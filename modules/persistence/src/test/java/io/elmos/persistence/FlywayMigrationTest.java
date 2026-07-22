@@ -6,11 +6,32 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Testcontainers(disabledWithoutDocker = true)
 class FlywayMigrationTest {
+    private static final Set<String> BATCH_14_TABLES = Set.of(
+            "growth_programs", "growth_goals", "north_star_metrics", "metric_definitions",
+            "growth_events", "identity_links", "funnels", "journeys", "experiments",
+            "experiment_variants", "experiment_assignments", "experiment_results",
+            "channels", "campaigns", "touchpoints", "attribution_models", "attribution_results",
+            "content_pillars", "content_topics", "content_assets", "content_versions",
+            "content_reviews", "seo_keywords", "seo_pages", "events", "event_attendees",
+            "developer_profiles", "api_applications", "sdk_usage", "cli_usage",
+            "sample_repositories", "sandbox_sessions", "community_spaces", "community_members",
+            "community_posts", "community_answers", "community_reputation", "community_badges",
+            "moderation_cases", "community_events", "marketplace_publishers", "marketplace_assets",
+            "asset_versions", "asset_certifications", "asset_installations", "asset_usage",
+            "asset_reviews", "asset_reports", "marketplace_orders", "publisher_payouts",
+            "marketplace_bounties", "locales", "translation_keys", "translations",
+            "translation_memories", "terminology", "localization_projects", "regional_requirements",
+            "regions", "regional_launches", "regional_prices", "regional_partners",
+            "regional_campaigns", "regional_metrics", "growth_playbooks", "growth_learnings",
+            "growth_risks", "growth_costs", "growth_economics");
+
     @Container static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:17.5-alpine");
     @Test void createsAllAuthoritativeSchemasThroughProductBatchThirtyEightAndMigrationPackAdmission() {
         var flyway=Flyway.configure().dataSource(POSTGRES.getJdbcUrl(),POSTGRES.getUsername(),POSTGRES.getPassword()).load();
@@ -22,7 +43,10 @@ class FlywayMigrationTest {
         assertEquals(24, jdbc.sql("select count(*) from information_schema.tables where table_schema='public' and table_name in ('security_estates','security_assets','security_boundaries','security_identities','access_policies','cryptographic_assets','security_requirements','security_controls','control_assessments','software_components','sbom_documents','provenance_statements','vex_statements','security_tools','security_scans','security_findings','vulnerabilities','vulnerability_exposures','runtime_security_events','data_processing_activities','threat_models','compliance_catalogs','oscal_assessment_results','authorization_boundaries')").query(Integer.class).single());
         assertEquals(24, jdbc.sql("select count(*) from information_schema.tables where table_schema='public' and table_name in ('test_estates','test_framework_profiles','test_suites','test_cases','test_case_identities','test_executions','test_results','test_discovery_snapshots','quality_requirements','quality_risks','quality_coverage_records','test_portfolios','characterization_scenarios','golden_masters','contract_tests','provider_verifications','property_tests','mutation_runs','test_data_assets','test_environments','ai_test_candidates','flaky_test_profiles','quality_decisions','continuous_validation_runs')").query(Integer.class).single());
         assertTrue(jdbc.sql("select count(*) from pg_policies where schemaname='public' and policyname='tenant_isolation'").query(Integer.class).single() >= 1239);
-        assertEquals(96, jdbc.sql("select count(*) from information_schema.tables where table_schema='public' and table_name like 'growth_%'").query(Integer.class).single());
+        var publicTables = Set.copyOf(jdbc.sql("select table_name from information_schema.tables where table_schema='public'").query(String.class).list());
+        var missingBatch14Tables = BATCH_14_TABLES.stream().filter(table -> !publicTables.contains(table)).sorted().toList();
+        assertEquals(69, BATCH_14_TABLES.size());
+        assertTrue(missingBatch14Tables.isEmpty(), () -> "Missing Batch 14 tables: " + missingBatch14Tables);
         assertEquals(81, jdbc.sql("select count(*) from information_schema.tables where table_schema='software_delivery'").query(Integer.class).single());
         assertEquals(107, jdbc.sql("select count(*) from information_schema.tables where table_schema='ai_platform'").query(Integer.class).single());
         assertEquals(112, jdbc.sql("select count(*) from information_schema.tables where table_schema='edge_industrial'").query(Integer.class).single());
