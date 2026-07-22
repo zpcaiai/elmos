@@ -11,7 +11,7 @@ elmos-project-synthesis = "elmos_project_synthesis.cli:main"
 [dependency-groups]
 dev = [
   "mypy==1.17.0",
-  "pyyaml==6.0.2",
+  "pyyaml==6.0.3",
   "pytest==8.4.1",
   "ruff==0.12.5",
 ]
