@@ -1,0 +1,119 @@
+{
+  "checks": {
+    "externalized_shutdown_timeout": true,
+    "graceful_shutdown": true,
+    "liveness_readiness_probes": true,
+    "production_database_fail_closed": true,
+    "safe_error_responses": true
+  },
+  "config_artifacts": [
+    {
+      "bytes": 655,
+      "path": "apps/agent-gateway/src/main/resources/application.yml",
+      "sha256": "0463dd7b8156dadeaffbdd17a55366a5166146419520c023e41fc1b690efa62d"
+    },
+    {
+      "bytes": 547,
+      "path": "apps/commercial-api/src/main/resources/application.yml",
+      "sha256": "3e207370301d814f5a43a5609a13913bd8d1078ecf51bfd259cfb48816e82053"
+    },
+    {
+      "bytes": 179,
+      "path": "apps/control-plane/src/main/resources/application-prod.yml",
+      "sha256": "86c39d3ecaad96c257be6665fdc29ef424058221e537381f06a0b63b4d9f7291"
+    },
+    {
+      "bytes": 1377,
+      "path": "apps/control-plane/src/main/resources/application.yml",
+      "sha256": "d94fa25acb0e8a47f51a01c90b4d2e43c1552d8948d72e448f481d5b2bb9ab83"
+    },
+    {
+      "bytes": 555,
+      "path": "apps/enterprise-control/src/main/resources/application.yml",
+      "sha256": "8dfcaba1f2539c234a045980c5db6158925a4bf9e87060f3b9a1b08061e28ebc"
+    },
+    {
+      "bytes": 725,
+      "path": "apps/java-engine-worker/src/main/resources/application.yml",
+      "sha256": "f53e72ac533bafe58970df9a76125fc9468c8edbfa371286d99e0de993baf658"
+    },
+    {
+      "bytes": 179,
+      "path": "apps/workspace-service/src/main/resources/application-prod.yml",
+      "sha256": "86c39d3ecaad96c257be6665fdc29ef424058221e537381f06a0b63b4d9f7291"
+    },
+    {
+      "bytes": 1239,
+      "path": "apps/workspace-service/src/main/resources/application.yml",
+      "sha256": "1da8c2fb17b2f70263d1b38c05ba32694d829694eb3c97cdd8567572b5f29cf5"
+    },
+    {
+      "bytes": 548,
+      "path": "engines/ai-platform-engine/src/main/resources/application.yml",
+      "sha256": "b1dd1b788a617d9a2f9ae93415f951f4830b09063cb1defb6472c45fc3544d38"
+    },
+    {
+      "bytes": 552,
+      "path": "engines/database-data-engine/src/main/resources/application.yml",
+      "sha256": "dc22e9ff5864550a4d21cba096d7b5194235683ae22ebdcf24c565af4fd05ca6"
+    },
+    {
+      "bytes": 564,
+      "path": "engines/edge-iot-industrial-engine/src/main/resources/application.yml",
+      "sha256": "31ba394d2e90e0f834ff8ffda47952e47d7a37f88670e4a2e3eb4da8008c03ec"
+    },
+    {
+      "bytes": 572,
+      "path": "engines/enterprise-architecture-engine/src/main/resources/application.yml",
+      "sha256": "7358c7c56ae97122061c2d7c36320181b2a2a2a7ae4a61c81c1e90cc50c62a1b"
+    },
+    {
+      "bytes": 570,
+      "path": "engines/enterprise-integration-engine/src/main/resources/application.yml",
+      "sha256": "9d42845089d0666a84f5b91843cc2f809aebe303b493a6844a2c34c4930a5fc0"
+    },
+    {
+      "bytes": 558,
+      "path": "engines/enterprise-suite-engine/src/main/resources/application.yml",
+      "sha256": "10802aa1a54ab5495036cd13864a5981ceebf2e699bbb2ca97c3e8b302fe3e30"
+    },
+    {
+      "bytes": 554,
+      "path": "engines/infrastructure-engine/src/main/resources/application.yml",
+      "sha256": "e58e011b6122c235d89fb43b6f6670ad7fc9895466dc0e5616aae0a7bf02b505"
+    },
+    {
+      "bytes": 544,
+      "path": "engines/mainframe-engine/src/main/resources/application.yml",
+      "sha256": "7eb92d7ee1c8d1b2c830a24f9545ad58de3310099edf3cf29f68117b9721f70e"
+    },
+    {
+      "bytes": 564,
+      "path": "engines/operations-sre-itsm-engine/src/main/resources/application.yml",
+      "sha256": "5c9161f48736478c77441845df5cbbf0e9fe387d1f60e723ce088d6b6922e9a3"
+    },
+    {
+      "bytes": 564,
+      "path": "engines/security-compliance-engine/src/main/resources/application.yml",
+      "sha256": "76fc4dea492b707dfeb6b91cd580cb36627fc81455e2dcc08c939e5f9da8063c"
+    },
+    {
+      "bytes": 578,
+      "path": "engines/software-delivery-platform-engine/src/main/resources/application.yml",
+      "sha256": "c224e5bd67ab30cf5ed646f32c3e2374e62f0b2ca8e7a1a009a1ea5f32d34d09"
+    },
+    {
+      "bytes": 550,
+      "path": "engines/test-quality-engine/src/main/resources/application.yml",
+      "sha256": "eeeb14cfde0b02e5c1b5ce0c2ce777cc7dc661c061d21f7e059d852f68f44d50"
+    }
+  ],
+  "database_service_count": 2,
+  "engineering_evidence_only": true,
+  "errors": [],
+  "external_evidence_status": "NOT_RUN",
+  "service_count": 18,
+  "status": "PASS",
+  "unique_application_names": 18,
+  "unique_default_ports": 18
+}

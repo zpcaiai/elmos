@@ -1,0 +1,40 @@
+{
+  "batch": 45,
+  "packKey": "elmos-platform-production-readiness",
+  "owner": "elmos-platform-maintainers",
+  "scope": [
+    "18 Spring HTTP service operability configurations enumerated by tooling/validate_runtime_operability.py",
+    "Project Synthesis Engine 1.0.0 intake, approval, generation safety, and target profile contracts",
+    "Web Console generation and Skills routes",
+    "repository CI for Java, Python Project Synthesis, Batch 45 fail-closed checks, and Web Console"
+  ],
+  "skillIds": [
+    1475,
+    1476,
+    1477,
+    1478,
+    1479,
+    1480,
+    1481,
+    1482,
+    1483,
+    1484,
+    1485,
+    1486,
+    1487,
+    1488,
+    1489,
+    1490,
+    1491,
+    1492,
+    1493,
+    1494,
+    1495,
+    1496
+  ],
+  "status": "IN_PROGRESS",
+  "evidenceRefs": [
+    "engineering/runtime-operability.json"
+  ],
+  "externalOperationExecuted": false
+}

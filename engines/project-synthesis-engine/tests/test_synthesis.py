@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 import yaml
 
+from elmos_project_synthesis.cli import main
 from elmos_project_synthesis.intake import approve_request, create_draft
 from elmos_project_synthesis.models import RequestValidationError, SynthesisRequest
 from elmos_project_synthesis.workspace import WorkspaceConflictError, generate_workspace, render_workspace
@@ -26,6 +27,31 @@ def test_natural_language_draft_keeps_questions_explicit() -> None:
     assert draft["open_questions"]
     with pytest.raises(ValueError, match="OPEN_QUESTIONS_BLOCK_APPROVAL"):
         approve_request(draft, actor="user:test")
+
+
+def test_draft_normalizes_short_names_and_preserves_explicit_namespace() -> None:
+    draft = create_draft(
+        name="A",
+        description="A bounded service",
+        entity="item",
+        namespace="io.elmos.items",
+        languages=("python",),
+    )
+    assert draft["project"]["name"] == "a-service"
+    assert draft["project"]["namespace"] == "io.elmos.items"
+    assert [target["language"] for target in draft["targets"]] == ["python"]
+    with pytest.raises(ValueError, match="TARGETS_REQUIRED"):
+        create_draft(name="items", description="service", entity="item", languages=())
+    with pytest.raises(RequestValidationError, match="PROJECT_NAMESPACE_INVALID"):
+        create_draft(name="items", description="service", entity="item", namespace="Invalid Namespace")
+
+
+def test_approval_requires_an_accountable_actor_and_utc_capable_timestamp() -> None:
+    draft = create_draft(name="items", description="service", entity="item")
+    with pytest.raises(ValueError, match="APPROVER_INVALID"):
+        approve_request(draft, actor=" ")
+    with pytest.raises(ValueError, match="APPROVED_AT_TIMEZONE_REQUIRED"):
+        approve_request(draft, actor="user:test", approved_at="2026-07-22T00:00:00")
 
 
 def test_approval_is_hash_bound_and_tampering_blocks_generation() -> None:
@@ -82,9 +108,38 @@ def test_generation_is_idempotent_and_never_overwrites_modified_managed_files(tm
         generate_workspace(approved_request(), output)
 
 
+def test_changed_approved_baseline_requires_a_new_output_directory(tmp_path: Path) -> None:
+    output = tmp_path / "generated"
+    generate_workspace(approved_request(), output)
+    changed = create_draft(
+        name="work-order-service",
+        description="A materially different approved baseline",
+        entity="work_order",
+    )
+    changed = approve_request(changed, actor="user:test", approved_at="2026-07-22T00:01:00+00:00")
+    with pytest.raises(WorkspaceConflictError, match="REQUEST_BASELINE_CHANGED_REQUIRES_NEW_OUTPUT"):
+        generate_workspace(changed, output)
+
+
 def test_nonempty_unmanaged_output_is_rejected(tmp_path: Path) -> None:
     output = tmp_path / "existing"
     output.mkdir()
     (output / "README.md").write_text("owned by user", encoding="utf-8")
     with pytest.raises(WorkspaceConflictError, match="NONEMPTY_UNMANAGED_OUTPUT_REJECTED"):
         generate_workspace(approved_request(), output)
+
+
+def test_cli_draft_accepts_namespace_and_writes_atomically(tmp_path: Path) -> None:
+    output = tmp_path / "request.json"
+    assert main([
+        "draft",
+        "--name", "inventory-service",
+        "--description", "Inventory API",
+        "--entity", "inventory_item",
+        "--namespace", "io.elmos.inventory",
+        "--language", "java",
+        "--output", str(output),
+    ]) == 0
+    request = json.loads(output.read_text(encoding="utf-8"))
+    assert request["project"]["namespace"] == "io.elmos.inventory"
+    assert not list(tmp_path.glob("*.tmp"))

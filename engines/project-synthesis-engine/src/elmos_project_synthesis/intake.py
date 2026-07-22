@@ -5,7 +5,15 @@ from copy import deepcopy
 from datetime import UTC, datetime
 from typing import Any
 
-from .models import SUPPORTED_LANGUAGES, identifier, request_payload, sha256_json, slugify
+from .models import (
+    SUPPORTED_LANGUAGES,
+    identifier,
+    project_description,
+    project_namespace,
+    request_payload,
+    sha256_json,
+    slugify,
+)
 
 
 def create_draft(
@@ -13,11 +21,18 @@ def create_draft(
     name: str,
     description: str,
     entity: str | None,
+    namespace: str | None = None,
     languages: Iterable[str] = SUPPORTED_LANGUAGES,
 ) -> dict[str, Any]:
     project_name = slugify(name)
+    normalized_description = project_description(description)
+    normalized_namespace = project_namespace(
+        namespace or f"com.example.{project_name.replace('-', '')}"
+    )
     entity_name = identifier(entity or project_name.split("-")[0])
     selected = tuple(dict.fromkeys(languages))
+    if not selected:
+        raise ValueError("TARGETS_REQUIRED")
     unsupported = sorted(set(selected) - set(SUPPORTED_LANGUAGES))
     if unsupported:
         raise ValueError(f"UNSUPPORTED_TARGET_LANGUAGES:{','.join(unsupported)}")
@@ -38,8 +53,8 @@ def create_draft(
         "project": {
             "id": f"PRJ-{project_name.upper()}",
             "name": project_name,
-            "description": description.strip(),
-            "namespace": f"com.example.{project_name.replace('-', '')}",
+            "description": normalized_description,
+            "namespace": normalized_namespace,
         },
         "actors": [{"id": "ACT-API-USER", "name": "API user", "kind": "human"}],
         "entity": {
@@ -152,11 +167,21 @@ def create_draft(
 def approve_request(mapping: dict[str, Any], *, actor: str, approved_at: str | None = None) -> dict[str, Any]:
     if mapping.get("open_questions"):
         raise ValueError("OPEN_QUESTIONS_BLOCK_APPROVAL")
+    approver = actor.strip()
+    if not approver or len(approver) > 200 or any(ord(character) < 32 for character in approver):
+        raise ValueError("APPROVER_INVALID")
+    timestamp = approved_at or datetime.now(UTC).replace(microsecond=0).isoformat()
+    try:
+        parsed_timestamp = datetime.fromisoformat(timestamp)
+    except ValueError as error:
+        raise ValueError("APPROVED_AT_INVALID") from error
+    if parsed_timestamp.tzinfo is None:
+        raise ValueError("APPROVED_AT_TIMEZONE_REQUIRED")
     approved = deepcopy(mapping)
     approved["approval"] = {
         "status": "APPROVED",
-        "approved_by": actor,
-        "approved_at": approved_at or datetime.now(UTC).replace(microsecond=0).isoformat(),
+        "approved_by": approver,
+        "approved_at": parsed_timestamp.astimezone(UTC).replace(microsecond=0).isoformat(),
         "approved_payload_sha256": sha256_json(request_payload(approved)),
     }
     return approved

@@ -1,0 +1,49 @@
+{
+  "packKey": "elmos-platform-production-readiness",
+  "status": "OPEN",
+  "owner": "elmos-platform-maintainers",
+  "risks": [
+    {
+      "id": "RISK-IDENTITY-001",
+      "severity": "critical",
+      "status": "OPEN",
+      "statement": "Production identity, tenant binding, and authorization journeys have not been independently exercised end to end."
+    },
+    {
+      "id": "RISK-DATA-001",
+      "severity": "critical",
+      "status": "OPEN",
+      "statement": "Backup, point-in-time recovery, restore, and disaster-recovery evidence for the production database topology is NOT_RUN."
+    },
+    {
+      "id": "RISK-DEPLOY-001",
+      "severity": "high",
+      "status": "OPEN",
+      "statement": "The supported deployment matrix, upgrade, rollback, and mixed-version paths have not run in representative environments."
+    },
+    {
+      "id": "RISK-SRE-001",
+      "severity": "high",
+      "status": "OPEN",
+      "statement": "Load, soak, capacity, failure injection, alert routing, incident response, and recovery objectives remain NOT_RUN."
+    },
+    {
+      "id": "RISK-SECURITY-001",
+      "severity": "critical",
+      "status": "OPEN",
+      "statement": "Independent security, privacy, tenant-isolation, and supply-chain review has not been supplied."
+    },
+    {
+      "id": "RISK-SYNTHESIS-001",
+      "severity": "high",
+      "status": "OPEN",
+      "statement": "Generated starters intentionally use in-memory storage and omit identity until an approved production profile is selected."
+    },
+    {
+      "id": "RISK-EXTERNAL-001",
+      "severity": "high",
+      "status": "OPEN",
+      "statement": "Provider, hardware, vendor-platform, customer, economics, and independent certification evidence remains NOT_RUN."
+    }
+  ]
+}

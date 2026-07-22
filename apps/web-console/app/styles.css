@@ -521,6 +521,8 @@ kbd { min-width: 22px; display: inline-grid; place-items: center; padding: 3px 6
 .generation-pipeline small { color: #789092; font-size: 8px; }
 .preview-command { padding: 18px 24px; border-bottom: 1px solid rgba(255,255,255,.08); }
 .preview-command > div { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: #91a8aa; font-size: 9px; font-weight: 800; text-transform: uppercase; }
+.preview-command button { min-height: 30px; display: inline-flex; align-items: center; gap: 6px; padding: 0 9px; border: 1px solid rgba(169,206,202,.2); border-radius: 7px; background: rgba(169,206,202,.07); color: #a9ceca; font-size: 8px; font-weight: 800; cursor: pointer; }
+.preview-command button:hover { border-color: rgba(169,206,202,.36); background: rgba(169,206,202,.12); }
 .preview-command code { display: block; overflow-wrap: anywhere; margin-top: 11px; padding: 11px; border-radius: 8px; background: #102124; color: #a9ceca; font: 600 8px/1.7 ui-monospace, SFMono-Regular, Menlo, monospace; }
 .preview-command > small { display: block; margin-top: 7px; color: #71898b; font-size: 8px; }
 .generation-boundary { display: grid; grid-template-columns: auto minmax(0,1fr); gap: 9px; padding: 18px 24px; color: #d4a969; }

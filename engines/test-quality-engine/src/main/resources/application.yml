@@ -1,5 +1,10 @@
 server:
   port: ${ELMOS_TEST_QUALITY_PORT:8092}
+  shutdown: graceful
+  error:
+    include-message: never
+    include-binding-errors: never
+    include-stacktrace: never
 management:
   endpoints:
     web:
@@ -9,6 +14,13 @@ management:
     health:
       probes:
         enabled: true
+        add-additional-paths: true
+      show-details: never
 spring:
   application:
     name: elmos-test-quality-engine
+  lifecycle:
+    timeout-per-shutdown-phase: ${ELMOS_SHUTDOWN_TIMEOUT:30s}
+  mvc:
+    problemdetails:
+      enabled: true

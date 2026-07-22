@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
+import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -13,6 +15,8 @@ from .workspace import WorkspaceConflictError, generate_workspace
 
 
 def _read_json(path: Path) -> dict[str, Any]:
+    if path.stat().st_size > 1_048_576:
+        raise ValueError("REQUEST_FILE_TOO_LARGE")
     loaded = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(loaded, dict):
         raise ValueError("JSON_OBJECT_REQUIRED")
@@ -20,8 +24,25 @@ def _read_json(path: Path) -> dict[str, Any]:
 
 
 def _write_json(path: Path, value: dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    output = path.expanduser()
+    if output.exists() and (output.is_symlink() or not output.is_file()):
+        raise ValueError("OUTPUT_MUST_BE_REGULAR_FILE")
+    output.parent.mkdir(parents=True, exist_ok=True)
+    descriptor, temporary_name = tempfile.mkstemp(
+        prefix=f".{output.name}.elmos-",
+        suffix=".tmp",
+        dir=output.parent,
+        text=True,
+    )
+    temporary = Path(temporary_name)
+    try:
+        with os.fdopen(descriptor, "w", encoding="utf-8", newline="\n") as handle:
+            handle.write(json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+        temporary.replace(output)
+    finally:
+        temporary.unlink(missing_ok=True)
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -32,6 +53,7 @@ def _parser() -> argparse.ArgumentParser:
     draft.add_argument("--name", required=True)
     draft.add_argument("--description", required=True)
     draft.add_argument("--entity")
+    draft.add_argument("--namespace")
     draft.add_argument("--language", action="append", choices=["java", "python", "csharp"])
     draft.add_argument("--output", type=Path, required=True)
 
@@ -58,6 +80,7 @@ def main(argv: list[str] | None = None) -> int:
                 name=args.name,
                 description=args.description,
                 entity=args.entity,
+                namespace=args.namespace,
                 languages=args.language or ("java", "python", "csharp"),
             )
             _write_json(args.output, result)

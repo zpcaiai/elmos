@@ -3,6 +3,8 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
+import tempfile
 from pathlib import Path, PurePosixPath
 from typing import Any, cast
 
@@ -256,17 +258,50 @@ def _load_existing_manifest(root: Path) -> dict[str, Any] | None:
 
 
 def _assert_existing_files_unmodified(root: Path, manifest: dict[str, Any]) -> None:
+    if (
+        manifest.get("engine") != "elmos.project-synthesis"
+        or manifest.get("engine_version") != "1.0.0"
+        or manifest.get("status") != "GENERATED"
+    ):
+        raise WorkspaceConflictError("EXISTING_MANIFEST_IDENTITY_INVALID")
     entries = manifest.get("files")
     if not isinstance(entries, list):
         raise WorkspaceConflictError("EXISTING_MANIFEST_FILES_INVALID")
+    seen_paths: set[str] = set()
     for entry in entries:
-        if not isinstance(entry, dict) or not isinstance(entry.get("path"), str):
+        if (
+            not isinstance(entry, dict)
+            or not isinstance(entry.get("path"), str)
+            or entry["path"] in seen_paths
+            or not isinstance(entry.get("sha256"), str)
+            or re.fullmatch(r"[0-9a-f]{64}", entry["sha256"]) is None
+        ):
             raise WorkspaceConflictError("EXISTING_MANIFEST_ENTRY_INVALID")
+        seen_paths.add(entry["path"])
         target = _safe_path(root, entry["path"])
         if not target.is_file():
             raise WorkspaceConflictError(f"MANAGED_FILE_MISSING:{entry['path']}")
         if hashlib.sha256(target.read_bytes()).hexdigest() != entry.get("sha256"):
             raise WorkspaceConflictError(f"MANAGED_FILE_MODIFIED:{entry['path']}")
+
+
+def _write_text_atomic(target: Path, content: str) -> None:
+    descriptor, temporary_name = tempfile.mkstemp(
+        prefix=f".{target.name}.elmos-",
+        suffix=".tmp",
+        dir=target.parent,
+        text=True,
+    )
+    temporary = Path(temporary_name)
+    try:
+        with os.fdopen(descriptor, "w", encoding="utf-8", newline="\n") as handle:
+            handle.write(content)
+            handle.flush()
+            os.fsync(handle.fileno())
+        temporary.chmod(0o644)
+        temporary.replace(target)
+    finally:
+        temporary.unlink(missing_ok=True)
 
 
 def generate_workspace(request_mapping: dict[str, Any], output: Path) -> dict[str, Any]:
@@ -279,6 +314,8 @@ def generate_workspace(request_mapping: dict[str, Any], output: Path) -> dict[st
         raise WorkspaceConflictError("NONEMPTY_UNMANAGED_OUTPUT_REJECTED")
     if existing_manifest is not None:
         _assert_existing_files_unmodified(root, existing_manifest)
+        if existing_manifest.get("request_sha256") != request.request_hash:
+            raise WorkspaceConflictError("REQUEST_BASELINE_CHANGED_REQUIRES_NEW_OUTPUT")
     rendered = render_workspace(request)
     for relative, content in sorted(rendered.items()):
         target = _safe_path(root, relative)
@@ -290,9 +327,7 @@ def generate_workspace(request_mapping: dict[str, Any], output: Path) -> dict[st
             if existing_manifest is None:
                 raise WorkspaceConflictError(f"EXISTING_FILE_CONFLICT:{relative}")
         target.parent.mkdir(parents=True, exist_ok=True)
-        temporary = target.with_name(f".{target.name}.elmos-tmp-{os.getpid()}")
-        temporary.write_text(content, encoding="utf-8", newline="\n")
-        temporary.replace(target)
+        _write_text_atomic(target, content)
     manifest = cast(dict[str, Any], json.loads(rendered[".elmos/generation-manifest.json"]))
     manifest["workspace"] = str(root)
     manifest["file_count"] = len(manifest["files"])

@@ -40,7 +40,7 @@ export function SkillsWorkspace() {
 
     <section className="metric-grid metric-grid-four" aria-label="Skills 资格摘要">
       <article className="metric-card metric-card-accent"><span>组合包契约</span><strong>1,824</strong><small>官方结构 1,824 / 1,824</small></article>
-      <article className="metric-card"><span>Build / Runtime</span><strong className="metric-pair">424 <i>/</i> 1,647</strong><small>均具有可调用界面</small></article>
+      <article className="metric-card"><span>Codex / Runtime</span><strong className="metric-pair">530 <i>/</i> 2,097</strong><small>均具有可调用界面</small></article>
       <article className="metric-card"><span>严格用例目录</span><strong>408</strong><small>Batch 1–37 · 八类变体</small></article>
       <article className="metric-card"><span>外部认证用例</span><strong className="warning-text">0 / 408</strong><small>全部保持 NOT_RUN</small></article>
     </section>

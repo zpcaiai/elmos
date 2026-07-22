@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { Icon, type IconName } from "../components/Icon";
 import { StatusChip } from "../components/StatusChip";
 
@@ -25,9 +25,9 @@ type GenerationDraft = {
 };
 
 const targetProfiles: TargetProfile[] = [
-  { id: "java", language: "Java", runtime: "21", framework: "Spring Boot 3.5.3", port: 8080, accent: "amber", icon: "code" },
-  { id: "python", language: "Python", runtime: "3.12", framework: "FastAPI 0.116.1", port: 8000, accent: "blue", icon: "spark" },
-  { id: "csharp", language: "C#", runtime: ".NET 10", framework: "ASP.NET Core", port: 8081, accent: "violet", icon: "layers" },
+  { id: "java", language: "Java", runtime: "21", framework: "Spring Boot 3.5.3", port: 8081, accent: "amber", icon: "code" },
+  { id: "python", language: "Python", runtime: "3.12", framework: "FastAPI 0.116.1", port: 8082, accent: "blue", icon: "spark" },
+  { id: "csharp", language: "C#", runtime: ".NET 10", framework: "ASP.NET Core", port: 8083, accent: "violet", icon: "layers" },
 ];
 
 const phases = [
@@ -58,6 +58,7 @@ export function ProjectGenerationStudio() {
   const [draft, setDraft] = useState<GenerationDraft | null>(null);
   const [feedback, setFeedback] = useState("");
   const [targetError, setTargetError] = useState("");
+  const feedbackTimer = useRef<number | null>(null);
 
   const selectedProfiles = useMemo(
     () => targetProfiles.filter((profile) => targets.includes(profile.id)),
@@ -66,7 +67,20 @@ export function ProjectGenerationStudio() {
 
   const preview = draft ?? { name, namespace, description, entity, targets };
   const previewProfiles = targetProfiles.filter((profile) => preview.targets.includes(profile.id));
-  const command = `elmos-project-synthesis draft --name ${shellQuote(preview.name || "project-name")} --description ${shellQuote(preview.description || "project description")} --entity ${shellQuote(preview.entity || "entity")} ${preview.targets.map((target) => `--language ${target}`).join(" ")} --output synthesis-request.json`;
+  const command = `elmos-project-synthesis draft --name ${shellQuote(preview.name || "project-name")} --namespace ${shellQuote(preview.namespace || "com.example.project")} --description ${shellQuote(preview.description || "project description")} --entity ${shellQuote(preview.entity || "entity")} ${preview.targets.map((target) => `--language ${target}`).join(" ")} --output synthesis-request.json`;
+
+  useEffect(() => () => {
+    if (feedbackTimer.current !== null) window.clearTimeout(feedbackTimer.current);
+  }, []);
+
+  function announce(message: string) {
+    if (feedbackTimer.current !== null) window.clearTimeout(feedbackTimer.current);
+    setFeedback(message);
+    feedbackTimer.current = window.setTimeout(() => {
+      setFeedback("");
+      feedbackTimer.current = null;
+    }, 4800);
+  }
 
   function toggleTarget(id: TargetId) {
     setTargets((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id]);
@@ -82,8 +96,16 @@ export function ProjectGenerationStudio() {
     }
     const nextDraft = { name: name.trim(), namespace: namespace.trim(), description: description.trim(), entity: entity.trim(), targets };
     setDraft(nextDraft);
-    setFeedback(`“${nextDraft.name}”的生成计划已保存为当前页面草稿；未执行任何代码生成。`);
-    window.setTimeout(() => setFeedback(""), 4800);
+    announce(`“${nextDraft.name}”的生成计划已保存为当前页面草稿；未执行任何代码生成。`);
+  }
+
+  async function copyCommand() {
+    try {
+      await navigator.clipboard.writeText(command);
+      announce("CLI 草稿命令已复制，可在受控终端中执行。");
+    } catch {
+      announce("浏览器未允许访问剪贴板，请手动选择并复制命令。");
+    }
   }
 
   return (
@@ -179,9 +201,9 @@ export function ProjectGenerationStudio() {
           </div>
 
           <div className="preview-command">
-            <div><span>CLI 草稿参考</span><StatusChip status="NOT_RUN" compact /></div>
+            <div><span>CLI 草稿参考</span><button type="button" onClick={copyCommand}><Icon name="copy" size={13} />复制命令</button></div>
             <code>{command}</code>
-            <small>仅供复制参考；此界面不会执行命令。</small>
+            <small>命名空间、目标语言与端口和 Project Synthesis 1.0.0 引擎保持一致；此界面不会执行命令。</small>
           </div>
 
           <div className="generation-boundary">

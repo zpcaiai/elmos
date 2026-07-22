@@ -1,12 +1,24 @@
 server:
   port: ${ELMOS_CONTROL_PLANE_PORT:8080}
+  shutdown: graceful
+  error:
+    include-message: never
+    include-binding-errors: never
+    include-stacktrace: never
 spring:
+  application:
+    name: elmos-control-plane
   datasource:
     url: ${ELMOS_DATABASE_URL:jdbc:postgresql://localhost:5432/elmos}
     username: ${ELMOS_DATABASE_USER:elmos}
     password: ${ELMOS_DATABASE_PASSWORD:elmos-local-only}
   flyway:
     enabled: true
+  lifecycle:
+    timeout-per-shutdown-phase: ${ELMOS_SHUTDOWN_TIMEOUT:30s}
+  mvc:
+    problemdetails:
+      enabled: true
 elmos:
   github:
     app:
@@ -23,6 +35,12 @@ elmos:
     artifact-root: ${ELMOS_SNAPSHOT_ARTIFACT_ROOT:}
     max-artifact-bytes: ${ELMOS_SNAPSHOT_MAX_ARTIFACT_BYTES:1073741824}
 management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+        add-additional-paths: true
+      show-details: never
   endpoints:
     web:
       exposure:

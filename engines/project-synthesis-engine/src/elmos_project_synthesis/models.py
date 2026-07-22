@@ -10,6 +10,9 @@ SUPPORTED_LANGUAGES = ("java", "python", "csharp")
 SUPPORTED_FIELD_TYPES = ("string", "integer", "number", "boolean", "datetime")
 SLUG_PATTERN = re.compile(r"^[a-z][a-z0-9-]{1,62}[a-z0-9]$")
 IDENTIFIER_PATTERN = re.compile(r"^[a-z][a-z0-9_]{0,62}$")
+NAMESPACE_PATTERN = re.compile(r"^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$")
+MAX_DESCRIPTION_LENGTH = 2_000
+MAX_NAMESPACE_LENGTH = 255
 
 
 class RequestValidationError(ValueError):
@@ -34,7 +37,27 @@ def slugify(value: str) -> str:
         slug = "generated-service"
     if not slug[0].isalpha():
         slug = f"service-{slug}"
+    if len(slug) < 3:
+        slug = f"{slug}-service"
     return slug[:63].rstrip("-")
+
+
+def project_description(value: str) -> str:
+    description = value.strip()
+    if not description:
+        raise RequestValidationError("PROJECT_DESCRIPTION_REQUIRED")
+    if len(description) > MAX_DESCRIPTION_LENGTH:
+        raise RequestValidationError("PROJECT_DESCRIPTION_TOO_LONG")
+    if any(ord(character) < 32 and character not in "\n\r\t" for character in description):
+        raise RequestValidationError("PROJECT_DESCRIPTION_CONTAINS_CONTROL_CHARACTERS")
+    return description
+
+
+def project_namespace(value: str) -> str:
+    namespace = value.strip()
+    if len(namespace) > MAX_NAMESPACE_LENGTH or not NAMESPACE_PATTERN.fullmatch(namespace):
+        raise RequestValidationError("PROJECT_NAMESPACE_INVALID")
+    return namespace
 
 
 def identifier(value: str) -> str:
@@ -151,12 +174,10 @@ class SynthesisRequest:
         project_name = str(project.get("name", ""))
         if not SLUG_PATTERN.fullmatch(project_name):
             raise RequestValidationError("PROJECT_NAME_MUST_BE_KEBAB_CASE")
-        description = str(project.get("description", "")).strip()
-        if not description:
-            raise RequestValidationError("PROJECT_DESCRIPTION_REQUIRED")
-        namespace = str(project.get("namespace", f"com.example.{project_name.replace('-', '')}"))
-        if not re.fullmatch(r"[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+", namespace):
-            raise RequestValidationError("PROJECT_NAMESPACE_INVALID")
+        description = project_description(str(project.get("description", "")))
+        namespace = project_namespace(
+            str(project.get("namespace", f"com.example.{project_name.replace('-', '')}"))
+        )
         entity_mapping = mapping.get("entity")
         if not isinstance(entity_mapping, dict):
             raise RequestValidationError("ENTITY_REQUIRED")

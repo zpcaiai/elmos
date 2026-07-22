@@ -1,0 +1,14 @@
+{
+  "batch": 45,
+  "packKey": "elmos-platform-production-readiness",
+  "eligible": false,
+  "status": "NOT_RUN",
+  "failures": [
+    "field evidence has not run",
+    "an external authorized trust store has not been supplied",
+    "independent holdout and representative workloads have not run",
+    "deployment, security, SRE, DR, economics, and customer-outcome gates remain NOT_RUN"
+  ],
+  "evidenceRefs": [],
+  "externalOperationExecuted": false
+}

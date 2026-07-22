@@ -3,7 +3,7 @@ export type IconName =
   | "check" | "clock" | "lock" | "search" | "plus" | "filter" | "code"
   | "database" | "cloud" | "layers" | "workflow" | "spark" | "menu" | "close"
   | "refresh" | "repository" | "server" | "file" | "user" | "chevron" | "external"
-  | "command" | "test";
+  | "command" | "test" | "copy";
 
 const paths: Record<IconName, React.ReactNode> = {
   home: <><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10M9 20v-6h6v6"/></>,
@@ -36,6 +36,7 @@ const paths: Record<IconName, React.ReactNode> = {
   external: <><path d="M14 4h6v6M20 4l-9 9"/><path d="M18 13v7H4V6h7"/></>,
   command: <><path d="M9 6V4a2 2 0 1 0-2 2h10a2 2 0 1 0-2-2v16a2 2 0 1 0 2-2H7a2 2 0 1 0 2 2V6Z"/></>,
   test: <><path d="M9 3h6M10 3v5l-5 9a2.5 2.5 0 0 0 2.2 4h9.6a2.5 2.5 0 0 0 2.2-4l-5-9V3"/><path d="M8 15h8M9.5 18h5"/></>,
+  copy: <><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></>,
 };
 
 export function Icon({ name, size = 20, className }: { name: IconName; size?: number; className?: string }) {
