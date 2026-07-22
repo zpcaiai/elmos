@@ -96,7 +96,7 @@
         <docker-java.version>3.4.2</docker-java.version>
         <jgit.version>7.7.0.202606012155-r</jgit.version>
         <tomlj.version>1.1.1</tomlj.version>
-        <sqlite-jdbc.version>3.50.3.0</sqlite-jdbc.version>
+        <sqlite-jdbc.version>3.53.2.1</sqlite-jdbc.version>
     </properties>
 
     <dependencyManagement>
