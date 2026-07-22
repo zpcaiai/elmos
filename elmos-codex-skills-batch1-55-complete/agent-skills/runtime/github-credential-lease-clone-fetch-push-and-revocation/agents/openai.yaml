@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B35: Github Credential Lease Clone Fetch Push And Revocation"
+  short_description: "Run ELMOS B35 Skill with fail-closed evidence"
+  default_prompt: "Use $github-credential-lease-clone-fetch-push-and-revocation to execute the ELMOS B35 contract with fail-closed evidence."

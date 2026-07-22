@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M28: B28 Manifest Driven Enterprise Platform Domain 28 Capability Matrix And Planning"
+  short_description: "Run ELMOS M28 Skill with fail-closed evidence"
+  default_prompt: "Use $b28-manifest-driven-enterprise-platform-domain-28-capab-c3b03258 to execute the ELMOS M28 contract with fail-closed evidence."

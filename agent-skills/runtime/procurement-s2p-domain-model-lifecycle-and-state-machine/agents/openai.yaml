@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B42: Procurement S2P Domain Model Lifecycle And State Machine"
+  short_description: "Run ELMOS Product B42 contract with fail-closed evidence"
+  default_prompt: "Use $procurement-s2p-domain-model-lifecycle-and-state-machine to implement its fail-closed ELMOS Product B42 contract."

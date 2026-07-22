@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B45: Agentic Runtime Workflow Orchestration Assignment Escalation And Recovery"
+  short_description: "Run ELMOS Product B45 contract with fail-closed evidence"
+  default_prompt: "Use $agentic-runtime-workflow-orchestration-assignment-escal-dc14a2f9 to implement its fail-closed ELMOS Product B45 contract."

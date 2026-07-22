@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B40: Customer Support Case Entitlement Sla Omnichannel Escalation And Knowledge"
+  short_description: "Run ELMOS B40 Skill with fail-closed evidence"
+  default_prompt: "Use $customer-support-case-entitlement-sla-omnichannel-escal-23ec8472 to execute the ELMOS B40 contract with fail-closed evidence."

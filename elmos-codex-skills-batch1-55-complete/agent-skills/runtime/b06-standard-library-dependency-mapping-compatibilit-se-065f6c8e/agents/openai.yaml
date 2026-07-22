@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M06: B06 Standard Library Dependency Mapping Compatibilit Security Privacy And Tenant Isol"
+  short_description: "Run ELMOS M06 Skill with fail-closed evidence"
+  default_prompt: "Use $b06-standard-library-dependency-mapping-compatibilit-se-065f6c8e to execute the ELMOS M06 contract with fail-closed evidence."

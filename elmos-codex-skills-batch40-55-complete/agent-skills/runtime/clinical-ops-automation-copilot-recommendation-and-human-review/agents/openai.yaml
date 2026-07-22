@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B52: Clinical Ops Automation Copilot Recommendation And Human Review"
+  short_description: "Run ELMOS Product B52 contract with fail-closed evidence"
+  default_prompt: "Use $clinical-ops-automation-copilot-recommendation-and-human-review to implement its fail-closed ELMOS Product B52 contract."

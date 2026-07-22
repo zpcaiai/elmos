@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B54: Collaboration Intel Audit Evidence Records Retention And Legal Hold"
+  short_description: "Run ELMOS Product B54 contract with fail-closed evidence"
+  default_prompt: "Use $collaboration-intel-audit-evidence-records-retention-an-b0c3e677 to implement its fail-closed ELMOS Product B54 contract."

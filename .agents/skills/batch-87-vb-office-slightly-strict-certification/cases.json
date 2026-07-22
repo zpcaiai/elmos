@@ -1,0 +1,1524 @@
+[
+  {
+    "id": "CASE-0157",
+    "test_skill_id": "T087",
+    "batch": 87,
+    "target_skills": [
+      "PG295"
+    ],
+    "category": "source-skill-direct",
+    "severity": "critical",
+    "title": "Direct verification: PG295 vb6 project discovery and inventory",
+    "objective": "Execute PG295 `vb6-project-discovery-and-inventory` with representative valid, boundary and adversarial inputs and verify its declared output, failure and evidence contracts.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable.",
+      "The target Skill-specific output contract is satisfied.",
+      "The target Skill has direct executed coverage rather than inferred batch coverage."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-87",
+      "vb-office",
+      "pg295",
+      "direct-coverage"
+    ]
+  },
+  {
+    "id": "CASE-0158",
+    "test_skill_id": "T087",
+    "batch": 87,
+    "target_skills": [
+      "PG296"
+    ],
+    "category": "source-skill-direct",
+    "severity": "high",
+    "title": "Direct verification: PG296 vb6 parser and semantic model",
+    "objective": "Execute PG296 `vb6-parser-and-semantic-model` with representative valid, boundary and adversarial inputs and verify its declared output, failure and evidence contracts.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable.",
+      "The target Skill-specific output contract is satisfied.",
+      "The target Skill has direct executed coverage rather than inferred batch coverage."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-87",
+      "vb-office",
+      "pg296",
+      "direct-coverage"
+    ]
+  },
+  {
+    "id": "CASE-0159",
+    "test_skill_id": "T087",
+    "batch": 87,
+    "target_skills": [
+      "PG297"
+    ],
+    "category": "source-skill-direct",
+    "severity": "high",
+    "title": "Direct verification: PG297 com activex dependency analyzer",
+    "objective": "Execute PG297 `com-activex-dependency-analyzer` with representative valid, boundary and adversarial inputs and verify its declared output, failure and evidence contracts.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable.",
+      "The target Skill-specific output contract is satisfied.",
+      "The target Skill has direct executed coverage rather than inferred batch coverage."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-87",
+      "vb-office",
+      "pg297",
+      "direct-coverage"
+    ]
+  },
+  {
+    "id": "CASE-0160",
+    "test_skill_id": "T087",
+    "batch": 87,
+    "target_skills": [
+      "PG298"
+    ],
+    "category": "source-skill-direct",
+    "severity": "medium",
+    "title": "Direct verification: PG298 vb forms ui event modeler",
+    "objective": "Execute PG298 `vb-forms-ui-event-modeler` with representative valid, boundary and adversarial inputs and verify its declared output, failure and evidence contracts.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable.",
+      "The target Skill-specific output contract is satisfied.",
+      "The target Skill has direct executed coverage rather than inferred batch coverage."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-87",
+      "vb-office",
+      "pg298",
+      "direct-coverage"
+    ]
+  },
+  {
+    "id": "CASE-0161",
+    "test_skill_id": "T087",
+    "batch": 87,
+    "target_skills": [
+      "PG299"
+    ],
+    "category": "source-skill-direct",
+    "severity": "critical",
+    "title": "Direct verification: PG299 vba office macro discovery",
+    "objective": "Execute PG299 `vba-office-macro-discovery` with representative valid, boundary and adversarial inputs and verify its declared output, failure and evidence contracts.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable.",
+      "The target Skill-specific output contract is satisfied.",
+      "The target Skill has direct executed coverage rather than inferred batch coverage."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-87",
+      "vb-office",
+      "pg299",
+      "direct-coverage"
+    ]
+  },
+  {
+    "id": "CASE-0162",
+    "test_skill_id": "T087",
+    "batch": 87,
+    "target_skills": [
+      "PG300"
+    ],
+    "category": "source-skill-direct",
+    "severity": "high",
+    "title": "Direct verification: PG300 vba 32 64bit compatibility analyzer",
+    "objective": "Execute PG300 `vba-32-64bit-compatibility-analyzer` with representative valid, boundary and adversarial inputs and verify its declared output, failure and evidence contracts.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable.",
+      "The target Skill-specific output contract is satisfied.",
+      "The target Skill has direct executed coverage rather than inferred batch coverage."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-87",
+      "vb-office",
+      "pg300",
+      "direct-coverage"
+    ]
+  },
+  {
+    "id": "CASE-0163",
+    "test_skill_id": "T087",
+    "batch": 87,
+    "target_skills": [
+      "PG301"
+    ],
+    "category": "source-skill-direct",
+    "severity": "high",
+    "title": "Direct verification: PG301 vbnet modernization profile",
+    "objective": "Execute PG301 `vbnet-modernization-profile` with representative valid, boundary and adversarial inputs and verify its declared output, failure and evidence contracts.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable.",
+      "The target Skill-specific output contract is satisfied.",
+      "The target Skill has direct executed coverage rather than inferred batch coverage."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-87",
+      "vb-office",
+      "pg301",
+      "direct-coverage"
+    ]
+  },
+  {
+    "id": "CASE-0164",
+    "test_skill_id": "T087",
+    "batch": 87,
+    "target_skills": [
+      "PG302"
+    ],
+    "category": "source-skill-direct",
+    "severity": "medium",
+    "title": "Direct verification: PG302 vb6 to csharp generator",
+    "objective": "Execute PG302 `vb6-to-csharp-generator` with representative valid, boundary and adversarial inputs and verify its declared output, failure and evidence contracts.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable.",
+      "The target Skill-specific output contract is satisfied.",
+      "The target Skill has direct executed coverage rather than inferred batch coverage."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-87",
+      "vb-office",
+      "pg302",
+      "direct-coverage"
+    ]
+  },
+  {
+    "id": "CASE-0165",
+    "test_skill_id": "T087",
+    "batch": 87,
+    "target_skills": [
+      "PG303"
+    ],
+    "category": "source-skill-direct",
+    "severity": "critical",
+    "title": "Direct verification: PG303 vba to office scripts python powerautomate generator",
+    "objective": "Execute PG303 `vba-to-office-scripts-python-powerautomate-generator` with representative valid, boundary and adversarial inputs and verify its declared output, failure and evidence contracts.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable.",
+      "The target Skill-specific output contract is satisfied.",
+      "The target Skill has direct executed coverage rather than inferred batch coverage."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-87",
+      "vb-office",
+      "pg303",
+      "direct-coverage"
+    ]
+  },
+  {
+    "id": "CASE-0166",
+    "test_skill_id": "T087",
+    "batch": 87,
+    "target_skills": [
+      "PG304"
+    ],
+    "category": "source-skill-direct",
+    "severity": "high",
+    "title": "Direct verification: PG304 access database application modernizer",
+    "objective": "Execute PG304 `access-database-application-modernizer` with representative valid, boundary and adversarial inputs and verify its declared output, failure and evidence contracts.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable.",
+      "The target Skill-specific output contract is satisfied.",
+      "The target Skill has direct executed coverage rather than inferred batch coverage."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-87",
+      "vb-office",
+      "pg304",
+      "direct-coverage"
+    ]
+  },
+  {
+    "id": "CASE-0167",
+    "test_skill_id": "T087",
+    "batch": 87,
+    "target_skills": [
+      "PG305"
+    ],
+    "category": "source-skill-direct",
+    "severity": "high",
+    "title": "Direct verification: PG305 windows interop regression verifier",
+    "objective": "Execute PG305 `windows-interop-regression-verifier` with representative valid, boundary and adversarial inputs and verify its declared output, failure and evidence contracts.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable.",
+      "The target Skill-specific output contract is satisfied.",
+      "The target Skill has direct executed coverage rather than inferred batch coverage."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-87",
+      "vb-office",
+      "pg305",
+      "direct-coverage"
+    ]
+  },
+  {
+    "id": "CASE-0168",
+    "test_skill_id": "T087",
+    "batch": 87,
+    "target_skills": [
+      "PG306"
+    ],
+    "category": "source-skill-direct",
+    "severity": "medium",
+    "title": "Direct verification: PG306 vb modernization certifier",
+    "objective": "Execute PG306 `vb-modernization-certifier` with representative valid, boundary and adversarial inputs and verify its declared output, failure and evidence contracts.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable.",
+      "The target Skill-specific output contract is satisfied.",
+      "The target Skill has direct executed coverage rather than inferred batch coverage."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-87",
+      "vb-office",
+      "pg306",
+      "direct-coverage"
+    ]
+  },
+  {
+    "id": "CASE-0169",
+    "test_skill_id": "T087",
+    "batch": 87,
+    "target_skills": [
+      "PG295",
+      "PG296",
+      "PG297",
+      "PG298",
+      "PG299",
+      "PG300",
+      "PG301",
+      "PG302",
+      "PG303",
+      "PG304",
+      "PG305",
+      "PG306"
+    ],
+    "category": "domain-adversarial",
+    "severity": "critical",
+    "title": "Verify Variant coercion, Empty/Null/Nothing, default properties and late binding are preserved or made explicit",
+    "objective": "Verify Variant coercion, Empty/Null/Nothing, default properties and late binding are preserved or made explicit.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-87",
+      "vb-office",
+      "variant-default-property",
+      "domain-specific"
+    ]
+  },
+  {
+    "id": "CASE-0170",
+    "test_skill_id": "T087",
+    "batch": 87,
+    "target_skills": [
+      "PG295",
+      "PG296",
+      "PG297",
+      "PG298",
+      "PG299",
+      "PG300",
+      "PG301",
+      "PG302",
+      "PG303",
+      "PG304",
+      "PG305",
+      "PG306"
+    ],
+    "category": "domain-adversarial",
+    "severity": "high",
+    "title": "Trace On Error Resume Next and Err state; migration must not hide failures or change control flow",
+    "objective": "Trace On Error Resume Next and Err state; migration must not hide failures or change control flow.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-87",
+      "vb-office",
+      "on-error-resume-next",
+      "domain-specific"
+    ]
+  },
+  {
+    "id": "CASE-0171",
+    "test_skill_id": "T087",
+    "batch": 87,
+    "target_skills": [
+      "PG295",
+      "PG296",
+      "PG297",
+      "PG298",
+      "PG299",
+      "PG300",
+      "PG301",
+      "PG302",
+      "PG303",
+      "PG304",
+      "PG305",
+      "PG306"
+    ],
+    "category": "domain-adversarial",
+    "severity": "high",
+    "title": "Exercise COM apartment threading, reference counting, callbacks and event sink lifetime",
+    "objective": "Exercise COM apartment threading, reference counting, callbacks and event sink lifetime.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-87",
+      "vb-office",
+      "com-apartment-lifetime",
+      "domain-specific"
+    ]
+  },
+  {
+    "id": "CASE-0172",
+    "test_skill_id": "T087",
+    "batch": 87,
+    "target_skills": [
+      "PG295",
+      "PG296",
+      "PG297",
+      "PG298",
+      "PG299",
+      "PG300",
+      "PG301",
+      "PG302",
+      "PG303",
+      "PG304",
+      "PG305",
+      "PG306"
+    ],
+    "category": "domain-adversarial",
+    "severity": "critical",
+    "title": "Validate PtrSafe, LongPtr, Windows API declarations and pointer truncation on 32/64-bit Office",
+    "objective": "Validate PtrSafe, LongPtr, Windows API declarations and pointer truncation on 32/64-bit Office.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-87",
+      "vb-office",
+      "vba-32-64-api",
+      "domain-specific"
+    ]
+  },
+  {
+    "id": "CASE-0173",
+    "test_skill_id": "T087",
+    "batch": 87,
+    "target_skills": [
+      "PG295",
+      "PG296",
+      "PG297",
+      "PG298",
+      "PG299",
+      "PG300",
+      "PG301",
+      "PG302",
+      "PG303",
+      "PG304",
+      "PG305",
+      "PG306"
+    ],
+    "category": "domain-adversarial",
+    "severity": "high",
+    "title": "Verify signed macro, Trust Center, protected view and least-privilege automation behavior",
+    "objective": "Verify signed macro, Trust Center, protected view and least-privilege automation behavior.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-87",
+      "vb-office",
+      "office-macro-security",
+      "domain-specific"
+    ]
+  },
+  {
+    "id": "CASE-0174",
+    "test_skill_id": "T087",
+    "batch": 87,
+    "target_skills": [
+      "PG295",
+      "PG296",
+      "PG297",
+      "PG298",
+      "PG299",
+      "PG300",
+      "PG301",
+      "PG302",
+      "PG303",
+      "PG304",
+      "PG305",
+      "PG306"
+    ],
+    "category": "domain-adversarial",
+    "severity": "critical",
+    "title": "Compare Access queries, forms, reports and record-locking behavior with the modernized application",
+    "objective": "Compare Access queries, forms, reports and record-locking behavior with the modernized application.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-87",
+      "vb-office",
+      "access-forms-data-parity",
+      "domain-specific"
+    ]
+  },
+  {
+    "id": "CASE-0175",
+    "test_skill_id": "T087",
+    "batch": 87,
+    "target_skills": [
+      "PG295",
+      "PG296",
+      "PG297",
+      "PG298",
+      "PG299",
+      "PG300",
+      "PG301",
+      "PG302",
+      "PG303",
+      "PG304",
+      "PG305",
+      "PG306"
+    ],
+    "category": "happy-path",
+    "severity": "high",
+    "title": "Representative certified success path",
+    "objective": "Execute a representative complete workflow from discovery through evidence and verify all declared artifacts.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-87",
+      "vb-office",
+      "happy-path"
+    ]
+  },
+  {
+    "id": "CASE-0176",
+    "test_skill_id": "T087",
+    "batch": 87,
+    "target_skills": [
+      "PG295",
+      "PG296",
+      "PG297",
+      "PG298",
+      "PG299",
+      "PG300",
+      "PG301",
+      "PG302",
+      "PG303",
+      "PG304",
+      "PG305",
+      "PG306"
+    ],
+    "category": "boundary-scale",
+    "severity": "high",
+    "title": "Boundary and moderate scale",
+    "objective": "Use maximum supported names, nesting, dependency depth and moderate estate size without truncation or unstable output.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-87",
+      "vb-office",
+      "boundary-scale"
+    ]
+  },
+  {
+    "id": "CASE-0177",
+    "test_skill_id": "T087",
+    "batch": 87,
+    "target_skills": [
+      "PG295",
+      "PG296",
+      "PG297",
+      "PG298",
+      "PG299",
+      "PG300",
+      "PG301",
+      "PG302",
+      "PG303",
+      "PG304",
+      "PG305",
+      "PG306"
+    ],
+    "category": "invalid-conflicting-input",
+    "severity": "high",
+    "title": "Invalid and conflicting input",
+    "objective": "Provide missing, malformed, ambiguous and contradictory inputs; require precise blocking diagnostics.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-87",
+      "vb-office",
+      "invalid-conflicting-input"
+    ]
+  },
+  {
+    "id": "CASE-0178",
+    "test_skill_id": "T087",
+    "batch": 87,
+    "target_skills": [
+      "PG295",
+      "PG296",
+      "PG297",
+      "PG298",
+      "PG299",
+      "PG300",
+      "PG301",
+      "PG302",
+      "PG303",
+      "PG304",
+      "PG305",
+      "PG306"
+    ],
+    "category": "dependency-failure-recovery",
+    "severity": "high",
+    "title": "Dependency failure and recovery",
+    "objective": "Interrupt parser, vendor tool, registry or runtime and resume without duplicated side effects.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-87",
+      "vb-office",
+      "dependency-failure-recovery"
+    ]
+  },
+  {
+    "id": "CASE-0179",
+    "test_skill_id": "T087",
+    "batch": 87,
+    "target_skills": [
+      "PG295",
+      "PG296",
+      "PG297",
+      "PG298",
+      "PG299",
+      "PG300",
+      "PG301",
+      "PG302",
+      "PG303",
+      "PG304",
+      "PG305",
+      "PG306"
+    ],
+    "category": "security-isolation",
+    "severity": "critical",
+    "title": "Security and isolation",
+    "objective": "Attempt unauthorized access, secret exposure, unsafe execution and cross-project contamination.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-87",
+      "vb-office",
+      "security-isolation"
+    ]
+  },
+  {
+    "id": "CASE-0180",
+    "test_skill_id": "T087",
+    "batch": 87,
+    "target_skills": [
+      "PG295",
+      "PG296",
+      "PG297",
+      "PG298",
+      "PG299",
+      "PG300",
+      "PG301",
+      "PG302",
+      "PG303",
+      "PG304",
+      "PG305",
+      "PG306"
+    ],
+    "category": "replay-idempotency",
+    "severity": "high",
+    "title": "Replay and idempotency",
+    "objective": "Repeat identical requests, retries and restarts; require stable identifiers and no duplicate artifacts.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-87",
+      "vb-office",
+      "replay-idempotency"
+    ]
+  },
+  {
+    "id": "CASE-0181",
+    "test_skill_id": "T087",
+    "batch": 87,
+    "target_skills": [
+      "PG295",
+      "PG296",
+      "PG297",
+      "PG298",
+      "PG299",
+      "PG300",
+      "PG301",
+      "PG302",
+      "PG303",
+      "PG304",
+      "PG305",
+      "PG306"
+    ],
+    "category": "version-drift",
+    "severity": "high",
+    "title": "Toolchain and version drift",
+    "objective": "Change compiler/runtime/schema/vendor versions and require explicit compatibility classification.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-87",
+      "vb-office",
+      "version-drift"
+    ]
+  },
+  {
+    "id": "CASE-0182",
+    "test_skill_id": "T087",
+    "batch": 87,
+    "target_skills": [
+      "PG295",
+      "PG296",
+      "PG297",
+      "PG298",
+      "PG299",
+      "PG300",
+      "PG301",
+      "PG302",
+      "PG303",
+      "PG304",
+      "PG305",
+      "PG306"
+    ],
+    "category": "evidence-tamper",
+    "severity": "critical",
+    "title": "Evidence tamper and anti-fraud",
+    "objective": "Modify, omit or reorder evidence; certification must reject the result.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-87",
+      "vb-office",
+      "evidence-tamper"
+    ]
+  }
+]

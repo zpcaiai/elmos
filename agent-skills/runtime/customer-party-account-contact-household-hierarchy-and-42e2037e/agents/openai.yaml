@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B40: Customer Party Account Contact Household Hierarchy And Identity Resolution"
+  short_description: "Run ELMOS Product B40 contract with fail-closed evidence"
+  default_prompt: "Use $customer-party-account-contact-household-hierarchy-and-42e2037e to implement its fail-closed ELMOS Product B40 contract."

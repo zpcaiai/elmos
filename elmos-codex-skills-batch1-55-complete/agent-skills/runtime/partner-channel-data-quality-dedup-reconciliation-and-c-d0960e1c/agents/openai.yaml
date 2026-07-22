@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B40: Partner Channel Data Quality Dedup Reconciliation And Certification"
+  short_description: "Run ELMOS B40 Skill with fail-closed evidence"
+  default_prompt: "Use $partner-channel-data-quality-dedup-reconciliation-and-c-d0960e1c to execute the ELMOS B40 contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B45: Responsible Ai Provider Adapters Versioning Compatibility And Migration"
+  short_description: "Run ELMOS B45 Skill with fail-closed evidence"
+  default_prompt: "Use $responsible-ai-provider-adapters-versioning-compatibili-09760819 to execute the ELMOS B45 contract with fail-closed evidence."

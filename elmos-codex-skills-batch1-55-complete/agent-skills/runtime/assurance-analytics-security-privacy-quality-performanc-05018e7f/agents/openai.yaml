@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B37: Assurance Analytics Security Privacy Quality Performance And Release Gates"
+  short_description: "Run ELMOS B37 Skill with fail-closed evidence"
+  default_prompt: "Use $assurance-analytics-security-privacy-quality-performanc-05018e7f to execute the ELMOS B37 contract with fail-closed evidence."

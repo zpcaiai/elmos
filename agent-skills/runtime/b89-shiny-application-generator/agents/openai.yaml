@@ -1,0 +1,4 @@
+interface:
+  display_name: "B89 Shiny Application Generator"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b89-shiny-application-generator to execute this ELMOS Language Pack Skill with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "B30 Framework Factory"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b30-framework-factory to execute this ELMOS Runtime Skill with fail-closed evidence."

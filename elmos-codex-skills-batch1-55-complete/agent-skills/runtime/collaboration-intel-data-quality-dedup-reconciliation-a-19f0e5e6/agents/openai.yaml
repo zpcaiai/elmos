@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B54: Collaboration Intel Data Quality Dedup Reconciliation And Certification"
+  short_description: "Run ELMOS B54 Skill with fail-closed evidence"
+  default_prompt: "Use $collaboration-intel-data-quality-dedup-reconciliation-a-19f0e5e6 to execute the ELMOS B54 contract with fail-closed evidence."

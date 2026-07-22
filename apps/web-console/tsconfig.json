@@ -21,7 +21,8 @@
     ],
     "allowJs": true,
     "skipLibCheck": true,
-    "incremental": true
+    "incremental": true,
+    "tsBuildInfoFile": ".next/cache/tsconfig.tsbuildinfo"
   },
   "include": [
     "next-env.d.ts",

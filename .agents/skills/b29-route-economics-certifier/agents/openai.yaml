@@ -1,0 +1,4 @@
+interface:
+  display_name: "B29 Route Economics Certifier"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b29-route-economics-certifier to execute this ELMOS Runtime Skill with fail-closed evidence."

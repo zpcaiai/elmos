@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B38: Governance Regulatory Operations Orchestrator"
+  short_description: "Run ELMOS B38 Skill with fail-closed evidence"
+  default_prompt: "Use $governance-regulatory-operations-orchestrator to execute the ELMOS B38 contract with fail-closed evidence."

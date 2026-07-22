@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B51: Lastmile Delivery Automation Copilot Recommendation And Human Review"
+  short_description: "Run ELMOS Product B51 contract with fail-closed evidence"
+  default_prompt: "Use $lastmile-delivery-automation-copilot-recommendation-and-ad12f3cb to implement its fail-closed ELMOS Product B51 contract."

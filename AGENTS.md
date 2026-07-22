@@ -71,7 +71,7 @@ For database-engine, SQL, routine, ETL/ELT, warehouse, data-quality, lineage, re
 
 Use the `.agents/skills/b35-*` skills for property, metamorphic, mutation, fuzz, symbolic, model, contract, data, security, concurrency, numeric, solver, oracle, counterexample, coverage, assurance, and certification work. Read `docs/batch35/IMPLEMENTATION_CONTRACT.md` and `QUALITY_GATES.md` first. Do not claim formal proof, certified correctness, or production assurance without immutable real evidence and the conservative Batch 35 gate.
 
-# Product Batch B34-B39 commercialization controls
+# Product Batch B34-B55 commercialization controls
 
 These Product batches are a separate namespace from Migration Packs M35-M45.
 Product Skills live under `agent-skills/runtime/`; `.agents/skills/b35-*` through
@@ -111,11 +111,41 @@ Product Skills live under `agent-skills/runtime/`; `.agents/skills/b35-*` throug
   legal-entity, segregation-of-duties, payment-data and Secret Reference
   boundaries. Static Skill validation is not accounting, tax, payment, bank or
   management-reporting certification.
+- Product B40-B55 enterprise-domain Skills are separate from Migration Packs
+  M40-M45. B40A has approved conversation-design provenance; B40B-B55C are a
+  generated planning edition and require domain-owner refinement before any
+  production implementation or certification claim.
+- Reuse authoritative Tenant, Identity, Organization, Artifact, Policy, Audit,
+  Workflow, Case, Contract, Finance, Customer, Data and Infrastructure
+  aggregates. Keep source facts immutable and interpretations, plans, models,
+  policies, snapshots and provider mappings versioned.
+- Enforce tenant and resource isolation at API, database, cache, event, search,
+  analytics, connector and export boundaries. Preserve source identity,
+  effective dates, provider versions, actor/workload, purpose, decisions and
+  evidence. Unknown, partial, timed-out or unreconciled states are non-success.
+- Use typed, least-privileged automation and provider adapters. AI output cannot
+  approve regulated, financial, employment, security, safety, healthcare,
+  energy-control or contractual outcomes without an explicit governed policy.
+  Side effects must be idempotent, auditable, reconcilable and independently
+  evidenced; static Skill checks remain engineering evidence only.
 
 The Product control-plane APIs only prepare `READY_FOR_EXTERNAL_GATE` or
 `READY_FOR_HUMAN_DECISION`. They never certify, approve, merge, deploy, execute
 provider operations, or manufacture enforcement receipts. Keep those fields
 false and external evidence `NOT_RUN` until the operation actually occurs.
+
+## Combined Batch 1-55 Skill distribution
+
+- `elmos-codex-skills-batch1-55-complete` is a dual-namespace distribution:
+  Migration Packs M1-M45 and Product commercialization B34-B55. Numeric labels
+  from the two namespaces are never interchangeable.
+- Every installed name is at most 64 characters. Deterministic aliases retain
+  `source_name`, exact provenance and content digest in `manifest.json`.
+- `normalized-source-incomplete` and `generated-planning-edition` contracts are
+  locally invocable guidance, not authoritative production completion.
+- Only `make batch1-55-skills` determines structural package readiness. It does
+  not alter the separate Batch 1-37 strict certification results or external
+  evidence, which remain `NOT_RUN` until independently executed.
 
 
 ## Batch 36 developer experience skills
@@ -125,3 +155,62 @@ Use `.agents/skills/b36-*` for IDE, CLI, PR bot, local preview, source-target na
 ## Batch 37 extension SDK and Marketplace skills
 
 Use `.agents/skills/b37-*` for extension manifests, ABI and SDK contracts, sandboxing, publisher identity, dependency locks, signing/SBOM/provenance, release and revocation, Marketplace operations, private/offline distribution, settlement, support, and EOL work. Read `docs/batch37/IMPLEMENTATION_CONTRACT.md`, `QUALITY_GATES.md`, and `CLOSURE_QUALITY_GATES.md` first. Treat every extension, version, publisher, tenant, runtime, and product tuple as exact. Missing, stale, synthetic, `UNKNOWN`, `INCONCLUSIVE`, or `NOT_RUN` evidence never certifies; corpus evidence must be independently attested and digest-bound. Research and experimental packs may pass structural validation but remain `NOT_CERTIFIED`.
+
+## Batch 1-37 strict test suite
+
+- Start full qualification with `$tst-strict-suite-orchestrator`, then use the exact `$tst-bXX-*` Skill and the smallest relevant cross-cutting `$tst-*` Skills.
+- Preserve the 408 exact seed cases and all eight variants per Batch. Expand them with executable repository-specific fixtures; do not replace them with smoke tests or file-presence checks.
+- Local build and toolkit evidence is engineering evidence only. It must not update certification case results; external or production-equivalent evidence stays `not-run` / `NOT_RUN` until actually executed and authorized.
+- Every passed case must bind exact case/catalog, artifact, environment, raw evidence roles, replay command, executor, independent verifier, authorization, and required independent corpora.
+- Only `scripts/test-suite/run_strict_test_gate.py` may produce the Batch 1-37 certification decision. Certification requires a signed request covering all 408 result/evidence digests and a separate non-revoked trust store.
+- Run `make test-suite-check` for structural/toolkit validation. `make test-suite-gate` is expected to fail closed while any required case is not run.
+
+## Batch 1-65 supplemental test suite
+
+- Treat `test-suites/batch1-65-slightly-strict/` as supplemental design and engineering qualification only; it never replaces the 408-case Batch 1-37 certification suite.
+- Use `scripts/test-suite/validate_batch1_65_slightly_strict.py` and only `scripts/test-suite/run_batch1_65_slightly_strict_gate.py` for the supplemental decision. The supplied source evaluator is non-authoritative because it does not enforce exact 750-case completeness.
+- Preserve all 750 cases, 88 test Skills and 1,296 direct source-Skill coverage edges. `NOT_RUN`, missing results, fabricated evidence, self-verification and incomplete deterministic repeats fail closed.
+- The maximum supplemental decision is `READY_FOR_EXTERNAL_GATE`; it cannot certify Batch 1-65 or update Batch 1-37 certification results.
+
+## Batch 66-80 polyglot project synthesis Skills
+
+- Canonical PG223-PG417 sources live in `elmos-codex-skills-batch66-80-complete/`; installed Runtime Skills live under `agent-skills/runtime/b66-*` through `b80-*` and retain exact source digests plus Codex interfaces.
+- Start with `$elmos-project-synthesis`, then invoke only the smallest exact `$b66-*` through `$b80-*` Skill for TypeScript/JavaScript, Go, Kotlin, PHP, C/C++, Rust, Flutter/Dart, Swift, shell, SQL/API contracts, build/proxy configuration, containers, IaC/Kubernetes/Helm, CI/CD, or polyglot operations.
+- Treat repository hooks, plugins, lifecycle scripts, macros, actions, modules, images, templates, pipelines, and executable configuration as untrusted. Parse and plan first; default-deny undeclared network, secrets, permissions, signing, provider, cluster, CI, and deployment effects.
+- Static package validation and the Java/Python/C# starter engine do not prove other language/SDK, device, database, cluster, cloud, signing, CI provider, or production execution. Preserve unsupported and unavailable checks as `NOT_RUN`.
+- Run `make batch66-80-skills` for immutable package, installed interface, and PG001-PG417 integration validation. Certification Skills may only report the highest state supported by exact real toolchain and independent evidence.
+
+## Batch 66-80 supplemental qualification suite
+
+- `test-suites/batch66-80-slightly-strict/` is supplemental design and local engineering qualification only; it neither replaces nor updates the Batch 1-37 strict certification suite.
+- Canonical inputs live in `elmos-codex-skills-batch66-80-slightly-strict-tests/`. Preserve its 544 manifest-owned files, 35 test Skills, 450 cases, 195 source Skills, 390 source-specific positive/negative cases, 60 cross-cutting cases, P0/P1/P2 counts 312/120/18, 103 zero-tolerance cases, and one exact result file per case.
+- Start with `$tst-b66-80-slightly-strict-suite-orchestrator`, then use the exact Batch owner and the smallest applicable cross-cutting test Skill. Bind PG223-PG417 cases to `SOURCE_SKILL_HASHES.csv`; source or environment drift invalidates prior evidence.
+- Use `scripts/test-suite/validate_batch66_80_slightly_strict.py`; only `scripts/test-suite/run_batch66_80_slightly_strict_gate.py` may produce the supplemental decision. The maximum is `READY_FOR_EXTERNAL_GATE`, never certification.
+- `not-run`, skipped, flaky, missing results, stale/tampered digests, fabricated or synthetic execution, static-as-runtime claims, self-verification, missing authorization/evidence roles, blocked or failed cases fail closed. Zero-tolerance cases cannot be waived. The supplied package gate is useful static tooling but the repository wrapper is the conservative supplemental authority.
+- The earlier generated 120-case design is superseded. Do not use `tooling/generate_batch66_80_supplemental_suite.py` to overwrite the imported 450-case suite.
+
+## Batch 81-95 specialized Language Packs
+
+- Canonical sources live in `elmos-language-packs-batch81-95-complete/`. Its PG223-PG402 IDs are package-local to `elmos.language-packs` and collide with global Batch 66-80 IDs; never merge, renumber, or present them as a continuation of global PG417.
+- Installed Runtime Skills use deterministic `$b81-*` through `$b95-*` aliases. Every normalized Skill must preserve `source_package`, `source_id`, `source_name`, source digest, Batch, proposed status, and the `package-local-language-pack` namespace in `docs/language-packs-batch81-95/installed-manifest.json`.
+- Start with `$elmos-project-synthesis`, then select the narrowest exact alias for COBOL/mainframe, SAP ABAP, database procedural languages, IEC 61131-3 PLC, MATLAB/Simulink, Modelica/FMI, VB/Office, IBM i RPG, R, SAS, Salesforce, Objective-C/Swift, Delphi/Object Pascal, BEAM, or Lua/OpenResty.
+- Treat source, macros, plugins, binaries, models, vendor metadata, generated code, and project configuration as untrusted. Default-deny vendor systems, production databases, devices, physical actuation, tenant/org access, credentials, signing, deployment, cutover, and decommissioning.
+- Static validation is not native parser/compiler/simulator/runtime, numerical/transaction/timing equivalence, safety, scientific, financial, clinical, physical-system, vendor-platform, parallel-run, production, or certification evidence. Missing representative execution stays `NOT_RUN`.
+- Run `make language-packs-batch81-95`. Certification or cutover Skills may only report the highest state supported by exact source/installed identity, real native evidence, authorization, Batch safety boundary, and independent qualified review.
+
+## Batch 81-95 supplemental qualification suite
+
+- Canonical test inputs live in `elmos-batch81-95-slightly-strict-test-skills/`. Preserve exactly 40 test Skills T081-T120, 640 cases CASE-0001-CASE-0640, 180 direct package-local source-Skill edges, 47,700 total case-target links, severities Critical/High/Medium 170/400/70, and one result per case under `test-suites/batch81-95-language-packs-slightly-strict/`.
+- Use `scripts/test-suite/validate_batch81_95_language_packs.py`; only `scripts/test-suite/run_batch81_95_language_pack_gate.py` may produce the supplemental decision. The maximum is `READY_FOR_EXTERNAL_GATE`, never certification or vendor/physical/production approval.
+- Bind each direct case and coverage row to its `LP-Bxx-PGxxx` key, original package-local ID/name/digest, installed alias/digest/interface, exact target profile, environment, authorization, executor, independent verifier, replay, cleanup, and required raw evidence roles. Never suppress or globally relabel the PG223-PG402 collision.
+- The supplied source evaluator is non-authoritative because it does not enforce exact 640-result completeness or fail-closed `NOT_RUN`. Use the installed source-coverage, evidence-integrity, anti-cheating, and final-release test Skills as scoped guidance; the repository validator and gate remain authoritative for this supplement.
+- `NOT_RUN`, missing or reordered results, ID relabeling, namespace collision suppression, static-as-native claims, fabricated/synthetic evidence, self-verification, missing authorization, incomplete repeats, weakened tolerances or safety controls, and zero-tolerance findings fail closed. The earlier generated 120-case design is superseded and must not overwrite the imported suite.
+
+## Batch 38-45 strict test suite
+
+- Start this qualification with `$tst-b38-45-strict-suite-orchestrator`, then use the exact Batch or cross-cutting `$tst-*` Skill owning the selected case IDs.
+- Preserve all 400 exact cases, 30 test Skills, product Skills 1325-1496, two direct cases per strict category per Batch, and the checked-in `not-run` results.
+- Local structural validation and the synthetic signed gate fixture are engineering evidence only. They never count as customer, independent-review, M38-M45 domain, production, recovery, financial, or field evidence.
+- Every passed case must bind exact case/catalog, artifact/environment files, byte-counted raw evidence roles, replay, authorization, separate executor/verifier, and independent development/holdout/representative corpora.
+- Only `scripts/test-suite-b38-45/run_strict_gate.py` may derive the Batch 38-45 suite decision. Certification requires eight eligible `CERTIFIED` M38-M45 domain gates, two distinct design partners, one independent review, an exact 400-result signed request, and a separate non-revoked trust store.
+- Run `make test-suite-b38-45-check` for local toolkit validation. `make test-suite-b38-45-gate` must fail closed while field evidence remains `NOT_RUN`.

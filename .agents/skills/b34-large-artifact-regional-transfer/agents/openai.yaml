@@ -1,0 +1,4 @@
+interface:
+  display_name: "B34 Large Artifact Regional Transfer"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b34-large-artifact-regional-transfer to execute this ELMOS Runtime Skill with fail-closed evidence."

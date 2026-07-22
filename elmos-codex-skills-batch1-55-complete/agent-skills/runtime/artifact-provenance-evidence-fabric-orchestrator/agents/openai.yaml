@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B37: Artifact Provenance Evidence Fabric Orchestrator"
+  short_description: "Run ELMOS B37 Skill with fail-closed evidence"
+  default_prompt: "Use $artifact-provenance-evidence-fabric-orchestrator to execute the ELMOS B37 contract with fail-closed evidence."

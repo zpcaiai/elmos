@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.project-synthesis.project-blueprint.v1",
+  "title": "ELMOS Project Blueprint",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "project",
+    "applications",
+    "repository",
+    "runtime",
+    "dependencies",
+    "build",
+    "configuration",
+    "quality",
+    "generation_units"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "project": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "architecture_baseline_ref",
+        "requirements_baseline_ref"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "architecture_baseline_ref": {
+          "type": "string"
+        },
+        "requirements_baseline_ref": {
+          "type": "string"
+        }
+      }
+    },
+    "applications": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "repository": {
+      "type": "object"
+    },
+    "runtime": {
+      "type": "object"
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "build": {
+      "type": "object"
+    },
+    "configuration": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "quality": {
+      "type": "object"
+    },
+    "generation_units": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "target_path",
+          "ownership",
+          "source_refs"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "project",
+              "module",
+              "source",
+              "test",
+              "config",
+              "docs",
+              "deployment"
+            ]
+          },
+          "target_path": {
+            "type": "string"
+          },
+          "ownership": {
+            "enum": [
+              "managed",
+              "protected",
+              "user-owned",
+              "imported",
+              "derived"
+            ]
+          },
+          "source_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "depends_on": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

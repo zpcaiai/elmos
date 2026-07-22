@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B55: Platform Ecosystem Data Quality Dedup Reconciliation And Certification"
+  short_description: "Run ELMOS Product B55 contract with fail-closed evidence"
+  default_prompt: "Use $platform-ecosystem-data-quality-dedup-reconciliation-an-29de3daf to implement its fail-closed ELMOS Product B55 contract."

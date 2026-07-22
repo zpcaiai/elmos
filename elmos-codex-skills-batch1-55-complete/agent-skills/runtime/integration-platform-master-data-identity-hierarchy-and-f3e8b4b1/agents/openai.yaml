@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B46: Integration Platform Master Data Identity Hierarchy And Effective Dating"
+  short_description: "Run ELMOS B46 Skill with fail-closed evidence"
+  default_prompt: "Use $integration-platform-master-data-identity-hierarchy-and-f3e8b4b1 to execute the ELMOS B46 contract with fail-closed evidence."

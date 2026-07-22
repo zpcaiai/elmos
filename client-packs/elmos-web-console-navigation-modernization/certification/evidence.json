@@ -27,5 +27,9 @@
   "test_integrity_violations": 0,
   "unapproved_baseline_changes": 0,
   "unapproved_dependency_changes": 0,
-  "evidence_refs": []
+  "evidence_refs": [
+    "certification/local-ui-polish-evidence.json",
+    "certification/local-ui-workflow-polish-evidence.json",
+    "certification/local-project-generation-evidence.json"
+  ]
 }

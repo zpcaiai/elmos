@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M34: B34 Content Addressed Cache Artifact Reuse"
+  short_description: "Run ELMOS M34 Skill with fail-closed evidence"
+  default_prompt: "Use $b34-content-addressed-cache-artifact-reuse to execute the ELMOS M34 contract with fail-closed evidence."

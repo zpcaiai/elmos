@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B37: Build Source Artifact Test Security Performance Delivery Correlation And Lineage"
+  short_description: "Run ELMOS B37 Skill with fail-closed evidence"
+  default_prompt: "Use $build-source-artifact-test-security-performance-deliver-2614a221 to execute the ELMOS B37 contract with fail-closed evidence."

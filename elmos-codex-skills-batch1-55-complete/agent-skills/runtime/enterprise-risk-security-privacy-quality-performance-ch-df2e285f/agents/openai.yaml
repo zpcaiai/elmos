@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B48: Enterprise Risk Security Privacy Quality Performance Chaos And Release Gates"
+  short_description: "Run ELMOS B48 Skill with fail-closed evidence"
+  default_prompt: "Use $enterprise-risk-security-privacy-quality-performance-ch-df2e285f to execute the ELMOS B48 contract with fail-closed evidence."

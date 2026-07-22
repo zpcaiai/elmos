@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M44: B44 Customer Route Edition Margin"
+  short_description: "Run ELMOS M44 Skill with fail-closed evidence"
+  default_prompt: "Use $b44-customer-route-edition-margin to execute the ELMOS M44 contract with fail-closed evidence."

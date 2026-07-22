@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B55: Globalization Access Data Quality Dedup Reconciliation And Certification"
+  short_description: "Run ELMOS B55 Skill with fail-closed evidence"
+  default_prompt: "Use $globalization-access-data-quality-dedup-reconciliation-18e90b7b to execute the ELMOS B55 contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B49: Cloud Platform Policy Authorization Approval Segregation And Exception"
+  short_description: "Run ELMOS B49 Skill with fail-closed evidence"
+  default_prompt: "Use $cloud-platform-policy-authorization-approval-segregatio-b347114b to execute the ELMOS B49 contract with fail-closed evidence."

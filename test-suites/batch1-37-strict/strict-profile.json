@@ -1,0 +1,46 @@
+{
+  "profile_id": "batch1-37-strict-v2",
+  "description": "Slightly strict production qualification profile for all Batch 1–37 capabilities.",
+  "thresholds": {
+    "batch_coverage": 1.0,
+    "p0_pass_rate": 1.0,
+    "p1_pass_rate": 1.0,
+    "holdout_pass_rate": 1.0,
+    "representative_workload_pass_rate": 1.0,
+    "evidence_trace_coverage": 0.98,
+    "source_target_trace_coverage": 0.98,
+    "affected_test_recall": 0.97,
+    "mutation_score": 0.85,
+    "p95_latency_regression_max": 0.05,
+    "p99_latency_regression_max": 0.1,
+    "resource_regression_max": 0.1,
+    "recovery_success_rate": 1.0,
+    "max_evidence_age_days": 30,
+    "flaky_p0_p1": 0,
+    "critical_unknowns": 0,
+    "critical_security_findings": 0,
+    "tenant_isolation_violations": 0,
+    "test_integrity_violations": 0,
+    "unreplayed_critical_failures": 0,
+    "stale_evidence": 0,
+    "forged_certification_attempts": 0
+  },
+  "blockers": [
+    "any failed, blocked, not-run or waived P0 case",
+    "any failed or not-run P1 case",
+    "missing Batch 1–37 coverage",
+    "missing independent holdout for certification-required scopes",
+    "missing representative workload",
+    "critical security, privacy, money, transaction, tenant or data-integrity difference",
+    "test or evidence integrity violation",
+    "stale artifact/environment digest",
+    "unreplayable critical failure",
+    "self-approved waiver or certification"
+  ],
+  "waiver_policy": {
+    "p0_allowed": false,
+    "p1_allowed_only_with_executive_security_and_customer_approval": true,
+    "maximum_days": 30,
+    "must_include_compensating_controls": true
+  }
+}

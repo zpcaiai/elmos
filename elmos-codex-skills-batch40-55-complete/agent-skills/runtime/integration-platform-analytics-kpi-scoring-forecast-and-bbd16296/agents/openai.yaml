@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B46: Integration Platform Analytics Kpi Scoring Forecast And Diagnostics"
+  short_description: "Run ELMOS Product B46 contract with fail-closed evidence"
+  default_prompt: "Use $integration-platform-analytics-kpi-scoring-forecast-and-bbd16296 to implement its fail-closed ELMOS Product B46 contract."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B36: Execution Operations Cockpit Slo Capacity Forecast And Runbooks"
+  short_description: "Run ELMOS B36 Skill with fail-closed evidence"
+  default_prompt: "Use $execution-operations-cockpit-slo-capacity-forecast-and-runbooks to execute the ELMOS B36 contract with fail-closed evidence."

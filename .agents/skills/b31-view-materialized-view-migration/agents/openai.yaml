@@ -1,0 +1,4 @@
+interface:
+  display_name: "B31 View Materialized View Migration"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b31-view-materialized-view-migration to execute this ELMOS Runtime Skill with fail-closed evidence."

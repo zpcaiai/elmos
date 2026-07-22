@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M45: B45 Target Maintainability Certification"
+  short_description: "Run ELMOS M45 Skill with fail-closed evidence"
+  default_prompt: "Use $b45-target-maintainability-certification to execute the ELMOS M45 contract with fail-closed evidence."

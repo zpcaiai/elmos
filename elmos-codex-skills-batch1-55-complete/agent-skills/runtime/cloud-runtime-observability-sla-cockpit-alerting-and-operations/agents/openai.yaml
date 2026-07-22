@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B49: Cloud Runtime Observability Sla Cockpit Alerting And Operations"
+  short_description: "Run ELMOS B49 Skill with fail-closed evidence"
+  default_prompt: "Use $cloud-runtime-observability-sla-cockpit-alerting-and-operations to execute the ELMOS B49 contract with fail-closed evidence."

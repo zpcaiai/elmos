@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tst B05 Method Lowering"
+  short_description: "Help with Tst B05 Method Lowering tasks"
+  default_prompt: "Use $tst-b05-method-lowering to implement and verify this strict Batch 1–37 test scope with immutable evidence and fail-closed results."

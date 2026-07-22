@@ -32,6 +32,7 @@ Batch 35 comes from the supplied `batch35-codex-skills` package whose 78-entry f
 - Negative gates reject status-only `CERTIFIED`, empty evidence, failed or missing holdout and representative results, critical findings, missing batch metrics, and external operations without authorization references.
 - Generator compatibility covers the 172 Batch 38–45 definitions while Batches 35–37 remain protected from generic regeneration.
 - Both distribution ZIPs rebuild byte-for-byte deterministically, pass `unzip -t`, and pass every internal file-manifest checksum.
+- Distribution inputs now require the root Makefile and every `Makefile.batch29`–`Makefile.batch45`; missing build entrypoints fail packaging instead of being silently omitted. The deterministic archives contain 823 and 1,135 entries; their current SHA-256 values are recorded in the adjacent `.sha256` sidecars.
 - Full architecture verification passes 58/58 tests after installing the final source manifests, Batch 36–37 runtime boundaries, and count baselines.
 - `modules/advanced-verification` executes 14/14 Java tests in the local Java 21 rehearsal; the generated pack passes structural validation with the explicit decision `NOT_CERTIFIED`.
 - `modules/developer-workflow` executes 18/18 Java tests and real local CLI `inspect`/`preview` replay; the generated Developer Experience Pack passes structural validation with the explicit decision `NOT_CERTIFIED`.

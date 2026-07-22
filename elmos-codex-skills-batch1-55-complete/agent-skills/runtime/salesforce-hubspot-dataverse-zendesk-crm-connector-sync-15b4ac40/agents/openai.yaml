@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B40: Salesforce Hubspot Dataverse Zendesk Crm Connector Sync And Reconciliation"
+  short_description: "Run ELMOS B40 Skill with fail-closed evidence"
+  default_prompt: "Use $salesforce-hubspot-dataverse-zendesk-crm-connector-sync-15b4ac40 to execute the ELMOS B40 contract with fail-closed evidence."

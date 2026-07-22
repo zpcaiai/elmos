@@ -1,0 +1,4 @@
+interface:
+  display_name: "B92 Objectivec Parser Runtime Model"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b92-objectivec-parser-runtime-model to execute this ELMOS Language Pack Skill with fail-closed evidence."

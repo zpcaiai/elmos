@@ -1,0 +1,11 @@
+BATCH34_PYTHON ?= /opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python
+.PHONY: batch34-validate batch34-test batch34-check batch34-score batch34-local-rehearsal
+batch34-validate:
+	$(BATCH34_PYTHON) scripts/batch34/validate_skill_bundle.py .agents/skills
+batch34-test:
+	$(BATCH34_PYTHON) -m unittest discover -s tests/batch34 -p 'test_*.py'
+batch34-check: batch34-validate batch34-test
+batch34-score:
+	$(BATCH34_PYTHON) scripts/batch34/score_portfolio_candidates.py templates/batch34/portfolio-candidates.json --output /tmp/batch34-portfolio-candidates-result.json
+batch34-local-rehearsal:
+	$(BATCH34_PYTHON) scripts/batch34/run_local_portfolio_rehearsal.py --repo-root .

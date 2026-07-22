@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B53: Grid Dispatch Automation Copilot Recommendation And Human Review"
+  short_description: "Run ELMOS Product B53 contract with fail-closed evidence"
+  default_prompt: "Use $grid-dispatch-automation-copilot-recommendation-and-human-review to implement its fail-closed ELMOS Product B53 contract."

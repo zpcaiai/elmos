@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/test-suite-b38-45/certification-request.schema.json",
+  "type": "object", "additionalProperties": false,
+  "required": ["request_version", "suite_id", "requested_at", "expires_at", "signer_id", "authorization_refs", "control_digests", "release_gate_digest", "case_bindings", "external_bindings"],
+  "properties": {
+    "request_version": {"const": 1}, "suite_id": {"const": "batch38-45-strict"}, "requested_at": {"type": "string", "format": "date-time"}, "expires_at": {"type": "string", "format": "date-time"}, "signer_id": {"type": "string", "minLength": 1},
+    "authorization_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "control_digests": {"type": "object", "minProperties": 5, "additionalProperties": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}}, "release_gate_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "case_bindings": {"type": "array", "minItems": 400, "maxItems": 400, "items": {"type": "object", "additionalProperties": false, "required": ["case_id", "result_digest", "evidence_manifest_digests"], "properties": {"case_id": {"type": "string"}, "result_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}, "evidence_manifest_digests": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}}}}},
+    "external_bindings": {"type": "array", "minItems": 11, "items": {"type": "object", "additionalProperties": false, "required": ["kind", "id", "digest"], "properties": {"kind": {"enum": ["domain-gate", "design-partner", "independent-review"]}, "id": {"type": "string", "minLength": 1}, "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}}}}
+  }
+}

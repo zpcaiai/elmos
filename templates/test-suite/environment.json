@@ -1,0 +1,19 @@
+{
+  "environment_id": "strict-local",
+  "version": "1.0.0",
+  "isolated": true,
+  "toolchains": [
+    {
+      "name": "python",
+      "version": "3.x"
+    }
+  ],
+  "network_policy": {
+    "default": "deny",
+    "allow": []
+  },
+  "data_policy": {
+    "production_data": false,
+    "secrets": "references-only"
+  }
+}

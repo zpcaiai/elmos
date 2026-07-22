@@ -1,0 +1,136 @@
+{
+  "batch": 48,
+  "engine": "elmos.project-synthesis",
+  "skill_count": 12,
+  "skills": [
+    {
+      "id": "PG021",
+      "name": "requirement-normalizer",
+      "path": "skills/batch-48/PG021-requirement-normalizer.md",
+      "depends_on": [
+        "PG014",
+        "PG016",
+        "PG017",
+        "PG020"
+      ],
+      "summary": "Normalizes requirement wording, structure, identifiers, modality, and verification fields."
+    },
+    {
+      "id": "PG022",
+      "name": "requirement-deduplicator",
+      "path": "skills/batch-48/PG022-requirement-deduplicator.md",
+      "depends_on": [
+        "PG021"
+      ],
+      "summary": "Detects exact, semantic, and partially overlapping duplicate requirements."
+    },
+    {
+      "id": "PG023",
+      "name": "requirement-conflict-detector",
+      "path": "skills/batch-48/PG023-requirement-conflict-detector.md",
+      "depends_on": [
+        "PG017",
+        "PG018",
+        "PG022"
+      ],
+      "summary": "Detects logical, temporal, permission, data, technology, and quality-target conflicts."
+    },
+    {
+      "id": "PG024",
+      "name": "scope-boundary-manager",
+      "path": "skills/batch-48/PG024-scope-boundary-manager.md",
+      "depends_on": [
+        "PG015",
+        "PG018",
+        "PG022",
+        "PG023"
+      ],
+      "summary": "Defines in-scope, out-of-scope, deferred, dependency, and future-option boundaries."
+    },
+    {
+      "id": "PG025",
+      "name": "requirement-priority-classifier",
+      "path": "skills/batch-48/PG025-requirement-priority-classifier.md",
+      "depends_on": [
+        "PG024"
+      ],
+      "summary": "Classifies requirement priority using value, urgency, dependency, risk, and delivery slicing."
+    },
+    {
+      "id": "PG026",
+      "name": "requirement-risk-classifier",
+      "path": "skills/batch-48/PG026-requirement-risk-classifier.md",
+      "depends_on": [
+        "PG023",
+        "PG024"
+      ],
+      "summary": "Scores requirements for ambiguity, complexity, security, compliance, integration, data, and delivery risk."
+    },
+    {
+      "id": "PG027",
+      "name": "measurable-quality-attribute-builder",
+      "path": "skills/batch-48/PG027-measurable-quality-attribute-builder.md",
+      "depends_on": [
+        "PG017",
+        "PG024"
+      ],
+      "summary": "Converts quality expectations into measurable scenarios with thresholds, workload, environment, and observation methods."
+    },
+    {
+      "id": "PG028",
+      "name": "acceptance-criteria-generator",
+      "path": "skills/batch-48/PG028-acceptance-criteria-generator.md",
+      "depends_on": [
+        "PG021",
+        "PG023",
+        "PG026",
+        "PG027"
+      ],
+      "summary": "Generates requirement-level acceptance criteria and negative scenarios from approved intent."
+    },
+    {
+      "id": "PG029",
+      "name": "definition-of-ready-validator",
+      "path": "skills/batch-48/PG029-definition-of-ready-validator.md",
+      "depends_on": [
+        "PG023",
+        "PG024",
+        "PG026",
+        "PG028"
+      ],
+      "summary": "Determines whether the requirement baseline is sufficiently complete and safe for architecture planning."
+    },
+    {
+      "id": "PG030",
+      "name": "requirement-quality-score",
+      "path": "skills/batch-48/PG030-requirement-quality-score.md",
+      "depends_on": [
+        "PG022",
+        "PG023",
+        "PG026",
+        "PG028"
+      ],
+      "summary": "Computes explainable quality scores for completeness, clarity, consistency, testability, traceability, and feasibility."
+    },
+    {
+      "id": "PG031",
+      "name": "requirements-baseline-and-approval",
+      "path": "skills/batch-48/PG031-requirements-baseline-and-approval.md",
+      "depends_on": [
+        "PG029",
+        "PG030"
+      ],
+      "summary": "Creates immutable requirement baselines and manages stakeholder approvals, rejections, and exceptions."
+    },
+    {
+      "id": "PG032",
+      "name": "requirements-change-impact",
+      "path": "skills/batch-48/PG032-requirements-change-impact.md",
+      "depends_on": [
+        "PG004",
+        "PG031"
+      ],
+      "summary": "Analyzes changes between requirement baselines and determines affected domain, architecture, code, test, data, and delivery artifacts."
+    }
+  ]
+}

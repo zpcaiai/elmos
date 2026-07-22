@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B50: Manufacturing Quality Data Quality Dedup Reconciliation And Certification"
+  short_description: "Run ELMOS Product B50 contract with fail-closed evidence"
+  default_prompt: "Use $manufacturing-quality-data-quality-dedup-reconciliation-bac89f76 to implement its fail-closed ELMOS Product B50 contract."

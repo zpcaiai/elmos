@@ -7,3 +7,5 @@ Certification requires nonempty evidence, complete holdout and representative pa
 - `grossMarginEvidenceCoverageRate` must satisfy `min 0.95`.
 
 Status-only certification and unauthorized external evidence must be rejected.
+
+The gate must also enforce `docs/mature-product/EVIDENCE_PROTOCOL.md`: exact file digests and byte counts, safe pack-relative paths, executor/verifier separation, independent corpora, request freshness, signed digest binding, and an externally supplied authorized trust key.

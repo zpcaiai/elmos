@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B54: Content Knowledge Automation Copilot Recommendation And Human Review"
+  short_description: "Run ELMOS B54 Skill with fail-closed evidence"
+  default_prompt: "Use $content-knowledge-automation-copilot-recommendation-and-81b3e983 to execute the ELMOS B54 contract with fail-closed evidence."

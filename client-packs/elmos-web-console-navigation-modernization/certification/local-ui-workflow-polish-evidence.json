@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-07-22T16:46:46+08:00",
+  "scope": "local workflow UI quality evidence only",
+  "browser": "Google Chrome 150.0.7871.129",
+  "runtime": "Node.js 24.14.0",
+  "framework": "Next.js 16.2.10 with React 19.2.7",
+  "viewports": [
+    {"width":1440,"height":1000,"journey":"migration filtering, modal focus, local draft announcement, Marketplace empty state"},
+    {"width":1024,"height":768,"journey":"commercialization trust-chain keyboard tabs"},
+    {"width":390,"height":844,"journey":"complete responsive assurance queue"}
+  ],
+  "checks": {
+    "typescript_strict": "PASSED",
+    "next_production_build": "PASSED",
+    "filter_result_and_clear": "PASSED",
+    "marketplace_empty_and_restore": "PASSED",
+    "dialog_initial_focus": "PASSED",
+    "dialog_tab_cycle": "PASSED",
+    "dialog_escape_and_focus_return": "PASSED",
+    "draft_live_announcement": "PASSED",
+    "trust_tab_arrow_navigation": "PASSED",
+    "tabpanel_update": "PASSED",
+    "mobile_information_parity": "PASSED",
+    "visible_targets_below_44px": 0,
+    "horizontal_overflow": 0,
+    "browser_console_and_page_errors": 0,
+    "external_execution_evidence": "NOT_RUN",
+    "approved_visual_baseline": "NOT_RUN",
+    "cross_browser": "NOT_RUN",
+    "assistive_technology": "NOT_RUN",
+    "independent_holdout": "NOT_RUN",
+    "representative_workload": "NOT_RUN"
+  },
+  "screenshots": [
+    {"path":"elmos-migration-polished-desktop-v2.png","sha256":"0f01a9a6d07685a16c4948a67c09ac3a4b0a6703d2c7e446359cae26bcfdcd03"},
+    {"path":"elmos-commercialization-polished-mobile-v2.png","sha256":"c2c6162c626914deecf50165857770b9f6cba2b4ffc6042134c4e2645f9d85a0"}
+  ],
+  "target_files": [
+    {"path":"apps/web-console/app/migration/MigrationStudio.tsx","sha256":"3abe4ce3843864b10c0c92d2b9145b278bd18f67d7a7a3621781887a8c3e1427"},
+    {"path":"apps/web-console/app/commercialization/CommercializationConsole.tsx","sha256":"0abb0ef1d22fb6902c68c3918ea796fd76c5220ffe332c23b9208a0adaf55f73"},
+    {"path":"apps/web-console/app/styles.css","sha256":"c2e1bf76e98414484b9962d3ce4f3cc322a96ecfb9ef4ebb980d835903c93aa5"}
+  ],
+  "certification_claim": false
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "B74 Shell Process Pipeline Orchestrator"
+  short_description: "Run this ELMOS project Skill with evidence controls"
+  default_prompt: "Use $b74-shell-process-pipeline-orchestrator to execute this ELMOS project Skill with fail-closed evidence."

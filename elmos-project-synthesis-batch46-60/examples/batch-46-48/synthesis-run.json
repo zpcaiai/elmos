@@ -1,0 +1,21 @@
+{
+  "run_id": "RUN-2026-000001",
+  "engine": "elmos.project-synthesis",
+  "state": "REQUIREMENTS_REVIEW",
+  "tenant_id": "TENANT-DEMO",
+  "workspace_id": "WORKSPACE-EQUIPMENT",
+  "input_fingerprint": "sha256:example",
+  "versions": {
+    "schema": "elmos.project-synthesis.v1",
+    "constitution": "1.0.0",
+    "skills": {
+      "PG001": "1.0.0",
+      "PG011": "1.0.0",
+      "PG020": "1.0.0"
+    }
+  },
+  "approvals": [],
+  "evidence_refs": [
+    "EVD-REQ-0001"
+  ]
+}

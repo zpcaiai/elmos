@@ -1,0 +1,57 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "RUN-CHANGE-001",
+  "agents": [
+    {
+      "id": "agent-planner",
+      "role": "planner",
+      "capabilities": [
+        "artifact-graph:read"
+      ],
+      "model_route": "reasoning-high"
+    },
+    {
+      "id": "agent-java",
+      "role": "implementer",
+      "capabilities": [
+        "repository:write-managed"
+      ],
+      "model_route": "coding-high"
+    },
+    {
+      "id": "agent-certifier",
+      "role": "independent-certifier",
+      "capabilities": [
+        "repository:read",
+        "evidence:read"
+      ],
+      "model_route": "reasoning-high"
+    }
+  ],
+  "steps": [
+    {
+      "id": "plan",
+      "skill": "PG174"
+    },
+    {
+      "id": "generate",
+      "skill": "PG082"
+    },
+    {
+      "id": "test",
+      "skill": "PG135"
+    },
+    {
+      "id": "certify",
+      "skill": "PG198"
+    }
+  ],
+  "budgets": {
+    "max_model_cost_usd": 25,
+    "max_repair_attempts": 3
+  },
+  "policy_ref": "POLICY-ENTERPRISE",
+  "checkpoint_policy": {
+    "after_each_step": true
+  }
+}

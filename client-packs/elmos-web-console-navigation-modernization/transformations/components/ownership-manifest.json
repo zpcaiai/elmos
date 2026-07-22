@@ -2,7 +2,7 @@
   "schema_version": 1,
   "generated": [],
   "shared": ["apps/web-console/app/components/AppShell.tsx","apps/web-console/app/components/Icon.tsx","apps/web-console/app/components/StatusChip.tsx","apps/web-console/app/styles.css"],
-  "manual": ["apps/web-console/app/page.tsx","apps/web-console/app/migration/MigrationStudio.tsx","apps/web-console/app/commercialization/CommercializationConsole.tsx"],
+  "manual": ["apps/web-console/app/page.tsx","apps/web-console/app/migration/MigrationStudio.tsx","apps/web-console/app/commercialization/CommercializationConsole.tsx","apps/web-console/app/generation/page.tsx","apps/web-console/app/generation/ProjectGenerationStudio.tsx"],
   "protected": ["apps/control-plane/**","modules/**"],
   "extension_points": ["apps/web-console/app/lib/catalog.ts","apps/web-console/app/api/capabilities/**"]
 }

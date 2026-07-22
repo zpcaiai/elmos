@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B43: Payroll Workforce Planning Capacity Scenario Optimization And Allocation"
+  short_description: "Run ELMOS B43 Skill with fail-closed evidence"
+  default_prompt: "Use $payroll-workforce-planning-capacity-scenario-optimizati-96ff2b62 to execute the ELMOS B43 contract with fail-closed evidence."

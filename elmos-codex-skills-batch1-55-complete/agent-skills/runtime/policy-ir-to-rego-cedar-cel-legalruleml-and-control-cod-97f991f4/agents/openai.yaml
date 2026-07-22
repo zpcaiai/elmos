@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B38: Policy Ir To Rego Cedar Cel Legalruleml And Control Code Compiler"
+  short_description: "Run ELMOS B38 Skill with fail-closed evidence"
+  default_prompt: "Use $policy-ir-to-rego-cedar-cel-legalruleml-and-control-cod-97f991f4 to execute the ELMOS B38 contract with fail-closed evidence."

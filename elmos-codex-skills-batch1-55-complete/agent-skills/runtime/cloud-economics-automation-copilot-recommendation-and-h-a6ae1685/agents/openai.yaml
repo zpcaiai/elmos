@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B49: Cloud Economics Automation Copilot Recommendation And Human Review"
+  short_description: "Run ELMOS B49 Skill with fail-closed evidence"
+  default_prompt: "Use $cloud-economics-automation-copilot-recommendation-and-h-a6ae1685 to execute the ELMOS B49 contract with fail-closed evidence."

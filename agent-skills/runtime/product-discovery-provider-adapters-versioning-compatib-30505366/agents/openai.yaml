@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B41: Product Discovery Provider Adapters Versioning Compatibility And Migration"
+  short_description: "Run ELMOS Product B41 contract with fail-closed evidence"
+  default_prompt: "Use $product-discovery-provider-adapters-versioning-compatib-30505366 to implement its fail-closed ELMOS Product B41 contract."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M12: B12 Benchmark Quality Scoring Cost Manual Effort Execution Engine"
+  short_description: "Run ELMOS M12 Skill with fail-closed evidence"
+  default_prompt: "Use $b12-benchmark-quality-scoring-cost-manual-effort-execut-8179cb80 to execute the ELMOS M12 contract with fail-closed evidence."

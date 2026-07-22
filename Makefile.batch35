@@ -1,0 +1,14 @@
+BATCH35_PYTHON ?= /opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python
+.PHONY: batch35-validate batch35-test batch35-check batch35-scaffold batch35-gate batch35-local-rehearsal
+batch35-validate:
+	$(BATCH35_PYTHON) scripts/batch35/validate_skill_bundle.py .agents/skills
+batch35-test:
+	$(BATCH35_PYTHON) -m unittest discover -s tests/batch35 -p 'test_*.py'
+batch35-check: batch35-validate batch35-test
+batch35-scaffold:
+	$(BATCH35_PYTHON) scripts/batch35/scaffold_verification_pack.py --help
+batch35-gate:
+	@test -n "$(PACK)" || (echo "PACK is required" >&2; exit 2)
+	$(BATCH35_PYTHON) scripts/batch35/run_verification_gate.py "$(PACK)"
+batch35-local-rehearsal:
+	$(BATCH35_PYTHON) scripts/batch35/run_local_verification_rehearsal.py --repo-root .

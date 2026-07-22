@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B39: Psp Bank Payment Rail Connector Capability Authentication And Lifecycle"
+  short_description: "Run ELMOS B39 Skill with fail-closed evidence"
+  default_prompt: "Use $psp-bank-payment-rail-connector-capability-authenticati-a7678f08 to execute the ELMOS B39 contract with fail-closed evidence."

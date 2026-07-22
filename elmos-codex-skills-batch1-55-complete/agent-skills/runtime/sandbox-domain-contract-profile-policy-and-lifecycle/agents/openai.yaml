@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B36: Sandbox Domain Contract Profile Policy And Lifecycle"
+  short_description: "Run ELMOS B36 Skill with fail-closed evidence"
+  default_prompt: "Use $sandbox-domain-contract-profile-policy-and-lifecycle to execute the ELMOS B36 contract with fail-closed evidence."

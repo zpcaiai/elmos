@@ -1,0 +1,14 @@
+{
+  "environment_id": "env-id",
+  "os": {
+    "name": "",
+    "version": ""
+  },
+  "architecture": "",
+  "toolchains": [],
+  "services": [],
+  "network_policy": "deny-by-default",
+  "time_control": "fixed-or-recorded",
+  "locale": "en_US.UTF-8",
+  "sha256": ""
+}

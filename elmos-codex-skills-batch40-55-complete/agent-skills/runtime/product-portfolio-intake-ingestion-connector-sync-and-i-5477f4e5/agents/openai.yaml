@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B41: Product Portfolio Intake Ingestion Connector Sync And Idempotency"
+  short_description: "Run ELMOS Product B41 contract with fail-closed evidence"
+  default_prompt: "Use $product-portfolio-intake-ingestion-connector-sync-and-i-5477f4e5 to implement its fail-closed ELMOS Product B41 contract."

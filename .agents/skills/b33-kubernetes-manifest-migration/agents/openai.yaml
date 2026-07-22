@@ -1,0 +1,4 @@
+interface:
+  display_name: "B33 Kubernetes Manifest Migration"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b33-kubernetes-manifest-migration to execute this ELMOS Runtime Skill with fail-closed evidence."

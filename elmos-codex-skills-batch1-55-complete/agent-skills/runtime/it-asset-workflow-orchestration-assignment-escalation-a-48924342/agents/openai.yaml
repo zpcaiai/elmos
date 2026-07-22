@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B47: It Asset Workflow Orchestration Assignment Escalation And Recovery"
+  short_description: "Run ELMOS B47 Skill with fail-closed evidence"
+  default_prompt: "Use $it-asset-workflow-orchestration-assignment-escalation-a-48924342 to execute the ELMOS B47 contract with fail-closed evidence."

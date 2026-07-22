@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B52: Health Interoperability Master Data Identity Hierarchy And Effective Dating"
+  short_description: "Run ELMOS Product B52 contract with fail-closed evidence"
+  default_prompt: "Use $health-interoperability-master-data-identity-hierarchy-12a00833 to implement its fail-closed ELMOS Product B52 contract."

@@ -1,6 +1,6 @@
 {
   "profile_key": "elmos-web-console-navigation-modernization-target",
-  "version": "0.1.0",
+  "version": "0.4.0",
   "owner": "elmos-web-console-maintainers",
   "framework": "nextjs-app-router",
   "versions": [
@@ -16,53 +16,54 @@
   ],
   "build_tool": "next-16.2.10",
   "package_manager": "pnpm-10.12.4",
-  "router": [],
+  "router": ["next-app-router-16.2.10"],
   "rendering_strategy": {
-    "mode": "UNSET"
+    "mode": "static-prerender-with-client-hydration"
   },
   "state_strategy": {
-    "provider": "UNSET"
+    "provider": "react-use-state-19.2.7"
   },
   "form_strategy": {
-    "provider": "UNSET"
+    "provider": "react-controlled-native-validation-memory-only"
   },
   "styling_strategy": {
-    "mode": "UNSET"
+    "mode": "global-css-custom-properties"
   },
   "design_system_strategy": {
-    "mode": "UNSET"
+    "mode": "repository-local-elmos-console-0.4.0"
   },
   "api_client_strategy": {
-    "provider": "UNSET"
+    "provider": "browser-fetch-with-repository-contract-fallback"
   },
   "auth_strategy": {
-    "mode": "UNSET"
+    "mode": "local-read-only-no-auth; production authorization NOT_RUN"
   },
   "i18n_strategy": {
-    "provider": "UNSET"
+    "provider": "zh-CN-visible-copy; translation framework NOT_CONFIGURED"
   },
   "accessibility_profile": {
-    "standard": "WCAG-UNSET"
+    "standard": "WCAG-2.2-AA-local-keyboard-focus-status-and-target-subset"
   },
   "browser_matrix": [
-    "chromium-UNSET"
+    "chrome-150.0.7871.129-local"
   ],
-  "device_profiles": [],
+  "device_profiles": ["desktop-1440x1000", "tablet-1024x768", "mobile-390x844"],
   "test_profiles": [
-    "e2e-UNSET"
+    "local-playwright-navigation-and-responsive-e2e"
   ],
   "provision": {
     "commands": [
-      "UNSET"
+      "cd apps/web-console && pnpm install --frozen-lockfile"
     ]
   },
   "health_check": {
     "commands": [
-      "UNSET"
+      "cd apps/web-console && pnpm check",
+      "curl --noproxy '*' http://127.0.0.1:3311/skills"
     ]
   },
   "security": {
-    "content_security_policy": "UNSET"
+    "content_security_policy": "NOT_CONFIGURED; deployment security gate required"
   },
   "lifecycle": {
     "support_until": "UNSET",

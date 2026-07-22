@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B54: Collaboration Intel Analytics Kpi Scoring Forecast And Diagnostics"
+  short_description: "Run ELMOS B54 Skill with fail-closed evidence"
+  default_prompt: "Use $collaboration-intel-analytics-kpi-scoring-forecast-and-762f7f9d to execute the ELMOS B54 contract with fail-closed evidence."

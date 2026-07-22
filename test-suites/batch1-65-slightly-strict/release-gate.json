@@ -1,0 +1,59 @@
+{
+  "gate_id": "batch1-65-slightly-strict-supplemental",
+  "gate_version": 1,
+  "decision": "BLOCKED",
+  "certification_authority": false,
+  "maximum_success_decision": "READY_FOR_EXTERNAL_GATE",
+  "evaluated_at": "2026-07-22T10:49:08.620523Z",
+  "field_evidence_status": "NOT_RUN",
+  "profile_id": "elmos-slightly-strict-v1",
+  "metrics": {
+    "batches": 65,
+    "source_skills": 1296,
+    "test_skills": 88,
+    "cases": 750,
+    "results": 750,
+    "project_synthesis_specs": 52,
+    "status_counts": {
+      "PASSED": 0,
+      "FAILED": 0,
+      "BLOCKED": 0,
+      "NOT_RUN": 750,
+      "QUARANTINED": 0,
+      "INVALID": 0
+    },
+    "severity_totals": {
+      "HIGH": 463,
+      "MEDIUM": 111,
+      "CRITICAL": 176
+    },
+    "severity_passed": {},
+    "severity_pass_rates": {
+      "CRITICAL": 0.0,
+      "HIGH": 0.0,
+      "MEDIUM": 0.0,
+      "LOW": 1.0
+    },
+    "overall_pass_rate": 0.0,
+    "executed_batch_test_skills": 0,
+    "critical_high_evidence_completeness": 0.0,
+    "overall_evidence_completeness": 0.0,
+    "flaky_rate": 0.0,
+    "quarantined_rate": 0.0
+  },
+  "anti_fraud_signals": [],
+  "blocker_count": 8,
+  "blockers": [
+    "required cases remain NOT_RUN: 750",
+    "critical pass rate below threshold: 0/176",
+    "high pass rate below threshold: 0.0000",
+    "medium pass rate below threshold: 0.0000",
+    "overall pass rate below threshold: 0.0000",
+    "Batch test Skill execution coverage unmet: 0/65",
+    "Critical/High evidence completeness unmet: 0.0000",
+    "overall evidence completeness unmet: 0.0000"
+  ],
+  "control_manifest_digest": "sha256:74c5934b0c28a27bf0f57d0f559f3f3e95c0e71440ffefa7061d13c548ca1730",
+  "result_catalog_digest": "sha256:f5b5e20ece19b6eccbe1bb083cdf6fc919692babf653c4f0197d73f6840abe75",
+  "gate_digest": "sha256:883d23f676ed687906f3dc0829cd2fbc0484d7a295ecb53a94715e686daec561"
+}

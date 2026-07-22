@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M21: B21 Manifest Driven Enterprise Platform Domain 21 Domain Model And Contracts"
+  short_description: "Run ELMOS M21 Skill with fail-closed evidence"
+  default_prompt: "Use $b21-manifest-driven-enterprise-platform-domain-21-domai-d0e99dee to execute the ELMOS M21 contract with fail-closed evidence."

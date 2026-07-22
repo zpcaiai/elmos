@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M44: B44 Provider Resource Routing"
+  short_description: "Run ELMOS M44 Skill with fail-closed evidence"
+  default_prompt: "Use $b44-provider-resource-routing to execute the ELMOS M44 contract with fail-closed evidence."

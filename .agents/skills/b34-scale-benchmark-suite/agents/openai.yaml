@@ -1,0 +1,4 @@
+interface:
+  display_name: "B34 Scale Benchmark Suite"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b34-scale-benchmark-suite to execute this ELMOS Runtime Skill with fail-closed evidence."

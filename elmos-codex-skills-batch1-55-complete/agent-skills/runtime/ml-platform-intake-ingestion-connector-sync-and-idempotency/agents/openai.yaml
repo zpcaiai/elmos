@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B45: Ml Platform Intake Ingestion Connector Sync And Idempotency"
+  short_description: "Run ELMOS B45 Skill with fail-closed evidence"
+  default_prompt: "Use $ml-platform-intake-ingestion-connector-sync-and-idempotency to execute the ELMOS B45 contract with fail-closed evidence."

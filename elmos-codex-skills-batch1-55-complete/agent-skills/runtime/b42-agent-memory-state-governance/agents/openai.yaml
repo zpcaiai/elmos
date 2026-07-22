@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M42: B42 Agent Memory State Governance"
+  short_description: "Run ELMOS M42 Skill with fail-closed evidence"
+  default_prompt: "Use $b42-agent-memory-state-governance to execute the ELMOS M42 contract with fail-closed evidence."

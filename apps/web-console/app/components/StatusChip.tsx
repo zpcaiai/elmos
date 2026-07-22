@@ -3,6 +3,7 @@ const statusLabels: Record<string, string> = {
   ENFORCED: "已强制",
   BLOCKED: "已阻断",
   NOT_RUN: "未运行",
+  NOT_CERTIFIED: "未认证",
   NOT_CONFIGURED: "未配置",
   EXPERIMENTAL: "实验性",
   REVIEW: "待审阅",

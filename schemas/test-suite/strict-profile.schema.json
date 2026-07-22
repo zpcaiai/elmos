@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/test-suite/strict-profile.schema.json",
+  "type": "object",
+  "required": ["profile_id", "description", "thresholds", "blockers", "waiver_policy"],
+  "properties": {
+    "profile_id": {"type": "string", "minLength": 1},
+    "description": {"type": "string", "minLength": 1},
+    "thresholds": {
+      "type": "object",
+      "required": [
+        "batch_coverage", "p0_pass_rate", "p1_pass_rate", "holdout_pass_rate",
+        "representative_workload_pass_rate", "evidence_trace_coverage",
+        "source_target_trace_coverage", "affected_test_recall", "mutation_score",
+        "p95_latency_regression_max", "p99_latency_regression_max",
+        "resource_regression_max", "recovery_success_rate", "max_evidence_age_days",
+        "flaky_p0_p1", "critical_unknowns", "critical_security_findings",
+        "tenant_isolation_violations", "test_integrity_violations",
+        "unreplayed_critical_failures", "stale_evidence",
+        "forged_certification_attempts"
+      ],
+      "additionalProperties": {"type": "number"}
+    },
+    "blockers": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "waiver_policy": {
+      "type": "object",
+      "required": ["p0_allowed", "p1_allowed_only_with_executive_security_and_customer_approval", "maximum_days", "must_include_compensating_controls"],
+      "properties": {
+        "p0_allowed": {"const": false},
+        "p1_allowed_only_with_executive_security_and_customer_approval": {"type": "boolean"},
+        "maximum_days": {"type": "integer", "minimum": 1, "maximum": 30},
+        "must_include_compensating_controls": {"const": true}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

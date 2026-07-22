@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M29: B29 Route Prioritizer"
+  short_description: "Run ELMOS M29 Skill with fail-closed evidence"
+  default_prompt: "Use $b29-route-prioritizer to execute the ELMOS M29 contract with fail-closed evidence."

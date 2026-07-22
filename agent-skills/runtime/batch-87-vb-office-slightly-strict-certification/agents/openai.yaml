@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 87 Vb Office Slightly Strict Certification"
+  short_description: "Run this ELMOS Batch 81-95 test Skill with evidence"
+  default_prompt: "Use $batch-87-vb-office-slightly-strict-certification to run its exact Batch 81-95 test scope with fail-closed evidence."

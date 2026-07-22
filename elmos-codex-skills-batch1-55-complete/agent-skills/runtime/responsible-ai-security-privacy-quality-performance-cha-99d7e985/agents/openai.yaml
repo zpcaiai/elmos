@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B45: Responsible Ai Security Privacy Quality Performance Chaos And Release Gates"
+  short_description: "Run ELMOS B45 Skill with fail-closed evidence"
+  default_prompt: "Use $responsible-ai-security-privacy-quality-performance-cha-99d7e985 to execute the ELMOS B45 contract with fail-closed evidence."

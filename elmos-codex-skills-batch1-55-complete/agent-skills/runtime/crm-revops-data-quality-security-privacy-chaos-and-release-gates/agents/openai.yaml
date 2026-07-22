@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B40: Crm Revops Data Quality Security Privacy Chaos And Release Gates"
+  short_description: "Run ELMOS B40 Skill with fail-closed evidence"
+  default_prompt: "Use $crm-revops-data-quality-security-privacy-chaos-and-release-gates to execute the ELMOS B40 contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B46: Integration Platform Provider Adapters Versioning Compatibility And Migration"
+  short_description: "Run ELMOS B46 Skill with fail-closed evidence"
+  default_prompt: "Use $integration-platform-provider-adapters-versioning-compa-2b5ac05a to execute the ELMOS B46 contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B35: Github Scm Connector Security Compatibility Tests And Release Gates"
+  short_description: "Run ELMOS B35 Skill with fail-closed evidence"
+  default_prompt: "Use $github-scm-connector-security-compatibility-tests-and-r-bd8c3157 to execute the ELMOS B35 contract with fail-closed evidence."

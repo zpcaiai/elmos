@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/mature-product/certification-request.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestVersion",
+    "batch",
+    "packKey",
+    "requestedAt",
+    "keyId",
+    "approvedBy",
+    "programDigest",
+    "evidenceDigest",
+    "certificationDigest",
+    "evidenceManifestDigest"
+  ],
+  "properties": {
+    "requestVersion": {"const": 1},
+    "batch": {"type": "integer", "minimum": 38, "maximum": 45},
+    "packKey": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{2,62}$"},
+    "requestedAt": {"type": "string", "format": "date-time"},
+    "keyId": {"type": "string", "minLength": 1},
+    "approvedBy": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1, "uniqueItems": true},
+    "programDigest": {"$ref": "#/$defs/sha256"},
+    "evidenceDigest": {"$ref": "#/$defs/sha256"},
+    "certificationDigest": {"$ref": "#/$defs/sha256"},
+    "evidenceManifestDigest": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$", "not": {"pattern": "^sha256:([0-9a-f])\\1{63}$"}}
+  }
+}

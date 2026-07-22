@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B39: Financial Commercial Security Quality Chaos And Release Gates"
+  short_description: "Run ELMOS B39 Skill with fail-closed evidence"
+  default_prompt: "Use $financial-commercial-security-quality-chaos-and-release-gates to execute the ELMOS B39 contract with fail-closed evidence."

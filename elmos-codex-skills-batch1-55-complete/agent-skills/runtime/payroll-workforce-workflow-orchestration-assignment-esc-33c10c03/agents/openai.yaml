@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B43: Payroll Workforce Workflow Orchestration Assignment Escalation And Recovery"
+  short_description: "Run ELMOS B43 Skill with fail-closed evidence"
+  default_prompt: "Use $payroll-workforce-workflow-orchestration-assignment-esc-33c10c03 to execute the ELMOS B43 contract with fail-closed evidence."

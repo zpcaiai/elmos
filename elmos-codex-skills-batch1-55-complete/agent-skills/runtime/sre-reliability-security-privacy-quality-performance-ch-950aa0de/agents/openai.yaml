@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B47: Sre Reliability Security Privacy Quality Performance Chaos And Release Gates"
+  short_description: "Run ELMOS B47 Skill with fail-closed evidence"
+  default_prompt: "Use $sre-reliability-security-privacy-quality-performance-ch-950aa0de to execute the ELMOS B47 contract with fail-closed evidence."

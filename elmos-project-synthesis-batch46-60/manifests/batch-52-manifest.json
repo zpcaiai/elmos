@@ -1,0 +1,153 @@
+{
+  "batch": 52,
+  "engine": "elmos.project-synthesis",
+  "skill_count": 12,
+  "skills": [
+    {
+      "id": "PG065",
+      "name": "template-registry",
+      "depends_on": [
+        "PG008",
+        "PG064"
+      ],
+      "summary": "Registers reusable project, module, file, test, configuration, deployment, and documentation templates.",
+      "path": "skills/batch-52/PG065-template-registry.md"
+    },
+    {
+      "id": "PG066",
+      "name": "template-signing-and-provenance",
+      "depends_on": [
+        "PG007",
+        "PG008",
+        "PG065"
+      ],
+      "summary": "Signs templates and records source, publisher, review, dependencies, license, and content lineage.",
+      "path": "skills/batch-52/PG066-template-signing-and-provenance.md"
+    },
+    {
+      "id": "PG067",
+      "name": "semantic-code-model",
+      "depends_on": [
+        "PG037",
+        "PG040",
+        "PG060",
+        "PG064"
+      ],
+      "summary": "Defines the language-neutral semantic model for projects, modules, types, members, dependencies, behavior, tests, and annotations.",
+      "path": "skills/batch-52/PG067-semantic-code-model.md"
+    },
+    {
+      "id": "PG068",
+      "name": "scaffold-composer",
+      "depends_on": [
+        "PG059",
+        "PG064",
+        "PG065",
+        "PG067"
+      ],
+      "summary": "Composes repositories, applications, modules, directories, baseline files, tests, docs, and deployment roots.",
+      "path": "skills/batch-52/PG068-scaffold-composer.md"
+    },
+    {
+      "id": "PG069",
+      "name": "ast-cst-code-emitter",
+      "depends_on": [
+        "PG056",
+        "PG067",
+        "PG068"
+      ],
+      "summary": "Emits compilable target-language source through AST/CST-aware writers and language adapters.",
+      "path": "skills/batch-52/PG069-ast-cst-code-emitter.md"
+    },
+    {
+      "id": "PG070",
+      "name": "configuration-file-emitter",
+      "depends_on": [
+        "PG061",
+        "PG062",
+        "PG063",
+        "PG064",
+        "PG068"
+      ],
+      "summary": "Generates build, runtime, dependency, formatter, linter, container, CI, and environment configuration files.",
+      "path": "skills/batch-52/PG070-configuration-file-emitter.md"
+    },
+    {
+      "id": "PG071",
+      "name": "generated-file-ownership",
+      "depends_on": [
+        "PG059",
+        "PG064",
+        "PG068"
+      ],
+      "summary": "Assigns managed, protected, user-owned, imported, and derived ownership modes to files and symbols.",
+      "path": "skills/batch-52/PG071-generated-file-ownership.md"
+    },
+    {
+      "id": "PG072",
+      "name": "protected-region-and-extension-point",
+      "depends_on": [
+        "PG067",
+        "PG069",
+        "PG071"
+      ],
+      "summary": "Defines protected source regions, partial types, interfaces, hooks, plugins, callbacks, and generated extension contracts.",
+      "path": "skills/batch-52/PG072-protected-region-and-extension-point.md"
+    },
+    {
+      "id": "PG073",
+      "name": "idempotent-generation-engine",
+      "depends_on": [
+        "PG009",
+        "PG064",
+        "PG068",
+        "PG071",
+        "PG072"
+      ],
+      "summary": "Executes deterministic generation plans without duplicating semantic artifacts or creating unstable diffs.",
+      "path": "skills/batch-52/PG073-idempotent-generation-engine.md"
+    },
+    {
+      "id": "PG074",
+      "name": "incremental-merge-engine",
+      "depends_on": [
+        "PG032",
+        "PG069",
+        "PG071",
+        "PG072",
+        "PG073"
+      ],
+      "summary": "Performs AST/CST-aware, ownership-aware, and history-aware merges between generated intent and repository state.",
+      "path": "skills/batch-52/PG074-incremental-merge-engine.md"
+    },
+    {
+      "id": "PG075",
+      "name": "formatter-linter-normalizer",
+      "depends_on": [
+        "PG057",
+        "PG063",
+        "PG069",
+        "PG070",
+        "PG074"
+      ],
+      "summary": "Formats, lints, type-checks, normalizes, and statically validates generated artifacts using pinned toolchains.",
+      "path": "skills/batch-52/PG075-formatter-linter-normalizer.md"
+    },
+    {
+      "id": "PG076",
+      "name": "generation-manifest-and-sbom",
+      "depends_on": [
+        "PG007",
+        "PG058",
+        "PG064",
+        "PG066",
+        "PG071",
+        "PG073",
+        "PG074",
+        "PG075"
+      ],
+      "summary": "Publishes the generation manifest, artifact inventory, provenance, ownership, dependencies, tools, and software bill of materials.",
+      "path": "skills/batch-52/PG076-generation-manifest-and-sbom.md"
+    }
+  ]
+}

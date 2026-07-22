@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M14: B14 Composite Migration Planning Dependency Waves Co Workflow And State Machine"
+  short_description: "Run ELMOS M14 Skill with fail-closed evidence"
+  default_prompt: "Use $b14-composite-migration-planning-dependency-waves-co-wo-7caf0f59 to execute the ELMOS M14 contract with fail-closed evidence."

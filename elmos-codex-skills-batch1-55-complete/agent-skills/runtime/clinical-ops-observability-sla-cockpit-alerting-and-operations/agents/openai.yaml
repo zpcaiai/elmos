@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B52: Clinical Ops Observability Sla Cockpit Alerting And Operations"
+  short_description: "Run ELMOS B52 Skill with fail-closed evidence"
+  default_prompt: "Use $clinical-ops-observability-sla-cockpit-alerting-and-operations to execute the ELMOS B52 contract with fail-closed evidence."

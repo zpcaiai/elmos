@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B37: Spdx Cyclonedx Sbom Generation Normalization Merge And Quality"
+  short_description: "Run ELMOS B37 Skill with fail-closed evidence"
+  default_prompt: "Use $spdx-cyclonedx-sbom-generation-normalization-merge-and-quality to execute the ELMOS B37 contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B53: Grid Dispatch Data Quality Dedup Reconciliation And Certification"
+  short_description: "Run ELMOS Product B53 contract with fail-closed evidence"
+  default_prompt: "Use $grid-dispatch-data-quality-dedup-reconciliation-and-cer-833ac684 to implement its fail-closed ELMOS Product B53 contract."

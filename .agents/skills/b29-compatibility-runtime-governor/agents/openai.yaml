@@ -1,0 +1,4 @@
+interface:
+  display_name: "B29 Compatibility Runtime Governor"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b29-compatibility-runtime-governor to execute this ELMOS Runtime Skill with fail-closed evidence."

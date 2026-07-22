@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B47: Sre Reliability Automation Copilot Recommendation And Human Review"
+  short_description: "Run ELMOS B47 Skill with fail-closed evidence"
+  default_prompt: "Use $sre-reliability-automation-copilot-recommendation-and-h-8bed4e72 to execute the ELMOS B47 contract with fail-closed evidence."

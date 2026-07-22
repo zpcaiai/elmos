@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B48: Identity Security Domain Model Lifecycle And State Machine"
+  short_description: "Run ELMOS B48 Skill with fail-closed evidence"
+  default_prompt: "Use $identity-security-domain-model-lifecycle-and-state-machine to execute the ELMOS B48 contract with fail-closed evidence."

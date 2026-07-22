@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M30: B30 Micronaut Migration"
+  short_description: "Run ELMOS M30 Skill with fail-closed evidence"
+  default_prompt: "Use $b30-micronaut-migration to execute the ELMOS M30 contract with fail-closed evidence."

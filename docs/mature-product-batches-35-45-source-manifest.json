@@ -2,8 +2,9 @@
   "series": "mature-product-skills",
   "batches": [35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45],
   "skill_id_range": [1265, 1496],
-  "source_document": "ChatGPT-跨语言迁移月报 (1).md",
-  "source_document_sha256": "17dee47f9b7f5617c02e959d28ac1bb22f0bea98d70ce2ee3c8d7d8e0",
+  "source_document": "ChatGPT-跨语言迁移月报 (1).md (external supplied authority)",
+  "source_document_sha256": "17dee47f9b7f5617c02e959d28ac1bb22f0bea98d70ce2ee3c8d7ee633d9903b",
+  "source_document_status": "EXTERNAL_VERIFIED; packaged Batch 38-45 AUTHORITY.md files support offline generator checks",
   "source_document_scope": "batches 38-45; Batches 35-37 use supplied exact packages",
   "batch35_source_package": {
     "name": "batch35-codex-skills",
@@ -29,7 +30,7 @@
     "stale_missing_cache_paths": 29,
     "manifest_status": "STALE_PRESERVED_FOR_PROVENANCE"
   },
-  "generator_sha256": "2231773f257b4da9b4fab6b5eac18e9c974bc7346a3022c26d4139a37fabf452",
+  "generator_sha256": "28b35feb7f482aa6c5e0d7f60c0e6dbe13201926ad98266079eb03c9f23230f1",
   "generator_scope": "batches 38-45 only; Batches 35-37 are protected from generic regeneration",
   "toolkit_sha256": "df99ce4f03b952f5511f01ccc8b2831e1b321e099f7862945eaa1e998709eabc",
   "batch35_gate_sha256": "c3a00bf8b34ae9d2d5ee516f57c31d38cce948fd6723b2341f0fd93986dcf353",
@@ -39,10 +40,10 @@
   "batch37_core_gate_sha256": "4da02e8f0a062bd1e2fa620fa6d980a21b1132b9f86bfc27df11a958bec2daa8",
   "batch37_closure_gate_sha256": "9fc25a9b8c67250e18efed69de864172f0b806b7f6deb62c083143d316ccdd04",
   "batch37_local_rehearsal_sha256": "2080f8c33791c83c42b3538b8a2a284ed0de3d92a832fa9944fb1beb4299f0bb",
-  "distribution_tool_sha256": "fa543bf0ae578a30a9faff366ef0f5d96fd9252b733927c8eab81d96a6e39ca0",
+  "distribution_tool_sha256": "d2c8a723fc6174d815fa16a10180900e003b16987d135f8b59c4bc42308412a5",
   "installed_payload": {
     "files": 820,
-    "sha256": "b368cd233f6f37551f262af4b198f7d492a5cd7417d342c32f5731693e374734",
+    "sha256": "a563d7544b11366f57de61bb566a6ea4ca342b7dee1714cd2733a68511a28896",
     "digest_method": "SHA-256 over UTF-8 sorted repository-relative path, NUL, file SHA-256 hex, and newline, excluding this self-referential manifest",
     "skills": 248,
     "openai_yaml": 248,

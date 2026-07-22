@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B38: Regulatory Change Source Monitoring Semantic Diff And Impact Analysis"
+  short_description: "Run ELMOS B38 Skill with fail-closed evidence"
+  default_prompt: "Use $regulatory-change-source-monitoring-semantic-diff-and-i-f2a4bd5f to execute the ELMOS B38 contract with fail-closed evidence."

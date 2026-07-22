@@ -1,0 +1,175 @@
+{
+  "batch": 55,
+  "title": "Globalization、Accessibility、Marketplace、SDK与Product Certification",
+  "sourceConfidence": "planning-package",
+  "cases": [
+    {
+      "id": "B55-P0-01",
+      "title": "Accessibility Keyboard Screenreader",
+      "priority": "P0",
+      "type": "domain-specific",
+      "given": "关键业务Journey仅使用键盘和Screen Reader",
+      "when": "执行端到端测试",
+      "then": "无阻塞且语义正确",
+      "evidence": [
+        "raw-result.json",
+        "trace.json",
+        "assertion-report.md"
+      ]
+    },
+    {
+      "id": "B55-P1-02",
+      "title": "Marketplace Revocation Offline",
+      "priority": "P1",
+      "type": "domain-specific",
+      "given": "扩展签名被撤销但离线站点缓存旧状态",
+      "when": "执行扩展",
+      "then": "高风险执行被阻止并告警",
+      "evidence": [
+        "raw-result.json",
+        "trace.json",
+        "assertion-report.md"
+      ]
+    },
+    {
+      "id": "B55-P1-03",
+      "title": "Valid Vertical Slice",
+      "priority": "P1",
+      "type": "manifest-driven",
+      "given": "代表性端到端输入与合法身份",
+      "when": "执行该Batch的最小完整纵向切片",
+      "then": "业务结果、状态、副作用和Evidence均符合Manifest",
+      "evidence": [
+        "test-result.json",
+        "environment.json",
+        "source-map.json"
+      ]
+    },
+    {
+      "id": "B55-P1-04",
+      "title": "Invalid And Boundary Input",
+      "priority": "P1",
+      "type": "manifest-driven",
+      "given": "空值、超长、极值、Unicode、时区和非法枚举",
+      "when": "提交到全部公共入口",
+      "then": "输入被一致拒绝或按契约处理，不产生部分副作用",
+      "evidence": [
+        "test-result.json",
+        "environment.json",
+        "source-map.json"
+      ]
+    },
+    {
+      "id": "B55-P1-05",
+      "title": "Duplicate And Idempotency",
+      "priority": "P1",
+      "type": "manifest-driven",
+      "given": "同一请求、事件或任务重复提交",
+      "when": "并发和串行重放",
+      "then": "最终副作用至多一次，重复记录可追踪",
+      "evidence": [
+        "test-result.json",
+        "environment.json",
+        "source-map.json"
+      ]
+    },
+    {
+      "id": "B55-P1-06",
+      "title": "Illegal State Transition",
+      "priority": "P1",
+      "type": "manifest-driven",
+      "given": "对象处于不允许的前置状态",
+      "when": "请求后续或回退状态",
+      "then": "转换被拒绝且原状态不被破坏",
+      "evidence": [
+        "test-result.json",
+        "environment.json",
+        "source-map.json"
+      ]
+    },
+    {
+      "id": "B55-P0-07",
+      "title": "Tenant And Authorization Negative",
+      "priority": "P0",
+      "type": "manifest-driven",
+      "given": "另一个Tenant或低权限主体",
+      "when": "读取、修改或导出资源",
+      "then": "拒绝访问且不泄露资源存在或敏感元数据",
+      "evidence": [
+        "test-result.json",
+        "environment.json",
+        "source-map.json"
+      ]
+    },
+    {
+      "id": "B55-P1-08",
+      "title": "Timeout And Unknown Result",
+      "priority": "P1",
+      "type": "manifest-driven",
+      "given": "Provider或内部Worker在副作用边界超时",
+      "when": "触发重试/恢复",
+      "then": "先对账再重试，不重复副作用",
+      "evidence": [
+        "test-result.json",
+        "environment.json",
+        "source-map.json"
+      ]
+    },
+    {
+      "id": "B55-P0-09",
+      "title": "Data Reconciliation",
+      "priority": "P0",
+      "type": "manifest-driven",
+      "given": "输入、输出、Ledger或投影存在可计算守恒关系",
+      "when": "执行处理并对账",
+      "then": "总额、数量、Hash或状态守恒，未知差异阻止发布",
+      "evidence": [
+        "test-result.json",
+        "environment.json",
+        "source-map.json"
+      ]
+    },
+    {
+      "id": "B55-P1-10",
+      "title": "Rollback And Recovery",
+      "priority": "P1",
+      "type": "manifest-driven",
+      "given": "处理中途失败或新版本发布失败",
+      "when": "执行补偿、回滚或恢复",
+      "then": "恢复到可验证状态，历史与失败证据保留",
+      "evidence": [
+        "test-result.json",
+        "environment.json",
+        "source-map.json"
+      ]
+    },
+    {
+      "id": "B55-P2-11",
+      "title": "Performance Tail",
+      "priority": "P2",
+      "type": "manifest-driven",
+      "given": "代表性数据规模和并发",
+      "when": "运行基线与候选版本",
+      "then": "P95不超过基线10%，P99与资源峰值可见",
+      "evidence": [
+        "test-result.json",
+        "environment.json",
+        "source-map.json"
+      ]
+    },
+    {
+      "id": "B55-P1-12",
+      "title": "Observability And Evidence",
+      "priority": "P1",
+      "type": "manifest-driven",
+      "given": "成功、拒绝和失败路径",
+      "when": "检查日志、Metric、Trace和Audit",
+      "then": "Correlation完整且Secret/PII未泄漏",
+      "evidence": [
+        "test-result.json",
+        "environment.json",
+        "source-map.json"
+      ]
+    }
+  ]
+}

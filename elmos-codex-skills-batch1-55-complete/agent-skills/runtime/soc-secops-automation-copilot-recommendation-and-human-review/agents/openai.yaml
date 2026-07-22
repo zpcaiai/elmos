@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B48: Soc Secops Automation Copilot Recommendation And Human Review"
+  short_description: "Run ELMOS B48 Skill with fail-closed evidence"
+  default_prompt: "Use $soc-secops-automation-copilot-recommendation-and-human-review to execute the ELMOS B48 contract with fail-closed evidence."

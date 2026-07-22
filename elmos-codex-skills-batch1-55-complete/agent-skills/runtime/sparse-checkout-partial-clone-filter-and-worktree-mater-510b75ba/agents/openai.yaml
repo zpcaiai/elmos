@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B35: Sparse Checkout Partial Clone Filter And Worktree Materialization"
+  short_description: "Run ELMOS B35 Skill with fail-closed evidence"
+  default_prompt: "Use $sparse-checkout-partial-clone-filter-and-worktree-mater-510b75ba to execute the ELMOS B35 contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M35: B35 Counterexample Shrinking Replay"
+  short_description: "Run ELMOS M35 Skill with fail-closed evidence"
+  default_prompt: "Use $b35-counterexample-shrinking-replay to execute the ELMOS M35 contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B55: Platform Ecosystem Analytics Kpi Scoring Forecast And Diagnostics"
+  short_description: "Run ELMOS B55 Skill with fail-closed evidence"
+  default_prompt: "Use $platform-ecosystem-analytics-kpi-scoring-forecast-and-d-6d357440 to execute the ELMOS B55 contract with fail-closed evidence."

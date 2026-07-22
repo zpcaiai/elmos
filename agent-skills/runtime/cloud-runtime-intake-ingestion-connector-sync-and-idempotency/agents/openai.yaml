@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B49: Cloud Runtime Intake Ingestion Connector Sync And Idempotency"
+  short_description: "Run ELMOS Product B49 contract with fail-closed evidence"
+  default_prompt: "Use $cloud-runtime-intake-ingestion-connector-sync-and-idempotency to implement its fail-closed ELMOS Product B49 contract."

@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "1",
+  "decisionId": "replace-me",
+  "tenantId": "replace-me",
+  "subject": {
+    "type": "replace-me",
+    "id": "replace-me",
+    "version": "replace-me"
+  },
+  "sourceSnapshots": [],
+  "policyVersions": [],
+  "providerVersions": [],
+  "asOf": "YYYY-MM-DDTHH:MM:SSZ",
+  "result": "INCONCLUSIVE",
+  "reconciliationStatus": "OPEN",
+  "limitations": [],
+  "evidenceRefs": []
+}

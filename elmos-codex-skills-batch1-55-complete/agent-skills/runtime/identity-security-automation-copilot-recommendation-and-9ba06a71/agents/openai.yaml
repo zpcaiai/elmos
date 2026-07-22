@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B48: Identity Security Automation Copilot Recommendation And Human Review"
+  short_description: "Run ELMOS B48 Skill with fail-closed evidence"
+  default_prompt: "Use $identity-security-automation-copilot-recommendation-and-9ba06a71 to execute the ELMOS B48 contract with fail-closed evidence."

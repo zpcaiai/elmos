@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M01: B01 Repository Intake Secure Snapshot Baseline Disco Domain Model And Contracts"
+  short_description: "Run ELMOS M01 Skill with fail-closed evidence"
+  default_prompt: "Use $b01-repository-intake-secure-snapshot-baseline-disco-do-35f71ec1 to execute the ELMOS M01 contract with fail-closed evidence."

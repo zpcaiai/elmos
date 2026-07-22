@@ -1,0 +1,12 @@
+{
+  "name": "elmos-codex-skills-batch66-80-complete",
+  "source_zip": "elmos-codex-skills-batch66-80-complete.zip",
+  "source_zip_sha256": "f8255be826d3de2e733089c54b5c308cc8a69e01a4a66f8d4c48f4ef10865191",
+  "source_skill_count": 195,
+  "id_range": [
+    "PG223",
+    "PG417"
+  ],
+  "catalog_sha256": "067c1dfc76c4a75e344ecb71d68ea1b426e7d049d0139bd006f1700eb79db12b",
+  "manifest_sha256": "752829ba0e0fb3035400df0e87f19150fe6b01521d12faa2b396c82e8dd9ccea"
+}

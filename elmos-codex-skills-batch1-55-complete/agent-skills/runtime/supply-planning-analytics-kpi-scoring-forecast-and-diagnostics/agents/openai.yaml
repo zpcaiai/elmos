@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B42: Supply Planning Analytics Kpi Scoring Forecast And Diagnostics"
+  short_description: "Run ELMOS B42 Skill with fail-closed evidence"
+  default_prompt: "Use $supply-planning-analytics-kpi-scoring-forecast-and-diagnostics to execute the ELMOS B42 contract with fail-closed evidence."

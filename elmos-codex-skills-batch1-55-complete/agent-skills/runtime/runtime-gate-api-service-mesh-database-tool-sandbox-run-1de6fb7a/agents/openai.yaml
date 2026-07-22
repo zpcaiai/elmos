@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B38: Runtime Gate Api Service Mesh Database Tool Sandbox Runner And Artifact Enforcement"
+  short_description: "Run ELMOS B38 Skill with fail-closed evidence"
+  default_prompt: "Use $runtime-gate-api-service-mesh-database-tool-sandbox-run-1de6fb7a to execute the ELMOS B38 contract with fail-closed evidence."

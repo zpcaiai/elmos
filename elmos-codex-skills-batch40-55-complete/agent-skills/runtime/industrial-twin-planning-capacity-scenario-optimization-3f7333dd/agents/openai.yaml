@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B50: Industrial Twin Planning Capacity Scenario Optimization And Allocation"
+  short_description: "Run ELMOS Product B50 contract with fail-closed evidence"
+  default_prompt: "Use $industrial-twin-planning-capacity-scenario-optimization-3f7333dd to implement its fail-closed ELMOS Product B50 contract."

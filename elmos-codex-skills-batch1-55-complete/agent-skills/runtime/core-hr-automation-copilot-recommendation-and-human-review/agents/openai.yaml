@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B43: Core Hr Automation Copilot Recommendation And Human Review"
+  short_description: "Run ELMOS B43 Skill with fail-closed evidence"
+  default_prompt: "Use $core-hr-automation-copilot-recommendation-and-human-review to execute the ELMOS B43 contract with fail-closed evidence."

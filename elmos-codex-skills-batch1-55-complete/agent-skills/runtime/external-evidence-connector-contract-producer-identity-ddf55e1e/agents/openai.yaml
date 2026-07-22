@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B37: External Evidence Connector Contract Producer Identity And Capability"
+  short_description: "Run ELMOS B37 Skill with fail-closed evidence"
+  default_prompt: "Use $external-evidence-connector-contract-producer-identity-ddf55e1e to execute the ELMOS B37 contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B48: Soc Secops Policy Authorization Approval Segregation And Exception"
+  short_description: "Run ELMOS B48 Skill with fail-closed evidence"
+  default_prompt: "Use $soc-secops-policy-authorization-approval-segregation-an-908bcb0c to execute the ELMOS B48 contract with fail-closed evidence."

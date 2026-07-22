@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B49: Cloud Runtime Security Privacy Quality Performance Chaos And Release Gates"
+  short_description: "Run ELMOS Product B49 contract with fail-closed evidence"
+  default_prompt: "Use $cloud-runtime-security-privacy-quality-performance-chao-e990df9d to implement its fail-closed ELMOS Product B49 contract."

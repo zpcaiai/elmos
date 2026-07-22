@@ -1,0 +1,4 @@
+interface:
+  display_name: "B73 Swift Networking Contract Generator"
+  short_description: "Run this ELMOS project Skill with evidence controls"
+  default_prompt: "Use $b73-swift-networking-contract-generator to execute this ELMOS project Skill with fail-closed evidence."

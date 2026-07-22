@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B37: Assurance Trend Baseline Change Point Seasonality Anomaly And Diagnostics"
+  short_description: "Run ELMOS B37 Skill with fail-closed evidence"
+  default_prompt: "Use $assurance-trend-baseline-change-point-seasonality-anoma-903d0e6d to execute the ELMOS B37 contract with fail-closed evidence."

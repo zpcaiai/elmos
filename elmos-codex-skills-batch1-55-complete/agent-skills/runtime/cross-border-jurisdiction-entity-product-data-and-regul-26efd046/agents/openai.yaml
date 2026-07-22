@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B38: Cross Border Jurisdiction Entity Product Data And Regulatory Matrix"
+  short_description: "Run ELMOS B38 Skill with fail-closed evidence"
+  default_prompt: "Use $cross-border-jurisdiction-entity-product-data-and-regul-26efd046 to execute the ELMOS B38 contract with fail-closed evidence."

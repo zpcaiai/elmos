@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B46: Workflow Bpm Planning Capacity Scenario Optimization And Allocation"
+  short_description: "Run ELMOS Product B46 contract with fail-closed evidence"
+  default_prompt: "Use $workflow-bpm-planning-capacity-scenario-optimization-an-64831510 to implement its fail-closed ELMOS Product B46 contract."

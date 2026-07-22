@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B38: Natural Language Policy Clause Definition Entity And Scope Extraction"
+  short_description: "Run ELMOS B38 Skill with fail-closed evidence"
+  default_prompt: "Use $natural-language-policy-clause-definition-entity-and-sc-9cd9f917 to execute the ELMOS B38 contract with fail-closed evidence."

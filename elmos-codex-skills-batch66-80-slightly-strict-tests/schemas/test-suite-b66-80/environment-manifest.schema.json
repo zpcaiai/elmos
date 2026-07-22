@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "environment-manifest.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "environment_id",
+    "os",
+    "architecture",
+    "toolchains",
+    "services",
+    "network_policy",
+    "time_control",
+    "locale",
+    "sha256"
+  ],
+  "properties": {
+    "environment_id": {
+      "type": "string"
+    },
+    "os": {
+      "type": "object"
+    },
+    "architecture": {
+      "type": "string"
+    },
+    "toolchains": {
+      "type": "array"
+    },
+    "services": {
+      "type": "array"
+    },
+    "network_policy": {
+      "type": "string"
+    },
+    "time_control": {
+      "type": "string"
+    },
+    "locale": {
+      "type": "string"
+    },
+    "sha256": {
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B38: Responsibility Raci Accountability Delegation And Capacity Governance"
+  short_description: "Run ELMOS B38 Skill with fail-closed evidence"
+  default_prompt: "Use $responsibility-raci-accountability-delegation-and-capac-76b21238 to execute the ELMOS B38 contract with fail-closed evidence."

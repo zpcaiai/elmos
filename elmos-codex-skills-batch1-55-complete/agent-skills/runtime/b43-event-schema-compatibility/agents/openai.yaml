@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M43: B43 Event Schema Compatibility"
+  short_description: "Run ELMOS M43 Skill with fail-closed evidence"
+  default_prompt: "Use $b43-event-schema-compatibility to execute the ELMOS M43 contract with fail-closed evidence."

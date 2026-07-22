@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tst Data Transaction Migration Integrity"
+  short_description: "Run this ELMOS Batch 66-80 test Skill with evidence"
+  default_prompt: "Use $tst-data-transaction-migration-integrity to run the exact Batch 66-80 test scope with fail-closed evidence."

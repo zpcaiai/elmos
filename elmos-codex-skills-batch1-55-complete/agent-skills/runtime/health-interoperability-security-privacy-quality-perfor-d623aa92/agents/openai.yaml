@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B52: Health Interoperability Security Privacy Quality Performance Chaos And Release Gates"
+  short_description: "Run ELMOS B52 Skill with fail-closed evidence"
+  default_prompt: "Use $health-interoperability-security-privacy-quality-perfor-d623aa92 to execute the ELMOS B52 contract with fail-closed evidence."

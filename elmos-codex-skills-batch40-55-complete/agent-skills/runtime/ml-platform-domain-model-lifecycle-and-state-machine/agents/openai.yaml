@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B45: Ml Platform Domain Model Lifecycle And State Machine"
+  short_description: "Run ELMOS Product B45 contract with fail-closed evidence"
+  default_prompt: "Use $ml-platform-domain-model-lifecycle-and-state-machine to implement its fail-closed ELMOS Product B45 contract."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M42: B42 Multiagent Consensus Arbitration"
+  short_description: "Run ELMOS M42 Skill with fail-closed evidence"
+  default_prompt: "Use $b42-multiagent-consensus-arbitration to execute the ELMOS M42 contract with fail-closed evidence."

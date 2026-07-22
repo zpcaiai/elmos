@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B47: Itsm Service Planning Capacity Scenario Optimization And Allocation"
+  short_description: "Run ELMOS B47 Skill with fail-closed evidence"
+  default_prompt: "Use $itsm-service-planning-capacity-scenario-optimization-an-1b7bce90 to execute the ELMOS B47 contract with fail-closed evidence."

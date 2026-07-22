@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B40: Customer Crm Revenue Operations Orchestrator"
+  short_description: "Run ELMOS B40 Skill with fail-closed evidence"
+  default_prompt: "Use $customer-crm-revenue-operations-orchestrator to execute the ELMOS B40 contract with fail-closed evidence."

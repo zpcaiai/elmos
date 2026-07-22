@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M20: B20 Migration Platform Foundation And Repository Exe Data Lineage And Reconciliation"
+  short_description: "Run ELMOS M20 Skill with fail-closed evidence"
+  default_prompt: "Use $b20-migration-platform-foundation-and-repository-exe-da-0b0124ee to execute the ELMOS M20 contract with fail-closed evidence."

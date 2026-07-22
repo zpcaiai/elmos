@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B42: Inventory Fulfillment Backfill Replay Resilience Disaster Recovery And Continuity"
+  short_description: "Run ELMOS B42 Skill with fail-closed evidence"
+  default_prompt: "Use $inventory-fulfillment-backfill-replay-resilience-disast-5e4acbcc to execute the ELMOS B42 contract with fail-closed evidence."

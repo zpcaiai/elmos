@@ -7,84 +7,60 @@
       "domain": "navigation",
       "status": "experimental",
       "owner": "elmos-web-console",
-      "source_versions": [
-        "UNSET"
-      ],
-      "target_versions": [
-        "UNSET"
-      ],
-      "evidence_refs": [],
-      "reason": "Initial scaffold; evidence required."
+      "source_versions": ["16.2.10"],
+      "target_versions": ["16.2.10"],
+      "evidence_refs": ["certification/local-ui-polish-evidence.json"],
+      "reason": "Local Chrome navigation passed; independent matrix remains NOT_RUN."
     },
     {
       "id": "component-and-view",
       "domain": "component",
       "status": "experimental",
       "owner": "elmos-web-console",
-      "source_versions": [
-        "UNSET"
-      ],
-      "target_versions": [
-        "UNSET"
-      ],
-      "evidence_refs": [],
-      "reason": "Initial scaffold; evidence required."
+      "source_versions": ["16.2.10"],
+      "target_versions": ["16.2.10"],
+      "evidence_refs": ["certification/local-ui-polish-evidence.json","certification/local-project-generation-evidence.json"],
+      "reason": "Local view, component, and project-generation preview journeys passed; holdout remains NOT_RUN."
     },
     {
       "id": "state-and-effects",
       "domain": "state",
       "status": "experimental",
       "owner": "elmos-web-console",
-      "source_versions": [
-        "UNSET"
-      ],
-      "target_versions": [
-        "UNSET"
-      ],
-      "evidence_refs": [],
-      "reason": "Initial scaffold; evidence required."
+      "source_versions": ["19.2.7"],
+      "target_versions": ["19.2.7"],
+      "evidence_refs": ["certification/local-ui-polish-evidence.json"],
+      "reason": "Local state, command, and namespace interactions passed."
     },
     {
       "id": "forms-and-validation",
       "domain": "forms",
       "status": "experimental",
       "owner": "elmos-web-console",
-      "source_versions": [
-        "UNSET"
-      ],
-      "target_versions": [
-        "UNSET"
-      ],
-      "evidence_refs": [],
-      "reason": "Initial scaffold; evidence required."
+      "source_versions": ["native-formdata"],
+      "target_versions": ["native-formdata"],
+      "evidence_refs": ["certification/local-ui-evidence.json","certification/local-project-generation-evidence.json"],
+      "reason": "Memory-only assessment and project-generation drafts passed in local Chrome evidence."
     },
     {
       "id": "identity-and-permission",
       "domain": "security",
       "status": "experimental",
       "owner": "elmos-control-plane-security",
-      "source_versions": [
-        "UNSET"
-      ],
-      "target_versions": [
-        "UNSET"
-      ],
+      "source_versions": ["local-read-only"],
+      "target_versions": ["local-read-only"],
       "evidence_refs": [],
-      "reason": "Initial scaffold; evidence required."
+      "reason": "External identity and production authorization remain NOT_RUN."
     },
     {
       "id": "accessibility-i18n-visual",
       "domain": "quality",
       "status": "experimental",
       "owner": "elmos-accessibility-review",
-      "source_versions": [
-        "UNSET"
-      ],
-      "target_versions": [
-        "UNSET"
-      ],
-      "evidence_refs": [],
-      "reason": "Initial scaffold; evidence required."
+      "source_versions": ["elmos-console-0.3.0"],
+      "target_versions": ["elmos-console-0.4.0"],
+      "evidence_refs": ["certification/local-ui-polish-evidence.json","certification/local-project-generation-evidence.json"],
+      "reason": "Local keyboard, focus, target-size, overflow, and visual inspection passed; assistive technology and approved baseline remain NOT_RUN."
     }
   ]
 }

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M36: B36 Review Collaboration Approvals"
+  short_description: "Run ELMOS M36 Skill with fail-closed evidence"
+  default_prompt: "Use $b36-review-collaboration-approvals to execute the ELMOS M36 contract with fail-closed evidence."

@@ -1,0 +1,41 @@
+﻿id,name,kind,batch,title,target_skill_count,case_count,summary
+T081,batch-81-cobol-mainframe-slightly-strict-certification,batch,81,COBOL Mainframe Modernization Certification,12,26,Slightly strict certification for Batch 81 COBOL Mainframe Modernization Certification.
+T082,batch-82-sap-abap-slightly-strict-certification,batch,82,SAP ABAP and Clean Core Certification,12,26,Slightly strict certification for Batch 82 SAP ABAP and Clean Core Certification.
+T083,batch-83-database-procedural-slightly-strict-certification,batch,83,Database Procedural Logic Certification,12,26,Slightly strict certification for Batch 83 Database Procedural Logic Certification.
+T084,batch-84-iec61131-plc-slightly-strict-certification,batch,84,IEC 61131-3 PLC Safety-Aware Certification,12,26,Slightly strict certification for Batch 84 IEC 61131-3 PLC Safety-Aware Certification.
+T085,batch-85-matlab-simulink-slightly-strict-certification,batch,85,MATLAB Simulink Stateflow Certification,12,26,Slightly strict certification for Batch 85 MATLAB Simulink Stateflow Certification.
+T086,batch-86-modelica-fmi-slightly-strict-certification,batch,86,Modelica FMI Digital Twin Certification,12,26,Slightly strict certification for Batch 86 Modelica FMI Digital Twin Certification.
+T087,batch-87-vb-office-slightly-strict-certification,batch,87,VB6 VBA VB.NET Modernization Certification,12,26,Slightly strict certification for Batch 87 VB6 VBA VB.NET Modernization Certification.
+T088,batch-88-ibmi-rpg-slightly-strict-certification,batch,88,IBM i RPG CL DDS Modernization Certification,12,26,Slightly strict certification for Batch 88 IBM i RPG CL DDS Modernization Certification.
+T089,batch-89-r-data-science-slightly-strict-certification,batch,89,R Statistical Reproducibility Certification,12,26,Slightly strict certification for Batch 89 R Statistical Reproducibility Certification.
+T090,batch-90-sas-modernization-slightly-strict-certification,batch,90,SAS Estate Modernization Certification,12,26,Slightly strict certification for Batch 90 SAS Estate Modernization Certification.
+T091,batch-91-salesforce-slightly-strict-certification,batch,91,Salesforce Apex LWC Release Certification,12,26,Slightly strict certification for Batch 91 Salesforce Apex LWC Release Certification.
+T092,batch-92-objective-c-swift-slightly-strict-certification,batch,92,Objective-C to Swift Migration Certification,12,26,Slightly strict certification for Batch 92 Objective-C to Swift Migration Certification.
+T093,batch-93-delphi-object-pascal-slightly-strict-certification,batch,93,Delphi Object Pascal Modernization Certification,12,26,Slightly strict certification for Batch 93 Delphi Object Pascal Modernization Certification.
+T094,batch-94-beam-erlang-elixir-gleam-slightly-strict-certification,batch,94,BEAM OTP Concurrency and Release Certification,12,26,Slightly strict certification for Batch 94 BEAM OTP Concurrency and Release Certification.
+T095,batch-95-lua-openresty-slightly-strict-certification,batch,95,Lua OpenResty Embedded Runtime Certification,12,26,Slightly strict certification for Batch 95 Lua OpenResty Embedded Runtime Certification.
+T096,parser-roundtrip-gate,cross-gate,,Parser and Round-trip Gate,180,10,"Parse, serialize and reparse representative source artifacts without losing semantics, identifiers, comments required for review, or platform metadata."
+T097,semantic-preservation-gate,cross-gate,,Semantic Preservation Gate,180,10,"Prove source-to-target behavior for business rules, state machines, error paths, side effects and external contracts."
+T098,numeric-datetime-collation-gate,cross-gate,,"Numeric, Date-Time and Collation Gate",180,10,"Detect precision, rounding, overflow, missing/null, timezone, locale, encoding and collation drift."
+T099,transaction-state-gate,cross-gate,,Transaction and State Consistency Gate,180,10,"Validate commit, rollback, locking, replay, state recovery and consistency boundaries across platforms."
+T100,concurrency-restart-gate,cross-gate,,Concurrency and Restart Gate,180,10,"Exercise task/process/thread/actor scheduling, restart, cancellation, duplicate delivery and backpressure."
+T101,identity-authorization-gate,cross-gate,,Identity and Authorization Gate,180,10,"Enforce platform-native identities, least privilege, tenant/resource scope and negative authorization."
+T102,unsafe-interop-sandbox-gate,cross-gate,,Unsafe Interop and Sandbox Gate,180,10,"Test native calls, FFI, COM, dynamic SQL, macro/runtime reflection and embedded scripting isolation."
+T103,toolchain-provenance-license-gate,cross-gate,,Toolchain Provenance and License Gate,180,10,"Validate compilers, vendor tools, packages, images, plugins, licenses, signatures and reproducible acquisition."
+T104,binary-runtime-compatibility-gate,cross-gate,,Binary and Runtime Compatibility Gate,180,10,"Check ABI, package, runtime, VM, firmware, schema and supported-version compatibility."
+T105,source-target-differential-gate,cross-gate,,Source-Target Differential Gate,180,10,"Run source and target against golden and generated cases, reconcile outputs and classify every difference."
+T106,generation-idempotency-gate,cross-gate,,Generation Idempotency Gate,180,10,Repeat generation with identical inputs and require no semantic diff or unstable identifiers.
+T107,manual-edit-preservation-gate,cross-gate,,Manual Edit Preservation Gate,180,10,Regenerate after protected and user-owned changes; prohibit overwrite or silent semantic loss.
+T108,large-estate-performance-gate,cross-gate,,Large Estate Performance Gate,180,10,"Test large repositories, models, schemas and dependency graphs under declared latency, memory, token and cost limits."
+T109,failure-recovery-gate,cross-gate,,Failure Recovery Gate,180,10,"Interrupt tools, vendor runtimes, networks, storage and agents; resume without duplication or evidence loss."
+T110,evidence-integrity-gate,cross-gate,,Evidence Integrity Gate,180,10,"Detect missing, selectively omitted, reordered or tampered build, simulation, migration and approval evidence."
+T111,version-drift-gate,cross-gate,,Version Drift Gate,180,10,"Change compiler, runtime, package, schema, vendor platform and operating environment versions; require explicit compatibility decisions."
+T112,platform-deployment-gate,cross-gate,,Platform Deployment Gate,180,10,"Validate packaging, configuration, health, rollout, operational telemetry and platform-specific deployment behavior."
+T113,cutover-rollback-gate,cross-gate,,Cutover and Rollback Gate,180,10,"Test parallel run, canary/cutover, forward recovery, rollback boundaries and decommission safeguards."
+T114,safety-regulatory-boundary-gate,cross-gate,,Safety and Regulatory Boundary Gate,180,10,"Block unsupported safety, clinical, financial, privacy or regulated claims without independent approval."
+T115,cross-language-interop-gate,cross-gate,,Cross-Language Interoperability Gate,180,10,Validate generated Java/.NET/Python/Swift and platform adapters against canonical data and contract semantics.
+T116,data-migration-lineage-gate,cross-gate,,Data Migration and Lineage Gate,180,10,"Verify complete, reversible where possible, reconciled and lineage-preserving data movement."
+T117,test-anti-cheating-gate,cross-gate,,Test Anti-Cheating Gate,180,10,"Detect deleted tests, weakened assertions, mocked mandatory integrations, hidden skips and manipulated tolerances."
+T118,source-skill-coverage-gate,cross-gate,,Source Skill Coverage Gate,180,10,Require direct test mapping and executed evidence for all PG223–PG402 source Skills.
+T119,product-handoff-gate,cross-gate,,ELMOS Product Handoff Gate,180,10,"Verify Batch 81–95 outputs can enter Project Synthesis, Modernization, Build, Evidence and Requirement Studio workflows."
+T120,final-release-certification,cross-gate,,Batch 81–95 Final Release Certification,180,10,Apply non-compensating release criteria across all batch and cross-platform gates.

@@ -1,0 +1,4 @@
+interface:
+  display_name: "B29 Certify Python To Java"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b29-certify-python-to-java to execute this ELMOS Runtime Skill with fail-closed evidence."

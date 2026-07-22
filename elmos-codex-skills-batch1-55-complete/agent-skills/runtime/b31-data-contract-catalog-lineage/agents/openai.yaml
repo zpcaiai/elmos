@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M31: B31 Data Contract Catalog Lineage"
+  short_description: "Run ELMOS M31 Skill with fail-closed evidence"
+  default_prompt: "Use $b31-data-contract-catalog-lineage to execute the ELMOS M31 contract with fail-closed evidence."

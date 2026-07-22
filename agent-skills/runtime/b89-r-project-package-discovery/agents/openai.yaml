@@ -1,0 +1,4 @@
+interface:
+  display_name: "B89 R Project Package Discovery"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b89-r-project-package-discovery to execute this ELMOS Language Pack Skill with fail-closed evidence."

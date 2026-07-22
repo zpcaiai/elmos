@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M35: B35 Concurrency Schedule Exploration"
+  short_description: "Run ELMOS M35 Skill with fail-closed evidence"
+  default_prompt: "Use $b35-concurrency-schedule-exploration to execute the ELMOS M35 contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B36: Artifact Stream Session Multipart Checksum Cas And Dedup"
+  short_description: "Run ELMOS B36 Skill with fail-closed evidence"
+  default_prompt: "Use $artifact-stream-session-multipart-checksum-cas-and-dedup to execute the ELMOS B36 contract with fail-closed evidence."

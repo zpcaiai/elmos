@@ -1,0 +1,4 @@
+interface:
+  display_name: "B31 Constraint Index Partition Migration"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b31-constraint-index-partition-migration to execute this ELMOS Runtime Skill with fail-closed evidence."

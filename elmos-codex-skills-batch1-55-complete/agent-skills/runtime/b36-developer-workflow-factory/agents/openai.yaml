@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M36: B36 Developer Workflow Factory"
+  short_description: "Run ELMOS M36 Skill with fail-closed evidence"
+  default_prompt: "Use $b36-developer-workflow-factory to execute the ELMOS M36 contract with fail-closed evidence."

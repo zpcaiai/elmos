@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B40: Partner Channel Automation Copilot Recommendation And Human Review"
+  short_description: "Run ELMOS B40 Skill with fail-closed evidence"
+  default_prompt: "Use $partner-channel-automation-copilot-recommendation-and-h-57697c3e to execute the ELMOS B40 contract with fail-closed evidence."

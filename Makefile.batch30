@@ -1,0 +1,11 @@
+BATCH30_PYTHON ?= /opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python
+.PHONY: b30-skills-test b30-pack-validate b30-pack-gate
+b30-skills-test:
+	$(BATCH30_PYTHON) scripts/batch30/validate_skill_bundle.py
+	$(BATCH30_PYTHON) -m unittest discover -s tests/batch30 -p 'test_*.py'
+b30-pack-validate:
+	@test -n "$(PACK)" || (echo "PACK=<framework-pack-key> required" && exit 2)
+	$(BATCH30_PYTHON) scripts/batch30/validate_framework_pack.py framework-packs/$(PACK)
+b30-pack-gate:
+	@test -n "$(PACK)" || (echo "PACK=<framework-pack-key> required" && exit 2)
+	$(BATCH30_PYTHON) scripts/batch30/run_framework_gate.py framework-packs/$(PACK)

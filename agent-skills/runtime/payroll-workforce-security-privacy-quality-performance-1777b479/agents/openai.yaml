@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B43: Payroll Workforce Security Privacy Quality Performance Chaos And Release Gates"
+  short_description: "Run ELMOS Product B43 contract with fail-closed evidence"
+  default_prompt: "Use $payroll-workforce-security-privacy-quality-performance-1777b479 to implement its fail-closed ELMOS Product B43 contract."

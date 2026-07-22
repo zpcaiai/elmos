@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.project-synthesis.run.v1",
+  "title": "ELMOS Project Synthesis Run",
+  "type": "object",
+  "required": [
+    "run_id",
+    "engine",
+    "state",
+    "tenant_id",
+    "workspace_id",
+    "input_fingerprint",
+    "versions"
+  ],
+  "properties": {
+    "run_id": {
+      "type": "string"
+    },
+    "engine": {
+      "const": "elmos.project-synthesis"
+    },
+    "state": {
+      "enum": [
+        "DRAFT",
+        "REQUIREMENTS_DISCOVERY",
+        "REQUIREMENTS_REVIEW",
+        "ARCHITECTURE_PLANNING",
+        "BLUEPRINT_APPROVED",
+        "GENERATING",
+        "BUILDING",
+        "TESTING",
+        "REPAIRING",
+        "SECURITY_REVIEW",
+        "DELIVERY_REVIEW",
+        "DELIVERED",
+        "PAUSED",
+        "CANCELLED",
+        "FAILED"
+      ]
+    },
+    "tenant_id": {
+      "type": "string"
+    },
+    "workspace_id": {
+      "type": "string"
+    },
+    "input_fingerprint": {
+      "type": "string"
+    },
+    "versions": {
+      "type": "object",
+      "required": [
+        "schema",
+        "constitution",
+        "skills"
+      ],
+      "properties": {
+        "schema": {
+          "type": "string"
+        },
+        "constitution": {
+          "type": "string"
+        },
+        "skills": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "approvals": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

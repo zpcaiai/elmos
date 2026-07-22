@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B48: Enterprise Risk Data Quality Dedup Reconciliation And Certification"
+  short_description: "Run ELMOS B48 Skill with fail-closed evidence"
+  default_prompt: "Use $enterprise-risk-data-quality-dedup-reconciliation-and-c-a538ff4c to execute the ELMOS B48 contract with fail-closed evidence."

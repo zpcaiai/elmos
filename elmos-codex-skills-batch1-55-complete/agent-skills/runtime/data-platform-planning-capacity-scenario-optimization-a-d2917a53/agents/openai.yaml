@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B44: Data Platform Planning Capacity Scenario Optimization And Allocation"
+  short_description: "Run ELMOS B44 Skill with fail-closed evidence"
+  default_prompt: "Use $data-platform-planning-capacity-scenario-optimization-a-d2917a53 to execute the ELMOS B44 contract with fail-closed evidence."

@@ -1,0 +1,315 @@
+{
+  "batch": 80,
+  "title": "Polyglot Project Operations and Certification Pack",
+  "subject": "cross-language asset graphs, build orchestration, contract synchronization, environment parity, identity, provenance, local CI reproduction, runtime journeys, repair, performance budgets, migration compatibility, and final certification",
+  "skill_count": 12,
+  "id_range": [
+    "PG406",
+    "PG417"
+  ],
+  "toolchain": [
+    "all Batch 66-79 toolchains",
+    "ELMOS artifact graph",
+    "sandbox runner",
+    "policy engine",
+    "evidence store"
+  ],
+  "source_markers": [
+    "polyglot repository",
+    "build graph",
+    "contract graph",
+    "deployment graph",
+    "evidence bundle"
+  ],
+  "skills": [
+    {
+      "id": "PG406",
+      "batch": 80,
+      "name": "b80-polyglot-engineering-asset-graph",
+      "title": "Polyglot Engineering Asset Graph",
+      "summary": "Implement and validate Polyglot Engineering Asset Graph for cross-language asset graphs, build orchestration, contract synchronization, environment parity, identity, provenance, local CI reproduction, runtime journeys, repair, performance budgets, migration compatibility, and final certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b80-polyglot-engineering-asset-graph/SKILL.md",
+      "catalog_path": "skills/batch-80/PG406-polyglot-engineering-asset-graph.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG405"
+      ],
+      "outputs": [
+        "polyglot_engineering_asset_graph_plan.json",
+        "polyglot_engineering_asset_graph_artifacts/",
+        "polyglot_engineering_asset_graph_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG407",
+      "batch": 80,
+      "name": "b80-cross-language-build-orchestrator",
+      "title": "Cross Language Build Orchestrator",
+      "summary": "Coordinate and control Cross Language Build Orchestrator for cross-language asset graphs, build orchestration, contract synchronization, environment parity, identity, provenance, local CI reproduction, runtime journeys, repair, performance budgets, migration compatibility, and final certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b80-cross-language-build-orchestrator/SKILL.md",
+      "catalog_path": "skills/batch-80/PG407-cross-language-build-orchestrator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG405",
+        "PG406"
+      ],
+      "outputs": [
+        "cross_language_build_orchestrator_plan.json",
+        "cross_language_build_orchestrator_artifacts/",
+        "cross_language_build_orchestrator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG408",
+      "batch": 80,
+      "name": "b80-cross-contract-schema-synchronizer",
+      "title": "Cross Contract Schema Synchronizer",
+      "summary": "Coordinate and control Cross Contract Schema Synchronizer for cross-language asset graphs, build orchestration, contract synchronization, environment parity, identity, provenance, local CI reproduction, runtime journeys, repair, performance budgets, migration compatibility, and final certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b80-cross-contract-schema-synchronizer/SKILL.md",
+      "catalog_path": "skills/batch-80/PG408-cross-contract-schema-synchronizer.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG405",
+        "PG407"
+      ],
+      "outputs": [
+        "cross_contract_schema_synchronizer_plan.json",
+        "cross_contract_schema_synchronizer_artifacts/",
+        "cross_contract_schema_synchronizer_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG409",
+      "batch": 80,
+      "name": "b80-environment-parity-drift-detector",
+      "title": "Environment Parity Drift Detector",
+      "summary": "Implement and validate Environment Parity Drift Detector for cross-language asset graphs, build orchestration, contract synchronization, environment parity, identity, provenance, local CI reproduction, runtime journeys, repair, performance budgets, migration compatibility, and final certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b80-environment-parity-drift-detector/SKILL.md",
+      "catalog_path": "skills/batch-80/PG409-environment-parity-drift-detector.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG405",
+        "PG408"
+      ],
+      "outputs": [
+        "environment_parity_drift_detector_plan.json",
+        "environment_parity_drift_detector_artifacts/",
+        "environment_parity_drift_detector_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG410",
+      "batch": 80,
+      "name": "b80-polyglot-secret-identity-policy",
+      "title": "Polyglot Secret Identity Policy",
+      "summary": "Enforce and test Polyglot Secret Identity Policy for cross-language asset graphs, build orchestration, contract synchronization, environment parity, identity, provenance, local CI reproduction, runtime journeys, repair, performance budgets, migration compatibility, and final certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b80-polyglot-secret-identity-policy/SKILL.md",
+      "catalog_path": "skills/batch-80/PG410-polyglot-secret-identity-policy.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG405",
+        "PG409"
+      ],
+      "outputs": [
+        "polyglot_secret_identity_policy_plan.json",
+        "polyglot_secret_identity_policy_artifacts/",
+        "polyglot_secret_identity_policy_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG411",
+      "batch": 80,
+      "name": "b80-software-supply-chain-provenance-orchestrator",
+      "title": "Software Supply Chain Provenance Orchestrator",
+      "summary": "Coordinate and control Software Supply Chain Provenance Orchestrator for cross-language asset graphs, build orchestration, contract synchronization, environment parity, identity, provenance, local CI reproduction, runtime journeys, repair, performance budgets, migration compatibility, and final certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b80-software-supply-chain-provenance-orchestrator/SKILL.md",
+      "catalog_path": "skills/batch-80/PG411-software-supply-chain-provenance-orchestrator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG405",
+        "PG410"
+      ],
+      "outputs": [
+        "software_supply_chain_provenance_orchestrator_plan.json",
+        "software_supply_chain_provenance_orchestrator_artifacts/",
+        "software_supply_chain_provenance_orchestrator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG412",
+      "batch": 80,
+      "name": "b80-local-ci-runtime-reproducer",
+      "title": "Local Ci Runtime Reproducer",
+      "summary": "Reproduce deterministically Local Ci Runtime Reproducer for cross-language asset graphs, build orchestration, contract synchronization, environment parity, identity, provenance, local CI reproduction, runtime journeys, repair, performance budgets, migration compatibility, and final certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b80-local-ci-runtime-reproducer/SKILL.md",
+      "catalog_path": "skills/batch-80/PG412-local-ci-runtime-reproducer.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG405",
+        "PG411"
+      ],
+      "outputs": [
+        "local_ci_runtime_reproducer_plan.json",
+        "local_ci_runtime_reproducer_artifacts/",
+        "local_ci_runtime_reproducer_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG413",
+      "batch": 80,
+      "name": "b80-runtime-smoke-journey-orchestrator",
+      "title": "Runtime Smoke Journey Orchestrator",
+      "summary": "Coordinate and control Runtime Smoke Journey Orchestrator for cross-language asset graphs, build orchestration, contract synchronization, environment parity, identity, provenance, local CI reproduction, runtime journeys, repair, performance budgets, migration compatibility, and final certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b80-runtime-smoke-journey-orchestrator/SKILL.md",
+      "catalog_path": "skills/batch-80/PG413-runtime-smoke-journey-orchestrator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG405",
+        "PG412"
+      ],
+      "outputs": [
+        "runtime_smoke_journey_orchestrator_plan.json",
+        "runtime_smoke_journey_orchestrator_artifacts/",
+        "runtime_smoke_journey_orchestrator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG414",
+      "batch": 80,
+      "name": "b80-cross-layer-failure-diagnosis-repair",
+      "title": "Cross Layer Failure Diagnosis Repair",
+      "summary": "Implement and validate Cross Layer Failure Diagnosis Repair for cross-language asset graphs, build orchestration, contract synchronization, environment parity, identity, provenance, local CI reproduction, runtime journeys, repair, performance budgets, migration compatibility, and final certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b80-cross-layer-failure-diagnosis-repair/SKILL.md",
+      "catalog_path": "skills/batch-80/PG414-cross-layer-failure-diagnosis-repair.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG405",
+        "PG413"
+      ],
+      "outputs": [
+        "cross_layer_failure_diagnosis_repair_plan.json",
+        "cross_layer_failure_diagnosis_repair_artifacts/",
+        "cross_layer_failure_diagnosis_repair_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG415",
+      "batch": 80,
+      "name": "b80-project-performance-cost-budget-gate",
+      "title": "Project Performance Cost Budget Gate",
+      "summary": "Enforce and test Project Performance Cost Budget Gate for cross-language asset graphs, build orchestration, contract synchronization, environment parity, identity, provenance, local CI reproduction, runtime journeys, repair, performance budgets, migration compatibility, and final certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b80-project-performance-cost-budget-gate/SKILL.md",
+      "catalog_path": "skills/batch-80/PG415-project-performance-cost-budget-gate.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG405",
+        "PG414"
+      ],
+      "outputs": [
+        "project_performance_cost_budget_gate_plan.json",
+        "project_performance_cost_budget_gate_artifacts/",
+        "project_performance_cost_budget_gate_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG416",
+      "batch": 80,
+      "name": "b80-project-migration-compatibility-gate",
+      "title": "Project Migration Compatibility Gate",
+      "summary": "Enforce and test Project Migration Compatibility Gate for cross-language asset graphs, build orchestration, contract synchronization, environment parity, identity, provenance, local CI reproduction, runtime journeys, repair, performance budgets, migration compatibility, and final certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b80-project-migration-compatibility-gate/SKILL.md",
+      "catalog_path": "skills/batch-80/PG416-project-migration-compatibility-gate.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG405",
+        "PG415"
+      ],
+      "outputs": [
+        "project_migration_compatibility_gate_plan.json",
+        "project_migration_compatibility_gate_artifacts/",
+        "project_migration_compatibility_gate_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG417",
+      "batch": 80,
+      "name": "b80-project-operations-certification",
+      "title": "Project Operations Certification",
+      "summary": "Execute and independently verify Project Operations Certification for cross-language asset graphs, build orchestration, contract synchronization, environment parity, identity, provenance, local CI reproduction, runtime journeys, repair, performance budgets, migration compatibility, and final certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b80-project-operations-certification/SKILL.md",
+      "catalog_path": "skills/batch-80/PG417-project-operations-certification.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG405",
+        "PG416"
+      ],
+      "outputs": [
+        "project_operations_certification_plan.json",
+        "project_operations_certification_artifacts/",
+        "project_operations_certification_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md",
+        "certification_result.json",
+        "scope_and_limitations.md"
+      ]
+    }
+  ]
+}

@@ -42,6 +42,11 @@ SUPPLEMENTAL_ID_PATTERN = re.compile(r"^#{1,2} Skill B37-X(\d+)(?::|\b)", re.MUL
 LOCAL_REFERENCE_PATTERN = re.compile(
     r"`(\.\./\.\./\.\./(?:docs|scripts)/[^`]+)`"
 )
+COMMON_MATURE_PRODUCT_SCHEMAS = {
+    "evidence-manifest.schema.json",
+    "certification-request.schema.json",
+    "trust-store.schema.json",
+}
 
 
 def require(condition: bool, message: str, errors: list[str]) -> None:
@@ -188,12 +193,35 @@ def main() -> int:
 
     require(total_skills == 372, f"Expected 372 Skills, found {total_skills}", errors)
     require(total_schemas == 120, f"Expected 120 Schemas, found {total_schemas}", errors)
+    common_schema_root = ROOT / "schemas" / "mature-product"
+    common_schema_files = sorted(common_schema_root.glob("*.json"))
+    require(
+        {path.name for path in common_schema_files} == COMMON_MATURE_PRODUCT_SCHEMAS,
+        "M38-M45 common certification Schema set is incomplete or ambiguous",
+        errors,
+    )
+    for path in common_schema_files:
+        schema = validate_json(path, errors)
+        if isinstance(schema, dict):
+            try:
+                jsonschema.validators.validator_for(schema).check_schema(schema)
+            except jsonschema.exceptions.SchemaError as exc:
+                errors.append(f"{path}: invalid JSON Schema: {exc.message}")
+    for required in (
+        ROOT / "docs/mature-product/EVIDENCE_PROTOCOL.md",
+        ROOT / "docs/mature-product/BATCH38_45_SOURCE_AUDIT.md",
+        ROOT / "tests/mature_product_gate_test.py",
+    ):
+        require(required.is_file(), f"{required}: missing", errors)
 
     if errors:
         for error in errors:
             print(f"ERROR: {error}")
         return 1
-    print(f"OK: batches=17 skills={total_skills} schemas={total_schemas}")
+    print(
+        f"OK: batches=17 skills={total_skills} schemas={total_schemas} "
+        f"common_m38_m45_schemas={len(common_schema_files)}"
+    )
     return 0
 
 

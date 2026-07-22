@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B55: Platform Ecosystem Policy Authorization Approval Segregation And Exception"
+  short_description: "Run ELMOS Product B55 contract with fail-closed evidence"
+  default_prompt: "Use $platform-ecosystem-policy-authorization-approval-segreg-8f4e13ef to implement its fail-closed ELMOS Product B55 contract."

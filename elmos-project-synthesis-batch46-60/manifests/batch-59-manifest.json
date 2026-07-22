@@ -1,0 +1,142 @@
+{
+  "batch": 59,
+  "engine": "elmos.project-synthesis",
+  "skill_count": 12,
+  "skills": [
+    {
+      "id": "PG147",
+      "name": "isolated-build-runner",
+      "path": "skills/batch-59/PG147-isolated-build-runner.md",
+      "depends_on": [
+        "PG009",
+        "PG076"
+      ],
+      "summary": "Executes generated projects in clean, policy-controlled build environments."
+    },
+    {
+      "id": "PG148",
+      "name": "dependency-resolution-diagnoser",
+      "path": "skills/batch-59/PG148-dependency-resolution-diagnoser.md",
+      "depends_on": [
+        "PG058",
+        "PG098",
+        "PG110",
+        "PG147"
+      ],
+      "summary": "Diagnoses package, repository, lockfile, version, platform, and provenance resolution failures."
+    },
+    {
+      "id": "PG149",
+      "name": "compile-error-classifier",
+      "path": "skills/batch-59/PG149-compile-error-classifier.md",
+      "depends_on": [
+        "PG069",
+        "PG076",
+        "PG147"
+      ],
+      "summary": "Classifies Java, Python type/import, C# compiler, generated-source, and configuration compile-time failures."
+    },
+    {
+      "id": "PG150",
+      "name": "test-failure-classifier",
+      "path": "skills/batch-59/PG150-test-failure-classifier.md",
+      "depends_on": [
+        "PG135",
+        "PG147"
+      ],
+      "summary": "Classifies assertion, fixture, environment, contract, timing, isolation, product, and flaky test failures."
+    },
+    {
+      "id": "PG151",
+      "name": "runtime-log-trace-diagnoser",
+      "path": "skills/batch-59/PG151-runtime-log-trace-diagnoser.md",
+      "depends_on": [
+        "PG052",
+        "PG147"
+      ],
+      "summary": "Analyzes startup and runtime logs, metrics, traces, health events, and exception chains."
+    },
+    {
+      "id": "PG152",
+      "name": "application-startup-probe",
+      "path": "skills/batch-59/PG152-application-startup-probe.md",
+      "depends_on": [
+        "PG088",
+        "PG100",
+        "PG112",
+        "PG134",
+        "PG147"
+      ],
+      "summary": "Starts generated applications and verifies process lifecycle, configuration validation, migrations, dependencies, and readiness progression."
+    },
+    {
+      "id": "PG153",
+      "name": "smoke-and-health-verifier",
+      "path": "skills/batch-59/PG153-smoke-and-health-verifier.md",
+      "depends_on": [
+        "PG134",
+        "PG140",
+        "PG152"
+      ],
+      "summary": "Executes health, readiness, authenticated API, worker, event, database, and full-stack smoke checks."
+    },
+    {
+      "id": "PG154",
+      "name": "automated-patch-planner",
+      "path": "skills/batch-59/PG154-automated-patch-planner.md",
+      "depends_on": [
+        "PG071",
+        "PG149",
+        "PG150",
+        "PG151",
+        "PG153"
+      ],
+      "summary": "Creates bounded repair plans from classified build, test, runtime, security, and contract failures."
+    },
+    {
+      "id": "PG155",
+      "name": "bounded-repair-loop",
+      "path": "skills/batch-59/PG155-bounded-repair-loop.md",
+      "depends_on": [
+        "PG073",
+        "PG074",
+        "PG154"
+      ],
+      "summary": "Applies, verifies, limits, and records automated repair attempts."
+    },
+    {
+      "id": "PG156",
+      "name": "flaky-test-detector",
+      "path": "skills/batch-59/PG156-flaky-test-detector.md",
+      "depends_on": [
+        "PG150",
+        "PG155"
+      ],
+      "summary": "Detects nondeterministic tests through reruns, order changes, seed control, timing analysis, and shared-state inspection."
+    },
+    {
+      "id": "PG157",
+      "name": "cross-environment-matrix-validator",
+      "path": "skills/batch-59/PG157-cross-environment-matrix-validator.md",
+      "depends_on": [
+        "PG057",
+        "PG076",
+        "PG147"
+      ],
+      "summary": "Validates generated projects across supported runtime, OS, database, browser, architecture, and deployment matrices."
+    },
+    {
+      "id": "PG158",
+      "name": "build-green-evidence-publisher",
+      "path": "skills/batch-59/PG158-build-green-evidence-publisher.md",
+      "depends_on": [
+        "PG147",
+        "PG153",
+        "PG155",
+        "PG156",
+        "PG157"
+      ],
+      "summary": "Compiles signed build, test, startup, smoke, repair, and matrix evidence into the Build Green decision."
+    }
+  ]
+}

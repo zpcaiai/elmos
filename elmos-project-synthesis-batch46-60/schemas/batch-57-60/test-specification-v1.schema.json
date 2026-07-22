@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.project-synthesis.test-spec.v1",
+  "title": "ELMOS Test Specification",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "suite_id",
+    "test_level",
+    "obligations",
+    "environment",
+    "pass_policy"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "suite_id": {
+      "type": "string"
+    },
+    "test_level": {
+      "enum": [
+        "unit",
+        "integration",
+        "contract",
+        "migration",
+        "e2e",
+        "property",
+        "mutation",
+        "performance",
+        "security",
+        "accessibility"
+      ]
+    },
+    "obligations": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "environment": {
+      "type": "object"
+    },
+    "fixtures": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "pass_policy": {
+      "type": "object"
+    }
+  }
+}

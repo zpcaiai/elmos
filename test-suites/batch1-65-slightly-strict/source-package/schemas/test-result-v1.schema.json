@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.test-result.v1",
+  "type": "object",
+  "required": [
+    "run_id",
+    "source_package_hash",
+    "profile_id",
+    "results"
+  ],
+  "properties": {
+    "run_id": {
+      "type": "string"
+    },
+    "source_package_hash": {
+      "type": "string"
+    },
+    "profile_id": {
+      "const": "elmos-slightly-strict-v1"
+    },
+    "results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "case_id",
+          "status",
+          "severity",
+          "evidence_complete"
+        ],
+        "properties": {
+          "case_id": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "PASSED",
+              "FAILED",
+              "SKIPPED",
+              "QUARANTINED",
+              "NOT_APPLICABLE"
+            ]
+          },
+          "severity": {
+            "enum": [
+              "CRITICAL",
+              "HIGH",
+              "MEDIUM",
+              "LOW"
+            ]
+          },
+          "evidence_complete": {
+            "type": "boolean"
+          },
+          "duration_ms": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "failure_code": {
+            "type": "string"
+          },
+          "waiver_id": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "waivers": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "metadata": {
+      "type": "object"
+    }
+  }
+}

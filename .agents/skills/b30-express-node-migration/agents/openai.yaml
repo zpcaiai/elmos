@@ -1,0 +1,4 @@
+interface:
+  display_name: "B30 Express Node Migration"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b30-express-node-migration to execute this ELMOS Runtime Skill with fail-closed evidence."

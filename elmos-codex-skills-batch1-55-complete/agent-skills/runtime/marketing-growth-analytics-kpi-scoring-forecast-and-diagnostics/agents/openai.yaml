@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B40: Marketing Growth Analytics Kpi Scoring Forecast And Diagnostics"
+  short_description: "Run ELMOS B40 Skill with fail-closed evidence"
+  default_prompt: "Use $marketing-growth-analytics-kpi-scoring-forecast-and-diagnostics to execute the ELMOS B40 contract with fail-closed evidence."

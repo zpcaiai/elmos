@@ -1,0 +1,4 @@
+interface:
+  display_name: "B67 Go CLI Generator"
+  short_description: "Run this ELMOS project Skill with evidence controls"
+  default_prompt: "Use $b67-go-cli-generator to execute this ELMOS project Skill with fail-closed evidence."

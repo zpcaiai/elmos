@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M37: B37 Extension Configuration State Data Migration"
+  short_description: "Run ELMOS M37 Skill with fail-closed evidence"
+  default_prompt: "Use $b37-extension-configuration-state-data-migration to execute the ELMOS M37 contract with fail-closed evidence."

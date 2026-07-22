@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B45: Ml Platform Security Privacy Quality Performance Chaos And Release Gates"
+  short_description: "Run ELMOS B45 Skill with fail-closed evidence"
+  default_prompt: "Use $ml-platform-security-privacy-quality-performance-chaos-8f66147c to execute the ELMOS B45 contract with fail-closed evidence."

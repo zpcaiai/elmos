@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M37: B37 Extension Dependency Lock Composition"
+  short_description: "Run ELMOS M37 Skill with fail-closed evidence"
+  default_prompt: "Use $b37-extension-dependency-lock-composition to execute the ELMOS M37 contract with fail-closed evidence."

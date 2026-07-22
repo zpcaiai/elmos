@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B52: Healthcare Rcm Automation Copilot Recommendation And Human Review"
+  short_description: "Run ELMOS Product B52 contract with fail-closed evidence"
+  default_prompt: "Use $healthcare-rcm-automation-copilot-recommendation-and-hu-516547f1 to implement its fail-closed ELMOS Product B52 contract."

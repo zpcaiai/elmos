@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M36: B36 Pr Bot"
+  short_description: "Run ELMOS M36 Skill with fail-closed evidence"
+  default_prompt: "Use $b36-pr-bot to execute the ELMOS M36 contract with fail-closed evidence."

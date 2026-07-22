@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B37: Test Result Coverage Mutation Flaky And Test Management Normalizer"
+  short_description: "Run ELMOS B37 Skill with fail-closed evidence"
+  default_prompt: "Use $test-result-coverage-mutation-flaky-and-test-management-e7a03112 to execute the ELMOS B37 contract with fail-closed evidence."

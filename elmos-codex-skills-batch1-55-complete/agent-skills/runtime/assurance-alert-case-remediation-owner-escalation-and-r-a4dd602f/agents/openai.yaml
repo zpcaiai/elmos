@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B37: Assurance Alert Case Remediation Owner Escalation And Reverification"
+  short_description: "Run ELMOS B37 Skill with fail-closed evidence"
+  default_prompt: "Use $assurance-alert-case-remediation-owner-escalation-and-r-a4dd602f to execute the ELMOS B37 contract with fail-closed evidence."

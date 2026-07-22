@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B47: It Asset Automation Copilot Recommendation And Human Review"
+  short_description: "Run ELMOS B47 Skill with fail-closed evidence"
+  default_prompt: "Use $it-asset-automation-copilot-recommendation-and-human-review to execute the ELMOS B47 contract with fail-closed evidence."

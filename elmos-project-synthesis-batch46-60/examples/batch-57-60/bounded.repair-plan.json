@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.0.0",
+  "repair_id": "REPAIR-001",
+  "root_causes": [
+    {
+      "type": "generated-symbol-reference",
+      "evidence": "compiler error in generated mapper"
+    }
+  ],
+  "changes": [
+    {
+      "path": "src/main/java/example/AlertMapper.java",
+      "ownership": "managed",
+      "change": "use AlertStatus enum mapping"
+    }
+  ],
+  "limits": {
+    "max_attempts": 4,
+    "max_files": 5,
+    "max_change_ratio": 0.03
+  },
+  "verification": [
+    "compile",
+    "unit-test-alert",
+    "integration-test-persistence"
+  ],
+  "approval_required": false
+}

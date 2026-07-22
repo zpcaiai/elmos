@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B51: Lastmile Delivery Audit Evidence Records Retention And Legal Hold"
+  short_description: "Run ELMOS B51 Skill with fail-closed evidence"
+  default_prompt: "Use $lastmile-delivery-audit-evidence-records-retention-and-2b2292ff to execute the ELMOS B51 contract with fail-closed evidence."

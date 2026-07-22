@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B34: Tenant Aware Postgresql Rls Ownership And Runtime Roles"
+  short_description: "Run ELMOS B34 Skill with fail-closed evidence"
+  default_prompt: "Use $tenant-aware-postgresql-rls-ownership-and-runtime-roles to execute the ELMOS B34 contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B49: Cloud Economics Security Privacy Quality Performance Chaos And Release Gates"
+  short_description: "Run ELMOS B49 Skill with fail-closed evidence"
+  default_prompt: "Use $cloud-economics-security-privacy-quality-performance-ch-b9e8a7f3 to execute the ELMOS B49 contract with fail-closed evidence."

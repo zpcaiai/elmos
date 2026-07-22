@@ -1,0 +1,1524 @@
+[
+  {
+    "id": "CASE-0183",
+    "test_skill_id": "T088",
+    "batch": 88,
+    "target_skills": [
+      "PG307"
+    ],
+    "category": "source-skill-direct",
+    "severity": "critical",
+    "title": "Direct verification: PG307 ibmi landscape discovery and inventory",
+    "objective": "Execute PG307 `ibmi-landscape-discovery-and-inventory` with representative valid, boundary and adversarial inputs and verify its declared output, failure and evidence contracts.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable.",
+      "The target Skill-specific output contract is satisfied.",
+      "The target Skill has direct executed coverage rather than inferred batch coverage."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-88",
+      "ibmi-rpg",
+      "pg307",
+      "direct-coverage"
+    ]
+  },
+  {
+    "id": "CASE-0184",
+    "test_skill_id": "T088",
+    "batch": 88,
+    "target_skills": [
+      "PG308"
+    ],
+    "category": "source-skill-direct",
+    "severity": "high",
+    "title": "Direct verification: PG308 rpg parser and semantic model",
+    "objective": "Execute PG308 `rpg-parser-and-semantic-model` with representative valid, boundary and adversarial inputs and verify its declared output, failure and evidence contracts.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable.",
+      "The target Skill-specific output contract is satisfied.",
+      "The target Skill has direct executed coverage rather than inferred batch coverage."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-88",
+      "ibmi-rpg",
+      "pg308",
+      "direct-coverage"
+    ]
+  },
+  {
+    "id": "CASE-0185",
+    "test_skill_id": "T088",
+    "batch": 88,
+    "target_skills": [
+      "PG309"
+    ],
+    "category": "source-skill-direct",
+    "severity": "high",
+    "title": "Direct verification: PG309 cl job workflow modeler",
+    "objective": "Execute PG309 `cl-job-workflow-modeler` with representative valid, boundary and adversarial inputs and verify its declared output, failure and evidence contracts.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable.",
+      "The target Skill-specific output contract is satisfied.",
+      "The target Skill has direct executed coverage rather than inferred batch coverage."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-88",
+      "ibmi-rpg",
+      "pg309",
+      "direct-coverage"
+    ]
+  },
+  {
+    "id": "CASE-0186",
+    "test_skill_id": "T088",
+    "batch": 88,
+    "target_skills": [
+      "PG310"
+    ],
+    "category": "source-skill-direct",
+    "severity": "medium",
+    "title": "Direct verification: PG310 dds display printer file modeler",
+    "objective": "Execute PG310 `dds-display-printer-file-modeler` with representative valid, boundary and adversarial inputs and verify its declared output, failure and evidence contracts.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable.",
+      "The target Skill-specific output contract is satisfied.",
+      "The target Skill has direct executed coverage rather than inferred batch coverage."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-88",
+      "ibmi-rpg",
+      "pg310",
+      "direct-coverage"
+    ]
+  },
+  {
+    "id": "CASE-0187",
+    "test_skill_id": "T088",
+    "batch": 88,
+    "target_skills": [
+      "PG311"
+    ],
+    "category": "source-skill-direct",
+    "severity": "critical",
+    "title": "Direct verification: PG311 db2i data access mapper",
+    "objective": "Execute PG311 `db2i-data-access-mapper` with representative valid, boundary and adversarial inputs and verify its declared output, failure and evidence contracts.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable.",
+      "The target Skill-specific output contract is satisfied.",
+      "The target Skill has direct executed coverage rather than inferred batch coverage."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-88",
+      "ibmi-rpg",
+      "pg311",
+      "direct-coverage"
+    ]
+  },
+  {
+    "id": "CASE-0188",
+    "test_skill_id": "T088",
+    "batch": 88,
+    "target_skills": [
+      "PG312"
+    ],
+    "category": "source-skill-direct",
+    "severity": "high",
+    "title": "Direct verification: PG312 ile service program binding analyzer",
+    "objective": "Execute PG312 `ile-service-program-binding-analyzer` with representative valid, boundary and adversarial inputs and verify its declared output, failure and evidence contracts.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable.",
+      "The target Skill-specific output contract is satisfied.",
+      "The target Skill has direct executed coverage rather than inferred batch coverage."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-88",
+      "ibmi-rpg",
+      "pg312",
+      "direct-coverage"
+    ]
+  },
+  {
+    "id": "CASE-0189",
+    "test_skill_id": "T088",
+    "batch": 88,
+    "target_skills": [
+      "PG313"
+    ],
+    "category": "source-skill-direct",
+    "severity": "high",
+    "title": "Direct verification: PG313 5250 ui to web modernizer",
+    "objective": "Execute PG313 `5250-ui-to-web-modernizer` with representative valid, boundary and adversarial inputs and verify its declared output, failure and evidence contracts.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable.",
+      "The target Skill-specific output contract is satisfied.",
+      "The target Skill has direct executed coverage rather than inferred batch coverage."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-88",
+      "ibmi-rpg",
+      "pg313",
+      "direct-coverage"
+    ]
+  },
+  {
+    "id": "CASE-0190",
+    "test_skill_id": "T088",
+    "batch": 88,
+    "target_skills": [
+      "PG314"
+    ],
+    "category": "source-skill-direct",
+    "severity": "medium",
+    "title": "Direct verification: PG314 rpg to java dotnet generator",
+    "objective": "Execute PG314 `rpg-to-java-dotnet-generator` with representative valid, boundary and adversarial inputs and verify its declared output, failure and evidence contracts.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable.",
+      "The target Skill-specific output contract is satisfied.",
+      "The target Skill has direct executed coverage rather than inferred batch coverage."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-88",
+      "ibmi-rpg",
+      "pg314",
+      "direct-coverage"
+    ]
+  },
+  {
+    "id": "CASE-0191",
+    "test_skill_id": "T088",
+    "batch": 88,
+    "target_skills": [
+      "PG315"
+    ],
+    "category": "source-skill-direct",
+    "severity": "critical",
+    "title": "Direct verification: PG315 cl to workflow batch generator",
+    "objective": "Execute PG315 `cl-to-workflow-batch-generator` with representative valid, boundary and adversarial inputs and verify its declared output, failure and evidence contracts.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable.",
+      "The target Skill-specific output contract is satisfied.",
+      "The target Skill has direct executed coverage rather than inferred batch coverage."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-88",
+      "ibmi-rpg",
+      "pg315",
+      "direct-coverage"
+    ]
+  },
+  {
+    "id": "CASE-0192",
+    "test_skill_id": "T088",
+    "batch": 88,
+    "target_skills": [
+      "PG316"
+    ],
+    "category": "source-skill-direct",
+    "severity": "high",
+    "title": "Direct verification: PG316 ibmi integration adapter",
+    "objective": "Execute PG316 `ibmi-integration-adapter` with representative valid, boundary and adversarial inputs and verify its declared output, failure and evidence contracts.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable.",
+      "The target Skill-specific output contract is satisfied.",
+      "The target Skill has direct executed coverage rather than inferred batch coverage."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-88",
+      "ibmi-rpg",
+      "pg316",
+      "direct-coverage"
+    ]
+  },
+  {
+    "id": "CASE-0193",
+    "test_skill_id": "T088",
+    "batch": 88,
+    "target_skills": [
+      "PG317"
+    ],
+    "category": "source-skill-direct",
+    "severity": "high",
+    "title": "Direct verification: PG317 ibmi parallel run record verifier",
+    "objective": "Execute PG317 `ibmi-parallel-run-record-verifier` with representative valid, boundary and adversarial inputs and verify its declared output, failure and evidence contracts.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable.",
+      "The target Skill-specific output contract is satisfied.",
+      "The target Skill has direct executed coverage rather than inferred batch coverage."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-88",
+      "ibmi-rpg",
+      "pg317",
+      "direct-coverage"
+    ]
+  },
+  {
+    "id": "CASE-0194",
+    "test_skill_id": "T088",
+    "batch": 88,
+    "target_skills": [
+      "PG318"
+    ],
+    "category": "source-skill-direct",
+    "severity": "medium",
+    "title": "Direct verification: PG318 ibmi cutover certifier",
+    "objective": "Execute PG318 `ibmi-cutover-certifier` with representative valid, boundary and adversarial inputs and verify its declared output, failure and evidence contracts.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable.",
+      "The target Skill-specific output contract is satisfied.",
+      "The target Skill has direct executed coverage rather than inferred batch coverage."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-88",
+      "ibmi-rpg",
+      "pg318",
+      "direct-coverage"
+    ]
+  },
+  {
+    "id": "CASE-0195",
+    "test_skill_id": "T088",
+    "batch": 88,
+    "target_skills": [
+      "PG307",
+      "PG308",
+      "PG309",
+      "PG310",
+      "PG311",
+      "PG312",
+      "PG313",
+      "PG314",
+      "PG315",
+      "PG316",
+      "PG317",
+      "PG318"
+    ],
+    "category": "domain-adversarial",
+    "severity": "critical",
+    "title": "Verify packed/zoned decimal, CCSID conversion, fixed-length fields and record-format overlays",
+    "objective": "Verify packed/zoned decimal, CCSID conversion, fixed-length fields and record-format overlays.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-88",
+      "ibmi-rpg",
+      "packed-zoned-ccsid",
+      "domain-specific"
+    ]
+  },
+  {
+    "id": "CASE-0196",
+    "test_skill_id": "T088",
+    "batch": 88,
+    "target_skills": [
+      "PG307",
+      "PG308",
+      "PG309",
+      "PG310",
+      "PG311",
+      "PG312",
+      "PG313",
+      "PG314",
+      "PG315",
+      "PG316",
+      "PG317",
+      "PG318"
+    ],
+    "category": "domain-adversarial",
+    "severity": "high",
+    "title": "Exercise RPG indicators, calculation cycle, subprocedures and file operation status codes",
+    "objective": "Exercise RPG indicators, calculation cycle, subprocedures and file operation status codes.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-88",
+      "ibmi-rpg",
+      "rpg-indicator-cycle",
+      "domain-specific"
+    ]
+  },
+  {
+    "id": "CASE-0197",
+    "test_skill_id": "T088",
+    "batch": 88,
+    "target_skills": [
+      "PG307",
+      "PG308",
+      "PG309",
+      "PG310",
+      "PG311",
+      "PG312",
+      "PG313",
+      "PG314",
+      "PG315",
+      "PG316",
+      "PG317",
+      "PG318"
+    ],
+    "category": "domain-adversarial",
+    "severity": "high",
+    "title": "Validate OVRDBF, library lists, job attributes, commitment control and restart semantics",
+    "objective": "Validate OVRDBF, library lists, job attributes, commitment control and restart semantics.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-88",
+      "ibmi-rpg",
+      "cl-override-commitment",
+      "domain-specific"
+    ]
+  },
+  {
+    "id": "CASE-0198",
+    "test_skill_id": "T088",
+    "batch": 88,
+    "target_skills": [
+      "PG307",
+      "PG308",
+      "PG309",
+      "PG310",
+      "PG311",
+      "PG312",
+      "PG313",
+      "PG314",
+      "PG315",
+      "PG316",
+      "PG317",
+      "PG318"
+    ],
+    "category": "domain-adversarial",
+    "severity": "critical",
+    "title": "Verify keyed physical/logical files, display subfiles and printer file formatting",
+    "objective": "Verify keyed physical/logical files, display subfiles and printer file formatting.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-88",
+      "ibmi-rpg",
+      "dds-key-subfile",
+      "domain-specific"
+    ]
+  },
+  {
+    "id": "CASE-0199",
+    "test_skill_id": "T088",
+    "batch": 88,
+    "target_skills": [
+      "PG307",
+      "PG308",
+      "PG309",
+      "PG310",
+      "PG311",
+      "PG312",
+      "PG313",
+      "PG314",
+      "PG315",
+      "PG316",
+      "PG317",
+      "PG318"
+    ],
+    "category": "domain-adversarial",
+    "severity": "high",
+    "title": "Detect service program binding signature and activation-group compatibility breaks",
+    "objective": "Detect service program binding signature and activation-group compatibility breaks.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-88",
+      "ibmi-rpg",
+      "ile-binding-signature",
+      "domain-specific"
+    ]
+  },
+  {
+    "id": "CASE-0200",
+    "test_skill_id": "T088",
+    "batch": 88,
+    "target_skills": [
+      "PG307",
+      "PG308",
+      "PG309",
+      "PG310",
+      "PG311",
+      "PG312",
+      "PG313",
+      "PG314",
+      "PG315",
+      "PG316",
+      "PG317",
+      "PG318"
+    ],
+    "category": "domain-adversarial",
+    "severity": "critical",
+    "title": "Reconcile source/target records, spool outputs, data queues and batch job effects",
+    "objective": "Reconcile source/target records, spool outputs, data queues and batch job effects.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-88",
+      "ibmi-rpg",
+      "record-parallel-run",
+      "domain-specific"
+    ]
+  },
+  {
+    "id": "CASE-0201",
+    "test_skill_id": "T088",
+    "batch": 88,
+    "target_skills": [
+      "PG307",
+      "PG308",
+      "PG309",
+      "PG310",
+      "PG311",
+      "PG312",
+      "PG313",
+      "PG314",
+      "PG315",
+      "PG316",
+      "PG317",
+      "PG318"
+    ],
+    "category": "happy-path",
+    "severity": "high",
+    "title": "Representative certified success path",
+    "objective": "Execute a representative complete workflow from discovery through evidence and verify all declared artifacts.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-88",
+      "ibmi-rpg",
+      "happy-path"
+    ]
+  },
+  {
+    "id": "CASE-0202",
+    "test_skill_id": "T088",
+    "batch": 88,
+    "target_skills": [
+      "PG307",
+      "PG308",
+      "PG309",
+      "PG310",
+      "PG311",
+      "PG312",
+      "PG313",
+      "PG314",
+      "PG315",
+      "PG316",
+      "PG317",
+      "PG318"
+    ],
+    "category": "boundary-scale",
+    "severity": "high",
+    "title": "Boundary and moderate scale",
+    "objective": "Use maximum supported names, nesting, dependency depth and moderate estate size without truncation or unstable output.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-88",
+      "ibmi-rpg",
+      "boundary-scale"
+    ]
+  },
+  {
+    "id": "CASE-0203",
+    "test_skill_id": "T088",
+    "batch": 88,
+    "target_skills": [
+      "PG307",
+      "PG308",
+      "PG309",
+      "PG310",
+      "PG311",
+      "PG312",
+      "PG313",
+      "PG314",
+      "PG315",
+      "PG316",
+      "PG317",
+      "PG318"
+    ],
+    "category": "invalid-conflicting-input",
+    "severity": "high",
+    "title": "Invalid and conflicting input",
+    "objective": "Provide missing, malformed, ambiguous and contradictory inputs; require precise blocking diagnostics.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-88",
+      "ibmi-rpg",
+      "invalid-conflicting-input"
+    ]
+  },
+  {
+    "id": "CASE-0204",
+    "test_skill_id": "T088",
+    "batch": 88,
+    "target_skills": [
+      "PG307",
+      "PG308",
+      "PG309",
+      "PG310",
+      "PG311",
+      "PG312",
+      "PG313",
+      "PG314",
+      "PG315",
+      "PG316",
+      "PG317",
+      "PG318"
+    ],
+    "category": "dependency-failure-recovery",
+    "severity": "high",
+    "title": "Dependency failure and recovery",
+    "objective": "Interrupt parser, vendor tool, registry or runtime and resume without duplicated side effects.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-88",
+      "ibmi-rpg",
+      "dependency-failure-recovery"
+    ]
+  },
+  {
+    "id": "CASE-0205",
+    "test_skill_id": "T088",
+    "batch": 88,
+    "target_skills": [
+      "PG307",
+      "PG308",
+      "PG309",
+      "PG310",
+      "PG311",
+      "PG312",
+      "PG313",
+      "PG314",
+      "PG315",
+      "PG316",
+      "PG317",
+      "PG318"
+    ],
+    "category": "security-isolation",
+    "severity": "critical",
+    "title": "Security and isolation",
+    "objective": "Attempt unauthorized access, secret exposure, unsafe execution and cross-project contamination.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-88",
+      "ibmi-rpg",
+      "security-isolation"
+    ]
+  },
+  {
+    "id": "CASE-0206",
+    "test_skill_id": "T088",
+    "batch": 88,
+    "target_skills": [
+      "PG307",
+      "PG308",
+      "PG309",
+      "PG310",
+      "PG311",
+      "PG312",
+      "PG313",
+      "PG314",
+      "PG315",
+      "PG316",
+      "PG317",
+      "PG318"
+    ],
+    "category": "replay-idempotency",
+    "severity": "high",
+    "title": "Replay and idempotency",
+    "objective": "Repeat identical requests, retries and restarts; require stable identifiers and no duplicate artifacts.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-88",
+      "ibmi-rpg",
+      "replay-idempotency"
+    ]
+  },
+  {
+    "id": "CASE-0207",
+    "test_skill_id": "T088",
+    "batch": 88,
+    "target_skills": [
+      "PG307",
+      "PG308",
+      "PG309",
+      "PG310",
+      "PG311",
+      "PG312",
+      "PG313",
+      "PG314",
+      "PG315",
+      "PG316",
+      "PG317",
+      "PG318"
+    ],
+    "category": "version-drift",
+    "severity": "high",
+    "title": "Toolchain and version drift",
+    "objective": "Change compiler/runtime/schema/vendor versions and require explicit compatibility classification.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-88",
+      "ibmi-rpg",
+      "version-drift"
+    ]
+  },
+  {
+    "id": "CASE-0208",
+    "test_skill_id": "T088",
+    "batch": 88,
+    "target_skills": [
+      "PG307",
+      "PG308",
+      "PG309",
+      "PG310",
+      "PG311",
+      "PG312",
+      "PG313",
+      "PG314",
+      "PG315",
+      "PG316",
+      "PG317",
+      "PG318"
+    ],
+    "category": "evidence-tamper",
+    "severity": "critical",
+    "title": "Evidence tamper and anti-fraud",
+    "objective": "Modify, omit or reorder evidence; certification must reject the result.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-88",
+      "ibmi-rpg",
+      "evidence-tamper"
+    ]
+  }
+]

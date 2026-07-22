@@ -1,0 +1,4 @@
+interface:
+  display_name: "B34 Shared Library Bom Platform Dependency"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b34-shared-library-bom-platform-dependency to execute this ELMOS Runtime Skill with fail-closed evidence."

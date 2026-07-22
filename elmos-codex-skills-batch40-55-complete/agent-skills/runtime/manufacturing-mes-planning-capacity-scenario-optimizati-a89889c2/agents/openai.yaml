@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B50: Manufacturing Mes Planning Capacity Scenario Optimization And Allocation"
+  short_description: "Run ELMOS Product B50 contract with fail-closed evidence"
+  default_prompt: "Use $manufacturing-mes-planning-capacity-scenario-optimizati-a89889c2 to implement its fail-closed ELMOS Product B50 contract."

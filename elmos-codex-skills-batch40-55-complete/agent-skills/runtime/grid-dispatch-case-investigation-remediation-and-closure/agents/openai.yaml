@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B53: Grid Dispatch Case Investigation Remediation And Closure"
+  short_description: "Run ELMOS Product B53 contract with fail-closed evidence"
+  default_prompt: "Use $grid-dispatch-case-investigation-remediation-and-closure to implement its fail-closed ELMOS Product B53 contract."

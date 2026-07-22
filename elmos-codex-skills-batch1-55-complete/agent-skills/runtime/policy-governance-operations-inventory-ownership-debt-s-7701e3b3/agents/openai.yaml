@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B38: Policy Governance Operations Inventory Ownership Debt Sla And Cockpit"
+  short_description: "Run ELMOS B38 Skill with fail-closed evidence"
+  default_prompt: "Use $policy-governance-operations-inventory-ownership-debt-s-7701e3b3 to execute the ELMOS B38 contract with fail-closed evidence."

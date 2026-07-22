@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B50: Manufacturing Mes Backfill Replay Resilience Disaster Recovery And Continuity"
+  short_description: "Run ELMOS Product B50 contract with fail-closed evidence"
+  default_prompt: "Use $manufacturing-mes-backfill-replay-resilience-disaster-r-0d5ea1b9 to implement its fail-closed ELMOS Product B50 contract."

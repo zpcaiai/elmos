@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B55: Product Maturity Data Quality Dedup Reconciliation And Certification"
+  short_description: "Run ELMOS B55 Skill with fail-closed evidence"
+  default_prompt: "Use $product-maturity-data-quality-dedup-reconciliation-and-88ec98f6 to execute the ELMOS B55 contract with fail-closed evidence."

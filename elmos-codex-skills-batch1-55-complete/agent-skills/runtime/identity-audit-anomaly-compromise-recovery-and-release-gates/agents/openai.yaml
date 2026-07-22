@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B34: Identity Audit Anomaly Compromise Recovery And Release Gates"
+  short_description: "Run ELMOS B34 Skill with fail-closed evidence"
+  default_prompt: "Use $identity-audit-anomaly-compromise-recovery-and-release-gates to execute the ELMOS B34 contract with fail-closed evidence."

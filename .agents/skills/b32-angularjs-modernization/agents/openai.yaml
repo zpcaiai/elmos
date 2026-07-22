@@ -1,0 +1,4 @@
+interface:
+  display_name: "B32 Angularjs Modernization"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b32-angularjs-modernization to execute this ELMOS Runtime Skill with fail-closed evidence."

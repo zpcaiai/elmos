@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B44: Data Platform Intake Ingestion Connector Sync And Idempotency"
+  short_description: "Run ELMOS B44 Skill with fail-closed evidence"
+  default_prompt: "Use $data-platform-intake-ingestion-connector-sync-and-idempotency to execute the ELMOS B44 contract with fail-closed evidence."

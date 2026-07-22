@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B54: Collaboration Intel Master Data Identity Hierarchy And Effective Dating"
+  short_description: "Run ELMOS B54 Skill with fail-closed evidence"
+  default_prompt: "Use $collaboration-intel-master-data-identity-hierarchy-and-7830711a to execute the ELMOS B54 contract with fail-closed evidence."

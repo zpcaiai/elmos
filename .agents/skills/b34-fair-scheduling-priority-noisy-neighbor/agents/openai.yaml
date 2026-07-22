@@ -1,0 +1,4 @@
+interface:
+  display_name: "B34 Fair Scheduling Priority Noisy Neighbor"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b34-fair-scheduling-priority-noisy-neighbor to execute this ELMOS Runtime Skill with fail-closed evidence."

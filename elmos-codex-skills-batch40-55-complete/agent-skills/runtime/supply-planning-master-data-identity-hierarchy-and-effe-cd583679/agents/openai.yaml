@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B42: Supply Planning Master Data Identity Hierarchy And Effective Dating"
+  short_description: "Run ELMOS Product B42 contract with fail-closed evidence"
+  default_prompt: "Use $supply-planning-master-data-identity-hierarchy-and-effe-cd583679 to implement its fail-closed ELMOS Product B42 contract."

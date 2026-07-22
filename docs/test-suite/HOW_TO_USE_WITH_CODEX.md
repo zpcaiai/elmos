@@ -1,0 +1,3 @@
+# Using with Codex
+
+Start with `$tst-strict-suite-orchestrator`, then invoke the exact `$tst-bXX-*` Skill for the affected Batch and the smallest relevant cross-cutting Skills. Ask Codex to implement executable tests, run them, store raw evidence, update coverage, and invoke the strict gate. Run `make test-suite-check` for toolkit validation. Use `make test-suite-local-qualification TEST_SUITE_EVIDENCE_DIR=<new-directory>` for immutable local build evidence; this command deliberately updates no certification cases. Only supply `--certification-request`, `--signature` and `--trust-store` after an authorized independent verifier has sealed all 408 exact results. Do not ask Codex merely to write a test plan or turn local green builds into field certification.

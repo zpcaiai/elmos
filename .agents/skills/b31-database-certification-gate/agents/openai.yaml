@@ -1,0 +1,4 @@
+interface:
+  display_name: "B31 Database Certification Gate"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b31-database-certification-gate to execute this ELMOS Runtime Skill with fail-closed evidence."

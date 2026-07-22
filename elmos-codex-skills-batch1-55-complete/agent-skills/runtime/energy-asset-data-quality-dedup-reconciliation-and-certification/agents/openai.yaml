@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B53: Energy Asset Data Quality Dedup Reconciliation And Certification"
+  short_description: "Run ELMOS B53 Skill with fail-closed evidence"
+  default_prompt: "Use $energy-asset-data-quality-dedup-reconciliation-and-certification to execute the ELMOS B53 contract with fail-closed evidence."

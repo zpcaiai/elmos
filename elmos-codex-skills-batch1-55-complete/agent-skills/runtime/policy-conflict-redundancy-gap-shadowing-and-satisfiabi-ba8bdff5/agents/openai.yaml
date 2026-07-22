@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B38: Policy Conflict Redundancy Gap Shadowing And Satisfiability Analysis"
+  short_description: "Run ELMOS B38 Skill with fail-closed evidence"
+  default_prompt: "Use $policy-conflict-redundancy-gap-shadowing-and-satisfiabi-ba8bdff5 to execute the ELMOS B38 contract with fail-closed evidence."

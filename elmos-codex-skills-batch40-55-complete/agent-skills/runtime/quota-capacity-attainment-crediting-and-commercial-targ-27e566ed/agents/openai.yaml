@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B40: Quota Capacity Attainment Crediting And Commercial Target Management"
+  short_description: "Run ELMOS Product B40 contract with fail-closed evidence"
+  default_prompt: "Use $quota-capacity-attainment-crediting-and-commercial-targ-27e566ed to implement its fail-closed ELMOS Product B40 contract."

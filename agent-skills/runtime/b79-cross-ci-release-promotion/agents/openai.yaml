@@ -1,0 +1,4 @@
+interface:
+  display_name: "B79 Cross CI Release Promotion"
+  short_description: "Run this ELMOS project Skill with evidence controls"
+  default_prompt: "Use $b79-cross-ci-release-promotion to execute this ELMOS project Skill with fail-closed evidence."

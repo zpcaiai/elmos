@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B44: Data Platform Data Quality Dedup Reconciliation And Certification"
+  short_description: "Run ELMOS Product B44 contract with fail-closed evidence"
+  default_prompt: "Use $data-platform-data-quality-dedup-reconciliation-and-cer-8cbba335 to implement its fail-closed ELMOS Product B44 contract."

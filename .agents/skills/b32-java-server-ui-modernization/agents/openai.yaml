@@ -1,0 +1,4 @@
+interface:
+  display_name: "B32 Java Server Ui Modernization"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b32-java-server-ui-modernization to execute this ELMOS Runtime Skill with fail-closed evidence."

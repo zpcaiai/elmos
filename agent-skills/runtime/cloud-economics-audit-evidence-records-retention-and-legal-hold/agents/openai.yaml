@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B49: Cloud Economics Audit Evidence Records Retention And Legal Hold"
+  short_description: "Run ELMOS Product B49 contract with fail-closed evidence"
+  default_prompt: "Use $cloud-economics-audit-evidence-records-retention-and-legal-hold to implement its fail-closed ELMOS Product B49 contract."

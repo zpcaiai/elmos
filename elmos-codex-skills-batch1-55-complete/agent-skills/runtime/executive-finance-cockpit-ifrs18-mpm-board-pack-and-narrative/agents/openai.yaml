@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B39: Executive Finance Cockpit Ifrs18 Mpm Board Pack And Narrative"
+  short_description: "Run ELMOS B39 Skill with fail-closed evidence"
+  default_prompt: "Use $executive-finance-cockpit-ifrs18-mpm-board-pack-and-narrative to execute the ELMOS B39 contract with fail-closed evidence."

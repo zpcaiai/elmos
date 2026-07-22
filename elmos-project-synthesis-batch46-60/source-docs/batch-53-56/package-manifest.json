@@ -1,0 +1,358 @@
+{
+  "package": "elmos-project-synthesis-batch-53-56",
+  "engine": "elmos.project-synthesis",
+  "skill_count": 48,
+  "batches": [
+    53,
+    54,
+    55,
+    56
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "d5ccd47ebe48f07c3939a532fa6bb3b1eacc9df3d5c9db112a5432d4cf04343f",
+      "size_bytes": 1715
+    },
+    {
+      "path": "batch-53-manifest.json",
+      "sha256": "bce205f770cec98558c122ed01af9c5a19163cbee7a431ac8edee6331042772f",
+      "size_bytes": 4973
+    },
+    {
+      "path": "batch-54-manifest.json",
+      "sha256": "69a32e7b2fd026962886738712f200908518a047ffed34f198697fb253c9ea92",
+      "size_bytes": 4984
+    },
+    {
+      "path": "batch-55-manifest.json",
+      "sha256": "d2a8cf75447849fee55716c669e52439a6120c5b0409cb775d0c494be1c42602",
+      "size_bytes": 5030
+    },
+    {
+      "path": "batch-56-manifest.json",
+      "sha256": "3ab9531ad1e7502931ee385ca8ad5dd69324a6bc6ead67a598f534d3d18b4c35",
+      "size_bytes": 4837
+    },
+    {
+      "path": "docs/CERTIFICATION_MATRIX.md",
+      "sha256": "729c9fc76a6b9bd7a89717828101fd8d0e3e2df2781cffe92c6c580a298fa9f0",
+      "size_bytes": 1113
+    },
+    {
+      "path": "docs/DEPENDENCY_GRAPH.md",
+      "sha256": "ce13f47d77ce67e6b675c4bffab14733aef0cc64e2ac2902eef21233387fae82",
+      "size_bytes": 12933
+    },
+    {
+      "path": "docs/EXIT_GATE.md",
+      "sha256": "4da4e9a314826a69de79ea3f3c463bf69cc968f8d5c6ad9e0783de29a2db4b23",
+      "size_bytes": 786
+    },
+    {
+      "path": "docs/INTEGRATION_DESIGN_RULES.md",
+      "sha256": "8ceef088fcfade97214103bae8bc02f1ab8e7b4a0768d5918994f1ce311f87f3",
+      "size_bytes": 694
+    },
+    {
+      "path": "docs/SKILL_CATALOG.md",
+      "sha256": "73abcd4bfba3e8a96ffd0440c3c2dc71bb7ba92a36f3d10d51bb4aa69e71a8ec",
+      "size_bytes": 7656
+    },
+    {
+      "path": "examples/alert-rest.integration-contract.json",
+      "sha256": "17a7b57af939e680c42cdd4d65bf488e1b644ce5f4f07130ac6710319a71d7e3",
+      "size_bytes": 566
+    },
+    {
+      "path": "examples/dotnet-project-pack.json",
+      "sha256": "d862640d70f8fa665e65fddd023a7937e20eabbcbbefaa4a4ad455b418be518f",
+      "size_bytes": 1185
+    },
+    {
+      "path": "examples/java-project-pack.json",
+      "sha256": "548a2d5ec4137be2d8225dcc2c3e10c7da130418d4e70fcc119b948c704270b9",
+      "size_bytes": 1160
+    },
+    {
+      "path": "examples/predictive-maintenance.migration-plan.json",
+      "sha256": "5adb92b279cc1714385619dab9fb9723816137d74bb629213ce2f187626db94c",
+      "size_bytes": 504
+    },
+    {
+      "path": "examples/predictive-maintenance.relational-schema.json",
+      "sha256": "0aa06bd29986daedd13a57545071ad7c35ac97f70563259567315a4ae478410b",
+      "size_bytes": 1254
+    },
+    {
+      "path": "examples/python-project-pack.json",
+      "sha256": "a767b78e07e0280fc0b941892f47973acf5a9e2c7a4eb0dcd3152c523454d43b",
+      "size_bytes": 1117
+    },
+    {
+      "path": "index.json",
+      "sha256": "1f1a7bb991c9a33b46e8a5bfcdf702cb196ead2002f606f9c1fdf9b21b50710c",
+      "size_bytes": 19678
+    },
+    {
+      "path": "schemas/database-migration-plan-v1.schema.json",
+      "sha256": "7dd796bd7030d6c80d6a42b6407369fc6df310b864bf846fb1ede56bf554041e",
+      "size_bytes": 1549
+    },
+    {
+      "path": "schemas/integration-contract-v1.schema.json",
+      "sha256": "41a3fad2f975f3d6407a3965d21ef0da05c83dd392aa270848afc8a2dfc7ff23",
+      "size_bytes": 1348
+    },
+    {
+      "path": "schemas/language-project-pack-v1.schema.json",
+      "sha256": "968aca18ce8d8476bbfec3d577b8e30e749f82cb6a5602a639b7b31182c4941d",
+      "size_bytes": 1676
+    },
+    {
+      "path": "schemas/relational-schema-v1.schema.json",
+      "sha256": "09505562def682d8d7095d4c63187e40bd8e4ad150f6a96162e4f79705e2a6d0",
+      "size_bytes": 1822
+    },
+    {
+      "path": "skills/batch-53/PG077-java-spring-boot-service-profile.md",
+      "sha256": "911cca0f927b87791d40d403362d148dbd5c3c874985347c2dc7797349d8c31a",
+      "size_bytes": 8925
+    },
+    {
+      "path": "skills/batch-53/PG078-java-modular-monolith-profile.md",
+      "sha256": "92672cde19ec2ad9426d55cc0e74326ca2ca5f5b4008f83598ae63291f09bb47",
+      "size_bytes": 8718
+    },
+    {
+      "path": "skills/batch-53/PG079-java-microservice-profile.md",
+      "sha256": "08b50c9f8b52666155984ce2470a4df3ba53f92c7b7649161ca5ec8d353ff4be",
+      "size_bytes": 8771
+    },
+    {
+      "path": "skills/batch-53/PG080-java-cli-batch-worker-profile.md",
+      "sha256": "91072c67462a10619ca133d8ca94f1c5b0c6f5cef3434b5cdf7850ed69e7dc03",
+      "size_bytes": 8708
+    },
+    {
+      "path": "skills/batch-53/PG081-java-rest-controller-generator.md",
+      "sha256": "8e45127439a60fb22ec3dd0440ea8175901d70f409383fca43dddc32c2af39d9",
+      "size_bytes": 8861
+    },
+    {
+      "path": "skills/batch-53/PG082-java-domain-application-layer-generator.md",
+      "sha256": "d65493bb7497bd63cf4d0604d4083894c1c9c601ae0bcd03dee03dea016641a7",
+      "size_bytes": 8892
+    },
+    {
+      "path": "skills/batch-53/PG083-java-jpa-jdbc-persistence-generator.md",
+      "sha256": "7a56bf8e0b14354769c3cbf55298e973a5fdd8722fead4eb4eea7146a644b4df",
+      "size_bytes": 9294
+    },
+    {
+      "path": "skills/batch-53/PG084-java-security-authz-generator.md",
+      "sha256": "80ad89b61d15e88feebb419c5fef2a191c3de0e3988d8486f98491ba82ebcadb",
+      "size_bytes": 9319
+    },
+    {
+      "path": "skills/batch-53/PG085-java-messaging-scheduler-generator.md",
+      "sha256": "2bd146fff8fc07fc731a9699465630aa30c9bf7277a7fc2a3cecbf078f091380",
+      "size_bytes": 9473
+    },
+    {
+      "path": "skills/batch-53/PG086-java-maven-gradle-build-generator.md",
+      "sha256": "93fb3a516c637c75d55ddcd48f11c2e7377c9dc954547094ee47be8364fe0b13",
+      "size_bytes": 9139
+    },
+    {
+      "path": "skills/batch-53/PG087-java-test-fixture-generator.md",
+      "sha256": "82034e5326ebad462880d86043b360e903d83a62fe4fd630f0c1e3b2936c6603",
+      "size_bytes": 9036
+    },
+    {
+      "path": "skills/batch-53/PG088-java-container-deployment-generator.md",
+      "sha256": "f6778bdd0e1aa0077f603e1d80ebb14737516aeef730381bdc738a44fc1aa8dc",
+      "size_bytes": 9302
+    },
+    {
+      "path": "skills/batch-54/PG089-python-fastapi-service-profile.md",
+      "sha256": "eae07d2b71c60ad554c3fbc52d96f4813fbada0cd8ee553ee6bd8c1c213ecc18",
+      "size_bytes": 8930
+    },
+    {
+      "path": "skills/batch-54/PG090-python-django-web-profile.md",
+      "sha256": "5ce769cdaf519d7ed4af0cc9e27d2d1b8b831ebb3e79f622ceb7ba460c946b16",
+      "size_bytes": 8777
+    },
+    {
+      "path": "skills/batch-54/PG091-python-cli-worker-profile.md",
+      "sha256": "1f546d41a4007c6fecb40348faca98a4a3c357feb2dfa87ab2f05e8781028a25",
+      "size_bytes": 8747
+    },
+    {
+      "path": "skills/batch-54/PG092-python-data-ai-service-profile.md",
+      "sha256": "21e53e1c95000934fa1f68a5d9587b8f8bf5cec8f500804ce42434ee481aebef",
+      "size_bytes": 8786
+    },
+    {
+      "path": "skills/batch-54/PG093-python-domain-application-layer-generator.md",
+      "sha256": "f8399ebe8ebbf400411b783881722da5e598fe5afad7f9091c3b2ea2e375c845",
+      "size_bytes": 8818
+    },
+    {
+      "path": "skills/batch-54/PG094-python-pydantic-api-contract-generator.md",
+      "sha256": "74d59ea807c46746de9419c6754820571ce12bfbf39445f6fbf373561c836b31",
+      "size_bytes": 8874
+    },
+    {
+      "path": "skills/batch-54/PG095-python-sqlalchemy-django-orm-generator.md",
+      "sha256": "50099169f641f1f57a8a032d1dd438e77c604c8d11f66e8ec3ced7dbfae72d20",
+      "size_bytes": 9332
+    },
+    {
+      "path": "skills/batch-54/PG096-python-auth-permission-generator.md",
+      "sha256": "14a866454d023a9bd2d4fc1de80f8a361d125a0371951b3f5583ad30bcfdb601",
+      "size_bytes": 9343
+    },
+    {
+      "path": "skills/batch-54/PG097-python-task-queue-scheduler-generator.md",
+      "sha256": "16c198d397cf5baaec88609e35eb81ce158a118edbbd6d71d040dde8950779bb",
+      "size_bytes": 9432
+    },
+    {
+      "path": "skills/batch-54/PG098-python-packaging-lockfile-generator.md",
+      "sha256": "aad007fa91b860e83a9e7236fa6980f9e6467b9859654568a2bf7eb507dd57fb",
+      "size_bytes": 9160
+    },
+    {
+      "path": "skills/batch-54/PG099-python-pytest-fixture-generator.md",
+      "sha256": "2fad295d21168746deb30c565dbe50139d62e2f44972246d7f7805ff69b37f82",
+      "size_bytes": 8975
+    },
+    {
+      "path": "skills/batch-54/PG100-python-container-deployment-generator.md",
+      "sha256": "892137b25db38bfc4681e8405acdd8cf77ccd5a001160136c4aa2b201b7014af",
+      "size_bytes": 9303
+    },
+    {
+      "path": "skills/batch-55/PG101-dotnet-aspnet-core-api-profile.md",
+      "sha256": "6ba1dad714ee8a2cd8b87b5dc91018bc06143088874b9aebc0b80eca42257736",
+      "size_bytes": 8897
+    },
+    {
+      "path": "skills/batch-55/PG102-dotnet-mvc-blazor-profile.md",
+      "sha256": "685904f66ba65aa5d91465c6857e3f6fb140125af63c4bad2cd0acb0b0bc23e3",
+      "size_bytes": 8804
+    },
+    {
+      "path": "skills/batch-55/PG103-dotnet-worker-console-profile.md",
+      "sha256": "5f507544895310f31eabd4d70b7f432ee72e8ba5d89fd7855229f3ae11d00ac1",
+      "size_bytes": 8817
+    },
+    {
+      "path": "skills/batch-55/PG104-dotnet-modular-monolith-profile.md",
+      "sha256": "24abc602d20ce0c3e199a0997d35d891ecae465e89a0c912b60c3acaae8fcd5f",
+      "size_bytes": 8706
+    },
+    {
+      "path": "skills/batch-55/PG105-dotnet-domain-application-layer-generator.md",
+      "sha256": "bb4e1a8f46596d1961b964661f62161995f30ac1e62c3cd1fb0fb3add4f60a6a",
+      "size_bytes": 8925
+    },
+    {
+      "path": "skills/batch-55/PG106-dotnet-minimal-api-controller-generator.md",
+      "sha256": "9c057bd6d9f3b68dde5f09ae3e585fcf06ab7b890904a972b2a51e2dde66e6b6",
+      "size_bytes": 8848
+    },
+    {
+      "path": "skills/batch-55/PG107-dotnet-ef-core-persistence-generator.md",
+      "sha256": "51697147a06894fcc3f8eae5eb1b7c2f1bfb195164175543096b4b60c82031d7",
+      "size_bytes": 9259
+    },
+    {
+      "path": "skills/batch-55/PG108-dotnet-identity-authz-generator.md",
+      "sha256": "213c6a57bd32b8da01879fa303269e4d1eaaf3f0a418e60fc8aa396298a39568",
+      "size_bytes": 9362
+    },
+    {
+      "path": "skills/batch-55/PG109-dotnet-messaging-background-service-generator.md",
+      "sha256": "9c7c39be6d69caffbb049cb9da02c70fdbaa2825f76dc8491ed9c11fbfa80fa3",
+      "size_bytes": 9444
+    },
+    {
+      "path": "skills/batch-55/PG110-dotnet-solution-project-generator.md",
+      "sha256": "73bc23d09e62e864d3378a49156d557414f4ff22a18a18f710e7564567197675",
+      "size_bytes": 9228
+    },
+    {
+      "path": "skills/batch-55/PG111-dotnet-xunit-fixture-generator.md",
+      "sha256": "24db008591224810c5db326b3ac31ca65b4663b6752379fbe1a9735f767ba660",
+      "size_bytes": 8892
+    },
+    {
+      "path": "skills/batch-55/PG112-dotnet-container-deployment-generator.md",
+      "sha256": "61196cb34eb7c0424043ce858d8b213a2b429b7efa7d1b95ffd2a5131a62c3b1",
+      "size_bytes": 9300
+    },
+    {
+      "path": "skills/batch-56/PG113-relational-schema-generator.md",
+      "sha256": "4757da0c5c18e190c9202d4f8ee8c16bc97a875e1af78dcfaa8a100e42f2236a",
+      "size_bytes": 9247
+    },
+    {
+      "path": "skills/batch-56/PG114-migration-seed-data-generator.md",
+      "sha256": "989f31cba9e4aa0876bbcd0569ec50469d54c773de1c322c3a4ad15e577381be",
+      "size_bytes": 9290
+    },
+    {
+      "path": "skills/batch-56/PG115-openapi-generator.md",
+      "sha256": "02fcfbef1a8f224caf4bc5566c63c901cc5f991fe6d60e2843befe4b36ca8513",
+      "size_bytes": 9021
+    },
+    {
+      "path": "skills/batch-56/PG116-grpc-protobuf-generator.md",
+      "sha256": "1bec4e1afd3351a0da322884b1b96fa6745d245cd22122173e4cdc7e17050131",
+      "size_bytes": 8955
+    },
+    {
+      "path": "skills/batch-56/PG117-event-schema-and-broker-generator.md",
+      "sha256": "6d9a7dc383f7e43b400033325a5e8eaa81f5e5d204c684e878812294f3800019",
+      "size_bytes": 9464
+    },
+    {
+      "path": "skills/batch-56/PG118-cache-search-adapter-generator.md",
+      "sha256": "e9ea10bca8f89374f1c297a3bfdc73934f2131f9dcc8e00d2d7c459c76738fab",
+      "size_bytes": 8743
+    },
+    {
+      "path": "skills/batch-56/PG119-object-storage-file-service-generator.md",
+      "sha256": "a9f638e5bbb419cf2053ecf1bcc7217e1dc84d7697c727e4f8454f4864374897",
+      "size_bytes": 8852
+    },
+    {
+      "path": "skills/batch-56/PG120-external-api-client-generator.md",
+      "sha256": "ee3ce02c26947a3f1758005c4bde274d91bf6f96a5e50c5b73375d0f2c075092",
+      "size_bytes": 8984
+    },
+    {
+      "path": "skills/batch-56/PG121-resilience-timeout-retry-generator.md",
+      "sha256": "e9bc7cc4f46d3a0fc58a66a7e5f7b262af57667efe623d456e834228fe5670a4",
+      "size_bytes": 8914
+    },
+    {
+      "path": "skills/batch-56/PG122-idempotency-outbox-saga-generator.md",
+      "sha256": "c8500b61e5b36f337a7a1a11bb31463ac0fbcf0ee888ee95d8d98db72296f877",
+      "size_bytes": 9410
+    },
+    {
+      "path": "skills/batch-56/PG123-mock-stub-service-virtualization.md",
+      "sha256": "5948331a489b31d7973e920082b276aae4e242622f892aa6b86b5fabd3405d81",
+      "size_bytes": 8856
+    },
+    {
+      "path": "skills/batch-56/PG124-integration-contract-registry-publisher.md",
+      "sha256": "48854a2358b63704753ee352ce410219b639f4b73b4a7afb2125f511fe51e087",
+      "size_bytes": 8983
+    }
+  ]
+}

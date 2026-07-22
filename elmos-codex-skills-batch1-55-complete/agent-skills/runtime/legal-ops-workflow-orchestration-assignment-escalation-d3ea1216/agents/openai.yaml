@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B54: Legal Ops Workflow Orchestration Assignment Escalation And Recovery"
+  short_description: "Run ELMOS B54 Skill with fail-closed evidence"
+  default_prompt: "Use $legal-ops-workflow-orchestration-assignment-escalation-d3ea1216 to execute the ELMOS B54 contract with fail-closed evidence."

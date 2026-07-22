@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B51: Global Trade Master Data Identity Hierarchy And Effective Dating"
+  short_description: "Run ELMOS B51 Skill with fail-closed evidence"
+  default_prompt: "Use $global-trade-master-data-identity-hierarchy-and-effective-dating to execute the ELMOS B51 contract with fail-closed evidence."

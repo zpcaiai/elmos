@@ -1,0 +1,654 @@
+{
+  "engine": "elmos.project-synthesis",
+  "schema": "elmos.project-synthesis.v1",
+  "release": "batch-53-56",
+  "skill_count": 48,
+  "skills": [
+    {
+      "id": "PG077",
+      "name": "java-spring-boot-service-profile",
+      "batch": 53,
+      "depends_on": [
+        "PG056",
+        "PG057",
+        "PG058",
+        "PG064",
+        "PG076"
+      ],
+      "path": "skills/batch-53/PG077-java-spring-boot-service-profile.md",
+      "summary": "certified Spring Boot REST/service profile with standard runtime, layering, security, observability and delivery conventions"
+    },
+    {
+      "id": "PG078",
+      "name": "java-modular-monolith-profile",
+      "batch": 53,
+      "depends_on": [
+        "PG045",
+        "PG054",
+        "PG064",
+        "PG077"
+      ],
+      "path": "skills/batch-53/PG078-java-modular-monolith-profile.md",
+      "summary": "enforceable Java modular-monolith boundaries, public module APIs and architecture tests"
+    },
+    {
+      "id": "PG079",
+      "name": "java-microservice-profile",
+      "batch": 53,
+      "depends_on": [
+        "PG045",
+        "PG048",
+        "PG053",
+        "PG064",
+        "PG077"
+      ],
+      "path": "skills/batch-53/PG079-java-microservice-profile.md",
+      "summary": "evidence-backed independently deployable Spring Boot services with owned data and contract tests"
+    },
+    {
+      "id": "PG080",
+      "name": "java-cli-batch-worker-profile",
+      "batch": 53,
+      "depends_on": [
+        "PG038",
+        "PG053",
+        "PG057",
+        "PG064"
+      ],
+      "path": "skills/batch-53/PG080-java-cli-batch-worker-profile.md",
+      "summary": "Java CLI, batch, scheduled and worker lifecycle, checkpoint, retry and exit contracts"
+    },
+    {
+      "id": "PG081",
+      "name": "java-rest-controller-generator",
+      "batch": 53,
+      "depends_on": [
+        "PG040",
+        "PG041",
+        "PG067",
+        "PG077"
+      ],
+      "path": "skills/batch-53/PG081-java-rest-controller-generator.md",
+      "summary": "Spring REST controllers, DTOs, validation, standardized errors, authorization and OpenAPI alignment"
+    },
+    {
+      "id": "PG082",
+      "name": "java-domain-application-layer-generator",
+      "batch": 53,
+      "depends_on": [
+        "PG035",
+        "PG037",
+        "PG067",
+        "PG072",
+        "PG077"
+      ],
+      "path": "skills/batch-53/PG082-java-domain-application-layer-generator.md",
+      "summary": "framework-independent Java domain and application layers with aggregates, handlers, ports and invariant tests"
+    },
+    {
+      "id": "PG083",
+      "name": "java-jpa-jdbc-persistence-generator",
+      "batch": 53,
+      "depends_on": [
+        "PG035",
+        "PG047",
+        "PG067",
+        "PG077",
+        "PG113"
+      ],
+      "path": "skills/batch-53/PG083-java-jpa-jdbc-persistence-generator.md",
+      "summary": "JPA, Spring Data JDBC or JDBC persistence adapters, mappings, locking and target-database tests"
+    },
+    {
+      "id": "PG084",
+      "name": "java-security-authz-generator",
+      "batch": 53,
+      "depends_on": [
+        "PG041",
+        "PG050",
+        "PG062",
+        "PG077"
+      ],
+      "path": "skills/batch-53/PG084-java-security-authz-generator.md",
+      "summary": "Spring Security authentication, tenant context, authorization policy and negative security tests"
+    },
+    {
+      "id": "PG085",
+      "name": "java-messaging-scheduler-generator",
+      "batch": 53,
+      "depends_on": [
+        "PG048",
+        "PG049",
+        "PG077",
+        "PG117",
+        "PG122"
+      ],
+      "path": "skills/batch-53/PG085-java-messaging-scheduler-generator.md",
+      "summary": "Kafka/RabbitMQ/scheduler adapters with versioned schemas, idempotency, outbox, retries and dead-letter behavior"
+    },
+    {
+      "id": "PG086",
+      "name": "java-maven-gradle-build-generator",
+      "batch": 53,
+      "depends_on": [
+        "PG058",
+        "PG061",
+        "PG063",
+        "PG077"
+      ],
+      "path": "skills/batch-53/PG086-java-maven-gradle-build-generator.md",
+      "summary": "reproducible Maven/Gradle wrapper builds, dependency management, test tasks, analysis and packaging"
+    },
+    {
+      "id": "PG087",
+      "name": "java-test-fixture-generator",
+      "batch": 53,
+      "depends_on": [
+        "PG028",
+        "PG042",
+        "PG078",
+        "PG081",
+        "PG082",
+        "PG083",
+        "PG084",
+        "PG085"
+      ],
+      "path": "skills/batch-53/PG087-java-test-fixture-generator.md",
+      "summary": "JUnit/Testcontainers fixtures and requirement-traced unit, integration, security, messaging and architecture tests"
+    },
+    {
+      "id": "PG088",
+      "name": "java-container-deployment-generator",
+      "batch": 53,
+      "depends_on": [
+        "PG053",
+        "PG062",
+        "PG070",
+        "PG086"
+      ],
+      "path": "skills/batch-53/PG088-java-container-deployment-generator.md",
+      "summary": "non-root Java container, Compose and Kubernetes assets with probes, resources and JVM runtime policy"
+    },
+    {
+      "id": "PG089",
+      "name": "python-fastapi-service-profile",
+      "batch": 54,
+      "depends_on": [
+        "PG056",
+        "PG057",
+        "PG058",
+        "PG064",
+        "PG076"
+      ],
+      "path": "skills/batch-54/PG089-python-fastapi-service-profile.md",
+      "summary": "certified FastAPI profile with typed contracts, explicit sync/async boundaries, security, tests and deployment"
+    },
+    {
+      "id": "PG090",
+      "name": "python-django-web-profile",
+      "batch": 54,
+      "depends_on": [
+        "PG056",
+        "PG057",
+        "PG058",
+        "PG064"
+      ],
+      "path": "skills/batch-54/PG090-python-django-web-profile.md",
+      "summary": "Django web/admin profile with bounded apps, settings layering, migrations, auth and extension points"
+    },
+    {
+      "id": "PG091",
+      "name": "python-cli-worker-profile",
+      "batch": 54,
+      "depends_on": [
+        "PG038",
+        "PG053",
+        "PG057",
+        "PG064"
+      ],
+      "path": "skills/batch-54/PG091-python-cli-worker-profile.md",
+      "summary": "Python CLI, batch, scheduler, queue worker and stream processor lifecycle and replay contracts"
+    },
+    {
+      "id": "PG092",
+      "name": "python-data-ai-service-profile",
+      "batch": 54,
+      "depends_on": [
+        "PG050",
+        "PG057",
+        "PG064"
+      ],
+      "path": "skills/batch-54/PG092-python-data-ai-service-profile.md",
+      "summary": "data, inference, RAG and agent backend profile with model/prompt/tool versioning, safety and eval hooks"
+    },
+    {
+      "id": "PG093",
+      "name": "python-domain-application-layer-generator",
+      "batch": 54,
+      "depends_on": [
+        "PG035",
+        "PG037",
+        "PG067",
+        "PG072",
+        "PG089"
+      ],
+      "path": "skills/batch-54/PG093-python-domain-application-layer-generator.md",
+      "summary": "typed framework-independent Python domain/application layers, protocols, invariants and tests"
+    },
+    {
+      "id": "PG094",
+      "name": "python-pydantic-api-contract-generator",
+      "batch": 54,
+      "depends_on": [
+        "PG039",
+        "PG040",
+        "PG041",
+        "PG089"
+      ],
+      "path": "skills/batch-54/PG094-python-pydantic-api-contract-generator.md",
+      "summary": "Pydantic models and FastAPI routes with validation, errors, auth, pagination and OpenAPI stability"
+    },
+    {
+      "id": "PG095",
+      "name": "python-sqlalchemy-django-orm-generator",
+      "batch": 54,
+      "depends_on": [
+        "PG035",
+        "PG047",
+        "PG089",
+        "PG090",
+        "PG113"
+      ],
+      "path": "skills/batch-54/PG095-python-sqlalchemy-django-orm-generator.md",
+      "summary": "SQLAlchemy/Django ORM persistence, session/transaction boundaries, mappings and target-database tests"
+    },
+    {
+      "id": "PG096",
+      "name": "python-auth-permission-generator",
+      "batch": 54,
+      "depends_on": [
+        "PG041",
+        "PG050",
+        "PG062",
+        "PG089",
+        "PG090"
+      ],
+      "path": "skills/batch-54/PG096-python-auth-permission-generator.md",
+      "summary": "FastAPI/Django identity, tenant scope, object permissions and fail-closed security configuration"
+    },
+    {
+      "id": "PG097",
+      "name": "python-task-queue-scheduler-generator",
+      "batch": 54,
+      "depends_on": [
+        "PG038",
+        "PG048",
+        "PG049",
+        "PG091",
+        "PG117",
+        "PG122"
+      ],
+      "path": "skills/batch-54/PG097-python-task-queue-scheduler-generator.md",
+      "summary": "task queue and scheduler generation with versioned payloads, retries, idempotency and broker tests"
+    },
+    {
+      "id": "PG098",
+      "name": "python-packaging-lockfile-generator",
+      "batch": 54,
+      "depends_on": [
+        "PG058",
+        "PG061",
+        "PG063",
+        "PG089"
+      ],
+      "path": "skills/batch-54/PG098-python-packaging-lockfile-generator.md",
+      "summary": "pyproject, dependency groups, lock strategy, package scripts, formatter, linter and type-checker setup"
+    },
+    {
+      "id": "PG099",
+      "name": "python-pytest-fixture-generator",
+      "batch": 54,
+      "depends_on": [
+        "PG028",
+        "PG042",
+        "PG093",
+        "PG094",
+        "PG095",
+        "PG096",
+        "PG097"
+      ],
+      "path": "skills/batch-54/PG099-python-pytest-fixture-generator.md",
+      "summary": "Pytest fixtures, factories, property tests, real-service integration tests and requirement traceability"
+    },
+    {
+      "id": "PG100",
+      "name": "python-container-deployment-generator",
+      "batch": 54,
+      "depends_on": [
+        "PG053",
+        "PG062",
+        "PG070",
+        "PG098"
+      ],
+      "path": "skills/batch-54/PG100-python-container-deployment-generator.md",
+      "summary": "non-root Python production container, process model, Compose, Kubernetes, probes and locked install"
+    },
+    {
+      "id": "PG101",
+      "name": "dotnet-aspnet-core-api-profile",
+      "batch": 55,
+      "depends_on": [
+        "PG056",
+        "PG057",
+        "PG058",
+        "PG064",
+        "PG076"
+      ],
+      "path": "skills/batch-55/PG101-dotnet-aspnet-core-api-profile.md",
+      "summary": "certified ASP.NET Core API profile with hosting, contracts, security, observability, tests and deployment"
+    },
+    {
+      "id": "PG102",
+      "name": "dotnet-mvc-blazor-profile",
+      "batch": 55,
+      "depends_on": [
+        "PG050",
+        "PG057",
+        "PG064",
+        "PG101"
+      ],
+      "path": "skills/batch-55/PG102-dotnet-mvc-blazor-profile.md",
+      "summary": "MVC, Razor Pages and Blazor profile with UI/session/state/accessibility and server authorization boundaries"
+    },
+    {
+      "id": "PG103",
+      "name": "dotnet-worker-console-profile",
+      "batch": 55,
+      "depends_on": [
+        "PG038",
+        "PG053",
+        "PG057",
+        "PG064"
+      ],
+      "path": "skills/batch-55/PG103-dotnet-worker-console-profile.md",
+      "summary": "Generic Host worker, console, batch and scheduler lifecycle with cancellation, checkpoint and exit semantics"
+    },
+    {
+      "id": "PG104",
+      "name": "dotnet-modular-monolith-profile",
+      "batch": 55,
+      "depends_on": [
+        "PG045",
+        "PG054",
+        "PG064",
+        "PG101"
+      ],
+      "path": "skills/batch-55/PG104-dotnet-modular-monolith-profile.md",
+      "summary": "enforceable .NET project/assembly module boundaries, contracts and architecture tests"
+    },
+    {
+      "id": "PG105",
+      "name": "dotnet-domain-application-layer-generator",
+      "batch": 55,
+      "depends_on": [
+        "PG035",
+        "PG037",
+        "PG067",
+        "PG072",
+        "PG101"
+      ],
+      "path": "skills/batch-55/PG105-dotnet-domain-application-layer-generator.md",
+      "summary": "framework-independent C# domain/application projects with records, aggregates, handlers, ports and explicit outcomes"
+    },
+    {
+      "id": "PG106",
+      "name": "dotnet-minimal-api-controller-generator",
+      "batch": 55,
+      "depends_on": [
+        "PG039",
+        "PG040",
+        "PG041",
+        "PG101"
+      ],
+      "path": "skills/batch-55/PG106-dotnet-minimal-api-controller-generator.md",
+      "summary": "ASP.NET controllers/minimal APIs, DTOs, validation, ProblemDetails, auth and OpenAPI alignment"
+    },
+    {
+      "id": "PG107",
+      "name": "dotnet-ef-core-persistence-generator",
+      "batch": 55,
+      "depends_on": [
+        "PG035",
+        "PG047",
+        "PG101",
+        "PG113"
+      ],
+      "path": "skills/batch-55/PG107-dotnet-ef-core-persistence-generator.md",
+      "summary": "EF Core contexts, mappings, repositories, query filters, concurrency and real database tests"
+    },
+    {
+      "id": "PG108",
+      "name": "dotnet-identity-authz-generator",
+      "batch": 55,
+      "depends_on": [
+        "PG041",
+        "PG050",
+        "PG062",
+        "PG101"
+      ],
+      "path": "skills/batch-55/PG108-dotnet-identity-authz-generator.md",
+      "summary": "ASP.NET authentication, claims/tenant mapping, fallback authorization, data protection and security tests"
+    },
+    {
+      "id": "PG109",
+      "name": "dotnet-messaging-background-service-generator",
+      "batch": 55,
+      "depends_on": [
+        "PG048",
+        "PG049",
+        "PG103",
+        "PG117",
+        "PG122"
+      ],
+      "path": "skills/batch-55/PG109-dotnet-messaging-background-service-generator.md",
+      "summary": "message producers/consumers and BackgroundService generation with cancellation, outbox and idempotency"
+    },
+    {
+      "id": "PG110",
+      "name": "dotnet-solution-project-generator",
+      "batch": 55,
+      "depends_on": [
+        "PG058",
+        "PG061",
+        "PG063",
+        "PG101"
+      ],
+      "path": "skills/batch-55/PG110-dotnet-solution-project-generator.md",
+      "summary": "solution/project files, central package management, nullable/analyzer policy, locked restore and publish configuration"
+    },
+    {
+      "id": "PG111",
+      "name": "dotnet-xunit-fixture-generator",
+      "batch": 55,
+      "depends_on": [
+        "PG028",
+        "PG042",
+        "PG104",
+        "PG105",
+        "PG106",
+        "PG107",
+        "PG108",
+        "PG109"
+      ],
+      "path": "skills/batch-55/PG111-dotnet-xunit-fixture-generator.md",
+      "summary": "xUnit fixtures, WebApplicationFactory, Testcontainers and traced unit/integration/architecture/security tests"
+    },
+    {
+      "id": "PG112",
+      "name": "dotnet-container-deployment-generator",
+      "batch": 55,
+      "depends_on": [
+        "PG053",
+        "PG062",
+        "PG070",
+        "PG110"
+      ],
+      "path": "skills/batch-55/PG112-dotnet-container-deployment-generator.md",
+      "summary": "non-root .NET images, publish mode, Compose/Kubernetes, probes and trimming/AOT compatibility policy"
+    },
+    {
+      "id": "PG113",
+      "name": "relational-schema-generator",
+      "batch": 56,
+      "depends_on": [
+        "PG035",
+        "PG039",
+        "PG047",
+        "PG064"
+      ],
+      "path": "skills/batch-56/PG113-relational-schema-generator.md",
+      "summary": "database-neutral relational schema, ownership, keys, constraints, indexes and tenant boundaries"
+    },
+    {
+      "id": "PG114",
+      "name": "migration-seed-data-generator",
+      "batch": 56,
+      "depends_on": [
+        "PG032",
+        "PG113"
+      ],
+      "path": "skills/batch-56/PG114-migration-seed-data-generator.md",
+      "summary": "ordered forward migrations, safe recovery, deterministic reference/test seeds and migration certification tests"
+    },
+    {
+      "id": "PG115",
+      "name": "openapi-generator",
+      "batch": 56,
+      "depends_on": [
+        "PG039",
+        "PG040",
+        "PG041",
+        "PG081",
+        "PG094",
+        "PG106"
+      ],
+      "path": "skills/batch-56/PG115-openapi-generator.md",
+      "summary": "authoritative OpenAPI document, examples, security/error schemas, implementation comparison and compatibility report"
+    },
+    {
+      "id": "PG116",
+      "name": "grpc-protobuf-generator",
+      "batch": 56,
+      "depends_on": [
+        "PG039",
+        "PG048",
+        "PG064"
+      ],
+      "path": "skills/batch-56/PG116-grpc-protobuf-generator.md",
+      "summary": "Protobuf/gRPC contracts, stable field numbering, deadlines, streaming semantics, stubs and compatibility tests"
+    },
+    {
+      "id": "PG117",
+      "name": "event-schema-and-broker-generator",
+      "batch": 56,
+      "depends_on": [
+        "PG037",
+        "PG039",
+        "PG048"
+      ],
+      "path": "skills/batch-56/PG117-event-schema-and-broker-generator.md",
+      "summary": "versioned event wire schemas, topic/queue topology, routing, headers, retention and contract tests"
+    },
+    {
+      "id": "PG118",
+      "name": "cache-search-adapter-generator",
+      "batch": 56,
+      "depends_on": [
+        "PG047",
+        "PG048",
+        "PG064"
+      ],
+      "path": "skills/batch-56/PG118-cache-search-adapter-generator.md",
+      "summary": "cache/search adapters, keys, tenant scope, TTL, invalidation, rebuild and fallback behavior"
+    },
+    {
+      "id": "PG119",
+      "name": "object-storage-file-service-generator",
+      "batch": 56,
+      "depends_on": [
+        "PG039",
+        "PG050",
+        "PG064"
+      ],
+      "path": "skills/batch-56/PG119-object-storage-file-service-generator.md",
+      "summary": "object-storage adapters, secure upload/download, metadata, checksum, scanning, quarantine and lifecycle"
+    },
+    {
+      "id": "PG120",
+      "name": "external-api-client-generator",
+      "batch": 56,
+      "depends_on": [
+        "PG048",
+        "PG049",
+        "PG050",
+        "PG064"
+      ],
+      "path": "skills/batch-56/PG120-external-api-client-generator.md",
+      "summary": "typed external clients with auth references, pagination, rate limits, timeout, retry, circuit breaking and fixtures"
+    },
+    {
+      "id": "PG121",
+      "name": "resilience-timeout-retry-generator",
+      "batch": 56,
+      "depends_on": [
+        "PG048",
+        "PG049",
+        "PG077",
+        "PG089",
+        "PG101"
+      ],
+      "path": "skills/batch-56/PG121-resilience-timeout-retry-generator.md",
+      "summary": "cross-language timeout, retry, backoff, circuit, bulkhead, rate-limit and semantically safe fallback policies"
+    },
+    {
+      "id": "PG122",
+      "name": "idempotency-outbox-saga-generator",
+      "batch": 56,
+      "depends_on": [
+        "PG038",
+        "PG047",
+        "PG048",
+        "PG117"
+      ],
+      "path": "skills/batch-56/PG122-idempotency-outbox-saga-generator.md",
+      "summary": "idempotency keys, inbox/outbox, transactional publication, sagas, compensation and reconciliation"
+    },
+    {
+      "id": "PG123",
+      "name": "mock-stub-service-virtualization",
+      "batch": 56,
+      "depends_on": [
+        "PG115",
+        "PG116",
+        "PG117",
+        "PG120"
+      ],
+      "path": "skills/batch-56/PG123-mock-stub-service-virtualization.md",
+      "summary": "contract-valid HTTP/gRPC/event/webhook stubs, stateful scenarios, deterministic fixtures and fault injection"
+    },
+    {
+      "id": "PG124",
+      "name": "integration-contract-registry-publisher",
+      "batch": 56,
+      "depends_on": [
+        "PG115",
+        "PG116",
+        "PG117",
+        "PG119",
+        "PG120"
+      ],
+      "path": "skills/batch-56/PG124-integration-contract-registry-publisher.md",
+      "summary": "governed integration registry with owner, version, visibility, consumers/providers, lifecycle and compatibility evidence"
+    }
+  ]
+}

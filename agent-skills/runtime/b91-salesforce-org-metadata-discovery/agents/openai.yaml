@@ -1,0 +1,4 @@
+interface:
+  display_name: "B91 Salesforce Org Metadata Discovery"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b91-salesforce-org-metadata-discovery to execute this ELMOS Language Pack Skill with fail-closed evidence."

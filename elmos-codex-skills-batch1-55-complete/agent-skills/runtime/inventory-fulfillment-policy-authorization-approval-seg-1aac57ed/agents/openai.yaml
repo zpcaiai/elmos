@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B42: Inventory Fulfillment Policy Authorization Approval Segregation And Exception"
+  short_description: "Run ELMOS B42 Skill with fail-closed evidence"
+  default_prompt: "Use $inventory-fulfillment-policy-authorization-approval-seg-1aac57ed to execute the ELMOS B42 contract with fail-closed evidence."

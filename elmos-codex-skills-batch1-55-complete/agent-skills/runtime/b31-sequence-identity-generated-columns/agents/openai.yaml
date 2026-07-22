@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M31: B31 Sequence Identity Generated Columns"
+  short_description: "Run ELMOS M31 Skill with fail-closed evidence"
+  default_prompt: "Use $b31-sequence-identity-generated-columns to execute the ELMOS M31 contract with fail-closed evidence."

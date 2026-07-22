@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tst Cross Platform Toolchain Runtime Matrix"
+  short_description: "Run this ELMOS Batch 66-80 test Skill with evidence"
+  default_prompt: "Use $tst-cross-platform-toolchain-runtime-matrix to run the exact Batch 66-80 test scope with fail-closed evidence."

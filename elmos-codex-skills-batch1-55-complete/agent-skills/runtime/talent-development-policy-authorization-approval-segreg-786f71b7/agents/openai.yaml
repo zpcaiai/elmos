@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B43: Talent Development Policy Authorization Approval Segregation And Exception"
+  short_description: "Run ELMOS B43 Skill with fail-closed evidence"
+  default_prompt: "Use $talent-development-policy-authorization-approval-segreg-786f71b7 to execute the ELMOS B43 contract with fail-closed evidence."

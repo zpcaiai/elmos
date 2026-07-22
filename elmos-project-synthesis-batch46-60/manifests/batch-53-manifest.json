@@ -1,0 +1,171 @@
+{
+  "batch": 53,
+  "title": "Java Project Pack",
+  "skills": [
+    {
+      "id": "PG077",
+      "name": "java-spring-boot-service-profile",
+      "batch": 53,
+      "depends_on": [
+        "PG056",
+        "PG057",
+        "PG058",
+        "PG064",
+        "PG076"
+      ],
+      "path": "skills/batch-53/PG077-java-spring-boot-service-profile.md",
+      "summary": "certified Spring Boot REST/service profile with standard runtime, layering, security, observability and delivery conventions"
+    },
+    {
+      "id": "PG078",
+      "name": "java-modular-monolith-profile",
+      "batch": 53,
+      "depends_on": [
+        "PG045",
+        "PG054",
+        "PG064",
+        "PG077"
+      ],
+      "path": "skills/batch-53/PG078-java-modular-monolith-profile.md",
+      "summary": "enforceable Java modular-monolith boundaries, public module APIs and architecture tests"
+    },
+    {
+      "id": "PG079",
+      "name": "java-microservice-profile",
+      "batch": 53,
+      "depends_on": [
+        "PG045",
+        "PG048",
+        "PG053",
+        "PG064",
+        "PG077"
+      ],
+      "path": "skills/batch-53/PG079-java-microservice-profile.md",
+      "summary": "evidence-backed independently deployable Spring Boot services with owned data and contract tests"
+    },
+    {
+      "id": "PG080",
+      "name": "java-cli-batch-worker-profile",
+      "batch": 53,
+      "depends_on": [
+        "PG038",
+        "PG053",
+        "PG057",
+        "PG064"
+      ],
+      "path": "skills/batch-53/PG080-java-cli-batch-worker-profile.md",
+      "summary": "Java CLI, batch, scheduled and worker lifecycle, checkpoint, retry and exit contracts"
+    },
+    {
+      "id": "PG081",
+      "name": "java-rest-controller-generator",
+      "batch": 53,
+      "depends_on": [
+        "PG040",
+        "PG041",
+        "PG067",
+        "PG077"
+      ],
+      "path": "skills/batch-53/PG081-java-rest-controller-generator.md",
+      "summary": "Spring REST controllers, DTOs, validation, standardized errors, authorization and OpenAPI alignment"
+    },
+    {
+      "id": "PG082",
+      "name": "java-domain-application-layer-generator",
+      "batch": 53,
+      "depends_on": [
+        "PG035",
+        "PG037",
+        "PG067",
+        "PG072",
+        "PG077"
+      ],
+      "path": "skills/batch-53/PG082-java-domain-application-layer-generator.md",
+      "summary": "framework-independent Java domain and application layers with aggregates, handlers, ports and invariant tests"
+    },
+    {
+      "id": "PG083",
+      "name": "java-jpa-jdbc-persistence-generator",
+      "batch": 53,
+      "depends_on": [
+        "PG035",
+        "PG047",
+        "PG067",
+        "PG077",
+        "PG113"
+      ],
+      "path": "skills/batch-53/PG083-java-jpa-jdbc-persistence-generator.md",
+      "summary": "JPA, Spring Data JDBC or JDBC persistence adapters, mappings, locking and target-database tests"
+    },
+    {
+      "id": "PG084",
+      "name": "java-security-authz-generator",
+      "batch": 53,
+      "depends_on": [
+        "PG041",
+        "PG050",
+        "PG062",
+        "PG077"
+      ],
+      "path": "skills/batch-53/PG084-java-security-authz-generator.md",
+      "summary": "Spring Security authentication, tenant context, authorization policy and negative security tests"
+    },
+    {
+      "id": "PG085",
+      "name": "java-messaging-scheduler-generator",
+      "batch": 53,
+      "depends_on": [
+        "PG048",
+        "PG049",
+        "PG077",
+        "PG117",
+        "PG122"
+      ],
+      "path": "skills/batch-53/PG085-java-messaging-scheduler-generator.md",
+      "summary": "Kafka/RabbitMQ/scheduler adapters with versioned schemas, idempotency, outbox, retries and dead-letter behavior"
+    },
+    {
+      "id": "PG086",
+      "name": "java-maven-gradle-build-generator",
+      "batch": 53,
+      "depends_on": [
+        "PG058",
+        "PG061",
+        "PG063",
+        "PG077"
+      ],
+      "path": "skills/batch-53/PG086-java-maven-gradle-build-generator.md",
+      "summary": "reproducible Maven/Gradle wrapper builds, dependency management, test tasks, analysis and packaging"
+    },
+    {
+      "id": "PG087",
+      "name": "java-test-fixture-generator",
+      "batch": 53,
+      "depends_on": [
+        "PG028",
+        "PG042",
+        "PG078",
+        "PG081",
+        "PG082",
+        "PG083",
+        "PG084",
+        "PG085"
+      ],
+      "path": "skills/batch-53/PG087-java-test-fixture-generator.md",
+      "summary": "JUnit/Testcontainers fixtures and requirement-traced unit, integration, security, messaging and architecture tests"
+    },
+    {
+      "id": "PG088",
+      "name": "java-container-deployment-generator",
+      "batch": 53,
+      "depends_on": [
+        "PG053",
+        "PG062",
+        "PG070",
+        "PG086"
+      ],
+      "path": "skills/batch-53/PG088-java-container-deployment-generator.md",
+      "summary": "non-root Java container, Compose and Kubernetes assets with probes, resources and JVM runtime policy"
+    }
+  ]
+}

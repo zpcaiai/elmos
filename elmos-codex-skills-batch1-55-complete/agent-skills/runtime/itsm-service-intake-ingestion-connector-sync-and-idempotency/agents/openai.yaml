@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B47: Itsm Service Intake Ingestion Connector Sync And Idempotency"
+  short_description: "Run ELMOS B47 Skill with fail-closed evidence"
+  default_prompt: "Use $itsm-service-intake-ingestion-connector-sync-and-idempotency to execute the ELMOS B47 contract with fail-closed evidence."

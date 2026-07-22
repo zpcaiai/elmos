@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B47: Itsm Service Observability Sla Cockpit Alerting And Operations"
+  short_description: "Run ELMOS B47 Skill with fail-closed evidence"
+  default_prompt: "Use $itsm-service-observability-sla-cockpit-alerting-and-operations to execute the ELMOS B47 contract with fail-closed evidence."

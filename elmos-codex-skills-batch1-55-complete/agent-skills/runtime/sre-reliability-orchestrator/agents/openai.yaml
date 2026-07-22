@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B47: Sre Reliability Orchestrator"
+  short_description: "Run ELMOS B47 Skill with fail-closed evidence"
+  default_prompt: "Use $sre-reliability-orchestrator to execute the ELMOS B47 contract with fail-closed evidence."

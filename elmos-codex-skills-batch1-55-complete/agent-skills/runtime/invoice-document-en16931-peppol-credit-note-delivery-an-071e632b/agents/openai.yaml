@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B39: Invoice Document En16931 Peppol Credit Note Delivery And Acceptance"
+  short_description: "Run ELMOS B39 Skill with fail-closed evidence"
+  default_prompt: "Use $invoice-document-en16931-peppol-credit-note-delivery-an-071e632b to execute the ELMOS B39 contract with fail-closed evidence."

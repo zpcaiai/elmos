@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B37: Control Catalog Oscal Mapping Assessment And Continuous Control Monitoring"
+  short_description: "Run ELMOS B37 Skill with fail-closed evidence"
+  default_prompt: "Use $control-catalog-oscal-mapping-assessment-and-continuous-43b7e09f to execute the ELMOS B37 contract with fail-closed evidence."

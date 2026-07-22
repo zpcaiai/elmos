@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B53: Grid Dispatch Observability Sla Cockpit Alerting And Operations"
+  short_description: "Run ELMOS B53 Skill with fail-closed evidence"
+  default_prompt: "Use $grid-dispatch-observability-sla-cockpit-alerting-and-operations to execute the ELMOS B53 contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M40: B40 Security Architecture Review"
+  short_description: "Run ELMOS M40 Skill with fail-closed evidence"
+  default_prompt: "Use $b40-security-architecture-review to execute the ELMOS M40 contract with fail-closed evidence."

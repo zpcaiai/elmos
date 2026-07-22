@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B37: Oci Artifact Distribution Referrers And Registry Integration"
+  short_description: "Run ELMOS B37 Skill with fail-closed evidence"
+  default_prompt: "Use $oci-artifact-distribution-referrers-and-registry-integration to execute the ELMOS B37 contract with fail-closed evidence."

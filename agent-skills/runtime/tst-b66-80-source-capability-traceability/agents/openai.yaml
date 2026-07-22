@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tst B66 80 Source Capability Traceability"
+  short_description: "Run this ELMOS Batch 66-80 test Skill with evidence"
+  default_prompt: "Use $tst-b66-80-source-capability-traceability to run the exact Batch 66-80 test scope with fail-closed evidence."

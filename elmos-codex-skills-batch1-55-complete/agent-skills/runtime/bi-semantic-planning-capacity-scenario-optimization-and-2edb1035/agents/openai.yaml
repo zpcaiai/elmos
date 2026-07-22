@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B44: Bi Semantic Planning Capacity Scenario Optimization And Allocation"
+  short_description: "Run ELMOS B44 Skill with fail-closed evidence"
+  default_prompt: "Use $bi-semantic-planning-capacity-scenario-optimization-and-2edb1035 to execute the ELMOS B44 contract with fail-closed evidence."

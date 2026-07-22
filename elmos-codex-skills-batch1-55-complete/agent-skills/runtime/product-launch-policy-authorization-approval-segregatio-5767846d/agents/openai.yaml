@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B41: Product Launch Policy Authorization Approval Segregation And Exception"
+  short_description: "Run ELMOS B41 Skill with fail-closed evidence"
+  default_prompt: "Use $product-launch-policy-authorization-approval-segregatio-5767846d to execute the ELMOS B41 contract with fail-closed evidence."

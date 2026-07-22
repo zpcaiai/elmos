@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B52: Healthcare Rcm Workflow Orchestration Assignment Escalation And Recovery"
+  short_description: "Run ELMOS Product B52 contract with fail-closed evidence"
+  default_prompt: "Use $healthcare-rcm-workflow-orchestration-assignment-escala-5b1c0461 to implement its fail-closed ELMOS Product B52 contract."

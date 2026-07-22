@@ -1,0 +1,33 @@
+{
+  "suite_id": "batch38-45-strict",
+  "version": "2.0.0",
+  "scope": {
+    "batches": [
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45
+    ],
+    "product_skills": {
+      "from": 1325,
+      "to": 1496,
+      "count": 172
+    },
+    "test_skills": 30
+  },
+  "skill_count": 30,
+  "case_count": 400,
+  "product_skill_count": 172,
+  "profile": "strict-profile.json",
+  "case_catalog": "cases/catalog.json",
+  "case_manifest": "cases/manifest.json",
+  "coverage_matrix": "coverage-matrix.json",
+  "release_gate": "release-gate.json",
+  "result_schema": "../../schemas/test-suite-b38-45/result.schema.json",
+  "authoritative_gate": "scripts/test-suite-b38-45/run_strict_gate.py",
+  "certification_default": "BLOCKED"
+}

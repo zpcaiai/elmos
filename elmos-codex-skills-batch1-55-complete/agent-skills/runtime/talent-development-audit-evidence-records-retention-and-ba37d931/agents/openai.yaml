@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B43: Talent Development Audit Evidence Records Retention And Legal Hold"
+  short_description: "Run ELMOS B43 Skill with fail-closed evidence"
+  default_prompt: "Use $talent-development-audit-evidence-records-retention-and-ba37d931 to execute the ELMOS B43 contract with fail-closed evidence."

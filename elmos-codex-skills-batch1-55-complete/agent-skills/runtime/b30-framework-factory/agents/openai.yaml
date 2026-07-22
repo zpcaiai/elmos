@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M30: B30 Framework Factory"
+  short_description: "Run ELMOS M30 Skill with fail-closed evidence"
+  default_prompt: "Use $b30-framework-factory to execute the ELMOS M30 contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B43: Payroll Workforce Automation Copilot Recommendation And Human Review"
+  short_description: "Run ELMOS B43 Skill with fail-closed evidence"
+  default_prompt: "Use $payroll-workforce-automation-copilot-recommendation-and-78bb4d80 to execute the ELMOS B43 contract with fail-closed evidence."

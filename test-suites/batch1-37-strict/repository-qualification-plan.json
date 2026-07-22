@@ -1,0 +1,79 @@
+{
+  "plan_version": 1,
+  "plan_id": "elmos-local-engineering-qualification",
+  "scope": "local-engineering-evidence-only",
+  "updates_certification_cases": false,
+  "certification_case_ids": [],
+  "commands": [
+    {
+      "id": "test-suite-check",
+      "command": ["make", "test-suite-check"],
+      "timeout_seconds": 600
+    },
+    {
+      "id": "batch1-55-skills",
+      "command": ["make", "batch1-55-skills"],
+      "timeout_seconds": 900
+    },
+    {
+      "id": "product-batch33-55-skills",
+      "command": ["make", "product-batch33-55-skills"],
+      "timeout_seconds": 900
+    },
+    {
+      "id": "mature-product-skills",
+      "command": ["make", "mature-product-skills"],
+      "timeout_seconds": 1800,
+      "cleanup_after": {
+        "command": ["python3", "scripts/test-suite/cleanup_qualification_outputs.py", "all"],
+        "timeout_seconds": 600
+      }
+    },
+    {
+      "id": "java-reactor",
+      "command": ["make", "backend"],
+      "timeout_seconds": 3600,
+      "cleanup_after": {
+        "command": ["python3", "scripts/test-suite/cleanup_qualification_outputs.py", "java"],
+        "timeout_seconds": 600
+      }
+    },
+    {
+      "id": "dotnet-engine",
+      "command": ["make", "dotnet"],
+      "timeout_seconds": 1800,
+      "cleanup_after": {
+        "command": ["python3", "scripts/test-suite/cleanup_qualification_outputs.py", "dotnet"],
+        "timeout_seconds": 600
+      }
+    },
+    {
+      "id": "python-engine",
+      "command": ["make", "python"],
+      "timeout_seconds": 1800
+    },
+    {
+      "id": "project-synthesis-engine",
+      "command": ["make", "project-synthesis"],
+      "timeout_seconds": 1800
+    },
+    {
+      "id": "frontend-client",
+      "command": ["make", "frontend"],
+      "timeout_seconds": 1800,
+      "cleanup_after": {
+        "command": ["python3", "scripts/test-suite/cleanup_qualification_outputs.py", "frontend"],
+        "timeout_seconds": 600
+      }
+    },
+    {
+      "id": "web-console",
+      "command": ["make", "web"],
+      "timeout_seconds": 1800,
+      "cleanup_after": {
+        "command": ["python3", "scripts/test-suite/cleanup_qualification_outputs.py", "web"],
+        "timeout_seconds": 600
+      }
+    }
+  ]
+}

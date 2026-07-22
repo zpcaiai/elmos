@@ -1,0 +1,45 @@
+{
+  "profile_id": "elmos-slightly-strict-v1",
+  "name": "ELMOS Slightly Strict Release Profile",
+  "description": "Stricter than smoke/regression testing but intentionally below exhaustive formal certification.",
+  "thresholds": {
+    "overall_pass_rate_min": 0.95,
+    "critical_pass_rate_min": 1.0,
+    "high_pass_rate_min": 0.98,
+    "medium_pass_rate_min": 0.95,
+    "low_pass_rate_min": 0.9,
+    "batch_execution_coverage_min": 1.0,
+    "source_skill_direct_coverage_min": 1.0,
+    "evidence_completeness_critical_high_min": 1.0,
+    "evidence_completeness_overall_min": 0.98,
+    "deterministic_repeat_runs": 2,
+    "flaky_rate_max": 0.01,
+    "quarantined_rate_max": 0.005
+  },
+  "zero_tolerance": [
+    "cross_tenant_data_exposure",
+    "production_secret_exposure",
+    "user_owned_file_overwrite",
+    "evidence_tampering_accepted",
+    "critical_security_control_bypass",
+    "fake_or_synthetic_build_green",
+    "test_deletion_or_assertion_weakening_by_repair",
+    "unapproved_breaking_contract_change"
+  ],
+  "quarantine_rules": {
+    "critical_or_high_allowed": false,
+    "owner_required": true,
+    "expiry_required": true,
+    "linked_defect_required": true
+  },
+  "release_blockers": [
+    "any_failed_critical_case",
+    "high_pass_rate_below_threshold",
+    "missing_batch_execution",
+    "uncovered_source_skill",
+    "hidden_skip_or_disabled_test",
+    "expired_waiver",
+    "incomplete_required_evidence",
+    "unresolved_tamper_signal"
+  ]
+}

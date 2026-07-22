@@ -1,0 +1,318 @@
+{
+  "batch": 73,
+  "title": "Swift and Apple Native Project Pack",
+  "subject": "Swift, SwiftUI, Xcode, SwiftPM, state, networking, persistence, concurrency, Objective-C interoperability, widgets, accessibility, XCTest, and signing",
+  "skill_count": 12,
+  "id_range": [
+    "PG309",
+    "PG320"
+  ],
+  "toolchain": [
+    "swift",
+    "xcodebuild",
+    "Swift Package Manager",
+    "swift-format/swiftlint",
+    "XCTest",
+    "simctl"
+  ],
+  "source_markers": [
+    "Package.swift",
+    "*.xcodeproj",
+    "*.xcworkspace",
+    "Sources/",
+    "Tests/",
+    "*.entitlements",
+    "Info.plist"
+  ],
+  "skills": [
+    {
+      "id": "PG309",
+      "batch": 73,
+      "name": "b73-swift-project-profile-detector",
+      "title": "Swift Project Profile Detector",
+      "summary": "Inspect and model Swift Project Profile Detector for Swift, SwiftUI, Xcode, SwiftPM, state, networking, persistence, concurrency, Objective-C interoperability, widgets, accessibility, XCTest, and signing, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b73-swift-project-profile-detector/SKILL.md",
+      "catalog_path": "skills/batch-73/PG309-swift-project-profile-detector.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG308"
+      ],
+      "outputs": [
+        "swift_project_profile_detector.json",
+        "swift_project_profile_detector_artifacts/",
+        "swift_project_profile_detector_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG310",
+      "batch": 73,
+      "name": "b73-swift-package-dependency-reproducer",
+      "title": "Swift Package Dependency Reproducer",
+      "summary": "Reproduce deterministically Swift Package Dependency Reproducer for Swift, SwiftUI, Xcode, SwiftPM, state, networking, persistence, concurrency, Objective-C interoperability, widgets, accessibility, XCTest, and signing, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b73-swift-package-dependency-reproducer/SKILL.md",
+      "catalog_path": "skills/batch-73/PG310-swift-package-dependency-reproducer.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG308",
+        "PG309"
+      ],
+      "outputs": [
+        "swift_package_dependency_reproducer_plan.json",
+        "swift_package_dependency_reproducer_artifacts/",
+        "swift_package_dependency_reproducer_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG311",
+      "batch": 73,
+      "name": "b73-swiftui-application-generator",
+      "title": "SwiftUI Application Generator",
+      "summary": "Generate runnable and maintainable SwiftUI Application Generator for Swift, SwiftUI, Xcode, SwiftPM, state, networking, persistence, concurrency, Objective-C interoperability, widgets, accessibility, XCTest, and signing, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b73-swiftui-application-generator/SKILL.md",
+      "catalog_path": "skills/batch-73/PG311-swiftui-application-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG308",
+        "PG310"
+      ],
+      "outputs": [
+        "swiftui_application_generator_plan.json",
+        "swiftui_application_generator_artifacts/",
+        "swiftui_application_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG312",
+      "batch": 73,
+      "name": "b73-swift-state-architecture-generator",
+      "title": "Swift State Architecture Generator",
+      "summary": "Generate runnable and maintainable Swift State Architecture Generator for Swift, SwiftUI, Xcode, SwiftPM, state, networking, persistence, concurrency, Objective-C interoperability, widgets, accessibility, XCTest, and signing, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b73-swift-state-architecture-generator/SKILL.md",
+      "catalog_path": "skills/batch-73/PG312-swift-state-architecture-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG308",
+        "PG311"
+      ],
+      "outputs": [
+        "swift_state_architecture_generator_plan.json",
+        "swift_state_architecture_generator_artifacts/",
+        "swift_state_architecture_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG313",
+      "batch": 73,
+      "name": "b73-swift-networking-contract-generator",
+      "title": "Swift Networking Contract Generator",
+      "summary": "Generate runnable and maintainable Swift Networking Contract Generator for Swift, SwiftUI, Xcode, SwiftPM, state, networking, persistence, concurrency, Objective-C interoperability, widgets, accessibility, XCTest, and signing, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b73-swift-networking-contract-generator/SKILL.md",
+      "catalog_path": "skills/batch-73/PG313-swift-networking-contract-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG308",
+        "PG312"
+      ],
+      "outputs": [
+        "swift_networking_contract_generator_plan.json",
+        "swift_networking_contract_generator_artifacts/",
+        "swift_networking_contract_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG314",
+      "batch": 73,
+      "name": "b73-swift-persistence-generator",
+      "title": "Swift Persistence Generator",
+      "summary": "Generate runnable and maintainable Swift Persistence Generator for Swift, SwiftUI, Xcode, SwiftPM, state, networking, persistence, concurrency, Objective-C interoperability, widgets, accessibility, XCTest, and signing, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b73-swift-persistence-generator/SKILL.md",
+      "catalog_path": "skills/batch-73/PG314-swift-persistence-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG308",
+        "PG313"
+      ],
+      "outputs": [
+        "swift_persistence_generator_plan.json",
+        "swift_persistence_generator_artifacts/",
+        "swift_persistence_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG315",
+      "batch": 73,
+      "name": "b73-swift-concurrency-safety",
+      "title": "Swift Concurrency Safety",
+      "summary": "Enforce and test Swift Concurrency Safety for Swift, SwiftUI, Xcode, SwiftPM, state, networking, persistence, concurrency, Objective-C interoperability, widgets, accessibility, XCTest, and signing, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b73-swift-concurrency-safety/SKILL.md",
+      "catalog_path": "skills/batch-73/PG315-swift-concurrency-safety.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG308",
+        "PG314"
+      ],
+      "outputs": [
+        "swift_concurrency_safety_plan.json",
+        "swift_concurrency_safety_artifacts/",
+        "swift_concurrency_safety_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG316",
+      "batch": 73,
+      "name": "b73-objectivec-swift-interop-manager",
+      "title": "Objective-C Swift Interop Manager",
+      "summary": "Coordinate and control Objective-C Swift Interop Manager for Swift, SwiftUI, Xcode, SwiftPM, state, networking, persistence, concurrency, Objective-C interoperability, widgets, accessibility, XCTest, and signing, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b73-objectivec-swift-interop-manager/SKILL.md",
+      "catalog_path": "skills/batch-73/PG316-objectivec-swift-interop-manager.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG308",
+        "PG315"
+      ],
+      "outputs": [
+        "objectivec_swift_interop_manager_plan.json",
+        "objectivec_swift_interop_manager_artifacts/",
+        "objectivec_swift_interop_manager_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG317",
+      "batch": 73,
+      "name": "b73-apple-widget-extension-generator",
+      "title": "Apple Widget Extension Generator",
+      "summary": "Generate runnable and maintainable Apple Widget Extension Generator for Swift, SwiftUI, Xcode, SwiftPM, state, networking, persistence, concurrency, Objective-C interoperability, widgets, accessibility, XCTest, and signing, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b73-apple-widget-extension-generator/SKILL.md",
+      "catalog_path": "skills/batch-73/PG317-apple-widget-extension-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG308",
+        "PG316"
+      ],
+      "outputs": [
+        "apple_widget_extension_generator_plan.json",
+        "apple_widget_extension_generator_artifacts/",
+        "apple_widget_extension_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG318",
+      "batch": 73,
+      "name": "b73-apple-accessibility-localization",
+      "title": "Apple Accessibility Localization",
+      "summary": "Implement and validate Apple Accessibility Localization for Swift, SwiftUI, Xcode, SwiftPM, state, networking, persistence, concurrency, Objective-C interoperability, widgets, accessibility, XCTest, and signing, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b73-apple-accessibility-localization/SKILL.md",
+      "catalog_path": "skills/batch-73/PG318-apple-accessibility-localization.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG308",
+        "PG317"
+      ],
+      "outputs": [
+        "apple_accessibility_localization_plan.json",
+        "apple_accessibility_localization_artifacts/",
+        "apple_accessibility_localization_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG319",
+      "batch": 73,
+      "name": "b73-xctest-ui-test-harness",
+      "title": "XCTest UI Test Harness",
+      "summary": "Implement and validate XCTest UI Test Harness for Swift, SwiftUI, Xcode, SwiftPM, state, networking, persistence, concurrency, Objective-C interoperability, widgets, accessibility, XCTest, and signing, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b73-xctest-ui-test-harness/SKILL.md",
+      "catalog_path": "skills/batch-73/PG319-xctest-ui-test-harness.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG308",
+        "PG318"
+      ],
+      "outputs": [
+        "xctest_ui_test_harness_plan.json",
+        "xctest_ui_test_harness_artifacts/",
+        "xctest_ui_test_harness_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG320",
+      "batch": 73,
+      "name": "b73-xcode-build-signing-certifier",
+      "title": "Xcode Build Signing Certifier",
+      "summary": "Execute and independently verify Xcode Build Signing Certifier for Swift, SwiftUI, Xcode, SwiftPM, state, networking, persistence, concurrency, Objective-C interoperability, widgets, accessibility, XCTest, and signing, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b73-xcode-build-signing-certifier/SKILL.md",
+      "catalog_path": "skills/batch-73/PG320-xcode-build-signing-certifier.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG308",
+        "PG319"
+      ],
+      "outputs": [
+        "xcode_build_signing_certifier_plan.json",
+        "xcode_build_signing_certifier_artifacts/",
+        "xcode_build_signing_certifier_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md",
+        "certification_result.json",
+        "scope_and_limitations.md"
+      ]
+    }
+  ]
+}

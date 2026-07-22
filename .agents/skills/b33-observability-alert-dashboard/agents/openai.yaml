@@ -1,0 +1,4 @@
+interface:
+  display_name: "B33 Observability Alert Dashboard"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b33-observability-alert-dashboard to execute this ELMOS Runtime Skill with fail-closed evidence."

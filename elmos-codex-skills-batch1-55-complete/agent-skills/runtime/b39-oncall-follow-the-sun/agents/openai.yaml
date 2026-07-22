@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M39: B39 Oncall Follow The Sun"
+  short_description: "Run ELMOS M39 Skill with fail-closed evidence"
+  default_prompt: "Use $b39-oncall-follow-the-sun to execute the ELMOS M39 contract with fail-closed evidence."

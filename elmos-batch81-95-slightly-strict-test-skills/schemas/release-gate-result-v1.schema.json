@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.slightly-strict.release-gate-result.v1",
+  "type": "object",
+  "required": [
+    "suite",
+    "decision",
+    "metrics",
+    "blocking_reasons"
+  ],
+  "properties": {
+    "suite": {
+      "type": "string"
+    },
+    "decision": {
+      "enum": [
+        "passed",
+        "failed"
+      ]
+    },
+    "metrics": {
+      "type": "object"
+    },
+    "blocking_reasons": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

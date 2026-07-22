@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B40: Partner Channel Workflow Orchestration Assignment Escalation And Recovery"
+  short_description: "Run ELMOS Product B40 contract with fail-closed evidence"
+  default_prompt: "Use $partner-channel-workflow-orchestration-assignment-escal-f7a1dfda to implement its fail-closed ELMOS Product B40 contract."

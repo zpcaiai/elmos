@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B54: Legal Ops Case Investigation Remediation And Closure"
+  short_description: "Run ELMOS B54 Skill with fail-closed evidence"
+  default_prompt: "Use $legal-ops-case-investigation-remediation-and-closure to execute the ELMOS B54 contract with fail-closed evidence."

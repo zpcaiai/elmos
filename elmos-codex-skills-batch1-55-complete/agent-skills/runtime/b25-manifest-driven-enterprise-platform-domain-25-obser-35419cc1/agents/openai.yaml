@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M25: B25 Manifest Driven Enterprise Platform Domain 25 Observability And Operational Readi"
+  short_description: "Run ELMOS M25 Skill with fail-closed evidence"
+  default_prompt: "Use $b25-manifest-driven-enterprise-platform-domain-25-obser-35419cc1 to execute the ELMOS M25 contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B47: Itsm Service Workflow Orchestration Assignment Escalation And Recovery"
+  short_description: "Run ELMOS Product B47 contract with fail-closed evidence"
+  default_prompt: "Use $itsm-service-workflow-orchestration-assignment-escalati-01b39b4f to implement its fail-closed ELMOS Product B47 contract."

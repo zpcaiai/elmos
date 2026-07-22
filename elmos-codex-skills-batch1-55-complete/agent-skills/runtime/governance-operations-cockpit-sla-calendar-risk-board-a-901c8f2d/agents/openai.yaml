@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B38: Governance Operations Cockpit Sla Calendar Risk Board And Regulator Reporting"
+  short_description: "Run ELMOS B38 Skill with fail-closed evidence"
+  default_prompt: "Use $governance-operations-cockpit-sla-calendar-risk-board-a-901c8f2d to execute the ELMOS B38 contract with fail-closed evidence."

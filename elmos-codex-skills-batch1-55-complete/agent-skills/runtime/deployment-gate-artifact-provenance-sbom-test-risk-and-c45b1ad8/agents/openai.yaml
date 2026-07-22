@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B38: Deployment Gate Artifact Provenance Sbom Test Risk And Environment Admission"
+  short_description: "Run ELMOS B38 Skill with fail-closed evidence"
+  default_prompt: "Use $deployment-gate-artifact-provenance-sbom-test-risk-and-c45b1ad8 to execute the ELMOS B38 contract with fail-closed evidence."

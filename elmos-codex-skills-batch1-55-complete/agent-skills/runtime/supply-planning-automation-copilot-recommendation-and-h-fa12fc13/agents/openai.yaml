@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B42: Supply Planning Automation Copilot Recommendation And Human Review"
+  short_description: "Run ELMOS B42 Skill with fail-closed evidence"
+  default_prompt: "Use $supply-planning-automation-copilot-recommendation-and-h-fa12fc13 to execute the ELMOS B42 contract with fail-closed evidence."

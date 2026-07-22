@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B43: Core Hr Master Data Identity Hierarchy And Effective Dating"
+  short_description: "Run ELMOS Product B43 contract with fail-closed evidence"
+  default_prompt: "Use $core-hr-master-data-identity-hierarchy-and-effective-dating to implement its fail-closed ELMOS Product B43 contract."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Cross Language Interop Gate"
+  short_description: "Run this ELMOS Batch 81-95 test Skill with evidence"
+  default_prompt: "Use $cross-language-interop-gate to run its exact Batch 81-95 test scope with fail-closed evidence."

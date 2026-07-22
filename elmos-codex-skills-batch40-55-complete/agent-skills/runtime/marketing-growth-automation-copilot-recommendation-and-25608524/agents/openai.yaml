@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B40: Marketing Growth Automation Copilot Recommendation And Human Review"
+  short_description: "Run ELMOS Product B40 contract with fail-closed evidence"
+  default_prompt: "Use $marketing-growth-automation-copilot-recommendation-and-25608524 to implement its fail-closed ELMOS Product B40 contract."

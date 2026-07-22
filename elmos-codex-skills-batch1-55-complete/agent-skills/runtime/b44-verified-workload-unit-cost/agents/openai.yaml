@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M44: B44 Verified Workload Unit Cost"
+  short_description: "Run ELMOS M44 Skill with fail-closed evidence"
+  default_prompt: "Use $b44-verified-workload-unit-cost to execute the ELMOS M44 contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "B74 Cross Shell Automation Certifier"
+  short_description: "Run this ELMOS project Skill with evidence controls"
+  default_prompt: "Use $b74-cross-shell-automation-certifier to execute this ELMOS project Skill with fail-closed evidence."

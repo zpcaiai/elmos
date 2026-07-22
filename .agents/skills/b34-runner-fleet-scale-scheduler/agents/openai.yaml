@@ -1,0 +1,4 @@
+interface:
+  display_name: "B34 Runner Fleet Scale Scheduler"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b34-runner-fleet-scale-scheduler to execute this ELMOS Runtime Skill with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B51: Lastmile Delivery Policy Authorization Approval Segregation And Exception"
+  short_description: "Run ELMOS B51 Skill with fail-closed evidence"
+  default_prompt: "Use $lastmile-delivery-policy-authorization-approval-segrega-bbe90785 to execute the ELMOS B51 contract with fail-closed evidence."

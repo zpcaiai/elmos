@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B34: Session Token Mfa Step Up Device And Risk Authentication"
+  short_description: "Run ELMOS B34 Skill with fail-closed evidence"
+  default_prompt: "Use $session-token-mfa-step-up-device-and-risk-authentication to execute the ELMOS B34 contract with fail-closed evidence."

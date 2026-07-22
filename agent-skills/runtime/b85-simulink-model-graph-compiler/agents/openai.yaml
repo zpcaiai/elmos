@@ -1,0 +1,4 @@
+interface:
+  display_name: "B85 Simulink Model Graph Compiler"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b85-simulink-model-graph-compiler to execute this ELMOS Language Pack Skill with fail-closed evidence."

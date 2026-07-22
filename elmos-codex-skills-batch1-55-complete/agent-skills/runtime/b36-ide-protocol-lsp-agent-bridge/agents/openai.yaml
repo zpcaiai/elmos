@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M36: B36 Ide Protocol Lsp Agent Bridge"
+  short_description: "Run ELMOS M36 Skill with fail-closed evidence"
+  default_prompt: "Use $b36-ide-protocol-lsp-agent-bridge to execute the ELMOS M36 contract with fail-closed evidence."

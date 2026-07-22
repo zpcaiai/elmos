@@ -1,0 +1,4 @@
+interface:
+  display_name: "B29 Certify Csharp To Java"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b29-certify-csharp-to-java to execute this ELMOS Runtime Skill with fail-closed evidence."

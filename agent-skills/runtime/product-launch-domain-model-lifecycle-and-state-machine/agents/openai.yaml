@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B41: Product Launch Domain Model Lifecycle And State Machine"
+  short_description: "Run ELMOS Product B41 contract with fail-closed evidence"
+  default_prompt: "Use $product-launch-domain-model-lifecycle-and-state-machine to implement its fail-closed ELMOS Product B41 contract."

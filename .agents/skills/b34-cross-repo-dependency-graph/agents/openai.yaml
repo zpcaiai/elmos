@@ -1,0 +1,4 @@
+interface:
+  display_name: "B34 Cross Repo Dependency Graph"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b34-cross-repo-dependency-graph to execute this ELMOS Runtime Skill with fail-closed evidence."

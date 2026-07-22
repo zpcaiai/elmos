@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B55: Platform Ecosystem Audit Evidence Records Retention And Legal Hold"
+  short_description: "Run ELMOS Product B55 contract with fail-closed evidence"
+  default_prompt: "Use $platform-ecosystem-audit-evidence-records-retention-and-c7414215 to implement its fail-closed ELMOS Product B55 contract."

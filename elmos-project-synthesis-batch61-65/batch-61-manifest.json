@@ -1,0 +1,130 @@
+{
+  "batch": 61,
+  "skill_count": 10,
+  "skills": [
+    {
+      "id": "PG171",
+      "name": "spec-to-code-drift-detector",
+      "path": "skills/batch-61/PG171-spec-to-code-drift-detector.md",
+      "depends_on": [
+        "PG032",
+        "PG042",
+        "PG064",
+        "PG076",
+        "PG158"
+      ],
+      "summary": "Detects divergence between approved specifications and current repository behavior."
+    },
+    {
+      "id": "PG172",
+      "name": "code-to-spec-reconciliation",
+      "path": "skills/batch-61/PG172-code-to-spec-reconciliation.md",
+      "depends_on": [
+        "PG071",
+        "PG171"
+      ],
+      "summary": "Proposes controlled specification updates when valid repository behavior is not represented upstream."
+    },
+    {
+      "id": "PG173",
+      "name": "manual-edit-preservation",
+      "path": "skills/batch-61/PG173-manual-edit-preservation.md",
+      "depends_on": [
+        "PG071",
+        "PG072",
+        "PG074",
+        "PG171"
+      ],
+      "summary": "Preserves manual edits across regeneration using ownership, protected regions, semantic identity, and version history."
+    },
+    {
+      "id": "PG174",
+      "name": "incremental-regeneration-planner",
+      "path": "skills/batch-61/PG174-incremental-regeneration-planner.md",
+      "depends_on": [
+        "PG032",
+        "PG042",
+        "PG073",
+        "PG173"
+      ],
+      "summary": "Creates the smallest safe regeneration plan for an approved change request."
+    },
+    {
+      "id": "PG175",
+      "name": "change-set-impact-analyzer",
+      "path": "skills/batch-61/PG175-change-set-impact-analyzer.md",
+      "depends_on": [
+        "PG032",
+        "PG046",
+        "PG050",
+        "PG053",
+        "PG174"
+      ],
+      "summary": "Analyzes proposed repository changes across behavior, contracts, data, security, operations, and cost."
+    },
+    {
+      "id": "PG176",
+      "name": "architecture-drift-detector",
+      "path": "skills/batch-61/PG176-architecture-drift-detector.md",
+      "depends_on": [
+        "PG045",
+        "PG047",
+        "PG050",
+        "PG053",
+        "PG171"
+      ],
+      "summary": "Detects repository structures and runtime topology that violate the approved architecture baseline."
+    },
+    {
+      "id": "PG177",
+      "name": "database-api-compatibility-check",
+      "path": "skills/batch-61/PG177-database-api-compatibility-check.md",
+      "depends_on": [
+        "PG114",
+        "PG115",
+        "PG116",
+        "PG117",
+        "PG124",
+        "PG175"
+      ],
+      "summary": "Checks schema, migration, REST, RPC, event, and webhook compatibility for a change set."
+    },
+    {
+      "id": "PG178",
+      "name": "refactoring-and-upgrade-bridge",
+      "path": "skills/batch-61/PG178-refactoring-and-upgrade-bridge.md",
+      "depends_on": [
+        "PG010",
+        "PG057",
+        "PG058",
+        "PG175",
+        "PG177"
+      ],
+      "summary": "Plans controlled framework, runtime, dependency, and structural upgrades within Project Synthesis."
+    },
+    {
+      "id": "PG179",
+      "name": "human-approval-gate",
+      "path": "skills/batch-61/PG179-human-approval-gate.md",
+      "depends_on": [
+        "PG007",
+        "PG008",
+        "PG031",
+        "PG175"
+      ],
+      "summary": "Manages scoped approvals for high-impact change, reconciliation, repair, security, data, and delivery decisions."
+    },
+    {
+      "id": "PG180",
+      "name": "git-pr-delivery-manager",
+      "path": "skills/batch-61/PG180-git-pr-delivery-manager.md",
+      "depends_on": [
+        "PG158",
+        "PG175",
+        "PG177",
+        "PG179"
+      ],
+      "summary": "Packages approved incremental changes into reviewable commits and pull or merge requests."
+    }
+  ]
+}

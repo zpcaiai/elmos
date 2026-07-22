@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B42: Procurement S2P Master Data Identity Hierarchy And Effective Dating"
+  short_description: "Run ELMOS B42 Skill with fail-closed evidence"
+  default_prompt: "Use $procurement-s2p-master-data-identity-hierarchy-and-effe-1bf79bdb to execute the ELMOS B42 contract with fail-closed evidence."

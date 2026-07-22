@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B51: Fleet Transport Workflow Orchestration Assignment Escalation And Recovery"
+  short_description: "Run ELMOS B51 Skill with fail-closed evidence"
+  default_prompt: "Use $fleet-transport-workflow-orchestration-assignment-escal-faa5f34f to execute the ELMOS B51 contract with fail-closed evidence."

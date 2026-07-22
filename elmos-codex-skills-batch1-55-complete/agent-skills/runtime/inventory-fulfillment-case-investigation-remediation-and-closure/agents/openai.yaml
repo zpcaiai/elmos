@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B42: Inventory Fulfillment Case Investigation Remediation And Closure"
+  short_description: "Run ELMOS B42 Skill with fail-closed evidence"
+  default_prompt: "Use $inventory-fulfillment-case-investigation-remediation-and-closure to execute the ELMOS B42 contract with fail-closed evidence."

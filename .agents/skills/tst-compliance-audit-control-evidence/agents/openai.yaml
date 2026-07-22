@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tst Compliance Audit Control Evidence"
+  short_description: "Run Batch 38-45 strict evidence validation"
+  default_prompt: "Use $tst-compliance-audit-control-evidence to run its exact Batch 38-45 cases with fail-closed evidence."

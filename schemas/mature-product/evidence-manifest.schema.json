@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/mature-product/evidence-manifest.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "manifestVersion",
+    "batch",
+    "packKey",
+    "generatedAt",
+    "artifact",
+    "environment",
+    "execution",
+    "evidence",
+    "corpora",
+    "approvals",
+    "domainGates"
+  ],
+  "properties": {
+    "manifestVersion": {"const": 1},
+    "batch": {"type": "integer", "minimum": 38, "maximum": 45},
+    "packKey": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{2,62}$"},
+    "generatedAt": {"type": "string", "format": "date-time"},
+    "artifact": {"$ref": "#/$defs/closedFileRef"},
+    "environment": {"$ref": "#/$defs/closedFileRef"},
+    "execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["startedAt", "finishedAt", "replayCommand", "executorId", "verifierId", "verifierIndependent", "authorizationRefs"],
+      "properties": {
+        "startedAt": {"type": "string", "format": "date-time"},
+        "finishedAt": {"type": "string", "format": "date-time"},
+        "replayCommand": {"type": "string", "minLength": 1},
+        "executorId": {"type": "string", "minLength": 1},
+        "verifierId": {"type": "string", "minLength": 1},
+        "verifierIndependent": {"const": true},
+        "authorizationRefs": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/evidenceRef"},
+      "minItems": 3
+    },
+    "corpora": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/corpusRef"},
+      "minItems": 2
+    },
+    "approvals": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "domainGates": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/domainGateRef"}
+    }
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$", "not": {"pattern": "^sha256:([0-9a-f])\\1{63}$"}},
+    "fileRef": {
+      "type": "object",
+      "required": ["path", "sha256", "bytes"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "bytes": {"type": "integer", "minimum": 1}
+      }
+    },
+    "closedFileRef": {
+      "allOf": [{"$ref": "#/$defs/fileRef"}],
+      "unevaluatedProperties": false
+    },
+    "evidenceRef": {
+      "allOf": [
+        {"$ref": "#/$defs/fileRef"},
+        {
+          "type": "object",
+          "required": ["id", "role", "claimIds"],
+          "properties": {
+            "id": {"type": "string", "minLength": 1},
+            "role": {"enum": ["execution", "provenance", "verification", "customer", "independent-review", "authorization", "recovery", "financial-reconciliation"]},
+            "claimIds": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1, "uniqueItems": true}
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "corpusRef": {
+      "allOf": [
+        {"$ref": "#/$defs/fileRef"},
+        {
+          "type": "object",
+          "required": ["kind", "authoringAccess"],
+          "properties": {
+            "kind": {"enum": ["holdout", "representative"]},
+            "authoringAccess": {"const": false}
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "domainGateRef": {
+      "allOf": [
+        {"$ref": "#/$defs/fileRef"},
+        {
+          "type": "object",
+          "required": ["batch"],
+          "properties": {"batch": {"type": "integer", "minimum": 38, "maximum": 44}}
+        }
+      ],
+      "unevaluatedProperties": false
+    }
+  }
+}

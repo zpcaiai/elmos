@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M35: B35 Formal Spec Smt Solver"
+  short_description: "Run ELMOS M35 Skill with fail-closed evidence"
+  default_prompt: "Use $b35-formal-spec-smt-solver to execute the ELMOS M35 contract with fail-closed evidence."

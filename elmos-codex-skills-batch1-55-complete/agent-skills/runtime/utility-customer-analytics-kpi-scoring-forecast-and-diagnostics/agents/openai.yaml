@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B53: Utility Customer Analytics Kpi Scoring Forecast And Diagnostics"
+  short_description: "Run ELMOS B53 Skill with fail-closed evidence"
+  default_prompt: "Use $utility-customer-analytics-kpi-scoring-forecast-and-diagnostics to execute the ELMOS B53 contract with fail-closed evidence."

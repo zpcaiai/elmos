@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B45: Responsible Ai Policy Authorization Approval Segregation And Exception"
+  short_description: "Run ELMOS Product B45 contract with fail-closed evidence"
+  default_prompt: "Use $responsible-ai-policy-authorization-approval-segregatio-e034f9bc to implement its fail-closed ELMOS Product B45 contract."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B51: Fleet Transport Domain Model Lifecycle And State Machine"
+  short_description: "Run ELMOS Product B51 contract with fail-closed evidence"
+  default_prompt: "Use $fleet-transport-domain-model-lifecycle-and-state-machine to implement its fail-closed ELMOS Product B51 contract."

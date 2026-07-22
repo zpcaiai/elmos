@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B50: Manufacturing Quality Automation Copilot Recommendation And Human Review"
+  short_description: "Run ELMOS B50 Skill with fail-closed evidence"
+  default_prompt: "Use $manufacturing-quality-automation-copilot-recommendation-1213470f to execute the ELMOS B50 contract with fail-closed evidence."

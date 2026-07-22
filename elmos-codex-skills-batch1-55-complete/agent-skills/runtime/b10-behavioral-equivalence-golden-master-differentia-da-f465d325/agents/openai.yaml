@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M10: B10 Behavioral Equivalence Golden Master Differentia Data Lineage And Reconciliation"
+  short_description: "Run ELMOS M10 Skill with fail-closed evidence"
+  default_prompt: "Use $b10-behavioral-equivalence-golden-master-differentia-da-f465d325 to execute the ELMOS M10 contract with fail-closed evidence."

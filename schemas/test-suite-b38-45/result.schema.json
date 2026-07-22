@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/test-suite-b38-45/result.schema.json",
+  "type": "object", "additionalProperties": false,
+  "required": ["case_id", "status", "artifact_digest", "environment_digest", "started_at", "finished_at", "execution_kind", "evidence", "replay_command", "trace_coverage", "authorization_refs", "counters", "findings"],
+  "properties": {
+    "case_id": {"type": "string"}, "status": {"enum": ["passed", "failed", "blocked", "not-run", "waived"]},
+    "artifact_digest": {"$ref": "#/$defs/digest"}, "environment_digest": {"$ref": "#/$defs/digest"},
+    "started_at": {"type": ["string", "null"], "format": "date-time"}, "finished_at": {"type": ["string", "null"], "format": "date-time"},
+    "execution_kind": {"type": ["string", "null"], "enum": ["real", "approved-equivalent", null]},
+    "evidence": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}, "replay_command": {"type": ["string", "null"]},
+    "trace_coverage": {"type": "number", "minimum": 0, "maximum": 1}, "authorization_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "counters": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}}, "findings": {"type": "array"},
+    "metrics": {"type": "object", "additionalProperties": {"type": "number"}}
+  },
+  "$defs": {"digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}}
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B40: Territory Segmentation Account Assignment Routing And Coverage Management"
+  short_description: "Run ELMOS Product B40 contract with fail-closed evidence"
+  default_prompt: "Use $territory-segmentation-account-assignment-routing-and-c-ab286329 to implement its fail-closed ELMOS Product B40 contract."

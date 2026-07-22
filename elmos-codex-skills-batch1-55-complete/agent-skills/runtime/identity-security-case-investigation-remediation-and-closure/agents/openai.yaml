@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B48: Identity Security Case Investigation Remediation And Closure"
+  short_description: "Run ELMOS B48 Skill with fail-closed evidence"
+  default_prompt: "Use $identity-security-case-investigation-remediation-and-closure to execute the ELMOS B48 contract with fail-closed evidence."

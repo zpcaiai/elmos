@@ -1,0 +1,366 @@
+{
+  "batch": 74,
+  "title": "Bash Shell and PowerShell Operations Pack",
+  "subject": "Bash/POSIX shell and PowerShell scripts, modules, error handling, arguments, processes, remoting, secrets, signing, linting, and tests",
+  "skill_count": 14,
+  "id_range": [
+    "PG321",
+    "PG334"
+  ],
+  "toolchain": [
+    "bash/sh/zsh",
+    "shellcheck",
+    "shfmt",
+    "bats",
+    "pwsh",
+    "PSScriptAnalyzer",
+    "Pester"
+  ],
+  "source_markers": [
+    "*.sh",
+    "*.bash",
+    "*.zsh",
+    "*.ps1",
+    "*.psm1",
+    "*.psd1"
+  ],
+  "skills": [
+    {
+      "id": "PG321",
+      "batch": 74,
+      "name": "b74-shell-script-profile-detector",
+      "title": "Shell Script Profile Detector",
+      "summary": "Inspect and model Shell Script Profile Detector for Bash/POSIX shell and PowerShell scripts, modules, error handling, arguments, processes, remoting, secrets, signing, linting, and tests, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b74-shell-script-profile-detector/SKILL.md",
+      "catalog_path": "skills/batch-74/PG321-shell-script-profile-detector.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG320"
+      ],
+      "outputs": [
+        "shell_script_profile_detector.json",
+        "shell_script_profile_detector_artifacts/",
+        "shell_script_profile_detector_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG322",
+      "batch": 74,
+      "name": "b74-portable-bash-script-generator",
+      "title": "Portable Bash Script Generator",
+      "summary": "Generate runnable and maintainable Portable Bash Script Generator for Bash/POSIX shell and PowerShell scripts, modules, error handling, arguments, processes, remoting, secrets, signing, linting, and tests, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b74-portable-bash-script-generator/SKILL.md",
+      "catalog_path": "skills/batch-74/PG322-portable-bash-script-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG320",
+        "PG321"
+      ],
+      "outputs": [
+        "portable_bash_script_generator_plan.json",
+        "portable_bash_script_generator_artifacts/",
+        "portable_bash_script_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG323",
+      "batch": 74,
+      "name": "b74-shell-strict-mode-error-handling",
+      "title": "Shell Strict Mode Error Handling",
+      "summary": "Implement and validate Shell Strict Mode Error Handling for Bash/POSIX shell and PowerShell scripts, modules, error handling, arguments, processes, remoting, secrets, signing, linting, and tests, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b74-shell-strict-mode-error-handling/SKILL.md",
+      "catalog_path": "skills/batch-74/PG323-shell-strict-mode-error-handling.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG320",
+        "PG322"
+      ],
+      "outputs": [
+        "shell_strict_mode_error_handling_plan.json",
+        "shell_strict_mode_error_handling_artifacts/",
+        "shell_strict_mode_error_handling_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG324",
+      "batch": 74,
+      "name": "b74-shell-argument-env-config-parser",
+      "title": "Shell Argument Env Config Parser",
+      "summary": "Implement and validate Shell Argument Env Config Parser for Bash/POSIX shell and PowerShell scripts, modules, error handling, arguments, processes, remoting, secrets, signing, linting, and tests, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b74-shell-argument-env-config-parser/SKILL.md",
+      "catalog_path": "skills/batch-74/PG324-shell-argument-env-config-parser.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG320",
+        "PG323"
+      ],
+      "outputs": [
+        "shell_argument_env_config_parser_plan.json",
+        "shell_argument_env_config_parser_artifacts/",
+        "shell_argument_env_config_parser_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG325",
+      "batch": 74,
+      "name": "b74-shell-process-pipeline-orchestrator",
+      "title": "Shell Process Pipeline Orchestrator",
+      "summary": "Coordinate and control Shell Process Pipeline Orchestrator for Bash/POSIX shell and PowerShell scripts, modules, error handling, arguments, processes, remoting, secrets, signing, linting, and tests, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b74-shell-process-pipeline-orchestrator/SKILL.md",
+      "catalog_path": "skills/batch-74/PG325-shell-process-pipeline-orchestrator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG320",
+        "PG324"
+      ],
+      "outputs": [
+        "shell_process_pipeline_orchestrator_plan.json",
+        "shell_process_pipeline_orchestrator_artifacts/",
+        "shell_process_pipeline_orchestrator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG326",
+      "batch": 74,
+      "name": "b74-shell-security-secret-hardening",
+      "title": "Shell Security Secret Hardening",
+      "summary": "Enforce and test Shell Security Secret Hardening for Bash/POSIX shell and PowerShell scripts, modules, error handling, arguments, processes, remoting, secrets, signing, linting, and tests, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b74-shell-security-secret-hardening/SKILL.md",
+      "catalog_path": "skills/batch-74/PG326-shell-security-secret-hardening.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG320",
+        "PG325"
+      ],
+      "outputs": [
+        "shell_security_secret_hardening_plan.json",
+        "shell_security_secret_hardening_artifacts/",
+        "shell_security_secret_hardening_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG327",
+      "batch": 74,
+      "name": "b74-shellcheck-bats-quality-gate",
+      "title": "Shellcheck Bats Quality Gate",
+      "summary": "Enforce and test Shellcheck Bats Quality Gate for Bash/POSIX shell and PowerShell scripts, modules, error handling, arguments, processes, remoting, secrets, signing, linting, and tests, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b74-shellcheck-bats-quality-gate/SKILL.md",
+      "catalog_path": "skills/batch-74/PG327-shellcheck-bats-quality-gate.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG320",
+        "PG326"
+      ],
+      "outputs": [
+        "shellcheck_bats_quality_gate_plan.json",
+        "shellcheck_bats_quality_gate_artifacts/",
+        "shellcheck_bats_quality_gate_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG328",
+      "batch": 74,
+      "name": "b74-powershell-project-profile-detector",
+      "title": "Powershell Project Profile Detector",
+      "summary": "Inspect and model Powershell Project Profile Detector for Bash/POSIX shell and PowerShell scripts, modules, error handling, arguments, processes, remoting, secrets, signing, linting, and tests, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b74-powershell-project-profile-detector/SKILL.md",
+      "catalog_path": "skills/batch-74/PG328-powershell-project-profile-detector.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG320",
+        "PG327"
+      ],
+      "outputs": [
+        "powershell_project_profile_detector.json",
+        "powershell_project_profile_detector_artifacts/",
+        "powershell_project_profile_detector_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG329",
+      "batch": 74,
+      "name": "b74-powershell-module-command-generator",
+      "title": "Powershell Module Command Generator",
+      "summary": "Generate runnable and maintainable Powershell Module Command Generator for Bash/POSIX shell and PowerShell scripts, modules, error handling, arguments, processes, remoting, secrets, signing, linting, and tests, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b74-powershell-module-command-generator/SKILL.md",
+      "catalog_path": "skills/batch-74/PG329-powershell-module-command-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG320",
+        "PG328"
+      ],
+      "outputs": [
+        "powershell_module_command_generator_plan.json",
+        "powershell_module_command_generator_artifacts/",
+        "powershell_module_command_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG330",
+      "batch": 74,
+      "name": "b74-powershell-error-pipeline-contract",
+      "title": "Powershell Error Pipeline Contract",
+      "summary": "Implement and validate Powershell Error Pipeline Contract for Bash/POSIX shell and PowerShell scripts, modules, error handling, arguments, processes, remoting, secrets, signing, linting, and tests, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b74-powershell-error-pipeline-contract/SKILL.md",
+      "catalog_path": "skills/batch-74/PG330-powershell-error-pipeline-contract.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG320",
+        "PG329"
+      ],
+      "outputs": [
+        "powershell_error_pipeline_contract_plan.json",
+        "powershell_error_pipeline_contract_artifacts/",
+        "powershell_error_pipeline_contract_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG331",
+      "batch": 74,
+      "name": "b74-powershell-remoting-crossplatform",
+      "title": "Powershell Remoting Crossplatform",
+      "summary": "Implement and validate Powershell Remoting Crossplatform for Bash/POSIX shell and PowerShell scripts, modules, error handling, arguments, processes, remoting, secrets, signing, linting, and tests, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b74-powershell-remoting-crossplatform/SKILL.md",
+      "catalog_path": "skills/batch-74/PG331-powershell-remoting-crossplatform.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG320",
+        "PG330"
+      ],
+      "outputs": [
+        "powershell_remoting_crossplatform_plan.json",
+        "powershell_remoting_crossplatform_artifacts/",
+        "powershell_remoting_crossplatform_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG332",
+      "batch": 74,
+      "name": "b74-powershell-secret-signing-policy",
+      "title": "Powershell Secret Signing Policy",
+      "summary": "Enforce and test Powershell Secret Signing Policy for Bash/POSIX shell and PowerShell scripts, modules, error handling, arguments, processes, remoting, secrets, signing, linting, and tests, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b74-powershell-secret-signing-policy/SKILL.md",
+      "catalog_path": "skills/batch-74/PG332-powershell-secret-signing-policy.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG320",
+        "PG331"
+      ],
+      "outputs": [
+        "powershell_secret_signing_policy_plan.json",
+        "powershell_secret_signing_policy_artifacts/",
+        "powershell_secret_signing_policy_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG333",
+      "batch": 74,
+      "name": "b74-pester-psscriptanalyzer-quality-gate",
+      "title": "Pester Psscriptanalyzer Quality Gate",
+      "summary": "Enforce and test Pester Psscriptanalyzer Quality Gate for Bash/POSIX shell and PowerShell scripts, modules, error handling, arguments, processes, remoting, secrets, signing, linting, and tests, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b74-pester-psscriptanalyzer-quality-gate/SKILL.md",
+      "catalog_path": "skills/batch-74/PG333-pester-psscriptanalyzer-quality-gate.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG320",
+        "PG332"
+      ],
+      "outputs": [
+        "pester_psscriptanalyzer_quality_gate_plan.json",
+        "pester_psscriptanalyzer_quality_gate_artifacts/",
+        "pester_psscriptanalyzer_quality_gate_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG334",
+      "batch": 74,
+      "name": "b74-cross-shell-automation-certifier",
+      "title": "Cross Shell Automation Certifier",
+      "summary": "Execute and independently verify Cross Shell Automation Certifier for Bash/POSIX shell and PowerShell scripts, modules, error handling, arguments, processes, remoting, secrets, signing, linting, and tests, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b74-cross-shell-automation-certifier/SKILL.md",
+      "catalog_path": "skills/batch-74/PG334-cross-shell-automation-certifier.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG320",
+        "PG333"
+      ],
+      "outputs": [
+        "cross_shell_automation_certifier_plan.json",
+        "cross_shell_automation_certifier_artifacts/",
+        "cross_shell_automation_certifier_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md",
+        "certification_result.json",
+        "scope_and_limitations.md"
+      ]
+    }
+  ]
+}

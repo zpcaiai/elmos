@@ -1,0 +1,4 @@
+interface:
+  display_name: "B32 Route Navigation Deeplink"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b32-route-navigation-deeplink to execute this ELMOS Runtime Skill with fail-closed evidence."

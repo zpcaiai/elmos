@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B40: Customer Consent Contactability Preference Privacy And Lifecycle Governance"
+  short_description: "Run ELMOS Product B40 contract with fail-closed evidence"
+  default_prompt: "Use $customer-consent-contactability-preference-privacy-and-9a32e05d to implement its fail-closed ELMOS Product B40 contract."

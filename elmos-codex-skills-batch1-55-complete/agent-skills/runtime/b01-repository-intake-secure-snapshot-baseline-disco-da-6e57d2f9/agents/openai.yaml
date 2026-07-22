@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M01: B01 Repository Intake Secure Snapshot Baseline Disco Data Lineage And Reconciliation"
+  short_description: "Run ELMOS M01 Skill with fail-closed evidence"
+  default_prompt: "Use $b01-repository-intake-secure-snapshot-baseline-disco-da-6e57d2f9 to execute the ELMOS M01 contract with fail-closed evidence."

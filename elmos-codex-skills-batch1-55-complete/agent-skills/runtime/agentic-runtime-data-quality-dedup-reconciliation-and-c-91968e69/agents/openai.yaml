@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B45: Agentic Runtime Data Quality Dedup Reconciliation And Certification"
+  short_description: "Run ELMOS B45 Skill with fail-closed evidence"
+  default_prompt: "Use $agentic-runtime-data-quality-dedup-reconciliation-and-c-91968e69 to execute the ELMOS B45 contract with fail-closed evidence."

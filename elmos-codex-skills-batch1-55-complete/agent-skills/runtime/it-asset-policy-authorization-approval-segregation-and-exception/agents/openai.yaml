@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B47: It Asset Policy Authorization Approval Segregation And Exception"
+  short_description: "Run ELMOS B47 Skill with fail-closed evidence"
+  default_prompt: "Use $it-asset-policy-authorization-approval-segregation-and-exception to execute the ELMOS B47 contract with fail-closed evidence."

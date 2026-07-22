@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B55: Product Maturity Provider Adapters Versioning Compatibility And Migration"
+  short_description: "Run ELMOS B55 Skill with fail-closed evidence"
+  default_prompt: "Use $product-maturity-provider-adapters-versioning-compatibi-a59e585b to execute the ELMOS B55 contract with fail-closed evidence."

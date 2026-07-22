@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B46: Integration Platform Planning Capacity Scenario Optimization And Allocation"
+  short_description: "Run ELMOS B46 Skill with fail-closed evidence"
+  default_prompt: "Use $integration-platform-planning-capacity-scenario-optimiz-1cb13c5e to execute the ELMOS B46 contract with fail-closed evidence."

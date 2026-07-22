@@ -1,0 +1,4 @@
+interface:
+  display_name: "B73 Swift Concurrency Safety"
+  short_description: "Run this ELMOS project Skill with evidence controls"
+  default_prompt: "Use $b73-swift-concurrency-safety to execute this ELMOS project Skill with fail-closed evidence."

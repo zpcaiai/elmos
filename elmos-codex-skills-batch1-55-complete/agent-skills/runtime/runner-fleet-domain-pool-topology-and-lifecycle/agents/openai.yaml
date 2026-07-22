@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B36: Runner Fleet Domain Pool Topology And Lifecycle"
+  short_description: "Run ELMOS B36 Skill with fail-closed evidence"
+  default_prompt: "Use $runner-fleet-domain-pool-topology-and-lifecycle to execute the ELMOS B36 contract with fail-closed evidence."

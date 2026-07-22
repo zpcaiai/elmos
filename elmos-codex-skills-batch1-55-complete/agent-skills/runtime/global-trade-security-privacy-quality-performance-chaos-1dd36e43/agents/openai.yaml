@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B51: Global Trade Security Privacy Quality Performance Chaos And Release Gates"
+  short_description: "Run ELMOS B51 Skill with fail-closed evidence"
+  default_prompt: "Use $global-trade-security-privacy-quality-performance-chaos-1dd36e43 to execute the ELMOS B51 contract with fail-closed evidence."

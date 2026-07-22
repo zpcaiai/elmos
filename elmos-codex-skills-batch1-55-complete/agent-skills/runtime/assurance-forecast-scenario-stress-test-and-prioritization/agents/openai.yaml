@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B37: Assurance Forecast Scenario Stress Test And Prioritization"
+  short_description: "Run ELMOS B37 Skill with fail-closed evidence"
+  default_prompt: "Use $assurance-forecast-scenario-stress-test-and-prioritization to execute the ELMOS B37 contract with fail-closed evidence."

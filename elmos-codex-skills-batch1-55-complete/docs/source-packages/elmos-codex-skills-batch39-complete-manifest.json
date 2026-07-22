@@ -1,0 +1,367 @@
+{
+  "schemaVersion": "1",
+  "package": "elmos-codex-skills-batch39-complete",
+  "generatedAt": "2026-07-22T05:21:06.938353+00:00",
+  "skillCount": 48,
+  "batches": {
+    "39A": {
+      "title": "Financial、Billing与Commercial Operations",
+      "theme": "多租户计量、Usage Ledger、价格、套餐、合同、订单、发票、税务、Revenue Recognition、Credit、Collection与商业运营",
+      "skillCount": 16,
+      "skills": [
+        "financial-billing-commercial-operations-orchestrator",
+        "multi-tenant-metering-event-contract-and-usage-ledger",
+        "meter-definition-dimension-aggregation-correction-and-data-quality",
+        "product-catalog-price-book-plan-rate-card-entitlement-discount-and-promotion",
+        "quote-cpq-contract-amendment-commitment-minimum-and-approval",
+        "order-subscription-provisioning-entitlement-lifecycle-and-orchestration",
+        "rating-charging-billing-period-invoice-line-and-adjustment-engine",
+        "tax-determination-registration-nexus-vat-gst-sales-tax-withholding-and-einvoicing",
+        "invoice-document-en16931-peppol-credit-note-delivery-and-acceptance",
+        "accounts-receivable-payment-allocation-refund-dispute-and-dunning",
+        "credit-policy-limit-risk-deposit-collection-writeoff-and-bad-debt",
+        "revenue-recognition-ifrs15-asc606-performance-obligation-allocation-and-schedule",
+        "contract-asset-liability-deferred-revenue-unbilled-ar-and-financial-subledger",
+        "commercial-operations-renewal-expansion-churn-forecast-and-revenue-assurance",
+        "billing-finance-reconciliation-period-close-audit-evidence-and-reporting",
+        "financial-commercial-security-quality-chaos-and-release-gates"
+      ]
+    },
+    "39B": {
+      "title": "Payment、Treasury与Financial Risk Operations",
+      "theme": "Payment Orchestration、PSP／银行连接、Virtual Account、Cash Application、Refund／Chargeback、FX、Liquidity、Cash Forecast、Bank Reconciliation、Fraud与Treasury Control",
+      "skillCount": 16,
+      "skills": [
+        "payment-treasury-financial-risk-operations-orchestrator",
+        "unified-payment-intent-instruction-attempt-settlement-and-cash-movement-domain",
+        "psp-bank-payment-rail-connector-capability-authentication-and-lifecycle",
+        "payment-routing-orchestration-fee-sla-retry-idempotency-and-failover",
+        "beneficiary-bank-account-virtual-account-mandate-and-verification-of-payee",
+        "cash-application-remittance-matching-allocation-and-unapplied-cash",
+        "refund-reversal-return-chargeback-dispute-and-representment",
+        "bank-statement-iso20022-camt-bai2-ingestion-and-reconciliation",
+        "fx-market-data-quote-trade-hedge-settlement-revaluation-and-exposure",
+        "treasury-bank-account-liquidity-pooling-sweep-limit-and-funding",
+        "cash-forecast-scenario-variance-confidence-and-liquidity-planning",
+        "payment-fraud-risk-signal-rule-model-decision-case-and-step-up",
+        "treasury-mandate-signer-approval-segregation-limit-and-payment-factory-control",
+        "payment-security-pci-tokenization-pan-vault-encryption-key-and-secret-boundary",
+        "payment-treasury-operations-cockpit-position-reconciliation-fraud-and-sla",
+        "payment-treasury-conformance-security-chaos-performance-and-release-gates"
+      ]
+    },
+    "39C": {
+      "title": "Finance Analytics、Planning与Unit Economics",
+      "theme": "MRR／ARR、Revenue Bridge、Cohort、Gross Margin、Cost Allocation、Budget、Forecast、Scenario、Variance、Pricing Analytics、Customer Profitability与Executive Finance Cockpit",
+      "skillCount": 16,
+      "skills": [
+        "finance-analytics-planning-unit-economics-orchestrator",
+        "finance-semantic-layer-kpi-registry-definition-lineage-and-restatement",
+        "mrr-arr-acv-tcv-bookings-billings-revenue-and-recurring-metric-engine",
+        "revenue-bridge-new-expansion-contraction-churn-reactivation-and-fx-waterfall",
+        "cohort-retention-grr-nrr-survival-and-customer-lifecycle-analytics",
+        "gross-margin-cogs-contribution-margin-and-cost-classification",
+        "focus-cost-ingestion-shared-cost-allocation-showback-chargeback-and-unit-cost",
+        "budget-driver-based-planning-workforce-capex-opex-and-version-control",
+        "rolling-forecast-scenario-assumption-sensitivity-confidence-and-stress-test",
+        "variance-price-volume-mix-fx-timing-rate-and-driver-analysis",
+        "pricing-analytics-packaging-discount-waterfall-elasticity-and-experiment",
+        "customer-product-segment-profitability-ltv-cac-payback-and-cost-to-serve",
+        "finance-actual-plan-forecast-reconciliation-close-and-management-reporting",
+        "executive-finance-cockpit-ifrs18-mpm-board-pack-and-narrative",
+        "finance-planning-workflow-owner-review-approval-lock-and-collaboration",
+        "finance-analytics-quality-security-performance-and-release-gates"
+      ]
+    }
+  },
+  "skills": [
+    {
+      "batch": "39A",
+      "name": "financial-billing-commercial-operations-orchestrator",
+      "description": "Implement Batch 39A end to end: metering, usage ledger, catalog, pricing, contracts, orders, subscriptions, billing, tax, invoices, AR, credit, collections, revenue recognition, subledgers, commercial operations and release gates.",
+      "path": "agent-skills/runtime/financial-billing-commercial-operations-orchestrator/SKILL.md"
+    },
+    {
+      "batch": "39A",
+      "name": "multi-tenant-metering-event-contract-and-usage-ledger",
+      "description": "Implement tenant-bound metering events, producer contracts, immutable usage ledger, idempotency, correction events, event-time semantics, partitioning, replay and audit.",
+      "path": "agent-skills/runtime/multi-tenant-metering-event-contract-and-usage-ledger/SKILL.md"
+    },
+    {
+      "batch": "39A",
+      "name": "meter-definition-dimension-aggregation-correction-and-data-quality",
+      "description": "Implement versioned meters, units, dimensions, aggregation windows, late data, estimates, corrections, completeness, anomaly detection and certified usage aggregates.",
+      "path": "agent-skills/runtime/meter-definition-dimension-aggregation-correction-and-data-quality/SKILL.md"
+    },
+    {
+      "batch": "39A",
+      "name": "product-catalog-price-book-plan-rate-card-entitlement-discount-and-promotion",
+      "description": "Implement versioned products, SKUs, features, plans, price books, rate cards, tiers, entitlements, discounts, promotions, floors, approvals and effective dating.",
+      "path": "agent-skills/runtime/product-catalog-price-book-plan-rate-card-entitlement-discount-and-promotion/SKILL.md"
+    },
+    {
+      "batch": "39A",
+      "name": "quote-cpq-contract-amendment-commitment-minimum-and-approval",
+      "description": "Implement CPQ quotes, commercial proposals, signed contracts, amendments, commitments, minimum spend, ramp schedules, approvals, signatures and contract lineage.",
+      "path": "agent-skills/runtime/quote-cpq-contract-amendment-commitment-minimum-and-approval/SKILL.md"
+    },
+    {
+      "batch": "39A",
+      "name": "order-subscription-provisioning-entitlement-lifecycle-and-orchestration",
+      "description": "Implement orders, order lines, subscriptions, changes, renewals, cancellations, provisioning, fulfilment, entitlements and reconciliation.",
+      "path": "agent-skills/runtime/order-subscription-provisioning-entitlement-lifecycle-and-orchestration/SKILL.md"
+    },
+    {
+      "batch": "39A",
+      "name": "rating-charging-billing-period-invoice-line-and-adjustment-engine",
+      "description": "Implement deterministic rating, tiering, minimums, commitments, proration, billing periods, charges, invoice lines, adjustments, re-rating and reproducibility.",
+      "path": "agent-skills/runtime/rating-charging-billing-period-invoice-line-and-adjustment-engine/SKILL.md"
+    },
+    {
+      "batch": "39A",
+      "name": "tax-determination-registration-nexus-vat-gst-sales-tax-withholding-and-einvoicing",
+      "description": "Implement jurisdiction-aware tax determination, registrations, nexus, place of supply, VAT/GST/sales tax, exemptions, reverse charge, withholding, tax evidence, provider adapters and versioned rules.",
+      "path": "agent-skills/runtime/tax-determination-registration-nexus-vat-gst-sales-tax-withholding-and-einvoicing/SKILL.md"
+    },
+    {
+      "batch": "39A",
+      "name": "invoice-document-en16931-peppol-credit-note-delivery-and-acceptance",
+      "description": "Implement legal invoice documents, numbering, EN 16931 and Peppol profiles, local CIUS, credit/debit notes, delivery, responses, acceptance, migration and document evidence.",
+      "path": "agent-skills/runtime/invoice-document-en16931-peppol-credit-note-delivery-and-acceptance/SKILL.md"
+    },
+    {
+      "batch": "39A",
+      "name": "accounts-receivable-payment-allocation-refund-dispute-and-dunning",
+      "description": "Implement receivables, payments, allocations, refunds, chargebacks, disputes, unapplied cash, dunning, promises to pay, statements and reconciliation.",
+      "path": "agent-skills/runtime/accounts-receivable-payment-allocation-refund-dispute-and-dunning/SKILL.md"
+    },
+    {
+      "batch": "39A",
+      "name": "credit-policy-limit-risk-deposit-collection-writeoff-and-bad-debt",
+      "description": "Implement customer credit profiles, limits, risk signals, guarantees, deposits, overrides, collection cases, legal escalation, write-offs and bad-debt accounting.",
+      "path": "agent-skills/runtime/credit-policy-limit-risk-deposit-collection-writeoff-and-bad-debt/SKILL.md"
+    },
+    {
+      "batch": "39A",
+      "name": "revenue-recognition-ifrs15-asc606-performance-obligation-allocation-and-schedule",
+      "description": "Implement versioned IFRS 15 and ASC 606 accounting policies, revenue contracts, performance obligations, transaction price, variable consideration, SSP, allocation, satisfaction and revenue schedules.",
+      "path": "agent-skills/runtime/revenue-recognition-ifrs15-asc606-performance-obligation-allocation-and-schedule/SKILL.md"
+    },
+    {
+      "batch": "39A",
+      "name": "contract-asset-liability-deferred-revenue-unbilled-ar-and-financial-subledger",
+      "description": "Implement billing and revenue subledgers, contract assets and liabilities, deferred revenue, unbilled AR, journal rules, accounting periods, posting and GL export.",
+      "path": "agent-skills/runtime/contract-asset-liability-deferred-revenue-unbilled-ar-and-financial-subledger/SKILL.md"
+    },
+    {
+      "batch": "39A",
+      "name": "commercial-operations-renewal-expansion-churn-forecast-and-revenue-assurance",
+      "description": "Implement commercial operations for renewals, expansions, contraction, churn, commitments, forecasts, leakage detection, revenue assurance and action workflows.",
+      "path": "agent-skills/runtime/commercial-operations-renewal-expansion-churn-forecast-and-revenue-assurance/SKILL.md"
+    },
+    {
+      "batch": "39A",
+      "name": "billing-finance-reconciliation-period-close-audit-evidence-and-reporting",
+      "description": "Implement reconciliations from usage to GL, period-close checklists, subledger certification, variance explanations, audit evidence, disclosures and financial reporting.",
+      "path": "agent-skills/runtime/billing-finance-reconciliation-period-close-audit-evidence-and-reporting/SKILL.md"
+    },
+    {
+      "batch": "39A",
+      "name": "financial-commercial-security-quality-chaos-and-release-gates",
+      "description": "Implement financial invariants, property tests, billing simulations, tax and eInvoice conformance, journal balancing, close tests, provider chaos, security, privacy, scale and mandatory release gates.",
+      "path": "agent-skills/runtime/financial-commercial-security-quality-chaos-and-release-gates/SKILL.md"
+    },
+    {
+      "batch": "39B",
+      "name": "payment-treasury-financial-risk-operations-orchestrator",
+      "description": "Implement Batch 39B end to end: payment facts, PSP and bank connectors, routing, virtual accounts, cash application, refunds, chargebacks, statements, FX, liquidity, cash forecasting, fraud, treasury controls, operations and release gates.",
+      "path": "agent-skills/runtime/payment-treasury-financial-risk-operations-orchestrator/SKILL.md"
+    },
+    {
+      "batch": "39B",
+      "name": "unified-payment-intent-instruction-attempt-settlement-and-cash-movement-domain",
+      "description": "Implement provider-neutral payment intents, instructions, attempts, authorizations, captures, settlements, returns and immutable cash movements.",
+      "path": "agent-skills/runtime/unified-payment-intent-instruction-attempt-settlement-and-cash-movement-domain/SKILL.md"
+    },
+    {
+      "batch": "39B",
+      "name": "psp-bank-payment-rail-connector-capability-authentication-and-lifecycle",
+      "description": "Implement provider-neutral PSP, bank and payment-rail connectors with capability discovery, authentication, versions, webhooks, polling, files, ISO 20022 and reconciliation.",
+      "path": "agent-skills/runtime/psp-bank-payment-rail-connector-capability-authentication-and-lifecycle/SKILL.md"
+    },
+    {
+      "batch": "39B",
+      "name": "payment-routing-orchestration-fee-sla-retry-idempotency-and-failover",
+      "description": "Implement explainable payment routing, provider scoring, fees, FX, risk, limits, SLA, retry classification, idempotency, circuit breakers and duplicate-safe failover.",
+      "path": "agent-skills/runtime/payment-routing-orchestration-fee-sla-retry-idempotency-and-failover/SKILL.md"
+    },
+    {
+      "batch": "39B",
+      "name": "beneficiary-bank-account-virtual-account-mandate-and-verification-of-payee",
+      "description": "Implement beneficiaries, bank accounts, virtual accounts, direct-debit mandates, ownership evidence, Verification of Payee, risk reviews and lifecycle controls.",
+      "path": "agent-skills/runtime/beneficiary-bank-account-virtual-account-mandate-and-verification-of-payee/SKILL.md"
+    },
+    {
+      "batch": "39B",
+      "name": "cash-application-remittance-matching-allocation-and-unapplied-cash",
+      "description": "Implement cash-application rules, remittance parsing, candidate matching, confidence, allocations, unapplied cash, deductions, short pays and reconciliation.",
+      "path": "agent-skills/runtime/cash-application-remittance-matching-allocation-and-unapplied-cash/SKILL.md"
+    },
+    {
+      "batch": "39B",
+      "name": "refund-reversal-return-chargeback-dispute-and-representment",
+      "description": "Implement refunds, payment reversals, bank returns, card chargebacks, disputes, evidence, representment, financial postings and duplicate-loss controls.",
+      "path": "agent-skills/runtime/refund-reversal-return-chargeback-dispute-and-representment/SKILL.md"
+    },
+    {
+      "batch": "39B",
+      "name": "bank-statement-iso20022-camt-bai2-ingestion-and-reconciliation",
+      "description": "Implement bank-statement ingestion for ISO 20022 camt, BAI2, MT940 and APIs, immutable entries, balance validation, normalization, cash matching and bank reconciliation.",
+      "path": "agent-skills/runtime/bank-statement-iso20022-camt-bai2-ingestion-and-reconciliation/SKILL.md"
+    },
+    {
+      "batch": "39B",
+      "name": "fx-market-data-quote-trade-hedge-settlement-revaluation-and-exposure",
+      "description": "Implement FX market data, quotes, spot/forward/swap trades, confirmations, settlements, economic hedges, revaluation, exposure and counterparty risk.",
+      "path": "agent-skills/runtime/fx-market-data-quote-trade-hedge-settlement-revaluation-and-exposure/SKILL.md"
+    },
+    {
+      "batch": "39B",
+      "name": "treasury-bank-account-liquidity-pooling-sweep-limit-and-funding",
+      "description": "Implement treasury bank-account inventory, balance positions, liquidity, cash pooling, sweeps, buffers, facilities, funding, limits and intercompany movements.",
+      "path": "agent-skills/runtime/treasury-bank-account-liquidity-pooling-sweep-limit-and-funding/SKILL.md"
+    },
+    {
+      "batch": "39B",
+      "name": "cash-forecast-scenario-variance-confidence-and-liquidity-planning",
+      "description": "Implement short-, medium- and long-term cash forecasts, scenarios, source confidence, liquidity planning, variance and forecast governance.",
+      "path": "agent-skills/runtime/cash-forecast-scenario-variance-confidence-and-liquidity-planning/SKILL.md"
+    },
+    {
+      "batch": "39B",
+      "name": "payment-fraud-risk-signal-rule-model-decision-case-and-step-up",
+      "description": "Implement payment-fraud signals, rules, models, decisions, 3DS and step-up, velocity, beneficiary risk, cases, privacy and feedback.",
+      "path": "agent-skills/runtime/payment-fraud-risk-signal-rule-model-decision-case-and-step-up/SKILL.md"
+    },
+    {
+      "batch": "39B",
+      "name": "treasury-mandate-signer-approval-segregation-limit-and-payment-factory-control",
+      "description": "Implement bank mandates, signers, approval matrices, segregation of duties, payment limits, payment files, payment factory, emergency payments and bank-portal reconciliation.",
+      "path": "agent-skills/runtime/treasury-mandate-signer-approval-segregation-limit-and-payment-factory-control/SKILL.md"
+    },
+    {
+      "batch": "39B",
+      "name": "payment-security-pci-tokenization-pan-vault-encryption-key-and-secret-boundary",
+      "description": "Implement payment-data classification, PCI scope, tokenization, PAN vault adapters, encryption, key lifecycle, redaction, access, evidence and third-party responsibility.",
+      "path": "agent-skills/runtime/payment-security-pci-tokenization-pan-vault-encryption-key-and-secret-boundary/SKILL.md"
+    },
+    {
+      "batch": "39B",
+      "name": "payment-treasury-operations-cockpit-position-reconciliation-fraud-and-sla",
+      "description": "Implement payment and treasury operational dashboards, cash positions, unknown payments, reconciliation, fraud, liquidity, forecasts, limits, SLA, cases and actions.",
+      "path": "agent-skills/runtime/payment-treasury-operations-cockpit-position-reconciliation-fraud-and-sla/SKILL.md"
+    },
+    {
+      "batch": "39B",
+      "name": "payment-treasury-conformance-security-chaos-performance-and-release-gates",
+      "description": "Implement payment, bank, statement, cash application, refund, chargeback, FX, liquidity, fraud, treasury-control, PCI, chaos, scale and release-gate tests.",
+      "path": "agent-skills/runtime/payment-treasury-conformance-security-chaos-performance-and-release-gates/SKILL.md"
+    },
+    {
+      "batch": "39C",
+      "name": "finance-analytics-planning-unit-economics-orchestrator",
+      "description": "Implement Batch 39C end to end: finance semantics, recurring revenue, bridges, cohorts, margin, cost allocation, budgeting, forecasting, variance, pricing analytics, profitability, reporting, workflow and release gates.",
+      "path": "agent-skills/runtime/finance-analytics-planning-unit-economics-orchestrator/SKILL.md"
+    },
+    {
+      "batch": "39C",
+      "name": "finance-semantic-layer-kpi-registry-definition-lineage-and-restatement",
+      "description": "Implement versioned finance metrics, grains, measures, dimensions, accounting classifications, currency bases, snapshots, lineage, certification and restatements.",
+      "path": "agent-skills/runtime/finance-semantic-layer-kpi-registry-definition-lineage-and-restatement/SKILL.md"
+    },
+    {
+      "batch": "39C",
+      "name": "mrr-arr-acv-tcv-bookings-billings-revenue-and-recurring-metric-engine",
+      "description": "Implement reproducible recurring-revenue and commercial metrics with eligibility, normalization, commitments, usage, currency, contract and subscription states.",
+      "path": "agent-skills/runtime/mrr-arr-acv-tcv-bookings-billings-revenue-and-recurring-metric-engine/SKILL.md"
+    },
+    {
+      "batch": "39C",
+      "name": "revenue-bridge-new-expansion-contraction-churn-reactivation-and-fx-waterfall",
+      "description": "Implement deterministic recurring-revenue bridges, movement classification, precedence, contract migrations, FX separation, reconciliation and drill-down.",
+      "path": "agent-skills/runtime/revenue-bridge-new-expansion-contraction-churn-reactivation-and-fx-waterfall/SKILL.md"
+    },
+    {
+      "batch": "39C",
+      "name": "cohort-retention-grr-nrr-survival-and-customer-lifecycle-analytics",
+      "description": "Implement fixed cohorts, logo and revenue retention, GRR, NRR, survival, censoring, lifecycle stages and cohort drill-down.",
+      "path": "agent-skills/runtime/cohort-retention-grr-nrr-survival-and-customer-lifecycle-analytics/SKILL.md"
+    },
+    {
+      "batch": "39C",
+      "name": "gross-margin-cogs-contribution-margin-and-cost-classification",
+      "description": "Implement revenue and cost classifications, COGS, gross margin, contribution margin, product cost policies, restatements and reconciliations.",
+      "path": "agent-skills/runtime/gross-margin-cogs-contribution-margin-and-cost-classification/SKILL.md"
+    },
+    {
+      "batch": "39C",
+      "name": "focus-cost-ingestion-shared-cost-allocation-showback-chargeback-and-unit-cost",
+      "description": "Implement FOCUS and vendor-cost ingestion, direct assignment, shared pools, allocation drivers, showback, chargeback, unit costs and reconciliation.",
+      "path": "agent-skills/runtime/focus-cost-ingestion-shared-cost-allocation-showback-chargeback-and-unit-cost/SKILL.md"
+    },
+    {
+      "batch": "39C",
+      "name": "budget-driver-based-planning-workforce-capex-opex-and-version-control",
+      "description": "Implement annual and multi-year budgets, operating drivers, workforce, capacity, capex, opex, cash, approvals, locks and version control.",
+      "path": "agent-skills/runtime/budget-driver-based-planning-workforce-capex-opex-and-version-control/SKILL.md"
+    },
+    {
+      "batch": "39C",
+      "name": "rolling-forecast-scenario-assumption-sensitivity-confidence-and-stress-test",
+      "description": "Implement rolling forecasts, forecast models, assumptions, overrides, scenarios, sensitivities, confidence intervals, stress tests and liquidity impacts.",
+      "path": "agent-skills/runtime/rolling-forecast-scenario-assumption-sensitivity-confidence-and-stress-test/SKILL.md"
+    },
+    {
+      "batch": "39C",
+      "name": "variance-price-volume-mix-fx-timing-rate-and-driver-analysis",
+      "description": "Implement actual-to-budget and actual-to-forecast variance, price-volume-mix, FX, timing, rate, headcount, cost and driver decomposition with reconciliation.",
+      "path": "agent-skills/runtime/variance-price-volume-mix-fx-timing-rate-and-driver-analysis/SKILL.md"
+    },
+    {
+      "batch": "39C",
+      "name": "pricing-analytics-packaging-discount-waterfall-elasticity-and-experiment",
+      "description": "Implement price realization, discount waterfalls, packaging analysis, elasticity estimates, willingness-to-pay studies, experiments and governed recommendations.",
+      "path": "agent-skills/runtime/pricing-analytics-packaging-discount-waterfall-elasticity-and-experiment/SKILL.md"
+    },
+    {
+      "batch": "39C",
+      "name": "customer-product-segment-profitability-ltv-cac-payback-and-cost-to-serve",
+      "description": "Implement customer, product and segment profitability, cost-to-serve, allocated margin, LTV, CAC, payback, account hierarchies and drill-down.",
+      "path": "agent-skills/runtime/customer-product-segment-profitability-ltv-cac-payback-and-cost-to-serve/SKILL.md"
+    },
+    {
+      "batch": "39C",
+      "name": "finance-actual-plan-forecast-reconciliation-close-and-management-reporting",
+      "description": "Implement actual-plan-forecast reconciliation, preliminary and final periods, close integration, management reporting, segment reconciliations and report restatements.",
+      "path": "agent-skills/runtime/finance-actual-plan-forecast-reconciliation-close-and-management-reporting/SKILL.md"
+    },
+    {
+      "batch": "39C",
+      "name": "executive-finance-cockpit-ifrs18-mpm-board-pack-and-narrative",
+      "description": "Implement executive finance dashboards, IFRS 18 management-performance-measure governance, board packs, metric reconciliation, drivers, risks and evidence-backed narratives.",
+      "path": "agent-skills/runtime/executive-finance-cockpit-ifrs18-mpm-board-pack-and-narrative/SKILL.md"
+    },
+    {
+      "batch": "39C",
+      "name": "finance-planning-workflow-owner-review-approval-lock-and-collaboration",
+      "description": "Implement planning submissions, ownership, comments, approvals, segregation of duties, locks, reopen, change requests and collaboration evidence.",
+      "path": "agent-skills/runtime/finance-planning-workflow-owner-review-approval-lock-and-collaboration/SKILL.md"
+    },
+    {
+      "batch": "39C",
+      "name": "finance-analytics-quality-security-performance-and-release-gates",
+      "description": "Implement metric, bridge, cohort, margin, allocation, planning, forecast, variance, pricing, profitability, cockpit, security and performance release tests.",
+      "path": "agent-skills/runtime/finance-analytics-quality-security-performance-and-release-gates/SKILL.md"
+    }
+  ]
+}

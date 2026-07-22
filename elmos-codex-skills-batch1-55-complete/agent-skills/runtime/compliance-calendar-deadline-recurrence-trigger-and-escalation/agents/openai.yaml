@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B38: Compliance Calendar Deadline Recurrence Trigger And Escalation"
+  short_description: "Run ELMOS B38 Skill with fail-closed evidence"
+  default_prompt: "Use $compliance-calendar-deadline-recurrence-trigger-and-escalation to execute the ELMOS B38 contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M41: B41 Pattern Antipattern Extraction"
+  short_description: "Run ELMOS M41 Skill with fail-closed evidence"
+  default_prompt: "Use $b41-pattern-antipattern-extraction to execute the ELMOS M41 contract with fail-closed evidence."

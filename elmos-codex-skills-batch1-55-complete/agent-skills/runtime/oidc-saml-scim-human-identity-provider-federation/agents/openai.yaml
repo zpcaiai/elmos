@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B34: Oidc Saml Scim Human Identity Provider Federation"
+  short_description: "Run ELMOS B34 Skill with fail-closed evidence"
+  default_prompt: "Use $oidc-saml-scim-human-identity-provider-federation to execute the ELMOS B34 contract with fail-closed evidence."

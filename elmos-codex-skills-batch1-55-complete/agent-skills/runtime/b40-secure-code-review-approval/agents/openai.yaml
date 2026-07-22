@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M40: B40 Secure Code Review Approval"
+  short_description: "Run ELMOS M40 Skill with fail-closed evidence"
+  default_prompt: "Use $b40-secure-code-review-approval to execute the ELMOS M40 contract with fail-closed evidence."

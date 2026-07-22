@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B54: Collaboration Intel Workflow Orchestration Assignment Escalation And Recovery"
+  short_description: "Run ELMOS B54 Skill with fail-closed evidence"
+  default_prompt: "Use $collaboration-intel-workflow-orchestration-assignment-e-bbd9e8d6 to execute the ELMOS B54 contract with fail-closed evidence."

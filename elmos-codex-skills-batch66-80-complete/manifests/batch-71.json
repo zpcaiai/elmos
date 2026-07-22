@@ -1,0 +1,318 @@
+{
+  "batch": 71,
+  "title": "Rust Secure Systems Project Pack",
+  "subject": "Rust Cargo workspaces, Axum/Actix services, CLI tools, Tokio workers, Serde contracts, FFI/WASM, unsafe review, supply-chain policy, fuzzing, and releases",
+  "skill_count": 12,
+  "id_range": [
+    "PG285",
+    "PG296"
+  ],
+  "toolchain": [
+    "rustup",
+    "cargo",
+    "rustfmt",
+    "clippy",
+    "cargo test",
+    "cargo audit/deny",
+    "cargo fuzz",
+    "miri"
+  ],
+  "source_markers": [
+    "Cargo.toml",
+    "Cargo.lock",
+    "rust-toolchain.toml",
+    "src/",
+    "crates/"
+  ],
+  "skills": [
+    {
+      "id": "PG285",
+      "batch": 71,
+      "name": "b71-rust-project-profile-detector",
+      "title": "Rust Project Profile Detector",
+      "summary": "Inspect and model Rust Project Profile Detector for Rust Cargo workspaces, Axum/Actix services, CLI tools, Tokio workers, Serde contracts, FFI/WASM, unsafe review, supply-chain policy, fuzzing, and releases, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b71-rust-project-profile-detector/SKILL.md",
+      "catalog_path": "skills/batch-71/PG285-rust-project-profile-detector.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG284"
+      ],
+      "outputs": [
+        "rust_project_profile_detector.json",
+        "rust_project_profile_detector_artifacts/",
+        "rust_project_profile_detector_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG286",
+      "batch": 71,
+      "name": "b71-cargo-workspace-dependency-reproducer",
+      "title": "Cargo Workspace Dependency Reproducer",
+      "summary": "Reproduce deterministically Cargo Workspace Dependency Reproducer for Rust Cargo workspaces, Axum/Actix services, CLI tools, Tokio workers, Serde contracts, FFI/WASM, unsafe review, supply-chain policy, fuzzing, and releases, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b71-cargo-workspace-dependency-reproducer/SKILL.md",
+      "catalog_path": "skills/batch-71/PG286-cargo-workspace-dependency-reproducer.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG284",
+        "PG285"
+      ],
+      "outputs": [
+        "cargo_workspace_dependency_reproducer_plan.json",
+        "cargo_workspace_dependency_reproducer_artifacts/",
+        "cargo_workspace_dependency_reproducer_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG287",
+      "batch": 71,
+      "name": "b71-rust-axum-service-generator",
+      "title": "Rust Axum Service Generator",
+      "summary": "Generate runnable and maintainable Rust Axum Service Generator for Rust Cargo workspaces, Axum/Actix services, CLI tools, Tokio workers, Serde contracts, FFI/WASM, unsafe review, supply-chain policy, fuzzing, and releases, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b71-rust-axum-service-generator/SKILL.md",
+      "catalog_path": "skills/batch-71/PG287-rust-axum-service-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG284",
+        "PG286"
+      ],
+      "outputs": [
+        "rust_axum_service_generator_plan.json",
+        "rust_axum_service_generator_artifacts/",
+        "rust_axum_service_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG288",
+      "batch": 71,
+      "name": "b71-rust-cli-generator",
+      "title": "Rust CLI Generator",
+      "summary": "Generate runnable and maintainable Rust CLI Generator for Rust Cargo workspaces, Axum/Actix services, CLI tools, Tokio workers, Serde contracts, FFI/WASM, unsafe review, supply-chain policy, fuzzing, and releases, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b71-rust-cli-generator/SKILL.md",
+      "catalog_path": "skills/batch-71/PG288-rust-cli-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG284",
+        "PG287"
+      ],
+      "outputs": [
+        "rust_cli_generator_plan.json",
+        "rust_cli_generator_artifacts/",
+        "rust_cli_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG289",
+      "batch": 71,
+      "name": "b71-rust-async-worker-generator",
+      "title": "Rust Async Worker Generator",
+      "summary": "Generate runnable and maintainable Rust Async Worker Generator for Rust Cargo workspaces, Axum/Actix services, CLI tools, Tokio workers, Serde contracts, FFI/WASM, unsafe review, supply-chain policy, fuzzing, and releases, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b71-rust-async-worker-generator/SKILL.md",
+      "catalog_path": "skills/batch-71/PG289-rust-async-worker-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG284",
+        "PG288"
+      ],
+      "outputs": [
+        "rust_async_worker_generator_plan.json",
+        "rust_async_worker_generator_artifacts/",
+        "rust_async_worker_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG290",
+      "batch": 71,
+      "name": "b71-rust-serde-contract-generator",
+      "title": "Rust Serde Contract Generator",
+      "summary": "Generate runnable and maintainable Rust Serde Contract Generator for Rust Cargo workspaces, Axum/Actix services, CLI tools, Tokio workers, Serde contracts, FFI/WASM, unsafe review, supply-chain policy, fuzzing, and releases, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b71-rust-serde-contract-generator/SKILL.md",
+      "catalog_path": "skills/batch-71/PG290-rust-serde-contract-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG284",
+        "PG289"
+      ],
+      "outputs": [
+        "rust_serde_contract_generator_plan.json",
+        "rust_serde_contract_generator_artifacts/",
+        "rust_serde_contract_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG291",
+      "batch": 71,
+      "name": "b71-rust-ffi-wasm-extension-generator",
+      "title": "Rust FFI WASM Extension Generator",
+      "summary": "Generate runnable and maintainable Rust FFI WASM Extension Generator for Rust Cargo workspaces, Axum/Actix services, CLI tools, Tokio workers, Serde contracts, FFI/WASM, unsafe review, supply-chain policy, fuzzing, and releases, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b71-rust-ffi-wasm-extension-generator/SKILL.md",
+      "catalog_path": "skills/batch-71/PG291-rust-ffi-wasm-extension-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG284",
+        "PG290"
+      ],
+      "outputs": [
+        "rust_ffi_wasm_extension_generator_plan.json",
+        "rust_ffi_wasm_extension_generator_artifacts/",
+        "rust_ffi_wasm_extension_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG292",
+      "batch": 71,
+      "name": "b71-rust-unsafe-boundary-review",
+      "title": "Rust Unsafe Boundary Review",
+      "summary": "Enforce and test Rust Unsafe Boundary Review for Rust Cargo workspaces, Axum/Actix services, CLI tools, Tokio workers, Serde contracts, FFI/WASM, unsafe review, supply-chain policy, fuzzing, and releases, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b71-rust-unsafe-boundary-review/SKILL.md",
+      "catalog_path": "skills/batch-71/PG292-rust-unsafe-boundary-review.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG284",
+        "PG291"
+      ],
+      "outputs": [
+        "rust_unsafe_boundary_review_plan.json",
+        "rust_unsafe_boundary_review_artifacts/",
+        "rust_unsafe_boundary_review_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG293",
+      "batch": 71,
+      "name": "b71-rust-supply-chain-policy",
+      "title": "Rust Supply Chain Policy",
+      "summary": "Enforce and test Rust Supply Chain Policy for Rust Cargo workspaces, Axum/Actix services, CLI tools, Tokio workers, Serde contracts, FFI/WASM, unsafe review, supply-chain policy, fuzzing, and releases, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b71-rust-supply-chain-policy/SKILL.md",
+      "catalog_path": "skills/batch-71/PG293-rust-supply-chain-policy.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG284",
+        "PG292"
+      ],
+      "outputs": [
+        "rust_supply_chain_policy_plan.json",
+        "rust_supply_chain_policy_artifacts/",
+        "rust_supply_chain_policy_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG294",
+      "batch": 71,
+      "name": "b71-rust-test-property-fuzz-generator",
+      "title": "Rust Test Property Fuzz Generator",
+      "summary": "Generate runnable and maintainable Rust Test Property Fuzz Generator for Rust Cargo workspaces, Axum/Actix services, CLI tools, Tokio workers, Serde contracts, FFI/WASM, unsafe review, supply-chain policy, fuzzing, and releases, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b71-rust-test-property-fuzz-generator/SKILL.md",
+      "catalog_path": "skills/batch-71/PG294-rust-test-property-fuzz-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG284",
+        "PG293"
+      ],
+      "outputs": [
+        "rust_test_property_fuzz_generator_plan.json",
+        "rust_test_property_fuzz_generator_artifacts/",
+        "rust_test_property_fuzz_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG295",
+      "batch": 71,
+      "name": "b71-rust-crosscompile-release-generator",
+      "title": "Rust Crosscompile Release Generator",
+      "summary": "Generate runnable and maintainable Rust Crosscompile Release Generator for Rust Cargo workspaces, Axum/Actix services, CLI tools, Tokio workers, Serde contracts, FFI/WASM, unsafe review, supply-chain policy, fuzzing, and releases, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b71-rust-crosscompile-release-generator/SKILL.md",
+      "catalog_path": "skills/batch-71/PG295-rust-crosscompile-release-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG284",
+        "PG294"
+      ],
+      "outputs": [
+        "rust_crosscompile_release_generator_plan.json",
+        "rust_crosscompile_release_generator_artifacts/",
+        "rust_crosscompile_release_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG296",
+      "batch": 71,
+      "name": "b71-rust-build-run-certifier",
+      "title": "Rust Build Run Certifier",
+      "summary": "Execute and independently verify Rust Build Run Certifier for Rust Cargo workspaces, Axum/Actix services, CLI tools, Tokio workers, Serde contracts, FFI/WASM, unsafe review, supply-chain policy, fuzzing, and releases, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b71-rust-build-run-certifier/SKILL.md",
+      "catalog_path": "skills/batch-71/PG296-rust-build-run-certifier.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG284",
+        "PG295"
+      ],
+      "outputs": [
+        "rust_build_run_certifier_plan.json",
+        "rust_build_run_certifier_artifacts/",
+        "rust_build_run_certifier_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md",
+        "certification_result.json",
+        "scope_and_limitations.md"
+      ]
+    }
+  ]
+}

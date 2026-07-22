@@ -1,0 +1,4 @@
+interface:
+  display_name: "B75 SQL Security Rls Policy Generator"
+  short_description: "Run this ELMOS project Skill with evidence controls"
+  default_prompt: "Use $b75-sql-security-rls-policy-generator to execute this ELMOS project Skill with fail-closed evidence."

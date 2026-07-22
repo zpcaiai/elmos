@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B44: Data Platform Automation Copilot Recommendation And Human Review"
+  short_description: "Run ELMOS Product B44 contract with fail-closed evidence"
+  default_prompt: "Use $data-platform-automation-copilot-recommendation-and-human-review to implement its fail-closed ELMOS Product B44 contract."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B44: Bi Semantic Provider Adapters Versioning Compatibility And Migration"
+  short_description: "Run ELMOS Product B44 contract with fail-closed evidence"
+  default_prompt: "Use $bi-semantic-provider-adapters-versioning-compatibility-fc064daa to implement its fail-closed ELMOS Product B44 contract."

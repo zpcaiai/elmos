@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M18: B18 Test And Quality Engineering Modernization Engin Governance Approval And Waiver"
+  short_description: "Run ELMOS M18 Skill with fail-closed evidence"
+  default_prompt: "Use $b18-test-and-quality-engineering-modernization-engin-go-33f7739f to execute the ELMOS M18 contract with fail-closed evidence."

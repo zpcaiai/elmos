@@ -1,0 +1,49 @@
+{
+  "results": [
+    {
+      "case_id": "CASE-0001",
+      "status": "passed",
+      "severity": "critical",
+      "evidence_complete": true,
+      "attempts": 1,
+      "flaky": false,
+      "target_skills": [
+        "PG223"
+      ],
+      "findings": [],
+      "evidence_refs": [
+        "EVD-EXAMPLE"
+      ]
+    },
+    {
+      "case_id": "CASE-0002",
+      "status": "passed",
+      "severity": "high",
+      "evidence_complete": true,
+      "attempts": 1,
+      "flaky": false,
+      "target_skills": [
+        "PG224"
+      ],
+      "findings": [],
+      "evidence_refs": [
+        "EVD-EXAMPLE"
+      ]
+    },
+    {
+      "case_id": "CASE-0003",
+      "status": "passed",
+      "severity": "high",
+      "evidence_complete": true,
+      "attempts": 1,
+      "flaky": false,
+      "target_skills": [
+        "PG225"
+      ],
+      "findings": [],
+      "evidence_refs": [
+        "EVD-EXAMPLE"
+      ]
+    }
+  ]
+}

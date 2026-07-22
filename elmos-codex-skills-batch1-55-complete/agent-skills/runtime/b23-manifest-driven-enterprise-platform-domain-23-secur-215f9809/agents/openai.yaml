@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M23: B23 Manifest Driven Enterprise Platform Domain 23 Security Privacy And Tenant Isolati"
+  short_description: "Run ELMOS M23 Skill with fail-closed evidence"
+  default_prompt: "Use $b23-manifest-driven-enterprise-platform-domain-23-secur-215f9809 to execute the ELMOS M23 contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B46: B2B Edi Case Investigation Remediation And Closure"
+  short_description: "Run ELMOS B46 Skill with fail-closed evidence"
+  default_prompt: "Use $b2b-edi-case-investigation-remediation-and-closure to execute the ELMOS B46 contract with fail-closed evidence."

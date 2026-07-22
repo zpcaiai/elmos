@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B45: Responsible Ai Observability Sla Cockpit Alerting And Operations"
+  short_description: "Run ELMOS Product B45 contract with fail-closed evidence"
+  default_prompt: "Use $responsible-ai-observability-sla-cockpit-alerting-and-operations to implement its fail-closed ELMOS Product B45 contract."

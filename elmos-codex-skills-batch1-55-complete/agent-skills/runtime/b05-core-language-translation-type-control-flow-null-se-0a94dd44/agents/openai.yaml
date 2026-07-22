@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M05: B05 Core Language Translation Type Control Flow Null Security Privacy And Tenant Isol"
+  short_description: "Run ELMOS M05 Skill with fail-closed evidence"
+  default_prompt: "Use $b05-core-language-translation-type-control-flow-null-se-0a94dd44 to execute the ELMOS M05 contract with fail-closed evidence."

@@ -1,0 +1,414 @@
+{
+  "batch": 75,
+  "title": "SQL and API Contract Language Pack",
+  "subject": "SQL migrations, queries, transactions, fixtures, performance and security plus OpenAPI, Protocol Buffers, GraphQL, code generation, and compatibility",
+  "skill_count": 16,
+  "id_range": [
+    "PG335",
+    "PG350"
+  ],
+  "toolchain": [
+    "database clients",
+    "migration tools",
+    "SQL linters",
+    "Spectral/Redocly",
+    "protoc/buf",
+    "GraphQL validators/codegen"
+  ],
+  "source_markers": [
+    "*.sql",
+    "openapi*.yaml/json",
+    "*.proto",
+    "*.graphql",
+    "*.graphqls"
+  ],
+  "skills": [
+    {
+      "id": "PG335",
+      "batch": 75,
+      "name": "b75-sql-schema-dialect-detector",
+      "title": "SQL Schema Dialect Detector",
+      "summary": "Implement and validate SQL Schema Dialect Detector for SQL migrations, queries, transactions, fixtures, performance and security plus OpenAPI, Protocol Buffers, GraphQL, code generation, and compatibility, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b75-sql-schema-dialect-detector/SKILL.md",
+      "catalog_path": "skills/batch-75/PG335-sql-schema-dialect-detector.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG334"
+      ],
+      "outputs": [
+        "sql_schema_dialect_detector_plan.json",
+        "sql_schema_dialect_detector_artifacts/",
+        "sql_schema_dialect_detector_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG336",
+      "batch": 75,
+      "name": "b75-sql-migration-generator",
+      "title": "SQL Migration Generator",
+      "summary": "Generate runnable and maintainable SQL Migration Generator for SQL migrations, queries, transactions, fixtures, performance and security plus OpenAPI, Protocol Buffers, GraphQL, code generation, and compatibility, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b75-sql-migration-generator/SKILL.md",
+      "catalog_path": "skills/batch-75/PG336-sql-migration-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG334",
+        "PG335"
+      ],
+      "outputs": [
+        "sql_migration_generator_plan.json",
+        "sql_migration_generator_artifacts/",
+        "sql_migration_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG337",
+      "batch": 75,
+      "name": "b75-sql-query-generator",
+      "title": "SQL Query Generator",
+      "summary": "Generate runnable and maintainable SQL Query Generator for SQL migrations, queries, transactions, fixtures, performance and security plus OpenAPI, Protocol Buffers, GraphQL, code generation, and compatibility, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b75-sql-query-generator/SKILL.md",
+      "catalog_path": "skills/batch-75/PG337-sql-query-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG334",
+        "PG336"
+      ],
+      "outputs": [
+        "sql_query_generator_plan.json",
+        "sql_query_generator_artifacts/",
+        "sql_query_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG338",
+      "batch": 75,
+      "name": "b75-sql-transaction-isolation-designer",
+      "title": "SQL Transaction Isolation Designer",
+      "summary": "Coordinate and control SQL Transaction Isolation Designer for SQL migrations, queries, transactions, fixtures, performance and security plus OpenAPI, Protocol Buffers, GraphQL, code generation, and compatibility, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b75-sql-transaction-isolation-designer/SKILL.md",
+      "catalog_path": "skills/batch-75/PG338-sql-transaction-isolation-designer.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG334",
+        "PG337"
+      ],
+      "outputs": [
+        "sql_transaction_isolation_designer_plan.json",
+        "sql_transaction_isolation_designer_artifacts/",
+        "sql_transaction_isolation_designer_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG339",
+      "batch": 75,
+      "name": "b75-sql-seed-fixture-generator",
+      "title": "SQL Seed Fixture Generator",
+      "summary": "Generate runnable and maintainable SQL Seed Fixture Generator for SQL migrations, queries, transactions, fixtures, performance and security plus OpenAPI, Protocol Buffers, GraphQL, code generation, and compatibility, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b75-sql-seed-fixture-generator/SKILL.md",
+      "catalog_path": "skills/batch-75/PG339-sql-seed-fixture-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG334",
+        "PG338"
+      ],
+      "outputs": [
+        "sql_seed_fixture_generator_plan.json",
+        "sql_seed_fixture_generator_artifacts/",
+        "sql_seed_fixture_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG340",
+      "batch": 75,
+      "name": "b75-sql-query-plan-performance-gate",
+      "title": "SQL Query Plan Performance Gate",
+      "summary": "Enforce and test SQL Query Plan Performance Gate for SQL migrations, queries, transactions, fixtures, performance and security plus OpenAPI, Protocol Buffers, GraphQL, code generation, and compatibility, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b75-sql-query-plan-performance-gate/SKILL.md",
+      "catalog_path": "skills/batch-75/PG340-sql-query-plan-performance-gate.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG334",
+        "PG339"
+      ],
+      "outputs": [
+        "sql_query_plan_performance_gate_plan.json",
+        "sql_query_plan_performance_gate_artifacts/",
+        "sql_query_plan_performance_gate_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG341",
+      "batch": 75,
+      "name": "b75-sql-security-rls-policy-generator",
+      "title": "SQL Security RLS Policy Generator",
+      "summary": "Enforce and test SQL Security RLS Policy Generator for SQL migrations, queries, transactions, fixtures, performance and security plus OpenAPI, Protocol Buffers, GraphQL, code generation, and compatibility, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b75-sql-security-rls-policy-generator/SKILL.md",
+      "catalog_path": "skills/batch-75/PG341-sql-security-rls-policy-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG334",
+        "PG340"
+      ],
+      "outputs": [
+        "sql_security_rls_policy_generator_plan.json",
+        "sql_security_rls_policy_generator_artifacts/",
+        "sql_security_rls_policy_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG342",
+      "batch": 75,
+      "name": "b75-sql-compatibility-certifier",
+      "title": "SQL Compatibility Certifier",
+      "summary": "Execute and independently verify SQL Compatibility Certifier for SQL migrations, queries, transactions, fixtures, performance and security plus OpenAPI, Protocol Buffers, GraphQL, code generation, and compatibility, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b75-sql-compatibility-certifier/SKILL.md",
+      "catalog_path": "skills/batch-75/PG342-sql-compatibility-certifier.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG334",
+        "PG341"
+      ],
+      "outputs": [
+        "sql_compatibility_certifier_plan.json",
+        "sql_compatibility_certifier_artifacts/",
+        "sql_compatibility_certifier_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md",
+        "certification_result.json",
+        "scope_and_limitations.md"
+      ]
+    },
+    {
+      "id": "PG343",
+      "batch": 75,
+      "name": "b75-openapi-spec-generator",
+      "title": "OpenAPI Spec Generator",
+      "summary": "Generate runnable and maintainable OpenAPI Spec Generator for SQL migrations, queries, transactions, fixtures, performance and security plus OpenAPI, Protocol Buffers, GraphQL, code generation, and compatibility, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b75-openapi-spec-generator/SKILL.md",
+      "catalog_path": "skills/batch-75/PG343-openapi-spec-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG334",
+        "PG342"
+      ],
+      "outputs": [
+        "openapi_spec_generator_plan.json",
+        "openapi_spec_generator_artifacts/",
+        "openapi_spec_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG344",
+      "batch": 75,
+      "name": "b75-openapi-lint-breaking-change-gate",
+      "title": "OpenAPI Lint Breaking Change Gate",
+      "summary": "Enforce and test OpenAPI Lint Breaking Change Gate for SQL migrations, queries, transactions, fixtures, performance and security plus OpenAPI, Protocol Buffers, GraphQL, code generation, and compatibility, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b75-openapi-lint-breaking-change-gate/SKILL.md",
+      "catalog_path": "skills/batch-75/PG344-openapi-lint-breaking-change-gate.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG334",
+        "PG343"
+      ],
+      "outputs": [
+        "openapi_lint_breaking_change_gate_plan.json",
+        "openapi_lint_breaking_change_gate_artifacts/",
+        "openapi_lint_breaking_change_gate_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG345",
+      "batch": 75,
+      "name": "b75-openapi-codegen-contract-test",
+      "title": "OpenAPI Codegen Contract Test",
+      "summary": "Implement and validate OpenAPI Codegen Contract Test for SQL migrations, queries, transactions, fixtures, performance and security plus OpenAPI, Protocol Buffers, GraphQL, code generation, and compatibility, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b75-openapi-codegen-contract-test/SKILL.md",
+      "catalog_path": "skills/batch-75/PG345-openapi-codegen-contract-test.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG334",
+        "PG344"
+      ],
+      "outputs": [
+        "openapi_codegen_contract_test_plan.json",
+        "openapi_codegen_contract_test_artifacts/",
+        "openapi_codegen_contract_test_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG346",
+      "batch": 75,
+      "name": "b75-protobuf-schema-generator",
+      "title": "Protocol Buffers Schema Generator",
+      "summary": "Generate runnable and maintainable Protocol Buffers Schema Generator for SQL migrations, queries, transactions, fixtures, performance and security plus OpenAPI, Protocol Buffers, GraphQL, code generation, and compatibility, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b75-protobuf-schema-generator/SKILL.md",
+      "catalog_path": "skills/batch-75/PG346-protobuf-schema-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG334",
+        "PG345"
+      ],
+      "outputs": [
+        "protobuf_schema_generator_plan.json",
+        "protobuf_schema_generator_artifacts/",
+        "protobuf_schema_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG347",
+      "batch": 75,
+      "name": "b75-protobuf-buf-compatibility-gate",
+      "title": "Protocol Buffers Buf Compatibility Gate",
+      "summary": "Enforce and test Protocol Buffers Buf Compatibility Gate for SQL migrations, queries, transactions, fixtures, performance and security plus OpenAPI, Protocol Buffers, GraphQL, code generation, and compatibility, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b75-protobuf-buf-compatibility-gate/SKILL.md",
+      "catalog_path": "skills/batch-75/PG347-protobuf-buf-compatibility-gate.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG334",
+        "PG346"
+      ],
+      "outputs": [
+        "protobuf_buf_compatibility_gate_plan.json",
+        "protobuf_buf_compatibility_gate_artifacts/",
+        "protobuf_buf_compatibility_gate_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG348",
+      "batch": 75,
+      "name": "b75-graphql-schema-resolver-generator",
+      "title": "GraphQL Schema Resolver Generator",
+      "summary": "Generate runnable and maintainable GraphQL Schema Resolver Generator for SQL migrations, queries, transactions, fixtures, performance and security plus OpenAPI, Protocol Buffers, GraphQL, code generation, and compatibility, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b75-graphql-schema-resolver-generator/SKILL.md",
+      "catalog_path": "skills/batch-75/PG348-graphql-schema-resolver-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG334",
+        "PG347"
+      ],
+      "outputs": [
+        "graphql_schema_resolver_generator_plan.json",
+        "graphql_schema_resolver_generator_artifacts/",
+        "graphql_schema_resolver_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG349",
+      "batch": 75,
+      "name": "b75-graphql-security-cost-gate",
+      "title": "GraphQL Security Cost Gate",
+      "summary": "Enforce and test GraphQL Security Cost Gate for SQL migrations, queries, transactions, fixtures, performance and security plus OpenAPI, Protocol Buffers, GraphQL, code generation, and compatibility, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b75-graphql-security-cost-gate/SKILL.md",
+      "catalog_path": "skills/batch-75/PG349-graphql-security-cost-gate.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG334",
+        "PG348"
+      ],
+      "outputs": [
+        "graphql_security_cost_gate_plan.json",
+        "graphql_security_cost_gate_artifacts/",
+        "graphql_security_cost_gate_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG350",
+      "batch": 75,
+      "name": "b75-multi-contract-language-certifier",
+      "title": "Multi Contract Language Certifier",
+      "summary": "Execute and independently verify Multi Contract Language Certifier for SQL migrations, queries, transactions, fixtures, performance and security plus OpenAPI, Protocol Buffers, GraphQL, code generation, and compatibility, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b75-multi-contract-language-certifier/SKILL.md",
+      "catalog_path": "skills/batch-75/PG350-multi-contract-language-certifier.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG334",
+        "PG349"
+      ],
+      "outputs": [
+        "multi_contract_language_certifier_plan.json",
+        "multi_contract_language_certifier_artifacts/",
+        "multi_contract_language_certifier_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md",
+        "certification_result.json",
+        "scope_and_limitations.md"
+      ]
+    }
+  ]
+}

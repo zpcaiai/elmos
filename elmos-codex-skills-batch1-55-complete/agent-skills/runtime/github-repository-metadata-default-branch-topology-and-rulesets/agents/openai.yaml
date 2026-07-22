@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B35: Github Repository Metadata Default Branch Topology And Rulesets"
+  short_description: "Run ELMOS B35 Skill with fail-closed evidence"
+  default_prompt: "Use $github-repository-metadata-default-branch-topology-and-rulesets to execute the ELMOS B35 contract with fail-closed evidence."

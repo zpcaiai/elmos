@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B46: Integration Platform Data Quality Dedup Reconciliation And Certification"
+  short_description: "Run ELMOS B46 Skill with fail-closed evidence"
+  default_prompt: "Use $integration-platform-data-quality-dedup-reconciliation-26b9cec9 to execute the ELMOS B46 contract with fail-closed evidence."

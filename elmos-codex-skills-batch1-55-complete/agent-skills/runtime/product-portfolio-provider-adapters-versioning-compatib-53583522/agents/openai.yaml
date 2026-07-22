@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B41: Product Portfolio Provider Adapters Versioning Compatibility And Migration"
+  short_description: "Run ELMOS B41 Skill with fail-closed evidence"
+  default_prompt: "Use $product-portfolio-provider-adapters-versioning-compatib-53583522 to execute the ELMOS B41 contract with fail-closed evidence."

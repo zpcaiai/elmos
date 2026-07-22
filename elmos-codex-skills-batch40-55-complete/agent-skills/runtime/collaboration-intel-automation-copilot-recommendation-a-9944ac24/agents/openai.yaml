@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B54: Collaboration Intel Automation Copilot Recommendation And Human Review"
+  short_description: "Run ELMOS Product B54 contract with fail-closed evidence"
+  default_prompt: "Use $collaboration-intel-automation-copilot-recommendation-a-9944ac24 to implement its fail-closed ELMOS Product B54 contract."

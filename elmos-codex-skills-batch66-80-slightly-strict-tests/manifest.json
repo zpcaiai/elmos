@@ -1,0 +1,328 @@
+{
+  "package": "elmos-codex-skills-batch66-80-slightly-strict-tests",
+  "version": "1.0.0",
+  "profile": "slightly-strict",
+  "source_package": {
+    "name": "elmos-codex-skills-batch66-80-complete",
+    "source_zip": "elmos-codex-skills-batch66-80-complete.zip",
+    "source_zip_sha256": "f8255be826d3de2e733089c54b5c308cc8a69e01a4a66f8d4c48f4ef10865191",
+    "source_skill_count": 195,
+    "id_range": [
+      "PG223",
+      "PG417"
+    ],
+    "catalog_sha256": "067c1dfc76c4a75e344ecb71d68ea1b426e7d049d0139bd006f1700eb79db12b",
+    "manifest_sha256": "752829ba0e0fb3035400df0e87f19150fe6b01521d12faa2b396c82e8dd9ccea"
+  },
+  "test_skill_count": 35,
+  "case_count": 450,
+  "source_skill_count": 195,
+  "test_skill_codes": [
+    "TB66",
+    "TB67",
+    "TB68",
+    "TB69",
+    "TB70",
+    "TB71",
+    "TB72",
+    "TB73",
+    "TB74",
+    "TB75",
+    "TB76",
+    "TB77",
+    "TB78",
+    "TB79",
+    "TB80",
+    "X001",
+    "X002",
+    "X003",
+    "X004",
+    "X005",
+    "X006",
+    "X007",
+    "X008",
+    "X009",
+    "X010",
+    "X011",
+    "X012",
+    "X013",
+    "X014",
+    "X015",
+    "X016",
+    "X017",
+    "X018",
+    "X019",
+    "X020"
+  ],
+  "skills": [
+    {
+      "code": "TB66",
+      "name": "tst-b66-typescript-javascript-slightly-strict-suite",
+      "batch": 66,
+      "title": "Batch 66 TypeScript and JavaScript Slightly Strict Suite",
+      "path": "agent-skills/runtime/tst-b66-typescript-javascript-slightly-strict-suite/SKILL.md"
+    },
+    {
+      "code": "TB67",
+      "name": "tst-b67-go-cloud-native-slightly-strict-suite",
+      "batch": 67,
+      "title": "Batch 67 Go Cloud-Native Slightly Strict Suite",
+      "path": "agent-skills/runtime/tst-b67-go-cloud-native-slightly-strict-suite/SKILL.md"
+    },
+    {
+      "code": "TB68",
+      "name": "tst-b68-kotlin-jvm-android-slightly-strict-suite",
+      "batch": 68,
+      "title": "Batch 68 Kotlin JVM Android and Multiplatform Slightly Strict Suite",
+      "path": "agent-skills/runtime/tst-b68-kotlin-jvm-android-slightly-strict-suite/SKILL.md"
+    },
+    {
+      "code": "TB69",
+      "name": "tst-b69-php-web-slightly-strict-suite",
+      "batch": 69,
+      "title": "Batch 69 PHP Laravel Symfony and WordPress Slightly Strict Suite",
+      "path": "agent-skills/runtime/tst-b69-php-web-slightly-strict-suite/SKILL.md"
+    },
+    {
+      "code": "TB70",
+      "name": "tst-b70-native-industrial-slightly-strict-suite",
+      "batch": 70,
+      "title": "Batch 70 C C++ Industrial and Native Slightly Strict Suite",
+      "path": "agent-skills/runtime/tst-b70-native-industrial-slightly-strict-suite/SKILL.md"
+    },
+    {
+      "code": "TB71",
+      "name": "tst-b71-rust-secure-systems-slightly-strict-suite",
+      "batch": 71,
+      "title": "Batch 71 Rust Secure Systems Slightly Strict Suite",
+      "path": "agent-skills/runtime/tst-b71-rust-secure-systems-slightly-strict-suite/SKILL.md"
+    },
+    {
+      "code": "TB72",
+      "name": "tst-b72-flutter-multiplatform-slightly-strict-suite",
+      "batch": 72,
+      "title": "Batch 72 Dart Flutter Multiplatform Slightly Strict Suite",
+      "path": "agent-skills/runtime/tst-b72-flutter-multiplatform-slightly-strict-suite/SKILL.md"
+    },
+    {
+      "code": "TB73",
+      "name": "tst-b73-swift-apple-native-slightly-strict-suite",
+      "batch": 73,
+      "title": "Batch 73 Swift Apple Native Slightly Strict Suite",
+      "path": "agent-skills/runtime/tst-b73-swift-apple-native-slightly-strict-suite/SKILL.md"
+    },
+    {
+      "code": "TB74",
+      "name": "tst-b74-shell-powershell-slightly-strict-suite",
+      "batch": 74,
+      "title": "Batch 74 Bash Shell and PowerShell Slightly Strict Suite",
+      "path": "agent-skills/runtime/tst-b74-shell-powershell-slightly-strict-suite/SKILL.md"
+    },
+    {
+      "code": "TB75",
+      "name": "tst-b75-sql-api-contracts-slightly-strict-suite",
+      "batch": 75,
+      "title": "Batch 75 SQL and API Contract Languages Slightly Strict Suite",
+      "path": "agent-skills/runtime/tst-b75-sql-api-contracts-slightly-strict-suite/SKILL.md"
+    },
+    {
+      "code": "TB76",
+      "name": "tst-b76-make-cmake-nginx-slightly-strict-suite",
+      "batch": 76,
+      "title": "Batch 76 Make CMake and Nginx Slightly Strict Suite",
+      "path": "agent-skills/runtime/tst-b76-make-cmake-nginx-slightly-strict-suite/SKILL.md"
+    },
+    {
+      "code": "TB77",
+      "name": "tst-b77-docker-compose-slightly-strict-suite",
+      "batch": 77,
+      "title": "Batch 77 Dockerfile and Docker Compose Slightly Strict Suite",
+      "path": "agent-skills/runtime/tst-b77-docker-compose-slightly-strict-suite/SKILL.md"
+    },
+    {
+      "code": "TB78",
+      "name": "tst-b78-iac-kubernetes-helm-slightly-strict-suite",
+      "batch": 78,
+      "title": "Batch 78 HCL Terraform Kubernetes YAML and Helm Slightly Strict Suite",
+      "path": "agent-skills/runtime/tst-b78-iac-kubernetes-helm-slightly-strict-suite/SKILL.md"
+    },
+    {
+      "code": "TB79",
+      "name": "tst-b79-cicd-systems-slightly-strict-suite",
+      "batch": 79,
+      "title": "Batch 79 GitHub Actions GitLab CI and Jenkins Slightly Strict Suite",
+      "path": "agent-skills/runtime/tst-b79-cicd-systems-slightly-strict-suite/SKILL.md"
+    },
+    {
+      "code": "TB80",
+      "name": "tst-b80-polyglot-operations-slightly-strict-suite",
+      "batch": 80,
+      "title": "Batch 80 Polyglot Project Operations and Certification Slightly Strict Suite",
+      "path": "agent-skills/runtime/tst-b80-polyglot-operations-slightly-strict-suite/SKILL.md"
+    },
+    {
+      "code": "X001",
+      "name": "tst-b66-80-slightly-strict-suite-orchestrator",
+      "batch": "cross",
+      "title": "Batch 66–80略严苛测试总编排",
+      "path": "agent-skills/runtime/tst-b66-80-slightly-strict-suite-orchestrator/SKILL.md"
+    },
+    {
+      "code": "X002",
+      "name": "tst-b66-80-source-capability-traceability",
+      "batch": "cross",
+      "title": "Source Skill能力追踪与覆盖",
+      "path": "agent-skills/runtime/tst-b66-80-source-capability-traceability/SKILL.md"
+    },
+    {
+      "code": "X003",
+      "name": "tst-b66-80-fixture-environment-matrix",
+      "batch": "cross",
+      "title": "Fixture与环境矩阵",
+      "path": "agent-skills/runtime/tst-b66-80-fixture-environment-matrix/SKILL.md"
+    },
+    {
+      "code": "X004",
+      "name": "tst-b66-80-evidence-integrity-anti-forgery",
+      "batch": "cross",
+      "title": "Evidence完整性与防伪",
+      "path": "agent-skills/runtime/tst-b66-80-evidence-integrity-anti-forgery/SKILL.md"
+    },
+    {
+      "code": "X005",
+      "name": "tst-deterministic-dependency-build-reproducibility",
+      "batch": "cross",
+      "title": "依赖与构建可重复性",
+      "path": "agent-skills/runtime/tst-deterministic-dependency-build-reproducibility/SKILL.md"
+    },
+    {
+      "code": "X006",
+      "name": "tst-generated-project-build-run-shutdown",
+      "batch": "cross",
+      "title": "生成项目Build Run Shutdown",
+      "path": "agent-skills/runtime/tst-generated-project-build-run-shutdown/SKILL.md"
+    },
+    {
+      "code": "X007",
+      "name": "tst-contract-schema-compatibility-roundtrip",
+      "batch": "cross",
+      "title": "契约Schema兼容与Roundtrip",
+      "path": "agent-skills/runtime/tst-contract-schema-compatibility-roundtrip/SKILL.md"
+    },
+    {
+      "code": "X008",
+      "name": "tst-data-transaction-migration-integrity",
+      "batch": "cross",
+      "title": "数据事务与迁移完整性",
+      "path": "agent-skills/runtime/tst-data-transaction-migration-integrity/SKILL.md"
+    },
+    {
+      "code": "X009",
+      "name": "tst-concurrency-cancellation-race-leak",
+      "batch": "cross",
+      "title": "并发取消Race与泄漏",
+      "path": "agent-skills/runtime/tst-concurrency-cancellation-race-leak/SKILL.md"
+    },
+    {
+      "code": "X010",
+      "name": "tst-cross-platform-toolchain-runtime-matrix",
+      "batch": "cross",
+      "title": "跨平台工具链与Runtime矩阵",
+      "path": "agent-skills/runtime/tst-cross-platform-toolchain-runtime-matrix/SKILL.md"
+    },
+    {
+      "code": "X011",
+      "name": "tst-ui-accessibility-localization-runtime-journey",
+      "batch": "cross",
+      "title": "UI可访问性本地化与Runtime Journey",
+      "path": "agent-skills/runtime/tst-ui-accessibility-localization-runtime-journey/SKILL.md"
+    },
+    {
+      "code": "X012",
+      "name": "tst-native-memory-abi-ffi-safety",
+      "batch": "cross",
+      "title": "Native内存ABI与FFI安全",
+      "path": "agent-skills/runtime/tst-native-memory-abi-ffi-safety/SKILL.md"
+    },
+    {
+      "code": "X013",
+      "name": "tst-shell-powershell-injection-portability",
+      "batch": "cross",
+      "title": "Shell与PowerShell注入及可移植性",
+      "path": "agent-skills/runtime/tst-shell-powershell-injection-portability/SKILL.md"
+    },
+    {
+      "code": "X014",
+      "name": "tst-sql-query-migration-security",
+      "batch": "cross",
+      "title": "SQL查询迁移与安全",
+      "path": "agent-skills/runtime/tst-sql-query-migration-security/SKILL.md"
+    },
+    {
+      "code": "X015",
+      "name": "tst-container-image-compose-runtime-hardening",
+      "batch": "cross",
+      "title": "容器镜像与Compose运行加固",
+      "path": "agent-skills/runtime/tst-container-image-compose-runtime-hardening/SKILL.md"
+    },
+    {
+      "code": "X016",
+      "name": "tst-iac-kubernetes-helm-plan-drift-rollback",
+      "batch": "cross",
+      "title": "IaC Kubernetes Helm Plan Drift Rollback",
+      "path": "agent-skills/runtime/tst-iac-kubernetes-helm-plan-drift-rollback/SKILL.md"
+    },
+    {
+      "code": "X017",
+      "name": "tst-cicd-runner-permission-provenance",
+      "batch": "cross",
+      "title": "CI/CD Runner权限与Provenance",
+      "path": "agent-skills/runtime/tst-cicd-runner-permission-provenance/SKILL.md"
+    },
+    {
+      "code": "X018",
+      "name": "tst-supply-chain-secret-identity-tamper",
+      "batch": "cross",
+      "title": "供应链Secret身份与篡改",
+      "path": "agent-skills/runtime/tst-supply-chain-secret-identity-tamper/SKILL.md"
+    },
+    {
+      "code": "X019",
+      "name": "tst-performance-cost-resource-regression",
+      "batch": "cross",
+      "title": "性能成本与资源回归",
+      "path": "agent-skills/runtime/tst-performance-cost-resource-regression/SKILL.md"
+    },
+    {
+      "code": "X020",
+      "name": "tst-b66-80-final-slightly-strict-release-gate",
+      "batch": "cross",
+      "title": "Batch 66–80最终略严苛发布门",
+      "path": "agent-skills/runtime/tst-b66-80-final-slightly-strict-release-gate/SKILL.md"
+    }
+  ],
+  "batches": [
+    66,
+    67,
+    68,
+    69,
+    70,
+    71,
+    72,
+    73,
+    74,
+    75,
+    76,
+    77,
+    78,
+    79,
+    80
+  ],
+  "priority_counts": {
+    "P1": 120,
+    "P0": 312,
+    "P2": 18
+  },
+  "zero_tolerance_case_count": 103,
+  "status": "test-ready-not-run"
+}

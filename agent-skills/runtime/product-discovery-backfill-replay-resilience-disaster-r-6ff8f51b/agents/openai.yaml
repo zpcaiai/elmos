@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B41: Product Discovery Backfill Replay Resilience Disaster Recovery And Continuity"
+  short_description: "Run ELMOS Product B41 contract with fail-closed evidence"
+  default_prompt: "Use $product-discovery-backfill-replay-resilience-disaster-r-6ff8f51b to implement its fail-closed ELMOS Product B41 contract."

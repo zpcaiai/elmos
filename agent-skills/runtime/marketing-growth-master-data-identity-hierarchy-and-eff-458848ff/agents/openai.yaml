@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B40: Marketing Growth Master Data Identity Hierarchy And Effective Dating"
+  short_description: "Run ELMOS Product B40 contract with fail-closed evidence"
+  default_prompt: "Use $marketing-growth-master-data-identity-hierarchy-and-eff-458848ff to implement its fail-closed ELMOS Product B40 contract."

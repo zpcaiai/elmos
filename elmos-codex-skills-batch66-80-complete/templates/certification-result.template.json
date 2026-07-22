@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0",
+  "certification_id": "cert-example",
+  "scope": [
+    "replace-me"
+  ],
+  "status": "blocked",
+  "evidence_bundle_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "certifier": {
+    "identity": "independent-reviewer",
+    "independent": true
+  },
+  "limitations": [
+    "Template only"
+  ],
+  "expires_at": null
+}

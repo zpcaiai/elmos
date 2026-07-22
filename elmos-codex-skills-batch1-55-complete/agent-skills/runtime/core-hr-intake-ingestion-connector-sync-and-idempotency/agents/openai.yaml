@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B43: Core Hr Intake Ingestion Connector Sync And Idempotency"
+  short_description: "Run ELMOS B43 Skill with fail-closed evidence"
+  default_prompt: "Use $core-hr-intake-ingestion-connector-sync-and-idempotency to execute the ELMOS B43 contract with fail-closed evidence."

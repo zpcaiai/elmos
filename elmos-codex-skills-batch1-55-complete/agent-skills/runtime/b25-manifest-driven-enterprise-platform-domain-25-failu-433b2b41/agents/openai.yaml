@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M25: B25 Manifest Driven Enterprise Platform Domain 25 Failure Recovery And Rollback"
+  short_description: "Run ELMOS M25 Skill with fail-closed evidence"
+  default_prompt: "Use $b25-manifest-driven-enterprise-platform-domain-25-failu-433b2b41 to execute the ELMOS M25 contract with fail-closed evidence."

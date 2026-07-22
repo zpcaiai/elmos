@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B36: Task Checkpoint Model Heartbeat Resume And Compatibility"
+  short_description: "Run ELMOS B36 Skill with fail-closed evidence"
+  default_prompt: "Use $task-checkpoint-model-heartbeat-resume-and-compatibility to execute the ELMOS B36 contract with fail-closed evidence."

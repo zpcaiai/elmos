@@ -1,0 +1,117 @@
+{
+  "batch": 65,
+  "skill_count": 10,
+  "skills": [
+    {
+      "id": "PG213",
+      "name": "requirement-studio-ui",
+      "path": "skills/batch-65/PG213-requirement-studio-ui.md",
+      "depends_on": [
+        "PG011",
+        "PG031",
+        "PG179"
+      ],
+      "summary": "Provides the interactive workspace for natural-language discovery, source review, requirements, assumptions, conflicts, scope, and baselines."
+    },
+    {
+      "id": "PG214",
+      "name": "architecture-review-ui",
+      "path": "skills/batch-65/PG214-architecture-review-ui.md",
+      "depends_on": [
+        "PG054",
+        "PG179"
+      ],
+      "summary": "Provides interactive architecture diagrams, ADRs, tradeoffs, risks, threats, deployment, and approval views."
+    },
+    {
+      "id": "PG215",
+      "name": "project-preview-and-diff-ui",
+      "path": "skills/batch-65/PG215-project-preview-and-diff-ui.md",
+      "depends_on": [
+        "PG173",
+        "PG174",
+        "PG175"
+      ],
+      "summary": "Provides repository tree, generated-file preview, ownership, symbol trace, semantic diff, and regeneration review."
+    },
+    {
+      "id": "PG216",
+      "name": "build-run-console-ui",
+      "path": "skills/batch-65/PG216-build-run-console-ui.md",
+      "depends_on": [
+        "PG147",
+        "PG158",
+        "PG181"
+      ],
+      "summary": "Provides live and historical build, test, startup, smoke, repair, and environment evidence views."
+    },
+    {
+      "id": "PG217",
+      "name": "artifact-evidence-explorer",
+      "path": "skills/batch-65/PG217-artifact-evidence-explorer.md",
+      "depends_on": [
+        "PG004",
+        "PG007",
+        "PG197"
+      ],
+      "summary": "Provides searchable lineage and evidence navigation across requirements, code, tests, builds, security, deployments, and releases."
+    },
+    {
+      "id": "PG218",
+      "name": "collaborative-comment-approval",
+      "path": "skills/batch-65/PG218-collaborative-comment-approval.md",
+      "depends_on": [
+        "PG179",
+        "PG213",
+        "PG214",
+        "PG215"
+      ],
+      "summary": "Provides reusable comments, mentions, assignments, decisions, approvals, exceptions, and notification workflows."
+    },
+    {
+      "id": "PG219",
+      "name": "tenant-policy-and-quota",
+      "path": "skills/batch-65/PG219-tenant-policy-and-quota.md",
+      "depends_on": [
+        "PG008",
+        "PG186"
+      ],
+      "summary": "Provides tenant administration for policy, capabilities, models, registries, runners, budgets, retention, and quotas."
+    },
+    {
+      "id": "PG220",
+      "name": "generation-usage-metering",
+      "path": "skills/batch-65/PG220-generation-usage-metering.md",
+      "depends_on": [
+        "PG186",
+        "PG219"
+      ],
+      "summary": "Meters model, tool, runner, storage, network, artifact, and support usage by tenant, project, run, and feature."
+    },
+    {
+      "id": "PG221",
+      "name": "support-diagnostic-bundle",
+      "path": "skills/batch-65/PG221-support-diagnostic-bundle.md",
+      "depends_on": [
+        "PG007",
+        "PG009",
+        "PG158",
+        "PG216"
+      ],
+      "summary": "Creates privacy-safe diagnostic packages for failed or degraded synthesis runs."
+    },
+    {
+      "id": "PG222",
+      "name": "feedback-to-skill-learning-loop",
+      "path": "skills/batch-65/PG222-feedback-to-skill-learning-loop.md",
+      "depends_on": [
+        "PG189",
+        "PG190",
+        "PG202",
+        "PG220",
+        "PG221"
+      ],
+      "summary": "Converts user feedback, defects, review findings, support cases, and evaluation failures into governed Skill improvements."
+    }
+  ]
+}

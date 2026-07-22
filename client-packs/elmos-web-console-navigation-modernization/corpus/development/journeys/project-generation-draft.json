@@ -1,0 +1,15 @@
+{
+  "id": "journey.project-generation-draft",
+  "synthetic_data": true,
+  "browser_scope": "Google Chrome 150.0.7871.129 local",
+  "steps": [
+    "Navigate to the project-generation workspace from overview, sidebar, mobile navigation, or Command-K",
+    "Verify the three exact repository-supported target tuples",
+    "Clear every target and verify the explicit at-least-one-target error",
+    "Enter a synthetic project slug, namespace, description, and entity",
+    "Select C# and create the in-memory generation-plan preview",
+    "Verify the DRAFT announcement, selected target, CLI reference, NOT_RUN execution state, and NOT_CERTIFIED boundary",
+    "Repeat layout and touch-target checks at desktop, tablet, and mobile viewports"
+  ],
+  "expected": "The workspace creates only a memory-scoped project-generation preview, preserves exact target versions, remains usable without horizontal overflow, and performs no generator, approval, deployment, or certification side effect."
+}

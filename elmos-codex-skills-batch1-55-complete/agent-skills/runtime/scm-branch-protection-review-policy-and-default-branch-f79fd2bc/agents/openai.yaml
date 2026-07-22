@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B35: Scm Branch Protection Review Policy And Default Branch Normalization"
+  short_description: "Run ELMOS B35 Skill with fail-closed evidence"
+  default_prompt: "Use $scm-branch-protection-review-policy-and-default-branch-f79fd2bc to execute the ELMOS B35 contract with fail-closed evidence."

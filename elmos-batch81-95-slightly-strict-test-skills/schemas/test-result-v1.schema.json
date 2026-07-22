@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.slightly-strict.test-result.v1",
+  "type": "object",
+  "required": [
+    "case_id",
+    "status",
+    "severity",
+    "evidence_complete",
+    "attempts",
+    "target_skills"
+  ],
+  "properties": {
+    "case_id": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "passed",
+        "failed",
+        "blocked",
+        "skipped",
+        "quarantined"
+      ]
+    },
+    "severity": {
+      "enum": [
+        "critical",
+        "high",
+        "medium",
+        "low"
+      ]
+    },
+    "evidence_complete": {
+      "type": "boolean"
+    },
+    "attempts": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "flaky": {
+      "type": "boolean"
+    },
+    "target_skills": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

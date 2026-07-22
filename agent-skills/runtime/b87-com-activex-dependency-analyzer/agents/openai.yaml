@@ -1,0 +1,4 @@
+interface:
+  display_name: "B87 Com Activex Dependency Analyzer"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b87-com-activex-dependency-analyzer to execute this ELMOS Language Pack Skill with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B45: Agentic Runtime Master Data Identity Hierarchy And Effective Dating"
+  short_description: "Run ELMOS Product B45 contract with fail-closed evidence"
+  default_prompt: "Use $agentic-runtime-master-data-identity-hierarchy-and-effe-fe8037fb to implement its fail-closed ELMOS Product B45 contract."

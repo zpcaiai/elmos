@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B53: Utility Customer Provider Adapters Versioning Compatibility And Migration"
+  short_description: "Run ELMOS B53 Skill with fail-closed evidence"
+  default_prompt: "Use $utility-customer-provider-adapters-versioning-compatibi-4717b1c8 to execute the ELMOS B53 contract with fail-closed evidence."

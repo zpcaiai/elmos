@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B50: Industrial Twin Policy Authorization Approval Segregation And Exception"
+  short_description: "Run ELMOS Product B50 contract with fail-closed evidence"
+  default_prompt: "Use $industrial-twin-policy-authorization-approval-segregati-9b9105d2 to implement its fail-closed ELMOS Product B50 contract."

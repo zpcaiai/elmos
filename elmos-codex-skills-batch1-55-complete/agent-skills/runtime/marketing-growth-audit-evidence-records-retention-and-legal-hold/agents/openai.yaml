@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B40: Marketing Growth Audit Evidence Records Retention And Legal Hold"
+  short_description: "Run ELMOS B40 Skill with fail-closed evidence"
+  default_prompt: "Use $marketing-growth-audit-evidence-records-retention-and-legal-hold to execute the ELMOS B40 contract with fail-closed evidence."

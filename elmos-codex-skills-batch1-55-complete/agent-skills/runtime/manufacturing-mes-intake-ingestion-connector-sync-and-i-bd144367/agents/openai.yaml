@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B50: Manufacturing Mes Intake Ingestion Connector Sync And Idempotency"
+  short_description: "Run ELMOS B50 Skill with fail-closed evidence"
+  default_prompt: "Use $manufacturing-mes-intake-ingestion-connector-sync-and-i-bd144367 to execute the ELMOS B50 contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M19: B19 Productization Operations Support Lifecycle Gove Evidence Audit And Provenance"
+  short_description: "Run ELMOS M19 Skill with fail-closed evidence"
+  default_prompt: "Use $b19-productization-operations-support-lifecycle-gove-ev-900e8367 to execute the ELMOS M19 contract with fail-closed evidence."

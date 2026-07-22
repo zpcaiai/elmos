@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B42: Inventory Fulfillment Analytics Kpi Scoring Forecast And Diagnostics"
+  short_description: "Run ELMOS B42 Skill with fail-closed evidence"
+  default_prompt: "Use $inventory-fulfillment-analytics-kpi-scoring-forecast-an-20f623f8 to execute the ELMOS B42 contract with fail-closed evidence."

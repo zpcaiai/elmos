@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M22: B22 Manifest Driven Enterprise Platform Domain 22 Governance Approval And Waiver"
+  short_description: "Run ELMOS M22 Skill with fail-closed evidence"
+  default_prompt: "Use $b22-manifest-driven-enterprise-platform-domain-22-gover-49cefba6 to execute the ELMOS M22 contract with fail-closed evidence."

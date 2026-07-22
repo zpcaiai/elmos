@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B37: Evidence Conformance Tamper Security Chaos And Release Gates"
+  short_description: "Run ELMOS B37 Skill with fail-closed evidence"
+  default_prompt: "Use $evidence-conformance-tamper-security-chaos-and-release-gates to execute the ELMOS B37 contract with fail-closed evidence."

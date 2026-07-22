@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B35: Git Lfs Object Pointer Transfer Cache And Integrity"
+  short_description: "Run ELMOS B35 Skill with fail-closed evidence"
+  default_prompt: "Use $git-lfs-object-pointer-transfer-cache-and-integrity to execute the ELMOS B35 contract with fail-closed evidence."

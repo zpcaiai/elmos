@@ -1,0 +1,308 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.project-synthesis.psir.v1",
+  "title": "ELMOS Project Synthesis Intermediate Representation",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "project",
+    "requirements",
+    "acceptance_criteria",
+    "actors",
+    "constraints"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "project": {
+      "type": "object",
+      "required": [
+        "id",
+        "name"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^PRJ-[A-Z0-9-]+$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "requirements": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/requirement"
+      }
+    },
+    "acceptance_criteria": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/acceptanceCriterion"
+      }
+    },
+    "actors": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/actor"
+      }
+    },
+    "constraints": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/constraint"
+      }
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/assumption"
+      }
+    },
+    "quality_attributes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/qualityAttribute"
+      }
+    },
+    "open_questions": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    }
+  },
+  "$defs": {
+    "sourceRef": {
+      "type": "object",
+      "required": [
+        "source_id"
+      ],
+      "properties": {
+        "source_id": {
+          "type": "string"
+        },
+        "location": {
+          "type": "string"
+        },
+        "fingerprint": {
+          "type": "string"
+        }
+      }
+    },
+    "requirement": {
+      "type": "object",
+      "required": [
+        "id",
+        "kind",
+        "statement",
+        "status",
+        "source_refs"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^REQ-[A-Z0-9-]+$"
+        },
+        "kind": {
+          "enum": [
+            "functional",
+            "nonfunctional",
+            "policy-derived"
+          ]
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "enum": [
+            "candidate",
+            "approved",
+            "rejected",
+            "deferred",
+            "superseded"
+          ]
+        },
+        "priority": {
+          "enum": [
+            "must",
+            "should",
+            "could",
+            "wont"
+          ]
+        },
+        "risk": {
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "critical"
+          ]
+        },
+        "source_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/sourceRef"
+          }
+        },
+        "depends_on": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "acceptanceCriterion": {
+      "type": "object",
+      "required": [
+        "id",
+        "requirement_ids",
+        "statement",
+        "verification_type"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^AC-[A-Z0-9-]+$"
+        },
+        "requirement_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "statement": {
+          "type": "string"
+        },
+        "verification_type": {
+          "enum": [
+            "test",
+            "inspection",
+            "analysis",
+            "demonstration"
+          ]
+        }
+      }
+    },
+    "actor": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "kind"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "human",
+            "system",
+            "external-system"
+          ]
+        }
+      }
+    },
+    "constraint": {
+      "type": "object",
+      "required": [
+        "id",
+        "category",
+        "statement",
+        "hard"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "category": {
+          "enum": [
+            "technical",
+            "organizational",
+            "legal",
+            "budget",
+            "schedule",
+            "environment"
+          ]
+        },
+        "statement": {
+          "type": "string"
+        },
+        "hard": {
+          "type": "boolean"
+        }
+      }
+    },
+    "assumption": {
+      "type": "object",
+      "required": [
+        "id",
+        "statement",
+        "status",
+        "impact"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "statement": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "proposed",
+            "accepted",
+            "rejected",
+            "expired"
+          ]
+        },
+        "impact": {
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "critical"
+          ]
+        }
+      }
+    },
+    "qualityAttribute": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "scenario",
+        "measure"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "scenario": {
+          "type": "string"
+        },
+        "measure": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

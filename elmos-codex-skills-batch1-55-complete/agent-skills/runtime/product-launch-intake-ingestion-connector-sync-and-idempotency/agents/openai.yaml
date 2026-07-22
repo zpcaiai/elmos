@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B41: Product Launch Intake Ingestion Connector Sync And Idempotency"
+  short_description: "Run ELMOS B41 Skill with fail-closed evidence"
+  default_prompt: "Use $product-launch-intake-ingestion-connector-sync-and-idempotency to execute the ELMOS B41 contract with fail-closed evidence."

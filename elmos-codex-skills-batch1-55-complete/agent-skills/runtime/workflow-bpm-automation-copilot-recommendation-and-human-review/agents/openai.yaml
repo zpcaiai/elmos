@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B46: Workflow Bpm Automation Copilot Recommendation And Human Review"
+  short_description: "Run ELMOS B46 Skill with fail-closed evidence"
+  default_prompt: "Use $workflow-bpm-automation-copilot-recommendation-and-human-review to execute the ELMOS B46 contract with fail-closed evidence."

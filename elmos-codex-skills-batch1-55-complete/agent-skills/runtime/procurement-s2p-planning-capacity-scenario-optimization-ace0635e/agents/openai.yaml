@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B42: Procurement S2P Planning Capacity Scenario Optimization And Allocation"
+  short_description: "Run ELMOS B42 Skill with fail-closed evidence"
+  default_prompt: "Use $procurement-s2p-planning-capacity-scenario-optimization-ace0635e to execute the ELMOS B42 contract with fail-closed evidence."

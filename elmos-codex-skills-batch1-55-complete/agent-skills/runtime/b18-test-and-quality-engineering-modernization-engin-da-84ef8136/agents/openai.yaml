@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M18: B18 Test And Quality Engineering Modernization Engin Data Lineage And Reconciliation"
+  short_description: "Run ELMOS M18 Skill with fail-closed evidence"
+  default_prompt: "Use $b18-test-and-quality-engineering-modernization-engin-da-84ef8136 to execute the ELMOS M18 contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B38: Continuous Authorization Pdp Pep Decision Api Obligations And Cache"
+  short_description: "Run ELMOS B38 Skill with fail-closed evidence"
+  default_prompt: "Use $continuous-authorization-pdp-pep-decision-api-obligatio-e844fab7 to execute the ELMOS B38 contract with fail-closed evidence."

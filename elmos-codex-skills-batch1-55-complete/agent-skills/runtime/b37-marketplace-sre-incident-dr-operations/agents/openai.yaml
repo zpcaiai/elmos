@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M37: B37 Marketplace Sre Incident Dr Operations"
+  short_description: "Run ELMOS M37 Skill with fail-closed evidence"
+  default_prompt: "Use $b37-marketplace-sre-incident-dr-operations to execute the ELMOS M37 contract with fail-closed evidence."

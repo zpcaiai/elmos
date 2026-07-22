@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tst Cicd Runner Permission Provenance"
+  short_description: "Run this ELMOS Batch 66-80 test Skill with evidence"
+  default_prompt: "Use $tst-cicd-runner-permission-provenance to run the exact Batch 66-80 test scope with fail-closed evidence."

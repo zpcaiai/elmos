@@ -1,0 +1,4 @@
+interface:
+  display_name: "B32 Mobile Crossplatform"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b32-mobile-crossplatform to execute this ELMOS Runtime Skill with fail-closed evidence."

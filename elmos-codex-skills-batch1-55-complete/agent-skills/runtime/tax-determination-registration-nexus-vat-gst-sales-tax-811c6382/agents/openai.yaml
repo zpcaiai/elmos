@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B39: Tax Determination Registration Nexus Vat Gst Sales Tax Withholding And Einvoicing"
+  short_description: "Run ELMOS B39 Skill with fail-closed evidence"
+  default_prompt: "Use $tax-determination-registration-nexus-vat-gst-sales-tax-811c6382 to execute the ELMOS B39 contract with fail-closed evidence."

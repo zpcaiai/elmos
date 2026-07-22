@@ -1,0 +1,62 @@
+{
+  "schema_version": "1.0.0",
+  "language": "python",
+  "profiles": [
+    {
+      "id": "python-fastapi-service",
+      "skills": [
+        "PG089",
+        "PG090",
+        "PG091",
+        "PG092",
+        "PG093",
+        "PG094",
+        "PG095",
+        "PG096",
+        "PG097",
+        "PG098",
+        "PG099",
+        "PG100"
+      ]
+    }
+  ],
+  "runtime": {
+    "version": "platform-pinned",
+    "support_policy": "active-supported",
+    "framework": "fastapi",
+    "framework_version": "platform-pinned"
+  },
+  "build": {
+    "system": "pyproject",
+    "lock_required": true,
+    "isolated_install": true
+  },
+  "quality": {
+    "formatter_linter": "ruff",
+    "type_checker": "strict-profile"
+  },
+  "generators": [
+    {
+      "skill_id": "PG094",
+      "artifact_kinds": [
+        "routes",
+        "pydantic-contracts"
+      ],
+      "ownership_modes": [
+        "managed",
+        "protected"
+      ]
+    },
+    {
+      "skill_id": "PG093",
+      "artifact_kinds": [
+        "domain",
+        "application",
+        "ports"
+      ],
+      "ownership_modes": [
+        "protected"
+      ]
+    }
+  ]
+}

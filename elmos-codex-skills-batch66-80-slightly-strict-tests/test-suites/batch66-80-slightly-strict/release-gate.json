@@ -1,0 +1,22 @@
+{
+  "suite_id": "batch66-80-slightly-strict",
+  "status": "NOT_RUN",
+  "thresholds": {
+    "P0_pass_rate": 1.0,
+    "P1_pass_rate": 0.98,
+    "P2_pass_rate": 0.95,
+    "zero_tolerance_failures": 0,
+    "flaky_rate_max": 0.01,
+    "p95_regression_max": 0.1,
+    "artifact_size_regression_max": 0.15,
+    "critical_mutation_score_min": 0.7,
+    "overall_mutation_score_min": 0.6
+  },
+  "counts": {
+    "not-run": 450
+  },
+  "reasons": [
+    "All cases are not-run. Static package validation is not runtime certification."
+  ],
+  "generated_at": null
+}

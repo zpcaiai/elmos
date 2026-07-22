@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B43: Payroll Workforce Data Quality Dedup Reconciliation And Certification"
+  short_description: "Run ELMOS B43 Skill with fail-closed evidence"
+  default_prompt: "Use $payroll-workforce-data-quality-dedup-reconciliation-and-e276fba0 to execute the ELMOS B43 contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B48: Enterprise Risk Planning Capacity Scenario Optimization And Allocation"
+  short_description: "Run ELMOS B48 Skill with fail-closed evidence"
+  default_prompt: "Use $enterprise-risk-planning-capacity-scenario-optimization-b8523544 to execute the ELMOS B48 contract with fail-closed evidence."

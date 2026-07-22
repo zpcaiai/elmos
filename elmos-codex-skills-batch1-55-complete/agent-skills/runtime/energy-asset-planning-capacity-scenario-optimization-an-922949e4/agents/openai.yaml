@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B53: Energy Asset Planning Capacity Scenario Optimization And Allocation"
+  short_description: "Run ELMOS B53 Skill with fail-closed evidence"
+  default_prompt: "Use $energy-asset-planning-capacity-scenario-optimization-an-922949e4 to execute the ELMOS B53 contract with fail-closed evidence."

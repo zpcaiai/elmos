@@ -1,0 +1,2227 @@
+{
+  "package": "elmos-codex-skills-batch66-80-complete",
+  "skill_count": 195,
+  "id_range": [
+    "PG223",
+    "PG417"
+  ],
+  "batches": [
+    66,
+    67,
+    68,
+    69,
+    70,
+    71,
+    72,
+    73,
+    74,
+    75,
+    76,
+    77,
+    78,
+    79,
+    80
+  ],
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "size_bytes": 3793,
+      "sha256": "9a04c44981de3fa47be7b0320ab7b91f19be52b3e2a572b4cbbd0c8fbdf81115"
+    },
+    {
+      "path": "Makefile",
+      "size_bytes": 163,
+      "sha256": "97178874489a0883c5c3d7cc9308813f83b1fc001e194cb2760438d6f3ba82c4"
+    },
+    {
+      "path": "README.md",
+      "size_bytes": 1905,
+      "sha256": "4cdcb7bd74bec26d2e8503d8542d401399b265385129d3fc93dff81dfbba887b"
+    },
+    {
+      "path": "SKILL_CATALOG.csv",
+      "size_bytes": 95310,
+      "sha256": "067c1dfc76c4a75e344ecb71d68ea1b426e7d049d0139bd006f1700eb79db12b"
+    },
+    {
+      "path": "agent-skills/runtime/b66-nestjs-fastify-api-generator/SKILL.md",
+      "size_bytes": 12114,
+      "sha256": "490c94e60e55fcb8d46f23469c93850547e230694b07f30defb8ee436405cd72"
+    },
+    {
+      "path": "agent-skills/runtime/b66-nextjs-fullstack-generator/SKILL.md",
+      "size_bytes": 12100,
+      "sha256": "b16c06ad6f9bb07a98ff090bea7fe6aec18460fd285792fb4bf1a7902268a777"
+    },
+    {
+      "path": "agent-skills/runtime/b66-node-build-run-repair-certifier/SKILL.md",
+      "size_bytes": 12339,
+      "sha256": "3db0d860a2fc4b9c9f65751a09ad8169a5aa16c13fcd8ce29c1e053d541a9866"
+    },
+    {
+      "path": "agent-skills/runtime/b66-node-runtime-lockfile-reproducer/SKILL.md",
+      "size_bytes": 12123,
+      "sha256": "9da82d7180936fd304bf2d8d967402508782e3e50f2f732fbf103e2031969a3f"
+    },
+    {
+      "path": "agent-skills/runtime/b66-node-worker-cli-generator/SKILL.md",
+      "size_bytes": 12087,
+      "sha256": "9e0907cb197e72bb5d7c519c7c449f4e632749fe268e93da1e5bc818a1bda0be"
+    },
+    {
+      "path": "agent-skills/runtime/b66-react-vite-spa-generator/SKILL.md",
+      "size_bytes": 12078,
+      "sha256": "f1865d082bfcc1c896b55dc7dbf796b57e60e153f04b349ad2566a6af59ff0b2"
+    },
+    {
+      "path": "agent-skills/runtime/b66-typescript-contract-client-generator/SKILL.md",
+      "size_bytes": 12527,
+      "sha256": "1f77f423ede19daf566ddbffd41ef434876fdfbfd2cc5ad2aa3bcefd9c762efb"
+    },
+    {
+      "path": "agent-skills/runtime/b66-typescript-data-access-generator/SKILL.md",
+      "size_bytes": 12320,
+      "sha256": "7a1cc34bea7dcb024f3db4f4682d42c80c2a47b6f22c5d1d2f73f0afa730ed3c"
+    },
+    {
+      "path": "agent-skills/runtime/b66-typescript-monorepo-scaffolder/SKILL.md",
+      "size_bytes": 12241,
+      "sha256": "31244a74e884c6f2e6ee53b3ded57fc5a9517337ee42d601d699a5f1193b8412"
+    },
+    {
+      "path": "agent-skills/runtime/b66-typescript-project-profile-detector/SKILL.md",
+      "size_bytes": 12304,
+      "sha256": "8c598b29eea619ae41dce1379bea21265c28cc026c01c416eda8c074adbb3177"
+    },
+    {
+      "path": "agent-skills/runtime/b66-typescript-test-harness-generator/SKILL.md",
+      "size_bytes": 12503,
+      "sha256": "cba4edb29abd0faf0793a8f8337c2eed7e88cc35a4420d20eac6c30ac383f48e"
+    },
+    {
+      "path": "agent-skills/runtime/b66-vue-nuxt-app-generator/SKILL.md",
+      "size_bytes": 12060,
+      "sha256": "0e37be656d16ede51cd2c25ffe35d12a0c1ca498027dd6d70dffbd3924041752"
+    },
+    {
+      "path": "agent-skills/runtime/b67-go-build-crosscompile-certifier/SKILL.md",
+      "size_bytes": 12416,
+      "sha256": "7306d489babb00fc01b9566ccb23f9a063f1d80b317d7e11aad0a2c2d082645b"
+    },
+    {
+      "path": "agent-skills/runtime/b67-go-cli-generator/SKILL.md",
+      "size_bytes": 12083,
+      "sha256": "39d5783cf4a8b29a18eb277eeace35cb8de622b499fd14a1c98821a2feb1b15c"
+    },
+    {
+      "path": "agent-skills/runtime/b67-go-concurrency-context-safety/SKILL.md",
+      "size_bytes": 12151,
+      "sha256": "a5962691e3317c7f385052ee6d35221846d3f37f1d9f9793097e22247f7bdc2d"
+    },
+    {
+      "path": "agent-skills/runtime/b67-go-data-access-transaction-generator/SKILL.md",
+      "size_bytes": 12399,
+      "sha256": "7d40650c4d311065941f166e13dec38f2e02f7296df7f5f81c373b0bbf0865a9"
+    },
+    {
+      "path": "agent-skills/runtime/b67-go-http-grpc-service-generator/SKILL.md",
+      "size_bytes": 12209,
+      "sha256": "911b8b5be34b00e45d835b4f7113f495bda7bfddb2ee57aa32677cfdac0ee183"
+    },
+    {
+      "path": "agent-skills/runtime/b67-go-kubernetes-operator-generator/SKILL.md",
+      "size_bytes": 12424,
+      "sha256": "af36bf58675a2bf84708d77166d6f35e5ace15f8a8dabe5d2a8fa3f2cfbedf60"
+    },
+    {
+      "path": "agent-skills/runtime/b67-go-mcp-tool-server-generator/SKILL.md",
+      "size_bytes": 12191,
+      "sha256": "87359761381755689911bc1f088b29f5a1c4c39ff9f711b762d966f90b1c6ed9"
+    },
+    {
+      "path": "agent-skills/runtime/b67-go-module-workspace-reproducer/SKILL.md",
+      "size_bytes": 12182,
+      "sha256": "17de0b60da1a024ffdab280e394942e2dfd99989cf8f2c0241563f53f489e3f8"
+    },
+    {
+      "path": "agent-skills/runtime/b67-go-observability-middleware-generator/SKILL.md",
+      "size_bytes": 12272,
+      "sha256": "14f797ce4fda2943619ef6917871b01af57c208dd9dc77b85c2c49e1ebe2b85c"
+    },
+    {
+      "path": "agent-skills/runtime/b67-go-repository-profile-detector/SKILL.md",
+      "size_bytes": 12166,
+      "sha256": "356f8ae16c77d77ca7217665a0d7de354267b8625bfed85073c537f505b2d97b"
+    },
+    {
+      "path": "agent-skills/runtime/b67-go-test-fuzz-race-generator/SKILL.md",
+      "size_bytes": 12356,
+      "sha256": "88607671996e62495e263e8bc89f306925b627704629a11a841438a19d9f82b4"
+    },
+    {
+      "path": "agent-skills/runtime/b67-go-worker-event-consumer-generator/SKILL.md",
+      "size_bytes": 12245,
+      "sha256": "a5f431ef350498131aea929c26c3cdc576faf86dae4cd31175b1f6bb7372e875"
+    },
+    {
+      "path": "agent-skills/runtime/b68-android-compose-application-generator/SKILL.md",
+      "size_bytes": 12377,
+      "sha256": "2c0326e9e64f5fcc8f0efbf4b308ef17f5e394fe1d8dacbafffb9f6a74b51050"
+    },
+    {
+      "path": "agent-skills/runtime/b68-gradle-kotlin-build-reproducer/SKILL.md",
+      "size_bytes": 12404,
+      "sha256": "52bc682750384fe61624b691fa06db831e867891058007fbf1397fbbacdc2963"
+    },
+    {
+      "path": "agent-skills/runtime/b68-java-kotlin-interop-manager/SKILL.md",
+      "size_bytes": 12050,
+      "sha256": "e1d6b891ad94b443670c5b5697caee00cf016f45974c4cd7a925e78930d9b3de"
+    },
+    {
+      "path": "agent-skills/runtime/b68-kotlin-build-run-repair-certifier/SKILL.md",
+      "size_bytes": 12510,
+      "sha256": "492146aa42e487e0e3e69bbc4c973898dcd2d272fa868fe5a7c854194da6c026"
+    },
+    {
+      "path": "agent-skills/runtime/b68-kotlin-contract-client-generator/SKILL.md",
+      "size_bytes": 12474,
+      "sha256": "ed4feb3d1d21b2bb3c2d68dc808dc200cd46deac08b2c196b991e6fba8a917b6"
+    },
+    {
+      "path": "agent-skills/runtime/b68-kotlin-coroutine-structured-concurrency/SKILL.md",
+      "size_bytes": 12329,
+      "sha256": "030708d9b3b95e2d1adcedf3b5182297a08e20cd38a8206c18830c1f03e4ef7c"
+    },
+    {
+      "path": "agent-skills/runtime/b68-kotlin-data-access-generator/SKILL.md",
+      "size_bytes": 12267,
+      "sha256": "0e417ec0fa8e6cc37115abfcf88fa7477a1191bf1612b989aece425833150127"
+    },
+    {
+      "path": "agent-skills/runtime/b68-kotlin-multiplatform-library-generator/SKILL.md",
+      "size_bytes": 12357,
+      "sha256": "2d94d5b7a7577cd31fa323af2d81ea0aea05ebb26f3c56e0a396ca94f50a563b"
+    },
+    {
+      "path": "agent-skills/runtime/b68-kotlin-project-profile-detector/SKILL.md",
+      "size_bytes": 12251,
+      "sha256": "e2fef81bb777538d7bdfa980629332cf58c3acb391d971b99605832723653c79"
+    },
+    {
+      "path": "agent-skills/runtime/b68-kotlin-test-harness-generator/SKILL.md",
+      "size_bytes": 12450,
+      "sha256": "a47d73e555f9845327e8bd189458c448f0728daf3f3c31a8751c71ba4bff4a6b"
+    },
+    {
+      "path": "agent-skills/runtime/b68-ktor-service-generator/SKILL.md",
+      "size_bytes": 12040,
+      "sha256": "3536c19797e8ae68cf6b9070f311052dab7dd8e05236ab4f9c1bc24badb78965"
+    },
+    {
+      "path": "agent-skills/runtime/b68-spring-kotlin-service-generator/SKILL.md",
+      "size_bytes": 12294,
+      "sha256": "9150b3ce86255e77dc3a5405f435cd6fc5bb9c9bedcb19013b324c8ba135f59c"
+    },
+    {
+      "path": "agent-skills/runtime/b69-composer-dependency-reproducer/SKILL.md",
+      "size_bytes": 12372,
+      "sha256": "b2553a762601342cfc9b792b244c5de8a9eab5afcd67be45df80b142f5573f5a"
+    },
+    {
+      "path": "agent-skills/runtime/b69-laravel-application-generator/SKILL.md",
+      "size_bytes": 12188,
+      "sha256": "493c43f8efe3a5eae35fe3dc97c6f62c664b950961bef127328b090ec90c40ee"
+    },
+    {
+      "path": "agent-skills/runtime/b69-php-build-run-deploy-certifier/SKILL.md",
+      "size_bytes": 12555,
+      "sha256": "65e8d6f983bd420274c7c2d8889129478284a08c27d38060e1f56436355d32dc"
+    },
+    {
+      "path": "agent-skills/runtime/b69-php-contract-client-generator/SKILL.md",
+      "size_bytes": 12519,
+      "sha256": "4d304fa715ba09343899ba8b9ff14e3a63361042876a7227786bc36650ef1415"
+    },
+    {
+      "path": "agent-skills/runtime/b69-php-modernization-repair/SKILL.md",
+      "size_bytes": 12095,
+      "sha256": "d49c68a8f0a4b7f6b318cfe35c1091dfb59eae68fd489be7d90b2d47c68aec60"
+    },
+    {
+      "path": "agent-skills/runtime/b69-php-modular-monolith-generator/SKILL.md",
+      "size_bytes": 12357,
+      "sha256": "feef8ad96cd71d7512445ed87d53f129703554f91310c245f8c0e052ebf64641"
+    },
+    {
+      "path": "agent-skills/runtime/b69-php-persistence-migration-generator/SKILL.md",
+      "size_bytes": 12556,
+      "sha256": "d54d54821f0505bc8a0f08a53900bf87f51f5b23c7e4076b5952a0d35aa252e2"
+    },
+    {
+      "path": "agent-skills/runtime/b69-php-project-profile-detector/SKILL.md",
+      "size_bytes": 12296,
+      "sha256": "448e9ac399473929c5e9dd78534106f76296b3e7e45d3ffb4214c9dc4fa83ff0"
+    },
+    {
+      "path": "agent-skills/runtime/b69-php-queue-scheduler-generator/SKILL.md",
+      "size_bytes": 12348,
+      "sha256": "179fe94fab58b9493b07811bf3b39092a94b8df0dd12636edd1bcaebe3d36b37"
+    },
+    {
+      "path": "agent-skills/runtime/b69-php-test-quality-harness/SKILL.md",
+      "size_bytes": 12269,
+      "sha256": "f188a0dc742dcd78d702ec4db0d9a4a68db936972d2434332c7457abe256e650"
+    },
+    {
+      "path": "agent-skills/runtime/b69-symfony-api-generator/SKILL.md",
+      "size_bytes": 12116,
+      "sha256": "12aaa47dbb2c6c9e05ac34c0250688db183c53df8b97472c5aa3cf14397dd97d"
+    },
+    {
+      "path": "agent-skills/runtime/b69-wordpress-woocommerce-extension-generator/SKILL.md",
+      "size_bytes": 12296,
+      "sha256": "e353e643a9eb9fd1b93c1de000b1bef11c3ac1889be2dbb0f74157b973cc14eb"
+    },
+    {
+      "path": "agent-skills/runtime/b70-c-api-abi-contract-manager/SKILL.md",
+      "size_bytes": 12116,
+      "sha256": "6c499aae116749bbce14f9d2eccd1efd6439890108b97a1b4d20ae737e0f424d"
+    },
+    {
+      "path": "agent-skills/runtime/b70-cmake-native-project-generator/SKILL.md",
+      "size_bytes": 12414,
+      "sha256": "3533614a11408f748c2f34cc6f53aa59ae33eb21eeb8df597df5b8015316bada"
+    },
+    {
+      "path": "agent-skills/runtime/b70-embedded-crosscompile-project-generator/SKILL.md",
+      "size_bytes": 12270,
+      "sha256": "c37d43a4aad950ea59df76babe576043f7eeb60708bc6757b4cf32484f6d4724"
+    },
+    {
+      "path": "agent-skills/runtime/b70-modern-cpp-library-service-generator/SKILL.md",
+      "size_bytes": 12243,
+      "sha256": "e0900577144ce9c6b1dd4accc80571072087624615611079dd4a9908caa038d6"
+    },
+    {
+      "path": "agent-skills/runtime/b70-native-build-run-certifier/SKILL.md",
+      "size_bytes": 12545,
+      "sha256": "37c4f89aa419222c7c24b449235c35043f61f7499e9c54dd8f4f96a122654f8b"
+    },
+    {
+      "path": "agent-skills/runtime/b70-native-concurrency-realtime-safety/SKILL.md",
+      "size_bytes": 12370,
+      "sha256": "23c837f4ae191913a6b83c4a1c89d409c285b85e0a5e45c3e01eefdf501ae5ab"
+    },
+    {
+      "path": "agent-skills/runtime/b70-native-ffi-binding-generator/SKILL.md",
+      "size_bytes": 12365,
+      "sha256": "f7dae5f7a7e76ce81cbeef8c5d510c67d96ff68d3e0fc3e844730cd13f808003"
+    },
+    {
+      "path": "agent-skills/runtime/b70-native-memory-lifetime-safety/SKILL.md",
+      "size_bytes": 12154,
+      "sha256": "3a340a17ccabfb2ecb30773e58905fb17c71dd17cd37a7de45ff4b3adebc9a96"
+    },
+    {
+      "path": "agent-skills/runtime/b70-native-project-profile-detector/SKILL.md",
+      "size_bytes": 12349,
+      "sha256": "1306c6f8d39aae52856b1e14e0a8b436d74eda63b9ceee32f498b65c686a2c97"
+    },
+    {
+      "path": "agent-skills/runtime/b70-native-sanitizer-fuzz-static-analysis/SKILL.md",
+      "size_bytes": 12238,
+      "sha256": "ebe34d045381682ddcd601e079382f7f7c5462bd770e799fd2576a2ff09ef3ea"
+    },
+    {
+      "path": "agent-skills/runtime/b70-native-toolchain-compiler-matrix/SKILL.md",
+      "size_bytes": 12193,
+      "sha256": "4f8b2ea6e32cb2cbb09d4a85ebfa44de7da1f31301e260b0c8b8ea476093cbc1"
+    },
+    {
+      "path": "agent-skills/runtime/b70-opcua-industrial-adapter-generator/SKILL.md",
+      "size_bytes": 12229,
+      "sha256": "3d68530f8fc3c4e17ba28dd5ce481b6923fcfa77c7783eac10bb69ea826061bf"
+    },
+    {
+      "path": "agent-skills/runtime/b70-qt-industrial-hmi-generator/SKILL.md",
+      "size_bytes": 12162,
+      "sha256": "8b88a7b8d89eb1226807a20ff53a0e3e48ae69cd790542f74313bc8d671c9b04"
+    },
+    {
+      "path": "agent-skills/runtime/b70-ros2-node-project-generator/SKILL.md",
+      "size_bytes": 12166,
+      "sha256": "2ecc7c9fa7bdc86a7fe7f5debae328d10ae596e6274a545f2a0bf18610d24cf6"
+    },
+    {
+      "path": "agent-skills/runtime/b71-cargo-workspace-dependency-reproducer/SKILL.md",
+      "size_bytes": 12439,
+      "sha256": "7d5bb83df62e9835ca9b1cdc699e89448b376e39fd85c8b7d445cbf62f2c9a01"
+    },
+    {
+      "path": "agent-skills/runtime/b71-rust-async-worker-generator/SKILL.md",
+      "size_bytes": 12438,
+      "sha256": "1d90f0d7ab0cf83f445862f074e1acfbe4fde437b45dffdad8af39854d541649"
+    },
+    {
+      "path": "agent-skills/runtime/b71-rust-axum-service-generator/SKILL.md",
+      "size_bytes": 12438,
+      "sha256": "9faaf44e5e603b78a9c48b4040c25712545fa16accd141037314aea626f6d2f8"
+    },
+    {
+      "path": "agent-skills/runtime/b71-rust-build-run-certifier/SKILL.md",
+      "size_bytes": 12609,
+      "sha256": "b182d069dc0bf5867aa7760b354dc67180e7fe596c1681de6a20706a9eb64844"
+    },
+    {
+      "path": "agent-skills/runtime/b71-rust-cli-generator/SKILL.md",
+      "size_bytes": 12357,
+      "sha256": "e6e568017308390c4a16defc559442546e70de8bee634800003fa95c05a34a4e"
+    },
+    {
+      "path": "agent-skills/runtime/b71-rust-crosscompile-release-generator/SKILL.md",
+      "size_bytes": 12664,
+      "sha256": "692a36de0478a4e937b4782efc4af9e95a2f5fafc13db23a9f375e0a46b5e04a"
+    },
+    {
+      "path": "agent-skills/runtime/b71-rust-ffi-wasm-extension-generator/SKILL.md",
+      "size_bytes": 12492,
+      "sha256": "0f3db4e0c14b9962550ec6d6b997a00dc8657846c22eec87044b0cc50551cf21"
+    },
+    {
+      "path": "agent-skills/runtime/b71-rust-project-profile-detector/SKILL.md",
+      "size_bytes": 12413,
+      "sha256": "d3bf47ae685dea2faf185941024ac71cddd19e6d4fd3f3504f9212c701568f46"
+    },
+    {
+      "path": "agent-skills/runtime/b71-rust-serde-contract-generator/SKILL.md",
+      "size_bytes": 12627,
+      "sha256": "7a8b1154edd3ef770041513968a80b101540614cf91371a6c24501ebfe798e1f"
+    },
+    {
+      "path": "agent-skills/runtime/b71-rust-supply-chain-policy/SKILL.md",
+      "size_bytes": 12191,
+      "sha256": "cc2525fa3a021b26d2b870e4b1c688ac7c82a5ef77f7f5c6bfe0de9f258685b4"
+    },
+    {
+      "path": "agent-skills/runtime/b71-rust-test-property-fuzz-generator/SKILL.md",
+      "size_bytes": 12666,
+      "sha256": "a27d727b1f652ab5618a4c012fb4fbaadfd4a92cec91dea526ee2d3aaa72f085"
+    },
+    {
+      "path": "agent-skills/runtime/b71-rust-unsafe-boundary-review/SKILL.md",
+      "size_bytes": 12218,
+      "sha256": "ace61a026da2e676b4d55cfb83234a49c6a4f31a8cbfc9e7d2d15b2f30e8796a"
+    },
+    {
+      "path": "agent-skills/runtime/b72-flutter-accessibility-localization/SKILL.md",
+      "size_bytes": 12324,
+      "sha256": "46a76eb14a93d0d501f38d53bde3f83b14e16d45c6c97854ad32a9fae467e4e9"
+    },
+    {
+      "path": "agent-skills/runtime/b72-flutter-api-data-layer-generator/SKILL.md",
+      "size_bytes": 12514,
+      "sha256": "08bed281f8c1ba2f3d1333a92d50ecf0074b3f7f29df60db29cbce306ff037c4"
+    },
+    {
+      "path": "agent-skills/runtime/b72-flutter-build-run-certifier/SKILL.md",
+      "size_bytes": 12667,
+      "sha256": "bdea70c82f623fd968f461ed4ecd9a35b0baa354db29448de2fd8015f59a08ca"
+    },
+    {
+      "path": "agent-skills/runtime/b72-flutter-clean-architecture-generator/SKILL.md",
+      "size_bytes": 12550,
+      "sha256": "e3e1de56530e44782314b0c43a5d40f8a05286b09afb7aa60fe2da42113ed225"
+    },
+    {
+      "path": "agent-skills/runtime/b72-flutter-dependency-workspace-reproducer/SKILL.md",
+      "size_bytes": 12550,
+      "sha256": "86ee6a24e3f6834ee6fd875d81488602c9c8e29ac5eca7a2df7d550004f54631"
+    },
+    {
+      "path": "agent-skills/runtime/b72-flutter-offline-sync-generator/SKILL.md",
+      "size_bytes": 12496,
+      "sha256": "64714ffdda78bb08fa581a3143194ea9d35b22935f352af3c0db8fa71044a99b"
+    },
+    {
+      "path": "agent-skills/runtime/b72-flutter-platform-channel-generator/SKILL.md",
+      "size_bytes": 12532,
+      "sha256": "d836f40dc2ab7a94a809e7dc4923978f104882221e7f191074c4204d58839e0e"
+    },
+    {
+      "path": "agent-skills/runtime/b72-flutter-project-profile-detector/SKILL.md",
+      "size_bytes": 12471,
+      "sha256": "0958e0c77d90ab3e97fcb72aa8d84d8ba083f3fdb1bba702b00676b5939690d0"
+    },
+    {
+      "path": "agent-skills/runtime/b72-flutter-release-signing-packager/SKILL.md",
+      "size_bytes": 12484,
+      "sha256": "396142e681fae80b75fa8bd434d881a4dc34f05ada80998767a05b2dd1697b13"
+    },
+    {
+      "path": "agent-skills/runtime/b72-flutter-responsive-multiplatform-ui/SKILL.md",
+      "size_bytes": 12333,
+      "sha256": "abbe046a7cb76d14083f16733430274aa1fd98d2ba7f37a30021318cca009674"
+    },
+    {
+      "path": "agent-skills/runtime/b72-flutter-state-routing-generator/SKILL.md",
+      "size_bytes": 12505,
+      "sha256": "d344cffe0662fb80e3c1c9e8e63df37e0d9b7c7ce6ec87b1a2067dce74e1a537"
+    },
+    {
+      "path": "agent-skills/runtime/b72-flutter-test-golden-integration-harness/SKILL.md",
+      "size_bytes": 12543,
+      "sha256": "6b22b662d8f8f31b12d357208fdb9588b2bbbbd5164774c7d69419d9597a3d2c"
+    },
+    {
+      "path": "agent-skills/runtime/b73-apple-accessibility-localization/SKILL.md",
+      "size_bytes": 12086,
+      "sha256": "3fb5a9c4c25785d31ebc959d8c668a127193714a1a83a0c3e5e1be359829532f"
+    },
+    {
+      "path": "agent-skills/runtime/b73-apple-widget-extension-generator/SKILL.md",
+      "size_bytes": 12294,
+      "sha256": "3b58cd0db9ba425cffb190dc7148cf9d3d2bfd4efd5636cef50cb3041b4c451d"
+    },
+    {
+      "path": "agent-skills/runtime/b73-objectivec-swift-interop-manager/SKILL.md",
+      "size_bytes": 12271,
+      "sha256": "52ca776e8470346796cbc4042fa26c12763473c4c2d30fcf6215315b061c0e04"
+    },
+    {
+      "path": "agent-skills/runtime/b73-swift-concurrency-safety/SKILL.md",
+      "size_bytes": 12354,
+      "sha256": "84d2178f9362d6839ea2390baa4e1f826075cb6a162d4613d81c33250c565cc8"
+    },
+    {
+      "path": "agent-skills/runtime/b73-swift-networking-contract-generator/SKILL.md",
+      "size_bytes": 12673,
+      "sha256": "c958c9073c9f58dc9e5ee8db41418f0047384b6257b3cd33433258d67c0d95de"
+    },
+    {
+      "path": "agent-skills/runtime/b73-swift-package-dependency-reproducer/SKILL.md",
+      "size_bytes": 12475,
+      "sha256": "1a21e4815097e3b7c81f9f103071c55122003b01a62561a49f8f30de9be32aa0"
+    },
+    {
+      "path": "agent-skills/runtime/b73-swift-persistence-generator/SKILL.md",
+      "size_bytes": 12430,
+      "sha256": "b9457645b2bf18a348c632fd48840cdbfea9080508aa01e7fd6eab29a6409d23"
+    },
+    {
+      "path": "agent-skills/runtime/b73-swift-project-profile-detector/SKILL.md",
+      "size_bytes": 12414,
+      "sha256": "4e758b54c9265a4cd1d3bf343e12d531d9ee8252f2c4f1a47bbe03517d8b63d5"
+    },
+    {
+      "path": "agent-skills/runtime/b73-swift-state-architecture-generator/SKILL.md",
+      "size_bytes": 12493,
+      "sha256": "9ce32353afdc48c81a5a7afd8bfca7dc72317188fa90821086355de308eeb033"
+    },
+    {
+      "path": "agent-skills/runtime/b73-swiftui-application-generator/SKILL.md",
+      "size_bytes": 12448,
+      "sha256": "f3944dbc0c5b64438fb4b04f0436d03658d3946b2500f8e6c5ddb388c5e713f4"
+    },
+    {
+      "path": "agent-skills/runtime/b73-xcode-build-signing-certifier/SKILL.md",
+      "size_bytes": 12465,
+      "sha256": "52bf18814dc8496780ac2a55ccf3b9ed337b0e6043e6b13c46e07803f0cf4378"
+    },
+    {
+      "path": "agent-skills/runtime/b73-xctest-ui-test-harness/SKILL.md",
+      "size_bytes": 12170,
+      "sha256": "933427f94736cece210f9ca3f6535cec34a53c197da5e95fc07d5c95d2721bd6"
+    },
+    {
+      "path": "agent-skills/runtime/b74-cross-shell-automation-certifier/SKILL.md",
+      "size_bytes": 12384,
+      "sha256": "bbea472ed6a5754a921084f100a9963ba0e1f09f284dc2e9e0847cea154e0ea0"
+    },
+    {
+      "path": "agent-skills/runtime/b74-pester-psscriptanalyzer-quality-gate/SKILL.md",
+      "size_bytes": 11981,
+      "sha256": "3c2f822df140abaf9b506400d6fd2f72f0bd0170ca4b6408729b6f454308f9e1"
+    },
+    {
+      "path": "agent-skills/runtime/b74-portable-bash-script-generator/SKILL.md",
+      "size_bytes": 12147,
+      "sha256": "414d9b795403340d027745f454edd8372496e4791a7a82a509cc41105bef8989"
+    },
+    {
+      "path": "agent-skills/runtime/b74-powershell-error-pipeline-contract/SKILL.md",
+      "size_bytes": 12471,
+      "sha256": "4dbbcbb88907bc44256576e171b96673308344520dbbdcef6cf2c9e86dc22fdd"
+    },
+    {
+      "path": "agent-skills/runtime/b74-powershell-module-command-generator/SKILL.md",
+      "size_bytes": 12517,
+      "sha256": "d1e9a0d245490d950ea8e8d9cee17b41753774849bc27e030b40f14c0d5c4bfe"
+    },
+    {
+      "path": "agent-skills/runtime/b74-powershell-project-profile-detector/SKILL.md",
+      "size_bytes": 12483,
+      "sha256": "33edc239f74faa4988394f2c0507be71a4cbda5bcf974a4616f9706c6615aa5c"
+    },
+    {
+      "path": "agent-skills/runtime/b74-powershell-remoting-crossplatform/SKILL.md",
+      "size_bytes": 12291,
+      "sha256": "5734bcee24a9a7e295f68546c66858e8fe2481117bf841da8d1be45f0b352c35"
+    },
+    {
+      "path": "agent-skills/runtime/b74-powershell-secret-signing-policy/SKILL.md",
+      "size_bytes": 12448,
+      "sha256": "d43e09e714cbc7bd671deb0e65470b5cda3b6f44a60237157394ca6f45e1a634"
+    },
+    {
+      "path": "agent-skills/runtime/b74-shell-argument-env-config-parser/SKILL.md",
+      "size_bytes": 12124,
+      "sha256": "fa5a6b7e59cca04222d804bd659c529c926fa26a429a6b8e434c78c463af7228"
+    },
+    {
+      "path": "agent-skills/runtime/b74-shell-process-pipeline-orchestrator/SKILL.md",
+      "size_bytes": 12151,
+      "sha256": "530e35e86936d3af329855948404a476fa300cb092bbdfb04d71f4311f164e01"
+    },
+    {
+      "path": "agent-skills/runtime/b74-shell-script-profile-detector/SKILL.md",
+      "size_bytes": 12262,
+      "sha256": "3487b9ab56670f55596e8754ffbfcc7f5f3cae5e91ed9d33814802ac203b6340"
+    },
+    {
+      "path": "agent-skills/runtime/b74-shell-security-secret-hardening/SKILL.md",
+      "size_bytes": 12447,
+      "sha256": "5f12d99d5028e7b54b81558c901ae4010f37e2e7bf7edb2d78f668ac9950a8c0"
+    },
+    {
+      "path": "agent-skills/runtime/b74-shell-strict-mode-error-handling/SKILL.md",
+      "size_bytes": 12124,
+      "sha256": "d3f0f4070e3d5951bda25bb4efdb6639ea0c6b53e5fc1d16e7fafd418742cf04"
+    },
+    {
+      "path": "agent-skills/runtime/b74-shellcheck-bats-quality-gate/SKILL.md",
+      "size_bytes": 12076,
+      "sha256": "61ef6af4a8507b59d790912f758ed6fc7ce84df8f58467feb343f3b0b7838232"
+    },
+    {
+      "path": "agent-skills/runtime/b75-graphql-schema-resolver-generator/SKILL.md",
+      "size_bytes": 12443,
+      "sha256": "a0bb8e652e96e06b1f76c5f5830bf9ef1c41a1afa1eb65f14777378325b34027"
+    },
+    {
+      "path": "agent-skills/runtime/b75-graphql-security-cost-gate/SKILL.md",
+      "size_bytes": 12326,
+      "sha256": "9ae77dcdc21e4e6e3dbd612c63765918145982278809e21fbfe2c7d4142cb732"
+    },
+    {
+      "path": "agent-skills/runtime/b75-multi-contract-language-certifier/SKILL.md",
+      "size_bytes": 12510,
+      "sha256": "b783b925f68780844763b75518c3076c79fdea53a3a404932df93da66929993a"
+    },
+    {
+      "path": "agent-skills/runtime/b75-openapi-codegen-contract-test/SKILL.md",
+      "size_bytes": 12549,
+      "sha256": "d74b48b950f21bb9580550ebbc15e8280066e9a2784a2223ba01cd5fc7791dff"
+    },
+    {
+      "path": "agent-skills/runtime/b75-openapi-lint-breaking-change-gate/SKILL.md",
+      "size_bytes": 12228,
+      "sha256": "3a89c599238e86cc51df4941bf9a8d1a1e32c563a2a62d34420a58f65c824128"
+    },
+    {
+      "path": "agent-skills/runtime/b75-openapi-spec-generator/SKILL.md",
+      "size_bytes": 12349,
+      "sha256": "3f9f0ef3dc7cb01b5394e141d961cc524692d85061b9095dbb2da182e5286b00"
+    },
+    {
+      "path": "agent-skills/runtime/b75-protobuf-buf-compatibility-gate/SKILL.md",
+      "size_bytes": 12194,
+      "sha256": "1b88ffa6496308c4409f429a46d38b56df44f4981a8b5b02f0d60d6717dcf052"
+    },
+    {
+      "path": "agent-skills/runtime/b75-protobuf-schema-generator/SKILL.md",
+      "size_bytes": 12360,
+      "sha256": "6e035fa945f2571d43283c7a457f65e225cb4c5191b3f7227dd1efa01da7de7f"
+    },
+    {
+      "path": "agent-skills/runtime/b75-sql-compatibility-certifier/SKILL.md",
+      "size_bytes": 12485,
+      "sha256": "a8a63ab895ca451deb9b994c41f1e71e22a82dcc29618c554775934773ee57e5"
+    },
+    {
+      "path": "agent-skills/runtime/b75-sql-migration-generator/SKILL.md",
+      "size_bytes": 12551,
+      "sha256": "3850020b2528952ef291405d3fd78ce78d4b32ec543c1a8b834e5baea6adc1c1"
+    },
+    {
+      "path": "agent-skills/runtime/b75-sql-query-generator/SKILL.md",
+      "size_bytes": 12361,
+      "sha256": "4a5e0557228db25158c7f91b8c9a2463fbe6865cc8017b14e8f28cd4ee6539b3"
+    },
+    {
+      "path": "agent-skills/runtime/b75-sql-query-plan-performance-gate/SKILL.md",
+      "size_bytes": 12249,
+      "sha256": "5aab1d422d7d64893083a7b7c82e30e1bc042cd4b42d08211d632bbcb6ab6404"
+    },
+    {
+      "path": "agent-skills/runtime/b75-sql-schema-dialect-detector/SKILL.md",
+      "size_bytes": 12216,
+      "sha256": "0c77d5e7089acfe1cff8f0a26426d9558a6a95e8fbe72020bf71c57f9c7c30e8"
+    },
+    {
+      "path": "agent-skills/runtime/b75-sql-security-rls-policy-generator/SKILL.md",
+      "size_bytes": 12617,
+      "sha256": "bddeb3b0d715fb3372eeb36a8e75f7952d430ce367b47bd6bee6198ca378a13a"
+    },
+    {
+      "path": "agent-skills/runtime/b75-sql-seed-fixture-generator/SKILL.md",
+      "size_bytes": 12424,
+      "sha256": "7e27d194b2a33d183665951bf81992083db009f6f6ba72dbf874109701ffd952"
+    },
+    {
+      "path": "agent-skills/runtime/b75-sql-transaction-isolation-designer/SKILL.md",
+      "size_bytes": 12424,
+      "sha256": "3725e047ada123c16b67182a6a2e4c55fa8dc4b652bbab6ec184b6d66beeb460"
+    },
+    {
+      "path": "agent-skills/runtime/b76-build-proxy-configuration-certifier/SKILL.md",
+      "size_bytes": 12326,
+      "sha256": "87afa1226067fcc38a03d80c60002d3c58c9d15d69300f5179bab27b6ad23655"
+    },
+    {
+      "path": "agent-skills/runtime/b76-cmake-dependency-package-manager/SKILL.md",
+      "size_bytes": 12174,
+      "sha256": "e78f99e07483ac58a08b5919f21a5b1d180380ab212d85f2c065704967f6bcfd"
+    },
+    {
+      "path": "agent-skills/runtime/b76-cmake-presets-crossbuild-manager/SKILL.md",
+      "size_bytes": 12320,
+      "sha256": "0baa5c0eeb30ffc9df20aaac5ec6461756b2bd5e03b0699d60b14d3f578e5407"
+    },
+    {
+      "path": "agent-skills/runtime/b76-cmake-profile-detector/SKILL.md",
+      "size_bytes": 12258,
+      "sha256": "6d74d19fb8521585e02132e0be4e7677690b8a626b181517d92985c85be384e2"
+    },
+    {
+      "path": "agent-skills/runtime/b76-cmake-target-graph-generator/SKILL.md",
+      "size_bytes": 12346,
+      "sha256": "962f0a7439dd482ce245b92551af511369e921851c82d83d54e95d0130b620ae"
+    },
+    {
+      "path": "agent-skills/runtime/b76-make-incremental-dependency-manager/SKILL.md",
+      "size_bytes": 12053,
+      "sha256": "6d77c6626868e63b9b7ecf45eb7c226e180f520eb036c22f4285b2846b2b6c3f"
+    },
+    {
+      "path": "agent-skills/runtime/b76-make-test-release-orchestrator/SKILL.md",
+      "size_bytes": 12336,
+      "sha256": "f4745f7c397b7c6ba1bbc7b9947824d46067ae7ef2e53810ddc8644231207943"
+    },
+    {
+      "path": "agent-skills/runtime/b76-makefile-profile-detector/SKILL.md",
+      "size_bytes": 12128,
+      "sha256": "a4c04c7be6bbf20fe1f5898e19d27d55ce230685b7b401ad78b66c2b18d989d8"
+    },
+    {
+      "path": "agent-skills/runtime/b76-nginx-reverse-proxy-generator/SKILL.md",
+      "size_bytes": 12257,
+      "sha256": "f81b3ffa6fbc2a1f8e026e6a2021535c4ba53e5d0b747b333ec8051f50ccf7f4"
+    },
+    {
+      "path": "agent-skills/runtime/b76-nginx-tls-security-rate-limit/SKILL.md",
+      "size_bytes": 12215,
+      "sha256": "21e6dd1847fa2fb678c8b5e056cf9aa6e371f0b5cdbf316ef353c87352b6e28c"
+    },
+    {
+      "path": "agent-skills/runtime/b76-nginx-topology-profile-detector/SKILL.md",
+      "size_bytes": 12241,
+      "sha256": "2d97464535901767a519d094050c9462807b0baaa179afbcc995d6b4efe11a2c"
+    },
+    {
+      "path": "agent-skills/runtime/b76-portable-makefile-generator/SKILL.md",
+      "size_bytes": 12189,
+      "sha256": "3f5e0abb97a8c4834e10fdf96dd4b6a609fa529fea35bad7c544a24aec2593e2"
+    },
+    {
+      "path": "agent-skills/runtime/b77-compose-development-environment/SKILL.md",
+      "size_bytes": 12409,
+      "sha256": "dd1e7ed8b8dc1ef2dc7d448f779c36ebef0e0d887785bd607cb5e7d81d5c5cba"
+    },
+    {
+      "path": "agent-skills/runtime/b77-compose-production-parity-gate/SKILL.md",
+      "size_bytes": 12388,
+      "sha256": "435e476410e4e35acc5819111888f432bea1d4977f8d2d45d6b7248b0756cc92"
+    },
+    {
+      "path": "agent-skills/runtime/b77-compose-readiness-dependency-manager/SKILL.md",
+      "size_bytes": 12454,
+      "sha256": "d78647ce1f1ccfde05d489192244d43a60eaeabcf7e4f4caa667d4028abd36a2"
+    },
+    {
+      "path": "agent-skills/runtime/b77-compose-service-topology-generator/SKILL.md",
+      "size_bytes": 12644,
+      "sha256": "50cde7608370369f43cac41b10d1c69b8d228c49b517c2f85bae25285d829a51"
+    },
+    {
+      "path": "agent-skills/runtime/b77-container-base-image-sbom-policy/SKILL.md",
+      "size_bytes": 12204,
+      "sha256": "34eba0dc220dc0472cd5061388af32fbb4e52092533880fecc447b8068dc39f7"
+    },
+    {
+      "path": "agent-skills/runtime/b77-container-build-run-certifier/SKILL.md",
+      "size_bytes": 12595,
+      "sha256": "1f3bbcbac7c67be689cd7157a18676de65387d4d470a8bad46fb7d2f0cbbb379"
+    },
+    {
+      "path": "agent-skills/runtime/b77-container-health-runtime-contract/SKILL.md",
+      "size_bytes": 12396,
+      "sha256": "40c693bc7939cc0589312fd47481a201790172d8dd814df224548e918e165c11"
+    },
+    {
+      "path": "agent-skills/runtime/b77-container-image-test-scan-gate/SKILL.md",
+      "size_bytes": 12360,
+      "sha256": "98cb831087be0a0240303d59bca1ac712c6c44d63177b7a3cd9a3a8b551062de"
+    },
+    {
+      "path": "agent-skills/runtime/b77-container-project-profile-detector/SKILL.md",
+      "size_bytes": 12399,
+      "sha256": "12cd1a71da655ce22c57c3dd9c8ec487de6705ee38832779d05c7fe17b6f4547"
+    },
+    {
+      "path": "agent-skills/runtime/b77-docker-buildx-multiarch-generator/SKILL.md",
+      "size_bytes": 12734,
+      "sha256": "0dc9b13717e79eaf91dc38f15f11d2517c373a36404d024d5f209c3aed06daac"
+    },
+    {
+      "path": "agent-skills/runtime/b77-dockerfile-multistage-generator/SKILL.md",
+      "size_bytes": 12570,
+      "sha256": "419eca409a489ddb674ef9acf1d84b87f3058eda57a77c0a0f261b178eebbdd0"
+    },
+    {
+      "path": "agent-skills/runtime/b77-rootless-container-hardening/SKILL.md",
+      "size_bytes": 12168,
+      "sha256": "6bb47777aaefb613202cb35ee89934224972bf76f839769a15911806f9664913"
+    },
+    {
+      "path": "agent-skills/runtime/b78-gitops-release-bundle-generator/SKILL.md",
+      "size_bytes": 12742,
+      "sha256": "07609a6dd40fd072e142c03dabb16219e8211e8fccf0f72648eebfadc4cdd6c8"
+    },
+    {
+      "path": "agent-skills/runtime/b78-helm-chart-generator/SKILL.md",
+      "size_bytes": 12648,
+      "sha256": "caa66e628055316ab4561e864529a1e9f5db6ed6250a4d0d32c049336a905088"
+    },
+    {
+      "path": "agent-skills/runtime/b78-helm-upgrade-rollback-gate/SKILL.md",
+      "size_bytes": 12482,
+      "sha256": "45fbd8203eeb935c14514b7ab842ae766d8f083642a974660997aa6ce594202e"
+    },
+    {
+      "path": "agent-skills/runtime/b78-helm-values-schema-manager/SKILL.md",
+      "size_bytes": 12494,
+      "sha256": "3d258c9e1d4f9dc2698edc2ce4107a23f12258a9a870e0e2a5e6d011a1dfd194"
+    },
+    {
+      "path": "agent-skills/runtime/b78-iac-kubernetes-helm-certifier/SKILL.md",
+      "size_bytes": 12978,
+      "sha256": "1df6038b56458e75ac473174087e152906956ab79a85ddd90217ef42e23d08d7"
+    },
+    {
+      "path": "agent-skills/runtime/b78-iac-kubernetes-profile-detector/SKILL.md",
+      "size_bytes": 12742,
+      "sha256": "55a35d12aa01b044390f3a366422d0b900bc1bf0bf71c6eed08e9052835e8612"
+    },
+    {
+      "path": "agent-skills/runtime/b78-kubernetes-autoscaling-reliability/SKILL.md",
+      "size_bytes": 12604,
+      "sha256": "cc0f02dee1bca25c23b571b17503fd919d01e4b3341dcbb0f372821870869fc9"
+    },
+    {
+      "path": "agent-skills/runtime/b78-kubernetes-config-secret-policy/SKILL.md",
+      "size_bytes": 12743,
+      "sha256": "470ed24d980f54c526afd2619a50156737530b2ea4df34ee156a3e766df31a9a"
+    },
+    {
+      "path": "agent-skills/runtime/b78-kubernetes-network-security-generator/SKILL.md",
+      "size_bytes": 13005,
+      "sha256": "7a926e1f854023884fea1374fe4f93c21f507dfd7f8e56180f3ae7cde6d2de35"
+    },
+    {
+      "path": "agent-skills/runtime/b78-kubernetes-policy-admission-gate/SKILL.md",
+      "size_bytes": 12574,
+      "sha256": "911601ca13827a748113ecba6a6312fbc37ad109cbdfe4360ae59b60bbba6abe"
+    },
+    {
+      "path": "agent-skills/runtime/b78-kubernetes-workload-manifest-generator/SKILL.md",
+      "size_bytes": 12848,
+      "sha256": "07b617ce6dc69e59882ecf408ace7226e1c512351a59fc97a67bbae928260258"
+    },
+    {
+      "path": "agent-skills/runtime/b78-terraform-import-drift-reconciler/SKILL.md",
+      "size_bytes": 12557,
+      "sha256": "61fa6f450dfac29ad228f8ffe425a14e8ecadc257d340df7693f0daafc1f825d"
+    },
+    {
+      "path": "agent-skills/runtime/b78-terraform-module-scaffolder/SKILL.md",
+      "size_bytes": 12650,
+      "sha256": "6be24f67b9ab6e947d0c98f484d562ddbad7bcbbdf056b6ff308014d8520117e"
+    },
+    {
+      "path": "agent-skills/runtime/b78-terraform-plan-policy-cost-gate/SKILL.md",
+      "size_bytes": 12527,
+      "sha256": "e11e0dc92873018d8e100ea8578e81bb5b276920aec000341a67ff761d9f41b1"
+    },
+    {
+      "path": "agent-skills/runtime/b78-terraform-provider-state-manager/SKILL.md",
+      "size_bytes": 12548,
+      "sha256": "d1b9e4dee74b6ffd26f78c27bb5740ecfbbd09c85e2cc0ccd59a19fbd5481bab"
+    },
+    {
+      "path": "agent-skills/runtime/b78-terraform-test-validation-harness/SKILL.md",
+      "size_bytes": 12731,
+      "sha256": "19bb27dc82fdcb28d7f155ff47e29604c3f6d37789387bacec8cc90b10572cbe"
+    },
+    {
+      "path": "agent-skills/runtime/b79-cicd-cross-system-certifier/SKILL.md",
+      "size_bytes": 12390,
+      "sha256": "39548ea8580adc59358c5c0442ef9d428c08a99e4260e08a0625e6e71d8061ca"
+    },
+    {
+      "path": "agent-skills/runtime/b79-cicd-pipeline-profile-detector/SKILL.md",
+      "size_bytes": 12322,
+      "sha256": "d427f8ed8912cd1118f4cbb415db6d816980b00dae524e9005a09c2508430ffc"
+    },
+    {
+      "path": "agent-skills/runtime/b79-cross-ci-release-promotion/SKILL.md",
+      "size_bytes": 12271,
+      "sha256": "266edfadc7b879321bd91b7728446c809f49a81f01588b9fa66d352e984be7be"
+    },
+    {
+      "path": "agent-skills/runtime/b79-github-actions-workflow-generator/SKILL.md",
+      "size_bytes": 12518,
+      "sha256": "1635e40160fcfbe23b1177c53afd0e2d2c3f24f7f20bc8191d9e18f4d95aa1be"
+    },
+    {
+      "path": "agent-skills/runtime/b79-github-matrix-cache-artifact-manager/SKILL.md",
+      "size_bytes": 12337,
+      "sha256": "3f8a1166a81c87dd36fc9f33c036a61b88d1f1bf14bddc171c6b2e67c9c0b660"
+    },
+    {
+      "path": "agent-skills/runtime/b79-github-oidc-permission-hardening/SKILL.md",
+      "size_bytes": 12289,
+      "sha256": "cf02c72ceaa929163d26e4c1663cc0763c30616bb56ab4d03c7e9bba926367ed"
+    },
+    {
+      "path": "agent-skills/runtime/b79-github-reusable-workflow-action-generator/SKILL.md",
+      "size_bytes": 12590,
+      "sha256": "1d65d0cef237c0f5ce3e2dbc008b7e1111c733ec88c0a5be02365ba9c9fe5fdf"
+    },
+    {
+      "path": "agent-skills/runtime/b79-gitlab-child-pipeline-component-generator/SKILL.md",
+      "size_bytes": 12617,
+      "sha256": "c268384d662ac5f0753e13aa2c7a5af86825e7e05612395b87bafbb138034877"
+    },
+    {
+      "path": "agent-skills/runtime/b79-gitlab-ci-pipeline-generator/SKILL.md",
+      "size_bytes": 12500,
+      "sha256": "10d0192e1d4d5ae743c43dff55741a11088b6d87be35a69996ce54f0355d2ed4"
+    },
+    {
+      "path": "agent-skills/runtime/b79-gitlab-environment-release-manager/SKILL.md",
+      "size_bytes": 12500,
+      "sha256": "7672f36862ef1439a48fedda61bd9abffc1acd8682e67e6e5762765a9cb213dc"
+    },
+    {
+      "path": "agent-skills/runtime/b79-gitlab-runner-secret-hardening/SKILL.md",
+      "size_bytes": 12476,
+      "sha256": "491c911c1fa68ded526da064c944a7724801427cf24166aaef40f246fdbf95e2"
+    },
+    {
+      "path": "agent-skills/runtime/b79-jenkins-agent-credential-hardening/SKILL.md",
+      "size_bytes": 12328,
+      "sha256": "ab454513ca343e139086f3c5a99f625d7210f4fae84d641db7e622e12a67624e"
+    },
+    {
+      "path": "agent-skills/runtime/b79-jenkins-declarative-pipeline-generator/SKILL.md",
+      "size_bytes": 12584,
+      "sha256": "96e77fc324d20b1dca52875d9c5e028827cc4e8867dbf6e4e331616a07b3e7b1"
+    },
+    {
+      "path": "agent-skills/runtime/b79-jenkins-shared-library-generator/SKILL.md",
+      "size_bytes": 12530,
+      "sha256": "ed2f319decd147ba98fc767f53219471f894f107e15ecde7de324ff810dabed1"
+    },
+    {
+      "path": "agent-skills/runtime/b79-pipeline-security-provenance-gate/SKILL.md",
+      "size_bytes": 12334,
+      "sha256": "c994677e5c6569bab2b2c609d487e53f00c8d0bce7b20f5a05702669c37d2ad9"
+    },
+    {
+      "path": "agent-skills/runtime/b80-cross-contract-schema-synchronizer/SKILL.md",
+      "size_bytes": 12662,
+      "sha256": "812bd421ba92185c06941dc5e73fb4020635e842e2d739c70068f0b5537782e6"
+    },
+    {
+      "path": "agent-skills/runtime/b80-cross-language-build-orchestrator/SKILL.md",
+      "size_bytes": 12628,
+      "sha256": "04b9e6113212f42b132d4308e7ccfaf099917c2c842de85a567264f50ef6a7f1"
+    },
+    {
+      "path": "agent-skills/runtime/b80-cross-layer-failure-diagnosis-repair/SKILL.md",
+      "size_bytes": 12509,
+      "sha256": "c65328c141029e092bc6b4bf5615b26fc1c320fc33503a932f4dc7b829c04a00"
+    },
+    {
+      "path": "agent-skills/runtime/b80-environment-parity-drift-detector/SKILL.md",
+      "size_bytes": 12482,
+      "sha256": "f792b0eda36f43a810b1f68f3707bf9efb926328c91ca669bacfb5c88e5d0c8a"
+    },
+    {
+      "path": "agent-skills/runtime/b80-local-ci-runtime-reproducer/SKILL.md",
+      "size_bytes": 12609,
+      "sha256": "e7fbfd4f7ae63922e13a6f5d900df8b877d85f70562c99a725a7279426f38c0f"
+    },
+    {
+      "path": "agent-skills/runtime/b80-polyglot-engineering-asset-graph/SKILL.md",
+      "size_bytes": 12464,
+      "sha256": "95a997a148b0dfafb986a3a7188d6e136d7a5b0fc1ec4bd846489e06e66fb7be"
+    },
+    {
+      "path": "agent-skills/runtime/b80-polyglot-secret-identity-policy/SKILL.md",
+      "size_bytes": 12630,
+      "sha256": "b5cb25ea64c068ad904e69b403f6a5884a0790a47a540cf14ca94c0b80d77fbd"
+    },
+    {
+      "path": "agent-skills/runtime/b80-project-migration-compatibility-gate/SKILL.md",
+      "size_bytes": 12651,
+      "sha256": "ea8af1b96b2742e48cd8c762a3f47650037ace07a41692bd0d2a51de88baf27a"
+    },
+    {
+      "path": "agent-skills/runtime/b80-project-operations-certification/SKILL.md",
+      "size_bytes": 12552,
+      "sha256": "eed3e44855bfad86513eb791a33915b6623222d769f61292179d7fd53bf153b5"
+    },
+    {
+      "path": "agent-skills/runtime/b80-project-performance-cost-budget-gate/SKILL.md",
+      "size_bytes": 12497,
+      "sha256": "2bfa5923db412ddfc4d16409961f60e343614a983c369bd4966b21015f0bd8d2"
+    },
+    {
+      "path": "agent-skills/runtime/b80-runtime-smoke-journey-orchestrator/SKILL.md",
+      "size_bytes": 12491,
+      "sha256": "2524fd05f2a65eecf8ced73e2ea723c4ebeb73213c1a998828c527b726ebd734"
+    },
+    {
+      "path": "agent-skills/runtime/b80-software-supply-chain-provenance-orchestrator/SKILL.md",
+      "size_bytes": 12590,
+      "sha256": "0193603115aab22ce2180bbfa27fc51a05e5cee5da22181a4e9ecda9488169be"
+    },
+    {
+      "path": "docs/SKILL_CATALOG.md",
+      "size_bytes": 71409,
+      "sha256": "f0b9ebb771ad446165cc9fb7b673a2ac2e5c3f16e3642d84c6bbefb221c5ff96"
+    },
+    {
+      "path": "docs/batch-66-overview.md",
+      "size_bytes": 4241,
+      "sha256": "d464eca13961f8f8b3832bc4908fca2d92f7b526596a7436203477ed82262644"
+    },
+    {
+      "path": "docs/batch-67-overview.md",
+      "size_bytes": 4289,
+      "sha256": "433cab7eee39ce8748f647847a7aef8bfbdef980f7d85f7510fdb694d3931612"
+    },
+    {
+      "path": "docs/batch-68-overview.md",
+      "size_bytes": 4312,
+      "sha256": "927b1bb7a033cbf6e9c7ed8e3a88fb07fa51745c17bcafa68b68b65042590343"
+    },
+    {
+      "path": "docs/batch-69-overview.md",
+      "size_bytes": 4496,
+      "sha256": "1e84180a7c7425047c141ecd9148717c19a526359805e100eb91c147770dd3b1"
+    },
+    {
+      "path": "docs/batch-70-overview.md",
+      "size_bytes": 5151,
+      "sha256": "c4351ec3160ea37263249e0cc08eed5c5e79270d2257bb0a2538a69a3045c244"
+    },
+    {
+      "path": "docs/batch-71-overview.md",
+      "size_bytes": 4722,
+      "sha256": "e3be534be1d4df4378dc34a47b98fd207eebbd92f0ebfb8021d3b041dfcd91f4"
+    },
+    {
+      "path": "docs/batch-72-overview.md",
+      "size_bytes": 5018,
+      "sha256": "03a1ea4773f949b556c30655a49d5340e253477f0ff812eff34649b537331de0"
+    },
+    {
+      "path": "docs/batch-73-overview.md",
+      "size_bytes": 4692,
+      "sha256": "ef1c33b8c86f6c2084d6a6ecaef16b303326211422d88f5b00b6d15faea531cb"
+    },
+    {
+      "path": "docs/batch-74-overview.md",
+      "size_bytes": 5165,
+      "sha256": "15b010ba2fc4f5c794bcad07dceb23230d86e4aa3d02d4de4d72c0e04f36bcf7"
+    },
+    {
+      "path": "docs/batch-75-overview.md",
+      "size_bytes": 6041,
+      "sha256": "13589059c30ac651f25faf8f946137c5bf46453e4e2e719727ec2442c0865989"
+    },
+    {
+      "path": "docs/batch-76-overview.md",
+      "size_bytes": 4240,
+      "sha256": "a34444a4222e3f019e07195ce3eac8ef5c42b999862d7f0726eb657f1981dd82"
+    },
+    {
+      "path": "docs/batch-77-overview.md",
+      "size_bytes": 5159,
+      "sha256": "95aa282a1607bc7b1630069fd5bef853cf72881e6bea284a1a9db02655a1feed"
+    },
+    {
+      "path": "docs/batch-78-overview.md",
+      "size_bytes": 7043,
+      "sha256": "41ae85225e5f873baa8d683090450853e533a5268d346a0f280280e639b65da0"
+    },
+    {
+      "path": "docs/batch-79-overview.md",
+      "size_bytes": 6148,
+      "sha256": "85e89577d39f10a8d6c27ac31552a8324732313046f047faae14dfa9bf05b817"
+    },
+    {
+      "path": "docs/batch-80-overview.md",
+      "size_bytes": 5853,
+      "sha256": "bdd11c7067852fa34f56e081e014e99548c83dc314d90e2fd3d508e831f7820d"
+    },
+    {
+      "path": "index.json",
+      "size_bytes": 232851,
+      "sha256": "f5d4394eb2bb6b7e7fa5df8e3970170696824151ec51c5c33b2cef45da1d7f1d"
+    },
+    {
+      "path": "install.sh",
+      "size_bytes": 787,
+      "sha256": "97a66d08302c328edade9363732f413801818001b8101fa554acd4c0cabfeec3"
+    },
+    {
+      "path": "manifests/batch-66.json",
+      "size_bytes": 12533,
+      "sha256": "a8e999b135e76d99d0cf3138b45825df81895ac1200b04cbe5be38d80dd67b2b"
+    },
+    {
+      "path": "manifests/batch-67.json",
+      "size_bytes": 12559,
+      "sha256": "186cda4b74924b8499de75e4588e0cc686f55b1f5f8355e6a73d2834e58b24dd"
+    },
+    {
+      "path": "manifests/batch-68.json",
+      "size_bytes": 12726,
+      "sha256": "a744e709b539ff08c405925c781fe54db52d5c66bf44e3c8982815852bc43006"
+    },
+    {
+      "path": "manifests/batch-69.json",
+      "size_bytes": 12726,
+      "sha256": "1b050783478b22a7060593638b295ac4af6001266ae68c9ef58bbe3c4890d65b"
+    },
+    {
+      "path": "manifests/batch-70.json",
+      "size_bytes": 14919,
+      "sha256": "b1a2681c110c517b043cc29a0b7b6880c5e32f5e06f856606bf12533b96d2935"
+    },
+    {
+      "path": "manifests/batch-71.json",
+      "size_bytes": 12907,
+      "sha256": "acf1b6b7dadfca003d8730e9e3228d055b672c11d887747aa7a38733778182af"
+    },
+    {
+      "path": "manifests/batch-72.json",
+      "size_bytes": 13562,
+      "sha256": "37c032556ed0ddc1570a92a1550c6ab2be7baa5292fe9a865f635e1e214a645c"
+    },
+    {
+      "path": "manifests/batch-73.json",
+      "size_bytes": 13017,
+      "sha256": "4a2e5ed18780812dd84a022e4db66b95787356c345cc3001dce28a74868ebeef"
+    },
+    {
+      "path": "manifests/batch-74.json",
+      "size_bytes": 14965,
+      "sha256": "4c60a1e5ceef4ffc8aa443da872dadaa1aa93dd95c1eefe2c1b777ba41d25c41"
+    },
+    {
+      "path": "manifests/batch-75.json",
+      "size_bytes": 16947,
+      "sha256": "214fbe9234c8691b6cdde746c173fe165d479e5199dea2bf3d08abda0092d713"
+    },
+    {
+      "path": "manifests/batch-76.json",
+      "size_bytes": 12463,
+      "sha256": "8bf794ca635292a126d9f1bb68a74a4d9c1a422c43fdc26486befd4f1498ee1f"
+    },
+    {
+      "path": "manifests/batch-77.json",
+      "size_bytes": 13561,
+      "sha256": "db9aacc9fd4ad5304d27556a1a654c0d5edae6a2deafb396e1ab308743f640be"
+    },
+    {
+      "path": "manifests/batch-78.json",
+      "size_bytes": 18096,
+      "sha256": "3217d753c02eed7cd1054b03512840635aa0766deb0f7649a2ba78595aeccedd"
+    },
+    {
+      "path": "manifests/batch-79.json",
+      "size_bytes": 16751,
+      "sha256": "af3fbfdef12440d8fe0712764889aba33068c462481bd1a1d495a60cc503f938"
+    },
+    {
+      "path": "manifests/batch-80.json",
+      "size_bytes": 14463,
+      "sha256": "23b5aec8a95b8d5b6d3a8d84a4d0ca82b7c49763ce537cb75fcefc61079e1bf5"
+    },
+    {
+      "path": "schemas/certification-result-v1.schema.json",
+      "size_bytes": 1214,
+      "sha256": "71ed9e8876b9053f758c5717fbd85dc2d6d1ad84d2555d2d132a37b7dd1f87b0"
+    },
+    {
+      "path": "schemas/evidence-bundle-v1.schema.json",
+      "size_bytes": 1843,
+      "sha256": "e13b6115f8495587fa10b80a43a627f9282aee625972f3281e0d49528813c6a8"
+    },
+    {
+      "path": "schemas/execution-plan-v1.schema.json",
+      "size_bytes": 1354,
+      "sha256": "c91c74730a116e10539d1f34da8b5f7f29b787aa081166fc091bddac9a89abee"
+    },
+    {
+      "path": "schemas/project-profile-v1.schema.json",
+      "size_bytes": 1479,
+      "sha256": "bb647a8b1e03dab19843f75c8ee27feaf2234fced0f6b7869f38107fae2acc5b"
+    },
+    {
+      "path": "scripts/build_execution_plan.py",
+      "size_bytes": 814,
+      "sha256": "c26663f366bea176d8d513c906e65ed3771006a10234ddc91c7404a4c1501886"
+    },
+    {
+      "path": "scripts/validate_package.py",
+      "size_bytes": 1580,
+      "sha256": "9ebd997338f59f03ff2f1bc5b687bc2bbdc1b444d0006d61a0bd84cbd5a99f34"
+    },
+    {
+      "path": "scripts/verify_evidence.py",
+      "size_bytes": 466,
+      "sha256": "bfa69c3401388d157c84e7109d0530763cd04f867ec0b6a4d188082d41c3f020"
+    },
+    {
+      "path": "skills/batch-66/PG223-typescript-project-profile-detector.md",
+      "size_bytes": 12304,
+      "sha256": "8c598b29eea619ae41dce1379bea21265c28cc026c01c416eda8c074adbb3177"
+    },
+    {
+      "path": "skills/batch-66/PG224-node-runtime-lockfile-reproducer.md",
+      "size_bytes": 12123,
+      "sha256": "9da82d7180936fd304bf2d8d967402508782e3e50f2f732fbf103e2031969a3f"
+    },
+    {
+      "path": "skills/batch-66/PG225-typescript-monorepo-scaffolder.md",
+      "size_bytes": 12241,
+      "sha256": "31244a74e884c6f2e6ee53b3ded57fc5a9517337ee42d601d699a5f1193b8412"
+    },
+    {
+      "path": "skills/batch-66/PG226-nestjs-fastify-api-generator.md",
+      "size_bytes": 12114,
+      "sha256": "490c94e60e55fcb8d46f23469c93850547e230694b07f30defb8ee436405cd72"
+    },
+    {
+      "path": "skills/batch-66/PG227-nextjs-fullstack-generator.md",
+      "size_bytes": 12100,
+      "sha256": "b16c06ad6f9bb07a98ff090bea7fe6aec18460fd285792fb4bf1a7902268a777"
+    },
+    {
+      "path": "skills/batch-66/PG228-react-vite-spa-generator.md",
+      "size_bytes": 12078,
+      "sha256": "f1865d082bfcc1c896b55dc7dbf796b57e60e153f04b349ad2566a6af59ff0b2"
+    },
+    {
+      "path": "skills/batch-66/PG229-vue-nuxt-app-generator.md",
+      "size_bytes": 12060,
+      "sha256": "0e37be656d16ede51cd2c25ffe35d12a0c1ca498027dd6d70dffbd3924041752"
+    },
+    {
+      "path": "skills/batch-66/PG230-node-worker-cli-generator.md",
+      "size_bytes": 12087,
+      "sha256": "9e0907cb197e72bb5d7c519c7c449f4e632749fe268e93da1e5bc818a1bda0be"
+    },
+    {
+      "path": "skills/batch-66/PG231-typescript-data-access-generator.md",
+      "size_bytes": 12320,
+      "sha256": "7a1cc34bea7dcb024f3db4f4682d42c80c2a47b6f22c5d1d2f73f0afa730ed3c"
+    },
+    {
+      "path": "skills/batch-66/PG232-typescript-contract-client-generator.md",
+      "size_bytes": 12527,
+      "sha256": "1f77f423ede19daf566ddbffd41ef434876fdfbfd2cc5ad2aa3bcefd9c762efb"
+    },
+    {
+      "path": "skills/batch-66/PG233-typescript-test-harness-generator.md",
+      "size_bytes": 12503,
+      "sha256": "cba4edb29abd0faf0793a8f8337c2eed7e88cc35a4420d20eac6c30ac383f48e"
+    },
+    {
+      "path": "skills/batch-66/PG234-node-build-run-repair-certifier.md",
+      "size_bytes": 12339,
+      "sha256": "3db0d860a2fc4b9c9f65751a09ad8169a5aa16c13fcd8ce29c1e053d541a9866"
+    },
+    {
+      "path": "skills/batch-67/PG235-go-repository-profile-detector.md",
+      "size_bytes": 12166,
+      "sha256": "356f8ae16c77d77ca7217665a0d7de354267b8625bfed85073c537f505b2d97b"
+    },
+    {
+      "path": "skills/batch-67/PG236-go-module-workspace-reproducer.md",
+      "size_bytes": 12182,
+      "sha256": "17de0b60da1a024ffdab280e394942e2dfd99989cf8f2c0241563f53f489e3f8"
+    },
+    {
+      "path": "skills/batch-67/PG237-go-http-grpc-service-generator.md",
+      "size_bytes": 12209,
+      "sha256": "911b8b5be34b00e45d835b4f7113f495bda7bfddb2ee57aa32677cfdac0ee183"
+    },
+    {
+      "path": "skills/batch-67/PG238-go-cli-generator.md",
+      "size_bytes": 12083,
+      "sha256": "39d5783cf4a8b29a18eb277eeace35cb8de622b499fd14a1c98821a2feb1b15c"
+    },
+    {
+      "path": "skills/batch-67/PG239-go-worker-event-consumer-generator.md",
+      "size_bytes": 12245,
+      "sha256": "a5f431ef350498131aea929c26c3cdc576faf86dae4cd31175b1f6bb7372e875"
+    },
+    {
+      "path": "skills/batch-67/PG240-go-data-access-transaction-generator.md",
+      "size_bytes": 12399,
+      "sha256": "7d40650c4d311065941f166e13dec38f2e02f7296df7f5f81c373b0bbf0865a9"
+    },
+    {
+      "path": "skills/batch-67/PG241-go-concurrency-context-safety.md",
+      "size_bytes": 12151,
+      "sha256": "a5962691e3317c7f385052ee6d35221846d3f37f1d9f9793097e22247f7bdc2d"
+    },
+    {
+      "path": "skills/batch-67/PG242-go-observability-middleware-generator.md",
+      "size_bytes": 12272,
+      "sha256": "14f797ce4fda2943619ef6917871b01af57c208dd9dc77b85c2c49e1ebe2b85c"
+    },
+    {
+      "path": "skills/batch-67/PG243-go-kubernetes-operator-generator.md",
+      "size_bytes": 12424,
+      "sha256": "af36bf58675a2bf84708d77166d6f35e5ace15f8a8dabe5d2a8fa3f2cfbedf60"
+    },
+    {
+      "path": "skills/batch-67/PG244-go-mcp-tool-server-generator.md",
+      "size_bytes": 12191,
+      "sha256": "87359761381755689911bc1f088b29f5a1c4c39ff9f711b762d966f90b1c6ed9"
+    },
+    {
+      "path": "skills/batch-67/PG245-go-test-fuzz-race-generator.md",
+      "size_bytes": 12356,
+      "sha256": "88607671996e62495e263e8bc89f306925b627704629a11a841438a19d9f82b4"
+    },
+    {
+      "path": "skills/batch-67/PG246-go-build-crosscompile-certifier.md",
+      "size_bytes": 12416,
+      "sha256": "7306d489babb00fc01b9566ccb23f9a063f1d80b317d7e11aad0a2c2d082645b"
+    },
+    {
+      "path": "skills/batch-68/PG247-kotlin-project-profile-detector.md",
+      "size_bytes": 12251,
+      "sha256": "e2fef81bb777538d7bdfa980629332cf58c3acb391d971b99605832723653c79"
+    },
+    {
+      "path": "skills/batch-68/PG248-gradle-kotlin-build-reproducer.md",
+      "size_bytes": 12404,
+      "sha256": "52bc682750384fe61624b691fa06db831e867891058007fbf1397fbbacdc2963"
+    },
+    {
+      "path": "skills/batch-68/PG249-spring-kotlin-service-generator.md",
+      "size_bytes": 12294,
+      "sha256": "9150b3ce86255e77dc3a5405f435cd6fc5bb9c9bedcb19013b324c8ba135f59c"
+    },
+    {
+      "path": "skills/batch-68/PG250-ktor-service-generator.md",
+      "size_bytes": 12040,
+      "sha256": "3536c19797e8ae68cf6b9070f311052dab7dd8e05236ab4f9c1bc24badb78965"
+    },
+    {
+      "path": "skills/batch-68/PG251-kotlin-coroutine-structured-concurrency.md",
+      "size_bytes": 12329,
+      "sha256": "030708d9b3b95e2d1adcedf3b5182297a08e20cd38a8206c18830c1f03e4ef7c"
+    },
+    {
+      "path": "skills/batch-68/PG252-kotlin-data-access-generator.md",
+      "size_bytes": 12267,
+      "sha256": "0e417ec0fa8e6cc37115abfcf88fa7477a1191bf1612b989aece425833150127"
+    },
+    {
+      "path": "skills/batch-68/PG253-java-kotlin-interop-manager.md",
+      "size_bytes": 12050,
+      "sha256": "e1d6b891ad94b443670c5b5697caee00cf016f45974c4cd7a925e78930d9b3de"
+    },
+    {
+      "path": "skills/batch-68/PG254-kotlin-contract-client-generator.md",
+      "size_bytes": 12474,
+      "sha256": "ed4feb3d1d21b2bb3c2d68dc808dc200cd46deac08b2c196b991e6fba8a917b6"
+    },
+    {
+      "path": "skills/batch-68/PG255-android-compose-application-generator.md",
+      "size_bytes": 12377,
+      "sha256": "2c0326e9e64f5fcc8f0efbf4b308ef17f5e394fe1d8dacbafffb9f6a74b51050"
+    },
+    {
+      "path": "skills/batch-68/PG256-kotlin-multiplatform-library-generator.md",
+      "size_bytes": 12357,
+      "sha256": "2d94d5b7a7577cd31fa323af2d81ea0aea05ebb26f3c56e0a396ca94f50a563b"
+    },
+    {
+      "path": "skills/batch-68/PG257-kotlin-test-harness-generator.md",
+      "size_bytes": 12450,
+      "sha256": "a47d73e555f9845327e8bd189458c448f0728daf3f3c31a8751c71ba4bff4a6b"
+    },
+    {
+      "path": "skills/batch-68/PG258-kotlin-build-run-repair-certifier.md",
+      "size_bytes": 12510,
+      "sha256": "492146aa42e487e0e3e69bbc4c973898dcd2d272fa868fe5a7c854194da6c026"
+    },
+    {
+      "path": "skills/batch-69/PG259-php-project-profile-detector.md",
+      "size_bytes": 12296,
+      "sha256": "448e9ac399473929c5e9dd78534106f76296b3e7e45d3ffb4214c9dc4fa83ff0"
+    },
+    {
+      "path": "skills/batch-69/PG260-composer-dependency-reproducer.md",
+      "size_bytes": 12372,
+      "sha256": "b2553a762601342cfc9b792b244c5de8a9eab5afcd67be45df80b142f5573f5a"
+    },
+    {
+      "path": "skills/batch-69/PG261-laravel-application-generator.md",
+      "size_bytes": 12188,
+      "sha256": "493c43f8efe3a5eae35fe3dc97c6f62c664b950961bef127328b090ec90c40ee"
+    },
+    {
+      "path": "skills/batch-69/PG262-symfony-api-generator.md",
+      "size_bytes": 12116,
+      "sha256": "12aaa47dbb2c6c9e05ac34c0250688db183c53df8b97472c5aa3cf14397dd97d"
+    },
+    {
+      "path": "skills/batch-69/PG263-php-modular-monolith-generator.md",
+      "size_bytes": 12357,
+      "sha256": "feef8ad96cd71d7512445ed87d53f129703554f91310c245f8c0e052ebf64641"
+    },
+    {
+      "path": "skills/batch-69/PG264-php-persistence-migration-generator.md",
+      "size_bytes": 12556,
+      "sha256": "d54d54821f0505bc8a0f08a53900bf87f51f5b23c7e4076b5952a0d35aa252e2"
+    },
+    {
+      "path": "skills/batch-69/PG265-php-queue-scheduler-generator.md",
+      "size_bytes": 12348,
+      "sha256": "179fe94fab58b9493b07811bf3b39092a94b8df0dd12636edd1bcaebe3d36b37"
+    },
+    {
+      "path": "skills/batch-69/PG266-wordpress-woocommerce-extension-generator.md",
+      "size_bytes": 12296,
+      "sha256": "e353e643a9eb9fd1b93c1de000b1bef11c3ac1889be2dbb0f74157b973cc14eb"
+    },
+    {
+      "path": "skills/batch-69/PG267-php-contract-client-generator.md",
+      "size_bytes": 12519,
+      "sha256": "4d304fa715ba09343899ba8b9ff14e3a63361042876a7227786bc36650ef1415"
+    },
+    {
+      "path": "skills/batch-69/PG268-php-test-quality-harness.md",
+      "size_bytes": 12269,
+      "sha256": "f188a0dc742dcd78d702ec4db0d9a4a68db936972d2434332c7457abe256e650"
+    },
+    {
+      "path": "skills/batch-69/PG269-php-modernization-repair.md",
+      "size_bytes": 12095,
+      "sha256": "d49c68a8f0a4b7f6b318cfe35c1091dfb59eae68fd489be7d90b2d47c68aec60"
+    },
+    {
+      "path": "skills/batch-69/PG270-php-build-run-deploy-certifier.md",
+      "size_bytes": 12555,
+      "sha256": "65e8d6f983bd420274c7c2d8889129478284a08c27d38060e1f56436355d32dc"
+    },
+    {
+      "path": "skills/batch-70/PG271-native-project-profile-detector.md",
+      "size_bytes": 12349,
+      "sha256": "1306c6f8d39aae52856b1e14e0a8b436d74eda63b9ceee32f498b65c686a2c97"
+    },
+    {
+      "path": "skills/batch-70/PG272-native-toolchain-compiler-matrix.md",
+      "size_bytes": 12193,
+      "sha256": "4f8b2ea6e32cb2cbb09d4a85ebfa44de7da1f31301e260b0c8b8ea476093cbc1"
+    },
+    {
+      "path": "skills/batch-70/PG273-cmake-native-project-generator.md",
+      "size_bytes": 12414,
+      "sha256": "3533614a11408f748c2f34cc6f53aa59ae33eb21eeb8df597df5b8015316bada"
+    },
+    {
+      "path": "skills/batch-70/PG274-modern-cpp-library-service-generator.md",
+      "size_bytes": 12243,
+      "sha256": "e0900577144ce9c6b1dd4accc80571072087624615611079dd4a9908caa038d6"
+    },
+    {
+      "path": "skills/batch-70/PG275-c-api-abi-contract-manager.md",
+      "size_bytes": 12116,
+      "sha256": "6c499aae116749bbce14f9d2eccd1efd6439890108b97a1b4d20ae737e0f424d"
+    },
+    {
+      "path": "skills/batch-70/PG276-native-ffi-binding-generator.md",
+      "size_bytes": 12365,
+      "sha256": "f7dae5f7a7e76ce81cbeef8c5d510c67d96ff68d3e0fc3e844730cd13f808003"
+    },
+    {
+      "path": "skills/batch-70/PG277-native-memory-lifetime-safety.md",
+      "size_bytes": 12154,
+      "sha256": "3a340a17ccabfb2ecb30773e58905fb17c71dd17cd37a7de45ff4b3adebc9a96"
+    },
+    {
+      "path": "skills/batch-70/PG278-native-concurrency-realtime-safety.md",
+      "size_bytes": 12370,
+      "sha256": "23c837f4ae191913a6b83c4a1c89d409c285b85e0a5e45c3e01eefdf501ae5ab"
+    },
+    {
+      "path": "skills/batch-70/PG279-ros2-node-project-generator.md",
+      "size_bytes": 12166,
+      "sha256": "2ecc7c9fa7bdc86a7fe7f5debae328d10ae596e6274a545f2a0bf18610d24cf6"
+    },
+    {
+      "path": "skills/batch-70/PG280-opcua-industrial-adapter-generator.md",
+      "size_bytes": 12229,
+      "sha256": "3d68530f8fc3c4e17ba28dd5ce481b6923fcfa77c7783eac10bb69ea826061bf"
+    },
+    {
+      "path": "skills/batch-70/PG281-embedded-crosscompile-project-generator.md",
+      "size_bytes": 12270,
+      "sha256": "c37d43a4aad950ea59df76babe576043f7eeb60708bc6757b4cf32484f6d4724"
+    },
+    {
+      "path": "skills/batch-70/PG282-qt-industrial-hmi-generator.md",
+      "size_bytes": 12162,
+      "sha256": "8b88a7b8d89eb1226807a20ff53a0e3e48ae69cd790542f74313bc8d671c9b04"
+    },
+    {
+      "path": "skills/batch-70/PG283-native-sanitizer-fuzz-static-analysis.md",
+      "size_bytes": 12238,
+      "sha256": "ebe34d045381682ddcd601e079382f7f7c5462bd770e799fd2576a2ff09ef3ea"
+    },
+    {
+      "path": "skills/batch-70/PG284-native-build-run-certifier.md",
+      "size_bytes": 12545,
+      "sha256": "37c4f89aa419222c7c24b449235c35043f61f7499e9c54dd8f4f96a122654f8b"
+    },
+    {
+      "path": "skills/batch-71/PG285-rust-project-profile-detector.md",
+      "size_bytes": 12413,
+      "sha256": "d3bf47ae685dea2faf185941024ac71cddd19e6d4fd3f3504f9212c701568f46"
+    },
+    {
+      "path": "skills/batch-71/PG286-cargo-workspace-dependency-reproducer.md",
+      "size_bytes": 12439,
+      "sha256": "7d5bb83df62e9835ca9b1cdc699e89448b376e39fd85c8b7d445cbf62f2c9a01"
+    },
+    {
+      "path": "skills/batch-71/PG287-rust-axum-service-generator.md",
+      "size_bytes": 12438,
+      "sha256": "9faaf44e5e603b78a9c48b4040c25712545fa16accd141037314aea626f6d2f8"
+    },
+    {
+      "path": "skills/batch-71/PG288-rust-cli-generator.md",
+      "size_bytes": 12357,
+      "sha256": "e6e568017308390c4a16defc559442546e70de8bee634800003fa95c05a34a4e"
+    },
+    {
+      "path": "skills/batch-71/PG289-rust-async-worker-generator.md",
+      "size_bytes": 12438,
+      "sha256": "1d90f0d7ab0cf83f445862f074e1acfbe4fde437b45dffdad8af39854d541649"
+    },
+    {
+      "path": "skills/batch-71/PG290-rust-serde-contract-generator.md",
+      "size_bytes": 12627,
+      "sha256": "7a8b1154edd3ef770041513968a80b101540614cf91371a6c24501ebfe798e1f"
+    },
+    {
+      "path": "skills/batch-71/PG291-rust-ffi-wasm-extension-generator.md",
+      "size_bytes": 12492,
+      "sha256": "0f3db4e0c14b9962550ec6d6b997a00dc8657846c22eec87044b0cc50551cf21"
+    },
+    {
+      "path": "skills/batch-71/PG292-rust-unsafe-boundary-review.md",
+      "size_bytes": 12218,
+      "sha256": "ace61a026da2e676b4d55cfb83234a49c6a4f31a8cbfc9e7d2d15b2f30e8796a"
+    },
+    {
+      "path": "skills/batch-71/PG293-rust-supply-chain-policy.md",
+      "size_bytes": 12191,
+      "sha256": "cc2525fa3a021b26d2b870e4b1c688ac7c82a5ef77f7f5c6bfe0de9f258685b4"
+    },
+    {
+      "path": "skills/batch-71/PG294-rust-test-property-fuzz-generator.md",
+      "size_bytes": 12666,
+      "sha256": "a27d727b1f652ab5618a4c012fb4fbaadfd4a92cec91dea526ee2d3aaa72f085"
+    },
+    {
+      "path": "skills/batch-71/PG295-rust-crosscompile-release-generator.md",
+      "size_bytes": 12664,
+      "sha256": "692a36de0478a4e937b4782efc4af9e95a2f5fafc13db23a9f375e0a46b5e04a"
+    },
+    {
+      "path": "skills/batch-71/PG296-rust-build-run-certifier.md",
+      "size_bytes": 12609,
+      "sha256": "b182d069dc0bf5867aa7760b354dc67180e7fe596c1681de6a20706a9eb64844"
+    },
+    {
+      "path": "skills/batch-72/PG297-flutter-project-profile-detector.md",
+      "size_bytes": 12471,
+      "sha256": "0958e0c77d90ab3e97fcb72aa8d84d8ba083f3fdb1bba702b00676b5939690d0"
+    },
+    {
+      "path": "skills/batch-72/PG298-flutter-dependency-workspace-reproducer.md",
+      "size_bytes": 12550,
+      "sha256": "86ee6a24e3f6834ee6fd875d81488602c9c8e29ac5eca7a2df7d550004f54631"
+    },
+    {
+      "path": "skills/batch-72/PG299-flutter-clean-architecture-generator.md",
+      "size_bytes": 12550,
+      "sha256": "e3e1de56530e44782314b0c43a5d40f8a05286b09afb7aa60fe2da42113ed225"
+    },
+    {
+      "path": "skills/batch-72/PG300-flutter-state-routing-generator.md",
+      "size_bytes": 12505,
+      "sha256": "d344cffe0662fb80e3c1c9e8e63df37e0d9b7c7ce6ec87b1a2067dce74e1a537"
+    },
+    {
+      "path": "skills/batch-72/PG301-flutter-api-data-layer-generator.md",
+      "size_bytes": 12514,
+      "sha256": "08bed281f8c1ba2f3d1333a92d50ecf0074b3f7f29df60db29cbce306ff037c4"
+    },
+    {
+      "path": "skills/batch-72/PG302-flutter-offline-sync-generator.md",
+      "size_bytes": 12496,
+      "sha256": "64714ffdda78bb08fa581a3143194ea9d35b22935f352af3c0db8fa71044a99b"
+    },
+    {
+      "path": "skills/batch-72/PG303-flutter-platform-channel-generator.md",
+      "size_bytes": 12532,
+      "sha256": "d836f40dc2ab7a94a809e7dc4923978f104882221e7f191074c4204d58839e0e"
+    },
+    {
+      "path": "skills/batch-72/PG304-flutter-responsive-multiplatform-ui.md",
+      "size_bytes": 12333,
+      "sha256": "abbe046a7cb76d14083f16733430274aa1fd98d2ba7f37a30021318cca009674"
+    },
+    {
+      "path": "skills/batch-72/PG305-flutter-accessibility-localization.md",
+      "size_bytes": 12324,
+      "sha256": "46a76eb14a93d0d501f38d53bde3f83b14e16d45c6c97854ad32a9fae467e4e9"
+    },
+    {
+      "path": "skills/batch-72/PG306-flutter-test-golden-integration-harness.md",
+      "size_bytes": 12543,
+      "sha256": "6b22b662d8f8f31b12d357208fdb9588b2bbbbd5164774c7d69419d9597a3d2c"
+    },
+    {
+      "path": "skills/batch-72/PG307-flutter-release-signing-packager.md",
+      "size_bytes": 12484,
+      "sha256": "396142e681fae80b75fa8bd434d881a4dc34f05ada80998767a05b2dd1697b13"
+    },
+    {
+      "path": "skills/batch-72/PG308-flutter-build-run-certifier.md",
+      "size_bytes": 12667,
+      "sha256": "bdea70c82f623fd968f461ed4ecd9a35b0baa354db29448de2fd8015f59a08ca"
+    },
+    {
+      "path": "skills/batch-73/PG309-swift-project-profile-detector.md",
+      "size_bytes": 12414,
+      "sha256": "4e758b54c9265a4cd1d3bf343e12d531d9ee8252f2c4f1a47bbe03517d8b63d5"
+    },
+    {
+      "path": "skills/batch-73/PG310-swift-package-dependency-reproducer.md",
+      "size_bytes": 12475,
+      "sha256": "1a21e4815097e3b7c81f9f103071c55122003b01a62561a49f8f30de9be32aa0"
+    },
+    {
+      "path": "skills/batch-73/PG311-swiftui-application-generator.md",
+      "size_bytes": 12448,
+      "sha256": "f3944dbc0c5b64438fb4b04f0436d03658d3946b2500f8e6c5ddb388c5e713f4"
+    },
+    {
+      "path": "skills/batch-73/PG312-swift-state-architecture-generator.md",
+      "size_bytes": 12493,
+      "sha256": "9ce32353afdc48c81a5a7afd8bfca7dc72317188fa90821086355de308eeb033"
+    },
+    {
+      "path": "skills/batch-73/PG313-swift-networking-contract-generator.md",
+      "size_bytes": 12673,
+      "sha256": "c958c9073c9f58dc9e5ee8db41418f0047384b6257b3cd33433258d67c0d95de"
+    },
+    {
+      "path": "skills/batch-73/PG314-swift-persistence-generator.md",
+      "size_bytes": 12430,
+      "sha256": "b9457645b2bf18a348c632fd48840cdbfea9080508aa01e7fd6eab29a6409d23"
+    },
+    {
+      "path": "skills/batch-73/PG315-swift-concurrency-safety.md",
+      "size_bytes": 12354,
+      "sha256": "84d2178f9362d6839ea2390baa4e1f826075cb6a162d4613d81c33250c565cc8"
+    },
+    {
+      "path": "skills/batch-73/PG316-objectivec-swift-interop-manager.md",
+      "size_bytes": 12271,
+      "sha256": "52ca776e8470346796cbc4042fa26c12763473c4c2d30fcf6215315b061c0e04"
+    },
+    {
+      "path": "skills/batch-73/PG317-apple-widget-extension-generator.md",
+      "size_bytes": 12294,
+      "sha256": "3b58cd0db9ba425cffb190dc7148cf9d3d2bfd4efd5636cef50cb3041b4c451d"
+    },
+    {
+      "path": "skills/batch-73/PG318-apple-accessibility-localization.md",
+      "size_bytes": 12086,
+      "sha256": "3fb5a9c4c25785d31ebc959d8c668a127193714a1a83a0c3e5e1be359829532f"
+    },
+    {
+      "path": "skills/batch-73/PG319-xctest-ui-test-harness.md",
+      "size_bytes": 12170,
+      "sha256": "933427f94736cece210f9ca3f6535cec34a53c197da5e95fc07d5c95d2721bd6"
+    },
+    {
+      "path": "skills/batch-73/PG320-xcode-build-signing-certifier.md",
+      "size_bytes": 12465,
+      "sha256": "52bf18814dc8496780ac2a55ccf3b9ed337b0e6043e6b13c46e07803f0cf4378"
+    },
+    {
+      "path": "skills/batch-74/PG321-shell-script-profile-detector.md",
+      "size_bytes": 12262,
+      "sha256": "3487b9ab56670f55596e8754ffbfcc7f5f3cae5e91ed9d33814802ac203b6340"
+    },
+    {
+      "path": "skills/batch-74/PG322-portable-bash-script-generator.md",
+      "size_bytes": 12147,
+      "sha256": "414d9b795403340d027745f454edd8372496e4791a7a82a509cc41105bef8989"
+    },
+    {
+      "path": "skills/batch-74/PG323-shell-strict-mode-error-handling.md",
+      "size_bytes": 12124,
+      "sha256": "d3f0f4070e3d5951bda25bb4efdb6639ea0c6b53e5fc1d16e7fafd418742cf04"
+    },
+    {
+      "path": "skills/batch-74/PG324-shell-argument-env-config-parser.md",
+      "size_bytes": 12124,
+      "sha256": "fa5a6b7e59cca04222d804bd659c529c926fa26a429a6b8e434c78c463af7228"
+    },
+    {
+      "path": "skills/batch-74/PG325-shell-process-pipeline-orchestrator.md",
+      "size_bytes": 12151,
+      "sha256": "530e35e86936d3af329855948404a476fa300cb092bbdfb04d71f4311f164e01"
+    },
+    {
+      "path": "skills/batch-74/PG326-shell-security-secret-hardening.md",
+      "size_bytes": 12447,
+      "sha256": "5f12d99d5028e7b54b81558c901ae4010f37e2e7bf7edb2d78f668ac9950a8c0"
+    },
+    {
+      "path": "skills/batch-74/PG327-shellcheck-bats-quality-gate.md",
+      "size_bytes": 12076,
+      "sha256": "61ef6af4a8507b59d790912f758ed6fc7ce84df8f58467feb343f3b0b7838232"
+    },
+    {
+      "path": "skills/batch-74/PG328-powershell-project-profile-detector.md",
+      "size_bytes": 12483,
+      "sha256": "33edc239f74faa4988394f2c0507be71a4cbda5bcf974a4616f9706c6615aa5c"
+    },
+    {
+      "path": "skills/batch-74/PG329-powershell-module-command-generator.md",
+      "size_bytes": 12517,
+      "sha256": "d1e9a0d245490d950ea8e8d9cee17b41753774849bc27e030b40f14c0d5c4bfe"
+    },
+    {
+      "path": "skills/batch-74/PG330-powershell-error-pipeline-contract.md",
+      "size_bytes": 12471,
+      "sha256": "4dbbcbb88907bc44256576e171b96673308344520dbbdcef6cf2c9e86dc22fdd"
+    },
+    {
+      "path": "skills/batch-74/PG331-powershell-remoting-crossplatform.md",
+      "size_bytes": 12291,
+      "sha256": "5734bcee24a9a7e295f68546c66858e8fe2481117bf841da8d1be45f0b352c35"
+    },
+    {
+      "path": "skills/batch-74/PG332-powershell-secret-signing-policy.md",
+      "size_bytes": 12448,
+      "sha256": "d43e09e714cbc7bd671deb0e65470b5cda3b6f44a60237157394ca6f45e1a634"
+    },
+    {
+      "path": "skills/batch-74/PG333-pester-psscriptanalyzer-quality-gate.md",
+      "size_bytes": 11981,
+      "sha256": "3c2f822df140abaf9b506400d6fd2f72f0bd0170ca4b6408729b6f454308f9e1"
+    },
+    {
+      "path": "skills/batch-74/PG334-cross-shell-automation-certifier.md",
+      "size_bytes": 12384,
+      "sha256": "bbea472ed6a5754a921084f100a9963ba0e1f09f284dc2e9e0847cea154e0ea0"
+    },
+    {
+      "path": "skills/batch-75/PG335-sql-schema-dialect-detector.md",
+      "size_bytes": 12216,
+      "sha256": "0c77d5e7089acfe1cff8f0a26426d9558a6a95e8fbe72020bf71c57f9c7c30e8"
+    },
+    {
+      "path": "skills/batch-75/PG336-sql-migration-generator.md",
+      "size_bytes": 12551,
+      "sha256": "3850020b2528952ef291405d3fd78ce78d4b32ec543c1a8b834e5baea6adc1c1"
+    },
+    {
+      "path": "skills/batch-75/PG337-sql-query-generator.md",
+      "size_bytes": 12361,
+      "sha256": "4a5e0557228db25158c7f91b8c9a2463fbe6865cc8017b14e8f28cd4ee6539b3"
+    },
+    {
+      "path": "skills/batch-75/PG338-sql-transaction-isolation-designer.md",
+      "size_bytes": 12424,
+      "sha256": "3725e047ada123c16b67182a6a2e4c55fa8dc4b652bbab6ec184b6d66beeb460"
+    },
+    {
+      "path": "skills/batch-75/PG339-sql-seed-fixture-generator.md",
+      "size_bytes": 12424,
+      "sha256": "7e27d194b2a33d183665951bf81992083db009f6f6ba72dbf874109701ffd952"
+    },
+    {
+      "path": "skills/batch-75/PG340-sql-query-plan-performance-gate.md",
+      "size_bytes": 12249,
+      "sha256": "5aab1d422d7d64893083a7b7c82e30e1bc042cd4b42d08211d632bbcb6ab6404"
+    },
+    {
+      "path": "skills/batch-75/PG341-sql-security-rls-policy-generator.md",
+      "size_bytes": 12617,
+      "sha256": "bddeb3b0d715fb3372eeb36a8e75f7952d430ce367b47bd6bee6198ca378a13a"
+    },
+    {
+      "path": "skills/batch-75/PG342-sql-compatibility-certifier.md",
+      "size_bytes": 12485,
+      "sha256": "a8a63ab895ca451deb9b994c41f1e71e22a82dcc29618c554775934773ee57e5"
+    },
+    {
+      "path": "skills/batch-75/PG343-openapi-spec-generator.md",
+      "size_bytes": 12349,
+      "sha256": "3f9f0ef3dc7cb01b5394e141d961cc524692d85061b9095dbb2da182e5286b00"
+    },
+    {
+      "path": "skills/batch-75/PG344-openapi-lint-breaking-change-gate.md",
+      "size_bytes": 12228,
+      "sha256": "3a89c599238e86cc51df4941bf9a8d1a1e32c563a2a62d34420a58f65c824128"
+    },
+    {
+      "path": "skills/batch-75/PG345-openapi-codegen-contract-test.md",
+      "size_bytes": 12549,
+      "sha256": "d74b48b950f21bb9580550ebbc15e8280066e9a2784a2223ba01cd5fc7791dff"
+    },
+    {
+      "path": "skills/batch-75/PG346-protobuf-schema-generator.md",
+      "size_bytes": 12360,
+      "sha256": "6e035fa945f2571d43283c7a457f65e225cb4c5191b3f7227dd1efa01da7de7f"
+    },
+    {
+      "path": "skills/batch-75/PG347-protobuf-buf-compatibility-gate.md",
+      "size_bytes": 12194,
+      "sha256": "1b88ffa6496308c4409f429a46d38b56df44f4981a8b5b02f0d60d6717dcf052"
+    },
+    {
+      "path": "skills/batch-75/PG348-graphql-schema-resolver-generator.md",
+      "size_bytes": 12443,
+      "sha256": "a0bb8e652e96e06b1f76c5f5830bf9ef1c41a1afa1eb65f14777378325b34027"
+    },
+    {
+      "path": "skills/batch-75/PG349-graphql-security-cost-gate.md",
+      "size_bytes": 12326,
+      "sha256": "9ae77dcdc21e4e6e3dbd612c63765918145982278809e21fbfe2c7d4142cb732"
+    },
+    {
+      "path": "skills/batch-75/PG350-multi-contract-language-certifier.md",
+      "size_bytes": 12510,
+      "sha256": "b783b925f68780844763b75518c3076c79fdea53a3a404932df93da66929993a"
+    },
+    {
+      "path": "skills/batch-76/PG351-makefile-profile-detector.md",
+      "size_bytes": 12128,
+      "sha256": "a4c04c7be6bbf20fe1f5898e19d27d55ce230685b7b401ad78b66c2b18d989d8"
+    },
+    {
+      "path": "skills/batch-76/PG352-portable-makefile-generator.md",
+      "size_bytes": 12189,
+      "sha256": "3f5e0abb97a8c4834e10fdf96dd4b6a609fa529fea35bad7c544a24aec2593e2"
+    },
+    {
+      "path": "skills/batch-76/PG353-make-incremental-dependency-manager.md",
+      "size_bytes": 12053,
+      "sha256": "6d77c6626868e63b9b7ecf45eb7c226e180f520eb036c22f4285b2846b2b6c3f"
+    },
+    {
+      "path": "skills/batch-76/PG354-make-test-release-orchestrator.md",
+      "size_bytes": 12336,
+      "sha256": "f4745f7c397b7c6ba1bbc7b9947824d46067ae7ef2e53810ddc8644231207943"
+    },
+    {
+      "path": "skills/batch-76/PG355-cmake-profile-detector.md",
+      "size_bytes": 12258,
+      "sha256": "6d74d19fb8521585e02132e0be4e7677690b8a626b181517d92985c85be384e2"
+    },
+    {
+      "path": "skills/batch-76/PG356-cmake-target-graph-generator.md",
+      "size_bytes": 12346,
+      "sha256": "962f0a7439dd482ce245b92551af511369e921851c82d83d54e95d0130b620ae"
+    },
+    {
+      "path": "skills/batch-76/PG357-cmake-dependency-package-manager.md",
+      "size_bytes": 12174,
+      "sha256": "e78f99e07483ac58a08b5919f21a5b1d180380ab212d85f2c065704967f6bcfd"
+    },
+    {
+      "path": "skills/batch-76/PG358-cmake-presets-crossbuild-manager.md",
+      "size_bytes": 12320,
+      "sha256": "0baa5c0eeb30ffc9df20aaac5ec6461756b2bd5e03b0699d60b14d3f578e5407"
+    },
+    {
+      "path": "skills/batch-76/PG359-nginx-topology-profile-detector.md",
+      "size_bytes": 12241,
+      "sha256": "2d97464535901767a519d094050c9462807b0baaa179afbcc995d6b4efe11a2c"
+    },
+    {
+      "path": "skills/batch-76/PG360-nginx-reverse-proxy-generator.md",
+      "size_bytes": 12257,
+      "sha256": "f81b3ffa6fbc2a1f8e026e6a2021535c4ba53e5d0b747b333ec8051f50ccf7f4"
+    },
+    {
+      "path": "skills/batch-76/PG361-nginx-tls-security-rate-limit.md",
+      "size_bytes": 12215,
+      "sha256": "21e6dd1847fa2fb678c8b5e056cf9aa6e371f0b5cdbf316ef353c87352b6e28c"
+    },
+    {
+      "path": "skills/batch-76/PG362-build-proxy-configuration-certifier.md",
+      "size_bytes": 12326,
+      "sha256": "87afa1226067fcc38a03d80c60002d3c58c9d15d69300f5179bab27b6ad23655"
+    },
+    {
+      "path": "skills/batch-77/PG363-container-project-profile-detector.md",
+      "size_bytes": 12399,
+      "sha256": "12cd1a71da655ce22c57c3dd9c8ec487de6705ee38832779d05c7fe17b6f4547"
+    },
+    {
+      "path": "skills/batch-77/PG364-dockerfile-multistage-generator.md",
+      "size_bytes": 12570,
+      "sha256": "419eca409a489ddb674ef9acf1d84b87f3058eda57a77c0a0f261b178eebbdd0"
+    },
+    {
+      "path": "skills/batch-77/PG365-container-base-image-sbom-policy.md",
+      "size_bytes": 12204,
+      "sha256": "34eba0dc220dc0472cd5061388af32fbb4e52092533880fecc447b8068dc39f7"
+    },
+    {
+      "path": "skills/batch-77/PG366-rootless-container-hardening.md",
+      "size_bytes": 12168,
+      "sha256": "6bb47777aaefb613202cb35ee89934224972bf76f839769a15911806f9664913"
+    },
+    {
+      "path": "skills/batch-77/PG367-docker-buildx-multiarch-generator.md",
+      "size_bytes": 12734,
+      "sha256": "0dc9b13717e79eaf91dc38f15f11d2517c373a36404d024d5f209c3aed06daac"
+    },
+    {
+      "path": "skills/batch-77/PG368-container-health-runtime-contract.md",
+      "size_bytes": 12396,
+      "sha256": "40c693bc7939cc0589312fd47481a201790172d8dd814df224548e918e165c11"
+    },
+    {
+      "path": "skills/batch-77/PG369-compose-service-topology-generator.md",
+      "size_bytes": 12644,
+      "sha256": "50cde7608370369f43cac41b10d1c69b8d228c49b517c2f85bae25285d829a51"
+    },
+    {
+      "path": "skills/batch-77/PG370-compose-readiness-dependency-manager.md",
+      "size_bytes": 12454,
+      "sha256": "d78647ce1f1ccfde05d489192244d43a60eaeabcf7e4f4caa667d4028abd36a2"
+    },
+    {
+      "path": "skills/batch-77/PG371-compose-development-environment.md",
+      "size_bytes": 12409,
+      "sha256": "dd1e7ed8b8dc1ef2dc7d448f779c36ebef0e0d887785bd607cb5e7d81d5c5cba"
+    },
+    {
+      "path": "skills/batch-77/PG372-compose-production-parity-gate.md",
+      "size_bytes": 12388,
+      "sha256": "435e476410e4e35acc5819111888f432bea1d4977f8d2d45d6b7248b0756cc92"
+    },
+    {
+      "path": "skills/batch-77/PG373-container-image-test-scan-gate.md",
+      "size_bytes": 12360,
+      "sha256": "98cb831087be0a0240303d59bca1ac712c6c44d63177b7a3cd9a3a8b551062de"
+    },
+    {
+      "path": "skills/batch-77/PG374-container-build-run-certifier.md",
+      "size_bytes": 12595,
+      "sha256": "1f3bbcbac7c67be689cd7157a18676de65387d4d470a8bad46fb7d2f0cbbb379"
+    },
+    {
+      "path": "skills/batch-78/PG375-iac-kubernetes-profile-detector.md",
+      "size_bytes": 12742,
+      "sha256": "55a35d12aa01b044390f3a366422d0b900bc1bf0bf71c6eed08e9052835e8612"
+    },
+    {
+      "path": "skills/batch-78/PG376-terraform-module-scaffolder.md",
+      "size_bytes": 12650,
+      "sha256": "6be24f67b9ab6e947d0c98f484d562ddbad7bcbbdf056b6ff308014d8520117e"
+    },
+    {
+      "path": "skills/batch-78/PG377-terraform-provider-state-manager.md",
+      "size_bytes": 12548,
+      "sha256": "d1b9e4dee74b6ffd26f78c27bb5740ecfbbd09c85e2cc0ccd59a19fbd5481bab"
+    },
+    {
+      "path": "skills/batch-78/PG378-terraform-plan-policy-cost-gate.md",
+      "size_bytes": 12527,
+      "sha256": "e11e0dc92873018d8e100ea8578e81bb5b276920aec000341a67ff761d9f41b1"
+    },
+    {
+      "path": "skills/batch-78/PG379-terraform-import-drift-reconciler.md",
+      "size_bytes": 12557,
+      "sha256": "61fa6f450dfac29ad228f8ffe425a14e8ecadc257d340df7693f0daafc1f825d"
+    },
+    {
+      "path": "skills/batch-78/PG380-terraform-test-validation-harness.md",
+      "size_bytes": 12731,
+      "sha256": "19bb27dc82fdcb28d7f155ff47e29604c3f6d37789387bacec8cc90b10572cbe"
+    },
+    {
+      "path": "skills/batch-78/PG381-kubernetes-workload-manifest-generator.md",
+      "size_bytes": 12848,
+      "sha256": "07b617ce6dc69e59882ecf408ace7226e1c512351a59fc97a67bbae928260258"
+    },
+    {
+      "path": "skills/batch-78/PG382-kubernetes-config-secret-policy.md",
+      "size_bytes": 12743,
+      "sha256": "470ed24d980f54c526afd2619a50156737530b2ea4df34ee156a3e766df31a9a"
+    },
+    {
+      "path": "skills/batch-78/PG383-kubernetes-network-security-generator.md",
+      "size_bytes": 13005,
+      "sha256": "7a926e1f854023884fea1374fe4f93c21f507dfd7f8e56180f3ae7cde6d2de35"
+    },
+    {
+      "path": "skills/batch-78/PG384-kubernetes-autoscaling-reliability.md",
+      "size_bytes": 12604,
+      "sha256": "cc0f02dee1bca25c23b571b17503fd919d01e4b3341dcbb0f372821870869fc9"
+    },
+    {
+      "path": "skills/batch-78/PG385-helm-chart-generator.md",
+      "size_bytes": 12648,
+      "sha256": "caa66e628055316ab4561e864529a1e9f5db6ed6250a4d0d32c049336a905088"
+    },
+    {
+      "path": "skills/batch-78/PG386-helm-values-schema-manager.md",
+      "size_bytes": 12494,
+      "sha256": "3d258c9e1d4f9dc2698edc2ce4107a23f12258a9a870e0e2a5e6d011a1dfd194"
+    },
+    {
+      "path": "skills/batch-78/PG387-helm-upgrade-rollback-gate.md",
+      "size_bytes": 12482,
+      "sha256": "45fbd8203eeb935c14514b7ab842ae766d8f083642a974660997aa6ce594202e"
+    },
+    {
+      "path": "skills/batch-78/PG388-kubernetes-policy-admission-gate.md",
+      "size_bytes": 12574,
+      "sha256": "911601ca13827a748113ecba6a6312fbc37ad109cbdfe4360ae59b60bbba6abe"
+    },
+    {
+      "path": "skills/batch-78/PG389-gitops-release-bundle-generator.md",
+      "size_bytes": 12742,
+      "sha256": "07609a6dd40fd072e142c03dabb16219e8211e8fccf0f72648eebfadc4cdd6c8"
+    },
+    {
+      "path": "skills/batch-78/PG390-iac-kubernetes-helm-certifier.md",
+      "size_bytes": 12978,
+      "sha256": "1df6038b56458e75ac473174087e152906956ab79a85ddd90217ef42e23d08d7"
+    },
+    {
+      "path": "skills/batch-79/PG391-cicd-pipeline-profile-detector.md",
+      "size_bytes": 12322,
+      "sha256": "d427f8ed8912cd1118f4cbb415db6d816980b00dae524e9005a09c2508430ffc"
+    },
+    {
+      "path": "skills/batch-79/PG392-github-actions-workflow-generator.md",
+      "size_bytes": 12518,
+      "sha256": "1635e40160fcfbe23b1177c53afd0e2d2c3f24f7f20bc8191d9e18f4d95aa1be"
+    },
+    {
+      "path": "skills/batch-79/PG393-github-reusable-workflow-action-generator.md",
+      "size_bytes": 12590,
+      "sha256": "1d65d0cef237c0f5ce3e2dbc008b7e1111c733ec88c0a5be02365ba9c9fe5fdf"
+    },
+    {
+      "path": "skills/batch-79/PG394-github-oidc-permission-hardening.md",
+      "size_bytes": 12289,
+      "sha256": "cf02c72ceaa929163d26e4c1663cc0763c30616bb56ab4d03c7e9bba926367ed"
+    },
+    {
+      "path": "skills/batch-79/PG395-github-matrix-cache-artifact-manager.md",
+      "size_bytes": 12337,
+      "sha256": "3f8a1166a81c87dd36fc9f33c036a61b88d1f1bf14bddc171c6b2e67c9c0b660"
+    },
+    {
+      "path": "skills/batch-79/PG396-gitlab-ci-pipeline-generator.md",
+      "size_bytes": 12500,
+      "sha256": "10d0192e1d4d5ae743c43dff55741a11088b6d87be35a69996ce54f0355d2ed4"
+    },
+    {
+      "path": "skills/batch-79/PG397-gitlab-child-pipeline-component-generator.md",
+      "size_bytes": 12617,
+      "sha256": "c268384d662ac5f0753e13aa2c7a5af86825e7e05612395b87bafbb138034877"
+    },
+    {
+      "path": "skills/batch-79/PG398-gitlab-runner-secret-hardening.md",
+      "size_bytes": 12476,
+      "sha256": "491c911c1fa68ded526da064c944a7724801427cf24166aaef40f246fdbf95e2"
+    },
+    {
+      "path": "skills/batch-79/PG399-gitlab-environment-release-manager.md",
+      "size_bytes": 12500,
+      "sha256": "7672f36862ef1439a48fedda61bd9abffc1acd8682e67e6e5762765a9cb213dc"
+    },
+    {
+      "path": "skills/batch-79/PG400-jenkins-declarative-pipeline-generator.md",
+      "size_bytes": 12584,
+      "sha256": "96e77fc324d20b1dca52875d9c5e028827cc4e8867dbf6e4e331616a07b3e7b1"
+    },
+    {
+      "path": "skills/batch-79/PG401-jenkins-shared-library-generator.md",
+      "size_bytes": 12530,
+      "sha256": "ed2f319decd147ba98fc767f53219471f894f107e15ecde7de324ff810dabed1"
+    },
+    {
+      "path": "skills/batch-79/PG402-jenkins-agent-credential-hardening.md",
+      "size_bytes": 12328,
+      "sha256": "ab454513ca343e139086f3c5a99f625d7210f4fae84d641db7e622e12a67624e"
+    },
+    {
+      "path": "skills/batch-79/PG403-cross-ci-release-promotion.md",
+      "size_bytes": 12271,
+      "sha256": "266edfadc7b879321bd91b7728446c809f49a81f01588b9fa66d352e984be7be"
+    },
+    {
+      "path": "skills/batch-79/PG404-pipeline-security-provenance-gate.md",
+      "size_bytes": 12334,
+      "sha256": "c994677e5c6569bab2b2c609d487e53f00c8d0bce7b20f5a05702669c37d2ad9"
+    },
+    {
+      "path": "skills/batch-79/PG405-cicd-cross-system-certifier.md",
+      "size_bytes": 12390,
+      "sha256": "39548ea8580adc59358c5c0442ef9d428c08a99e4260e08a0625e6e71d8061ca"
+    },
+    {
+      "path": "skills/batch-80/PG406-polyglot-engineering-asset-graph.md",
+      "size_bytes": 12464,
+      "sha256": "95a997a148b0dfafb986a3a7188d6e136d7a5b0fc1ec4bd846489e06e66fb7be"
+    },
+    {
+      "path": "skills/batch-80/PG407-cross-language-build-orchestrator.md",
+      "size_bytes": 12628,
+      "sha256": "04b9e6113212f42b132d4308e7ccfaf099917c2c842de85a567264f50ef6a7f1"
+    },
+    {
+      "path": "skills/batch-80/PG408-cross-contract-schema-synchronizer.md",
+      "size_bytes": 12662,
+      "sha256": "812bd421ba92185c06941dc5e73fb4020635e842e2d739c70068f0b5537782e6"
+    },
+    {
+      "path": "skills/batch-80/PG409-environment-parity-drift-detector.md",
+      "size_bytes": 12482,
+      "sha256": "f792b0eda36f43a810b1f68f3707bf9efb926328c91ca669bacfb5c88e5d0c8a"
+    },
+    {
+      "path": "skills/batch-80/PG410-polyglot-secret-identity-policy.md",
+      "size_bytes": 12630,
+      "sha256": "b5cb25ea64c068ad904e69b403f6a5884a0790a47a540cf14ca94c0b80d77fbd"
+    },
+    {
+      "path": "skills/batch-80/PG411-software-supply-chain-provenance-orchestrator.md",
+      "size_bytes": 12590,
+      "sha256": "0193603115aab22ce2180bbfa27fc51a05e5cee5da22181a4e9ecda9488169be"
+    },
+    {
+      "path": "skills/batch-80/PG412-local-ci-runtime-reproducer.md",
+      "size_bytes": 12609,
+      "sha256": "e7fbfd4f7ae63922e13a6f5d900df8b877d85f70562c99a725a7279426f38c0f"
+    },
+    {
+      "path": "skills/batch-80/PG413-runtime-smoke-journey-orchestrator.md",
+      "size_bytes": 12491,
+      "sha256": "2524fd05f2a65eecf8ced73e2ea723c4ebeb73213c1a998828c527b726ebd734"
+    },
+    {
+      "path": "skills/batch-80/PG414-cross-layer-failure-diagnosis-repair.md",
+      "size_bytes": 12509,
+      "sha256": "c65328c141029e092bc6b4bf5615b26fc1c320fc33503a932f4dc7b829c04a00"
+    },
+    {
+      "path": "skills/batch-80/PG415-project-performance-cost-budget-gate.md",
+      "size_bytes": 12497,
+      "sha256": "2bfa5923db412ddfc4d16409961f60e343614a983c369bd4966b21015f0bd8d2"
+    },
+    {
+      "path": "skills/batch-80/PG416-project-migration-compatibility-gate.md",
+      "size_bytes": 12651,
+      "sha256": "ea8af1b96b2742e48cd8c762a3f47650037ace07a41692bd0d2a51de88baf27a"
+    },
+    {
+      "path": "skills/batch-80/PG417-project-operations-certification.md",
+      "size_bytes": 12552,
+      "sha256": "eed3e44855bfad86513eb791a33915b6623222d769f61292179d7fd53bf153b5"
+    },
+    {
+      "path": "templates/certification-result.template.json",
+      "size_bytes": 374,
+      "sha256": "5db39ba20a9d1b2ab4d9d41f543fc98141ace34b6e60427ac1a0339a30d6d96d"
+    },
+    {
+      "path": "templates/evidence-bundle.template.json",
+      "size_bytes": 507,
+      "sha256": "d3ba73e8b600db9a3cb1ecc8cb547dbb47e3cd739c663c4eb888fc4469bf12a5"
+    },
+    {
+      "path": "templates/execution-plan.template.json",
+      "size_bytes": 366,
+      "sha256": "0a17f31402390fe214ad931e9cba743201683f100f207e075975f6e22b8752ee"
+    },
+    {
+      "path": "templates/project-profile.template.json",
+      "size_bytes": 445,
+      "sha256": "a6ffdc7bb8e78d2a5a34be8ec9960b470f44c054a596f742b09e0fc6e2939375"
+    },
+    {
+      "path": "tests/test_package.py",
+      "size_bytes": 873,
+      "sha256": "ad21d41241dbbb1cf3bab6fdeb87afd5647466551067dbdeb8d7e9252281d381"
+    },
+    {
+      "path": "validate.sh",
+      "size_bytes": 234,
+      "sha256": "7e5b257386a0742854785ad537705168658f9e23a08df91373a5c9478d0a1307"
+    }
+  ]
+}

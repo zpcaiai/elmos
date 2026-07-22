@@ -1,20 +1,24 @@
 {
   "profile_key": "elmos-web-console-navigation-modernization-acceptance",
-  "version": "0.1.0",
+  "version": "0.4.0",
   "owner": "elmos-accessibility-review",
   "browser_matrix": [
-    "chromium-UNSET"
+    "chrome-150.0.7871.129-local"
   ],
-  "device_matrix": [],
+  "device_matrix": [
+    "desktop-1440x1000",
+    "tablet-1024x768",
+    "mobile-390x844"
+  ],
   "locales": [
-    "en-US"
+    "zh-CN"
   ],
   "themes": [
-    "default"
+    "default-light"
   ],
   "rendering": {
     "modes": [
-      "UNSET"
+      "next-static-prerender-with-client-hydration"
     ]
   },
   "visual": {
@@ -22,7 +26,7 @@
     "max_unapproved_differences": 0
   },
   "accessibility": {
-    "standard": "WCAG-UNSET",
+    "standard": "WCAG-2.2-AA-local-keyboard-and-target-size-subset",
     "critical_violations": 0
   },
   "interaction": {
@@ -40,7 +44,15 @@
   "security": {
     "authorization_regressions": 0
   },
-  "p0_journeys": [],
+  "p0_journeys": [
+    "workspace-navigation",
+    "skills-qualification",
+    "global-command-navigation",
+    "mobile-bottom-navigation",
+    "migration-marketplace-switch",
+    "trust-chain-review",
+    "project-generation-draft"
+  ],
   "thresholds": {
     "source_fingerprint_coverage": 0.95,
     "ui_ir_source_map_coverage": 0.95,

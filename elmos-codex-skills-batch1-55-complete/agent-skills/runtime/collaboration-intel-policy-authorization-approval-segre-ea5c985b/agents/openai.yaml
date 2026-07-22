@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B54: Collaboration Intel Policy Authorization Approval Segregation And Exception"
+  short_description: "Run ELMOS B54 Skill with fail-closed evidence"
+  default_prompt: "Use $collaboration-intel-policy-authorization-approval-segre-ea5c985b to execute the ELMOS B54 contract with fail-closed evidence."

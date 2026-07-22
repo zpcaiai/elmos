@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B47: It Asset Audit Evidence Records Retention And Legal Hold"
+  short_description: "Run ELMOS Product B47 contract with fail-closed evidence"
+  default_prompt: "Use $it-asset-audit-evidence-records-retention-and-legal-hold to implement its fail-closed ELMOS Product B47 contract."

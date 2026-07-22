@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B49: Cloud Runtime Domain Model Lifecycle And State Machine"
+  short_description: "Run ELMOS Product B49 contract with fail-closed evidence"
+  default_prompt: "Use $cloud-runtime-domain-model-lifecycle-and-state-machine to implement its fail-closed ELMOS Product B49 contract."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B34: Jit Access Approval Break Glass And Privileged Access"
+  short_description: "Run ELMOS B34 Skill with fail-closed evidence"
+  default_prompt: "Use $jit-access-approval-break-glass-and-privileged-access to execute the ELMOS B34 contract with fail-closed evidence."

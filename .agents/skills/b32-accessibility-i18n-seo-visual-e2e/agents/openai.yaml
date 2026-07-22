@@ -1,0 +1,4 @@
+interface:
+  display_name: "B32 Accessibility I18N Seo Visual E2E"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b32-accessibility-i18n-seo-visual-e2e to execute this ELMOS Runtime Skill with fail-closed evidence."

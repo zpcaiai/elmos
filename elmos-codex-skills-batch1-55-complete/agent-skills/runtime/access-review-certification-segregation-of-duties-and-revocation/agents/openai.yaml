@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B34: Access Review Certification Segregation Of Duties And Revocation"
+  short_description: "Run ELMOS B34 Skill with fail-closed evidence"
+  default_prompt: "Use $access-review-certification-segregation-of-duties-and-revocation to execute the ELMOS B34 contract with fail-closed evidence."

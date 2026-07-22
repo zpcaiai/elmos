@@ -1,0 +1,367 @@
+{
+  "schemaVersion": "1",
+  "package": "elmos-codex-skills-batch1-55-slightly-strict-tests",
+  "version": "1.0.0",
+  "generatedOn": "2026-07-22",
+  "skillCount": 71,
+  "foundationSkillCount": 16,
+  "batchSpecificSkillCount": 55,
+  "testCaseCount": 660,
+  "skills": [
+    {
+      "name": "api-event-schema-contract-and-compatibility-tests",
+      "path": "agent-skills/runtime/api-event-schema-contract-and-compatibility-tests/SKILL.md",
+      "description": "测试OpenAPI、GraphQL、Event、Webhook、File和Provider契约兼容性。"
+    },
+    {
+      "name": "batch-01-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-01-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 1: Repository Intake、Secure Snapshot与Baseline Discovery."
+    },
+    {
+      "name": "batch-02-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-02-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 2: Polyglot Semantic Adapters、AST/CST、Symbol与Type Recovery."
+    },
+    {
+      "name": "batch-03-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-03-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 3: Unified Intermediate Representation与Source Mapping."
+    },
+    {
+      "name": "batch-04-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-04-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 4: Target Skeleton、Project Structure与Traceable Generation."
+    },
+    {
+      "name": "batch-05-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-05-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 5: Core Language Translation、Type／Control-flow／Null Semantics."
+    },
+    {
+      "name": "batch-06-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-06-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 6: Standard Library、Dependency Mapping与Compatibility Runtime."
+    },
+    {
+      "name": "batch-07-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-07-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 7: Framework Migration Recipes与Application Semantics."
+    },
+    {
+      "name": "batch-08-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-08-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 8: Repository-aware Agent、Context、RAG与Human Escalation."
+    },
+    {
+      "name": "batch-09-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-09-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 9: Build、Compile、Test Repair与Bounded Fix Loop."
+    },
+    {
+      "name": "batch-10-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-10-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 10: Behavioral Equivalence、Golden Master与Differential Validation."
+    },
+    {
+      "name": "batch-11-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-11-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 11: Performance、Security与Production Semantics Validation."
+    },
+    {
+      "name": "batch-12-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-12-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 12: Benchmark、Quality Scoring、Cost与Manual Effort."
+    },
+    {
+      "name": "batch-13-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-13-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 13: Enterprise Delivery、Multi-tenancy、Private Deployment与Audit."
+    },
+    {
+      "name": "batch-14-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-14-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 14: Installed Batch 14 Manifest-driven Domain."
+    },
+    {
+      "name": "batch-15-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-15-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 15: Installed Batch 15 Manifest-driven Domain."
+    },
+    {
+      "name": "batch-16-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-16-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 16: Infrastructure、Cloud、Container、Kubernetes、Serverless与FinOps."
+    },
+    {
+      "name": "batch-17-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-17-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 17: Installed Batch 17 Manifest-driven Domain."
+    },
+    {
+      "name": "batch-18-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-18-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 18: Test and Quality Engineering Modernization Engine."
+    },
+    {
+      "name": "batch-19-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-19-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 19: Installed Batch 19 Manifest-driven Domain."
+    },
+    {
+      "name": "batch-20-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-20-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 20: Migration Platform Foundation and Repository Execution Scaffold."
+    },
+    {
+      "name": "batch-21-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-21-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 21: Installed Batch 21 Manifest-driven Domain."
+    },
+    {
+      "name": "batch-22-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-22-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 22: Installed Batch 22 Manifest-driven Domain."
+    },
+    {
+      "name": "batch-23-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-23-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 23: Installed Batch 23 Manifest-driven Domain."
+    },
+    {
+      "name": "batch-24-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-24-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 24: Installed Batch 24 Manifest-driven Domain."
+    },
+    {
+      "name": "batch-25-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-25-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 25: Installed Batch 25 Manifest-driven Domain."
+    },
+    {
+      "name": "batch-26-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-26-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 26: Installed Batch 26 Manifest-driven Domain."
+    },
+    {
+      "name": "batch-27-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-27-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 27: Installed Batch 27 Manifest-driven Domain."
+    },
+    {
+      "name": "batch-28-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-28-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 28: Installed Batch 28 Manifest-driven Domain."
+    },
+    {
+      "name": "batch-29-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-29-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 29: Multi-language Route Certification Factory."
+    },
+    {
+      "name": "batch-30-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-30-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 30: Framework Modernization Packs and Certification."
+    },
+    {
+      "name": "batch-31-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-31-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 31: Database、Query、ORM、ETL、Data Contract与Warehouse Modernization."
+    },
+    {
+      "name": "batch-32-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-32-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 32: ELMOS Platform MVP、Control Plane、Runner与Execution Foundation."
+    },
+    {
+      "name": "batch-33-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-33-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 33: Cloud／IaC Route Packs、Policy、Drift、Cost与Recovery."
+    },
+    {
+      "name": "batch-34-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-34-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 34: Enterprise Identity、Multi-tenancy与Access Governance."
+    },
+    {
+      "name": "batch-35-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-35-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 35: SCM Provider、Repository Workspace与Formal Verification Tooling."
+    },
+    {
+      "name": "batch-36-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-36-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 36: Private Runner Fleet、Sandbox与Execution Operations."
+    },
+    {
+      "name": "batch-37-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-37-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 37: Artifact、Provenance、Evidence Producer与Assurance Analytics."
+    },
+    {
+      "name": "batch-38-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-38-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 38: Policy Automation、Policy Intelligence与Regulatory Operations."
+    },
+    {
+      "name": "batch-39-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-39-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 39: Billing、Payment、Treasury、Finance Analytics与Unit Economics."
+    },
+    {
+      "name": "batch-40-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-40-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 40: CRM、Marketing、Partner与Revenue Operations."
+    },
+    {
+      "name": "batch-41-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-41-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 41: Product Portfolio、Discovery、Launch与Lifecycle Operations."
+    },
+    {
+      "name": "batch-42-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-42-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 42: Procurement、Inventory、Fulfillment、Demand与S&OP."
+    },
+    {
+      "name": "batch-43-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-43-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 43: HR、Talent、Payroll、Benefits与Workforce Planning."
+    },
+    {
+      "name": "batch-44-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-44-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 44: Data Platform、BI、Semantic Metrics、MDM与Governance."
+    },
+    {
+      "name": "batch-45-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-45-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 45: ML Platform、Agentic AI与Responsible AI."
+    },
+    {
+      "name": "batch-46-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-46-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 46: API、iPaaS、Event Streaming、Workflow、B2B与MFT."
+    },
+    {
+      "name": "batch-47-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-47-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 47: ITSM、SRE、Observability、Incident、CMDB与IT Asset."
+    },
+    {
+      "name": "batch-48-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-48-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 48: SOC、Identity Security、PAM、GRC、BCM与Crisis."
+    },
+    {
+      "name": "batch-49-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-49-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 49: Cloud Platform、Kubernetes、Serverless、FinOps与Sustainability."
+    },
+    {
+      "name": "batch-50-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-50-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 50: Manufacturing、MES、IIoT、Digital Twin、Quality与Safety."
+    },
+    {
+      "name": "batch-51-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-51-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 51: Transportation、Warehouse、Delivery、Customs与Logistics Finance."
+    },
+    {
+      "name": "batch-52-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-52-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 52: Clinical Operations、FHIR、DICOM、Revenue Cycle、Privacy与Safety."
+    },
+    {
+      "name": "batch-53-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-53-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 53: Utility Metering、Grid、DER／VPP、Field Service与Sustainability."
+    },
+    {
+      "name": "batch-54-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-54-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 54: Legal、Contract、eDiscovery、Content、Records与Collaboration."
+    },
+    {
+      "name": "batch-55-slightly-strict-certification-test-suite",
+      "path": "agent-skills/runtime/batch-55-slightly-strict-certification-test-suite/SKILL.md",
+      "description": "Run the slightly strict certification test suite for Batch 55: Globalization、Accessibility、Marketplace、SDK与Product Certification."
+    },
+    {
+      "name": "batch-manifest-test-coverage-resolver",
+      "path": "agent-skills/runtime/batch-manifest-test-coverage-resolver/SKILL.md",
+      "description": "读取Batch 1–55 Manifest、SKILL.md和依赖图，建立需求—不变量—测试覆盖矩阵。"
+    },
+    {
+      "name": "chaos-resilience-provider-failure-backup-and-dr-tests",
+      "path": "agent-skills/runtime/chaos-resilience-provider-failure-backup-and-dr-tests/SKILL.md",
+      "description": "验证Timeout、重复、网络分区、Provider故障、恢复、备份和DR。"
+    },
+    {
+      "name": "database-migration-transaction-rollback-and-reconciliation-tests",
+      "path": "agent-skills/runtime/database-migration-transaction-rollback-and-reconciliation-tests/SKILL.md",
+      "description": "验证Schema迁移、事务、回滚、RLS、数据修复与账实对账。"
+    },
+    {
+      "name": "differential-golden-master-holdout-and-oracle-tests",
+      "path": "agent-skills/runtime/differential-golden-master-holdout-and-oracle-tests/SKILL.md",
+      "description": "执行源目标差分、Golden Master、独立Holdout和多Oracle验证。"
+    },
+    {
+      "name": "performance-capacity-tail-latency-cost-and-leak-tests",
+      "path": "agent-skills/runtime/performance-capacity-tail-latency-cost-and-leak-tests/SKILL.md",
+      "description": "验证P95/P99、吞吐、容量、资源泄漏和单位成本回归。"
+    },
+    {
+      "name": "property-fuzz-mutation-and-boundary-test-engine",
+      "path": "agent-skills/runtime/property-fuzz-mutation-and-boundary-test-engine/SKILL.md",
+      "description": "执行Property-based、Fuzz、Mutation和组合边界测试。"
+    },
+    {
+      "name": "security-tenant-privacy-secret-and-abuse-tests",
+      "path": "agent-skills/runtime/security-tenant-privacy-secret-and-abuse-tests/SKILL.md",
+      "description": "覆盖认证、授权、多租户、RLS、Secret、PII、Prompt Injection和滥用。"
+    },
+    {
+      "name": "slightly-strict-test-certification-orchestrator",
+      "path": "agent-skills/runtime/slightly-strict-test-certification-orchestrator/SKILL.md",
+      "description": "编排Batch 1–55测试清单、风险分级、执行、证据、缺陷和发布Gate。"
+    },
+    {
+      "name": "state-machine-concurrency-idempotency-and-race-tests",
+      "path": "agent-skills/runtime/state-machine-concurrency-idempotency-and-race-tests/SKILL.md",
+      "description": "验证状态机、并发、重复、乱序、租约、幂等与竞态。"
+    },
+    {
+      "name": "test-case-schema-catalog-and-traceability",
+      "path": "agent-skills/runtime/test-case-schema-catalog-and-traceability/SKILL.md",
+      "description": "定义机器可读Given／When／Then用例、需求链接、数据、Oracle和证据Schema。"
+    },
+    {
+      "name": "test-data-fixture-synthetic-pii-and-seed-governance",
+      "path": "agent-skills/runtime/test-data-fixture-synthetic-pii-and-seed-governance/SKILL.md",
+      "description": "管理确定性Fixture、合成PII、边界数据、随机种子和数据清理。"
+    },
+    {
+      "name": "test-environment-matrix-virtualization-and-parity",
+      "path": "agent-skills/runtime/test-environment-matrix-virtualization-and-parity/SKILL.md",
+      "description": "定义Local、CI、Ephemeral、Provider Sandbox、Staging和DR环境矩阵。"
+    },
+    {
+      "name": "test-evidence-flaky-quarantine-waiver-and-release-gate",
+      "path": "agent-skills/runtime/test-evidence-flaky-quarantine-waiver-and-release-gate/SKILL.md",
+      "description": "治理测试证据、Flaky、隔离、Waiver和PR／Nightly／Release Gate。"
+    },
+    {
+      "name": "test-risk-criticality-and-priority-model",
+      "path": "agent-skills/runtime/test-risk-criticality-and-priority-model/SKILL.md",
+      "description": "定义P0/P1/P2/P3优先级、业务影响、可豁免性和测试深度。"
+    },
+    {
+      "name": "unit-component-and-deterministic-domain-tests",
+      "path": "agent-skills/runtime/unit-component-and-deterministic-domain-tests/SKILL.md",
+      "description": "建立领域不变量、纯函数、边界条件和组件级确定性测试。"
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M13: B13 Enterprise Delivery Multi Tenancy Private Deploy Discovery And Baseline"
+  short_description: "Run ELMOS M13 Skill with fail-closed evidence"
+  default_prompt: "Use $b13-enterprise-delivery-multi-tenancy-private-deploy-di-ec27da60 to execute the ELMOS M13 contract with fail-closed evidence."

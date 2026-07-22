@@ -1,0 +1,4 @@
+interface:
+  display_name: "B33 Infrastructure Drift Validator"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b33-infrastructure-drift-validator to execute this ELMOS Runtime Skill with fail-closed evidence."

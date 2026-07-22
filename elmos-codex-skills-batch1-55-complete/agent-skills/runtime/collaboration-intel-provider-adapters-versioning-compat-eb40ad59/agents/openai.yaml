@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B54: Collaboration Intel Provider Adapters Versioning Compatibility And Migration"
+  short_description: "Run ELMOS B54 Skill with fail-closed evidence"
+  default_prompt: "Use $collaboration-intel-provider-adapters-versioning-compat-eb40ad59 to execute the ELMOS B54 contract with fail-closed evidence."

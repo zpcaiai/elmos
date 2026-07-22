@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B55: Product Maturity Automation Copilot Recommendation And Human Review"
+  short_description: "Run ELMOS Product B55 contract with fail-closed evidence"
+  default_prompt: "Use $product-maturity-automation-copilot-recommendation-and-afaf50ed to implement its fail-closed ELMOS Product B55 contract."

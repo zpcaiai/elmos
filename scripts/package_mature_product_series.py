@@ -30,9 +30,8 @@ def collect(first_batch: int, last_batch: int) -> list[Path]:
                     path for path in directory.rglob("*")
                     if path.is_file() and "__pycache__" not in path.parts
                 )
-        makefile = ROOT / f"Makefile.batch{batch}"
-        if makefile.is_file():
-            files.add(makefile)
+        files.add(ROOT / f"Makefile.batch{batch}")
+    files.add(ROOT / "Makefile")
     files.add(ROOT / "AGENTS.md")
     files.add(ROOT / "scripts" / "validate_mature_product_series.py")
     files.add(ROOT / "scripts" / "package_mature_product_series.py")

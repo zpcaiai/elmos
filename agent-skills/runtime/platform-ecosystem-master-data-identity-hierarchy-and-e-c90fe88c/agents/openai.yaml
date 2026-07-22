@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B55: Platform Ecosystem Master Data Identity Hierarchy And Effective Dating"
+  short_description: "Run ELMOS Product B55 contract with fail-closed evidence"
+  default_prompt: "Use $platform-ecosystem-master-data-identity-hierarchy-and-e-c90fe88c to implement its fail-closed ELMOS Product B55 contract."

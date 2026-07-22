@@ -1,0 +1,319 @@
+{
+  "batch": 66,
+  "title": "TypeScript and JavaScript Project Pack",
+  "subject": "TypeScript/JavaScript full-stack, Node.js, React, Vue, Nuxt, Next.js, workers, data access, contracts, and tests",
+  "skill_count": 12,
+  "id_range": [
+    "PG223",
+    "PG234"
+  ],
+  "toolchain": [
+    "node",
+    "corepack",
+    "pnpm/npm/yarn",
+    "tsc",
+    "eslint",
+    "vitest/jest",
+    "playwright"
+  ],
+  "source_markers": [
+    "package.json",
+    "tsconfig.json",
+    "pnpm-lock.yaml",
+    "package-lock.json",
+    "yarn.lock",
+    "vite.config.*",
+    "next.config.*"
+  ],
+  "skills": [
+    {
+      "id": "PG223",
+      "batch": 66,
+      "name": "b66-typescript-project-profile-detector",
+      "title": "TypeScript Project Profile Detector",
+      "summary": "Inspect and model TypeScript Project Profile Detector for TypeScript/JavaScript full-stack, Node.js, React, Vue, Nuxt, Next.js, workers, data access, contracts, and tests, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b66-typescript-project-profile-detector/SKILL.md",
+      "catalog_path": "skills/batch-66/PG223-typescript-project-profile-detector.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG222"
+      ],
+      "outputs": [
+        "typescript_project_profile_detector.json",
+        "typescript_project_profile_detector_artifacts/",
+        "typescript_project_profile_detector_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG224",
+      "batch": 66,
+      "name": "b66-node-runtime-lockfile-reproducer",
+      "title": "Node Runtime Lockfile Reproducer",
+      "summary": "Reproduce deterministically Node Runtime Lockfile Reproducer for TypeScript/JavaScript full-stack, Node.js, React, Vue, Nuxt, Next.js, workers, data access, contracts, and tests, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b66-node-runtime-lockfile-reproducer/SKILL.md",
+      "catalog_path": "skills/batch-66/PG224-node-runtime-lockfile-reproducer.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG222",
+        "PG223"
+      ],
+      "outputs": [
+        "node_runtime_lockfile_reproducer_plan.json",
+        "node_runtime_lockfile_reproducer_artifacts/",
+        "node_runtime_lockfile_reproducer_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG225",
+      "batch": 66,
+      "name": "b66-typescript-monorepo-scaffolder",
+      "title": "TypeScript Monorepo Scaffolder",
+      "summary": "Generate runnable and maintainable TypeScript Monorepo Scaffolder for TypeScript/JavaScript full-stack, Node.js, React, Vue, Nuxt, Next.js, workers, data access, contracts, and tests, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b66-typescript-monorepo-scaffolder/SKILL.md",
+      "catalog_path": "skills/batch-66/PG225-typescript-monorepo-scaffolder.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG222",
+        "PG224"
+      ],
+      "outputs": [
+        "typescript_monorepo_scaffolder_plan.json",
+        "typescript_monorepo_scaffolder_artifacts/",
+        "typescript_monorepo_scaffolder_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG226",
+      "batch": 66,
+      "name": "b66-nestjs-fastify-api-generator",
+      "title": "NestJS Fastify API Generator",
+      "summary": "Generate runnable and maintainable NestJS Fastify API Generator for TypeScript/JavaScript full-stack, Node.js, React, Vue, Nuxt, Next.js, workers, data access, contracts, and tests, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b66-nestjs-fastify-api-generator/SKILL.md",
+      "catalog_path": "skills/batch-66/PG226-nestjs-fastify-api-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG222",
+        "PG225"
+      ],
+      "outputs": [
+        "nestjs_fastify_api_generator_plan.json",
+        "nestjs_fastify_api_generator_artifacts/",
+        "nestjs_fastify_api_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG227",
+      "batch": 66,
+      "name": "b66-nextjs-fullstack-generator",
+      "title": "Next.js Fullstack Generator",
+      "summary": "Generate runnable and maintainable Next.js Fullstack Generator for TypeScript/JavaScript full-stack, Node.js, React, Vue, Nuxt, Next.js, workers, data access, contracts, and tests, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b66-nextjs-fullstack-generator/SKILL.md",
+      "catalog_path": "skills/batch-66/PG227-nextjs-fullstack-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG222",
+        "PG226"
+      ],
+      "outputs": [
+        "nextjs_fullstack_generator_plan.json",
+        "nextjs_fullstack_generator_artifacts/",
+        "nextjs_fullstack_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG228",
+      "batch": 66,
+      "name": "b66-react-vite-spa-generator",
+      "title": "React Vite Spa Generator",
+      "summary": "Generate runnable and maintainable React Vite Spa Generator for TypeScript/JavaScript full-stack, Node.js, React, Vue, Nuxt, Next.js, workers, data access, contracts, and tests, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b66-react-vite-spa-generator/SKILL.md",
+      "catalog_path": "skills/batch-66/PG228-react-vite-spa-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG222",
+        "PG227"
+      ],
+      "outputs": [
+        "react_vite_spa_generator_plan.json",
+        "react_vite_spa_generator_artifacts/",
+        "react_vite_spa_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG229",
+      "batch": 66,
+      "name": "b66-vue-nuxt-app-generator",
+      "title": "Vue Nuxt App Generator",
+      "summary": "Generate runnable and maintainable Vue Nuxt App Generator for TypeScript/JavaScript full-stack, Node.js, React, Vue, Nuxt, Next.js, workers, data access, contracts, and tests, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b66-vue-nuxt-app-generator/SKILL.md",
+      "catalog_path": "skills/batch-66/PG229-vue-nuxt-app-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG222",
+        "PG228"
+      ],
+      "outputs": [
+        "vue_nuxt_app_generator_plan.json",
+        "vue_nuxt_app_generator_artifacts/",
+        "vue_nuxt_app_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG230",
+      "batch": 66,
+      "name": "b66-node-worker-cli-generator",
+      "title": "Node Worker CLI Generator",
+      "summary": "Generate runnable and maintainable Node Worker CLI Generator for TypeScript/JavaScript full-stack, Node.js, React, Vue, Nuxt, Next.js, workers, data access, contracts, and tests, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b66-node-worker-cli-generator/SKILL.md",
+      "catalog_path": "skills/batch-66/PG230-node-worker-cli-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG222",
+        "PG229"
+      ],
+      "outputs": [
+        "node_worker_cli_generator_plan.json",
+        "node_worker_cli_generator_artifacts/",
+        "node_worker_cli_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG231",
+      "batch": 66,
+      "name": "b66-typescript-data-access-generator",
+      "title": "TypeScript Data Access Generator",
+      "summary": "Generate runnable and maintainable TypeScript Data Access Generator for TypeScript/JavaScript full-stack, Node.js, React, Vue, Nuxt, Next.js, workers, data access, contracts, and tests, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b66-typescript-data-access-generator/SKILL.md",
+      "catalog_path": "skills/batch-66/PG231-typescript-data-access-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG222",
+        "PG230"
+      ],
+      "outputs": [
+        "typescript_data_access_generator_plan.json",
+        "typescript_data_access_generator_artifacts/",
+        "typescript_data_access_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG232",
+      "batch": 66,
+      "name": "b66-typescript-contract-client-generator",
+      "title": "TypeScript Contract Client Generator",
+      "summary": "Generate runnable and maintainable TypeScript Contract Client Generator for TypeScript/JavaScript full-stack, Node.js, React, Vue, Nuxt, Next.js, workers, data access, contracts, and tests, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b66-typescript-contract-client-generator/SKILL.md",
+      "catalog_path": "skills/batch-66/PG232-typescript-contract-client-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG222",
+        "PG231"
+      ],
+      "outputs": [
+        "typescript_contract_client_generator_plan.json",
+        "typescript_contract_client_generator_artifacts/",
+        "typescript_contract_client_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG233",
+      "batch": 66,
+      "name": "b66-typescript-test-harness-generator",
+      "title": "TypeScript Test Harness Generator",
+      "summary": "Generate runnable and maintainable TypeScript Test Harness Generator for TypeScript/JavaScript full-stack, Node.js, React, Vue, Nuxt, Next.js, workers, data access, contracts, and tests, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b66-typescript-test-harness-generator/SKILL.md",
+      "catalog_path": "skills/batch-66/PG233-typescript-test-harness-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG222",
+        "PG232"
+      ],
+      "outputs": [
+        "typescript_test_harness_generator_plan.json",
+        "typescript_test_harness_generator_artifacts/",
+        "typescript_test_harness_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG234",
+      "batch": 66,
+      "name": "b66-node-build-run-repair-certifier",
+      "title": "Node Build Run Repair Certifier",
+      "summary": "Execute and independently verify Node Build Run Repair Certifier for TypeScript/JavaScript full-stack, Node.js, React, Vue, Nuxt, Next.js, workers, data access, contracts, and tests, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b66-node-build-run-repair-certifier/SKILL.md",
+      "catalog_path": "skills/batch-66/PG234-node-build-run-repair-certifier.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG222",
+        "PG233"
+      ],
+      "outputs": [
+        "node_build_run_repair_certifier_plan.json",
+        "node_build_run_repair_certifier_artifacts/",
+        "node_build_run_repair_certifier_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md",
+        "certification_result.json",
+        "scope_and_limitations.md"
+      ]
+    }
+  ]
+}

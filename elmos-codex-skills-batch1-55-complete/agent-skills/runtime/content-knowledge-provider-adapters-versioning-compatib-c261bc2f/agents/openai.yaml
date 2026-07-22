@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B54: Content Knowledge Provider Adapters Versioning Compatibility And Migration"
+  short_description: "Run ELMOS B54 Skill with fail-closed evidence"
+  default_prompt: "Use $content-knowledge-provider-adapters-versioning-compatib-c261bc2f to execute the ELMOS B54 contract with fail-closed evidence."

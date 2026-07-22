@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B51: Fleet Transport Case Investigation Remediation And Closure"
+  short_description: "Run ELMOS B51 Skill with fail-closed evidence"
+  default_prompt: "Use $fleet-transport-case-investigation-remediation-and-closure to execute the ELMOS B51 contract with fail-closed evidence."

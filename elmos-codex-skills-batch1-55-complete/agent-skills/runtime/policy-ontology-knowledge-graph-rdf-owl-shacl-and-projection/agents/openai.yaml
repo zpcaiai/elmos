@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B38: Policy Ontology Knowledge Graph Rdf Owl Shacl And Projection"
+  short_description: "Run ELMOS B38 Skill with fail-closed evidence"
+  default_prompt: "Use $policy-ontology-knowledge-graph-rdf-owl-shacl-and-projection to execute the ELMOS B38 contract with fail-closed evidence."

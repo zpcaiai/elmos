@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B54: Content Knowledge Case Investigation Remediation And Closure"
+  short_description: "Run ELMOS Product B54 contract with fail-closed evidence"
+  default_prompt: "Use $content-knowledge-case-investigation-remediation-and-closure to implement its fail-closed ELMOS Product B54 contract."

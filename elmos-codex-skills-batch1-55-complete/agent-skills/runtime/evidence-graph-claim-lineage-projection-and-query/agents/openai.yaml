@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B37: Evidence Graph Claim Lineage Projection And Query"
+  short_description: "Run ELMOS B37 Skill with fail-closed evidence"
+  default_prompt: "Use $evidence-graph-claim-lineage-projection-and-query to execute the ELMOS B37 contract with fail-closed evidence."

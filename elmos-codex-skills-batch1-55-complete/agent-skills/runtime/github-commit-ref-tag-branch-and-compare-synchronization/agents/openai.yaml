@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B35: Github Commit Ref Tag Branch And Compare Synchronization"
+  short_description: "Run ELMOS B35 Skill with fail-closed evidence"
+  default_prompt: "Use $github-commit-ref-tag-branch-and-compare-synchronization to execute the ELMOS B35 contract with fail-closed evidence."

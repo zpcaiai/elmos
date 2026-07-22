@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B50: Manufacturing Quality Audit Evidence Records Retention And Legal Hold"
+  short_description: "Run ELMOS B50 Skill with fail-closed evidence"
+  default_prompt: "Use $manufacturing-quality-audit-evidence-records-retention-e8693219 to execute the ELMOS B50 contract with fail-closed evidence."

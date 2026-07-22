@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B39: Cash Forecast Scenario Variance Confidence And Liquidity Planning"
+  short_description: "Run ELMOS B39 Skill with fail-closed evidence"
+  default_prompt: "Use $cash-forecast-scenario-variance-confidence-and-liquidit-0f01ed8f to execute the ELMOS B39 contract with fail-closed evidence."

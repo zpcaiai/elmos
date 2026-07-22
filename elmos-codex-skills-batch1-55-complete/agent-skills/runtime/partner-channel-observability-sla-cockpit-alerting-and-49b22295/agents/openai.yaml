@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B40: Partner Channel Observability Sla Cockpit Alerting And Operations"
+  short_description: "Run ELMOS B40 Skill with fail-closed evidence"
+  default_prompt: "Use $partner-channel-observability-sla-cockpit-alerting-and-49b22295 to execute the ELMOS B40 contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M44: B44 Migration Finops Factory"
+  short_description: "Run ELMOS M44 Skill with fail-closed evidence"
+  default_prompt: "Use $b44-migration-finops-factory to execute the ELMOS M44 contract with fail-closed evidence."

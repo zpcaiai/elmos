@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B45: Agentic Runtime Analytics Kpi Scoring Forecast And Diagnostics"
+  short_description: "Run ELMOS Product B45 contract with fail-closed evidence"
+  default_prompt: "Use $agentic-runtime-analytics-kpi-scoring-forecast-and-diagnostics to implement its fail-closed ELMOS Product B45 contract."

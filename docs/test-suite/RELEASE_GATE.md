@@ -1,0 +1,3 @@
+# Release Gate
+
+The authoritative gate validates the 52 Skills, exact 408-case catalog, eight variants for every Batch, control/schema manifest, actual results, raw evidence roles and digests, artifact/environment bindings, timestamps, independent corpora, thresholds, replay, identities and authorization. A `CERTIFIED` result additionally requires an RSA-SHA256 request signed by the independent verifier, covering all exact result/evidence digests, and verified against a separate non-revoked trust store. Missing inputs yield `BLOCKED`; unexecuted field evidence remains `NOT_RUN`. Editing the decision file cannot create a pass.

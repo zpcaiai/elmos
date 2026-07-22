@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M07: B07 Framework Migration Recipes Application Semantic Execution Engine"
+  short_description: "Run ELMOS M07 Skill with fail-closed evidence"
+  default_prompt: "Use $b07-framework-migration-recipes-application-semantic-ex-47495f46 to execute the ELMOS M07 contract with fail-closed evidence."

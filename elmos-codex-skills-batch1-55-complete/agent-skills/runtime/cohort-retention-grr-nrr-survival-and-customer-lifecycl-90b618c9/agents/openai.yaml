@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B39: Cohort Retention Grr Nrr Survival And Customer Lifecycle Analytics"
+  short_description: "Run ELMOS B39 Skill with fail-closed evidence"
+  default_prompt: "Use $cohort-retention-grr-nrr-survival-and-customer-lifecycl-90b618c9 to execute the ELMOS B39 contract with fail-closed evidence."

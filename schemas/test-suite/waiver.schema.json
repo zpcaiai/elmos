@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/test-suite/waiver.schema.json",
+  "type": "object",
+  "required": [
+    "waiver_id", "case_id", "severity", "owner", "issued_at", "expires_at",
+    "reason", "compensating_controls", "approvals"
+  ],
+  "properties": {
+    "waiver_id": {"type": "string", "minLength": 1},
+    "case_id": {"type": "string", "pattern": "^[A-Z0-9-]+$"},
+    "severity": {"enum": ["P1", "P2", "P3"]},
+    "owner": {"type": "string", "minLength": 1},
+    "issued_at": {"type": "string", "format": "date-time"},
+    "expires_at": {"type": "string", "format": "date-time"},
+    "reason": {"type": "string", "minLength": 20},
+    "compensating_controls": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "approvals": {
+      "type": "array", "minItems": 3, "uniqueItems": true,
+      "items": {
+        "type": "object", "required": ["role", "identity", "evidence_ref"],
+        "properties": {
+          "role": {"enum": ["executive", "security", "customer"]},
+          "identity": {"type": "string", "minLength": 1},
+          "evidence_ref": {"type": "string", "minLength": 1}
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

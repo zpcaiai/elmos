@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M11: B11 Performance Security Production Semantics Valida Capability Matrix And Planning"
+  short_description: "Run ELMOS M11 Skill with fail-closed evidence"
+  default_prompt: "Use $b11-performance-security-production-semantics-valida-ca-229d7e1b to execute the ELMOS M11 contract with fail-closed evidence."

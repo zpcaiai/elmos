@@ -1,0 +1,4 @@
+interface:
+  display_name: "B30 Target Framework Profile"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b30-target-framework-profile to execute this ELMOS Runtime Skill with fail-closed evidence."

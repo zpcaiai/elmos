@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B53: Energy Asset Provider Adapters Versioning Compatibility And Migration"
+  short_description: "Run ELMOS B53 Skill with fail-closed evidence"
+  default_prompt: "Use $energy-asset-provider-adapters-versioning-compatibility-8ebf7fb4 to execute the ELMOS B53 contract with fail-closed evidence."

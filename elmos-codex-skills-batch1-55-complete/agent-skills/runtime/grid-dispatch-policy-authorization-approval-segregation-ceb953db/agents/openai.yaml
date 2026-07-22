@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B53: Grid Dispatch Policy Authorization Approval Segregation And Exception"
+  short_description: "Run ELMOS B53 Skill with fail-closed evidence"
+  default_prompt: "Use $grid-dispatch-policy-authorization-approval-segregation-ceb953db to execute the ELMOS B53 contract with fail-closed evidence."

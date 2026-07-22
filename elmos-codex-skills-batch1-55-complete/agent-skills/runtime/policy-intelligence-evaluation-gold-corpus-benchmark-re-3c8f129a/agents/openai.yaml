@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B38: Policy Intelligence Evaluation Gold Corpus Benchmark Red Team And Model Governance"
+  short_description: "Run ELMOS B38 Skill with fail-closed evidence"
+  default_prompt: "Use $policy-intelligence-evaluation-gold-corpus-benchmark-re-3c8f129a to execute the ELMOS B38 contract with fail-closed evidence."

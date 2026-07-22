@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B34: User Membership Role Permission And Resource Authorization"
+  short_description: "Run ELMOS B34 Skill with fail-closed evidence"
+  default_prompt: "Use $user-membership-role-permission-and-resource-authorization to execute the ELMOS B34 contract with fail-closed evidence."

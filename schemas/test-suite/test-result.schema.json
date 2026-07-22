@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/test-suite/test-result.schema.json",
+  "title": "Strict test result",
+  "type": "object",
+  "required": [
+    "case_id",
+    "status",
+    "artifact_digest",
+    "environment_digest",
+    "started_at",
+    "finished_at",
+    "evidence"
+  ],
+  "properties": {
+    "case_id": {"type": "string", "pattern": "^[A-Z0-9-]+$"},
+    "status": {"enum": ["passed", "failed", "blocked", "not-run", "waived"]},
+    "artifact_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "environment_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "started_at": {"type": "string"},
+    "finished_at": {"type": "string"},
+    "evidence": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "execution_kind": {"enum": ["real", "approved-equivalent"]},
+    "failure_class": {"type": "string", "minLength": 1},
+    "replay_command": {"type": "string", "minLength": 1},
+    "trace_coverage": {"type": "number", "minimum": 0, "maximum": 1},
+    "source_target_trace_coverage": {"type": "number", "minimum": 0, "maximum": 1},
+    "holdout_passed": {"type": "boolean"},
+    "representative_workload_passed": {"type": "boolean"},
+    "affected_test_recall": {"type": "number", "minimum": 0, "maximum": 1},
+    "mutation_score": {"type": "number", "minimum": 0, "maximum": 1},
+    "p95_latency_regression": {"type": "number"},
+    "p99_latency_regression": {"type": "number"},
+    "resource_regression": {"type": "number"},
+    "recovery_success_rate": {"type": "number", "minimum": 0, "maximum": 1},
+    "critical_unknowns": {"type": "integer", "minimum": 0},
+    "critical_security_findings": {"type": "integer", "minimum": 0},
+    "tenant_isolation_violations": {"type": "integer", "minimum": 0},
+    "test_integrity_violations": {"type": "integer", "minimum": 0},
+    "stale_evidence": {"type": "integer", "minimum": 0},
+    "unreplayed_critical_failures": {"type": "integer", "minimum": 0},
+    "forged_certification_attempts": {"type": "integer", "minimum": 0},
+    "flaky_p0_p1": {"type": "integer", "minimum": 0}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "not-run"}}, "required": ["status"]},
+      "then": {
+        "properties": {
+          "artifact_digest": {"const": "sha256:0000000000000000000000000000000000000000000000000000000000000000"},
+          "environment_digest": {"const": "sha256:0000000000000000000000000000000000000000000000000000000000000000"},
+          "started_at": {"const": ""},
+          "finished_at": {"const": ""},
+          "evidence": {"maxItems": 0}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"status": {"const": "passed"}}, "required": ["status"]},
+      "then": {
+        "required": [
+          "execution_kind",
+          "replay_command",
+          "trace_coverage",
+          "source_target_trace_coverage"
+        ],
+        "properties": {
+          "artifact_digest": {"pattern": "^sha256:(?!0{64}$)[0-9a-f]{64}$"},
+          "environment_digest": {"pattern": "^sha256:(?!0{64}$)[0-9a-f]{64}$"},
+          "started_at": {"format": "date-time", "minLength": 1},
+          "finished_at": {"format": "date-time", "minLength": 1},
+          "evidence": {"minItems": 1}
+        }
+      }
+    }
+  ],
+  "additionalProperties": false
+}

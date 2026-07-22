@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B39: Treasury Mandate Signer Approval Segregation Limit And Payment Factory Control"
+  short_description: "Run ELMOS B39 Skill with fail-closed evidence"
+  default_prompt: "Use $treasury-mandate-signer-approval-segregation-limit-and-25c147ab to execute the ELMOS B39 contract with fail-closed evidence."

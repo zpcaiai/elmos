@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tst Cross Tenant Security Adversarial"
+  short_description: "Help with Tst Cross Tenant Security Adversarial tasks"
+  default_prompt: "Use $tst-cross-tenant-security-adversarial to implement and verify this strict Batch 1–37 test scope with immutable evidence and fail-closed results."

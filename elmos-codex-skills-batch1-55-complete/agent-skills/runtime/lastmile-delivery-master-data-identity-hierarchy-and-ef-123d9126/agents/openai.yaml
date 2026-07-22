@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B51: Lastmile Delivery Master Data Identity Hierarchy And Effective Dating"
+  short_description: "Run ELMOS B51 Skill with fail-closed evidence"
+  default_prompt: "Use $lastmile-delivery-master-data-identity-hierarchy-and-ef-123d9126 to execute the ELMOS B51 contract with fail-closed evidence."

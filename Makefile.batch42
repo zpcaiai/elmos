@@ -1,0 +1,13 @@
+BATCH42_PYTHON ?= /opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python
+.PHONY: batch42-check batch42-scaffold batch42-gate
+batch42-check:
+	$(BATCH42_PYTHON) scripts/mature_product_toolkit.py validate --batch 42
+	$(BATCH42_PYTHON) -m unittest discover -s tests/batch42 -p 'test_*.py'
+batch42-scaffold:
+	@test -n "$(PACK)" || (echo "PACK=<pack-key> required" && exit 2)
+	@test -n "$(OWNER)" || (echo "OWNER=<owner> required" && exit 2)
+	$(BATCH42_PYTHON) scripts/mature_product_toolkit.py scaffold --batch 42 --key $(PACK) --owner $(OWNER)
+batch42-gate:
+	@test -n "$(PACK)" || (echo "PACK=<pack-key> required" && exit 2)
+	@test -n "$(TRUST_STORE)" || (echo "TRUST_STORE=<external-trust-store.json> required" && exit 2)
+	$(BATCH42_PYTHON) scripts/mature_product_toolkit.py gate --batch 42 mature-product-packs/batch42/$(PACK) --trust-store $(TRUST_STORE)

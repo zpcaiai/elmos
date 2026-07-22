@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M10: B10 Behavioral Equivalence Golden Master Differentia Release Certification Gate"
+  short_description: "Run ELMOS M10 Skill with fail-closed evidence"
+  default_prompt: "Use $b10-behavioral-equivalence-golden-master-differentia-re-94c8975f to execute the ELMOS M10 contract with fail-closed evidence."

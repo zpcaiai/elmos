@@ -1,0 +1,170 @@
+{
+  "batch": 54,
+  "title": "Python Project Pack",
+  "skills": [
+    {
+      "id": "PG089",
+      "name": "python-fastapi-service-profile",
+      "batch": 54,
+      "depends_on": [
+        "PG056",
+        "PG057",
+        "PG058",
+        "PG064",
+        "PG076"
+      ],
+      "path": "skills/batch-54/PG089-python-fastapi-service-profile.md",
+      "summary": "certified FastAPI profile with typed contracts, explicit sync/async boundaries, security, tests and deployment"
+    },
+    {
+      "id": "PG090",
+      "name": "python-django-web-profile",
+      "batch": 54,
+      "depends_on": [
+        "PG056",
+        "PG057",
+        "PG058",
+        "PG064"
+      ],
+      "path": "skills/batch-54/PG090-python-django-web-profile.md",
+      "summary": "Django web/admin profile with bounded apps, settings layering, migrations, auth and extension points"
+    },
+    {
+      "id": "PG091",
+      "name": "python-cli-worker-profile",
+      "batch": 54,
+      "depends_on": [
+        "PG038",
+        "PG053",
+        "PG057",
+        "PG064"
+      ],
+      "path": "skills/batch-54/PG091-python-cli-worker-profile.md",
+      "summary": "Python CLI, batch, scheduler, queue worker and stream processor lifecycle and replay contracts"
+    },
+    {
+      "id": "PG092",
+      "name": "python-data-ai-service-profile",
+      "batch": 54,
+      "depends_on": [
+        "PG050",
+        "PG057",
+        "PG064"
+      ],
+      "path": "skills/batch-54/PG092-python-data-ai-service-profile.md",
+      "summary": "data, inference, RAG and agent backend profile with model/prompt/tool versioning, safety and eval hooks"
+    },
+    {
+      "id": "PG093",
+      "name": "python-domain-application-layer-generator",
+      "batch": 54,
+      "depends_on": [
+        "PG035",
+        "PG037",
+        "PG067",
+        "PG072",
+        "PG089"
+      ],
+      "path": "skills/batch-54/PG093-python-domain-application-layer-generator.md",
+      "summary": "typed framework-independent Python domain/application layers, protocols, invariants and tests"
+    },
+    {
+      "id": "PG094",
+      "name": "python-pydantic-api-contract-generator",
+      "batch": 54,
+      "depends_on": [
+        "PG039",
+        "PG040",
+        "PG041",
+        "PG089"
+      ],
+      "path": "skills/batch-54/PG094-python-pydantic-api-contract-generator.md",
+      "summary": "Pydantic models and FastAPI routes with validation, errors, auth, pagination and OpenAPI stability"
+    },
+    {
+      "id": "PG095",
+      "name": "python-sqlalchemy-django-orm-generator",
+      "batch": 54,
+      "depends_on": [
+        "PG035",
+        "PG047",
+        "PG089",
+        "PG090",
+        "PG113"
+      ],
+      "path": "skills/batch-54/PG095-python-sqlalchemy-django-orm-generator.md",
+      "summary": "SQLAlchemy/Django ORM persistence, session/transaction boundaries, mappings and target-database tests"
+    },
+    {
+      "id": "PG096",
+      "name": "python-auth-permission-generator",
+      "batch": 54,
+      "depends_on": [
+        "PG041",
+        "PG050",
+        "PG062",
+        "PG089",
+        "PG090"
+      ],
+      "path": "skills/batch-54/PG096-python-auth-permission-generator.md",
+      "summary": "FastAPI/Django identity, tenant scope, object permissions and fail-closed security configuration"
+    },
+    {
+      "id": "PG097",
+      "name": "python-task-queue-scheduler-generator",
+      "batch": 54,
+      "depends_on": [
+        "PG038",
+        "PG048",
+        "PG049",
+        "PG091",
+        "PG117",
+        "PG122"
+      ],
+      "path": "skills/batch-54/PG097-python-task-queue-scheduler-generator.md",
+      "summary": "task queue and scheduler generation with versioned payloads, retries, idempotency and broker tests"
+    },
+    {
+      "id": "PG098",
+      "name": "python-packaging-lockfile-generator",
+      "batch": 54,
+      "depends_on": [
+        "PG058",
+        "PG061",
+        "PG063",
+        "PG089"
+      ],
+      "path": "skills/batch-54/PG098-python-packaging-lockfile-generator.md",
+      "summary": "pyproject, dependency groups, lock strategy, package scripts, formatter, linter and type-checker setup"
+    },
+    {
+      "id": "PG099",
+      "name": "python-pytest-fixture-generator",
+      "batch": 54,
+      "depends_on": [
+        "PG028",
+        "PG042",
+        "PG093",
+        "PG094",
+        "PG095",
+        "PG096",
+        "PG097"
+      ],
+      "path": "skills/batch-54/PG099-python-pytest-fixture-generator.md",
+      "summary": "Pytest fixtures, factories, property tests, real-service integration tests and requirement traceability"
+    },
+    {
+      "id": "PG100",
+      "name": "python-container-deployment-generator",
+      "batch": 54,
+      "depends_on": [
+        "PG053",
+        "PG062",
+        "PG070",
+        "PG098"
+      ],
+      "path": "skills/batch-54/PG100-python-container-deployment-generator.md",
+      "summary": "non-root Python production container, process model, Compose, Kubernetes, probes and locked install"
+    }
+  ]
+}

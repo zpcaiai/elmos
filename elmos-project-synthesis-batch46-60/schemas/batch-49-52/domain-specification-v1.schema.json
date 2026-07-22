@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.project-synthesis.domain-specification.v1",
+  "title": "ELMOS Domain Specification",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "project_id",
+    "contexts",
+    "aggregates",
+    "business_rules",
+    "workflows",
+    "trace_links"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "project_id": {
+      "type": "string"
+    },
+    "contexts": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "aggregates": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "business_rules": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "commands": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "queries": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "workflows": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "data_dictionary": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "api_drafts": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "permissions": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "trace_links": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "from",
+          "to",
+          "type"
+        ],
+        "properties": {
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              "realizes",
+              "constrains",
+              "verifies",
+              "owns",
+              "uses",
+              "emits",
+              "handles"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B39: Beneficiary Bank Account Virtual Account Mandate And Verification Of Payee"
+  short_description: "Run ELMOS B39 Skill with fail-closed evidence"
+  default_prompt: "Use $beneficiary-bank-account-virtual-account-mandate-and-ve-b90a1d92 to execute the ELMOS B39 contract with fail-closed evidence."

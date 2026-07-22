@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M10: B10 Behavioral Equivalence Golden Master Differentia Security Privacy And Tenant Isol"
+  short_description: "Run ELMOS M10 Skill with fail-closed evidence"
+  default_prompt: "Use $b10-behavioral-equivalence-golden-master-differentia-se-17a932f1 to execute the ELMOS M10 contract with fail-closed evidence."

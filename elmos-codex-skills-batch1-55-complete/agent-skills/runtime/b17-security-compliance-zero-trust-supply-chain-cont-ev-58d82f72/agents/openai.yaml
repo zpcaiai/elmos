@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M17: B17 Security Compliance Zero Trust Supply Chain Cont Evidence Audit And Provenance"
+  short_description: "Run ELMOS M17 Skill with fail-closed evidence"
+  default_prompt: "Use $b17-security-compliance-zero-trust-supply-chain-cont-ev-58d82f72 to execute the ELMOS M17 contract with fail-closed evidence."

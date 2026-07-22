@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B38: Regulator Portal Correspondence Submission Provider And Delivery Adapters"
+  short_description: "Run ELMOS B38 Skill with fail-closed evidence"
+  default_prompt: "Use $regulator-portal-correspondence-submission-provider-and-a21d7de9 to execute the ELMOS B38 contract with fail-closed evidence."

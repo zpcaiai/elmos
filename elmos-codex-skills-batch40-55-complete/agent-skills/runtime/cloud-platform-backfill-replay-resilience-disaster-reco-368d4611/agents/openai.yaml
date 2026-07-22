@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B49: Cloud Platform Backfill Replay Resilience Disaster Recovery And Continuity"
+  short_description: "Run ELMOS Product B49 contract with fail-closed evidence"
+  default_prompt: "Use $cloud-platform-backfill-replay-resilience-disaster-reco-368d4611 to implement its fail-closed ELMOS Product B49 contract."

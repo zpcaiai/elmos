@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tst B27 Incremental Production Factory"
+  short_description: "Help with Tst B27 Incremental Production Factory tasks"
+  default_prompt: "Use $tst-b27-incremental-production-factory to implement and verify this strict Batch 1–37 test scope with immutable evidence and fail-closed results."

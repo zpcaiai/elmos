@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B40: Customer 360 Timeline Interaction Feature Profile And Consented Activation"
+  short_description: "Run ELMOS B40 Skill with fail-closed evidence"
+  default_prompt: "Use $customer-360-timeline-interaction-feature-profile-and-c-10b33f0a to execute the ELMOS B40 contract with fail-closed evidence."

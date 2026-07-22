@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B53: Energy Asset Observability Sla Cockpit Alerting And Operations"
+  short_description: "Run ELMOS Product B53 contract with fail-closed evidence"
+  default_prompt: "Use $energy-asset-observability-sla-cockpit-alerting-and-operations to implement its fail-closed ELMOS Product B53 contract."

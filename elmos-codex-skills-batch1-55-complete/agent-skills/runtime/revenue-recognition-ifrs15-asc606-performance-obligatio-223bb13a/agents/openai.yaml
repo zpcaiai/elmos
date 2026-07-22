@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B39: Revenue Recognition Ifrs15 Asc606 Performance Obligation Allocation And Schedule"
+  short_description: "Run ELMOS B39 Skill with fail-closed evidence"
+  default_prompt: "Use $revenue-recognition-ifrs15-asc606-performance-obligatio-223bb13a to execute the ELMOS B39 contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B41: Product Discovery Workflow Orchestration Assignment Escalation And Recovery"
+  short_description: "Run ELMOS Product B41 contract with fail-closed evidence"
+  default_prompt: "Use $product-discovery-workflow-orchestration-assignment-esc-a218cd98 to implement its fail-closed ELMOS Product B41 contract."

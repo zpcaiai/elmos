@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B48: Identity Security Master Data Identity Hierarchy And Effective Dating"
+  short_description: "Run ELMOS Product B48 contract with fail-closed evidence"
+  default_prompt: "Use $identity-security-master-data-identity-hierarchy-and-ef-952b8c14 to implement its fail-closed ELMOS Product B48 contract."

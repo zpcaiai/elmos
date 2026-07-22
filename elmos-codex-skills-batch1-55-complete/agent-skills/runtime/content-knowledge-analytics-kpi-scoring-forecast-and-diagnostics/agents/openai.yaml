@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B54: Content Knowledge Analytics Kpi Scoring Forecast And Diagnostics"
+  short_description: "Run ELMOS B54 Skill with fail-closed evidence"
+  default_prompt: "Use $content-knowledge-analytics-kpi-scoring-forecast-and-diagnostics to execute the ELMOS B54 contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B53: Energy Asset Workflow Orchestration Assignment Escalation And Recovery"
+  short_description: "Run ELMOS Product B53 contract with fail-closed evidence"
+  default_prompt: "Use $energy-asset-workflow-orchestration-assignment-escalati-4fa98fab to implement its fail-closed ELMOS Product B53 contract."

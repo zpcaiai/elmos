@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B40: Partner Channel Master Data Identity Hierarchy And Effective Dating"
+  short_description: "Run ELMOS B40 Skill with fail-closed evidence"
+  default_prompt: "Use $partner-channel-master-data-identity-hierarchy-and-effe-5964b479 to execute the ELMOS B40 contract with fail-closed evidence."

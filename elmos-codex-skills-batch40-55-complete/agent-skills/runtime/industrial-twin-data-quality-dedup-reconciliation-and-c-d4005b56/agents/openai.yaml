@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B50: Industrial Twin Data Quality Dedup Reconciliation And Certification"
+  short_description: "Run ELMOS Product B50 contract with fail-closed evidence"
+  default_prompt: "Use $industrial-twin-data-quality-dedup-reconciliation-and-c-d4005b56 to implement its fail-closed ELMOS Product B50 contract."

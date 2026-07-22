@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B43: Payroll Workforce Observability Sla Cockpit Alerting And Operations"
+  short_description: "Run ELMOS Product B43 contract with fail-closed evidence"
+  default_prompt: "Use $payroll-workforce-observability-sla-cockpit-alerting-an-650356b4 to implement its fail-closed ELMOS Product B43 contract."

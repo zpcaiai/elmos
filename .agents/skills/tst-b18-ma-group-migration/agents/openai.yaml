@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tst B18 Ma Group Migration"
+  short_description: "Help with Tst B18 Ma Group Migration tasks"
+  default_prompt: "Use $tst-b18-ma-group-migration to implement and verify this strict Batch 1–37 test scope with immutable evidence and fail-closed results."

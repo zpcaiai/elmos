@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B48: Enterprise Risk Case Investigation Remediation And Closure"
+  short_description: "Run ELMOS Product B48 contract with fail-closed evidence"
+  default_prompt: "Use $enterprise-risk-case-investigation-remediation-and-closure to implement its fail-closed ELMOS Product B48 contract."

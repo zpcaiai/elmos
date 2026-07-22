@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B48: Enterprise Risk Automation Copilot Recommendation And Human Review"
+  short_description: "Run ELMOS B48 Skill with fail-closed evidence"
+  default_prompt: "Use $enterprise-risk-automation-copilot-recommendation-and-h-35d9eac6 to execute the ELMOS B48 contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M41: B41 Effort Duration Cost Prediction"
+  short_description: "Run ELMOS M41 Skill with fail-closed evidence"
+  default_prompt: "Use $b41-effort-duration-cost-prediction to execute the ELMOS M41 contract with fail-closed evidence."

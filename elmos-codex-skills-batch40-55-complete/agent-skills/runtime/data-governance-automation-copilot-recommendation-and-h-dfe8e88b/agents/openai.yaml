@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B44: Data Governance Automation Copilot Recommendation And Human Review"
+  short_description: "Run ELMOS Product B44 contract with fail-closed evidence"
+  default_prompt: "Use $data-governance-automation-copilot-recommendation-and-h-dfe8e88b to implement its fail-closed ELMOS Product B44 contract."

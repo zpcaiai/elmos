@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.slightly-strict.test-case.v1",
+  "type": "object",
+  "required": [
+    "id",
+    "test_skill_id",
+    "target_skills",
+    "category",
+    "severity",
+    "title",
+    "objective",
+    "steps",
+    "expected",
+    "required_evidence"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^CASE-[0-9]{4}$"
+    },
+    "test_skill_id": {
+      "type": "string",
+      "pattern": "^T[0-9]{3}$"
+    },
+    "batch": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "target_skills": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "category": {
+      "type": "string"
+    },
+    "severity": {
+      "enum": [
+        "critical",
+        "high",
+        "medium",
+        "low"
+      ]
+    },
+    "title": {
+      "type": "string"
+    },
+    "objective": {
+      "type": "string"
+    },
+    "preconditions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "expected": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "required_evidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "anti_fraud": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

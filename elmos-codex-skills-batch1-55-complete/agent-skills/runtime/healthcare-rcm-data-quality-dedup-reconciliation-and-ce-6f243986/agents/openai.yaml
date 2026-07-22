@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B52: Healthcare Rcm Data Quality Dedup Reconciliation And Certification"
+  short_description: "Run ELMOS B52 Skill with fail-closed evidence"
+  default_prompt: "Use $healthcare-rcm-data-quality-dedup-reconciliation-and-ce-6f243986 to execute the ELMOS B52 contract with fail-closed evidence."

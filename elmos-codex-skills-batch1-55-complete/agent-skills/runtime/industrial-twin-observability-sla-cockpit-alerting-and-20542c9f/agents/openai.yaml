@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B50: Industrial Twin Observability Sla Cockpit Alerting And Operations"
+  short_description: "Run ELMOS B50 Skill with fail-closed evidence"
+  default_prompt: "Use $industrial-twin-observability-sla-cockpit-alerting-and-20542c9f to execute the ELMOS B50 contract with fail-closed evidence."

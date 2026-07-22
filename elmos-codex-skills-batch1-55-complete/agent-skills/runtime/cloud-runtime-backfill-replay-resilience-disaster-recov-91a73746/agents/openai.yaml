@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B49: Cloud Runtime Backfill Replay Resilience Disaster Recovery And Continuity"
+  short_description: "Run ELMOS B49 Skill with fail-closed evidence"
+  default_prompt: "Use $cloud-runtime-backfill-replay-resilience-disaster-recov-91a73746 to execute the ELMOS B49 contract with fail-closed evidence."

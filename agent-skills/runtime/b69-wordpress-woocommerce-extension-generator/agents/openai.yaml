@@ -1,0 +1,4 @@
+interface:
+  display_name: "B69 Wordpress Woocommerce Extension Generator"
+  short_description: "Run this ELMOS project Skill with evidence controls"
+  default_prompt: "Use $b69-wordpress-woocommerce-extension-generator to execute this ELMOS project Skill with fail-closed evidence."

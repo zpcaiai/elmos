@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B46: Integration Platform Audit Evidence Records Retention And Legal Hold"
+  short_description: "Run ELMOS B46 Skill with fail-closed evidence"
+  default_prompt: "Use $integration-platform-audit-evidence-records-retention-a-2126055e to execute the ELMOS B46 contract with fail-closed evidence."

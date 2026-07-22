@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M04: B04 Target Skeleton Project Structure Traceable Gene Observability And Operational Re"
+  short_description: "Run ELMOS M04 Skill with fail-closed evidence"
+  default_prompt: "Use $b04-target-skeleton-project-structure-traceable-gene-ob-232d1498 to execute the ELMOS M04 contract with fail-closed evidence."

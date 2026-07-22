@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B36: Runner Assignment Offer Lease Ack Renew Cancel And Reconciliation"
+  short_description: "Run ELMOS B36 Skill with fail-closed evidence"
+  default_prompt: "Use $runner-assignment-offer-lease-ack-renew-cancel-and-reco-7837b31f to execute the ELMOS B36 contract with fail-closed evidence."

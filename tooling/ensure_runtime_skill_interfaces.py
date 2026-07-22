@@ -5,9 +5,12 @@ from __future__ import annotations
 
 import argparse
 import importlib.util
+import re
 import subprocess
 import sys
 from pathlib import Path
+
+import yaml
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -29,16 +32,32 @@ def load_validator():
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--check", action="store_true", help="fail instead of generating missing interfaces")
+    parser.add_argument(
+        "--root",
+        type=Path,
+        default=RUNTIME,
+        help="Skill directory root (defaults to agent-skills/runtime)",
+    )
     args = parser.parse_args()
+    skill_root = args.root.resolve()
     validate_skill = load_validator()
     updated: list[str] = []
     missing: list[str] = []
-    skills = sorted(path.parent for path in RUNTIME.glob("*/SKILL.md"))
+    skills = sorted(path.parent for path in skill_root.glob("*/SKILL.md"))
     for skill_dir in skills:
         name = skill_dir.name
         valid, message = validate_skill(skill_dir)
         if not valid:
             raise SystemExit(f"Invalid Runtime Skill {name}: {message}")
+        content = (skill_dir / "SKILL.md").read_text(encoding="utf-8")
+        frontmatter_match = re.match(r"^---\n(.*?)\n---", content, re.DOTALL)
+        if frontmatter_match is None:
+            raise SystemExit(f"Invalid Skill frontmatter for {name}")
+        frontmatter = yaml.safe_load(frontmatter_match.group(1))
+        if frontmatter.get("name") != name:
+            raise SystemExit(
+                f"Skill directory/frontmatter mismatch: {name} != {frontmatter.get('name')}"
+            )
         interface = skill_dir / "agents" / "openai.yaml"
         if interface.is_file() and f"${name}" in interface.read_text(encoding="utf-8"):
             continue
@@ -75,7 +94,14 @@ def main() -> None:
             invalid_interfaces.append(skill_dir.name)
     if invalid_interfaces:
         raise SystemExit(f"Runtime Skill interfaces remain invalid: {invalid_interfaces[:10]}")
-    print({"runtime_skills": len(skills), "interfaces_updated": len(updated), "interfaces_valid": len(skills)})
+    print(
+        {
+            "skill_root": str(skill_root),
+            "skills": len(skills),
+            "interfaces_updated": len(updated),
+            "interfaces_valid": len(skills),
+        }
+    )
 
 
 if __name__ == "__main__":

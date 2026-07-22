@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B49: Cloud Platform Observability Sla Cockpit Alerting And Operations"
+  short_description: "Run ELMOS Product B49 contract with fail-closed evidence"
+  default_prompt: "Use $cloud-platform-observability-sla-cockpit-alerting-and-operations to implement its fail-closed ELMOS Product B49 contract."

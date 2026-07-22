@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B34: Tenant Resource Namespace Quota And Service Boundary"
+  short_description: "Run ELMOS B34 Skill with fail-closed evidence"
+  default_prompt: "Use $tenant-resource-namespace-quota-and-service-boundary to execute the ELMOS B34 contract with fail-closed evidence."

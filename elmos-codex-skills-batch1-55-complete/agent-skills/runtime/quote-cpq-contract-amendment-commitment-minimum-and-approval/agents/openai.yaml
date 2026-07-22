@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B39: Quote Cpq Contract Amendment Commitment Minimum And Approval"
+  short_description: "Run ELMOS B39 Skill with fail-closed evidence"
+  default_prompt: "Use $quote-cpq-contract-amendment-commitment-minimum-and-approval to execute the ELMOS B39 contract with fail-closed evidence."

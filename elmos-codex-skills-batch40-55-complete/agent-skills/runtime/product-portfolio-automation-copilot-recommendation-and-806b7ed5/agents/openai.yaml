@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B41: Product Portfolio Automation Copilot Recommendation And Human Review"
+  short_description: "Run ELMOS Product B41 contract with fail-closed evidence"
+  default_prompt: "Use $product-portfolio-automation-copilot-recommendation-and-806b7ed5 to implement its fail-closed ELMOS Product B41 contract."

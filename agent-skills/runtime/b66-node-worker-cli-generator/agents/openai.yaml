@@ -1,0 +1,4 @@
+interface:
+  display_name: "B66 Node Worker CLI Generator"
+  short_description: "Run this ELMOS project Skill with evidence controls"
+  default_prompt: "Use $b66-node-worker-cli-generator to execute this ELMOS project Skill with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tst B38 Deployment Upgrade Lifecycle"
+  short_description: "Run Batch 38-45 strict evidence validation"
+  default_prompt: "Use $tst-b38-deployment-upgrade-lifecycle to run its exact Batch 38-45 cases with fail-closed evidence."

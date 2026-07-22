@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "transformation_key": "project-generation-workspace-0.4.0",
+  "source_snapshot_digest": "8eb0058161be9e4a7c4a6e874838c6829ac2722e56f7b608574bb14fcf428ca1",
+  "source_contracts": [
+    "contracts/project-synthesis-schema/synthesis-request-v1.schema.json",
+    "docs/project-synthesis-batch46-60-verification.md"
+  ],
+  "target_components": [
+    "apps/web-console/app/generation/ProjectGenerationStudio.tsx",
+    "apps/web-console/app/generation/page.tsx",
+    "apps/web-console/app/components/AppShell.tsx",
+    "apps/web-console/app/page.tsx",
+    "apps/web-console/app/styles.css"
+  ],
+  "preserved_contracts": [
+    "exact Java 21 and Spring Boot 3.5.3 target",
+    "exact Python 3.12 and FastAPI 0.116.1 target",
+    "exact C# and .NET 10 ASP.NET Core target",
+    "explicit draft-before-approval workflow",
+    "external execution remains NOT_RUN",
+    "generated output remains NOT_CERTIFIED"
+  ],
+  "interaction_changes": [
+    "add a dedicated /generation route and workspace navigation",
+    "bind controlled intent fields to a live read-only preview",
+    "provide native pattern validation and at-least-one-target validation",
+    "save the submitted preview only in React page memory",
+    "announce draft creation without invoking generation or approval"
+  ],
+  "breaking_changes": [],
+  "external_side_effects": false
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B55: Platform Ecosystem Backfill Replay Resilience Disaster Recovery And Continuity"
+  short_description: "Run ELMOS B55 Skill with fail-closed evidence"
+  default_prompt: "Use $platform-ecosystem-backfill-replay-resilience-disaster-5165b9b6 to execute the ELMOS B55 contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B55: Globalization Access Audit Evidence Records Retention And Legal Hold"
+  short_description: "Run ELMOS Product B55 contract with fail-closed evidence"
+  default_prompt: "Use $globalization-access-audit-evidence-records-retention-a-5aec09a3 to implement its fail-closed ELMOS Product B55 contract."

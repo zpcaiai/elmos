@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B40: Customer Success Onboarding Adoption Outcome Health Risk And Success Plan"
+  short_description: "Run ELMOS Product B40 contract with fail-closed evidence"
+  default_prompt: "Use $customer-success-onboarding-adoption-outcome-health-ris-5ff100e7 to implement its fail-closed ELMOS Product B40 contract."

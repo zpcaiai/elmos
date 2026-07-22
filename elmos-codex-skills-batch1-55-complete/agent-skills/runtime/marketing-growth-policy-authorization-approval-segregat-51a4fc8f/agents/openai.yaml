@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B40: Marketing Growth Policy Authorization Approval Segregation And Exception"
+  short_description: "Run ELMOS B40 Skill with fail-closed evidence"
+  default_prompt: "Use $marketing-growth-policy-authorization-approval-segregat-51a4fc8f to execute the ELMOS B40 contract with fail-closed evidence."

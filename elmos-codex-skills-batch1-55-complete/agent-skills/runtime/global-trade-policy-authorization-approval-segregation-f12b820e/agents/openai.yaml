@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B51: Global Trade Policy Authorization Approval Segregation And Exception"
+  short_description: "Run ELMOS B51 Skill with fail-closed evidence"
+  default_prompt: "Use $global-trade-policy-authorization-approval-segregation-f12b820e to execute the ELMOS B51 contract with fail-closed evidence."

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "pack_key": "elmos-web-console-navigation-modernization",
-  "version": "0.1.0",
+  "version": "0.4.0",
   "mode": "modernization",
   "status": "experimental",
   "owner": "elmos-web-console",
@@ -23,20 +23,20 @@
     ],
     "build_tool": "next-16.2.10",
     "package_manager": "pnpm-10.12.4",
-    "router": [],
-    "renderer": [],
-    "state": [],
-    "forms": [],
-    "styling": [],
-    "design_system": [],
+    "router": ["next-app-router-16.2.10"],
+    "renderer": ["react-19.2.7-client-hydration"],
+    "state": ["react-use-state-19.2.7"],
+    "forms": ["native-formdata-memory-only"],
+    "styling": ["css-custom-properties"],
+    "design_system": ["elmos-console-0.3.0"],
     "api_client": [],
     "identity": [],
-    "i18n": [],
-    "test_tools": [],
+    "i18n": ["zh-CN-visible-copy"],
+    "test_tools": ["playwright-chrome-150.0.7871.129"],
     "browsers": [
-      "chromium-UNSET"
+      "chrome-150.0.7871.129"
     ],
-    "devices": []
+    "devices": ["desktop-1440x1000", "tablet-1024x768", "mobile-390x844"]
   },
   "target": {
     "stack": "nextjs-app-router",
@@ -53,24 +53,24 @@
     ],
     "build_tool": "next-16.2.10",
     "package_manager": "pnpm-10.12.4",
-    "router": [],
-    "renderer": [],
-    "state": [],
-    "forms": [],
-    "styling": [],
-    "design_system": [],
+    "router": ["next-app-router-16.2.10"],
+    "renderer": ["react-19.2.7-client-hydration"],
+    "state": ["react-use-state-19.2.7"],
+    "forms": ["react-controlled-native-validation-memory-only"],
+    "styling": ["css-custom-properties"],
+    "design_system": ["elmos-console-0.4.0"],
     "api_client": [],
     "identity": [],
-    "i18n": [],
-    "test_tools": [],
+    "i18n": ["zh-CN-visible-copy"],
+    "test_tools": ["playwright-chrome-150.0.7871.129"],
     "browsers": [
-      "chromium-UNSET"
+      "chrome-150.0.7871.129"
     ],
-    "devices": []
+    "devices": ["desktop-1440x1000", "tablet-1024x768", "mobile-390x844"]
   },
   "scope": {
-    "journeys": ["workspace-navigation", "local-assessment-draft", "trust-chain-review"],
-    "routes": ["/", "/migration", "/commercialization"],
+    "journeys": ["workspace-navigation", "local-assessment-draft", "trust-chain-review", "skills-qualification", "project-generation-draft", "global-command-navigation", "mobile-bottom-navigation"],
+    "routes": ["/", "/migration", "/commercialization", "/generation", "/skills"],
     "component_roots": ["apps/web-console/app"],
     "excluded": ["external certification", "production mutation", "customer data"]
   },

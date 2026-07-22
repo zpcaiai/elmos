@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B40: Lead Capture Enrichment Scoring Routing Qualification And Conversion"
+  short_description: "Run ELMOS B40 Skill with fail-closed evidence"
+  default_prompt: "Use $lead-capture-enrichment-scoring-routing-qualification-a-d4ce2bed to execute the ELMOS B40 contract with fail-closed evidence."

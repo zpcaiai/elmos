@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B50: Manufacturing Quality Analytics Kpi Scoring Forecast And Diagnostics"
+  short_description: "Run ELMOS B50 Skill with fail-closed evidence"
+  default_prompt: "Use $manufacturing-quality-analytics-kpi-scoring-forecast-an-a02b5722 to execute the ELMOS B50 contract with fail-closed evidence."

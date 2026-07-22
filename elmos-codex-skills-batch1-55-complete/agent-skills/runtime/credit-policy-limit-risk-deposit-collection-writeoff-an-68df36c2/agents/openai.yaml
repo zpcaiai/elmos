@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B39: Credit Policy Limit Risk Deposit Collection Writeoff And Bad Debt"
+  short_description: "Run ELMOS B39 Skill with fail-closed evidence"
+  default_prompt: "Use $credit-policy-limit-risk-deposit-collection-writeoff-an-68df36c2 to execute the ELMOS B39 contract with fail-closed evidence."

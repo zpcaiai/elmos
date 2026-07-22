@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M41: B41 Similar Project Retrieval"
+  short_description: "Run ELMOS M41 Skill with fail-closed evidence"
+  default_prompt: "Use $b41-similar-project-retrieval to execute the ELMOS M41 contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M15: B15 Cutover Rollback Decommission Organizational Cha Workflow And State Machine"
+  short_description: "Run ELMOS M15 Skill with fail-closed evidence"
+  default_prompt: "Use $b15-cutover-rollback-decommission-organizational-cha-wo-d44aceb2 to execute the ELMOS M15 contract with fail-closed evidence."

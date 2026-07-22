@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B38: Regulatory Notification Incident Disclosure Materiality And Deadline Workflow"
+  short_description: "Run ELMOS B38 Skill with fail-closed evidence"
+  default_prompt: "Use $regulatory-notification-incident-disclosure-materiality-7c05a06d to execute the ELMOS B38 contract with fail-closed evidence."

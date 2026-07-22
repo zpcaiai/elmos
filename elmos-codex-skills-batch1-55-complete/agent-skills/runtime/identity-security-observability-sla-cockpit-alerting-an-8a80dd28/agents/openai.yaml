@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B48: Identity Security Observability Sla Cockpit Alerting And Operations"
+  short_description: "Run ELMOS B48 Skill with fail-closed evidence"
+  default_prompt: "Use $identity-security-observability-sla-cockpit-alerting-an-8a80dd28 to execute the ELMOS B48 contract with fail-closed evidence."

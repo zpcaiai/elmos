@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B37: Azure Pipelines Build Timeline Log Artifact Test And Identity Connector"
+  short_description: "Run ELMOS B37 Skill with fail-closed evidence"
+  default_prompt: "Use $azure-pipelines-build-timeline-log-artifact-test-and-id-d161b97d to execute the ELMOS B37 contract with fail-closed evidence."

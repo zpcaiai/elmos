@@ -7,6 +7,7 @@ be overwritten by this compatibility generator.
 
 from __future__ import annotations
 
+import argparse
 import json
 import re
 import subprocess
@@ -399,16 +400,31 @@ def write_json(path: Path, payload: dict) -> None:
 
 
 def main() -> int:
-    source = SOURCE.read_text(encoding="utf-8")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--source", type=Path, help="optional complete monthly-report authority")
+    parser.add_argument("--check", action="store_true", help="validate authority and IDs without writing")
+    args = parser.parse_args()
+    source_path = args.source or (SOURCE if SOURCE.is_file() else None)
+    source = source_path.read_text(encoding="utf-8") if source_path else None
     created = 0
     for batch, spec in BATCHES.items():
-        section = authority_section(source, batch)
+        if source is not None:
+            section = authority_section(source, batch)
+        else:
+            authority = ROOT / "docs" / f"batch{batch}" / "AUTHORITY.md"
+            if not authority.is_file():
+                raise FileNotFoundError(
+                    f"Batch {batch} authority missing; pass --source with the supplied monthly report"
+                )
+            section = authority.read_text(encoding="utf-8")
         titles = skill_titles(section)
         if len(titles) != len(spec["slugs"]):
             raise ValueError(f"Batch {batch}: {len(titles)} titles but {len(spec['slugs'])} slugs")
         expected_ids = list(range(spec["first"], spec["first"] + len(spec["slugs"])))
         if [skill_id for skill_id, _ in titles] != expected_ids:
             raise ValueError(f"Batch {batch}: non-contiguous authority IDs")
+        if args.check:
+            continue
 
         docs = ROOT / "docs" / f"batch{batch}"
         docs.mkdir(parents=True, exist_ok=True)
@@ -466,7 +482,8 @@ def main() -> int:
                 )
                 created += 1
             (directory / "SKILL.md").write_text(skill_text(batch, skill_id, name, title, spec), encoding="utf-8")
-    print(f"generated_batches={len(BATCHES)} initialized_skills={created} total_skills={sum(len(spec['slugs']) for spec in BATCHES.values())}")
+    action = "validated" if args.check else "generated"
+    print(f"{action}_batches={len(BATCHES)} initialized_skills={created} total_skills={sum(len(spec['slugs']) for spec in BATCHES.values())}")
     return 0
 
 

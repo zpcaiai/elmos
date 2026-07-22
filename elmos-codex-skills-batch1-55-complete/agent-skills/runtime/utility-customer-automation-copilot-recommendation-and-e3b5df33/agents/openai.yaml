@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B53: Utility Customer Automation Copilot Recommendation And Human Review"
+  short_description: "Run ELMOS B53 Skill with fail-closed evidence"
+  default_prompt: "Use $utility-customer-automation-copilot-recommendation-and-e3b5df33 to execute the ELMOS B53 contract with fail-closed evidence."

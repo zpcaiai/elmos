@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B55: Globalization Access Analytics Kpi Scoring Forecast And Diagnostics"
+  short_description: "Run ELMOS B55 Skill with fail-closed evidence"
+  default_prompt: "Use $globalization-access-analytics-kpi-scoring-forecast-and-e0ca3b5f to execute the ELMOS B55 contract with fail-closed evidence."

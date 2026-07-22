@@ -1,0 +1,20 @@
+BATCH37_PYTHON ?= /opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python
+.PHONY: batch37-validate batch37-test batch37-check batch37-scaffold batch37-local-rehearsal batch37-core-gate batch37-closure-gate validate-b37 test-b37
+batch37-validate:
+	$(BATCH37_PYTHON) scripts/batch37/validate_skill_bundle.py .agents/skills
+	$(BATCH37_PYTHON) scripts/validate_mature_product_series.py
+batch37-test:
+	$(BATCH37_PYTHON) -m unittest discover -s tests/batch37 -p 'test_*.py'
+batch37-check: batch37-validate batch37-test
+batch37-scaffold:
+	$(BATCH37_PYTHON) scripts/batch37/scaffold_marketplace_pack.py --help
+batch37-local-rehearsal:
+	$(BATCH37_PYTHON) scripts/batch37/run_local_marketplace_rehearsal.py --repo-root .
+batch37-core-gate:
+	@test -n "$(PACK)" || (echo "PACK is required" >&2; exit 2)
+	$(BATCH37_PYTHON) scripts/batch37/run_marketplace_gate.py "$(PACK)"
+batch37-closure-gate:
+	@test -n "$(PACK)" || (echo "PACK is required" >&2; exit 2)
+	$(BATCH37_PYTHON) scripts/batch37/run_marketplace_closure_gate.py "$(PACK)"
+validate-b37: batch37-validate
+test-b37: batch37-test

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B46: Integration Platform Workflow Orchestration Assignment Escalation And Recovery"
+  short_description: "Run ELMOS B46 Skill with fail-closed evidence"
+  default_prompt: "Use $integration-platform-workflow-orchestration-assignment-f3c91ec6 to execute the ELMOS B46 contract with fail-closed evidence."

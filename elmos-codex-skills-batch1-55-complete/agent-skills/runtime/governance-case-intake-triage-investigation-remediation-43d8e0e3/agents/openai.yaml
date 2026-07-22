@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B38: Governance Case Intake Triage Investigation Remediation And Closure"
+  short_description: "Run ELMOS B38 Skill with fail-closed evidence"
+  default_prompt: "Use $governance-case-intake-triage-investigation-remediation-43d8e0e3 to execute the ELMOS B38 contract with fail-closed evidence."

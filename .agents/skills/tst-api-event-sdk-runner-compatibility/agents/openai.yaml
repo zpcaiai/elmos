@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tst Api Event Sdk Runner Compatibility"
+  short_description: "Run Batch 38-45 strict evidence validation"
+  default_prompt: "Use $tst-api-event-sdk-runner-compatibility to run its exact Batch 38-45 cases with fail-closed evidence."

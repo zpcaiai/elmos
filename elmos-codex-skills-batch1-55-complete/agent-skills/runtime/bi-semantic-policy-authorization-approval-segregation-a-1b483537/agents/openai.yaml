@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B44: Bi Semantic Policy Authorization Approval Segregation And Exception"
+  short_description: "Run ELMOS B44 Skill with fail-closed evidence"
+  default_prompt: "Use $bi-semantic-policy-authorization-approval-segregation-a-1b483537 to execute the ELMOS B44 contract with fail-closed evidence."

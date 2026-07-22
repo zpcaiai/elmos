@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tst B66 80 Evidence Integrity Anti Forgery"
+  short_description: "Run this ELMOS Batch 66-80 test Skill with evidence"
+  default_prompt: "Use $tst-b66-80-evidence-integrity-anti-forgery to run the exact Batch 66-80 test scope with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M42: B42 Agent Shadow Canary"
+  short_description: "Run ELMOS M42 Skill with fail-closed evidence"
+  default_prompt: "Use $b42-agent-shadow-canary to execute the ELMOS M42 contract with fail-closed evidence."

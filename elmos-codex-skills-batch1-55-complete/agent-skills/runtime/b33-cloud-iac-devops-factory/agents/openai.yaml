@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M33: B33 Cloud Iac Devops Factory"
+  short_description: "Run ELMOS M33 Skill with fail-closed evidence"
+  default_prompt: "Use $b33-cloud-iac-devops-factory to execute the ELMOS M33 contract with fail-closed evidence."

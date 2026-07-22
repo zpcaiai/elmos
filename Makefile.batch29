@@ -1,0 +1,11 @@
+BATCH29_PYTHON ?= /opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python
+.PHONY: b29-skills-test b29-route-validate b29-route-gate
+b29-skills-test:
+	$(BATCH29_PYTHON) scripts/batch29/validate_skill_bundle.py
+	$(BATCH29_PYTHON) -m unittest discover -s tests/batch29 -p 'test_*.py'
+b29-route-validate:
+	@test -n "$(ROUTE)" || (echo "ROUTE=<source>-to-<target> required" && exit 2)
+	$(BATCH29_PYTHON) scripts/batch29/validate_route.py routes/$(ROUTE)
+b29-route-gate:
+	@test -n "$(ROUTE)" || (echo "ROUTE=<source>-to-<target> required" && exit 2)
+	$(BATCH29_PYTHON) scripts/batch29/run_route_gate.py routes/$(ROUTE)

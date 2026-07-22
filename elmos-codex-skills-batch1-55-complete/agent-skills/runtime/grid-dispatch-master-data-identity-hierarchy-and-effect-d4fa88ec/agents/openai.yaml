@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B53: Grid Dispatch Master Data Identity Hierarchy And Effective Dating"
+  short_description: "Run ELMOS B53 Skill with fail-closed evidence"
+  default_prompt: "Use $grid-dispatch-master-data-identity-hierarchy-and-effect-d4fa88ec to execute the ELMOS B53 contract with fail-closed evidence."

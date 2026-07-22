@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B39: Bank Statement Iso20022 Camt Bai2 Ingestion And Reconciliation"
+  short_description: "Run ELMOS B39 Skill with fail-closed evidence"
+  default_prompt: "Use $bank-statement-iso20022-camt-bai2-ingestion-and-reconciliation to execute the ELMOS B39 contract with fail-closed evidence."

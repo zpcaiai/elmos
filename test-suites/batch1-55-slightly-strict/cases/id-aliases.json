@@ -1,0 +1,215 @@
+{
+  "alias_version": 1,
+  "aliases": [
+    {
+      "source_id": "B01-P0-02",
+      "normalized_id": "B01-P1-02",
+      "reason": "source id priority segment disagreed with priority field"
+    },
+    {
+      "source_id": "B02-P0-02",
+      "normalized_id": "B02-P1-02",
+      "reason": "source id priority segment disagreed with priority field"
+    },
+    {
+      "source_id": "B03-P0-02",
+      "normalized_id": "B03-P1-02",
+      "reason": "source id priority segment disagreed with priority field"
+    },
+    {
+      "source_id": "B04-P0-02",
+      "normalized_id": "B04-P1-02",
+      "reason": "source id priority segment disagreed with priority field"
+    },
+    {
+      "source_id": "B05-P0-02",
+      "normalized_id": "B05-P1-02",
+      "reason": "source id priority segment disagreed with priority field"
+    },
+    {
+      "source_id": "B06-P0-02",
+      "normalized_id": "B06-P1-02",
+      "reason": "source id priority segment disagreed with priority field"
+    },
+    {
+      "source_id": "B07-P0-02",
+      "normalized_id": "B07-P1-02",
+      "reason": "source id priority segment disagreed with priority field"
+    },
+    {
+      "source_id": "B08-P0-02",
+      "normalized_id": "B08-P1-02",
+      "reason": "source id priority segment disagreed with priority field"
+    },
+    {
+      "source_id": "B09-P0-02",
+      "normalized_id": "B09-P1-02",
+      "reason": "source id priority segment disagreed with priority field"
+    },
+    {
+      "source_id": "B10-P0-02",
+      "normalized_id": "B10-P1-02",
+      "reason": "source id priority segment disagreed with priority field"
+    },
+    {
+      "source_id": "B11-P0-02",
+      "normalized_id": "B11-P1-02",
+      "reason": "source id priority segment disagreed with priority field"
+    },
+    {
+      "source_id": "B12-P0-02",
+      "normalized_id": "B12-P1-02",
+      "reason": "source id priority segment disagreed with priority field"
+    },
+    {
+      "source_id": "B13-P0-02",
+      "normalized_id": "B13-P1-02",
+      "reason": "source id priority segment disagreed with priority field"
+    },
+    {
+      "source_id": "B16-P0-02",
+      "normalized_id": "B16-P1-02",
+      "reason": "source id priority segment disagreed with priority field"
+    },
+    {
+      "source_id": "B18-P0-02",
+      "normalized_id": "B18-P1-02",
+      "reason": "source id priority segment disagreed with priority field"
+    },
+    {
+      "source_id": "B29-P0-02",
+      "normalized_id": "B29-P1-02",
+      "reason": "source id priority segment disagreed with priority field"
+    },
+    {
+      "source_id": "B30-P0-02",
+      "normalized_id": "B30-P1-02",
+      "reason": "source id priority segment disagreed with priority field"
+    },
+    {
+      "source_id": "B31-P0-02",
+      "normalized_id": "B31-P1-02",
+      "reason": "source id priority segment disagreed with priority field"
+    },
+    {
+      "source_id": "B32-P0-02",
+      "normalized_id": "B32-P1-02",
+      "reason": "source id priority segment disagreed with priority field"
+    },
+    {
+      "source_id": "B33-P0-02",
+      "normalized_id": "B33-P1-02",
+      "reason": "source id priority segment disagreed with priority field"
+    },
+    {
+      "source_id": "B34-P0-02",
+      "normalized_id": "B34-P1-02",
+      "reason": "source id priority segment disagreed with priority field"
+    },
+    {
+      "source_id": "B35-P0-02",
+      "normalized_id": "B35-P1-02",
+      "reason": "source id priority segment disagreed with priority field"
+    },
+    {
+      "source_id": "B36-P0-02",
+      "normalized_id": "B36-P1-02",
+      "reason": "source id priority segment disagreed with priority field"
+    },
+    {
+      "source_id": "B37-P0-02",
+      "normalized_id": "B37-P1-02",
+      "reason": "source id priority segment disagreed with priority field"
+    },
+    {
+      "source_id": "B38-P0-02",
+      "normalized_id": "B38-P1-02",
+      "reason": "source id priority segment disagreed with priority field"
+    },
+    {
+      "source_id": "B39-P0-02",
+      "normalized_id": "B39-P1-02",
+      "reason": "source id priority segment disagreed with priority field"
+    },
+    {
+      "source_id": "B40-P0-02",
+      "normalized_id": "B40-P1-02",
+      "reason": "source id priority segment disagreed with priority field"
+    },
+    {
+      "source_id": "B41-P0-02",
+      "normalized_id": "B41-P1-02",
+      "reason": "source id priority segment disagreed with priority field"
+    },
+    {
+      "source_id": "B42-P0-02",
+      "normalized_id": "B42-P1-02",
+      "reason": "source id priority segment disagreed with priority field"
+    },
+    {
+      "source_id": "B43-P0-02",
+      "normalized_id": "B43-P1-02",
+      "reason": "source id priority segment disagreed with priority field"
+    },
+    {
+      "source_id": "B44-P0-02",
+      "normalized_id": "B44-P1-02",
+      "reason": "source id priority segment disagreed with priority field"
+    },
+    {
+      "source_id": "B45-P0-02",
+      "normalized_id": "B45-P1-02",
+      "reason": "source id priority segment disagreed with priority field"
+    },
+    {
+      "source_id": "B46-P0-02",
+      "normalized_id": "B46-P1-02",
+      "reason": "source id priority segment disagreed with priority field"
+    },
+    {
+      "source_id": "B47-P0-02",
+      "normalized_id": "B47-P1-02",
+      "reason": "source id priority segment disagreed with priority field"
+    },
+    {
+      "source_id": "B48-P0-02",
+      "normalized_id": "B48-P1-02",
+      "reason": "source id priority segment disagreed with priority field"
+    },
+    {
+      "source_id": "B49-P0-02",
+      "normalized_id": "B49-P1-02",
+      "reason": "source id priority segment disagreed with priority field"
+    },
+    {
+      "source_id": "B50-P0-02",
+      "normalized_id": "B50-P1-02",
+      "reason": "source id priority segment disagreed with priority field"
+    },
+    {
+      "source_id": "B51-P0-02",
+      "normalized_id": "B51-P1-02",
+      "reason": "source id priority segment disagreed with priority field"
+    },
+    {
+      "source_id": "B52-P0-02",
+      "normalized_id": "B52-P1-02",
+      "reason": "source id priority segment disagreed with priority field"
+    },
+    {
+      "source_id": "B53-P0-02",
+      "normalized_id": "B53-P1-02",
+      "reason": "source id priority segment disagreed with priority field"
+    },
+    {
+      "source_id": "B54-P0-02",
+      "normalized_id": "B54-P1-02",
+      "reason": "source id priority segment disagreed with priority field"
+    },
+    {
+      "source_id": "B55-P0-02",
+      "normalized_id": "B55-P1-02",
+      "reason": "source id priority segment disagreed with priority field"
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B40: Marketing Growth Orchestrator"
+  short_description: "Run ELMOS Product B40 contract with fail-closed evidence"
+  default_prompt: "Use $marketing-growth-orchestrator to implement its fail-closed ELMOS Product B40 contract."

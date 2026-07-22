@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B42: Supply Planning Intake Ingestion Connector Sync And Idempotency"
+  short_description: "Run ELMOS B42 Skill with fail-closed evidence"
+  default_prompt: "Use $supply-planning-intake-ingestion-connector-sync-and-idempotency to execute the ELMOS B42 contract with fail-closed evidence."

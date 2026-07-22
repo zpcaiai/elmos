@@ -1,0 +1,1437 @@
+{
+  "pack": "ELMOS Codex Skills Batch 34–38 Complete",
+  "version": "3.4-3.8-complete",
+  "generated_at": "2026-07-22",
+  "skill_count": 188,
+  "batch_counts": {
+    "34A": 6,
+    "34B": 6,
+    "34C": 6,
+    "35A": 11,
+    "35B": 11,
+    "35C": 11,
+    "36A": 11,
+    "36B": 15,
+    "36C": 15,
+    "38A": 16,
+    "38B": 16,
+    "38C": 16,
+    "37A": 16,
+    "37B": 16,
+    "37C": 16
+  },
+  "batches": {
+    "34A": {
+      "title": "Tenant Foundation与Isolation",
+      "theme": "Tenant域、层级、上下文、RLS、资源边界与生命周期",
+      "skills": [
+        "enterprise-identity-multitenancy-access-governance-orchestrator",
+        "tenant-domain-hierarchy-lifecycle-and-isolation",
+        "tenant-context-propagation-resolution-and-anti-spoofing",
+        "tenant-aware-postgresql-rls-ownership-and-runtime-roles",
+        "tenant-resource-namespace-quota-and-service-boundary",
+        "tenant-onboarding-offboarding-data-export-and-deletion"
+      ]
+    },
+    "34B": {
+      "title": "Human Identity与Access Governance",
+      "theme": "OIDC/SAML/SCIM、RBAC/ABAC、MFA/JIT、Access Review与SoD",
+      "skills": [
+        "oidc-saml-scim-human-identity-provider-federation",
+        "user-membership-role-permission-and-resource-authorization",
+        "group-team-directory-sync-and-membership-reconciliation",
+        "session-token-mfa-step-up-device-and-risk-authentication",
+        "jit-access-approval-break-glass-and-privileged-access",
+        "access-review-certification-segregation-of-duties-and-revocation"
+      ]
+    },
+    "34C": {
+      "title": "Workload Identity与Credential Governance",
+      "theme": "SPIFFE/mTLS、机器身份、Secret Broker、短期凭证、审计与恢复",
+      "skills": [
+        "workload-identity-spiffe-spire-mtls-and-service-authentication",
+        "runner-site-agent-and-connector-machine-identity",
+        "secret-reference-vault-kms-hsm-and-credential-broker",
+        "short-lived-token-credential-lease-rotation-and-revocation",
+        "workload-authorization-policy-tool-permission-and-purpose-binding",
+        "identity-audit-anomaly-compromise-recovery-and-release-gates"
+      ]
+    },
+    "35A": {
+      "title": "GitHub Cloud／GHES SCM Connector",
+      "theme": "GitHub App、Repo生命周期、Webhook、分支、PR、凭证与兼容性",
+      "skills": [
+        "github-scm-connector-orchestrator",
+        "github-app-installation-identity-and-permission-governance",
+        "github-cloud-ghes-instance-capability-and-version-discovery",
+        "github-repository-registration-authorization-and-lifecycle",
+        "github-webhook-polling-event-dedup-and-reconciliation",
+        "github-repository-metadata-default-branch-topology-and-rulesets",
+        "github-commit-ref-tag-branch-and-compare-synchronization",
+        "github-pull-request-check-status-review-and-delivery-integration",
+        "github-credential-lease-clone-fetch-push-and-revocation",
+        "github-enterprise-proxy-tls-rate-limit-and-resilience",
+        "github-scm-connector-security-compatibility-tests-and-release-gates"
+      ]
+    },
+    "35B": {
+      "title": "Unified Multi-provider SCM",
+      "theme": "GitLab、Azure DevOps、Bitbucket、Gitee与统一契约",
+      "skills": [
+        "unified-scm-provider-contract-capability-and-error-model",
+        "gitlab-cloud-self-managed-scm-connector",
+        "azure-devops-repos-project-organization-scm-connector",
+        "bitbucket-cloud-workspace-repository-scm-connector",
+        "bitbucket-data-center-project-repository-scm-connector",
+        "gitee-enterprise-organization-repository-scm-connector",
+        "scm-webhook-polling-watermark-backfill-and-reconciliation",
+        "scm-branch-protection-review-policy-and-default-branch-normalization",
+        "scm-provider-credential-proxy-tls-rate-limit-and-resilience",
+        "scm-cross-provider-migration-mapping-and-compatibility",
+        "multi-provider-scm-conformance-security-tests-and-release-gates"
+      ]
+    },
+    "35C": {
+      "title": "Advanced Repository Workspace",
+      "theme": "Monorepo、Multi-repo、Submodule、LFS、Sparse/Partial Clone、Cache与Recovery",
+      "skills": [
+        "repository-workspace-orchestrator",
+        "monorepo-module-build-boundary-and-change-impact",
+        "multi-repository-workspace-manifest-and-atomic-snapshot",
+        "git-submodule-recursive-identity-policy-and-recovery",
+        "git-lfs-object-pointer-transfer-cache-and-integrity",
+        "sparse-checkout-partial-clone-filter-and-worktree-materialization",
+        "multi-branch-worktree-baseline-target-and-merge-workspace",
+        "git-object-proxy-mirror-cache-pack-and-bandwidth-governance",
+        "workspace-path-symlink-permission-case-and-filesystem-compatibility",
+        "workspace-resume-cleanup-corruption-recovery-and-reconciliation",
+        "advanced-repository-workspace-security-scale-tests-and-release-gates"
+      ]
+    },
+    "36A": {
+      "title": "Private Runner Fleet",
+      "theme": "Runner Pool、调度、能力信任、容量、Assignment、Drain、Autoscaling与Upgrade",
+      "skills": [
+        "private-runner-fleet-orchestrator",
+        "runner-fleet-domain-pool-topology-and-lifecycle",
+        "runner-capability-discovery-attestation-and-trust",
+        "runner-version-protocol-image-and-supply-chain-governance",
+        "runner-capacity-reservation-quota-and-overcommit-accounting",
+        "runner-task-requirement-affinity-antiaffinity-and-placement-policy",
+        "runner-scheduler-filter-score-fairness-priority-and-admission",
+        "runner-provider-static-kubernetes-kueue-and-vm-adapters",
+        "runner-assignment-offer-lease-ack-renew-cancel-and-reconciliation",
+        "runner-drain-maintenance-autoscaling-failover-and-upgrade",
+        "runner-fleet-observability-simulation-security-tests-and-release-gates"
+      ]
+    },
+    "36B": {
+      "title": "Task Sandbox Execution Plane",
+      "theme": "Rootless、gVisor、Kata、MicroVM、Filesystem、Network、Secrets、Syscall与Resource",
+      "skills": [
+        "task-sandbox-execution-plane-orchestrator",
+        "sandbox-domain-contract-profile-policy-and-lifecycle",
+        "rootless-oci-container-userns-idmapped-mount-provider",
+        "gvisor-runsc-containerd-runtimeclass-provider",
+        "kata-containers-vm-runtimeclass-provider",
+        "firecracker-microvm-jailer-guest-agent-provider",
+        "sandbox-image-rootfs-kernel-runtime-and-supply-chain",
+        "sandbox-filesystem-mount-path-device-proc-and-sys-isolation",
+        "sandbox-network-dns-egress-proxy-metadata-and-exfiltration-control",
+        "sandbox-secret-lease-injection-redaction-and-zeroization",
+        "sandbox-process-namespace-syscall-capability-lsm-and-kernel-surface",
+        "sandbox-cgroup-resource-time-io-oom-and-abuse-control",
+        "malicious-repository-build-wrapper-hook-archive-and-tool-policy",
+        "sandbox-execution-receipt-cancel-cleanup-reconciliation-and-forensics",
+        "sandbox-security-escape-compatibility-chaos-and-release-gates"
+      ]
+    },
+    "36C": {
+      "title": "Runner Execution Operations",
+      "theme": "Checkpoint、Artifact/Log流、离线队列、站点自治、缓存预热与Fleet运营",
+      "skills": [
+        "runner-execution-operations-orchestrator",
+        "task-checkpoint-model-heartbeat-resume-and-compatibility",
+        "artifact-stream-session-multipart-checksum-cas-and-dedup",
+        "execution-log-stream-otel-redaction-backpressure-and-replay",
+        "site-local-durable-command-event-queue-wal-and-outbox",
+        "site-connectivity-offline-queue-resynchronization-and-conflict-resolution",
+        "site-autonomy-policy-bundle-offline-permit-local-admission-and-safe-stop",
+        "site-local-coordinator-leader-election-runner-gateway-and-ha",
+        "cache-warmup-scm-dependency-toolchain-sandbox-lfs-and-recipe-prefetch",
+        "transfer-qos-bandwidth-priority-throttling-delta-and-maintenance-window",
+        "fleet-scale-heartbeat-aggregation-delta-inventory-sharding-and-fanout",
+        "checkpointable-task-download-build-test-agent-and-upload-resume-providers",
+        "local-retention-compaction-gc-disk-pressure-and-evidence-preservation",
+        "execution-operations-cockpit-slo-capacity-forecast-and-runbooks",
+        "offline-chaos-security-recovery-tests-and-release-gates"
+      ]
+    },
+    "38A": {
+      "title": "Policy、Control Automation与Continuous Authorization",
+      "theme": "Policy-as-Code、Control-as-Code、Exception、Continuous Decision、Deployment/Runtime Gate与Remediation",
+      "skills": [
+        "policy-control-continuous-authorization-orchestrator",
+        "unified-policy-domain-language-engine-contract-and-lifecycle",
+        "policy-as-code-repository-bundle-signing-distribution-and-offline-cache",
+        "control-as-code-oscal-objective-evidence-monitor-and-enforcement-binding",
+        "rego-cedar-cel-policy-authoring-lint-test-simulation-and-partial-evaluation",
+        "policy-information-point-context-fact-resolver-trust-freshness-and-external-data",
+        "continuous-authorization-pdp-pep-decision-api-obligations-and-cache",
+        "shared-signals-caep-risc-session-token-device-workload-and-risk-reevaluation",
+        "exception-waiver-risk-acceptance-compensating-control-and-expiry",
+        "deployment-gate-artifact-provenance-sbom-test-risk-and-environment-admission",
+        "kubernetes-cel-gatekeeper-kyverno-image-and-workload-admission-policy",
+        "runtime-gate-api-service-mesh-database-tool-sandbox-runner-and-artifact-enforcement",
+        "control-automation-remediation-plan-approval-execution-compensation-and-verification",
+        "policy-decision-log-explanation-trace-replay-attestation-and-evidence",
+        "policy-change-impact-shadow-canary-rollout-kill-switch-and-rollback",
+        "policy-conformance-fuzz-property-security-chaos-performance-and-release-gates"
+      ]
+    },
+    "38B": {
+      "title": "Policy Intelligence与Governance Engineering",
+      "theme": "自然语言到形式化Policy、知识图谱、冲突、Mining、Explainability、Copilot与法规影响",
+      "skills": [
+        "policy-intelligence-governance-engineering-orchestrator",
+        "authoritative-policy-source-document-version-clause-and-citation-ingestion",
+        "policy-ontology-knowledge-graph-rdf-owl-shacl-and-projection",
+        "natural-language-policy-clause-definition-entity-and-scope-extraction",
+        "deontic-temporal-jurisdiction-exception-and-policy-intermediate-representation",
+        "policy-ir-to-rego-cedar-cel-legalruleml-and-control-code-compiler",
+        "policy-conflict-redundancy-gap-shadowing-and-satisfiability-analysis",
+        "policy-mining-decision-log-code-config-grant-and-exception-discovery",
+        "policy-explainability-source-trace-counterfactual-and-audience-views",
+        "policy-copilot-grounded-rag-drafting-formalization-and-review-assistant",
+        "regulatory-change-source-monitoring-semantic-diff-and-impact-analysis",
+        "policy-knowledge-search-question-answering-and-cross-framework-traceability",
+        "policy-review-comment-approval-segregation-of-duties-and-publication",
+        "policy-governance-operations-inventory-ownership-debt-sla-and-cockpit",
+        "policy-intelligence-evaluation-gold-corpus-benchmark-red-team-and-model-governance",
+        "policy-intelligence-conformance-security-quality-chaos-and-release-gates"
+      ]
+    },
+    "38C": {
+      "title": "Governance Workflow与Regulatory Operations",
+      "theme": "义务台账、合规日历、RACI、监管报送、培训、董事会、检查与治理Case",
+      "skills": [
+        "governance-regulatory-operations-orchestrator",
+        "regulatory-obligation-register-source-applicability-and-lifecycle",
+        "cross-border-jurisdiction-entity-product-data-and-regulatory-matrix",
+        "compliance-calendar-deadline-recurrence-trigger-and-escalation",
+        "responsibility-raci-accountability-delegation-and-capacity-governance",
+        "obligation-workplan-evidence-certification-attestation-and-closure",
+        "regulatory-reporting-taxonomy-xbrl-filing-validation-and-acknowledgement",
+        "regulatory-notification-incident-disclosure-materiality-and-deadline-workflow",
+        "policy-training-targeting-acknowledgement-competency-and-campaign",
+        "board-committee-agenda-pack-decision-minute-action-and-attestation",
+        "regulatory-examination-inquiry-evidence-room-response-and-remediation",
+        "governance-case-intake-triage-investigation-remediation-and-closure",
+        "governance-records-retention-legal-hold-privilege-and-disposition",
+        "regulator-portal-correspondence-submission-provider-and-delivery-adapters",
+        "governance-operations-cockpit-sla-calendar-risk-board-and-regulator-reporting",
+        "regulatory-operations-conformance-security-chaos-and-release-gates"
+      ]
+    },
+    "37A": {
+      "title": "Artifact、Provenance 与 Evidence Fabric",
+      "theme": "统一 Artifact Schema、内容寻址、签名、SBOM、SLSA、证据图、对象锁、Retention 与离线验收包",
+      "skills": [
+        "artifact-provenance-evidence-fabric-orchestrator",
+        "unified-artifact-domain-schema-identity-classification-and-lifecycle",
+        "evidence-producer-sdk-schema-registry-ingestion-and-idempotency",
+        "content-addressed-storage-encryption-dedup-integrity-and-provider-adapters",
+        "in-toto-statement-dsse-attestation-and-predicate-registry",
+        "artifact-signing-sigstore-kms-trust-root-timestamp-and-key-lifecycle",
+        "slsa-source-build-provenance-vsa-generation-and-verification",
+        "spdx-cyclonedx-sbom-generation-normalization-merge-and-quality",
+        "oci-artifact-distribution-referrers-and-registry-integration",
+        "evidence-graph-claim-lineage-projection-and-query",
+        "verification-policy-expectations-trust-decision-and-vsa",
+        "object-lock-retention-legal-hold-records-management-and-disposition",
+        "offline-evidence-pack-export-import-and-airgap-verification",
+        "evidence-classification-redaction-privacy-and-source-locality",
+        "artifact-fabric-replication-backup-scrubbing-migration-and-disaster-recovery",
+        "evidence-conformance-tamper-security-chaos-and-release-gates"
+      ]
+    },
+    "37B": {
+      "title": "Evidence Producer Integrations",
+      "theme": "Jenkins、GitHub Actions、GitLab CI、Azure Pipelines、SonarQube、SCA/SAST、Test、Performance 与第三方审计证据接入",
+      "skills": [
+        "external-evidence-producer-integration-orchestrator",
+        "external-evidence-connector-contract-producer-identity-and-capability",
+        "jenkins-controller-pipeline-build-artifact-test-fingerprint-and-plugin-connector",
+        "github-actions-workflow-run-job-artifact-log-attestation-and-oidc-connector",
+        "gitlab-ci-pipeline-job-artifact-report-security-and-provenance-connector",
+        "azure-pipelines-build-timeline-log-artifact-test-and-identity-connector",
+        "sonarqube-server-cloud-analysis-quality-gate-measure-issue-and-webhook-connector",
+        "sast-sca-secret-iac-container-sarif-vulnerability-and-finding-normalizer",
+        "test-result-coverage-mutation-flaky-and-test-management-normalizer",
+        "performance-benchmark-load-jmh-jmeter-gatling-k6-and-regression-normalizer",
+        "third-party-audit-penetration-test-compliance-assessment-and-signed-report-intake",
+        "ci-producer-workload-identity-oidc-signing-and-trust-policy",
+        "webhook-polling-backfill-watermark-dedup-and-reconciliation",
+        "build-source-artifact-test-security-performance-delivery-correlation-and-lineage",
+        "external-evidence-quality-freshness-completeness-conflict-confidence-and-gating",
+        "external-evidence-conformance-fixtures-security-chaos-and-release-gates"
+      ]
+    },
+    "37C": {
+      "title": "Evidence Analytics 与 Assurance Cockpit",
+      "theme": "证据完整度、供应链风险、审计就绪度、趋势、异常、到期预警、控制覆盖、Portfolio Assurance 与高管/审计驾驶舱",
+      "skills": [
+        "evidence-analytics-assurance-cockpit-orchestrator",
+        "assurance-semantic-layer-metric-registry-and-denominator-governance",
+        "evidence-data-quality-source-certification-lineage-and-reconciliation",
+        "evidence-completeness-chain-coverage-gap-and-readiness-analytics",
+        "software-supply-chain-risk-exposure-concentration-and-blast-radius-analytics",
+        "control-catalog-oscal-mapping-assessment-and-continuous-control-monitoring",
+        "audit-readiness-pbc-request-list-evidence-room-and-examiner-workflow",
+        "evidence-freshness-expiry-renewal-sla-and-forward-alerting",
+        "assurance-trend-baseline-change-point-seasonality-anomaly-and-diagnostics",
+        "portfolio-assurance-rollup-risk-appetite-segmentation-and-benchmarking",
+        "executive-assurance-cockpit-kpi-scorecard-and-narrative",
+        "auditor-control-cockpit-evidence-navigator-sampling-and-export",
+        "assurance-alert-case-remediation-owner-escalation-and-reverification",
+        "assurance-query-cube-cache-dashboard-api-export-and-snapshot-publication",
+        "assurance-forecast-scenario-stress-test-and-prioritization",
+        "assurance-analytics-security-privacy-quality-performance-and-release-gates"
+      ]
+    }
+  },
+  "skills": [
+    {
+      "batch": "34A",
+      "name": "enterprise-identity-multitenancy-access-governance-orchestrator",
+      "path": "agent-skills/runtime/enterprise-identity-multitenancy-access-governance-orchestrator/SKILL.md",
+      "description": "Implement the complete enterprise identity, multi-tenancy, access-governance, human/workload identity, credential, audit, and release-gate programme."
+    },
+    {
+      "batch": "34A",
+      "name": "tenant-domain-hierarchy-lifecycle-and-isolation",
+      "path": "agent-skills/runtime/tenant-domain-hierarchy-lifecycle-and-isolation/SKILL.md",
+      "description": "Implement tenant domains, organization hierarchies, lifecycle, trust domains, legal entities, isolation tiers, ownership, and tenant state transitions."
+    },
+    {
+      "batch": "34A",
+      "name": "tenant-context-propagation-resolution-and-anti-spoofing",
+      "path": "agent-skills/runtime/tenant-context-propagation-resolution-and-anti-spoofing/SKILL.md",
+      "description": "Implement authenticated tenant-context resolution and propagation across API, workflow, events, jobs, runners, data stores, and UI without trusting caller-supplied tenant headers."
+    },
+    {
+      "batch": "34A",
+      "name": "tenant-aware-postgresql-rls-ownership-and-runtime-roles",
+      "path": "agent-skills/runtime/tenant-aware-postgresql-rls-ownership-and-runtime-roles/SKILL.md",
+      "description": "Implement tenant-aware PostgreSQL RLS, FORCE RLS, owner/runtime/migration roles, tenant foreign keys, session context, connection-pool safety, and isolation tests."
+    },
+    {
+      "batch": "34A",
+      "name": "tenant-resource-namespace-quota-and-service-boundary",
+      "path": "agent-skills/runtime/tenant-resource-namespace-quota-and-service-boundary/SKILL.md",
+      "description": "Implement tenant resource namespaces, quotas, service boundaries, regional/data-residency constraints, noisy-neighbour controls, and capacity governance."
+    },
+    {
+      "batch": "34A",
+      "name": "tenant-onboarding-offboarding-data-export-and-deletion",
+      "path": "agent-skills/runtime/tenant-onboarding-offboarding-data-export-and-deletion/SKILL.md",
+      "description": "Implement tenant onboarding, bootstrap, configuration, suspension, offboarding, export, retention, legal hold, cryptographic erasure, and deletion evidence."
+    },
+    {
+      "batch": "34B",
+      "name": "oidc-saml-scim-human-identity-provider-federation",
+      "path": "agent-skills/runtime/oidc-saml-scim-human-identity-provider-federation/SKILL.md",
+      "description": "Implement human identity federation through OIDC, SAML, SCIM, enterprise directories, domain discovery, account linking, issuer trust, and provider lifecycle."
+    },
+    {
+      "batch": "34B",
+      "name": "user-membership-role-permission-and-resource-authorization",
+      "path": "agent-skills/runtime/user-membership-role-permission-and-resource-authorization/SKILL.md",
+      "description": "Implement users, memberships, roles, permissions, policy bindings, resource authorization, field-level permissions, default deny, and decision evidence."
+    },
+    {
+      "batch": "34B",
+      "name": "group-team-directory-sync-and-membership-reconciliation",
+      "path": "agent-skills/runtime/group-team-directory-sync-and-membership-reconciliation/SKILL.md",
+      "description": "Implement directory group and team synchronization, authoritative source precedence, membership reconciliation, deprovisioning, conflict handling, and drift detection."
+    },
+    {
+      "batch": "34B",
+      "name": "session-token-mfa-step-up-device-and-risk-authentication",
+      "path": "agent-skills/runtime/session-token-mfa-step-up-device-and-risk-authentication/SKILL.md",
+      "description": "Implement sessions, tokens, MFA, step-up authentication, assurance levels, device/risk context, revocation, renewal, and replay protection."
+    },
+    {
+      "batch": "34B",
+      "name": "jit-access-approval-break-glass-and-privileged-access",
+      "path": "agent-skills/runtime/jit-access-approval-break-glass-and-privileged-access/SKILL.md",
+      "description": "Implement just-in-time access, approval workflows, time-bound grants, privileged access, break-glass controls, emergency review, and automatic revocation."
+    },
+    {
+      "batch": "34B",
+      "name": "access-review-certification-segregation-of-duties-and-revocation",
+      "path": "agent-skills/runtime/access-review-certification-segregation-of-duties-and-revocation/SKILL.md",
+      "description": "Implement periodic access reviews, certification, segregation-of-duties analysis, orphan access detection, reviewer workflows, revocation, and immutable evidence."
+    },
+    {
+      "batch": "34C",
+      "name": "workload-identity-spiffe-spire-mtls-and-service-authentication",
+      "path": "agent-skills/runtime/workload-identity-spiffe-spire-mtls-and-service-authentication/SKILL.md",
+      "description": "Implement workload identity, SPIFFE/SPIRE-compatible identities, mTLS, trust bundles, service authentication, rotation, attestation, and workload authorization."
+    },
+    {
+      "batch": "34C",
+      "name": "runner-site-agent-and-connector-machine-identity",
+      "path": "agent-skills/runtime/runner-site-agent-and-connector-machine-identity/SKILL.md",
+      "description": "Implement machine identities for runners, sites, agents, connectors, schedulers, providers, and service accounts with scoped trust and compromise recovery."
+    },
+    {
+      "batch": "34C",
+      "name": "secret-reference-vault-kms-hsm-and-credential-broker",
+      "path": "agent-skills/runtime/secret-reference-vault-kms-hsm-and-credential-broker/SKILL.md",
+      "description": "Implement secret references, Vault/KMS/HSM provider contracts, credential brokering, encryption domains, policy checks, audit, and provider failover."
+    },
+    {
+      "batch": "34C",
+      "name": "short-lived-token-credential-lease-rotation-and-revocation",
+      "path": "agent-skills/runtime/short-lived-token-credential-lease-rotation-and-revocation/SKILL.md",
+      "description": "Implement short-lived tokens and credential leases with purpose binding, TTL, renewal, use tracking, rotation, revocation, and zeroization evidence."
+    },
+    {
+      "batch": "34C",
+      "name": "workload-authorization-policy-tool-permission-and-purpose-binding",
+      "path": "agent-skills/runtime/workload-authorization-policy-tool-permission-and-purpose-binding/SKILL.md",
+      "description": "Implement workload authorization for tools, arguments, resources, networks, credentials, side effects, purpose binding, budgets, and continuous re-evaluation."
+    },
+    {
+      "batch": "34C",
+      "name": "identity-audit-anomaly-compromise-recovery-and-release-gates",
+      "path": "agent-skills/runtime/identity-audit-anomaly-compromise-recovery-and-release-gates/SKILL.md",
+      "description": "Implement identity audit, anomaly detection, credential-compromise response, trust-root recovery, tenant isolation tests, chaos tests, and mandatory release gates."
+    },
+    {
+      "batch": "35A",
+      "name": "github-scm-connector-orchestrator",
+      "path": "agent-skills/runtime/github-scm-connector-orchestrator/SKILL.md",
+      "description": "Implement GitHub Cloud and GHES repository connection, synchronization, credential, event, branch, pull-request, delivery, compatibility, and release-gate workflows."
+    },
+    {
+      "batch": "35A",
+      "name": "github-app-installation-identity-and-permission-governance",
+      "path": "agent-skills/runtime/github-app-installation-identity-and-permission-governance/SKILL.md",
+      "description": "Implement GitHub App identity, installation lifecycle, permission minimization, repository selection, suspension, revocation, and audit."
+    },
+    {
+      "batch": "35A",
+      "name": "github-cloud-ghes-instance-capability-and-version-discovery",
+      "path": "agent-skills/runtime/github-cloud-ghes-instance-capability-and-version-discovery/SKILL.md",
+      "description": "Implement GitHub Cloud/GHES instance registration, version and API discovery, feature/plan capability snapshots, TLS/proxy, and compatibility status."
+    },
+    {
+      "batch": "35A",
+      "name": "github-repository-registration-authorization-and-lifecycle",
+      "path": "agent-skills/runtime/github-repository-registration-authorization-and-lifecycle/SKILL.md",
+      "description": "Implement repository registration, tenant authorization, installation binding, activation, suspension, transfer, archival, deletion, and reconciliation."
+    },
+    {
+      "batch": "35A",
+      "name": "github-webhook-polling-event-dedup-and-reconciliation",
+      "path": "agent-skills/runtime/github-webhook-polling-event-dedup-and-reconciliation/SKILL.md",
+      "description": "Implement signed webhook ingestion, polling, watermarks, backfill, deduplication, ordering, missed-event detection, and reconciliation."
+    },
+    {
+      "batch": "35A",
+      "name": "github-repository-metadata-default-branch-topology-and-rulesets",
+      "path": "agent-skills/runtime/github-repository-metadata-default-branch-topology-and-rulesets/SKILL.md",
+      "description": "Implement repository metadata, visibility, default branch, branch topology, rulesets, protection, merge settings, CODEOWNERS, and policy snapshots."
+    },
+    {
+      "batch": "35A",
+      "name": "github-commit-ref-tag-branch-and-compare-synchronization",
+      "path": "agent-skills/runtime/github-commit-ref-tag-branch-and-compare-synchronization/SKILL.md",
+      "description": "Implement commit, ref, branch, tag, compare, history, force-push detection, shallow-boundary handling, and immutable synchronization."
+    },
+    {
+      "batch": "35A",
+      "name": "github-pull-request-check-status-review-and-delivery-integration",
+      "path": "agent-skills/runtime/github-pull-request-check-status-review-and-delivery-integration/SKILL.md",
+      "description": "Implement pull requests, reviews, checks, statuses, merge queue, comments, delivery evidence, idempotency, and external-side-effect reconciliation."
+    },
+    {
+      "batch": "35A",
+      "name": "github-credential-lease-clone-fetch-push-and-revocation",
+      "path": "agent-skills/runtime/github-credential-lease-clone-fetch-push-and-revocation/SKILL.md",
+      "description": "Implement short-lived installation credential leases for clone, fetch, compare, push, PR, and checks with purpose scopes and revocation."
+    },
+    {
+      "batch": "35A",
+      "name": "github-enterprise-proxy-tls-rate-limit-and-resilience",
+      "path": "agent-skills/runtime/github-enterprise-proxy-tls-rate-limit-and-resilience/SKILL.md",
+      "description": "Implement enterprise proxy, custom CA, TLS verification, DNS, redirect, API version, rate limits, retry, circuit breaking, and provider outage behaviour."
+    },
+    {
+      "batch": "35A",
+      "name": "github-scm-connector-security-compatibility-tests-and-release-gates",
+      "path": "agent-skills/runtime/github-scm-connector-security-compatibility-tests-and-release-gates/SKILL.md",
+      "description": "Implement GitHub connector contract tests, GHES version matrix, webhook attacks, credential revocation, rate-limit chaos, tenant isolation, and release gates."
+    },
+    {
+      "batch": "35B",
+      "name": "unified-scm-provider-contract-capability-and-error-model",
+      "path": "agent-skills/runtime/unified-scm-provider-contract-capability-and-error-model/SKILL.md",
+      "description": "Implement provider-neutral SCM connector contracts, stable identifiers, capabilities, pagination, credentials, normalized errors, lifecycle, and connector TCK."
+    },
+    {
+      "batch": "35B",
+      "name": "gitlab-cloud-self-managed-scm-connector",
+      "path": "agent-skills/runtime/gitlab-cloud-self-managed-scm-connector/SKILL.md",
+      "description": "Implement GitLab.com and Self-Managed groups, projects, repositories, branches, merge requests, hooks, tokens, version discovery, and reconciliation."
+    },
+    {
+      "batch": "35B",
+      "name": "azure-devops-repos-project-organization-scm-connector",
+      "path": "agent-skills/runtime/azure-devops-repos-project-organization-scm-connector/SKILL.md",
+      "description": "Implement Azure DevOps organizations, projects, Git repositories, refs, pull requests, policies, service identities, API versions, and reconciliation."
+    },
+    {
+      "batch": "35B",
+      "name": "bitbucket-cloud-workspace-repository-scm-connector",
+      "path": "agent-skills/runtime/bitbucket-cloud-workspace-repository-scm-connector/SKILL.md",
+      "description": "Implement Bitbucket Cloud workspaces, repositories, branches, pull requests, webhooks, OAuth/app-password compatibility, and rate-limit handling."
+    },
+    {
+      "batch": "35B",
+      "name": "bitbucket-data-center-project-repository-scm-connector",
+      "path": "agent-skills/runtime/bitbucket-data-center-project-repository-scm-connector/SKILL.md",
+      "description": "Implement Bitbucket Data Center projects, repositories, pull requests, hooks, personal/access tokens, version compatibility, clustered deployment, and resilience."
+    },
+    {
+      "batch": "35B",
+      "name": "gitee-enterprise-organization-repository-scm-connector",
+      "path": "agent-skills/runtime/gitee-enterprise-organization-repository-scm-connector/SKILL.md",
+      "description": "Implement Gitee public/enterprise organizations, repositories, branches, pull requests, hooks, credentials, API limitations, and compatibility evidence."
+    },
+    {
+      "batch": "35B",
+      "name": "scm-webhook-polling-watermark-backfill-and-reconciliation",
+      "path": "agent-skills/runtime/scm-webhook-polling-watermark-backfill-and-reconciliation/SKILL.md",
+      "description": "Implement a shared webhook, polling, cursor, watermark, backfill, deduplication, replay, and reconciliation layer across SCM providers."
+    },
+    {
+      "batch": "35B",
+      "name": "scm-branch-protection-review-policy-and-default-branch-normalization",
+      "path": "agent-skills/runtime/scm-branch-protection-review-policy-and-default-branch-normalization/SKILL.md",
+      "description": "Normalize default branches, protected branches, approval requirements, review policies, merge strategies, status checks, and governance differences."
+    },
+    {
+      "batch": "35B",
+      "name": "scm-provider-credential-proxy-tls-rate-limit-and-resilience",
+      "path": "agent-skills/runtime/scm-provider-credential-proxy-tls-rate-limit-and-resilience/SKILL.md",
+      "description": "Implement shared credential leases, proxy/TLS profiles, custom CAs, DNS, redirects, rate budgets, retries, provider health, and fail-closed behaviour."
+    },
+    {
+      "batch": "35B",
+      "name": "scm-cross-provider-migration-mapping-and-compatibility",
+      "path": "agent-skills/runtime/scm-cross-provider-migration-mapping-and-compatibility/SKILL.md",
+      "description": "Implement cross-provider identity mappings, repository transfer plans, branch/PR metadata compatibility, permission gaps, migration evidence, and rollback."
+    },
+    {
+      "batch": "35B",
+      "name": "multi-provider-scm-conformance-security-tests-and-release-gates",
+      "path": "agent-skills/runtime/multi-provider-scm-conformance-security-tests-and-release-gates/SKILL.md",
+      "description": "Implement provider TCK, real-cloud/self-managed fixtures, webhook/security attacks, version matrices, tenant isolation, chaos, and release gates."
+    },
+    {
+      "batch": "35C",
+      "name": "repository-workspace-orchestrator",
+      "path": "agent-skills/runtime/repository-workspace-orchestrator/SKILL.md",
+      "description": "Implement advanced repository workspace creation, immutable snapshot inputs, materialization, caching, multi-repository composition, cleanup, and evidence."
+    },
+    {
+      "batch": "35C",
+      "name": "monorepo-module-build-boundary-and-change-impact",
+      "path": "agent-skills/runtime/monorepo-module-build-boundary-and-change-impact/SKILL.md",
+      "description": "Implement monorepo module discovery, build boundaries, ownership, dependency graphs, affected-set calculation, sparse work units, and validation."
+    },
+    {
+      "batch": "35C",
+      "name": "multi-repository-workspace-manifest-and-atomic-snapshot",
+      "path": "agent-skills/runtime/multi-repository-workspace-manifest-and-atomic-snapshot/SKILL.md",
+      "description": "Implement multi-repository workspace manifests, exact commits, atomic snapshot consistency, dependency ordering, partial failure handling, and resume."
+    },
+    {
+      "batch": "35C",
+      "name": "git-submodule-recursive-identity-policy-and-recovery",
+      "path": "agent-skills/runtime/git-submodule-recursive-identity-policy-and-recovery/SKILL.md",
+      "description": "Implement Git submodule identity, URL rewriting, recursive resolution, credential separation, pinned commits, cycles, missing commits, and recovery."
+    },
+    {
+      "batch": "35C",
+      "name": "git-lfs-object-pointer-transfer-cache-and-integrity",
+      "path": "agent-skills/runtime/git-lfs-object-pointer-transfer-cache-and-integrity/SKILL.md",
+      "description": "Implement Git LFS pointer validation, OID transfer, authorization, range resume, cache, integrity, quota, missing-object handling, and cleanup."
+    },
+    {
+      "batch": "35C",
+      "name": "sparse-checkout-partial-clone-filter-and-worktree-materialization",
+      "path": "agent-skills/runtime/sparse-checkout-partial-clone-filter-and-worktree-materialization/SKILL.md",
+      "description": "Implement sparse checkout, partial clone filters, promisor objects, lazy hydration, path policy, offline limitations, and deterministic materialization."
+    },
+    {
+      "batch": "35C",
+      "name": "multi-branch-worktree-baseline-target-and-merge-workspace",
+      "path": "agent-skills/runtime/multi-branch-worktree-baseline-target-and-merge-workspace/SKILL.md",
+      "description": "Implement isolated worktrees for baseline, target, repair, merge, and comparison branches with conflict handling and cleanup."
+    },
+    {
+      "batch": "35C",
+      "name": "git-object-proxy-mirror-cache-pack-and-bandwidth-governance",
+      "path": "agent-skills/runtime/git-object-proxy-mirror-cache-pack-and-bandwidth-governance/SKILL.md",
+      "description": "Implement Git object proxy/mirror/cache, pack reuse, trust domains, tenant-safe deduplication, bandwidth quotas, corruption detection, and eviction."
+    },
+    {
+      "batch": "35C",
+      "name": "workspace-path-symlink-permission-case-and-filesystem-compatibility",
+      "path": "agent-skills/runtime/workspace-path-symlink-permission-case-and-filesystem-compatibility/SKILL.md",
+      "description": "Implement path, symlink, hardlink, permission, executable-bit, case sensitivity, line-ending, Unicode, long-path, and filesystem compatibility controls."
+    },
+    {
+      "batch": "35C",
+      "name": "workspace-resume-cleanup-corruption-recovery-and-reconciliation",
+      "path": "agent-skills/runtime/workspace-resume-cleanup-corruption-recovery-and-reconciliation/SKILL.md",
+      "description": "Implement workspace checkpoints, interrupted clone/fetch recovery, lock handling, corruption detection, cleanup, orphan scanning, and reconciliation."
+    },
+    {
+      "batch": "35C",
+      "name": "advanced-repository-workspace-security-scale-tests-and-release-gates",
+      "path": "agent-skills/runtime/advanced-repository-workspace-security-scale-tests-and-release-gates/SKILL.md",
+      "description": "Implement malicious repository, submodule/LFS, cache poisoning, path escape, multi-repo atomicity, scale, chaos, and release gates."
+    },
+    {
+      "batch": "36A",
+      "name": "private-runner-fleet-orchestrator",
+      "path": "agent-skills/runtime/private-runner-fleet-orchestrator/SKILL.md",
+      "description": "Implement the complete private runner fleet: pools, capabilities, trust, versions, capacity, scheduling, assignments, leases, drain, autoscaling, upgrade, observability, and gates."
+    },
+    {
+      "batch": "36A",
+      "name": "runner-fleet-domain-pool-topology-and-lifecycle",
+      "path": "agent-skills/runtime/runner-fleet-domain-pool-topology-and-lifecycle/SKILL.md",
+      "description": "Implement runner, site, fleet and pool domains, topology, membership, lifecycle, states, ownership, trust boundaries, and reconciliation."
+    },
+    {
+      "batch": "36A",
+      "name": "runner-capability-discovery-attestation-and-trust",
+      "path": "agent-skills/runtime/runner-capability-discovery-attestation-and-trust/SKILL.md",
+      "description": "Implement runner capability discovery, evidence, attestation, freshness, trust levels, compatibility, quarantine, and anti-self-assertion controls."
+    },
+    {
+      "batch": "36A",
+      "name": "runner-version-protocol-image-and-supply-chain-governance",
+      "path": "agent-skills/runtime/runner-version-protocol-image-and-supply-chain-governance/SKILL.md",
+      "description": "Implement runner protocol, release, binary/image, signature, SBOM, provenance, compatibility, rollout, revocation, and supply-chain governance."
+    },
+    {
+      "batch": "36A",
+      "name": "runner-capacity-reservation-quota-and-overcommit-accounting",
+      "path": "agent-skills/runtime/runner-capacity-reservation-quota-and-overcommit-accounting/SKILL.md",
+      "description": "Implement multidimensional runner capacity, reservations, quotas, budgets, overcommit policies, accounting, release, and capacity reconciliation."
+    },
+    {
+      "batch": "36A",
+      "name": "runner-task-requirement-affinity-antiaffinity-and-placement-policy",
+      "path": "agent-skills/runtime/runner-task-requirement-affinity-antiaffinity-and-placement-policy/SKILL.md",
+      "description": "Implement task requirements, hard constraints, affinity, anti-affinity, residency, security, locality, preferences, and explainable placement policy."
+    },
+    {
+      "batch": "36A",
+      "name": "runner-scheduler-filter-score-fairness-priority-and-admission",
+      "path": "agent-skills/runtime/runner-scheduler-filter-score-fairness-priority-and-admission/SKILL.md",
+      "description": "Implement deterministic scheduler filtering, scoring, priorities, fairness, quotas, starvation prevention, admission, simulation, and explanations."
+    },
+    {
+      "batch": "36A",
+      "name": "runner-provider-static-kubernetes-kueue-and-vm-adapters",
+      "path": "agent-skills/runtime/runner-provider-static-kubernetes-kueue-and-vm-adapters/SKILL.md",
+      "description": "Implement provider-neutral runner adapters for static hosts, Kubernetes Jobs, Kueue, VMs, private clouds, and provider reconciliation."
+    },
+    {
+      "batch": "36A",
+      "name": "runner-assignment-offer-lease-ack-renew-cancel-and-reconciliation",
+      "path": "agent-skills/runtime/runner-assignment-offer-lease-ack-renew-cancel-and-reconciliation/SKILL.md",
+      "description": "Implement assignment offers, epochs, acknowledgements, leases, renewal, cancellation, completion, unknown-result reconciliation, and idempotency."
+    },
+    {
+      "batch": "36A",
+      "name": "runner-drain-maintenance-autoscaling-failover-and-upgrade",
+      "path": "agent-skills/runtime/runner-drain-maintenance-autoscaling-failover-and-upgrade/SKILL.md",
+      "description": "Implement drain, maintenance, autoscaling, scale-down safety, failover, canary upgrades, rollback, task preservation, and operational evidence."
+    },
+    {
+      "batch": "36A",
+      "name": "runner-fleet-observability-simulation-security-tests-and-release-gates",
+      "path": "agent-skills/runtime/runner-fleet-observability-simulation-security-tests-and-release-gates/SKILL.md",
+      "description": "Implement fleet telemetry, SLOs, scheduling simulation, compromise tests, capacity/lease chaos, scale tests, and mandatory release gates."
+    },
+    {
+      "batch": "36B",
+      "name": "task-sandbox-execution-plane-orchestrator",
+      "path": "agent-skills/runtime/task-sandbox-execution-plane-orchestrator/SKILL.md",
+      "description": "Implement Batch 36B end to end: provider-neutral sandbox contracts, rootless OCI, gVisor, Kata, Firecracker, filesystem, network, secrets, syscalls, resources, malicious repositories, cleanup, and gates."
+    },
+    {
+      "batch": "36B",
+      "name": "sandbox-domain-contract-profile-policy-and-lifecycle",
+      "path": "agent-skills/runtime/sandbox-domain-contract-profile-policy-and-lifecycle/SKILL.md",
+      "description": "Implement sandbox contracts, isolation tiers, profiles, policy compiler, typed commands/mounts/networks/secrets/resources, provider selection, lifecycle, APIs, and audit."
+    },
+    {
+      "batch": "36B",
+      "name": "rootless-oci-container-userns-idmapped-mount-provider",
+      "path": "agent-skills/runtime/rootless-oci-container-userns-idmapped-mount-provider/SKILL.md",
+      "description": "Implement a rootless OCI provider with user namespaces, UID/GID ranges, idmapped mounts, read-only rootfs, capabilities, seccomp, cgroups, and evidence."
+    },
+    {
+      "batch": "36B",
+      "name": "gvisor-runsc-containerd-runtimeclass-provider",
+      "path": "agent-skills/runtime/gvisor-runsc-containerd-runtimeclass-provider/SKILL.md",
+      "description": "Implement gVisor runsc through containerd/Kubernetes RuntimeClass, pinned artifacts, host-side runtime verification, compatibility, cancellation, and cleanup."
+    },
+    {
+      "batch": "36B",
+      "name": "kata-containers-vm-runtimeclass-provider",
+      "path": "agent-skills/runtime/kata-containers-vm-runtimeclass-provider/SKILL.md",
+      "description": "Implement Kata Containers VM-backed isolation, RuntimeClass, hypervisor profiles, guest kernel/rootfs/agent governance, policy, network, and cleanup."
+    },
+    {
+      "batch": "36B",
+      "name": "firecracker-microvm-jailer-guest-agent-provider",
+      "path": "agent-skills/runtime/firecracker-microvm-jailer-guest-agent-provider/SKILL.md",
+      "description": "Implement Firecracker microVM isolation with Jailer, trusted jail roots, guest artifacts, vsock agent, networking, resources, recovery, and cleanup."
+    },
+    {
+      "batch": "36B",
+      "name": "sandbox-image-rootfs-kernel-runtime-and-supply-chain",
+      "path": "agent-skills/runtime/sandbox-image-rootfs-kernel-runtime-and-supply-chain/SKILL.md",
+      "description": "Implement sandbox image, rootfs, kernel, initrd, firmware, runtime and guest-agent catalogs with digests, signatures, provenance, SBOM, scans, and revocation."
+    },
+    {
+      "batch": "36B",
+      "name": "sandbox-filesystem-mount-path-device-proc-and-sys-isolation",
+      "path": "agent-skills/runtime/sandbox-filesystem-mount-path-device-proc-and-sys-isolation/SKILL.md",
+      "description": "Implement secure filesystem layout, race-resistant path resolution, mounts, overlays, proc/sys/dev minimization, archive extraction, quotas, and output collection."
+    },
+    {
+      "batch": "36B",
+      "name": "sandbox-network-dns-egress-proxy-metadata-and-exfiltration-control",
+      "path": "agent-skills/runtime/sandbox-network-dns-egress-proxy-metadata-and-exfiltration-control/SKILL.md",
+      "description": "Implement default-deny networking, DNS and redirect validation, proxy/CONNECT controls, metadata/private-network blocking, quotas, evidence, and exfiltration findings."
+    },
+    {
+      "batch": "36B",
+      "name": "sandbox-secret-lease-injection-redaction-and-zeroization",
+      "path": "agent-skills/runtime/sandbox-secret-lease-injection-redaction-and-zeroization/SKILL.md",
+      "description": "Implement sandbox-scoped secret leases, process-bound delivery, tmpfs/FD helpers, inheritance controls, pre-persistence redaction, revocation, and zeroization evidence."
+    },
+    {
+      "batch": "36B",
+      "name": "sandbox-process-namespace-syscall-capability-lsm-and-kernel-surface",
+      "path": "agent-skills/runtime/sandbox-process-namespace-syscall-capability-lsm-and-kernel-surface/SKILL.md",
+      "description": "Implement process supervision, namespaces, UID/GID, capability drop, no_new_privs, seccomp, AppArmor, SELinux, Landlock, signals, and core-dump controls."
+    },
+    {
+      "batch": "36B",
+      "name": "sandbox-cgroup-resource-time-io-oom-and-abuse-control",
+      "path": "agent-skills/runtime/sandbox-cgroup-resource-time-io-oom-and-abuse-control/SKILL.md",
+      "description": "Implement cgroup v2 CPU, memory, swap, PID, IO, disk, inode, file-descriptor, log, network and time limits with OOM-group and abuse tests."
+    },
+    {
+      "batch": "36B",
+      "name": "malicious-repository-build-wrapper-hook-archive-and-tool-policy",
+      "path": "agent-skills/runtime/malicious-repository-build-wrapper-hook-archive-and-tool-policy/SKILL.md",
+      "description": "Implement staged untrusted repository handling, Git hardening, Maven/Gradle wrapper validation, plugin/test/agent boundaries, cache overlays, archives, and malicious fixtures."
+    },
+    {
+      "batch": "36B",
+      "name": "sandbox-execution-receipt-cancel-cleanup-reconciliation-and-forensics",
+      "path": "agent-skills/runtime/sandbox-execution-receipt-cancel-cleanup-reconciliation-and-forensics/SKILL.md",
+      "description": "Implement execution receipts, secure cancel ordering, cleanup, unknown-result reconciliation, orphan scanning, quarantine, forensics, retention, and recovery."
+    },
+    {
+      "batch": "36B",
+      "name": "sandbox-security-escape-compatibility-chaos-and-release-gates",
+      "path": "agent-skills/runtime/sandbox-security-escape-compatibility-chaos-and-release-gates/SKILL.md",
+      "description": "Implement provider TCK, filesystem/network/secret/syscall/resource escape tests, malicious repositories, compatibility, chaos cleanup, performance, and release gates."
+    },
+    {
+      "batch": "36C",
+      "name": "runner-execution-operations-orchestrator",
+      "path": "agent-skills/runtime/runner-execution-operations-orchestrator/SKILL.md",
+      "description": "Implement Batch 36C end to end: checkpoints, artifact/log streams, durable site queues, offline operation, site autonomy, HA, cache warming, transfer QoS, fleet scale, retention, and gates."
+    },
+    {
+      "batch": "36C",
+      "name": "task-checkpoint-model-heartbeat-resume-and-compatibility",
+      "path": "agent-skills/runtime/task-checkpoint-model-heartbeat-resume-and-compatibility/SKILL.md",
+      "description": "Implement explicit task checkpoints, progress heartbeats, side-effect fences, artifact-backed state, Temporal bridge, compatibility, resume plans, supersession, and recovery."
+    },
+    {
+      "batch": "36C",
+      "name": "artifact-stream-session-multipart-checksum-cas-and-dedup",
+      "path": "agent-skills/runtime/artifact-stream-session-multipart-checksum-cas-and-dedup/SKILL.md",
+      "description": "Implement resumable artifact upload/download sessions, multipart checksums, final digests, staging, CAS, tenant-safe deduplication, encryption, commit reconciliation, and cleanup."
+    },
+    {
+      "batch": "36C",
+      "name": "execution-log-stream-otel-redaction-backpressure-and-replay",
+      "path": "agent-skills/runtime/execution-log-stream-otel-redaction-backpressure-and-replay/SKILL.md",
+      "description": "Implement structured OpenTelemetry-style log streams, sequence, pre-persistence redaction, segments, compression, live tail, replay, gaps, truncation, and backpressure."
+    },
+    {
+      "batch": "36C",
+      "name": "site-local-durable-command-event-queue-wal-and-outbox",
+      "path": "agent-skills/runtime/site-local-durable-command-event-queue-wal-and-outbox/SKILL.md",
+      "description": "Implement a site-local durable inbox/outbox and event journal with SQLite WAL or approved broker, signatures, sequence, dedup, retries, dead letters, encryption, and integrity."
+    },
+    {
+      "batch": "36C",
+      "name": "site-connectivity-offline-queue-resynchronization-and-conflict-resolution",
+      "path": "agent-skills/runtime/site-connectivity-offline-queue-resynchronization-and-conflict-resolution/SKILL.md",
+      "description": "Implement connectivity states, planned/unplanned offline operation, reconnect handshakes, epochs, inventory/watermarks, replay, assignment reconciliation, clock uncertainty, and conflicts."
+    },
+    {
+      "batch": "36C",
+      "name": "site-autonomy-policy-bundle-offline-permit-local-admission-and-safe-stop",
+      "path": "agent-skills/runtime/site-autonomy-policy-bundle-offline-permit-local-admission-and-safe-stop/SKILL.md",
+      "description": "Implement signed offline policy bundles and permits, local admission, task/side-effect restrictions, expiry, local operator controls, emergency revocation, and safe stop."
+    },
+    {
+      "batch": "36C",
+      "name": "site-local-coordinator-leader-election-runner-gateway-and-ha",
+      "path": "agent-skills/runtime/site-local-coordinator-leader-election-runner-gateway-and-ha/SKILL.md",
+      "description": "Implement the site coordinator, runner gateway, durable leader election, site epochs, local inventory, assignment delivery, split-brain prevention, failover, and HA modes."
+    },
+    {
+      "batch": "36C",
+      "name": "cache-warmup-scm-dependency-toolchain-sandbox-lfs-and-recipe-prefetch",
+      "path": "agent-skills/runtime/cache-warmup-scm-dependency-toolchain-sandbox-lfs-and-recipe-prefetch/SKILL.md",
+      "description": "Implement authorized cache warming for Git, LFS, dependencies, toolchains, sandbox artifacts, recipes, policy and offline packages with staging, verification, readiness, and eviction."
+    },
+    {
+      "batch": "36C",
+      "name": "transfer-qos-bandwidth-priority-throttling-delta-and-maintenance-window",
+      "path": "agent-skills/runtime/transfer-qos-bandwidth-priority-throttling-delta-and-maintenance-window/SKILL.md",
+      "description": "Implement transfer classes, control-traffic reserves, bandwidth/concurrency shaping, fairness, pause/resume, maintenance windows, compression, delta transfer, and provider throttling."
+    },
+    {
+      "batch": "36C",
+      "name": "fleet-scale-heartbeat-aggregation-delta-inventory-sharding-and-fanout",
+      "path": "agent-skills/runtime/fleet-scale-heartbeat-aggregation-delta-inventory-sharding-and-fanout/SKILL.md",
+      "description": "Implement site/pool heartbeat aggregation, adaptive intervals, inventory snapshots/deltas, gap recovery, control-plane sharding, command fanout, backpressure, and cardinality controls."
+    },
+    {
+      "batch": "36C",
+      "name": "checkpointable-task-download-build-test-agent-and-upload-resume-providers",
+      "path": "agent-skills/runtime/checkpointable-task-download-build-test-agent-and-upload-resume-providers/SKILL.md",
+      "description": "Implement task-specific resume providers for Git/LFS/dependency downloads, phased builds, test shards, OpenRewrite, agents, reports, uploads, and side-effect reconciliation."
+    },
+    {
+      "batch": "36C",
+      "name": "local-retention-compaction-gc-disk-pressure-and-evidence-preservation",
+      "path": "agent-skills/runtime/local-retention-compaction-gc-disk-pressure-and-evidence-preservation/SKILL.md",
+      "description": "Implement local retention, queue/log compaction, CAS GC, multipart cleanup, disk-pressure states, safe eviction, legal holds, key erasure, and residue checks."
+    },
+    {
+      "batch": "36C",
+      "name": "execution-operations-cockpit-slo-capacity-forecast-and-runbooks",
+      "path": "agent-skills/runtime/execution-operations-cockpit-slo-capacity-forecast-and-runbooks/SKILL.md",
+      "description": "Implement site/fleet operations dashboards, stream health, offline readiness, SLOs, error budgets, capacity forecasts, typed JIT actions, incidents, and runbooks."
+    },
+    {
+      "batch": "36C",
+      "name": "offline-chaos-security-recovery-tests-and-release-gates",
+      "path": "agent-skills/runtime/offline-chaos-security-recovery-tests-and-release-gates/SKILL.md",
+      "description": "Implement disconnect, queue, storage, partial transfer, expiry, split-brain, HA, cache and scale fault tests with machine-readable release evidence."
+    },
+    {
+      "batch": "38A",
+      "name": "policy-control-continuous-authorization-orchestrator",
+      "path": "agent-skills/runtime/policy-control-continuous-authorization-orchestrator/SKILL.md",
+      "description": "Implement Batch 38A end to end: policy domains, engines, signed bundles, control-as-code, continuous authorization, CAEP signals, exceptions, deployment/runtime gates, remediation, evidence, rollout, and gates."
+    },
+    {
+      "batch": "38A",
+      "name": "unified-policy-domain-language-engine-contract-and-lifecycle",
+      "path": "agent-skills/runtime/unified-policy-domain-language-engine-contract-and-lifecycle/SKILL.md",
+      "description": "Implement provider-neutral policy domains, kinds, languages, schemas, engine contracts, decisions, obligations, advice, lifecycle, conflict resolution, APIs, and audit."
+    },
+    {
+      "batch": "38A",
+      "name": "policy-as-code-repository-bundle-signing-distribution-and-offline-cache",
+      "path": "agent-skills/runtime/policy-as-code-repository-bundle-signing-distribution-and-offline-cache/SKILL.md",
+      "description": "Implement Policy-as-Code repositories, reviews, signed bundles, manifests, distribution, atomic activation, last-known-good, offline cache, revocation, and rollback."
+    },
+    {
+      "batch": "38A",
+      "name": "control-as-code-oscal-objective-evidence-monitor-and-enforcement-binding",
+      "path": "agent-skills/runtime/control-as-code-oscal-objective-evidence-monitor-and-enforcement-binding/SKILL.md",
+      "description": "Implement Control-as-Code definitions, OSCAL links, objectives, applicability, evidence, policy/monitor/gate/remediation bindings, assessments, POA&M, and effectiveness."
+    },
+    {
+      "batch": "38A",
+      "name": "rego-cedar-cel-policy-authoring-lint-test-simulation-and-partial-evaluation",
+      "path": "agent-skills/runtime/rego-cedar-cel-policy-authoring-lint-test-simulation-and-partial-evaluation/SKILL.md",
+      "description": "Implement Rego, Cedar and CEL authoring, schemas, lint, compilation, unit/mutation tests, coverage, simulations, impact comparisons, and partial evaluation."
+    },
+    {
+      "batch": "38A",
+      "name": "policy-information-point-context-fact-resolver-trust-freshness-and-external-data",
+      "path": "agent-skills/runtime/policy-information-point-context-fact-resolver-trust-freshness-and-external-data/SKILL.md",
+      "description": "Implement PIP facts, trust, freshness, source precedence, conflicts, immutable context snapshots, safe external-data providers, caching, batching, and privacy."
+    },
+    {
+      "batch": "38A",
+      "name": "continuous-authorization-pdp-pep-decision-api-obligations-and-cache",
+      "path": "agent-skills/runtime/continuous-authorization-pdp-pep-decision-api-obligations-and-cache/SKILL.md",
+      "description": "Implement PDP/PEP contracts, synchronous/local decisions, obligations, decision caches, authorization versions, renewal, fail modes, and enforcement receipts."
+    },
+    {
+      "batch": "38A",
+      "name": "shared-signals-caep-risc-session-token-device-workload-and-risk-reevaluation",
+      "path": "agent-skills/runtime/shared-signals-caep-risc-session-token-device-workload-and-risk-reevaluation/SKILL.md",
+      "description": "Implement OpenID Shared Signals, CAEP/RISC receivers, SET validation, subjects, replay protection, fact updates, session/token/device/workload re-evaluation, and actions."
+    },
+    {
+      "batch": "38A",
+      "name": "exception-waiver-risk-acceptance-compensating-control-and-expiry",
+      "path": "agent-skills/runtime/exception-waiver-risk-acceptance-compensating-control-and-expiry/SKILL.md",
+      "description": "Implement policy exceptions, control waivers, risk acceptances, exact scopes, compensating controls, non-waivable policies, approvals, usage, expiry, renewal, and revocation."
+    },
+    {
+      "batch": "38A",
+      "name": "deployment-gate-artifact-provenance-sbom-test-risk-and-environment-admission",
+      "path": "agent-skills/runtime/deployment-gate-artifact-provenance-sbom-test-risk-and-environment-admission/SKILL.md",
+      "description": "Implement digest-bound deployment gates using provenance, signatures, SBOM, vulnerabilities, tests, performance, freshness, exceptions, environment, target, and post-deploy verification."
+    },
+    {
+      "batch": "38A",
+      "name": "kubernetes-cel-gatekeeper-kyverno-image-and-workload-admission-policy",
+      "path": "agent-skills/runtime/kubernetes-cel-gatekeeper-kyverno-image-and-workload-admission-policy/SKILL.md",
+      "description": "Implement Kubernetes admission profiles using native CEL, Gatekeeper and Kyverno-compatible adapters, image verification, mutation governance, audit, rollout, and version discovery."
+    },
+    {
+      "batch": "38A",
+      "name": "runtime-gate-api-service-mesh-database-tool-sandbox-runner-and-artifact-enforcement",
+      "path": "agent-skills/runtime/runtime-gate-api-service-mesh-database-tool-sandbox-runner-and-artifact-enforcement/SKILL.md",
+      "description": "Implement action/resource-specific runtime gates for APIs, service mesh, databases, tool brokers, runners, sandboxes, artifacts, SCM and agents with renewal and receipts."
+    },
+    {
+      "batch": "38A",
+      "name": "control-automation-remediation-plan-approval-execution-compensation-and-verification",
+      "path": "agent-skills/runtime/control-automation-remediation-plan-approval-execution-compensation-and-verification/SKILL.md",
+      "description": "Implement typed remediation catalogs, plans, simulations, approvals, idempotent execution, compensation, rollback/manual recovery, evidence, and mandatory reverification."
+    },
+    {
+      "batch": "38A",
+      "name": "policy-decision-log-explanation-trace-replay-attestation-and-evidence",
+      "path": "agent-skills/runtime/policy-decision-log-explanation-trace-replay-attestation-and-evidence/SKILL.md",
+      "description": "Implement redacted policy-decision logs, determining-rule explanations, traces, immutable inputs, replay, decision attestations, enforcement evidence, and graph links."
+    },
+    {
+      "batch": "38A",
+      "name": "policy-change-impact-shadow-canary-rollout-kill-switch-and-rollback",
+      "path": "agent-skills/runtime/policy-change-impact-shadow-canary-rollout-kill-switch-and-rollback/SKILL.md",
+      "description": "Implement policy diffs, impact analysis, historical replay, shadow decisions, canary/wave rollout, pause criteria, kill switches, mixed revisions, and trusted rollback."
+    },
+    {
+      "batch": "38A",
+      "name": "policy-conformance-fuzz-property-security-chaos-performance-and-release-gates",
+      "path": "agent-skills/runtime/policy-conformance-fuzz-property-security-chaos-performance-and-release-gates/SKILL.md",
+      "description": "Implement policy-engine conformance, property/fuzz tests, authorization attacks, signal replay, exception expiry, gate revocation, remediation recovery, performance, and release gates."
+    },
+    {
+      "batch": "38B",
+      "name": "policy-intelligence-governance-engineering-orchestrator",
+      "path": "agent-skills/runtime/policy-intelligence-governance-engineering-orchestrator/SKILL.md",
+      "description": "Implement Batch 38B end to end: policy sources, Policy IR, ontology/graph, NLP extraction, compilers, conflict analysis, mining, explanations, Copilot, regulatory impact, review, operations, evaluation, and gates."
+    },
+    {
+      "batch": "38B",
+      "name": "authoritative-policy-source-document-version-clause-and-citation-ingestion",
+      "path": "agent-skills/runtime/authoritative-policy-source-document-version-clause-and-citation-ingestion/SKILL.md",
+      "description": "Implement authoritative policy sources, document versions, exact clauses, citations, identifiers, languages, jurisdictions, effective periods, amendments, repeals, consolidations, signatures, and trust."
+    },
+    {
+      "batch": "38B",
+      "name": "policy-ontology-knowledge-graph-rdf-owl-shacl-and-projection",
+      "path": "agent-skills/runtime/policy-ontology-knowledge-graph-rdf-owl-shacl-and-projection/SKILL.md",
+      "description": "Implement a rebuildable policy ontology and knowledge graph with RDF/OWL-compatible concepts, stable SHACL validation, provenance, assertion/inference separation, and lineage."
+    },
+    {
+      "batch": "38B",
+      "name": "natural-language-policy-clause-definition-entity-and-scope-extraction",
+      "path": "agent-skills/runtime/natural-language-policy-clause-definition-entity-and-scope-extraction/SKILL.md",
+      "description": "Implement clause segmentation and extraction of definitions, actors, actions, resources, conditions, scope, jurisdiction, time, cross-references, ambiguity, confidence, and human review."
+    },
+    {
+      "batch": "38B",
+      "name": "deontic-temporal-jurisdiction-exception-and-policy-intermediate-representation",
+      "path": "agent-skills/runtime/deontic-temporal-jurisdiction-exception-and-policy-intermediate-representation/SKILL.md",
+      "description": "Implement Policy IR with obligations, prohibitions, permissions, recommendations, definitions, exceptions, subjects/actions/resources, conditions, time, jurisdiction, authority, priority, evidence, and ambiguity."
+    },
+    {
+      "batch": "38B",
+      "name": "policy-ir-to-rego-cedar-cel-legalruleml-and-control-code-compiler",
+      "path": "agent-skills/runtime/policy-ir-to-rego-cedar-cel-legalruleml-and-control-code-compiler/SKILL.md",
+      "description": "Implement deterministic source-mapped compilers from Policy IR to Rego, Cedar, Kubernetes CEL, LegalRuleML and Control-as-Code with semantic-loss reports and tests."
+    },
+    {
+      "batch": "38B",
+      "name": "policy-conflict-redundancy-gap-shadowing-and-satisfiability-analysis",
+      "path": "agent-skills/runtime/policy-conflict-redundancy-gap-shadowing-and-satisfiability-analysis/SKILL.md",
+      "description": "Implement engine-aware conflict, overlap, redundancy, shadowing, reachability, gap and bounded satisfiability analysis with witnesses, counterexamples, bounds, and reviews."
+    },
+    {
+      "batch": "38B",
+      "name": "policy-mining-decision-log-code-config-grant-and-exception-discovery",
+      "path": "agent-skills/runtime/policy-mining-decision-log-code-config-grant-and-exception-discovery/SKILL.md",
+      "description": "Implement privacy-aware policy mining from decisions, guards, IAM grants, RBAC, configuration, exceptions, tickets and runtime observations into reviewed candidates and drift findings."
+    },
+    {
+      "batch": "38B",
+      "name": "policy-explainability-source-trace-counterfactual-and-audience-views",
+      "path": "agent-skills/runtime/policy-explainability-source-trace-counterfactual-and-audience-views/SKILL.md",
+      "description": "Implement audience-safe policy explanations, exact source traces, determining rules, facts, missing/stale context, exceptions, errors, and secure counterfactual candidates."
+    },
+    {
+      "batch": "38B",
+      "name": "policy-copilot-grounded-rag-drafting-formalization-and-review-assistant",
+      "path": "agent-skills/runtime/policy-copilot-grounded-rag-drafting-formalization-and-review-assistant/SKILL.md",
+      "description": "Implement a grounded Policy Copilot for cited Q&A, drafting, IR/rule/test proposals, conflict/regulatory review, abstention, prompt-injection defence, provenance, and human approval."
+    },
+    {
+      "batch": "38B",
+      "name": "regulatory-change-source-monitoring-semantic-diff-and-impact-analysis",
+      "path": "agent-skills/runtime/regulatory-change-source-monitoring-semantic-diff-and-impact-analysis/SKILL.md",
+      "description": "Implement authoritative regulatory monitoring, status/version changes, textual/structural/semantic diffs, applicability reviews, knowledge-graph impact paths, action plans, and verification."
+    },
+    {
+      "batch": "38B",
+      "name": "policy-knowledge-search-question-answering-and-cross-framework-traceability",
+      "path": "agent-skills/runtime/policy-knowledge-search-question-answering-and-cross-framework-traceability/SKILL.md",
+      "description": "Implement lexical/semantic/hybrid/graph policy search, definition resolution, temporal/jurisdiction Q&A, citations, contradictions, and cross-framework control/policy/evidence traces."
+    },
+    {
+      "batch": "38B",
+      "name": "policy-review-comment-approval-segregation-of-duties-and-publication",
+      "path": "agent-skills/runtime/policy-review-comment-approval-segregation-of-duties-and-publication/SKILL.md",
+      "description": "Implement clause/IR/rule/test reviews, comments, suggestions, reviewer roles, conflicts of interest, segregation of duties, digest-bound approvals, quorum, rechecks, and publication readiness."
+    },
+    {
+      "batch": "38B",
+      "name": "policy-governance-operations-inventory-ownership-debt-sla-and-cockpit",
+      "path": "agent-skills/runtime/policy-governance-operations-inventory-ownership-debt-sla-and-cockpit/SKILL.md",
+      "description": "Implement policy inventory, owners, review schedules, usage, drift, conflicts, exception burden, stale/unused candidates, transparent debt dimensions, SLOs, alerts, cases, and cockpit."
+    },
+    {
+      "batch": "38B",
+      "name": "policy-intelligence-evaluation-gold-corpus-benchmark-red-team-and-model-governance",
+      "path": "agent-skills/runtime/policy-intelligence-evaluation-gold-corpus-benchmark-red-team-and-model-governance/SKILL.md",
+      "description": "Implement gold corpora, extraction/formalization/conflict/Copilot/regulatory evaluations, reviewer agreement, citations/abstention metrics, red teams, model/prompt governance, drift, and release decisions."
+    },
+    {
+      "batch": "38B",
+      "name": "policy-intelligence-conformance-security-quality-chaos-and-release-gates",
+      "path": "agent-skills/runtime/policy-intelligence-conformance-security-quality-chaos-and-release-gates/SKILL.md",
+      "description": "Implement source, ontology, IR, compiler, conflict, mining, explanation, Copilot, regulation, review, privacy, scale, chaos, and mandatory release gates."
+    },
+    {
+      "batch": "38C",
+      "name": "governance-regulatory-operations-orchestrator",
+      "path": "agent-skills/runtime/governance-regulatory-operations-orchestrator/SKILL.md",
+      "description": "Implement Batch 38C end to end: obligations, applicability, cross-border matrices, calendars, RACI, filings, notifications, training, board governance, examinations, cases, records, adapters, cockpits, and gates."
+    },
+    {
+      "batch": "38C",
+      "name": "regulatory-obligation-register-source-applicability-and-lifecycle",
+      "path": "agent-skills/runtime/regulatory-obligation-register-source-applicability-and-lifecycle/SKILL.md",
+      "description": "Implement clause-backed regulatory obligations, interpretations, applicability, actions, triggers, deadlines, evidence, reporting requirements, penalties, lifecycle, ownership, and versioning."
+    },
+    {
+      "batch": "38C",
+      "name": "cross-border-jurisdiction-entity-product-data-and-regulatory-matrix",
+      "path": "agent-skills/runtime/cross-border-jurisdiction-entity-product-data-and-regulatory-matrix/SKILL.md",
+      "description": "Implement cross-border regulatory matrices across jurisdictions, legal entities, activities, products, customers, data, locations, environments, thresholds, licences, conflicts, and mappings."
+    },
+    {
+      "batch": "38C",
+      "name": "compliance-calendar-deadline-recurrence-trigger-and-escalation",
+      "path": "agent-skills/runtime/compliance-calendar-deadline-recurrence-trigger-and-escalation/SKILL.md",
+      "description": "Implement compliance calendars, deterministic deadline rules, recurrence, event triggers, timezones/business days, milestones, dependencies, escalation, rescheduling, and evidence."
+    },
+    {
+      "batch": "38C",
+      "name": "responsibility-raci-accountability-delegation-and-capacity-governance",
+      "path": "agent-skills/runtime/responsibility-raci-accountability-delegation-and-capacity-governance/SKILL.md",
+      "description": "Implement accountable/responsible/consulted/informed roles, natural-person accountability, delegation, acceptance, expiry, backup coverage, segregation of duties, capacity, and org-change reconciliation."
+    },
+    {
+      "batch": "38C",
+      "name": "obligation-workplan-evidence-certification-attestation-and-closure",
+      "path": "agent-skills/runtime/obligation-workplan-evidence-certification-attestation-and-closure/SKILL.md",
+      "description": "Implement obligation-derived work plans, tasks, dependencies, evidence requests, management certifications, attestations, satisfaction decisions, closure, reopening, and audit."
+    },
+    {
+      "batch": "38C",
+      "name": "regulatory-reporting-taxonomy-xbrl-filing-validation-and-acknowledgement",
+      "path": "agent-skills/runtime/regulatory-reporting-taxonomy-xbrl-filing-validation-and-acknowledgement/SKILL.md",
+      "description": "Implement regulatory reporting, taxonomy and filing-rule versions, source facts, adjustments, XBRL/iXBRL/XML/JSON/CSV packages, validation, certification, submission, receipts, corrections, and reconciliation."
+    },
+    {
+      "batch": "38C",
+      "name": "regulatory-notification-incident-disclosure-materiality-and-deadline-workflow",
+      "path": "agent-skills/runtime/regulatory-notification-incident-disclosure-materiality-and-deadline-workflow/SKILL.md",
+      "description": "Implement event-triggered notifications, incident timestamps, materiality assessments, deadline clocks, initial/intermediate/final disclosures, approvals, submissions, updates, receipts, and closure."
+    },
+    {
+      "batch": "38C",
+      "name": "policy-training-targeting-acknowledgement-competency-and-campaign",
+      "path": "agent-skills/runtime/policy-training-targeting-acknowledgement-competency-and-campaign/SKILL.md",
+      "description": "Implement policy-version training, audience targeting, campaigns, progress, acknowledgements, assessments, competency, exemptions, retraining, reminders, certificates, and evidence."
+    },
+    {
+      "batch": "38C",
+      "name": "board-committee-agenda-pack-decision-minute-action-and-attestation",
+      "path": "agent-skills/runtime/board-committee-agenda-pack-decision-minute-action-and-attestation/SKILL.md",
+      "description": "Implement boards/committees, meeting calendars, agendas, immutable packs, conflicts, quorum, attendance, decisions, votes, minutes, actions, certifications, and governance evidence."
+    },
+    {
+      "batch": "38C",
+      "name": "regulatory-examination-inquiry-evidence-room-response-and-remediation",
+      "path": "agent-skills/runtime/regulatory-examination-inquiry-evidence-room-response-and-remediation/SKILL.md",
+      "description": "Implement regulatory examinations, notices, scopes, requests, scoped evidence rooms, correspondence, interviews, findings, responses, commitments, remediation, and closure."
+    },
+    {
+      "batch": "38C",
+      "name": "governance-case-intake-triage-investigation-remediation-and-closure",
+      "path": "agent-skills/runtime/governance-case-intake-triage-investigation-remediation-and-closure/SKILL.md",
+      "description": "Implement protected governance-case intake, confidentiality, triage, conflict checks, investigations, allegations/facts/findings, decisions, remediation, reverification, closure, and appeals."
+    },
+    {
+      "batch": "38C",
+      "name": "governance-records-retention-legal-hold-privilege-and-disposition",
+      "path": "agent-skills/runtime/governance-records-retention-legal-hold-privilege-and-disposition/SKILL.md",
+      "description": "Implement governance record classes, jurisdictional retention, legal holds, privilege, confidentiality, access reviews, disposition, exports, destruction evidence, and policy tests."
+    },
+    {
+      "batch": "38C",
+      "name": "regulator-portal-correspondence-submission-provider-and-delivery-adapters",
+      "path": "agent-skills/runtime/regulator-portal-correspondence-submission-provider-and-delivery-adapters/SKILL.md",
+      "description": "Implement provider-neutral regulatory delivery adapters for APIs, XBRL collectors, SFTP, secure email, assisted portals and manual delivery with credentials, receipts, human handoff, and reconciliation."
+    },
+    {
+      "batch": "38C",
+      "name": "governance-operations-cockpit-sla-calendar-risk-board-and-regulator-reporting",
+      "path": "agent-skills/runtime/governance-operations-cockpit-sla-calendar-risk-board-and-regulator-reporting/SKILL.md",
+      "description": "Implement governance operations dashboards for obligations, cross-border conflicts, calendar risk, owners, filings, notifications, training, board actions, examinations, cases, records, SLOs, forecasts, and reports."
+    },
+    {
+      "batch": "38C",
+      "name": "regulatory-operations-conformance-security-chaos-and-release-gates",
+      "path": "agent-skills/runtime/regulatory-operations-conformance-security-chaos-and-release-gates/SKILL.md",
+      "description": "Implement obligation, applicability, cross-border, calendar, RACI, filing, notification, training, board, examination, case, records, portal, privacy, chaos, scale, and release gates."
+    },
+    {
+      "batch": "37A",
+      "name": "artifact-provenance-evidence-fabric-orchestrator",
+      "path": "agent-skills/runtime/artifact-provenance-evidence-fabric-orchestrator/SKILL.md",
+      "description": "端到端编排统一 Artifact、Producer SDK、CAS、Attestation、Signing、SLSA、SBOM、OCI、Evidence Graph、Verification、Retention、Offline Pack 与 DR。"
+    },
+    {
+      "batch": "37A",
+      "name": "unified-artifact-domain-schema-identity-classification-and-lifecycle",
+      "path": "agent-skills/runtime/unified-artifact-domain-schema-identity-classification-and-lifecycle/SKILL.md",
+      "description": "分离不可变 Content Object、版本化 Artifact Metadata、分类、关系、授权和生命周期。"
+    },
+    {
+      "batch": "37A",
+      "name": "evidence-producer-sdk-schema-registry-ingestion-and-idempotency",
+      "path": "agent-skills/runtime/evidence-producer-sdk-schema-registry-ingestion-and-idempotency/SKILL.md",
+      "description": "建立统一 Evidence Producer 注册、Schema Registry、SDK、幂等摄取和生产者一致性测试。"
+    },
+    {
+      "batch": "37A",
+      "name": "content-addressed-storage-encryption-dedup-integrity-and-provider-adapters",
+      "path": "agent-skills/runtime/content-addressed-storage-encryption-dedup-integrity-and-provider-adapters/SKILL.md",
+      "description": "实现可插拔对象存储、内容寻址、加密域、租户安全去重、完整性与存储位置健康。"
+    },
+    {
+      "batch": "37A",
+      "name": "in-toto-statement-dsse-attestation-and-predicate-registry",
+      "path": "agent-skills/runtime/in-toto-statement-dsse-attestation-and-predicate-registry/SKILL.md",
+      "description": "实现 in-toto Statement v1、Digest Subject、DSSE、Predicate Registry、纠正与撤销声明。"
+    },
+    {
+      "batch": "37A",
+      "name": "artifact-signing-sigstore-kms-trust-root-timestamp-and-key-lifecycle",
+      "path": "agent-skills/runtime/artifact-signing-sigstore-kms-trust-root-timestamp-and-key-lifecycle/SKILL.md",
+      "description": "实现 Sigstore Keyless/Private、KMS/HSM、Timestamp、Transparency、Trust Root、轮换与撤销。"
+    },
+    {
+      "batch": "37A",
+      "name": "slsa-source-build-provenance-vsa-generation-and-verification",
+      "path": "agent-skills/runtime/slsa-source-build-provenance-vsa-generation-and-verification/SKILL.md",
+      "description": "实现 SLSA 1.2 Source/Build Provenance、Builder、参数、依赖、Level Assessment 与 VSA。"
+    },
+    {
+      "batch": "37A",
+      "name": "spdx-cyclonedx-sbom-generation-normalization-merge-and-quality",
+      "path": "agent-skills/runtime/spdx-cyclonedx-sbom-generation-normalization-merge-and-quality/SKILL.md",
+      "description": "支持 SPDX 3.0.1/2.3 Export、CycloneDX 1.7、生命周期、完整性、合并冲突和质量维度。"
+    },
+    {
+      "batch": "37A",
+      "name": "oci-artifact-distribution-referrers-and-registry-integration",
+      "path": "agent-skills/runtime/oci-artifact-distribution-referrers-and-registry-integration/SKILL.md",
+      "description": "实现 OCI 1.1 Subject/Referrer 发布、Registry Capability、Fallback、认证与对账。"
+    },
+    {
+      "batch": "37A",
+      "name": "evidence-graph-claim-lineage-projection-and-query",
+      "path": "agent-skills/runtime/evidence-graph-claim-lineage-projection-and-query/SKILL.md",
+      "description": "构建可重建证据图，区分 Claim、Observation、Verification 和 Inference，并支持影响分析。"
+    },
+    {
+      "batch": "37A",
+      "name": "verification-policy-expectations-trust-decision-and-vsa",
+      "path": "agent-skills/runtime/verification-policy-expectations-trust-decision-and-vsa/SKILL.md",
+      "description": "实现 Artifact Verification Policy、Signer/Builder/Subject/SBOM/SLSA Expectations、解释和 VSA。"
+    },
+    {
+      "batch": "37A",
+      "name": "object-lock-retention-legal-hold-records-management-and-disposition",
+      "path": "agent-skills/runtime/object-lock-retention-legal-hold-records-management-and-disposition/SKILL.md",
+      "description": "实现精确对象版本 Retention、Governance/Compliance Lock、Legal Hold 与 Disposition。"
+    },
+    {
+      "batch": "37A",
+      "name": "offline-evidence-pack-export-import-and-airgap-verification",
+      "path": "agent-skills/runtime/offline-evidence-pack-export-import-and-airgap-verification/SKILL.md",
+      "description": "实现可离线验证的规范化、签名、加密 Evidence Pack 与隔离导入。"
+    },
+    {
+      "batch": "37A",
+      "name": "evidence-classification-redaction-privacy-and-source-locality",
+      "path": "agent-skills/runtime/evidence-classification-redaction-privacy-and-source-locality/SKILL.md",
+      "description": "实现证据分类、Source Locality、Secret/PII/Source 扫描、结构化脱敏和披露审批。"
+    },
+    {
+      "batch": "37A",
+      "name": "artifact-fabric-replication-backup-scrubbing-migration-and-disaster-recovery",
+      "path": "agent-skills/runtime/artifact-fabric-replication-backup-scrubbing-migration-and-disaster-recovery/SKILL.md",
+      "description": "实现多副本、分层存储、完整性巡检、Provider 迁移、恢复、索引/图重建与DR演练。"
+    },
+    {
+      "batch": "37A",
+      "name": "evidence-conformance-tamper-security-chaos-and-release-gates",
+      "path": "agent-skills/runtime/evidence-conformance-tamper-security-chaos-and-release-gates/SKILL.md",
+      "description": "实现标准一致性、篡改、信任、Retention、Offline、Privacy、Scale 与DR发布门禁。"
+    },
+    {
+      "batch": "37B",
+      "name": "external-evidence-producer-integration-orchestrator",
+      "path": "agent-skills/runtime/external-evidence-producer-integration-orchestrator/SKILL.md",
+      "description": "端到端编排外部生产者连接、CI平台、质量/安全/测试/性能报告、审计报告、关联、质量与发布门禁。"
+    },
+    {
+      "batch": "37B",
+      "name": "external-evidence-connector-contract-producer-identity-and-capability",
+      "path": "agent-skills/runtime/external-evidence-connector-contract-producer-identity-and-capability/SKILL.md",
+      "description": "实现 Provider-neutral External Evidence Connector、稳定ID、能力快照、分页、错误和TCK。"
+    },
+    {
+      "batch": "37B",
+      "name": "jenkins-controller-pipeline-build-artifact-test-fingerprint-and-plugin-connector",
+      "path": "agent-skills/runtime/jenkins-controller-pipeline-build-artifact-test-fingerprint-and-plugin-connector/SKILL.md",
+      "description": "接入 Jenkins Controller版本、Plugin能力、Job/Build/Pipeline、Artifact、Fingerprint、JUnit与Progressive Log。"
+    },
+    {
+      "batch": "37B",
+      "name": "github-actions-workflow-run-job-artifact-log-attestation-and-oidc-connector",
+      "path": "agent-skills/runtime/github-actions-workflow-run-job-artifact-log-attestation-and-oidc-connector/SKILL.md",
+      "description": "接入 Workflow/Run/Attempt/Job/Artifact/Log、Reusable Workflow、OIDC与GitHub Artifact Attestation。"
+    },
+    {
+      "batch": "37B",
+      "name": "gitlab-ci-pipeline-job-artifact-report-security-and-provenance-connector",
+      "path": "agent-skills/runtime/gitlab-ci-pipeline-job-artifact-report-security-and-provenance-connector/SKILL.md",
+      "description": "接入 GitLab Pipeline/Job/Retry/Bridge/Parent-Child/Multi-project、Artifact、Trace、报告与SBOM。"
+    },
+    {
+      "batch": "37B",
+      "name": "azure-pipelines-build-timeline-log-artifact-test-and-identity-connector",
+      "path": "agent-skills/runtime/azure-pipelines-build-timeline-log-artifact-test-and-identity-connector/SKILL.md",
+      "description": "接入 Azure Build 7.1、Timeline、Logs、Artifacts、Test Run/Result/Attachments和Entra Identity。"
+    },
+    {
+      "batch": "37B",
+      "name": "sonarqube-server-cloud-analysis-quality-gate-measure-issue-and-webhook-connector",
+      "path": "agent-skills/runtime/sonarqube-server-cloud-analysis-quality-gate-measure-issue-and-webhook-connector/SKILL.md",
+      "description": "接入SonarQube Server/Cloud、HMAC Webhook、Background Task、Analysis、Gate、Measure、Issue与Profile Drift。"
+    },
+    {
+      "batch": "37B",
+      "name": "sast-sca-secret-iac-container-sarif-vulnerability-and-finding-normalizer",
+      "path": "agent-skills/runtime/sast-sca-secret-iac-container-sarif-vulnerability-and-finding-normalizer/SKILL.md",
+      "description": "归一 SARIF 2.1.0及Native Security Reports、漏洞别名、严重度、指纹、Baseline和Suppression。"
+    },
+    {
+      "batch": "37B",
+      "name": "test-result-coverage-mutation-flaky-and-test-management-normalizer",
+      "path": "agent-skills/runtime/test-result-coverage-mutation-flaky-and-test-management-normalizer/SKILL.md",
+      "description": "归一JUnit/TestNG/NUnit/pytest/TRX、Coverage、Mutation、Rerun、Flaky与附件。"
+    },
+    {
+      "batch": "37B",
+      "name": "performance-benchmark-load-jmh-jmeter-gatling-k6-and-regression-normalizer",
+      "path": "agent-skills/runtime/performance-benchmark-load-jmh-jmeter-gatling-k6-and-regression-normalizer/SKILL.md",
+      "description": "归一JMH/JMeter/Gatling/k6和通用Benchmark，保存环境、负载、时间序列、Percentile和比较结论。"
+    },
+    {
+      "batch": "37B",
+      "name": "third-party-audit-penetration-test-compliance-assessment-and-signed-report-intake",
+      "path": "agent-skills/runtime/third-party-audit-penetration-test-compliance-assessment-and-signed-report-intake/SKILL.md",
+      "description": "安全接收外部审计、渗透测试、认证与评估报告，验证Issuer、Signature、Scope、Period和修订。"
+    },
+    {
+      "batch": "37B",
+      "name": "ci-producer-workload-identity-oidc-signing-and-trust-policy",
+      "path": "agent-skills/runtime/ci-producer-workload-identity-oidc-signing-and-trust-policy/SKILL.md",
+      "description": "统一CI Producer Identity、OIDC Claims、Trusted Workflow、Signed Evidence Upload与撤销。"
+    },
+    {
+      "batch": "37B",
+      "name": "webhook-polling-backfill-watermark-dedup-and-reconciliation",
+      "path": "agent-skills/runtime/webhook-polling-backfill-watermark-dedup-and-reconciliation/SKILL.md",
+      "description": "实现多模式摄取、游标、水位线、去重、乱序、限流和缺失事件恢复。"
+    },
+    {
+      "batch": "37B",
+      "name": "build-source-artifact-test-security-performance-delivery-correlation-and-lineage",
+      "path": "agent-skills/runtime/build-source-artifact-test-security-performance-delivery-correlation-and-lineage/SKILL.md",
+      "description": "使用Commit、Digest和Native ID关联外部运行、Artifact、报告、PR/MR与ELMOS项目，保留置信度和歧义。"
+    },
+    {
+      "batch": "37B",
+      "name": "external-evidence-quality-freshness-completeness-conflict-confidence-and-gating",
+      "path": "agent-skills/runtime/external-evidence-quality-freshness-completeness-conflict-confidence-and-gating/SKILL.md",
+      "description": "计算Authenticity、Integrity、Correlation、Completeness、Freshness、Scope、Reproducibility与Producer Assurance。"
+    },
+    {
+      "batch": "37B",
+      "name": "external-evidence-conformance-fixtures-security-chaos-and-release-gates",
+      "path": "agent-skills/runtime/external-evidence-conformance-fixtures-security-chaos-and-release-gates/SKILL.md",
+      "description": "实现Connector TCK、平台Fixtures、真实平台Smoke、恶意报告、Webhook丢失、Schema Drift、Scale与发布门禁。"
+    },
+    {
+      "batch": "37C",
+      "name": "evidence-analytics-assurance-cockpit-orchestrator",
+      "path": "agent-skills/runtime/evidence-analytics-assurance-cockpit-orchestrator/SKILL.md",
+      "description": "端到端编排Semantic Layer、Data Quality、Completeness、Risk、Control、Audit、Freshness、Trend、Portfolio、Cockpit、Alert与Forecast。"
+    },
+    {
+      "batch": "37C",
+      "name": "assurance-semantic-layer-metric-registry-and-denominator-governance",
+      "path": "agent-skills/runtime/assurance-semantic-layer-metric-registry-and-denominator-governance/SKILL.md",
+      "description": "建立统一Metric定义、Grain、分子分母、适用性、时间、聚合、目标、护栏、Snapshot与Restatement。"
+    },
+    {
+      "batch": "37C",
+      "name": "evidence-data-quality-source-certification-lineage-and-reconciliation",
+      "path": "agent-skills/runtime/evidence-data-quality-source-certification-lineage-and-reconciliation/SKILL.md",
+      "description": "评估证据分析源的完整性、唯一性、有效性、一致性、完整参照、及时性、形状、血缘与授权。"
+    },
+    {
+      "batch": "37C",
+      "name": "evidence-completeness-chain-coverage-gap-and-readiness-analytics",
+      "path": "agent-skills/runtime/evidence-completeness-chain-coverage-gap-and-readiness-analytics/SKILL.md",
+      "description": "基于Requirement Profile和End-to-end Evidence Chain计算多维完整度、缺口和项目就绪度。"
+    },
+    {
+      "batch": "37C",
+      "name": "software-supply-chain-risk-exposure-concentration-and-blast-radius-analytics",
+      "path": "agent-skills/runtime/software-supply-chain-risk-exposure-concentration-and-blast-radius-analytics/SKILL.md",
+      "description": "计算组件、漏洞、Builder、Signer、Provider、依赖集中度、可达性、暴露期与影响范围。"
+    },
+    {
+      "batch": "37C",
+      "name": "control-catalog-oscal-mapping-assessment-and-continuous-control-monitoring",
+      "path": "agent-skills/runtime/control-catalog-oscal-mapping-assessment-and-continuous-control-monitoring/SKILL.md",
+      "description": "实现Control Catalog/Profile/Mapping、Responsibility、Assessment、Evidence、Continuous Monitor与POA&M。"
+    },
+    {
+      "batch": "37C",
+      "name": "audit-readiness-pbc-request-list-evidence-room-and-examiner-workflow",
+      "path": "agent-skills/runtime/audit-readiness-pbc-request-list-evidence-room-and-examiner-workflow/SKILL.md",
+      "description": "实现审计Engagement、PBC Request、Evidence Mapping、只读证据室、内部复核、可重现抽样与签名导出。"
+    },
+    {
+      "batch": "37C",
+      "name": "evidence-freshness-expiry-renewal-sla-and-forward-alerting",
+      "path": "agent-skills/runtime/evidence-freshness-expiry-renewal-sla-and-forward-alerting/SKILL.md",
+      "description": "实现按Evidence/Control类型的Freshness、提前失效、续期、SLA、90/60/30天预警和影响预测。"
+    },
+    {
+      "batch": "37C",
+      "name": "assurance-trend-baseline-change-point-seasonality-anomaly-and-diagnostics",
+      "path": "agent-skills/runtime/assurance-trend-baseline-change-point-seasonality-anomaly-and-diagnostics/SKILL.md",
+      "description": "实现时间语义、Gap/Reset、鲁棒Baseline、Change Point、Anomaly、Segment Driver与Restatement处理。"
+    },
+    {
+      "batch": "37C",
+      "name": "portfolio-assurance-rollup-risk-appetite-segmentation-and-benchmarking",
+      "path": "agent-skills/runtime/portfolio-assurance-rollup-risk-appetite-segmentation-and-benchmarking/SKILL.md",
+      "description": "实现组织层级、安全Rollup、Critical Visibility、Risk Appetite、可比Cohort和隐私基准。"
+    },
+    {
+      "batch": "37C",
+      "name": "executive-assurance-cockpit-kpi-scorecard-and-narrative",
+      "path": "agent-skills/runtime/executive-assurance-cockpit-kpi-scorecard-and-narrative/SKILL.md",
+      "description": "实现董事会/CIO/CTO/CISO/CRO等受众的Outcome/Driver/Guardrail、趋势、例外、行动和证据化叙事。"
+    },
+    {
+      "batch": "37C",
+      "name": "auditor-control-cockpit-evidence-navigator-sampling-and-export",
+      "path": "agent-skills/runtime/auditor-control-cockpit-evidence-navigator-sampling-and-export/SKILL.md",
+      "description": "实现Framework→Control→Implementation→Assessment→Evidence→Finding→POA&M导航、抽样和不可变导出。"
+    },
+    {
+      "batch": "37C",
+      "name": "assurance-alert-case-remediation-owner-escalation-and-reverification",
+      "path": "agent-skills/runtime/assurance-alert-case-remediation-owner-escalation-and-reverification/SKILL.md",
+      "description": "将Evidence Gap、Expiry、Control Failure、Risk、Audit与Data Quality信号转成有Owner、SLA、整改与复验的Case。"
+    },
+    {
+      "batch": "37C",
+      "name": "assurance-query-cube-cache-dashboard-api-export-and-snapshot-publication",
+      "path": "agent-skills/runtime/assurance-query-cube-cache-dashboard-api-export-and-snapshot-publication/SKILL.md",
+      "description": "建立分析事实/维度、Materialized Aggregate、Semantic Query、Tenant-safe Cache、Filter、Export与签名Snapshot。"
+    },
+    {
+      "batch": "37C",
+      "name": "assurance-forecast-scenario-stress-test-and-prioritization",
+      "path": "agent-skills/runtime/assurance-forecast-scenario-stress-test-and-prioritization/SKILL.md",
+      "description": "实现Evidence Expiry、Audit Readiness、Remediation Backlog、Risk等可解释预测、情景、敏感性与行动优先级。"
+    },
+    {
+      "batch": "37C",
+      "name": "assurance-analytics-security-privacy-quality-performance-and-release-gates",
+      "path": "agent-skills/runtime/assurance-analytics-security-privacy-quality-performance-and-release-gates/SKILL.md",
+      "description": "实现Metric、Data Quality、Completeness、Control、Risk、Audit、Trend、Portfolio、Dashboard、Cache、Forecast发布门禁。"
+    }
+  ],
+  "provenance": {
+    "batch37": "Imported from the previously validated 48-skill Batch 37 complete package.",
+    "batch34_36_38": "Normalized installable Skill files generated from the approved A/B/C architecture and skill definitions in the conversation."
+  }
+}

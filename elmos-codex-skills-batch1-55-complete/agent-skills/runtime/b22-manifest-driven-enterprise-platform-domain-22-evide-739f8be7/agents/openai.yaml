@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M22: B22 Manifest Driven Enterprise Platform Domain 22 Evidence Audit And Provenance"
+  short_description: "Run ELMOS M22 Skill with fail-closed evidence"
+  default_prompt: "Use $b22-manifest-driven-enterprise-platform-domain-22-evide-739f8be7 to execute the ELMOS M22 contract with fail-closed evidence."

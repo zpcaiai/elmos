@@ -1,0 +1,9 @@
+BATCH33_PYTHON ?= /opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python
+.PHONY: batch33-validate batch33-test batch33-check batch33-score
+batch33-validate:
+	$(BATCH33_PYTHON) scripts/batch33/validate_skill_bundle.py .agents/skills
+batch33-test:
+	$(BATCH33_PYTHON) -m unittest discover -s tests/batch33 -p 'test_*.py'
+batch33-check: batch33-validate batch33-test
+batch33-score:
+	$(BATCH33_PYTHON) scripts/batch33/score_cloud_candidates.py templates/batch33/cloud-candidates.json --output /tmp/batch33-cloud-candidates-result.json

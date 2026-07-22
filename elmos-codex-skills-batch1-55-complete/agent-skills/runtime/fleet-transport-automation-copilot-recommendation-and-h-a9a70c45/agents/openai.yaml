@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B51: Fleet Transport Automation Copilot Recommendation And Human Review"
+  short_description: "Run ELMOS B51 Skill with fail-closed evidence"
+  default_prompt: "Use $fleet-transport-automation-copilot-recommendation-and-h-a9a70c45 to execute the ELMOS B51 contract with fail-closed evidence."

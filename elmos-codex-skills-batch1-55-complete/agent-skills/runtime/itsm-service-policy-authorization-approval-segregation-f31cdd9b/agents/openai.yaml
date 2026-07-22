@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B47: Itsm Service Policy Authorization Approval Segregation And Exception"
+  short_description: "Run ELMOS B47 Skill with fail-closed evidence"
+  default_prompt: "Use $itsm-service-policy-authorization-approval-segregation-f31cdd9b to execute the ELMOS B47 contract with fail-closed evidence."

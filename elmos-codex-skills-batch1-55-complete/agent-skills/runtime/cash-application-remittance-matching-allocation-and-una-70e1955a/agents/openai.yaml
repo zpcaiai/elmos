@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B39: Cash Application Remittance Matching Allocation And Unapplied Cash"
+  short_description: "Run ELMOS B39 Skill with fail-closed evidence"
+  default_prompt: "Use $cash-application-remittance-matching-allocation-and-una-70e1955a to execute the ELMOS B39 contract with fail-closed evidence."

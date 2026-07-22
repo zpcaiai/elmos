@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B41: Product Discovery Audit Evidence Records Retention And Legal Hold"
+  short_description: "Run ELMOS B41 Skill with fail-closed evidence"
+  default_prompt: "Use $product-discovery-audit-evidence-records-retention-and-ffc1b024 to execute the ELMOS B41 contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M09: B09 Build Compile Test Repair Bounded Fix Loop Discovery And Baseline"
+  short_description: "Run ELMOS M09 Skill with fail-closed evidence"
+  default_prompt: "Use $b09-build-compile-test-repair-bounded-fix-loop-discover-660e89e5 to execute the ELMOS M09 contract with fail-closed evidence."

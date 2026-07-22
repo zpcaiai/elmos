@@ -1,0 +1,4 @@
+interface:
+  display_name: "B34 Multilanguage Workspace Build Graph"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b34-multilanguage-workspace-build-graph to execute this ELMOS Runtime Skill with fail-closed evidence."

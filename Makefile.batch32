@@ -1,0 +1,9 @@
+BATCH32_PYTHON ?= /opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python
+.PHONY: batch32-validate batch32-test batch32-check batch32-score
+batch32-validate:
+	$(BATCH32_PYTHON) scripts/batch32/validate_skill_bundle.py .agents/skills
+batch32-test:
+	$(BATCH32_PYTHON) -m unittest discover -s tests/batch32 -p 'test_*.py'
+batch32-check: batch32-validate batch32-test
+batch32-score:
+	$(BATCH32_PYTHON) scripts/batch32/score_client_candidates.py templates/batch32/client-candidates.json --output /tmp/batch32-client-candidates-result.json

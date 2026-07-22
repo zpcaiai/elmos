@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M44: B44 Human Expert Cost"
+  short_description: "Run ELMOS M44 Skill with fail-closed evidence"
+  default_prompt: "Use $b44-human-expert-cost to execute the ELMOS M44 contract with fail-closed evidence."

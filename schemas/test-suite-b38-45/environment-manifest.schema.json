@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/test-suite-b38-45/environment-manifest.schema.json",
+  "type": "object", "additionalProperties": false,
+  "required": ["manifest_version", "environment_id", "edition", "regions", "network_mode", "toolchains", "providers", "configuration_digest", "captured_at", "captured_by"],
+  "properties": {
+    "manifest_version": {"const": 1}, "environment_id": {"type": "string", "minLength": 1}, "edition": {"type": "string", "minLength": 1}, "regions": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "network_mode": {"enum": ["connected", "restricted", "air-gapped"]}, "toolchains": {"type": "object", "minProperties": 1}, "providers": {"type": "object"},
+    "configuration_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}, "captured_at": {"type": "string", "format": "date-time"}, "captured_by": {"type": "string", "minLength": 1}
+  }
+}

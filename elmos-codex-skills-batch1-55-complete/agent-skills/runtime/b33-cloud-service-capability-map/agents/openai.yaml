@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M33: B33 Cloud Service Capability Map"
+  short_description: "Run ELMOS M33 Skill with fail-closed evidence"
+  default_prompt: "Use $b33-cloud-service-capability-map to execute the ELMOS M33 contract with fail-closed evidence."

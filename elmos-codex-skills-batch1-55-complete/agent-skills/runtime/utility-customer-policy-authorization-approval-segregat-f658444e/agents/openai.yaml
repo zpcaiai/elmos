@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B53: Utility Customer Policy Authorization Approval Segregation And Exception"
+  short_description: "Run ELMOS B53 Skill with fail-closed evidence"
+  default_prompt: "Use $utility-customer-policy-authorization-approval-segregat-f658444e to execute the ELMOS B53 contract with fail-closed evidence."

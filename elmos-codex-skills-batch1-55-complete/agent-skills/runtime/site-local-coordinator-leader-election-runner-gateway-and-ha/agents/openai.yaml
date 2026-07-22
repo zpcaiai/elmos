@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B36: Site Local Coordinator Leader Election Runner Gateway And Ha"
+  short_description: "Run ELMOS B36 Skill with fail-closed evidence"
+  default_prompt: "Use $site-local-coordinator-leader-election-runner-gateway-and-ha to execute the ELMOS B36 contract with fail-closed evidence."

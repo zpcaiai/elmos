@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M37: B37 Airgapped Mirror Offline Revocation License"
+  short_description: "Run ELMOS M37 Skill with fail-closed evidence"
+  default_prompt: "Use $b37-airgapped-mirror-offline-revocation-license to execute the ELMOS M37 contract with fail-closed evidence."

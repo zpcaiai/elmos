@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M43: B43 Release Channel Governance"
+  short_description: "Run ELMOS M43 Skill with fail-closed evidence"
+  default_prompt: "Use $b43-release-channel-governance to execute the ELMOS M43 contract with fail-closed evidence."

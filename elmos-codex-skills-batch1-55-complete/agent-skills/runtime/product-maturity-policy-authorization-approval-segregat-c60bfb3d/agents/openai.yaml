@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B55: Product Maturity Policy Authorization Approval Segregation And Exception"
+  short_description: "Run ELMOS B55 Skill with fail-closed evidence"
+  default_prompt: "Use $product-maturity-policy-authorization-approval-segregat-c60bfb3d to execute the ELMOS B55 contract with fail-closed evidence."

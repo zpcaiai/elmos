@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B54: Content Knowledge Master Data Identity Hierarchy And Effective Dating"
+  short_description: "Run ELMOS Product B54 contract with fail-closed evidence"
+  default_prompt: "Use $content-knowledge-master-data-identity-hierarchy-and-ef-2ddded64 to implement its fail-closed ELMOS Product B54 contract."

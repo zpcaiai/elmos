@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B38: Policy Conformance Fuzz Property Security Chaos Performance And Release Gates"
+  short_description: "Run ELMOS B38 Skill with fail-closed evidence"
+  default_prompt: "Use $policy-conformance-fuzz-property-security-chaos-perform-5779b1d0 to execute the ELMOS B38 contract with fail-closed evidence."

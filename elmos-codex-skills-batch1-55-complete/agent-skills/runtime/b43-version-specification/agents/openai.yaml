@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M43: B43 Version Specification"
+  short_description: "Run ELMOS M43 Skill with fail-closed evidence"
+  default_prompt: "Use $b43-version-specification to execute the ELMOS M43 contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B45: Agentic Runtime Observability Sla Cockpit Alerting And Operations"
+  short_description: "Run ELMOS Product B45 contract with fail-closed evidence"
+  default_prompt: "Use $agentic-runtime-observability-sla-cockpit-alerting-and-b7e4834b to implement its fail-closed ELMOS Product B45 contract."

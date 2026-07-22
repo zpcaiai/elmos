@@ -1,0 +1,4 @@
+interface:
+  display_name: "B67 Go Data Access Transaction Generator"
+  short_description: "Run this ELMOS project Skill with evidence controls"
+  default_prompt: "Use $b67-go-data-access-transaction-generator to execute this ELMOS project Skill with fail-closed evidence."

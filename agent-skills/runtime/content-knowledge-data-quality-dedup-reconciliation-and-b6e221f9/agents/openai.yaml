@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B54: Content Knowledge Data Quality Dedup Reconciliation And Certification"
+  short_description: "Run ELMOS Product B54 contract with fail-closed evidence"
+  default_prompt: "Use $content-knowledge-data-quality-dedup-reconciliation-and-b6e221f9 to implement its fail-closed ELMOS Product B54 contract."

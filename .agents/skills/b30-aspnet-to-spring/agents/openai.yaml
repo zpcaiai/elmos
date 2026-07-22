@@ -1,0 +1,4 @@
+interface:
+  display_name: "B30 Aspnet To Spring"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b30-aspnet-to-spring to execute this ELMOS Runtime Skill with fail-closed evidence."

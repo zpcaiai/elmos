@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B39: Treasury Bank Account Liquidity Pooling Sweep Limit And Funding"
+  short_description: "Run ELMOS B39 Skill with fail-closed evidence"
+  default_prompt: "Use $treasury-bank-account-liquidity-pooling-sweep-limit-and-funding to execute the ELMOS B39 contract with fail-closed evidence."

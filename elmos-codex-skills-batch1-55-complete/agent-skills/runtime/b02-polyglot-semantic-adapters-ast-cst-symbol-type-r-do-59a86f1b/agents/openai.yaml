@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M02: B02 Polyglot Semantic Adapters Ast Cst Symbol Type R Domain Model And Contracts"
+  short_description: "Run ELMOS M02 Skill with fail-closed evidence"
+  default_prompt: "Use $b02-polyglot-semantic-adapters-ast-cst-symbol-type-r-do-59a86f1b to execute the ELMOS M02 contract with fail-closed evidence."

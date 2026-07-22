@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B39: Rating Charging Billing Period Invoice Line And Adjustment Engine"
+  short_description: "Run ELMOS B39 Skill with fail-closed evidence"
+  default_prompt: "Use $rating-charging-billing-period-invoice-line-and-adjustm-ce0d1257 to execute the ELMOS B39 contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M32: B32 Design Token Theme Extraction"
+  short_description: "Run ELMOS M32 Skill with fail-closed evidence"
+  default_prompt: "Use $b32-design-token-theme-extraction to execute the ELMOS M32 contract with fail-closed evidence."

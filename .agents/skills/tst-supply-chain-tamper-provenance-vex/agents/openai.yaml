@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tst Supply Chain Tamper Provenance Vex"
+  short_description: "Run Batch 38-45 strict evidence validation"
+  default_prompt: "Use $tst-supply-chain-tamper-provenance-vex to run its exact Batch 38-45 cases with fail-closed evidence."

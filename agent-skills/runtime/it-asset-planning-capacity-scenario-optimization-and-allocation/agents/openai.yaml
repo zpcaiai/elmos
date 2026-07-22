@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B47: It Asset Planning Capacity Scenario Optimization And Allocation"
+  short_description: "Run ELMOS Product B47 contract with fail-closed evidence"
+  default_prompt: "Use $it-asset-planning-capacity-scenario-optimization-and-allocation to implement its fail-closed ELMOS Product B47 contract."

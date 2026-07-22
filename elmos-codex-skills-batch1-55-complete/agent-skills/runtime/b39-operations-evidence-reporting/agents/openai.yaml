@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M39: B39 Operations Evidence Reporting"
+  short_description: "Run ELMOS M39 Skill with fail-closed evidence"
+  default_prompt: "Use $b39-operations-evidence-reporting to execute the ELMOS M39 contract with fail-closed evidence."

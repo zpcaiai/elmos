@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B48: Enterprise Risk Observability Sla Cockpit Alerting And Operations"
+  short_description: "Run ELMOS Product B48 contract with fail-closed evidence"
+  default_prompt: "Use $enterprise-risk-observability-sla-cockpit-alerting-and-5ec8f173 to implement its fail-closed ELMOS Product B48 contract."

@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/test-suite-b38-45/customer-evidence.schema.json",
+  "type": "object", "additionalProperties": false,
+  "required": ["evidence_version", "evidence_id", "organization_id", "scope", "artifact_digest", "environment_digest", "accepted", "independent", "accepted_at", "verifier_id", "authorization_refs", "findings"],
+  "properties": {
+    "evidence_version": {"const": 1}, "evidence_id": {"type": "string", "minLength": 1}, "organization_id": {"type": "string", "minLength": 1}, "scope": {"const": "batch38-45-strict"},
+    "artifact_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}, "environment_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "accepted": {"const": true}, "independent": {"const": true}, "accepted_at": {"type": "string", "format": "date-time"}, "verifier_id": {"type": "string", "minLength": 1},
+    "authorization_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}, "findings": {"type": "array"}
+  }
+}

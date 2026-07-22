@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B37: External Evidence Quality Freshness Completeness Conflict Confidence And Gating"
+  short_description: "Run ELMOS B37 Skill with fail-closed evidence"
+  default_prompt: "Use $external-evidence-quality-freshness-completeness-confli-3a40b578 to execute the ELMOS B37 contract with fail-closed evidence."

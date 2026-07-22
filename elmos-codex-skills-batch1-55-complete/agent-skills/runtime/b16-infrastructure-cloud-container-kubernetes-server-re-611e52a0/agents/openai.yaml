@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M16: B16 Infrastructure Cloud Container Kubernetes Server Release Certification Gate"
+  short_description: "Run ELMOS M16 Skill with fail-closed evidence"
+  default_prompt: "Use $b16-infrastructure-cloud-container-kubernetes-server-re-611e52a0 to execute the ELMOS M16 contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B53: Utility Customer Security Privacy Quality Performance Chaos And Release Gates"
+  short_description: "Run ELMOS Product B53 contract with fail-closed evidence"
+  default_prompt: "Use $utility-customer-security-privacy-quality-performance-c-8151d581 to implement its fail-closed ELMOS Product B53 contract."

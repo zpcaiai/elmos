@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B41: Product Discovery Case Investigation Remediation And Closure"
+  short_description: "Run ELMOS B41 Skill with fail-closed evidence"
+  default_prompt: "Use $product-discovery-case-investigation-remediation-and-closure to execute the ELMOS B41 contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B47: Sre Reliability Backfill Replay Resilience Disaster Recovery And Continuity"
+  short_description: "Run ELMOS B47 Skill with fail-closed evidence"
+  default_prompt: "Use $sre-reliability-backfill-replay-resilience-disaster-rec-cca3a149 to execute the ELMOS B47 contract with fail-closed evidence."

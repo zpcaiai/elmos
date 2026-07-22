@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B50: Industrial Twin Analytics Kpi Scoring Forecast And Diagnostics"
+  short_description: "Run ELMOS Product B50 contract with fail-closed evidence"
+  default_prompt: "Use $industrial-twin-analytics-kpi-scoring-forecast-and-diagnostics to implement its fail-closed ELMOS Product B50 contract."

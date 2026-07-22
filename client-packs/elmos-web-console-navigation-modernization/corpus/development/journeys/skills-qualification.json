@@ -1,0 +1,14 @@
+{
+  "id": "journey.skills-qualification",
+  "synthetic_data": true,
+  "browser_scope": "Google Chrome 150.0.7871.129 local",
+  "steps": [
+    "Open the global command palette with Command-K",
+    "Search for Skills and navigate with Enter",
+    "Switch from Migration M1-M45 to Product B34-B55",
+    "Confirm provenance ranges and exact totals",
+    "Confirm strict qualification remains 0 / 408 and BLOCKED",
+    "Repeat on mobile using the bottom navigation"
+  ],
+  "expected": "The namespace boundary stays explicit, all missing external evidence remains NOT_RUN, keyboard focus returns after dismissal, and no viewport has horizontal overflow."
+}

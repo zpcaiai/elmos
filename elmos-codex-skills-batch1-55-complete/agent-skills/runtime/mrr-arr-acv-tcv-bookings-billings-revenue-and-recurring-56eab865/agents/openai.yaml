@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B39: Mrr Arr Acv Tcv Bookings Billings Revenue And Recurring Metric Engine"
+  short_description: "Run ELMOS B39 Skill with fail-closed evidence"
+  default_prompt: "Use $mrr-arr-acv-tcv-bookings-billings-revenue-and-recurring-56eab865 to execute the ELMOS B39 contract with fail-closed evidence."

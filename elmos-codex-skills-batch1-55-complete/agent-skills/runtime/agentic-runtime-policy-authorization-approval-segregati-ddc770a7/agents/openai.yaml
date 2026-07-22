@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B45: Agentic Runtime Policy Authorization Approval Segregation And Exception"
+  short_description: "Run ELMOS B45 Skill with fail-closed evidence"
+  default_prompt: "Use $agentic-runtime-policy-authorization-approval-segregati-ddc770a7 to execute the ELMOS B45 contract with fail-closed evidence."

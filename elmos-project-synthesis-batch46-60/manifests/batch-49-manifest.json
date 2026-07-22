@@ -1,0 +1,128 @@
+{
+  "batch": 49,
+  "engine": "elmos.project-synthesis",
+  "skill_count": 10,
+  "skills": [
+    {
+      "id": "PG033",
+      "name": "user-story-and-use-case-builder",
+      "depends_on": [
+        "PG015",
+        "PG024",
+        "PG028",
+        "PG031"
+      ],
+      "summary": "Builds user stories, use cases, alternate flows, and exception paths from an approved requirement baseline.",
+      "path": "skills/batch-49/PG033-user-story-and-use-case-builder.md"
+    },
+    {
+      "id": "PG034",
+      "name": "business-rule-modeler",
+      "depends_on": [
+        "PG014",
+        "PG028",
+        "PG031",
+        "PG033"
+      ],
+      "summary": "Models validations, calculations, eligibility rules, temporal rules, invariants, and decision tables.",
+      "path": "skills/batch-49/PG034-business-rule-modeler.md"
+    },
+    {
+      "id": "PG035",
+      "name": "domain-entity-value-object-modeler",
+      "depends_on": [
+        "PG014",
+        "PG033",
+        "PG034"
+      ],
+      "summary": "Models aggregates, entities, value objects, identities, invariants, and lifecycle boundaries.",
+      "path": "skills/batch-49/PG035-domain-entity-value-object-modeler.md"
+    },
+    {
+      "id": "PG036",
+      "name": "bounded-context-candidate-builder",
+      "depends_on": [
+        "PG014",
+        "PG015",
+        "PG034",
+        "PG035"
+      ],
+      "summary": "Proposes bounded contexts and context relationships from language, rules, ownership, and change patterns.",
+      "path": "skills/batch-49/PG036-bounded-context-candidate-builder.md"
+    },
+    {
+      "id": "PG037",
+      "name": "domain-event-command-query-modeler",
+      "depends_on": [
+        "PG033",
+        "PG034",
+        "PG035",
+        "PG036"
+      ],
+      "summary": "Models commands, queries, domain events, integration events, handlers, and causality.",
+      "path": "skills/batch-49/PG037-domain-event-command-query-modeler.md"
+    },
+    {
+      "id": "PG038",
+      "name": "workflow-and-state-machine-modeler",
+      "depends_on": [
+        "PG028",
+        "PG033",
+        "PG034",
+        "PG037"
+      ],
+      "summary": "Builds workflows, state machines, transitions, guards, timers, compensations, and terminal outcomes.",
+      "path": "skills/batch-49/PG038-workflow-and-state-machine-modeler.md"
+    },
+    {
+      "id": "PG039",
+      "name": "data-dictionary-builder",
+      "depends_on": [
+        "PG014",
+        "PG018",
+        "PG035"
+      ],
+      "summary": "Builds canonical data definitions, classifications, units, formats, retention, and ownership metadata.",
+      "path": "skills/batch-49/PG039-data-dictionary-builder.md"
+    },
+    {
+      "id": "PG040",
+      "name": "api-contract-draft-builder",
+      "depends_on": [
+        "PG033",
+        "PG037",
+        "PG039"
+      ],
+      "summary": "Drafts language-neutral REST, RPC, event, webhook, and batch interface contracts from approved behavior.",
+      "path": "skills/batch-49/PG040-api-contract-draft-builder.md"
+    },
+    {
+      "id": "PG041",
+      "name": "permission-matrix-builder",
+      "depends_on": [
+        "PG015",
+        "PG033",
+        "PG034",
+        "PG040"
+      ],
+      "summary": "Builds roles, permissions, resource scopes, conditions, segregation-of-duty rules, and administrative boundaries.",
+      "path": "skills/batch-49/PG041-permission-matrix-builder.md"
+    },
+    {
+      "id": "PG042",
+      "name": "requirement-traceability-graph",
+      "depends_on": [
+        "PG004",
+        "PG031",
+        "PG033",
+        "PG034",
+        "PG035",
+        "PG038",
+        "PG040",
+        "PG041"
+      ],
+      "summary": "Builds the complete trace graph from requirements to stories, rules, domain elements, workflows, APIs, permissions, and tests.",
+      "path": "skills/batch-49/PG042-requirement-traceability-graph.md"
+    }
+  ]
+}

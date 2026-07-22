@@ -1,0 +1,4 @@
+interface:
+  display_name: "B33 Cloud Certification Gate"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b33-cloud-certification-gate to execute this ELMOS Runtime Skill with fail-closed evidence."

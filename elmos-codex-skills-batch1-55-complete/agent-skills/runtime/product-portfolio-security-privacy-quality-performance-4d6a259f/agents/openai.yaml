@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B41: Product Portfolio Security Privacy Quality Performance Chaos And Release Gates"
+  short_description: "Run ELMOS B41 Skill with fail-closed evidence"
+  default_prompt: "Use $product-portfolio-security-privacy-quality-performance-4d6a259f to execute the ELMOS B41 contract with fail-closed evidence."

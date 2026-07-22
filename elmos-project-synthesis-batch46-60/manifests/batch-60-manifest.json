@@ -1,0 +1,148 @@
+{
+  "batch": 60,
+  "engine": "elmos.project-synthesis",
+  "skill_count": 12,
+  "skills": [
+    {
+      "id": "PG159",
+      "name": "ci-pipeline-generator",
+      "path": "skills/batch-60/PG159-ci-pipeline-generator.md",
+      "depends_on": [
+        "PG061",
+        "PG135",
+        "PG144",
+        "PG158"
+      ],
+      "summary": "Generates CI workflows for validation, build, test, security, packaging, evidence, and policy gates."
+    },
+    {
+      "id": "PG160",
+      "name": "branch-pr-checks-generator",
+      "path": "skills/batch-60/PG160-branch-pr-checks-generator.md",
+      "depends_on": [
+        "PG071",
+        "PG159"
+      ],
+      "summary": "Generates branch protection, status checks, CODEOWNERS, review, merge, release, and generated-file policies."
+    },
+    {
+      "id": "PG161",
+      "name": "secret-config-policy-generator",
+      "path": "skills/batch-60/PG161-secret-config-policy-generator.md",
+      "depends_on": [
+        "PG050",
+        "PG062"
+      ],
+      "summary": "Generates configuration validation, secret references, rotation, environment separation, and leak-prevention policy."
+    },
+    {
+      "id": "PG162",
+      "name": "sast-sca-license-gate",
+      "path": "skills/batch-60/PG162-sast-sca-license-gate.md",
+      "depends_on": [
+        "PG066",
+        "PG076",
+        "PG144",
+        "PG158"
+      ],
+      "summary": "Generates and executes static analysis, dependency vulnerability, provenance, SBOM, and license gates."
+    },
+    {
+      "id": "PG163",
+      "name": "container-hardening-generator",
+      "path": "skills/batch-60/PG163-container-hardening-generator.md",
+      "depends_on": [
+        "PG088",
+        "PG100",
+        "PG112",
+        "PG162"
+      ],
+      "summary": "Generates hardened container builds, users, filesystems, capabilities, scanning, signing, and attestations."
+    },
+    {
+      "id": "PG164",
+      "name": "kubernetes-helm-generator",
+      "path": "skills/batch-60/PG164-kubernetes-helm-generator.md",
+      "depends_on": [
+        "PG053",
+        "PG052",
+        "PG161",
+        "PG163"
+      ],
+      "summary": "Generates Kubernetes and Helm resources with security, configuration, probes, autoscaling, disruption, and policy controls."
+    },
+    {
+      "id": "PG165",
+      "name": "infrastructure-as-code-generator",
+      "path": "skills/batch-60/PG165-infrastructure-as-code-generator.md",
+      "depends_on": [
+        "PG050",
+        "PG053",
+        "PG117",
+        "PG119"
+      ],
+      "summary": "Generates approved infrastructure modules for network, compute, databases, brokers, storage, identity integration, and observability."
+    },
+    {
+      "id": "PG166",
+      "name": "otel-logging-metrics-tracing-generator",
+      "path": "skills/batch-60/PG166-otel-logging-metrics-tracing-generator.md",
+      "depends_on": [
+        "PG052",
+        "PG085",
+        "PG097",
+        "PG109",
+        "PG164"
+      ],
+      "summary": "Generates OpenTelemetry instrumentation, structured logging, metrics, trace propagation, exporters, and collection configuration."
+    },
+    {
+      "id": "PG167",
+      "name": "health-readiness-slo-generator",
+      "path": "skills/batch-60/PG167-health-readiness-slo-generator.md",
+      "depends_on": [
+        "PG027",
+        "PG052",
+        "PG053",
+        "PG166"
+      ],
+      "summary": "Generates health/readiness checks, SLIs, SLOs, error budgets, alerts, dashboards, and ownership."
+    },
+    {
+      "id": "PG168",
+      "name": "release-versioning-changelog-generator",
+      "path": "skills/batch-60/PG168-release-versioning-changelog-generator.md",
+      "depends_on": [
+        "PG124",
+        "PG158",
+        "PG162"
+      ],
+      "summary": "Generates versions, release notes, changelogs, contract compatibility summaries, migration instructions, and provenance."
+    },
+    {
+      "id": "PG169",
+      "name": "canary-bluegreen-rollout-generator",
+      "path": "skills/batch-60/PG169-canary-bluegreen-rollout-generator.md",
+      "depends_on": [
+        "PG026",
+        "PG053",
+        "PG167",
+        "PG168"
+      ],
+      "summary": "Generates rolling, canary, blue-green, feature-flag, metric-gated promotion, and automated abort procedures."
+    },
+    {
+      "id": "PG170",
+      "name": "rollback-disaster-recovery-plan",
+      "path": "skills/batch-60/PG170-rollback-disaster-recovery-plan.md",
+      "depends_on": [
+        "PG049",
+        "PG053",
+        "PG114",
+        "PG168",
+        "PG169"
+      ],
+      "summary": "Generates application rollback, forward recovery, data restore, broker replay, failover, disaster recovery, and exercise plans."
+    }
+  ]
+}

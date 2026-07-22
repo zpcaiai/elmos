@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.project-synthesis.artifact-graph.v1",
+  "title": "ELMOS Artifact Graph",
+  "type": "object",
+  "required": [
+    "nodes",
+    "edges"
+  ],
+  "properties": {
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "fingerprint"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              "requirement",
+              "acceptance-criterion",
+              "psir-node",
+              "architecture-decision",
+              "module",
+              "file",
+              "symbol",
+              "test",
+              "build",
+              "security-finding",
+              "evidence",
+              "approval",
+              "delivery"
+            ]
+          },
+          "fingerprint": {
+            "type": "string"
+          },
+          "metadata": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "from",
+          "to",
+          "type"
+        ],
+        "properties": {
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              "implements",
+              "verifies",
+              "generated-from",
+              "depends-on",
+              "supersedes",
+              "invalidates",
+              "approved-by",
+              "evidenced-by"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

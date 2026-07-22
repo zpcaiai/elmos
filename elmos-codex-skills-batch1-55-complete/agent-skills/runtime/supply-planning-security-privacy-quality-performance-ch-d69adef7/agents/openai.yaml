@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B42: Supply Planning Security Privacy Quality Performance Chaos And Release Gates"
+  short_description: "Run ELMOS B42 Skill with fail-closed evidence"
+  default_prompt: "Use $supply-planning-security-privacy-quality-performance-ch-d69adef7 to execute the ELMOS B42 contract with fail-closed evidence."

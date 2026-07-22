@@ -1,0 +1,4 @@
+interface:
+  display_name: "B76 Portable Makefile Generator"
+  short_description: "Run this ELMOS project Skill with evidence controls"
+  default_prompt: "Use $b76-portable-makefile-generator to execute this ELMOS project Skill with fail-closed evidence."

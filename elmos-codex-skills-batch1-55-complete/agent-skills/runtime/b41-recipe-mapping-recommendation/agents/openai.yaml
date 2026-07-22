@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M41: B41 Recipe Mapping Recommendation"
+  short_description: "Run ELMOS M41 Skill with fail-closed evidence"
+  default_prompt: "Use $b41-recipe-mapping-recommendation to execute the ELMOS M41 contract with fail-closed evidence."

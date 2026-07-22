@@ -1,0 +1,368 @@
+{
+  "batch": 70,
+  "title": "C and C++ Industrial and Native Project Pack",
+  "subject": "C/C++, compilers, CMake, ABI, FFI, memory and concurrency safety, ROS 2, OPC UA, embedded targets, Qt HMI, sanitizers, and fuzzing",
+  "skill_count": 14,
+  "id_range": [
+    "PG271",
+    "PG284"
+  ],
+  "toolchain": [
+    "gcc/clang/MSVC",
+    "cmake",
+    "ninja/make",
+    "clang-tidy",
+    "cppcheck",
+    "ASan/UBSan/TSan",
+    "valgrind",
+    "libFuzzer"
+  ],
+  "source_markers": [
+    "CMakeLists.txt",
+    "CMakePresets.json",
+    "*.c",
+    "*.cpp",
+    "*.h",
+    "*.hpp",
+    "toolchain files"
+  ],
+  "skills": [
+    {
+      "id": "PG271",
+      "batch": 70,
+      "name": "b70-native-project-profile-detector",
+      "title": "Native Project Profile Detector",
+      "summary": "Inspect and model Native Project Profile Detector for C/C++, compilers, CMake, ABI, FFI, memory and concurrency safety, ROS 2, OPC UA, embedded targets, Qt HMI, sanitizers, and fuzzing, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b70-native-project-profile-detector/SKILL.md",
+      "catalog_path": "skills/batch-70/PG271-native-project-profile-detector.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG270"
+      ],
+      "outputs": [
+        "native_project_profile_detector.json",
+        "native_project_profile_detector_artifacts/",
+        "native_project_profile_detector_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG272",
+      "batch": 70,
+      "name": "b70-native-toolchain-compiler-matrix",
+      "title": "Native Toolchain Compiler Matrix",
+      "summary": "Implement and validate Native Toolchain Compiler Matrix for C/C++, compilers, CMake, ABI, FFI, memory and concurrency safety, ROS 2, OPC UA, embedded targets, Qt HMI, sanitizers, and fuzzing, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b70-native-toolchain-compiler-matrix/SKILL.md",
+      "catalog_path": "skills/batch-70/PG272-native-toolchain-compiler-matrix.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG270",
+        "PG271"
+      ],
+      "outputs": [
+        "native_toolchain_compiler_matrix_plan.json",
+        "native_toolchain_compiler_matrix_artifacts/",
+        "native_toolchain_compiler_matrix_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG273",
+      "batch": 70,
+      "name": "b70-cmake-native-project-generator",
+      "title": "CMake Native Project Generator",
+      "summary": "Generate runnable and maintainable CMake Native Project Generator for C/C++, compilers, CMake, ABI, FFI, memory and concurrency safety, ROS 2, OPC UA, embedded targets, Qt HMI, sanitizers, and fuzzing, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b70-cmake-native-project-generator/SKILL.md",
+      "catalog_path": "skills/batch-70/PG273-cmake-native-project-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG270",
+        "PG272"
+      ],
+      "outputs": [
+        "cmake_native_project_generator_plan.json",
+        "cmake_native_project_generator_artifacts/",
+        "cmake_native_project_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG274",
+      "batch": 70,
+      "name": "b70-modern-cpp-library-service-generator",
+      "title": "Modern C++ Library Service Generator",
+      "summary": "Generate runnable and maintainable Modern C++ Library Service Generator for C/C++, compilers, CMake, ABI, FFI, memory and concurrency safety, ROS 2, OPC UA, embedded targets, Qt HMI, sanitizers, and fuzzing, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b70-modern-cpp-library-service-generator/SKILL.md",
+      "catalog_path": "skills/batch-70/PG274-modern-cpp-library-service-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG270",
+        "PG273"
+      ],
+      "outputs": [
+        "modern_cpp_library_service_generator_plan.json",
+        "modern_cpp_library_service_generator_artifacts/",
+        "modern_cpp_library_service_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG275",
+      "batch": 70,
+      "name": "b70-c-api-abi-contract-manager",
+      "title": "C API Abi Contract Manager",
+      "summary": "Coordinate and control C API Abi Contract Manager for C/C++, compilers, CMake, ABI, FFI, memory and concurrency safety, ROS 2, OPC UA, embedded targets, Qt HMI, sanitizers, and fuzzing, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b70-c-api-abi-contract-manager/SKILL.md",
+      "catalog_path": "skills/batch-70/PG275-c-api-abi-contract-manager.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG270",
+        "PG274"
+      ],
+      "outputs": [
+        "c_api_abi_contract_manager_plan.json",
+        "c_api_abi_contract_manager_artifacts/",
+        "c_api_abi_contract_manager_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG276",
+      "batch": 70,
+      "name": "b70-native-ffi-binding-generator",
+      "title": "Native FFI Binding Generator",
+      "summary": "Generate runnable and maintainable Native FFI Binding Generator for C/C++, compilers, CMake, ABI, FFI, memory and concurrency safety, ROS 2, OPC UA, embedded targets, Qt HMI, sanitizers, and fuzzing, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b70-native-ffi-binding-generator/SKILL.md",
+      "catalog_path": "skills/batch-70/PG276-native-ffi-binding-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG270",
+        "PG275"
+      ],
+      "outputs": [
+        "native_ffi_binding_generator_plan.json",
+        "native_ffi_binding_generator_artifacts/",
+        "native_ffi_binding_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG277",
+      "batch": 70,
+      "name": "b70-native-memory-lifetime-safety",
+      "title": "Native Memory Lifetime Safety",
+      "summary": "Enforce and test Native Memory Lifetime Safety for C/C++, compilers, CMake, ABI, FFI, memory and concurrency safety, ROS 2, OPC UA, embedded targets, Qt HMI, sanitizers, and fuzzing, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b70-native-memory-lifetime-safety/SKILL.md",
+      "catalog_path": "skills/batch-70/PG277-native-memory-lifetime-safety.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG270",
+        "PG276"
+      ],
+      "outputs": [
+        "native_memory_lifetime_safety_plan.json",
+        "native_memory_lifetime_safety_artifacts/",
+        "native_memory_lifetime_safety_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG278",
+      "batch": 70,
+      "name": "b70-native-concurrency-realtime-safety",
+      "title": "Native Concurrency Realtime Safety",
+      "summary": "Enforce and test Native Concurrency Realtime Safety for C/C++, compilers, CMake, ABI, FFI, memory and concurrency safety, ROS 2, OPC UA, embedded targets, Qt HMI, sanitizers, and fuzzing, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b70-native-concurrency-realtime-safety/SKILL.md",
+      "catalog_path": "skills/batch-70/PG278-native-concurrency-realtime-safety.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG270",
+        "PG277"
+      ],
+      "outputs": [
+        "native_concurrency_realtime_safety_plan.json",
+        "native_concurrency_realtime_safety_artifacts/",
+        "native_concurrency_realtime_safety_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG279",
+      "batch": 70,
+      "name": "b70-ros2-node-project-generator",
+      "title": "ROS 2 Node Project Generator",
+      "summary": "Generate runnable and maintainable ROS 2 Node Project Generator for C/C++, compilers, CMake, ABI, FFI, memory and concurrency safety, ROS 2, OPC UA, embedded targets, Qt HMI, sanitizers, and fuzzing, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b70-ros2-node-project-generator/SKILL.md",
+      "catalog_path": "skills/batch-70/PG279-ros2-node-project-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG270",
+        "PG278"
+      ],
+      "outputs": [
+        "ros2_node_project_generator_plan.json",
+        "ros2_node_project_generator_artifacts/",
+        "ros2_node_project_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG280",
+      "batch": 70,
+      "name": "b70-opcua-industrial-adapter-generator",
+      "title": "OPC UA Industrial Adapter Generator",
+      "summary": "Generate runnable and maintainable OPC UA Industrial Adapter Generator for C/C++, compilers, CMake, ABI, FFI, memory and concurrency safety, ROS 2, OPC UA, embedded targets, Qt HMI, sanitizers, and fuzzing, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b70-opcua-industrial-adapter-generator/SKILL.md",
+      "catalog_path": "skills/batch-70/PG280-opcua-industrial-adapter-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG270",
+        "PG279"
+      ],
+      "outputs": [
+        "opcua_industrial_adapter_generator_plan.json",
+        "opcua_industrial_adapter_generator_artifacts/",
+        "opcua_industrial_adapter_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG281",
+      "batch": 70,
+      "name": "b70-embedded-crosscompile-project-generator",
+      "title": "Embedded Crosscompile Project Generator",
+      "summary": "Generate runnable and maintainable Embedded Crosscompile Project Generator for C/C++, compilers, CMake, ABI, FFI, memory and concurrency safety, ROS 2, OPC UA, embedded targets, Qt HMI, sanitizers, and fuzzing, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b70-embedded-crosscompile-project-generator/SKILL.md",
+      "catalog_path": "skills/batch-70/PG281-embedded-crosscompile-project-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG270",
+        "PG280"
+      ],
+      "outputs": [
+        "embedded_crosscompile_project_generator_plan.json",
+        "embedded_crosscompile_project_generator_artifacts/",
+        "embedded_crosscompile_project_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG282",
+      "batch": 70,
+      "name": "b70-qt-industrial-hmi-generator",
+      "title": "Qt Industrial HMI Generator",
+      "summary": "Generate runnable and maintainable Qt Industrial HMI Generator for C/C++, compilers, CMake, ABI, FFI, memory and concurrency safety, ROS 2, OPC UA, embedded targets, Qt HMI, sanitizers, and fuzzing, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b70-qt-industrial-hmi-generator/SKILL.md",
+      "catalog_path": "skills/batch-70/PG282-qt-industrial-hmi-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG270",
+        "PG281"
+      ],
+      "outputs": [
+        "qt_industrial_hmi_generator_plan.json",
+        "qt_industrial_hmi_generator_artifacts/",
+        "qt_industrial_hmi_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG283",
+      "batch": 70,
+      "name": "b70-native-sanitizer-fuzz-static-analysis",
+      "title": "Native Sanitizer Fuzz Static Analysis",
+      "summary": "Implement and validate Native Sanitizer Fuzz Static Analysis for C/C++, compilers, CMake, ABI, FFI, memory and concurrency safety, ROS 2, OPC UA, embedded targets, Qt HMI, sanitizers, and fuzzing, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b70-native-sanitizer-fuzz-static-analysis/SKILL.md",
+      "catalog_path": "skills/batch-70/PG283-native-sanitizer-fuzz-static-analysis.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG270",
+        "PG282"
+      ],
+      "outputs": [
+        "native_sanitizer_fuzz_static_analysis_plan.json",
+        "native_sanitizer_fuzz_static_analysis_artifacts/",
+        "native_sanitizer_fuzz_static_analysis_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG284",
+      "batch": 70,
+      "name": "b70-native-build-run-certifier",
+      "title": "Native Build Run Certifier",
+      "summary": "Execute and independently verify Native Build Run Certifier for C/C++, compilers, CMake, ABI, FFI, memory and concurrency safety, ROS 2, OPC UA, embedded targets, Qt HMI, sanitizers, and fuzzing, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b70-native-build-run-certifier/SKILL.md",
+      "catalog_path": "skills/batch-70/PG284-native-build-run-certifier.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG270",
+        "PG283"
+      ],
+      "outputs": [
+        "native_build_run_certifier_plan.json",
+        "native_build_run_certifier_artifacts/",
+        "native_build_run_certifier_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md",
+        "certification_result.json",
+        "scope_and_limitations.md"
+      ]
+    }
+  ]
+}

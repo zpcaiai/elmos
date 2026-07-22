@@ -1,0 +1,4 @@
+interface:
+  display_name: "B79 GitHub Matrix Cache Artifact Manager"
+  short_description: "Run this ELMOS project Skill with evidence controls"
+  default_prompt: "Use $b79-github-matrix-cache-artifact-manager to execute this ELMOS project Skill with fail-closed evidence."

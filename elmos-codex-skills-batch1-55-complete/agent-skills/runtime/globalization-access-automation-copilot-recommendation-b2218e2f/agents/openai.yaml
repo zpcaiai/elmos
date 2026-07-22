@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B55: Globalization Access Automation Copilot Recommendation And Human Review"
+  short_description: "Run ELMOS B55 Skill with fail-closed evidence"
+  default_prompt: "Use $globalization-access-automation-copilot-recommendation-b2218e2f to execute the ELMOS B55 contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B47: Sre Reliability Audit Evidence Records Retention And Legal Hold"
+  short_description: "Run ELMOS Product B47 contract with fail-closed evidence"
+  default_prompt: "Use $sre-reliability-audit-evidence-records-retention-and-legal-hold to implement its fail-closed ELMOS Product B47 contract."

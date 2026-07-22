@@ -1,0 +1,32 @@
+{
+  "suite_id": "batch1-65-slightly-strict-supplemental",
+  "version": "1.0.0",
+  "scope": {
+    "batches": {
+      "from": 1,
+      "to": 65
+    },
+    "source_skills": 1296,
+    "test_skills": 88,
+    "cases": 750,
+    "batch_test_skills": 65,
+    "cross_batch_test_skills": 23
+  },
+  "authority": "supplemental-design-and-local-engineering-only",
+  "replaces_batch1_37_strict_suite": false,
+  "certification_authority": false,
+  "maximum_success_decision": "READY_FOR_EXTERNAL_GATE",
+  "source_package": "source-package",
+  "case_catalog": "cases/catalog.json",
+  "case_splits": "cases/by-skill",
+  "coverage_matrix": "coverage-matrix.csv",
+  "target_manifest": "target-manifest.json",
+  "strictness_profile": "strictness-profile.json",
+  "result_catalog": "results/catalog.json",
+  "control_manifest": "control-manifest.json",
+  "gate": "scripts/test-suite/run_batch1_65_slightly_strict_gate.py",
+  "default_decision": "BLOCKED",
+  "field_evidence_status": "NOT_RUN",
+  "source_evaluator_authoritative": false,
+  "source_evaluator_note": "The supplied evaluator does not enforce exact case completeness; the repository gate is authoritative only for this supplemental integration."
+}

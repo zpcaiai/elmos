@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M45: B45 Independent Expert Validation"
+  short_description: "Run ELMOS M45 Skill with fail-closed evidence"
+  default_prompt: "Use $b45-independent-expert-validation to execute the ELMOS M45 contract with fail-closed evidence."

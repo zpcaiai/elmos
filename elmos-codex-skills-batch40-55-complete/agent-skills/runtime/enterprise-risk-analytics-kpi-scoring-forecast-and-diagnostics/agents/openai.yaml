@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B48: Enterprise Risk Analytics Kpi Scoring Forecast And Diagnostics"
+  short_description: "Run ELMOS Product B48 contract with fail-closed evidence"
+  default_prompt: "Use $enterprise-risk-analytics-kpi-scoring-forecast-and-diagnostics to implement its fail-closed ELMOS Product B48 contract."

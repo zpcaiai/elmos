@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B39: Contract Asset Liability Deferred Revenue Unbilled Ar And Financial Subledger"
+  short_description: "Run ELMOS B39 Skill with fail-closed evidence"
+  default_prompt: "Use $contract-asset-liability-deferred-revenue-unbilled-ar-a-92997cb5 to execute the ELMOS B39 contract with fail-closed evidence."

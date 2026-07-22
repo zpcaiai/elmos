@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B49: Cloud Platform Planning Capacity Scenario Optimization And Allocation"
+  short_description: "Run ELMOS Product B49 contract with fail-closed evidence"
+  default_prompt: "Use $cloud-platform-planning-capacity-scenario-optimization-cd178d2b to implement its fail-closed ELMOS Product B49 contract."

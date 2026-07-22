@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/test-suite-b38-45/strict-profile.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["profile_id", "description", "thresholds", "zero_tolerance", "waiver_policy"],
+  "properties": {
+    "profile_id": {"const": "batch38-45-strict-v2"},
+    "description": {"type": "string", "minLength": 20},
+    "thresholds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["p0_pass_rate", "p1_pass_rate", "p2_pass_rate", "evidence_trace_coverage", "p95_latency_regression_max", "p99_latency_regression_max", "unit_cost_regression_max", "required_design_partner_organizations", "required_independent_reviews", "required_domain_gates", "max_evidence_age_days"],
+      "properties": {
+        "p0_pass_rate": {"const": 1.0}, "p1_pass_rate": {"const": 1.0}, "p2_pass_rate": {"minimum": 0.98, "maximum": 1.0},
+        "evidence_trace_coverage": {"minimum": 0.99, "maximum": 1.0},
+        "p95_latency_regression_max": {"maximum": 0.05}, "p99_latency_regression_max": {"maximum": 0.1}, "unit_cost_regression_max": {"maximum": 0.08},
+        "required_design_partner_organizations": {"minimum": 2}, "required_independent_reviews": {"minimum": 1}, "required_domain_gates": {"const": 8},
+        "max_evidence_age_days": {"type": "integer", "minimum": 1, "maximum": 90}
+      }
+    },
+    "zero_tolerance": {"type": "array", "minItems": 11, "uniqueItems": true, "items": {"type": "string", "minLength": 3}},
+    "waiver_policy": {"type": "object", "additionalProperties": false, "required": ["p0_allowed", "p1_allowed", "p2_allowed", "maximum_days", "independent_approval_required"], "properties": {"p0_allowed": {"const": false}, "p1_allowed": {"const": false}, "p2_allowed": {"const": true}, "maximum_days": {"type": "integer", "minimum": 1, "maximum": 30}, "independent_approval_required": {"const": true}}}
+  }
+}

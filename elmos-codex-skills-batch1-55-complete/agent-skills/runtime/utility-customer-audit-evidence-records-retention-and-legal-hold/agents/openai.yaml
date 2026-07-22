@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B53: Utility Customer Audit Evidence Records Retention And Legal Hold"
+  short_description: "Run ELMOS B53 Skill with fail-closed evidence"
+  default_prompt: "Use $utility-customer-audit-evidence-records-retention-and-legal-hold to execute the ELMOS B53 contract with fail-closed evidence."

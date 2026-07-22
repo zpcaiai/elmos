@@ -1,0 +1,4 @@
+interface:
+  display_name: "B30 Framework Certification Gate"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b30-framework-certification-gate to execute this ELMOS Runtime Skill with fail-closed evidence."

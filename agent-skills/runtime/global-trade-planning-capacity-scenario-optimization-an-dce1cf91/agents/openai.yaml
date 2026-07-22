@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B51: Global Trade Planning Capacity Scenario Optimization And Allocation"
+  short_description: "Run ELMOS Product B51 contract with fail-closed evidence"
+  default_prompt: "Use $global-trade-planning-capacity-scenario-optimization-an-dce1cf91 to implement its fail-closed ELMOS Product B51 contract."

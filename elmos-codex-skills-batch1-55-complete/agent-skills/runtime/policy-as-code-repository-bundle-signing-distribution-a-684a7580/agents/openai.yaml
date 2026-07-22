@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B38: Policy As Code Repository Bundle Signing Distribution And Offline Cache"
+  short_description: "Run ELMOS B38 Skill with fail-closed evidence"
+  default_prompt: "Use $policy-as-code-repository-bundle-signing-distribution-a-684a7580 to execute the ELMOS B38 contract with fail-closed evidence."

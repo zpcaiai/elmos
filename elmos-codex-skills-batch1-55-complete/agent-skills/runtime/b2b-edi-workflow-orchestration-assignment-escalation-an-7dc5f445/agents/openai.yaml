@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B46: B2B Edi Workflow Orchestration Assignment Escalation And Recovery"
+  short_description: "Run ELMOS B46 Skill with fail-closed evidence"
+  default_prompt: "Use $b2b-edi-workflow-orchestration-assignment-escalation-an-7dc5f445 to execute the ELMOS B46 contract with fail-closed evidence."

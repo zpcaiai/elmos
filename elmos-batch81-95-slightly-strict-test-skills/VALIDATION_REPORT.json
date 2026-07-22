@@ -1,0 +1,10 @@
+{
+  "status": "PASSED",
+  "errors": [],
+  "skills": 40,
+  "cases": 640,
+  "coverage": 180,
+  "source_package_sha256": "4c3de1f268c3c0b98e6fc500240618d58d5255df5e75f5c00ff9f8211565d13d",
+  "batch_coverage": "81-95",
+  "source_skill_range": "PG223-PG402"
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M24: B24 Manifest Driven Enterprise Platform Domain 24 Release Certification Gate"
+  short_description: "Run ELMOS M24 Skill with fail-closed evidence"
+  default_prompt: "Use $b24-manifest-driven-enterprise-platform-domain-24-relea-26dff71b to execute the ELMOS M24 contract with fail-closed evidence."

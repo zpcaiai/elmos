@@ -1,0 +1,4 @@
+interface:
+  display_name: "B88 Cl to Workflow Batch Generator"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b88-cl-to-workflow-batch-generator to execute this ELMOS Language Pack Skill with fail-closed evidence."

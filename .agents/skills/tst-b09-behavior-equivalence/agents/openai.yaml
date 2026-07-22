@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tst B09 Behavior Equivalence"
+  short_description: "Help with Tst B09 Behavior Equivalence tasks"
+  default_prompt: "Use $tst-b09-behavior-equivalence to implement and verify this strict Batch 1–37 test scope with immutable evidence and fail-closed results."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B55: Platform Ecosystem Observability Sla Cockpit Alerting And Operations"
+  short_description: "Run ELMOS B55 Skill with fail-closed evidence"
+  default_prompt: "Use $platform-ecosystem-observability-sla-cockpit-alerting-a-12f7b785 to execute the ELMOS B55 contract with fail-closed evidence."

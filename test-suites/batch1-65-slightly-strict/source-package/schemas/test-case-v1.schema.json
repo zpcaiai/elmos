@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.test-case.v1",
+  "type": "object",
+  "required": [
+    "case_id",
+    "test_skill_id",
+    "category",
+    "severity",
+    "title",
+    "target_batches",
+    "setup",
+    "stimulus",
+    "expected",
+    "deterministic_oracle",
+    "required_evidence"
+  ],
+  "properties": {
+    "case_id": {
+      "type": "string",
+      "pattern": "^TC-T[0-9]{3}-[0-9]{3}$"
+    },
+    "test_skill_id": {
+      "type": "string",
+      "pattern": "^T[0-9]{3}$"
+    },
+    "category": {
+      "type": "string"
+    },
+    "severity": {
+      "enum": [
+        "CRITICAL",
+        "HIGH",
+        "MEDIUM",
+        "LOW"
+      ]
+    },
+    "title": {
+      "type": "string"
+    },
+    "target_batches": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 65
+      }
+    },
+    "target_skill_names": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "invariant": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "setup": {
+      "type": "string"
+    },
+    "stimulus": {
+      "type": "string"
+    },
+    "expected": {
+      "type": "string"
+    },
+    "deterministic_oracle": {
+      "type": "string"
+    },
+    "required_evidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "timeout_policy": {
+      "type": "string"
+    },
+    "retry_policy": {
+      "type": "string"
+    },
+    "disallowed_shortcuts": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

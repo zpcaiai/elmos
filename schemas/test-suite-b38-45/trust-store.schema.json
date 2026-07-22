@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/test-suite-b38-45/trust-store.schema.json",
+  "type": "object", "additionalProperties": false,
+  "required": ["store_version", "authorities"],
+  "properties": {
+    "store_version": {"const": 1},
+    "authorities": {"type": "array", "minItems": 1, "items": {"type": "object", "additionalProperties": false, "required": ["signer_id", "roles", "suites", "batches", "algorithm", "revoked", "valid_from", "valid_until", "public_key", "public_key_sha256"], "properties": {"signer_id": {"type": "string", "minLength": 1}, "roles": {"type": "array", "contains": {"const": "independent-certifier"}}, "suites": {"type": "array", "contains": {"const": "batch38-45-strict"}}, "batches": {"type": "array", "const": [38, 39, 40, 41, 42, 43, 44, 45]}, "algorithm": {"const": "rsa-sha256"}, "revoked": {"const": false}, "valid_from": {"type": "string", "format": "date-time"}, "valid_until": {"type": "string", "format": "date-time"}, "public_key": {"type": "string", "minLength": 1}, "public_key_sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}}}}
+  }
+}

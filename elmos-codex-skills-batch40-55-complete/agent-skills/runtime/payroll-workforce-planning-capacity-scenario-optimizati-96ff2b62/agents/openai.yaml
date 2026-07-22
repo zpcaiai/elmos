@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B43: Payroll Workforce Planning Capacity Scenario Optimization And Allocation"
+  short_description: "Run ELMOS Product B43 contract with fail-closed evidence"
+  default_prompt: "Use $payroll-workforce-planning-capacity-scenario-optimizati-96ff2b62 to implement its fail-closed ELMOS Product B43 contract."

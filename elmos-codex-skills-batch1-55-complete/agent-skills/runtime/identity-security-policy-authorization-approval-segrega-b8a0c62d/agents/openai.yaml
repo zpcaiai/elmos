@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B48: Identity Security Policy Authorization Approval Segregation And Exception"
+  short_description: "Run ELMOS B48 Skill with fail-closed evidence"
+  default_prompt: "Use $identity-security-policy-authorization-approval-segrega-b8a0c62d to execute the ELMOS B48 contract with fail-closed evidence."

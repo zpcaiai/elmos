@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "transformation_key": "workflow-polish-0.3.0",
+  "source_snapshot_digest": "f43f1d3302d3a09e1e63bb093b8d6b7c4dfae81282c36b6d69bab1f431b16daf",
+  "target": "apps/web-console",
+  "changes": [
+    "add live filter counts, clear actions, and explicit Marketplace empty state",
+    "add modal initial focus, focus cycle, Escape dismissal, and focus restoration",
+    "add non-persistent draft success announcement",
+    "add trust-chain tab semantics and Arrow, Home, and End keyboard navigation",
+    "preserve assurance subject, owner, stage, and status in mobile cards",
+    "increase small-text readability without changing evidence or permission semantics"
+  ],
+  "visual_baseline_action": "none",
+  "authorization_change": "none",
+  "external_certification_claim": false
+}

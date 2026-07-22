@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tst Evidence Replay Certification Anti Forgery"
+  short_description: "Run Batch 38-45 strict evidence validation"
+  default_prompt: "Use $tst-evidence-replay-certification-anti-forgery to run its exact Batch 38-45 cases with fail-closed evidence."

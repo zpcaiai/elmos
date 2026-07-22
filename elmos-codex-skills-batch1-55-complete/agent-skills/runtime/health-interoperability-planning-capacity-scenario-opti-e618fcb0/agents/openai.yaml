@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B52: Health Interoperability Planning Capacity Scenario Optimization And Allocation"
+  short_description: "Run ELMOS B52 Skill with fail-closed evidence"
+  default_prompt: "Use $health-interoperability-planning-capacity-scenario-opti-e618fcb0 to execute the ELMOS B52 contract with fail-closed evidence."

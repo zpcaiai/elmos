@@ -1,0 +1,117 @@
+{
+  "batch": 64,
+  "skill_count": 10,
+  "skills": [
+    {
+      "id": "PG203",
+      "name": "saas-admin-domain-pack",
+      "path": "skills/batch-64/PG203-saas-admin-domain-pack.md",
+      "depends_on": [
+        "PG051",
+        "PG188",
+        "PG202"
+      ],
+      "summary": "Provides reusable multi-tenant SaaS administration concepts, workflows, permissions, integrations, and tests."
+    },
+    {
+      "id": "PG204",
+      "name": "ecommerce-order-domain-pack",
+      "path": "skills/batch-64/PG204-ecommerce-order-domain-pack.md",
+      "depends_on": [
+        "PG122",
+        "PG188",
+        "PG202"
+      ],
+      "summary": "Provides catalog, cart, order, payment orchestration, fulfillment, return, and refund domain models."
+    },
+    {
+      "id": "PG205",
+      "name": "warehouse-logistics-domain-pack",
+      "path": "skills/batch-64/PG205-warehouse-logistics-domain-pack.md",
+      "depends_on": [
+        "PG117",
+        "PG188",
+        "PG202"
+      ],
+      "summary": "Provides inventory, location, receiving, picking, packing, shipment, task, and optimization domain concepts."
+    },
+    {
+      "id": "PG206",
+      "name": "manufacturing-mes-iot-domain-pack",
+      "path": "skills/batch-64/PG206-manufacturing-mes-iot-domain-pack.md",
+      "depends_on": [
+        "PG117",
+        "PG188",
+        "PG202"
+      ],
+      "summary": "Provides plant, equipment, work order, operation, quality, maintenance, telemetry, and traceability models."
+    },
+    {
+      "id": "PG207",
+      "name": "energy-ems-vpp-domain-pack",
+      "path": "skills/batch-64/PG207-energy-ems-vpp-domain-pack.md",
+      "depends_on": [
+        "PG117",
+        "PG188",
+        "PG202"
+      ],
+      "summary": "Provides assets, meters, forecasts, dispatch, constraints, tariffs, markets, settlement, and flexibility models."
+    },
+    {
+      "id": "PG208",
+      "name": "healthcare-clinical-admin-domain-pack",
+      "path": "skills/batch-64/PG208-healthcare-clinical-admin-domain-pack.md",
+      "depends_on": [
+        "PG119",
+        "PG188",
+        "PG202"
+      ],
+      "summary": "Provides patient administration, scheduling, encounter, order, result, consent, billing, and audit models."
+    },
+    {
+      "id": "PG209",
+      "name": "digital-twin-domain-pack",
+      "path": "skills/batch-64/PG209-digital-twin-domain-pack.md",
+      "depends_on": [
+        "PG117",
+        "PG188",
+        "PG202"
+      ],
+      "summary": "Provides physical assets, twin models, telemetry, state estimation, simulation, commands, scenarios, and calibration concepts."
+    },
+    {
+      "id": "PG210",
+      "name": "ai-agent-rag-domain-pack",
+      "path": "skills/batch-64/PG210-ai-agent-rag-domain-pack.md",
+      "depends_on": [
+        "PG092",
+        "PG188",
+        "PG202"
+      ],
+      "summary": "Provides knowledge source, ingestion, retrieval, prompt, tool, agent, memory, evaluation, and safety domain models."
+    },
+    {
+      "id": "PG211",
+      "name": "data-platform-analytics-domain-pack",
+      "path": "skills/batch-64/PG211-data-platform-analytics-domain-pack.md",
+      "depends_on": [
+        "PG039",
+        "PG188",
+        "PG202"
+      ],
+      "summary": "Provides source, pipeline, dataset, schema, quality, lineage, metric, dashboard, and access-control models."
+    },
+    {
+      "id": "PG212",
+      "name": "workflow-approval-domain-pack",
+      "path": "skills/batch-64/PG212-workflow-approval-domain-pack.md",
+      "depends_on": [
+        "PG038",
+        "PG179",
+        "PG188",
+        "PG202"
+      ],
+      "summary": "Provides configurable forms, cases, tasks, states, rules, approvals, escalations, SLAs, and audit models."
+    }
+  ]
+}

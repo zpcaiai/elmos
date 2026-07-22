@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B53: Grid Dispatch Security Privacy Quality Performance Chaos And Release Gates"
+  short_description: "Run ELMOS B53 Skill with fail-closed evidence"
+  default_prompt: "Use $grid-dispatch-security-privacy-quality-performance-chao-012bbe3d to execute the ELMOS B53 contract with fail-closed evidence."

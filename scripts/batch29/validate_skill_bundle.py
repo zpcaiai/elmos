@@ -6,8 +6,8 @@ from pathlib import Path
 def main() -> int:
     root=Path(sys.argv[1] if len(sys.argv)>1 else '.agents/skills')
     errors=[]; names={}
-    files=sorted(root.glob('*/SKILL.md'))
-    if not files: errors.append(f'no skills found under {root}')
+    files=sorted(root.glob('b29-*/SKILL.md'))
+    if not files: errors.append(f'no Batch 29 skills found under {root}')
     for f in files:
         text=f.read_text()
         m=re.match(r'^---\n(.*?)\n---\n',text,re.S)

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B45: Ml Platform Backfill Replay Resilience Disaster Recovery And Continuity"
+  short_description: "Run ELMOS B45 Skill with fail-closed evidence"
+  default_prompt: "Use $ml-platform-backfill-replay-resilience-disaster-recover-cb3ba2ce to execute the ELMOS B45 contract with fail-closed evidence."

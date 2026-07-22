@@ -7,9 +7,11 @@ Batches 35, 36, and 37 use their richer dedicated validators and gates.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
-import shutil
+import subprocess
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import jsonschema
@@ -33,6 +35,8 @@ REQUIRED_SECTIONS = (
     "## Stop and escalate when",
     "## Definition of done",
 )
+COMMON_SCHEMA_ROOT = ROOT / "schemas" / "mature-product"
+MAX_EVIDENCE_AGE = timedelta(days=30)
 
 
 def load_json(path: Path) -> dict:
@@ -40,6 +44,152 @@ def load_json(path: Path) -> dict:
     if not isinstance(payload, dict):
         raise ValueError(f"{path} must contain a JSON object")
     return payload
+
+
+def sha256_file(path: Path) -> str:
+    return "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def validate_document(payload: dict, schema_path: Path) -> None:
+    schema = load_json(schema_path)
+    jsonschema.Draft202012Validator.check_schema(schema)
+    validator = jsonschema.Draft202012Validator(
+        schema, format_checker=jsonschema.FormatChecker()
+    )
+    validator.validate(payload)
+
+
+def parse_timestamp(value: object, label: str, failures: list[str]) -> datetime | None:
+    if not isinstance(value, str):
+        failures.append(f"{label} timestamp missing")
+        return None
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        failures.append(f"{label} timestamp is invalid")
+        return None
+    if parsed.tzinfo is None:
+        failures.append(f"{label} timestamp must include a timezone")
+        return None
+    return parsed.astimezone(timezone.utc)
+
+
+def validate_file_ref(pack: Path, ref: object, label: str, failures: list[str]) -> Path | None:
+    if not isinstance(ref, dict):
+        failures.append(f"{label} file reference is invalid")
+        return None
+    raw_path = ref.get("path")
+    if not isinstance(raw_path, str) or not raw_path:
+        failures.append(f"{label} path is missing")
+        return None
+    relative = Path(raw_path)
+    if relative.is_absolute() or ".." in relative.parts:
+        failures.append(f"{label} path must stay inside the pack")
+        return None
+    target = (pack / relative).resolve()
+    try:
+        target.relative_to(pack.resolve())
+    except ValueError:
+        failures.append(f"{label} path escapes the pack")
+        return None
+    if not target.is_file():
+        failures.append(f"{label} file is missing: {raw_path}")
+        return None
+    if target.stat().st_size != ref.get("bytes"):
+        failures.append(f"{label} byte count does not match: {raw_path}")
+    if sha256_file(target) != ref.get("sha256"):
+        failures.append(f"{label} digest does not match: {raw_path}")
+    return target
+
+
+def validate_signature(
+    batch: int,
+    pack: Path,
+    trust_store_path: Path | None,
+    program: dict,
+    manifest: dict,
+    failures: list[str],
+) -> None:
+    request_path = pack / "certification-request.json"
+    signature_path = pack / "certification-request.sig"
+    if trust_store_path is None:
+        failures.append("external trust store is required")
+        return
+    try:
+        request = load_json(request_path)
+        trust_store = load_json(trust_store_path)
+        validate_document(
+            request, COMMON_SCHEMA_ROOT / "certification-request.schema.json"
+        )
+        validate_document(trust_store, COMMON_SCHEMA_ROOT / "trust-store.schema.json")
+    except (OSError, ValueError, json.JSONDecodeError, jsonschema.exceptions.ValidationError, jsonschema.exceptions.SchemaError) as exc:
+        failures.append(f"certification request or trust store is invalid: {exc}")
+        return
+    if not signature_path.is_file() or signature_path.stat().st_size == 0:
+        failures.append("certification request signature is missing")
+        return
+    if request.get("batch") != batch or request.get("packKey") != program.get("packKey"):
+        failures.append("certification request scope does not match the pack")
+    expected_digests = {
+        "programDigest": sha256_file(pack / "program.json"),
+        "evidenceDigest": sha256_file(pack / "evidence.json"),
+        "certificationDigest": sha256_file(pack / "certification.json"),
+        "evidenceManifestDigest": sha256_file(pack / "evidence-manifest.json"),
+    }
+    for field, expected in expected_digests.items():
+        if request.get(field) != expected:
+            failures.append(f"certification request {field} does not match")
+    requested_at = parse_timestamp(request.get("requestedAt"), "certification request", failures)
+    now = datetime.now(timezone.utc)
+    if requested_at and (requested_at > now + timedelta(minutes=5) or now - requested_at > MAX_EVIDENCE_AGE):
+        failures.append("certification request is stale or future-dated")
+    approved_by = request.get("approvedBy", [])
+    if not set(approved_by).issubset(set(manifest.get("approvals", []))):
+        failures.append("certification request approvals are not bound to the evidence manifest")
+    if program.get("owner") not in approved_by:
+        failures.append("program owner must approve the certification request")
+    if request.get("keyId") == manifest.get("execution", {}).get("executorId"):
+        failures.append("certification authority must differ from the executor")
+    keys = [item for item in trust_store.get("keys", []) if item.get("keyId") == request.get("keyId")]
+    if len(keys) != 1:
+        failures.append("certification key is missing or ambiguous in the trust store")
+        return
+    key = keys[0]
+    if key.get("revoked"):
+        failures.append("certification key is revoked")
+    if batch not in key.get("authorizedBatches", []):
+        failures.append("certification key is not authorized for this Batch")
+    raw_public_key = key.get("publicKeyPath")
+    public_key = (trust_store_path.parent / raw_public_key).resolve() if isinstance(raw_public_key, str) else Path()
+    try:
+        public_key.relative_to(trust_store_path.parent.resolve())
+    except ValueError:
+        failures.append("public key path escapes the trust store")
+        return
+    if not public_key.is_file():
+        failures.append("trusted public key is missing")
+        return
+    try:
+        completed = subprocess.run(
+            [
+                "openssl",
+                "dgst",
+                "-sha256",
+                "-verify",
+                str(public_key),
+                "-signature",
+                str(signature_path),
+                str(request_path),
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+    except OSError as exc:
+        failures.append(f"certification signature verifier is unavailable: {exc}")
+        return
+    if completed.returncode != 0:
+        failures.append("certification request signature verification failed")
 
 
 def validate_batch(batch: int) -> list[str]:
@@ -115,6 +265,15 @@ def validate_batch(batch: int) -> list[str]:
     ):
         if not required.is_file():
             errors.append(f"{required}: missing")
+    for name in (
+        "evidence-manifest.schema.json",
+        "certification-request.schema.json",
+        "trust-store.schema.json",
+    ):
+        try:
+            jsonschema.Draft202012Validator.check_schema(load_json(COMMON_SCHEMA_ROOT / name))
+        except (OSError, ValueError, json.JSONDecodeError, jsonschema.exceptions.SchemaError) as exc:
+            errors.append(f"common schema {name}: {exc}")
     return errors
 
 
@@ -141,16 +300,22 @@ def scaffold(batch: int, key: str, owner: str, output_root: Path) -> Path:
     return destination
 
 
-def evaluate_gate(batch: int, pack: Path) -> tuple[bool, list[str], str]:
+def evaluate_gate(
+    batch: int, pack: Path, trust_store_path: Path | None
+) -> tuple[bool, list[str], str]:
     spec = BATCHES[batch]
-    program = load_json(pack / "program.json")
-    certification = load_json(pack / "certification.json")
-    evidence = load_json(pack / "evidence.json")
     failures: list[str] = []
+    try:
+        program = load_json(pack / "program.json")
+        certification = load_json(pack / "certification.json")
+        evidence = load_json(pack / "evidence.json")
+    except (OSError, ValueError, json.JSONDecodeError) as exc:
+        return False, [f"required pack document is invalid: {exc}"], "BLOCKED"
     for name, payload in (("program", program), ("evidence", evidence), ("certification", certification)):
         try:
-            schema = load_json(ROOT / "schemas" / f"batch{batch}" / f"{name}.schema.json")
-            jsonschema.validate(payload, schema)
+            validate_document(
+                payload, ROOT / "schemas" / f"batch{batch}" / f"{name}.schema.json"
+            )
         except (OSError, ValueError, json.JSONDecodeError, jsonschema.exceptions.ValidationError) as exc:
             failures.append(f"{name} schema validation failed: {exc}")
     pack_keys = {program.get("packKey"), evidence.get("packKey"), certification.get("packKey")}
@@ -186,15 +351,125 @@ def evaluate_gate(batch: int, pack: Path) -> tuple[bool, list[str], str]:
             failures.append(f"claim {claim_id} evidenceRefs are empty")
         if claim.get("externalOperationExecuted") and not claim.get("authorizationRefs"):
             failures.append(f"claim {claim_id} external operation lacks authorizationRefs")
+    manifest_path = pack / "evidence-manifest.json"
+    try:
+        manifest = load_json(manifest_path)
+        validate_document(
+            manifest, COMMON_SCHEMA_ROOT / "evidence-manifest.schema.json"
+        )
+    except (OSError, ValueError, json.JSONDecodeError, jsonschema.exceptions.ValidationError, jsonschema.exceptions.SchemaError) as exc:
+        failures.append(f"evidence manifest is invalid: {exc}")
+        manifest = {}
+    if manifest:
+        if manifest.get("batch") != batch or manifest.get("packKey") != program.get("packKey"):
+            failures.append("evidence manifest scope does not match the pack")
+        generated_at = parse_timestamp(manifest.get("generatedAt"), "evidence manifest", failures)
+        execution = manifest.get("execution", {})
+        started_at = parse_timestamp(execution.get("startedAt"), "execution start", failures)
+        finished_at = parse_timestamp(execution.get("finishedAt"), "execution finish", failures)
+        now = datetime.now(timezone.utc)
+        if generated_at and (generated_at > now + timedelta(minutes=5) or now - generated_at > MAX_EVIDENCE_AGE):
+            failures.append("evidence manifest is stale or future-dated")
+        if started_at and finished_at and finished_at < started_at:
+            failures.append("execution finish precedes start")
+        if finished_at and generated_at and finished_at > generated_at:
+            failures.append("evidence manifest predates execution completion")
+        if execution.get("executorId") == execution.get("verifierId"):
+            failures.append("executor and independent verifier must differ")
+        validate_file_ref(pack, manifest.get("artifact"), "artifact", failures)
+        validate_file_ref(pack, manifest.get("environment"), "environment", failures)
+        if manifest.get("artifact", {}).get("sha256") == manifest.get("environment", {}).get("sha256"):
+            failures.append("artifact and environment digests must differ")
+        evidence_entries = manifest.get("evidence", [])
+        evidence_ids = [item.get("id") for item in evidence_entries if isinstance(item, dict)]
+        evidence_paths = [item.get("path") for item in evidence_entries if isinstance(item, dict)]
+        evidence_digests = [item.get("sha256") for item in evidence_entries if isinstance(item, dict)]
+        if len(evidence_ids) != len(set(evidence_ids)):
+            failures.append("evidence IDs must be unique")
+        if len(evidence_paths) != len(set(evidence_paths)) or len(evidence_digests) != len(set(evidence_digests)):
+            failures.append("evidence paths and digests must be distinct")
+        evidence_by_id = {item.get("id"): item for item in evidence_entries if isinstance(item, dict)}
+        claim_ids = {claim.get("claimId") for claim in claims if isinstance(claim, dict)}
+        for entry in evidence_entries:
+            if isinstance(entry, dict) and not set(entry.get("claimIds", [])).issubset(claim_ids):
+                failures.append(f"evidence {entry.get('id')} binds an unknown claim")
+        roles = {item.get("role") for item in evidence_entries if isinstance(item, dict)}
+        for role in ("execution", "provenance", "verification"):
+            if role not in roles:
+                failures.append(f"required evidence role missing: {role}")
+        for index, entry in enumerate(evidence_entries):
+            validate_file_ref(pack, entry, f"evidence[{index}]", failures)
+        corpus_entries = manifest.get("corpora", [])
+        corpus_kinds = [item.get("kind") for item in corpus_entries if isinstance(item, dict)]
+        if sorted(corpus_kinds) != ["holdout", "representative"]:
+            failures.append("exactly one holdout and one representative corpus are required")
+        corpus_digests = [item.get("sha256") for item in corpus_entries if isinstance(item, dict)]
+        if len(corpus_digests) != len(set(corpus_digests)):
+            failures.append("holdout and representative corpus digests must differ")
+        for index, entry in enumerate(corpus_entries):
+            validate_file_ref(pack, entry, f"corpora[{index}]", failures)
+        for claim in claims:
+            claim_id = claim.get("claimId", "unknown")
+            for ref_id in claim.get("evidenceRefs", []):
+                entry = evidence_by_id.get(ref_id)
+                if entry is None:
+                    failures.append(f"claim {claim_id} evidence ref is not in the manifest: {ref_id}")
+                elif claim_id not in entry.get("claimIds", []):
+                    failures.append(f"claim {claim_id} is not bound by evidence ref {ref_id}")
+            for ref_id in claim.get("provenanceRefs", []):
+                entry = evidence_by_id.get(ref_id)
+                if entry is None or entry.get("role") != "provenance":
+                    failures.append(f"claim {claim_id} provenance ref is invalid: {ref_id}")
+        if set(certification.get("evidenceRefs", [])) != set(evidence_ids):
+            failures.append("certification evidenceRefs must exactly match the evidence manifest")
+        domain_gates = manifest.get("domainGates", [])
+        if batch == 45:
+            customer_entries = [item for item in evidence_entries if item.get("role") == "customer"]
+            independent_entries = [item for item in evidence_entries if item.get("role") == "independent-review"]
+            if len(customer_entries) < 2:
+                failures.append("Batch 45 requires at least two customer evidence records")
+            if not independent_entries:
+                failures.append("Batch 45 requires independent review evidence")
+            domain_batches = [item.get("batch") for item in domain_gates if isinstance(item, dict)]
+            if sorted(domain_batches) != list(range(38, 45)):
+                failures.append("Batch 45 requires exact certified domain gates for Batches 38-44")
+            for index, entry in enumerate(domain_gates):
+                target = validate_file_ref(pack, entry, f"domainGates[{index}]", failures)
+                if target:
+                    try:
+                        gate = load_json(target)
+                        validate_document(
+                            gate,
+                            ROOT / "schemas" / f"batch{entry.get('batch')}" / "gate-result.schema.json",
+                        )
+                    except (OSError, ValueError, json.JSONDecodeError, jsonschema.exceptions.ValidationError, jsonschema.exceptions.SchemaError) as exc:
+                        failures.append(f"domain gate is invalid: {exc}")
+                    else:
+                        if gate.get("batch") != entry.get("batch") or gate.get("status") != "CERTIFIED" or gate.get("eligible") is not True:
+                            failures.append(f"Batch {entry.get('batch')} domain gate is not certified")
+        elif domain_gates:
+            failures.append("domainGates are only accepted by the Batch 45 aggregate gate")
+        validate_signature(
+            batch,
+            pack,
+            trust_store_path,
+            program,
+            manifest,
+            failures,
+        )
     eligible = not failures
     status = "CERTIFIED" if eligible else "BLOCKED"
     return eligible, failures, status
 
 
 def write_gate_result(batch: int, pack: Path, eligible: bool, failures: list[str], status: str) -> None:
+    try:
+        pack_key = load_json(pack / "program.json").get("packKey", pack.name)
+    except (OSError, ValueError, json.JSONDecodeError):
+        pack_key = pack.name
     result = {
         "batch": batch,
-        "packKey": load_json(pack / "program.json")["packKey"],
+        "packKey": pack_key,
         "eligible": eligible,
         "status": status,
         "failures": failures,
@@ -222,6 +497,7 @@ def main() -> int:
     gate_parser = sub.add_parser("gate")
     gate_parser.add_argument("--batch", type=int, choices=BATCHES, required=True)
     gate_parser.add_argument("pack", type=Path)
+    gate_parser.add_argument("--trust-store", type=Path)
     args = parser.parse_args()
 
     if args.command == "validate":
@@ -235,7 +511,7 @@ def main() -> int:
     if args.command == "scaffold":
         print(scaffold(args.batch, args.key, args.owner, args.output_root))
         return 0
-    eligible, failures, status = evaluate_gate(args.batch, args.pack)
+    eligible, failures, status = evaluate_gate(args.batch, args.pack, args.trust_store)
     write_gate_result(args.batch, args.pack, eligible, failures, status)
     for failure in failures:
         print(f"GATE FAIL: {failure}")

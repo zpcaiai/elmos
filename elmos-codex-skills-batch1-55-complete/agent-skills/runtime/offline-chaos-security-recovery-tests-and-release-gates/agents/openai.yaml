@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B36: Offline Chaos Security Recovery Tests And Release Gates"
+  short_description: "Run ELMOS B36 Skill with fail-closed evidence"
+  default_prompt: "Use $offline-chaos-security-recovery-tests-and-release-gates to execute the ELMOS B36 contract with fail-closed evidence."

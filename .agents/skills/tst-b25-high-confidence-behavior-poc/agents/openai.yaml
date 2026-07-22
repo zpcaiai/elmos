@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tst B25 High Confidence Behavior Poc"
+  short_description: "Help with Tst B25 High Confidence Behavior Poc tasks"
+  default_prompt: "Use $tst-b25-high-confidence-behavior-poc to implement and verify this strict Batch 1–37 test scope with immutable evidence and fail-closed results."

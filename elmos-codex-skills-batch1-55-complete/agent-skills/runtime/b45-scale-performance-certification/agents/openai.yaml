@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M45: B45 Scale Performance Certification"
+  short_description: "Run ELMOS M45 Skill with fail-closed evidence"
+  default_prompt: "Use $b45-scale-performance-certification to execute the ELMOS M45 contract with fail-closed evidence."

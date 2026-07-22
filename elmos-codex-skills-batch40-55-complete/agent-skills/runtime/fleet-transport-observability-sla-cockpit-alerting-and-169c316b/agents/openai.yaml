@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B51: Fleet Transport Observability Sla Cockpit Alerting And Operations"
+  short_description: "Run ELMOS Product B51 contract with fail-closed evidence"
+  default_prompt: "Use $fleet-transport-observability-sla-cockpit-alerting-and-169c316b to implement its fail-closed ELMOS Product B51 contract."

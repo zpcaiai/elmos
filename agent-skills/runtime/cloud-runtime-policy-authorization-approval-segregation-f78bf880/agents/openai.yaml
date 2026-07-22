@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B49: Cloud Runtime Policy Authorization Approval Segregation And Exception"
+  short_description: "Run ELMOS Product B49 contract with fail-closed evidence"
+  default_prompt: "Use $cloud-runtime-policy-authorization-approval-segregation-f78bf880 to implement its fail-closed ELMOS Product B49 contract."

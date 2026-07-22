@@ -19,20 +19,20 @@
       ],
       "build_tool": "next-16.2.10",
       "package_manager": "pnpm-10.12.4",
-      "router": [],
-      "renderer": [],
-      "state": [],
-      "forms": [],
-      "styling": [],
-      "design_system": [],
+      "router": ["next-app-router-16.2.10"],
+      "renderer": ["react-19.2.7-client-hydration"],
+      "state": ["react-use-state-19.2.7"],
+      "forms": ["native-formdata-memory-only"],
+      "styling": ["css-custom-properties"],
+      "design_system": ["elmos-console-0.3.0"],
       "api_client": [],
       "identity": [],
-      "i18n": [],
-      "test_tools": [],
+      "i18n": ["zh-CN-visible-copy"],
+      "test_tools": ["playwright-chrome-150.0.7871.129"],
       "browsers": [
-        "chromium-UNSET"
+        "chrome-150.0.7871.129"
       ],
-      "devices": []
+      "devices": ["desktop-1440x1000", "tablet-1024x768", "mobile-390x844"]
     },
     "target": {
       "stack": "nextjs-app-router",
@@ -49,22 +49,26 @@
       ],
       "build_tool": "next-16.2.10",
       "package_manager": "pnpm-10.12.4",
-      "router": [],
-      "renderer": [],
-      "state": [],
-      "forms": [],
-      "styling": [],
-      "design_system": [],
+      "router": ["next-app-router-16.2.10"],
+      "renderer": ["react-19.2.7-client-hydration"],
+      "state": ["react-use-state-19.2.7"],
+      "forms": ["react-controlled-native-validation-memory-only"],
+      "styling": ["css-custom-properties"],
+      "design_system": ["elmos-console-0.4.0"],
       "api_client": [],
       "identity": [],
-      "i18n": [],
-      "test_tools": [],
+      "i18n": ["zh-CN-visible-copy"],
+      "test_tools": ["playwright-chrome-150.0.7871.129"],
       "browsers": [
-        "chromium-UNSET"
+        "chrome-150.0.7871.129"
       ],
-      "devices": []
+      "devices": ["desktop-1440x1000", "tablet-1024x768", "mobile-390x844"]
     }
   },
-  "evidence_refs": [],
+  "evidence_refs": [
+    "certification/local-ui-polish-evidence.json",
+    "certification/local-ui-workflow-polish-evidence.json",
+    "certification/local-project-generation-evidence.json"
+  ],
   "recertification_triggers": []
 }

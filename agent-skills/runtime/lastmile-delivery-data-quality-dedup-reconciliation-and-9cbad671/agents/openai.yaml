@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B51: Lastmile Delivery Data Quality Dedup Reconciliation And Certification"
+  short_description: "Run ELMOS Product B51 contract with fail-closed evidence"
+  default_prompt: "Use $lastmile-delivery-data-quality-dedup-reconciliation-and-9cbad671 to implement its fail-closed ELMOS Product B51 contract."

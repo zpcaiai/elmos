@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B37: Evidence Data Quality Source Certification Lineage And Reconciliation"
+  short_description: "Run ELMOS B37 Skill with fail-closed evidence"
+  default_prompt: "Use $evidence-data-quality-source-certification-lineage-and-bb4d5028 to execute the ELMOS B37 contract with fail-closed evidence."

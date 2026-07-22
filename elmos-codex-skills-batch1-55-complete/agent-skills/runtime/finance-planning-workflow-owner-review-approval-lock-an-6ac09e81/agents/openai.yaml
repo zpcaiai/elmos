@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B39: Finance Planning Workflow Owner Review Approval Lock And Collaboration"
+  short_description: "Run ELMOS B39 Skill with fail-closed evidence"
+  default_prompt: "Use $finance-planning-workflow-owner-review-approval-lock-an-6ac09e81 to execute the ELMOS B39 contract with fail-closed evidence."

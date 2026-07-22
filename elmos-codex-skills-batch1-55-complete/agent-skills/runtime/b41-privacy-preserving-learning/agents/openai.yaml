@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M41: B41 Privacy Preserving Learning"
+  short_description: "Run ELMOS M41 Skill with fail-closed evidence"
+  default_prompt: "Use $b41-privacy-preserving-learning to execute the ELMOS M41 contract with fail-closed evidence."

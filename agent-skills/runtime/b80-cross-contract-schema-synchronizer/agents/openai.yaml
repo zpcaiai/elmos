@@ -1,0 +1,4 @@
+interface:
+  display_name: "B80 Cross Contract Schema Synchronizer"
+  short_description: "Run this ELMOS project Skill with evidence controls"
+  default_prompt: "Use $b80-cross-contract-schema-synchronizer to execute this ELMOS project Skill with fail-closed evidence."

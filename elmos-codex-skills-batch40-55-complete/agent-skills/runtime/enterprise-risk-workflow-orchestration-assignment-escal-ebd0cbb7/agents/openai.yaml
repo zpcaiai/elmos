@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B48: Enterprise Risk Workflow Orchestration Assignment Escalation And Recovery"
+  short_description: "Run ELMOS Product B48 contract with fail-closed evidence"
+  default_prompt: "Use $enterprise-risk-workflow-orchestration-assignment-escal-ebd0cbb7 to implement its fail-closed ELMOS Product B48 contract."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B40: Partner Channel Orchestrator"
+  short_description: "Run ELMOS B40 Skill with fail-closed evidence"
+  default_prompt: "Use $partner-channel-orchestrator to execute the ELMOS B40 contract with fail-closed evidence."

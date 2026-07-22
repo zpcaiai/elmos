@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M38: B38 Upgrade Rollback Disaster Recovery"
+  short_description: "Run ELMOS M38 Skill with fail-closed evidence"
+  default_prompt: "Use $b38-upgrade-rollback-disaster-recovery to execute the ELMOS M38 contract with fail-closed evidence."

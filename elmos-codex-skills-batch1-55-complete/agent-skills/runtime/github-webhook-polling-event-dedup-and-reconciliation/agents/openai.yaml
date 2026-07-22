@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B35: Github Webhook Polling Event Dedup And Reconciliation"
+  short_description: "Run ELMOS B35 Skill with fail-closed evidence"
+  default_prompt: "Use $github-webhook-polling-event-dedup-and-reconciliation to execute the ELMOS B35 contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "B84 Safety Boundary Sil Approval Gate"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b84-safety-boundary-sil-approval-gate to execute this ELMOS Language Pack Skill with fail-closed evidence."

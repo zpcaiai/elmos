@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B42: Supply Planning Planning Capacity Scenario Optimization And Allocation"
+  short_description: "Run ELMOS Product B42 contract with fail-closed evidence"
+  default_prompt: "Use $supply-planning-planning-capacity-scenario-optimization-78498a67 to implement its fail-closed ELMOS Product B42 contract."

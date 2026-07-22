@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tst Performance Capacity Cost Regression"
+  short_description: "Run Batch 38-45 strict evidence validation"
+  default_prompt: "Use $tst-performance-capacity-cost-regression to run its exact Batch 38-45 cases with fail-closed evidence."

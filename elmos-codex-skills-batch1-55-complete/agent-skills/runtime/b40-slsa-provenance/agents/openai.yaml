@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M40: B40 Slsa Provenance"
+  short_description: "Run ELMOS M40 Skill with fail-closed evidence"
+  default_prompt: "Use $b40-slsa-provenance to execute the ELMOS M40 contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B44: Data Platform Observability Sla Cockpit Alerting And Operations"
+  short_description: "Run ELMOS B44 Skill with fail-closed evidence"
+  default_prompt: "Use $data-platform-observability-sla-cockpit-alerting-and-operations to execute the ELMOS B44 contract with fail-closed evidence."

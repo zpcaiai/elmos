@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B39: Billing Finance Reconciliation Period Close Audit Evidence And Reporting"
+  short_description: "Run ELMOS B39 Skill with fail-closed evidence"
+  default_prompt: "Use $billing-finance-reconciliation-period-close-audit-evide-13e9caf7 to execute the ELMOS B39 contract with fail-closed evidence."

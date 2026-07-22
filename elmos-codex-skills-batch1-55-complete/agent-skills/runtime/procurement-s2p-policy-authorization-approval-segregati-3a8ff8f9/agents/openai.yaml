@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B42: Procurement S2P Policy Authorization Approval Segregation And Exception"
+  short_description: "Run ELMOS B42 Skill with fail-closed evidence"
+  default_prompt: "Use $procurement-s2p-policy-authorization-approval-segregati-3a8ff8f9 to execute the ELMOS B42 contract with fail-closed evidence."

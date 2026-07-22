@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B52: Health Interoperability Domain Model Lifecycle And State Machine"
+  short_description: "Run ELMOS B52 Skill with fail-closed evidence"
+  default_prompt: "Use $health-interoperability-domain-model-lifecycle-and-state-machine to execute the ELMOS B52 contract with fail-closed evidence."

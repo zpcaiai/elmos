@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B46: Workflow Bpm Security Privacy Quality Performance Chaos And Release Gates"
+  short_description: "Run ELMOS Product B46 contract with fail-closed evidence"
+  default_prompt: "Use $workflow-bpm-security-privacy-quality-performance-chaos-0a03f965 to implement its fail-closed ELMOS Product B46 contract."

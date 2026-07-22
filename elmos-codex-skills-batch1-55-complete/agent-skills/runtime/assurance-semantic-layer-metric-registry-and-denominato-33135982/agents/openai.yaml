@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B37: Assurance Semantic Layer Metric Registry And Denominator Governance"
+  short_description: "Run ELMOS B37 Skill with fail-closed evidence"
+  default_prompt: "Use $assurance-semantic-layer-metric-registry-and-denominato-33135982 to execute the ELMOS B37 contract with fail-closed evidence."

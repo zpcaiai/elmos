@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type KeyboardEvent } from "react";
 import { Icon } from "../components/Icon";
 import { StatusChip } from "../components/StatusChip";
 import { productStages as fallbackStages } from "../lib/catalog";
@@ -39,6 +39,19 @@ export function CommercializationConsole() {
   const selectedStage = payload.stages.find((stage) => stage.batch === selected) ?? payload.stages[0];
   const enforcedCount = payload.stages.flatMap((stage) => stage.checks).filter((check) => check.status === "READY" || check.status === "ENFORCED").length;
   const unresolvedCount = payload.stages.flatMap((stage) => stage.checks).filter((check) => check.status === "BLOCKED" || check.status === "NOT_RUN" || check.status === "NOT_CONFIGURED").length;
+  const fetchedAt = payload.fetchedAt === new Date(0).toISOString()
+    ? "等待首次刷新"
+    : new Intl.DateTimeFormat("zh-CN", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false }).format(new Date(payload.fetchedAt));
+
+  function moveStage(event: KeyboardEvent<HTMLButtonElement>, index: number) {
+    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+    event.preventDefault();
+    const last = payload.stages.length - 1;
+    const nextIndex = event.key === "Home" ? 0 : event.key === "End" ? last : event.key === "ArrowRight" ? (index + 1) % payload.stages.length : (index - 1 + payload.stages.length) % payload.stages.length;
+    const nextStage = payload.stages[nextIndex];
+    setSelected(nextStage.batch);
+    requestAnimationFrame(() => document.getElementById(`trust-tab-${nextStage.batch}`)?.focus());
+  }
 
   return (
     <div className="page-stack control-page">
@@ -58,14 +71,14 @@ export function CommercializationConsole() {
         <article className="metric-card"><span>决策上限</span><strong className="metric-word">Gate / Human</strong><small>不批准、不执行</small></article>
       </section>
 
-      <section className="source-notice" role="status"><Icon name={payload.source === "LIVE_API" ? "check" : "clock"} size={16} /><span>{payload.note}</span><StatusChip status={payload.source} compact /></section>
+      <section className="source-notice" role="status"><Icon name={payload.source === "LIVE_API" ? "check" : "clock"} size={16} /><span>{payload.note}</span><small className="source-freshness">最近刷新 {fetchedAt}</small><StatusChip status={payload.source} compact /></section>
 
       <section className="trust-chain" aria-labelledby="trust-chain-title">
         <div className="section-heading compact-heading"><div><span className="overline">TRUST CHAIN</span><h2 id="trust-chain-title">从身份到执行回执</h2></div><span className="quiet-label">点击任一阶段查看检查项</span></div>
-        <div className="trust-steps">
+        <div className="trust-steps" role="tablist" aria-label="商业化可信链阶段">
           {payload.stages.map((stage, index) => (
             <div className="trust-step-wrap" key={stage.batch}>
-              <button className={`trust-step ${selected === stage.batch ? "selected" : ""}`} onClick={() => setSelected(stage.batch)} aria-pressed={selected === stage.batch}>
+              <button id={`trust-tab-${stage.batch}`} className={`trust-step ${selected === stage.batch ? "selected" : ""}`} role="tab" aria-selected={selected === stage.batch} aria-controls="trust-stage-panel" tabIndex={selected === stage.batch ? 0 : -1} onClick={() => setSelected(stage.batch)} onKeyDown={(event) => moveStage(event, index)}>
                 <span className="trust-step-icon"><Icon name={stage.icon} size={20} /></span>
                 <span><small>{stage.batch}</small><strong>{stage.shortTitle}</strong></span>
                 <StatusChip status={stage.status} compact />
@@ -77,7 +90,7 @@ export function CommercializationConsole() {
       </section>
 
       <section className="control-grid">
-        <article className="surface-card stage-detail">
+        <article className="surface-card stage-detail" id="trust-stage-panel" role="tabpanel" aria-labelledby={`trust-tab-${selectedStage.batch}`} tabIndex={0}>
           <div className="stage-detail-heading">
             <span className="large-stage-icon"><Icon name={selectedStage.icon} size={23} /></span>
             <div><span className="overline">{selectedStage.batch} · {selectedStage.subtitle}</span><h2>{selectedStage.title}</h2></div>
@@ -106,7 +119,7 @@ export function CommercializationConsole() {
         <div className="card-heading"><div><span className="overline">ASSURANCE QUEUE</span><h2>证据审阅队列</h2></div><span className="quiet-label">合成演示数据 · 不含客户内容</span></div>
         <div className="queue-table" role="table" aria-label="证据审阅队列">
           <div className="queue-head" role="row"><span role="columnheader">事项</span><span role="columnheader">对象</span><span role="columnheader">阶段</span><span role="columnheader">负责人</span><span role="columnheader">状态</span></div>
-          {reviewQueue.map((item) => <div className="queue-row" role="row" key={item.id}><span role="cell"><small>{item.id}</small><strong>{item.title}</strong></span><span role="cell">{item.subject}</span><span role="cell"><b className="batch-pill">{item.stage}</b></span><span role="cell">{item.owner}</span><span role="cell"><StatusChip status={item.status} compact /></span></div>)}
+          {reviewQueue.map((item) => <div className="queue-row" role="row" key={item.id}><span role="cell" data-label="事项"><small>{item.id}</small><strong>{item.title}</strong></span><span role="cell" data-label="对象">{item.subject}</span><span role="cell" data-label="阶段"><b className="batch-pill">{item.stage}</b></span><span role="cell" data-label="负责人">{item.owner}</span><span role="cell" data-label="状态"><StatusChip status={item.status} compact /></span></div>)}
         </div>
       </section>
 

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B54: Collaboration Intel Observability Sla Cockpit Alerting And Operations"
+  short_description: "Run ELMOS B54 Skill with fail-closed evidence"
+  default_prompt: "Use $collaboration-intel-observability-sla-cockpit-alerting-df18fd19 to execute the ELMOS B54 contract with fail-closed evidence."

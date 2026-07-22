@@ -1,10 +1,11 @@
 {
   "schema_version": 1,
-  "source_snapshot_digest": "ebb89f64a5a487c5bfd0103723dc2b9d26e678a519758a843267e0804207d973",
+  "source_snapshot_digest": "8eb0058161be9e4a7c4a6e874838c6829ac2722e56f7b608574bb14fcf428ca1",
   "mappings": [
     {"source":"apps/web-console/app/page.tsx","target":"apps/web-console/app/components/AppShell.tsx","ownership":"shared","behavior":"persistent navigation shell"},
     {"source":"apps/web-console/app/page.tsx","target":"apps/web-console/app/migration/MigrationStudio.tsx","ownership":"manual","behavior":"migration catalog and local-draft journey"},
     {"source":"apps/web-console/app/page.tsx","target":"apps/web-console/app/commercialization/CommercializationConsole.tsx","ownership":"manual","behavior":"read-only trust-chain review journey"},
+    {"source":"contracts/project-synthesis-schema/synthesis-request-v1.schema.json","target":"apps/web-console/app/generation/ProjectGenerationStudio.tsx","ownership":"manual","behavior":"exact target selection and memory-only project-generation draft"},
     {"source":"apps/web-console/app/styles.css","target":"apps/web-console/app/styles.css","ownership":"shared","behavior":"responsive design-token implementation"}
   ]
 }

@@ -1,0 +1,25 @@
+# Batch 77 — Dockerfile and Docker Compose Project Pack
+
+Dockerfiles, multi-stage and multi-architecture images, rootless hardening, SBOMs, health contracts, Compose topology, readiness, development, parity, scanning, and runtime certification
+
+Skill range: **PG363–PG374** (12 Skills)
+
+## Skills
+
+- **PG363 — `b77-container-project-profile-detector`**: Inspect and model Container Project Profile Detector for Dockerfiles, multi-stage and multi-architecture images, rootless hardening, SBOMs, health contracts, Compose topology, readiness, development, parity, scanning, and runtime certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.
+- **PG364 — `b77-dockerfile-multistage-generator`**: Generate runnable and maintainable Dockerfile Multistage Generator for Dockerfiles, multi-stage and multi-architecture images, rootless hardening, SBOMs, health contracts, Compose topology, readiness, development, parity, scanning, and runtime certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.
+- **PG365 — `b77-container-base-image-sbom-policy`**: Enforce and test Container Base Image SBOM Policy for Dockerfiles, multi-stage and multi-architecture images, rootless hardening, SBOMs, health contracts, Compose topology, readiness, development, parity, scanning, and runtime certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.
+- **PG366 — `b77-rootless-container-hardening`**: Enforce and test Rootless Container Hardening for Dockerfiles, multi-stage and multi-architecture images, rootless hardening, SBOMs, health contracts, Compose topology, readiness, development, parity, scanning, and runtime certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.
+- **PG367 — `b77-docker-buildx-multiarch-generator`**: Generate runnable and maintainable Docker Buildx Multiarch Generator for Dockerfiles, multi-stage and multi-architecture images, rootless hardening, SBOMs, health contracts, Compose topology, readiness, development, parity, scanning, and runtime certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.
+- **PG368 — `b77-container-health-runtime-contract`**: Implement and validate Container Health Runtime Contract for Dockerfiles, multi-stage and multi-architecture images, rootless hardening, SBOMs, health contracts, Compose topology, readiness, development, parity, scanning, and runtime certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.
+- **PG369 — `b77-compose-service-topology-generator`**: Generate runnable and maintainable Compose Service Topology Generator for Dockerfiles, multi-stage and multi-architecture images, rootless hardening, SBOMs, health contracts, Compose topology, readiness, development, parity, scanning, and runtime certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.
+- **PG370 — `b77-compose-readiness-dependency-manager`**: Coordinate and control Compose Readiness Dependency Manager for Dockerfiles, multi-stage and multi-architecture images, rootless hardening, SBOMs, health contracts, Compose topology, readiness, development, parity, scanning, and runtime certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.
+- **PG371 — `b77-compose-development-environment`**: Implement and validate Compose Development Environment for Dockerfiles, multi-stage and multi-architecture images, rootless hardening, SBOMs, health contracts, Compose topology, readiness, development, parity, scanning, and runtime certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.
+- **PG372 — `b77-compose-production-parity-gate`**: Enforce and test Compose Production Parity Gate for Dockerfiles, multi-stage and multi-architecture images, rootless hardening, SBOMs, health contracts, Compose topology, readiness, development, parity, scanning, and runtime certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.
+- **PG373 — `b77-container-image-test-scan-gate`**: Enforce and test Container Image Test Scan Gate for Dockerfiles, multi-stage and multi-architecture images, rootless hardening, SBOMs, health contracts, Compose topology, readiness, development, parity, scanning, and runtime certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.
+- **PG374 — `b77-container-build-run-certifier`**: Execute and independently verify Container Build Run Certifier for Dockerfiles, multi-stage and multi-architecture images, rootless hardening, SBOMs, health contracts, Compose topology, readiness, development, parity, scanning, and runtime certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.
+
+## Exit gate
+
+- Installable Codex Skill layout validated.
+- Runtime claims require exact external tool and environment evidence.

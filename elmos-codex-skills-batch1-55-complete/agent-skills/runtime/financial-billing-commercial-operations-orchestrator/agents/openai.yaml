@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B39: Financial Billing Commercial Operations Orchestrator"
+  short_description: "Run ELMOS B39 Skill with fail-closed evidence"
+  default_prompt: "Use $financial-billing-commercial-operations-orchestrator to execute the ELMOS B39 contract with fail-closed evidence."

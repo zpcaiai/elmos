@@ -1,0 +1,13 @@
+BATCH38_PYTHON ?= /opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python
+.PHONY: batch38-check batch38-scaffold batch38-gate
+batch38-check:
+	$(BATCH38_PYTHON) scripts/mature_product_toolkit.py validate --batch 38
+	$(BATCH38_PYTHON) -m unittest discover -s tests/batch38 -p 'test_*.py'
+batch38-scaffold:
+	@test -n "$(PACK)" || (echo "PACK=<pack-key> required" && exit 2)
+	@test -n "$(OWNER)" || (echo "OWNER=<owner> required" && exit 2)
+	$(BATCH38_PYTHON) scripts/mature_product_toolkit.py scaffold --batch 38 --key $(PACK) --owner $(OWNER)
+batch38-gate:
+	@test -n "$(PACK)" || (echo "PACK=<pack-key> required" && exit 2)
+	@test -n "$(TRUST_STORE)" || (echo "TRUST_STORE=<external-trust-store.json> required" && exit 2)
+	$(BATCH38_PYTHON) scripts/mature_product_toolkit.py gate --batch 38 mature-product-packs/batch38/$(PACK) --trust-store $(TRUST_STORE)

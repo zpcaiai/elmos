@@ -1,0 +1,550 @@
+{
+  "engine": "elmos.project-synthesis",
+  "schema": "elmos.project-synthesis.v1",
+  "release": "batch-57-60",
+  "skill_count": 46,
+  "skills": [
+    {
+      "id": "PG125",
+      "name": "frontend-profile-selector",
+      "path": "skills/batch-57/PG125-frontend-profile-selector.md",
+      "depends_on": [
+        "PG033",
+        "PG053",
+        "PG055",
+        "PG064"
+      ],
+      "summary": "Selects the supported frontend application and rendering profile."
+    },
+    {
+      "id": "PG126",
+      "name": "typescript-client-sdk-generator",
+      "path": "skills/batch-57/PG126-typescript-client-sdk-generator.md",
+      "depends_on": [
+        "PG115",
+        "PG116",
+        "PG124",
+        "PG125"
+      ],
+      "summary": "Generates typed TypeScript clients from approved REST, RPC, event, or webhook contracts."
+    },
+    {
+      "id": "PG127",
+      "name": "auth-session-ui-generator",
+      "path": "skills/batch-57/PG127-auth-session-ui-generator.md",
+      "depends_on": [
+        "PG041",
+        "PG050",
+        "PG096",
+        "PG108",
+        "PG125"
+      ],
+      "summary": "Generates sign-in, sign-out, session, token refresh, tenant selection, and authorization-aware UI flows."
+    },
+    {
+      "id": "PG128",
+      "name": "form-validation-generator",
+      "path": "skills/batch-57/PG128-form-validation-generator.md",
+      "depends_on": [
+        "PG034",
+        "PG039",
+        "PG125",
+        "PG126"
+      ],
+      "summary": "Generates forms, field schemas, client validation, server-error mapping, accessibility, and optimistic concurrency handling."
+    },
+    {
+      "id": "PG129",
+      "name": "crud-table-detail-generator",
+      "path": "skills/batch-57/PG129-crud-table-detail-generator.md",
+      "depends_on": [
+        "PG033",
+        "PG040",
+        "PG041",
+        "PG125",
+        "PG126"
+      ],
+      "summary": "Generates list, filter, sort, page, create, view, edit, and delete interfaces from approved resource contracts."
+    },
+    {
+      "id": "PG130",
+      "name": "dashboard-chart-generator",
+      "path": "skills/batch-57/PG130-dashboard-chart-generator.md",
+      "depends_on": [
+        "PG027",
+        "PG040",
+        "PG125",
+        "PG126"
+      ],
+      "summary": "Generates KPI cards, charts, filters, drilldowns, freshness indicators, and accessible tabular alternatives."
+    },
+    {
+      "id": "PG131",
+      "name": "navigation-routing-permission-generator",
+      "path": "skills/batch-57/PG131-navigation-routing-permission-generator.md",
+      "depends_on": [
+        "PG033",
+        "PG041",
+        "PG045",
+        "PG125"
+      ],
+      "summary": "Generates application shell, route tree, breadcrumbs, navigation, deep links, and permission-aware visibility."
+    },
+    {
+      "id": "PG132",
+      "name": "design-token-component-adapter",
+      "path": "skills/batch-57/PG132-design-token-component-adapter.md",
+      "depends_on": [
+        "PG063",
+        "PG125"
+      ],
+      "summary": "Maps generated UI to approved design tokens and component-library primitives."
+    },
+    {
+      "id": "PG133",
+      "name": "frontend-state-data-fetch-generator",
+      "path": "skills/batch-57/PG133-frontend-state-data-fetch-generator.md",
+      "depends_on": [
+        "PG048",
+        "PG126",
+        "PG129"
+      ],
+      "summary": "Generates query caching, mutations, optimistic updates, invalidation, offline state, and error recovery."
+    },
+    {
+      "id": "PG134",
+      "name": "fullstack-e2e-wiring-generator",
+      "path": "skills/batch-57/PG134-fullstack-e2e-wiring-generator.md",
+      "depends_on": [
+        "PG076",
+        "PG088",
+        "PG100",
+        "PG112",
+        "PG124",
+        "PG125",
+        "PG126",
+        "PG127",
+        "PG133"
+      ],
+      "summary": "Wires frontend, generated SDK, backend, identity, database, messaging, configuration, local composition, and end-to-end journeys."
+    },
+    {
+      "id": "PG135",
+      "name": "requirement-to-test-trace-compiler",
+      "path": "skills/batch-58/PG135-requirement-to-test-trace-compiler.md",
+      "depends_on": [
+        "PG026",
+        "PG028",
+        "PG031",
+        "PG042"
+      ],
+      "summary": "Compiles requirements and acceptance criteria into a complete test-intent graph."
+    },
+    {
+      "id": "PG136",
+      "name": "unit-test-generator",
+      "path": "skills/batch-58/PG136-unit-test-generator.md",
+      "depends_on": [
+        "PG034",
+        "PG035",
+        "PG067",
+        "PG135"
+      ],
+      "summary": "Generates focused unit tests for domain rules, value objects, services, transformations, and pure logic."
+    },
+    {
+      "id": "PG137",
+      "name": "integration-test-generator",
+      "path": "skills/batch-58/PG137-integration-test-generator.md",
+      "depends_on": [
+        "PG113",
+        "PG117",
+        "PG118",
+        "PG119",
+        "PG123",
+        "PG135"
+      ],
+      "summary": "Generates component integration tests using compatible databases, brokers, caches, storage, identity, and external-service substitutes."
+    },
+    {
+      "id": "PG138",
+      "name": "api-contract-test-generator",
+      "path": "skills/batch-58/PG138-api-contract-test-generator.md",
+      "depends_on": [
+        "PG115",
+        "PG116",
+        "PG124",
+        "PG126",
+        "PG135"
+      ],
+      "summary": "Generates provider, consumer, schema, compatibility, authorization, and error-contract tests for APIs."
+    },
+    {
+      "id": "PG139",
+      "name": "database-migration-test-generator",
+      "path": "skills/batch-58/PG139-database-migration-test-generator.md",
+      "depends_on": [
+        "PG113",
+        "PG114",
+        "PG135"
+      ],
+      "summary": "Generates migration, upgrade, rollback/forward-recovery, restart, lock, and data-preservation tests."
+    },
+    {
+      "id": "PG140",
+      "name": "e2e-journey-test-generator",
+      "path": "skills/batch-58/PG140-e2e-journey-test-generator.md",
+      "depends_on": [
+        "PG033",
+        "PG134",
+        "PG135"
+      ],
+      "summary": "Generates end-to-end tests for critical user and system journeys across frontend, backend, identity, data, and messaging."
+    },
+    {
+      "id": "PG141",
+      "name": "property-based-test-generator",
+      "path": "skills/batch-58/PG141-property-based-test-generator.md",
+      "depends_on": [
+        "PG034",
+        "PG038",
+        "PG039",
+        "PG135"
+      ],
+      "summary": "Generates property-based and generative tests for invariants, parsers, transformations, state machines, and contracts."
+    },
+    {
+      "id": "PG142",
+      "name": "mutation-test-planner",
+      "path": "skills/batch-58/PG142-mutation-test-planner.md",
+      "depends_on": [
+        "PG026",
+        "PG136"
+      ],
+      "summary": "Plans and executes mutation testing for high-value domain and security logic under cost controls."
+    },
+    {
+      "id": "PG143",
+      "name": "performance-test-generator",
+      "path": "skills/batch-58/PG143-performance-test-generator.md",
+      "depends_on": [
+        "PG027",
+        "PG046",
+        "PG053",
+        "PG135"
+      ],
+      "summary": "Generates load, stress, endurance, concurrency, backpressure, and capacity tests from measurable quality scenarios."
+    },
+    {
+      "id": "PG144",
+      "name": "security-test-generator",
+      "path": "skills/batch-58/PG144-security-test-generator.md",
+      "depends_on": [
+        "PG041",
+        "PG050",
+        "PG135"
+      ],
+      "summary": "Generates authentication, authorization, tenant-isolation, injection, abuse, secret, dependency, and configuration security tests."
+    },
+    {
+      "id": "PG145",
+      "name": "accessibility-test-generator",
+      "path": "skills/batch-58/PG145-accessibility-test-generator.md",
+      "depends_on": [
+        "PG128",
+        "PG130",
+        "PG132",
+        "PG135"
+      ],
+      "summary": "Generates automated and manual accessibility checks for keyboard, semantics, focus, contrast, forms, charts, and dynamic content."
+    },
+    {
+      "id": "PG146",
+      "name": "test-data-and-fixture-factory",
+      "path": "skills/batch-58/PG146-test-data-and-fixture-factory.md",
+      "depends_on": [
+        "PG034",
+        "PG039",
+        "PG113",
+        "PG135"
+      ],
+      "summary": "Generates deterministic, privacy-safe, referentially valid, tenant-aware test data and cleanup behavior."
+    },
+    {
+      "id": "PG147",
+      "name": "isolated-build-runner",
+      "path": "skills/batch-59/PG147-isolated-build-runner.md",
+      "depends_on": [
+        "PG009",
+        "PG076"
+      ],
+      "summary": "Executes generated projects in clean, policy-controlled build environments."
+    },
+    {
+      "id": "PG148",
+      "name": "dependency-resolution-diagnoser",
+      "path": "skills/batch-59/PG148-dependency-resolution-diagnoser.md",
+      "depends_on": [
+        "PG058",
+        "PG098",
+        "PG110",
+        "PG147"
+      ],
+      "summary": "Diagnoses package, repository, lockfile, version, platform, and provenance resolution failures."
+    },
+    {
+      "id": "PG149",
+      "name": "compile-error-classifier",
+      "path": "skills/batch-59/PG149-compile-error-classifier.md",
+      "depends_on": [
+        "PG069",
+        "PG076",
+        "PG147"
+      ],
+      "summary": "Classifies Java, Python type/import, C# compiler, generated-source, and configuration compile-time failures."
+    },
+    {
+      "id": "PG150",
+      "name": "test-failure-classifier",
+      "path": "skills/batch-59/PG150-test-failure-classifier.md",
+      "depends_on": [
+        "PG135",
+        "PG147"
+      ],
+      "summary": "Classifies assertion, fixture, environment, contract, timing, isolation, product, and flaky test failures."
+    },
+    {
+      "id": "PG151",
+      "name": "runtime-log-trace-diagnoser",
+      "path": "skills/batch-59/PG151-runtime-log-trace-diagnoser.md",
+      "depends_on": [
+        "PG052",
+        "PG147"
+      ],
+      "summary": "Analyzes startup and runtime logs, metrics, traces, health events, and exception chains."
+    },
+    {
+      "id": "PG152",
+      "name": "application-startup-probe",
+      "path": "skills/batch-59/PG152-application-startup-probe.md",
+      "depends_on": [
+        "PG088",
+        "PG100",
+        "PG112",
+        "PG134",
+        "PG147"
+      ],
+      "summary": "Starts generated applications and verifies process lifecycle, configuration validation, migrations, dependencies, and readiness progression."
+    },
+    {
+      "id": "PG153",
+      "name": "smoke-and-health-verifier",
+      "path": "skills/batch-59/PG153-smoke-and-health-verifier.md",
+      "depends_on": [
+        "PG134",
+        "PG140",
+        "PG152"
+      ],
+      "summary": "Executes health, readiness, authenticated API, worker, event, database, and full-stack smoke checks."
+    },
+    {
+      "id": "PG154",
+      "name": "automated-patch-planner",
+      "path": "skills/batch-59/PG154-automated-patch-planner.md",
+      "depends_on": [
+        "PG071",
+        "PG149",
+        "PG150",
+        "PG151",
+        "PG153"
+      ],
+      "summary": "Creates bounded repair plans from classified build, test, runtime, security, and contract failures."
+    },
+    {
+      "id": "PG155",
+      "name": "bounded-repair-loop",
+      "path": "skills/batch-59/PG155-bounded-repair-loop.md",
+      "depends_on": [
+        "PG073",
+        "PG074",
+        "PG154"
+      ],
+      "summary": "Applies, verifies, limits, and records automated repair attempts."
+    },
+    {
+      "id": "PG156",
+      "name": "flaky-test-detector",
+      "path": "skills/batch-59/PG156-flaky-test-detector.md",
+      "depends_on": [
+        "PG150",
+        "PG155"
+      ],
+      "summary": "Detects nondeterministic tests through reruns, order changes, seed control, timing analysis, and shared-state inspection."
+    },
+    {
+      "id": "PG157",
+      "name": "cross-environment-matrix-validator",
+      "path": "skills/batch-59/PG157-cross-environment-matrix-validator.md",
+      "depends_on": [
+        "PG057",
+        "PG076",
+        "PG147"
+      ],
+      "summary": "Validates generated projects across supported runtime, OS, database, browser, architecture, and deployment matrices."
+    },
+    {
+      "id": "PG158",
+      "name": "build-green-evidence-publisher",
+      "path": "skills/batch-59/PG158-build-green-evidence-publisher.md",
+      "depends_on": [
+        "PG147",
+        "PG153",
+        "PG155",
+        "PG156",
+        "PG157"
+      ],
+      "summary": "Compiles signed build, test, startup, smoke, repair, and matrix evidence into the Build Green decision."
+    },
+    {
+      "id": "PG159",
+      "name": "ci-pipeline-generator",
+      "path": "skills/batch-60/PG159-ci-pipeline-generator.md",
+      "depends_on": [
+        "PG061",
+        "PG135",
+        "PG144",
+        "PG158"
+      ],
+      "summary": "Generates CI workflows for validation, build, test, security, packaging, evidence, and policy gates."
+    },
+    {
+      "id": "PG160",
+      "name": "branch-pr-checks-generator",
+      "path": "skills/batch-60/PG160-branch-pr-checks-generator.md",
+      "depends_on": [
+        "PG071",
+        "PG159"
+      ],
+      "summary": "Generates branch protection, status checks, CODEOWNERS, review, merge, release, and generated-file policies."
+    },
+    {
+      "id": "PG161",
+      "name": "secret-config-policy-generator",
+      "path": "skills/batch-60/PG161-secret-config-policy-generator.md",
+      "depends_on": [
+        "PG050",
+        "PG062"
+      ],
+      "summary": "Generates configuration validation, secret references, rotation, environment separation, and leak-prevention policy."
+    },
+    {
+      "id": "PG162",
+      "name": "sast-sca-license-gate",
+      "path": "skills/batch-60/PG162-sast-sca-license-gate.md",
+      "depends_on": [
+        "PG066",
+        "PG076",
+        "PG144",
+        "PG158"
+      ],
+      "summary": "Generates and executes static analysis, dependency vulnerability, provenance, SBOM, and license gates."
+    },
+    {
+      "id": "PG163",
+      "name": "container-hardening-generator",
+      "path": "skills/batch-60/PG163-container-hardening-generator.md",
+      "depends_on": [
+        "PG088",
+        "PG100",
+        "PG112",
+        "PG162"
+      ],
+      "summary": "Generates hardened container builds, users, filesystems, capabilities, scanning, signing, and attestations."
+    },
+    {
+      "id": "PG164",
+      "name": "kubernetes-helm-generator",
+      "path": "skills/batch-60/PG164-kubernetes-helm-generator.md",
+      "depends_on": [
+        "PG053",
+        "PG052",
+        "PG161",
+        "PG163"
+      ],
+      "summary": "Generates Kubernetes and Helm resources with security, configuration, probes, autoscaling, disruption, and policy controls."
+    },
+    {
+      "id": "PG165",
+      "name": "infrastructure-as-code-generator",
+      "path": "skills/batch-60/PG165-infrastructure-as-code-generator.md",
+      "depends_on": [
+        "PG050",
+        "PG053",
+        "PG117",
+        "PG119"
+      ],
+      "summary": "Generates approved infrastructure modules for network, compute, databases, brokers, storage, identity integration, and observability."
+    },
+    {
+      "id": "PG166",
+      "name": "otel-logging-metrics-tracing-generator",
+      "path": "skills/batch-60/PG166-otel-logging-metrics-tracing-generator.md",
+      "depends_on": [
+        "PG052",
+        "PG085",
+        "PG097",
+        "PG109",
+        "PG164"
+      ],
+      "summary": "Generates OpenTelemetry instrumentation, structured logging, metrics, trace propagation, exporters, and collection configuration."
+    },
+    {
+      "id": "PG167",
+      "name": "health-readiness-slo-generator",
+      "path": "skills/batch-60/PG167-health-readiness-slo-generator.md",
+      "depends_on": [
+        "PG027",
+        "PG052",
+        "PG053",
+        "PG166"
+      ],
+      "summary": "Generates health/readiness checks, SLIs, SLOs, error budgets, alerts, dashboards, and ownership."
+    },
+    {
+      "id": "PG168",
+      "name": "release-versioning-changelog-generator",
+      "path": "skills/batch-60/PG168-release-versioning-changelog-generator.md",
+      "depends_on": [
+        "PG124",
+        "PG158",
+        "PG162"
+      ],
+      "summary": "Generates versions, release notes, changelogs, contract compatibility summaries, migration instructions, and provenance."
+    },
+    {
+      "id": "PG169",
+      "name": "canary-bluegreen-rollout-generator",
+      "path": "skills/batch-60/PG169-canary-bluegreen-rollout-generator.md",
+      "depends_on": [
+        "PG026",
+        "PG053",
+        "PG167",
+        "PG168"
+      ],
+      "summary": "Generates rolling, canary, blue-green, feature-flag, metric-gated promotion, and automated abort procedures."
+    },
+    {
+      "id": "PG170",
+      "name": "rollback-disaster-recovery-plan",
+      "path": "skills/batch-60/PG170-rollback-disaster-recovery-plan.md",
+      "depends_on": [
+        "PG049",
+        "PG053",
+        "PG114",
+        "PG168",
+        "PG169"
+      ],
+      "summary": "Generates application rollback, forward recovery, data restore, broker replay, failover, disaster recovery, and exercise plans."
+    }
+  ]
+}

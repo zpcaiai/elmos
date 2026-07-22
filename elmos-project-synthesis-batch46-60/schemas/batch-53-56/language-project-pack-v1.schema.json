@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.project-synthesis.language-pack.v1",
+  "title": "ELMOS Language Project Pack",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "language",
+    "profiles",
+    "runtime",
+    "build",
+    "quality",
+    "generators"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "language": {
+      "enum": [
+        "java",
+        "python",
+        "csharp"
+      ]
+    },
+    "profiles": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "runtime": {
+      "type": "object",
+      "required": [
+        "version",
+        "support_policy"
+      ],
+      "properties": {
+        "version": {
+          "type": "string"
+        },
+        "support_policy": {
+          "type": "string"
+        },
+        "framework": {
+          "type": "string"
+        },
+        "framework_version": {
+          "type": "string"
+        }
+      }
+    },
+    "build": {
+      "type": "object"
+    },
+    "quality": {
+      "type": "object"
+    },
+    "generators": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "skill_id",
+          "artifact_kinds",
+          "ownership_modes"
+        ],
+        "properties": {
+          "skill_id": {
+            "type": "string"
+          },
+          "artifact_kinds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "ownership_modes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

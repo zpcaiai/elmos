@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tst Performance Capacity Cost"
+  short_description: "Help with Tst Performance Capacity Cost tasks"
+  default_prompt: "Use $tst-performance-capacity-cost to implement and verify this strict Batch 1–37 test scope with immutable evidence and fail-closed results."

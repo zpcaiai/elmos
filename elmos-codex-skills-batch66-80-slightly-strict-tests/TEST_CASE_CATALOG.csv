@@ -1,0 +1,451 @@
+case_id,batch,source_skill_id,source_skill_name,owner_test_skill,title,priority,category,polarity,zero_tolerance,required_real_system
+B66-PG223-RUN,66,PG223,b66-typescript-project-profile-detector,tst-b66-typescript-javascript-slightly-strict-suite,TypeScript Project Profile Detector / 可运行成功路径,P1,discovery,positive,False,False
+B66-PG223-NEG,66,PG223,b66-typescript-project-profile-detector,tst-b66-typescript-javascript-slightly-strict-suite,TypeScript Project Profile Detector / 负向与故障路径,P0,adversarial-discovery,negative,False,False
+B66-PG224-RUN,66,PG224,b66-node-runtime-lockfile-reproducer,tst-b66-typescript-javascript-slightly-strict-suite,Node Runtime Lockfile Reproducer / 可运行成功路径,P1,reproducibility,positive,False,True
+B66-PG224-NEG,66,PG224,b66-node-runtime-lockfile-reproducer,tst-b66-typescript-javascript-slightly-strict-suite,Node Runtime Lockfile Reproducer / 负向与故障路径,P0,cache-lockfile-tamper,negative,False,True
+B66-PG225-RUN,66,PG225,b66-typescript-monorepo-scaffolder,tst-b66-typescript-javascript-slightly-strict-suite,TypeScript Monorepo Scaffolder / 可运行成功路径,P1,generation,positive,False,True
+B66-PG225-NEG,66,PG225,b66-typescript-monorepo-scaffolder,tst-b66-typescript-javascript-slightly-strict-suite,TypeScript Monorepo Scaffolder / 负向与故障路径,P0,generation-adversarial,negative,False,False
+B66-PG226-RUN,66,PG226,b66-nestjs-fastify-api-generator,tst-b66-typescript-javascript-slightly-strict-suite,NestJS Fastify API Generator / 可运行成功路径,P1,generation,positive,False,True
+B66-PG226-NEG,66,PG226,b66-nestjs-fastify-api-generator,tst-b66-typescript-javascript-slightly-strict-suite,NestJS Fastify API Generator / 负向与故障路径,P0,generation-adversarial,negative,False,False
+B66-PG227-RUN,66,PG227,b66-nextjs-fullstack-generator,tst-b66-typescript-javascript-slightly-strict-suite,Next.js Fullstack Generator / 可运行成功路径,P1,ui-runtime,positive,False,True
+B66-PG227-NEG,66,PG227,b66-nextjs-fullstack-generator,tst-b66-typescript-javascript-slightly-strict-suite,Next.js Fullstack Generator / 负向与故障路径,P0,ui-resilience,negative,False,True
+B66-PG228-RUN,66,PG228,b66-react-vite-spa-generator,tst-b66-typescript-javascript-slightly-strict-suite,React Vite Spa Generator / 可运行成功路径,P1,ui-runtime,positive,False,True
+B66-PG228-NEG,66,PG228,b66-react-vite-spa-generator,tst-b66-typescript-javascript-slightly-strict-suite,React Vite Spa Generator / 负向与故障路径,P0,ui-resilience,negative,False,True
+B66-PG229-RUN,66,PG229,b66-vue-nuxt-app-generator,tst-b66-typescript-javascript-slightly-strict-suite,Vue Nuxt App Generator / 可运行成功路径,P1,ui-runtime,positive,False,True
+B66-PG229-NEG,66,PG229,b66-vue-nuxt-app-generator,tst-b66-typescript-javascript-slightly-strict-suite,Vue Nuxt App Generator / 负向与故障路径,P0,ui-resilience,negative,False,True
+B66-PG230-RUN,66,PG230,b66-node-worker-cli-generator,tst-b66-typescript-javascript-slightly-strict-suite,Node Worker CLI Generator / 可运行成功路径,P1,generation,positive,False,True
+B66-PG230-NEG,66,PG230,b66-node-worker-cli-generator,tst-b66-typescript-javascript-slightly-strict-suite,Node Worker CLI Generator / 负向与故障路径,P0,generation-adversarial,negative,False,False
+B66-PG231-RUN,66,PG231,b66-typescript-data-access-generator,tst-b66-typescript-javascript-slightly-strict-suite,TypeScript Data Access Generator / 可运行成功路径,P1,data-integrity,positive,False,True
+B66-PG231-NEG,66,PG231,b66-typescript-data-access-generator,tst-b66-typescript-javascript-slightly-strict-suite,TypeScript Data Access Generator / 负向与故障路径,P0,data-security-fault,negative,False,True
+B66-PG232-RUN,66,PG232,b66-typescript-contract-client-generator,tst-b66-typescript-javascript-slightly-strict-suite,TypeScript Contract Client Generator / 可运行成功路径,P0,contract,positive,False,True
+B66-PG232-NEG,66,PG232,b66-typescript-contract-client-generator,tst-b66-typescript-javascript-slightly-strict-suite,TypeScript Contract Client Generator / 负向与故障路径,P0,breaking-contract,negative,False,True
+B66-PG233-RUN,66,PG233,b66-typescript-test-harness-generator,tst-b66-typescript-javascript-slightly-strict-suite,TypeScript Test Harness Generator / 可运行成功路径,P1,test-harness,positive,False,True
+B66-PG233-NEG,66,PG233,b66-typescript-test-harness-generator,tst-b66-typescript-javascript-slightly-strict-suite,TypeScript Test Harness Generator / 负向与故障路径,P0,test-anti-cheat,negative,False,True
+B66-PG234-RUN,66,PG234,b66-node-build-run-repair-certifier,tst-b66-typescript-javascript-slightly-strict-suite,Node Build Run Repair Certifier / 可运行成功路径,P0,build,positive,False,True
+B66-PG234-NEG,66,PG234,b66-node-build-run-repair-certifier,tst-b66-typescript-javascript-slightly-strict-suite,Node Build Run Repair Certifier / 负向与故障路径,P0,build-fault,negative,True,True
+B67-PG235-RUN,67,PG235,b67-go-repository-profile-detector,tst-b67-go-cloud-native-slightly-strict-suite,Go Repository Profile Detector / 可运行成功路径,P1,discovery,positive,False,False
+B67-PG235-NEG,67,PG235,b67-go-repository-profile-detector,tst-b67-go-cloud-native-slightly-strict-suite,Go Repository Profile Detector / 负向与故障路径,P0,adversarial-discovery,negative,False,False
+B67-PG236-RUN,67,PG236,b67-go-module-workspace-reproducer,tst-b67-go-cloud-native-slightly-strict-suite,Go Module Workspace Reproducer / 可运行成功路径,P1,reproducibility,positive,False,True
+B67-PG236-NEG,67,PG236,b67-go-module-workspace-reproducer,tst-b67-go-cloud-native-slightly-strict-suite,Go Module Workspace Reproducer / 负向与故障路径,P0,cache-lockfile-tamper,negative,False,True
+B67-PG237-RUN,67,PG237,b67-go-http-grpc-service-generator,tst-b67-go-cloud-native-slightly-strict-suite,Go HTTP gRPC Service Generator / 可运行成功路径,P1,contract,positive,False,True
+B67-PG237-NEG,67,PG237,b67-go-http-grpc-service-generator,tst-b67-go-cloud-native-slightly-strict-suite,Go HTTP gRPC Service Generator / 负向与故障路径,P0,breaking-contract,negative,False,True
+B67-PG238-RUN,67,PG238,b67-go-cli-generator,tst-b67-go-cloud-native-slightly-strict-suite,Go CLI Generator / 可运行成功路径,P1,generation,positive,False,True
+B67-PG238-NEG,67,PG238,b67-go-cli-generator,tst-b67-go-cloud-native-slightly-strict-suite,Go CLI Generator / 负向与故障路径,P0,generation-adversarial,negative,False,False
+B67-PG239-RUN,67,PG239,b67-go-worker-event-consumer-generator,tst-b67-go-cloud-native-slightly-strict-suite,Go Worker Event Consumer Generator / 可运行成功路径,P1,concurrency,positive,False,True
+B67-PG239-NEG,67,PG239,b67-go-worker-event-consumer-generator,tst-b67-go-cloud-native-slightly-strict-suite,Go Worker Event Consumer Generator / 负向与故障路径,P0,concurrency-fault,negative,False,True
+B67-PG240-RUN,67,PG240,b67-go-data-access-transaction-generator,tst-b67-go-cloud-native-slightly-strict-suite,Go Data Access Transaction Generator / 可运行成功路径,P0,data-integrity,positive,False,True
+B67-PG240-NEG,67,PG240,b67-go-data-access-transaction-generator,tst-b67-go-cloud-native-slightly-strict-suite,Go Data Access Transaction Generator / 负向与故障路径,P0,data-security-fault,negative,True,True
+B67-PG241-RUN,67,PG241,b67-go-concurrency-context-safety,tst-b67-go-cloud-native-slightly-strict-suite,Go Concurrency Context Safety / 可运行成功路径,P0,concurrency,positive,False,True
+B67-PG241-NEG,67,PG241,b67-go-concurrency-context-safety,tst-b67-go-cloud-native-slightly-strict-suite,Go Concurrency Context Safety / 负向与故障路径,P0,concurrency-fault,negative,True,True
+B67-PG242-RUN,67,PG242,b67-go-observability-middleware-generator,tst-b67-go-cloud-native-slightly-strict-suite,Go Observability Middleware Generator / 可运行成功路径,P0,native-runtime,positive,False,True
+B67-PG242-NEG,67,PG242,b67-go-observability-middleware-generator,tst-b67-go-cloud-native-slightly-strict-suite,Go Observability Middleware Generator / 负向与故障路径,P0,native-fault,negative,True,True
+B67-PG243-RUN,67,PG243,b67-go-kubernetes-operator-generator,tst-b67-go-cloud-native-slightly-strict-suite,Go Kubernetes Operator Generator / 可运行成功路径,P0,iac-runtime,positive,False,True
+B67-PG243-NEG,67,PG243,b67-go-kubernetes-operator-generator,tst-b67-go-cloud-native-slightly-strict-suite,Go Kubernetes Operator Generator / 负向与故障路径,P0,iac-dangerous-plan,negative,True,True
+B67-PG244-RUN,67,PG244,b67-go-mcp-tool-server-generator,tst-b67-go-cloud-native-slightly-strict-suite,Go MCP Tool Server Generator / 可运行成功路径,P1,generation,positive,False,True
+B67-PG244-NEG,67,PG244,b67-go-mcp-tool-server-generator,tst-b67-go-cloud-native-slightly-strict-suite,Go MCP Tool Server Generator / 负向与故障路径,P0,generation-adversarial,negative,False,False
+B67-PG245-RUN,67,PG245,b67-go-test-fuzz-race-generator,tst-b67-go-cloud-native-slightly-strict-suite,Go Test Fuzz Race Generator / 可运行成功路径,P0,concurrency,positive,False,True
+B67-PG245-NEG,67,PG245,b67-go-test-fuzz-race-generator,tst-b67-go-cloud-native-slightly-strict-suite,Go Test Fuzz Race Generator / 负向与故障路径,P0,concurrency-fault,negative,True,True
+B67-PG246-RUN,67,PG246,b67-go-build-crosscompile-certifier,tst-b67-go-cloud-native-slightly-strict-suite,Go Build Crosscompile Certifier / 可运行成功路径,P0,build,positive,False,True
+B67-PG246-NEG,67,PG246,b67-go-build-crosscompile-certifier,tst-b67-go-cloud-native-slightly-strict-suite,Go Build Crosscompile Certifier / 负向与故障路径,P0,build-fault,negative,True,True
+B68-PG247-RUN,68,PG247,b68-kotlin-project-profile-detector,tst-b68-kotlin-jvm-android-slightly-strict-suite,Kotlin Project Profile Detector / 可运行成功路径,P1,discovery,positive,False,False
+B68-PG247-NEG,68,PG247,b68-kotlin-project-profile-detector,tst-b68-kotlin-jvm-android-slightly-strict-suite,Kotlin Project Profile Detector / 负向与故障路径,P0,adversarial-discovery,negative,False,False
+B68-PG248-RUN,68,PG248,b68-gradle-kotlin-build-reproducer,tst-b68-kotlin-jvm-android-slightly-strict-suite,Gradle Kotlin Build Reproducer / 可运行成功路径,P1,reproducibility,positive,False,True
+B68-PG248-NEG,68,PG248,b68-gradle-kotlin-build-reproducer,tst-b68-kotlin-jvm-android-slightly-strict-suite,Gradle Kotlin Build Reproducer / 负向与故障路径,P0,cache-lockfile-tamper,negative,False,True
+B68-PG249-RUN,68,PG249,b68-spring-kotlin-service-generator,tst-b68-kotlin-jvm-android-slightly-strict-suite,Spring Kotlin Service Generator / 可运行成功路径,P1,generation,positive,False,True
+B68-PG249-NEG,68,PG249,b68-spring-kotlin-service-generator,tst-b68-kotlin-jvm-android-slightly-strict-suite,Spring Kotlin Service Generator / 负向与故障路径,P0,generation-adversarial,negative,False,False
+B68-PG250-RUN,68,PG250,b68-ktor-service-generator,tst-b68-kotlin-jvm-android-slightly-strict-suite,Ktor Service Generator / 可运行成功路径,P1,generation,positive,False,True
+B68-PG250-NEG,68,PG250,b68-ktor-service-generator,tst-b68-kotlin-jvm-android-slightly-strict-suite,Ktor Service Generator / 负向与故障路径,P0,generation-adversarial,negative,False,False
+B68-PG251-RUN,68,PG251,b68-kotlin-coroutine-structured-concurrency,tst-b68-kotlin-jvm-android-slightly-strict-suite,Kotlin Coroutine Structured Concurrency / 可运行成功路径,P0,concurrency,positive,False,True
+B68-PG251-NEG,68,PG251,b68-kotlin-coroutine-structured-concurrency,tst-b68-kotlin-jvm-android-slightly-strict-suite,Kotlin Coroutine Structured Concurrency / 负向与故障路径,P0,concurrency-fault,negative,True,True
+B68-PG252-RUN,68,PG252,b68-kotlin-data-access-generator,tst-b68-kotlin-jvm-android-slightly-strict-suite,Kotlin Data Access Generator / 可运行成功路径,P1,data-integrity,positive,False,True
+B68-PG252-NEG,68,PG252,b68-kotlin-data-access-generator,tst-b68-kotlin-jvm-android-slightly-strict-suite,Kotlin Data Access Generator / 负向与故障路径,P0,data-security-fault,negative,False,True
+B68-PG253-RUN,68,PG253,b68-java-kotlin-interop-manager,tst-b68-kotlin-jvm-android-slightly-strict-suite,Java Kotlin Interop Manager / 可运行成功路径,P1,generation,positive,False,True
+B68-PG253-NEG,68,PG253,b68-java-kotlin-interop-manager,tst-b68-kotlin-jvm-android-slightly-strict-suite,Java Kotlin Interop Manager / 负向与故障路径,P0,generation-adversarial,negative,False,False
+B68-PG254-RUN,68,PG254,b68-kotlin-contract-client-generator,tst-b68-kotlin-jvm-android-slightly-strict-suite,Kotlin Contract Client Generator / 可运行成功路径,P0,contract,positive,False,True
+B68-PG254-NEG,68,PG254,b68-kotlin-contract-client-generator,tst-b68-kotlin-jvm-android-slightly-strict-suite,Kotlin Contract Client Generator / 负向与故障路径,P0,breaking-contract,negative,False,True
+B68-PG255-RUN,68,PG255,b68-android-compose-application-generator,tst-b68-kotlin-jvm-android-slightly-strict-suite,Android Compose Application Generator / 可运行成功路径,P1,ui-runtime,positive,False,True
+B68-PG255-NEG,68,PG255,b68-android-compose-application-generator,tst-b68-kotlin-jvm-android-slightly-strict-suite,Android Compose Application Generator / 负向与故障路径,P0,ui-resilience,negative,False,True
+B68-PG256-RUN,68,PG256,b68-kotlin-multiplatform-library-generator,tst-b68-kotlin-jvm-android-slightly-strict-suite,Kotlin Multiplatform Library Generator / 可运行成功路径,P1,generation,positive,False,True
+B68-PG256-NEG,68,PG256,b68-kotlin-multiplatform-library-generator,tst-b68-kotlin-jvm-android-slightly-strict-suite,Kotlin Multiplatform Library Generator / 负向与故障路径,P0,generation-adversarial,negative,False,False
+B68-PG257-RUN,68,PG257,b68-kotlin-test-harness-generator,tst-b68-kotlin-jvm-android-slightly-strict-suite,Kotlin Test Harness Generator / 可运行成功路径,P1,test-harness,positive,False,True
+B68-PG257-NEG,68,PG257,b68-kotlin-test-harness-generator,tst-b68-kotlin-jvm-android-slightly-strict-suite,Kotlin Test Harness Generator / 负向与故障路径,P0,test-anti-cheat,negative,False,True
+B68-PG258-RUN,68,PG258,b68-kotlin-build-run-repair-certifier,tst-b68-kotlin-jvm-android-slightly-strict-suite,Kotlin Build Run Repair Certifier / 可运行成功路径,P0,build,positive,False,True
+B68-PG258-NEG,68,PG258,b68-kotlin-build-run-repair-certifier,tst-b68-kotlin-jvm-android-slightly-strict-suite,Kotlin Build Run Repair Certifier / 负向与故障路径,P0,build-fault,negative,True,True
+B69-PG259-RUN,69,PG259,b69-php-project-profile-detector,tst-b69-php-web-slightly-strict-suite,Php Project Profile Detector / 可运行成功路径,P1,discovery,positive,False,False
+B69-PG259-NEG,69,PG259,b69-php-project-profile-detector,tst-b69-php-web-slightly-strict-suite,Php Project Profile Detector / 负向与故障路径,P0,adversarial-discovery,negative,False,False
+B69-PG260-RUN,69,PG260,b69-composer-dependency-reproducer,tst-b69-php-web-slightly-strict-suite,Composer Dependency Reproducer / 可运行成功路径,P1,reproducibility,positive,False,True
+B69-PG260-NEG,69,PG260,b69-composer-dependency-reproducer,tst-b69-php-web-slightly-strict-suite,Composer Dependency Reproducer / 负向与故障路径,P0,cache-lockfile-tamper,negative,False,True
+B69-PG261-RUN,69,PG261,b69-laravel-application-generator,tst-b69-php-web-slightly-strict-suite,Laravel Application Generator / 可运行成功路径,P1,generation,positive,False,True
+B69-PG261-NEG,69,PG261,b69-laravel-application-generator,tst-b69-php-web-slightly-strict-suite,Laravel Application Generator / 负向与故障路径,P0,generation-adversarial,negative,False,False
+B69-PG262-RUN,69,PG262,b69-symfony-api-generator,tst-b69-php-web-slightly-strict-suite,Symfony API Generator / 可运行成功路径,P1,generation,positive,False,True
+B69-PG262-NEG,69,PG262,b69-symfony-api-generator,tst-b69-php-web-slightly-strict-suite,Symfony API Generator / 负向与故障路径,P0,generation-adversarial,negative,False,False
+B69-PG263-RUN,69,PG263,b69-php-modular-monolith-generator,tst-b69-php-web-slightly-strict-suite,Php Modular Monolith Generator / 可运行成功路径,P1,generation,positive,False,True
+B69-PG263-NEG,69,PG263,b69-php-modular-monolith-generator,tst-b69-php-web-slightly-strict-suite,Php Modular Monolith Generator / 负向与故障路径,P0,generation-adversarial,negative,False,False
+B69-PG264-RUN,69,PG264,b69-php-persistence-migration-generator,tst-b69-php-web-slightly-strict-suite,Php Persistence Migration Generator / 可运行成功路径,P0,data-integrity,positive,False,True
+B69-PG264-NEG,69,PG264,b69-php-persistence-migration-generator,tst-b69-php-web-slightly-strict-suite,Php Persistence Migration Generator / 负向与故障路径,P0,data-security-fault,negative,True,True
+B69-PG265-RUN,69,PG265,b69-php-queue-scheduler-generator,tst-b69-php-web-slightly-strict-suite,Php Queue Scheduler Generator / 可运行成功路径,P1,concurrency,positive,False,True
+B69-PG265-NEG,69,PG265,b69-php-queue-scheduler-generator,tst-b69-php-web-slightly-strict-suite,Php Queue Scheduler Generator / 负向与故障路径,P0,concurrency-fault,negative,False,True
+B69-PG266-RUN,69,PG266,b69-wordpress-woocommerce-extension-generator,tst-b69-php-web-slightly-strict-suite,Wordpress Woocommerce Extension Generator / 可运行成功路径,P1,generation,positive,False,True
+B69-PG266-NEG,69,PG266,b69-wordpress-woocommerce-extension-generator,tst-b69-php-web-slightly-strict-suite,Wordpress Woocommerce Extension Generator / 负向与故障路径,P0,generation-adversarial,negative,False,False
+B69-PG267-RUN,69,PG267,b69-php-contract-client-generator,tst-b69-php-web-slightly-strict-suite,Php Contract Client Generator / 可运行成功路径,P0,contract,positive,False,True
+B69-PG267-NEG,69,PG267,b69-php-contract-client-generator,tst-b69-php-web-slightly-strict-suite,Php Contract Client Generator / 负向与故障路径,P0,breaking-contract,negative,False,True
+B69-PG268-RUN,69,PG268,b69-php-test-quality-harness,tst-b69-php-web-slightly-strict-suite,Php Test Quality Harness / 可运行成功路径,P1,test-harness,positive,False,True
+B69-PG268-NEG,69,PG268,b69-php-test-quality-harness,tst-b69-php-web-slightly-strict-suite,Php Test Quality Harness / 负向与故障路径,P0,test-anti-cheat,negative,False,True
+B69-PG269-RUN,69,PG269,b69-php-modernization-repair,tst-b69-php-web-slightly-strict-suite,Php Modernization Repair / 可运行成功路径,P1,generation,positive,False,True
+B69-PG269-NEG,69,PG269,b69-php-modernization-repair,tst-b69-php-web-slightly-strict-suite,Php Modernization Repair / 负向与故障路径,P0,generation-adversarial,negative,False,False
+B69-PG270-RUN,69,PG270,b69-php-build-run-deploy-certifier,tst-b69-php-web-slightly-strict-suite,Php Build Run Deploy Certifier / 可运行成功路径,P0,build,positive,False,True
+B69-PG270-NEG,69,PG270,b69-php-build-run-deploy-certifier,tst-b69-php-web-slightly-strict-suite,Php Build Run Deploy Certifier / 负向与故障路径,P0,build-fault,negative,True,True
+B70-PG271-RUN,70,PG271,b70-native-project-profile-detector,tst-b70-native-industrial-slightly-strict-suite,Native Project Profile Detector / 可运行成功路径,P1,discovery,positive,False,False
+B70-PG271-NEG,70,PG271,b70-native-project-profile-detector,tst-b70-native-industrial-slightly-strict-suite,Native Project Profile Detector / 负向与故障路径,P0,adversarial-discovery,negative,False,False
+B70-PG272-RUN,70,PG272,b70-native-toolchain-compiler-matrix,tst-b70-native-industrial-slightly-strict-suite,Native Toolchain Compiler Matrix / 可运行成功路径,P1,native-runtime,positive,False,True
+B70-PG272-NEG,70,PG272,b70-native-toolchain-compiler-matrix,tst-b70-native-industrial-slightly-strict-suite,Native Toolchain Compiler Matrix / 负向与故障路径,P0,native-fault,negative,False,True
+B70-PG273-RUN,70,PG273,b70-cmake-native-project-generator,tst-b70-native-industrial-slightly-strict-suite,CMake Native Project Generator / 可运行成功路径,P1,native-runtime,positive,False,True
+B70-PG273-NEG,70,PG273,b70-cmake-native-project-generator,tst-b70-native-industrial-slightly-strict-suite,CMake Native Project Generator / 负向与故障路径,P0,native-fault,negative,False,True
+B70-PG274-RUN,70,PG274,b70-modern-cpp-library-service-generator,tst-b70-native-industrial-slightly-strict-suite,Modern C++ Library Service Generator / 可运行成功路径,P1,native-runtime,positive,False,True
+B70-PG274-NEG,70,PG274,b70-modern-cpp-library-service-generator,tst-b70-native-industrial-slightly-strict-suite,Modern C++ Library Service Generator / 负向与故障路径,P0,native-fault,negative,False,True
+B70-PG275-RUN,70,PG275,b70-c-api-abi-contract-manager,tst-b70-native-industrial-slightly-strict-suite,C API Abi Contract Manager / 可运行成功路径,P0,contract,positive,False,True
+B70-PG275-NEG,70,PG275,b70-c-api-abi-contract-manager,tst-b70-native-industrial-slightly-strict-suite,C API Abi Contract Manager / 负向与故障路径,P0,breaking-contract,negative,True,True
+B70-PG276-RUN,70,PG276,b70-native-ffi-binding-generator,tst-b70-native-industrial-slightly-strict-suite,Native FFI Binding Generator / 可运行成功路径,P0,native-runtime,positive,False,True
+B70-PG276-NEG,70,PG276,b70-native-ffi-binding-generator,tst-b70-native-industrial-slightly-strict-suite,Native FFI Binding Generator / 负向与故障路径,P0,native-fault,negative,True,True
+B70-PG277-RUN,70,PG277,b70-native-memory-lifetime-safety,tst-b70-native-industrial-slightly-strict-suite,Native Memory Lifetime Safety / 可运行成功路径,P0,native-runtime,positive,False,True
+B70-PG277-NEG,70,PG277,b70-native-memory-lifetime-safety,tst-b70-native-industrial-slightly-strict-suite,Native Memory Lifetime Safety / 负向与故障路径,P0,native-fault,negative,True,True
+B70-PG278-RUN,70,PG278,b70-native-concurrency-realtime-safety,tst-b70-native-industrial-slightly-strict-suite,Native Concurrency Realtime Safety / 可运行成功路径,P0,concurrency,positive,False,True
+B70-PG278-NEG,70,PG278,b70-native-concurrency-realtime-safety,tst-b70-native-industrial-slightly-strict-suite,Native Concurrency Realtime Safety / 负向与故障路径,P0,concurrency-fault,negative,True,True
+B70-PG279-RUN,70,PG279,b70-ros2-node-project-generator,tst-b70-native-industrial-slightly-strict-suite,ROS 2 Node Project Generator / 可运行成功路径,P1,native-runtime,positive,False,True
+B70-PG279-NEG,70,PG279,b70-ros2-node-project-generator,tst-b70-native-industrial-slightly-strict-suite,ROS 2 Node Project Generator / 负向与故障路径,P0,native-fault,negative,False,True
+B70-PG280-RUN,70,PG280,b70-opcua-industrial-adapter-generator,tst-b70-native-industrial-slightly-strict-suite,OPC UA Industrial Adapter Generator / 可运行成功路径,P1,native-runtime,positive,False,True
+B70-PG280-NEG,70,PG280,b70-opcua-industrial-adapter-generator,tst-b70-native-industrial-slightly-strict-suite,OPC UA Industrial Adapter Generator / 负向与故障路径,P0,native-fault,negative,False,True
+B70-PG281-RUN,70,PG281,b70-embedded-crosscompile-project-generator,tst-b70-native-industrial-slightly-strict-suite,Embedded Crosscompile Project Generator / 可运行成功路径,P1,native-runtime,positive,False,True
+B70-PG281-NEG,70,PG281,b70-embedded-crosscompile-project-generator,tst-b70-native-industrial-slightly-strict-suite,Embedded Crosscompile Project Generator / 负向与故障路径,P0,native-fault,negative,False,True
+B70-PG282-RUN,70,PG282,b70-qt-industrial-hmi-generator,tst-b70-native-industrial-slightly-strict-suite,Qt Industrial HMI Generator / 可运行成功路径,P1,ui-runtime,positive,False,True
+B70-PG282-NEG,70,PG282,b70-qt-industrial-hmi-generator,tst-b70-native-industrial-slightly-strict-suite,Qt Industrial HMI Generator / 负向与故障路径,P0,ui-resilience,negative,False,True
+B70-PG283-RUN,70,PG283,b70-native-sanitizer-fuzz-static-analysis,tst-b70-native-industrial-slightly-strict-suite,Native Sanitizer Fuzz Static Analysis / 可运行成功路径,P1,native-runtime,positive,False,True
+B70-PG283-NEG,70,PG283,b70-native-sanitizer-fuzz-static-analysis,tst-b70-native-industrial-slightly-strict-suite,Native Sanitizer Fuzz Static Analysis / 负向与故障路径,P0,native-fault,negative,False,True
+B70-PG284-RUN,70,PG284,b70-native-build-run-certifier,tst-b70-native-industrial-slightly-strict-suite,Native Build Run Certifier / 可运行成功路径,P0,native-runtime,positive,False,True
+B70-PG284-NEG,70,PG284,b70-native-build-run-certifier,tst-b70-native-industrial-slightly-strict-suite,Native Build Run Certifier / 负向与故障路径,P0,native-fault,negative,True,True
+B71-PG285-RUN,71,PG285,b71-rust-project-profile-detector,tst-b71-rust-secure-systems-slightly-strict-suite,Rust Project Profile Detector / 可运行成功路径,P1,discovery,positive,False,False
+B71-PG285-NEG,71,PG285,b71-rust-project-profile-detector,tst-b71-rust-secure-systems-slightly-strict-suite,Rust Project Profile Detector / 负向与故障路径,P0,adversarial-discovery,negative,False,False
+B71-PG286-RUN,71,PG286,b71-cargo-workspace-dependency-reproducer,tst-b71-rust-secure-systems-slightly-strict-suite,Cargo Workspace Dependency Reproducer / 可运行成功路径,P1,reproducibility,positive,False,True
+B71-PG286-NEG,71,PG286,b71-cargo-workspace-dependency-reproducer,tst-b71-rust-secure-systems-slightly-strict-suite,Cargo Workspace Dependency Reproducer / 负向与故障路径,P0,cache-lockfile-tamper,negative,False,True
+B71-PG287-RUN,71,PG287,b71-rust-axum-service-generator,tst-b71-rust-secure-systems-slightly-strict-suite,Rust Axum Service Generator / 可运行成功路径,P1,generation,positive,False,True
+B71-PG287-NEG,71,PG287,b71-rust-axum-service-generator,tst-b71-rust-secure-systems-slightly-strict-suite,Rust Axum Service Generator / 负向与故障路径,P0,generation-adversarial,negative,False,False
+B71-PG288-RUN,71,PG288,b71-rust-cli-generator,tst-b71-rust-secure-systems-slightly-strict-suite,Rust CLI Generator / 可运行成功路径,P1,generation,positive,False,True
+B71-PG288-NEG,71,PG288,b71-rust-cli-generator,tst-b71-rust-secure-systems-slightly-strict-suite,Rust CLI Generator / 负向与故障路径,P0,generation-adversarial,negative,False,False
+B71-PG289-RUN,71,PG289,b71-rust-async-worker-generator,tst-b71-rust-secure-systems-slightly-strict-suite,Rust Async Worker Generator / 可运行成功路径,P1,concurrency,positive,False,True
+B71-PG289-NEG,71,PG289,b71-rust-async-worker-generator,tst-b71-rust-secure-systems-slightly-strict-suite,Rust Async Worker Generator / 负向与故障路径,P0,concurrency-fault,negative,False,True
+B71-PG290-RUN,71,PG290,b71-rust-serde-contract-generator,tst-b71-rust-secure-systems-slightly-strict-suite,Rust Serde Contract Generator / 可运行成功路径,P0,contract,positive,False,True
+B71-PG290-NEG,71,PG290,b71-rust-serde-contract-generator,tst-b71-rust-secure-systems-slightly-strict-suite,Rust Serde Contract Generator / 负向与故障路径,P0,breaking-contract,negative,False,True
+B71-PG291-RUN,71,PG291,b71-rust-ffi-wasm-extension-generator,tst-b71-rust-secure-systems-slightly-strict-suite,Rust FFI WASM Extension Generator / 可运行成功路径,P0,native-runtime,positive,False,True
+B71-PG291-NEG,71,PG291,b71-rust-ffi-wasm-extension-generator,tst-b71-rust-secure-systems-slightly-strict-suite,Rust FFI WASM Extension Generator / 负向与故障路径,P0,native-fault,negative,True,True
+B71-PG292-RUN,71,PG292,b71-rust-unsafe-boundary-review,tst-b71-rust-secure-systems-slightly-strict-suite,Rust Unsafe Boundary Review / 可运行成功路径,P1,native-runtime,positive,False,True
+B71-PG292-NEG,71,PG292,b71-rust-unsafe-boundary-review,tst-b71-rust-secure-systems-slightly-strict-suite,Rust Unsafe Boundary Review / 负向与故障路径,P0,native-fault,negative,False,True
+B71-PG293-RUN,71,PG293,b71-rust-supply-chain-policy,tst-b71-rust-secure-systems-slightly-strict-suite,Rust Supply Chain Policy / 可运行成功路径,P0,security,positive,False,True
+B71-PG293-NEG,71,PG293,b71-rust-supply-chain-policy,tst-b71-rust-secure-systems-slightly-strict-suite,Rust Supply Chain Policy / 负向与故障路径,P0,security-adversarial,negative,True,True
+B71-PG294-RUN,71,PG294,b71-rust-test-property-fuzz-generator,tst-b71-rust-secure-systems-slightly-strict-suite,Rust Test Property Fuzz Generator / 可运行成功路径,P1,test-harness,positive,False,True
+B71-PG294-NEG,71,PG294,b71-rust-test-property-fuzz-generator,tst-b71-rust-secure-systems-slightly-strict-suite,Rust Test Property Fuzz Generator / 负向与故障路径,P0,test-anti-cheat,negative,False,True
+B71-PG295-RUN,71,PG295,b71-rust-crosscompile-release-generator,tst-b71-rust-secure-systems-slightly-strict-suite,Rust Crosscompile Release Generator / 可运行成功路径,P1,build,positive,False,True
+B71-PG295-NEG,71,PG295,b71-rust-crosscompile-release-generator,tst-b71-rust-secure-systems-slightly-strict-suite,Rust Crosscompile Release Generator / 负向与故障路径,P0,build-fault,negative,False,True
+B71-PG296-RUN,71,PG296,b71-rust-build-run-certifier,tst-b71-rust-secure-systems-slightly-strict-suite,Rust Build Run Certifier / 可运行成功路径,P0,build,positive,False,True
+B71-PG296-NEG,71,PG296,b71-rust-build-run-certifier,tst-b71-rust-secure-systems-slightly-strict-suite,Rust Build Run Certifier / 负向与故障路径,P0,build-fault,negative,True,True
+B72-PG297-RUN,72,PG297,b72-flutter-project-profile-detector,tst-b72-flutter-multiplatform-slightly-strict-suite,Flutter Project Profile Detector / 可运行成功路径,P1,discovery,positive,False,False
+B72-PG297-NEG,72,PG297,b72-flutter-project-profile-detector,tst-b72-flutter-multiplatform-slightly-strict-suite,Flutter Project Profile Detector / 负向与故障路径,P0,adversarial-discovery,negative,False,False
+B72-PG298-RUN,72,PG298,b72-flutter-dependency-workspace-reproducer,tst-b72-flutter-multiplatform-slightly-strict-suite,Flutter Dependency Workspace Reproducer / 可运行成功路径,P1,reproducibility,positive,False,True
+B72-PG298-NEG,72,PG298,b72-flutter-dependency-workspace-reproducer,tst-b72-flutter-multiplatform-slightly-strict-suite,Flutter Dependency Workspace Reproducer / 负向与故障路径,P0,cache-lockfile-tamper,negative,False,True
+B72-PG299-RUN,72,PG299,b72-flutter-clean-architecture-generator,tst-b72-flutter-multiplatform-slightly-strict-suite,Flutter Clean Architecture Generator / 可运行成功路径,P1,ui-runtime,positive,False,True
+B72-PG299-NEG,72,PG299,b72-flutter-clean-architecture-generator,tst-b72-flutter-multiplatform-slightly-strict-suite,Flutter Clean Architecture Generator / 负向与故障路径,P0,ui-resilience,negative,False,True
+B72-PG300-RUN,72,PG300,b72-flutter-state-routing-generator,tst-b72-flutter-multiplatform-slightly-strict-suite,Flutter State Routing Generator / 可运行成功路径,P1,ui-runtime,positive,False,True
+B72-PG300-NEG,72,PG300,b72-flutter-state-routing-generator,tst-b72-flutter-multiplatform-slightly-strict-suite,Flutter State Routing Generator / 负向与故障路径,P0,ui-resilience,negative,False,True
+B72-PG301-RUN,72,PG301,b72-flutter-api-data-layer-generator,tst-b72-flutter-multiplatform-slightly-strict-suite,Flutter API Data Layer Generator / 可运行成功路径,P1,ui-runtime,positive,False,True
+B72-PG301-NEG,72,PG301,b72-flutter-api-data-layer-generator,tst-b72-flutter-multiplatform-slightly-strict-suite,Flutter API Data Layer Generator / 负向与故障路径,P0,ui-resilience,negative,False,True
+B72-PG302-RUN,72,PG302,b72-flutter-offline-sync-generator,tst-b72-flutter-multiplatform-slightly-strict-suite,Flutter Offline Sync Generator / 可运行成功路径,P1,ui-runtime,positive,False,True
+B72-PG302-NEG,72,PG302,b72-flutter-offline-sync-generator,tst-b72-flutter-multiplatform-slightly-strict-suite,Flutter Offline Sync Generator / 负向与故障路径,P0,ui-resilience,negative,False,True
+B72-PG303-RUN,72,PG303,b72-flutter-platform-channel-generator,tst-b72-flutter-multiplatform-slightly-strict-suite,Flutter Platform Channel Generator / 可运行成功路径,P1,ui-runtime,positive,False,True
+B72-PG303-NEG,72,PG303,b72-flutter-platform-channel-generator,tst-b72-flutter-multiplatform-slightly-strict-suite,Flutter Platform Channel Generator / 负向与故障路径,P0,ui-resilience,negative,False,True
+B72-PG304-RUN,72,PG304,b72-flutter-responsive-multiplatform-ui,tst-b72-flutter-multiplatform-slightly-strict-suite,Flutter Responsive Multiplatform UI / 可运行成功路径,P1,ui-runtime,positive,False,True
+B72-PG304-NEG,72,PG304,b72-flutter-responsive-multiplatform-ui,tst-b72-flutter-multiplatform-slightly-strict-suite,Flutter Responsive Multiplatform UI / 负向与故障路径,P0,ui-resilience,negative,False,True
+B72-PG305-RUN,72,PG305,b72-flutter-accessibility-localization,tst-b72-flutter-multiplatform-slightly-strict-suite,Flutter Accessibility Localization / 可运行成功路径,P1,ui-runtime,positive,False,True
+B72-PG305-NEG,72,PG305,b72-flutter-accessibility-localization,tst-b72-flutter-multiplatform-slightly-strict-suite,Flutter Accessibility Localization / 负向与故障路径,P0,ui-resilience,negative,False,True
+B72-PG306-RUN,72,PG306,b72-flutter-test-golden-integration-harness,tst-b72-flutter-multiplatform-slightly-strict-suite,Flutter Test Golden Integration Harness / 可运行成功路径,P1,ui-runtime,positive,False,True
+B72-PG306-NEG,72,PG306,b72-flutter-test-golden-integration-harness,tst-b72-flutter-multiplatform-slightly-strict-suite,Flutter Test Golden Integration Harness / 负向与故障路径,P0,ui-resilience,negative,False,True
+B72-PG307-RUN,72,PG307,b72-flutter-release-signing-packager,tst-b72-flutter-multiplatform-slightly-strict-suite,Flutter Release Signing Packager / 可运行成功路径,P0,ui-runtime,positive,False,True
+B72-PG307-NEG,72,PG307,b72-flutter-release-signing-packager,tst-b72-flutter-multiplatform-slightly-strict-suite,Flutter Release Signing Packager / 负向与故障路径,P0,ui-resilience,negative,True,True
+B72-PG308-RUN,72,PG308,b72-flutter-build-run-certifier,tst-b72-flutter-multiplatform-slightly-strict-suite,Flutter Build Run Certifier / 可运行成功路径,P0,ui-runtime,positive,False,True
+B72-PG308-NEG,72,PG308,b72-flutter-build-run-certifier,tst-b72-flutter-multiplatform-slightly-strict-suite,Flutter Build Run Certifier / 负向与故障路径,P0,ui-resilience,negative,True,True
+B73-PG309-RUN,73,PG309,b73-swift-project-profile-detector,tst-b73-swift-apple-native-slightly-strict-suite,Swift Project Profile Detector / 可运行成功路径,P1,discovery,positive,False,False
+B73-PG309-NEG,73,PG309,b73-swift-project-profile-detector,tst-b73-swift-apple-native-slightly-strict-suite,Swift Project Profile Detector / 负向与故障路径,P0,adversarial-discovery,negative,False,False
+B73-PG310-RUN,73,PG310,b73-swift-package-dependency-reproducer,tst-b73-swift-apple-native-slightly-strict-suite,Swift Package Dependency Reproducer / 可运行成功路径,P1,reproducibility,positive,False,True
+B73-PG310-NEG,73,PG310,b73-swift-package-dependency-reproducer,tst-b73-swift-apple-native-slightly-strict-suite,Swift Package Dependency Reproducer / 负向与故障路径,P0,cache-lockfile-tamper,negative,False,True
+B73-PG311-RUN,73,PG311,b73-swiftui-application-generator,tst-b73-swift-apple-native-slightly-strict-suite,SwiftUI Application Generator / 可运行成功路径,P1,ui-runtime,positive,False,True
+B73-PG311-NEG,73,PG311,b73-swiftui-application-generator,tst-b73-swift-apple-native-slightly-strict-suite,SwiftUI Application Generator / 负向与故障路径,P0,ui-resilience,negative,False,True
+B73-PG312-RUN,73,PG312,b73-swift-state-architecture-generator,tst-b73-swift-apple-native-slightly-strict-suite,Swift State Architecture Generator / 可运行成功路径,P1,ui-runtime,positive,False,True
+B73-PG312-NEG,73,PG312,b73-swift-state-architecture-generator,tst-b73-swift-apple-native-slightly-strict-suite,Swift State Architecture Generator / 负向与故障路径,P0,ui-resilience,negative,False,True
+B73-PG313-RUN,73,PG313,b73-swift-networking-contract-generator,tst-b73-swift-apple-native-slightly-strict-suite,Swift Networking Contract Generator / 可运行成功路径,P0,contract,positive,False,True
+B73-PG313-NEG,73,PG313,b73-swift-networking-contract-generator,tst-b73-swift-apple-native-slightly-strict-suite,Swift Networking Contract Generator / 负向与故障路径,P0,breaking-contract,negative,False,True
+B73-PG314-RUN,73,PG314,b73-swift-persistence-generator,tst-b73-swift-apple-native-slightly-strict-suite,Swift Persistence Generator / 可运行成功路径,P1,data-integrity,positive,False,True
+B73-PG314-NEG,73,PG314,b73-swift-persistence-generator,tst-b73-swift-apple-native-slightly-strict-suite,Swift Persistence Generator / 负向与故障路径,P0,data-security-fault,negative,False,True
+B73-PG315-RUN,73,PG315,b73-swift-concurrency-safety,tst-b73-swift-apple-native-slightly-strict-suite,Swift Concurrency Safety / 可运行成功路径,P0,concurrency,positive,False,True
+B73-PG315-NEG,73,PG315,b73-swift-concurrency-safety,tst-b73-swift-apple-native-slightly-strict-suite,Swift Concurrency Safety / 负向与故障路径,P0,concurrency-fault,negative,True,True
+B73-PG316-RUN,73,PG316,b73-objectivec-swift-interop-manager,tst-b73-swift-apple-native-slightly-strict-suite,Objective-C Swift Interop Manager / 可运行成功路径,P1,generation,positive,False,True
+B73-PG316-NEG,73,PG316,b73-objectivec-swift-interop-manager,tst-b73-swift-apple-native-slightly-strict-suite,Objective-C Swift Interop Manager / 负向与故障路径,P0,generation-adversarial,negative,False,False
+B73-PG317-RUN,73,PG317,b73-apple-widget-extension-generator,tst-b73-swift-apple-native-slightly-strict-suite,Apple Widget Extension Generator / 可运行成功路径,P1,ui-runtime,positive,False,True
+B73-PG317-NEG,73,PG317,b73-apple-widget-extension-generator,tst-b73-swift-apple-native-slightly-strict-suite,Apple Widget Extension Generator / 负向与故障路径,P0,ui-resilience,negative,False,True
+B73-PG318-RUN,73,PG318,b73-apple-accessibility-localization,tst-b73-swift-apple-native-slightly-strict-suite,Apple Accessibility Localization / 可运行成功路径,P1,ui-runtime,positive,False,True
+B73-PG318-NEG,73,PG318,b73-apple-accessibility-localization,tst-b73-swift-apple-native-slightly-strict-suite,Apple Accessibility Localization / 负向与故障路径,P0,ui-resilience,negative,False,True
+B73-PG319-RUN,73,PG319,b73-xctest-ui-test-harness,tst-b73-swift-apple-native-slightly-strict-suite,XCTest UI Test Harness / 可运行成功路径,P1,test-harness,positive,False,True
+B73-PG319-NEG,73,PG319,b73-xctest-ui-test-harness,tst-b73-swift-apple-native-slightly-strict-suite,XCTest UI Test Harness / 负向与故障路径,P0,test-anti-cheat,negative,False,True
+B73-PG320-RUN,73,PG320,b73-xcode-build-signing-certifier,tst-b73-swift-apple-native-slightly-strict-suite,Xcode Build Signing Certifier / 可运行成功路径,P0,security,positive,False,True
+B73-PG320-NEG,73,PG320,b73-xcode-build-signing-certifier,tst-b73-swift-apple-native-slightly-strict-suite,Xcode Build Signing Certifier / 负向与故障路径,P0,security-adversarial,negative,True,True
+B74-PG321-RUN,74,PG321,b74-shell-script-profile-detector,tst-b74-shell-powershell-slightly-strict-suite,Shell Script Profile Detector / 可运行成功路径,P1,discovery,positive,False,False
+B74-PG321-NEG,74,PG321,b74-shell-script-profile-detector,tst-b74-shell-powershell-slightly-strict-suite,Shell Script Profile Detector / 负向与故障路径,P0,adversarial-discovery,negative,False,False
+B74-PG322-RUN,74,PG322,b74-portable-bash-script-generator,tst-b74-shell-powershell-slightly-strict-suite,Portable Bash Script Generator / 可运行成功路径,P1,shell-runtime,positive,False,True
+B74-PG322-NEG,74,PG322,b74-portable-bash-script-generator,tst-b74-shell-powershell-slightly-strict-suite,Portable Bash Script Generator / 负向与故障路径,P0,shell-injection,negative,False,True
+B74-PG323-RUN,74,PG323,b74-shell-strict-mode-error-handling,tst-b74-shell-powershell-slightly-strict-suite,Shell Strict Mode Error Handling / 可运行成功路径,P1,shell-runtime,positive,False,True
+B74-PG323-NEG,74,PG323,b74-shell-strict-mode-error-handling,tst-b74-shell-powershell-slightly-strict-suite,Shell Strict Mode Error Handling / 负向与故障路径,P0,shell-injection,negative,False,True
+B74-PG324-RUN,74,PG324,b74-shell-argument-env-config-parser,tst-b74-shell-powershell-slightly-strict-suite,Shell Argument Env Config Parser / 可运行成功路径,P1,shell-runtime,positive,False,True
+B74-PG324-NEG,74,PG324,b74-shell-argument-env-config-parser,tst-b74-shell-powershell-slightly-strict-suite,Shell Argument Env Config Parser / 负向与故障路径,P0,shell-injection,negative,False,True
+B74-PG325-RUN,74,PG325,b74-shell-process-pipeline-orchestrator,tst-b74-shell-powershell-slightly-strict-suite,Shell Process Pipeline Orchestrator / 可运行成功路径,P0,shell-runtime,positive,False,True
+B74-PG325-NEG,74,PG325,b74-shell-process-pipeline-orchestrator,tst-b74-shell-powershell-slightly-strict-suite,Shell Process Pipeline Orchestrator / 负向与故障路径,P0,shell-injection,negative,True,True
+B74-PG326-RUN,74,PG326,b74-shell-security-secret-hardening,tst-b74-shell-powershell-slightly-strict-suite,Shell Security Secret Hardening / 可运行成功路径,P0,shell-runtime,positive,False,True
+B74-PG326-NEG,74,PG326,b74-shell-security-secret-hardening,tst-b74-shell-powershell-slightly-strict-suite,Shell Security Secret Hardening / 负向与故障路径,P0,shell-injection,negative,True,True
+B74-PG327-RUN,74,PG327,b74-shellcheck-bats-quality-gate,tst-b74-shell-powershell-slightly-strict-suite,Shellcheck Bats Quality Gate / 可运行成功路径,P0,shell-runtime,positive,False,True
+B74-PG327-NEG,74,PG327,b74-shellcheck-bats-quality-gate,tst-b74-shell-powershell-slightly-strict-suite,Shellcheck Bats Quality Gate / 负向与故障路径,P0,shell-injection,negative,True,True
+B74-PG328-RUN,74,PG328,b74-powershell-project-profile-detector,tst-b74-shell-powershell-slightly-strict-suite,Powershell Project Profile Detector / 可运行成功路径,P1,discovery,positive,False,False
+B74-PG328-NEG,74,PG328,b74-powershell-project-profile-detector,tst-b74-shell-powershell-slightly-strict-suite,Powershell Project Profile Detector / 负向与故障路径,P0,adversarial-discovery,negative,False,False
+B74-PG329-RUN,74,PG329,b74-powershell-module-command-generator,tst-b74-shell-powershell-slightly-strict-suite,Powershell Module Command Generator / 可运行成功路径,P1,shell-runtime,positive,False,True
+B74-PG329-NEG,74,PG329,b74-powershell-module-command-generator,tst-b74-shell-powershell-slightly-strict-suite,Powershell Module Command Generator / 负向与故障路径,P0,shell-injection,negative,False,True
+B74-PG330-RUN,74,PG330,b74-powershell-error-pipeline-contract,tst-b74-shell-powershell-slightly-strict-suite,Powershell Error Pipeline Contract / 可运行成功路径,P0,contract,positive,False,True
+B74-PG330-NEG,74,PG330,b74-powershell-error-pipeline-contract,tst-b74-shell-powershell-slightly-strict-suite,Powershell Error Pipeline Contract / 负向与故障路径,P0,breaking-contract,negative,True,True
+B74-PG331-RUN,74,PG331,b74-powershell-remoting-crossplatform,tst-b74-shell-powershell-slightly-strict-suite,Powershell Remoting Crossplatform / 可运行成功路径,P1,shell-runtime,positive,False,True
+B74-PG331-NEG,74,PG331,b74-powershell-remoting-crossplatform,tst-b74-shell-powershell-slightly-strict-suite,Powershell Remoting Crossplatform / 负向与故障路径,P0,shell-injection,negative,False,True
+B74-PG332-RUN,74,PG332,b74-powershell-secret-signing-policy,tst-b74-shell-powershell-slightly-strict-suite,Powershell Secret Signing Policy / 可运行成功路径,P0,shell-runtime,positive,False,True
+B74-PG332-NEG,74,PG332,b74-powershell-secret-signing-policy,tst-b74-shell-powershell-slightly-strict-suite,Powershell Secret Signing Policy / 负向与故障路径,P0,shell-injection,negative,True,True
+B74-PG333-RUN,74,PG333,b74-pester-psscriptanalyzer-quality-gate,tst-b74-shell-powershell-slightly-strict-suite,Pester Psscriptanalyzer Quality Gate / 可运行成功路径,P0,shell-runtime,positive,False,True
+B74-PG333-NEG,74,PG333,b74-pester-psscriptanalyzer-quality-gate,tst-b74-shell-powershell-slightly-strict-suite,Pester Psscriptanalyzer Quality Gate / 负向与故障路径,P0,shell-injection,negative,True,True
+B74-PG334-RUN,74,PG334,b74-cross-shell-automation-certifier,tst-b74-shell-powershell-slightly-strict-suite,Cross Shell Automation Certifier / 可运行成功路径,P0,shell-runtime,positive,False,True
+B74-PG334-NEG,74,PG334,b74-cross-shell-automation-certifier,tst-b74-shell-powershell-slightly-strict-suite,Cross Shell Automation Certifier / 负向与故障路径,P0,shell-injection,negative,True,True
+B75-PG335-RUN,75,PG335,b75-sql-schema-dialect-detector,tst-b75-sql-api-contracts-slightly-strict-suite,SQL Schema Dialect Detector / 可运行成功路径,P0,discovery,positive,False,False
+B75-PG335-NEG,75,PG335,b75-sql-schema-dialect-detector,tst-b75-sql-api-contracts-slightly-strict-suite,SQL Schema Dialect Detector / 负向与故障路径,P0,adversarial-discovery,negative,True,False
+B75-PG336-RUN,75,PG336,b75-sql-migration-generator,tst-b75-sql-api-contracts-slightly-strict-suite,SQL Migration Generator / 可运行成功路径,P0,data-integrity,positive,False,True
+B75-PG336-NEG,75,PG336,b75-sql-migration-generator,tst-b75-sql-api-contracts-slightly-strict-suite,SQL Migration Generator / 负向与故障路径,P0,data-security-fault,negative,True,True
+B75-PG337-RUN,75,PG337,b75-sql-query-generator,tst-b75-sql-api-contracts-slightly-strict-suite,SQL Query Generator / 可运行成功路径,P0,data-integrity,positive,False,True
+B75-PG337-NEG,75,PG337,b75-sql-query-generator,tst-b75-sql-api-contracts-slightly-strict-suite,SQL Query Generator / 负向与故障路径,P0,data-security-fault,negative,True,True
+B75-PG338-RUN,75,PG338,b75-sql-transaction-isolation-designer,tst-b75-sql-api-contracts-slightly-strict-suite,SQL Transaction Isolation Designer / 可运行成功路径,P0,data-integrity,positive,False,True
+B75-PG338-NEG,75,PG338,b75-sql-transaction-isolation-designer,tst-b75-sql-api-contracts-slightly-strict-suite,SQL Transaction Isolation Designer / 负向与故障路径,P0,data-security-fault,negative,True,True
+B75-PG339-RUN,75,PG339,b75-sql-seed-fixture-generator,tst-b75-sql-api-contracts-slightly-strict-suite,SQL Seed Fixture Generator / 可运行成功路径,P0,data-integrity,positive,False,True
+B75-PG339-NEG,75,PG339,b75-sql-seed-fixture-generator,tst-b75-sql-api-contracts-slightly-strict-suite,SQL Seed Fixture Generator / 负向与故障路径,P0,data-security-fault,negative,True,True
+B75-PG340-RUN,75,PG340,b75-sql-query-plan-performance-gate,tst-b75-sql-api-contracts-slightly-strict-suite,SQL Query Plan Performance Gate / 可运行成功路径,P0,data-integrity,positive,False,True
+B75-PG340-NEG,75,PG340,b75-sql-query-plan-performance-gate,tst-b75-sql-api-contracts-slightly-strict-suite,SQL Query Plan Performance Gate / 负向与故障路径,P0,data-security-fault,negative,True,True
+B75-PG341-RUN,75,PG341,b75-sql-security-rls-policy-generator,tst-b75-sql-api-contracts-slightly-strict-suite,SQL Security RLS Policy Generator / 可运行成功路径,P0,data-integrity,positive,False,True
+B75-PG341-NEG,75,PG341,b75-sql-security-rls-policy-generator,tst-b75-sql-api-contracts-slightly-strict-suite,SQL Security RLS Policy Generator / 负向与故障路径,P0,data-security-fault,negative,True,True
+B75-PG342-RUN,75,PG342,b75-sql-compatibility-certifier,tst-b75-sql-api-contracts-slightly-strict-suite,SQL Compatibility Certifier / 可运行成功路径,P0,data-integrity,positive,False,True
+B75-PG342-NEG,75,PG342,b75-sql-compatibility-certifier,tst-b75-sql-api-contracts-slightly-strict-suite,SQL Compatibility Certifier / 负向与故障路径,P0,data-security-fault,negative,True,True
+B75-PG343-RUN,75,PG343,b75-openapi-spec-generator,tst-b75-sql-api-contracts-slightly-strict-suite,OpenAPI Spec Generator / 可运行成功路径,P1,contract,positive,False,True
+B75-PG343-NEG,75,PG343,b75-openapi-spec-generator,tst-b75-sql-api-contracts-slightly-strict-suite,OpenAPI Spec Generator / 负向与故障路径,P0,breaking-contract,negative,False,True
+B75-PG344-RUN,75,PG344,b75-openapi-lint-breaking-change-gate,tst-b75-sql-api-contracts-slightly-strict-suite,OpenAPI Lint Breaking Change Gate / 可运行成功路径,P0,contract,positive,False,True
+B75-PG344-NEG,75,PG344,b75-openapi-lint-breaking-change-gate,tst-b75-sql-api-contracts-slightly-strict-suite,OpenAPI Lint Breaking Change Gate / 负向与故障路径,P0,breaking-contract,negative,True,True
+B75-PG345-RUN,75,PG345,b75-openapi-codegen-contract-test,tst-b75-sql-api-contracts-slightly-strict-suite,OpenAPI Codegen Contract Test / 可运行成功路径,P0,contract,positive,False,True
+B75-PG345-NEG,75,PG345,b75-openapi-codegen-contract-test,tst-b75-sql-api-contracts-slightly-strict-suite,OpenAPI Codegen Contract Test / 负向与故障路径,P0,breaking-contract,negative,False,True
+B75-PG346-RUN,75,PG346,b75-protobuf-schema-generator,tst-b75-sql-api-contracts-slightly-strict-suite,Protocol Buffers Schema Generator / 可运行成功路径,P1,contract,positive,False,True
+B75-PG346-NEG,75,PG346,b75-protobuf-schema-generator,tst-b75-sql-api-contracts-slightly-strict-suite,Protocol Buffers Schema Generator / 负向与故障路径,P0,breaking-contract,negative,False,True
+B75-PG347-RUN,75,PG347,b75-protobuf-buf-compatibility-gate,tst-b75-sql-api-contracts-slightly-strict-suite,Protocol Buffers Buf Compatibility Gate / 可运行成功路径,P0,contract,positive,False,True
+B75-PG347-NEG,75,PG347,b75-protobuf-buf-compatibility-gate,tst-b75-sql-api-contracts-slightly-strict-suite,Protocol Buffers Buf Compatibility Gate / 负向与故障路径,P0,breaking-contract,negative,True,True
+B75-PG348-RUN,75,PG348,b75-graphql-schema-resolver-generator,tst-b75-sql-api-contracts-slightly-strict-suite,GraphQL Schema Resolver Generator / 可运行成功路径,P1,contract,positive,False,True
+B75-PG348-NEG,75,PG348,b75-graphql-schema-resolver-generator,tst-b75-sql-api-contracts-slightly-strict-suite,GraphQL Schema Resolver Generator / 负向与故障路径,P0,breaking-contract,negative,False,True
+B75-PG349-RUN,75,PG349,b75-graphql-security-cost-gate,tst-b75-sql-api-contracts-slightly-strict-suite,GraphQL Security Cost Gate / 可运行成功路径,P0,contract,positive,False,True
+B75-PG349-NEG,75,PG349,b75-graphql-security-cost-gate,tst-b75-sql-api-contracts-slightly-strict-suite,GraphQL Security Cost Gate / 负向与故障路径,P0,breaking-contract,negative,True,True
+B75-PG350-RUN,75,PG350,b75-multi-contract-language-certifier,tst-b75-sql-api-contracts-slightly-strict-suite,Multi Contract Language Certifier / 可运行成功路径,P0,contract,positive,False,True
+B75-PG350-NEG,75,PG350,b75-multi-contract-language-certifier,tst-b75-sql-api-contracts-slightly-strict-suite,Multi Contract Language Certifier / 负向与故障路径,P0,breaking-contract,negative,True,True
+B76-PG351-RUN,76,PG351,b76-makefile-profile-detector,tst-b76-make-cmake-nginx-slightly-strict-suite,Makefile Profile Detector / 可运行成功路径,P1,discovery,positive,False,False
+B76-PG351-NEG,76,PG351,b76-makefile-profile-detector,tst-b76-make-cmake-nginx-slightly-strict-suite,Makefile Profile Detector / 负向与故障路径,P0,adversarial-discovery,negative,False,False
+B76-PG352-RUN,76,PG352,b76-portable-makefile-generator,tst-b76-make-cmake-nginx-slightly-strict-suite,Portable Makefile Generator / 可运行成功路径,P1,build,positive,False,True
+B76-PG352-NEG,76,PG352,b76-portable-makefile-generator,tst-b76-make-cmake-nginx-slightly-strict-suite,Portable Makefile Generator / 负向与故障路径,P0,build-fault,negative,False,True
+B76-PG353-RUN,76,PG353,b76-make-incremental-dependency-manager,tst-b76-make-cmake-nginx-slightly-strict-suite,Make Incremental Dependency Manager / 可运行成功路径,P1,build,positive,False,True
+B76-PG353-NEG,76,PG353,b76-make-incremental-dependency-manager,tst-b76-make-cmake-nginx-slightly-strict-suite,Make Incremental Dependency Manager / 负向与故障路径,P0,build-fault,negative,False,True
+B76-PG354-RUN,76,PG354,b76-make-test-release-orchestrator,tst-b76-make-cmake-nginx-slightly-strict-suite,Make Test Release Orchestrator / 可运行成功路径,P1,build,positive,False,True
+B76-PG354-NEG,76,PG354,b76-make-test-release-orchestrator,tst-b76-make-cmake-nginx-slightly-strict-suite,Make Test Release Orchestrator / 负向与故障路径,P0,build-fault,negative,False,True
+B76-PG355-RUN,76,PG355,b76-cmake-profile-detector,tst-b76-make-cmake-nginx-slightly-strict-suite,CMake Profile Detector / 可运行成功路径,P1,discovery,positive,False,False
+B76-PG355-NEG,76,PG355,b76-cmake-profile-detector,tst-b76-make-cmake-nginx-slightly-strict-suite,CMake Profile Detector / 负向与故障路径,P0,adversarial-discovery,negative,False,False
+B76-PG356-RUN,76,PG356,b76-cmake-target-graph-generator,tst-b76-make-cmake-nginx-slightly-strict-suite,CMake Target Graph Generator / 可运行成功路径,P1,build,positive,False,True
+B76-PG356-NEG,76,PG356,b76-cmake-target-graph-generator,tst-b76-make-cmake-nginx-slightly-strict-suite,CMake Target Graph Generator / 负向与故障路径,P0,build-fault,negative,False,True
+B76-PG357-RUN,76,PG357,b76-cmake-dependency-package-manager,tst-b76-make-cmake-nginx-slightly-strict-suite,CMake Dependency Package Manager / 可运行成功路径,P1,build,positive,False,True
+B76-PG357-NEG,76,PG357,b76-cmake-dependency-package-manager,tst-b76-make-cmake-nginx-slightly-strict-suite,CMake Dependency Package Manager / 负向与故障路径,P0,build-fault,negative,False,True
+B76-PG358-RUN,76,PG358,b76-cmake-presets-crossbuild-manager,tst-b76-make-cmake-nginx-slightly-strict-suite,CMake Presets Crossbuild Manager / 可运行成功路径,P1,build,positive,False,True
+B76-PG358-NEG,76,PG358,b76-cmake-presets-crossbuild-manager,tst-b76-make-cmake-nginx-slightly-strict-suite,CMake Presets Crossbuild Manager / 负向与故障路径,P0,build-fault,negative,False,True
+B76-PG359-RUN,76,PG359,b76-nginx-topology-profile-detector,tst-b76-make-cmake-nginx-slightly-strict-suite,Nginx Topology Profile Detector / 可运行成功路径,P1,discovery,positive,False,False
+B76-PG359-NEG,76,PG359,b76-nginx-topology-profile-detector,tst-b76-make-cmake-nginx-slightly-strict-suite,Nginx Topology Profile Detector / 负向与故障路径,P0,adversarial-discovery,negative,False,False
+B76-PG360-RUN,76,PG360,b76-nginx-reverse-proxy-generator,tst-b76-make-cmake-nginx-slightly-strict-suite,Nginx Reverse Proxy Generator / 可运行成功路径,P1,proxy-runtime,positive,False,True
+B76-PG360-NEG,76,PG360,b76-nginx-reverse-proxy-generator,tst-b76-make-cmake-nginx-slightly-strict-suite,Nginx Reverse Proxy Generator / 负向与故障路径,P0,proxy-security,negative,False,True
+B76-PG361-RUN,76,PG361,b76-nginx-tls-security-rate-limit,tst-b76-make-cmake-nginx-slightly-strict-suite,Nginx TLS Security Rate Limit / 可运行成功路径,P0,proxy-runtime,positive,False,True
+B76-PG361-NEG,76,PG361,b76-nginx-tls-security-rate-limit,tst-b76-make-cmake-nginx-slightly-strict-suite,Nginx TLS Security Rate Limit / 负向与故障路径,P0,proxy-security,negative,True,True
+B76-PG362-RUN,76,PG362,b76-build-proxy-configuration-certifier,tst-b76-make-cmake-nginx-slightly-strict-suite,Build Proxy Configuration Certifier / 可运行成功路径,P0,proxy-runtime,positive,False,True
+B76-PG362-NEG,76,PG362,b76-build-proxy-configuration-certifier,tst-b76-make-cmake-nginx-slightly-strict-suite,Build Proxy Configuration Certifier / 负向与故障路径,P0,proxy-security,negative,True,True
+B77-PG363-RUN,77,PG363,b77-container-project-profile-detector,tst-b77-docker-compose-slightly-strict-suite,Container Project Profile Detector / 可运行成功路径,P0,discovery,positive,False,False
+B77-PG363-NEG,77,PG363,b77-container-project-profile-detector,tst-b77-docker-compose-slightly-strict-suite,Container Project Profile Detector / 负向与故障路径,P0,adversarial-discovery,negative,True,False
+B77-PG364-RUN,77,PG364,b77-dockerfile-multistage-generator,tst-b77-docker-compose-slightly-strict-suite,Dockerfile Multistage Generator / 可运行成功路径,P0,container-runtime,positive,False,True
+B77-PG364-NEG,77,PG364,b77-dockerfile-multistage-generator,tst-b77-docker-compose-slightly-strict-suite,Dockerfile Multistage Generator / 负向与故障路径,P0,container-hardening,negative,True,True
+B77-PG365-RUN,77,PG365,b77-container-base-image-sbom-policy,tst-b77-docker-compose-slightly-strict-suite,Container Base Image SBOM Policy / 可运行成功路径,P0,container-runtime,positive,False,True
+B77-PG365-NEG,77,PG365,b77-container-base-image-sbom-policy,tst-b77-docker-compose-slightly-strict-suite,Container Base Image SBOM Policy / 负向与故障路径,P0,container-hardening,negative,True,True
+B77-PG366-RUN,77,PG366,b77-rootless-container-hardening,tst-b77-docker-compose-slightly-strict-suite,Rootless Container Hardening / 可运行成功路径,P0,container-runtime,positive,False,True
+B77-PG366-NEG,77,PG366,b77-rootless-container-hardening,tst-b77-docker-compose-slightly-strict-suite,Rootless Container Hardening / 负向与故障路径,P0,container-hardening,negative,True,True
+B77-PG367-RUN,77,PG367,b77-docker-buildx-multiarch-generator,tst-b77-docker-compose-slightly-strict-suite,Docker Buildx Multiarch Generator / 可运行成功路径,P0,container-runtime,positive,False,True
+B77-PG367-NEG,77,PG367,b77-docker-buildx-multiarch-generator,tst-b77-docker-compose-slightly-strict-suite,Docker Buildx Multiarch Generator / 负向与故障路径,P0,container-hardening,negative,True,True
+B77-PG368-RUN,77,PG368,b77-container-health-runtime-contract,tst-b77-docker-compose-slightly-strict-suite,Container Health Runtime Contract / 可运行成功路径,P0,contract,positive,False,True
+B77-PG368-NEG,77,PG368,b77-container-health-runtime-contract,tst-b77-docker-compose-slightly-strict-suite,Container Health Runtime Contract / 负向与故障路径,P0,breaking-contract,negative,True,True
+B77-PG369-RUN,77,PG369,b77-compose-service-topology-generator,tst-b77-docker-compose-slightly-strict-suite,Compose Service Topology Generator / 可运行成功路径,P1,container-runtime,positive,False,True
+B77-PG369-NEG,77,PG369,b77-compose-service-topology-generator,tst-b77-docker-compose-slightly-strict-suite,Compose Service Topology Generator / 负向与故障路径,P0,container-hardening,negative,False,True
+B77-PG370-RUN,77,PG370,b77-compose-readiness-dependency-manager,tst-b77-docker-compose-slightly-strict-suite,Compose Readiness Dependency Manager / 可运行成功路径,P1,container-runtime,positive,False,True
+B77-PG370-NEG,77,PG370,b77-compose-readiness-dependency-manager,tst-b77-docker-compose-slightly-strict-suite,Compose Readiness Dependency Manager / 负向与故障路径,P0,container-hardening,negative,False,True
+B77-PG371-RUN,77,PG371,b77-compose-development-environment,tst-b77-docker-compose-slightly-strict-suite,Compose Development Environment / 可运行成功路径,P1,container-runtime,positive,False,True
+B77-PG371-NEG,77,PG371,b77-compose-development-environment,tst-b77-docker-compose-slightly-strict-suite,Compose Development Environment / 负向与故障路径,P0,container-hardening,negative,False,True
+B77-PG372-RUN,77,PG372,b77-compose-production-parity-gate,tst-b77-docker-compose-slightly-strict-suite,Compose Production Parity Gate / 可运行成功路径,P0,container-runtime,positive,False,True
+B77-PG372-NEG,77,PG372,b77-compose-production-parity-gate,tst-b77-docker-compose-slightly-strict-suite,Compose Production Parity Gate / 负向与故障路径,P0,container-hardening,negative,True,True
+B77-PG373-RUN,77,PG373,b77-container-image-test-scan-gate,tst-b77-docker-compose-slightly-strict-suite,Container Image Test Scan Gate / 可运行成功路径,P0,container-runtime,positive,False,True
+B77-PG373-NEG,77,PG373,b77-container-image-test-scan-gate,tst-b77-docker-compose-slightly-strict-suite,Container Image Test Scan Gate / 负向与故障路径,P0,container-hardening,negative,True,True
+B77-PG374-RUN,77,PG374,b77-container-build-run-certifier,tst-b77-docker-compose-slightly-strict-suite,Container Build Run Certifier / 可运行成功路径,P0,container-runtime,positive,False,True
+B77-PG374-NEG,77,PG374,b77-container-build-run-certifier,tst-b77-docker-compose-slightly-strict-suite,Container Build Run Certifier / 负向与故障路径,P0,container-hardening,negative,True,True
+B78-PG375-RUN,78,PG375,b78-iac-kubernetes-profile-detector,tst-b78-iac-kubernetes-helm-slightly-strict-suite,IaC Kubernetes Profile Detector / 可运行成功路径,P0,discovery,positive,False,False
+B78-PG375-NEG,78,PG375,b78-iac-kubernetes-profile-detector,tst-b78-iac-kubernetes-helm-slightly-strict-suite,IaC Kubernetes Profile Detector / 负向与故障路径,P0,adversarial-discovery,negative,True,False
+B78-PG376-RUN,78,PG376,b78-terraform-module-scaffolder,tst-b78-iac-kubernetes-helm-slightly-strict-suite,Terraform Module Scaffolder / 可运行成功路径,P1,iac-runtime,positive,False,True
+B78-PG376-NEG,78,PG376,b78-terraform-module-scaffolder,tst-b78-iac-kubernetes-helm-slightly-strict-suite,Terraform Module Scaffolder / 负向与故障路径,P0,iac-dangerous-plan,negative,False,True
+B78-PG377-RUN,78,PG377,b78-terraform-provider-state-manager,tst-b78-iac-kubernetes-helm-slightly-strict-suite,Terraform Provider State Manager / 可运行成功路径,P1,iac-runtime,positive,False,True
+B78-PG377-NEG,78,PG377,b78-terraform-provider-state-manager,tst-b78-iac-kubernetes-helm-slightly-strict-suite,Terraform Provider State Manager / 负向与故障路径,P0,iac-dangerous-plan,negative,False,True
+B78-PG378-RUN,78,PG378,b78-terraform-plan-policy-cost-gate,tst-b78-iac-kubernetes-helm-slightly-strict-suite,Terraform Plan Policy Cost Gate / 可运行成功路径,P0,iac-runtime,positive,False,True
+B78-PG378-NEG,78,PG378,b78-terraform-plan-policy-cost-gate,tst-b78-iac-kubernetes-helm-slightly-strict-suite,Terraform Plan Policy Cost Gate / 负向与故障路径,P0,iac-dangerous-plan,negative,True,True
+B78-PG379-RUN,78,PG379,b78-terraform-import-drift-reconciler,tst-b78-iac-kubernetes-helm-slightly-strict-suite,Terraform Import Drift Reconciler / 可运行成功路径,P1,iac-runtime,positive,False,True
+B78-PG379-NEG,78,PG379,b78-terraform-import-drift-reconciler,tst-b78-iac-kubernetes-helm-slightly-strict-suite,Terraform Import Drift Reconciler / 负向与故障路径,P0,iac-dangerous-plan,negative,False,True
+B78-PG380-RUN,78,PG380,b78-terraform-test-validation-harness,tst-b78-iac-kubernetes-helm-slightly-strict-suite,Terraform Test Validation Harness / 可运行成功路径,P1,iac-runtime,positive,False,True
+B78-PG380-NEG,78,PG380,b78-terraform-test-validation-harness,tst-b78-iac-kubernetes-helm-slightly-strict-suite,Terraform Test Validation Harness / 负向与故障路径,P0,iac-dangerous-plan,negative,False,True
+B78-PG381-RUN,78,PG381,b78-kubernetes-workload-manifest-generator,tst-b78-iac-kubernetes-helm-slightly-strict-suite,Kubernetes Workload Manifest Generator / 可运行成功路径,P0,iac-runtime,positive,False,True
+B78-PG381-NEG,78,PG381,b78-kubernetes-workload-manifest-generator,tst-b78-iac-kubernetes-helm-slightly-strict-suite,Kubernetes Workload Manifest Generator / 负向与故障路径,P0,iac-dangerous-plan,negative,True,True
+B78-PG382-RUN,78,PG382,b78-kubernetes-config-secret-policy,tst-b78-iac-kubernetes-helm-slightly-strict-suite,Kubernetes Config Secret Policy / 可运行成功路径,P0,iac-runtime,positive,False,True
+B78-PG382-NEG,78,PG382,b78-kubernetes-config-secret-policy,tst-b78-iac-kubernetes-helm-slightly-strict-suite,Kubernetes Config Secret Policy / 负向与故障路径,P0,iac-dangerous-plan,negative,True,True
+B78-PG383-RUN,78,PG383,b78-kubernetes-network-security-generator,tst-b78-iac-kubernetes-helm-slightly-strict-suite,Kubernetes Network Security Generator / 可运行成功路径,P0,iac-runtime,positive,False,True
+B78-PG383-NEG,78,PG383,b78-kubernetes-network-security-generator,tst-b78-iac-kubernetes-helm-slightly-strict-suite,Kubernetes Network Security Generator / 负向与故障路径,P0,iac-dangerous-plan,negative,True,True
+B78-PG384-RUN,78,PG384,b78-kubernetes-autoscaling-reliability,tst-b78-iac-kubernetes-helm-slightly-strict-suite,Kubernetes Autoscaling Reliability / 可运行成功路径,P0,native-runtime,positive,False,True
+B78-PG384-NEG,78,PG384,b78-kubernetes-autoscaling-reliability,tst-b78-iac-kubernetes-helm-slightly-strict-suite,Kubernetes Autoscaling Reliability / 负向与故障路径,P0,native-fault,negative,True,True
+B78-PG385-RUN,78,PG385,b78-helm-chart-generator,tst-b78-iac-kubernetes-helm-slightly-strict-suite,Helm Chart Generator / 可运行成功路径,P0,iac-runtime,positive,False,True
+B78-PG385-NEG,78,PG385,b78-helm-chart-generator,tst-b78-iac-kubernetes-helm-slightly-strict-suite,Helm Chart Generator / 负向与故障路径,P0,iac-dangerous-plan,negative,True,True
+B78-PG386-RUN,78,PG386,b78-helm-values-schema-manager,tst-b78-iac-kubernetes-helm-slightly-strict-suite,Helm Values Schema Manager / 可运行成功路径,P0,data-integrity,positive,False,True
+B78-PG386-NEG,78,PG386,b78-helm-values-schema-manager,tst-b78-iac-kubernetes-helm-slightly-strict-suite,Helm Values Schema Manager / 负向与故障路径,P0,data-security-fault,negative,True,True
+B78-PG387-RUN,78,PG387,b78-helm-upgrade-rollback-gate,tst-b78-iac-kubernetes-helm-slightly-strict-suite,Helm Upgrade Rollback Gate / 可运行成功路径,P0,iac-runtime,positive,False,True
+B78-PG387-NEG,78,PG387,b78-helm-upgrade-rollback-gate,tst-b78-iac-kubernetes-helm-slightly-strict-suite,Helm Upgrade Rollback Gate / 负向与故障路径,P0,iac-dangerous-plan,negative,True,True
+B78-PG388-RUN,78,PG388,b78-kubernetes-policy-admission-gate,tst-b78-iac-kubernetes-helm-slightly-strict-suite,Kubernetes Policy Admission Gate / 可运行成功路径,P0,iac-runtime,positive,False,True
+B78-PG388-NEG,78,PG388,b78-kubernetes-policy-admission-gate,tst-b78-iac-kubernetes-helm-slightly-strict-suite,Kubernetes Policy Admission Gate / 负向与故障路径,P0,iac-dangerous-plan,negative,True,True
+B78-PG389-RUN,78,PG389,b78-gitops-release-bundle-generator,tst-b78-iac-kubernetes-helm-slightly-strict-suite,Gitops Release Bundle Generator / 可运行成功路径,P1,iac-runtime,positive,False,True
+B78-PG389-NEG,78,PG389,b78-gitops-release-bundle-generator,tst-b78-iac-kubernetes-helm-slightly-strict-suite,Gitops Release Bundle Generator / 负向与故障路径,P0,iac-dangerous-plan,negative,False,True
+B78-PG390-RUN,78,PG390,b78-iac-kubernetes-helm-certifier,tst-b78-iac-kubernetes-helm-slightly-strict-suite,IaC Kubernetes Helm Certifier / 可运行成功路径,P0,iac-runtime,positive,False,True
+B78-PG390-NEG,78,PG390,b78-iac-kubernetes-helm-certifier,tst-b78-iac-kubernetes-helm-slightly-strict-suite,IaC Kubernetes Helm Certifier / 负向与故障路径,P0,iac-dangerous-plan,negative,True,True
+B79-PG391-RUN,79,PG391,b79-cicd-pipeline-profile-detector,tst-b79-cicd-systems-slightly-strict-suite,CI/CD Pipeline Profile Detector / 可运行成功路径,P0,discovery,positive,False,False
+B79-PG391-NEG,79,PG391,b79-cicd-pipeline-profile-detector,tst-b79-cicd-systems-slightly-strict-suite,CI/CD Pipeline Profile Detector / 负向与故障路径,P0,adversarial-discovery,negative,True,False
+B79-PG392-RUN,79,PG392,b79-github-actions-workflow-generator,tst-b79-cicd-systems-slightly-strict-suite,GitHub Actions Workflow Generator / 可运行成功路径,P1,cicd,positive,False,True
+B79-PG392-NEG,79,PG392,b79-github-actions-workflow-generator,tst-b79-cicd-systems-slightly-strict-suite,GitHub Actions Workflow Generator / 负向与故障路径,P0,cicd-adversarial,negative,False,True
+B79-PG393-RUN,79,PG393,b79-github-reusable-workflow-action-generator,tst-b79-cicd-systems-slightly-strict-suite,GitHub Reusable Workflow Action Generator / 可运行成功路径,P1,cicd,positive,False,True
+B79-PG393-NEG,79,PG393,b79-github-reusable-workflow-action-generator,tst-b79-cicd-systems-slightly-strict-suite,GitHub Reusable Workflow Action Generator / 负向与故障路径,P0,cicd-adversarial,negative,False,True
+B79-PG394-RUN,79,PG394,b79-github-oidc-permission-hardening,tst-b79-cicd-systems-slightly-strict-suite,GitHub OIDC Permission Hardening / 可运行成功路径,P0,cicd,positive,False,True
+B79-PG394-NEG,79,PG394,b79-github-oidc-permission-hardening,tst-b79-cicd-systems-slightly-strict-suite,GitHub OIDC Permission Hardening / 负向与故障路径,P0,cicd-adversarial,negative,True,True
+B79-PG395-RUN,79,PG395,b79-github-matrix-cache-artifact-manager,tst-b79-cicd-systems-slightly-strict-suite,GitHub Matrix Cache Artifact Manager / 可运行成功路径,P1,cicd,positive,False,True
+B79-PG395-NEG,79,PG395,b79-github-matrix-cache-artifact-manager,tst-b79-cicd-systems-slightly-strict-suite,GitHub Matrix Cache Artifact Manager / 负向与故障路径,P0,cicd-adversarial,negative,False,True
+B79-PG396-RUN,79,PG396,b79-gitlab-ci-pipeline-generator,tst-b79-cicd-systems-slightly-strict-suite,GitLab Ci Pipeline Generator / 可运行成功路径,P0,cicd,positive,False,True
+B79-PG396-NEG,79,PG396,b79-gitlab-ci-pipeline-generator,tst-b79-cicd-systems-slightly-strict-suite,GitLab Ci Pipeline Generator / 负向与故障路径,P0,cicd-adversarial,negative,True,True
+B79-PG397-RUN,79,PG397,b79-gitlab-child-pipeline-component-generator,tst-b79-cicd-systems-slightly-strict-suite,GitLab Child Pipeline Component Generator / 可运行成功路径,P0,cicd,positive,False,True
+B79-PG397-NEG,79,PG397,b79-gitlab-child-pipeline-component-generator,tst-b79-cicd-systems-slightly-strict-suite,GitLab Child Pipeline Component Generator / 负向与故障路径,P0,cicd-adversarial,negative,True,True
+B79-PG398-RUN,79,PG398,b79-gitlab-runner-secret-hardening,tst-b79-cicd-systems-slightly-strict-suite,GitLab Runner Secret Hardening / 可运行成功路径,P0,cicd,positive,False,True
+B79-PG398-NEG,79,PG398,b79-gitlab-runner-secret-hardening,tst-b79-cicd-systems-slightly-strict-suite,GitLab Runner Secret Hardening / 负向与故障路径,P0,cicd-adversarial,negative,True,True
+B79-PG399-RUN,79,PG399,b79-gitlab-environment-release-manager,tst-b79-cicd-systems-slightly-strict-suite,GitLab Environment Release Manager / 可运行成功路径,P1,cicd,positive,False,True
+B79-PG399-NEG,79,PG399,b79-gitlab-environment-release-manager,tst-b79-cicd-systems-slightly-strict-suite,GitLab Environment Release Manager / 负向与故障路径,P0,cicd-adversarial,negative,False,True
+B79-PG400-RUN,79,PG400,b79-jenkins-declarative-pipeline-generator,tst-b79-cicd-systems-slightly-strict-suite,Jenkins Declarative Pipeline Generator / 可运行成功路径,P0,cicd,positive,False,True
+B79-PG400-NEG,79,PG400,b79-jenkins-declarative-pipeline-generator,tst-b79-cicd-systems-slightly-strict-suite,Jenkins Declarative Pipeline Generator / 负向与故障路径,P0,cicd-adversarial,negative,True,True
+B79-PG401-RUN,79,PG401,b79-jenkins-shared-library-generator,tst-b79-cicd-systems-slightly-strict-suite,Jenkins Shared Library Generator / 可运行成功路径,P1,cicd,positive,False,True
+B79-PG401-NEG,79,PG401,b79-jenkins-shared-library-generator,tst-b79-cicd-systems-slightly-strict-suite,Jenkins Shared Library Generator / 负向与故障路径,P0,cicd-adversarial,negative,False,True
+B79-PG402-RUN,79,PG402,b79-jenkins-agent-credential-hardening,tst-b79-cicd-systems-slightly-strict-suite,Jenkins Agent Credential Hardening / 可运行成功路径,P0,cicd,positive,False,True
+B79-PG402-NEG,79,PG402,b79-jenkins-agent-credential-hardening,tst-b79-cicd-systems-slightly-strict-suite,Jenkins Agent Credential Hardening / 负向与故障路径,P0,cicd-adversarial,negative,True,True
+B79-PG403-RUN,79,PG403,b79-cross-ci-release-promotion,tst-b79-cicd-systems-slightly-strict-suite,Cross Ci Release Promotion / 可运行成功路径,P1,cicd,positive,False,True
+B79-PG403-NEG,79,PG403,b79-cross-ci-release-promotion,tst-b79-cicd-systems-slightly-strict-suite,Cross Ci Release Promotion / 负向与故障路径,P0,cicd-adversarial,negative,False,True
+B79-PG404-RUN,79,PG404,b79-pipeline-security-provenance-gate,tst-b79-cicd-systems-slightly-strict-suite,Pipeline Security Provenance Gate / 可运行成功路径,P0,cicd,positive,False,True
+B79-PG404-NEG,79,PG404,b79-pipeline-security-provenance-gate,tst-b79-cicd-systems-slightly-strict-suite,Pipeline Security Provenance Gate / 负向与故障路径,P0,cicd-adversarial,negative,True,True
+B79-PG405-RUN,79,PG405,b79-cicd-cross-system-certifier,tst-b79-cicd-systems-slightly-strict-suite,CI/CD Cross System Certifier / 可运行成功路径,P0,cicd,positive,False,True
+B79-PG405-NEG,79,PG405,b79-cicd-cross-system-certifier,tst-b79-cicd-systems-slightly-strict-suite,CI/CD Cross System Certifier / 负向与故障路径,P0,cicd-adversarial,negative,True,True
+B80-PG406-RUN,80,PG406,b80-polyglot-engineering-asset-graph,tst-b80-polyglot-operations-slightly-strict-suite,Polyglot Engineering Asset Graph / 可运行成功路径,P1,discovery,positive,False,False
+B80-PG406-NEG,80,PG406,b80-polyglot-engineering-asset-graph,tst-b80-polyglot-operations-slightly-strict-suite,Polyglot Engineering Asset Graph / 负向与故障路径,P0,adversarial-discovery,negative,False,False
+B80-PG407-RUN,80,PG407,b80-cross-language-build-orchestrator,tst-b80-polyglot-operations-slightly-strict-suite,Cross Language Build Orchestrator / 可运行成功路径,P1,build,positive,False,True
+B80-PG407-NEG,80,PG407,b80-cross-language-build-orchestrator,tst-b80-polyglot-operations-slightly-strict-suite,Cross Language Build Orchestrator / 负向与故障路径,P0,build-fault,negative,False,True
+B80-PG408-RUN,80,PG408,b80-cross-contract-schema-synchronizer,tst-b80-polyglot-operations-slightly-strict-suite,Cross Contract Schema Synchronizer / 可运行成功路径,P0,contract,positive,False,True
+B80-PG408-NEG,80,PG408,b80-cross-contract-schema-synchronizer,tst-b80-polyglot-operations-slightly-strict-suite,Cross Contract Schema Synchronizer / 负向与故障路径,P0,breaking-contract,negative,False,True
+B80-PG409-RUN,80,PG409,b80-environment-parity-drift-detector,tst-b80-polyglot-operations-slightly-strict-suite,Environment Parity Drift Detector / 可运行成功路径,P1,discovery,positive,False,False
+B80-PG409-NEG,80,PG409,b80-environment-parity-drift-detector,tst-b80-polyglot-operations-slightly-strict-suite,Environment Parity Drift Detector / 负向与故障路径,P0,adversarial-discovery,negative,False,False
+B80-PG410-RUN,80,PG410,b80-polyglot-secret-identity-policy,tst-b80-polyglot-operations-slightly-strict-suite,Polyglot Secret Identity Policy / 可运行成功路径,P0,security,positive,False,True
+B80-PG410-NEG,80,PG410,b80-polyglot-secret-identity-policy,tst-b80-polyglot-operations-slightly-strict-suite,Polyglot Secret Identity Policy / 负向与故障路径,P0,security-adversarial,negative,True,True
+B80-PG411-RUN,80,PG411,b80-software-supply-chain-provenance-orchestrator,tst-b80-polyglot-operations-slightly-strict-suite,Software Supply Chain Provenance Orchestrator / 可运行成功路径,P0,security,positive,False,True
+B80-PG411-NEG,80,PG411,b80-software-supply-chain-provenance-orchestrator,tst-b80-polyglot-operations-slightly-strict-suite,Software Supply Chain Provenance Orchestrator / 负向与故障路径,P0,security-adversarial,negative,True,True
+B80-PG412-RUN,80,PG412,b80-local-ci-runtime-reproducer,tst-b80-polyglot-operations-slightly-strict-suite,Local Ci Runtime Reproducer / 可运行成功路径,P1,reproducibility,positive,False,True
+B80-PG412-NEG,80,PG412,b80-local-ci-runtime-reproducer,tst-b80-polyglot-operations-slightly-strict-suite,Local Ci Runtime Reproducer / 负向与故障路径,P0,cache-lockfile-tamper,negative,False,True
+B80-PG413-RUN,80,PG413,b80-runtime-smoke-journey-orchestrator,tst-b80-polyglot-operations-slightly-strict-suite,Runtime Smoke Journey Orchestrator / 可运行成功路径,P1,generation,positive,False,True
+B80-PG413-NEG,80,PG413,b80-runtime-smoke-journey-orchestrator,tst-b80-polyglot-operations-slightly-strict-suite,Runtime Smoke Journey Orchestrator / 负向与故障路径,P0,generation-adversarial,negative,False,False
+B80-PG414-RUN,80,PG414,b80-cross-layer-failure-diagnosis-repair,tst-b80-polyglot-operations-slightly-strict-suite,Cross Layer Failure Diagnosis Repair / 可运行成功路径,P1,generation,positive,False,True
+B80-PG414-NEG,80,PG414,b80-cross-layer-failure-diagnosis-repair,tst-b80-polyglot-operations-slightly-strict-suite,Cross Layer Failure Diagnosis Repair / 负向与故障路径,P0,generation-adversarial,negative,False,False
+B80-PG415-RUN,80,PG415,b80-project-performance-cost-budget-gate,tst-b80-polyglot-operations-slightly-strict-suite,Project Performance Cost Budget Gate / 可运行成功路径,P0,certification,positive,False,True
+B80-PG415-NEG,80,PG415,b80-project-performance-cost-budget-gate,tst-b80-polyglot-operations-slightly-strict-suite,Project Performance Cost Budget Gate / 负向与故障路径,P0,anti-forgery,negative,True,True
+B80-PG416-RUN,80,PG416,b80-project-migration-compatibility-gate,tst-b80-polyglot-operations-slightly-strict-suite,Project Migration Compatibility Gate / 可运行成功路径,P0,data-integrity,positive,False,True
+B80-PG416-NEG,80,PG416,b80-project-migration-compatibility-gate,tst-b80-polyglot-operations-slightly-strict-suite,Project Migration Compatibility Gate / 负向与故障路径,P0,data-security-fault,negative,True,True
+B80-PG417-RUN,80,PG417,b80-project-operations-certification,tst-b80-polyglot-operations-slightly-strict-suite,Project Operations Certification / 可运行成功路径,P0,certification,positive,False,True
+B80-PG417-NEG,80,PG417,b80-project-operations-certification,tst-b80-polyglot-operations-slightly-strict-suite,Project Operations Certification / 负向与故障路径,P0,anti-forgery,negative,True,True
+X001-01,cross,,,tst-b66-80-slightly-strict-suite-orchestrator,Batch 66–80略严苛测试总编排 / 依赖顺序与全量调度,P0,orchestration,cross-cutting,False,False
+X001-02,cross,,,tst-b66-80-slightly-strict-suite-orchestrator,Batch 66–80略严苛测试总编排 / 中断恢复与幂等重放,P1,recovery,cross-cutting,False,False
+X001-03,cross,,,tst-b66-80-slightly-strict-suite-orchestrator,Batch 66–80略严苛测试总编排 / 预算耗尽停止,P2,budget,cross-cutting,False,False
+X002-01,cross,,,tst-b66-80-source-capability-traceability,Source Skill能力追踪与覆盖 / 195项Source Skill双路径覆盖,P0,coverage,cross-cutting,True,False
+X002-02,cross,,,tst-b66-80-source-capability-traceability,Source Skill能力追踪与覆盖 / Source Skill变更后陈旧覆盖,P0,drift,cross-cutting,True,False
+X002-03,cross,,,tst-b66-80-source-capability-traceability,Source Skill能力追踪与覆盖 / 未使用Hard Rule识别,P2,mutation,cross-cutting,False,False
+X003-01,cross,,,tst-b66-80-fixture-environment-matrix,Fixture与环境矩阵 / 版本与平台矩阵冻结,P0,environment,cross-cutting,False,False
+X003-02,cross,,,tst-b66-80-fixture-environment-matrix,Fixture与环境矩阵 / 时间随机端口与网络控制,P1,determinism,cross-cutting,False,False
+X003-03,cross,,,tst-b66-80-fixture-environment-matrix,Fixture与环境矩阵 / 代表性Fixture与Holdout分离,P2,holdout,cross-cutting,False,False
+X004-01,cross,,,tst-b66-80-evidence-integrity-anti-forgery,Evidence完整性与防伪 / Artifact与日志Hash绑定,P0,evidence,cross-cutting,True,False
+X004-02,cross,,,tst-b66-80-evidence-integrity-anti-forgery,Evidence完整性与防伪 / 低级状态冒充Certified,P0,anti-forgery,cross-cutting,True,False
+X004-03,cross,,,tst-b66-80-evidence-integrity-anti-forgery,Evidence完整性与防伪 / 陈旧Evidence过期,P1,staleness,cross-cutting,False,False
+X005-01,cross,,,tst-deterministic-dependency-build-reproducibility,依赖与构建可重复性 / 两次Clean Build产物一致,P0,reproducibility,cross-cutting,True,False
+X005-02,cross,,,tst-deterministic-dependency-build-reproducibility,依赖与构建可重复性 / 锁文件与缓存投毒,P0,supply-chain,cross-cutting,True,False
+X005-03,cross,,,tst-deterministic-dependency-build-reproducibility,依赖与构建可重复性 / 并行与增量构建一致,P2,build,cross-cutting,False,False
+X006-01,cross,,,tst-generated-project-build-run-shutdown,生成项目Build Run Shutdown / 空目录Bootstrap到Runtime,P0,runtime,cross-cutting,False,True
+X006-02,cross,,,tst-generated-project-build-run-shutdown,生成项目Build Run Shutdown / 失败取消优雅关闭,P1,lifecycle,cross-cutting,False,True
+X006-03,cross,,,tst-generated-project-build-run-shutdown,生成项目Build Run Shutdown / 重复生成无破坏,P2,idempotency,cross-cutting,False,True
+X007-01,cross,,,tst-contract-schema-compatibility-roundtrip,契约Schema兼容与Roundtrip / 多语言契约Roundtrip,P0,contract,cross-cutting,True,True
+X007-02,cross,,,tst-contract-schema-compatibility-roundtrip,契约Schema兼容与Roundtrip / 破坏性变更拒绝,P0,compatibility,cross-cutting,True,True
+X007-03,cross,,,tst-contract-schema-compatibility-roundtrip,契约Schema兼容与Roundtrip / 未知字段与版本演进,P2,evolution,cross-cutting,False,True
+X008-01,cross,,,tst-data-transaction-migration-integrity,数据事务与迁移完整性 / 事务原子性与对账,P0,transaction,cross-cutting,True,False
+X008-02,cross,,,tst-data-transaction-migration-integrity,数据事务与迁移完整性 / 注入与越权查询,P0,security,cross-cutting,True,False
+X008-03,cross,,,tst-data-transaction-migration-integrity,数据事务与迁移完整性 / 隔离级别与并发迁移,P2,concurrency,cross-cutting,False,False
+X009-01,cross,,,tst-concurrency-cancellation-race-leak,并发取消Race与泄漏 / 取消与Deadline传播,P0,concurrency,cross-cutting,True,False
+X009-02,cross,,,tst-concurrency-cancellation-race-leak,并发取消Race与泄漏 / Race死锁与泄漏检测,P0,race,cross-cutting,True,False
+X009-03,cross,,,tst-concurrency-cancellation-race-leak,并发取消Race与泄漏 / 背压与有界队列,P2,backpressure,cross-cutting,False,False
+X010-01,cross,,,tst-cross-platform-toolchain-runtime-matrix,跨平台工具链与Runtime矩阵 / 声明平台真实构建矩阵,P0,compatibility,cross-cutting,False,True
+X010-02,cross,,,tst-cross-platform-toolchain-runtime-matrix,跨平台工具链与Runtime矩阵 / 交叉编译Artifact烟测,P1,crosscompile,cross-cutting,False,True
+X010-03,cross,,,tst-cross-platform-toolchain-runtime-matrix,跨平台工具链与Runtime矩阵 / N-1 N N+1兼容,P2,version-matrix,cross-cutting,False,True
+X011-01,cross,,,tst-ui-accessibility-localization-runtime-journey,UI可访问性本地化与Runtime Journey / 键盘读屏与语义,P0,accessibility,cross-cutting,False,True
+X011-02,cross,,,tst-ui-accessibility-localization-runtime-journey,UI可访问性本地化与Runtime Journey / 多语言布局和极端文本,P1,localization,cross-cutting,False,True
+X011-03,cross,,,tst-ui-accessibility-localization-runtime-journey,UI可访问性本地化与Runtime Journey / 离线旋转恢复Journey,P2,resilience,cross-cutting,False,True
+X012-01,cross,,,tst-native-memory-abi-ffi-safety,Native内存ABI与FFI安全 / Sanitizer与生命周期,P0,memory-safety,cross-cutting,True,True
+X012-02,cross,,,tst-native-memory-abi-ffi-safety,Native内存ABI与FFI安全 / ABI与FFI错误边界,P0,abi,cross-cutting,True,True
+X012-03,cross,,,tst-native-memory-abi-ffi-safety,Native内存ABI与FFI安全 / Unsafe最小化与Fuzz,P2,fuzz,cross-cutting,False,True
+X013-01,cross,,,tst-shell-powershell-injection-portability,Shell与PowerShell注入及可移植性 / 参数引号Globbing与路径,P0,injection,cross-cutting,True,False
+X013-02,cross,,,tst-shell-powershell-injection-portability,Shell与PowerShell注入及可移植性 / 退出码Trap与Pipeline失败,P1,error-contract,cross-cutting,False,False
+X013-03,cross,,,tst-shell-powershell-injection-portability,Shell与PowerShell注入及可移植性 / POSIX Bash PowerShell矩阵,P2,portability,cross-cutting,False,False
+X014-01,cross,,,tst-sql-query-migration-security,SQL查询迁移与安全 / 方言语义等价,P0,sql,cross-cutting,False,False
+X014-02,cross,,,tst-sql-query-migration-security,SQL查询迁移与安全 / 迁移失败回滚,P0,migration,cross-cutting,False,False
+X014-03,cross,,,tst-sql-query-migration-security,SQL查询迁移与安全 / 计划与性能回归,P2,query-plan,cross-cutting,False,False
+X015-01,cross,,,tst-container-image-compose-runtime-hardening,容器镜像与Compose运行加固 / 非Root最小权限运行,P0,container-security,cross-cutting,True,True
+X015-02,cross,,,tst-container-image-compose-runtime-hardening,容器镜像与Compose运行加固 / Secret与Layer泄漏,P0,secret,cross-cutting,True,True
+X015-03,cross,,,tst-container-image-compose-runtime-hardening,容器镜像与Compose运行加固 / 多架构与Compose恢复,P2,runtime,cross-cutting,False,True
+X016-01,cross,,,tst-iac-kubernetes-helm-plan-drift-rollback,IaC Kubernetes Helm Plan Drift Rollback / Plan Policy Cost门禁,P0,iac,cross-cutting,True,True
+X016-02,cross,,,tst-iac-kubernetes-helm-plan-drift-rollback,IaC Kubernetes Helm Plan Drift Rollback / Kubernetes Server Dry-run与Admission,P0,iac,cross-cutting,True,True
+X016-03,cross,,,tst-iac-kubernetes-helm-plan-drift-rollback,IaC Kubernetes Helm Plan Drift Rollback / Helm升级漂移与回滚,P2,iac,cross-cutting,False,True
+X017-01,cross,,,tst-cicd-runner-permission-provenance,CI/CD Runner权限与Provenance / Untrusted PR/Fork Secret隔离,P0,cicd,cross-cutting,True,True
+X017-02,cross,,,tst-cicd-runner-permission-provenance,CI/CD Runner权限与Provenance / OIDC权限和环境审批,P0,cicd,cross-cutting,True,True
+X017-03,cross,,,tst-cicd-runner-permission-provenance,CI/CD Runner权限与Provenance / 缓存投毒与跨CI晋级,P2,cicd,cross-cutting,False,True
+X018-01,cross,,,tst-supply-chain-secret-identity-tamper,供应链Secret身份与篡改 / 依赖签名Pin与来源,P0,supply-chain,cross-cutting,True,False
+X018-02,cross,,,tst-supply-chain-secret-identity-tamper,供应链Secret身份与篡改 / Secret零落盘与日志脱敏,P0,supply-chain,cross-cutting,True,False
+X018-03,cross,,,tst-supply-chain-secret-identity-tamper,供应链Secret身份与篡改 / SBOM与Vulnerability差异,P2,supply-chain,cross-cutting,False,False
+X019-01,cross,,,tst-performance-cost-resource-regression,性能成本与资源回归 / P95/P99与吞吐预算,P1,performance,cross-cutting,False,True
+X019-02,cross,,,tst-performance-cost-resource-regression,性能成本与资源回归 / 资源峰值与泄漏,P1,resource,cross-cutting,False,True
+X019-03,cross,,,tst-performance-cost-resource-regression,性能成本与资源回归 / Artifact镜像与CI成本,P2,performance,cross-cutting,False,True
+X020-01,cross,,,tst-b66-80-final-slightly-strict-release-gate,Batch 66–80最终略严苛发布门 / 零容忍项门禁,P0,release-gate,cross-cutting,True,False
+X020-02,cross,,,tst-b66-80-final-slightly-strict-release-gate,Batch 66–80最终略严苛发布门 / 阈值与Waiver校验,P0,release-gate,cross-cutting,True,False
+X020-03,cross,,,tst-b66-80-final-slightly-strict-release-gate,Batch 66–80最终略严苛发布门 / 未运行用例不得通过,P1,anti-cheat,cross-cutting,False,False

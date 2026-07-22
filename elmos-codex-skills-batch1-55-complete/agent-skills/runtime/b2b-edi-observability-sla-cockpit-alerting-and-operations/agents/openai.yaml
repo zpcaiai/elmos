@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B46: B2B Edi Observability Sla Cockpit Alerting And Operations"
+  short_description: "Run ELMOS B46 Skill with fail-closed evidence"
+  default_prompt: "Use $b2b-edi-observability-sla-cockpit-alerting-and-operations to execute the ELMOS B46 contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B53: Energy Asset Security Privacy Quality Performance Chaos And Release Gates"
+  short_description: "Run ELMOS B53 Skill with fail-closed evidence"
+  default_prompt: "Use $energy-asset-security-privacy-quality-performance-chaos-3918215c to execute the ELMOS B53 contract with fail-closed evidence."

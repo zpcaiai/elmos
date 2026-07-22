@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M33: B33 Cloud Certification Gate"
+  short_description: "Run ELMOS M33 Skill with fail-closed evidence"
+  default_prompt: "Use $b33-cloud-certification-gate to execute the ELMOS M33 contract with fail-closed evidence."

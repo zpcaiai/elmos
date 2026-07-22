@@ -1,0 +1,4 @@
+interface:
+  display_name: "B32 Component Template View Migration"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b32-component-template-view-migration to execute this ELMOS Runtime Skill with fail-closed evidence."

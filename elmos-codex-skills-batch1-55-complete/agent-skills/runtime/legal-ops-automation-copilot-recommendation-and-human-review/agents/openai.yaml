@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B54: Legal Ops Automation Copilot Recommendation And Human Review"
+  short_description: "Run ELMOS B54 Skill with fail-closed evidence"
+  default_prompt: "Use $legal-ops-automation-copilot-recommendation-and-human-review to execute the ELMOS B54 contract with fail-closed evidence."

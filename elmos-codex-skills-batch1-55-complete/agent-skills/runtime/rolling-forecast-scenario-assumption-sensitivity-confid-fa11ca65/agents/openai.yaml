@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B39: Rolling Forecast Scenario Assumption Sensitivity Confidence And Stress Test"
+  short_description: "Run ELMOS B39 Skill with fail-closed evidence"
+  default_prompt: "Use $rolling-forecast-scenario-assumption-sensitivity-confid-fa11ca65 to execute the ELMOS B39 contract with fail-closed evidence."

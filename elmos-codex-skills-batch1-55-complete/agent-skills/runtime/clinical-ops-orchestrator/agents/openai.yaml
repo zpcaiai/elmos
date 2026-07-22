@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B52: Clinical Ops Orchestrator"
+  short_description: "Run ELMOS B52 Skill with fail-closed evidence"
+  default_prompt: "Use $clinical-ops-orchestrator to execute the ELMOS B52 contract with fail-closed evidence."

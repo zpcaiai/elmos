@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M31: B31 Data Quality Repair"
+  short_description: "Run ELMOS M31 Skill with fail-closed evidence"
+  default_prompt: "Use $b31-data-quality-repair to execute the ELMOS M31 contract with fail-closed evidence."

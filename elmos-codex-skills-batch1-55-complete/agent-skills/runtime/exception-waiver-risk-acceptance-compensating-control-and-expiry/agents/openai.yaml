@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B38: Exception Waiver Risk Acceptance Compensating Control And Expiry"
+  short_description: "Run ELMOS B38 Skill with fail-closed evidence"
+  default_prompt: "Use $exception-waiver-risk-acceptance-compensating-control-and-expiry to execute the ELMOS B38 contract with fail-closed evidence."

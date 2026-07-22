@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/test-suite/test-suite.schema.json",
+  "type": "object",
+  "required": [
+    "suite_id", "version", "scope", "status", "profile", "case_catalog",
+    "case_manifest", "coverage_matrix", "result_schema", "authoritative_gate",
+    "certification_default"
+  ],
+  "properties": {
+    "suite_id": {"const": "batch1-37-strict"},
+    "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "scope": {
+      "type": "object",
+      "required": ["batches", "skills", "seed_cases"],
+      "properties": {
+        "batches": {
+          "type": "object", "required": ["from", "to"],
+          "properties": {"from": {"const": 1}, "to": {"const": 37}},
+          "additionalProperties": false
+        },
+        "skills": {"const": 52},
+        "seed_cases": {"const": 408}
+      },
+      "additionalProperties": false
+    },
+    "status": {"enum": ["draft", "active", "certified", "deprecated"]},
+    "profile": {"type": "string", "minLength": 1},
+    "case_catalog": {"type": "string", "minLength": 1},
+    "case_manifest": {"type": "string", "minLength": 1},
+    "coverage_matrix": {"type": "string", "minLength": 1},
+    "result_schema": {"type": "string", "minLength": 1},
+    "authoritative_gate": {"const": "scripts/test-suite/run_strict_test_gate.py"},
+    "certification_default": {"const": "BLOCKED"}
+  },
+  "additionalProperties": false
+}

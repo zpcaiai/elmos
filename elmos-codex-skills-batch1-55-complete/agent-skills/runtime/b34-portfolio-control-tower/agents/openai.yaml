@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M34: B34 Portfolio Control Tower"
+  short_description: "Run ELMOS M34 Skill with fail-closed evidence"
+  default_prompt: "Use $b34-portfolio-control-tower to execute the ELMOS M34 contract with fail-closed evidence."

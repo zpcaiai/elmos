@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B41: Product Discovery Planning Capacity Scenario Optimization And Allocation"
+  short_description: "Run ELMOS B41 Skill with fail-closed evidence"
+  default_prompt: "Use $product-discovery-planning-capacity-scenario-optimizati-94c6c8f1 to execute the ELMOS B41 contract with fail-closed evidence."

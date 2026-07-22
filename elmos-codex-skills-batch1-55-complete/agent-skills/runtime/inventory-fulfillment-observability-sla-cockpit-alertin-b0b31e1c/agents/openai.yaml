@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B42: Inventory Fulfillment Observability Sla Cockpit Alerting And Operations"
+  short_description: "Run ELMOS B42 Skill with fail-closed evidence"
+  default_prompt: "Use $inventory-fulfillment-observability-sla-cockpit-alertin-b0b31e1c to execute the ELMOS B42 contract with fail-closed evidence."

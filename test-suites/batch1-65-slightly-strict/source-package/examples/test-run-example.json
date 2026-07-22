@@ -1,0 +1,26 @@
+{
+  "run_id": "TEST-RUN-EXAMPLE-001",
+  "source_package_hash": "sha256:example",
+  "profile_id": "elmos-slightly-strict-v1",
+  "results": [
+    {
+      "case_id": "TC-T001-001",
+      "status": "PASSED",
+      "severity": "HIGH",
+      "evidence_complete": true,
+      "duration_ms": 2400
+    },
+    {
+      "case_id": "TC-T001-005",
+      "status": "PASSED",
+      "severity": "CRITICAL",
+      "evidence_complete": true,
+      "duration_ms": 3100
+    }
+  ],
+  "waivers": [],
+  "metadata": {
+    "environment": "isolated-ci",
+    "repeat_run": 2
+  }
+}

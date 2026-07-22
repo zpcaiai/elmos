@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M31: B31 Constraint Index Partition Migration"
+  short_description: "Run ELMOS M31 Skill with fail-closed evidence"
+  default_prompt: "Use $b31-constraint-index-partition-migration to execute the ELMOS M31 contract with fail-closed evidence."

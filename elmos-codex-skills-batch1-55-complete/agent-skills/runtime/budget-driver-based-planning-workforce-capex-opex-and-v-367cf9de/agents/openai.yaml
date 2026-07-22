@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B39: Budget Driver Based Planning Workforce Capex Opex And Version Control"
+  short_description: "Run ELMOS B39 Skill with fail-closed evidence"
+  default_prompt: "Use $budget-driver-based-planning-workforce-capex-opex-and-v-367cf9de to execute the ELMOS B39 contract with fail-closed evidence."

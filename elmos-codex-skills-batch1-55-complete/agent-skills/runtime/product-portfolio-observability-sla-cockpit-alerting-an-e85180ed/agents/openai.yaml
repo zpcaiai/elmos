@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B41: Product Portfolio Observability Sla Cockpit Alerting And Operations"
+  short_description: "Run ELMOS B41 Skill with fail-closed evidence"
+  default_prompt: "Use $product-portfolio-observability-sla-cockpit-alerting-an-e85180ed to execute the ELMOS B41 contract with fail-closed evidence."

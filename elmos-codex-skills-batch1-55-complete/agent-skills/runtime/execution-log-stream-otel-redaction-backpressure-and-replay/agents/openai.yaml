@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B36: Execution Log Stream Otel Redaction Backpressure And Replay"
+  short_description: "Run ELMOS B36 Skill with fail-closed evidence"
+  default_prompt: "Use $execution-log-stream-otel-redaction-backpressure-and-replay to execute the ELMOS B36 contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B49: Cloud Runtime Analytics Kpi Scoring Forecast And Diagnostics"
+  short_description: "Run ELMOS Product B49 contract with fail-closed evidence"
+  default_prompt: "Use $cloud-runtime-analytics-kpi-scoring-forecast-and-diagnostics to implement its fail-closed ELMOS Product B49 contract."

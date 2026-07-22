@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B53: Grid Dispatch Workflow Orchestration Assignment Escalation And Recovery"
+  short_description: "Run ELMOS B53 Skill with fail-closed evidence"
+  default_prompt: "Use $grid-dispatch-workflow-orchestration-assignment-escalat-c23406aa to execute the ELMOS B53 contract with fail-closed evidence."

@@ -1,0 +1,14 @@
+BATCH36_PYTHON ?= /opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python
+.PHONY: batch36-validate batch36-test batch36-check batch36-scaffold batch36-gate batch36-local-rehearsal
+batch36-validate:
+	$(BATCH36_PYTHON) scripts/batch36/validate_skill_bundle.py .agents/skills
+batch36-test:
+	$(BATCH36_PYTHON) -m unittest discover -s tests/batch36 -p 'test_*.py'
+batch36-check: batch36-validate batch36-test
+batch36-scaffold:
+	$(BATCH36_PYTHON) scripts/batch36/scaffold_developer_experience_pack.py --help
+batch36-gate:
+	@test -n "$(PACK)" || (echo "PACK is required" >&2; exit 2)
+	$(BATCH36_PYTHON) scripts/batch36/run_developer_experience_gate.py "$(PACK)"
+batch36-local-rehearsal:
+	$(BATCH36_PYTHON) scripts/batch36/run_local_developer_workflow_rehearsal.py --repo-root .

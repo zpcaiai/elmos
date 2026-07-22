@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B51: Global Trade Provider Adapters Versioning Compatibility And Migration"
+  short_description: "Run ELMOS B51 Skill with fail-closed evidence"
+  default_prompt: "Use $global-trade-provider-adapters-versioning-compatibility-fac66348 to execute the ELMOS B51 contract with fail-closed evidence."

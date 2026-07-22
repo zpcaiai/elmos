@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M44: B44 Artifact Retention Egress Economics"
+  short_description: "Run ELMOS M44 Skill with fail-closed evidence"
+  default_prompt: "Use $b44-artifact-retention-egress-economics to execute the ELMOS M44 contract with fail-closed evidence."

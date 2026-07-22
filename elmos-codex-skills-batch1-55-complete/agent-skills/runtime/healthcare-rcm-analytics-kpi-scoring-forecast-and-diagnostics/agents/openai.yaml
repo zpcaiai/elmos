@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B52: Healthcare Rcm Analytics Kpi Scoring Forecast And Diagnostics"
+  short_description: "Run ELMOS B52 Skill with fail-closed evidence"
+  default_prompt: "Use $healthcare-rcm-analytics-kpi-scoring-forecast-and-diagnostics to execute the ELMOS B52 contract with fail-closed evidence."

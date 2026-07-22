@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B55: Platform Ecosystem Intake Ingestion Connector Sync And Idempotency"
+  short_description: "Run ELMOS Product B55 contract with fail-closed evidence"
+  default_prompt: "Use $platform-ecosystem-intake-ingestion-connector-sync-and-fe8d2f01 to implement its fail-closed ELMOS Product B55 contract."

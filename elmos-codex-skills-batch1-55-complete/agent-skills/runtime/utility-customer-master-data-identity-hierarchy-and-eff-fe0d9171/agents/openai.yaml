@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B53: Utility Customer Master Data Identity Hierarchy And Effective Dating"
+  short_description: "Run ELMOS B53 Skill with fail-closed evidence"
+  default_prompt: "Use $utility-customer-master-data-identity-hierarchy-and-eff-fe0d9171 to execute the ELMOS B53 contract with fail-closed evidence."

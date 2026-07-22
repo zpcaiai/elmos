@@ -1,0 +1,4 @@
+interface:
+  display_name: "B68 Kotlin Contract Client Generator"
+  short_description: "Run this ELMOS project Skill with evidence controls"
+  default_prompt: "Use $b68-kotlin-contract-client-generator to execute this ELMOS project Skill with fail-closed evidence."

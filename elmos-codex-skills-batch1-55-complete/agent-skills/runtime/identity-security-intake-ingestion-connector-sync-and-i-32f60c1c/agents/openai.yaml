@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B48: Identity Security Intake Ingestion Connector Sync And Idempotency"
+  short_description: "Run ELMOS B48 Skill with fail-closed evidence"
+  default_prompt: "Use $identity-security-intake-ingestion-connector-sync-and-i-32f60c1c to execute the ELMOS B48 contract with fail-closed evidence."

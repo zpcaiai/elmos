@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B47: Sre Reliability Data Quality Dedup Reconciliation And Certification"
+  short_description: "Run ELMOS B47 Skill with fail-closed evidence"
+  default_prompt: "Use $sre-reliability-data-quality-dedup-reconciliation-and-c-3450e516 to execute the ELMOS B47 contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B37: Evidence Producer Sdk Schema Registry Ingestion And Idempotency"
+  short_description: "Run ELMOS B37 Skill with fail-closed evidence"
+  default_prompt: "Use $evidence-producer-sdk-schema-registry-ingestion-and-idempotency to execute the ELMOS B37 contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "B72 Flutter Release Signing Packager"
+  short_description: "Run this ELMOS project Skill with evidence controls"
+  default_prompt: "Use $b72-flutter-release-signing-packager to execute this ELMOS project Skill with fail-closed evidence."

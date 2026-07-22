@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M34: B34 Incremental Graph Impact"
+  short_description: "Run ELMOS M34 Skill with fail-closed evidence"
+  default_prompt: "Use $b34-incremental-graph-impact to execute the ELMOS M34 contract with fail-closed evidence."

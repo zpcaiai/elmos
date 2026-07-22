@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B42: Procurement S2P Audit Evidence Records Retention And Legal Hold"
+  short_description: "Run ELMOS B42 Skill with fail-closed evidence"
+  default_prompt: "Use $procurement-s2p-audit-evidence-records-retention-and-legal-hold to execute the ELMOS B42 contract with fail-closed evidence."

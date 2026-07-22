@@ -1,0 +1,65 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "RUN-2026-000049",
+  "blueprint_hash": "sha256:blueprint-example",
+  "artifacts": [
+    {
+      "path": "settings.gradle.kts",
+      "fingerprint": "sha256:settings-example",
+      "ownership": "managed",
+      "generator": "PG070",
+      "source_refs": [
+        "GEN-ROOT"
+      ],
+      "template_ref": "TPL-GRADLE-ROOT@1.0.0",
+      "semantic_symbol_ids": []
+    },
+    {
+      "path": "src/main/java/com/example/maintenance/alert/domain/Alert.java",
+      "fingerprint": "sha256:alert-example",
+      "ownership": "protected",
+      "generator": "PG069",
+      "source_refs": [
+        "AGG-ALERT",
+        "REQ-ALERT-002"
+      ],
+      "template_ref": "TPL-JAVA-AGGREGATE@1.0.0",
+      "semantic_symbol_ids": [
+        "SYM-AGG-ALERT"
+      ]
+    }
+  ],
+  "templates": [
+    {
+      "id": "TPL-GRADLE-ROOT",
+      "version": "1.0.0",
+      "signature": "sig:example"
+    },
+    {
+      "id": "TPL-JAVA-AGGREGATE",
+      "version": "1.0.0",
+      "signature": "sig:example"
+    }
+  ],
+  "tools": [
+    {
+      "name": "java-emitter",
+      "version": "1.0.0"
+    },
+    {
+      "name": "spotless",
+      "version": "pinned-by-blueprint"
+    }
+  ],
+  "merge": {
+    "mode": "initial-generation",
+    "conflicts": 0
+  },
+  "quality": {
+    "format": "passed",
+    "lint": "passed",
+    "typecheck": "passed"
+  },
+  "sbom_ref": "SBOM-RUN-2026-000049",
+  "signature": "sig:generation-manifest-example"
+}

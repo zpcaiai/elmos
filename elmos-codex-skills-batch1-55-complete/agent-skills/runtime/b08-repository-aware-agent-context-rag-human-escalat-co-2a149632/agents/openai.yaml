@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M08: B08 Repository Aware Agent Context Rag Human Escalat Conformance Security And Chaos T"
+  short_description: "Run ELMOS M08 Skill with fail-closed evidence"
+  default_prompt: "Use $b08-repository-aware-agent-context-rag-human-escalat-co-2a149632 to execute the ELMOS M08 contract with fail-closed evidence."

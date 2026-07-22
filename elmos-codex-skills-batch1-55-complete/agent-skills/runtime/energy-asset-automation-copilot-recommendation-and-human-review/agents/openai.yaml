@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B53: Energy Asset Automation Copilot Recommendation And Human Review"
+  short_description: "Run ELMOS B53 Skill with fail-closed evidence"
+  default_prompt: "Use $energy-asset-automation-copilot-recommendation-and-human-review to execute the ELMOS B53 contract with fail-closed evidence."

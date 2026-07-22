@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B54: Legal Ops Analytics Kpi Scoring Forecast And Diagnostics"
+  short_description: "Run ELMOS Product B54 contract with fail-closed evidence"
+  default_prompt: "Use $legal-ops-analytics-kpi-scoring-forecast-and-diagnostics to implement its fail-closed ELMOS Product B54 contract."

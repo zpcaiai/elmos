@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B44: Bi Semantic Analytics Kpi Scoring Forecast And Diagnostics"
+  short_description: "Run ELMOS Product B44 contract with fail-closed evidence"
+  default_prompt: "Use $bi-semantic-analytics-kpi-scoring-forecast-and-diagnostics to implement its fail-closed ELMOS Product B44 contract."

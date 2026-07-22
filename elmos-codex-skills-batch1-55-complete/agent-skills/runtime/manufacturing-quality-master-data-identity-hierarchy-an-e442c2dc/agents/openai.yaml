@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B50: Manufacturing Quality Master Data Identity Hierarchy And Effective Dating"
+  short_description: "Run ELMOS B50 Skill with fail-closed evidence"
+  default_prompt: "Use $manufacturing-quality-master-data-identity-hierarchy-an-e442c2dc to execute the ELMOS B50 contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B54: Content Knowledge Workflow Orchestration Assignment Escalation And Recovery"
+  short_description: "Run ELMOS B54 Skill with fail-closed evidence"
+  default_prompt: "Use $content-knowledge-workflow-orchestration-assignment-esc-1c16f25a to execute the ELMOS B54 contract with fail-closed evidence."

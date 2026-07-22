@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B50: Manufacturing Quality Workflow Orchestration Assignment Escalation And Recovery"
+  short_description: "Run ELMOS Product B50 contract with fail-closed evidence"
+  default_prompt: "Use $manufacturing-quality-workflow-orchestration-assignment-d22a2e1a to implement its fail-closed ELMOS Product B50 contract."

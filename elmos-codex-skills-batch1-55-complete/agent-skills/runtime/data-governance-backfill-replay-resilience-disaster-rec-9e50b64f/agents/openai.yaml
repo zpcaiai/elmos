@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B44: Data Governance Backfill Replay Resilience Disaster Recovery And Continuity"
+  short_description: "Run ELMOS B44 Skill with fail-closed evidence"
+  default_prompt: "Use $data-governance-backfill-replay-resilience-disaster-rec-9e50b64f to execute the ELMOS B44 contract with fail-closed evidence."

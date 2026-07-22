@@ -58,7 +58,8 @@ class BatchOneToThirteenAssuranceTest {
     @Test
     void skillPacksAndVerificationReportsCoverAllBatches() throws IOException {
         assertEquals(37, countSkills(root.resolve("agent-skills/build")));
-        assertEquals(879, countSkills(root.resolve("agent-skills/runtime")));
+        assertTrue(countSkills(root.resolve("agent-skills/runtime")) >= 1647,
+                "runtime Skill count must not fall below the 1,647-Skill baseline; additive Skills are allowed");
         assertEquals(32, countSkills(root.resolve("agent-skills/build-test-feedback")));
         assertEquals(9, countJsonSchemas(root.resolve("contracts/repair-loop-schema")));
         assertEquals(35, countSkills(root.resolve("agent-skills/behavioral-equivalence")));
@@ -81,7 +82,14 @@ class BatchOneToThirteenAssuranceTest {
         assertEquals(4, countJsonSchemas(root.resolve("contracts/vertical-solution-schema")));
         assertEquals(77, countSkills(root.resolve("agent-skills/group-integration")));
         assertEquals(4, countJsonSchemas(root.resolve("contracts/group-integration-schema")));
-        assertEquals(372, countSkills(root.resolve(".agents/skills")));
+        assertTrue(countSkills(root.resolve(".agents/skills")) >= 425,
+                "repository Skill count must not fall below the 425-Skill baseline; additive Skills are allowed");
+        assertTrue(Files.isRegularFile(root.resolve(".agents/skills/elmos-project-synthesis/SKILL.md")));
+        assertTrue(countSkillsWithPrefix(root.resolve(".agents/skills"), "tst-") >= 52,
+                "strict test Skill count must not fall below the 52-Skill Batch 1-37 baseline; additive suites are allowed");
+        assertEquals(9, countJsonSchemas(root.resolve("schemas/test-suite")));
+        assertTrue(Files.isRegularFile(root.resolve("docs/test-suite/IMPORT_AUDIT.md")));
+        assertTrue(Files.isRegularFile(root.resolve("docs/test-suite/VALIDATION.md")));
         int[] matureSkillCounts = {20, 20, 22, 20, 20, 22, 22, 18, 36, 22, 22, 24, 20, 22, 20, 20, 22};
         int[] matureSchemaCounts = {3, 4, 6, 7, 8, 10, 13, 12, 25, 4, 4, 4, 4, 4, 4, 4, 4};
         for (int offset = 0; offset < matureSkillCounts.length; offset++) {
@@ -471,7 +479,7 @@ class BatchOneToThirteenAssuranceTest {
                 "api-gateway-policy-lifecycle-and-facade-modernizer", "event-driven-architecture-cloudevents-and-event-governance",
                 "schema-registry-contract-evolution-and-code-generation", "edi-as2-mft-b2b-partner-modernizer",
                 "workflow-bpmn-saga-and-process-orchestration-modernizer", "integration-security-identity-certificate-and-nonrepudiation",
-                "integration-observability-trace-replay-and-operational-readiness", "integration-contract-test-virtualization-and-equivalence-validator",
+                "integration-observability-trace-replay-and-operational-readiness", "integration-contract-equivalence-validator",
                 "parallel-bridge-dual-publish-cutover-and-decommission", "integration-elmos-unified-evidence-integration")
                 .stream().filter(name -> Files.isRegularFile(root.resolve("agent-skills/runtime").resolve(name).resolve("SKILL.md"))).count());
         String v21 = Files.readString(root.resolve(

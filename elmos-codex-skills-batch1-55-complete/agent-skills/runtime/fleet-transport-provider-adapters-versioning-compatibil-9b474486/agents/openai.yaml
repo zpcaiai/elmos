@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B51: Fleet Transport Provider Adapters Versioning Compatibility And Migration"
+  short_description: "Run ELMOS B51 Skill with fail-closed evidence"
+  default_prompt: "Use $fleet-transport-provider-adapters-versioning-compatibil-9b474486 to execute the ELMOS B51 contract with fail-closed evidence."

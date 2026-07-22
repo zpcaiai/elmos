@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B53: Utility Customer Backfill Replay Resilience Disaster Recovery And Continuity"
+  short_description: "Run ELMOS B53 Skill with fail-closed evidence"
+  default_prompt: "Use $utility-customer-backfill-replay-resilience-disaster-re-1cb61d55 to execute the ELMOS B53 contract with fail-closed evidence."

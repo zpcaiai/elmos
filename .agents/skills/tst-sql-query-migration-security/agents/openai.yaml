@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tst SQL Query Migration Security"
+  short_description: "Run this ELMOS Batch 66-80 test Skill with evidence"
+  default_prompt: "Use $tst-sql-query-migration-security to run the exact Batch 66-80 test scope with fail-closed evidence."

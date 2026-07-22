@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B45: Ml Platform Policy Authorization Approval Segregation And Exception"
+  short_description: "Run ELMOS B45 Skill with fail-closed evidence"
+  default_prompt: "Use $ml-platform-policy-authorization-approval-segregation-a-58350eec to execute the ELMOS B45 contract with fail-closed evidence."

@@ -1,0 +1,36 @@
+code,name,batch,title,path
+TB66,tst-b66-typescript-javascript-slightly-strict-suite,66,Batch 66 TypeScript and JavaScript Slightly Strict Suite,agent-skills/runtime/tst-b66-typescript-javascript-slightly-strict-suite/SKILL.md
+TB67,tst-b67-go-cloud-native-slightly-strict-suite,67,Batch 67 Go Cloud-Native Slightly Strict Suite,agent-skills/runtime/tst-b67-go-cloud-native-slightly-strict-suite/SKILL.md
+TB68,tst-b68-kotlin-jvm-android-slightly-strict-suite,68,Batch 68 Kotlin JVM Android and Multiplatform Slightly Strict Suite,agent-skills/runtime/tst-b68-kotlin-jvm-android-slightly-strict-suite/SKILL.md
+TB69,tst-b69-php-web-slightly-strict-suite,69,Batch 69 PHP Laravel Symfony and WordPress Slightly Strict Suite,agent-skills/runtime/tst-b69-php-web-slightly-strict-suite/SKILL.md
+TB70,tst-b70-native-industrial-slightly-strict-suite,70,Batch 70 C C++ Industrial and Native Slightly Strict Suite,agent-skills/runtime/tst-b70-native-industrial-slightly-strict-suite/SKILL.md
+TB71,tst-b71-rust-secure-systems-slightly-strict-suite,71,Batch 71 Rust Secure Systems Slightly Strict Suite,agent-skills/runtime/tst-b71-rust-secure-systems-slightly-strict-suite/SKILL.md
+TB72,tst-b72-flutter-multiplatform-slightly-strict-suite,72,Batch 72 Dart Flutter Multiplatform Slightly Strict Suite,agent-skills/runtime/tst-b72-flutter-multiplatform-slightly-strict-suite/SKILL.md
+TB73,tst-b73-swift-apple-native-slightly-strict-suite,73,Batch 73 Swift Apple Native Slightly Strict Suite,agent-skills/runtime/tst-b73-swift-apple-native-slightly-strict-suite/SKILL.md
+TB74,tst-b74-shell-powershell-slightly-strict-suite,74,Batch 74 Bash Shell and PowerShell Slightly Strict Suite,agent-skills/runtime/tst-b74-shell-powershell-slightly-strict-suite/SKILL.md
+TB75,tst-b75-sql-api-contracts-slightly-strict-suite,75,Batch 75 SQL and API Contract Languages Slightly Strict Suite,agent-skills/runtime/tst-b75-sql-api-contracts-slightly-strict-suite/SKILL.md
+TB76,tst-b76-make-cmake-nginx-slightly-strict-suite,76,Batch 76 Make CMake and Nginx Slightly Strict Suite,agent-skills/runtime/tst-b76-make-cmake-nginx-slightly-strict-suite/SKILL.md
+TB77,tst-b77-docker-compose-slightly-strict-suite,77,Batch 77 Dockerfile and Docker Compose Slightly Strict Suite,agent-skills/runtime/tst-b77-docker-compose-slightly-strict-suite/SKILL.md
+TB78,tst-b78-iac-kubernetes-helm-slightly-strict-suite,78,Batch 78 HCL Terraform Kubernetes YAML and Helm Slightly Strict Suite,agent-skills/runtime/tst-b78-iac-kubernetes-helm-slightly-strict-suite/SKILL.md
+TB79,tst-b79-cicd-systems-slightly-strict-suite,79,Batch 79 GitHub Actions GitLab CI and Jenkins Slightly Strict Suite,agent-skills/runtime/tst-b79-cicd-systems-slightly-strict-suite/SKILL.md
+TB80,tst-b80-polyglot-operations-slightly-strict-suite,80,Batch 80 Polyglot Project Operations and Certification Slightly Strict Suite,agent-skills/runtime/tst-b80-polyglot-operations-slightly-strict-suite/SKILL.md
+X001,tst-b66-80-slightly-strict-suite-orchestrator,cross,Batch 66–80略严苛测试总编排,agent-skills/runtime/tst-b66-80-slightly-strict-suite-orchestrator/SKILL.md
+X002,tst-b66-80-source-capability-traceability,cross,Source Skill能力追踪与覆盖,agent-skills/runtime/tst-b66-80-source-capability-traceability/SKILL.md
+X003,tst-b66-80-fixture-environment-matrix,cross,Fixture与环境矩阵,agent-skills/runtime/tst-b66-80-fixture-environment-matrix/SKILL.md
+X004,tst-b66-80-evidence-integrity-anti-forgery,cross,Evidence完整性与防伪,agent-skills/runtime/tst-b66-80-evidence-integrity-anti-forgery/SKILL.md
+X005,tst-deterministic-dependency-build-reproducibility,cross,依赖与构建可重复性,agent-skills/runtime/tst-deterministic-dependency-build-reproducibility/SKILL.md
+X006,tst-generated-project-build-run-shutdown,cross,生成项目Build Run Shutdown,agent-skills/runtime/tst-generated-project-build-run-shutdown/SKILL.md
+X007,tst-contract-schema-compatibility-roundtrip,cross,契约Schema兼容与Roundtrip,agent-skills/runtime/tst-contract-schema-compatibility-roundtrip/SKILL.md
+X008,tst-data-transaction-migration-integrity,cross,数据事务与迁移完整性,agent-skills/runtime/tst-data-transaction-migration-integrity/SKILL.md
+X009,tst-concurrency-cancellation-race-leak,cross,并发取消Race与泄漏,agent-skills/runtime/tst-concurrency-cancellation-race-leak/SKILL.md
+X010,tst-cross-platform-toolchain-runtime-matrix,cross,跨平台工具链与Runtime矩阵,agent-skills/runtime/tst-cross-platform-toolchain-runtime-matrix/SKILL.md
+X011,tst-ui-accessibility-localization-runtime-journey,cross,UI可访问性本地化与Runtime Journey,agent-skills/runtime/tst-ui-accessibility-localization-runtime-journey/SKILL.md
+X012,tst-native-memory-abi-ffi-safety,cross,Native内存ABI与FFI安全,agent-skills/runtime/tst-native-memory-abi-ffi-safety/SKILL.md
+X013,tst-shell-powershell-injection-portability,cross,Shell与PowerShell注入及可移植性,agent-skills/runtime/tst-shell-powershell-injection-portability/SKILL.md
+X014,tst-sql-query-migration-security,cross,SQL查询迁移与安全,agent-skills/runtime/tst-sql-query-migration-security/SKILL.md
+X015,tst-container-image-compose-runtime-hardening,cross,容器镜像与Compose运行加固,agent-skills/runtime/tst-container-image-compose-runtime-hardening/SKILL.md
+X016,tst-iac-kubernetes-helm-plan-drift-rollback,cross,IaC Kubernetes Helm Plan Drift Rollback,agent-skills/runtime/tst-iac-kubernetes-helm-plan-drift-rollback/SKILL.md
+X017,tst-cicd-runner-permission-provenance,cross,CI/CD Runner权限与Provenance,agent-skills/runtime/tst-cicd-runner-permission-provenance/SKILL.md
+X018,tst-supply-chain-secret-identity-tamper,cross,供应链Secret身份与篡改,agent-skills/runtime/tst-supply-chain-secret-identity-tamper/SKILL.md
+X019,tst-performance-cost-resource-regression,cross,性能成本与资源回归,agent-skills/runtime/tst-performance-cost-resource-regression/SKILL.md
+X020,tst-b66-80-final-slightly-strict-release-gate,cross,Batch 66–80最终略严苛发布门,agent-skills/runtime/tst-b66-80-final-slightly-strict-release-gate/SKILL.md

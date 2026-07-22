@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B52: Clinical Ops Planning Capacity Scenario Optimization And Allocation"
+  short_description: "Run ELMOS Product B52 contract with fail-closed evidence"
+  default_prompt: "Use $clinical-ops-planning-capacity-scenario-optimization-an-8ba49e4f to implement its fail-closed ELMOS Product B52 contract."

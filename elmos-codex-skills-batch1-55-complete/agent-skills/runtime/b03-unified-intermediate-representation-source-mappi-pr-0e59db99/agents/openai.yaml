@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M03: B03 Unified Intermediate Representation Source Mappi Provider And Tool Adapters"
+  short_description: "Run ELMOS M03 Skill with fail-closed evidence"
+  default_prompt: "Use $b03-unified-intermediate-representation-source-mappi-pr-0e59db99 to execute the ELMOS M03 contract with fail-closed evidence."

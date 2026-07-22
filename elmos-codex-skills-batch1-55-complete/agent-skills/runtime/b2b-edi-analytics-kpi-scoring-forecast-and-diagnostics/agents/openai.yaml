@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B46: B2B Edi Analytics Kpi Scoring Forecast And Diagnostics"
+  short_description: "Run ELMOS B46 Skill with fail-closed evidence"
+  default_prompt: "Use $b2b-edi-analytics-kpi-scoring-forecast-and-diagnostics to execute the ELMOS B46 contract with fail-closed evidence."

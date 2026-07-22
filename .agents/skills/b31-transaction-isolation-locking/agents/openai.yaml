@@ -1,0 +1,4 @@
+interface:
+  display_name: "B31 Transaction Isolation Locking"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b31-transaction-isolation-locking to execute this ELMOS Runtime Skill with fail-closed evidence."

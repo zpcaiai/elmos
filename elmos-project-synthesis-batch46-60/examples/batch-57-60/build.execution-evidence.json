@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.0.0",
+  "execution_id": "EXEC-BUILD-001",
+  "kind": "build",
+  "runner": {
+    "image": "approved-java-builder@sha256:example",
+    "network": "dependency-allowlist",
+    "cpu": 4,
+    "memory_mb": 8192
+  },
+  "command": [
+    "./gradlew",
+    "clean",
+    "test",
+    "integrationTest",
+    "bootJar"
+  ],
+  "started_at": "2026-07-22T07:00:00Z",
+  "finished_at": "2026-07-22T07:08:00Z",
+  "status": "passed",
+  "exit_code": 0,
+  "artifacts": [
+    {
+      "path": "build/libs/app.jar",
+      "sha256": "example"
+    }
+  ],
+  "diagnostics": []
+}

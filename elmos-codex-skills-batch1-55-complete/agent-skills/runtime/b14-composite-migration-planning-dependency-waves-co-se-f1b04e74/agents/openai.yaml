@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M14: B14 Composite Migration Planning Dependency Waves Co Security Privacy And Tenant Isol"
+  short_description: "Run ELMOS M14 Skill with fail-closed evidence"
+  default_prompt: "Use $b14-composite-migration-planning-dependency-waves-co-se-f1b04e74 to execute the ELMOS M14 contract with fail-closed evidence."

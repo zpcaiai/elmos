@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M09: B09 Build Compile Test Repair Bounded Fix Loop Conformance Security And Chaos Tests"
+  short_description: "Run ELMOS M09 Skill with fail-closed evidence"
+  default_prompt: "Use $b09-build-compile-test-repair-bounded-fix-loop-conforma-04d8f215 to execute the ELMOS M09 contract with fail-closed evidence."

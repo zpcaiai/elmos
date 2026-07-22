@@ -1,0 +1,4 @@
+interface:
+  display_name: "B94 Elixir Mix Project Profile"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b94-elixir-mix-project-profile to execute this ELMOS Language Pack Skill with fail-closed evidence."

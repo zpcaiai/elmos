@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B39: Finance Actual Plan Forecast Reconciliation Close And Management Reporting"
+  short_description: "Run ELMOS B39 Skill with fail-closed evidence"
+  default_prompt: "Use $finance-actual-plan-forecast-reconciliation-close-and-m-77c0342f to execute the ELMOS B39 contract with fail-closed evidence."

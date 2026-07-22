@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B36: Sandbox Network Dns Egress Proxy Metadata And Exfiltration Control"
+  short_description: "Run ELMOS B36 Skill with fail-closed evidence"
+  default_prompt: "Use $sandbox-network-dns-egress-proxy-metadata-and-exfiltrat-6affb6b9 to execute the ELMOS B36 contract with fail-closed evidence."

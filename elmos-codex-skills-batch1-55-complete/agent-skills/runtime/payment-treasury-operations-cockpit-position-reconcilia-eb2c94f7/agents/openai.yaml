@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B39: Payment Treasury Operations Cockpit Position Reconciliation Fraud And Sla"
+  short_description: "Run ELMOS B39 Skill with fail-closed evidence"
+  default_prompt: "Use $payment-treasury-operations-cockpit-position-reconcilia-eb2c94f7 to execute the ELMOS B39 contract with fail-closed evidence."

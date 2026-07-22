@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B43: Payroll Workforce Domain Model Lifecycle And State Machine"
+  short_description: "Run ELMOS B43 Skill with fail-closed evidence"
+  default_prompt: "Use $payroll-workforce-domain-model-lifecycle-and-state-machine to execute the ELMOS B43 contract with fail-closed evidence."

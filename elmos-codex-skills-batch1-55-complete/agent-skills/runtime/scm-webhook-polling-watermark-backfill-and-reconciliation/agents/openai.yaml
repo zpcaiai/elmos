@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B35: Scm Webhook Polling Watermark Backfill And Reconciliation"
+  short_description: "Run ELMOS B35 Skill with fail-closed evidence"
+  default_prompt: "Use $scm-webhook-polling-watermark-backfill-and-reconciliation to execute the ELMOS B35 contract with fail-closed evidence."

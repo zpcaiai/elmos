@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B40: Sales Forecast Category Rollup Commit Best Case And Accuracy Management"
+  short_description: "Run ELMOS Product B40 contract with fail-closed evidence"
+  default_prompt: "Use $sales-forecast-category-rollup-commit-best-case-and-acc-c4922cc3 to implement its fail-closed ELMOS Product B40 contract."

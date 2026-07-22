@@ -1,0 +1,1524 @@
+[
+  {
+    "id": "CASE-0261",
+    "test_skill_id": "T091",
+    "batch": 91,
+    "target_skills": [
+      "PG343"
+    ],
+    "category": "source-skill-direct",
+    "severity": "critical",
+    "title": "Direct verification: PG343 salesforce org metadata discovery",
+    "objective": "Execute PG343 `salesforce-org-metadata-discovery` with representative valid, boundary and adversarial inputs and verify its declared output, failure and evidence contracts.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable.",
+      "The target Skill-specific output contract is satisfied.",
+      "The target Skill has direct executed coverage rather than inferred batch coverage."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-91",
+      "salesforce",
+      "pg343",
+      "direct-coverage"
+    ]
+  },
+  {
+    "id": "CASE-0262",
+    "test_skill_id": "T091",
+    "batch": 91,
+    "target_skills": [
+      "PG344"
+    ],
+    "category": "source-skill-direct",
+    "severity": "high",
+    "title": "Direct verification: PG344 apex parser and semantic model",
+    "objective": "Execute PG344 `apex-parser-and-semantic-model` with representative valid, boundary and adversarial inputs and verify its declared output, failure and evidence contracts.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable.",
+      "The target Skill-specific output contract is satisfied.",
+      "The target Skill has direct executed coverage rather than inferred batch coverage."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-91",
+      "salesforce",
+      "pg344",
+      "direct-coverage"
+    ]
+  },
+  {
+    "id": "CASE-0263",
+    "test_skill_id": "T091",
+    "batch": 91,
+    "target_skills": [
+      "PG345"
+    ],
+    "category": "source-skill-direct",
+    "severity": "high",
+    "title": "Direct verification: PG345 soql sosl query analyzer",
+    "objective": "Execute PG345 `soql-sosl-query-analyzer` with representative valid, boundary and adversarial inputs and verify its declared output, failure and evidence contracts.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable.",
+      "The target Skill-specific output contract is satisfied.",
+      "The target Skill has direct executed coverage rather than inferred batch coverage."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-91",
+      "salesforce",
+      "pg345",
+      "direct-coverage"
+    ]
+  },
+  {
+    "id": "CASE-0264",
+    "test_skill_id": "T091",
+    "batch": 91,
+    "target_skills": [
+      "PG346"
+    ],
+    "category": "source-skill-direct",
+    "severity": "medium",
+    "title": "Direct verification: PG346 trigger bulkification governor limit analyzer",
+    "objective": "Execute PG346 `trigger-bulkification-governor-limit-analyzer` with representative valid, boundary and adversarial inputs and verify its declared output, failure and evidence contracts.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable.",
+      "The target Skill-specific output contract is satisfied.",
+      "The target Skill has direct executed coverage rather than inferred batch coverage."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-91",
+      "salesforce",
+      "pg346",
+      "direct-coverage"
+    ]
+  },
+  {
+    "id": "CASE-0265",
+    "test_skill_id": "T091",
+    "batch": 91,
+    "target_skills": [
+      "PG347"
+    ],
+    "category": "source-skill-direct",
+    "severity": "critical",
+    "title": "Direct verification: PG347 lwc application generator",
+    "objective": "Execute PG347 `lwc-application-generator` with representative valid, boundary and adversarial inputs and verify its declared output, failure and evidence contracts.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable.",
+      "The target Skill-specific output contract is satisfied.",
+      "The target Skill has direct executed coverage rather than inferred batch coverage."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-91",
+      "salesforce",
+      "pg347",
+      "direct-coverage"
+    ]
+  },
+  {
+    "id": "CASE-0266",
+    "test_skill_id": "T091",
+    "batch": 91,
+    "target_skills": [
+      "PG348"
+    ],
+    "category": "source-skill-direct",
+    "severity": "high",
+    "title": "Direct verification: PG348 visualforce to lwc modernizer",
+    "objective": "Execute PG348 `visualforce-to-lwc-modernizer` with representative valid, boundary and adversarial inputs and verify its declared output, failure and evidence contracts.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable.",
+      "The target Skill-specific output contract is satisfied.",
+      "The target Skill has direct executed coverage rather than inferred batch coverage."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-91",
+      "salesforce",
+      "pg348",
+      "direct-coverage"
+    ]
+  },
+  {
+    "id": "CASE-0267",
+    "test_skill_id": "T091",
+    "batch": 91,
+    "target_skills": [
+      "PG349"
+    ],
+    "category": "source-skill-direct",
+    "severity": "high",
+    "title": "Direct verification: PG349 flow apex orchestration generator",
+    "objective": "Execute PG349 `flow-apex-orchestration-generator` with representative valid, boundary and adversarial inputs and verify its declared output, failure and evidence contracts.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable.",
+      "The target Skill-specific output contract is satisfied.",
+      "The target Skill has direct executed coverage rather than inferred batch coverage."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-91",
+      "salesforce",
+      "pg349",
+      "direct-coverage"
+    ]
+  },
+  {
+    "id": "CASE-0268",
+    "test_skill_id": "T091",
+    "batch": 91,
+    "target_skills": [
+      "PG350"
+    ],
+    "category": "source-skill-direct",
+    "severity": "medium",
+    "title": "Direct verification: PG350 platform event integration generator",
+    "objective": "Execute PG350 `platform-event-integration-generator` with representative valid, boundary and adversarial inputs and verify its declared output, failure and evidence contracts.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable.",
+      "The target Skill-specific output contract is satisfied.",
+      "The target Skill has direct executed coverage rather than inferred batch coverage."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-91",
+      "salesforce",
+      "pg350",
+      "direct-coverage"
+    ]
+  },
+  {
+    "id": "CASE-0269",
+    "test_skill_id": "T091",
+    "batch": 91,
+    "target_skills": [
+      "PG351"
+    ],
+    "category": "source-skill-direct",
+    "severity": "critical",
+    "title": "Direct verification: PG351 salesforce security sharing fsl crud generator",
+    "objective": "Execute PG351 `salesforce-security-sharing-fsl-crud-generator` with representative valid, boundary and adversarial inputs and verify its declared output, failure and evidence contracts.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable.",
+      "The target Skill-specific output contract is satisfied.",
+      "The target Skill has direct executed coverage rather than inferred batch coverage."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-91",
+      "salesforce",
+      "pg351",
+      "direct-coverage"
+    ]
+  },
+  {
+    "id": "CASE-0270",
+    "test_skill_id": "T091",
+    "batch": 91,
+    "target_skills": [
+      "PG352"
+    ],
+    "category": "source-skill-direct",
+    "severity": "high",
+    "title": "Direct verification: PG352 sfdx package ci generator",
+    "objective": "Execute PG352 `sfdx-package-ci-generator` with representative valid, boundary and adversarial inputs and verify its declared output, failure and evidence contracts.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable.",
+      "The target Skill-specific output contract is satisfied.",
+      "The target Skill has direct executed coverage rather than inferred batch coverage."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-91",
+      "salesforce",
+      "pg352",
+      "direct-coverage"
+    ]
+  },
+  {
+    "id": "CASE-0271",
+    "test_skill_id": "T091",
+    "batch": 91,
+    "target_skills": [
+      "PG353"
+    ],
+    "category": "source-skill-direct",
+    "severity": "high",
+    "title": "Direct verification: PG353 apex test mutation generator",
+    "objective": "Execute PG353 `apex-test-mutation-generator` with representative valid, boundary and adversarial inputs and verify its declared output, failure and evidence contracts.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable.",
+      "The target Skill-specific output contract is satisfied.",
+      "The target Skill has direct executed coverage rather than inferred batch coverage."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-91",
+      "salesforce",
+      "pg353",
+      "direct-coverage"
+    ]
+  },
+  {
+    "id": "CASE-0272",
+    "test_skill_id": "T091",
+    "batch": 91,
+    "target_skills": [
+      "PG354"
+    ],
+    "category": "source-skill-direct",
+    "severity": "medium",
+    "title": "Direct verification: PG354 salesforce release certifier",
+    "objective": "Execute PG354 `salesforce-release-certifier` with representative valid, boundary and adversarial inputs and verify its declared output, failure and evidence contracts.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable.",
+      "The target Skill-specific output contract is satisfied.",
+      "The target Skill has direct executed coverage rather than inferred batch coverage."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-91",
+      "salesforce",
+      "pg354",
+      "direct-coverage"
+    ]
+  },
+  {
+    "id": "CASE-0273",
+    "test_skill_id": "T091",
+    "batch": 91,
+    "target_skills": [
+      "PG343",
+      "PG344",
+      "PG345",
+      "PG346",
+      "PG347",
+      "PG348",
+      "PG349",
+      "PG350",
+      "PG351",
+      "PG352",
+      "PG353",
+      "PG354"
+    ],
+    "category": "domain-adversarial",
+    "severity": "critical",
+    "title": "Execute 200-record bulk operations and verify SOQL, DML, CPU, heap and callout limits remain safe",
+    "objective": "Execute 200-record bulk operations and verify SOQL, DML, CPU, heap and callout limits remain safe.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-91",
+      "salesforce",
+      "bulk-200-governor",
+      "domain-specific"
+    ]
+  },
+  {
+    "id": "CASE-0274",
+    "test_skill_id": "T091",
+    "batch": 91,
+    "target_skills": [
+      "PG343",
+      "PG344",
+      "PG345",
+      "PG346",
+      "PG347",
+      "PG348",
+      "PG349",
+      "PG350",
+      "PG351",
+      "PG352",
+      "PG353",
+      "PG354"
+    ],
+    "category": "domain-adversarial",
+    "severity": "high",
+    "title": "Detect trigger recursion, order-of-execution errors and mixed-DML violations",
+    "objective": "Detect trigger recursion, order-of-execution errors and mixed-DML violations.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-91",
+      "salesforce",
+      "recursive-trigger-mixed-dml",
+      "domain-specific"
+    ]
+  },
+  {
+    "id": "CASE-0275",
+    "test_skill_id": "T091",
+    "batch": 91,
+    "target_skills": [
+      "PG343",
+      "PG344",
+      "PG345",
+      "PG346",
+      "PG347",
+      "PG348",
+      "PG349",
+      "PG350",
+      "PG351",
+      "PG352",
+      "PG353",
+      "PG354"
+    ],
+    "category": "domain-adversarial",
+    "severity": "high",
+    "title": "Run with profiles, permission sets, sharing rules and restricted fields; enforce CRUD/FLS and record sharing",
+    "objective": "Run with profiles, permission sets, sharing rules and restricted fields; enforce CRUD/FLS and record sharing.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-91",
+      "salesforce",
+      "sharing-fls-crud",
+      "domain-specific"
+    ]
+  },
+  {
+    "id": "CASE-0276",
+    "test_skill_id": "T091",
+    "batch": 91,
+    "target_skills": [
+      "PG343",
+      "PG344",
+      "PG345",
+      "PG346",
+      "PG347",
+      "PG348",
+      "PG349",
+      "PG350",
+      "PG351",
+      "PG352",
+      "PG353",
+      "PG354"
+    ],
+    "category": "domain-adversarial",
+    "severity": "critical",
+    "title": "Inject dynamic SOQL/SOSL inputs and nonselective queries; reject unsafe or governor-risk code",
+    "objective": "Inject dynamic SOQL/SOSL inputs and nonselective queries; reject unsafe or governor-risk code.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-91",
+      "salesforce",
+      "soql-injection-selectivity",
+      "domain-specific"
+    ]
+  },
+  {
+    "id": "CASE-0277",
+    "test_skill_id": "T091",
+    "batch": 91,
+    "target_skills": [
+      "PG343",
+      "PG344",
+      "PG345",
+      "PG346",
+      "PG347",
+      "PG348",
+      "PG349",
+      "PG350",
+      "PG351",
+      "PG352",
+      "PG353",
+      "PG354"
+    ],
+    "category": "domain-adversarial",
+    "severity": "high",
+    "title": "Exercise Queueable, Batch, Future and Platform Event ordering, retries and duplicate delivery",
+    "objective": "Exercise Queueable, Batch, Future and Platform Event ordering, retries and duplicate delivery.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-91",
+      "salesforce",
+      "async-ordering-retry",
+      "domain-specific"
+    ]
+  },
+  {
+    "id": "CASE-0278",
+    "test_skill_id": "T091",
+    "batch": 91,
+    "target_skills": [
+      "PG343",
+      "PG344",
+      "PG345",
+      "PG346",
+      "PG347",
+      "PG348",
+      "PG349",
+      "PG350",
+      "PG351",
+      "PG352",
+      "PG353",
+      "PG354"
+    ],
+    "category": "domain-adversarial",
+    "severity": "critical",
+    "title": "Install in a clean scratch org and validate namespace, metadata dependency and destructive-change behavior",
+    "objective": "Install in a clean scratch org and validate namespace, metadata dependency and destructive-change behavior.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-91",
+      "salesforce",
+      "package-org-regression",
+      "domain-specific"
+    ]
+  },
+  {
+    "id": "CASE-0279",
+    "test_skill_id": "T091",
+    "batch": 91,
+    "target_skills": [
+      "PG343",
+      "PG344",
+      "PG345",
+      "PG346",
+      "PG347",
+      "PG348",
+      "PG349",
+      "PG350",
+      "PG351",
+      "PG352",
+      "PG353",
+      "PG354"
+    ],
+    "category": "happy-path",
+    "severity": "high",
+    "title": "Representative certified success path",
+    "objective": "Execute a representative complete workflow from discovery through evidence and verify all declared artifacts.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-91",
+      "salesforce",
+      "happy-path"
+    ]
+  },
+  {
+    "id": "CASE-0280",
+    "test_skill_id": "T091",
+    "batch": 91,
+    "target_skills": [
+      "PG343",
+      "PG344",
+      "PG345",
+      "PG346",
+      "PG347",
+      "PG348",
+      "PG349",
+      "PG350",
+      "PG351",
+      "PG352",
+      "PG353",
+      "PG354"
+    ],
+    "category": "boundary-scale",
+    "severity": "high",
+    "title": "Boundary and moderate scale",
+    "objective": "Use maximum supported names, nesting, dependency depth and moderate estate size without truncation or unstable output.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-91",
+      "salesforce",
+      "boundary-scale"
+    ]
+  },
+  {
+    "id": "CASE-0281",
+    "test_skill_id": "T091",
+    "batch": 91,
+    "target_skills": [
+      "PG343",
+      "PG344",
+      "PG345",
+      "PG346",
+      "PG347",
+      "PG348",
+      "PG349",
+      "PG350",
+      "PG351",
+      "PG352",
+      "PG353",
+      "PG354"
+    ],
+    "category": "invalid-conflicting-input",
+    "severity": "high",
+    "title": "Invalid and conflicting input",
+    "objective": "Provide missing, malformed, ambiguous and contradictory inputs; require precise blocking diagnostics.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-91",
+      "salesforce",
+      "invalid-conflicting-input"
+    ]
+  },
+  {
+    "id": "CASE-0282",
+    "test_skill_id": "T091",
+    "batch": 91,
+    "target_skills": [
+      "PG343",
+      "PG344",
+      "PG345",
+      "PG346",
+      "PG347",
+      "PG348",
+      "PG349",
+      "PG350",
+      "PG351",
+      "PG352",
+      "PG353",
+      "PG354"
+    ],
+    "category": "dependency-failure-recovery",
+    "severity": "high",
+    "title": "Dependency failure and recovery",
+    "objective": "Interrupt parser, vendor tool, registry or runtime and resume without duplicated side effects.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-91",
+      "salesforce",
+      "dependency-failure-recovery"
+    ]
+  },
+  {
+    "id": "CASE-0283",
+    "test_skill_id": "T091",
+    "batch": 91,
+    "target_skills": [
+      "PG343",
+      "PG344",
+      "PG345",
+      "PG346",
+      "PG347",
+      "PG348",
+      "PG349",
+      "PG350",
+      "PG351",
+      "PG352",
+      "PG353",
+      "PG354"
+    ],
+    "category": "security-isolation",
+    "severity": "critical",
+    "title": "Security and isolation",
+    "objective": "Attempt unauthorized access, secret exposure, unsafe execution and cross-project contamination.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-91",
+      "salesforce",
+      "security-isolation"
+    ]
+  },
+  {
+    "id": "CASE-0284",
+    "test_skill_id": "T091",
+    "batch": 91,
+    "target_skills": [
+      "PG343",
+      "PG344",
+      "PG345",
+      "PG346",
+      "PG347",
+      "PG348",
+      "PG349",
+      "PG350",
+      "PG351",
+      "PG352",
+      "PG353",
+      "PG354"
+    ],
+    "category": "replay-idempotency",
+    "severity": "high",
+    "title": "Replay and idempotency",
+    "objective": "Repeat identical requests, retries and restarts; require stable identifiers and no duplicate artifacts.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-91",
+      "salesforce",
+      "replay-idempotency"
+    ]
+  },
+  {
+    "id": "CASE-0285",
+    "test_skill_id": "T091",
+    "batch": 91,
+    "target_skills": [
+      "PG343",
+      "PG344",
+      "PG345",
+      "PG346",
+      "PG347",
+      "PG348",
+      "PG349",
+      "PG350",
+      "PG351",
+      "PG352",
+      "PG353",
+      "PG354"
+    ],
+    "category": "version-drift",
+    "severity": "high",
+    "title": "Toolchain and version drift",
+    "objective": "Change compiler/runtime/schema/vendor versions and require explicit compatibility classification.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-91",
+      "salesforce",
+      "version-drift"
+    ]
+  },
+  {
+    "id": "CASE-0286",
+    "test_skill_id": "T091",
+    "batch": 91,
+    "target_skills": [
+      "PG343",
+      "PG344",
+      "PG345",
+      "PG346",
+      "PG347",
+      "PG348",
+      "PG349",
+      "PG350",
+      "PG351",
+      "PG352",
+      "PG353",
+      "PG354"
+    ],
+    "category": "evidence-tamper",
+    "severity": "critical",
+    "title": "Evidence tamper and anti-fraud",
+    "objective": "Modify, omit or reorder evidence; certification must reject the result.",
+    "preconditions": [
+      "Use an isolated test tenant/workspace and pinned toolchain profile.",
+      "Load approved fixtures and source-package manifest.",
+      "Enable full audit, trace and evidence capture."
+    ],
+    "steps": [
+      "Prepare the declared source, target and environment fixture.",
+      "Execute the target Skill workflow through the public orchestration contract.",
+      "Inject the case-specific variation or failure condition.",
+      "Collect outputs, state transitions, logs, traces, diffs and approvals.",
+      "Evaluate semantic, safety, security and evidence assertions.",
+      "Repeat deterministic positive behavior a second time when applicable."
+    ],
+    "expected": [
+      "The system produces a deterministic machine-readable result.",
+      "Every decision and artifact is linked to source inputs and target Skills.",
+      "Unsafe or unsupported behavior is blocked rather than approximated silently.",
+      "Required evidence is complete, immutable and independently reviewable."
+    ],
+    "required_evidence": [
+      "input and environment fingerprints",
+      "toolchain and Skill versions",
+      "state-transition and decision log",
+      "artifact or semantic diff",
+      "assertion results",
+      "security/safety findings",
+      "final disposition and owner"
+    ],
+    "anti_fraud": [
+      "No deleted or disabled failing test.",
+      "No broadened tolerance without approved rationale.",
+      "No mock substituted for a mandatory real platform integration.",
+      "No evidence omitted because it is unfavorable."
+    ],
+    "tags": [
+      "batch-91",
+      "salesforce",
+      "evidence-tamper"
+    ]
+  }
+]

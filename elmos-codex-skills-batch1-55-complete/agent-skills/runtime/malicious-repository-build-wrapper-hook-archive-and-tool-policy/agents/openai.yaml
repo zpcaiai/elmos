@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B36: Malicious Repository Build Wrapper Hook Archive And Tool Policy"
+  short_description: "Run ELMOS B36 Skill with fail-closed evidence"
+  default_prompt: "Use $malicious-repository-build-wrapper-hook-archive-and-tool-policy to execute the ELMOS B36 contract with fail-closed evidence."

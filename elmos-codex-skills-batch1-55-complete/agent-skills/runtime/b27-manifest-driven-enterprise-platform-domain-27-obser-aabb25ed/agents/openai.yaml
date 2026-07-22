@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M27: B27 Manifest Driven Enterprise Platform Domain 27 Observability And Operational Readi"
+  short_description: "Run ELMOS M27 Skill with fail-closed evidence"
+  default_prompt: "Use $b27-manifest-driven-enterprise-platform-domain-27-obser-aabb25ed to execute the ELMOS M27 contract with fail-closed evidence."

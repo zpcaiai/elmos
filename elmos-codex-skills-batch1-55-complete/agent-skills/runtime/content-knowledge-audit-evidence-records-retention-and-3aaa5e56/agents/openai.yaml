@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B54: Content Knowledge Audit Evidence Records Retention And Legal Hold"
+  short_description: "Run ELMOS B54 Skill with fail-closed evidence"
+  default_prompt: "Use $content-knowledge-audit-evidence-records-retention-and-3aaa5e56 to execute the ELMOS B54 contract with fail-closed evidence."

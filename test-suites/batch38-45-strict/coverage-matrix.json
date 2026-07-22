@@ -1,0 +1,1383 @@
+{
+  "product_skill_count": 172,
+  "case_count": 400,
+  "mappings": [
+    {
+      "product_skill_id": 1325,
+      "batch": 38,
+      "case_ids": [
+        "B38-001",
+        "B38-009"
+      ]
+    },
+    {
+      "product_skill_id": 1326,
+      "batch": 38,
+      "case_ids": [
+        "B38-002",
+        "B38-010"
+      ]
+    },
+    {
+      "product_skill_id": 1327,
+      "batch": 38,
+      "case_ids": [
+        "B38-003",
+        "B38-011"
+      ]
+    },
+    {
+      "product_skill_id": 1328,
+      "batch": 38,
+      "case_ids": [
+        "B38-004",
+        "B38-012"
+      ]
+    },
+    {
+      "product_skill_id": 1329,
+      "batch": 38,
+      "case_ids": [
+        "B38-005",
+        "B38-013"
+      ]
+    },
+    {
+      "product_skill_id": 1330,
+      "batch": 38,
+      "case_ids": [
+        "B38-006",
+        "B38-014"
+      ]
+    },
+    {
+      "product_skill_id": 1331,
+      "batch": 38,
+      "case_ids": [
+        "B38-007",
+        "B38-015"
+      ]
+    },
+    {
+      "product_skill_id": 1332,
+      "batch": 38,
+      "case_ids": [
+        "B38-008",
+        "B38-016"
+      ]
+    },
+    {
+      "product_skill_id": 1333,
+      "batch": 38,
+      "case_ids": [
+        "B38-009",
+        "B38-017"
+      ]
+    },
+    {
+      "product_skill_id": 1334,
+      "batch": 38,
+      "case_ids": [
+        "B38-010",
+        "B38-018"
+      ]
+    },
+    {
+      "product_skill_id": 1335,
+      "batch": 38,
+      "case_ids": [
+        "B38-011",
+        "B38-019"
+      ]
+    },
+    {
+      "product_skill_id": 1336,
+      "batch": 38,
+      "case_ids": [
+        "B38-012",
+        "B38-020"
+      ]
+    },
+    {
+      "product_skill_id": 1337,
+      "batch": 38,
+      "case_ids": [
+        "B38-013",
+        "B38-021"
+      ]
+    },
+    {
+      "product_skill_id": 1338,
+      "batch": 38,
+      "case_ids": [
+        "B38-014",
+        "B38-022"
+      ]
+    },
+    {
+      "product_skill_id": 1339,
+      "batch": 38,
+      "case_ids": [
+        "B38-015",
+        "B38-023"
+      ]
+    },
+    {
+      "product_skill_id": 1340,
+      "batch": 38,
+      "case_ids": [
+        "B38-016",
+        "B38-024"
+      ]
+    },
+    {
+      "product_skill_id": 1341,
+      "batch": 38,
+      "case_ids": [
+        "B38-017",
+        "B38-001"
+      ]
+    },
+    {
+      "product_skill_id": 1342,
+      "batch": 38,
+      "case_ids": [
+        "B38-018",
+        "B38-002"
+      ]
+    },
+    {
+      "product_skill_id": 1343,
+      "batch": 38,
+      "case_ids": [
+        "B38-019",
+        "B38-003"
+      ]
+    },
+    {
+      "product_skill_id": 1344,
+      "batch": 38,
+      "case_ids": [
+        "B38-020",
+        "B38-004"
+      ]
+    },
+    {
+      "product_skill_id": 1345,
+      "batch": 38,
+      "case_ids": [
+        "B38-021",
+        "B38-005"
+      ]
+    },
+    {
+      "product_skill_id": 1346,
+      "batch": 38,
+      "case_ids": [
+        "B38-022",
+        "B38-006"
+      ]
+    },
+    {
+      "product_skill_id": 1347,
+      "batch": 39,
+      "case_ids": [
+        "B39-001",
+        "B39-009"
+      ]
+    },
+    {
+      "product_skill_id": 1348,
+      "batch": 39,
+      "case_ids": [
+        "B39-002",
+        "B39-010"
+      ]
+    },
+    {
+      "product_skill_id": 1349,
+      "batch": 39,
+      "case_ids": [
+        "B39-003",
+        "B39-011"
+      ]
+    },
+    {
+      "product_skill_id": 1350,
+      "batch": 39,
+      "case_ids": [
+        "B39-004",
+        "B39-012"
+      ]
+    },
+    {
+      "product_skill_id": 1351,
+      "batch": 39,
+      "case_ids": [
+        "B39-005",
+        "B39-013"
+      ]
+    },
+    {
+      "product_skill_id": 1352,
+      "batch": 39,
+      "case_ids": [
+        "B39-006",
+        "B39-014"
+      ]
+    },
+    {
+      "product_skill_id": 1353,
+      "batch": 39,
+      "case_ids": [
+        "B39-007",
+        "B39-015"
+      ]
+    },
+    {
+      "product_skill_id": 1354,
+      "batch": 39,
+      "case_ids": [
+        "B39-008",
+        "B39-016"
+      ]
+    },
+    {
+      "product_skill_id": 1355,
+      "batch": 39,
+      "case_ids": [
+        "B39-009",
+        "B39-017"
+      ]
+    },
+    {
+      "product_skill_id": 1356,
+      "batch": 39,
+      "case_ids": [
+        "B39-010",
+        "B39-018"
+      ]
+    },
+    {
+      "product_skill_id": 1357,
+      "batch": 39,
+      "case_ids": [
+        "B39-011",
+        "B39-019"
+      ]
+    },
+    {
+      "product_skill_id": 1358,
+      "batch": 39,
+      "case_ids": [
+        "B39-012",
+        "B39-020"
+      ]
+    },
+    {
+      "product_skill_id": 1359,
+      "batch": 39,
+      "case_ids": [
+        "B39-013",
+        "B39-021"
+      ]
+    },
+    {
+      "product_skill_id": 1360,
+      "batch": 39,
+      "case_ids": [
+        "B39-014",
+        "B39-022"
+      ]
+    },
+    {
+      "product_skill_id": 1361,
+      "batch": 39,
+      "case_ids": [
+        "B39-015",
+        "B39-023"
+      ]
+    },
+    {
+      "product_skill_id": 1362,
+      "batch": 39,
+      "case_ids": [
+        "B39-016",
+        "B39-024"
+      ]
+    },
+    {
+      "product_skill_id": 1363,
+      "batch": 39,
+      "case_ids": [
+        "B39-017",
+        "B39-001"
+      ]
+    },
+    {
+      "product_skill_id": 1364,
+      "batch": 39,
+      "case_ids": [
+        "B39-018",
+        "B39-002"
+      ]
+    },
+    {
+      "product_skill_id": 1365,
+      "batch": 39,
+      "case_ids": [
+        "B39-019",
+        "B39-003"
+      ]
+    },
+    {
+      "product_skill_id": 1366,
+      "batch": 39,
+      "case_ids": [
+        "B39-020",
+        "B39-004"
+      ]
+    },
+    {
+      "product_skill_id": 1367,
+      "batch": 39,
+      "case_ids": [
+        "B39-021",
+        "B39-005"
+      ]
+    },
+    {
+      "product_skill_id": 1368,
+      "batch": 39,
+      "case_ids": [
+        "B39-022",
+        "B39-006"
+      ]
+    },
+    {
+      "product_skill_id": 1369,
+      "batch": 40,
+      "case_ids": [
+        "B40-001",
+        "B40-009"
+      ]
+    },
+    {
+      "product_skill_id": 1370,
+      "batch": 40,
+      "case_ids": [
+        "B40-002",
+        "B40-010"
+      ]
+    },
+    {
+      "product_skill_id": 1371,
+      "batch": 40,
+      "case_ids": [
+        "B40-003",
+        "B40-011"
+      ]
+    },
+    {
+      "product_skill_id": 1372,
+      "batch": 40,
+      "case_ids": [
+        "B40-004",
+        "B40-012"
+      ]
+    },
+    {
+      "product_skill_id": 1373,
+      "batch": 40,
+      "case_ids": [
+        "B40-005",
+        "B40-013"
+      ]
+    },
+    {
+      "product_skill_id": 1374,
+      "batch": 40,
+      "case_ids": [
+        "B40-006",
+        "B40-014"
+      ]
+    },
+    {
+      "product_skill_id": 1375,
+      "batch": 40,
+      "case_ids": [
+        "B40-007",
+        "B40-015"
+      ]
+    },
+    {
+      "product_skill_id": 1376,
+      "batch": 40,
+      "case_ids": [
+        "B40-008",
+        "B40-016"
+      ]
+    },
+    {
+      "product_skill_id": 1377,
+      "batch": 40,
+      "case_ids": [
+        "B40-009",
+        "B40-017"
+      ]
+    },
+    {
+      "product_skill_id": 1378,
+      "batch": 40,
+      "case_ids": [
+        "B40-010",
+        "B40-018"
+      ]
+    },
+    {
+      "product_skill_id": 1379,
+      "batch": 40,
+      "case_ids": [
+        "B40-011",
+        "B40-019"
+      ]
+    },
+    {
+      "product_skill_id": 1380,
+      "batch": 40,
+      "case_ids": [
+        "B40-012",
+        "B40-020"
+      ]
+    },
+    {
+      "product_skill_id": 1381,
+      "batch": 40,
+      "case_ids": [
+        "B40-013",
+        "B40-021"
+      ]
+    },
+    {
+      "product_skill_id": 1382,
+      "batch": 40,
+      "case_ids": [
+        "B40-014",
+        "B40-022"
+      ]
+    },
+    {
+      "product_skill_id": 1383,
+      "batch": 40,
+      "case_ids": [
+        "B40-015",
+        "B40-023"
+      ]
+    },
+    {
+      "product_skill_id": 1384,
+      "batch": 40,
+      "case_ids": [
+        "B40-016",
+        "B40-024"
+      ]
+    },
+    {
+      "product_skill_id": 1385,
+      "batch": 40,
+      "case_ids": [
+        "B40-017",
+        "B40-001"
+      ]
+    },
+    {
+      "product_skill_id": 1386,
+      "batch": 40,
+      "case_ids": [
+        "B40-018",
+        "B40-002"
+      ]
+    },
+    {
+      "product_skill_id": 1387,
+      "batch": 40,
+      "case_ids": [
+        "B40-019",
+        "B40-003"
+      ]
+    },
+    {
+      "product_skill_id": 1388,
+      "batch": 40,
+      "case_ids": [
+        "B40-020",
+        "B40-004"
+      ]
+    },
+    {
+      "product_skill_id": 1389,
+      "batch": 40,
+      "case_ids": [
+        "B40-021",
+        "B40-005"
+      ]
+    },
+    {
+      "product_skill_id": 1390,
+      "batch": 40,
+      "case_ids": [
+        "B40-022",
+        "B40-006"
+      ]
+    },
+    {
+      "product_skill_id": 1391,
+      "batch": 40,
+      "case_ids": [
+        "B40-023",
+        "B40-007"
+      ]
+    },
+    {
+      "product_skill_id": 1392,
+      "batch": 40,
+      "case_ids": [
+        "B40-024",
+        "B40-008"
+      ]
+    },
+    {
+      "product_skill_id": 1393,
+      "batch": 41,
+      "case_ids": [
+        "B41-001",
+        "B41-009"
+      ]
+    },
+    {
+      "product_skill_id": 1394,
+      "batch": 41,
+      "case_ids": [
+        "B41-002",
+        "B41-010"
+      ]
+    },
+    {
+      "product_skill_id": 1395,
+      "batch": 41,
+      "case_ids": [
+        "B41-003",
+        "B41-011"
+      ]
+    },
+    {
+      "product_skill_id": 1396,
+      "batch": 41,
+      "case_ids": [
+        "B41-004",
+        "B41-012"
+      ]
+    },
+    {
+      "product_skill_id": 1397,
+      "batch": 41,
+      "case_ids": [
+        "B41-005",
+        "B41-013"
+      ]
+    },
+    {
+      "product_skill_id": 1398,
+      "batch": 41,
+      "case_ids": [
+        "B41-006",
+        "B41-014"
+      ]
+    },
+    {
+      "product_skill_id": 1399,
+      "batch": 41,
+      "case_ids": [
+        "B41-007",
+        "B41-015"
+      ]
+    },
+    {
+      "product_skill_id": 1400,
+      "batch": 41,
+      "case_ids": [
+        "B41-008",
+        "B41-016"
+      ]
+    },
+    {
+      "product_skill_id": 1401,
+      "batch": 41,
+      "case_ids": [
+        "B41-009",
+        "B41-017"
+      ]
+    },
+    {
+      "product_skill_id": 1402,
+      "batch": 41,
+      "case_ids": [
+        "B41-010",
+        "B41-018"
+      ]
+    },
+    {
+      "product_skill_id": 1403,
+      "batch": 41,
+      "case_ids": [
+        "B41-011",
+        "B41-019"
+      ]
+    },
+    {
+      "product_skill_id": 1404,
+      "batch": 41,
+      "case_ids": [
+        "B41-012",
+        "B41-020"
+      ]
+    },
+    {
+      "product_skill_id": 1405,
+      "batch": 41,
+      "case_ids": [
+        "B41-013",
+        "B41-021"
+      ]
+    },
+    {
+      "product_skill_id": 1406,
+      "batch": 41,
+      "case_ids": [
+        "B41-014",
+        "B41-022"
+      ]
+    },
+    {
+      "product_skill_id": 1407,
+      "batch": 41,
+      "case_ids": [
+        "B41-015",
+        "B41-023"
+      ]
+    },
+    {
+      "product_skill_id": 1408,
+      "batch": 41,
+      "case_ids": [
+        "B41-016",
+        "B41-024"
+      ]
+    },
+    {
+      "product_skill_id": 1409,
+      "batch": 41,
+      "case_ids": [
+        "B41-017",
+        "B41-001"
+      ]
+    },
+    {
+      "product_skill_id": 1410,
+      "batch": 41,
+      "case_ids": [
+        "B41-018",
+        "B41-002"
+      ]
+    },
+    {
+      "product_skill_id": 1411,
+      "batch": 41,
+      "case_ids": [
+        "B41-019",
+        "B41-003"
+      ]
+    },
+    {
+      "product_skill_id": 1412,
+      "batch": 41,
+      "case_ids": [
+        "B41-020",
+        "B41-004"
+      ]
+    },
+    {
+      "product_skill_id": 1413,
+      "batch": 42,
+      "case_ids": [
+        "B42-001",
+        "B42-009"
+      ]
+    },
+    {
+      "product_skill_id": 1414,
+      "batch": 42,
+      "case_ids": [
+        "B42-002",
+        "B42-010"
+      ]
+    },
+    {
+      "product_skill_id": 1415,
+      "batch": 42,
+      "case_ids": [
+        "B42-003",
+        "B42-011"
+      ]
+    },
+    {
+      "product_skill_id": 1416,
+      "batch": 42,
+      "case_ids": [
+        "B42-004",
+        "B42-012"
+      ]
+    },
+    {
+      "product_skill_id": 1417,
+      "batch": 42,
+      "case_ids": [
+        "B42-005",
+        "B42-013"
+      ]
+    },
+    {
+      "product_skill_id": 1418,
+      "batch": 42,
+      "case_ids": [
+        "B42-006",
+        "B42-014"
+      ]
+    },
+    {
+      "product_skill_id": 1419,
+      "batch": 42,
+      "case_ids": [
+        "B42-007",
+        "B42-015"
+      ]
+    },
+    {
+      "product_skill_id": 1420,
+      "batch": 42,
+      "case_ids": [
+        "B42-008",
+        "B42-016"
+      ]
+    },
+    {
+      "product_skill_id": 1421,
+      "batch": 42,
+      "case_ids": [
+        "B42-009",
+        "B42-017"
+      ]
+    },
+    {
+      "product_skill_id": 1422,
+      "batch": 42,
+      "case_ids": [
+        "B42-010",
+        "B42-018"
+      ]
+    },
+    {
+      "product_skill_id": 1423,
+      "batch": 42,
+      "case_ids": [
+        "B42-011",
+        "B42-019"
+      ]
+    },
+    {
+      "product_skill_id": 1424,
+      "batch": 42,
+      "case_ids": [
+        "B42-012",
+        "B42-020"
+      ]
+    },
+    {
+      "product_skill_id": 1425,
+      "batch": 42,
+      "case_ids": [
+        "B42-013",
+        "B42-021"
+      ]
+    },
+    {
+      "product_skill_id": 1426,
+      "batch": 42,
+      "case_ids": [
+        "B42-014",
+        "B42-022"
+      ]
+    },
+    {
+      "product_skill_id": 1427,
+      "batch": 42,
+      "case_ids": [
+        "B42-015",
+        "B42-023"
+      ]
+    },
+    {
+      "product_skill_id": 1428,
+      "batch": 42,
+      "case_ids": [
+        "B42-016",
+        "B42-024"
+      ]
+    },
+    {
+      "product_skill_id": 1429,
+      "batch": 42,
+      "case_ids": [
+        "B42-017",
+        "B42-001"
+      ]
+    },
+    {
+      "product_skill_id": 1430,
+      "batch": 42,
+      "case_ids": [
+        "B42-018",
+        "B42-002"
+      ]
+    },
+    {
+      "product_skill_id": 1431,
+      "batch": 42,
+      "case_ids": [
+        "B42-019",
+        "B42-003"
+      ]
+    },
+    {
+      "product_skill_id": 1432,
+      "batch": 42,
+      "case_ids": [
+        "B42-020",
+        "B42-004"
+      ]
+    },
+    {
+      "product_skill_id": 1433,
+      "batch": 42,
+      "case_ids": [
+        "B42-021",
+        "B42-005"
+      ]
+    },
+    {
+      "product_skill_id": 1434,
+      "batch": 42,
+      "case_ids": [
+        "B42-022",
+        "B42-006"
+      ]
+    },
+    {
+      "product_skill_id": 1435,
+      "batch": 43,
+      "case_ids": [
+        "B43-001",
+        "B43-009"
+      ]
+    },
+    {
+      "product_skill_id": 1436,
+      "batch": 43,
+      "case_ids": [
+        "B43-002",
+        "B43-010"
+      ]
+    },
+    {
+      "product_skill_id": 1437,
+      "batch": 43,
+      "case_ids": [
+        "B43-003",
+        "B43-011"
+      ]
+    },
+    {
+      "product_skill_id": 1438,
+      "batch": 43,
+      "case_ids": [
+        "B43-004",
+        "B43-012"
+      ]
+    },
+    {
+      "product_skill_id": 1439,
+      "batch": 43,
+      "case_ids": [
+        "B43-005",
+        "B43-013"
+      ]
+    },
+    {
+      "product_skill_id": 1440,
+      "batch": 43,
+      "case_ids": [
+        "B43-006",
+        "B43-014"
+      ]
+    },
+    {
+      "product_skill_id": 1441,
+      "batch": 43,
+      "case_ids": [
+        "B43-007",
+        "B43-015"
+      ]
+    },
+    {
+      "product_skill_id": 1442,
+      "batch": 43,
+      "case_ids": [
+        "B43-008",
+        "B43-016"
+      ]
+    },
+    {
+      "product_skill_id": 1443,
+      "batch": 43,
+      "case_ids": [
+        "B43-009",
+        "B43-017"
+      ]
+    },
+    {
+      "product_skill_id": 1444,
+      "batch": 43,
+      "case_ids": [
+        "B43-010",
+        "B43-018"
+      ]
+    },
+    {
+      "product_skill_id": 1445,
+      "batch": 43,
+      "case_ids": [
+        "B43-011",
+        "B43-019"
+      ]
+    },
+    {
+      "product_skill_id": 1446,
+      "batch": 43,
+      "case_ids": [
+        "B43-012",
+        "B43-020"
+      ]
+    },
+    {
+      "product_skill_id": 1447,
+      "batch": 43,
+      "case_ids": [
+        "B43-013",
+        "B43-021"
+      ]
+    },
+    {
+      "product_skill_id": 1448,
+      "batch": 43,
+      "case_ids": [
+        "B43-014",
+        "B43-022"
+      ]
+    },
+    {
+      "product_skill_id": 1449,
+      "batch": 43,
+      "case_ids": [
+        "B43-015",
+        "B43-023"
+      ]
+    },
+    {
+      "product_skill_id": 1450,
+      "batch": 43,
+      "case_ids": [
+        "B43-016",
+        "B43-024"
+      ]
+    },
+    {
+      "product_skill_id": 1451,
+      "batch": 43,
+      "case_ids": [
+        "B43-017",
+        "B43-001"
+      ]
+    },
+    {
+      "product_skill_id": 1452,
+      "batch": 43,
+      "case_ids": [
+        "B43-018",
+        "B43-002"
+      ]
+    },
+    {
+      "product_skill_id": 1453,
+      "batch": 43,
+      "case_ids": [
+        "B43-019",
+        "B43-003"
+      ]
+    },
+    {
+      "product_skill_id": 1454,
+      "batch": 43,
+      "case_ids": [
+        "B43-020",
+        "B43-004"
+      ]
+    },
+    {
+      "product_skill_id": 1455,
+      "batch": 44,
+      "case_ids": [
+        "B44-001",
+        "B44-009"
+      ]
+    },
+    {
+      "product_skill_id": 1456,
+      "batch": 44,
+      "case_ids": [
+        "B44-002",
+        "B44-010"
+      ]
+    },
+    {
+      "product_skill_id": 1457,
+      "batch": 44,
+      "case_ids": [
+        "B44-003",
+        "B44-011"
+      ]
+    },
+    {
+      "product_skill_id": 1458,
+      "batch": 44,
+      "case_ids": [
+        "B44-004",
+        "B44-012"
+      ]
+    },
+    {
+      "product_skill_id": 1459,
+      "batch": 44,
+      "case_ids": [
+        "B44-005",
+        "B44-013"
+      ]
+    },
+    {
+      "product_skill_id": 1460,
+      "batch": 44,
+      "case_ids": [
+        "B44-006",
+        "B44-014"
+      ]
+    },
+    {
+      "product_skill_id": 1461,
+      "batch": 44,
+      "case_ids": [
+        "B44-007",
+        "B44-015"
+      ]
+    },
+    {
+      "product_skill_id": 1462,
+      "batch": 44,
+      "case_ids": [
+        "B44-008",
+        "B44-016"
+      ]
+    },
+    {
+      "product_skill_id": 1463,
+      "batch": 44,
+      "case_ids": [
+        "B44-009",
+        "B44-017"
+      ]
+    },
+    {
+      "product_skill_id": 1464,
+      "batch": 44,
+      "case_ids": [
+        "B44-010",
+        "B44-018"
+      ]
+    },
+    {
+      "product_skill_id": 1465,
+      "batch": 44,
+      "case_ids": [
+        "B44-011",
+        "B44-019"
+      ]
+    },
+    {
+      "product_skill_id": 1466,
+      "batch": 44,
+      "case_ids": [
+        "B44-012",
+        "B44-020"
+      ]
+    },
+    {
+      "product_skill_id": 1467,
+      "batch": 44,
+      "case_ids": [
+        "B44-013",
+        "B44-021"
+      ]
+    },
+    {
+      "product_skill_id": 1468,
+      "batch": 44,
+      "case_ids": [
+        "B44-014",
+        "B44-022"
+      ]
+    },
+    {
+      "product_skill_id": 1469,
+      "batch": 44,
+      "case_ids": [
+        "B44-015",
+        "B44-023"
+      ]
+    },
+    {
+      "product_skill_id": 1470,
+      "batch": 44,
+      "case_ids": [
+        "B44-016",
+        "B44-024"
+      ]
+    },
+    {
+      "product_skill_id": 1471,
+      "batch": 44,
+      "case_ids": [
+        "B44-017",
+        "B44-001"
+      ]
+    },
+    {
+      "product_skill_id": 1472,
+      "batch": 44,
+      "case_ids": [
+        "B44-018",
+        "B44-002"
+      ]
+    },
+    {
+      "product_skill_id": 1473,
+      "batch": 44,
+      "case_ids": [
+        "B44-019",
+        "B44-003"
+      ]
+    },
+    {
+      "product_skill_id": 1474,
+      "batch": 44,
+      "case_ids": [
+        "B44-020",
+        "B44-004"
+      ]
+    },
+    {
+      "product_skill_id": 1475,
+      "batch": 45,
+      "case_ids": [
+        "B45-001",
+        "B45-009"
+      ]
+    },
+    {
+      "product_skill_id": 1476,
+      "batch": 45,
+      "case_ids": [
+        "B45-002",
+        "B45-010"
+      ]
+    },
+    {
+      "product_skill_id": 1477,
+      "batch": 45,
+      "case_ids": [
+        "B45-003",
+        "B45-011"
+      ]
+    },
+    {
+      "product_skill_id": 1478,
+      "batch": 45,
+      "case_ids": [
+        "B45-004",
+        "B45-012"
+      ]
+    },
+    {
+      "product_skill_id": 1479,
+      "batch": 45,
+      "case_ids": [
+        "B45-005",
+        "B45-013"
+      ]
+    },
+    {
+      "product_skill_id": 1480,
+      "batch": 45,
+      "case_ids": [
+        "B45-006",
+        "B45-014"
+      ]
+    },
+    {
+      "product_skill_id": 1481,
+      "batch": 45,
+      "case_ids": [
+        "B45-007",
+        "B45-015"
+      ]
+    },
+    {
+      "product_skill_id": 1482,
+      "batch": 45,
+      "case_ids": [
+        "B45-008",
+        "B45-016"
+      ]
+    },
+    {
+      "product_skill_id": 1483,
+      "batch": 45,
+      "case_ids": [
+        "B45-009",
+        "B45-017"
+      ]
+    },
+    {
+      "product_skill_id": 1484,
+      "batch": 45,
+      "case_ids": [
+        "B45-010",
+        "B45-018"
+      ]
+    },
+    {
+      "product_skill_id": 1485,
+      "batch": 45,
+      "case_ids": [
+        "B45-011",
+        "B45-019"
+      ]
+    },
+    {
+      "product_skill_id": 1486,
+      "batch": 45,
+      "case_ids": [
+        "B45-012",
+        "B45-020"
+      ]
+    },
+    {
+      "product_skill_id": 1487,
+      "batch": 45,
+      "case_ids": [
+        "B45-013",
+        "B45-021"
+      ]
+    },
+    {
+      "product_skill_id": 1488,
+      "batch": 45,
+      "case_ids": [
+        "B45-014",
+        "B45-022"
+      ]
+    },
+    {
+      "product_skill_id": 1489,
+      "batch": 45,
+      "case_ids": [
+        "B45-015",
+        "B45-023"
+      ]
+    },
+    {
+      "product_skill_id": 1490,
+      "batch": 45,
+      "case_ids": [
+        "B45-016",
+        "B45-024"
+      ]
+    },
+    {
+      "product_skill_id": 1491,
+      "batch": 45,
+      "case_ids": [
+        "B45-017",
+        "B45-001"
+      ]
+    },
+    {
+      "product_skill_id": 1492,
+      "batch": 45,
+      "case_ids": [
+        "B45-018",
+        "B45-002"
+      ]
+    },
+    {
+      "product_skill_id": 1493,
+      "batch": 45,
+      "case_ids": [
+        "B45-019",
+        "B45-003"
+      ]
+    },
+    {
+      "product_skill_id": 1494,
+      "batch": 45,
+      "case_ids": [
+        "B45-020",
+        "B45-004"
+      ]
+    },
+    {
+      "product_skill_id": 1495,
+      "batch": 45,
+      "case_ids": [
+        "B45-021",
+        "B45-005"
+      ]
+    },
+    {
+      "product_skill_id": 1496,
+      "batch": 45,
+      "case_ids": [
+        "B45-022",
+        "B45-006"
+      ]
+    }
+  ],
+  "suite_id": "batch38-45-strict"
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B40: Partner Channel Backfill Replay Resilience Disaster Recovery And Continuity"
+  short_description: "Run ELMOS B40 Skill with fail-closed evidence"
+  default_prompt: "Use $partner-channel-backfill-replay-resilience-disaster-rec-36be3b6e to execute the ELMOS B40 contract with fail-closed evidence."

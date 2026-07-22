@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B42: Supply Planning Workflow Orchestration Assignment Escalation And Recovery"
+  short_description: "Run ELMOS Product B42 contract with fail-closed evidence"
+  default_prompt: "Use $supply-planning-workflow-orchestration-assignment-escal-2efa6204 to implement its fail-closed ELMOS Product B42 contract."

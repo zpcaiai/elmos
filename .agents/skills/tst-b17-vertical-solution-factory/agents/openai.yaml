@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tst B17 Vertical Solution Factory"
+  short_description: "Help with Tst B17 Vertical Solution Factory tasks"
+  default_prompt: "Use $tst-b17-vertical-solution-factory to implement and verify this strict Batch 1–37 test scope with immutable evidence and fail-closed results."

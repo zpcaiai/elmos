@@ -1,0 +1,14 @@
+{
+  "filename": "elmos-language-packs-batch81-95-complete.zip",
+  "size_bytes": 3667614,
+  "sha256": "4c3de1f268c3c0b98e6fc500240618d58d5255df5e75f5c00ff9f8211565d13d",
+  "skill_count": 180,
+  "batch_range": [
+    81,
+    95
+  ],
+  "skill_range": [
+    "PG223",
+    "PG402"
+  ]
+}

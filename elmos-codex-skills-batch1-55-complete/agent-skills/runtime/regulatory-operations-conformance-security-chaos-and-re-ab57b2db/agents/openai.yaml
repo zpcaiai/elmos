@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B38: Regulatory Operations Conformance Security Chaos And Release Gates"
+  short_description: "Run ELMOS B38 Skill with fail-closed evidence"
+  default_prompt: "Use $regulatory-operations-conformance-security-chaos-and-re-ab57b2db to execute the ELMOS B38 contract with fail-closed evidence."

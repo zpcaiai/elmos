@@ -1,0 +1,4 @@
+interface:
+  display_name: "B70 Modern Cpp Library Service Generator"
+  short_description: "Run this ELMOS project Skill with evidence controls"
+  default_prompt: "Use $b70-modern-cpp-library-service-generator to execute this ELMOS project Skill with fail-closed evidence."

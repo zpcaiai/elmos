@@ -1,0 +1,4 @@
+interface:
+  display_name: "B77 Docker Buildx Multiarch Generator"
+  short_description: "Run this ELMOS project Skill with evidence controls"
+  default_prompt: "Use $b77-docker-buildx-multiarch-generator to execute this ELMOS project Skill with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B43: Payroll Workforce Audit Evidence Records Retention And Legal Hold"
+  short_description: "Run ELMOS Product B43 contract with fail-closed evidence"
+  default_prompt: "Use $payroll-workforce-audit-evidence-records-retention-and-cbc1da53 to implement its fail-closed ELMOS Product B43 contract."

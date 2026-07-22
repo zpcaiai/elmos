@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B55: Globalization Access Planning Capacity Scenario Optimization And Allocation"
+  short_description: "Run ELMOS Product B55 contract with fail-closed evidence"
+  default_prompt: "Use $globalization-access-planning-capacity-scenario-optimiz-9b23e75e to implement its fail-closed ELMOS Product B55 contract."

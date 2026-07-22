@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-07-22T16:34:12+08:00",
+  "scope": "local UI quality evidence only",
+  "browser": "Google Chrome 150.0.7871.129",
+  "runtime": "Node.js 24.14.0",
+  "framework": "Next.js 16.2.10 with React 19.2.7",
+  "viewports": [
+    {"width":1440,"height":1000,"journey":"overview, command keyboard navigation, Skills namespace qualification"},
+    {"width":1024,"height":768,"journey":"migration Marketplace switch"},
+    {"width":390,"height":844,"journey":"mobile bottom navigation and Skills qualification"}
+  ],
+  "checks": {
+    "typescript_strict": "PASSED",
+    "next_production_build": "PASSED",
+    "generated_manifest": "PASSED",
+    "runtime_routes": "PASSED",
+    "capability_api_status": "200",
+    "command_k_arrow_enter_escape": "PASSED",
+    "dialog_focus_return": "PASSED",
+    "namespace_switch_and_exact_total": "PASSED",
+    "mobile_bottom_navigation": "PASSED",
+    "visible_targets_below_44px": 0,
+    "horizontal_overflow": 0,
+    "browser_console_and_page_errors": 0,
+    "external_execution_evidence": "NOT_RUN",
+    "approved_visual_baseline": "NOT_RUN",
+    "cross_browser": "NOT_RUN",
+    "assistive_technology": "NOT_RUN",
+    "independent_holdout": "NOT_RUN",
+    "representative_workload": "NOT_RUN"
+  },
+  "screenshots": [
+    {"path":"elmos-dashboard-polished-desktop.png","sha256":"ec0c7311093ad7678506b2cbfb1ecc486edd4963341b94686d5c9b2a49814394"},
+    {"path":"elmos-skills-qualification-desktop.png","sha256":"f63adf03b70b99951202ad1c3797041b42b982a4dc309ff6e676a361152b65e2"},
+    {"path":"elmos-skills-mobile-navigation.png","sha256":"0c99a03a6390e6fdaa9bc7c80289a478a8aaa024e2659d2e1d61e6269a3d22b1"}
+  ],
+  "target_files": [
+    {"path":"apps/web-console/app/page.tsx","sha256":"6d9f4030e6748221314a62e964284ecb68ad4c03187dac8e68a09aae505e91fb"},
+    {"path":"apps/web-console/app/styles.css","sha256":"85ef7c14e5cca8d46c3d4155f202e00edf11f161079e72307c36c9ee6a8acfd1"},
+    {"path":"apps/web-console/app/components/AppShell.tsx","sha256":"16f49d48db32ad6a367100626fafa66ac72c3b48d90bedb26537ce581eea260c"},
+    {"path":"apps/web-console/app/components/Icon.tsx","sha256":"b43879d96bc9a16ec72f9c45b2bba77ce1613ab0605da5663274d840664a31eb"},
+    {"path":"apps/web-console/app/skills/page.tsx","sha256":"c1c79caf34ff0e5ced7a452cebcfcb1be7c31e8669667cf143cbeca060ea9812"},
+    {"path":"apps/web-console/app/skills/SkillsWorkspace.tsx","sha256":"b6317ee7d60833643c878d5cd1280397074f4e5f361bf6eb7b7d18d44fa33336"}
+  ],
+  "certification_claim": false
+}

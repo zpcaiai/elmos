@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B40: Marketing Growth Data Quality Dedup Reconciliation And Certification"
+  short_description: "Run ELMOS B40 Skill with fail-closed evidence"
+  default_prompt: "Use $marketing-growth-data-quality-dedup-reconciliation-and-312b5bfa to execute the ELMOS B40 contract with fail-closed evidence."

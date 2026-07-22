@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B51: Fleet Transport Planning Capacity Scenario Optimization And Allocation"
+  short_description: "Run ELMOS Product B51 contract with fail-closed evidence"
+  default_prompt: "Use $fleet-transport-planning-capacity-scenario-optimization-114ca1fc to implement its fail-closed ELMOS Product B51 contract."

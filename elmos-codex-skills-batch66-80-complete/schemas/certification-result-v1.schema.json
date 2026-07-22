@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "certification_id",
+    "scope",
+    "status",
+    "evidence_bundle_sha256",
+    "certifier",
+    "limitations"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "certification_id": {
+      "type": "string"
+    },
+    "scope": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "status": {
+      "enum": [
+        "certified",
+        "conditionally_certified",
+        "rejected",
+        "blocked"
+      ]
+    },
+    "evidence_bundle_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "certifier": {
+      "type": "object",
+      "required": [
+        "identity",
+        "independent"
+      ],
+      "properties": {
+        "identity": {
+          "type": "string"
+        },
+        "independent": {
+          "const": true
+        }
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "expires_at": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

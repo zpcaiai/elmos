@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B43: Payroll Workforce Analytics Kpi Scoring Forecast And Diagnostics"
+  short_description: "Run ELMOS B43 Skill with fail-closed evidence"
+  default_prompt: "Use $payroll-workforce-analytics-kpi-scoring-forecast-and-diagnostics to execute the ELMOS B43 contract with fail-closed evidence."

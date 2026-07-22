@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B47: It Asset Security Privacy Quality Performance Chaos And Release Gates"
+  short_description: "Run ELMOS B47 Skill with fail-closed evidence"
+  default_prompt: "Use $it-asset-security-privacy-quality-performance-chaos-and-3a35c311 to execute the ELMOS B47 contract with fail-closed evidence."

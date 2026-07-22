@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B40: Partner Channel Policy Authorization Approval Segregation And Exception"
+  short_description: "Run ELMOS Product B40 contract with fail-closed evidence"
+  default_prompt: "Use $partner-channel-policy-authorization-approval-segregati-64b69bdb to implement its fail-closed ELMOS Product B40 contract."

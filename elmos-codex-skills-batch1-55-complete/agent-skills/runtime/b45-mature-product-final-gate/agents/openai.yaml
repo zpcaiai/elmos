@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M45: B45 Mature Product Final Gate"
+  short_description: "Run ELMOS M45 Skill with fail-closed evidence"
+  default_prompt: "Use $b45-mature-product-final-gate to execute the ELMOS M45 contract with fail-closed evidence."

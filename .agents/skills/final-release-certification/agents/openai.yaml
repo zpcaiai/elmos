@@ -1,0 +1,4 @@
+interface:
+  display_name: "Final Release Certification"
+  short_description: "Run this ELMOS Batch 81-95 test Skill with evidence"
+  default_prompt: "Use $final-release-certification to run its exact Batch 81-95 test scope with fail-closed evidence."

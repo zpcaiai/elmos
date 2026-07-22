@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B44: Bi Semantic Workflow Orchestration Assignment Escalation And Recovery"
+  short_description: "Run ELMOS B44 Skill with fail-closed evidence"
+  default_prompt: "Use $bi-semantic-workflow-orchestration-assignment-escalatio-5eadcef7 to execute the ELMOS B44 contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B34: Tenant Context Propagation Resolution And Anti Spoofing"
+  short_description: "Run ELMOS B34 Skill with fail-closed evidence"
+  default_prompt: "Use $tenant-context-propagation-resolution-and-anti-spoofing to execute the ELMOS B34 contract with fail-closed evidence."

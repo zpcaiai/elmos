@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B47: Sre Reliability Policy Authorization Approval Segregation And Exception"
+  short_description: "Run ELMOS B47 Skill with fail-closed evidence"
+  default_prompt: "Use $sre-reliability-policy-authorization-approval-segregati-ffa615e0 to execute the ELMOS B47 contract with fail-closed evidence."

@@ -1,0 +1,20 @@
+{
+  "manifest_version": 2,
+  "manifest_id": "replace-with-immutable-manifest-id",
+  "case_id": "TS-GOV-01-001",
+  "case_digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+  "catalog_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+  "artifact_digest": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+  "environment_digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+  "execution_kind": "approved-equivalent",
+  "started_at": "2026-01-01T00:00:00Z",
+  "finished_at": "2026-01-01T00:01:00Z",
+  "executor": {"id": "replace-with-executor", "role": "executor"},
+  "verifier": {"id": "replace-with-independent-verifier", "role": "independent-verifier", "independent": true},
+  "authorization_refs": ["replace-with-authorization-reference"],
+  "files": [
+    {"role": "artifact-digest", "path": "artifact.json", "sha256": "5555555555555555555555555555555555555555555555555555555555555555", "bytes": 1, "immutable": true},
+    {"role": "environment-binding", "path": "environment.json", "sha256": "6666666666666666666666666666666666666666666666666666666666666666", "bytes": 1, "immutable": true}
+  ],
+  "corpora": []
+}

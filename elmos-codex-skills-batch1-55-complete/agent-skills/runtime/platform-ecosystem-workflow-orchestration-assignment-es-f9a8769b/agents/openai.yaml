@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B55: Platform Ecosystem Workflow Orchestration Assignment Escalation And Recovery"
+  short_description: "Run ELMOS B55 Skill with fail-closed evidence"
+  default_prompt: "Use $platform-ecosystem-workflow-orchestration-assignment-es-f9a8769b to execute the ELMOS B55 contract with fail-closed evidence."

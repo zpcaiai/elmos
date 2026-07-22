@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B50: Industrial Twin Backfill Replay Resilience Disaster Recovery And Continuity"
+  short_description: "Run ELMOS B50 Skill with fail-closed evidence"
+  default_prompt: "Use $industrial-twin-backfill-replay-resilience-disaster-rec-c5968b2e to execute the ELMOS B50 contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B34: Secret Reference Vault Kms Hsm And Credential Broker"
+  short_description: "Run ELMOS B34 Skill with fail-closed evidence"
+  default_prompt: "Use $secret-reference-vault-kms-hsm-and-credential-broker to execute the ELMOS B34 contract with fail-closed evidence."

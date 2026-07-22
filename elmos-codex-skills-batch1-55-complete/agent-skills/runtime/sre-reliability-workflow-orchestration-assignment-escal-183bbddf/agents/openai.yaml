@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B47: Sre Reliability Workflow Orchestration Assignment Escalation And Recovery"
+  short_description: "Run ELMOS B47 Skill with fail-closed evidence"
+  default_prompt: "Use $sre-reliability-workflow-orchestration-assignment-escal-183bbddf to execute the ELMOS B47 contract with fail-closed evidence."

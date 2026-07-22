@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0.0",
+  "id": "CR-ALERT-ESCALATION",
+  "project_id": "PRJ-EQUIPMENT-MAINTENANCE",
+  "base_baseline": "REQBASE-001",
+  "changes": [
+    {
+      "id": "CHG-001",
+      "kind": "requirement",
+      "statement": "Critical alerts unacknowledged for 15 minutes require supervisor escalation.",
+      "source_refs": [
+        "conversation-change-1"
+      ]
+    }
+  ],
+  "approval_state": "approved",
+  "impact_ref": "IMPACT-CR-001"
+}

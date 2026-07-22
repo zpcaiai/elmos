@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS M16: B16 Infrastructure Cloud Container Kubernetes Server Governance Approval And Waiver"
+  short_description: "Run ELMOS M16 Skill with fail-closed evidence"
+  default_prompt: "Use $b16-infrastructure-cloud-container-kubernetes-server-go-00ea453a to execute the ELMOS M16 contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B46: B2B Edi Audit Evidence Records Retention And Legal Hold"
+  short_description: "Run ELMOS Product B46 contract with fail-closed evidence"
+  default_prompt: "Use $b2b-edi-audit-evidence-records-retention-and-legal-hold to implement its fail-closed ELMOS Product B46 contract."

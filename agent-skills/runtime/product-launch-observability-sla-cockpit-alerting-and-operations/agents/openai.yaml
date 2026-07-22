@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B41: Product Launch Observability Sla Cockpit Alerting And Operations"
+  short_description: "Run ELMOS Product B41 contract with fail-closed evidence"
+  default_prompt: "Use $product-launch-observability-sla-cockpit-alerting-and-operations to implement its fail-closed ELMOS Product B41 contract."

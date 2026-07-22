@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B49: Cloud Platform Master Data Identity Hierarchy And Effective Dating"
+  short_description: "Run ELMOS B49 Skill with fail-closed evidence"
+  default_prompt: "Use $cloud-platform-master-data-identity-hierarchy-and-effec-0b2d361e to execute the ELMOS B49 contract with fail-closed evidence."

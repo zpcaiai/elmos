@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B46: Integration Platform Policy Authorization Approval Segregation And Exception"
+  short_description: "Run ELMOS Product B46 contract with fail-closed evidence"
+  default_prompt: "Use $integration-platform-policy-authorization-approval-segr-7706250f to implement its fail-closed ELMOS Product B46 contract."

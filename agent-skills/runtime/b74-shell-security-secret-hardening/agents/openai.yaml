@@ -1,0 +1,4 @@
+interface:
+  display_name: "B74 Shell Security Secret Hardening"
+  short_description: "Run this ELMOS project Skill with evidence controls"
+  default_prompt: "Use $b74-shell-security-secret-hardening to execute this ELMOS project Skill with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B46: Workflow Bpm Observability Sla Cockpit Alerting And Operations"
+  short_description: "Run ELMOS Product B46 contract with fail-closed evidence"
+  default_prompt: "Use $workflow-bpm-observability-sla-cockpit-alerting-and-operations to implement its fail-closed ELMOS Product B46 contract."

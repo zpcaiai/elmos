@@ -1,0 +1,4 @@
+interface:
+  display_name: "B32 React Angular Vue Target Profile"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b32-react-angular-vue-target-profile to execute this ELMOS Runtime Skill with fail-closed evidence."

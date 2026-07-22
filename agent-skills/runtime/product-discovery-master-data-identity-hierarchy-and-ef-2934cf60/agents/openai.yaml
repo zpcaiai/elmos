@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B41: Product Discovery Master Data Identity Hierarchy And Effective Dating"
+  short_description: "Run ELMOS Product B41 contract with fail-closed evidence"
+  default_prompt: "Use $product-discovery-master-data-identity-hierarchy-and-ef-2934cf60 to implement its fail-closed ELMOS Product B41 contract."

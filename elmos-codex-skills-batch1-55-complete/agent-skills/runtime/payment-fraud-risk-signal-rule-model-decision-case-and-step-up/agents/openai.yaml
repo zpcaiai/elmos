@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B39: Payment Fraud Risk Signal Rule Model Decision Case And Step Up"
+  short_description: "Run ELMOS B39 Skill with fail-closed evidence"
+  default_prompt: "Use $payment-fraud-risk-signal-rule-model-decision-case-and-step-up to execute the ELMOS B39 contract with fail-closed evidence."

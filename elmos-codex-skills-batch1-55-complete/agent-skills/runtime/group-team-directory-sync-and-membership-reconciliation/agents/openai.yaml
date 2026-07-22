@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B34: Group Team Directory Sync And Membership Reconciliation"
+  short_description: "Run ELMOS B34 Skill with fail-closed evidence"
+  default_prompt: "Use $group-team-directory-sync-and-membership-reconciliation to execute the ELMOS B34 contract with fail-closed evidence."

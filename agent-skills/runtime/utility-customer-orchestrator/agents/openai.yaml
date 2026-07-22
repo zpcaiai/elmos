@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B53: Utility Customer Orchestrator"
+  short_description: "Run ELMOS Product B53 contract with fail-closed evidence"
+  default_prompt: "Use $utility-customer-orchestrator to implement its fail-closed ELMOS Product B53 contract."

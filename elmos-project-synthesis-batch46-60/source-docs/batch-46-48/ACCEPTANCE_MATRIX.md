@@ -1,0 +1,36 @@
+# Acceptance Matrix
+
+| Skill | Primary certification focus | Blocking evidence |
+|---|---|---|
+| PG001 `project-synthesis-product-constitution` | Defines the product-level constitution, invariants, boundaries, and non-negotiable safety rules for ELMOS Project Synthesis. | Schema validation, lineage, audit, evidence, security, idempotency |
+| PG002 `unified-synthesis-engine-contract` | Defines the canonical engine API used by UI, CLI, agents, runners, and external integrations. | Schema validation, lineage, audit, evidence, security, idempotency |
+| PG003 `project-synthesis-ir-schema` | Defines PSIR, the canonical intermediate representation for requirements, domain behavior, architecture intent, and delivery constraints. | Schema validation, lineage, audit, evidence, security, idempotency |
+| PG004 `artifact-graph-schema` | Defines the graph linking requirements, PSIR nodes, architecture decisions, generated files, tests, evidence, and deliveries. | Schema validation, lineage, audit, evidence, security, idempotency |
+| PG005 `synthesis-job-state-machine` | Defines the lifecycle, transitions, guards, compensations, and terminal states of a synthesis run. | Schema validation, lineage, audit, evidence, security, idempotency |
+| PG006 `synthesis-scope-and-engine-extension` | Extends ELMOS scope resolution so new-project synthesis and legacy modernization share platform objects without mixing semantics. | Schema validation, lineage, audit, evidence, security, idempotency |
+| PG007 `evidence-and-audit-contract` | Defines evidence objects, audit records, signatures, retention, and claim-to-proof rules. | Schema validation, lineage, audit, evidence, security, idempotency |
+| PG008 `policy-and-capability-model` | Defines policy evaluation and capability grants for agents, skills, tools, runners, repositories, networks, and secrets. | Schema validation, lineage, audit, evidence, security, idempotency |
+| PG009 `deterministic-run-context` | Captures all versions, inputs, models, policies, templates, dependencies, and environment facts needed to reproduce a run. | Schema validation, lineage, audit, evidence, security, idempotency |
+| PG010 `migration-synthesis-interoperability` | Defines controlled handoffs between newly generated projects and existing ELMOS modernization or cross-language migration engines. | Schema validation, lineage, audit, evidence, security, idempotency |
+| PG011 `natural-language-session-orchestrator` | Runs the multi-turn discovery session that converts natural language into an approved requirement workspace. | Schema validation, lineage, audit, evidence, security, idempotency |
+| PG012 `requirement-intent-classifier` | Classifies user utterances and documents into requirement-relevant intent categories. | Schema validation, lineage, audit, evidence, security, idempotency |
+| PG013 `document-and-repo-input-adapter` | Normalizes requirements from documents, archives, API definitions, issue trackers, and example repositories. | Schema validation, lineage, audit, evidence, security, idempotency |
+| PG014 `product-glossary-builder` | Builds and maintains the domain glossary, aliases, acronyms, and disambiguation rules for a synthesis workspace. | Schema validation, lineage, audit, evidence, security, idempotency |
+| PG015 `stakeholder-and-actor-extractor` | Extracts stakeholders, system actors, external systems, responsibilities, and access expectations. | Schema validation, lineage, audit, evidence, security, idempotency |
+| PG016 `functional-requirement-extractor` | Extracts atomic, testable functional requirements from natural language and source materials. | Schema validation, lineage, audit, evidence, security, idempotency |
+| PG017 `nonfunctional-requirement-extractor` | Extracts quality attributes, operational constraints, compliance needs, and measurable service expectations. | Schema validation, lineage, audit, evidence, security, idempotency |
+| PG018 `constraint-assumption-extractor` | Extracts technical, organizational, legal, schedule, budget, and environment constraints while maintaining an explicit assumption ledger. | Schema validation, lineage, audit, evidence, security, idempotency |
+| PG019 `ambiguity-question-generator` | Generates minimal, high-value clarification questions ranked by expected impact. | Schema validation, lineage, audit, evidence, security, idempotency |
+| PG020 `conversation-memory-to-spec` | Consolidates approved multi-turn conversation facts into the requirement specification while preserving supersession history. | Schema validation, lineage, audit, evidence, security, idempotency |
+| PG021 `requirement-normalizer` | Normalizes requirement wording, structure, identifiers, modality, and verification fields. | Schema validation, lineage, audit, evidence, security, idempotency |
+| PG022 `requirement-deduplicator` | Detects exact, semantic, and partially overlapping duplicate requirements. | Schema validation, lineage, audit, evidence, security, idempotency |
+| PG023 `requirement-conflict-detector` | Detects logical, temporal, permission, data, technology, and quality-target conflicts. | Schema validation, lineage, audit, evidence, security, idempotency |
+| PG024 `scope-boundary-manager` | Defines in-scope, out-of-scope, deferred, dependency, and future-option boundaries. | Schema validation, lineage, audit, evidence, security, idempotency |
+| PG025 `requirement-priority-classifier` | Classifies requirement priority using value, urgency, dependency, risk, and delivery slicing. | Schema validation, lineage, audit, evidence, security, idempotency |
+| PG026 `requirement-risk-classifier` | Scores requirements for ambiguity, complexity, security, compliance, integration, data, and delivery risk. | Schema validation, lineage, audit, evidence, security, idempotency |
+| PG027 `measurable-quality-attribute-builder` | Converts quality expectations into measurable scenarios with thresholds, workload, environment, and observation methods. | Schema validation, lineage, audit, evidence, security, idempotency |
+| PG028 `acceptance-criteria-generator` | Generates requirement-level acceptance criteria and negative scenarios from approved intent. | Schema validation, lineage, audit, evidence, security, idempotency |
+| PG029 `definition-of-ready-validator` | Determines whether the requirement baseline is sufficiently complete and safe for architecture planning. | Schema validation, lineage, audit, evidence, security, idempotency |
+| PG030 `requirement-quality-score` | Computes explainable quality scores for completeness, clarity, consistency, testability, traceability, and feasibility. | Schema validation, lineage, audit, evidence, security, idempotency |
+| PG031 `requirements-baseline-and-approval` | Creates immutable requirement baselines and manages stakeholder approvals, rejections, and exceptions. | Schema validation, lineage, audit, evidence, security, idempotency |
+| PG032 `requirements-change-impact` | Analyzes changes between requirement baselines and determines affected domain, architecture, code, test, data, and delivery artifacts. | Schema validation, lineage, audit, evidence, security, idempotency |

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B44: Bi Semantic Master Data Identity Hierarchy And Effective Dating"
+  short_description: "Run ELMOS Product B44 contract with fail-closed evidence"
+  default_prompt: "Use $bi-semantic-master-data-identity-hierarchy-and-effective-dating to implement its fail-closed ELMOS Product B44 contract."

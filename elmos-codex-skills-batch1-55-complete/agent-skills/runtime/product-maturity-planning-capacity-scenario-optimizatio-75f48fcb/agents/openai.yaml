@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B55: Product Maturity Planning Capacity Scenario Optimization And Allocation"
+  short_description: "Run ELMOS B55 Skill with fail-closed evidence"
+  default_prompt: "Use $product-maturity-planning-capacity-scenario-optimizatio-75f48fcb to execute the ELMOS B55 contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B50: Industrial Twin Domain Model Lifecycle And State Machine"
+  short_description: "Run ELMOS B50 Skill with fail-closed evidence"
+  default_prompt: "Use $industrial-twin-domain-model-lifecycle-and-state-machine to execute the ELMOS B50 contract with fail-closed evidence."

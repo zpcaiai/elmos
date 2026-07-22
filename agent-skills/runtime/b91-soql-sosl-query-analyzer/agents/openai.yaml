@@ -1,0 +1,4 @@
+interface:
+  display_name: "B91 Soql Sosl Query Analyzer"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b91-soql-sosl-query-analyzer to execute this ELMOS Language Pack Skill with fail-closed evidence."

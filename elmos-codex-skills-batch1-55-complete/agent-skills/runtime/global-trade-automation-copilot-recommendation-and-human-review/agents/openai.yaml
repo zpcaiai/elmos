@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B51: Global Trade Automation Copilot Recommendation And Human Review"
+  short_description: "Run ELMOS B51 Skill with fail-closed evidence"
+  default_prompt: "Use $global-trade-automation-copilot-recommendation-and-human-review to execute the ELMOS B51 contract with fail-closed evidence."

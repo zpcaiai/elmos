@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B37: Artifact Signing Sigstore Kms Trust Root Timestamp And Key Lifecycle"
+  short_description: "Run ELMOS B37 Skill with fail-closed evidence"
+  default_prompt: "Use $artifact-signing-sigstore-kms-trust-root-timestamp-and-f85ebe04 to execute the ELMOS B37 contract with fail-closed evidence."

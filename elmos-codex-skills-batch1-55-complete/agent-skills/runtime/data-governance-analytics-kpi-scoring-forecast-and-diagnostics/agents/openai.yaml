@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS B44: Data Governance Analytics Kpi Scoring Forecast And Diagnostics"
+  short_description: "Run ELMOS B44 Skill with fail-closed evidence"
+  default_prompt: "Use $data-governance-analytics-kpi-scoring-forecast-and-diagnostics to execute the ELMOS B44 contract with fail-closed evidence."
