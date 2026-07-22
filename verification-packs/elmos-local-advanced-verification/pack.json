@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-local-advanced-verification",
+  "version": "0.1.0",
+  "status": "experimental",
+  "owner": "elmos-verification-engineering",
+  "maintenance_owner": "elmos-verification-engineering",
+  "scope": {
+    "migration_route": "local-java-regression-rehearsal",
+    "source_artifact_digest": "sha256:9694c5bee33c1540a5f037afc2aff9cceef94f9635f34389a254ea0e0269a852",
+    "target_artifact_digest": "sha256:9ccb34927e6a913f14b15924bcb12a97802ad8a25264b94e6833c10d25f763cb",
+    "workload_key": "portfolio-scale-and-verification-core",
+    "risk_tier": "P1",
+    "environment_digest": "sha256:2d793667b581a70ad75b6956efdd710d49796d5a3c8c0ca16194622b23e21810",
+    "validation_kind": "local-module-runtime-rehearsal",
+    "source_target_migration_equivalence": "NOT_RUN",
+    "external_solver_or_symbolic_execution": "NOT_RUN",
+    "independent_holdout": "NOT_RUN",
+    "representative_production_workload": "NOT_RUN"
+  },
+  "contracts": {
+    "validation_profile": "validation-profile.json",
+    "oracle_registry": "oracle-registry.json",
+    "assurance_case": "assurance/assurance-case.json"
+  },
+  "corpus": {
+    "development": "corpus/development",
+    "negative": "corpus/negative",
+    "holdout": "corpus/holdout",
+    "representative_workloads": "corpus/representative-workloads"
+  },
+  "certification": {
+    "evidence_path": "certification/evidence.json",
+    "result_path": "certification/gate-result.json"
+  },
+  "tags": [
+    "advanced-verification",
+    "local-rehearsal",
+    "not-certified"
+  ]
+}

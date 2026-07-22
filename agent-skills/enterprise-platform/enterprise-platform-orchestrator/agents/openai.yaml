@@ -1,0 +1,4 @@
+interface:
+  display_name: "enterprise-platform-orchestrator"
+  short_description: "Run this Batch 12 enterprise capability"
+  default_prompt: "Use $enterprise-platform-orchestrator to evaluate this enterprise platform capability with evidence."

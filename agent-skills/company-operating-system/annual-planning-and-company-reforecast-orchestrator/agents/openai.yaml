@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 523: annual planning and company reforecast orchestrator"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $annual-planning-and-company-reforecast-orchestrator to evaluate this capability with evidence."

@@ -1,0 +1,1 @@
+{"contractId":"contract-orders-v1","type":"MESSAGE","consumer":"ledger","provider":"orders","consumerVersion":"1","providerVersion":"2","contractVersion":"3","status":"CANNOT_DEPLOY","providerStateIsolated":true,"evidenceRefs":["evidence://contract-1"]}

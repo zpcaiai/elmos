@@ -1,0 +1,8 @@
+{
+  "cutoverScopeId": "cutoverScopeId-fixture",
+  "decision": "READY",
+  "safetyStatus": "safetyStatus-fixture",
+  "shadowStatus": "shadowStatus-fixture",
+  "rollbackStatus": "rollbackStatus-fixture",
+  "evidenceRefs": []
+}

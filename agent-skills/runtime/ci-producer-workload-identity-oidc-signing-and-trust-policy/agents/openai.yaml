@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B37: Ci Producer Workload Identity Oidc Signing And Trust Policy"
+  short_description: "Run ELMOS Product B37 contract with fail-closed evidence"
+  default_prompt: "Use $ci-producer-workload-identity-oidc-signing-and-trust-policy to implement its fail-closed ELMOS Product B37 contract."

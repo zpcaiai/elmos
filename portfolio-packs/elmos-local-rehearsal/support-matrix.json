@@ -1,0 +1,216 @@
+{
+  "capabilities": [
+    {
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "certification/local-rehearsal.json"
+      ],
+      "key": "portfolio-discovery",
+      "limitations": [
+        "Verified only in a local single-repository rehearsal; production portfolio evidence is NOT_RUN."
+      ],
+      "owner": "elmos-platform-team",
+      "status": "experimental"
+    },
+    {
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "certification/local-rehearsal.json"
+      ],
+      "key": "monorepo-partitioning",
+      "limitations": [
+        "Verified only in a local single-repository rehearsal; production portfolio evidence is NOT_RUN."
+      ],
+      "owner": "elmos-platform-team",
+      "status": "experimental"
+    },
+    {
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "certification/local-rehearsal.json"
+      ],
+      "key": "cross-repo-graph",
+      "limitations": [
+        "Verified only in a local single-repository rehearsal; production portfolio evidence is NOT_RUN."
+      ],
+      "owner": "elmos-platform-team",
+      "status": "experimental"
+    },
+    {
+      "evidence_refs": [],
+      "key": "distributed-semantic-index",
+      "limitations": [
+        "No certification evidence yet."
+      ],
+      "owner": "elmos-platform-team",
+      "status": "experimental"
+    },
+    {
+      "evidence_refs": [],
+      "key": "incremental-graph",
+      "limitations": [
+        "No certification evidence yet."
+      ],
+      "owner": "elmos-platform-team",
+      "status": "experimental"
+    },
+    {
+      "evidence_refs": [],
+      "key": "shared-platform-dependencies",
+      "limitations": [
+        "No certification evidence yet."
+      ],
+      "owner": "elmos-platform-team",
+      "status": "experimental"
+    },
+    {
+      "evidence_refs": [],
+      "key": "mixed-build-graph",
+      "limitations": [
+        "No certification evidence yet."
+      ],
+      "owner": "elmos-platform-team",
+      "status": "experimental"
+    },
+    {
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "certification/local-rehearsal.json"
+      ],
+      "key": "distributed-workflows",
+      "limitations": [
+        "Verified only in a local single-repository rehearsal; production portfolio evidence is NOT_RUN."
+      ],
+      "owner": "elmos-platform-team",
+      "status": "experimental"
+    },
+    {
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "certification/local-rehearsal.json"
+      ],
+      "key": "runner-fleet",
+      "limitations": [
+        "Verified only in a local single-repository rehearsal; production portfolio evidence is NOT_RUN."
+      ],
+      "owner": "elmos-platform-team",
+      "status": "experimental"
+    },
+    {
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "certification/local-rehearsal.json"
+      ],
+      "key": "content-addressed-cache",
+      "limitations": [
+        "Verified only in a local single-repository rehearsal; production portfolio evidence is NOT_RUN."
+      ],
+      "owner": "elmos-platform-team",
+      "status": "experimental"
+    },
+    {
+      "evidence_refs": [],
+      "key": "large-artifact-transfer",
+      "limitations": [
+        "No certification evidence yet."
+      ],
+      "owner": "elmos-platform-team",
+      "status": "experimental"
+    },
+    {
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "certification/local-rehearsal.json"
+      ],
+      "key": "recipe-campaigns",
+      "limitations": [
+        "Verified only in a local single-repository rehearsal; production portfolio evidence is NOT_RUN."
+      ],
+      "owner": "elmos-platform-team",
+      "status": "experimental"
+    },
+    {
+      "evidence_refs": [],
+      "key": "multi-repo-prs",
+      "limitations": [
+        "No certification evidence yet."
+      ],
+      "owner": "elmos-platform-team",
+      "status": "experimental"
+    },
+    {
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "certification/local-rehearsal.json"
+      ],
+      "key": "failure-recovery",
+      "limitations": [
+        "Verified only in a local single-repository rehearsal; production portfolio evidence is NOT_RUN."
+      ],
+      "owner": "elmos-platform-team",
+      "status": "experimental"
+    },
+    {
+      "evidence_refs": [],
+      "key": "fair-scheduling",
+      "limitations": [
+        "No certification evidence yet."
+      ],
+      "owner": "elmos-platform-team",
+      "status": "experimental"
+    },
+    {
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "certification/local-rehearsal.json"
+      ],
+      "key": "budget-guardrails",
+      "limitations": [
+        "Verified only in a local single-repository rehearsal; production portfolio evidence is NOT_RUN."
+      ],
+      "owner": "elmos-platform-team",
+      "status": "experimental"
+    },
+    {
+      "evidence_refs": [],
+      "key": "control-tower",
+      "limitations": [
+        "No certification evidence yet."
+      ],
+      "owner": "elmos-platform-team",
+      "status": "experimental"
+    },
+    {
+      "evidence_refs": [],
+      "key": "scale-benchmarks",
+      "limitations": [
+        "No certification evidence yet."
+      ],
+      "owner": "elmos-platform-team",
+      "status": "experimental"
+    },
+    {
+      "evidence_refs": [],
+      "key": "capacity-forecast",
+      "limitations": [
+        "No certification evidence yet."
+      ],
+      "owner": "elmos-platform-team",
+      "status": "experimental"
+    },
+    {
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "certification/local-rehearsal.json"
+      ],
+      "key": "disaster-replay",
+      "limitations": [
+        "Verified only in a local single-repository rehearsal; production portfolio evidence is NOT_RUN."
+      ],
+      "owner": "elmos-platform-team",
+      "status": "experimental"
+    }
+  ],
+  "pack_key": "elmos-local-rehearsal",
+  "schema_version": 1
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Jcl Procedure Scheduler And Batch Flow Analyzer"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $jcl-procedure-scheduler-and-batch-flow-analyzer to execute this ELMOS Runtime Skill with fail-closed evidence."

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.mutation-result.v1",
+  "type": "object",
+  "required": ["mutantId", "operator", "target", "status"],
+  "properties": {
+    "mutantId": {"type": "string"}, "operator": {"type": "string"}, "target": {"type": "object"},
+    "status": {"enum": ["KILLED", "SURVIVED", "NO_COVERAGE", "TIMEOUT", "NON_VIABLE", "RUN_ERROR", "EQUIVALENT_CANDIDATE"]},
+    "killingTestIds": {"type": "array", "items": {"type": "string"}},
+    "riskRefs": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

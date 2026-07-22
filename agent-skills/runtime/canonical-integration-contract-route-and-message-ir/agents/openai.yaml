@@ -1,0 +1,4 @@
+interface:
+  display_name: "canonical integration contract route and message ir"
+  short_description: "Govern integration modernization safely"
+  default_prompt: "Use $canonical-integration-contract-route-and-message-ir to modernize this integration scope safely."

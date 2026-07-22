@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 45: Maturity Model Editions"
+  short_description: "Run evidence-bound Batch 45 maturity model editions work"
+  default_prompt: "Use $b45-maturity-model-editions to implement and verify this capability with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Data Protection Privacy Encryption Tokenization and Dlp"
+  short_description: "Data Protection Privacy Encryption Tokenization and Dlp helper"
+  default_prompt: "Use $data-protection-privacy-encryption-tokenization-and-dlp to execute its ELMOS Batch 17 workflow safely."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B39: Meter Definition Dimension Aggregation Correction And Data Quality"
+  short_description: "Run ELMOS Product B39 contract with fail-closed evidence"
+  default_prompt: "Use $meter-definition-dimension-aggregation-correction-and-d-2a0091ff to implement its fail-closed ELMOS Product B39 contract."

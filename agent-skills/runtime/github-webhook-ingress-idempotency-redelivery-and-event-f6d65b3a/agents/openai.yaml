@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 35 Skill 004"
+  short_description: "Run Product Batch 35 evidence contract safely"
+  default_prompt: "Use $github-webhook-ingress-idempotency-redelivery-and-event-f6d65b3a to implement its fail-closed ELMOS Product Batch 35 contract."

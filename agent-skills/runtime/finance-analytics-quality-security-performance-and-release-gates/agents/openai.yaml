@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B39: Finance Analytics Quality Security Performance And Release Gates"
+  short_description: "Run ELMOS Product B39 contract with fail-closed evidence"
+  default_prompt: "Use $finance-analytics-quality-security-performance-and-release-gates to implement its fail-closed ELMOS Product B39 contract."

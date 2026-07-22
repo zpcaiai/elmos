@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 38: Recipe Pack Extension Upgrade"
+  short_description: "Run evidence-bound Batch 38 recipe pack extension upgrade work"
+  default_prompt: "Use $b38-recipe-pack-extension-upgrade to implement and verify this capability with fail-closed evidence."

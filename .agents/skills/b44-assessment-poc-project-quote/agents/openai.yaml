@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 44: Assessment Poc Project Quote"
+  short_description: "Run evidence-bound Batch 44 assessment poc project quote work"
+  default_prompt: "Use $b44-assessment-poc-project-quote to implement and verify this capability with fail-closed evidence."

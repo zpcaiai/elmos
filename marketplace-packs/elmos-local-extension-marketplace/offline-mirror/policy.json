@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "mirror_id": "mirror-1",
+  "owner": "offline-ops",
+  "source_catalog_digest": "sha256:catalog",
+  "mirror_catalog_digest": "sha256:mirror",
+  "max_staleness_hours": 24,
+  "current_staleness_hours": 1,
+  "revocation_list_digest": "sha256:revocations",
+  "signature_verified": false,
+  "disconnected_tested": false,
+  "emergency_revoke_tested": false,
+  "trust_roots": [
+    "root-1"
+  ],
+  "evidence_refs": [
+    "offline-mirror/evidence.txt"
+  ],
+  "evidence_status": "NOT_RUN",
+  "limitations": [
+    "No authorized external execution was performed."
+  ]
+}

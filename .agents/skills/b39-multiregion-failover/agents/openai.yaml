@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 39: Multiregion Failover"
+  short_description: "Run evidence-bound Batch 39 multiregion failover work"
+  default_prompt: "Use $b39-multiregion-failover to implement and verify this capability with fail-closed evidence."

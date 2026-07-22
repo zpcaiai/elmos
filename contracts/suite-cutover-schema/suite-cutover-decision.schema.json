@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.local/suite-cutover-decision/v1",
+  "title": "Suite Cutover Decision",
+  "type": "object",
+  "required": ["schemaVersion", "decisionId", "suiteEstateRef", "sourceArtifact", "evaluatedArtifact", "wave", "decision", "satisfiedGates", "blockers", "evidenceRefs"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "decisionId": {"type": "string", "minLength": 1},
+    "suiteEstateRef": {"type": "string", "minLength": 1},
+    "sourceArtifact": {"type": "string", "minLength": 1},
+    "evaluatedArtifact": {"type": "string", "minLength": 1},
+    "wave": {"type": "object", "required": ["dimension", "value"], "properties": {"dimension": {"enum": ["COMPANY", "COUNTRY", "PLANT", "BUSINESS_UNIT", "MODULE", "USER", "PROCESS", "PARTNER"]}, "value": {"type": "string"}}},
+    "decision": {"enum": ["PASS", "FAIL", "STALE", "UNKNOWN"]},
+    "satisfiedGates": {"type": "array", "items": {"type": "string"}},
+    "blockers": {"type": "array", "items": {"type": "string"}},
+    "evidenceRefs": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

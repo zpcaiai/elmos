@@ -1,0 +1,4 @@
+interface:
+  display_name: "schema registry contract evolution and code generation"
+  short_description: "Govern integration modernization safely"
+  default_prompt: "Use $schema-registry-contract-evolution-and-code-generation to modernize this integration scope safely."

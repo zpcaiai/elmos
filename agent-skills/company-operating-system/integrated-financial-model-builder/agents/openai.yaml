@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 493: integrated financial model builder"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $integrated-financial-model-builder to evaluate this capability with evidence."

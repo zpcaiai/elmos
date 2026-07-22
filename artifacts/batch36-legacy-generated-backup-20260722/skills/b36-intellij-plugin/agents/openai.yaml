@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 36: Intellij Plugin"
+  short_description: "Run evidence-bound Batch 36 intellij plugin work"
+  default_prompt: "Use $b36-intellij-plugin to implement and verify this capability with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 34 Skill 023"
+  short_description: "Run Product Batch 34 evidence contract safely"
+  default_prompt: "Use $resource-authorization-rbac-abac-and-audit to implement its fail-closed ELMOS Product Batch 34 contract."

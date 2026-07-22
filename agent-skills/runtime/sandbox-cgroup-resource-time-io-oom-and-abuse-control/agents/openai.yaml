@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B36: Sandbox Cgroup Resource Time Io Oom And Abuse Control"
+  short_description: "Run ELMOS Product B36 contract with fail-closed evidence"
+  default_prompt: "Use $sandbox-cgroup-resource-time-io-oom-and-abuse-control to implement its fail-closed ELMOS Product B36 contract."

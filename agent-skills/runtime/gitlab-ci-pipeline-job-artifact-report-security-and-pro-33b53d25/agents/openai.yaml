@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B37: Gitlab Ci Pipeline Job Artifact Report Security And Provenance Connector"
+  short_description: "Run ELMOS Product B37 contract with fail-closed evidence"
+  default_prompt: "Use $gitlab-ci-pipeline-job-artifact-report-security-and-pro-33b53d25 to implement its fail-closed ELMOS Product B37 contract."

@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "map_key": "elmos-local-developer-workflow-navigation-v1",
+  "source_artifact_digest": "sha256:865e6c4fb57d26426b4634bfc9a2175f86d33617620462802699e31e6ceeaead",
+  "target_artifact_digest": "sha256:b41b10009fa6d9715cfc3d11c14a3656b6b2a31a3a30e781c9c177b27124302e",
+  "nodes": [
+    {
+      "node_id": "source:b36-developer-workflow-factory",
+      "side": "source",
+      "path": ".agents/skills/b36-developer-workflow-factory/SKILL.md",
+      "range": {
+        "start": 1,
+        "end": 30
+      },
+      "symbol_id": "b36-developer-workflow-factory",
+      "document_digest": "sha256:865e6c4fb57d26426b4634bfc9a2175f86d33617620462802699e31e6ceeaead"
+    },
+    {
+      "node_id": "target:DeveloperWorkflowService",
+      "side": "target",
+      "path": "modules/developer-workflow/src/main/java/io/elmos/developerworkflow/DeveloperWorkflowService.java",
+      "range": {
+        "start": 1,
+        "end": 28
+      },
+      "symbol_id": "io.elmos.developerworkflow.DeveloperWorkflowService",
+      "document_digest": "sha256:dd9a862b163aa4ee7b50545c740ee827f6efde9944196319796e5607f863aac9"
+    }
+  ],
+  "edges": [
+    {
+      "from": "source:b36-developer-workflow-factory",
+      "to": "target:DeveloperWorkflowService",
+      "relation": "derived",
+      "confidence": 1.0,
+      "provenance_refs": [
+        "certification/source-manifest.json",
+        "certification/local-test-result.json"
+      ]
+    }
+  ]
+}

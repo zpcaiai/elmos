@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 25 017"
+  short_description: "Run Batch 25 runtime contract safely"
+  default_prompt: "Use $operations-toil-cost-quality-and-continual-improvement to apply its fail-closed ELMOS runtime contract."

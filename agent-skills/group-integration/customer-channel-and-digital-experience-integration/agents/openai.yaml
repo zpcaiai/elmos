@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 724: customer channel and digital experience integration"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $customer-channel-and-digital-experience-integration to evaluate this capability with evidence."

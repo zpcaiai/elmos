@@ -1,0 +1,14 @@
+{
+  "batch": 40,
+  "packKey": "template-pack",
+  "status": "NOT_RUN",
+  "evidenceRefs": [],
+  "holdoutPassRate": 0,
+  "representativePassRate": 0,
+  "criticalFindings": 0,
+  "metrics": {
+    "supplyChainCoverageRate": 0,
+    "signaturePassRate": 0,
+    "criticalVulnerabilityCount": 0
+  }
+}

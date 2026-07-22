@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 23 017"
+  short_description: "Run Batch 23 runtime contract safely"
+  default_prompt: "Use $ai-release-promotion-shadow-rollback-and-decommission to apply its fail-closed ELMOS runtime contract."

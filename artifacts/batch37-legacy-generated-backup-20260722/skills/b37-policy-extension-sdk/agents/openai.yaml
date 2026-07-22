@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 37: Policy Extension Sdk"
+  short_description: "Run evidence-bound Batch 37 policy extension sdk work"
+  default_prompt: "Use $b37-policy-extension-sdk to implement and verify this capability with fail-closed evidence."

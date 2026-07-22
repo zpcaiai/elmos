@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 39: Sla Service Credit Governance"
+  short_description: "Run evidence-bound Batch 39 sla service credit governance work"
+  default_prompt: "Use $b39-sla-service-credit-governance to implement and verify this capability with fail-closed evidence."

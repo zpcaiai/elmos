@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "release_id",
+    "extension_id",
+    "version",
+    "channel",
+    "status",
+    "artifact_digest",
+    "signature_ref",
+    "sbom_ref",
+    "provenance_ref",
+    "certification_ref",
+    "published_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "release_id": {
+      "type": "string"
+    },
+    "extension_id": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "channel": {
+      "enum": [
+        "preview",
+        "stable",
+        "lts",
+        "private"
+      ]
+    },
+    "status": {
+      "enum": [
+        "draft",
+        "submitted",
+        "certified",
+        "published",
+        "quarantined",
+        "revoked",
+        "withdrawn"
+      ]
+    },
+    "artifact_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-fA-F]{8,}$"
+    },
+    "signature_ref": {
+      "type": "string"
+    },
+    "sbom_ref": {
+      "type": "string"
+    },
+    "provenance_ref": {
+      "type": "string"
+    },
+    "certification_ref": {
+      "type": "string"
+    },
+    "published_at": {
+      "type": "string"
+    },
+    "immutable": {
+      "const": true
+    },
+    "revocation": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": true,
+  "$id": "https://example.invalid/batch37/release-record.schema.json"
+}

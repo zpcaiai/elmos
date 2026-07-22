@@ -1,0 +1,4 @@
+interface:
+  display_name: "Virtual Clock Timezone And Calendar Controller"
+  short_description: "Run this Batch 9 behavioral capability"
+  default_prompt: "Use $virtual-clock-timezone-and-calendar-controller to perform this Batch 9 behavioral-equivalence task."

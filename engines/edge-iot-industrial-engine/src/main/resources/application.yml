@@ -1,0 +1,10 @@
+server:
+  port: ${ELMOS_EDGE_IOT_INDUSTRIAL_PORT:8098}
+spring:
+  application:
+    name: elmos-edge-iot-industrial-engine
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

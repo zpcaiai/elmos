@@ -1,0 +1,4 @@
+interface:
+  display_name: "Security Estate Identity Asset and Trust Boundary Discovery"
+  short_description: "Security Estate Identity Asset and Trust Boundary Discove helper"
+  default_prompt: "Use $security-estate-identity-asset-and-trust-boundary-discovery to execute its ELMOS Batch 17 workflow safely."

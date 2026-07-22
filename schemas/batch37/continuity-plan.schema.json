@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "revoked_extension",
+    "release_digest",
+    "severity",
+    "owner",
+    "affected_tenants_known",
+    "execution_blocked",
+    "replacement_or_exit",
+    "notifications_complete",
+    "tested"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "revoked_extension": {
+      "type": "string",
+      "minLength": 1
+    },
+    "release_digest": {
+      "type": "string",
+      "pattern": "^sha256:[A-Za-z0-9._:-]+$"
+    },
+    "severity": {
+      "enum": [
+        "critical",
+        "high",
+        "medium",
+        "low"
+      ]
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "affected_tenants_known": {
+      "type": "boolean"
+    },
+    "execution_blocked": {
+      "const": true
+    },
+    "replacement_or_exit": {
+      "type": "object",
+      "required": [
+        "available",
+        "config_export",
+        "data_export"
+      ],
+      "properties": {
+        "available": {
+          "type": "boolean"
+        },
+        "config_export": {
+          "type": "boolean"
+        },
+        "data_export": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "notifications_complete": {
+      "type": "boolean"
+    },
+    "tested": {
+      "type": "boolean"
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "additionalProperties": true,
+  "$id": "https://example.invalid/batch37/continuity-plan.schema.json"
+}

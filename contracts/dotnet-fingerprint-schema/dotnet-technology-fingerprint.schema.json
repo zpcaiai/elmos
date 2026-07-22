@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/dotnet-technology-fingerprint.v1.json",
+  "title": ".NET Technology Fingerprint",
+  "type": "object",
+  "required": ["fingerprintId", "findings", "hasDynamicDependencies", "confidence", "migrationBlockers"],
+  "properties": {
+    "fingerprintId": {"type": "string", "minLength": 1},
+    "findings": {"type": "array", "items": {"$ref": "#/$defs/finding"}},
+    "hasDynamicDependencies": {"type": "boolean"},
+    "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+    "migrationBlockers": {"type": "array", "items": {"type": "string"}}
+  },
+  "$defs": {
+    "finding": {
+      "type": "object",
+      "required": ["findingId", "technology", "portability", "confidence", "evidence", "blocking"],
+      "properties": {
+        "findingId": {"type": "string"},
+        "technology": {"type": "string"},
+        "portability": {"enum": ["PORTABLE", "PORTABLE_WITH_PACKAGE", "WINDOWS_ONLY_SUPPORTED", "REQUIRES_COMPATIBILITY_PACK", "REQUIRES_ADAPTER", "REQUIRES_REDESIGN", "NO_MODERN_EQUIVALENT", "UNKNOWN"]},
+        "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+        "evidence": {"type": "string"},
+        "blocking": {"type": "boolean"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

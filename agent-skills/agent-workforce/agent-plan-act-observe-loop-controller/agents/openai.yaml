@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 547: agent plan act observe loop controller"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $agent-plan-act-observe-loop-controller to evaluate this capability with evidence."

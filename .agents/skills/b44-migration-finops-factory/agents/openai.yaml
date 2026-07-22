@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 44: Migration Finops Factory"
+  short_description: "Run evidence-bound Batch 44 migration finops factory work"
+  default_prompt: "Use $b44-migration-finops-factory to implement and verify this capability with fail-closed evidence."

@@ -1,0 +1,49 @@
+openapi: 3.1.0
+info:
+  title: ELMOS Test and Quality Engineering Modernization Engine API
+  version: 1.0.0
+paths:
+  /engine/v1/capabilities:
+    get:
+      operationId: testQualityCapabilities
+      responses:
+        "200": {description: ELMOS_TEST_QUALITY capabilities and adapter status}
+  /engine/v1/discover:
+    post:
+      operationId: discoverTestEstate
+      responses:
+        "202": {description: Accepted or explicit NOT_RUN fail-closed result}
+  /engine/v1/plan:
+    post:
+      operationId: planTestModernization
+      responses:
+        "202": {description: Requires reconciled estate and versioned quality-risk graph}
+  /engine/v1/generate:
+    post:
+      operationId: generateTestCandidate
+      responses:
+        "202": {description: Produces candidates only; promotion requires independent checks and human review}
+  /engine/v1/execute:
+    post:
+      operationId: executeTestPlan
+      responses:
+        "202": {description: Requires isolated runner plus environment and test-data leases}
+  /engine/v1/evaluate:
+    post:
+      operationId: evaluateQualityEvidence
+      responses:
+        "202": {description: Unknown, stale and not-run dimensions cannot pass}
+  /engine/v1/jobs/{jobId}:
+    get:
+      operationId: getTestQualityJob
+      parameters:
+        - {name: jobId, in: path, required: true, schema: {type: string}}
+      responses:
+        "200": {description: Tenant-scoped job status}
+  /engine/v1/jobs/{jobId}/cancel:
+    post:
+      operationId: cancelTestQualityJob
+      parameters:
+        - {name: jobId, in: path, required: true, schema: {type: string}}
+      responses:
+        "200": {description: Cancel non-terminal job}

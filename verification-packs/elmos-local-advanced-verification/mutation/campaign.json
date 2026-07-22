@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "campaign_key": "mutation.seeded-negative-controls",
+  "owner": "elmos-verification-engineering",
+  "target_scope": [
+    "modules/advanced-verification/src/main/java"
+  ],
+  "operators": [
+    {
+      "key": "negate-condition",
+      "risk": "P1"
+    },
+    {
+      "key": "boundary-shift",
+      "risk": "P1"
+    }
+  ],
+  "budgets": {
+    "max_mutants": 10,
+    "max_minutes": 2
+  },
+  "required_tests": [
+    "AdvancedVerificationTechniquesTest",
+    "VerificationGovernanceTest"
+  ],
+  "equivalent_mutant_policy": "explicitly-classified-in-test-fixture"
+}

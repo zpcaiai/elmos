@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B36: Rootless Oci Container Userns Idmapped Mount Provider"
+  short_description: "Run ELMOS Product B36 contract with fail-closed evidence"
+  default_prompt: "Use $rootless-oci-container-userns-idmapped-mount-provider to implement its fail-closed ELMOS Product B36 contract."

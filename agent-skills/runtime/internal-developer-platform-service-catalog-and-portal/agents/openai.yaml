@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 22 009"
+  short_description: "Run Batch 22 runtime contract safely"
+  default_prompt: "Use $internal-developer-platform-service-catalog-and-portal to apply its fail-closed ELMOS runtime contract."

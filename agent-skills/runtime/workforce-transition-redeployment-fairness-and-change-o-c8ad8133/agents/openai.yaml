@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 28 Skill 016"
+  short_description: "Run ELMOS Product Batch 28 governance safely"
+  default_prompt: "Use $workforce-transition-redeployment-fairness-and-change-o-c8ad8133 to implement its evidence-bound ELMOS Product Batch 28 contract."

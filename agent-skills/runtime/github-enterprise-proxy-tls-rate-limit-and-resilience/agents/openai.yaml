@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B35: Github Enterprise Proxy Tls Rate Limit And Resilience"
+  short_description: "Run ELMOS Product B35 contract with fail-closed evidence"
+  default_prompt: "Use $github-enterprise-proxy-tls-rate-limit-and-resilience to implement its fail-closed ELMOS Product B35 contract."

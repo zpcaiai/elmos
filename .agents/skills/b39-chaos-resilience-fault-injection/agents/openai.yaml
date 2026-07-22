@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 39: Chaos Resilience Fault Injection"
+  short_description: "Run evidence-bound Batch 39 chaos resilience fault injection wor"
+  default_prompt: "Use $b39-chaos-resilience-fault-injection to implement and verify this capability with fail-closed evidence."

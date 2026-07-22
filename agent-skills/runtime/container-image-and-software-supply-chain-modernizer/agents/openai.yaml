@@ -1,0 +1,4 @@
+interface:
+  display_name: "Container Image And Software Supply Chain Modernizer"
+  short_description: "Govern Batch 16 infrastructure modernization"
+  default_prompt: "Use $container-image-and-software-supply-chain-modernizer to produce a governed infrastructure modernization artifact."

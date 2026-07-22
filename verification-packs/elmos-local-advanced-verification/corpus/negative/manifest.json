@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "source_digest": "sha256:9694c5bee33c1540a5f037afc2aff9cceef94f9635f34389a254ea0e0269a852",
+  "dataset_digest": "sha256:357d79794ca8150ed94b2a2ab4c2d181e68d18f48078217ab16133cbae53a0f9",
+  "evidence_refs": [
+    "certification/local-test-result.json",
+    "counterexamples/sample.json"
+  ],
+  "limitations": []
+}

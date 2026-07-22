@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B35: Github App Installation Identity And Permission Governance"
+  short_description: "Run ELMOS Product B35 contract with fail-closed evidence"
+  default_prompt: "Use $github-app-installation-identity-and-permission-governance to implement its fail-closed ELMOS Product B35 contract."

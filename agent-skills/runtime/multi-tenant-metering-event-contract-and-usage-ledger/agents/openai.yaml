@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B39: Multi Tenant Metering Event Contract And Usage Ledger"
+  short_description: "Run ELMOS Product B39 contract with fail-closed evidence"
+  default_prompt: "Use $multi-tenant-metering-event-contract-and-usage-ledger to implement its fail-closed ELMOS Product B39 contract."

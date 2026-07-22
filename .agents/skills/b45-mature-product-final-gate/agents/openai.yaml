@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 45: Mature Product Final Gate"
+  short_description: "Run evidence-bound Batch 45 mature product final gate work"
+  default_prompt: "Use $b45-mature-product-final-gate to implement and verify this capability with fail-closed evidence."

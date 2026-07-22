@@ -1,0 +1,13 @@
+{
+  "schemaVersion":"1.0",
+  "domains": {
+    "esb":["simple-route","content-routing","transformation","stateful-flow","business-rule","database-lookup","retry","god-esb"],
+    "ibm-mq":["persistent","nonpersistent","request-reply","transaction","message-group","backout","dlq","rfh2","ccsid","rest-facade"],
+    "kafka":["partition-order","key-change","consumer-offset","rebalance","transactional","external-side-effect","compaction","tombstone","replay","schema-evolution"],
+    "rabbitmq":["classic","quorum","stream","exchange-routing","publisher-confirm","ack","requeue-loop","ttl","dlx"],
+    "api-gateway":["routing","auth","rate-limit","transformation","versioning","canary","policy-drift","business-logic-leak"],
+    "b2b":["as2-sync-mdn","as2-async-mdn","expired-certificate","duplicate-message","x12","edifact","sftp","checksum","partner-cutover"],
+    "workflow":["bpmn","timer","human-task","saga","compensation","duplicate-event","out-of-order","hidden-choreography"],
+    "cutover":["queue-bridge","topic-mirror","dual-publish","offset-cutover","partner-canary","rollback","decommission"]
+  }
+}

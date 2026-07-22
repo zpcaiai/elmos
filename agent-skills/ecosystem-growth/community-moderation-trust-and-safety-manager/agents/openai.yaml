@@ -1,0 +1,5 @@
+interface:
+  display_name: "Community Moderation Trust And Safety Manager"
+  short_description: "Authoritative Batch 14 Skill 432 workflow"
+  default_prompt: "Use $community-moderation-trust-and-safety-manager to execute its evidence-bound Batch 14 workflow."
+

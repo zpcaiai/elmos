@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 689: group migration factory capacity manager"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $group-migration-factory-capacity-manager to evaluate this capability with evidence."

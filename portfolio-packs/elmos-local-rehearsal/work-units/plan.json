@@ -1,0 +1,1708 @@
+{
+  "graph_version": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954",
+  "pack_key": "elmos-local-rehearsal",
+  "schema_version": 1,
+  "units": [
+    {
+      "criticality": "P1",
+      "dependencies": [
+        "wu.elmos-repair-orchestration"
+      ],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 85,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "apps/agent-gateway/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-agent-gateway",
+      "module_refs": [
+        "apps/agent-gateway"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:apps/agent-gateway",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [
+        "wu.elmos-engine-api",
+        "wu.elmos-evidence-bound-engine"
+      ],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 55,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "engines/ai-platform-engine/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-ai-platform-engine",
+      "module_refs": [
+        "engines/ai-platform-engine"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:engines/ai-platform-engine",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [
+        "wu.elmos-domain",
+        "wu.elmos-engine-api",
+        "wu.elmos-evidence"
+      ],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 1264,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "modules/application/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-application",
+      "module_refs": [
+        "modules/application"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:modules/application",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [
+        "wu.elmos-agent-gateway",
+        "wu.elmos-ai-platform-engine",
+        "wu.elmos-application",
+        "wu.elmos-commercial-api",
+        "wu.elmos-commercial-operations",
+        "wu.elmos-composite-modernization",
+        "wu.elmos-control-plane",
+        "wu.elmos-database-data-engine",
+        "wu.elmos-delivery",
+        "wu.elmos-dependency-migration",
+        "wu.elmos-domain",
+        "wu.elmos-edge-iot-industrial-engine",
+        "wu.elmos-egress-proxy",
+        "wu.elmos-elmosctl",
+        "wu.elmos-enterprise-architecture-engine",
+        "wu.elmos-enterprise-control",
+        "wu.elmos-enterprise-governance",
+        "wu.elmos-enterprise-integration-engine",
+        "wu.elmos-enterprise-suite-engine",
+        "wu.elmos-evidence-bound-engine",
+        "wu.elmos-framework-migration",
+        "wu.elmos-health-check",
+        "wu.elmos-intake",
+        "wu.elmos-integrations",
+        "wu.elmos-java-engine-worker",
+        "wu.elmos-lowering",
+        "wu.elmos-network-policy",
+        "wu.elmos-operations-sre-itsm-engine",
+        "wu.elmos-planning",
+        "wu.elmos-recipe-governance",
+        "wu.elmos-repair-orchestration",
+        "wu.elmos-scm",
+        "wu.elmos-secret",
+        "wu.elmos-semantic",
+        "wu.elmos-skeleton",
+        "wu.elmos-snapshot",
+        "wu.elmos-software-delivery-platform-engine",
+        "wu.elmos-uir",
+        "wu.elmos-validation",
+        "wu.elmos-workspace",
+        "wu.elmos-workspace-service"
+      ],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 1092,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "modules/architecture-tests/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-architecture-tests",
+      "module_refs": [
+        "modules/architecture-tests"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:modules/architecture-tests",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 1292,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "modules/behavior-equivalence/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-behavior-equivalence",
+      "module_refs": [
+        "modules/behavior-equivalence"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:modules/behavior-equivalence",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [
+        "wu.elmos-commercial-operations"
+      ],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 99,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "apps/commercial-api/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-commercial-api",
+      "module_refs": [
+        "apps/commercial-api"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:apps/commercial-api",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 991,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "modules/commercial-loop/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-commercial-loop",
+      "module_refs": [
+        "modules/commercial-loop"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:modules/commercial-loop",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [
+        "wu.elmos-enterprise-governance"
+      ],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 722,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "modules/commercial-operations/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-commercial-operations",
+      "module_refs": [
+        "modules/commercial-operations"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:modules/commercial-operations",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 464,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "modules/company-series/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-company-series",
+      "module_refs": [
+        "modules/company-series"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:modules/company-series",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 1775,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "modules/composite-modernization/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-composite-modernization",
+      "module_refs": [
+        "modules/composite-modernization"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:modules/composite-modernization",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [
+        "wu.elmos-application",
+        "wu.elmos-composite-modernization",
+        "wu.elmos-delivery",
+        "wu.elmos-integrations",
+        "wu.elmos-migration-pack-certification",
+        "wu.elmos-persistence",
+        "wu.elmos-product-roadmap-governance",
+        "wu.elmos-scm",
+        "wu.elmos-security",
+        "wu.elmos-workflow"
+      ],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 1114,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "apps/control-plane/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-control-plane",
+      "module_refs": [
+        "apps/control-plane"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:apps/control-plane",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [
+        "wu.elmos-engine-api"
+      ],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 1173,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "engines/database-data-engine/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-database-data-engine",
+      "module_refs": [
+        "engines/database-data-engine"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:engines/database-data-engine",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [
+        "wu.elmos-validation"
+      ],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 588,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "modules/delivery/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-delivery",
+      "module_refs": [
+        "modules/delivery"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:modules/delivery",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [
+        "wu.elmos-lowering"
+      ],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 796,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "modules/dependency-migration/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-dependency-migration",
+      "module_refs": [
+        "modules/dependency-migration"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:modules/dependency-migration",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 280,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "modules/domain/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-domain",
+      "module_refs": [
+        "modules/domain"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:modules/domain",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 1177,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "modules/ecosystem-growth/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-ecosystem-growth",
+      "module_refs": [
+        "modules/ecosystem-growth"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:modules/ecosystem-growth",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [
+        "wu.elmos-engine-api",
+        "wu.elmos-evidence-bound-engine"
+      ],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 54,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "engines/edge-iot-industrial-engine/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-edge-iot-industrial-engine",
+      "module_refs": [
+        "engines/edge-iot-industrial-engine"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:engines/edge-iot-industrial-engine",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [
+        "wu.elmos-network-policy"
+      ],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 88,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "apps/egress-proxy/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-egress-proxy",
+      "module_refs": [
+        "apps/egress-proxy"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:apps/egress-proxy",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [
+        "wu.elmos-enterprise-governance"
+      ],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 58,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "apps/elmosctl/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-elmosctl",
+      "module_refs": [
+        "apps/elmosctl"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:apps/elmosctl",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 183,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "contracts/engine-api/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-engine-api",
+      "module_refs": [
+        "contracts/engine-api"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:contracts/engine-api",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [
+        "wu.elmos-engine-api",
+        "wu.elmos-evidence-bound-engine"
+      ],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 55,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "engines/enterprise-architecture-engine/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-enterprise-architecture-engine",
+      "module_refs": [
+        "engines/enterprise-architecture-engine"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:engines/enterprise-architecture-engine",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [
+        "wu.elmos-enterprise-governance"
+      ],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 103,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "apps/enterprise-control/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-enterprise-control",
+      "module_refs": [
+        "apps/enterprise-control"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:apps/enterprise-control",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 860,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "modules/enterprise-governance/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-enterprise-governance",
+      "module_refs": [
+        "modules/enterprise-governance"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:modules/enterprise-governance",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [
+        "wu.elmos-engine-api"
+      ],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 451,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "engines/enterprise-integration-engine/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-enterprise-integration-engine",
+      "module_refs": [
+        "engines/enterprise-integration-engine"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:engines/enterprise-integration-engine",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 1152,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "modules/enterprise-platform/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-enterprise-platform",
+      "module_refs": [
+        "modules/enterprise-platform"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:modules/enterprise-platform",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [
+        "wu.elmos-engine-api"
+      ],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 467,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "engines/enterprise-suite-engine/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-enterprise-suite-engine",
+      "module_refs": [
+        "engines/enterprise-suite-engine"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:engines/enterprise-suite-engine",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [
+        "wu.elmos-domain"
+      ],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 86,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "modules/evidence/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-evidence",
+      "module_refs": [
+        "modules/evidence"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:modules/evidence",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [
+        "wu.elmos-engine-api"
+      ],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 496,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "modules/evidence-bound-engine/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-evidence-bound-engine",
+      "module_refs": [
+        "modules/evidence-bound-engine"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:modules/evidence-bound-engine",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [
+        "wu.elmos-dependency-migration"
+      ],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 1313,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "modules/framework-migration/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-framework-migration",
+      "module_refs": [
+        "modules/framework-migration"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:modules/framework-migration",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 588,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "modules/health-check/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-health-check",
+      "module_refs": [
+        "modules/health-check"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:modules/health-check",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [
+        "wu.elmos-engine-api"
+      ],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 783,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "engines/infrastructure-engine/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-infrastructure-engine",
+      "module_refs": [
+        "engines/infrastructure-engine"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:engines/infrastructure-engine",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 901,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "modules/intake/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-intake",
+      "module_refs": [
+        "modules/intake"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:modules/intake",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [
+        "wu.elmos-application",
+        "wu.elmos-engine-api",
+        "wu.elmos-health-check",
+        "wu.elmos-scm",
+        "wu.elmos-snapshot"
+      ],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 452,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "modules/integrations/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-integrations",
+      "module_refs": [
+        "modules/integrations"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:modules/integrations",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [
+        "wu.elmos-engine-api",
+        "wu.elmos-evidence",
+        "wu.elmos-health-check",
+        "wu.elmos-integrations",
+        "wu.elmos-planning",
+        "wu.elmos-recipe-governance",
+        "wu.elmos-validation"
+      ],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 328,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "apps/java-engine-worker/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-java-engine-worker",
+      "module_refs": [
+        "apps/java-engine-worker"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:apps/java-engine-worker",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 18,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "recipes/elmos-java-recipes/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-java-recipes",
+      "module_refs": [
+        "recipes/elmos-java-recipes"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:recipes/elmos-java-recipes",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [
+        "wu.elmos-skeleton"
+      ],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 421,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "modules/lowering/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-lowering",
+      "module_refs": [
+        "modules/lowering"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:modules/lowering",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [
+        "wu.elmos-engine-api"
+      ],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 445,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "engines/mainframe-engine/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-mainframe-engine",
+      "module_refs": [
+        "engines/mainframe-engine"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:engines/mainframe-engine",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 227,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "modules/migration-pack-certification/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-migration-pack-certification",
+      "module_refs": [
+        "modules/migration-pack-certification"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:modules/migration-pack-certification",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 74,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "modules/network-policy/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-network-policy",
+      "module_refs": [
+        "modules/network-policy"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:modules/network-policy",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [
+        "wu.elmos-engine-api",
+        "wu.elmos-evidence-bound-engine"
+      ],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 55,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "engines/operations-sre-itsm-engine/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-operations-sre-itsm-engine",
+      "module_refs": [
+        "engines/operations-sre-itsm-engine"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:engines/operations-sre-itsm-engine",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [
+        "wu.elmos-application",
+        "wu.elmos-health-check",
+        "wu.elmos-network-policy",
+        "wu.elmos-planning",
+        "wu.elmos-scm",
+        "wu.elmos-secret",
+        "wu.elmos-snapshot",
+        "wu.elmos-workspace"
+      ],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 785,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "modules/persistence/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-persistence",
+      "module_refs": [
+        "modules/persistence"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:modules/persistence",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [
+        "wu.elmos-health-check"
+      ],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 285,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "modules/planning/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-planning",
+      "module_refs": [
+        "modules/planning"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:modules/planning",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 1135,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "modules/portfolio-scale/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-portfolio-scale",
+      "module_refs": [
+        "modules/portfolio-scale"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:modules/portfolio-scale",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 438,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "modules/product-roadmap-governance/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-product-roadmap-governance",
+      "module_refs": [
+        "modules/product-roadmap-governance"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:modules/product-roadmap-governance",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 1264,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "modules/production-cutover/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-production-cutover",
+      "module_refs": [
+        "modules/production-cutover"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:modules/production-cutover",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 1072,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "modules/production-hardening/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-production-hardening",
+      "module_refs": [
+        "modules/production-hardening"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:modules/production-hardening",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 713,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "modules/recipe-governance/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-recipe-governance",
+      "module_refs": [
+        "modules/recipe-governance"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:modules/recipe-governance",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 2602,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "modules/repair-orchestration/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-repair-orchestration",
+      "module_refs": [
+        "modules/repair-orchestration"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:modules/repair-orchestration",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 384,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "modules/scm/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-scm",
+      "module_refs": [
+        "modules/scm"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:modules/scm",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 149,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "modules/secret/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-secret",
+      "module_refs": [
+        "modules/secret"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:modules/secret",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 30,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "modules/security/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-security",
+      "module_refs": [
+        "modules/security"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:modules/security",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [
+        "wu.elmos-engine-api"
+      ],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 760,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "engines/security-compliance-engine/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-security-compliance-engine",
+      "module_refs": [
+        "engines/security-compliance-engine"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:engines/security-compliance-engine",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [
+        "wu.elmos-intake"
+      ],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 792,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "modules/semantic/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-semantic",
+      "module_refs": [
+        "modules/semantic"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:modules/semantic",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [
+        "wu.elmos-uir"
+      ],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 216,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "modules/skeleton/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-skeleton",
+      "module_refs": [
+        "modules/skeleton"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:modules/skeleton",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [
+        "wu.elmos-scm"
+      ],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 320,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "modules/snapshot/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-snapshot",
+      "module_refs": [
+        "modules/snapshot"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:modules/snapshot",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [
+        "wu.elmos-engine-api",
+        "wu.elmos-evidence-bound-engine"
+      ],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 54,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "engines/software-delivery-platform-engine/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-software-delivery-platform-engine",
+      "module_refs": [
+        "engines/software-delivery-platform-engine"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:engines/software-delivery-platform-engine",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [
+        "wu.elmos-engine-api"
+      ],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 582,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "engines/test-quality-engine/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-test-quality-engine",
+      "module_refs": [
+        "engines/test-quality-engine"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:engines/test-quality-engine",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [
+        "wu.elmos-semantic"
+      ],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 982,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "modules/uir/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-uir",
+      "module_refs": [
+        "modules/uir"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:modules/uir",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 477,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "modules/validation/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-validation",
+      "module_refs": [
+        "modules/validation"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:modules/validation",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [
+        "wu.elmos-application",
+        "wu.elmos-domain"
+      ],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 48,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "modules/workflow/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-workflow",
+      "module_refs": [
+        "modules/workflow"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:modules/workflow",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 273,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "modules/workspace/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-workspace",
+      "module_refs": [
+        "modules/workspace"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:modules/workspace",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    },
+    {
+      "criticality": "P1",
+      "dependencies": [
+        "wu.elmos-network-policy",
+        "wu.elmos-persistence",
+        "wu.elmos-secret",
+        "wu.elmos-workspace"
+      ],
+      "entry_gate": "local-source-manifest-verified",
+      "estimated_loc": 578,
+      "evidence_refs": [
+        "certification/local-source-manifest.json",
+        "apps/workspace-service/pom.xml"
+      ],
+      "exit_gate": "module-tests-passed",
+      "id": "wu.elmos-workspace-service",
+      "module_refs": [
+        "apps/workspace-service"
+      ],
+      "owner": "elmos-platform-team",
+      "partition_key": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954:apps/workspace-service",
+      "regions": [
+        "local-macos"
+      ],
+      "repository_ids": [
+        "repo.elmos"
+      ],
+      "resource_profile": "local-java-21-maven",
+      "tenant_scope": "elmos-local-development"
+    }
+  ]
+}

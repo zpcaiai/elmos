@@ -1,0 +1,4 @@
+interface:
+  display_name: "target-framework-code-emitter"
+  short_description: "Plan and verify AFSM framework migration"
+  default_prompt: "Use $target-framework-code-emitter to perform this Batch 7 framework migration step."

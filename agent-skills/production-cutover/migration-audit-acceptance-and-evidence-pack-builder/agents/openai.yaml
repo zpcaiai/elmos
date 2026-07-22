@@ -1,0 +1,4 @@
+interface:
+  display_name: "Migration Audit Acceptance and Evidence Pack Builder"
+  short_description: "Run this Batch 11 cutover capability"
+  default_prompt: "Use $migration-audit-acceptance-and-evidence-pack-builder to perform this Batch 11 production-cutover task."

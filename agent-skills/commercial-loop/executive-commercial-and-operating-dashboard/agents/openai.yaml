@@ -1,0 +1,4 @@
+interface:
+  display_name: "executive-commercial-and-operating-dashboard"
+  short_description: "Run this Batch 13 commercial capability"
+  default_prompt: "Use $executive-commercial-and-operating-dashboard to evaluate this Batch 13 commercial capability with evidence."

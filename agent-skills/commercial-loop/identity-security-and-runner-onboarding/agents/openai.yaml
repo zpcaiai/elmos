@@ -1,0 +1,4 @@
+interface:
+  display_name: "identity-security-and-runner-onboarding"
+  short_description: "Run this Batch 13 commercial capability"
+  default_prompt: "Use $identity-security-and-runner-onboarding to evaluate this Batch 13 commercial capability with evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Gitlab Merge Request Publisher"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $gitlab-merge-request-publisher to execute this ELMOS Runtime Skill with fail-closed evidence."

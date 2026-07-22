@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-web-console-navigation-modernization",
+  "status": "research",
+  "owner": "independent-client-gate",
+  "exact_tuple": {
+    "source": {
+      "stack": "nextjs-app-router",
+      "versions": [
+        "16.2.10"
+      ],
+      "language": "typescript",
+      "language_versions": [
+        "5.9.2"
+      ],
+      "runtime": "nodejs",
+      "runtime_versions": [
+        "24.14.0"
+      ],
+      "build_tool": "next-16.2.10",
+      "package_manager": "pnpm-10.12.4",
+      "router": [],
+      "renderer": [],
+      "state": [],
+      "forms": [],
+      "styling": [],
+      "design_system": [],
+      "api_client": [],
+      "identity": [],
+      "i18n": [],
+      "test_tools": [],
+      "browsers": [
+        "chromium-UNSET"
+      ],
+      "devices": []
+    },
+    "target": {
+      "stack": "nextjs-app-router",
+      "versions": [
+        "16.2.10"
+      ],
+      "language": "typescript",
+      "language_versions": [
+        "5.9.2"
+      ],
+      "runtime": "nodejs",
+      "runtime_versions": [
+        "24.14.0"
+      ],
+      "build_tool": "next-16.2.10",
+      "package_manager": "pnpm-10.12.4",
+      "router": [],
+      "renderer": [],
+      "state": [],
+      "forms": [],
+      "styling": [],
+      "design_system": [],
+      "api_client": [],
+      "identity": [],
+      "i18n": [],
+      "test_tools": [],
+      "browsers": [
+        "chromium-UNSET"
+      ],
+      "devices": []
+    }
+  },
+  "evidence_refs": [],
+  "recertification_triggers": []
+}

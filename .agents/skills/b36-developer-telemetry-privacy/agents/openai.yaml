@@ -1,0 +1,4 @@
+interface:
+  display_name: "B36 Telemetry Privacy"
+  short_description: "Keep developer telemetry minimal and private"
+  default_prompt: "Use $b36-developer-telemetry-privacy to implement allowlisted privacy-preserving developer telemetry."

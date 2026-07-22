@@ -1,0 +1,4 @@
+interface:
+  display_name: "Frontend Evidence Integration"
+  short_description: "Map frontend results into ELMOS evidence"
+  default_prompt: "Use $frontend-elmos-unified-evidence-integration to map client artifacts, risks, costs, audit events, and change sets into ELMOS."

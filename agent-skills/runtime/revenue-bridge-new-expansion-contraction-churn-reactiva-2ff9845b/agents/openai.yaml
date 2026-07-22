@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B39: Revenue Bridge New Expansion Contraction Churn Reactivation And Fx Waterfall"
+  short_description: "Run ELMOS Product B39 contract with fail-closed evidence"
+  default_prompt: "Use $revenue-bridge-new-expansion-contraction-churn-reactiva-2ff9845b to implement its fail-closed ELMOS Product B39 contract."

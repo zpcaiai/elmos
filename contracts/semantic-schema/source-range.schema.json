@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/psp/v1/source-range.schema.json",
+  "title": "PSP v1 Source Range",
+  "type": "object",
+  "required": ["fileId", "startByte", "endByte", "startLine", "startColumn", "endLine", "endColumn"],
+  "properties": {
+    "fileId": {"type": "string", "minLength": 1},
+    "startByte": {"type": "integer", "minimum": 0},
+    "endByte": {"type": "integer", "minimum": 0},
+    "startLine": {"type": "integer", "minimum": 1},
+    "startColumn": {"type": "integer", "minimum": 0},
+    "endLine": {"type": "integer", "minimum": 1},
+    "endColumn": {"type": "integer", "minimum": 0}
+  },
+  "additionalProperties": false
+}

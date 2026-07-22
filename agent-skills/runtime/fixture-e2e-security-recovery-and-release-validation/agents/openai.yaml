@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 33-core Skill 016"
+  short_description: "Run Product Batch 33-core evidence contract safely"
+  default_prompt: "Use $fixture-e2e-security-recovery-and-release-validation to implement its fail-closed ELMOS Product Batch 33-core contract."

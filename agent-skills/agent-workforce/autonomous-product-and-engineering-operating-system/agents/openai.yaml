@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 582: autonomous product and engineering operating system"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $autonomous-product-and-engineering-operating-system to evaluate this capability with evidence."

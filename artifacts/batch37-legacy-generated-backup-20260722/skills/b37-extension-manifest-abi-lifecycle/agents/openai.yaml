@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 37: Extension Manifest Abi Lifecycle"
+  short_description: "Run evidence-bound Batch 37 extension manifest abi lifecycle wor"
+  default_prompt: "Use $b37-extension-manifest-abi-lifecycle to implement and verify this capability with fail-closed evidence."

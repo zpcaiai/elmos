@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.io/company-series/batch-15/conformance-report.schema.json",
+  "title": "Batch 15 Conformance Report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "batch",
+    "model",
+    "program_id",
+    "source_version",
+    "organization_id",
+    "gate",
+    "status",
+    "ready",
+    "evidence_complete",
+    "supported_dimensions",
+    "blockers",
+    "restrictions",
+    "evaluated_at",
+    "evidence_refs",
+    "external_operation_executed"
+  ],
+  "properties": {
+    "batch": {
+      "const": 15
+    },
+    "model": {
+      "const": "COGS"
+    },
+    "program_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "organization_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "gate": {
+      "enum": [
+        "BLOCKED",
+        "C15-A",
+        "C15-B",
+        "C15-C",
+        "C15-D",
+        "C15-E",
+        "C15-F",
+        "C15-G"
+      ]
+    },
+    "status": {
+      "enum": [
+        "BLOCKED",
+        "PARTIAL",
+        "company-scale-operating-ready"
+      ]
+    },
+    "ready": {
+      "type": "boolean"
+    },
+    "evidence_complete": {
+      "type": "boolean"
+    },
+    "supported_dimensions": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "purpose-strategy",
+          "strategic-execution",
+          "organization-talent",
+          "financial-management",
+          "capital-fundraising",
+          "governance",
+          "enterprise-risk",
+          "board-operations"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "blockers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "restrictions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "evaluated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "external_operation_executed": {
+      "const": false
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "ready": {
+            "const": true
+          }
+        },
+        "required": [
+          "ready"
+        ]
+      },
+      "then": {
+        "properties": {
+          "gate": {
+            "const": "C15-G"
+          },
+          "status": {
+            "const": "company-scale-operating-ready"
+          },
+          "evidence_complete": {
+            "const": true
+          },
+          "blockers": {
+            "maxItems": 0
+          }
+        }
+      }
+    }
+  ]
+}

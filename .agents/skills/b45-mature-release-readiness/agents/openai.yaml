@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 45: Mature Release Readiness"
+  short_description: "Run evidence-bound Batch 45 mature release readiness work"
+  default_prompt: "Use $b45-mature-release-readiness to implement and verify this capability with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "UI Semantic Graph"
+  short_description: "Map routes, components, state, and behavior"
+  default_prompt: "Use $ui-route-component-state-and-behavior-graph to build an evidence-backed UI route, component, state, event, form, permission, and API graph."

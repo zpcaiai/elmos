@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.service-level-decision.v1",
+  "title": "ELMOS Service Level Decision",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "breached",
+    "eligibleServiceCredit",
+    "reasonCodes",
+    "adjustmentRequestStatus"
+  ],
+  "properties": {
+    "breached": {
+      "type": "boolean"
+    },
+    "eligibleServiceCredit": {
+      "type": "number",
+      "minimum": 0
+    },
+    "reasonCodes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "adjustmentRequestStatus": {
+      "type": "string"
+    }
+  }
+}
+

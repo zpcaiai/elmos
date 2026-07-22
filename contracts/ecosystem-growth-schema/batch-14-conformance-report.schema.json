@@ -1,0 +1,141 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/ecosystem-growth/batch-14-conformance-report.schema.json",
+  "title": "Batch 14 Growth and Ecosystem Conformance Report Envelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "report",
+    "growth_platform_version",
+    "platform_business_version",
+    "assessment_run_id",
+    "conformance",
+    "gate_evidence"
+  ],
+  "properties": {
+    "report": { "const": "batch-14-conformance-report.json" },
+    "growth_platform_version": { "const": "growth-ecosystem-v1" },
+    "platform_business_version": { "type": "string", "minLength": 1 },
+    "assessment_run_id": { "type": "string", "minLength": 1 },
+    "conformance": { "$ref": "#/$defs/conformance" },
+    "gate_evidence": { "$ref": "#/$defs/conformance" }
+  },
+  "$defs": {
+    "rate": { "type": "number", "minimum": 0, "maximum": 1 },
+    "motion": {
+      "enum": [
+        "product-led-growth",
+        "content-led-growth",
+        "developer-led-growth",
+        "community-led-growth",
+        "marketplace-led-growth",
+        "partner-led-regional-expansion"
+      ]
+    },
+    "conformance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "batch",
+        "growth_platform_version",
+        "assessment_run_id",
+        "platform_business_version",
+        "gate",
+        "status",
+        "supported_motions",
+        "open_non_blocking_items",
+        "blockers",
+        "restrictions",
+        "metrics",
+        "external_evidence_complete",
+        "scalable_growth_ready",
+        "external_operation_executed",
+        "evaluated_at",
+        "evidence_refs"
+      ],
+      "properties": {
+        "batch": { "const": 14 },
+        "growth_platform_version": { "const": "growth-ecosystem-v1" },
+        "assessment_run_id": { "type": "string", "minLength": 1 },
+        "platform_business_version": { "type": "string", "minLength": 1 },
+        "gate": {
+          "enum": ["BLOCKED", "G14_A", "G14_B", "G14_C", "G14_D", "G14_E", "G14_F", "G14_G"]
+        },
+        "status": {
+          "enum": [
+            "INITIALIZED",
+            "PRODUCT_ACTIVATION_CONTROLLED",
+            "CONTENT_DEVELOPER_CONTROLLED",
+            "COMMUNITY_CONTROLLED",
+            "MARKETPLACE_CONTROLLED",
+            "INTERNATIONALIZATION_CONTROLLED",
+            "REGIONAL_CHANNEL_CONTROLLED",
+            "SCALABLE_GROWTH_READY",
+            "BLOCKED",
+            "FAILED_SAFELY"
+          ]
+        },
+        "supported_motions": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/motion" }
+        },
+        "open_non_blocking_items": { "type": "array", "items": { "type": "string" } },
+        "blockers": { "type": "array", "items": { "type": "string" } },
+        "restrictions": { "type": "array", "items": { "type": "string" } },
+        "metrics": {
+          "type": "object",
+          "required": [
+            "product_activation_coverage",
+            "content_and_developer_coverage",
+            "community_safety_coverage",
+            "marketplace_growth_coverage",
+            "internationalization_coverage",
+            "regional_channel_coverage",
+            "evidence_traceability",
+            "channel_cac_visibility",
+            "growth_contribution_margin_visibility"
+          ],
+          "properties": {
+            "product_activation_coverage": { "$ref": "#/$defs/rate" },
+            "content_and_developer_coverage": { "$ref": "#/$defs/rate" },
+            "community_safety_coverage": { "$ref": "#/$defs/rate" },
+            "marketplace_growth_coverage": { "$ref": "#/$defs/rate" },
+            "internationalization_coverage": { "$ref": "#/$defs/rate" },
+            "regional_channel_coverage": { "$ref": "#/$defs/rate" },
+            "evidence_traceability": { "$ref": "#/$defs/rate" },
+            "channel_cac_visibility": { "$ref": "#/$defs/rate" },
+            "growth_contribution_margin_visibility": { "$ref": "#/$defs/rate" }
+          },
+          "additionalProperties": { "type": "number" }
+        },
+        "external_evidence_complete": { "type": "boolean" },
+        "scalable_growth_ready": { "type": "boolean" },
+        "external_operation_executed": { "const": false },
+        "evaluated_at": { "type": "string", "format": "date-time" },
+        "evidence_refs": { "type": "array", "items": { "type": "string" } }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "scalable_growth_ready": { "const": true } },
+            "required": ["scalable_growth_ready"]
+          },
+          "then": {
+            "properties": {
+              "gate": { "const": "G14_G" },
+              "status": { "const": "SCALABLE_GROWTH_READY" },
+              "supported_motions": {
+                "minItems": 6,
+                "maxItems": 6
+              },
+              "blockers": { "maxItems": 0 },
+              "external_evidence_complete": { "const": true },
+              "external_operation_executed": { "const": false }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

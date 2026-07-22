@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-local-extension-marketplace",
+  "status": "passed",
+  "pack_status": "experimental",
+  "structural_gate_status": "passed",
+  "certification_requested": false,
+  "closure_decision": "NOT_CERTIFIED",
+  "closure_complete": false,
+  "failures": []
+}

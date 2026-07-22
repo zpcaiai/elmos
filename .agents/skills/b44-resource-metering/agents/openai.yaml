@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 44: Resource Metering"
+  short_description: "Run evidence-bound Batch 44 resource metering work"
+  default_prompt: "Use $b44-resource-metering to implement and verify this capability with fail-closed evidence."

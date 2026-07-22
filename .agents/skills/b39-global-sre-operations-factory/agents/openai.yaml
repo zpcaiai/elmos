@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 39: Global Sre Operations Factory"
+  short_description: "Run evidence-bound Batch 39 global sre operations factory work"
+  default_prompt: "Use $b39-global-sre-operations-factory to implement and verify this capability with fail-closed evidence."

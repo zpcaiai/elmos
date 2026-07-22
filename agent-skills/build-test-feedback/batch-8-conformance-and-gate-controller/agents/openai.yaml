@@ -1,0 +1,4 @@
+interface:
+  display_name: "batch 8 conformance and gate controller"
+  short_description: "Run a bounded Batch 8 repair workflow"
+  default_prompt: "Use $batch-8-conformance-and-gate-controller to perform this Batch 8 repair step."

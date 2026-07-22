@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 34 Skill 008"
+  short_description: "Run Product Batch 34 evidence contract safely"
+  default_prompt: "Use $rbac-role-permission-and-separation-of-duties to implement its fail-closed ELMOS Product Batch 34 contract."

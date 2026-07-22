@@ -1,0 +1,35 @@
+{
+  "$id": "elmos.application-portfolio-assessment.v1",
+  "type": "object",
+  "required": [
+    "applicationId",
+    "assessmentVersion",
+    "dimensions",
+    "confidence",
+    "lifecycleDecision",
+    "evidenceRefs"
+  ],
+  "properties": {
+    "applicationId": {
+      "type": "string"
+    },
+    "assessmentVersion": {
+      "type": "string"
+    },
+    "dimensions": {
+      "type": "object"
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "lifecycleDecision": {
+      "type": "string"
+    },
+    "evidenceRefs": {
+      "type": "array"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

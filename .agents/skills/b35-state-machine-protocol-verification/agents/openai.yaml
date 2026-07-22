@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 35: State Machine Protocol Verification"
+  short_description: "Run evidence-bound Batch 35 state machine protocol verification"
+  default_prompt: "Use $b35-state-machine-protocol-verification to implement and verify this capability with fail-closed evidence."

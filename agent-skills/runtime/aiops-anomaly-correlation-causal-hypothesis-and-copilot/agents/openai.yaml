@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 25 011"
+  short_description: "Run Batch 25 runtime contract safely"
+  default_prompt: "Use $aiops-anomaly-correlation-causal-hypothesis-and-copilot to apply its fail-closed ELMOS runtime contract."

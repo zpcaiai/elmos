@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "title": "Explainability profile",
+  "key": "elmos-local-developer-workflow-explainability",
+  "status": "experimental",
+  "provenance_required": true,
+  "evidence_refs": [
+    "certification/local-test-result.json",
+    "certification/local-cli-result.json",
+    "certification/source-manifest.json"
+  ]
+}

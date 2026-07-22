@@ -1,0 +1,4 @@
+interface:
+  display_name: "Polyglot Semantic Protocol Emitter"
+  short_description: "Write PSP v1 streams manifests reports and index"
+  default_prompt: "Use $polyglot-semantic-protocol-emitter to package validated Batch 2 entities as PSP v1."

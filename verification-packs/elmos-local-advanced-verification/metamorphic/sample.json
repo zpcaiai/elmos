@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "relation_id": "relation.order-invariant-conservation",
+  "claim_id": "claim.local-bounded-techniques",
+  "owner": "elmos-verification-engineering",
+  "preconditions": [
+    "finite-values"
+  ],
+  "transformation": {
+    "kind": "reverse-order"
+  },
+  "expected_relation": {
+    "kind": "same-sum"
+  },
+  "oracle_refs": [
+    "oracle.java-contract",
+    "oracle.junit-regression"
+  ],
+  "non_applicable": []
+}

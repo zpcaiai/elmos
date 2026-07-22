@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/roslyn-symbol-node.v1.json",
+  "title": "Roslyn Symbol Node",
+  "type": "object",
+  "required": ["symbolId", "kind", "displayName", "projectId", "generatedCode", "compilationState"],
+  "properties": {
+    "symbolId": {"type": "string", "pattern": "^[0-9a-f]{32}$"},
+    "kind": {"type": "string"},
+    "displayName": {"type": "string"},
+    "projectId": {"type": "string"},
+    "sourceLocation": {
+      "type": ["object", "null"],
+      "properties": {
+        "relativePath": {"type": "string"},
+        "startLine": {"type": "integer", "minimum": 1},
+        "startColumn": {"type": "integer", "minimum": 1},
+        "endLine": {"type": "integer", "minimum": 1},
+        "endColumn": {"type": "integer", "minimum": 1}
+      },
+      "required": ["relativePath", "startLine", "startColumn", "endLine", "endColumn"],
+      "additionalProperties": false
+    },
+    "generatedCode": {"type": "boolean"},
+    "compilationState": {"enum": ["FULL_COMPILATION", "PARTIAL_COMPILATION", "SYNTAX_ONLY", "METADATA_ONLY", "FAILED"]}
+  },
+  "additionalProperties": false
+}

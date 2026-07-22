@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 666: regional vertical channel replication"
+  short_description: "Operate authoritative Batch 17 capability"
+  default_prompt: "Use $regional-vertical-channel-replication to evaluate this capability with evidence."

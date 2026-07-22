@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.workload-placement-decision.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["workloadId", "recommendedTarget", "alternatives", "status", "reasonCodes", "hardConstraints", "requiredGates", "confidence", "evidenceRefs"],
+  "properties": {
+    "workloadId": {"type": "string", "minLength": 1},
+    "recommendedTarget": {"enum": ["KEEP_BARE_METAL", "MODERNIZE_VM", "CONTAINER_ON_VM", "KUBERNETES", "SERVERLESS_CONTAINER", "FUNCTION_AS_A_SERVICE", "MANAGED_PLATFORM", "MANAGED_DATABASE_OR_MIDDLEWARE", "EDGE_RUNTIME", "RETIRE"]},
+    "alternatives": {"type": "array", "items": {"type": "string"}},
+    "status": {"enum": ["RECOMMENDED", "FEASIBLE", "FEASIBLE_WITH_REFACTOR", "PILOT_REQUIRED", "NOT_RECOMMENDED", "BLOCKED", "UNKNOWN"]},
+    "reasonCodes": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+    "hardConstraints": {"type": "array", "items": {"type": "string"}},
+    "requiredGates": {"type": "array", "items": {"type": "string"}},
+    "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+    "evidenceRefs": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+  }
+}

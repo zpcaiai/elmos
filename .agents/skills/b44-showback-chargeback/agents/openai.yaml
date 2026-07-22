@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 44: Showback Chargeback"
+  short_description: "Run evidence-bound Batch 44 showback chargeback work"
+  default_prompt: "Use $b44-showback-chargeback to implement and verify this capability with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Capacity and Headroom Planner"
+  short_description: "Run this Batch 10 hardening capability"
+  default_prompt: "Use $capacity-and-headroom-planner to perform this Batch 10 production-hardening task."

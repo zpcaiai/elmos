@@ -1,0 +1,4 @@
+interface:
+  display_name: "Production Cutover Orchestrator"
+  short_description: "Run this Batch 11 cutover capability"
+  default_prompt: "Use $production-cutover-orchestrator to perform this Batch 11 production-cutover task."

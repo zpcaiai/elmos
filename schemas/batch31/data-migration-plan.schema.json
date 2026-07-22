@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schema_version",
+    "pack_key",
+    "owner",
+    "status",
+    "strategy",
+    "source",
+    "target",
+    "backfill",
+    "cdc",
+    "authority",
+    "reconciliation",
+    "rollback",
+    "privacy"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "pack_key": {
+      "type": "string"
+    },
+    "owner": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "draft",
+        "approved",
+        "executing",
+        "validated",
+        "completed",
+        "blocked"
+      ]
+    },
+    "strategy": {
+      "type": "string"
+    },
+    "source": {
+      "type": "object"
+    },
+    "target": {
+      "type": "object"
+    },
+    "backfill": {
+      "type": "object"
+    },
+    "cdc": {
+      "type": "object"
+    },
+    "authority": {
+      "type": "object"
+    },
+    "reconciliation": {
+      "type": "array"
+    },
+    "rollback": {
+      "type": "object"
+    },
+    "privacy": {
+      "type": "object"
+    }
+  }
+}

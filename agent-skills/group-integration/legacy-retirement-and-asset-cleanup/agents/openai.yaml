@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 744: legacy retirement and asset cleanup"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $legacy-retirement-and-asset-cleanup to evaluate this capability with evidence."

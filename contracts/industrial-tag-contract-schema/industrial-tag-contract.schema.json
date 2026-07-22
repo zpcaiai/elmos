@@ -1,0 +1,40 @@
+{
+  "$id": "elmos.industrial-tag-contract.v1",
+  "type": "object",
+  "required": [
+    "tagId",
+    "assetId",
+    "sourceEndpointId",
+    "address",
+    "dataType",
+    "qualityProfile",
+    "writePolicy"
+  ],
+  "properties": {
+    "tagId": {
+      "type": "string"
+    },
+    "assetId": {
+      "type": "string"
+    },
+    "sourceEndpointId": {
+      "type": "string"
+    },
+    "address": {
+      "type": "string"
+    },
+    "dataType": {
+      "type": "string"
+    },
+    "engineeringUnit": {
+      "type": "string"
+    },
+    "qualityProfile": {
+      "type": "string"
+    },
+    "writePolicy": {
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

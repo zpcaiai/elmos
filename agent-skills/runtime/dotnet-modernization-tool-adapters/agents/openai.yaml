@@ -1,0 +1,4 @@
+interface:
+  display_name: "Dotnet Modernization Tool Adapters"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $dotnet-modernization-tool-adapters to execute this ELMOS Runtime Skill with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Concurrency Saturation and Queueing Validator"
+  short_description: "Run this Batch 10 hardening capability"
+  default_prompt: "Use $concurrency-saturation-and-queueing-validator to perform this Batch 10 production-hardening task."

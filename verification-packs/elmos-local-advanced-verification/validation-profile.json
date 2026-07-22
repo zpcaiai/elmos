@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "profile_key": "elmos-local-advanced-verification-profile-v1",
+  "version": 1,
+  "risk_tier": "P1",
+  "claims": [
+    {
+      "claim_id": "claim.local-bounded-techniques",
+      "description": "The local runtime returns explicit bounded outcomes for implemented verification techniques.",
+      "criticality": "P1",
+      "required_oracles": [
+        "oracle.java-contract",
+        "oracle.junit-regression"
+      ],
+      "required_techniques": [
+        "property",
+        "metamorphic",
+        "mutation",
+        "structured-fuzz",
+        "model",
+        "bounded-proof"
+      ]
+    },
+    {
+      "claim_id": "claim.local-fail-closed-governance",
+      "description": "Unknown proof results, oracle conflicts, unsupported evidence, and residual P0 risk do not become pass decisions.",
+      "criticality": "P1",
+      "required_oracles": [
+        "oracle.java-contract",
+        "oracle.junit-regression"
+      ],
+      "required_techniques": [
+        "oracle-governance",
+        "assurance-case",
+        "counterexample-replay"
+      ]
+    }
+  ],
+  "techniques": [
+    "property",
+    "metamorphic",
+    "mutation",
+    "structured-fuzz",
+    "model",
+    "bounded-finite-domain-proof",
+    "concurrency",
+    "numeric",
+    "security",
+    "query-equivalence",
+    "oracle-governance",
+    "counterexample-replay",
+    "assurance-case"
+  ],
+  "budgets": {
+    "max_property_cases": 1000,
+    "max_fuzz_cases": 1000,
+    "max_schedules": 1000,
+    "max_wall_time_minutes": 10
+  },
+  "stop_conditions": [
+    "budget-exhausted",
+    "unknown-p0-property",
+    "oracle-conflict",
+    "security-violation"
+  ],
+  "approvals": []
+}

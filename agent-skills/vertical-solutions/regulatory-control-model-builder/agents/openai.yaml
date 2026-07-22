@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 597: regulatory control model builder"
+  short_description: "Operate authoritative Batch 17 capability"
+  default_prompt: "Use $regulatory-control-model-builder to evaluate this capability with evidence."

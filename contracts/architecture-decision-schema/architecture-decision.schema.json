@@ -1,0 +1,44 @@
+{
+  "$id": "elmos.architecture-decision.v1",
+  "type": "object",
+  "required": [
+    "decisionId",
+    "title",
+    "scope",
+    "context",
+    "options",
+    "decision",
+    "status",
+    "owner"
+  ],
+  "properties": {
+    "decisionId": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "scope": {
+      "type": "string"
+    },
+    "context": {
+      "type": "string"
+    },
+    "options": {
+      "type": "array"
+    },
+    "decision": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "owner": {
+      "type": "string"
+    },
+    "supersedes": {
+      "type": "array"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

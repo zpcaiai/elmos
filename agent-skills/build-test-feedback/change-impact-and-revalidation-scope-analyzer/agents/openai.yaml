@@ -1,0 +1,4 @@
+interface:
+  display_name: "change impact and revalidation scope analyzer"
+  short_description: "Run a bounded Batch 8 repair workflow"
+  default_prompt: "Use $change-impact-and-revalidation-scope-analyzer to perform this Batch 8 repair step."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Json Serialization Message Contract Comparator"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $json-serialization-message-contract-comparator to execute this ELMOS Runtime Skill with fail-closed evidence."

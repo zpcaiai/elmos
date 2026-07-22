@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "engine": "ELMOS_PYTHON",
+  "images": [
+    {"profile": "python-legacy-linux", "runtime": "Python 2.7.18", "platform": "linux/amd64", "base": "python:2.7.18-buster@sha256:d8fac68ebdc45b8d66d53f1ed6c1532da81109a8f5532a6ca0c951ed31107d70", "dockerfile": "sandbox-images/python2-legacy/Dockerfile", "buildStatus": "NOT_BUILT", "approvalStatus": "UNAPPROVED"},
+    {"profile": "python-modern-cpu", "runtime": "Python 3.14.6", "platform": "linux/amd64", "base": "python:3.14.6-slim-bookworm@sha256:86f975aca15cf04a40b399eebede9aea7c82eae084d1f1a0a6ef6bcaae871a30", "dockerfile": "sandbox-images/python314/Dockerfile", "buildStatus": "NOT_BUILT", "approvalStatus": "UNAPPROVED"},
+    {"profile": "python-modern-gpu", "runtime": "Python 3.13.11 + CUDA 13.0.2 + cuDNN", "platform": "linux/amd64+nvidia", "base": "nvidia/cuda:13.0.2-cudnn-runtime-ubuntu24.04@sha256:14d94b039cb94bbd5da559f303b46bc4b0d5d6c24ab1a9d7b186e566ed3400dc", "dockerfile": "sandbox-images/python314-gpu/Dockerfile", "buildStatus": "NOT_BUILT", "approvalStatus": "UNAPPROVED"},
+    {"profile": "python-windows", "runtime": "Python 3.14.6", "platform": "windows/amd64", "base": "python:3.14.6-windowsservercore-ltsc2022@sha256:3107174a877b3313262bf4fb8203bdc66e334f71b26c7bd965a5c82f9239e146", "dockerfile": "sandbox-images/python-windows/Dockerfile", "buildStatus": "NOT_BUILT", "approvalStatus": "UNAPPROVED"},
+    {"profile": "python-notebook", "runtime": "Python 3.14.6 + JupyterLab 4.4.10", "platform": "linux/amd64", "base": "python:3.14.6-slim-bookworm@sha256:86f975aca15cf04a40b399eebede9aea7c82eae084d1f1a0a6ef6bcaae871a30", "dockerfile": "sandbox-images/python-notebook/Dockerfile", "buildStatus": "NOT_BUILT", "approvalStatus": "UNAPPROVED"}
+  ],
+  "requiredEvidence": ["SMOKE_TEST", "OFFLINE_SYNC", "SBOM", "VULNERABILITY_SCAN", "PROVENANCE", "SECRET_SCAN", "TOOLCHAIN_MANIFEST"],
+  "note": "Registry digests are resolved; images remain unselectable until build, scan, runtime capability and reproducibility evidence is approved."
+}
+

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B37: Artifact Fabric Replication Backup Scrubbing Migration And Disaster Recovery"
+  short_description: "Run ELMOS Product B37 contract with fail-closed evidence"
+  default_prompt: "Use $artifact-fabric-replication-backup-scrubbing-migration-52e41d83 to implement its fail-closed ELMOS Product B37 contract."

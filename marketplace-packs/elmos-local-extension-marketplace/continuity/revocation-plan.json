@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "revoked_extension": "sample.publisher.extension",
+  "release_digest": "sha256:sample-release",
+  "severity": "critical",
+  "owner": "continuity-team",
+  "affected_tenants_known": false,
+  "execution_blocked": true,
+  "replacement_or_exit": {
+    "available": false,
+    "config_export": false,
+    "data_export": false
+  },
+  "notifications_complete": false,
+  "tested": false,
+  "evidence_refs": [
+    "continuity/evidence.txt"
+  ],
+  "evidence_status": "NOT_RUN",
+  "limitations": [
+    "No authorized external execution was performed."
+  ]
+}

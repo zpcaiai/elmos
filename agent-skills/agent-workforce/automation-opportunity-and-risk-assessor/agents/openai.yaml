@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 529: automation opportunity and risk assessor"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $automation-opportunity-and-risk-assessor to evaluate this capability with evidence."

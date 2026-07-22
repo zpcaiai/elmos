@@ -1,0 +1,5 @@
+interface:
+  display_name: "Locale Format And Regional User Experience Manager"
+  short_description: "Authoritative Batch 14 Skill 447 workflow"
+  default_prompt: "Use $locale-format-and-regional-user-experience-manager to execute its evidence-bound Batch 14 workflow."
+

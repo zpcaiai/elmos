@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 556: human on the loop supervision cockpit"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $human-on-the-loop-supervision-cockpit to evaluate this capability with evidence."

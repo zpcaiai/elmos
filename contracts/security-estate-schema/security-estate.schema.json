@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.security-estate.v1",
+  "type": "object",
+  "required": ["estateId", "organizationId", "version", "assetRefs", "trustBoundaryRefs", "unknowns", "evidenceRefs"],
+  "properties": {
+    "estateId": {"type": "string", "minLength": 1},
+    "organizationId": {"type": "string", "minLength": 1},
+    "version": {"type": "integer", "minimum": 1},
+    "assetRefs": {"type": "array", "items": {"type": "string"}},
+    "trustBoundaryRefs": {"type": "array", "items": {"type": "string"}},
+    "unknowns": {"type": "array", "items": {"enum": ["UNKNOWN_IDENTITY", "UNKNOWN_ADMIN_INTERFACE", "UNKNOWN_PUBLIC_ENDPOINT", "UNKNOWN_SECRET_STORE", "UNKNOWN_DATA_FLOW", "UNKNOWN_CONTROL_OWNER"]}},
+    "evidenceRefs": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

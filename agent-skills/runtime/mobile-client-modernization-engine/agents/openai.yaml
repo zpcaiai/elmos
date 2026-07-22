@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mobile Client Modernizer"
+  short_description: "Assess mobile compatibility and release risk"
+  default_prompt: "Use $mobile-client-modernization-engine to plan Android, iOS, hybrid, offline, permission, push, deep-link, and store modernization."

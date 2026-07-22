@@ -1,0 +1,4 @@
+interface:
+  display_name: "GitHub App Integration"
+  short_description: "Integrate GitHub App repository access"
+  default_prompt: "Use $github-app-integration to implement or review GitHub App access for ELMOS."

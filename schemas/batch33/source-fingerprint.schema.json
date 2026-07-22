@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "pack_key",
+    "snapshot_digest",
+    "coverage",
+    "source_tuple",
+    "resources",
+    "identities",
+    "networks",
+    "pipelines",
+    "runtime_evidence",
+    "evidence_refs"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "pack_key": {
+      "type": "string"
+    },
+    "snapshot_digest": {
+      "type": "string"
+    },
+    "coverage": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "source_tuple": {
+      "type": "object"
+    },
+    "resources": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "identities": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "networks": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "pipelines": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "runtime_evidence": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": true
+}

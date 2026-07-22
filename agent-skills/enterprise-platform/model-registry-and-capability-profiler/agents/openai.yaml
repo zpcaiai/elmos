@@ -1,0 +1,4 @@
+interface:
+  display_name: "model-registry-and-capability-profiler"
+  short_description: "Run this Batch 12 enterprise capability"
+  default_prompt: "Use $model-registry-and-capability-profiler to evaluate this enterprise platform capability with evidence."

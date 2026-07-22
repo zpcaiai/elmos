@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "argv": [
+    "/private/tmp/elmos-b36-tooling/apache-maven-3.9.11/bin/mvn",
+    "-q",
+    "-pl",
+    "modules/developer-workflow",
+    "-am",
+    "test"
+  ],
+  "network": "deny",
+  "repository_write": false
+}

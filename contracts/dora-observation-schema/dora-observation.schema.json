@@ -1,0 +1,39 @@
+{
+  "$id": "elmos.dora-observation.v1",
+  "type": "object",
+  "required": [
+    "serviceId",
+    "period",
+    "metric",
+    "value",
+    "coverage",
+    "sourceRefs"
+  ],
+  "properties": {
+    "serviceId": {
+      "type": "string"
+    },
+    "period": {
+      "type": "object"
+    },
+    "metric": {
+      "enum": [
+        "CHANGE_LEAD_TIME",
+        "DEPLOYMENT_FREQUENCY",
+        "FAILED_DEPLOYMENT_RECOVERY_TIME",
+        "CHANGE_FAIL_RATE",
+        "DEPLOYMENT_REWORK_RATE"
+      ]
+    },
+    "value": {},
+    "coverage": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "sourceRefs": {
+      "type": "array"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

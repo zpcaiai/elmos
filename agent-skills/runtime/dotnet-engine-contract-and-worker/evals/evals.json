@@ -1,0 +1,38 @@
+{
+  "skill_name": "dotnet-engine-contract-and-worker",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Scan a repository containing two solutions, legacy C# and VB projects, a custom UsingTask, and a parent Directory.Build.props. Decide what can be trusted before any build runs.",
+      "expected_output": "A tenant-scoped static discovery decision that keeps solution ambiguity and unsupported/custom inputs visible and defers dynamic MSBuild to an isolated Windows Runner.",
+      "files": ["../../../engines/dotnet-engine/test-fixtures/scenarios/webforms-custom-wcf-edmx/Web.sln", "../../../engines/dotnet-engine/test-fixtures/scenarios/webforms-custom-wcf-edmx/Secondary.slnx"],
+      "expectations": [
+        "The output does not arbitrarily select a primary solution and records MULTIPLE_SOLUTIONS_AMBIGUOUS.",
+        "The output keeps unsupported languages and custom MSBuild tasks visible rather than omitting them.",
+        "The output separates safe static parsing from dynamic MSBuild and requires an isolated network-denied Windows Runner for the latter."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Plan modernization for a net48 Web Forms and System.Web application that uses Registry, a custom WCF binding, EDMX, and must stay online.",
+      "expected_output": "Conservative, modern-Windows, cross-platform and side-by-side candidates with a Windows/side-by-side recommendation and explicit rewrite, WCF and EF gates.",
+      "files": ["../../../engines/dotnet-engine/test-fixtures/scenarios/webforms-custom-wcf-edmx/Web.csproj", "../../../engines/dotnet-engine/test-fixtures/scenarios/webforms-custom-wcf-edmx/App.cs", "../../../engines/dotnet-engine/test-fixtures/scenarios/webforms-custom-wcf-edmx/Model.edmx"],
+      "expectations": [
+        "The output does not recommend Linux while Registry and System.Web blockers remain.",
+        "The output marks Web Forms UI as rewrite-required and uses incremental YARP/System.Web adapter steps with an exit decision.",
+        "The output treats custom WCF binding as partial/redesign with architecture approval and stages EF6 before per-context EF Core/EDMX regeneration."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Judge a migration where Windows baseline and modern Windows builds pass, baseline discovered 800 tests, migrated discovered 240, and the required Linux runtime fails. Map the result into unified ELMOS evidence for a Java/.NET portfolio.",
+      "expected_output": "A failed independent validation decision with test and Linux blockers plus tenant-scoped .NET evidence extensions mapped to the shared portfolio/control plane.",
+      "files": [],
+      "expectations": [
+        "The output fails TEST_INVENTORY because 800 tests became 240 even though the remaining tests can pass.",
+        "The output fails MIGRATED_LINUX and states that a Windows pass cannot substitute for required Linux evidence.",
+        "The output maps .NET evidence into the existing same-tenant ELMOS portfolio without creating duplicate workflow, billing, audit, SCM or delivery authority."
+      ]
+    }
+  ]
+}

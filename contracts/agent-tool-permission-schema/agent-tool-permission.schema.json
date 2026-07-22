@@ -1,0 +1,33 @@
+{
+  "$id": "elmos.agent-tool-permission.v1",
+  "type": "object",
+  "required": [
+    "agentVersionId",
+    "toolId",
+    "environment",
+    "scope",
+    "approvalPolicy"
+  ],
+  "properties": {
+    "agentVersionId": {
+      "type": "string"
+    },
+    "toolId": {
+      "type": "string"
+    },
+    "environment": {
+      "type": "string"
+    },
+    "scope": {
+      "type": "object"
+    },
+    "approvalPolicy": {
+      "type": "string"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

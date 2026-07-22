@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 31 Skill 010"
+  short_description: "Run ELMOS Product Batch 31 governance safely"
+  default_prompt: "Use $agent-gateway-routing-budget-and-repair-loop to implement its evidence-bound ELMOS Product Batch 31 contract."

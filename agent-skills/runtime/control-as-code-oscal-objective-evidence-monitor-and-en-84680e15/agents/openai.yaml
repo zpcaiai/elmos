@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B38: Control As Code Oscal Objective Evidence Monitor And Enforcement Binding"
+  short_description: "Run ELMOS Product B38 contract with fail-closed evidence"
+  default_prompt: "Use $control-as-code-oscal-objective-evidence-monitor-and-en-84680e15 to implement its fail-closed ELMOS Product B38 contract."

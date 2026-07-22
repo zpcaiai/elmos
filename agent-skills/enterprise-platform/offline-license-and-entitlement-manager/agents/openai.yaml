@@ -1,0 +1,4 @@
+interface:
+  display_name: "offline-license-and-entitlement-manager"
+  short_description: "Run this Batch 12 enterprise capability"
+  default_prompt: "Use $offline-license-and-entitlement-manager to evaluate this enterprise platform capability with evidence."

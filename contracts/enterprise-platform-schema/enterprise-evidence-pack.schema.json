@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/enterprise-platform/enterprise-evidence-pack.schema.json",
+  "title": "Batch 12 Enterprise Evidence Pack",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["platform_version", "platform_digest", "tenancy_identity", "authorization_audit", "runner_security", "model_cost", "data_governance", "deployments", "acceptance", "conformance"],
+  "properties": {
+    "platform_version": {"type": "string", "minLength": 1},
+    "platform_digest": {"type": "string", "pattern": "^[A-Fa-f0-9]{64}$"},
+    "tenancy_identity": {"$ref": "tenancy-identity-evidence.schema.json"},
+    "authorization_audit": {"$ref": "authorization-audit-evidence.schema.json"},
+    "runner_security": {"$ref": "runner-security-evidence.schema.json"},
+    "model_cost": {"$ref": "model-cost-evidence.schema.json"},
+    "data_governance": {"$ref": "data-governance-evidence.schema.json"},
+    "deployments": {"$ref": "deployment-evidence.schema.json"},
+    "acceptance": {"$ref": "enterprise-acceptance-evidence.schema.json"},
+    "conformance": {"$ref": "batch-12-conformance-report.schema.json#/$defs/conformance"}
+  }
+}

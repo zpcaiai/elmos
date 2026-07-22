@@ -1,0 +1,4 @@
+interface:
+  display_name: "Data Rollback Compensation and Forward Fix Manager"
+  short_description: "Run this Batch 11 cutover capability"
+  default_prompt: "Use $data-rollback-compensation-and-forward-fix-manager to perform this Batch 11 production-cutover task."

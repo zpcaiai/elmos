@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 691: identity estate inventory"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $identity-estate-inventory to evaluate this capability with evidence."

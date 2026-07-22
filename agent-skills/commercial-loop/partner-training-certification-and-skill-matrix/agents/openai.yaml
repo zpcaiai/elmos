@@ -1,0 +1,4 @@
+interface:
+  display_name: "partner-training-certification-and-skill-matrix"
+  short_description: "Run this Batch 13 commercial capability"
+  default_prompt: "Use $partner-training-certification-and-skill-matrix to evaluate this Batch 13 commercial capability with evidence."

@@ -1,0 +1,33 @@
+{
+  "$id": "elmos.ai-release-bundle.v1",
+  "type": "object",
+  "required": [
+    "bundleId",
+    "version",
+    "components",
+    "evaluationProfileId",
+    "policyVersion",
+    "manifestHash"
+  ],
+  "properties": {
+    "bundleId": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "components": {
+      "type": "array"
+    },
+    "evaluationProfileId": {
+      "type": "string"
+    },
+    "policyVersion": {
+      "type": "string"
+    },
+    "manifestHash": {
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

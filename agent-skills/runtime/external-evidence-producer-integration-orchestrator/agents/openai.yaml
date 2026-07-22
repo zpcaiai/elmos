@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B37: External Evidence Producer Integration Orchestrator"
+  short_description: "Run ELMOS Product B37 contract with fail-closed evidence"
+  default_prompt: "Use $external-evidence-producer-integration-orchestrator to implement its fail-closed ELMOS Product B37 contract."

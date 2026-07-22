@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 37: Publisher Onboarding Identity"
+  short_description: "Run evidence-bound Batch 37 publisher onboarding identity work"
+  default_prompt: "Use $b37-publisher-onboarding-identity to implement and verify this capability with fail-closed evidence."

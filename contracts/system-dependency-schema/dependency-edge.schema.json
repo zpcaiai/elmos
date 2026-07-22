@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/composite/dependency-edge/1.0.0",
+  "title": "ELMOS System Dependency Edge",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "edgeId", "organizationId", "sourceNodeId", "targetNodeId", "edgeType", "environment", "confidence", "validity", "evidenceRefs"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "edgeId": { "type": "string", "minLength": 1 },
+    "organizationId": { "type": "string", "minLength": 1 },
+    "sourceNodeId": { "type": "string", "minLength": 1 },
+    "targetNodeId": { "type": "string", "minLength": 1 },
+    "edgeType": { "enum": ["CALLS_HTTP", "CALLS_GRPC", "CALLS_SOAP", "PUBLISHES_MESSAGE", "CONSUMES_MESSAGE", "READS_DATABASE", "WRITES_DATABASE", "SHARES_DATABASE", "READS_FILE", "WRITES_FILE", "INVOKES_MODEL", "USES_PACKAGE", "AUTHENTICATES_VIA", "TRIGGERS", "SCHEDULES", "ROUTES_TO", "SHADOWS", "REPLICATES_TO"] },
+    "environment": { "enum": ["DEVELOPMENT", "TEST", "STAGING", "PRODUCTION", "SHADOW"] },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "validity": { "enum": ["ACTIVE", "DORMANT", "HISTORICAL", "SUSPECTED", "STALE", "UNVERIFIED"] },
+    "hardDependency": { "type": "boolean", "default": false },
+    "contractRef": { "type": ["string", "null"] },
+    "evidenceRefs": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
+  }
+}

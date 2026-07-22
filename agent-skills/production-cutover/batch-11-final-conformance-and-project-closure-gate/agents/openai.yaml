@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 11 Final Conformance and Project Closure Gate"
+  short_description: "Run this Batch 11 cutover capability"
+  default_prompt: "Use $batch-11-final-conformance-and-project-closure-gate to perform this Batch 11 production-cutover task."

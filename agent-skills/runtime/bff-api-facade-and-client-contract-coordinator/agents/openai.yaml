@@ -1,0 +1,4 @@
+interface:
+  display_name: "BFF Contract Coordinator"
+  short_description: "Coordinate client BFF and backend contracts"
+  default_prompt: "Use $bff-api-facade-and-client-contract-coordinator to model BFF adaptation, auth context, error mapping, and client compatibility windows."

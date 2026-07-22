@@ -1,0 +1,4 @@
+interface:
+  display_name: "B36 Source Target Navigation"
+  short_description: "Navigate versioned many-to-many source maps"
+  default_prompt: "Use $b36-source-target-navigation to implement precise bidirectional navigation with freshness and confidence checks."

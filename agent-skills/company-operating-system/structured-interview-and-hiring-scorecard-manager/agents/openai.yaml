@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 484: structured interview and hiring scorecard manager"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $structured-interview-and-hiring-scorecard-manager to evaluate this capability with evidence."

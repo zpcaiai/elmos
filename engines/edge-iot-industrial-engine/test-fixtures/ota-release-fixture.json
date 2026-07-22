@@ -1,0 +1,8 @@
+{
+  "releaseId": "releaseId-fixture",
+  "artifactDigest": "artifactDigest-fixture",
+  "targetModels": [],
+  "releaseCounter": 0,
+  "signatureRefs": [],
+  "rollbackPolicy": {}
+}

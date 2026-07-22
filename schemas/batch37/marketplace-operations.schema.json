@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "owner",
+    "slos",
+    "on_call",
+    "runbooks",
+    "backup_restore_tested",
+    "dr_tested",
+    "rto_minutes",
+    "rpo_minutes",
+    "state_reconciled",
+    "open_critical_incidents"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "slos": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object"
+      }
+    },
+    "on_call": {
+      "const": true
+    },
+    "runbooks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "backup_restore_tested": {
+      "type": "boolean"
+    },
+    "dr_tested": {
+      "type": "boolean"
+    },
+    "rto_minutes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "rpo_minutes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "state_reconciled": {
+      "type": "boolean"
+    },
+    "open_critical_incidents": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "additionalProperties": true,
+  "$id": "https://example.invalid/batch37/marketplace-operations.schema.json"
+}

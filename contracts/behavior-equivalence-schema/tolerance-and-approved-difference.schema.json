@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.io/contracts/behavior-equivalence/tolerance-and-approved-difference.schema.json",
+  "title": "Scoped tolerance or approved difference",
+  "oneOf": [
+    {"type": "object", "required": ["tolerance_id", "scenario_id", "observation_type", "field_path", "type", "value", "rationale", "expires_at", "approver", "approval_evidence_ref"], "properties": {
+      "tolerance_id": {"type": "string", "minLength": 1}, "scenario_id": {"type": "string", "minLength": 1}, "observation_type": {"type": "string", "minLength": 1},
+      "field_path": {"type": "string", "minLength": 1}, "type": {"enum": ["absolute", "relative", "time", "set", "multiset", "keyed", "partial-order"]},
+      "value": {"type": "number", "minimum": 0}, "floor": {"type": ["number", "null"]}, "rationale": {"type": "string", "minLength": 1},
+      "expires_at": {"type": "string", "format": "date-time"}, "approver": {"type": "string", "minLength": 1}, "approval_evidence_ref": {"type": "string", "minLength": 1}, "high_risk_approved": {"type": "boolean"}
+    }, "additionalProperties": false},
+    {"type": "object", "required": ["change_id", "scenario_id", "observation_type", "business_reason", "version_strategy", "approver", "approval_evidence_ref", "high_risk_approved"], "properties": {
+      "change_id": {"type": "string", "minLength": 1}, "scenario_id": {"type": "string", "minLength": 1}, "observation_type": {"type": "string", "minLength": 1},
+      "business_reason": {"type": "string", "minLength": 1}, "version_strategy": {"type": "string", "minLength": 1},
+      "approver": {"type": "string", "minLength": 1}, "approval_evidence_ref": {"type": "string", "minLength": 1}, "high_risk_approved": {"type": "boolean"}
+    }, "additionalProperties": false}
+  ]
+}

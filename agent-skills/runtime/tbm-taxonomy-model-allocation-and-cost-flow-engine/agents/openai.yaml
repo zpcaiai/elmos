@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 27 Skill 003"
+  short_description: "Run ELMOS Product Batch 27 governance safely"
+  default_prompt: "Use $tbm-taxonomy-model-allocation-and-cost-flow-engine to implement its evidence-bound ELMOS Product Batch 27 contract."

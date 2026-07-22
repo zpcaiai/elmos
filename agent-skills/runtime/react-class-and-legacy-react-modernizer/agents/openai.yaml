@@ -1,0 +1,4 @@
+interface:
+  display_name: "React Legacy Modernizer"
+  short_description: "Classify and modernize legacy React behavior"
+  default_prompt: "Use $react-class-and-legacy-react-modernizer to classify React class components and preserve lifecycle, state, and error-boundary behavior."

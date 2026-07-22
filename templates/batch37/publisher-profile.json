@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "publisher_id": "sample-publisher",
+  "publisher_type": "partner",
+  "legal_name": "TODO",
+  "status": "pending",
+  "verified": false,
+  "organization_owner": "TODO",
+  "maintainers": [
+    {
+      "subject_id": "TODO",
+      "role": "owner",
+      "mfa": true
+    }
+  ],
+  "security_contact": "TODO",
+  "agreements": [],
+  "signing_identities": [],
+  "payout_status": "pending"
+}

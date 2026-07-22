@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 498: annual budget and department plan manager"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $annual-budget-and-department-plan-manager to evaluate this capability with evidence."

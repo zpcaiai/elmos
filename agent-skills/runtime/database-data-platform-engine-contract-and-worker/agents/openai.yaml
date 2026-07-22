@@ -1,0 +1,4 @@
+interface:
+  display_name: "Database Data Platform Worker"
+  short_description: "Govern the isolated database and data worker"
+  default_prompt: "Use $database-data-platform-engine-contract-and-worker to govern this ELMOS Batch 15 workflow."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Solution Msbuild Project Discovery"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $solution-msbuild-project-discovery to execute this ELMOS Runtime Skill with fail-closed evidence."

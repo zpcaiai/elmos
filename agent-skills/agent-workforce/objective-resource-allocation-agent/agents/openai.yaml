@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 588: objective resource allocation agent"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $objective-resource-allocation-agent to evaluate this capability with evidence."

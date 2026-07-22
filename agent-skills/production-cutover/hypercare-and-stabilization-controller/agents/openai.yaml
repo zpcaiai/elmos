@@ -1,0 +1,4 @@
+interface:
+  display_name: "Hypercare and Stabilization Controller"
+  short_description: "Run this Batch 11 cutover capability"
+  default_prompt: "Use $hypercare-and-stabilization-controller to perform this Batch 11 production-cutover task."

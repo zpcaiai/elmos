@@ -1,0 +1,1 @@
+{"schemaVersion":"1.0","stepId":"otc-credit-check","processVersionId":"order-to-cash-v3","sequence":3,"stepType":"CONTROL","evidenceStatus":"BUSINESS_APPROVED","suiteObjectRefs":["sales-order"],"controlRefs":["credit-limit"],"sourceArtifactRef":"artifact://process/otc-v3"}

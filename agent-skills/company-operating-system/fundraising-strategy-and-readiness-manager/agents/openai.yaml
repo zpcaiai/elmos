@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 504: fundraising strategy and readiness manager"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $fundraising-strategy-and-readiness-manager to evaluate this capability with evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 719: crm and commercial system integration"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $crm-and-commercial-system-integration to evaluate this capability with evidence."

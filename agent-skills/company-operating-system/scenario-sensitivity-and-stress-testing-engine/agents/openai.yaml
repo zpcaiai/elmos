@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 500: scenario sensitivity and stress testing engine"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $scenario-sensitivity-and-stress-testing-engine to evaluate this capability with evidence."

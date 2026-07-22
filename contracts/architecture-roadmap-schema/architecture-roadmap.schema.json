@@ -1,0 +1,32 @@
+{
+  "$id": "elmos.architecture-roadmap.v1",
+  "type": "object",
+  "required": [
+    "roadmapId",
+    "targetArchitectureId",
+    "version",
+    "waves",
+    "status"
+  ],
+  "properties": {
+    "roadmapId": {
+      "type": "string"
+    },
+    "targetArchitectureId": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "waves": {
+      "type": "array"
+    },
+    "status": {
+      "type": "string"
+    },
+    "decisionGates": {
+      "type": "array"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

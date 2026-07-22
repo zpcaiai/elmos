@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 564: tool use and agentic security manager"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $tool-use-and-agentic-security-manager to evaluate this capability with evidence."

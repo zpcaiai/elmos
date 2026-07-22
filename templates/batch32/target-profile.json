@@ -1,0 +1,71 @@
+{
+  "profile_key": "client-target-default",
+  "version": "0.1.0",
+  "owner": "UNASSIGNED",
+  "framework": "UNSET",
+  "versions": [
+    "UNSET"
+  ],
+  "language": "UNSET",
+  "language_versions": [
+    "UNSET"
+  ],
+  "runtime": "UNSET",
+  "runtime_versions": [
+    "UNSET"
+  ],
+  "build_tool": "UNSET",
+  "package_manager": "UNSET",
+  "router": [],
+  "rendering_strategy": {
+    "mode": "UNSET"
+  },
+  "state_strategy": {
+    "provider": "UNSET"
+  },
+  "form_strategy": {
+    "provider": "UNSET"
+  },
+  "styling_strategy": {
+    "mode": "UNSET"
+  },
+  "design_system_strategy": {
+    "mode": "UNSET"
+  },
+  "api_client_strategy": {
+    "provider": "UNSET"
+  },
+  "auth_strategy": {
+    "mode": "UNSET"
+  },
+  "i18n_strategy": {
+    "provider": "UNSET"
+  },
+  "accessibility_profile": {
+    "standard": "WCAG-UNSET"
+  },
+  "browser_matrix": [
+    "chromium-UNSET"
+  ],
+  "device_profiles": [],
+  "test_profiles": [
+    "e2e-UNSET"
+  ],
+  "provision": {
+    "commands": [
+      "UNSET"
+    ]
+  },
+  "health_check": {
+    "commands": [
+      "UNSET"
+    ]
+  },
+  "security": {
+    "content_security_policy": "UNSET"
+  },
+  "lifecycle": {
+    "support_until": "UNSET",
+    "upgrade_policy": "UNSET"
+  }
+}

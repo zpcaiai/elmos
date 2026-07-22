@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "title": "Offline workflow profile",
+  "key": "elmos-local-developer-workflow-offline",
+  "status": "blocked",
+  "network": "deny",
+  "signed_bundle_required": true,
+  "real_airgap_status": "NOT_RUN",
+  "evidence_refs": []
+}

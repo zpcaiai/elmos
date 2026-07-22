@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/repair-loop/v1/unified-diagnostic.schema.json",
+  "title": "Batch 8 Unified Diagnostic",
+  "type": "object",
+  "required": ["diagnosticId", "repairRunId", "phase", "tool", "category", "severity", "message", "moduleId", "rawOutputRef", "fingerprint", "confidence"],
+  "properties": {
+    "diagnosticId": {"type": "string", "minLength": 1}, "repairRunId": {"type": "string", "minLength": 1},
+    "phase": {"$ref": "#/$defs/phase"}, "tool": {"type": "string", "minLength": 1},
+    "nativeCode": {"type": ["string", "null"]}, "category": {"$ref": "#/$defs/category"},
+    "severity": {"enum": ["INFO", "WARNING", "ERROR", "BLOCKING", "CRITICAL"]},
+    "message": {"type": "string", "minLength": 1}, "moduleId": {"type": "string", "minLength": 1},
+    "file": {"type": ["string", "null"]}, "line": {"type": ["integer", "null"], "minimum": 1},
+    "column": {"type": ["integer", "null"], "minimum": 1}, "normalizedSymbol": {"type": ["string", "null"]},
+    "dependency": {"type": ["string", "null"]}, "targetDeclarationId": {"type": ["string", "null"]},
+    "sourceTestId": {"type": ["string", "null"]}, "rawOutputRef": {"type": "string", "minLength": 1},
+    "fingerprint": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "confidence": {"type": "number", "minimum": 0, "maximum": 1}
+  },
+  "$defs": {
+    "phase": {"enum": ["RESTORE", "BUILD_MODEL", "COMPILE", "STATIC_ANALYSIS", "TEST_DISCOVERY", "UNIT_TEST", "CONTRACT_TEST", "INTEGRATION_TEST", "STARTUP_TEST", "FULL_REGRESSION"]},
+    "category": {"enum": ["ENVIRONMENT", "DEPENDENCY", "BUILD_CONFIGURATION", "SYNTAX", "SYMBOL", "TYPE", "GENERIC", "NULLABILITY", "API_MAPPING", "FRAMEWORK", "STATIC_ANALYSIS", "TEST_DISCOVERY", "TEST_COMPILATION", "TEST_FIXTURE", "TEST_ASSERTION", "RUNTIME", "DATABASE", "MESSAGING", "SECURITY", "PERFORMANCE", "FLAKY", "SOURCE_BASELINE", "UNKNOWN"]}
+  },
+  "additionalProperties": false
+}

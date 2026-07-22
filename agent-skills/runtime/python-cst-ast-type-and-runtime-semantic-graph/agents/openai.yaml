@@ -1,0 +1,4 @@
+interface:
+  display_name: "Python Semantic Graph"
+  short_description: "Build CST AST type and runtime evidence graphs"
+  default_prompt: "Use $python-cst-ast-type-and-runtime-semantic-graph to analyze this Python codebase."

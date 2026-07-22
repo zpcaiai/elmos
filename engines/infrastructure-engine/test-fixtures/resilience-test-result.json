@@ -1,0 +1,16 @@
+{
+  "scenarioId": "zone-failure",
+  "environment": "staging",
+  "approvedBy": "resilience-owner",
+  "status": "PASS_WITH_WARNINGS",
+  "observedRecoveryTime": 38,
+  "rtoSourceRef": "artifact://bia/orders",
+  "sloImpact": {
+    "errorBudgetConsumed": 0.02
+  },
+  "abortTriggered": false,
+  "evidenceRefs": [
+    "artifact://resilience/sha256-f"
+  ]
+}
+

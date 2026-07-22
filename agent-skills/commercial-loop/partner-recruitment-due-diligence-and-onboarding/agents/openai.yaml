@@ -1,0 +1,4 @@
+interface:
+  display_name: "partner-recruitment-due-diligence-and-onboarding"
+  short_description: "Run this Batch 13 commercial capability"
+  default_prompt: "Use $partner-recruitment-due-diligence-and-onboarding to evaluate this Batch 13 commercial capability with evidence."

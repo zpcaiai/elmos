@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "period": "2026-07",
+  "owner": "marketplace-finance",
+  "currency": "USD",
+  "metering_digest": "sha256:meters",
+  "invoice_total": 1000.0,
+  "refunds": 0.0,
+  "chargebacks": 0.0,
+  "taxes": 100.0,
+  "payouts": 700.0,
+  "revenue_share": 200.0,
+  "reconciliation_difference": 0.0,
+  "fraud_findings_open": 0,
+  "approvals": [
+    "finance-approver",
+    "marketplace-approver"
+  ],
+  "evidence_refs": [
+    "commercial/settlement-evidence.txt"
+  ]
+}

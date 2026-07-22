@@ -1,0 +1,4 @@
+interface:
+  display_name: "Python Project Discovery"
+  short_description: "Inventory Python projects and runtime evidence"
+  default_prompt: "Use $python-project-environment-discovery to inventory this Python repository."

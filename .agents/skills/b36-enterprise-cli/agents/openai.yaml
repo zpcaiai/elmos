@@ -1,0 +1,4 @@
+interface:
+  display_name: "B36 Enterprise CLI"
+  short_description: "Build a deterministic migration workflow CLI"
+  default_prompt: "Use $b36-enterprise-cli to implement a stable, scriptable, and fail-closed enterprise CLI."

@@ -1,0 +1,10 @@
+server:
+  port: ${ELMOS_SECURITY_COMPLIANCE_PORT:8091}
+spring:
+  application:
+    name: elmos-security-compliance-engine
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

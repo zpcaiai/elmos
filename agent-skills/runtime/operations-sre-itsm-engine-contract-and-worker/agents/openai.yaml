@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 25 001"
+  short_description: "Run Batch 25 runtime contract safely"
+  default_prompt: "Use $operations-sre-itsm-engine-contract-and-worker to apply its fail-closed ELMOS runtime contract."

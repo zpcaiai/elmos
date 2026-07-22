@@ -1,0 +1,4 @@
+interface:
+  display_name: "Frontend Workspace Discovery"
+  short_description: "Inventory frontend workspaces and build inputs"
+  default_prompt: "Use $frontend-workspace-package-build-discovery to inventory packages, builds, entry points, environments, and browser targets."

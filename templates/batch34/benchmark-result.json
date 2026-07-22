@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "pack_key": "enterprise-portfolio-scale",
+  "profile_key": "enterprise-portfolio-scale-v1",
+  "run_id": "UNSET",
+  "environment_digest": "UNSET",
+  "dataset_digest": "UNSET",
+  "status": "not-run",
+  "metrics": {},
+  "failures": [],
+  "evidence_refs": []
+}

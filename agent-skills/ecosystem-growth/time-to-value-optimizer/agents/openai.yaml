@@ -1,0 +1,5 @@
+interface:
+  display_name: "Time To Value Optimizer"
+  short_description: "Authoritative Batch 14 Skill 408 workflow"
+  default_prompt: "Use $time-to-value-optimizer to execute its evidence-bound Batch 14 workflow."
+

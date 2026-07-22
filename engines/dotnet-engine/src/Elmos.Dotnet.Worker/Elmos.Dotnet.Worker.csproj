@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <ItemGroup>
+    <ProjectReference Include="../Elmos.Dotnet.Contracts/Elmos.Dotnet.Contracts.csproj" />
+    <ProjectReference Include="../Elmos.Dotnet.Application/Elmos.Dotnet.Application.csproj" />
+    <ProjectReference Include="../Elmos.Dotnet.Infrastructure/Elmos.Dotnet.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>

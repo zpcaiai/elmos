@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B35: Workspace Resume Cleanup Corruption Recovery And Reconciliation"
+  short_description: "Run ELMOS Product B35 contract with fail-closed evidence"
+  default_prompt: "Use $workspace-resume-cleanup-corruption-recovery-and-reconciliation to implement its fail-closed ELMOS Product B35 contract."

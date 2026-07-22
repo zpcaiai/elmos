@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 33-mature Skill 009"
+  short_description: "Run Product Batch 33-mature evidence contract safely"
+  default_prompt: "Use $maven-toolchain-baseline-build-and-failure-classification to implement its fail-closed ELMOS Product Batch 33-mature contract."

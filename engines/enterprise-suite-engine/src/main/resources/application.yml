@@ -1,0 +1,10 @@
+server:
+  port: ${ELMOS_ENTERPRISE_SUITE_PORT:8095}
+spring:
+  application:
+    name: elmos-enterprise-suite-engine
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

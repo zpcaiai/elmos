@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 717: observability soc and it operations integration"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $observability-soc-and-it-operations-integration to evaluate this capability with evidence."

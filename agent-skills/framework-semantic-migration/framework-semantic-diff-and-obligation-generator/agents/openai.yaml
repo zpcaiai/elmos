@@ -1,0 +1,4 @@
+interface:
+  display_name: "framework-semantic-diff-and-obligation-generator"
+  short_description: "Plan and verify AFSM framework migration"
+  default_prompt: "Use $framework-semantic-diff-and-obligation-generator to perform this Batch 7 framework migration step."

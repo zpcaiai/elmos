@@ -1,0 +1,4 @@
+interface:
+  display_name: "Migration Pack M33 Skill 087"
+  short_description: "Run Migration Pack M33 certification safely"
+  default_prompt: "Use $b33-cloud-iac-devops-factory to apply the independent, fail-closed Migration Pack M33 contract."

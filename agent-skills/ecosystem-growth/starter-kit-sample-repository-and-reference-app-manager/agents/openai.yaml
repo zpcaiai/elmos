@@ -1,0 +1,5 @@
+interface:
+  display_name: "Starter Kit Sample Repository And Reference App Manager"
+  short_description: "Authoritative Batch 14 Skill 426 workflow"
+  default_prompt: "Use $starter-kit-sample-repository-and-reference-app-manager to execute its evidence-bound Batch 14 workflow."
+

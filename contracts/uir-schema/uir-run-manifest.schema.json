@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/uir/v1/run-manifest.schema.json",
+  "title": "UIR v1 Run Manifest",
+  "type": "object",
+  "required": ["uirRunId", "semanticRunId", "snapshotId", "status", "protocolVersion", "modules", "dialects", "passPipeline", "configurationHash", "coverage", "diagnosticIds", "createdAt"],
+  "properties": {
+    "uirRunId": {"type": "string", "minLength": 1}, "semanticRunId": {"type": "string", "minLength": 1},
+    "snapshotId": {"type": "string", "minLength": 1}, "status": {"enum": ["completed", "completed_with_restrictions", "blocked", "failed"]},
+    "protocolVersion": {"const": "1.0"}, "modules": {"$ref": "#/$defs/stringSet"}, "dialects": {"$ref": "#/$defs/stringSet"},
+    "passPipeline": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+    "configurationHash": {"type": "string", "pattern": "^sha256:"}, "coverage": {"$ref": "#/$defs/coverage"},
+    "diagnosticIds": {"$ref": "#/$defs/stringSet"}, "createdAt": {"type": "string", "format": "date-time"}
+  },
+  "$defs": {
+    "ratio": {"type": "number", "minimum": 0, "maximum": 1},
+    "stringSet": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+    "coverage": {
+      "type": "object",
+      "required": ["declarationLiftRate", "operationLiftRate", "sourceMapCoverage", "typeCoverage", "callableBodyCoverage", "effectCoverage", "unknownOperationRate", "opaqueOperationRate", "unresolvedCallRate", "dynamicHighRiskRate"],
+      "properties": {
+        "declarationLiftRate": {"$ref": "#/$defs/ratio"}, "operationLiftRate": {"$ref": "#/$defs/ratio"},
+        "sourceMapCoverage": {"$ref": "#/$defs/ratio"}, "typeCoverage": {"$ref": "#/$defs/ratio"},
+        "callableBodyCoverage": {"$ref": "#/$defs/ratio"}, "effectCoverage": {"$ref": "#/$defs/ratio"},
+        "unknownOperationRate": {"$ref": "#/$defs/ratio"}, "opaqueOperationRate": {"$ref": "#/$defs/ratio"},
+        "unresolvedCallRate": {"$ref": "#/$defs/ratio"}, "dynamicHighRiskRate": {"$ref": "#/$defs/ratio"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

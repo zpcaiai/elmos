@@ -1,0 +1,4 @@
+interface:
+  display_name: "repair loop orchestrator"
+  short_description: "Run a bounded Batch 8 repair workflow"
+  default_prompt: "Use $repair-loop-orchestrator to perform this Batch 8 repair step."

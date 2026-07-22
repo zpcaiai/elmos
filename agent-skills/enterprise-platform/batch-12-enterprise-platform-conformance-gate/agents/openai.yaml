@@ -1,0 +1,4 @@
+interface:
+  display_name: "batch-12-enterprise-platform-conformance-gate"
+  short_description: "Run this Batch 12 enterprise capability"
+  default_prompt: "Use $batch-12-enterprise-platform-conformance-gate to evaluate this enterprise platform capability with evidence."

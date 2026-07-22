@@ -1,0 +1,4 @@
+interface:
+  display_name: "enterprise integration engine contract and worker"
+  short_description: "Govern integration modernization safely"
+  default_prompt: "Use $enterprise-integration-engine-contract-and-worker to modernize this integration scope safely."

@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/framework/v1/framework-emission.schema.json",
+  "title": "Framework Native Backend Emission",
+  "type": "object",
+  "required": ["emissionId", "entityId", "recipeId", "status", "targetArtifacts", "targetSemantics", "sourceMapIds", "obligationIds", "parsed", "registered", "deterministic", "placeholder", "agentGenerated", "humanReviewApproved", "containsSecretMaterial", "diagnostics"],
+  "properties": {
+    "emissionId": {"type": "string", "minLength": 1},
+    "entityId": {"type": "string", "minLength": 1},
+    "recipeId": {"type": ["string", "null"]},
+    "status": {"$ref": "#/$defs/status"},
+    "targetArtifacts": {"type": "array", "items": {"type": "string"}},
+    "targetSemantics": {"type": "object", "additionalProperties": {"type": "string"}},
+    "sourceMapIds": {"type": "array", "items": {"type": "string"}},
+    "obligationIds": {"type": "array", "items": {"type": "string"}},
+    "backendRef": {"type": ["string", "null"]},
+    "parsed": {"type": "boolean"},
+    "registered": {"type": "boolean"},
+    "deterministic": {"type": "boolean"},
+    "placeholder": {"type": "boolean"},
+    "agentGenerated": {"type": "boolean"},
+    "humanReviewApproved": {"type": "boolean"},
+    "reviewEvidenceRef": {"type": ["string", "null"]},
+    "containsSecretMaterial": {"type": "boolean"},
+    "diagnostics": {"type": "array", "items": {"type": "string"}}
+  },
+  "$defs": {"status": {"enum": ["PASSED", "FAILED", "BLOCKED", "NOT_RUN", "INCONCLUSIVE", "PASSED_WITH_OBLIGATIONS"]}},
+  "additionalProperties": false
+}

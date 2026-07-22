@@ -1,0 +1,5 @@
+interface:
+  display_name: "Interactive Demo Sandbox And Playground"
+  short_description: "Authoritative Batch 14 Skill 427 workflow"
+  default_prompt: "Use $interactive-demo-sandbox-and-playground to execute its evidence-bound Batch 14 workflow."
+

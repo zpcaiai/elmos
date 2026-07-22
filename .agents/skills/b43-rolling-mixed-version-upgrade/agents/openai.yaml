@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 43: Rolling Mixed Version Upgrade"
+  short_description: "Run evidence-bound Batch 43 rolling mixed version upgrade work"
+  default_prompt: "Use $b43-rolling-mixed-version-upgrade to implement and verify this capability with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "automation-rate-and-migration-opportunity-estimator"
+  short_description: "Run this Batch 13 commercial capability"
+  default_prompt: "Use $automation-rate-and-migration-opportunity-estimator to evaluate this Batch 13 commercial capability with evidence."

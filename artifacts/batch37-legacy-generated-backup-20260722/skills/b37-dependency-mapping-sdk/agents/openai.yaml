@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 37: Dependency Mapping Sdk"
+  short_description: "Run evidence-bound Batch 37 dependency mapping sdk work"
+  default_prompt: "Use $b37-dependency-mapping-sdk to implement and verify this capability with fail-closed evidence."

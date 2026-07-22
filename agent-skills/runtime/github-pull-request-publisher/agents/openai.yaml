@@ -1,0 +1,4 @@
+interface:
+  display_name: "Github Pull Request Publisher"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $github-pull-request-publisher to execute this ELMOS Runtime Skill with fail-closed evidence."

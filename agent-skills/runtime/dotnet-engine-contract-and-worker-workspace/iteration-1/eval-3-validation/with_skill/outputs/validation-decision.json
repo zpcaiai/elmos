@@ -1,0 +1,13 @@
+{
+  "decision": "FAILED",
+  "independentJudge": true,
+  "observations": [
+    {"gate": "WINDOWS_LEGACY_BASELINE", "status": "PASSED"},
+    {"gate": "MODERN_WINDOWS_MIGRATED", "status": "PASSED"},
+    {"gate": "TEST_INVENTORY", "status": "FAILED", "baselineDiscovered": 800, "migratedDiscovered": 240, "reason": "560 baseline test identities disappeared"},
+    {"gate": "MIGRATED_LINUX", "status": "FAILED", "required": true, "reason": "Windows pass cannot substitute for required Linux runtime/platform evidence"}
+  ],
+  "promotion": "BLOCKED",
+  "evidenceExtension": {"schemaVersion": "1.0", "organizationId": "org-example", "snapshotRef": "snapshot-example", "engine": "ELMOS_DOTNET", "engineVersion": "1.0.0", "artifactType": "DOTNET_VALIDATION_DECISION", "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "status": "FAILED", "dotnet": {"provider": "ELMOS_DOTNET", "providerVersion": "1.0.0", "artifact": {"blockingGates": ["TEST_INVENTORY", "MIGRATED_LINUX"]}}},
+  "portfolioMapping": {"organizationId": "org-example", "portfolioId": "portfolio-example", "enginePlans": ["ELMOS_JAVA", "ELMOS_DOTNET"], "shared": ["apiDependencies", "waves", "risks", "acceptanceGates"], "reusedAuthorities": ["tenant-rbac", "workflow-approval", "runner-leases", "usage-billing", "audit", "scm", "evidence-pack", "rollback", "delivery"], "duplicateControlPlaneObjectsCreated": false}
+}

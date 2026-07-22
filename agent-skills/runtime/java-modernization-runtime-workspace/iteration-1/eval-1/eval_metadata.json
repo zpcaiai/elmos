@@ -1,0 +1,4 @@
+{
+  "eval_id": 1,
+  "prompt": "对附件 legacy-shop 做有界静态 Java 遗留健康检查。不要执行客户构建；OSV 不可用时必须保留 INCONCLUSIVE。输出版本化 JSON 健康报告。"
+}

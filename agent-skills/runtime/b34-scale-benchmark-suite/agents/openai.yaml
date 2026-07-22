@@ -1,0 +1,4 @@
+interface:
+  display_name: "Migration Pack M34 Skill 123"
+  short_description: "Run Migration Pack M34 certification safely"
+  default_prompt: "Use $b34-scale-benchmark-suite to apply the independent, fail-closed Migration Pack M34 contract."

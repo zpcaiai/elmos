@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B35: Github Repository Registration Authorization And Lifecycle"
+  short_description: "Run ELMOS Product B35 contract with fail-closed evidence"
+  default_prompt: "Use $github-repository-registration-authorization-and-lifecycle to implement its fail-closed ELMOS Product B35 contract."

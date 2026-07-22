@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B36: Site Local Coordinator Leader Election Runner Gateway And Ha"
+  short_description: "Run ELMOS Product B36 contract with fail-closed evidence"
+  default_prompt: "Use $site-local-coordinator-leader-election-runner-gateway-and-ha to implement its fail-closed ELMOS Product B36 contract."

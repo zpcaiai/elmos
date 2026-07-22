@@ -1,0 +1,5 @@
+interface:
+  display_name: "Product Led Growth Strategy Manager"
+  short_description: "Authoritative Batch 14 Skill 405 workflow"
+  default_prompt: "Use $product-led-growth-strategy-manager to execute its evidence-bound Batch 14 workflow."
+

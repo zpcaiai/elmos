@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/repair-loop/v1/failure-attribution.schema.json",
+  "title": "Batch 8 Failure Attribution",
+  "type": "object",
+  "required": ["clusterId", "attribution", "evidence", "confidence"],
+  "properties": {
+    "clusterId": {"type": "string", "minLength": 1},
+    "attribution": {"enum": ["SOURCE_EXISTING", "MIGRATION_INTRODUCED", "TARGET_ENVIRONMENT", "DEPENDENCY_INFRASTRUCTURE", "TEST_MIGRATION", "TEST_FLAKY", "UNKNOWN", "MIXED"]},
+    "evidence": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "confidence": {"type": "number", "minimum": 0, "maximum": 1}
+  },
+  "additionalProperties": false
+}

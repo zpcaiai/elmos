@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "scenarios": [
+    { "id": 1, "name": "Oracle empty-string NULL semantics", "expected": "EMPTY_STRING_NULL_SEMANTIC_RISK" },
+    { "id": 2, "name": "Oracle NUMBER without precision", "expected": "PROFILE_AND_USAGE_REQUIRED" },
+    { "id": 3, "name": "SQL Server clustered index", "expected": "REBUILD_FROM_TARGET_WORKLOAD" },
+    { "id": 4, "name": "SQL Server Agent job", "expected": "JOB_INVENTORY_INCOMPLETE" },
+    { "id": 5, "name": "MySQL unsigned range", "expected": "NUMERIC_RANGE_RISK" },
+    { "id": 6, "name": "MySQL SQL_MODE drift", "expected": "SQL_MODE_BEHAVIOR_DIFFERENCE" },
+    { "id": 7, "name": "PostgreSQL extension support", "expected": "TARGET_INCOMPATIBLE" },
+    { "id": 8, "name": "Complex PL/SQL package", "expected": "CRITICAL_MANUAL_REDESIGN" },
+    { "id": 9, "name": "Trigger hidden side effects", "expected": "TRIGGER_SIDE_EFFECT_UNRESOLVED" },
+    { "id": 10, "name": "Runtime-dependent SQL", "expected": "RUNTIME_DEPENDENT" },
+    { "id": 11, "name": "Initial-load CDC frontier mismatch", "expected": "SNAPSHOT_CDC_FRONTIER_MISMATCH" },
+    { "id": 12, "name": "CDC large transaction", "expected": "CDC_NOT_CAUGHT_UP" },
+    { "id": 13, "name": "DDL during CDC", "expected": "DDL_REPLICATION_FAILED" },
+    { "id": 14, "name": "Reverse replication unavailable", "expected": "REVERSE_REPLICATION_UNAVAILABLE" },
+    { "id": 15, "name": "Query performance regression", "expected": "QUERY_PERFORMANCE_REGRESSION" },
+    { "id": 16, "name": "Source baseline duplicate", "expected": "PASS_WITH_BASELINE_DEFECTS" },
+    { "id": 17, "name": "Migration-introduced null", "expected": "FAIL_MIGRATION_REGRESSION" },
+    { "id": 18, "name": "Delta protocol incompatibility", "expected": "PROTOCOL_UPGRADE_BLOCKED" },
+    { "id": 19, "name": "Unratified Iceberg spec", "expected": "UNRATIFIED_SPECIFICATION_BLOCKED" },
+    { "id": 20, "name": "Lakehouse small files", "expected": "SMALL_FILE_FINDING" },
+    { "id": 21, "name": "BI metric drift", "expected": "BI_METRIC_DIFFERENCE" },
+    { "id": 22, "name": "BI row security loss", "expected": "CRITICAL_DATA_SECURITY_FAILURE" },
+    { "id": 23, "name": "Deletion not propagated", "expected": "DELETE_PROPAGATION_FAILED" },
+    { "id": 24, "name": "Unknown legacy writer", "expected": "UNKNOWN_DATABASE_WRITER" }
+  ]
+}

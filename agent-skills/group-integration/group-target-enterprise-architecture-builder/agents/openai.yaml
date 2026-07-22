@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 683: group target enterprise architecture builder"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $group-target-enterprise-architecture-builder to evaluate this capability with evidence."

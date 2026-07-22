@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B37: Portfolio Assurance Rollup Risk Appetite Segmentation And Benchmarking"
+  short_description: "Run ELMOS Product B37 contract with fail-closed evidence"
+  default_prompt: "Use $portfolio-assurance-rollup-risk-appetite-segmentation-a-5d409ca9 to implement its fail-closed ELMOS Product B37 contract."

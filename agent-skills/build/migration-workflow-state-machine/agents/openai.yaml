@@ -1,0 +1,4 @@
+interface:
+  display_name: "Migration Workflow State Machine"
+  short_description: "Implement durable auditable migration workflow transitions"
+  default_prompt: "Use $migration-workflow-state-machine to change migration states retries approvals cancellation or recovery."

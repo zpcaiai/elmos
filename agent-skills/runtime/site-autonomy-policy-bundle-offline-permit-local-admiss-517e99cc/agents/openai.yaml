@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B36: Site Autonomy Policy Bundle Offline Permit Local Admission And Safe Stop"
+  short_description: "Run ELMOS Product B36 contract with fail-closed evidence"
+  default_prompt: "Use $site-autonomy-policy-bundle-offline-permit-local-admiss-517e99cc to implement its fail-closed ELMOS Product B36 contract."

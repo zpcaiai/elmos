@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B37: Auditor Control Cockpit Evidence Navigator Sampling And Export"
+  short_description: "Run ELMOS Product B37 contract with fail-closed evidence"
+  default_prompt: "Use $auditor-control-cockpit-evidence-navigator-sampling-and-export to implement its fail-closed ELMOS Product B37 contract."

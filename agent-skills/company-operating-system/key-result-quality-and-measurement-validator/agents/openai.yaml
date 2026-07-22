@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 472: key result quality and measurement validator"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $key-result-quality-and-measurement-validator to evaluate this capability with evidence."

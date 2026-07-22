@@ -1,0 +1,4 @@
+interface:
+  display_name: "Integration And Consumer Contract Test Runner"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $integration-and-consumer-contract-test-runner to execute this ELMOS Runtime Skill with fail-closed evidence."

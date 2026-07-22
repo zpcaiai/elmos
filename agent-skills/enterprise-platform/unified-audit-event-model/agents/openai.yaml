@@ -1,0 +1,4 @@
+interface:
+  display_name: "unified-audit-event-model"
+  short_description: "Run this Batch 12 enterprise capability"
+  default_prompt: "Use $unified-audit-event-model to evaluate this enterprise platform capability with evidence."

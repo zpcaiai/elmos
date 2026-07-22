@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 557: human override kill switch and safe stop"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $human-override-kill-switch-and-safe-stop to evaluate this capability with evidence."

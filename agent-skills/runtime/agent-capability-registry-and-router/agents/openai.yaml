@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agent Capability Registry And Router"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $agent-capability-registry-and-router to execute this ELMOS Runtime Skill with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Migration Pack M34 Skill 114"
+  short_description: "Run Migration Pack M34 certification safely"
+  default_prompt: "Use $b34-portfolio-budget-cost-guardrails to apply the independent, fail-closed Migration Pack M34 contract."

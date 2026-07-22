@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 693: day one identity federation"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $day-one-identity-federation to evaluate this capability with evidence."

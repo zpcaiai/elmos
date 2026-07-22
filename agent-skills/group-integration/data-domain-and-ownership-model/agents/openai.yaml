@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 698: data domain and ownership model"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $data-domain-and-ownership-model to evaluate this capability with evidence."

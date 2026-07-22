@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 35: Oracle Governance"
+  short_description: "Govern independent oracles and resolve conflicts"
+  default_prompt: "Use $b35-oracle-governance-conflict-resolution to implement and verify this capability with fail-closed evidence."

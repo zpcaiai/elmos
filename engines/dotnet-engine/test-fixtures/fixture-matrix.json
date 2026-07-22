@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "policy": "Fixtures are inventory inputs only; Windows/IIS/COM/WCF runtime claims require external Runner evidence.",
+  "dimensions": {
+    "solutionFormats": ["sln", "slnx", "multiple-solutions", "no-solution"],
+    "projectSystems": ["legacy-csproj", "sdk-style", "packages-config", "package-reference", "mixed"],
+    "frameworks": ["net35", "net462", "net472", "net48", "net481", "net8", "net10"],
+    "aspnet": ["webforms", "mvc5", "webapi2", "systemweb-heavy", "forms-auth", "incremental-yarp"],
+    "wcf": ["basic-http", "ws-http", "net-tcp", "duplex", "transaction-flow", "custom-binding"],
+    "ef": ["code-first", "edmx", "object-context", "stored-procedure", "multiple-contexts", "ef6-efcore-side-by-side"],
+    "platform": ["registry", "com", "office-interop", "pinvoke", "windows-service", "cross-platform"]
+  },
+  "implementedFixtures": [
+    {"id": "mixed-legacy", "path": "scenarios/mixed-legacy", "covers": ["sln", "legacy-csproj", "packages-config", "net48", "mvc5", "net-tcp", "code-first", "registry"]},
+    {"id": "webforms-custom-wcf-edmx", "path": "scenarios/webforms-custom-wcf-edmx", "covers": ["multiple-solutions", "webforms", "systemweb-heavy", "custom-binding", "edmx", "com"]}
+  ],
+  "remainingFixtures": "DECLARED_NOT_YET_EXECUTED"
+}

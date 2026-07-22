@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 33-core Skill 005"
+  short_description: "Run Product Batch 33-core evidence contract safely"
+  default_prompt: "Use $secure-runner-enrollment-workload-identity-and-revocation to implement its fail-closed ELMOS Product Batch 33-core contract."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 41: Diagnostic Root Cause Recommendation"
+  short_description: "Run evidence-bound Batch 41 diagnostic root cause recommendation"
+  default_prompt: "Use $b41-diagnostic-root-cause-recommendation to implement and verify this capability with fail-closed evidence."

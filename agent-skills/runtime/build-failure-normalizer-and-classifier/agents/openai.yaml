@@ -1,0 +1,4 @@
+interface:
+  display_name: "Build Failure Normalizer And Classifier"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $build-failure-normalizer-and-classifier to execute this ELMOS Runtime Skill with fail-closed evidence."

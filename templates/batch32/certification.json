@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "pack_key": "client-source-to-target",
+  "status": "research",
+  "owner": "UNASSIGNED",
+  "exact_tuple": {
+    "source": {
+      "stack": "UNSET",
+      "versions": [
+        "UNSET"
+      ],
+      "language": "UNSET",
+      "language_versions": [
+        "UNSET"
+      ],
+      "runtime": "UNSET",
+      "runtime_versions": [
+        "UNSET"
+      ],
+      "build_tool": "UNSET",
+      "package_manager": "UNSET",
+      "router": [],
+      "renderer": [],
+      "state": [],
+      "forms": [],
+      "styling": [],
+      "design_system": [],
+      "api_client": [],
+      "identity": [],
+      "i18n": [],
+      "test_tools": [],
+      "browsers": [
+        "chromium-UNSET"
+      ],
+      "devices": []
+    },
+    "target": {
+      "stack": "UNSET",
+      "versions": [
+        "UNSET"
+      ],
+      "language": "UNSET",
+      "language_versions": [
+        "UNSET"
+      ],
+      "runtime": "UNSET",
+      "runtime_versions": [
+        "UNSET"
+      ],
+      "build_tool": "UNSET",
+      "package_manager": "UNSET",
+      "router": [],
+      "renderer": [],
+      "state": [],
+      "forms": [],
+      "styling": [],
+      "design_system": [],
+      "api_client": [],
+      "identity": [],
+      "i18n": [],
+      "test_tools": [],
+      "browsers": [
+        "chromium-UNSET"
+      ],
+      "devices": []
+    }
+  },
+  "evidence_refs": [],
+  "recertification_triggers": []
+}

@@ -1,0 +1,5 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema","$id":"https://elmos.dev/schemas/lowering/v1/callable-patch.schema.json","title":"Callable Patch","type":"object","additionalProperties":false,
+  "required":["patchId","targetDeclarationId","generationId","baseFileHash","resultFileHash","targetFile","sourceOperationIds","ruleIds","obligationIds","status","reversible"],
+  "properties":{"patchId":{"type":"string"},"targetDeclarationId":{"type":"string"},"generationId":{"type":"string"},"baseFileHash":{"type":"string","pattern":"^sha256:"},"resultFileHash":{"type":"string","pattern":"^sha256:"},"targetFile":{"type":"string"},"sourceOperationIds":{"type":"array","items":{"type":"string"}},"ruleIds":{"type":"array","items":{"type":"string"}},"obligationIds":{"type":"array","items":{"type":"string"}},"status":{"enum":["applied","unchanged","conflict","rejected","rolled-back"]},"reversible":{"const":true}}
+}

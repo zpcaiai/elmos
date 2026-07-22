@@ -1,0 +1,5 @@
+interface:
+  display_name: "Champion Ambassador And Expert Program"
+  short_description: "Authoritative Batch 14 Skill 429 workflow"
+  default_prompt: "Use $champion-ambassador-and-expert-program to execute its evidence-bound Batch 14 workflow."
+

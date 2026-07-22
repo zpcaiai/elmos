@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/batch36/recipe-authoring-profile.schema.json",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "profile_key",
+    "typed_model",
+    "preview_required",
+    "negative_required",
+    "holdout_required",
+    "signing_required",
+    "arbitrary_script"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "profile_key": {
+      "type": "string"
+    },
+    "typed_model": {
+      "type": "string"
+    },
+    "preview_required": {
+      "const": true
+    },
+    "negative_required": {
+      "const": true
+    },
+    "holdout_required": {
+      "const": true
+    },
+    "signing_required": {
+      "const": true
+    },
+    "arbitrary_script": {
+      "const": false
+    }
+  },
+  "additionalProperties": true
+}

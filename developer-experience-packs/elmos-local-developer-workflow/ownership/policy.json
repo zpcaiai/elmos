@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "policy_key": "elmos-local-developer-workflow-ownership",
+  "default_ownership": "customer-owned",
+  "entries": [
+    {
+      "selector": "modules/developer-workflow/src/main/**",
+      "ownership": "platform-owned",
+      "regeneration_policy": "semantic-merge",
+      "owners": [
+        "elmos-developer-experience"
+      ],
+      "approval_required": true
+    },
+    {
+      "selector": "developer-experience-packs/**",
+      "ownership": "generated-once",
+      "regeneration_policy": "preserve",
+      "owners": [
+        "elmos-platform"
+      ],
+      "approval_required": true
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 563: uncertainty hallucination and evidence validator"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $uncertainty-hallucination-and-evidence-validator to evaluate this capability with evidence."

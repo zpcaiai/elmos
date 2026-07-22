@@ -1,0 +1,4 @@
+interface:
+  display_name: "Patch Segmenter And Change Attribution"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $patch-segmenter-and-change-attribution to execute this ELMOS Runtime Skill with fail-closed evidence."

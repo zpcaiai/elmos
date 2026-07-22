@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.threat-model.v1",
+  "type": "object",
+  "required": ["threatModelId", "landscapeRef", "version", "methods", "threatRefs", "assumptionRefs", "evidenceRefs"],
+  "properties": {
+    "threatModelId": {"type": "string"}, "landscapeRef": {"type": "string"}, "version": {"type": "integer", "minimum": 1},
+    "methods": {"type": "array", "items": {"enum": ["STRIDE", "PASTA", "LINDDUN", "ATTACK_TREE", "ABUSE_CASE"]}},
+    "threatRefs": {"type": "array", "items": {"type": "string"}}, "assumptionRefs": {"type": "array", "items": {"type": "string"}},
+    "evidenceRefs": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

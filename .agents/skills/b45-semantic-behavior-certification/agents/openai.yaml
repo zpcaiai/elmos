@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 45: Semantic Behavior Certification"
+  short_description: "Run evidence-bound Batch 45 semantic behavior certification work"
+  default_prompt: "Use $b45-semantic-behavior-certification to implement and verify this capability with fail-closed evidence."

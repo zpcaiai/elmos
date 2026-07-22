@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "policy_key": "migration-pr-bot",
+  "providers": [
+    "github",
+    "gitlab",
+    "bitbucket"
+  ],
+  "permissions": {
+    "metadata": "read",
+    "contents": "read",
+    "checks": "write",
+    "pull_requests": "write",
+    "workflows": "none",
+    "secrets": "none"
+  },
+  "events": [
+    "pull_request",
+    "push",
+    "check_suite"
+  ],
+  "write_policy": {
+    "self_approval": false,
+    "fork_secret_access": false,
+    "comment_mode": "single-updatable-summary"
+  },
+  "checks": [
+    "build",
+    "affected-tests",
+    "behavior",
+    "security",
+    "ownership",
+    "manifest"
+  ],
+  "runtime_status": "NOT_RUN",
+  "limitations": [
+    "No SCM sandbox, webhook-signature, fork, or replay test was executed."
+  ]
+}

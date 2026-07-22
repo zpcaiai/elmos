@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 36: Generated Code Provenance"
+  short_description: "Run evidence-bound Batch 36 generated code provenance work"
+  default_prompt: "Use $b36-generated-code-provenance to implement and verify this capability with fail-closed evidence."

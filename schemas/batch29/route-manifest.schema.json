@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Batch29RouteManifest",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "route_key",
+    "version",
+    "status",
+    "owner",
+    "source",
+    "target",
+    "paths",
+    "gates"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "route_key": {
+      "type": "string",
+      "pattern": "^[a-z]+-to-[a-z]+$"
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "research",
+        "experimental",
+        "limited",
+        "certified",
+        "deprecated",
+        "blocked"
+      ]
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "review_date": {
+      "type": "string"
+    },
+    "source": {
+      "type": "object",
+      "required": [
+        "language",
+        "versions",
+        "engine_path"
+      ],
+      "properties": {
+        "language": {
+          "type": "string"
+        },
+        "versions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "engine_path": {
+          "type": "string"
+        }
+      }
+    },
+    "target": {
+      "type": "object",
+      "required": [
+        "language",
+        "versions",
+        "engine_path"
+      ],
+      "properties": {
+        "language": {
+          "type": "string"
+        },
+        "versions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "engine_path": {
+          "type": "string"
+        }
+      }
+    },
+    "paths": {
+      "type": "object",
+      "required": [
+        "support_matrix",
+        "corpus",
+        "certification"
+      ]
+    },
+    "gates": {
+      "type": "object"
+    },
+    "profiles": {
+      "type": "object"
+    },
+    "framework_profiles": {
+      "type": "array"
+    }
+  },
+  "additionalProperties": true
+}

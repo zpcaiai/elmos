@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 41: Migration Risk Prediction"
+  short_description: "Run evidence-bound Batch 41 migration risk prediction work"
+  default_prompt: "Use $b41-migration-risk-prediction to implement and verify this capability with fail-closed evidence."

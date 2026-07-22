@@ -1,0 +1,5 @@
+interface:
+  display_name: "Content Strategy And Topic Architecture"
+  short_description: "Authoritative Batch 14 Skill 416 workflow"
+  default_prompt: "Use $content-strategy-and-topic-architecture to execute its evidence-bound Batch 14 workflow."
+

@@ -1,0 +1,10 @@
+{
+  "batch": 34,
+  "organizationId": "org-example",
+  "runId": "iam-assessment-example",
+  "snapshotDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "policyVersion": "iam-policy-v1",
+  "humanOwnerId": "security-owner-example",
+  "evaluatedAt": "2026-07-22T00:00:00Z",
+  "evidence": []
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Dual Read Comparator and Read Repair Manager"
+  short_description: "Run this Batch 11 cutover capability"
+  default_prompt: "Use $dual-read-comparator-and-read-repair-manager to perform this Batch 11 production-cutover task."

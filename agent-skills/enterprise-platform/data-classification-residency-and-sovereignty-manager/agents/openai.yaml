@@ -1,0 +1,4 @@
+interface:
+  display_name: "data-classification-residency-and-sovereignty-manager"
+  short_description: "Run this Batch 12 enterprise capability"
+  default_prompt: "Use $data-classification-residency-and-sovereignty-manager to evaluate this enterprise platform capability with evidence."

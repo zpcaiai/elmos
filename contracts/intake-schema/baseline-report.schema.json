@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema", "$id": "elmos.polyglot.baseline-report.v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["schemaVersion", "snapshotId", "dependencyRestore", "buildStatus", "testStatus", "totalTests", "passedTests", "failedTests", "skippedTests", "steps", "existingFailures", "unresolved"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"}, "snapshotId": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}, "environmentRef": {"type": ["string", "null"]},
+    "dependencyRestore": {"enum": ["PASSED", "FAILED", "NOT_RUN", "INCONCLUSIVE", "BLOCKED"]}, "buildStatus": {"enum": ["PASSED", "FAILED", "NOT_RUN", "INCONCLUSIVE", "BLOCKED"]},
+    "testStatus": {"enum": ["PASSED", "FAILED", "NOT_RUN", "INCONCLUSIVE", "BLOCKED"]}, "totalTests": {"type": "integer", "minimum": 0},
+    "passedTests": {"type": "integer", "minimum": 0}, "failedTests": {"type": "integer", "minimum": 0}, "skippedTests": {"type": "integer", "minimum": 0},
+    "coverage": {"type": ["number", "null"], "minimum": 0, "maximum": 1}, "steps": {"type": "array", "items": {"type": "object"}},
+    "existingFailures": {"type": "array", "items": {"type": "string"}}, "unresolved": {"type": "array", "items": {"type": "string"}}
+  }
+}

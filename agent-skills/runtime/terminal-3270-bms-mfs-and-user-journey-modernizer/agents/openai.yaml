@@ -1,0 +1,4 @@
+interface:
+  display_name: "Terminal 3270 Bms Mfs And User Journey Modernizer"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $terminal-3270-bms-mfs-and-user-journey-modernizer to execute this ELMOS Runtime Skill with fail-closed evidence."

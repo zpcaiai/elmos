@@ -1,0 +1,4 @@
+interface:
+  display_name: "Data Archive Retention and Legal Hold Manager"
+  short_description: "Run this Batch 11 cutover capability"
+  default_prompt: "Use $data-archive-retention-and-legal-hold-manager to perform this Batch 11 production-cutover task."

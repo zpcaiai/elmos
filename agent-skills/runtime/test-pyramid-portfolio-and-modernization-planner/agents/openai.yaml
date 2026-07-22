@@ -1,0 +1,4 @@
+interface:
+  display_name: "test-pyramid-portfolio-and-modernization-planner"
+  short_description: "Apply this Batch 18 quality workflow safely"
+  default_prompt: "Use $test-pyramid-portfolio-and-modernization-planner to implement this test-quality task with fail-closed evidence boundaries."

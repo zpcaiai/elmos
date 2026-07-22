@@ -1,0 +1,4 @@
+interface:
+  display_name: "Build Secret Injector"
+  short_description: "Lease and revoke ephemeral build secrets"
+  default_prompt: "Use $build-secret-injector to implement or review this ELMOS Batch 2 capability."

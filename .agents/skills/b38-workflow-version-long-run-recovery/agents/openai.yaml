@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 38: Workflow Version Long Run Recovery"
+  short_description: "Run evidence-bound Batch 38 workflow version long run recovery w"
+  default_prompt: "Use $b38-workflow-version-long-run-recovery to implement and verify this capability with fail-closed evidence."

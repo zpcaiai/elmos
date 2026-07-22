@@ -1,0 +1,4 @@
+interface:
+  display_name: "Production Workload Model Builder"
+  short_description: "Run this Batch 10 hardening capability"
+  default_prompt: "Use $production-workload-model-builder to perform this Batch 10 production-hardening task."

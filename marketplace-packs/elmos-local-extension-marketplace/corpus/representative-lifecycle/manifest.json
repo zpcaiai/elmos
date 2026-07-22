@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "status": "NOT_RUN",
+  "source_digest": "sha256:275b0bd61698d90cbde77f258a8cfc2560f85c4fbd438d16d8d983b5ca0c4f35",
+  "dataset_digest": "sha256:d4b4a49a2a1696fc3d17fb5bf8fee89b8c55b47e30c31019441c576db289f265",
+  "independent": false,
+  "execution_kind": "NOT_RUN",
+  "authorization_refs": [],
+  "evidence_refs": [],
+  "reason": "No independent external execution was authorized or performed."
+}

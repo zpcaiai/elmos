@@ -1,0 +1,4 @@
+interface:
+  display_name: "Codex Executor Adapter"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $codex-executor-adapter to execute this ELMOS Runtime Skill with fail-closed evidence."

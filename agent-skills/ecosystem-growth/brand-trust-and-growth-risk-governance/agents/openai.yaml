@@ -1,0 +1,5 @@
+interface:
+  display_name: "Brand Trust And Growth Risk Governance"
+  short_description: "Authoritative Batch 14 Skill 458 workflow"
+  default_prompt: "Use $brand-trust-and-growth-risk-governance to execute its evidence-bound Batch 14 workflow."
+

@@ -1,0 +1,4 @@
+interface:
+  display_name: "dual-write-dual-read-cdc-and-ownership-controller"
+  short_description: "ELMOS Batch 13 composite modernization control"
+  default_prompt: "Use $dual-write-dual-read-cdc-and-ownership-controller to evaluate this Batch 13 composite modernization task with fail-closed evidence gates."

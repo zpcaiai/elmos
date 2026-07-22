@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 45: Target Maintainability Certification"
+  short_description: "Run evidence-bound Batch 45 target maintainability certification"
+  default_prompt: "Use $b45-target-maintainability-certification to implement and verify this capability with fail-closed evidence."

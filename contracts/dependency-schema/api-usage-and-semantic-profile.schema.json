@@ -1,0 +1,3 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema","$id":"https://elmos.dev/schemas/dependency/v1/api-usage-and-semantic-profile.schema.json","title":"Used API Surface And Semantic Profile","type":"object","required":["dependencyId","usage","profile","analyzerComplete","analyzerRef"],"properties":{"dependencyId":{"type":"string"},"usage":{"type":"object","required":["importedSymbols","calledApis","constructedTypes","annotations","sourceRefs","observedSemantics","observed"]},"profile":{"type":"object","required":["requiredApis","requirements","evidenceRefs","confidence","unresolved"]},"analyzerComplete":{"type":"boolean"},"analyzerRef":{"type":"string"}},"additionalProperties":false
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "application-lifecycle-health-and-readiness-migrator"
+  short_description: "Plan and verify AFSM framework migration"
+  default_prompt: "Use $application-lifecycle-health-and-readiness-migrator to perform this Batch 7 framework migration step."

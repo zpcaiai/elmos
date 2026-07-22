@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 44: Customer Route Edition Margin"
+  short_description: "Run evidence-bound Batch 44 customer route edition margin work"
+  default_prompt: "Use $b44-customer-route-edition-margin to implement and verify this capability with fail-closed evidence."

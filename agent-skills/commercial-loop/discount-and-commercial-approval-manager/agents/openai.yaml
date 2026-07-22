@@ -1,0 +1,4 @@
+interface:
+  display_name: "discount-and-commercial-approval-manager"
+  short_description: "Run this Batch 13 commercial capability"
+  default_prompt: "Use $discount-and-commercial-approval-manager to evaluate this Batch 13 commercial capability with evidence."

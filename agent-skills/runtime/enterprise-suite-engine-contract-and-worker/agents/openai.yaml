@@ -1,0 +1,4 @@
+interface:
+  display_name: "Enterprise Suite Engine Contract And Worker"
+  short_description: "Govern evidence-bound enterprise suite modernization"
+  default_prompt: "Use $enterprise-suite-engine-contract-and-worker to govern this enterprise suite modernization task with fail-closed evidence."

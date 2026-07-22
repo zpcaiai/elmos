@@ -1,0 +1,4 @@
+interface:
+  display_name: "Finops Cost Allocation Unit Economics And Optimization"
+  short_description: "Govern Batch 16 infrastructure modernization"
+  default_prompt: "Use $finops-cost-allocation-unit-economics-and-optimization to produce a governed infrastructure modernization artifact."

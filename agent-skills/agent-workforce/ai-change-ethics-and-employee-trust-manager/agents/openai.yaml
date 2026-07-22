@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 580: ai change ethics and employee trust manager"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $ai-change-ethics-and-employee-trust-manager to evaluate this capability with evidence."

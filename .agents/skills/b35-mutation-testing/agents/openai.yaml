@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 35: Mutation Testing"
+  short_description: "Run evidence-bound Batch 35 mutation testing work"
+  default_prompt: "Use $b35-mutation-testing to implement and verify this capability with fail-closed evidence."

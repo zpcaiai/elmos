@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 30 Skill 016"
+  short_description: "Run ELMOS Product Batch 30 governance safely"
+  default_prompt: "Use $platform-zero-trust-privacy-supply-chain-and-tenant-isolation to implement its evidence-bound ELMOS Product Batch 30 contract."

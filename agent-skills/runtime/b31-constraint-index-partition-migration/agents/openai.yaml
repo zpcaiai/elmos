@@ -1,0 +1,4 @@
+interface:
+  display_name: "Migration Pack M31 Skill 042"
+  short_description: "Run Migration Pack M31 certification safely"
+  default_prompt: "Use $b31-constraint-index-partition-migration to apply the independent, fail-closed Migration Pack M31 contract."

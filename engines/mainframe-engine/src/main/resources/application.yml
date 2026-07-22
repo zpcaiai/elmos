@@ -1,0 +1,10 @@
+server:
+  port: ${ELMOS_MAINFRAME_PORT:8093}
+spring:
+  application:
+    name: elmos-mainframe-engine
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

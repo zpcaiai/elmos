@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 37 marketplace-support-incident-dispute-sla"
+  short_description: "Run evidence-bound Batch 37 extension workflow"
+  default_prompt: "Use $b37-marketplace-support-incident-dispute-sla to implement and verify this exact extension ecosystem capability."

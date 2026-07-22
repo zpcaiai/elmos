@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 610: vertical product packaging and entitlement manager"
+  short_description: "Operate authoritative Batch 17 capability"
+  default_prompt: "Use $vertical-product-packaging-and-entitlement-manager to evaluate this capability with evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "cache-contract-migrator"
+  short_description: "Plan and verify AFSM framework migration"
+  default_prompt: "Use $cache-contract-migrator to perform this Batch 7 framework migration step."

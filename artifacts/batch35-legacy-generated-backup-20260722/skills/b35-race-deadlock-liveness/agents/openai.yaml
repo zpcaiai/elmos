@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 35: Race Deadlock Liveness"
+  short_description: "Run evidence-bound Batch 35 race deadlock liveness work"
+  default_prompt: "Use $b35-race-deadlock-liveness to implement and verify this capability with fail-closed evidence."

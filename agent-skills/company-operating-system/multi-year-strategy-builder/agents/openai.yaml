@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 464: multi year strategy builder"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $multi-year-strategy-builder to evaluate this capability with evidence."

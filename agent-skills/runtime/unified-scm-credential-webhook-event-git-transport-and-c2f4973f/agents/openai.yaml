@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 35 Skill 017"
+  short_description: "Run Product Batch 35 evidence contract safely"
+  default_prompt: "Use $unified-scm-credential-webhook-event-git-transport-and-c2f4973f to implement its fail-closed ELMOS Product Batch 35 contract."

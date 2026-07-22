@@ -1,0 +1,65 @@
+openapi: 3.1.0
+info:
+  title: ELMOS Infrastructure Engine API
+  version: 1.0.0
+  description: Provider-neutral, plan-first Batch 16 worker contract. External operations fail closed without approved Runners.
+servers:
+  - url: http://localhost:8090
+paths:
+  /engine/v1/capabilities:
+    get:
+      operationId: infrastructureCapabilities
+      responses:
+        "200": {description: ELMOS_INFRASTRUCTURE capabilities}
+  /engine/v1/scan:
+    post:
+      operationId: scanInfrastructureEstate
+      requestBody: {required: true, content: {application/json: {schema: {$ref: "#/components/schemas/JobRequest"}}}}
+      responses:
+        "202": {description: Accepted or terminal fail-closed result}
+  /engine/v1/plan:
+    post:
+      operationId: planInfrastructureModernization
+      requestBody: {required: true, content: {application/json: {schema: {$ref: "#/components/schemas/JobRequest"}}}}
+      responses:
+        "202": {description: Accepted or terminal fail-closed result}
+  /engine/v1/execute-step:
+    post:
+      operationId: executeApprovedInfrastructureStep
+      responses:
+        "202": {description: Requires immutable plan, gates, named approval, Runner, lease, and rollback}
+  /engine/v1/validate:
+    post:
+      operationId: validateInfrastructure
+      requestBody: {required: true, content: {application/json: {schema: {$ref: "#/components/schemas/JobRequest"}}}}
+      responses:
+        "202": {description: Independent validation result}
+  /engine/v1/jobs/{jobId}:
+    get:
+      operationId: getInfrastructureJob
+      parameters:
+        - {name: jobId, in: path, required: true, schema: {type: string}}
+        - {name: organizationId, in: query, required: true, schema: {type: string}}
+      responses:
+        "200": {description: Tenant-scoped job}
+  /engine/v1/jobs/{jobId}/cancel:
+    post:
+      operationId: cancelInfrastructureJob
+      parameters:
+        - {name: jobId, in: path, required: true, schema: {type: string}}
+        - {name: organizationId, in: query, required: true, schema: {type: string}}
+      responses:
+        "200": {description: Cancellation decision}
+components:
+  schemas:
+    JobRequest:
+      type: object
+      additionalProperties: false
+      required: [organizationId, repositorySnapshotRef, workspaceRef, profile, correlationId, idempotencyKey]
+      properties:
+        organizationId: {type: string, minLength: 1}
+        repositorySnapshotRef: {type: string, minLength: 1}
+        workspaceRef: {type: string, minLength: 1}
+        profile: {type: string, minLength: 1}
+        correlationId: {type: string, minLength: 1}
+        idempotencyKey: {type: string, minLength: 1}

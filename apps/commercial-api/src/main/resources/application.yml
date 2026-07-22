@@ -1,0 +1,7 @@
+server:
+  port: ${ELMOS_COMMERCIAL_API_PORT:8085}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 718: erp and group finance integration"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $erp-and-group-finance-integration to evaluate this capability with evidence."

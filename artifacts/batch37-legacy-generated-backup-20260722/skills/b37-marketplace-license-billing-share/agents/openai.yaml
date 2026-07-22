@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 37: Marketplace License Billing Share"
+  short_description: "Run evidence-bound Batch 37 marketplace license billing share wo"
+  default_prompt: "Use $b37-marketplace-license-billing-share to implement and verify this capability with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B39: Order Subscription Provisioning Entitlement Lifecycle And Orchestration"
+  short_description: "Run ELMOS Product B39 contract with fail-closed evidence"
+  default_prompt: "Use $order-subscription-provisioning-entitlement-lifecycle-a-f610de24 to implement its fail-closed ELMOS Product B39 contract."

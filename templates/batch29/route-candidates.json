@@ -1,0 +1,24 @@
+{
+  "weights": {
+    "customer_demand": 0.2,
+    "revenue_potential": 0.15,
+    "strategic_fit": 0.15,
+    "technical_feasibility": 0.2,
+    "corpus_availability": 0.1,
+    "team_capability": 0.1,
+    "maintenance_efficiency": 0.1
+  },
+  "candidates": [
+    {
+      "route_key": "java-to-csharp",
+      "customer_demand": 0,
+      "revenue_potential": 0,
+      "strategic_fit": 0,
+      "technical_feasibility": 0,
+      "corpus_availability": 0,
+      "team_capability": 0,
+      "maintenance_efficiency": 0,
+      "evidence_notes": []
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+services:
+  control-plane:
+    user: "${ELMOS_ROOTLESS_UID:?required}:${ELMOS_ROOTLESS_GID:?required}"
+    environment:
+      ELMOS_GITHUB_APP_ENABLED: "${ELMOS_GITHUB_APP_ENABLED:-false}"
+      ELMOS_GITHUB_APP_ID: "${ELMOS_GITHUB_APP_ID:-}"
+      ELMOS_GITHUB_APP_PRIVATE_KEY_PATH: /run/secrets/github-app-private-key.pem
+      ELMOS_SNAPSHOT_STAGING_ROOT: /var/lib/elmos/snapshot-staging
+      ELMOS_SNAPSHOT_ARTIFACT_ROOT: /var/lib/elmos/snapshot-artifacts
+    volumes:
+      - "${ELMOS_SNAPSHOT_ARTIFACT_HOST_PATH:?required}:/var/lib/elmos/snapshot-artifacts"
+      - "${ELMOS_GITHUB_APP_PRIVATE_KEY_HOST_PATH:?required}:/run/secrets/github-app-private-key.pem:ro"
+      - snapshot-staging:/var/lib/elmos/snapshot-staging
+  workspace-service:
+    user: "${ELMOS_ROOTLESS_UID:?required}:${ELMOS_ROOTLESS_GID:?required}"
+    environment:
+      DOCKER_HOST: unix:///run/docker.sock
+      ELMOS_WORKSPACE_DOCKER_ENABLED: "true"
+      ELMOS_WORKSPACE_SECRETS_ENABLED: "true"
+      ELMOS_SNAPSHOT_ARTIFACT_ROOT: /var/lib/elmos/snapshot-artifacts
+      ELMOS_COMMAND_ARTIFACT_ROOT: /var/lib/elmos/command-artifacts
+      ELMOS_PROVIDER_SECRET_ROOT: /run/elmos/provider-secrets
+      ELMOS_SNAPSHOT_HELPER_IMAGE_DIGEST: "${ELMOS_SNAPSHOT_HELPER_IMAGE_DIGEST:?required}"
+      ELMOS_EGRESS_PROXY_IMAGE_DIGEST: "${ELMOS_EGRESS_PROXY_IMAGE_DIGEST:?required}"
+    volumes:
+      - "${ELMOS_ROOTLESS_DOCKER_SOCKET:?required}:/run/docker.sock"
+      - "${ELMOS_SNAPSHOT_ARTIFACT_HOST_PATH:?required}:/var/lib/elmos/snapshot-artifacts:ro"
+      - "${ELMOS_COMMAND_ARTIFACT_HOST_PATH:?required}:/var/lib/elmos/command-artifacts"
+      - "${ELMOS_PROVIDER_SECRET_HOST_PATH:?required}:/run/elmos/provider-secrets"
+  software-delivery-platform-engine-worker:
+    user: "${ELMOS_ROOTLESS_UID:?required}:${ELMOS_ROOTLESS_GID:?required}"
+    read_only: true
+    security_opt: ["no-new-privileges:true"]
+    tmpfs: ["/tmp:rw,noexec,nosuid,size=64m"]
+  ai-platform-engine-worker:
+    user: "${ELMOS_ROOTLESS_UID:?required}:${ELMOS_ROOTLESS_GID:?required}"
+    read_only: true
+    security_opt: ["no-new-privileges:true"]
+    tmpfs: ["/tmp:rw,noexec,nosuid,size=64m"]
+  edge-iot-industrial-engine-worker:
+    user: "${ELMOS_ROOTLESS_UID:?required}:${ELMOS_ROOTLESS_GID:?required}"
+    read_only: true
+    security_opt: ["no-new-privileges:true"]
+    tmpfs: ["/tmp:rw,noexec,nosuid,size=64m"]
+  operations-sre-itsm-engine-worker:
+    user: "${ELMOS_ROOTLESS_UID:?required}:${ELMOS_ROOTLESS_GID:?required}"
+    read_only: true
+    security_opt: ["no-new-privileges:true"]
+    tmpfs: ["/tmp:rw,noexec,nosuid,size=64m"]
+  enterprise-architecture-engine-worker:
+    user: "${ELMOS_ROOTLESS_UID:?required}:${ELMOS_ROOTLESS_GID:?required}"
+    read_only: true
+    security_opt: ["no-new-privileges:true"]
+    tmpfs: ["/tmp:rw,noexec,nosuid,size=64m"]
+volumes:
+  snapshot-staging:

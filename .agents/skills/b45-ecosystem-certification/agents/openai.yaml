@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 45: Ecosystem Certification"
+  short_description: "Run evidence-bound Batch 45 ecosystem certification work"
+  default_prompt: "Use $b45-ecosystem-certification to implement and verify this capability with fail-closed evidence."

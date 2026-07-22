@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 489: leadership development and manager system"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $leadership-development-and-manager-system to evaluate this capability with evidence."

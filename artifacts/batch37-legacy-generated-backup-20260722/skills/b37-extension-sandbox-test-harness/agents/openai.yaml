@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 37: Extension Sandbox Test Harness"
+  short_description: "Run evidence-bound Batch 37 extension sandbox test harness work"
+  default_prompt: "Use $b37-extension-sandbox-test-harness to implement and verify this capability with fail-closed evidence."

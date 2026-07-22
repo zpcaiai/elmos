@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B37: Third Party Audit Penetration Test Compliance Assessment And Signed Report Intake"
+  short_description: "Run ELMOS Product B37 contract with fail-closed evidence"
+  default_prompt: "Use $third-party-audit-penetration-test-compliance-assessmen-f8b2a7d4 to implement its fail-closed ELMOS Product B37 contract."

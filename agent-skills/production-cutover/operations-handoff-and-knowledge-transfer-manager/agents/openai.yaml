@@ -1,0 +1,4 @@
+interface:
+  display_name: "Operations Handoff and Knowledge Transfer Manager"
+  short_description: "Run this Batch 11 cutover capability"
+  default_prompt: "Use $operations-handoff-and-knowledge-transfer-manager to perform this Batch 11 production-cutover task."

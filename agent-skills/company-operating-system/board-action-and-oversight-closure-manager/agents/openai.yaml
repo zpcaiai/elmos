@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 521: board action and oversight closure manager"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $board-action-and-oversight-closure-manager to evaluate this capability with evidence."

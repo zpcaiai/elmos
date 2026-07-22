@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 36: Recipe Mapping Authoring"
+  short_description: "Run evidence-bound Batch 36 recipe mapping authoring work"
+  default_prompt: "Use $b36-recipe-mapping-authoring to implement and verify this capability with fail-closed evidence."

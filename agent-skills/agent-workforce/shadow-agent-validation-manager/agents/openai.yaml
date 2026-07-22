@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 553: shadow agent validation manager"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $shadow-agent-validation-manager to evaluate this capability with evidence."

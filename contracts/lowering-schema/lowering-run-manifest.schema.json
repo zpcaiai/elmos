@@ -1,0 +1,7 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://elmos.dev/schemas/lowering/v1/run-manifest.schema.json",
+  "title":"Lowering Run Manifest","type":"object","additionalProperties":false,
+  "required":["loweringRunId","uirRunId","targetRepositoryId","targetProfileId","targetLanguage","configurationHash","callablePlanIds","ruleIds","capabilityIds","createdAt"],
+  "properties":{"loweringRunId":{"type":"string"},"uirRunId":{"type":"string"},"targetRepositoryId":{"type":"string"},"targetProfileId":{"type":"string"},"targetLanguage":{"enum":["java","python","csharp","typescript","javascript"]},"configurationHash":{"type":"string","pattern":"^sha256:"},"callablePlanIds":{"type":"array","items":{"type":"string"},"uniqueItems":true},"ruleIds":{"type":"array","items":{"type":"string"},"uniqueItems":true},"capabilityIds":{"type":"array","items":{"type":"string"},"uniqueItems":true},"createdAt":{"type":"string","format":"date-time"}}
+}

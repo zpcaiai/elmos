@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "policy_id",
+    "models",
+    "metering_authority",
+    "entitlement_signing",
+    "revenue_share",
+    "refund_policy",
+    "reconciliation"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "policy_id": {
+      "type": "string"
+    },
+    "models": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "free",
+          "subscription",
+          "usage",
+          "seat",
+          "tenant",
+          "trial",
+          "enterprise",
+          "private"
+        ]
+      }
+    },
+    "metering_authority": {
+      "const": "platform"
+    },
+    "entitlement_signing": {
+      "const": true
+    },
+    "revenue_share": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "required": [
+        "platform_percent",
+        "publisher_percent"
+      ],
+      "properties": {
+        "platform_percent": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "publisher_percent": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        }
+      },
+      "additionalProperties": true
+    },
+    "refund_policy": {
+      "type": "string"
+    },
+    "reconciliation": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "required": [
+        "frequency",
+        "idempotent_events",
+        "dispute_evidence"
+      ],
+      "properties": {
+        "frequency": {
+          "type": "string"
+        },
+        "idempotent_events": {
+          "const": true
+        },
+        "dispute_evidence": {
+          "const": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "security_gate_independent": {
+      "const": true
+    }
+  },
+  "additionalProperties": true,
+  "$id": "https://example.invalid/batch37/commercial-policy.schema.json"
+}

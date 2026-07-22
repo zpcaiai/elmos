@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 528: company work task and decision graph builder"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $company-work-task-and-decision-graph-builder to evaluate this capability with evidence."

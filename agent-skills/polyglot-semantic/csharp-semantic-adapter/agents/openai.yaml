@@ -1,0 +1,4 @@
+interface:
+  display_name: "C# Semantic Adapter"
+  short_description: "Extract Roslyn-backed C# semantics"
+  default_prompt: "Use $csharp-semantic-adapter to extract Roslyn semantics without running generators or analyzers."

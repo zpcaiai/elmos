@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 530: role decomposition and job redesign manager"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $role-decomposition-and-job-redesign-manager to evaluate this capability with evidence."

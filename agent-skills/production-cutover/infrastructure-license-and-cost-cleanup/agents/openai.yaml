@@ -1,0 +1,4 @@
+interface:
+  display_name: "Infrastructure License and Cost Cleanup"
+  short_description: "Run this Batch 11 cutover capability"
+  default_prompt: "Use $infrastructure-license-and-cost-cleanup to perform this Batch 11 production-cutover task."

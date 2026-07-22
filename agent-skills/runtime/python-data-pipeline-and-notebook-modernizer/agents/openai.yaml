@@ -1,0 +1,4 @@
+interface:
+  display_name: "Python Pipeline Modernizer"
+  short_description: "Modernize pipelines notebooks and schedulers"
+  default_prompt: "Use $python-data-pipeline-and-notebook-modernizer to modernize this data workflow."

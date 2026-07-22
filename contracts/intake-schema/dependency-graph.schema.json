@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema", "$id": "elmos.polyglot.dependency-graph.v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["schemaVersion", "snapshotId", "nodes", "edges", "stronglyConnectedComponents", "migrationCandidates", "highCouplingModules", "unresolved"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"}, "snapshotId": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "nodes": {"type": "array", "items": {"type": "object", "required": ["id", "type", "name", "attributes"]}},
+    "edges": {"type": "array", "items": {"type": "object", "required": ["from", "to", "type", "evidencePath"]}},
+    "stronglyConnectedComponents": {"type": "array", "items": {"type": "array", "items": {"type": "string"}}},
+    "migrationCandidates": {"type": "array", "items": {"type": "string"}}, "highCouplingModules": {"type": "array", "items": {"type": "string"}},
+    "unresolved": {"type": "array", "items": {"type": "string"}}
+  }
+}

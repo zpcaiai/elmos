@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-local-advanced-verification",
+  "metrics": {
+    "local_module_test_pass_rate": 1.0,
+    "local_module_tests": 14
+  },
+  "zero_tolerance": {},
+  "evidence_refs": [
+    "certification/local-test-result.json",
+    "certification/local-source-manifest.json",
+    "counterexamples/sample.json"
+  ],
+  "notes": [
+    "Local execution evidence only; certification thresholds were not evaluated."
+  ]
+}

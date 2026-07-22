@@ -1,0 +1,4 @@
+interface:
+  display_name: "patch audit rollback and evidence manager"
+  short_description: "Run a bounded Batch 8 repair workflow"
+  default_prompt: "Use $patch-audit-rollback-and-evidence-manager to perform this Batch 8 repair step."

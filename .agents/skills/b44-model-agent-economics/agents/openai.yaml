@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 44: Model Agent Economics"
+  short_description: "Run evidence-bound Batch 44 model agent economics work"
+  default_prompt: "Use $b44-model-agent-economics to implement and verify this capability with fail-closed evidence."

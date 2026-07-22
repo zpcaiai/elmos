@@ -1,0 +1,5 @@
+interface:
+  display_name: "Regional Growth Dashboard And Comparison Engine"
+  short_description: "Authoritative Batch 14 Skill 456 workflow"
+  default_prompt: "Use $regional-growth-dashboard-and-comparison-engine to execute its evidence-bound Batch 14 workflow."
+

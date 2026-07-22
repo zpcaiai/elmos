@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 35: Numeric Verification"
+  short_description: "Verify decimal rounding overflow and float intervals"
+  default_prompt: "Use $b35-numeric-decimal-float-verification to implement and verify this capability with fail-closed evidence."

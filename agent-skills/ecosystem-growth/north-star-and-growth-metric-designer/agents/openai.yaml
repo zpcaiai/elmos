@@ -1,0 +1,5 @@
+interface:
+  display_name: "North Star And Growth Metric Designer"
+  short_description: "Authoritative Batch 14 Skill 402 workflow"
+  default_prompt: "Use $north-star-and-growth-metric-designer to execute its evidence-bound Batch 14 workflow."
+

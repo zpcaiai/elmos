@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 45: Developer Experience Certification"
+  short_description: "Run evidence-bound Batch 45 developer experience certification w"
+  default_prompt: "Use $b45-developer-experience-certification to implement and verify this capability with fail-closed evidence."

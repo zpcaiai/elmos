@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 739: organization role and workforce transition"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $organization-role-and-workforce-transition to evaluate this capability with evidence."

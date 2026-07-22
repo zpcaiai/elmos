@@ -1,0 +1,4 @@
+interface:
+  display_name: "Infrastructure Estate Workload And Dependency Discovery"
+  short_description: "Govern Batch 16 infrastructure modernization"
+  default_prompt: "Use $infrastructure-estate-workload-and-dependency-discovery to produce a governed infrastructure modernization artifact."

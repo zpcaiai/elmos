@@ -1,0 +1,1 @@
+{"runner":"MAINFRAME_DISTRIBUTED_ANALYSIS","rootless":true,"ephemeral":true,"network":"DENY","productionCredentials":false,"executesMainframeCode":false,"outputs":"CANDIDATE_EVIDENCE_ONLY"}

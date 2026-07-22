@@ -1,0 +1,4 @@
+interface:
+  display_name: "isolated build test sandbox"
+  short_description: "Run a bounded Batch 8 repair workflow"
+  default_prompt: "Use $isolated-build-test-sandbox to perform this Batch 8 repair step."

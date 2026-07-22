@@ -1,0 +1,4 @@
+interface:
+  display_name: "Migration Wave Planner"
+  short_description: "Group migration steps into safe waves"
+  default_prompt: "Use $migration-wave-planner for ELMOS Batch 4 wave planning."

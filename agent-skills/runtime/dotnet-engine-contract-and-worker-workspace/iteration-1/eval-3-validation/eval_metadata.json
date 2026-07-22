@@ -1,0 +1,10 @@
+{
+  "eval_id": 3,
+  "eval_name": "independent-validation-and-unified-evidence",
+  "prompt": "Judge a migration where Windows baseline and modern Windows builds pass, baseline discovered 800 tests, migrated discovered 240, and the required Linux runtime fails. Map the result into unified ELMOS evidence for a Java/.NET portfolio.",
+  "assertions": [
+    "The output fails TEST_INVENTORY because 800 tests became 240 even though the remaining tests can pass.",
+    "The output fails MIGRATED_LINUX and states that a Windows pass cannot substitute for required Linux evidence.",
+    "The output maps .NET evidence into the existing same-tenant ELMOS portfolio without creating duplicate workflow, billing, audit, SCM or delivery authority."
+  ]
+}

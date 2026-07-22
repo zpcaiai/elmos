@@ -1,0 +1,1 @@
+{"schema":"elmos.test-runner-policy.v1","runner":"INTEGRATION","status":"NOT_CONFIGURED","rootless":true,"digestPinned":true,"network":"DENY","namespaceIsolation":true,"environmentLeaseRequired":true,"testDataLeaseRequired":true}

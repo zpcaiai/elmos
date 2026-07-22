@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 667: vertical marketplace and industry asset ecosystem"
+  short_description: "Operate authoritative Batch 17 capability"
+  default_prompt: "Use $vertical-marketplace-and-industry-asset-ecosystem to evaluate this capability with evidence."

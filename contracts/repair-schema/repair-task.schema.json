@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/repair-task.schema.json",
+  "title": "RepairTask",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "taskId",
+    "clusterId",
+    "intent",
+    "scope",
+    "forbiddenActions",
+    "requiredValidations",
+    "risk",
+    "contextHash",
+    "maximumAttempts",
+    "createdAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0"
+    },
+    "taskId": {
+      "type": "string"
+    },
+    "clusterId": {
+      "type": "string"
+    },
+    "intent": {
+      "type": "string"
+    },
+    "scope": {
+      "type": "object"
+    },
+    "forbiddenActions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "requiredValidations": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "risk": {
+      "enum": [
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "contextHash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "maximumAttempts": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 12
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}
+

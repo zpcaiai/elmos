@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/enterprise-platform/tenant-profile.schema.json",
+  "title": "Enterprise Tenant Profile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["tenant_id", "organization_id", "isolation_level", "deployment_mode", "data_region", "encryption_key_ref", "retention_policy_id", "resource_ownership_complete", "dedicated_data_key", "runner_boundary_declared", "model_policy_declared", "audit_sink_configured", "legal_hold_policy_configured", "evidence_refs"],
+  "properties": {
+    "tenant_id": {"type": "string", "minLength": 1},
+    "organization_id": {"type": "string", "minLength": 1},
+    "isolation_level": {"enum": ["LEVEL_1_SHARED", "LEVEL_2_DATA_ISOLATED", "LEVEL_3_NAMESPACE_RUNNER", "LEVEL_4_DEDICATED_CLUSTER", "LEVEL_5_DEDICATED_INSTALLATION", "LEVEL_6_AIR_GAPPED"]},
+    "deployment_mode": {"$ref": "deployment-profile.schema.json#/$defs/mode"},
+    "data_region": {"type": "string", "minLength": 1},
+    "encryption_key_ref": {"type": "string", "minLength": 1},
+    "retention_policy_id": {"type": "string", "minLength": 1},
+    "resource_ownership_complete": {"const": true},
+    "dedicated_data_key": {"const": true},
+    "runner_boundary_declared": {"const": true},
+    "model_policy_declared": {"const": true},
+    "audit_sink_configured": {"const": true},
+    "legal_hold_policy_configured": {"const": true},
+    "evidence_refs": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+  },
+  "allOf": [
+    {"if": {"properties": {"deployment_mode": {"const": "AIR_GAPPED"}}, "required": ["deployment_mode"]}, "then": {"properties": {"isolation_level": {"const": "LEVEL_6_AIR_GAPPED"}}}}
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema","$id":"https://elmos.dev/schemas/lowering/v1/rule.schema.json","title":"Lowering Rule","type":"object","additionalProperties":false,
+  "required":["ruleId","version","dialect","opcode","targetLanguage","minVersion","strategy","specificity","priority","fidelity","idempotent","production","emittedConstructs","obligations","approvedDependencies","tests"],
+  "properties":{"ruleId":{"type":"string"},"version":{"type":"string"},"dialect":{"type":"string"},"opcode":{"type":"string"},"targetLanguage":{"enum":["java","python","csharp","typescript","javascript"]},"minVersion":{"type":"string"},"maxVersion":{"type":["string","null"]},"strategy":{"type":"string"},"specificity":{"type":"integer"},"priority":{"type":"integer"},"fidelity":{"type":"string"},"idempotent":{"type":"boolean"},"production":{"type":"boolean"},"emittedConstructs":{"type":"array","items":{"type":"string"}},"obligations":{"type":"array","items":{"type":"string"}},"approvedDependencies":{"type":"array","items":{"type":"string"}},"tests":{"type":"array","items":{"type":"string"}}}
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 34 Skill 005"
+  short_description: "Run Product Batch 34 evidence contract safely"
+  default_prompt: "Use $scim-directory-user-group-and-role-provisioning to implement its fail-closed ELMOS Product Batch 34 contract."

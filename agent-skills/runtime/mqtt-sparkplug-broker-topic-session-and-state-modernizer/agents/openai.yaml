@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 24 006"
+  short_description: "Run Batch 24 runtime contract safely"
+  default_prompt: "Use $mqtt-sparkplug-broker-topic-session-and-state-modernizer to apply its fail-closed ELMOS runtime contract."

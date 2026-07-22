@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 463: strategic diagnosis and scenario planner"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $strategic-diagnosis-and-scenario-planner to evaluate this capability with evidence."

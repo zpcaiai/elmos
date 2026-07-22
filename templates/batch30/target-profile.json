@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "profile_key": "target-profile",
+  "version": "0.1.0",
+  "owner": "UNASSIGNED",
+  "framework": "",
+  "framework_versions": [],
+  "runtime": "",
+  "runtime_versions": [],
+  "architecture_style": "",
+  "providers": {
+    "serializer": {},
+    "dependency_injection": {},
+    "validation": {},
+    "authentication": {},
+    "authorization": {},
+    "persistence": {},
+    "messaging": {},
+    "cache": {},
+    "scheduler": {},
+    "observability": {}
+  },
+  "build": {
+    "commands": [],
+    "toolchain_digests": []
+  },
+  "startup": {
+    "command": "",
+    "health_check": ""
+  }
+}

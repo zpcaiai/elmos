@@ -1,0 +1,4 @@
+interface:
+  display_name: "B36 Visual Studio Extensions"
+  short_description: "Implement Visual Studio and VS Code adapters"
+  default_prompt: "Use $b36-visual-studio-vscode-extensions to implement host-specific Visual Studio and VS Code workflows."

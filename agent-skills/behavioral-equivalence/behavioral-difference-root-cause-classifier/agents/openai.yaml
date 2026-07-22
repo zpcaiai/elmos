@@ -1,0 +1,4 @@
+interface:
+  display_name: "Behavioral Difference Root Cause Classifier"
+  short_description: "Run this Batch 9 behavioral capability"
+  default_prompt: "Use $behavioral-difference-root-cause-classifier to perform this Batch 9 behavioral-equivalence task."

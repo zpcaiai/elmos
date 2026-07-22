@@ -1,0 +1,4 @@
+interface:
+  display_name: "Spring Stack Fingerprint"
+  short_description: "Fingerprint the Spring technology stack"
+  default_prompt: "Use $spring-stack-fingerprint for ELMOS Batch 3 Spring evidence."

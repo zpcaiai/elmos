@@ -1,0 +1,4 @@
+interface:
+  display_name: "Legacy Traffic Drain Controller"
+  short_description: "Run this Batch 11 cutover capability"
+  default_prompt: "Use $legacy-traffic-drain-controller to perform this Batch 11 production-cutover task."

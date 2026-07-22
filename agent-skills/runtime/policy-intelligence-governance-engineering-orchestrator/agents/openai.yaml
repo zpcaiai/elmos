@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B38: Policy Intelligence Governance Engineering Orchestrator"
+  short_description: "Run ELMOS Product B38 contract with fail-closed evidence"
+  default_prompt: "Use $policy-intelligence-governance-engineering-orchestrator to implement its fail-closed ELMOS Product B38 contract."

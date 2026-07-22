@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mainframe Estate Source Dataset And Runtime Discovery"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $mainframe-estate-source-dataset-and-runtime-discovery to execute this ELMOS Runtime Skill with fail-closed evidence."

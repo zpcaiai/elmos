@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Domain Model"
+  short_description: "Implement ELMOS aggregates value objects events and invariants"
+  default_prompt: "Use $elmos-domain-model to design or change ELMOS domain types and invariant tests."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Unit Test Result Normalizer And Comparator"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $unit-test-result-normalizer-and-comparator to execute this ELMOS Runtime Skill with fail-closed evidence."

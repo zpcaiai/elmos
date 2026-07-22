@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.polyglot.build-model.v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["schemaVersion", "snapshotId", "projects", "privateDependencySources", "unresolved"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"}, "snapshotId": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "projects": {"type": "array", "items": {"type": "object", "required": ["projectId", "language", "buildTool", "sourceRoots", "testRoots", "dependencies", "testCommands", "buildCommands", "unresolved"]}},
+    "privateDependencySources": {"type": "array", "items": {"type": "string"}}, "unresolved": {"type": "array", "items": {"type": "string"}}
+  }
+}

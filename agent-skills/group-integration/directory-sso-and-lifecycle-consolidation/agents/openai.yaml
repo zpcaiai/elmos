@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 694: directory sso and lifecycle consolidation"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $directory-sso-and-lifecycle-consolidation to evaluate this capability with evidence."

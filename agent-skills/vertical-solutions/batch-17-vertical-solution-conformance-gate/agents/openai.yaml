@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 668: batch 17 vertical solution conformance gate"
+  short_description: "Operate authoritative Batch 17 capability"
+  default_prompt: "Use $batch-17-vertical-solution-conformance-gate to evaluate this capability with evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Suite Identity Role Segregation Of Duties And Control Validator"
+  short_description: "Govern evidence-bound enterprise suite modernization"
+  default_prompt: "Use $suite-identity-role-segregation-of-duties-and-control-validator to govern this enterprise suite modernization task with fail-closed evidence."

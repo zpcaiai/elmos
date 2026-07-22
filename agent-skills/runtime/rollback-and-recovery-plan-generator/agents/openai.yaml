@@ -1,0 +1,4 @@
+interface:
+  display_name: "Rollback And Recovery Plan Generator"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $rollback-and-recovery-plan-generator to execute this ELMOS Runtime Skill with fail-closed evidence."

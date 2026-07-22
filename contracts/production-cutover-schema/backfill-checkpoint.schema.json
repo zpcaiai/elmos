@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/production-cutover/backfill-checkpoint.schema.json",
+  "title": "Durable Backfill Checkpoint",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["job_id", "partition_id", "sequence", "last_source_key", "records_read", "records_written", "records_failed", "source_high_watermark", "target_commit_id", "target_commit_confirmed", "checkpoint_published_after_commit", "idempotency_key", "recorded_at", "evidence_refs"],
+  "properties": {
+    "job_id": {"type": "string", "minLength": 1},
+    "partition_id": {"type": "string", "minLength": 1},
+    "sequence": {"type": "integer", "minimum": 1},
+    "last_source_key": {"type": ["string", "integer"]},
+    "records_read": {"type": "integer", "minimum": 0},
+    "records_written": {"type": "integer", "minimum": 0},
+    "records_failed": {"type": "integer", "minimum": 0},
+    "source_high_watermark": {"type": "string", "minLength": 1},
+    "target_commit_id": {"type": "string", "minLength": 1},
+    "target_commit_confirmed": {"const": true},
+    "checkpoint_published_after_commit": {"const": true},
+    "idempotency_key": {"type": "string", "minLength": 1},
+    "recorded_at": {"type": "string", "format": "date-time"},
+    "evidence_refs": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+  }
+}

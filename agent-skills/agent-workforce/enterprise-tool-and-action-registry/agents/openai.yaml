@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 541: enterprise tool and action registry"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $enterprise-tool-and-action-registry to evaluate this capability with evidence."

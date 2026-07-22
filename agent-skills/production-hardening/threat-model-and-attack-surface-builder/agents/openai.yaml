@@ -1,0 +1,4 @@
+interface:
+  display_name: "Threat Model and Attack Surface Builder"
+  short_description: "Run this Batch 10 hardening capability"
+  default_prompt: "Use $threat-model-and-attack-surface-builder to perform this Batch 10 production-hardening task."

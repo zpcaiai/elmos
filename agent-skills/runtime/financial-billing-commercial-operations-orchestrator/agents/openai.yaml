@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B39: Financial Billing Commercial Operations Orchestrator"
+  short_description: "Run ELMOS Product B39 contract with fail-closed evidence"
+  default_prompt: "Use $financial-billing-commercial-operations-orchestrator to implement its fail-closed ELMOS Product B39 contract."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "jQuery Modernizer"
+  short_description: "Stage jQuery and legacy widget modernization"
+  default_prompt: "Use $jquery-dom-and-legacy-widget-modernizer to inventory DOM ownership and plan staged jQuery and plugin modernization."

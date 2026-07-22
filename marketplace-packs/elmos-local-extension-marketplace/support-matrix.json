@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-local-extension-marketplace",
+  "capabilities": [
+    {
+      "capability": "extension-manifest-abi",
+      "status": "experimental",
+      "owner": "elmos-marketplace",
+      "evidence_refs": [
+        "certification/local-test-result.json",
+        "certification/local-cli-result.json",
+        "certification/source-manifest.json"
+      ],
+      "conditions": [
+        "Local Java core only; external Marketplace execution is NOT_RUN."
+      ]
+    },
+    {
+      "capability": "sandbox-execution",
+      "status": "experimental",
+      "owner": "elmos-marketplace",
+      "evidence_refs": [
+        "certification/local-test-result.json",
+        "certification/local-cli-result.json",
+        "certification/source-manifest.json"
+      ],
+      "conditions": [
+        "Local Java core only; external Marketplace execution is NOT_RUN."
+      ]
+    },
+    {
+      "capability": "publication-install-revoke",
+      "status": "experimental",
+      "owner": "elmos-marketplace",
+      "evidence_refs": [
+        "certification/local-test-result.json",
+        "certification/local-cli-result.json",
+        "certification/source-manifest.json"
+      ],
+      "conditions": [
+        "Local Java core only; external Marketplace execution is NOT_RUN."
+      ]
+    }
+  ]
+}

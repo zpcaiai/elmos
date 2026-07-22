@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 42: Agent Memory State Governance"
+  short_description: "Run evidence-bound Batch 42 agent memory state governance work"
+  default_prompt: "Use $b42-agent-memory-state-governance to implement and verify this capability with fail-closed evidence."

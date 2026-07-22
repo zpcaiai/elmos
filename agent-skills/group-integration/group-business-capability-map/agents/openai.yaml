@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 679: group business capability map"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $group-business-capability-map to evaluate this capability with evidence."

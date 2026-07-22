@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/composite/system-node/1.0.0",
+  "title": "ELMOS System Landscape Node",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "nodeId", "organizationId", "nodeType", "name", "language", "environment", "evidenceRefs"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "nodeId": { "type": "string", "minLength": 1 },
+    "organizationId": { "type": "string", "minLength": 1 },
+    "nodeType": { "enum": ["REPOSITORY", "DEPLOYABLE", "SERVICE", "WEB_APPLICATION", "BATCH_JOB", "MESSAGE_PROCESSOR", "MODEL_ENDPOINT", "DATABASE", "SCHEMA", "TABLE", "FILE_EXCHANGE", "EXTERNAL_SYSTEM", "USER_INTERFACE"] },
+    "name": { "type": "string", "minLength": 1 },
+    "language": { "enum": ["JAVA", "DOTNET", "PYTHON", "MULTI_LANGUAGE", "NONE", "UNKNOWN"] },
+    "repositoryId": { "type": ["string", "null"] },
+    "deployableId": { "type": ["string", "null"] },
+    "environment": { "enum": ["DEVELOPMENT", "TEST", "STAGING", "PRODUCTION", "SHADOW"] },
+    "evidenceRefs": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
+  }
+}

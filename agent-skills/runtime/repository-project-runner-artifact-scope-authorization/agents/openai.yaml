@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 34 Skill 010"
+  short_description: "Run Product Batch 34 evidence contract safely"
+  default_prompt: "Use $repository-project-runner-artifact-scope-authorization to implement its fail-closed ELMOS Product Batch 34 contract."

@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "route_key": "java-to-csharp",
+  "capabilities": [
+    {
+      "id": "type-system",
+      "status": "experimental",
+      "strategy": "deterministic-lowering",
+      "reason": "Initial scaffold; evidence required",
+      "evidence_refs": []
+    },
+    {
+      "id": "generics",
+      "status": "detected-only",
+      "strategy": "obligation",
+      "reason": "Not yet implemented",
+      "evidence_refs": []
+    },
+    {
+      "id": "nullability",
+      "status": "detected-only",
+      "strategy": "obligation",
+      "reason": "Not yet implemented",
+      "evidence_refs": []
+    },
+    {
+      "id": "numeric",
+      "status": "detected-only",
+      "strategy": "obligation",
+      "reason": "Not yet implemented",
+      "evidence_refs": []
+    },
+    {
+      "id": "time",
+      "status": "detected-only",
+      "strategy": "obligation",
+      "reason": "Not yet implemented",
+      "evidence_refs": []
+    },
+    {
+      "id": "exceptions",
+      "status": "detected-only",
+      "strategy": "obligation",
+      "reason": "Not yet implemented",
+      "evidence_refs": []
+    },
+    {
+      "id": "async",
+      "status": "detected-only",
+      "strategy": "obligation",
+      "reason": "Not yet implemented",
+      "evidence_refs": []
+    },
+    {
+      "id": "concurrency",
+      "status": "blocked",
+      "strategy": "human-review",
+      "reason": "Requires route-specific certification",
+      "evidence_refs": []
+    },
+    {
+      "id": "reflection",
+      "status": "blocked",
+      "strategy": "human-review",
+      "reason": "Requires route-specific certification",
+      "evidence_refs": []
+    },
+    {
+      "id": "serialization",
+      "status": "detected-only",
+      "strategy": "contract-mapping",
+      "reason": "Not yet implemented",
+      "evidence_refs": []
+    },
+    {
+      "id": "interop",
+      "status": "blocked",
+      "strategy": "retain-runtime-or-sidecar",
+      "reason": "Requires explicit boundary plan",
+      "evidence_refs": []
+    }
+  ]
+}

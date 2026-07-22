@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.offline-license.v1",
+  "title": "ELMOS Offline License",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "installationId",
+    "edition",
+    "features",
+    "maximumRunners",
+    "validFrom",
+    "validUntil",
+    "gracePeriodDays",
+    "signature"
+  ],
+  "properties": {
+    "installationId": {
+      "type": "string"
+    },
+    "edition": {
+      "type": "string"
+    },
+    "features": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "maximumRunners": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "validFrom": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "validUntil": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "gracePeriodDays": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "signature": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}
+

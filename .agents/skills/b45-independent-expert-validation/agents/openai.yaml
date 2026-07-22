@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 45: Independent Expert Validation"
+  short_description: "Run evidence-bound Batch 45 independent expert validation work"
+  default_prompt: "Use $b45-independent-expert-validation to implement and verify this capability with fail-closed evidence."

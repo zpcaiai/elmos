@@ -1,0 +1,4 @@
+interface:
+  display_name: "Scm Checks Status And Annotation Publisher"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $scm-checks-status-and-annotation-publisher to execute this ELMOS Runtime Skill with fail-closed evidence."

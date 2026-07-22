@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 37 extension-configuration-state-data-migration"
+  short_description: "Run evidence-bound Batch 37 extension workflow"
+  default_prompt: "Use $b37-extension-configuration-state-data-migration to implement and verify this exact extension ecosystem capability."

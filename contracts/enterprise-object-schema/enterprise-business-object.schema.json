@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.local/enterprise-business-object/v1",
+  "title": "Enterprise Business Object",
+  "type": "object",
+  "required": ["schemaVersion", "objectId", "category", "definition", "ownerRef", "authorityStatus", "identities"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "objectId": {"type": "string", "minLength": 1},
+    "category": {"enum": ["MASTER_DATA", "REFERENCE_DATA", "TRANSACTION", "BALANCE", "DOCUMENT", "EVENT", "CONFIGURATION", "HISTORY"]},
+    "definition": {"type": "string", "minLength": 1},
+    "ownerRef": {"type": "string", "minLength": 1},
+    "authorityStatus": {"enum": ["SOURCE_AUTHORITATIVE", "SHARED_AUTHORITATIVE", "TARGET_AUTHORITATIVE", "REFERENCE_ONLY", "ARCHIVED", "UNKNOWN_AUTHORITY"]},
+    "identities": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["system", "id", "role"], "properties": {"system": {"type": "string"}, "id": {"type": "string"}, "role": {"type": "string"}}}},
+    "fieldSemantics": {"type": "array", "items": {"type": "object"}}
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 658: telecom bss oss network function recipe pack"
+  short_description: "Operate authoritative Batch 17 capability"
+  default_prompt: "Use $telecom-bss-oss-network-function-recipe-pack to evaluate this capability with evidence."

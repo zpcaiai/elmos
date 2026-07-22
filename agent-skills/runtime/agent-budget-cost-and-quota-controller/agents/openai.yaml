@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agent Budget Cost And Quota Controller"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $agent-budget-cost-and-quota-controller to execute this ELMOS Runtime Skill with fail-closed evidence."

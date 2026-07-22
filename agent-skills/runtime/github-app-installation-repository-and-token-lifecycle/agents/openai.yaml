@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 33-mature Skill 003"
+  short_description: "Run Product Batch 33-mature evidence contract safely"
+  default_prompt: "Use $github-app-installation-repository-and-token-lifecycle to implement its fail-closed ELMOS Product Batch 33-mature contract."

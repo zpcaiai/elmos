@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "1.0",
+  "defaultStatus": "NOT_CONFIGURED",
+  "networkPolicy": "ALLOWLIST_REQUIRED",
+  "credentialPolicy": "SHORT_LIVED_ENVIRONMENT_BOUND_LEASE",
+  "controlPlaneExecution": false,
+  "adapters": [
+    {"id": "sap", "scope": ["CONFIGURATION", "ABAP_METADATA", "USAGE", "TRANSPORT"]},
+    {"id": "oracle-ebs", "scope": ["FND", "FORMS", "REPORTS", "WORKFLOW", "CONCURRENT_PROGRAM"]},
+    {"id": "oracle-fusion", "scope": ["CONFIGURATION", "VISUAL_BUILDER_EXTENSION", "API_CATALOG"]},
+    {"id": "dynamics", "scope": ["SOLUTION", "SOLUTION_LAYER", "PLUGIN", "SECURITY_ROLE"]},
+    {"id": "dataverse", "scope": ["TABLE", "FLOW", "APP", "CONNECTION_REFERENCE"]},
+    {"id": "salesforce", "scope": ["ORG_METADATA", "APEX", "FLOW", "PACKAGE", "PERMISSION"]},
+    {"id": "process-mining", "scope": ["APPROVED_EVENT_LOG", "PROCESS_VARIANT"]},
+    {"id": "mdm", "scope": ["MASTER_METADATA", "SYNTHETIC_MATCH"]},
+    {"id": "archive", "scope": ["ARCHIVE_METADATA", "ARCHIVE_TEST"]}
+  ],
+  "prohibitedPermissions": ["MODIFY_PRODUCTION_CONFIGURATION", "PUBLISH_PRODUCTION_TRANSPORT", "DEPLOY_PRODUCTION_SOLUTION", "DEPLOY_SALESFORCE_PRODUCTION", "MODIFY_USER_PERMISSION", "BULK_DELETE_BUSINESS_DATA", "ACCEPT_PROCESS_DIFFERENCE", "SWITCH_MASTER_DATA_AUTHORITY", "AUTO_CUTOVER", "AUTO_DECOMMISSION"]
+}

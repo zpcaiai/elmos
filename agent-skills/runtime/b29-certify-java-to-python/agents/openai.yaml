@@ -1,0 +1,4 @@
+interface:
+  display_name: "Migration Pack M29 Skill 006"
+  short_description: "Run Migration Pack M29 certification safely"
+  default_prompt: "Use $b29-certify-java-to-python to apply the independent, fail-closed Migration Pack M29 contract."

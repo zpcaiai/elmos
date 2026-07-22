@@ -1,0 +1,4 @@
+interface:
+  display_name: "B36 Semantic Conflicts"
+  short_description: "Resolve regeneration conflicts conservatively"
+  default_prompt: "Use $b36-semantic-conflict-resolution to resolve semantic three-way conflicts without overwriting human ownership."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 577: workforce transition and role migration manager"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $workforce-transition-and-role-migration-manager to evaluate this capability with evidence."

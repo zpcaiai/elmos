@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "pack_key": "unset-to-unset",
+  "metrics": {
+    "workload_fingerprint_coverage": 0,
+    "canonical_ir_coverage": 0,
+    "schema_conversion_pass_rate": 0,
+    "type_boundary_pass_rate": 0,
+    "query_semantic_pass_rate": 0,
+    "transaction_contract_pass_rate": 0,
+    "data_reconciliation_pass_rate": 0,
+    "target_provision_pass_rate": 0,
+    "representative_workload_pass_rate": 0,
+    "source_map_coverage": 0,
+    "query_performance_slo_pass_rate": 0
+  },
+  "critical_unknowns": 0,
+  "silent_database_drops": 0,
+  "critical_precision_loss": 0,
+  "critical_collation_regressions": 0,
+  "critical_transaction_regressions": 0,
+  "critical_data_differences": 0,
+  "critical_security_regressions": 0,
+  "destructive_unapproved_changes": 0,
+  "test_integrity_violations": 0,
+  "evidence_refs": []
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 23 010"
+  short_description: "Run Batch 23 runtime contract safely"
+  default_prompt: "Use $rag-knowledge-ingestion-retrieval-citation-and-freshness to apply its fail-closed ELMOS runtime contract."

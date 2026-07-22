@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 636: healthcare privacy security and clinical risk pack"
+  short_description: "Operate authoritative Batch 17 capability"
+  default_prompt: "Use $healthcare-privacy-security-and-clinical-risk-pack to evaluate this capability with evidence."

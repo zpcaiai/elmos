@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/batch34/campaign-plan.schema.json",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "pack_key",
+    "campaign_key",
+    "owner",
+    "inventory_snapshot_digest",
+    "recipe_set_digest",
+    "scope",
+    "cohorts",
+    "budgets",
+    "rollback",
+    "approvals"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "pack_key": {
+      "type": "string"
+    },
+    "campaign_key": {
+      "type": "string"
+    },
+    "owner": {
+      "type": "string"
+    },
+    "inventory_snapshot_digest": {
+      "type": "string"
+    },
+    "recipe_set_digest": {
+      "type": "string"
+    },
+    "scope": {
+      "type": "object"
+    },
+    "cohorts": {
+      "type": "array"
+    },
+    "budgets": {
+      "type": "object"
+    },
+    "rollback": {
+      "type": "object"
+    },
+    "approvals": {
+      "type": "array"
+    }
+  },
+  "additionalProperties": true
+}

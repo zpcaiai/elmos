@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/repair-loop/v1/batch-8-conformance-report.schema.json",
+  "title": "Batch 8 Conformance Report",
+  "type": "object",
+  "required": ["batch", "status", "repairRunId", "modules", "metrics", "blockingErrors", "openObligations", "eligibleForBatch9"],
+  "properties": {
+    "batch": {"const": 8}, "status": {"enum": ["PASSED", "BLOCKED"]},
+    "repairRunId": {"type": "string", "minLength": 1},
+    "modules": {"type": "array", "items": {"$ref": "#/$defs/module"}, "minItems": 1},
+    "metrics": {"$ref": "#/$defs/metrics"},
+    "blockingErrors": {"type": "array", "items": {"type": "string"}},
+    "openObligations": {"type": "array", "items": {"type": "string"}},
+    "eligibleForBatch9": {"type": "boolean"}
+  },
+  "$defs": {
+    "rate": {"type": "number", "minimum": 0, "maximum": 1},
+    "module": {
+      "type": "object",
+      "required": ["targetModuleId", "gate", "status", "eligibleForBehavioralEquivalence", "eligibleForProductionValidation", "restrictions", "evidenceRefs"],
+      "properties": {
+        "targetModuleId": {"type": "string", "minLength": 1}, "gate": {"enum": ["BLOCKED", "R-A", "R-B", "R-C", "R-D", "R-E"]},
+        "status": {"enum": ["PASSED", "FAILED", "BLOCKED", "NOT_RUN", "INCONCLUSIVE"]},
+        "eligibleForBehavioralEquivalence": {"type": "boolean"}, "eligibleForProductionValidation": {"type": "boolean"},
+        "restrictions": {"type": "array", "items": {"type": "string"}},
+        "evidenceRefs": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": false
+    },
+    "metrics": {
+      "type": "object",
+      "required": ["dependencyRestoreRate", "projectLoadRate", "compileRate", "diagnosticClassificationRate", "clusterCoverageRate", "attributionRate", "testDiscoveryRate", "requiredTestExecutionRate", "unitPassRate", "contractPassRate", "integrationPassRate", "flakyRate", "deterministicFixRate", "verifiedAgentFixRate", "unresolvedClusterRate", "patchRollbackRate", "patchRollbackAvailabilityRate", "sourceTargetTraceCoverage", "reproducibilityRunsPassed"],
+      "properties": {
+        "dependencyRestoreRate": {"$ref": "#/$defs/rate"}, "projectLoadRate": {"$ref": "#/$defs/rate"},
+        "compileRate": {"$ref": "#/$defs/rate"}, "diagnosticClassificationRate": {"$ref": "#/$defs/rate"},
+        "clusterCoverageRate": {"$ref": "#/$defs/rate"}, "attributionRate": {"$ref": "#/$defs/rate"},
+        "testDiscoveryRate": {"$ref": "#/$defs/rate"}, "requiredTestExecutionRate": {"$ref": "#/$defs/rate"},
+        "unitPassRate": {"$ref": "#/$defs/rate"}, "contractPassRate": {"$ref": "#/$defs/rate"},
+        "integrationPassRate": {"$ref": "#/$defs/rate"}, "flakyRate": {"$ref": "#/$defs/rate"},
+        "deterministicFixRate": {"$ref": "#/$defs/rate"}, "verifiedAgentFixRate": {"$ref": "#/$defs/rate"},
+        "unresolvedClusterRate": {"$ref": "#/$defs/rate"}, "patchRollbackRate": {"$ref": "#/$defs/rate"},
+        "patchRollbackAvailabilityRate": {"$ref": "#/$defs/rate"}, "sourceTargetTraceCoverage": {"$ref": "#/$defs/rate"},
+        "reproducibilityRunsPassed": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

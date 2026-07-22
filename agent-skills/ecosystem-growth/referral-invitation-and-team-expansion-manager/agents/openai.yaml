@@ -1,0 +1,5 @@
+interface:
+  display_name: "Referral Invitation And Team Expansion Manager"
+  short_description: "Authoritative Batch 14 Skill 411 workflow"
+  default_prompt: "Use $referral-invitation-and-team-expansion-manager to execute its evidence-bound Batch 14 workflow."
+

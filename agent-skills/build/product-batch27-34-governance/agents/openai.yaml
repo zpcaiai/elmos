@@ -1,0 +1,4 @@
+interface:
+  display_name: "Product Batch 27-34 Governance"
+  short_description: "Build the product roadmap governance safely"
+  default_prompt: "Use $product-batch27-34-governance to implement or verify ELMOS Product Batches 27-34."

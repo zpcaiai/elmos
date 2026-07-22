@@ -1,0 +1,7 @@
+{
+  "useCaseId": "useCaseId-fixture",
+  "riskTier": "riskTier-fixture",
+  "decision": "APPROVED",
+  "controls": [],
+  "validUntil": "validUntil-fixture"
+}

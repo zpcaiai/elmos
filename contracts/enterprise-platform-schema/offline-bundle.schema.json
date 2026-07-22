@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/enterprise-platform/offline-bundle.schema.json",
+  "title": "Signed Air-gapped Installation Bundle",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["bundle_id", "deployment_mode", "platform_version", "artifact_digest", "sbom_ref", "provenance_ref", "signature_ref", "package_manifest_ref", "model_manifest_ref", "license_manifest_ref", "vulnerability_feed_manifest_ref", "dependency_closure_passed", "unexpected_network_requests", "offline_license_verified", "offline_update_verified", "rollback_verified", "customer_code_included", "generated_at", "evidence_refs"],
+  "properties": {
+    "bundle_id": {"type": "string", "minLength": 1}, "deployment_mode": {"const": "AIR_GAPPED"}, "platform_version": {"type": "string", "minLength": 1},
+    "artifact_digest": {"type": "string", "pattern": "^[A-Fa-f0-9]{64}$"}, "sbom_ref": {"type": "string", "minLength": 1},
+    "provenance_ref": {"type": "string", "minLength": 1}, "signature_ref": {"type": "string", "minLength": 1}, "package_manifest_ref": {"type": "string", "minLength": 1},
+    "model_manifest_ref": {"type": "string", "minLength": 1}, "license_manifest_ref": {"type": "string", "minLength": 1}, "vulnerability_feed_manifest_ref": {"type": "string", "minLength": 1},
+    "dependency_closure_passed": {"const": true}, "unexpected_network_requests": {"const": 0}, "offline_license_verified": {"const": true},
+    "offline_update_verified": {"const": true}, "rollback_verified": {"const": true}, "customer_code_included": {"const": false},
+    "generated_at": {"type": "string", "format": "date-time"}, "evidence_refs": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+  }
+}

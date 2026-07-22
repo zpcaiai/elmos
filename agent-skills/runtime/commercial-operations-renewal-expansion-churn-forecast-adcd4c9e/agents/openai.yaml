@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B39: Commercial Operations Renewal Expansion Churn Forecast And Revenue Assurance"
+  short_description: "Run ELMOS Product B39 contract with fail-closed evidence"
+  default_prompt: "Use $commercial-operations-renewal-expansion-churn-forecast-adcd4c9e to implement its fail-closed ELMOS Product B39 contract."

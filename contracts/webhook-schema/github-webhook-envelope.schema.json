@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.github-webhook-envelope.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["deliveryId", "eventType", "payloadSha256", "receivedAt"],
+  "properties": {
+    "deliveryId": {"type": "string", "minLength": 1, "maxLength": 128},
+    "eventType": {"type": "string", "minLength": 1, "maxLength": 64},
+    "normalizedEventType": {"type": ["string", "null"], "maxLength": 64},
+    "action": {"type": ["string", "null"]},
+    "repositoryExternalId": {"type": ["integer", "null"]},
+    "installationExternalId": {"type": ["integer", "null"]},
+    "payloadSha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "receivedAt": {"type": "string", "format": "date-time"}
+  }
+}

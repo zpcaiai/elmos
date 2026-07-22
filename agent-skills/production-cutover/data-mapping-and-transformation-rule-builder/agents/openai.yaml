@@ -1,0 +1,4 @@
+interface:
+  display_name: "Data Mapping and Transformation Rule Builder"
+  short_description: "Run this Batch 11 cutover capability"
+  default_prompt: "Use $data-mapping-and-transformation-rule-builder to perform this Batch 11 production-cutover task."

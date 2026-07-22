@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "title": "Quick-fix profile",
+  "key": "elmos-local-developer-workflow-quick-fix",
+  "status": "experimental",
+  "exact_diagnostic_binding": true,
+  "auto_apply": false,
+  "evidence_refs": [
+    "certification/local-test-result.json",
+    "certification/local-cli-result.json",
+    "certification/source-manifest.json"
+  ]
+}

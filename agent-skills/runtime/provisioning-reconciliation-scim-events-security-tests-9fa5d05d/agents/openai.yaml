@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 34 Skill 032"
+  short_description: "Run Product Batch 34 evidence contract safely"
+  default_prompt: "Use $provisioning-reconciliation-scim-events-security-tests-9fa5d05d to implement its fail-closed ELMOS Product Batch 34 contract."

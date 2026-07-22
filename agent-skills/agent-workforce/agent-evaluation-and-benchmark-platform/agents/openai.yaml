@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 551: agent evaluation and benchmark platform"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $agent-evaluation-and-benchmark-platform to evaluate this capability with evidence."

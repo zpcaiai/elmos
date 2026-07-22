@@ -1,0 +1,4 @@
+interface:
+  display_name: "Data Asset and Migration Scope Inventory"
+  short_description: "Run this Batch 11 cutover capability"
+  default_prompt: "Use $data-asset-and-migration-scope-inventory to perform this Batch 11 production-cutover task."

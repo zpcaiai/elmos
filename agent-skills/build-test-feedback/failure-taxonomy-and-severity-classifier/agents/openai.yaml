@@ -1,0 +1,4 @@
+interface:
+  display_name: "failure taxonomy and severity classifier"
+  short_description: "Run a bounded Batch 8 repair workflow"
+  default_prompt: "Use $failure-taxonomy-and-severity-classifier to perform this Batch 8 repair step."

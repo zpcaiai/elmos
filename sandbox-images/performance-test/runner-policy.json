@@ -1,0 +1,1 @@
+{"schema":"elmos.test-runner-policy.v1","runner":"PERFORMANCE","status":"NOT_CONFIGURED","rootless":true,"digestPinned":true,"network":"DENY","sharedCi":false,"isolatedCapacityRequired":true,"productionSideEffects":false}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B36: Runner Scheduler Filter Score Fairness Priority And Admission"
+  short_description: "Run ELMOS Product B36 contract with fail-closed evidence"
+  default_prompt: "Use $runner-scheduler-filter-score-fairness-priority-and-admission to implement its fail-closed ELMOS Product B36 contract."

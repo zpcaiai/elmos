@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B37: Performance Benchmark Load Jmh Jmeter Gatling K6 And Regression Normalizer"
+  short_description: "Run ELMOS Product B37 contract with fail-closed evidence"
+  default_prompt: "Use $performance-benchmark-load-jmh-jmeter-gatling-k6-and-re-17404d8d to implement its fail-closed ELMOS Product B37 contract."

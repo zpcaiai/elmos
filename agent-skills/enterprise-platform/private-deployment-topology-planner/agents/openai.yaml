@@ -1,0 +1,4 @@
+interface:
+  display_name: "private-deployment-topology-planner"
+  short_description: "Run this Batch 12 enterprise capability"
+  default_prompt: "Use $private-deployment-topology-planner to evaluate this enterprise platform capability with evidence."

@@ -1,0 +1,5 @@
+interface:
+  display_name: "User Journey And Growth Funnel Modeler"
+  short_description: "Authoritative Batch 14 Skill 403 workflow"
+  default_prompt: "Use $user-journey-and-growth-funnel-modeler to execute its evidence-bound Batch 14 workflow."
+

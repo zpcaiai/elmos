@@ -1,0 +1,4 @@
+interface:
+  display_name: "scim-user-group-provisioning"
+  short_description: "Run this Batch 12 enterprise capability"
+  default_prompt: "Use $scim-user-group-provisioning to evaluate this enterprise platform capability with evidence."

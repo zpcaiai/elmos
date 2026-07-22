@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B34: Enterprise Identity Multitenancy Access Governance Orchestrator"
+  short_description: "Run ELMOS Product B34 contract with fail-closed evidence"
+  default_prompt: "Use $enterprise-identity-multitenancy-access-governance-orchestrator to implement its fail-closed ELMOS Product B34 contract."

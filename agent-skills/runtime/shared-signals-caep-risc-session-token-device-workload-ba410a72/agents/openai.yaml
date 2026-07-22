@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B38: Shared Signals Caep Risc Session Token Device Workload And Risk Reevaluation"
+  short_description: "Run ELMOS Product B38 contract with fail-closed evidence"
+  default_prompt: "Use $shared-signals-caep-risc-session-token-device-workload-ba410a72 to implement its fail-closed ELMOS Product B38 contract."

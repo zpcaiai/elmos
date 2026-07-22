@@ -1,0 +1,4 @@
+interface:
+  display_name: "B36 Recipe Authoring"
+  short_description: "Author typed and testable migration recipes"
+  default_prompt: "Use $b36-recipe-mapping-authoring to build typed recipe authoring with negative and holdout validation."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "B36 Local Evaluation"
+  short_description: "Select and run bounded affected tests"
+  default_prompt: "Use $b36-local-eval-affected-tests to derive bounded affected tests from semantic impact evidence."

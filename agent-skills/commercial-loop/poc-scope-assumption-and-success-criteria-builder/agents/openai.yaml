@@ -1,0 +1,4 @@
+interface:
+  display_name: "poc-scope-assumption-and-success-criteria-builder"
+  short_description: "Run this Batch 13 commercial capability"
+  default_prompt: "Use $poc-scope-assumption-and-success-criteria-builder to evaluate this Batch 13 commercial capability with evidence."

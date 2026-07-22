@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/commercial-loop/business-artifact.schema.json",
+  "title": "Immutable Batch 12 Business Artifact",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "platform_business_version",
+    "artifact_digest",
+    "immutable",
+    "signed",
+    "batch12_tg_verified",
+    "sbom_ref",
+    "provenance_ref",
+    "evidence_refs"
+  ],
+  "properties": {
+    "platform_business_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "artifact_digest": {
+      "type": "string",
+      "pattern": "^[A-Fa-f0-9]{64}$"
+    },
+    "immutable": {
+      "const": true
+    },
+    "signed": {
+      "const": true
+    },
+    "batch12_tg_verified": {
+      "const": true
+    },
+    "sbom_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "provenance_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  }
+}
+

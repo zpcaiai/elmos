@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tenant Isolation and Data Boundary Validator"
+  short_description: "Run this Batch 10 hardening capability"
+  default_prompt: "Use $tenant-isolation-and-data-boundary-validator to perform this Batch 10 production-hardening task."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Database Estate Discovery"
+  short_description: "Discover database estate workload and consumers"
+  default_prompt: "Use $database-estate-workload-and-usage-discovery to govern this ELMOS Batch 15 workflow."

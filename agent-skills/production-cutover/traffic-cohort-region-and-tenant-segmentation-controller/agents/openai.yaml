@@ -1,0 +1,4 @@
+interface:
+  display_name: "Traffic Cohort Region and Tenant Segmentation Controller"
+  short_description: "Run this Batch 11 cutover capability"
+  default_prompt: "Use $traffic-cohort-region-and-tenant-segmentation-controller to perform this Batch 11 production-cutover task."

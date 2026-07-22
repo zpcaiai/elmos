@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B34: Workload Identity Spiffe Spire Mtls And Service Authentication"
+  short_description: "Run ELMOS Product B34 contract with fail-closed evidence"
+  default_prompt: "Use $workload-identity-spiffe-spire-mtls-and-service-authentication to implement its fail-closed ELMOS Product B34 contract."

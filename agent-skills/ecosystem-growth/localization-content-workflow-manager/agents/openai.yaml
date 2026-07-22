@@ -1,0 +1,5 @@
+interface:
+  display_name: "Localization Content Workflow Manager"
+  short_description: "Authoritative Batch 14 Skill 445 workflow"
+  default_prompt: "Use $localization-content-workflow-manager to execute its evidence-bound Batch 14 workflow."
+

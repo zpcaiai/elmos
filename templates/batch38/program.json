@@ -1,0 +1,35 @@
+{
+  "batch": 38,
+  "packKey": "template-pack",
+  "owner": "template-owner",
+  "scope": [
+    "replace-with-approved-scope"
+  ],
+  "skillIds": [
+    1325,
+    1326,
+    1327,
+    1328,
+    1329,
+    1330,
+    1331,
+    1332,
+    1333,
+    1334,
+    1335,
+    1336,
+    1337,
+    1338,
+    1339,
+    1340,
+    1341,
+    1342,
+    1343,
+    1344,
+    1345,
+    1346
+  ],
+  "status": "NOT_RUN",
+  "evidenceRefs": [],
+  "externalOperationExecuted": false
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 23 018"
+  short_description: "Run Batch 23 runtime contract safely"
+  default_prompt: "Use $ai-platform-elmos-unified-evidence-integration to apply its fail-closed ELMOS runtime contract."

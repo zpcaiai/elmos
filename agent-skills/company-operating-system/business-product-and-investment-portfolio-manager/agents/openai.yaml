@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 468: business product and investment portfolio manager"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $business-product-and-investment-portfolio-manager to evaluate this capability with evidence."

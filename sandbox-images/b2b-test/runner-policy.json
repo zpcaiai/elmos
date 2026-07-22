@@ -1,0 +1,1 @@
+{"schemaVersion":"1.0","runner":"B2B_TEST","rootless":true,"network":"PARTNER_ALLOWLIST_REQUIRED","productionCredentials":false,"partnerAuthorizationRequired":true,"certificateSecretsInEvidence":false,"autoDestroy":true}

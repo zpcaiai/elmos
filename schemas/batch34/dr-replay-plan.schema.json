@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/batch34/dr-replay-plan.schema.json",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "pack_key",
+    "owner",
+    "rpo",
+    "rto",
+    "authoritative_stores",
+    "derived_stores",
+    "recovery_order",
+    "idempotency",
+    "test_cases",
+    "evidence_refs"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "pack_key": {
+      "type": "string"
+    },
+    "owner": {
+      "type": "string"
+    },
+    "rpo": {
+      "type": "string"
+    },
+    "rto": {
+      "type": "string"
+    },
+    "authoritative_stores": {
+      "type": "array"
+    },
+    "derived_stores": {
+      "type": "array"
+    },
+    "recovery_order": {
+      "type": "array"
+    },
+    "idempotency": {
+      "type": "object"
+    },
+    "test_cases": {
+      "type": "array"
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": true
+}

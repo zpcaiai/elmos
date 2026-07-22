@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/ecosystem-growth/growth-evidence-pack.schema.json",
+  "title": "Batch 14 Growth Evidence Pack",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "growth_platform_version",
+    "platform_business_version",
+    "artifact_digest",
+    "gate_evidence",
+    "growth_conformance",
+    "conformance",
+    "external_operation_executed"
+  ],
+  "properties": {
+    "growth_platform_version": { "const": "growth-ecosystem-v1" },
+    "platform_business_version": { "type": "string", "minLength": 1 },
+    "artifact_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "gate_evidence": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "items": { "$ref": "gate-evidence.schema.json" }
+    },
+    "growth_conformance": { "type": "object" },
+    "conformance": { "type": "object" },
+    "external_operation_executed": { "const": false }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "serviceId": "serviceId-fixture",
+  "period": {},
+  "metric": "CHANGE_LEAD_TIME",
+  "value": "value-fixture",
+  "coverage": 0,
+  "sourceRefs": []
+}

@@ -1,0 +1,8 @@
+{
+  "skill_name": "method-body-lowering-orchestrator",
+  "evals": [
+    {"id":1,"prompt":"Lower an eligible UIR module containing pure methods, a recursive pair, and one opaque permission method into an existing C# skeleton without touching manual regions.","expected_output":"Deterministic callable/SCC plans, verified faithful patches for safe methods, and a constrained escalation packet for the opaque method.","files":[]},
+    {"id":2,"prompt":"Regenerate a Java target after one lowering rule version changed; an engineer also edited a generated method and a manual helper.","expected_output":"Affected-callable regeneration only, hash-aware merge/conflict handling, no manual overwrite, and stable declaration provenance.","files":[]},
+    {"id":3,"prompt":"Produce idiomatic TypeScript from faithful output when the compiler backend is unavailable.","expected_output":"Fail-closed status with no idiomatic patch because faithful static validation cannot run.","files":[]}
+  ]
+}

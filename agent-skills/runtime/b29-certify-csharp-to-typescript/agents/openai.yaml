@@ -1,0 +1,4 @@
+interface:
+  display_name: "Migration Pack M29 Skill 004"
+  short_description: "Run Migration Pack M29 certification safely"
+  default_prompt: "Use $b29-certify-csharp-to-typescript to apply the independent, fail-closed Migration Pack M29 contract."

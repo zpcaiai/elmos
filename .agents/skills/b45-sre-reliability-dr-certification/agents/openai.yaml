@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 45: Sre Reliability Dr Certification"
+  short_description: "Run evidence-bound Batch 45 sre reliability dr certification wor"
+  default_prompt: "Use $b45-sre-reliability-dr-certification to implement and verify this capability with fail-closed evidence."

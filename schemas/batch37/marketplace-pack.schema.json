@@ -1,0 +1,181 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "pack_key",
+    "version",
+    "status",
+    "owner",
+    "maintenance_owner",
+    "scope",
+    "contracts",
+    "corpus",
+    "certification"
+  ],
+  "properties": {
+    "schema_version": {
+      "enum": [
+        1,
+        2
+      ]
+    },
+    "pack_key": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{1,95}$"
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "research",
+        "experimental",
+        "limited",
+        "certified",
+        "deprecated",
+        "blocked"
+      ]
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "maintenance_owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "scope": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "required": [
+        "product_version",
+        "protocol_version",
+        "edition",
+        "risk_tier",
+        "environment_digest"
+      ],
+      "properties": {
+        "product_version": {
+          "type": "string"
+        },
+        "protocol_version": {
+          "type": "string"
+        },
+        "edition": {
+          "type": "string"
+        },
+        "risk_tier": {
+          "enum": [
+            "P0",
+            "P1",
+            "P2",
+            "P3"
+          ]
+        },
+        "environment_digest": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "contracts": {
+      "type": "object",
+      "required": [
+        "extension_manifest",
+        "sandbox_policy",
+        "publisher_profile",
+        "compatibility_matrix",
+        "commercial_policy"
+      ],
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "corpus": {
+      "type": "object",
+      "required": [
+        "development",
+        "negative",
+        "holdout",
+        "representative_extensions"
+      ],
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "certification": {
+      "type": "object",
+      "required": [
+        "evidence_path",
+        "result_path"
+      ],
+      "additionalProperties": true
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": true,
+  "$id": "https://example.invalid/batch37/marketplace-pack.schema.json",
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "schema_version": {
+            "const": 2
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "contracts": {
+            "required": [
+              "extension_manifest",
+              "sandbox_policy",
+              "publisher_profile",
+              "compatibility_matrix",
+              "commercial_policy",
+              "dependency_lock",
+              "runtime_health",
+              "catalog_entry",
+              "ranking_policy",
+              "publisher_lifecycle",
+              "recertification_policy",
+              "extension_migration",
+              "continuity_plan",
+              "legal_support",
+              "private_marketplace",
+              "offline_mirror",
+              "operations_policy",
+              "commercial_settlement",
+              "eol_policy"
+            ]
+          },
+          "corpus": {
+            "required": [
+              "development",
+              "negative",
+              "holdout",
+              "representative_extensions",
+              "closure_holdout",
+              "representative_lifecycle"
+            ]
+          },
+          "certification": {
+            "required": [
+              "evidence_path",
+              "result_path",
+              "closure_certification_path",
+              "closure_result_path"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

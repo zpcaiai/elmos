@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 479: role charter accountability and decision rights manager"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $role-charter-accountability-and-decision-rights-manager to evaluate this capability with evidence."

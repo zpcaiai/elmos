@@ -1,0 +1,4 @@
+interface:
+  display_name: "Transaction Behavior Differential Validator"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $transaction-behavior-differential-validator to execute this ELMOS Runtime Skill with fail-closed evidence."

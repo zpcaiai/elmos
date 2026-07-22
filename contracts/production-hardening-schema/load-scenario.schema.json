@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.io/contracts/production-hardening/load-scenario.schema.json",
+  "title": "Batch 10 bounded hardening scenario",
+  "type": "object",
+  "required": [
+    "scenario_id",
+    "service_id",
+    "artifact_id",
+    "kind",
+    "non_production",
+    "uses_production_dependency",
+    "abort_conditions_defined",
+    "kill_switch_defined",
+    "timeout_seconds",
+    "expected_evidence"
+  ],
+  "properties": {
+    "scenario_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "service_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "artifact_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "kind": {
+      "enum": [
+        "BASELINE",
+        "NORMAL",
+        "PEAK",
+        "BURST",
+        "STRESS",
+        "SPIKE",
+        "SOAK",
+        "RECOVERY",
+        "SECURITY",
+        "CHAOS",
+        "CRASH",
+        "RESTORE",
+        "PITR",
+        "DISASTER_RECOVERY",
+        "OBSERVABILITY",
+        "CANARY",
+        "ROLLBACK",
+        "COST"
+      ]
+    },
+    "critical": {
+      "type": "boolean"
+    },
+    "non_production": {
+      "const": true
+    },
+    "uses_production_dependency": {
+      "const": false
+    },
+    "destructive": {
+      "type": "boolean"
+    },
+    "abort_conditions_defined": {
+      "const": true
+    },
+    "kill_switch_defined": {
+      "const": true
+    },
+    "timeout_seconds": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "expected_evidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "additionalProperties": false
+}
+

@@ -1,0 +1,14 @@
+server:
+  port: ${ELMOS_TEST_QUALITY_PORT:8092}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+spring:
+  application:
+    name: elmos-test-quality-engine

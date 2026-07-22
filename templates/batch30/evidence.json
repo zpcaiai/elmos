@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "pack_key": "spring-boot-3-to-4",
+  "pack_version": "0.1.0",
+  "runs": [],
+  "metrics": {
+    "source_fingerprint_coverage": 0,
+    "framework_contract_coverage": 0,
+    "build_green_rate": 0,
+    "startup_pass_rate": 0,
+    "p0_contract_pass_rate": 0,
+    "source_map_coverage": 0,
+    "manual_hours": 0,
+    "cost_per_verified_workload": 0
+  },
+  "critical_unknowns": 0,
+  "silent_framework_drops": 0,
+  "critical_security_regressions": 0,
+  "critical_transaction_regressions": 0,
+  "critical_data_regressions": 0,
+  "duplicate_message_or_job_effects": 0,
+  "test_integrity_violations": 0,
+  "notes": []
+}

@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "1.0",
+  "canonicalCapabilities": [
+    "COMPUTE",
+    "NETWORK",
+    "STORAGE",
+    "IDENTITY",
+    "SECRET",
+    "LOAD_BALANCER",
+    "CONTAINER_REGISTRY",
+    "KUBERNETES",
+    "SERVERLESS",
+    "OBSERVABILITY",
+    "COST"
+  ],
+  "requiredControls": [
+    "ORGANIZATION_ISOLATION",
+    "REGION_ALLOWLIST",
+    "OPERATION_ALLOWLIST",
+    "API_RATE_LIMIT",
+    "AUDIT",
+    "COST_CAPTURE",
+    "KILL_SWITCH"
+  ],
+  "providerCredentialsStored": false,
+  "privateKeysStored": false,
+  "adapters": [],
+  "externalStatus": "NOT_CONFIGURED"
+}
+

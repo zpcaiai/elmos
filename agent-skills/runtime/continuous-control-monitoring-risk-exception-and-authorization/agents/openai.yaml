@@ -1,0 +1,4 @@
+interface:
+  display_name: "Continuous Control Monitoring Risk Exception and Authorization"
+  short_description: "Continuous Control Monitoring Risk Exception and Authoriz helper"
+  default_prompt: "Use $continuous-control-monitoring-risk-exception-and-authorization to execute its ELMOS Batch 17 workflow safely."

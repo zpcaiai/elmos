@@ -1,0 +1,4 @@
+interface:
+  display_name: "knowledge-base-known-issue-and-resolution-manager"
+  short_description: "Run this Batch 13 commercial capability"
+  default_prompt: "Use $knowledge-base-known-issue-and-resolution-manager to evaluate this Batch 13 commercial capability with evidence."

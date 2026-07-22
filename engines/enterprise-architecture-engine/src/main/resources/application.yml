@@ -1,0 +1,10 @@
+server:
+  port: ${ELMOS_ENTERPRISE_ARCHITECTURE_PORT:8100}
+spring:
+  application:
+    name: elmos-enterprise-architecture-engine
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 44: Cache Incremental Cost Optimization"
+  short_description: "Run evidence-bound Batch 44 cache incremental cost optimization"
+  default_prompt: "Use $b44-cache-incremental-cost-optimization to implement and verify this capability with fail-closed evidence."

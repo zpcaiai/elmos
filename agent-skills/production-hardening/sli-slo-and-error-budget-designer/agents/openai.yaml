@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sli Slo and Error Budget Designer"
+  short_description: "Run this Batch 10 hardening capability"
+  default_prompt: "Use $sli-slo-and-error-budget-designer to perform this Batch 10 production-hardening task."

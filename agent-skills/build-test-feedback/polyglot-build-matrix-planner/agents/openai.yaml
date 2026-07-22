@@ -1,0 +1,4 @@
+interface:
+  display_name: "polyglot build matrix planner"
+  short_description: "Run a bounded Batch 8 repair workflow"
+  default_prompt: "Use $polyglot-build-matrix-planner to perform this Batch 8 repair step."

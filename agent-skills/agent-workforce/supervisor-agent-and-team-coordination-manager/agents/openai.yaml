@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 548: supervisor agent and team coordination manager"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $supervisor-agent-and-team-coordination-manager to evaluate this capability with evidence."

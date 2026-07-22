@@ -1,0 +1,4 @@
+interface:
+  display_name: "Model Behavior Validator"
+  short_description: "Validate artifacts inference and training separately"
+  default_prompt: "Use $model-artifact-inference-and-training-validator to validate this migrated model."

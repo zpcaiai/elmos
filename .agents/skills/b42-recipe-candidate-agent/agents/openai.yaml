@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 42: Recipe Candidate Agent"
+  short_description: "Run evidence-bound Batch 42 recipe candidate agent work"
+  default_prompt: "Use $b42-recipe-candidate-agent to implement and verify this capability with fail-closed evidence."

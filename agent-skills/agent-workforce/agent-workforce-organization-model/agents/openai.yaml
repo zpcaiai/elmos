@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 532: agent workforce organization model"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $agent-workforce-organization-model to evaluate this capability with evidence."

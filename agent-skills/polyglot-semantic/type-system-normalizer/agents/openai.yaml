@@ -1,0 +1,4 @@
+interface:
+  display_name: "Type System Normalizer"
+  short_description: "Normalize types without erasing native distinctions"
+  default_prompt: "Use $type-system-normalizer to emit PSP types with native semantics origin and confidence."

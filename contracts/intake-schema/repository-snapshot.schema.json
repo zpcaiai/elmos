@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.polyglot.repository-snapshot.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "snapshotId", "sourceType", "fileCount", "totalBytes", "files", "submodules", "createdAt", "integrityHash"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "snapshotId": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "sourceType": {"enum": ["GIT", "UPLOAD"]},
+    "repository": {"type": ["object", "null"]},
+    "uploadId": {"type": ["string", "null"]},
+    "fileCount": {"type": "integer", "minimum": 0},
+    "totalBytes": {"type": "integer", "minimum": 0},
+    "files": {"type": "array", "items": {"type": "object", "required": ["path", "bytes", "sha256", "category", "excludedFromModel"]}},
+    "submodules": {"type": "array", "items": {"type": "string"}},
+    "createdAt": {"type": "string", "format": "date-time"},
+    "integrityHash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

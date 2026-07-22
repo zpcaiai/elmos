@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 42: Supervisor Coordination Agent"
+  short_description: "Run evidence-bound Batch 42 supervisor coordination agent work"
+  default_prompt: "Use $b42-supervisor-coordination-agent to implement and verify this capability with fail-closed evidence."

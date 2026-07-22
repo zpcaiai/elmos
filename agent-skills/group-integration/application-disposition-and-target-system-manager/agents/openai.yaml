@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 678: application disposition and target system manager"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $application-disposition-and-target-system-manager to evaluate this capability with evidence."

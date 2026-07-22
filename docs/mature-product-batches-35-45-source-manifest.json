@@ -1,0 +1,69 @@
+{
+  "series": "mature-product-skills",
+  "batches": [35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45],
+  "skill_id_range": [1265, 1496],
+  "source_document": "ChatGPT-跨语言迁移月报 (1).md",
+  "source_document_sha256": "17dee47f9b7f5617c02e959d28ac1bb22f0bea98d70ce2ee3c8d7d8e0",
+  "source_document_scope": "batches 38-45; Batches 35-37 use supplied exact packages",
+  "batch35_source_package": {
+    "name": "batch35-codex-skills",
+    "file_manifest_sha256": "174959b24710e433482b1fa701aca0aaf64f014e9d184622ed9ccb700d7091a6",
+    "install_script_sha256": "84d6dd941f9234dec6964d8cb9ab9dbbcef339a64cae8275a5947f849d2737c6",
+    "manifest_files": 78,
+    "verified_missing_files": 0
+  },
+  "batch36_source_package": {
+    "name": "batch36-codex-skills",
+    "file_manifest_sha256": "cef111fdef467a6622e3039dc37819bbca8747346d4f95bc66494f5d6f134bff",
+    "install_script_sha256": "75404862336492286d2d86e80ffce4a9c53f6d44dbfa915da7af87da4d8887d3",
+    "manifest_files": 83,
+    "verified_missing_files": 0
+  },
+  "batch37_source_package": {
+    "name": "migration-platform-batch20-b29-b30-b31-b32-b33-b34-b35-b36-b37-complete",
+    "file_manifest_sha256": "0faf103641f7ebe0141c91f3ea529e4f70bc0b1e649c8b6dca51ba0a6ee5c601",
+    "batch37_validation_sha256": "41c24f1a2b43c697f06214d17c8a5adacd68df7b962a2134a80f75963c147318",
+    "manifest_paths": 624,
+    "actual_noncache_files": 668,
+    "unmanifested_noncache_files": 73,
+    "stale_missing_cache_paths": 29,
+    "manifest_status": "STALE_PRESERVED_FOR_PROVENANCE"
+  },
+  "generator_sha256": "2231773f257b4da9b4fab6b5eac18e9c974bc7346a3022c26d4139a37fabf452",
+  "generator_scope": "batches 38-45 only; Batches 35-37 are protected from generic regeneration",
+  "toolkit_sha256": "df99ce4f03b952f5511f01ccc8b2831e1b321e099f7862945eaa1e998709eabc",
+  "batch35_gate_sha256": "c3a00bf8b34ae9d2d5ee516f57c31d38cce948fd6723b2341f0fd93986dcf353",
+  "batch35_local_rehearsal_sha256": "1357212f023fa7b50077d3bf438ffec9b80c4d30438e393390558ed0429013dd",
+  "batch36_gate_sha256": "149566279fe3e1ebfe3178029ea77aeccb58f3952071a51941a8de8579eb5723",
+  "batch36_local_rehearsal_sha256": "303a644b93122a650b8c6c71cacef4fa2f74f9b376d96b0bbd08f5dddb690f72",
+  "batch37_core_gate_sha256": "4da02e8f0a062bd1e2fa620fa6d980a21b1132b9f86bfc27df11a958bec2daa8",
+  "batch37_closure_gate_sha256": "9fc25a9b8c67250e18efed69de864172f0b806b7f6deb62c083143d316ccdd04",
+  "batch37_local_rehearsal_sha256": "2080f8c33791c83c42b3538b8a2a284ed0de3d92a832fa9944fb1beb4299f0bb",
+  "distribution_tool_sha256": "fa543bf0ae578a30a9faff366ef0f5d96fd9252b733927c8eab81d96a6e39ca0",
+  "installed_payload": {
+    "files": 820,
+    "sha256": "99b37f1769fa1248b4eb1a72d10ecaf7296f78ff5b07aef9a2540e7af1128a09",
+    "digest_method": "SHA-256 over UTF-8 sorted repository-relative path, NUL, file SHA-256 hex, and newline, excluding this self-referential manifest",
+    "skills": 248,
+    "openai_yaml": 248,
+    "schemas": 82,
+    "templates": 90,
+    "tests": 71
+  },
+  "batches_detail": [
+    {"batch": 35, "skill_ids": [1265, 1286], "skills": 22, "schemas": 13, "templates": 15, "tests": 9},
+    {"batch": 36, "skill_ids": [1287, 1304], "skills": 18, "schemas": 12, "templates": 16, "tests": 9},
+    {"batch": 37, "skill_ids": [1305, 1324], "supplemental_skill_ids": ["B37-X01", "B37-X16"], "skills": 36, "schemas": 25, "templates": 27, "tests": 21},
+    {"batch": 38, "skill_ids": [1325, 1346], "skills": 22, "schemas": 4, "templates": 4, "tests": 4},
+    {"batch": 39, "skill_ids": [1347, 1368], "skills": 22, "schemas": 4, "templates": 4, "tests": 4},
+    {"batch": 40, "skill_ids": [1369, 1392], "skills": 24, "schemas": 4, "templates": 4, "tests": 4},
+    {"batch": 41, "skill_ids": [1393, 1412], "skills": 20, "schemas": 4, "templates": 4, "tests": 4},
+    {"batch": 42, "skill_ids": [1413, 1434], "skills": 22, "schemas": 4, "templates": 4, "tests": 4},
+    {"batch": 43, "skill_ids": [1435, 1454], "skills": 20, "schemas": 4, "templates": 4, "tests": 4},
+    {"batch": 44, "skill_ids": [1455, 1474], "skills": 20, "schemas": 4, "templates": 4, "tests": 4},
+    {"batch": 45, "skill_ids": [1475, 1496], "skills": 22, "schemas": 4, "templates": 4, "tests": 4}
+  ],
+  "package_status": "VERIFIED",
+  "external_operation_executed": false,
+  "field_certification_status": "NOT_RUN"
+}

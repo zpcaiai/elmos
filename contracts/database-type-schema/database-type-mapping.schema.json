@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.io/contracts/database-type-mapping.v1",
+  "title": "ELMOS Database Type Mapping",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "organizationId", "sourceType", "targetType", "compatibility", "risk", "approved"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "organizationId": { "type": "string", "minLength": 1 },
+    "sourceType": { "type": "string", "minLength": 1 },
+    "targetType": { "type": "string", "minLength": 1 },
+    "compatibility": {
+      "enum": ["LOSSLESS", "LOSSLESS_WITH_CONSTRAINT", "SEMANTICALLY_COMPATIBLE", "LOSSY_APPROVED", "REQUIRES_APPLICATION_CHANGE", "UNSUPPORTED"]
+    },
+    "risk": { "type": "string", "minLength": 1 },
+    "conditions": { "type": "array", "items": { "type": "string" } },
+    "approved": { "type": "boolean" },
+    "approvedBy": { "type": "string" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "compatibility": { "const": "LOSSY_APPROVED" } } },
+      "then": { "properties": { "approved": { "const": true } }, "required": ["approvedBy"] }
+    }
+  ]
+}

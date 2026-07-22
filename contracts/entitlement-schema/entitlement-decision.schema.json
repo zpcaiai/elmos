@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.entitlement-decision.v1",
+  "title": "ELMOS Entitlement Decision",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizationId",
+    "featureKey",
+    "decision",
+    "remainingAllowance",
+    "sourceEntitlementIds",
+    "policyVersion",
+    "reasonCodes"
+  ],
+  "properties": {
+    "organizationId": {
+      "type": "string"
+    },
+    "featureKey": {
+      "type": "string"
+    },
+    "decision": {
+      "enum": [
+        "ALLOW",
+        "DENY_NOT_ENTITLED",
+        "DENY_LIMIT_EXCEEDED",
+        "DENY_EXPIRED",
+        "DENY_LICENSE_INVALID",
+        "REQUIRE_ADD_ON",
+        "REQUIRE_UPGRADE"
+      ]
+    },
+    "remainingAllowance": {
+      "type": "number",
+      "minimum": 0
+    },
+    "sourceEntitlementIds": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "policyVersion": {
+      "type": "string"
+    },
+    "reasonCodes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}
+

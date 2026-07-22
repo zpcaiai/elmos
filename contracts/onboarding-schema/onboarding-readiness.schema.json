@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.onboarding-readiness.v1",
+  "title": "ELMOS Onboarding Readiness",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizationId",
+    "deploymentMode",
+    "overallStatus",
+    "dimensions",
+    "blockingTaskIds",
+    "formalMigrationAllowed"
+  ],
+  "properties": {
+    "organizationId": {
+      "type": "string"
+    },
+    "deploymentMode": {
+      "type": "string"
+    },
+    "overallStatus": {
+      "enum": [
+        "READY",
+        "READY_WITH_CONDITIONS",
+        "NOT_READY",
+        "BLOCKED",
+        "UNKNOWN"
+      ]
+    },
+    "dimensions": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "blockingTaskIds": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "formalMigrationAllowed": {
+      "type": "boolean"
+    }
+  }
+}
+

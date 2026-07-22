@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "title": "Local preview profile",
+  "key": "elmos-local-developer-workflow-preview",
+  "status": "experimental",
+  "repository_write": false,
+  "network": "deny",
+  "evidence_refs": [
+    "certification/local-test-result.json",
+    "certification/local-cli-result.json",
+    "certification/source-manifest.json"
+  ]
+}

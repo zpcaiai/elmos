@@ -1,0 +1,9 @@
+{
+  "tool_calls": {"HTTP": 1},
+  "total_tool_calls": 1,
+  "total_steps": 1,
+  "files_created": ["migration-plan.json"],
+  "errors_encountered": 0,
+  "output_chars": 10251,
+  "transcript_chars": 0
+}

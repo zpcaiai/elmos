@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 23 006"
+  short_description: "Run Batch 23 runtime contract safely"
+  default_prompt: "Use $model-registry-packaging-approval-and-lifecycle-governance to apply its fail-closed ELMOS runtime contract."

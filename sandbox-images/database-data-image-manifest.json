@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "engine": "ELMOS_DATABASE_DATA",
+  "selectionPolicy": "DENY_UNLESS_IMAGE_HOST_TOOLCHAIN_AND_EVIDENCE_APPROVED",
+  "profiles": [
+    { "profile": "ORACLE", "toolchain": ["SQLPlus", "SQLcl", "Data Pump", "DBMS_METADATA", "GoldenGate"], "buildStatus": "NOT_BUILT", "approvalStatus": "UNAPPROVED" },
+    { "profile": "SQL_SERVER", "toolchain": ["sqlcmd", "bcp", "DacFx", "SSMA"], "buildStatus": "NOT_BUILT", "approvalStatus": "UNAPPROVED" },
+    { "profile": "MYSQL", "toolchain": ["mysql", "mysqlsh", "MySQL Shell Dump Load"], "buildStatus": "NOT_BUILT", "approvalStatus": "UNAPPROVED" },
+    { "profile": "POSTGRESQL", "toolchain": ["psql", "pg_dump", "pg_restore", "pg_upgrade"], "buildStatus": "NOT_BUILT", "approvalStatus": "UNAPPROVED" },
+    { "profile": "DATA_PLATFORM", "toolchain": ["Spark", "Flink", "Trino", "dbt", "Airflow", "Iceberg", "Delta", "OpenLineage"], "buildStatus": "NOT_BUILT", "approvalStatus": "UNAPPROVED" },
+    { "profile": "BI_VALIDATION", "toolchain": ["Power BI Adapter", "SSRS Adapter", "Tableau Adapter", "Metric Comparator"], "buildStatus": "NOT_BUILT", "approvalStatus": "UNAPPROVED" }
+  ],
+  "requiredEvidence": ["LICENSE", "TOOLCHAIN_MANIFEST", "SMOKE_TEST", "SBOM", "VULNERABILITY_SCAN", "PROVENANCE", "SECRET_SCAN", "CONNECTIVITY_POLICY", "READ_ONLY_DISCOVERY_TEST"],
+  "currentHostEvidence": {
+    "oracle": "NOT_RUN",
+    "sqlServer": "NOT_RUN",
+    "mysql": "NOT_RUN",
+    "postgresqlCustomerWorkload": "NOT_RUN",
+    "dataPlatform": "NOT_RUN",
+    "biValidation": "NOT_RUN"
+  }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B38: Policy Training Targeting Acknowledgement Competency And Campaign"
+  short_description: "Run ELMOS Product B38 contract with fail-closed evidence"
+  default_prompt: "Use $policy-training-targeting-acknowledgement-competency-an-f7fb04d4 to implement its fail-closed ELMOS Product B38 contract."

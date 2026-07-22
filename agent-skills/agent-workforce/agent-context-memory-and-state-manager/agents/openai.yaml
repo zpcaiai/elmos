@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 539: agent context memory and state manager"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $agent-context-memory-and-state-manager to evaluate this capability with evidence."

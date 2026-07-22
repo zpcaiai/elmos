@@ -1,0 +1,4 @@
+interface:
+  display_name: "ibm mq queue channel transaction and dlq modernizer"
+  short_description: "Govern integration modernization safely"
+  default_prompt: "Use $ibm-mq-queue-channel-transaction-and-dlq-modernizer to modernize this integration scope safely."

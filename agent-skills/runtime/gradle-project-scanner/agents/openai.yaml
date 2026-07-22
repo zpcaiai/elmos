@@ -1,0 +1,4 @@
+interface:
+  display_name: "Gradle Project Scanner"
+  short_description: "Scan Gradle projects without evaluation"
+  default_prompt: "Use $gradle-project-scanner for ELMOS Batch 3 Gradle analysis."

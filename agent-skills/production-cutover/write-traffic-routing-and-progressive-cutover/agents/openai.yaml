@@ -1,0 +1,4 @@
+interface:
+  display_name: "Write Traffic Routing and Progressive Cutover"
+  short_description: "Run this Batch 11 cutover capability"
+  default_prompt: "Use $write-traffic-routing-and-progressive-cutover to perform this Batch 11 production-cutover task."

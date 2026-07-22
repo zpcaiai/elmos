@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/dotnet-engine-contract.v1.json",
+  "title": "ELMOS .NET Engine Contract",
+  "type": "object",
+  "required": ["organizationId", "repositorySnapshotRef", "workspaceRef", "profile", "correlationId", "idempotencyKey"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "organizationId": {"type": "string", "minLength": 1},
+    "repositorySnapshotRef": {"type": "string", "minLength": 1},
+    "workspaceRef": {"type": "string", "minLength": 1},
+    "profile": {"type": "string", "enum": ["STATIC", "CONSERVATIVE", "BALANCED", "STRATEGIC"]},
+    "correlationId": {"type": "string", "minLength": 1},
+    "idempotencyKey": {"type": "string", "minLength": 1},
+    "options": {"type": "object"}
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Infrastructure Cutover Rollback And Decommission Orchestrator"
+  short_description: "Govern Batch 16 infrastructure modernization"
+  default_prompt: "Use $infrastructure-cutover-rollback-and-decommission-orchestrator to produce a governed infrastructure modernization artifact."

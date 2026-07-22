@@ -1,0 +1,19 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Elmos.Dotnet.Contracts/Elmos.Dotnet.Contracts.csproj" />
+    <Project Path="src/Elmos.Dotnet.Domain/Elmos.Dotnet.Domain.csproj" />
+    <Project Path="src/Elmos.Dotnet.Application/Elmos.Dotnet.Application.csproj" />
+    <Project Path="src/Elmos.Dotnet.MSBuild/Elmos.Dotnet.MSBuild.csproj" />
+    <Project Path="src/Elmos.Dotnet.Roslyn/Elmos.Dotnet.Roslyn.csproj" />
+    <Project Path="src/Elmos.Dotnet.ProjectSystem/Elmos.Dotnet.ProjectSystem.csproj" />
+    <Project Path="src/Elmos.Dotnet.AspNet/Elmos.Dotnet.AspNet.csproj" />
+    <Project Path="src/Elmos.Dotnet.Wcf/Elmos.Dotnet.Wcf.csproj" />
+    <Project Path="src/Elmos.Dotnet.Ef/Elmos.Dotnet.Ef.csproj" />
+    <Project Path="src/Elmos.Dotnet.Validation/Elmos.Dotnet.Validation.csproj" />
+    <Project Path="src/Elmos.Dotnet.Infrastructure/Elmos.Dotnet.Infrastructure.csproj" />
+    <Project Path="src/Elmos.Dotnet.Worker/Elmos.Dotnet.Worker.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Elmos.Dotnet.Engine.Tests/Elmos.Dotnet.Engine.Tests.csproj" />
+  </Folder>
+</Solution>

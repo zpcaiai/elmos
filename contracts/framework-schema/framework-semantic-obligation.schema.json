@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/framework/v1/framework-semantic-obligation.schema.json",
+  "title": "Framework Semantic Obligation",
+  "type": "object",
+  "required": ["obligationId", "entityId", "category", "severity", "status", "statement", "verificationStrategy", "evidenceRefs"],
+  "properties": {
+    "obligationId": {"type": "string", "minLength": 1},
+    "entityId": {"type": "string", "minLength": 1},
+    "category": {"type": "string", "minLength": 1},
+    "severity": {"enum": ["info", "warning", "blocking"]},
+    "status": {"enum": ["open", "verified", "waived", "rejected"]},
+    "statement": {"type": "string", "minLength": 1},
+    "verificationStrategy": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+    "evidenceRefs": {"type": "array", "items": {"type": "string"}},
+    "owner": {"type": ["string", "null"]},
+    "waiverReason": {"type": ["string", "null"]}
+  },
+  "allOf": [{"if": {"properties": {"status": {"const": "waived"}}}, "then": {"required": ["owner", "waiverReason"], "properties": {"owner": {"type": "string", "minLength": 1}, "waiverReason": {"type": "string", "minLength": 1}}}}],
+  "additionalProperties": false
+}

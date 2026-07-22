@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 42: Agent Shadow Canary"
+  short_description: "Run evidence-bound Batch 42 agent shadow canary work"
+  default_prompt: "Use $b42-agent-shadow-canary to implement and verify this capability with fail-closed evidence."

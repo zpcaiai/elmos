@@ -1,0 +1,4 @@
+interface:
+  display_name: "Risk Register And Exception Manager"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $risk-register-and-exception-manager to execute this ELMOS Runtime Skill with fail-closed evidence."

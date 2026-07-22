@@ -1,0 +1,4 @@
+interface:
+  display_name: "Migration Risk Scorer"
+  short_description: "Score evidence-based migration risk"
+  default_prompt: "Use $migration-risk-scorer for ELMOS Batch 4 risk scoring."

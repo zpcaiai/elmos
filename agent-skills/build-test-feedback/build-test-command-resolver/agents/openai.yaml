@@ -1,0 +1,4 @@
+interface:
+  display_name: "build test command resolver"
+  short_description: "Run a bounded Batch 8 repair workflow"
+  default_prompt: "Use $build-test-command-resolver to perform this Batch 8 repair step."

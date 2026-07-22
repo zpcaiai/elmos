@@ -1,0 +1,5 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema","$id":"https://elmos.dev/schemas/lowering/v1/capability.schema.json","title":"Target Capability","type":"object","additionalProperties":false,
+  "required":["capabilityId","targetLanguage","targetVersion","state","targetConstructs","preconditions","semanticGaps","fallbacks","ruleIds"],
+  "properties":{"capabilityId":{"type":"string"},"targetLanguage":{"enum":["java","python","csharp","typescript","javascript"]},"targetVersion":{"type":"string","minLength":1},"state":{"enum":["native","native-with-constraints","desugar","helper","compatibility-runtime","wrapper","agent","manual","unsupported"]},"targetConstructs":{"type":"array","items":{"type":"string"}},"preconditions":{"type":"array","items":{"type":"string"}},"semanticGaps":{"type":"array","items":{"type":"string"}},"fallbacks":{"type":"array","items":{"type":"string"}},"ruleIds":{"type":"array","items":{"type":"string"}}}
+}

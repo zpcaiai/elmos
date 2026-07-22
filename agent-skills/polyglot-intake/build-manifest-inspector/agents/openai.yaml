@@ -1,0 +1,4 @@
+interface:
+  display_name: "Build Manifest Inspector"
+  short_description: "Parse cross-language build metadata safely"
+  default_prompt: "Use $build-manifest-inspector to create the Batch 1 unified Build Model."

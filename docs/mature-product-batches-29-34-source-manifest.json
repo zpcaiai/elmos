@@ -1,0 +1,35 @@
+{
+  "series": "mature-product-skills",
+  "batches": [29, 30, 31, 32, 33, 34],
+  "skill_id_range": [1141, 1264],
+  "source_document": "ChatGPT-跨语言迁移月报 (1).md",
+  "source_document_sha256": "17dee47f9b7f5617c02e959d28ac1bb22f0bea98d70ce2ee3c8d7ee633d9903b",
+  "standalone_batch34_archive_sha256": "afb9bf0262364932f5357cda3e2eb166ed87f3518c3a5b406cd7a6c4feeb7d60",
+  "cumulative_batch29_34_archive_sha256": "5e9a0152521e46b275409db35364713c7c23aaa976b89aa3a325d3ff015cd5dd",
+  "installed_payload": {
+    "files": 308,
+    "sha256": "4ae653cf1ac4f366e12cf748d4e9935148d39a5db7043cd627014c963ac9bcb6",
+    "digest_method": "SHA-256 over each sorted repository-relative path and its SHA-256 digest",
+    "skills": 124,
+    "schemas": 38,
+    "templates": 52,
+    "python_tools": 38
+  },
+  "batches_detail": [
+    {"batch": 29, "skill_ids": [1141, 1160], "skills": 20, "schemas": 3, "templates": 5, "tests": 3},
+    {"batch": 30, "skill_ids": [1161, 1180], "skills": 20, "schemas": 4, "templates": 6, "tests": 3},
+    {"batch": 31, "skill_ids": [1181, 1202], "skills": 22, "schemas": 6, "templates": 9, "tests": 5},
+    {"batch": 32, "skill_ids": [1203, 1222], "skills": 20, "schemas": 7, "templates": 9, "tests": 6},
+    {"batch": 33, "skill_ids": [1223, 1242], "skills": 20, "schemas": 8, "templates": 11, "tests": 7},
+    {"batch": 34, "skill_ids": [1243, 1264], "skills": 22, "schemas": 10, "templates": 12, "tests": 7}
+  ],
+  "installation_adjustments": [
+    "Quoted the Batch 29 route-economics Skill description so it is valid YAML under the official Skill Creator validator.",
+    "Made each Batch Makefile use an isolated uv environment with jsonschema and PyYAML.",
+    "Changed unittest execution to discovery mode so tests do not depend on a top-level Python package.",
+    "Added one cross-batch validator and one aggregate Make target."
+  ],
+  "package_status": "VERIFIED",
+  "external_operation_executed": false,
+  "field_certification_status": "NOT_RUN"
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Data Governance Catalog"
+  short_description: "Govern lineage ownership access and deletion"
+  default_prompt: "Use $data-catalog-lineage-classification-and-governance to govern this ELMOS Batch 15 workflow."

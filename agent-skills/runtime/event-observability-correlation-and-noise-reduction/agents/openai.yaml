@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 25 004"
+  short_description: "Run Batch 25 runtime contract safely"
+  default_prompt: "Use $event-observability-correlation-and-noise-reduction to apply its fail-closed ELMOS runtime contract."

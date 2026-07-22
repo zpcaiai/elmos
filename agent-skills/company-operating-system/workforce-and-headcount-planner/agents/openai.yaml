@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 480: workforce and headcount planner"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $workforce-and-headcount-planner to evaluate this capability with evidence."

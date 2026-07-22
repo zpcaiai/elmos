@@ -1,0 +1,4 @@
+interface:
+  display_name: "B36 Diagnostic Quick Fix"
+  short_description: "Plan safe diagnostic-bound code repairs"
+  default_prompt: "Use $b36-diagnostic-quick-fix to create policy-bound quick fixes with explicit postconditions."

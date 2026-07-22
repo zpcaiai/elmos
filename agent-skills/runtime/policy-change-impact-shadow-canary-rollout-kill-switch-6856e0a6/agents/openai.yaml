@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B38: Policy Change Impact Shadow Canary Rollout Kill Switch And Rollback"
+  short_description: "Run ELMOS Product B38 contract with fail-closed evidence"
+  default_prompt: "Use $policy-change-impact-shadow-canary-rollout-kill-switch-6856e0a6 to implement its fail-closed ELMOS Product B38 contract."

@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-local-advanced-verification",
+  "oracles": [
+    {
+      "oracle_id": "oracle.java-contract",
+      "type": "contract",
+      "owner": "elmos-verification-engineering",
+      "scope": [
+        "claim.local-bounded-techniques",
+        "claim.local-fail-closed-governance"
+      ],
+      "independence": "partially-independent",
+      "trust_level": "strong",
+      "version": "1",
+      "evidence_refs": [
+        "certification/local-source-manifest.json"
+      ]
+    },
+    {
+      "oracle_id": "oracle.junit-regression",
+      "type": "test",
+      "owner": "elmos-verification-engineering",
+      "scope": [
+        "claim.local-bounded-techniques",
+        "claim.local-fail-closed-governance"
+      ],
+      "independence": "dependent",
+      "trust_level": "supporting",
+      "version": "1",
+      "evidence_refs": [
+        "certification/local-test-result.json"
+      ]
+    }
+  ],
+  "precedence_rules": [
+    {
+      "claim_type": "local-runtime",
+      "ordered_oracles": [
+        "oracle.java-contract",
+        "oracle.junit-regression"
+      ]
+    }
+  ],
+  "conflicts": [],
+  "approvals": []
+}

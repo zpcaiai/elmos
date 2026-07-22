@@ -1,0 +1,4 @@
+interface:
+  display_name: "Recipe Catalog Indexer And Selector"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $recipe-catalog-indexer-and-selector to execute this ELMOS Runtime Skill with fail-closed evidence."

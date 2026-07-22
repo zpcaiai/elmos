@@ -1,0 +1,4 @@
+interface:
+  display_name: "Openrewrite Sandbox Runner"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $openrewrite-sandbox-runner to execute this ELMOS Runtime Skill with fail-closed evidence."

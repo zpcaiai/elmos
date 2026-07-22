@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 26 008"
+  short_description: "Run Batch 26 runtime contract safely"
+  default_prompt: "Use $dependency-concentration-obsolescence-and-systemic-risk-analyzer to apply its fail-closed ELMOS runtime contract."

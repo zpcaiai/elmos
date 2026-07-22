@@ -1,0 +1,5 @@
+interface:
+  display_name: "Local Content Community And Developer Program"
+  short_description: "Authoritative Batch 14 Skill 452 workflow"
+  default_prompt: "Use $local-content-community-and-developer-program to execute its evidence-bound Batch 14 workflow."
+

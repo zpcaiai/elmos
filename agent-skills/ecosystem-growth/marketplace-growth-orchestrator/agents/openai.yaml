@@ -1,0 +1,5 @@
+interface:
+  display_name: "Marketplace Growth Orchestrator"
+  short_description: "Authoritative Batch 14 Skill 436 workflow"
+  default_prompt: "Use $marketplace-growth-orchestrator to execute its evidence-bound Batch 14 workflow."
+

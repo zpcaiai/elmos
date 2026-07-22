@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.security-authorization-decision.v1",
+  "type": "object",
+  "required": ["authorizationBoundaryId", "decision", "validFrom", "validUntil", "conditions", "evidenceManifestHash", "internalDecisionOnly", "externalCertificationGranted"],
+  "properties": {
+    "authorizationBoundaryId": {"type": "string"},
+    "decision": {"enum": ["AUTHORIZED", "AUTHORIZED_WITH_CONDITIONS", "LIMITED_AUTHORIZATION", "REASSESSMENT_REQUIRED", "SUSPENDED", "DENIED", "EXPIRED"]},
+    "validFrom": {"type": "string", "format": "date-time"}, "validUntil": {"type": "string", "format": "date-time"},
+    "conditions": {"type": "array"}, "evidenceManifestHash": {"type": "string"},
+    "internalDecisionOnly": {"const": true}, "externalCertificationGranted": {"const": false}
+  },
+  "additionalProperties": false
+}

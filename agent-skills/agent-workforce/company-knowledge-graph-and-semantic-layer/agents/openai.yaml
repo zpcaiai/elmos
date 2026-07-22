@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 540: company knowledge graph and semantic layer"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $company-knowledge-graph-and-semantic-layer to evaluate this capability with evidence."

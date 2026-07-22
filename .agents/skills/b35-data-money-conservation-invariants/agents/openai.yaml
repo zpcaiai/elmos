@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 35: Conservation Invariants"
+  short_description: "Verify data money and quantity conservation"
+  default_prompt: "Use $b35-data-money-conservation-invariants to implement and verify this capability with fail-closed evidence."

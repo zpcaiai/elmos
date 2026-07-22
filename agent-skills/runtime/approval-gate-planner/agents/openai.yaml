@@ -1,0 +1,4 @@
+interface:
+  display_name: "Approval Gate Planner"
+  short_description: "Create blocking migration approval gates"
+  default_prompt: "Use $approval-gate-planner for ELMOS Batch 4 approvals."

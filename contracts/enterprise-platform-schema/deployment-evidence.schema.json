@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/enterprise-platform/deployment-evidence.schema.json",
+  "title": "T-F Independent Deployment Mode Evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["assessment_run_id", "platform_version", "status", "modes", "authority_id", "observed_at", "evidence_refs"],
+  "properties": {
+    "assessment_run_id": {"type": "string", "minLength": 1}, "platform_version": {"type": "string", "minLength": 1}, "status": {"const": "PASSED"},
+    "modes": {
+      "type": "array", "minItems": 5, "maxItems": 5, "uniqueItems": true, "items": {"$ref": "#/$defs/mode_result"},
+      "allOf": [
+        {"contains": {"properties": {"mode": {"const": "SAAS_SHARED"}}, "required": ["mode"]}, "minContains": 1, "maxContains": 1},
+        {"contains": {"properties": {"mode": {"const": "SAAS_DEDICATED_RUNNER"}}, "required": ["mode"]}, "minContains": 1, "maxContains": 1},
+        {"contains": {"properties": {"mode": {"const": "HYBRID_PRIVATE_RUNNER"}}, "required": ["mode"]}, "minContains": 1, "maxContains": 1},
+        {"contains": {"properties": {"mode": {"const": "SELF_HOSTED"}}, "required": ["mode"]}, "minContains": 1, "maxContains": 1},
+        {"contains": {"properties": {"mode": {"const": "AIR_GAPPED"}}, "required": ["mode"]}, "minContains": 1, "maxContains": 1}
+      ]
+    },
+    "authority_id": {"type": "string", "minLength": 1}, "observed_at": {"type": "string", "format": "date-time"},
+    "evidence_refs": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+  },
+  "$defs": {
+    "mode_result": {
+      "type": "object", "additionalProperties": false,
+      "required": ["mode", "status", "topology_validated", "responsibility_matrix_complete", "installation_passed", "hidden_saas_dependencies", "unexpected_network_requests", "signed_artifacts_passed", "dependency_closure_passed", "local_model_execution_passed", "model_license_passed", "offline_license_passed", "offline_update_passed", "rollback_passed", "ha_and_backup_restore_passed", "evidence_refs"],
+      "properties": {
+        "mode": {"enum": ["SAAS_SHARED", "SAAS_DEDICATED_RUNNER", "HYBRID_PRIVATE_RUNNER", "SELF_HOSTED", "AIR_GAPPED"]}, "status": {"const": "PASSED"},
+        "topology_validated": {"const": true}, "responsibility_matrix_complete": {"const": true}, "installation_passed": {"const": true},
+        "hidden_saas_dependencies": {"const": 0}, "unexpected_network_requests": {"const": 0}, "signed_artifacts_passed": {"const": true},
+        "dependency_closure_passed": {"const": true}, "local_model_execution_passed": {"type": "boolean"}, "model_license_passed": {"const": true},
+        "offline_license_passed": {"type": "boolean"}, "offline_update_passed": {"type": "boolean"}, "rollback_passed": {"const": true},
+        "ha_and_backup_restore_passed": {"const": true}, "evidence_refs": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+      },
+      "allOf": [
+        {"if": {"properties": {"mode": {"const": "AIR_GAPPED"}}, "required": ["mode"]}, "then": {"properties": {"local_model_execution_passed": {"const": true}, "offline_license_passed": {"const": true}, "offline_update_passed": {"const": true}}}},
+        {"if": {"properties": {"mode": {"const": "SELF_HOSTED"}}, "required": ["mode"]}, "then": {"properties": {"offline_update_passed": {"const": true}}}}
+      ]
+    }
+  }
+}

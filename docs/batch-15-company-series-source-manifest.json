@@ -1,0 +1,17 @@
+{
+  "batch": 15,
+  "skill_range": [
+    461,
+    525
+  ],
+  "skill_count": 65,
+  "source_file": "pasted-text.txt",
+  "source_sha256": "7ed443ce960fab9afee75215f746412e0845e7c9c46ae8af3e3c63655778956f",
+  "generated_groups": [
+    "agent-skills/company-operating-system",
+    "docs/batch-15-company-operating-acceptance-checklist.md",
+    "contracts/company-operating-system-schema",
+    "modules/persistence/src/main/resources/db/migration/V24__company_operating_and_governance_system.sql"
+  ],
+  "external_operation_executed": false
+}

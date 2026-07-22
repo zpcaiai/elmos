@@ -1,0 +1,12 @@
+{
+  "candidates": ["MINIMUM_SAFE_FRAMEWORK", "MODERN_WINDOWS", "MODERN_CROSS_PLATFORM_BLOCKED", "INCREMENTAL_SIDE_BY_SIDE"],
+  "recommended": {"strategy": "INCREMENTAL_SIDE_BY_SIDE", "runtime": ".NET 10 + .NET Framework 4.8", "operatingSystem": "WINDOWS", "reason": ["production must remain online", "Web Forms/System.Web", "Registry", "custom WCF binding", "EDMX"]},
+  "steps": [
+    {"id": "baseline-windows", "runner": "WINDOWS_LEGACY", "gates": ["build", "complete-test-inventory", "IIS", "WCF", "EF"]},
+    {"id": "sdk-packages", "after": ["baseline-windows"], "action": "SDK_STYLE_AND_PACKAGE_REFERENCE_KEEP_NET48"},
+    {"id": "aspnet-side-by-side", "after": ["sdk-packages"], "action": "YARP_AND_SYSTEM_WEB_ADAPTER", "ui": "REWRITE_REQUIRED", "exitDecision": "REMOVE_ADAPTER_OR_APPROVE_LONG_TERM_OWNERSHIP"},
+    {"id": "wcf-decision", "after": ["sdk-packages"], "result": "PARTIAL_REQUIRES_REDESIGN", "architectureApproval": true, "gates": ["WSDL", "SOAP", "security", "transaction", "legacy-client"]},
+    {"id": "ef-transition", "after": ["sdk-packages"], "action": "MODERN_RUNTIME_WITH_EF6_THEN_EFCORE_PER_CONTEXT", "edmx": "REGENERATE_FROM_APPROVED_TEST_DATABASE_NOT_FORMAT_CONVERSION", "migrationHistory": "NEW_REVIEWED_BASELINE"}
+  ],
+  "linuxPromotion": {"status": "BLOCKED", "blockers": ["WINDOWS_REGISTRY", "SYSTEM_WEB", "WEB_FORMS_UI", "CUSTOM_WCF_BINDING"]}
+}

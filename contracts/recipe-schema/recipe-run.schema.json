@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/recipe-run.schema.json",
+  "title": "RecipeRun",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schemaVersion",
+    "runId",
+    "manifestHash",
+    "status",
+    "idempotence"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0"
+    },
+    "runId": {
+      "type": "string"
+    },
+    "manifestHash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "status": {
+      "enum": [
+        "NO_CHANGES",
+        "SUCCEEDED_WITH_CHANGES",
+        "SUCCEEDED_WITH_WARNINGS",
+        "PARSE_FAILED",
+        "RECIPE_FAILED",
+        "POLICY_BLOCKED",
+        "TIMED_OUT",
+        "RESOURCE_EXCEEDED",
+        "CANCELLED"
+      ]
+    },
+    "idempotence": {
+      "type": "object"
+    }
+  }
+}
+

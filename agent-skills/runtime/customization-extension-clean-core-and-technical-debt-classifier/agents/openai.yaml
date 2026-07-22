@@ -1,0 +1,4 @@
+interface:
+  display_name: "Customization Extension Clean Core And Technical Debt Classifier"
+  short_description: "Govern evidence-bound enterprise suite modernization"
+  default_prompt: "Use $customization-extension-clean-core-and-technical-debt-classifier to govern this enterprise suite modernization task with fail-closed evidence."

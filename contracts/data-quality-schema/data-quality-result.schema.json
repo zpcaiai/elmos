@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.io/contracts/data-quality-result.v1",
+  "title": "ELMOS Data Quality Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "organizationId", "ruleId", "assetId", "ruleOwner", "status", "evaluatedRows", "failedRows", "defectClass", "evidenceRefs"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "organizationId": { "type": "string", "minLength": 1 },
+    "ruleId": { "type": "string", "minLength": 1 },
+    "assetId": { "type": "string", "minLength": 1 },
+    "ruleOwner": { "type": "string", "minLength": 1 },
+    "status": { "enum": ["PASS", "PASS_WITH_BASELINE_DEFECTS", "FAIL_MIGRATION_REGRESSION", "HUMAN_REVIEW_REQUIRED", "INCONCLUSIVE"] },
+    "evaluatedRows": { "type": "integer", "minimum": 0 },
+    "failedRows": { "type": "integer", "minimum": 0 },
+    "defectClass": { "enum": ["NONE", "SOURCE_DEFECT_PRESERVED", "SOURCE_DEFECT_FIXED", "MIGRATION_INTRODUCED_DEFECT", "TARGET_ONLY_DEFECT"] },
+    "evidenceRefs": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }
+  }
+}

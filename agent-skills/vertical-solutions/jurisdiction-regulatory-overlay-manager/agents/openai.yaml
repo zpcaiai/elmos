@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 598: jurisdiction regulatory overlay manager"
+  short_description: "Operate authoritative Batch 17 capability"
+  default_prompt: "Use $jurisdiction-regulatory-overlay-manager to evaluate this capability with evidence."

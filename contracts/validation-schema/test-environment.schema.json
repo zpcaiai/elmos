@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/test-environment.schema.json",
+  "title": "TestEnvironment",
+  "type": "object",
+  "required": [
+    "environmentId",
+    "workspaceId",
+    "sourceSnapshotId",
+    "commitSha",
+    "jdkDigest",
+    "buildToolVersion",
+    "containerImageDigests",
+    "reusableContainers",
+    "networkPolicyId",
+    "fixtureHash"
+  ],
+  "properties": {
+    "environmentId": {
+      "type": "string"
+    },
+    "workspaceId": {
+      "type": "string"
+    },
+    "sourceSnapshotId": {
+      "type": "string"
+    },
+    "commitSha": {
+      "type": "string"
+    },
+    "jdkDigest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "buildToolVersion": {
+      "type": "string"
+    },
+    "containerImageDigests": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^sha256:[0-9a-f]{64}$"
+      }
+    },
+    "reusableContainers": {
+      "const": false
+    },
+    "networkPolicyId": {
+      "type": "string"
+    },
+    "fixtureHash": {
+      "type": "string",
+      "pattern": "^(sha256:)?[0-9a-f]{64}$"
+    }
+  }
+}
+

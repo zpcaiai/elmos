@@ -1,0 +1,4 @@
+interface:
+  display_name: "Software Supply Chain Sbom Provenance Vex and Attestation"
+  short_description: "Software Supply Chain Sbom Provenance Vex and Attestation helper"
+  default_prompt: "Use $software-supply-chain-sbom-provenance-vex-and-attestation to execute its ELMOS Batch 17 workflow safely."

@@ -1,0 +1,425 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/commercial-loop/commercial-evidence-pack.schema.json",
+  "title": "Batch 13 Commercial Evidence Pack",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "platform_business_version",
+    "artifact_digest",
+    "sales_poc",
+    "quote_contract",
+    "onboarding_delivery",
+    "support_success",
+    "partner",
+    "operations_economics",
+    "scale_acceptance",
+    "conformance"
+  ],
+  "properties": {
+    "platform_business_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "artifact_digest": {
+      "type": "string",
+      "pattern": "^[A-Fa-f0-9]{64}$"
+    },
+    "sales_poc": {
+      "oneOf": [
+        {
+          "$ref": "sales-poc-evidence.schema.json"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status"
+          ],
+          "properties": {
+            "status": {
+              "const": "NOT_RUN"
+            }
+          }
+        }
+      ]
+    },
+    "quote_contract": {
+      "oneOf": [
+        {
+          "$ref": "quote-contract-evidence.schema.json"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status"
+          ],
+          "properties": {
+            "status": {
+              "const": "NOT_RUN"
+            }
+          }
+        }
+      ]
+    },
+    "onboarding_delivery": {
+      "oneOf": [
+        {
+          "$ref": "onboarding-delivery-evidence.schema.json"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status"
+          ],
+          "properties": {
+            "status": {
+              "const": "NOT_RUN"
+            }
+          }
+        }
+      ]
+    },
+    "support_success": {
+      "oneOf": [
+        {
+          "$ref": "support-success-evidence.schema.json"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status"
+          ],
+          "properties": {
+            "status": {
+              "const": "NOT_RUN"
+            }
+          }
+        }
+      ]
+    },
+    "partner": {
+      "oneOf": [
+        {
+          "$ref": "partner-evidence.schema.json"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status"
+          ],
+          "properties": {
+            "status": {
+              "const": "NOT_RUN"
+            }
+          }
+        }
+      ]
+    },
+    "operations_economics": {
+      "oneOf": [
+        {
+          "$ref": "operations-economics-evidence.schema.json"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status"
+          ],
+          "properties": {
+            "status": {
+              "const": "NOT_RUN"
+            }
+          }
+        }
+      ]
+    },
+    "scale_acceptance": {
+      "oneOf": [
+        {
+          "$ref": "scale-acceptance-evidence.schema.json"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status"
+          ],
+          "properties": {
+            "status": {
+              "const": "NOT_RUN"
+            }
+          }
+        }
+      ]
+    },
+    "conformance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "batch",
+        "assessment_run_id",
+        "platform_business_version",
+        "gate",
+        "status",
+        "blockers",
+        "restrictions",
+        "metrics",
+        "external_evidence_complete",
+        "commercial_scale_ready",
+        "commercial_operation_executed",
+        "evaluated_at",
+        "evidence_refs"
+      ],
+      "properties": {
+        "batch": {
+          "const": 13
+        },
+        "assessment_run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "platform_business_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "gate": {
+          "enum": [
+            "BLOCKED",
+            "B13_A",
+            "B13_B",
+            "B13_C",
+            "B13_D",
+            "B13_E",
+            "B13_F",
+            "B13_G"
+          ]
+        },
+        "status": {
+          "enum": [
+            "INITIALIZED",
+            "SALES_POC_STANDARDIZED",
+            "QUOTE_CONTRACT_ALIGNED",
+            "ONBOARDING_DELIVERY_EXECUTABLE",
+            "SUPPORT_SUCCESS_CLOSED_LOOP",
+            "PARTNER_DELIVERY_CONTROLLED",
+            "COMMERCIAL_OPERATIONS_MEASURABLE",
+            "COMMERCIAL_SCALE_READY",
+            "BLOCKED",
+            "FAILED_SAFELY"
+          ]
+        },
+        "blockers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "restrictions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "metrics": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "discovery_coverage",
+            "poc_criteria_coverage",
+            "poc_evidence_coverage",
+            "unapproved_poc_scope_changes",
+            "catalog_quote_coverage",
+            "unauthorized_discounts",
+            "quote_scope_mismatches",
+            "onboarding_coverage",
+            "unapproved_scope_work",
+            "acceptance_evidence_coverage",
+            "sla_coverage",
+            "p1_missed_escalations",
+            "health_coverage",
+            "renewal_coverage",
+            "value_realization_coverage",
+            "partner_certification_coverage",
+            "partner_access_violations",
+            "unreconciled_partner_settlements",
+            "cost_visibility",
+            "margin_visibility",
+            "untracked_project_costs",
+            "audit_coverage",
+            "critical_open_risks",
+            "evidence_traceability"
+          ],
+          "properties": {
+            "discovery_coverage": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "poc_criteria_coverage": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "poc_evidence_coverage": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "unapproved_poc_scope_changes": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "catalog_quote_coverage": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "unauthorized_discounts": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "quote_scope_mismatches": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "onboarding_coverage": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "unapproved_scope_work": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "acceptance_evidence_coverage": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "sla_coverage": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "p1_missed_escalations": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "health_coverage": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "renewal_coverage": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "value_realization_coverage": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "partner_certification_coverage": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "partner_access_violations": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "unreconciled_partner_settlements": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "cost_visibility": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "margin_visibility": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "untracked_project_costs": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "audit_coverage": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "critical_open_risks": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "evidence_traceability": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        },
+        "external_evidence_complete": {
+          "type": "boolean"
+        },
+        "commercial_scale_ready": {
+          "type": "boolean"
+        },
+        "commercial_operation_executed": {
+          "const": false
+        },
+        "evaluated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "commercial_scale_ready": {
+                "const": true
+              }
+            },
+            "required": [
+              "commercial_scale_ready"
+            ]
+          },
+          "then": {
+            "properties": {
+              "gate": {
+                "const": "B13_G"
+              },
+              "status": {
+                "const": "COMMERCIAL_SCALE_READY"
+              },
+              "blockers": {
+                "maxItems": 0
+              },
+              "external_evidence_complete": {
+                "const": true
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
+

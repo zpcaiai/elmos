@@ -1,0 +1,4 @@
+interface:
+  display_name: "Benefit Realization and Post Migration Review"
+  short_description: "Run this Batch 11 cutover capability"
+  default_prompt: "Use $benefit-realization-and-post-migration-review to perform this Batch 11 production-cutover task."

@@ -1,0 +1,5 @@
+interface:
+  display_name: "Channel Attribution And Incrementality Manager"
+  short_description: "Authoritative Batch 14 Skill 415 workflow"
+  default_prompt: "Use $channel-attribution-and-incrementality-manager to execute its evidence-bound Batch 14 workflow."
+

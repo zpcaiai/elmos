@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B38: Regulatory Examination Inquiry Evidence Room Response And Remediation"
+  short_description: "Run ELMOS Product B38 contract with fail-closed evidence"
+  default_prompt: "Use $regulatory-examination-inquiry-evidence-room-response-a-ae87eae9 to implement its fail-closed ELMOS Product B38 contract."

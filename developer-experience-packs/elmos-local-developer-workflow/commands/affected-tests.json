@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "selector": "semantic-impact-graph",
+  "fallback": "broader-suite",
+  "network": "deny"
+}

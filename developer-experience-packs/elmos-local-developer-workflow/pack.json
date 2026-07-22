@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-local-developer-workflow",
+  "version": "0.1.0",
+  "status": "experimental",
+  "owner": "elmos-developer-experience",
+  "maintenance_owner": "elmos-platform",
+  "scope": {
+    "migration_route": "batch36-spec-to-java-runtime",
+    "source_artifact_digest": "sha256:865e6c4fb57d26426b4634bfc9a2175f86d33617620462802699e31e6ceeaead",
+    "target_artifact_digest": "sha256:b41b10009fa6d9715cfc3d11c14a3656b6b2a31a3a30e781c9c177b27124302e",
+    "repository_provider": "local",
+    "repository_id": "elmos/local-workspace",
+    "risk_tier": "P1",
+    "environment_digest": "sha256:a786a4208f28cd5f1a4351952879f9d0a4c7fb9b783684a733b173c6283f1e0c"
+  },
+  "contracts": {
+    "ide_protocol": "protocol/ide-protocol.json",
+    "cli_contract": "cli/contract.json",
+    "pr_bot_policy": "pr-bot/policy.json",
+    "ownership_policy": "ownership/policy.json",
+    "telemetry_policy": "telemetry/policy.json"
+  },
+  "corpus": {
+    "development": "corpus/development",
+    "negative": "corpus/negative",
+    "holdout": "corpus/holdout",
+    "representative_workflows": "corpus/representative-workflows"
+  },
+  "certification": {
+    "evidence_path": "certification/evidence.json",
+    "result_path": "certification/certification.json"
+  },
+  "tags": [
+    "batch36",
+    "developer-experience"
+  ]
+}

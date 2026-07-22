@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B36: Transfer Qos Bandwidth Priority Throttling Delta And Maintenance Window"
+  short_description: "Run ELMOS Product B36 contract with fail-closed evidence"
+  default_prompt: "Use $transfer-qos-bandwidth-priority-throttling-delta-and-ma-83ab54dc to implement its fail-closed ELMOS Product B36 contract."

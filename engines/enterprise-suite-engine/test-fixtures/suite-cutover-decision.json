@@ -1,0 +1,1 @@
+{"schemaVersion":"1.0","decisionId":"suite-cutover-company-a","suiteEstateRef":"suite-estate-1","sourceArtifact":"sha256:fixture","evaluatedArtifact":"sha256:fixture","wave":{"dimension":"COMPANY","value":"A"},"decision":"FAIL","satisfiedGates":["CONFIGURATION_VALIDATED"],"blockers":["MASTER_DATA_AUTHORITY_UNRESOLVED"],"evidenceRefs":["evidence://cutover/company-a"]}

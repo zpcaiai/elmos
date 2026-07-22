@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 545: exception escalation and human takeover manager"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $exception-escalation-and-human-takeover-manager to evaluate this capability with evidence."

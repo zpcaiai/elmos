@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 39: Global Operations Gate"
+  short_description: "Run evidence-bound Batch 39 global operations gate work"
+  default_prompt: "Use $b39-global-operations-gate to implement and verify this capability with fail-closed evidence."

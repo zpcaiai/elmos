@@ -1,0 +1,4 @@
+interface:
+  display_name: "commercial-data-model-and-system-of-record"
+  short_description: "Run this Batch 13 commercial capability"
+  default_prompt: "Use $commercial-data-model-and-system-of-record to evaluate this Batch 13 commercial capability with evidence."

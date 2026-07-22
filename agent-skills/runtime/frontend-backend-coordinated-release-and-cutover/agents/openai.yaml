@@ -1,0 +1,4 @@
+interface:
+  display_name: "Client Cutover Coordinator"
+  short_description: "Govern cross-client release and rollback stages"
+  default_prompt: "Use $frontend-backend-coordinated-release-and-cutover to govern Web, desktop, mobile, BFF, and backend compatibility and cutover."

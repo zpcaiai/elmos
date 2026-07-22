@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.repository-snapshot.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["snapshotId", "repositoryId", "resolvedCommitSha", "archiveSha256", "manifestArtifactRef", "manifestSha256", "status"],
+  "properties": {
+    "snapshotId": {"type": "string", "minLength": 1},
+    "repositoryId": {"type": "string", "minLength": 1},
+    "requestedRef": {"type": "string"},
+    "resolvedCommitSha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "treeSha": {"type": "string"},
+    "archiveArtifactRef": {"type": "string"},
+    "archiveSha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "manifestArtifactRef": {"type": "string", "minLength": 1},
+    "manifestSha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "archiveFormat": {"const": "tar.zst"},
+    "status": {"enum": ["REQUESTED", "RESOLVING_REF", "FETCHING", "VERIFYING", "ARCHIVING", "UPLOADING", "AVAILABLE", "UNSUPPORTED_CONTENT", "FAILED", "QUARANTINED"]}
+  }
+}

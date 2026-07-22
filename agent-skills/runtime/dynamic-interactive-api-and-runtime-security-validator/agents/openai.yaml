@@ -1,0 +1,4 @@
+interface:
+  display_name: "Dynamic Interactive API and Runtime Security Validator"
+  short_description: "Help with Dynamic Interactive API and Runtime Security Validator"
+  default_prompt: "Use $dynamic-interactive-api-and-runtime-security-validator to execute its ELMOS Batch 17 workflow safely."

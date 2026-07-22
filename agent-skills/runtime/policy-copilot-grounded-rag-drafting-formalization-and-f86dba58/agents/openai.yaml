@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B38: Policy Copilot Grounded Rag Drafting Formalization And Review Assistant"
+  short_description: "Run ELMOS Product B38 contract with fail-closed evidence"
+  default_prompt: "Use $policy-copilot-grounded-rag-drafting-formalization-and-f86dba58 to implement its fail-closed ELMOS Product B38 contract."

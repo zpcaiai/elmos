@@ -1,0 +1,146 @@
+services:
+  postgres:
+    image: postgres:17.5-alpine
+    environment:
+      POSTGRES_DB: elmos
+      POSTGRES_USER: elmos
+      POSTGRES_PASSWORD: elmos-local-only
+    ports: ["5432:5432"]
+    volumes: ["postgres-data:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U elmos -d elmos"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  minio:
+    image: minio/minio:RELEASE.2025-07-23T15-54-02Z
+    command: server /data --console-address :9001
+    environment:
+      MINIO_ROOT_USER: elmos-local
+      MINIO_ROOT_PASSWORD: elmos-local-only
+    ports: ["9000:9000", "9001:9001"]
+    volumes: ["minio-data:/data"]
+  control-plane:
+    build: { context: ../.., dockerfile: apps/control-plane/Dockerfile }
+    environment:
+      ELMOS_DATABASE_URL: jdbc:postgresql://postgres:5432/elmos
+      ELMOS_DATABASE_USER: elmos
+      ELMOS_DATABASE_PASSWORD: elmos-local-only
+    ports: ["8080:8080"]
+    depends_on:
+      postgres: { condition: service_healthy }
+  java-engine-worker:
+    build: { context: ../.., dockerfile: apps/java-engine-worker/Dockerfile }
+    ports: ["8081:8081"]
+  dotnet-engine-worker:
+    build: { context: ../.., dockerfile: engines/dotnet-engine/Dockerfile }
+    environment:
+      ELMOS_DOTNET_WORKSPACE_ROOT: /workspaces
+    ports: ["8086:8086"]
+    volumes: ["dotnet-workspaces:/workspaces"]
+  python-engine-worker:
+    build: { context: ../.., dockerfile: engines/python-engine/Dockerfile }
+    environment:
+      ELMOS_PYTHON_WORKSPACE_ROOT: /workspaces
+    ports: ["8087:8087"]
+    volumes: ["python-workspaces:/workspaces"]
+  frontend-client-engine-worker:
+    build: { context: ../.., dockerfile: engines/frontend-client-engine/Dockerfile }
+    environment:
+      ELMOS_FRONTEND_PORT: "8088"
+      ELMOS_FRONTEND_HOST: "0.0.0.0"
+    ports: ["8088:8088"]
+  database-data-engine-worker:
+    build: { context: ../.., dockerfile: engines/database-data-engine/Dockerfile }
+    environment:
+      ELMOS_DATABASE_DATA_PORT: "8089"
+    ports: ["8089:8089"]
+  infrastructure-engine-worker:
+    build: { context: ../.., dockerfile: engines/infrastructure-engine/Dockerfile }
+    environment:
+      ELMOS_INFRASTRUCTURE_PORT: "8090"
+    ports: ["8090:8090"]
+  security-compliance-engine-worker:
+    build: { context: ../.., dockerfile: engines/security-compliance-engine/Dockerfile }
+    environment:
+      ELMOS_SECURITY_COMPLIANCE_PORT: "8091"
+    ports: ["8091:8091"]
+  test-quality-engine-worker:
+    build: { context: ../.., dockerfile: engines/test-quality-engine/Dockerfile }
+    environment:
+      ELMOS_TEST_QUALITY_PORT: "8092"
+    ports: ["8092:8092"]
+  mainframe-engine-worker:
+    build: { context: ../.., dockerfile: engines/mainframe-engine/Dockerfile }
+    environment:
+      ELMOS_MAINFRAME_PORT: "8093"
+    ports: ["8093:8093"]
+  enterprise-integration-engine-worker:
+    build: { context: ../.., dockerfile: engines/enterprise-integration-engine/Dockerfile }
+    environment:
+      ELMOS_ENTERPRISE_INTEGRATION_PORT: "8094"
+    ports: ["8094:8094"]
+  enterprise-suite-engine-worker:
+    build: { context: ../.., dockerfile: engines/enterprise-suite-engine/Dockerfile }
+    environment:
+      ELMOS_ENTERPRISE_SUITE_PORT: "8095"
+    ports: ["8095:8095"]
+  software-delivery-platform-engine-worker:
+    build: { context: ../.., dockerfile: engines/software-delivery-platform-engine/Dockerfile }
+    environment:
+      ELMOS_SOFTWARE_DELIVERY_PLATFORM_PORT: "8096"
+    ports: ["8096:8096"]
+  ai-platform-engine-worker:
+    build: { context: ../.., dockerfile: engines/ai-platform-engine/Dockerfile }
+    environment:
+      ELMOS_AI_PLATFORM_PORT: "8097"
+    ports: ["8097:8097"]
+  edge-iot-industrial-engine-worker:
+    build: { context: ../.., dockerfile: engines/edge-iot-industrial-engine/Dockerfile }
+    environment:
+      ELMOS_EDGE_IOT_INDUSTRIAL_PORT: "8098"
+    ports: ["8098:8098"]
+  operations-sre-itsm-engine-worker:
+    build: { context: ../.., dockerfile: engines/operations-sre-itsm-engine/Dockerfile }
+    environment:
+      ELMOS_OPERATIONS_SRE_ITSM_PORT: "8099"
+    ports: ["8099:8099"]
+  enterprise-architecture-engine-worker:
+    build: { context: ../.., dockerfile: engines/enterprise-architecture-engine/Dockerfile }
+    environment:
+      ELMOS_ENTERPRISE_ARCHITECTURE_PORT: "8100"
+    ports: ["8100:8100"]
+  workspace-service:
+    build: { context: ../.., dockerfile: apps/workspace-service/Dockerfile }
+    environment:
+      ELMOS_DATABASE_URL: jdbc:postgresql://postgres:5432/elmos
+      ELMOS_DATABASE_USER: elmos
+      ELMOS_DATABASE_PASSWORD: elmos-local-only
+      ELMOS_WORKSPACE_DOCKER_ENABLED: "false"
+    ports: ["8082:8082"]
+    depends_on:
+      postgres: { condition: service_healthy }
+  agent-gateway:
+    build: { context: ../.., dockerfile: apps/agent-gateway/Dockerfile }
+    environment:
+      ELMOS_AGENT_GATEWAY_PORT: "8083"
+    ports: ["8083:8083"]
+  enterprise-control:
+    build: { context: ../.., dockerfile: apps/enterprise-control/Dockerfile }
+    environment:
+      ELMOS_ENTERPRISE_CONTROL_PORT: "8084"
+    ports: ["8084:8084"]
+  commercial-api:
+    build: { context: ../.., dockerfile: apps/commercial-api/Dockerfile }
+    environment:
+      ELMOS_COMMERCIAL_API_PORT: "8085"
+    ports: ["8085:8085"]
+  web-console:
+    build: ../../apps/web-console
+    ports: ["3000:3000"]
+    depends_on: [control-plane]
+volumes:
+  postgres-data:
+  minio-data:
+  dotnet-workspaces:
+  python-workspaces:

@@ -1,0 +1,10 @@
+server:
+  port: ${ELMOS_OPERATIONS_SRE_ITSM_PORT:8099}
+spring:
+  application:
+    name: elmos-operations-sre-itsm-engine
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

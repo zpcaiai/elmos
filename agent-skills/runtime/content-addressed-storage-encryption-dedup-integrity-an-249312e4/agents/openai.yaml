@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B37: Content Addressed Storage Encryption Dedup Integrity And Provider Adapters"
+  short_description: "Run ELMOS Product B37 contract with fail-closed evidence"
+  default_prompt: "Use $content-addressed-storage-encryption-dedup-integrity-an-249312e4 to implement its fail-closed ELMOS Product B37 contract."

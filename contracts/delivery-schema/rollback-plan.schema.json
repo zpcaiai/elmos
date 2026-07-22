@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/rollback-plan.schema.json",
+  "title": "RollbackPlan",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "planId",
+    "migrationId",
+    "triggers",
+    "steps",
+    "drillStatus",
+    "limitations",
+    "executable",
+    "blockingReasons"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0"
+    },
+    "planId": {
+      "type": "string"
+    },
+    "migrationId": {
+      "type": "string"
+    },
+    "triggers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "rtoMinutes": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "rpoMinutes": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "drillStatus": {
+      "enum": [
+        "NOT_RUN",
+        "PASSED",
+        "FAILED",
+        "WAIVED"
+      ]
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "executable": {
+      "type": "boolean"
+    },
+    "blockingReasons": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}
+

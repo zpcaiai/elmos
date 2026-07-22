@@ -1,0 +1,4 @@
+interface:
+  display_name: "Canonical Database IR"
+  short_description: "Model schema SQL and procedures without loss"
+  default_prompt: "Use $canonical-schema-sql-and-procedure-semantic-model to govern this ELMOS Batch 15 workflow."

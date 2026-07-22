@@ -1,0 +1,4 @@
+interface:
+  display_name: "B36 Developer Experience Gate"
+  short_description: "Evaluate exact developer-workflow evidence"
+  default_prompt: "Use $b36-developer-experience-certification-gate to run the conservative Batch 36 certification decision."

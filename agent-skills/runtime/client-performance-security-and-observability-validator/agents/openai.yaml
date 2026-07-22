@@ -1,0 +1,4 @@
+interface:
+  display_name: "Client Quality Validator"
+  short_description: "Validate client performance security and telemetry"
+  default_prompt: "Use $client-performance-security-and-observability-validator to compare bundle, runtime, storage, security, and telemetry evidence."

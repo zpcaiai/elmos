@@ -1,0 +1,4 @@
+interface:
+  display_name: "Behavioral Scenario And Input Corpus Builder"
+  short_description: "Run this Batch 9 behavioral capability"
+  default_prompt: "Use $behavioral-scenario-and-input-corpus-builder to perform this Batch 9 behavioral-equivalence task."

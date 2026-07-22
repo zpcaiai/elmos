@@ -1,0 +1,4 @@
+interface:
+  display_name: "Java Binary Source Api Checker"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $java-binary-source-api-checker to execute this ELMOS Runtime Skill with fail-closed evidence."

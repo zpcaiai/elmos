@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 518: board composition and committee designer"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $board-composition-and-committee-designer to evaluate this capability with evidence."

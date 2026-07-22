@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 36: Developer Workflow Factory"
+  short_description: "Run evidence-bound Batch 36 developer workflow factory work"
+  default_prompt: "Use $b36-developer-workflow-factory to implement and verify this capability with fail-closed evidence."

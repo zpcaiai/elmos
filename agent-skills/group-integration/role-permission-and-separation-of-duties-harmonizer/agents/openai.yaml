@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 695: role permission and separation of duties harmonizer"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $role-permission-and-separation-of-duties-harmonizer to evaluate this capability with evidence."

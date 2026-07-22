@@ -1,0 +1,38 @@
+{
+  "authoritative_stores": [
+    "source-manifest",
+    "inventory",
+    "dependency-graph",
+    "work-unit-plan",
+    "workflow-history",
+    "commit-tokens"
+  ],
+  "derived_stores": [
+    "semantic-index",
+    "cache"
+  ],
+  "evidence_refs": [
+    "certification/local-rehearsal.json"
+  ],
+  "idempotency": {
+    "commit_token_required": true,
+    "status": "implemented-in-elmos-portfolio-scale"
+  },
+  "owner": "elmos-platform-team",
+  "pack_key": "elmos-local-rehearsal",
+  "recovery_order": [
+    "inventory",
+    "dependency-graph",
+    "work-unit-plan",
+    "workflow-history"
+  ],
+  "rpo": "NOT_RUN",
+  "rto": "NOT_RUN",
+  "schema_version": 1,
+  "test_cases": [
+    {
+      "key": "local-workflow-snapshot-restore",
+      "status": "covered-by-unit-test"
+    }
+  ]
+}

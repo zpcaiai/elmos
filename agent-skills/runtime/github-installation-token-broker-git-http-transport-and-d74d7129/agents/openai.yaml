@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 35 Skill 007"
+  short_description: "Run Product Batch 35 evidence contract safely"
+  default_prompt: "Use $github-installation-token-broker-git-http-transport-and-d74d7129 to implement its fail-closed ELMOS Product Batch 35 contract."

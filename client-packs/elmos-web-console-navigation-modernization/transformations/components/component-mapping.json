@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "source_snapshot_digest": "ebb89f64a5a487c5bfd0103723dc2b9d26e678a519758a843267e0804207d973",
+  "mappings": [
+    {"source":"apps/web-console/app/page.tsx","target":"apps/web-console/app/components/AppShell.tsx","ownership":"shared","behavior":"persistent navigation shell"},
+    {"source":"apps/web-console/app/page.tsx","target":"apps/web-console/app/migration/MigrationStudio.tsx","ownership":"manual","behavior":"migration catalog and local-draft journey"},
+    {"source":"apps/web-console/app/page.tsx","target":"apps/web-console/app/commercialization/CommercializationConsole.tsx","ownership":"manual","behavior":"read-only trust-chain review journey"},
+    {"source":"apps/web-console/app/styles.css","target":"apps/web-console/app/styles.css","ownership":"shared","behavior":"responsive design-token implementation"}
+  ]
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 39: Platform Cost Anomaly Monitoring"
+  short_description: "Run evidence-bound Batch 39 platform cost anomaly monitoring wor"
+  default_prompt: "Use $b39-platform-cost-anomaly-monitoring to implement and verify this capability with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Design System Modernizer"
+  short_description: "Map tokens and components across frameworks"
+  default_prompt: "Use $design-system-token-and-component-modernizer to extract design tokens and govern framework-neutral component mappings."

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.test-case-identity.v1",
+  "type": "object",
+  "required": ["testCaseId", "repositoryId", "module", "framework", "suite", "classOrFile", "logicalName", "environmentProfile"],
+  "properties": {
+    "testCaseId": {"type": "string", "minLength": 1},
+    "repositoryId": {"type": "string", "minLength": 1},
+    "module": {"type": "string", "minLength": 1},
+    "framework": {"type": "string", "minLength": 1},
+    "suite": {"type": "string", "minLength": 1},
+    "classOrFile": {"type": "string", "minLength": 1},
+    "logicalName": {"type": "string", "minLength": 1},
+    "parameters": {"type": "array", "items": {"type": "string"}},
+    "environmentProfile": {"type": "string", "minLength": 1}
+  },
+  "additionalProperties": false
+}

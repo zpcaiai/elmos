@@ -1,0 +1,5 @@
+interface:
+  display_name: "Marketplace Asset Certification And Quality Gate"
+  short_description: "Authoritative Batch 14 Skill 438 workflow"
+  default_prompt: "Use $marketplace-asset-certification-and-quality-gate to execute its evidence-bound Batch 14 workflow."
+

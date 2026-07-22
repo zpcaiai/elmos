@@ -1,0 +1,7 @@
+{
+  "requestId": "requestId-fixture",
+  "offeringId": "offeringId-fixture",
+  "requestor": "requestor-fixture",
+  "organizationId": "organizationId-fixture",
+  "status": "REQUESTED"
+}

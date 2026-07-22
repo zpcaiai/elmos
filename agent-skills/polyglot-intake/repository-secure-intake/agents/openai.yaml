@@ -1,0 +1,4 @@
+interface:
+  display_name: "Repository Secure Intake"
+  short_description: "Create immutable credential-free repository snapshots"
+  default_prompt: "Use $repository-secure-intake to bind this repository to a safe immutable Batch 1 snapshot."

@@ -1,0 +1,11 @@
+{
+  "pack": 29,
+  "organizationId": "org-example",
+  "assessmentId": "route-assessment-example",
+  "sourceSnapshotDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "targetSnapshotDigest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "packVersion": "migration-pack-M29-v1",
+  "requestedBy": "migration-owner-example",
+  "evaluatedAt": "2026-07-22T00:00:00Z",
+  "evidence": []
+}

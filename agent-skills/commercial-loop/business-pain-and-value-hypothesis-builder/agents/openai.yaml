@@ -1,0 +1,4 @@
+interface:
+  display_name: "business-pain-and-value-hypothesis-builder"
+  short_description: "Run this Batch 13 commercial capability"
+  default_prompt: "Use $business-pain-and-value-hypothesis-builder to evaluate this Batch 13 commercial capability with evidence."

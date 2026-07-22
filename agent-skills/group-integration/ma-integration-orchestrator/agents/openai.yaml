@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 669: ma integration orchestrator"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $ma-integration-orchestrator to evaluate this capability with evidence."

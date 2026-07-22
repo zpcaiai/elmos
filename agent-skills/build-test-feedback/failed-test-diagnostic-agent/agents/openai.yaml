@@ -1,0 +1,4 @@
+interface:
+  display_name: "failed test diagnostic agent"
+  short_description: "Run a bounded Batch 8 repair workflow"
+  default_prompt: "Use $failed-test-diagnostic-agent to perform this Batch 8 repair step."

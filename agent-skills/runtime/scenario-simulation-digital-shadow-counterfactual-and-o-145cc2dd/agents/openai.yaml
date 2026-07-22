@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 30 Skill 010"
+  short_description: "Run ELMOS Product Batch 30 governance safely"
+  default_prompt: "Use $scenario-simulation-digital-shadow-counterfactual-and-o-145cc2dd to implement its evidence-bound ELMOS Product Batch 30 contract."

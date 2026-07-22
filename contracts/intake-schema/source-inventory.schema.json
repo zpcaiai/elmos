@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema", "$id": "elmos.polyglot.source-inventory.v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["schemaVersion", "snapshotId", "files", "summary", "riskFlags"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"}, "snapshotId": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "files": {"type": "array", "items": {"type": "object"}},
+    "summary": {"type": "object", "required": ["productionLoc", "testLoc", "generatedLoc", "binaryBytes"]},
+    "riskFlags": {"type": "array", "items": {"type": "string"}}
+  }
+}

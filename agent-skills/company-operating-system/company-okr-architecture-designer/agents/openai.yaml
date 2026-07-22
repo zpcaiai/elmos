@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 470: company okr architecture designer"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $company-okr-architecture-designer to evaluate this capability with evidence."

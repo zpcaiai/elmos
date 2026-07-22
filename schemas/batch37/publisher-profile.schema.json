@@ -1,0 +1,151 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "publisher_id",
+    "publisher_type",
+    "legal_name",
+    "status",
+    "verified",
+    "organization_owner",
+    "maintainers",
+    "security_contact",
+    "agreements",
+    "signing_identities"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "publisher_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{2,95}$"
+    },
+    "publisher_type": {
+      "enum": [
+        "first-party",
+        "partner",
+        "customer-private",
+        "community"
+      ]
+    },
+    "legal_name": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "pending",
+        "active",
+        "suspended",
+        "terminated"
+      ]
+    },
+    "verified": {
+      "type": "boolean"
+    },
+    "organization_owner": {
+      "type": "string"
+    },
+    "maintainers": {
+      "type": "array",
+      "items": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "required": [
+          "subject_id",
+          "role",
+          "mfa"
+        ],
+        "properties": {
+          "subject_id": {
+            "type": "string"
+          },
+          "role": {
+            "enum": [
+              "owner",
+              "maintainer",
+              "release-manager",
+              "finance",
+              "support"
+            ]
+          },
+          "mfa": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "security_contact": {
+      "type": "string"
+    },
+    "agreements": {
+      "type": "array",
+      "items": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "required": [
+          "type",
+          "version",
+          "accepted_at"
+        ],
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "accepted_at": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "signing_identities": {
+      "type": "array",
+      "items": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "required": [
+          "key_id",
+          "status",
+          "valid_from",
+          "valid_until"
+        ],
+        "properties": {
+          "key_id": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "active",
+              "rotating",
+              "revoked",
+              "expired"
+            ]
+          },
+          "valid_from": {
+            "type": "string"
+          },
+          "valid_until": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "payout_status": {
+      "enum": [
+        "not-required",
+        "pending",
+        "active",
+        "held"
+      ]
+    }
+  },
+  "additionalProperties": true,
+  "$id": "https://example.invalid/batch37/publisher-profile.schema.json"
+}

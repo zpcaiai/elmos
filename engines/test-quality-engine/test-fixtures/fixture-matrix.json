@@ -1,0 +1,11 @@
+{
+  "legacyTestEstates": ["junit3", "junit4", "mstest-old", "nose", "karma", "protractor", "shell-test", "manual-spreadsheet", "disabled-suite"],
+  "testQuality": ["no-assertion", "over-mocked", "test-count-drop", "weak-snapshot", "stale-golden-master", "duplicate-tests", "uncovered-risk"],
+  "contract": ["http-consumer-provider", "message-contract", "mobile-old-consumer", "unknown-consumer", "provider-state-order", "compatibility-matrix"],
+  "property": ["round-trip", "idempotency", "business-invariant", "state-machine", "metamorphic", "minimal-counterexample", "flaky-property"],
+  "mutation": ["java-pit", "dotnet-stryker", "javascript-stryker", "python-mutation", "equivalent-mutant", "no-coverage", "incremental-mutation"],
+  "testData": ["synthetic", "masked-production", "referential-integrity", "tenant-isolation", "recorded-traffic", "stale-fixture"],
+  "virtualization": ["static-stub", "stateful-service", "virtual-drift", "testcontainers", "readiness", "fault-injection", "cleanup-failure"],
+  "flaky": ["timing", "random", "order", "shared-state", "port-conflict", "eventual-consistency", "resource-pressure", "unknown"],
+  "continuousValidation": ["dependency-change", "contract-change", "production-defect", "evidence-stale", "post-deploy-smoke", "risk-expiry"]
+}

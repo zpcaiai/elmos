@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B39: Fx Market Data Quote Trade Hedge Settlement Revaluation And Exposure"
+  short_description: "Run ELMOS Product B39 contract with fail-closed evidence"
+  default_prompt: "Use $fx-market-data-quote-trade-hedge-settlement-revaluation-deba3154 to implement its fail-closed ELMOS Product B39 contract."

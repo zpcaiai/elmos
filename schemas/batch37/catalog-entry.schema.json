@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "extension_id",
+    "release_digest",
+    "publisher_id",
+    "title",
+    "certification_status",
+    "compatibility",
+    "permissions_summary",
+    "discoverable",
+    "ranking_eligible"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "extension_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "release_digest": {
+      "type": "string",
+      "pattern": "^sha256:[A-Za-z0-9._:-]+$"
+    },
+    "publisher_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "summary": {
+      "type": "string"
+    },
+    "categories": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "certification_status": {
+      "enum": [
+        "certified",
+        "limited",
+        "experimental",
+        "blocked",
+        "revoked"
+      ]
+    },
+    "compatibility": {
+      "type": "object",
+      "required": [
+        "product_versions",
+        "editions",
+        "regions"
+      ],
+      "properties": {
+        "product_versions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "editions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "regions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "permissions_summary": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "discoverable": {
+      "type": "boolean"
+    },
+    "ranking_eligible": {
+      "type": "boolean"
+    },
+    "documentation_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "additionalProperties": true,
+  "$id": "https://example.invalid/batch37/catalog-entry.schema.json"
+}

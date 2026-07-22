@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.support-ticket.v1",
+  "title": "ELMOS Support Ticket",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "ticketId",
+    "type",
+    "severity",
+    "status",
+    "context",
+    "impact",
+    "urgency",
+    "agentMayClose",
+    "relatedFingerprints"
+  ],
+  "properties": {
+    "ticketId": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string"
+    },
+    "severity": {
+      "enum": [
+        "SEV1",
+        "SEV2",
+        "SEV3",
+        "SEV4"
+      ]
+    },
+    "status": {
+      "type": "string"
+    },
+    "context": {
+      "type": "object",
+      "required": [
+        "organizationId"
+      ],
+      "properties": {
+        "organizationId": {
+          "type": "string"
+        }
+      }
+    },
+    "impact": {
+      "type": "string"
+    },
+    "urgency": {
+      "type": "string"
+    },
+    "incidentCommander": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "agentMayClose": {
+      "type": "boolean"
+    },
+    "relatedFingerprints": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}
+

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B36: Private Runner Fleet Orchestrator"
+  short_description: "Run ELMOS Product B36 contract with fail-closed evidence"
+  default_prompt: "Use $private-runner-fleet-orchestrator to implement its fail-closed ELMOS Product B36 contract."

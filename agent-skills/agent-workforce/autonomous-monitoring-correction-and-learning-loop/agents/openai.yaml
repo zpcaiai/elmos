@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 589: autonomous monitoring correction and learning loop"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $autonomous-monitoring-correction-and-learning-loop to evaluate this capability with evidence."

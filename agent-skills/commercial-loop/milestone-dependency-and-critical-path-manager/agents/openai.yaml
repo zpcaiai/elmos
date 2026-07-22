@@ -1,0 +1,4 @@
+interface:
+  display_name: "milestone-dependency-and-critical-path-manager"
+  short_description: "Run this Batch 13 commercial capability"
+  default_prompt: "Use $milestone-dependency-and-critical-path-manager to evaluate this Batch 13 commercial capability with evidence."

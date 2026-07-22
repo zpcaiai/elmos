@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/batch34/benchmark-result.schema.json",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "pack_key",
+    "profile_key",
+    "run_id",
+    "environment_digest",
+    "dataset_digest",
+    "status",
+    "metrics",
+    "failures",
+    "evidence_refs"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "pack_key": {
+      "type": "string"
+    },
+    "profile_key": {
+      "type": "string"
+    },
+    "run_id": {
+      "type": "string"
+    },
+    "environment_digest": {
+      "type": "string"
+    },
+    "dataset_digest": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "not-run",
+        "passed",
+        "failed",
+        "invalid"
+      ]
+    },
+    "metrics": {
+      "type": "object"
+    },
+    "failures": {
+      "type": "array"
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": true
+}

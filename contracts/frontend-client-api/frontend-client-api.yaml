@@ -1,0 +1,129 @@
+openapi: 3.1.0
+info:
+  title: ELMOS Frontend Client Engine API
+  version: 1.0.0
+  description: Static analysis is repository-verifiable; customer code, browsers, desktop clients, mobile clients, signing and publishing require approved external Runners and fail closed otherwise.
+paths:
+  /engine/v1/capabilities:
+    get:
+      operationId: frontendCapabilities
+      responses:
+        '200':
+          description: Engine capabilities and explicit Runner configuration state.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Capabilities'}
+  /engine/v1/scan:
+    post: {$ref: '#/components/pathItems/SubmitJob'}
+  /engine/v1/plan:
+    post: {$ref: '#/components/pathItems/SubmitJob'}
+  /engine/v1/validate:
+    post: {$ref: '#/components/pathItems/SubmitJob'}
+  /engine/v1/execute-step:
+    post:
+      summary: Submit an approved migration step; returns FAILED with empty evidence when its Runner is not configured.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ExecuteStepRequest'}
+      responses:
+        '202': {$ref: '#/components/responses/JobAccepted'}
+        '409': {$ref: '#/components/responses/Conflict'}
+  /engine/v1/jobs/{jobId}:
+    get:
+      parameters:
+        - {$ref: '#/components/parameters/JobId'}
+        - {$ref: '#/components/parameters/OrganizationId'}
+      responses:
+        '200': {$ref: '#/components/responses/JobAccepted'}
+        '404': {description: Job is not visible to this tenant.}
+  /engine/v1/jobs/{jobId}/cancel:
+    post:
+      parameters:
+        - {$ref: '#/components/parameters/JobId'}
+        - {$ref: '#/components/parameters/OrganizationId'}
+      responses:
+        '202': {$ref: '#/components/responses/JobAccepted'}
+        '409': {$ref: '#/components/responses/Conflict'}
+components:
+  pathItems:
+    SubmitJob:
+      summary: Submit a tenant-scoped idempotent job.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/JobRequest'}
+      responses:
+        '202': {$ref: '#/components/responses/JobAccepted'}
+        '409': {$ref: '#/components/responses/Conflict'}
+  parameters:
+    JobId: {name: jobId, in: path, required: true, schema: {type: string, minLength: 1}}
+    OrganizationId: {name: organizationId, in: query, required: true, schema: {type: string, minLength: 1}}
+  responses:
+    JobAccepted:
+      description: Terminal or accepted job. Status must be inspected; HTTP acceptance is not migration success.
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/JobResponse'}
+    Conflict:
+      description: Idempotency input changed or a terminal job cannot be cancelled.
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/JobResponse'}
+  schemas:
+    JobRequest:
+      type: object
+      additionalProperties: false
+      required: [organizationId, snapshotId, idempotencyKey, workspaceRef]
+      properties:
+        organizationId: {type: string, minLength: 1}
+        snapshotId: {type: string, minLength: 1}
+        idempotencyKey: {type: string, minLength: 1}
+        workspaceRef: {type: string, minLength: 1}
+        input: {type: object}
+    ExecuteStepRequest:
+      type: object
+      additionalProperties: false
+      required: [organizationId, snapshotId, idempotencyKey, workspaceRef, planId, stepId, runnerProfile]
+      properties:
+        organizationId: {type: string, minLength: 1}
+        snapshotId: {type: string, minLength: 1}
+        idempotencyKey: {type: string, minLength: 1}
+        workspaceRef: {type: string, minLength: 1}
+        input: {type: object}
+        planId: {type: string, minLength: 1}
+        stepId: {type: string, minLength: 1}
+        runnerProfile: {type: string, minLength: 1}
+    JobResponse:
+      type: object
+      required: [schemaVersion, jobId, status, evidenceRefs, result]
+      properties:
+        schemaVersion: {const: '1.0'}
+        jobId: {type: string}
+        status: {enum: [ACCEPTED, RUNNING, SUCCEEDED, FAILED, CANCELLED]}
+        evidenceRefs: {type: array, items: {type: string}}
+        result: {type: object}
+        error: {$ref: '#/components/schemas/Problem'}
+    Problem:
+      type: object
+      required: [errorCode, message, retryable]
+      properties:
+        errorCode: {type: string}
+        message: {type: string}
+        retryable: {type: boolean}
+    Capabilities:
+      type: object
+      required: [schemaVersion, engine, engineVersion, languages, webFrameworks, desktopFrameworks, mobileFrameworks, runnerProfiles, staticAnalysis, customerCodeExecution]
+      properties:
+        schemaVersion: {const: '1.0'}
+        engine: {const: ELMOS_FRONTEND_CLIENT}
+        engineVersion: {type: string}
+        languages: {type: array, items: {type: string}}
+        webFrameworks: {type: array, items: {type: string}}
+        desktopFrameworks: {type: array, items: {type: string}}
+        mobileFrameworks: {type: array, items: {type: string}}
+        runnerProfiles: {type: object, additionalProperties: {const: NOT_CONFIGURED}}
+        staticAnalysis: {const: READY}
+        customerCodeExecution: {const: RUNNER_REQUIRED_FAIL_CLOSED}

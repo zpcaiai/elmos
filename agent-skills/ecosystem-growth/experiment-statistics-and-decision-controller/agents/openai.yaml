@@ -1,0 +1,5 @@
+interface:
+  display_name: "Experiment Statistics And Decision Controller"
+  short_description: "Authoritative Batch 14 Skill 413 workflow"
+  default_prompt: "Use $experiment-statistics-and-decision-controller to execute its evidence-bound Batch 14 workflow."
+

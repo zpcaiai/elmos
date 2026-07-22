@@ -1,0 +1,76 @@
+openapi: 3.1.0
+info:
+  title: ELMOS Mainframe Engine API
+  version: 1.0.0
+servers:
+  - url: http://localhost:8093
+paths:
+  /engine/v1/capabilities:
+    get:
+      operationId: getMainframeCapabilities
+      responses:
+        "200": {description: ELMOS_MAINFRAME capabilities and fail-closed adapter status}
+  /engine/v1/discover:
+    post:
+      operationId: discoverMainframeEstate
+      requestBody: {$ref: "#/components/requestBodies/JobRequest"}
+      responses: {"202": {description: Discovery accepted or explicitly NOT_RUN}}
+  /engine/v1/analyze:
+    post:
+      operationId: analyzeMainframeEstate
+      requestBody: {$ref: "#/components/requestBodies/JobRequest"}
+      responses: {"202": {description: Analysis accepted or inconclusive}}
+  /engine/v1/plan:
+    post:
+      operationId: planMainframeModernization
+      requestBody: {$ref: "#/components/requestBodies/JobRequest"}
+      responses: {"202": {description: Planning accepted or blocked}}
+  /engine/v1/transform:
+    post:
+      operationId: createMainframeTransformationCandidate
+      requestBody: {$ref: "#/components/requestBodies/JobRequest"}
+      responses: {"202": {description: Review-only candidate request}}
+  /engine/v1/execute:
+    post:
+      operationId: executeLeasedMainframeStep
+      responses: {"202": {description: Leased execution accepted or fail-closed}}
+  /engine/v1/validate:
+    post:
+      operationId: validateMainframeSemantics
+      requestBody: {$ref: "#/components/requestBodies/JobRequest"}
+      responses: {"202": {description: Independent semantic validation}}
+  /engine/v1/rules/approve:
+    post:
+      operationId: approveMainframeBusinessRule
+      responses: {"200": {description: Candidate authority decision}}
+  /engine/v1/jobs/{jobId}:
+    get:
+      operationId: getMainframeJob
+      parameters:
+        - {name: jobId, in: path, required: true, schema: {type: string}}
+        - {name: organizationId, in: query, required: true, schema: {type: string}}
+      responses: {"200": {description: Tenant-scoped job}}
+  /api/v1/mainframe/cutover-decisions/evaluate:
+    post:
+      operationId: evaluateMainframeCutover
+      responses: {"200": {description: Independent online, batch and writer cutover decision}}
+  /api/v1/mainframe/decommission-decisions/evaluate:
+    post:
+      operationId: evaluateMainframeDecommission
+      responses: {"200": {description: Independent stability, usage, consumer and access-removal decision}}
+components:
+  requestBodies:
+    JobRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [organizationId, repositorySnapshotRef, workspaceRef, profile, correlationId, idempotencyKey]
+            properties:
+              organizationId: {type: string}
+              repositorySnapshotRef: {type: string}
+              workspaceRef: {type: string}
+              profile: {type: string}
+              correlationId: {type: string}
+              idempotencyKey: {type: string}

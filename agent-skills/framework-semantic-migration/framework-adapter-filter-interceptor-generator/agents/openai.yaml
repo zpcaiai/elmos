@@ -1,0 +1,4 @@
+interface:
+  display_name: "framework-adapter-filter-interceptor-generator"
+  short_description: "Plan and verify AFSM framework migration"
+  default_prompt: "Use $framework-adapter-filter-interceptor-generator to perform this Batch 7 framework migration step."

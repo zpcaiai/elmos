@@ -1,0 +1,5 @@
+interface:
+  display_name: "Growth System Orchestrator"
+  short_description: "Authoritative Batch 14 Skill 401 workflow"
+  default_prompt: "Use $growth-system-orchestrator to execute its evidence-bound Batch 14 workflow."
+

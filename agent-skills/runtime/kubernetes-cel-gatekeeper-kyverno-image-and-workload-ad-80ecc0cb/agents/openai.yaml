@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B38: Kubernetes Cel Gatekeeper Kyverno Image And Workload Admission Policy"
+  short_description: "Run ELMOS Product B38 contract with fail-closed evidence"
+  default_prompt: "Use $kubernetes-cel-gatekeeper-kyverno-image-and-workload-ad-80ecc0cb to implement its fail-closed ELMOS Product B38 contract."

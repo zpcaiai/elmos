@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B34: Short Lived Token Credential Lease Rotation And Revocation"
+  short_description: "Run ELMOS Product B34 contract with fail-closed evidence"
+  default_prompt: "Use $short-lived-token-credential-lease-rotation-and-revocation to implement its fail-closed ELMOS Product B34 contract."

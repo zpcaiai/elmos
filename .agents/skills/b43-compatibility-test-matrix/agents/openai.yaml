@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 43: Compatibility Test Matrix"
+  short_description: "Run evidence-bound Batch 43 compatibility test matrix work"
+  default_prompt: "Use $b43-compatibility-test-matrix to implement and verify this capability with fail-closed evidence."

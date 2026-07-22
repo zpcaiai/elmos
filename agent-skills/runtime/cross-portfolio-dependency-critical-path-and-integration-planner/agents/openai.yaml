@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 29 Skill 005"
+  short_description: "Run ELMOS Product Batch 29 governance safely"
+  default_prompt: "Use $cross-portfolio-dependency-critical-path-and-integration-planner to implement its evidence-bound ELMOS Product Batch 29 contract."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B39: Gross Margin Cogs Contribution Margin And Cost Classification"
+  short_description: "Run ELMOS Product B39 contract with fail-closed evidence"
+  default_prompt: "Use $gross-margin-cogs-contribution-margin-and-cost-classification to implement its fail-closed ELMOS Product B39 contract."

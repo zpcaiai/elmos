@@ -1,0 +1,4 @@
+interface:
+  display_name: "framework-recipe-test-and-idempotency-harness"
+  short_description: "Plan and verify AFSM framework migration"
+  default_prompt: "Use $framework-recipe-test-and-idempotency-harness to perform this Batch 7 framework migration step."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 650: commerce payment fraud and consumer control pack"
+  short_description: "Operate authoritative Batch 17 capability"
+  default_prompt: "Use $commerce-payment-fraud-and-consumer-control-pack to evaluate this capability with evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 44: Usage Billing Reconciliation"
+  short_description: "Run evidence-bound Batch 44 usage billing reconciliation work"
+  default_prompt: "Use $b44-usage-billing-reconciliation to implement and verify this capability with fail-closed evidence."

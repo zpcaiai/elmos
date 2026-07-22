@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 496: cash runway and liquidity manager"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $cash-runway-and-liquidity-manager to evaluate this capability with evidence."

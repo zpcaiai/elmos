@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "1.0",
+  "projectModels": ["requirements", "setup-py", "setup-cfg", "pyproject", "poetry", "pipenv", "conda", "uv", "monorepo"],
+  "pythonVersions": ["2.7", "3.6", "3.8", "3.9", "3.10", "3.12", "3.13", "3.14"],
+  "frameworks": ["django-legacy", "django-modern", "flask-legacy", "flask-modern", "airflow", "celery", "spark"],
+  "scientific": ["numpy1", "numpy2", "pandas2", "pandas3", "scipy", "cython", "pybind11"],
+  "ml": ["tensorflow1", "tensorflow2", "pytorch", "sklearn-pickle", "sklearn-onnx", "cuda", "distributed"],
+  "notebooks": ["clean", "hidden-state", "out-of-order", "widget", "manual-step"],
+  "fixturePolicy": "Representative executable fixtures are committed; full external matrices require approved Runner images and artifact mirrors."
+}
+

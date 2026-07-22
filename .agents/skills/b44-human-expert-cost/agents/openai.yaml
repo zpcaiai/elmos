@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 44: Human Expert Cost"
+  short_description: "Run evidence-bound Batch 44 human expert cost work"
+  default_prompt: "Use $b44-human-expert-cost to implement and verify this capability with fail-closed evidence."

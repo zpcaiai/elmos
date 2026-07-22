@@ -1,0 +1,4 @@
+interface:
+  display_name: "Automatic Rollback and Forward Fix Validator"
+  short_description: "Run this Batch 10 hardening capability"
+  default_prompt: "Use $automatic-rollback-and-forward-fix-validator to perform this Batch 10 production-hardening task."

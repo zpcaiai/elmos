@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "profile_key": "sample-local-eval",
+  "toolchain_digest": "sha256:TODO",
+  "sandbox": {
+    "network": "deny",
+    "workspace": "ephemeral-copy",
+    "arbitrary_shell": false
+  },
+  "stages": [
+    {
+      "name": "build",
+      "command_ref": "commands/build.json",
+      "required_for_risk": [
+        "P0",
+        "P1",
+        "P2",
+        "P3"
+      ]
+    },
+    {
+      "name": "affected-tests",
+      "command_ref": "commands/affected-tests.json",
+      "required_for_risk": [
+        "P0",
+        "P1"
+      ]
+    }
+  ],
+  "budgets": {
+    "wall_time_seconds": 1800,
+    "cpu_seconds": 3600,
+    "memory_mb": 4096,
+    "disk_mb": 20480
+  },
+  "remote_fallback": "required-for-p0"
+}

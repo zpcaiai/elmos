@@ -1,0 +1,5 @@
+interface:
+  display_name: "Research Industry Report And Thought Leadership Manager"
+  short_description: "Authoritative Batch 14 Skill 422 workflow"
+  default_prompt: "Use $research-industry-report-and-thought-leadership-manager to execute its evidence-bound Batch 14 workflow."
+

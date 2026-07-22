@@ -1,0 +1,4 @@
+interface:
+  display_name: "Docker Workspace Provisioner"
+  short_description: "Provision constrained rootless workspaces"
+  default_prompt: "Use $docker-workspace-provisioner to implement or review this ELMOS Batch 2 capability."

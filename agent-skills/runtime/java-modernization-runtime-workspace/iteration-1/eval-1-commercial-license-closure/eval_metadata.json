@@ -1,0 +1,11 @@
+{
+  "eval_id": 1,
+  "eval_name": "commercial-license-closure",
+  "prompt": "我们要在 ELMOS 商业 SaaS 中直接使用 rewrite-spring 的一个组合 Recipe。根 Recipe 是 Apache-2.0，但它的 child recipe 和一个传递 artifact 都是 Moderne Source Available；没有商业授权。请给出可执行选择和 Manifest，不要阻塞项目。",
+  "assertions": [
+    "The output refuses commercial execution before download.",
+    "The output checks both child recipes and transitive artifacts.",
+    "The output does not create an execution manifest.",
+    "The output returns a structured license-blocked reason and required remediation."
+  ]
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "repair knowledge and rule learning loop"
+  short_description: "Run a bounded Batch 8 repair workflow"
+  default_prompt: "Use $repair-knowledge-and-rule-learning-loop to perform this Batch 8 repair step."

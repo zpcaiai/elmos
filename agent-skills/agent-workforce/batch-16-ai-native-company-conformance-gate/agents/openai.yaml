@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 592: batch 16 ai native company conformance gate"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $batch-16-ai-native-company-conformance-gate to evaluate this capability with evidence."

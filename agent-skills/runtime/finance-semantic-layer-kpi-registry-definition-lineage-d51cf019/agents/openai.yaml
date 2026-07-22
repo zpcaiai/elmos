@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B39: Finance Semantic Layer Kpi Registry Definition Lineage And Restatement"
+  short_description: "Run ELMOS Product B39 contract with fail-closed evidence"
+  default_prompt: "Use $finance-semantic-layer-kpi-registry-definition-lineage-d51cf019 to implement its fail-closed ELMOS Product B39 contract."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 526: ai native company orchestrator"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $ai-native-company-orchestrator to evaluate this capability with evidence."

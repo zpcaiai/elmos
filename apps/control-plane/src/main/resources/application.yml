@@ -1,0 +1,29 @@
+server:
+  port: ${ELMOS_CONTROL_PLANE_PORT:8080}
+spring:
+  datasource:
+    url: ${ELMOS_DATABASE_URL:jdbc:postgresql://localhost:5432/elmos}
+    username: ${ELMOS_DATABASE_USER:elmos}
+    password: ${ELMOS_DATABASE_PASSWORD:elmos-local-only}
+  flyway:
+    enabled: true
+elmos:
+  github:
+    app:
+      enabled: ${ELMOS_GITHUB_APP_ENABLED:false}
+      id: ${ELMOS_GITHUB_APP_ID:}
+      private-key-path: ${ELMOS_GITHUB_APP_PRIVATE_KEY_PATH:}
+    api-base-url: ${ELMOS_GITHUB_API_BASE_URL:https://api.github.com}
+    webhook:
+      secret: ${ELMOS_GITHUB_WEBHOOK_SECRET:}
+      previous-secret: ${ELMOS_GITHUB_WEBHOOK_PREVIOUS_SECRET:}
+      max-body-bytes: ${ELMOS_GITHUB_WEBHOOK_MAX_BODY_BYTES:1048576}
+  snapshot:
+    staging-root: ${ELMOS_SNAPSHOT_STAGING_ROOT:}
+    artifact-root: ${ELMOS_SNAPSHOT_ARTIFACT_ROOT:}
+    max-artifact-bytes: ${ELMOS_SNAPSHOT_MAX_ARTIFACT_BYTES:1073741824}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

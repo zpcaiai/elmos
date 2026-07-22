@@ -1,0 +1,4 @@
+interface:
+  display_name: "Canary Blue Green and Progressive Delivery Validator"
+  short_description: "Run this Batch 10 hardening capability"
+  default_prompt: "Use $canary-blue-green-and-progressive-delivery-validator to perform this Batch 10 production-hardening task."

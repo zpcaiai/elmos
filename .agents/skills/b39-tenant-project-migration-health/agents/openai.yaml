@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 39: Tenant Project Migration Health"
+  short_description: "Run evidence-bound Batch 39 tenant project migration health work"
+  default_prompt: "Use $b39-tenant-project-migration-health to implement and verify this capability with fail-closed evidence."

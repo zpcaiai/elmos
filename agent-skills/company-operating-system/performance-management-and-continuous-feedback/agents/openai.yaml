@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 486: performance management and continuous feedback"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $performance-management-and-continuous-feedback to evaluate this capability with evidence."

@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "1.0",
+  "edgeId": "edge-orders-inventory",
+  "organizationId": "org-fixture",
+  "sourceNodeId": "dotnet-inventory",
+  "targetNodeId": "java-orders",
+  "edgeType": "CALLS_HTTP",
+  "environment": "PRODUCTION",
+  "confidence": 0.97,
+  "validity": "ACTIVE",
+  "hardDependency": true,
+  "contractRef": "orders-http-v1",
+  "evidenceRefs": ["evidence:trace:01"]
+}

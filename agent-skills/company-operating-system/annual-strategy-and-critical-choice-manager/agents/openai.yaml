@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 465: annual strategy and critical choice manager"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $annual-strategy-and-critical-choice-manager to evaluate this capability with evidence."

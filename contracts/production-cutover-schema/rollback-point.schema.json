@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/production-cutover/rollback-point.schema.json",
+  "title": "Cutover Rollback Point",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["rollback_point_id", "phase", "source_capacity_sufficient", "reverse_sync_healthy", "traffic_plan_validated", "data_plan_validated", "irreversibility_frontier_crossed", "rollback_authorized", "verified_at", "evidence_refs"],
+  "properties": {
+    "rollback_point_id": {"type": "string", "minLength": 1},
+    "phase": {"$ref": "cutover-state-machine.schema.json#/$defs/phaseId"},
+    "source_capacity_sufficient": {"type": "boolean"},
+    "reverse_sync_healthy": {"type": "boolean"},
+    "traffic_plan_validated": {"type": "boolean"},
+    "data_plan_validated": {"type": "boolean"},
+    "irreversibility_frontier_crossed": {"type": "boolean"},
+    "irreversibility_approval_ref": {"type": "string"},
+    "rollback_authorized": {"type": "boolean"},
+    "forward_fix_plan_ref": {"type": "string", "minLength": 1},
+    "verified_at": {"type": "string", "format": "date-time"},
+    "evidence_refs": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"irreversibility_frontier_crossed": {"const": true}}, "required": ["irreversibility_frontier_crossed"]},
+      "then": {
+        "required": ["irreversibility_approval_ref", "forward_fix_plan_ref"],
+        "properties": {"rollback_authorized": {"const": false}, "irreversibility_approval_ref": {"minLength": 1}}
+      }
+    }
+  ]
+}

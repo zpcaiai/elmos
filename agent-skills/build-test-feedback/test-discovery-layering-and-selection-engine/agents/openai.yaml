@@ -1,0 +1,4 @@
+interface:
+  display_name: "test discovery layering and selection engine"
+  short_description: "Run a bounded Batch 8 repair workflow"
+  default_prompt: "Use $test-discovery-layering-and-selection-engine to perform this Batch 8 repair step."

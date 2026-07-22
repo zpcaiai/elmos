@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B39: Customer Product Segment Profitability Ltv Cac Payback And Cost To Serve"
+  short_description: "Run ELMOS Product B39 contract with fail-closed evidence"
+  default_prompt: "Use $customer-product-segment-profitability-ltv-cac-payback-fbe4d362 to implement its fail-closed ELMOS Product B39 contract."

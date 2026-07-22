@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 27 Skill 005"
+  short_description: "Run ELMOS Product Batch 27 governance safely"
+  default_prompt: "Use $project-to-product-funding-team-and-operating-model to implement its evidence-bound ELMOS Product Batch 27 contract."

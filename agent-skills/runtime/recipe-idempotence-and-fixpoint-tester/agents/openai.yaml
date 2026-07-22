@@ -1,0 +1,4 @@
+interface:
+  display_name: "Recipe Idempotence And Fixpoint Tester"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $recipe-idempotence-and-fixpoint-tester to execute this ELMOS Runtime Skill with fail-closed evidence."

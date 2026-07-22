@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/psp/v1/psp-dataset.schema.json",
+  "title": "PSP v1 Dataset",
+  "type": "object",
+  "required": ["manifest", "entities"],
+  "properties": {
+    "manifest": {"$ref": "semantic-run-manifest.schema.json"},
+    "entities": {"type": "array", "items": {"$ref": "entity-envelope.schema.json"}}
+  },
+  "additionalProperties": false
+}

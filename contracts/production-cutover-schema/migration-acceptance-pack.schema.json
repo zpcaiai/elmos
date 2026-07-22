@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/production-cutover/migration-acceptance-pack.schema.json",
+  "title": "Final Migration Acceptance Pack",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["cutover_run_id", "source_artifact_id", "target_artifact_id", "gate", "target_system_of_record", "legacy_system_decommissioned", "acceptance", "data_evidence_refs", "traffic_evidence_refs", "retirement_evidence_refs", "traceability", "migration_completed"],
+  "properties": {
+    "cutover_run_id": {"type": "string", "minLength": 1},
+    "source_artifact_id": {"type": "string", "minLength": 1},
+    "target_artifact_id": {"type": "string", "minLength": 1},
+    "gate": {"$ref": "cutover-state-machine.schema.json#/$defs/gateId"},
+    "target_system_of_record": {"type": "boolean"},
+    "legacy_system_decommissioned": {"type": "boolean"},
+    "acceptance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["business", "engineering", "security", "operations", "compliance"],
+      "properties": {
+        "business": {"const": "accepted"},
+        "engineering": {"const": "accepted"},
+        "security": {"const": "accepted"},
+        "operations": {"const": "accepted"},
+        "compliance": {"const": "accepted"}
+      }
+    },
+    "data_evidence_refs": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "traffic_evidence_refs": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "retirement_evidence_refs": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "traceability": {"type": "number", "minimum": 0, "maximum": 1},
+    "migration_completed": {"type": "boolean"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"migration_completed": {"const": true}}, "required": ["migration_completed"]},
+      "then": {
+        "properties": {
+          "gate": {"const": "C_G"},
+          "target_system_of_record": {"const": true},
+          "legacy_system_decommissioned": {"const": true},
+          "traceability": {"const": 1}
+        }
+      }
+    }
+  ]
+}

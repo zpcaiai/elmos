@@ -1,0 +1,20 @@
+{
+  "skill": "batch-6-conformance-and-gate-controller",
+  "evals": [
+    {
+      "id": "proven-unused-removal",
+      "prompt": "A complete symbol and dynamic-load analysis found no use of one direct Maven dependency. Produce the Batch 6 decision and gates.",
+      "expected": "Select REMOVE with analyzer evidence; do not add a target package; require native build resolution and contract evidence before D-D."
+    },
+    {
+      "id": "name-similarity-is-insufficient",
+      "prompt": "A target npm package has a very similar name and high popularity, but no API mapping or license evidence. Decide whether it may pass D-C.",
+      "expected": "Do not select automatically; emit an evidence blocker and keep D-C blocked regardless of heuristic score."
+    },
+    {
+      "id": "retained-runtime-boundary",
+      "prompt": "A Python ML dependency has no semantically faithful Java replacement, but a pinned Python service can be retained. Define the minimum gate evidence.",
+      "expected": "Use an explicit retained-runtime or sidecar strategy with versioned schema, lifecycle, security, deployment, support, serialization and differential tests."
+    }
+  ]
+}

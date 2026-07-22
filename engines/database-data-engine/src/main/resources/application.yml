@@ -1,0 +1,7 @@
+server:
+  port: ${ELMOS_DATABASE_DATA_PORT:8089}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

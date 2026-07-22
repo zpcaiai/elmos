@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 727: identity network and access separation"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $identity-network-and-access-separation to evaluate this capability with evidence."

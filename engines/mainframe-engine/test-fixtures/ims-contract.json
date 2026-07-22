@@ -1,0 +1,1 @@
+{"imsSystemId":"IMS1","kind":"IMS_DB","programId":"CUSTREAD","dbdRef":"CUSTDBD","psbRef":"CUSTPSB","pcbRefs":["CUSTPCB"],"positionSemantics":true,"checkpointSemantics":true,"segmentRelationships":[{"parent":"CUSTOMER","child":"ACCOUNT","ordered":true}]}

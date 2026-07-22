@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 28 Skill 002"
+  short_description: "Run ELMOS Product Batch 28 governance safely"
+  default_prompt: "Use $organization-team-role-capability-and-work-discovery to implement its evidence-bound ELMOS Product Batch 28 contract."

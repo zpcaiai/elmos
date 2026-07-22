@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.local/master-data-crosswalk/v1",
+  "title": "Master Data Crosswalk",
+  "type": "object",
+  "required": ["schemaVersion", "crosswalkId", "enterpriseObjectId", "sourceSystem", "sourceId", "targetSystem", "targetId", "decisionStatus", "provenanceRefs"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "crosswalkId": {"type": "string", "minLength": 1},
+    "enterpriseObjectId": {"type": "string", "minLength": 1},
+    "sourceSystem": {"type": "string", "minLength": 1},
+    "sourceId": {"type": "string", "minLength": 1},
+    "targetSystem": {"type": "string", "minLength": 1},
+    "targetId": {"type": "string", "minLength": 1},
+    "decisionStatus": {"enum": ["MATCH", "POSSIBLE_MATCH", "NO_MATCH", "CONFLICT", "MANUAL_REVIEW"]},
+    "validFrom": {"type": "string", "format": "date-time"},
+    "validUntil": {"type": "string", "format": "date-time"},
+    "provenanceRefs": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

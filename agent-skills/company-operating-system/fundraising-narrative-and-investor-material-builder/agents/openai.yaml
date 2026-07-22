@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 506: fundraising narrative and investor material builder"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $fundraising-narrative-and-investor-material-builder to evaluate this capability with evidence."

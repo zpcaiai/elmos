@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 34 Skill 013"
+  short_description: "Run Product Batch 34 evidence contract safely"
+  default_prompt: "Use $privileged-access-jit-dual-control-and-break-glass to implement its fail-closed ELMOS Product Batch 34 contract."

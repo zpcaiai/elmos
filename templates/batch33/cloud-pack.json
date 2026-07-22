@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "pack_key": "unset-to-unset",
+  "version": "0.1.0",
+  "status": "research",
+  "mode": "migration",
+  "owner": "UNASSIGNED",
+  "maintenance_owner": "UNASSIGNED",
+  "source": {
+    "platform": "UNSET",
+    "provider": "UNSET",
+    "regions": [
+      "UNSET"
+    ],
+    "account_model": "UNSET",
+    "iac_tool": {
+      "name": "UNSET",
+      "version": "UNSET"
+    },
+    "runtime": {
+      "name": "UNSET",
+      "version": "UNSET"
+    },
+    "orchestrator": {
+      "name": "none",
+      "version": "n/a"
+    },
+    "ci_cd": {
+      "name": "UNSET",
+      "version": "UNSET"
+    },
+    "state_backend": {
+      "type": "UNSET",
+      "locking": "UNSET",
+      "encryption": "UNSET"
+    },
+    "services": []
+  },
+  "target": {
+    "platform": "UNSET",
+    "provider": "UNSET",
+    "regions": [
+      "UNSET"
+    ],
+    "account_model": "UNSET",
+    "iac_tool": {
+      "name": "UNSET",
+      "version": "UNSET"
+    },
+    "runtime": {
+      "name": "UNSET",
+      "version": "UNSET"
+    },
+    "orchestrator": {
+      "name": "none",
+      "version": "n/a"
+    },
+    "ci_cd": {
+      "name": "UNSET",
+      "version": "UNSET"
+    },
+    "state_backend": {
+      "type": "UNSET",
+      "locking": "UNSET",
+      "encryption": "UNSET"
+    },
+    "services": []
+  },
+  "contracts": {
+    "runtime_architecture": "runtime-architecture/contract.json",
+    "iac_ir": "iac-ir/model.json",
+    "target_profile": "target-profile/profile.json",
+    "validation_profile": "validation/validation-profile.json"
+  },
+  "support_matrix_path": "support-matrix.json",
+  "corpus": {
+    "development": "corpus/development",
+    "negative": "corpus/negative",
+    "holdout": "corpus/holdout",
+    "representative_workloads": "corpus/representative-workloads"
+  },
+  "certification": {
+    "evidence_path": "certification/evidence.json",
+    "result_path": "certification/certification.json"
+  },
+  "tags": []
+}

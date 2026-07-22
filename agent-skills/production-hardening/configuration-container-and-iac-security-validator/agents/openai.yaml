@@ -1,0 +1,4 @@
+interface:
+  display_name: "Configuration Container and Iac Security Validator"
+  short_description: "Run this Batch 10 hardening capability"
+  default_prompt: "Use $configuration-container-and-iac-security-validator to perform this Batch 10 production-hardening task."

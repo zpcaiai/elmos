@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 601: industry identity role and authorization model"
+  short_description: "Operate authoritative Batch 17 capability"
+  default_prompt: "Use $industry-identity-role-and-authorization-model to evaluate this capability with evidence."

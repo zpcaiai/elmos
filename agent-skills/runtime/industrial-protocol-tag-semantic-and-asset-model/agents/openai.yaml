@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 24 003"
+  short_description: "Run Batch 24 runtime contract safely"
+  default_prompt: "Use $industrial-protocol-tag-semantic-and-asset-model to apply its fail-closed ELMOS runtime contract."

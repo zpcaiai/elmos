@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 511: term sheet negotiation and closing manager"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $term-sheet-negotiation-and-closing-manager to evaluate this capability with evidence."

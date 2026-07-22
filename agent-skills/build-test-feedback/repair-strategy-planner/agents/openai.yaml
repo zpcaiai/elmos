@@ -1,0 +1,4 @@
+interface:
+  display_name: "repair strategy planner"
+  short_description: "Run a bounded Batch 8 repair workflow"
+  default_prompt: "Use $repair-strategy-planner to perform this Batch 8 repair step."

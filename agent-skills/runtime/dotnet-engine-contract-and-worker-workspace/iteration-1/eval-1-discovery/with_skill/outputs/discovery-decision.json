@@ -1,0 +1,10 @@
+{
+  "organizationScope": "REQUIRED_FROM_CONTROL_PLANE",
+  "phase": "STATIC_SAFE_PARSE",
+  "primarySolution": null,
+  "findings": ["MULTIPLE_SOLUTIONS_AMBIGUOUS", "LEGACY_PROJECT_FORMAT", "UNSUPPORTED_PROJECT_TYPE", "CUSTOM_MSBUILD_TASK", "HOST_PARENT_IMPORT_CONTAMINATION_RISK"],
+  "languageSupport": {"C_SHARP": "FULL_SUPPORT", "VISUAL_BASIC": "SCAN_ONLY_MANUAL_OR_FUTURE_ENGINE_REQUIRED"},
+  "trustedNow": ["solution-and-project-file-inventory", "declared-imports", "declared-configurations-platforms", "declared-project-and-package-references"],
+  "notExecuted": ["MSBuild evaluation", "UsingTask", "Directory.Build.props import", "restore", "targets"],
+  "nextGate": {"status": "NOT_RUN", "runner": "WINDOWS_LEGACY", "requirements": ["isolated-filesystem-root", "network-denied", "no-control-plane-secrets", "resource-limits", "record-all-imports-and-task-assemblies"]}
+}

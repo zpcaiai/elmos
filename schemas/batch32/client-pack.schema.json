@@ -1,0 +1,410 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/batch32/client-pack.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "pack_key",
+    "version",
+    "mode",
+    "status",
+    "owner",
+    "maintenance_owner",
+    "ux_owner",
+    "accessibility_owner",
+    "source",
+    "target",
+    "scope",
+    "paths",
+    "gates"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "pack_key": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{1,95}$"
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "mode": {
+      "enum": [
+        "assessment",
+        "migration",
+        "upgrade",
+        "modernization",
+        "coexistence"
+      ]
+    },
+    "status": {
+      "enum": [
+        "research",
+        "experimental",
+        "limited",
+        "certified",
+        "deprecated",
+        "blocked"
+      ]
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "maintenance_owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ux_owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "accessibility_owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source": {
+      "type": "object",
+      "required": [
+        "stack",
+        "versions",
+        "language",
+        "language_versions",
+        "runtime",
+        "runtime_versions",
+        "build_tool",
+        "package_manager",
+        "router",
+        "renderer",
+        "state",
+        "forms",
+        "styling",
+        "design_system",
+        "api_client",
+        "identity",
+        "i18n",
+        "test_tools",
+        "browsers",
+        "devices"
+      ],
+      "properties": {
+        "stack": {
+          "type": "string",
+          "minLength": 1
+        },
+        "versions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "language": {
+          "type": "string",
+          "minLength": 1
+        },
+        "language_versions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "runtime": {
+          "type": "string",
+          "minLength": 1
+        },
+        "runtime_versions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "build_tool": {
+          "type": "string",
+          "minLength": 1
+        },
+        "package_manager": {
+          "type": "string",
+          "minLength": 1
+        },
+        "router": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "renderer": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "state": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "forms": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "styling": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "design_system": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "api_client": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "identity": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "i18n": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "test_tools": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "browsers": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "devices": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "target": {
+      "type": "object",
+      "required": [
+        "stack",
+        "versions",
+        "language",
+        "language_versions",
+        "runtime",
+        "runtime_versions",
+        "build_tool",
+        "package_manager",
+        "router",
+        "renderer",
+        "state",
+        "forms",
+        "styling",
+        "design_system",
+        "api_client",
+        "identity",
+        "i18n",
+        "test_tools",
+        "browsers",
+        "devices"
+      ],
+      "properties": {
+        "stack": {
+          "type": "string",
+          "minLength": 1
+        },
+        "versions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "language": {
+          "type": "string",
+          "minLength": 1
+        },
+        "language_versions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "runtime": {
+          "type": "string",
+          "minLength": 1
+        },
+        "runtime_versions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "build_tool": {
+          "type": "string",
+          "minLength": 1
+        },
+        "package_manager": {
+          "type": "string",
+          "minLength": 1
+        },
+        "router": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "renderer": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "state": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "forms": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "styling": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "design_system": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "api_client": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "identity": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "i18n": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "test_tools": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "browsers": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "devices": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "scope": {
+      "type": "object",
+      "required": [
+        "journeys",
+        "routes",
+        "component_roots",
+        "excluded"
+      ],
+      "properties": {
+        "journeys": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "routes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "component_roots": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "excluded": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "paths": {
+      "type": "object",
+      "minProperties": 1
+    },
+    "gates": {
+      "type": "object",
+      "minProperties": 1
+    },
+    "recertification_triggers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

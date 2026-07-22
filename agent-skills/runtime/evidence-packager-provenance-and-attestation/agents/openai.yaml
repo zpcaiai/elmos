@@ -1,0 +1,4 @@
+interface:
+  display_name: "Evidence Packager Provenance And Attestation"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $evidence-packager-provenance-and-attestation to execute this ELMOS Runtime Skill with fail-closed evidence."

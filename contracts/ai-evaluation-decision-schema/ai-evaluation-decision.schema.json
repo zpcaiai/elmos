@@ -1,0 +1,35 @@
+{
+  "$id": "elmos.ai-evaluation-decision.v1",
+  "type": "object",
+  "required": [
+    "bundleId",
+    "datasetVersion",
+    "scorerProfile",
+    "decision",
+    "evidenceRefs"
+  ],
+  "properties": {
+    "bundleId": {
+      "type": "string"
+    },
+    "datasetVersion": {
+      "type": "string"
+    },
+    "scorerProfile": {
+      "type": "string"
+    },
+    "decision": {
+      "enum": [
+        "PASS",
+        "PASS_WITH_WARNINGS",
+        "CONDITIONAL",
+        "FAIL",
+        "INCONCLUSIVE"
+      ]
+    },
+    "evidenceRefs": {
+      "type": "array"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

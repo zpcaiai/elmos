@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 35: Oracle Governance Arbitration"
+  short_description: "Run evidence-bound Batch 35 oracle governance arbitration work"
+  default_prompt: "Use $b35-oracle-governance-arbitration to implement and verify this capability with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mainframe Target Profile And Modernization Planner"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $mainframe-target-profile-and-modernization-planner to execute this ELMOS Runtime Skill with fail-closed evidence."

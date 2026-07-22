@@ -1,0 +1,39 @@
+{
+  "$id": "elmos.continuity-exercise-result.v1",
+  "type": "object",
+  "required": [
+    "exerciseId",
+    "scenario",
+    "result",
+    "observedRecoveryTime",
+    "observedRecoveryPoint",
+    "evidenceRefs"
+  ],
+  "properties": {
+    "exerciseId": {
+      "type": "string"
+    },
+    "scenario": {
+      "type": "string"
+    },
+    "result": {
+      "enum": [
+        "PASS",
+        "PASS_WITH_GAPS",
+        "FAIL",
+        "ABORTED",
+        "INCONCLUSIVE"
+      ]
+    },
+    "observedRecoveryTime": {
+      "type": "number"
+    },
+    "observedRecoveryPoint": {
+      "type": "object"
+    },
+    "evidenceRefs": {
+      "type": "array"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

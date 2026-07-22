@@ -1,0 +1,13 @@
+server:
+  port: ${ELMOS_ENGINE_PORT:8081}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+elmos:
+  worker:
+    workspace-root: ${ELMOS_WORKSPACE_ROOT:/workspace}
+    osv:
+      enabled: ${ELMOS_OSV_ENABLED:false}
+      api-base: ${ELMOS_OSV_API_BASE:https://api.osv.dev/}

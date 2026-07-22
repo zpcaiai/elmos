@@ -1,0 +1,4 @@
+interface:
+  display_name: "Integration Contract Test Virtualization And Equivalence Validator"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $integration-contract-test-virtualization-and-equivalence-validator to execute this ELMOS Runtime Skill with fail-closed evidence."

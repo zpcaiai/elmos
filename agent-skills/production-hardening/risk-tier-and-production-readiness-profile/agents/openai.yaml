@@ -1,0 +1,4 @@
+interface:
+  display_name: "Risk Tier and Production Readiness Profile"
+  short_description: "Run this Batch 10 hardening capability"
+  default_prompt: "Use $risk-tier-and-production-readiness-profile to perform this Batch 10 production-hardening task."

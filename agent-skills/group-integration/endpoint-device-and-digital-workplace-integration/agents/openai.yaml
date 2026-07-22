@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 714: endpoint device and digital workplace integration"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $endpoint-device-and-digital-workplace-integration to evaluate this capability with evidence."

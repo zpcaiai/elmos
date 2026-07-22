@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 40: Sast Integration"
+  short_description: "Run evidence-bound Batch 40 sast integration work"
+  default_prompt: "Use $b40-sast-integration to implement and verify this capability with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 641: government domain model"
+  short_description: "Operate authoritative Batch 17 capability"
+  default_prompt: "Use $government-domain-model to evaluate this capability with evidence."

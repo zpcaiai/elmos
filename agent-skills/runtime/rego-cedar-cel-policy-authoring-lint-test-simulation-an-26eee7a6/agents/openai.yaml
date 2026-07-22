@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B38: Rego Cedar Cel Policy Authoring Lint Test Simulation And Partial Evaluation"
+  short_description: "Run ELMOS Product B38 contract with fail-closed evidence"
+  default_prompt: "Use $rego-cedar-cel-policy-authoring-lint-test-simulation-an-26eee7a6 to implement its fail-closed ELMOS Product B38 contract."

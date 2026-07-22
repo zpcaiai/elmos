@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B36: Gvisor Runsc Containerd Runtimeclass Provider"
+  short_description: "Run ELMOS Product B36 contract with fail-closed evidence"
+  default_prompt: "Use $gvisor-runsc-containerd-runtimeclass-provider to implement its fail-closed ELMOS Product B36 contract."

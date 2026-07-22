@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/enterprise-platform/enterprise-acceptance-evidence.schema.json",
+  "title": "T-G Enterprise Acceptance and Operational Readiness Evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["assessment_run_id", "platform_version", "status", "control_plane_ha_passed", "backup_restore_passed", "queue_recovery_no_loss", "audit_and_ledger_restore_passed", "runner_reconnect_no_duplicate", "observability_passed", "administration_console_passed", "api_cli_sdk_passed", "git_ci_integration_passed", "engineering_accepted", "security_accepted", "operations_accepted", "business_accepted", "contract_capabilities_aligned", "critical_open_risks", "enterprise_evidence_pack_complete", "evidence_traceability", "authority_id", "observed_at", "evidence_refs"],
+  "properties": {
+    "assessment_run_id": {"type": "string", "minLength": 1}, "platform_version": {"type": "string", "minLength": 1}, "status": {"const": "PASSED"},
+    "control_plane_ha_passed": {"const": true}, "backup_restore_passed": {"const": true}, "queue_recovery_no_loss": {"const": true},
+    "audit_and_ledger_restore_passed": {"const": true}, "runner_reconnect_no_duplicate": {"const": true}, "observability_passed": {"const": true},
+    "administration_console_passed": {"const": true}, "api_cli_sdk_passed": {"const": true}, "git_ci_integration_passed": {"const": true},
+    "engineering_accepted": {"const": true}, "security_accepted": {"const": true}, "operations_accepted": {"const": true}, "business_accepted": {"const": true},
+    "contract_capabilities_aligned": {"const": true}, "critical_open_risks": {"const": 0}, "enterprise_evidence_pack_complete": {"const": true},
+    "evidence_traceability": {"const": 1}, "authority_id": {"type": "string", "minLength": 1}, "observed_at": {"type": "string", "format": "date-time"},
+    "evidence_refs": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+  }
+}

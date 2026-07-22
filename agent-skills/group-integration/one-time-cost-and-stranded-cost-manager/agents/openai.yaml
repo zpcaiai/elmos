@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 732: one time cost and stranded cost manager"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $one-time-cost-and-stranded-cost-manager to evaluate this capability with evidence."

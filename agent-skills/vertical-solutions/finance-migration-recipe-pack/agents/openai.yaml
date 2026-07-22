@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 616: finance migration recipe pack"
+  short_description: "Operate authoritative Batch 17 capability"
+  default_prompt: "Use $finance-migration-recipe-pack to evaluate this capability with evidence."

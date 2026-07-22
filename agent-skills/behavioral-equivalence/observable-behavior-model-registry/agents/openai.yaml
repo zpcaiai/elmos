@@ -1,0 +1,4 @@
+interface:
+  display_name: "Observable Behavior Model Registry"
+  short_description: "Run this Batch 9 behavioral capability"
+  default_prompt: "Use $observable-behavior-model-registry to perform this Batch 9 behavioral-equivalence task."

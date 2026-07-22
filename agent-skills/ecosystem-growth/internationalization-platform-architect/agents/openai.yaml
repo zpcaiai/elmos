@@ -1,0 +1,5 @@
+interface:
+  display_name: "Internationalization Platform Architect"
+  short_description: "Authoritative Batch 14 Skill 444 workflow"
+  default_prompt: "Use $internationalization-platform-architect to execute its evidence-bound Batch 14 workflow."
+

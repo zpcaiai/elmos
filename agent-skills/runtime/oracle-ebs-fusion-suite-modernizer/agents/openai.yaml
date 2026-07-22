@@ -1,0 +1,4 @@
+interface:
+  display_name: "Oracle EBS Fusion Suite Modernizer"
+  short_description: "Govern evidence-bound enterprise suite modernization"
+  default_prompt: "Use $oracle-ebs-fusion-suite-modernizer to govern this enterprise suite modernization task with fail-closed evidence."

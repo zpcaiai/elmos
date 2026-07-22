@@ -1,0 +1,4 @@
+interface:
+  display_name: "Cross-language Symbol Table Builder"
+  short_description: "Normalize scopes symbols and stable identities"
+  default_prompt: "Use $cross-language-symbol-table-builder to build a traceable PSP symbol and scope table."

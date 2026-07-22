@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 35: Conservation Invariant Verification"
+  short_description: "Run evidence-bound Batch 35 conservation invariant verification"
+  default_prompt: "Use $b35-conservation-invariant-verification to implement and verify this capability with fail-closed evidence."

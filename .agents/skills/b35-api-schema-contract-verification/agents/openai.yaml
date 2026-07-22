@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 35: Api Schema Contract Verification"
+  short_description: "Run evidence-bound Batch 35 api schema contract verification wor"
+  default_prompt: "Use $b35-api-schema-contract-verification to implement and verify this capability with fail-closed evidence."

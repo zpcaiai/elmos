@@ -1,0 +1,39 @@
+{
+  "$id": "elmos.technology-standard.v1",
+  "type": "object",
+  "required": [
+    "standardId",
+    "technologyId",
+    "status",
+    "scope",
+    "versionPolicy",
+    "owner"
+  ],
+  "properties": {
+    "standardId": {
+      "type": "string"
+    },
+    "technologyId": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "REQUIRED",
+        "PREFERRED",
+        "ALLOWED",
+        "LIMITED",
+        "PROHIBITED"
+      ]
+    },
+    "scope": {
+      "type": "object"
+    },
+    "versionPolicy": {
+      "type": "object"
+    },
+    "owner": {
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

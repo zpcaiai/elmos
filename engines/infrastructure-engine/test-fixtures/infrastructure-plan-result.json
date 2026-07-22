@@ -1,0 +1,25 @@
+{
+  "planId": "plan-1",
+  "organizationId": "org-1",
+  "stateVersion": "state-7",
+  "providerLockRef": "artifact://provider-lock/a",
+  "changes": [
+    {
+      "action": "NO_CHANGE",
+      "resourceRef": "network/core"
+    }
+  ],
+  "policyDecision": "PASS",
+  "securityDecision": "PASS",
+  "estimatedCost": {
+    "amount": 0,
+    "currency": "USD"
+  },
+  "rollbackRef": "artifact://rollback/a",
+  "approvedBy": null,
+  "externalStatus": "NOT_RUN",
+  "evidenceRefs": [
+    "artifact://plan/sha256-e"
+  ]
+}
+

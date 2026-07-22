@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "map_key": "sample-navigation-map",
+  "source_artifact_digest": "sha256:TODO",
+  "target_artifact_digest": "sha256:TODO",
+  "nodes": [
+    {
+      "node_id": "source:OrderService#get",
+      "side": "source",
+      "path": "src/OrderService.java",
+      "range": {
+        "start": 1,
+        "end": 10
+      },
+      "symbol_id": "source-order-get",
+      "document_digest": "sha256:TODO"
+    },
+    {
+      "node_id": "target:OrderService.Get",
+      "side": "target",
+      "path": "src/OrderService.cs",
+      "range": {
+        "start": 1,
+        "end": 12
+      },
+      "symbol_id": "target-order-get",
+      "document_digest": "sha256:TODO"
+    }
+  ],
+  "edges": [
+    {
+      "from": "source:OrderService#get",
+      "to": "target:OrderService.Get",
+      "relation": "exact",
+      "confidence": 1.0,
+      "provenance_refs": [
+        "certification/sample-evidence.txt"
+      ]
+    }
+  ]
+}

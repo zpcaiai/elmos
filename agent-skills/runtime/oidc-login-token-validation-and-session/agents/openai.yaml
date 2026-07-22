@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 34 Skill 003"
+  short_description: "Run Product Batch 34 evidence contract safely"
+  default_prompt: "Use $oidc-login-token-validation-and-session to implement its fail-closed ELMOS Product Batch 34 contract."

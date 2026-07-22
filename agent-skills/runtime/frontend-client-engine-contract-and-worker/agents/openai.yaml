@@ -1,0 +1,4 @@
+interface:
+  display_name: "Frontend Client Engine"
+  short_description: "Run the isolated frontend and client engine"
+  default_prompt: "Use $frontend-client-engine-contract-and-worker to inspect capabilities and submit a fail-closed frontend job."

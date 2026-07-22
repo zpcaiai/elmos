@@ -1,0 +1,290 @@
+[
+  {
+    "scenarioId": "B22-S01",
+    "title": "SVN作者无法映射",
+    "requirements": "Given：\n历史Changeset使用已离职员工短用户名\n\nWhen：\n迁移到Git\n\nThen：\n保留原始身份\n标记FORMER_EMPLOYEE或UNKNOWN\n不能伪造为当前员工。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B22-S02",
+    "title": "Branch数量看似相同但历史丢失",
+    "requirements": "Given：\nSource和Target Branch数量相同\n\nWhen：\n抽查Merge和Rename历史\n\nThen：\n发现历史转换不完整\nSCM Gate失败。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B22-S03",
+    "title": "二进制文件直接迁Git",
+    "requirements": "Given：\nRepository含几十GB安装包和数据库备份\n\nWhen：\n迁移Git\n\nThen：\n按Artifact、LFS或Archive分类\n不能全部进入普通Git历史。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B22-S04",
+    "title": "旧SCM仍可写",
+    "requirements": "Given：\n新Git已经启用\n旧SCM没有设为Read Only\n\nWhen：\n团队继续在旧SCM提交\n\nThen：\n形成双Source of Truth\nCutover Gate失败。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B22-S05",
+    "title": "复制粘贴Pipeline",
+    "requirements": "Given：\n500个Repository各自复制相似Build YAML\n\nWhen：\n分析Pipeline\n\nThen：\n聚类形成Reusable Component候选\n保留必要差异参数。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B22-S06",
+    "title": "Reusable Workflow引用Branch",
+    "requirements": "Given：\n生产部署引用platform-workflow@main\n\nWhen：\n平台Workflow发生不兼容修改\n\nThen：\n大量Repository同时变化\n生成UNPINNED_COMPONENT风险。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B22-S07",
+    "title": "Reusable Workflow权限扩大",
+    "requirements": "Given：\n新版本要求写入全部Repository和Cloud Admin\n\nWhen：\n申请升级\n\nThen：\nPermission Diff阻止自动升级。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B22-S08",
+    "title": "每个环境重新Build",
+    "requirements": "Given：\nTest和Production分别运行Build\n\nWhen：\n比较Artifact Digest\n\nThen：\nDigest不同\n违反Build Once原则。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B22-S09",
+    "title": "生产使用Latest Tag",
+    "requirements": "Given：\nDeployment引用service:latest\n\nWhen：\n追踪生产版本\n\nThen：\n无法唯一映射Artifact\nArtifact Integrity Gate失败。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B22-S10",
+    "title": "Artifact仍在Rollback Window被删除",
+    "requirements": "Given：\n旧版本仍是生产回滚候选\n\nWhen：\nRetention Job准备删除\n\nThen：\nDelete Gate阻止。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B22-S11",
+    "title": "Preview复制生产Secret",
+    "requirements": "Given：\nPR Preview直接复用Production Environment Secret\n\nWhen：\n创建环境\n\nThen：\nPolicy拒绝\n要求Test Credential或Workload Identity。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B22-S12",
+    "title": "Preview未清理",
+    "requirements": "Given：\nPR已关闭两周\nPreview环境仍在运行\n\nWhen：\nTTL检查\n\nThen：\n触发Cleanup和Cost Finding。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B22-S13",
+    "title": "共享测试环境互相覆盖",
+    "requirements": "Given：\n两个团队同时部署同名Service\n\nWhen：\n执行测试\n\nThen：\n识别Environment Conflict\n要求Namespace、Reservation或独立环境。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B22-S14",
+    "title": "仅把YAML放进Git",
+    "requirements": "Given：\nManifest在Git中\n仍由工程师手工kubectl apply\n\nWhen：\n判断GitOps状态\n\nThen：\n分类为DECLARATIVE_PUSH\n不是FULL_GITOPS。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B22-S15",
+    "title": "GitOps引用浮动镜像",
+    "requirements": "Given：\nDesired State引用latest\n\nWhen：\n实际镜像内容改变但Git无变化\n\nThen：\n不满足Versioned and Immutable原则。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B22-S16",
+    "title": "门户显示错误Owner",
+    "requirements": "Given：\nCatalog手工填写Owner\n组织结构已经变化\n\nWhen：\nDirectory和SCM Evidence冲突\n\nThen：\n标记STALE_METADATA\n不自动把平台团队设为Owner。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B22-S17",
+    "title": "Backstage Template只生成空Repository",
+    "requirements": "Given：\n模板能创建代码\n但没有CI、监控、Support和升级路径\n\nWhen：\n评估Golden Path\n\nThen：\n只能标记为Template\n不能标记完整Golden Path。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B22-S18",
+    "title": "Golden Path过度限制",
+    "requirements": "Given：\nGPU模型服务被强制使用普通Web服务模板\n\nWhen：\n评估适用性\n\nThen：\n使用专用Variant或Escape Hatch\n不能为了Adoption数字强制使用错误路径。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B22-S19",
+    "title": "Escape Hatch绕过安全Gate",
+    "requirements": "Given：\nRepository自定义Step删除SAST和签名\n\nWhen：\n执行Pipeline Policy\n\nThen：\n构建被阻止。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B22-S20",
+    "title": "自助数据库重复创建",
+    "requirements": "Given：\n用户因超时重复提交相同Request\n\nWhen：\nProvider恢复\n\nThen：\nIdempotency保证只创建一个数据库。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B22-S21",
+    "title": "自助操作返回管理员密码",
+    "requirements": "Given：\nPortal把长期数据库管理员密码显示给用户\n\nWhen：\n安全检查\n\nThen：\n拒绝\n改为短期身份或Secret Reference。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B22-S22",
+    "title": "Runner队列时间被计入构建时间",
+    "requirements": "Given：\nBuild执行只需5分钟\n排队45分钟\n\nWhen：\n分析效能\n\nThen：\n分开Queue Time和Execution Time\n优先解决容量而不是改Build代码。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B22-S23",
+    "title": "不受信任PR进入持久Runner",
+    "requirements": "Given：\n外部PR在连接生产网络的Persistent Runner执行\n\nWhen：\n安全评估\n\nThen：\nCritical Runner Isolation Finding。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B22-S24",
+    "title": "跨租户Cache污染",
+    "requirements": "Given：\nTenant A和B共享可写Build Cache\n\nWhen：\nA写入恶意缓存\n\nThen：\nB可能消费\nCache Security Gate失败。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B22-S25",
+    "title": "部署次数被用作个人KPI",
+    "requirements": "Given：\n管理层按工程师部署次数排名\n\nWhen：\n工程效能治理\n\nThen：\n阻止个人化指标使用\n指标只用于系统和团队改进。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B22-S26",
+    "title": "Pipeline运行数冒充部署频率",
+    "requirements": "Given：\n一天运行100次Pipeline\n只有两次实际部署生产\n\nWhen：\n计算DORA\n\nThen：\nDeployment Frequency只计两次。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B22-S27",
+    "title": "一般Incident混入恢复指标",
+    "requirements": "Given：\n网络运营商故障导致服务中断\n\nWhen：\n计算Failed Deployment Recovery Time\n\nThen：\n不纳入由Deployment造成的恢复指标。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B22-S28",
+    "title": "Hotfix未计入Change Fail Rate",
+    "requirements": "Given：\n部署后立即发布Hotfix\n原部署未标记失败\n\nWhen：\n指标核对\n\nThen：\n识别隐藏Change Failure。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B22-S29",
+    "title": "为了指标拆分无意义Deployment",
+    "requirements": "Given：\n团队把一次变化拆成十次无业务价值部署\n\nWhen：\n分析Deployment Frequency\n\nThen：\n生成METRIC_GAMING_SUSPECTED\n并结合批次和业务价值解释。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B22-S30",
+    "title": "不同系统直接排名",
+    "requirements": "Given：\nWeb服务每日部署\n主机结算系统每月Release\n\nWhen：\n组织按频率排名\n\nThen：\nELMOS提示上下文不可直接比较。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B22-S31",
+    "title": "平台Adoption高但体验差",
+    "requirements": "Given：\n90%团队被强制迁入平台\n平台失败率和支持Ticket快速上升\n\nWhen：\n计算Platform Scorecard\n\nThen：\nAdoption不能覆盖可靠性和DevEx失败。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B22-S32",
+    "title": "门户登录量被当作Adoption",
+    "requirements": "Given：\n大量用户访问Portal查询文档\n但部署仍走旧流程\n\nWhen：\n计算真实采用\n\nThen：\nGolden Path Adoption保持较低。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B22-S33",
+    "title": "平台团队成为审批瓶颈",
+    "requirements": "Given：\n每个测试环境都需平台团队手工批准\n\nWhen：\n分析Value Stream\n\nThen：\n低风险环境改为Policy Auto-approval。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B22-S34",
+    "title": "生产手工变更造成Drift",
+    "requirements": "Given：\n管理员直接修改生产环境配置\n\nWhen：\n持续校准\n\nThen：\n产生Drift Finding\n根据Policy恢复或导入变更。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B22-S35",
+    "title": "Golden Path升级破坏旧服务",
+    "requirements": "Given：\n平台停止支持旧JDK\n部分服务尚未完成迁移\n\nWhen：\n准备移除路径版本\n\nThen：\nConsumer Inventory阻止退役\n生成Migration Wave。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B22-S36",
+    "title": "平台Incident未反馈产品Roadmap",
+    "requirements": "Given：\n环境服务频繁故障\n每次只执行临时修复\n\nWhen：\nPlatform Learning运行\n\nThen：\n建立根因、Golden Path和Roadmap改进项。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  }
+]

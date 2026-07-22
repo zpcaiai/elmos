@@ -1,0 +1,6 @@
+{
+  "id": "negative.control-plane-unavailable",
+  "synthetic_data": true,
+  "condition": "CONTROL_PLANE_BASE_URL is unavailable",
+  "expected": "Capability routes return repository contracts and explicitly retain externalExecutionEvidence=NOT_RUN."
+}

@@ -1,0 +1,186 @@
+openapi: 3.1.0
+info:
+  title: ELMOS Modernization Engine API
+  version: 1.2.0
+  description: Shared Java/.NET/Python execution-plane contract; identity, workflow, billing, audit and delivery remain in the ELMOS control plane.
+paths:
+  /engine/v1/capabilities:
+    get:
+      operationId: getCapabilities
+      responses:
+        '200':
+          description: Engine capabilities
+          content: { application/json: { schema: { $ref: '#/components/schemas/Capabilities' } } }
+  /engine/v1/scan:
+    post:
+      operationId: scan
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/JobRequest' } } } }
+      responses:
+        '202': { $ref: '#/components/responses/JobAccepted' }
+        '409': { $ref: '#/components/responses/JobConflict' }
+  /engine/v1/health-checks:
+    post:
+      operationId: runLegacyHealthCheck
+      responses:
+        '200': { description: Evidence-bound legacy health report }
+        '400': { description: Workspace path or scan request rejected }
+  /engine/v1/migration-plans:
+    post:
+      operationId: createEvidenceBoundMigrationPlan
+      responses:
+        '200': { description: Deterministic migration DAG, estimates, waves and approval gates }
+        '400': { description: Workspace path or planning request rejected }
+  /engine/v1/plan:
+    post:
+      operationId: plan
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/JobRequest' } } } }
+      responses:
+        '202': { $ref: '#/components/responses/JobAccepted' }
+        '409': { $ref: '#/components/responses/JobConflict' }
+  /engine/v1/execute-step:
+    post:
+      operationId: executeStep
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/ExecuteStepRequest' } } } }
+      responses:
+        '202': { $ref: '#/components/responses/JobAccepted' }
+        '409': { $ref: '#/components/responses/JobConflict' }
+  /engine/v1/validate:
+    post:
+      operationId: validate
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/JobRequest' } } } }
+      responses:
+        '202': { $ref: '#/components/responses/JobAccepted' }
+        '409': { $ref: '#/components/responses/JobConflict' }
+  /engine/v1/recipes/selections:
+    post:
+      operationId: selectDeterministicRecipes
+      responses:
+        '200': { description: License-closed deterministic recipe selection }
+        '400': { description: Selection rejected by recipe governance }
+  /engine/v1/recipes/execution-manifests:
+    post:
+      operationId: createPinnedRecipeExecutionManifest
+      responses:
+        '200': { description: Immutable recipe execution manifest }
+        '400': { description: Unpinned artifact, invalid option, or license block }
+  /engine/v1/recipes/runs/evaluate:
+    post:
+      operationId: evaluateRecipeRunEvidence
+      responses: { '200': { description: Data-table and fresh-process idempotence result } }
+  /engine/v1/validation/environments/compare:
+    post:
+      operationId: compareIndependentValidationEnvironments
+      responses: { '200': { description: Isolation and comparability decision } }
+  /engine/v1/validation/tests/compare:
+    post:
+      operationId: compareBaselineAndMigratedTests
+      responses: { '200': { description: Identity-bound differential test result } }
+  /engine/v1/validation/decisions:
+    post:
+      operationId: adjudicateMigrationQuality
+      responses: { '200': { description: Versioned independent aggregate quality decision } }
+  /engine/v1/jobs/{jobId}:
+    get:
+      operationId: getJob
+      parameters:
+        - { in: path, name: jobId, required: true, schema: { type: string } }
+        - { in: query, name: organizationId, required: true, schema: { type: string } }
+      responses:
+        '200': { description: Tenant-scoped job status, content: { application/json: { schema: { $ref: '#/components/schemas/JobResponse' } } } }
+        '404': { description: Job absent or not visible in this organization }
+  /engine/v1/jobs/{jobId}/cancel:
+    post:
+      operationId: cancelJob
+      parameters:
+        - { in: path, name: jobId, required: true, schema: { type: string } }
+        - { in: query, name: organizationId, required: true, schema: { type: string } }
+      responses:
+        '200': { description: Tenant-scoped job cancelled, content: { application/json: { schema: { $ref: '#/components/schemas/JobResponse' } } } }
+        '404': { description: Job absent or not visible in this organization }
+        '409': { $ref: '#/components/responses/JobConflict' }
+components:
+  responses:
+    JobAccepted:
+      description: Request evaluated under the idempotency scope. A backend that is not configured returns a terminal FAILED job with empty evidenceRefs, executed=false and a reasonCode; it never fabricates successful execution evidence.
+      content: { application/json: { schema: { $ref: '#/components/schemas/JobResponse' } } }
+    JobConflict:
+      description: Idempotency key was reused with different input, or the requested state transition conflicts with a terminal job.
+      content: { application/json: { schema: { $ref: '#/components/schemas/EngineProblem' } } }
+  schemas:
+    Capabilities:
+      type: object
+      required: [schemaVersion, engineVersion, languages]
+      properties:
+        schemaVersion: { type: string }
+        engineName: { type: string }
+        engine: { type: string, description: Language-worker alias for engineName }
+        engineVersion: { type: string }
+        languages: { type: array, items: { type: string } }
+        supportedSourceVersions: { type: array, items: { type: string } }
+        sourceVersions: { type: array, items: { type: string }, description: Alias emitted by the Python engine }
+        supportedTargetVersions: { type: array, items: { type: string } }
+        buildSystems: { type: array, items: { type: string } }
+        solutionFormats: { type: array, items: { type: string } }
+        projectFormats: { type: array, items: { type: string } }
+        projectModels: { type: array, items: { type: string }, description: Python packaging and project models }
+        runnerProfiles: { type: array, items: { type: string } }
+        supportedFrameworks: { type: array, items: { type: string } }
+        frameworks: { type: array, items: { type: string }, description: Alias emitted by the Python engine }
+        availableRecipes: { type: array, items: { type: string } }
+        validationCapabilities: { type: array, items: { type: string } }
+        migrationCapabilities: { type: array, items: { type: string } }
+        sandboxRequirements: { type: object, additionalProperties: true }
+      additionalProperties: true
+    JobRequest:
+      type: object
+      required: [organizationId, repositorySnapshotRef, workspaceRef, profile, correlationId, idempotencyKey]
+      properties:
+        organizationId: { type: string, minLength: 1 }
+        repositorySnapshotRef: { type: string, minLength: 1 }
+        workspaceRef: { type: string, minLength: 1 }
+        profile: { type: string, minLength: 1 }
+        correlationId: { type: string, minLength: 1 }
+        idempotencyKey: { type: string, minLength: 1 }
+        options: { type: object, additionalProperties: true }
+    ExecuteStepRequest:
+      type: object
+      required: [organizationId, migrationRunId, migrationPlanVersion, stepDefinition, workspaceRef, sourceCommit, executionBudget, policy, correlationId, idempotencyKey]
+      properties:
+        organizationId: { type: string, minLength: 1 }
+        migrationRunId: { type: string, minLength: 1 }
+        migrationPlanVersion: { type: integer, minimum: 1 }
+        stepDefinition: { $ref: '#/components/schemas/StepDefinition' }
+        workspaceRef: { type: string, minLength: 1 }
+        sourceCommit: { type: string, minLength: 1 }
+        executionBudget: { type: object, additionalProperties: true }
+        policy: { type: object, additionalProperties: true }
+        correlationId: { type: string, minLength: 1 }
+        idempotencyKey: { type: string, minLength: 1 }
+    StepDefinition:
+      type: object
+      required: [stepId, executorType, configuration]
+      properties:
+        stepId: { type: string, minLength: 1 }
+        executorType:
+          enum: [SCANNER, OPENREWRITE, MSBUILD_EVALUATION, ROSLYN_TRANSFORMATION, PROJECT_SYSTEM_TRANSFORMATION, ASPNET_MIGRATION, WCF_MIGRATION, EF_MIGRATION, LIBCST, PYTHON_AST, UV, PIP, CONDA, MYPY, PYRIGHT, PYTEST, DATABASE_SCANNER, DATABASE_CONVERTER, DATABASE_QUERY_VALIDATOR, DATABASE_BULK_LOADER, DATABASE_CDC, DATA_QUALITY, DATA_PLATFORM, BI_VALIDATOR, INFRASTRUCTURE_SCANNER, VM_IMAGE_BUILDER, CONTAINER_BUILDER, KUBERNETES_VALIDATOR, SERVERLESS_VALIDATOR, IAC_PLANNER, IAC_APPLIER, NETWORK_VALIDATOR, OBSERVABILITY_VALIDATOR, FINOPS_VALIDATOR, RESILIENCE_VALIDATOR, MULTICLOUD_VALIDATOR, INFRASTRUCTURE_CUTOVER, DATA_VALIDATOR, MODEL_VALIDATOR, BUILD_TOOL, TEST_RUNNER, CODING_AGENT, SONARQUBE, CONTRACT_CHECKER, HUMAN_REVIEW, UNKNOWN]
+        configuration: { type: object, additionalProperties: true }
+    JobResponse:
+      type: object
+      required: [schemaVersion, jobId, status, evidenceRefs, result]
+      properties:
+        schemaVersion: { type: string }
+        jobId: { type: string }
+        status: { enum: [ACCEPTED, RUNNING, SUCCEEDED, FAILED, CANCELLED] }
+        evidenceRefs: { type: array, items: { type: string } }
+        result:
+          type: object
+          description: Operation-specific result. A not-run response includes configured=false, executed=false, customerCodeExecuted=false and a machine-readable reasonCode.
+          additionalProperties: true
+        error: { type: [object, 'null'], additionalProperties: true }
+    EngineProblem:
+      type: object
+      required: [errorCode, message, retryable]
+      properties:
+        errorCode: { type: string }
+        message: { type: string }
+        retryable: { type: boolean }

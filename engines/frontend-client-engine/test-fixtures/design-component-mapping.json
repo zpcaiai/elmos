@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "1.0",
+  "organizationId": "org-b14",
+  "mappingId": "legacy-dialog-to-ds-dialog",
+  "legacyComponent": "LegacyModal",
+  "targetComponent": "EnterpriseDialog",
+  "compatibility": "REQUIRES_ADAPTER",
+  "status": "CANDIDATE",
+  "unsupportedBehaviors": ["custom-industrial-gauge"],
+  "evidenceRefs": ["ev-component-contract"]
+}

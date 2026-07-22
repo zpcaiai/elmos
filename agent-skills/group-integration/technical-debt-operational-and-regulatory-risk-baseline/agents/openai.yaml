@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 682: technical debt operational and regulatory risk baseline"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $technical-debt-operational-and-regulatory-risk-baseline to evaluate this capability with evidence."

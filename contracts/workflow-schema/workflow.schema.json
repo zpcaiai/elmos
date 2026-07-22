@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/workflow.v1.json",
+  "title": "Workflow Definition",
+  "type": "object",
+  "required": ["schemaVersion", "workflowId", "version", "processType", "executability", "steps", "timers", "compensations"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "workflowId": {"type": "string"},
+    "version": {"type": "string"},
+    "processType": {"enum": ["SHORT_SYNCHRONOUS", "LONG_RUNNING", "HUMAN_IN_LOOP", "SCHEDULED", "SAGA", "CHOREOGRAPHY", "CASE_MANAGEMENT", "UNKNOWN"]},
+    "executability": {"enum": ["DOCUMENTATION_ONLY", "EXECUTABLE", "PARTIALLY_EXECUTABLE", "VENDOR_SPECIFIC", "UNKNOWN"]},
+    "steps": {"type": "array", "items": {"type": "object"}},
+    "timers": {"type": "array", "items": {"type": "object"}},
+    "compensations": {"type": "array", "items": {"type": "object"}},
+    "humanTasks": {"type": "array", "items": {"type": "object"}},
+    "evidenceRefs": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

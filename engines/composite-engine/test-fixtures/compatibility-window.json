@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "1.0",
+  "windowId": "window-orders-v1-v2",
+  "organizationId": "org-fixture",
+  "contractId": "orders-http-v1",
+  "oldVersion": "1.0.0",
+  "newVersion": "2.0.0",
+  "startsAt": "2026-07-01T00:00:00Z",
+  "expiresAt": "2026-08-01T00:00:00Z",
+  "owner": "orders-team",
+  "status": "ACTIVE",
+  "strategies": ["MULTI_VERSION_ENDPOINT"],
+  "removalTaskId": "remove-orders-v1",
+  "oldVersionUsage": 11,
+  "evidenceRefs": ["evidence:gateway-usage:orders-v1"]
+}

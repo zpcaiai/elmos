@@ -1,0 +1,38 @@
+{
+  "$id": "elmos.self-service-request.v1",
+  "type": "object",
+  "required": [
+    "requestId",
+    "offeringId",
+    "requestor",
+    "organizationId",
+    "status"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string"
+    },
+    "offeringId": {
+      "type": "string"
+    },
+    "requestor": {
+      "type": "string"
+    },
+    "organizationId": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "REQUESTED",
+        "VALIDATING",
+        "APPROVAL_REQUIRED",
+        "PROVISIONING",
+        "READY",
+        "FAILED",
+        "EXPIRED",
+        "DECOMMISSIONED"
+      ]
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

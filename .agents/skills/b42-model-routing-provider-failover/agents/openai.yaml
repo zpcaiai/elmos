@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 42: Model Routing Provider Failover"
+  short_description: "Run evidence-bound Batch 42 model routing provider failover work"
+  default_prompt: "Use $b42-model-routing-provider-failover to implement and verify this capability with fail-closed evidence."

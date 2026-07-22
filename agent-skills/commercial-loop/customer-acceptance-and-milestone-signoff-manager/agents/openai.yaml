@@ -1,0 +1,4 @@
+interface:
+  display_name: "customer-acceptance-and-milestone-signoff-manager"
+  short_description: "Run this Batch 13 commercial capability"
+  default_prompt: "Use $customer-acceptance-and-milestone-signoff-manager to evaluate this Batch 13 commercial capability with evidence."

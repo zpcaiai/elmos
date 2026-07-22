@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "execution_kind": "real-local-java-cli",
+  "inspect": {
+    "schema_version": 1,
+    "command": "inspect",
+    "status": "READY",
+    "network_access": false,
+    "repository_write": false,
+    "runtime_digest": "sha256:eeac9572751d5204c52b52506965d3c52287463623989531c8a9bdd17f80402d"
+  },
+  "preview": {
+    "schema_version": 1,
+    "command": "preview",
+    "decision": "ALLOW",
+    "code": "PREVIEW_READY",
+    "repository_write": false,
+    "network_access": false,
+    "diff_digest": "sha256:d5d78a48603565a4aa5b376637610c4a91933f38e1457678b3a57793c2074445"
+  }
+}

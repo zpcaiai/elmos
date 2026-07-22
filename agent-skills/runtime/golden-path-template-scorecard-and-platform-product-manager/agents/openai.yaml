@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 22 010"
+  short_description: "Run Batch 22 runtime contract safely"
+  default_prompt: "Use $golden-path-template-scorecard-and-platform-product-manager to apply its fail-closed ELMOS runtime contract."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Human Effort Estimator"
+  short_description: "Estimate bounded human effort ranges"
+  default_prompt: "Use $human-effort-estimator for ELMOS Batch 4 estimation."

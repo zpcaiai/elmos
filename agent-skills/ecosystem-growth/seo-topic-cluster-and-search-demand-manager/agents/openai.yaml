@@ -1,0 +1,5 @@
+interface:
+  display_name: "SEO Topic Cluster And Search Demand Manager"
+  short_description: "Authoritative Batch 14 Skill 418 workflow"
+  default_prompt: "Use $seo-topic-cluster-and-search-demand-manager to execute its evidence-bound Batch 14 workflow."
+

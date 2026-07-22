@@ -1,0 +1,5 @@
+interface:
+  display_name: "Growth Event And Semantic Analytics Layer"
+  short_description: "Authoritative Batch 14 Skill 414 workflow"
+  default_prompt: "Use $growth-event-and-semantic-analytics-layer to execute its evidence-bound Batch 14 workflow."
+

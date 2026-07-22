@@ -1,0 +1,4 @@
+interface:
+  display_name: "Enterprise Suite ELMOS Unified Evidence Integration"
+  short_description: "Govern evidence-bound enterprise suite modernization"
+  default_prompt: "Use $enterprise-suite-elmos-unified-evidence-integration to govern this enterprise suite modernization task with fail-closed evidence."

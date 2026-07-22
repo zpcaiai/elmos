@@ -1,0 +1,354 @@
+[
+  {
+    "scenarioId": "B25-S01",
+    "title": "生产服务不存在于CMDB",
+    "requirements": "Given：\nKubernetes中存在生产Deployment\nCMDB没有对应Service Instance\n\nWhen：\n执行Reconciliation\n\nThen：\n生成PRODUCTION_CI_NOT_IN_CMDB\n要求识别Owner和业务服务。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S02",
+    "title": "CMDB存在已删除服务器",
+    "requirements": "Given：\nCMDB仍显示一台Active VM\n云平台中该VM已删除半年\n\nWhen：\n验证CMDB\n\nThen：\n标记STALE_CI\n不能继续作为拓扑依据。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S03",
+    "title": "同一服务存在三个Owner",
+    "requirements": "Given：\nCatalog、CMDB和Repository声明不同Owner\n\nWhen：\n执行Owner Reconciliation\n\nThen：\n状态为CONFLICTED\n不能任意选取最近记录。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S04",
+    "title": "只使用静态架构关系",
+    "requirements": "Given：\n文档声明服务A调用B\n运行Trace显示A实际调用C\n\nWhen：\n构建拓扑\n\nThen：\n同时保留Declared和Observed\n创建Topology Drift。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S05",
+    "title": "备用数据库被认为无使用",
+    "requirements": "Given：\nReplica平时没有业务查询\n只在Failover时使用\n\nWhen：\n分析Runtime Usage\n\nThen：\n标记STANDBY\n不能作为Unused删除。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S06",
+    "title": "一个故障产生一千条Page",
+    "requirements": "Given：\n共享数据库故障\n每个服务均产生多个Pager Alert\n\nWhen：\n执行Event Correlation\n\nThen：\n按共同依赖聚合\n保护值班渠道\n保留底层Raw Event。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S07",
+    "title": "CPU告警但服务无影响",
+    "requirements": "Given：\nCPU持续90%\n请求延迟和错误率正常\n\nWhen：\nAlert Policy评估\n\nThen：\n不直接Page\n转为容量Ticket或Dashboard。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S08",
+    "title": "服务失败但组件指标正常",
+    "requirements": "Given：\n用户支付失败\n各Pod CPU和Memory正常\n\nWhen：\n业务SLI告警\n\nThen：\n用户症状触发Page\n不能等待底层组件异常。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S09",
+    "title": "告警自动恢复但仍唤醒值班",
+    "requirements": "Given：\n夜间告警每次30秒内自动恢复\n从未需要人工行动\n\nWhen：\n分析Alert Quality\n\nThen：\n降级、增加持续时间或自动化\n减少无行动Page。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S10",
+    "title": "Incident没有Commander",
+    "requirements": "Given：\n多个团队同时修改生产\n没有明确Incident Commander\n\nWhen：\n声明Major Incident\n\nThen：\n立即分配Command和Ops角色\n阻止Freelancing Change。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S11",
+    "title": "技术负责人无暇沟通",
+    "requirements": "Given：\n主诊断工程师同时负责客户更新\n\nWhen：\nIncident升级\n\nThen：\n单独分配Communications Lead。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S12",
+    "title": "跨时区交接不完整",
+    "requirements": "Given：\nIncident跨越夜间\n新团队只收到一句“还在调查”\n\nWhen：\n执行Handoff\n\nThen：\nCommand Transfer失败\n要求当前状态、行动和风险完整确认。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S13",
+    "title": "服务恢复但Incident立即关闭",
+    "requirements": "Given：\n临时关闭功能后服务恢复\n根因和风险尚不明确\n\nWhen：\n申请关闭Incident\n\nThen：\n可标记Resolved\n但必须建立Problem和临时控制。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S14",
+    "title": "Root Cause由AIOps自动确认",
+    "requirements": "Given：\nAIOps认为某Deployment最可疑\n没有回滚或因果验证\n\nWhen：\n创建Problem\n\nThen：\n状态只能是HYPOTHESIS或LIKELY\n不能标记CONFIRMED。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S15",
+    "title": "同类Incident反复出现",
+    "requirements": "Given：\n三个月发生12次相同缓存故障\n\nWhen：\nIncident聚类\n\nThen：\n建立统一Problem和Known Error\n不继续创建孤立修复Ticket。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S16",
+    "title": "Postmortem行动没有验证",
+    "requirements": "Given：\n行动项写着“增加监控”并标记Done\n\nWhen：\n验证关闭条件\n\nThen：\n必须提供规则、测试和生产观察Evidence。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S17",
+    "title": "所有Change都需CAB审批",
+    "requirements": "Given：\n低风险标准扩容也需等待每周CAB\n\nWhen：\n分析Change Value Stream\n\nThen：\n将重复、可验证操作转为Standard或自动Change。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S18",
+    "title": "Emergency被滥用",
+    "requirements": "Given：\n团队长期以Emergency绕过正常流程\n\nWhen：\n统计Change\n\nThen：\n触发治理Finding\n要求Root Cause和流程修复。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S19",
+    "title": "部署成功但业务失败",
+    "requirements": "Given：\nPipeline和Kubernetes显示成功\n订单成功率下降\n\nWhen：\nChange Verification\n\nThen：\nChange状态为FAILED或DEGRADED\n不能只看技术任务成功。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S20",
+    "title": "Incident与Change没有关联",
+    "requirements": "Given：\n故障发生前10分钟刚修改Feature Flag\n\nWhen：\nIncident Correlation\n\nThen：\n自动关联该Change作为调查候选。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S21",
+    "title": "SLO以CPU利用率定义",
+    "requirements": "Given：\n服务SLO写成CPU低于80%\n\nWhen：\nService Level Review\n\nThen：\n拒绝作为用户SLO\n改为成功率、延迟或业务Deadline。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S22",
+    "title": "低流量服务无请求时计算100%",
+    "requirements": "Given：\n夜间没有任何请求\n\nWhen：\n计算Availability\n\nThen：\n根据Missing／No Traffic Policy处理\n不能无条件计为100%。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S23",
+    "title": "Error Budget耗尽仍自动全量发布",
+    "requirements": "Given：\n服务预算已耗尽\n高风险Release准备全量部署\n\nWhen：\nError Budget Policy执行\n\nThen：\n要求Reliability Review、扩大Canary或暂停。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S24",
+    "title": "SLA与SLO混为一体",
+    "requirements": "Given：\n客户合同SLA为99.5%\n内部服务目标也设成99.5%\n\nWhen：\n分析用户风险\n\nThen：\n允许内部SLO设置更严格\n为检测和恢复保留余量。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S25",
+    "title": "值班人员被噪声淹没",
+    "requirements": "Given：\n每班平均收到80个Page\n大部分无需行动\n\nWhen：\n评估On-call Sustainability\n\nThen：\n状态为UNSAFE\n触发告警治理和工程改进。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S26",
+    "title": "唯一数据库专家休假",
+    "requirements": "Given：\n所有数据库Incident都依赖一个人\n\nWhen：\n检查Rotation和技能\n\nThen：\n生成SINGLE_EXPERT_RISK\n要求培训、Runbook和Secondary。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S27",
+    "title": "Runbook命令已过期",
+    "requirements": "Given：\nRunbook使用旧命令和已删除Namespace\n\nWhen：\n演练\n\nThen：\nRunbook状态转STALE\n不能作为自动修复依据。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S28",
+    "title": "Runbook只有操作没有验证",
+    "requirements": "Given：\n步骤为“重启服务”\n没有成功条件\n\nWhen：\n执行Runbook Review\n\nThen：\n要求SLI、业务和稳定窗口验证。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S29",
+    "title": "AIOps相似Incident建议错误",
+    "requirements": "Given：\n当前错误文本与旧Incident相似\n但拓扑和近期Change完全不同\n\nWhen：\n相似度分析\n\nThen：\n降低推荐Confidence\n明确列出差异。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S30",
+    "title": "自动重启形成循环",
+    "requirements": "Given：\n服务每隔三分钟崩溃\nAutomation不断重启\n\nWhen：\n达到Maximum Attempts\n\nThen：\n停止自动化\n升级人工并创建Problem。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S31",
+    "title": "自动扩容压垮数据库",
+    "requirements": "Given：\nAPI服务自动扩容\n数据库连接已饱和\n\nWhen：\n准备执行Scale\n\nThen：\nPrecondition阻止\n转为限流或数据库容量处理。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S32",
+    "title": "修复动作技术成功但业务未恢复",
+    "requirements": "Given：\nPod重启成功\n支付成功率仍为零\n\nWhen：\nVerification\n\nThen：\nRemediation状态为FAILED\nIncident保持Open。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S33",
+    "title": "容量只看平均值",
+    "requirements": "Given：\n数据库平均利用率40%\n月末峰值达到100%\n\nWhen：\nCapacity Forecast\n\nThen：\n识别Seasonal Saturation\n平均值不能证明容量充足。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S34",
+    "title": "故障切换后容量不足",
+    "requirements": "Given：\n双区域正常状态容量充足\n单区域无法承载全部流量\n\nWhen：\nFailover Capacity Test\n\nThen：\nContinuity和Capacity Gate失败。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S35",
+    "title": "DR文档写30分钟，实测4小时",
+    "requirements": "Given：\nDocumented RTO=30分钟\n演练Observed RTO=4小时\n\nWhen：\nContinuity Review\n\nThen：\n显示真实差距\n不能只修改报告隐藏失败。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S36",
+    "title": "备份成功但无法恢复",
+    "requirements": "Given：\n每日Backup Job成功\nRestore Test失败\n\nWhen：\n评估Continuity\n\nThen：\n恢复能力状态为FAIL\n备份成功不代表可恢复。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S37",
+    "title": "IT工具故障导致无法处理Incident",
+    "requirements": "Given：\n身份平台和Chat同时故障\n\nWhen：\n发生Major Incident\n\nThen：\n使用Out-of-band通信和备用访问。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S38",
+    "title": "供应商中断未进入BIA",
+    "requirements": "Given：\n核心支付依赖外部Provider\n内部系统均正常\n\nWhen：\nProvider长时间不可用\n\nThen：\n业务连续性计划必须包含替代或降级策略。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S39",
+    "title": "Incident被改成Service Request",
+    "requirements": "Given：\n用户无法登录生产系统\nService Desk将其归类为密码请求\n\nWhen：\n质量审查\n\nThen：\n应识别为Incident或关联Incident\n不能通过分类美化指标。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S40",
+    "title": "临时访问永久保留",
+    "requirements": "Given：\nIncident期间授予临时管理员权限\n\nWhen：\nIncident关闭\n\nThen：\n访问自动过期或撤销\n并保存Audit。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S41",
+    "title": "驾驶舱显示绿色但数据已过期",
+    "requirements": "Given：\nTelemetry Pipeline中断两小时\nDashboard仍显示最后一次绿色状态\n\nWhen：\n查看服务\n\nThen：\n状态为STALE或UNKNOWN\n不能继续显示Healthy。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S42",
+    "title": "业务影响无法下钻",
+    "requirements": "Given：\n驾驶舱显示“订单系统故障”\n无法定位依赖和实例\n\nWhen：\nIncident Command使用\n\nThen：\nService Topology Gate失败。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S43",
+    "title": "只追求降低MTTR",
+    "requirements": "Given：\n团队快速重启恢复\n同类故障每周重复\n\nWhen：\n运营评分\n\nThen：\n恢复速度不能覆盖Repeat Incident和Problem失败。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B25-S44",
+    "title": "自动化节省时间但增加事故",
+    "requirements": "Given：\n自动修复减少人工操作\n但误操作造成两次重大Incident\n\nWhen：\n计算Automation Outcome\n\nThen：\n收益必须扣除风险和恢复成本。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  }
+]

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 37: Vertical Pack Sdk"
+  short_description: "Run evidence-bound Batch 37 vertical pack sdk work"
+  default_prompt: "Use $b37-vertical-pack-sdk to implement and verify this capability with fail-closed evidence."

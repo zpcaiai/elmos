@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 39: Autoscaling Capacity Control"
+  short_description: "Run evidence-bound Batch 39 autoscaling capacity control work"
+  default_prompt: "Use $b39-autoscaling-capacity-control to implement and verify this capability with fail-closed evidence."

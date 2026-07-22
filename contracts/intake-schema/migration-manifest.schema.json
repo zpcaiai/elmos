@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema", "$id": "elmos.polyglot.migration-manifest.v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["schemaVersion", "migrationId", "snapshotId", "primaryLanguage", "frameworks", "buildSystems", "target", "projectIds", "sourceRoots", "testRoots", "exclusions", "baseline", "risks", "unresolved", "sandboxPolicyRef", "readiness", "gateStatus"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"}, "migrationId": {"type": "string", "minLength": 1}, "snapshotId": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "primaryLanguage": {"enum": ["JAVA", "PYTHON", "CSHARP", "JAVASCRIPT", "TYPESCRIPT", "OTHER"]}, "frameworks": {"type": "array", "items": {"type": "string"}},
+    "buildSystems": {"type": "array", "items": {"type": "string"}}, "target": {"type": "object"}, "projectIds": {"type": "array", "items": {"type": "string"}},
+    "sourceRoots": {"type": "array", "items": {"type": "string"}}, "testRoots": {"type": "array", "items": {"type": "string"}}, "exclusions": {"type": "object"},
+    "baseline": {"type": "object"}, "risks": {"type": "array", "items": {"type": "string"}}, "unresolved": {"type": "array", "items": {"type": "string"}},
+    "sandboxPolicyRef": {"const": "sandbox-policy.yaml"},
+    "readiness": {"type": "object", "required": ["total", "reproducibleBuild", "testCompleteness", "dependencyResolution", "typeInformation", "moduleDecoupling", "frameworkSupport", "dynamicFeatureRisk"]},
+    "gateStatus": {"enum": ["PASSED", "BLOCKED"]}
+  }
+}

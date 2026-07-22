@@ -1,0 +1,4 @@
+interface:
+  display_name: "Infrastructure As Code Import State Drift And Policy"
+  short_description: "Govern Batch 16 infrastructure modernization"
+  default_prompt: "Use $infrastructure-as-code-import-state-drift-and-policy to produce a governed infrastructure modernization artifact."

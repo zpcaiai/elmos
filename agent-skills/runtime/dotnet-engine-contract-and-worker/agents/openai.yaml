@@ -1,0 +1,4 @@
+interface:
+  display_name: "Dotnet Engine Contract And Worker"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $dotnet-engine-contract-and-worker to execute this ELMOS Runtime Skill with fail-closed evidence."

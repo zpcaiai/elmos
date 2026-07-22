@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/repair-loop/v1/execution-matrix.schema.json",
+  "title": "Batch 8 Execution Matrix Entry",
+  "type": "object",
+  "required": ["matrixId", "moduleId", "language", "runtimeVersion", "platform", "configuration", "phases", "commands", "reductionReason"],
+  "properties": {
+    "matrixId": {"type": "string", "minLength": 1},
+    "moduleId": {"type": "string", "minLength": 1},
+    "language": {"enum": ["JAVA", "PYTHON", "CSHARP", "TYPESCRIPT", "JAVASCRIPT"]},
+    "runtimeVersion": {"type": "string", "minLength": 1},
+    "platform": {"type": "string", "minLength": 1},
+    "configuration": {"type": "string", "minLength": 1},
+    "phases": {"type": "array", "items": {"$ref": "#/$defs/phase"}, "minItems": 1, "uniqueItems": true},
+    "commands": {"type": "array", "items": {"$ref": "#/$defs/command"}, "minItems": 1},
+    "reductionReason": {"type": "string", "minLength": 1}
+  },
+  "$defs": {
+    "phase": {"enum": ["RESTORE", "BUILD_MODEL", "COMPILE", "STATIC_ANALYSIS", "TEST_DISCOVERY", "UNIT_TEST", "CONTRACT_TEST", "INTEGRATION_TEST", "STARTUP_TEST", "FULL_REGRESSION"]},
+    "command": {
+      "type": "object",
+      "required": ["commandId", "phase", "workingDirectory", "executable", "arguments", "environment", "timeoutSeconds", "expectedReports", "toolVersion"],
+      "properties": {
+        "commandId": {"type": "string", "minLength": 1}, "phase": {"$ref": "#/$defs/phase"},
+        "workingDirectory": {"type": "string", "minLength": 1}, "executable": {"type": "string", "minLength": 1},
+        "arguments": {"type": "array", "items": {"type": "string"}},
+        "environment": {"type": "object", "additionalProperties": {"type": "string"}},
+        "timeoutSeconds": {"type": "integer", "minimum": 1},
+        "expectedReports": {"type": "array", "items": {"type": "string"}},
+        "toolVersion": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

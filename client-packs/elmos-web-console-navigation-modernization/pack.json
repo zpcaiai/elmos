@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-web-console-navigation-modernization",
+  "version": "0.1.0",
+  "mode": "modernization",
+  "status": "experimental",
+  "owner": "elmos-web-console",
+  "maintenance_owner": "elmos-web-console-maintainers",
+  "ux_owner": "elmos-product-design",
+  "accessibility_owner": "elmos-accessibility-review",
+  "source": {
+    "stack": "nextjs-app-router",
+    "versions": [
+      "16.2.10"
+    ],
+    "language": "typescript",
+    "language_versions": [
+      "5.9.2"
+    ],
+    "runtime": "nodejs",
+    "runtime_versions": [
+      "24.14.0"
+    ],
+    "build_tool": "next-16.2.10",
+    "package_manager": "pnpm-10.12.4",
+    "router": [],
+    "renderer": [],
+    "state": [],
+    "forms": [],
+    "styling": [],
+    "design_system": [],
+    "api_client": [],
+    "identity": [],
+    "i18n": [],
+    "test_tools": [],
+    "browsers": [
+      "chromium-UNSET"
+    ],
+    "devices": []
+  },
+  "target": {
+    "stack": "nextjs-app-router",
+    "versions": [
+      "16.2.10"
+    ],
+    "language": "typescript",
+    "language_versions": [
+      "5.9.2"
+    ],
+    "runtime": "nodejs",
+    "runtime_versions": [
+      "24.14.0"
+    ],
+    "build_tool": "next-16.2.10",
+    "package_manager": "pnpm-10.12.4",
+    "router": [],
+    "renderer": [],
+    "state": [],
+    "forms": [],
+    "styling": [],
+    "design_system": [],
+    "api_client": [],
+    "identity": [],
+    "i18n": [],
+    "test_tools": [],
+    "browsers": [
+      "chromium-UNSET"
+    ],
+    "devices": []
+  },
+  "scope": {
+    "journeys": ["workspace-navigation", "local-assessment-draft", "trust-chain-review"],
+    "routes": ["/", "/migration", "/commercialization"],
+    "component_roots": ["apps/web-console/app"],
+    "excluded": ["external certification", "production mutation", "customer data"]
+  },
+  "paths": {
+    "source_fingerprint": "source-fingerprint/fingerprint.json",
+    "ui_ir": "ui-ir/model.json",
+    "target_profile": "target-profile/profile.json",
+    "acceptance_profile": "acceptance/acceptance-profile.json",
+    "support_matrix": "support-matrix.json",
+    "evidence": "certification/evidence.json",
+    "certification": "certification/certification.json"
+  },
+  "gates": {
+    "build": "required",
+    "startup_or_launch": "required",
+    "p0_journeys": "required",
+    "visual": "required",
+    "accessibility": "required",
+    "security": "required",
+    "holdout": "required"
+  }
+}

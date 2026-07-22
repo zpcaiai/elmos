@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 41: Knowledge Flywheel Gate"
+  short_description: "Run evidence-bound Batch 41 knowledge flywheel gate work"
+  default_prompt: "Use $b41-knowledge-flywheel-gate to implement and verify this capability with fail-closed evidence."

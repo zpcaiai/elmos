@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.infrastructure-cost-allocation.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["allocationId", "period", "amount", "currency", "dimensions", "sharedCostRule", "coverage", "freshness", "allocationMode"],
+  "properties": {
+    "allocationId": {"type": "string", "minLength": 1},
+    "period": {"type": "object", "required": ["start", "end"], "properties": {"start": {"type": "string", "format": "date"}, "end": {"type": "string", "format": "date"}}},
+    "amount": {"type": "number", "minimum": 0},
+    "currency": {"type": "string", "pattern": "^[A-Z]{3}$"},
+    "dimensions": {"type": "object"},
+    "sharedCostRule": {"enum": ["EVEN", "RESOURCE_USAGE", "REQUESTS", "REVENUE", "TENANT", "BUSINESS_UNIT", "KEEP_UNALLOCATED"]},
+    "coverage": {"type": "number", "minimum": 0, "maximum": 1},
+    "freshness": {"type": "string", "format": "date-time"},
+    "allocationMode": {"enum": ["SHOWBACK", "CHARGEBACK"]}
+  }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Enterprise Canonical Master Data And Business Object Model"
+  short_description: "Govern evidence-bound enterprise suite modernization"
+  default_prompt: "Use $enterprise-canonical-master-data-and-business-object-model to govern this enterprise suite modernization task with fail-closed evidence."

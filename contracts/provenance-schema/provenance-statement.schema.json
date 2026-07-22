@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.provenance-statement.v1",
+  "type": "object",
+  "required": ["provenanceId", "subjectDigest", "builderIdentity", "buildType", "sourceCommit", "trustedBuilder", "evidenceRefs"],
+  "properties": {
+    "provenanceId": {"type": "string"}, "subjectDigest": {"type": "string"}, "builderIdentity": {"type": "string"},
+    "buildType": {"type": "string"}, "sourceCommit": {"type": "string"}, "trustedBuilder": {"type": "boolean"},
+    "evidenceRefs": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

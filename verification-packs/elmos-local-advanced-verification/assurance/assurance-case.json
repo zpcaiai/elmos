@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "case_key": "elmos-local-advanced-verification-assurance-v1",
+  "version": 1,
+  "owner": "elmos-verification-engineering",
+  "top_claim": "The local Batch 35 runtime is executable and fail-closed within its declared experimental scope.",
+  "claims": [
+    {
+      "claim_id": "claim.local-bounded-techniques",
+      "statement": "The local runtime returns explicit bounded outcomes for implemented verification techniques.",
+      "status": "partially-supported",
+      "evidence_refs": [
+        "certification/local-test-result.json"
+      ],
+      "assumptions": [
+        "Local deterministic environment"
+      ],
+      "limitations": [
+        "No independent holdout or production workload"
+      ]
+    },
+    {
+      "claim_id": "claim.local-fail-closed-governance",
+      "statement": "Unknown proof results, oracle conflicts, unsupported evidence, and residual P0 risk do not become pass decisions.",
+      "status": "partially-supported",
+      "evidence_refs": [
+        "certification/local-test-result.json",
+        "counterexamples/sample.json"
+      ],
+      "assumptions": [],
+      "limitations": [
+        "No independent reviewer approval"
+      ]
+    }
+  ],
+  "evidence": [
+    "certification/local-test-result.json",
+    "certification/local-source-manifest.json",
+    "counterexamples/sample.json"
+  ],
+  "residual_risks": [
+    {
+      "risk": "External solver and symbolic execution are NOT_RUN",
+      "owner": "elmos-verification-engineering",
+      "status": "open"
+    },
+    {
+      "risk": "Independent holdout and representative production workloads are NOT_RUN",
+      "owner": "elmos-verification-engineering",
+      "status": "open"
+    },
+    {
+      "risk": "This pack does not evaluate a real source-to-target migration pair",
+      "owner": "elmos-verification-engineering",
+      "status": "open"
+    }
+  ],
+  "monitoring_obligations": [
+    "Re-run on every change to modules/advanced-verification",
+    "Reject any request to certify without independent corpora and approvals"
+  ],
+  "approvals": []
+}

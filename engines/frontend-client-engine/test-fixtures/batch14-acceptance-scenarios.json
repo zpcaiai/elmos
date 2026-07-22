@@ -1,0 +1,28 @@
+{
+  "schemaVersion": "1.0",
+  "batch": 14,
+  "scenarios": [
+    {"id": 1, "name": "angularjs-eol", "expected": "ANGULARJS_EOL"},
+    {"id": 2, "name": "angularjs-watch", "expected": "BEHAVIOR_TEST_REQUIRED"},
+    {"id": 3, "name": "angular-major-upgrade", "expected": "ONE_STEP_PER_MAJOR"},
+    {"id": 4, "name": "vue-compat", "expected": "REMOVE_VUE_COMPAT"},
+    {"id": 5, "name": "vue-private-vnode", "expected": "INELIGIBLE"},
+    {"id": 6, "name": "react-class-effect", "expected": "FUNCTION_WITH_LAYOUT_EFFECT"},
+    {"id": 7, "name": "react-error-boundary", "expected": "KEEP_ERROR_BOUNDARY_CLASS"},
+    {"id": 8, "name": "jquery-dom-conflict", "expected": "CONFLICT"},
+    {"id": 9, "name": "jquery-migrate", "expected": "REMOVE_MIGRATE"},
+    {"id": 10, "name": "visual-font-drift", "expected": "UNSTABLE_BASELINE"},
+    {"id": 11, "name": "approved-design-change", "expected": "EXPECTED_APPROVED_CHANGE"},
+    {"id": 12, "name": "automated-a11y-only", "expected": "NEEDS_REVIEW"},
+    {"id": 13, "name": "focus-regression", "expected": "VIOLATION"},
+    {"id": 14, "name": "electron-dangerous-ipc", "expected": "ELECTRON_IPC_UNVALIDATED"},
+    {"id": 15, "name": "desktop-to-web-device-blocker", "expected": "DEVICE_CAPABILITY_BLOCKER"},
+    {"id": 16, "name": "mobile-old-version", "expected": "BLOCKED"},
+    {"id": 17, "name": "offline-duplicate", "expected": "DUPLICATE_RISK"},
+    {"id": 18, "name": "deep-link-breaking", "expected": "MISSING_REDIRECT"},
+    {"id": 19, "name": "service-worker-old-chunk", "expected": "CHUNK_404_RISK"},
+    {"id": 20, "name": "bff-logic-leak", "expected": "BFF_BUSINESS_LOGIC_LEAK"},
+    {"id": 21, "name": "multi-client-cutover", "expected": "HOLD"},
+    {"id": 22, "name": "design-component-no-equivalent", "expected": "HUMAN_DESIGN_REQUIRED"}
+  ]
+}

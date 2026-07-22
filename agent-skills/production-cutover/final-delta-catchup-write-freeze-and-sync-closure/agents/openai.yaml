@@ -1,0 +1,4 @@
+interface:
+  display_name: "Final Delta Catchup Write Freeze and Sync Closure"
+  short_description: "Run this Batch 11 cutover capability"
+  default_prompt: "Use $final-delta-catchup-write-freeze-and-sync-closure to perform this Batch 11 production-cutover task."

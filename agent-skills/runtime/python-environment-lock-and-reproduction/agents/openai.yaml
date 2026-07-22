@@ -1,0 +1,4 @@
+interface:
+  display_name: "Python Environment Reproduction"
+  short_description: "Reproduce and lock Python environments safely"
+  default_prompt: "Use $python-environment-lock-and-reproduction to reproduce this Python environment."

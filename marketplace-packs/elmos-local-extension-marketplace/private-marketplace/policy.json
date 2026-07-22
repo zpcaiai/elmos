@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "tenant_id": "tenant-sample",
+  "owner": "enterprise-marketplace-team",
+  "allowlist_enforced": true,
+  "immutable_promotion": true,
+  "cross_tenant_sharing": false,
+  "private_extensions_isolated": true,
+  "reconciliation_drift": 0,
+  "promotion_stages": [
+    "development",
+    "test",
+    "production"
+  ],
+  "evidence_refs": [
+    "private-marketplace/evidence.txt"
+  ],
+  "evidence_status": "NOT_RUN",
+  "limitations": [
+    "No authorized external execution was performed."
+  ]
+}

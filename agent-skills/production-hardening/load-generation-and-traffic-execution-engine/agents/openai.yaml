@@ -1,0 +1,4 @@
+interface:
+  display_name: "Load Generation and Traffic Execution Engine"
+  short_description: "Run this Batch 10 hardening capability"
+  default_prompt: "Use $load-generation-and-traffic-execution-engine to perform this Batch 10 production-hardening task."

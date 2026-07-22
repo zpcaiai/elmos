@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 560: model evaluation selection and fitness manager"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $model-evaluation-selection-and-fitness-manager to evaluate this capability with evidence."

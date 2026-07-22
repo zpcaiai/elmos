@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 40: Container Kubernetes Iac Scanning"
+  short_description: "Run evidence-bound Batch 40 container kubernetes iac scanning wo"
+  default_prompt: "Use $b40-container-kubernetes-iac-scanning to implement and verify this capability with fail-closed evidence."

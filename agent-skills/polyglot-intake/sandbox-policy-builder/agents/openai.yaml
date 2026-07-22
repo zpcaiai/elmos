@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sandbox Policy Builder"
+  short_description: "Create fail-closed repository execution policy"
+  default_prompt: "Use $sandbox-policy-builder to produce an approved default-deny Batch 1 sandbox policy."

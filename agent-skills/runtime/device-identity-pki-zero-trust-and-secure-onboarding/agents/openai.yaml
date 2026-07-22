@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 24 009"
+  short_description: "Run Batch 24 runtime contract safely"
+  default_prompt: "Use $device-identity-pki-zero-trust-and-secure-onboarding to apply its fail-closed ELMOS runtime contract."

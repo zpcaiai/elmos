@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/commercial-loop/onboarding-delivery-evidence.schema.json",
+  "title": "B13-C Onboarding and Delivery Evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "assessment_run_id",
+    "platform_business_version",
+    "status",
+    "required_onboarding_coverage",
+    "security_onboarding_passed",
+    "production_source_before_security_events",
+    "projects_without_customer_owner",
+    "project_baseline_approved",
+    "milestone_acceptance_criteria_coverage",
+    "raid_owner_coverage",
+    "unapproved_scope_work",
+    "milestones_without_acceptance_evidence",
+    "repository_baseline_verified",
+    "runner_identity_verified",
+    "deliverable_versioning_passed",
+    "authority_id",
+    "observed_at",
+    "evidence_refs"
+  ],
+  "properties": {
+    "assessment_run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "platform_business_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "const": "PASSED"
+    },
+    "required_onboarding_coverage": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "security_onboarding_passed": {
+      "const": true
+    },
+    "production_source_before_security_events": {
+      "const": 0
+    },
+    "projects_without_customer_owner": {
+      "const": 0
+    },
+    "project_baseline_approved": {
+      "const": true
+    },
+    "milestone_acceptance_criteria_coverage": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "raid_owner_coverage": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "unapproved_scope_work": {
+      "const": 0
+    },
+    "milestones_without_acceptance_evidence": {
+      "const": 0
+    },
+    "repository_baseline_verified": {
+      "const": true
+    },
+    "runner_identity_verified": {
+      "const": true
+    },
+    "deliverable_versioning_passed": {
+      "const": true
+    },
+    "authority_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "evidence_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  }
+}
+

@@ -1,0 +1,4 @@
+interface:
+  display_name: "framework-fingerprint-and-mode-detector"
+  short_description: "Plan and verify AFSM framework migration"
+  default_prompt: "Use $framework-fingerprint-and-mode-detector to perform this Batch 7 framework migration step."

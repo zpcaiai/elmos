@@ -1,0 +1,5 @@
+interface:
+  display_name: "Marketplace Install Version And Dependency Manager"
+  short_description: "Authoritative Batch 14 Skill 440 workflow"
+  default_prompt: "Use $marketplace-install-version-and-dependency-manager to execute its evidence-bound Batch 14 workflow."
+

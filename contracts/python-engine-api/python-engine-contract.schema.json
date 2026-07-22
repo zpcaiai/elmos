@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.io/schemas/python-engine-contract.v1.json",
+  "title": "ELMOS Python Engine Contract",
+  "type": "object",
+  "oneOf": [
+    {"$ref": "#/$defs/capabilities"},
+    {"$ref": "#/$defs/jobResponse"},
+    {"$ref": "#/$defs/migrationStep"}
+  ],
+  "$defs": {
+    "capabilities": {
+      "type": "object",
+      "required": ["schemaVersion", "engine", "engineVersion", "languages", "sourceVersions", "supportedTargetVersions", "projectModels", "frameworks", "runnerProfiles", "validationCapabilities", "sandboxRequirements"],
+      "properties": {
+        "schemaVersion": {"const": "1.0"},
+        "engine": {"const": "ELMOS_PYTHON"},
+        "engineVersion": {"type": "string", "minLength": 1},
+        "languages": {"type": "array", "const": ["PYTHON"]},
+        "sourceVersions": {"type": "array", "items": {"type": "string"}, "contains": {"const": "2.7"}},
+        "supportedTargetVersions": {"type": "array", "items": {"type": "string", "not": {"pattern": "^3\\.15"}}},
+        "projectModels": {"type": "array", "items": {"type": "string"}},
+        "frameworks": {"type": "array", "items": {"type": "string"}},
+        "runnerProfiles": {"type": "array", "items": {"enum": ["PYTHON_LEGACY_LINUX", "PYTHON_MODERN_CPU", "PYTHON_MODERN_GPU", "PYTHON_WINDOWS", "PYTHON_NOTEBOOK"]}, "minItems": 5, "uniqueItems": true},
+        "validationCapabilities": {"type": "array", "items": {"type": "string"}},
+        "sandboxRequirements": {"type": "object"}
+      },
+      "additionalProperties": false
+    },
+    "jobResponse": {
+      "type": "object",
+      "required": ["schemaVersion", "jobId", "status", "evidenceRefs", "result"],
+      "properties": {
+        "schemaVersion": {"const": "1.0"},
+        "jobId": {"type": "string", "pattern": "^python-[0-9a-f]{32}$"},
+        "status": {"enum": ["ACCEPTED", "RUNNING", "SUCCEEDED", "FAILED", "CANCELLED"]},
+        "evidenceRefs": {"type": "array", "items": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}},
+        "result": {"type": "object"},
+        "error": {"type": ["object", "null"]}
+      },
+      "additionalProperties": false
+    },
+    "migrationStep": {
+      "type": "object",
+      "required": ["stepId", "stepType", "projectIds", "executorPolicy", "dependsOn", "validations"],
+      "properties": {
+        "stepId": {"type": "string", "minLength": 1},
+        "stepType": {"type": "string", "minLength": 1},
+        "projectIds": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+        "executorPolicy": {"type": "object"},
+        "dependsOn": {"type": "array", "items": {"type": "string"}},
+        "validations": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+        "blockers": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": false
+    }
+  }
+}
+

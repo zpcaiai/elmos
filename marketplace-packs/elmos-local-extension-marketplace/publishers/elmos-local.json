@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "publisher_id": "elmos-local",
+  "publisher_type": "partner",
+  "legal_name": "ELMOS local rehearsal",
+  "status": "pending",
+  "verified": false,
+  "organization_owner": "elmos-marketplace",
+  "maintainers": [
+    {
+      "subject_id": "local-maintainer",
+      "role": "owner",
+      "mfa": true
+    }
+  ],
+  "security_contact": "security@example.invalid",
+  "agreements": [],
+  "signing_identities": [],
+  "payout_status": "pending",
+  "external_identity_status": "NOT_RUN"
+}

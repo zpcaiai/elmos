@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 39: Service Catalog Sli Slo"
+  short_description: "Run evidence-bound Batch 39 service catalog sli slo work"
+  default_prompt: "Use $b39-service-catalog-sli-slo to implement and verify this capability with fail-closed evidence."

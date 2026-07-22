@@ -1,0 +1,1 @@
+{"riskId":"risk-duplicate-payment","subjectId":"journey-payment","inherentRisk":"CRITICAL","residualRisk":"CRITICAL","coverageStatus":"UNCOVERED","riskModelVersion":"risk-v1","evidenceRefs":["evidence://risk-1"]}

@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/batch36/developer-experience-pack.schema.json",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "pack_key",
+    "version",
+    "status",
+    "owner",
+    "maintenance_owner",
+    "scope",
+    "contracts",
+    "corpus",
+    "certification"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "pack_key": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{1,95}$"
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "research",
+        "experimental",
+        "limited",
+        "certified",
+        "deprecated",
+        "blocked"
+      ]
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "maintenance_owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "scope": {
+      "type": "object",
+      "required": [
+        "migration_route",
+        "source_artifact_digest",
+        "target_artifact_digest",
+        "repository_provider",
+        "repository_id",
+        "risk_tier",
+        "environment_digest"
+      ],
+      "properties": {
+        "migration_route": {
+          "type": "string"
+        },
+        "source_artifact_digest": {
+          "type": "string"
+        },
+        "target_artifact_digest": {
+          "type": "string"
+        },
+        "repository_provider": {
+          "type": "string"
+        },
+        "repository_id": {
+          "type": "string"
+        },
+        "risk_tier": {
+          "enum": [
+            "P0",
+            "P1",
+            "P2",
+            "P3"
+          ]
+        },
+        "environment_digest": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "contracts": {
+      "type": "object",
+      "required": [
+        "ide_protocol",
+        "cli_contract",
+        "pr_bot_policy",
+        "ownership_policy",
+        "telemetry_policy"
+      ],
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "corpus": {
+      "type": "object",
+      "required": [
+        "development",
+        "negative",
+        "holdout",
+        "representative_workflows"
+      ],
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "certification": {
+      "type": "object",
+      "required": [
+        "evidence_path",
+        "result_path"
+      ],
+      "additionalProperties": true
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": true
+}

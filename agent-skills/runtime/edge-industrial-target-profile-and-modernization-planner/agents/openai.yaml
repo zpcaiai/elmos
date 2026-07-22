@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 24 004"
+  short_description: "Run Batch 24 runtime contract safely"
+  default_prompt: "Use $edge-industrial-target-profile-and-modernization-planner to apply its fail-closed ELMOS runtime contract."

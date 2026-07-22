@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.portability-profile.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["workloadId", "level", "vendorBindings", "dataGravity", "exitPlanRef", "lastRecoveryTest", "status", "evidenceRefs"],
+  "properties": {
+    "workloadId": {"type": "string", "minLength": 1},
+    "level": {"enum": ["P0_PROVIDER_LOCKED", "P1_REBUILDABLE", "P2_ARTIFACT_PORTABLE", "P3_PLATFORM_PORTABLE", "P4_ACTIVE_PORTABLE"]},
+    "vendorBindings": {"type": "array", "items": {"enum": ["PORTABLE_STANDARD", "PROVIDER_ADAPTER", "PROVIDER_MANAGED_WITH_EXIT", "PROVIDER_STRATEGIC_BINDING", "HARD_LOCK_IN"]}},
+    "dataGravity": {"type": "object"},
+    "exitPlanRef": {"type": "string"},
+    "lastRecoveryTest": {"type": ["string", "null"], "format": "date-time"},
+    "status": {"enum": ["VALIDATED", "CONDITIONAL", "BLOCKED", "NOT_RUN"]},
+    "evidenceRefs": {"type": "array", "items": {"type": "string"}}
+  }
+}

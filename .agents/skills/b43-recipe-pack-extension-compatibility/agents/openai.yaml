@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 43: Recipe Pack Extension Compatibility"
+  short_description: "Run evidence-bound Batch 43 recipe pack extension compatibility"
+  default_prompt: "Use $b43-recipe-pack-extension-compatibility to implement and verify this capability with fail-closed evidence."

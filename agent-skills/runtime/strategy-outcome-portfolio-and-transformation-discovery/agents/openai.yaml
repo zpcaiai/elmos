@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 29 Skill 002"
+  short_description: "Run ELMOS Product Batch 29 governance safely"
+  default_prompt: "Use $strategy-outcome-portfolio-and-transformation-discovery to implement its evidence-bound ELMOS Product Batch 29 contract."

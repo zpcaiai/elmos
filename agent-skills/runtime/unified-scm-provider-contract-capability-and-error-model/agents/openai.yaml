@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B35: Unified Scm Provider Contract Capability And Error Model"
+  short_description: "Run ELMOS Product B35 contract with fail-closed evidence"
+  default_prompt: "Use $unified-scm-provider-contract-capability-and-error-model to implement its fail-closed ELMOS Product B35 contract."

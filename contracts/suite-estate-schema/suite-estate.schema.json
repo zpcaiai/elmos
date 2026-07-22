@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.local/suite-estate/v1",
+  "title": "Enterprise Suite Estate",
+  "type": "object",
+  "required": ["schemaVersion", "estateId", "organizationId", "instances", "observationWindow", "unknowns"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "estateId": {"type": "string", "minLength": 1},
+    "organizationId": {"type": "string", "minLength": 1},
+    "instances": {"type": "array", "items": {"type": "object", "required": ["instanceId", "platform", "environment", "sourceArtifactRef"], "properties": {"instanceId": {"type": "string"}, "platform": {"enum": ["SAP_ECC", "SAP_S4HANA", "ORACLE_EBS", "ORACLE_FUSION", "DYNAMICS_365", "DATAVERSE", "POWER_PLATFORM", "SALESFORCE", "OTHER"]}, "environment": {"type": "string"}, "sourceArtifactRef": {"type": "string"}}}},
+    "observationWindow": {"type": "object", "required": ["startedAt", "endedAt"], "properties": {"startedAt": {"type": "string", "format": "date-time"}, "endedAt": {"type": "string", "format": "date-time"}}},
+    "unknowns": {"type": "array", "items": {"type": "string"}},
+    "evidenceRefs": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

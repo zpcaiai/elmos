@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B37: Audit Readiness Pbc Request List Evidence Room And Examiner Workflow"
+  short_description: "Run ELMOS Product B37 contract with fail-closed evidence"
+  default_prompt: "Use $audit-readiness-pbc-request-list-evidence-room-and-exam-58a21dec to implement its fail-closed ELMOS Product B37 contract."

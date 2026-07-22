@@ -1,0 +1,4 @@
+interface:
+  display_name: "composite-migration-order-and-wave-planner"
+  short_description: "ELMOS Batch 13 composite modernization control"
+  default_prompt: "Use $composite-migration-order-and-wave-planner to evaluate this Batch 13 composite modernization task with fail-closed evidence gates."

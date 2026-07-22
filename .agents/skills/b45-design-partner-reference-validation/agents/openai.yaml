@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 45: Design Partner Reference Validation"
+  short_description: "Run evidence-bound Batch 45 design partner reference validation"
+  default_prompt: "Use $b45-design-partner-reference-validation to implement and verify this capability with fail-closed evidence."

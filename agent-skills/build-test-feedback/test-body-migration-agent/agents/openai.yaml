@@ -1,0 +1,4 @@
+interface:
+  display_name: "test body migration agent"
+  short_description: "Run a bounded Batch 8 repair workflow"
+  default_prompt: "Use $test-body-migration-agent to perform this Batch 8 repair step."

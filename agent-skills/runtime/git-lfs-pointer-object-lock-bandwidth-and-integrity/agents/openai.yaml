@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 35 Skill 024"
+  short_description: "Run Product Batch 35 evidence contract safely"
+  default_prompt: "Use $git-lfs-pointer-object-lock-bandwidth-and-integrity to implement its fail-closed ELMOS Product Batch 35 contract."

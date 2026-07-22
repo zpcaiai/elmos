@@ -1,0 +1,41 @@
+{
+  "$id": "elmos.normalized-operational-event.v1",
+  "type": "object",
+  "required": [
+    "eventId",
+    "eventType",
+    "timestamp",
+    "source",
+    "serviceRef",
+    "severity",
+    "state"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string"
+    },
+    "eventType": {
+      "type": "string"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "source": {
+      "type": "string"
+    },
+    "serviceRef": {
+      "type": "string"
+    },
+    "severity": {
+      "type": "string"
+    },
+    "state": {
+      "type": "string"
+    },
+    "correlationRefs": {
+      "type": "array"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

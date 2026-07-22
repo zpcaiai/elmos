@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "1.0",
+  "organizationId": "org-b14",
+  "findingId": "focus-restore-dialog",
+  "profileId": "wcag-2.2-aa-web",
+  "targetStandard": "WCAG_2_2_AA",
+  "successCriterion": "2.4.3",
+  "status": "NEEDS_REVIEW",
+  "severity": "MAJOR",
+  "evidenceRefs": ["ev-automated-a11y"]
+}

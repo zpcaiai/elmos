@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 43: Feature Flag Progressive Enable"
+  short_description: "Run evidence-bound Batch 43 feature flag progressive enable work"
+  default_prompt: "Use $b43-feature-flag-progressive-enable to implement and verify this capability with fail-closed evidence."

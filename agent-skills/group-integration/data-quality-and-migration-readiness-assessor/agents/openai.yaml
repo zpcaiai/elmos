@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 701: data quality and migration readiness assessor"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $data-quality-and-migration-readiness-assessor to evaluate this capability with evidence."

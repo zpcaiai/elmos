@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 567: model version drift and behavior change manager"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $model-version-drift-and-behavior-change-manager to evaluate this capability with evidence."

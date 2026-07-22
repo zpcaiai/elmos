@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 531: human agent accountability and decision matrix"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $human-agent-accountability-and-decision-matrix to evaluate this capability with evidence."

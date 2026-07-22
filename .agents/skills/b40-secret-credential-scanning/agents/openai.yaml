@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 40: Secret Credential Scanning"
+  short_description: "Run evidence-bound Batch 40 secret credential scanning work"
+  default_prompt: "Use $b40-secret-credential-scanning to implement and verify this capability with fail-closed evidence."

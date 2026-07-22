@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="../Elmos.Dotnet.Application/Elmos.Dotnet.Application.csproj" />
+    <ProjectReference Include="../Elmos.Dotnet.MSBuild/Elmos.Dotnet.MSBuild.csproj" />
+    <ProjectReference Include="../Elmos.Dotnet.Roslyn/Elmos.Dotnet.Roslyn.csproj" />
+    <ProjectReference Include="../Elmos.Dotnet.ProjectSystem/Elmos.Dotnet.ProjectSystem.csproj" />
+    <ProjectReference Include="../Elmos.Dotnet.Validation/Elmos.Dotnet.Validation.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 38: Multiregion Active Active Edition"
+  short_description: "Run evidence-bound Batch 38 multiregion active active edition wo"
+  default_prompt: "Use $b38-multiregion-active-active-edition to implement and verify this capability with fail-closed evidence."

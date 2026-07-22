@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.model-routing-decision.v1",
+  "title": "ELMOS Model Routing Decision",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "status",
+    "reasonCodes",
+    "policyVersion",
+    "contentRetained"
+  ],
+  "properties": {
+    "status": {
+      "enum": [
+        "ALLOW",
+        "BLOCKED",
+        "HUMAN_REQUIRED"
+      ]
+    },
+    "providerId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "modelVersion": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "reasonCodes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "policyVersion": {
+      "type": "string"
+    },
+    "contentRetained": {
+      "type": "boolean"
+    }
+  }
+}
+

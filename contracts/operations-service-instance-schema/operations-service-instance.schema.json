@@ -1,0 +1,32 @@
+{
+  "$id": "elmos.operations-service-instance.v1",
+  "type": "object",
+  "required": [
+    "serviceInstanceId",
+    "applicationServiceId",
+    "environment",
+    "owner",
+    "lifecycle"
+  ],
+  "properties": {
+    "serviceInstanceId": {
+      "type": "string"
+    },
+    "applicationServiceId": {
+      "type": "string"
+    },
+    "environment": {
+      "type": "string"
+    },
+    "owner": {
+      "type": "string"
+    },
+    "lifecycle": {
+      "type": "string"
+    },
+    "runtimeIdentityRefs": {
+      "type": "array"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

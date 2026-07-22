@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 43: Release Documentation"
+  short_description: "Run evidence-bound Batch 43 release documentation work"
+  default_prompt: "Use $b43-release-documentation to implement and verify this capability with fail-closed evidence."

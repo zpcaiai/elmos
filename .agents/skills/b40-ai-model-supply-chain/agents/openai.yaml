@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 40: Ai Model Supply Chain"
+  short_description: "Run evidence-bound Batch 40 ai model supply chain work"
+  default_prompt: "Use $b40-ai-model-supply-chain to implement and verify this capability with fail-closed evidence."

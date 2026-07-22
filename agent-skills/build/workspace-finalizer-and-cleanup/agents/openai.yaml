@@ -1,0 +1,4 @@
+interface:
+  display_name: "Workspace Finalizer and Cleanup"
+  short_description: "Clean workspace resources idempotently"
+  default_prompt: "Use $workspace-finalizer-and-cleanup to implement or review this ELMOS Batch 2 capability."

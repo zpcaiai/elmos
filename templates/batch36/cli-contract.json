@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "cli_key": "migration-cli",
+  "version": "1.0.0",
+  "commands": [
+    {
+      "path": "migration preview",
+      "idempotent": true,
+      "supports_json": true,
+      "supports_noninteractive": true,
+      "destructive": false,
+      "requires_confirmation": false
+    },
+    {
+      "path": "patch apply",
+      "idempotent": true,
+      "supports_json": true,
+      "supports_noninteractive": true,
+      "destructive": true,
+      "requires_confirmation": true
+    }
+  ],
+  "output_formats": [
+    "human",
+    "json",
+    "jsonl",
+    "quiet"
+  ],
+  "exit_codes": {
+    "success": 0,
+    "user_error": 2,
+    "policy_denied": 3,
+    "retryable": 4,
+    "partial": 5,
+    "internal": 10
+  },
+  "security": {
+    "credential_storage": "os-keychain",
+    "prints_secrets": false,
+    "implicit_destructive_context": false
+  }
+}

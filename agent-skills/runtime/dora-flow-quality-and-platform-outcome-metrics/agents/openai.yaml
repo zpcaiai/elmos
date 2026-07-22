@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 22 013"
+  short_description: "Run Batch 22 runtime contract safely"
+  default_prompt: "Use $dora-flow-quality-and-platform-outcome-metrics to apply its fail-closed ELMOS runtime contract."

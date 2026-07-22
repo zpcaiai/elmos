@@ -1,0 +1,4 @@
+interface:
+  display_name: "Migrated Build And Differential Comparator"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $migrated-build-and-differential-comparator to execute this ELMOS Runtime Skill with fail-closed evidence."

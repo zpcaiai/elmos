@@ -1,0 +1,1957 @@
+{
+  "edges": [
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/evidence/pom.xml"
+      ],
+      "from": "module.elmos-evidence",
+      "id": "edge.c2014e8807d1fba90c9b",
+      "kind": "build",
+      "to": "module.elmos-domain"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/evidence-bound-engine/pom.xml"
+      ],
+      "from": "module.elmos-evidence-bound-engine",
+      "id": "edge.dc472d059e1af2a92124",
+      "kind": "build",
+      "to": "module.elmos-engine-api"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/application/pom.xml"
+      ],
+      "from": "module.elmos-application",
+      "id": "edge.3abf78a229e4c5655832",
+      "kind": "build",
+      "to": "module.elmos-domain"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/application/pom.xml"
+      ],
+      "from": "module.elmos-application",
+      "id": "edge.f647eb5b1aff18e1511f",
+      "kind": "build",
+      "to": "module.elmos-engine-api"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/application/pom.xml"
+      ],
+      "from": "module.elmos-application",
+      "id": "edge.498f63df16d6943503d9",
+      "kind": "build",
+      "to": "module.elmos-evidence"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/workflow/pom.xml"
+      ],
+      "from": "module.elmos-workflow",
+      "id": "edge.e11fa0a0b5096e43aa46",
+      "kind": "build",
+      "to": "module.elmos-application"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/workflow/pom.xml"
+      ],
+      "from": "module.elmos-workflow",
+      "id": "edge.997b1e4ebd27ffc7d2bb",
+      "kind": "build",
+      "to": "module.elmos-domain"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/snapshot/pom.xml"
+      ],
+      "from": "module.elmos-snapshot",
+      "id": "edge.bfef9bcf95aa0403a748",
+      "kind": "build",
+      "to": "module.elmos-scm"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/semantic/pom.xml"
+      ],
+      "from": "module.elmos-semantic",
+      "id": "edge.891ed4bc12d5c9f7160a",
+      "kind": "build",
+      "to": "module.elmos-intake"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/uir/pom.xml"
+      ],
+      "from": "module.elmos-uir",
+      "id": "edge.e4302fd8513d87f0e0ce",
+      "kind": "build",
+      "to": "module.elmos-semantic"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/skeleton/pom.xml"
+      ],
+      "from": "module.elmos-skeleton",
+      "id": "edge.93d35b187e7c228b7b3a",
+      "kind": "build",
+      "to": "module.elmos-uir"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/lowering/pom.xml"
+      ],
+      "from": "module.elmos-lowering",
+      "id": "edge.3cf20d455a57524462f2",
+      "kind": "build",
+      "to": "module.elmos-skeleton"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/dependency-migration/pom.xml"
+      ],
+      "from": "module.elmos-dependency-migration",
+      "id": "edge.6c0b92e254d840d9c9c0",
+      "kind": "build",
+      "to": "module.elmos-lowering"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/framework-migration/pom.xml"
+      ],
+      "from": "module.elmos-framework-migration",
+      "id": "edge.c8721260f94f4c1f2aac",
+      "kind": "build",
+      "to": "module.elmos-dependency-migration"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "engines/database-data-engine/pom.xml"
+      ],
+      "from": "module.elmos-database-data-engine",
+      "id": "edge.77804fe75e8f354173e7",
+      "kind": "build",
+      "to": "module.elmos-engine-api"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "engines/infrastructure-engine/pom.xml"
+      ],
+      "from": "module.elmos-infrastructure-engine",
+      "id": "edge.3cc32f858df65c2f7f3a",
+      "kind": "build",
+      "to": "module.elmos-engine-api"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "engines/security-compliance-engine/pom.xml"
+      ],
+      "from": "module.elmos-security-compliance-engine",
+      "id": "edge.e2b40c4d6a7044c8ff0d",
+      "kind": "build",
+      "to": "module.elmos-engine-api"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "engines/test-quality-engine/pom.xml"
+      ],
+      "from": "module.elmos-test-quality-engine",
+      "id": "edge.3f7f377c8846d0299c2c",
+      "kind": "build",
+      "to": "module.elmos-engine-api"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "engines/mainframe-engine/pom.xml"
+      ],
+      "from": "module.elmos-mainframe-engine",
+      "id": "edge.038ad4811ead50852e1c",
+      "kind": "build",
+      "to": "module.elmos-engine-api"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "engines/enterprise-integration-engine/pom.xml"
+      ],
+      "from": "module.elmos-enterprise-integration-engine",
+      "id": "edge.dafb6a41876d1534f432",
+      "kind": "build",
+      "to": "module.elmos-engine-api"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "engines/enterprise-suite-engine/pom.xml"
+      ],
+      "from": "module.elmos-enterprise-suite-engine",
+      "id": "edge.146a2b36d65f9fa2dd67",
+      "kind": "build",
+      "to": "module.elmos-engine-api"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "engines/software-delivery-platform-engine/pom.xml"
+      ],
+      "from": "module.elmos-software-delivery-platform-engine",
+      "id": "edge.eb92048ed43bd00c493c",
+      "kind": "build",
+      "to": "module.elmos-engine-api"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "engines/software-delivery-platform-engine/pom.xml"
+      ],
+      "from": "module.elmos-software-delivery-platform-engine",
+      "id": "edge.a7801e98f991bb384243",
+      "kind": "build",
+      "to": "module.elmos-evidence-bound-engine"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "engines/ai-platform-engine/pom.xml"
+      ],
+      "from": "module.elmos-ai-platform-engine",
+      "id": "edge.f22833595f0591d33966",
+      "kind": "build",
+      "to": "module.elmos-engine-api"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "engines/ai-platform-engine/pom.xml"
+      ],
+      "from": "module.elmos-ai-platform-engine",
+      "id": "edge.731945a6533d477babae",
+      "kind": "build",
+      "to": "module.elmos-evidence-bound-engine"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "engines/edge-iot-industrial-engine/pom.xml"
+      ],
+      "from": "module.elmos-edge-iot-industrial-engine",
+      "id": "edge.0c57b281d8d9a46fb539",
+      "kind": "build",
+      "to": "module.elmos-engine-api"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "engines/edge-iot-industrial-engine/pom.xml"
+      ],
+      "from": "module.elmos-edge-iot-industrial-engine",
+      "id": "edge.0b60c2ea3ec7da56a78c",
+      "kind": "build",
+      "to": "module.elmos-evidence-bound-engine"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "engines/operations-sre-itsm-engine/pom.xml"
+      ],
+      "from": "module.elmos-operations-sre-itsm-engine",
+      "id": "edge.a678e2a0118b85285a51",
+      "kind": "build",
+      "to": "module.elmos-engine-api"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "engines/operations-sre-itsm-engine/pom.xml"
+      ],
+      "from": "module.elmos-operations-sre-itsm-engine",
+      "id": "edge.5f24f31b3dffac989339",
+      "kind": "build",
+      "to": "module.elmos-evidence-bound-engine"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "engines/enterprise-architecture-engine/pom.xml"
+      ],
+      "from": "module.elmos-enterprise-architecture-engine",
+      "id": "edge.0690abe1d5aa84a21ce2",
+      "kind": "build",
+      "to": "module.elmos-engine-api"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "engines/enterprise-architecture-engine/pom.xml"
+      ],
+      "from": "module.elmos-enterprise-architecture-engine",
+      "id": "edge.27b9f157241b50af264c",
+      "kind": "build",
+      "to": "module.elmos-evidence-bound-engine"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/planning/pom.xml"
+      ],
+      "from": "module.elmos-planning",
+      "id": "edge.9e7a74e4b630394d5fd0",
+      "kind": "build",
+      "to": "module.elmos-health-check"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/delivery/pom.xml"
+      ],
+      "from": "module.elmos-delivery",
+      "id": "edge.973b66b4d94e7ae37ee0",
+      "kind": "build",
+      "to": "module.elmos-validation"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/commercial-operations/pom.xml"
+      ],
+      "from": "module.elmos-commercial-operations",
+      "id": "edge.734c3c1d80ce94a2fa4a",
+      "kind": "build",
+      "to": "module.elmos-enterprise-governance"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/persistence/pom.xml"
+      ],
+      "from": "module.elmos-persistence",
+      "id": "edge.9dd93444176cdf97603b",
+      "kind": "build",
+      "to": "module.elmos-application"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/persistence/pom.xml"
+      ],
+      "from": "module.elmos-persistence",
+      "id": "edge.b2e0e66e5596b73df750",
+      "kind": "build",
+      "to": "module.elmos-health-check"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/persistence/pom.xml"
+      ],
+      "from": "module.elmos-persistence",
+      "id": "edge.76d1b6ddf7c2958275e9",
+      "kind": "build",
+      "to": "module.elmos-network-policy"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/persistence/pom.xml"
+      ],
+      "from": "module.elmos-persistence",
+      "id": "edge.f066770ab30ac7fbf5b1",
+      "kind": "build",
+      "to": "module.elmos-planning"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/persistence/pom.xml"
+      ],
+      "from": "module.elmos-persistence",
+      "id": "edge.26bbd981c4733c8d359a",
+      "kind": "build",
+      "to": "module.elmos-scm"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/persistence/pom.xml"
+      ],
+      "from": "module.elmos-persistence",
+      "id": "edge.319cf561876afdd4f06f",
+      "kind": "build",
+      "to": "module.elmos-secret"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/persistence/pom.xml"
+      ],
+      "from": "module.elmos-persistence",
+      "id": "edge.1292f7c481d2517e6642",
+      "kind": "build",
+      "to": "module.elmos-snapshot"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/persistence/pom.xml"
+      ],
+      "from": "module.elmos-persistence",
+      "id": "edge.599fcd77dd49e4ca2e29",
+      "kind": "build",
+      "to": "module.elmos-workspace"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/integrations/pom.xml"
+      ],
+      "from": "module.elmos-integrations",
+      "id": "edge.cbc9fc9e893904dd027a",
+      "kind": "build",
+      "to": "module.elmos-application"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/integrations/pom.xml"
+      ],
+      "from": "module.elmos-integrations",
+      "id": "edge.4898ac6bad4be86944b6",
+      "kind": "build",
+      "to": "module.elmos-engine-api"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/integrations/pom.xml"
+      ],
+      "from": "module.elmos-integrations",
+      "id": "edge.3d83266efd82a476aefe",
+      "kind": "build",
+      "to": "module.elmos-health-check"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/integrations/pom.xml"
+      ],
+      "from": "module.elmos-integrations",
+      "id": "edge.0a0b60ecf30f15e3ae31",
+      "kind": "build",
+      "to": "module.elmos-scm"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/integrations/pom.xml"
+      ],
+      "from": "module.elmos-integrations",
+      "id": "edge.365f67b0a7560c1a4ac6",
+      "kind": "build",
+      "to": "module.elmos-snapshot"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "apps/java-engine-worker/pom.xml"
+      ],
+      "from": "module.elmos-java-engine-worker",
+      "id": "edge.704b92fec5c4bcd0fcc6",
+      "kind": "build",
+      "to": "module.elmos-engine-api"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "apps/java-engine-worker/pom.xml"
+      ],
+      "from": "module.elmos-java-engine-worker",
+      "id": "edge.1b2d0301d5db41d5596a",
+      "kind": "build",
+      "to": "module.elmos-evidence"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "apps/java-engine-worker/pom.xml"
+      ],
+      "from": "module.elmos-java-engine-worker",
+      "id": "edge.5110e0c656197e559839",
+      "kind": "build",
+      "to": "module.elmos-health-check"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "apps/java-engine-worker/pom.xml"
+      ],
+      "from": "module.elmos-java-engine-worker",
+      "id": "edge.4168d42e9f5cf14b89d7",
+      "kind": "build",
+      "to": "module.elmos-integrations"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "apps/java-engine-worker/pom.xml"
+      ],
+      "from": "module.elmos-java-engine-worker",
+      "id": "edge.1b9340182d3cf4985d74",
+      "kind": "build",
+      "to": "module.elmos-planning"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "apps/java-engine-worker/pom.xml"
+      ],
+      "from": "module.elmos-java-engine-worker",
+      "id": "edge.2189b0da1dc826d2ef46",
+      "kind": "build",
+      "to": "module.elmos-recipe-governance"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "apps/java-engine-worker/pom.xml"
+      ],
+      "from": "module.elmos-java-engine-worker",
+      "id": "edge.5a5e0854aa04aed62ba1",
+      "kind": "build",
+      "to": "module.elmos-validation"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "apps/control-plane/pom.xml"
+      ],
+      "from": "module.elmos-control-plane",
+      "id": "edge.45ba3cffe809fe738657",
+      "kind": "build",
+      "to": "module.elmos-application"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "apps/control-plane/pom.xml"
+      ],
+      "from": "module.elmos-control-plane",
+      "id": "edge.2461030501e21bca7a7a",
+      "kind": "build",
+      "to": "module.elmos-composite-modernization"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "apps/control-plane/pom.xml"
+      ],
+      "from": "module.elmos-control-plane",
+      "id": "edge.48385faf324cbffa1901",
+      "kind": "build",
+      "to": "module.elmos-delivery"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "apps/control-plane/pom.xml"
+      ],
+      "from": "module.elmos-control-plane",
+      "id": "edge.46115c95a4b23c8b3f8f",
+      "kind": "build",
+      "to": "module.elmos-integrations"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "apps/control-plane/pom.xml"
+      ],
+      "from": "module.elmos-control-plane",
+      "id": "edge.3bc1ef2e8a274a85a5f5",
+      "kind": "build",
+      "to": "module.elmos-migration-pack-certification"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "apps/control-plane/pom.xml"
+      ],
+      "from": "module.elmos-control-plane",
+      "id": "edge.157fc70976643e47b217",
+      "kind": "build",
+      "to": "module.elmos-persistence"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "apps/control-plane/pom.xml"
+      ],
+      "from": "module.elmos-control-plane",
+      "id": "edge.06f4888359937e62f7f9",
+      "kind": "build",
+      "to": "module.elmos-product-roadmap-governance"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "apps/control-plane/pom.xml"
+      ],
+      "from": "module.elmos-control-plane",
+      "id": "edge.1b5a8fbf4c5ebafe6be6",
+      "kind": "build",
+      "to": "module.elmos-scm"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "apps/control-plane/pom.xml"
+      ],
+      "from": "module.elmos-control-plane",
+      "id": "edge.c513dd094c292df0331e",
+      "kind": "build",
+      "to": "module.elmos-security"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "apps/control-plane/pom.xml"
+      ],
+      "from": "module.elmos-control-plane",
+      "id": "edge.b669c918eb22fe46d00a",
+      "kind": "build",
+      "to": "module.elmos-workflow"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "apps/workspace-service/pom.xml"
+      ],
+      "from": "module.elmos-workspace-service",
+      "id": "edge.6a91db5ddbd60541af21",
+      "kind": "build",
+      "to": "module.elmos-network-policy"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "apps/workspace-service/pom.xml"
+      ],
+      "from": "module.elmos-workspace-service",
+      "id": "edge.db9db1d073dbb1da6150",
+      "kind": "build",
+      "to": "module.elmos-persistence"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "apps/workspace-service/pom.xml"
+      ],
+      "from": "module.elmos-workspace-service",
+      "id": "edge.ff5f72c3bc23652dfa72",
+      "kind": "build",
+      "to": "module.elmos-secret"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "apps/workspace-service/pom.xml"
+      ],
+      "from": "module.elmos-workspace-service",
+      "id": "edge.3e023eea483a91e82dcb",
+      "kind": "build",
+      "to": "module.elmos-workspace"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "apps/egress-proxy/pom.xml"
+      ],
+      "from": "module.elmos-egress-proxy",
+      "id": "edge.3e3289df0c0470c0e8b5",
+      "kind": "build",
+      "to": "module.elmos-network-policy"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "apps/agent-gateway/pom.xml"
+      ],
+      "from": "module.elmos-agent-gateway",
+      "id": "edge.05723959f545deda3ae7",
+      "kind": "build",
+      "to": "module.elmos-repair-orchestration"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "apps/enterprise-control/pom.xml"
+      ],
+      "from": "module.elmos-enterprise-control",
+      "id": "edge.91f5c012ac76108113b9",
+      "kind": "build",
+      "to": "module.elmos-enterprise-governance"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "apps/commercial-api/pom.xml"
+      ],
+      "from": "module.elmos-commercial-api",
+      "id": "edge.e5fe2f1410ef29aff92c",
+      "kind": "build",
+      "to": "module.elmos-commercial-operations"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "apps/elmosctl/pom.xml"
+      ],
+      "from": "module.elmos-elmosctl",
+      "id": "edge.8c33da809e7b0c61a013",
+      "kind": "build",
+      "to": "module.elmos-enterprise-governance"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/architecture-tests/pom.xml"
+      ],
+      "from": "module.elmos-architecture-tests",
+      "id": "edge.34965f9aabe600ba8023",
+      "kind": "build",
+      "to": "module.elmos-agent-gateway"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/architecture-tests/pom.xml"
+      ],
+      "from": "module.elmos-architecture-tests",
+      "id": "edge.6cb4ef8b35d6ccbf6c8b",
+      "kind": "build",
+      "to": "module.elmos-ai-platform-engine"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/architecture-tests/pom.xml"
+      ],
+      "from": "module.elmos-architecture-tests",
+      "id": "edge.6fc25d711642a3dd9cdf",
+      "kind": "build",
+      "to": "module.elmos-application"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/architecture-tests/pom.xml"
+      ],
+      "from": "module.elmos-architecture-tests",
+      "id": "edge.8adbe14f5413cf7c52c9",
+      "kind": "build",
+      "to": "module.elmos-commercial-api"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/architecture-tests/pom.xml"
+      ],
+      "from": "module.elmos-architecture-tests",
+      "id": "edge.35c652e07af6b4248887",
+      "kind": "build",
+      "to": "module.elmos-commercial-operations"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/architecture-tests/pom.xml"
+      ],
+      "from": "module.elmos-architecture-tests",
+      "id": "edge.fca70e6d9c7725d1e7a8",
+      "kind": "build",
+      "to": "module.elmos-composite-modernization"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/architecture-tests/pom.xml"
+      ],
+      "from": "module.elmos-architecture-tests",
+      "id": "edge.32f8d3b289a4197e4da0",
+      "kind": "build",
+      "to": "module.elmos-control-plane"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/architecture-tests/pom.xml"
+      ],
+      "from": "module.elmos-architecture-tests",
+      "id": "edge.b812f7d17ffafc6ab701",
+      "kind": "build",
+      "to": "module.elmos-database-data-engine"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/architecture-tests/pom.xml"
+      ],
+      "from": "module.elmos-architecture-tests",
+      "id": "edge.e6716357c4960ed860de",
+      "kind": "build",
+      "to": "module.elmos-delivery"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/architecture-tests/pom.xml"
+      ],
+      "from": "module.elmos-architecture-tests",
+      "id": "edge.e0b86f76363fba67a45b",
+      "kind": "build",
+      "to": "module.elmos-dependency-migration"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/architecture-tests/pom.xml"
+      ],
+      "from": "module.elmos-architecture-tests",
+      "id": "edge.883d49588f8083e09337",
+      "kind": "build",
+      "to": "module.elmos-domain"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/architecture-tests/pom.xml"
+      ],
+      "from": "module.elmos-architecture-tests",
+      "id": "edge.b0c397937346de2ac5a1",
+      "kind": "build",
+      "to": "module.elmos-edge-iot-industrial-engine"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/architecture-tests/pom.xml"
+      ],
+      "from": "module.elmos-architecture-tests",
+      "id": "edge.5e2545d38685595eaab7",
+      "kind": "build",
+      "to": "module.elmos-egress-proxy"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/architecture-tests/pom.xml"
+      ],
+      "from": "module.elmos-architecture-tests",
+      "id": "edge.5dd78cfaafad602e50f5",
+      "kind": "build",
+      "to": "module.elmos-elmosctl"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/architecture-tests/pom.xml"
+      ],
+      "from": "module.elmos-architecture-tests",
+      "id": "edge.b19eeb12310fd9053a47",
+      "kind": "build",
+      "to": "module.elmos-enterprise-architecture-engine"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/architecture-tests/pom.xml"
+      ],
+      "from": "module.elmos-architecture-tests",
+      "id": "edge.a1d40a0e92499454ff5b",
+      "kind": "build",
+      "to": "module.elmos-enterprise-control"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/architecture-tests/pom.xml"
+      ],
+      "from": "module.elmos-architecture-tests",
+      "id": "edge.75a2d4b2ebd803b4879c",
+      "kind": "build",
+      "to": "module.elmos-enterprise-governance"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/architecture-tests/pom.xml"
+      ],
+      "from": "module.elmos-architecture-tests",
+      "id": "edge.d7bc1cc44f0c5f871cb1",
+      "kind": "build",
+      "to": "module.elmos-enterprise-integration-engine"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/architecture-tests/pom.xml"
+      ],
+      "from": "module.elmos-architecture-tests",
+      "id": "edge.cf0d40ad323819d93379",
+      "kind": "build",
+      "to": "module.elmos-enterprise-suite-engine"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/architecture-tests/pom.xml"
+      ],
+      "from": "module.elmos-architecture-tests",
+      "id": "edge.e5a754d0b210202a9c22",
+      "kind": "build",
+      "to": "module.elmos-evidence-bound-engine"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/architecture-tests/pom.xml"
+      ],
+      "from": "module.elmos-architecture-tests",
+      "id": "edge.5329dab2995e75abdf8a",
+      "kind": "build",
+      "to": "module.elmos-framework-migration"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/architecture-tests/pom.xml"
+      ],
+      "from": "module.elmos-architecture-tests",
+      "id": "edge.f6d32371f5ec7cfa4a32",
+      "kind": "build",
+      "to": "module.elmos-health-check"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/architecture-tests/pom.xml"
+      ],
+      "from": "module.elmos-architecture-tests",
+      "id": "edge.01d4713fda1f192f9e49",
+      "kind": "build",
+      "to": "module.elmos-intake"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/architecture-tests/pom.xml"
+      ],
+      "from": "module.elmos-architecture-tests",
+      "id": "edge.712c30d545cdd9d2684a",
+      "kind": "build",
+      "to": "module.elmos-integrations"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/architecture-tests/pom.xml"
+      ],
+      "from": "module.elmos-architecture-tests",
+      "id": "edge.9556117f95d20271b193",
+      "kind": "build",
+      "to": "module.elmos-java-engine-worker"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/architecture-tests/pom.xml"
+      ],
+      "from": "module.elmos-architecture-tests",
+      "id": "edge.acf5b226f0192d76cfe9",
+      "kind": "build",
+      "to": "module.elmos-lowering"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/architecture-tests/pom.xml"
+      ],
+      "from": "module.elmos-architecture-tests",
+      "id": "edge.99dc35edd31c5b31c1fe",
+      "kind": "build",
+      "to": "module.elmos-network-policy"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/architecture-tests/pom.xml"
+      ],
+      "from": "module.elmos-architecture-tests",
+      "id": "edge.8d03e492ba4228579f99",
+      "kind": "build",
+      "to": "module.elmos-operations-sre-itsm-engine"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/architecture-tests/pom.xml"
+      ],
+      "from": "module.elmos-architecture-tests",
+      "id": "edge.1f12f7b478ecebb259f0",
+      "kind": "build",
+      "to": "module.elmos-planning"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/architecture-tests/pom.xml"
+      ],
+      "from": "module.elmos-architecture-tests",
+      "id": "edge.785c3f81e02c632cc454",
+      "kind": "build",
+      "to": "module.elmos-recipe-governance"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/architecture-tests/pom.xml"
+      ],
+      "from": "module.elmos-architecture-tests",
+      "id": "edge.21e649c6d44c27fa76b9",
+      "kind": "build",
+      "to": "module.elmos-repair-orchestration"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/architecture-tests/pom.xml"
+      ],
+      "from": "module.elmos-architecture-tests",
+      "id": "edge.b2bac208bea4966ca390",
+      "kind": "build",
+      "to": "module.elmos-scm"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/architecture-tests/pom.xml"
+      ],
+      "from": "module.elmos-architecture-tests",
+      "id": "edge.ac9f5ab3744d179c5d76",
+      "kind": "build",
+      "to": "module.elmos-secret"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/architecture-tests/pom.xml"
+      ],
+      "from": "module.elmos-architecture-tests",
+      "id": "edge.b68f50b154bfbaa494fe",
+      "kind": "build",
+      "to": "module.elmos-semantic"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/architecture-tests/pom.xml"
+      ],
+      "from": "module.elmos-architecture-tests",
+      "id": "edge.4261f81bb01670e3b4f7",
+      "kind": "build",
+      "to": "module.elmos-skeleton"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/architecture-tests/pom.xml"
+      ],
+      "from": "module.elmos-architecture-tests",
+      "id": "edge.647bd756d47797ee3760",
+      "kind": "build",
+      "to": "module.elmos-snapshot"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/architecture-tests/pom.xml"
+      ],
+      "from": "module.elmos-architecture-tests",
+      "id": "edge.6541767acfd03dd52b04",
+      "kind": "build",
+      "to": "module.elmos-software-delivery-platform-engine"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/architecture-tests/pom.xml"
+      ],
+      "from": "module.elmos-architecture-tests",
+      "id": "edge.c983f4de439a208c9100",
+      "kind": "build",
+      "to": "module.elmos-uir"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/architecture-tests/pom.xml"
+      ],
+      "from": "module.elmos-architecture-tests",
+      "id": "edge.5bd397e0766af5834c81",
+      "kind": "build",
+      "to": "module.elmos-validation"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/architecture-tests/pom.xml"
+      ],
+      "from": "module.elmos-architecture-tests",
+      "id": "edge.1d5db8bc6b059d6d5102",
+      "kind": "build",
+      "to": "module.elmos-workspace"
+    },
+    {
+      "confidence": 1.0,
+      "criticality": "P1",
+      "evidence_refs": [
+        "modules/architecture-tests/pom.xml"
+      ],
+      "from": "module.elmos-architecture-tests",
+      "id": "edge.362907640e4d3842e065",
+      "kind": "build",
+      "to": "module.elmos-workspace-service"
+    }
+  ],
+  "graph_version": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954",
+  "nodes": [
+    {
+      "id": "repo.elmos",
+      "kind": "repository",
+      "logical_key": "elmos-local-workspace/elmos",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "digest": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954",
+          "path": "inventory/portfolio.json"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-domain",
+      "kind": "module",
+      "logical_key": "modules/domain",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "modules/domain/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-evidence",
+      "kind": "module",
+      "logical_key": "modules/evidence",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "modules/evidence/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-engine-api",
+      "kind": "module",
+      "logical_key": "contracts/engine-api",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "contracts/engine-api/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-evidence-bound-engine",
+      "kind": "module",
+      "logical_key": "modules/evidence-bound-engine",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "modules/evidence-bound-engine/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-application",
+      "kind": "module",
+      "logical_key": "modules/application",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "modules/application/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-workflow",
+      "kind": "module",
+      "logical_key": "modules/workflow",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "modules/workflow/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-scm",
+      "kind": "module",
+      "logical_key": "modules/scm",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "modules/scm/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-snapshot",
+      "kind": "module",
+      "logical_key": "modules/snapshot",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "modules/snapshot/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-secret",
+      "kind": "module",
+      "logical_key": "modules/secret",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "modules/secret/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-network-policy",
+      "kind": "module",
+      "logical_key": "modules/network-policy",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "modules/network-policy/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-workspace",
+      "kind": "module",
+      "logical_key": "modules/workspace",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "modules/workspace/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-health-check",
+      "kind": "module",
+      "logical_key": "modules/health-check",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "modules/health-check/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-intake",
+      "kind": "module",
+      "logical_key": "modules/intake",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "modules/intake/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-semantic",
+      "kind": "module",
+      "logical_key": "modules/semantic",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "modules/semantic/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-uir",
+      "kind": "module",
+      "logical_key": "modules/uir",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "modules/uir/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-skeleton",
+      "kind": "module",
+      "logical_key": "modules/skeleton",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "modules/skeleton/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-lowering",
+      "kind": "module",
+      "logical_key": "modules/lowering",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "modules/lowering/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-dependency-migration",
+      "kind": "module",
+      "logical_key": "modules/dependency-migration",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "modules/dependency-migration/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-framework-migration",
+      "kind": "module",
+      "logical_key": "modules/framework-migration",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "modules/framework-migration/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-composite-modernization",
+      "kind": "module",
+      "logical_key": "modules/composite-modernization",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "modules/composite-modernization/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-portfolio-scale",
+      "kind": "module",
+      "logical_key": "modules/portfolio-scale",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "modules/portfolio-scale/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-database-data-engine",
+      "kind": "module",
+      "logical_key": "engines/database-data-engine",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "engines/database-data-engine/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-infrastructure-engine",
+      "kind": "module",
+      "logical_key": "engines/infrastructure-engine",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "engines/infrastructure-engine/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-security-compliance-engine",
+      "kind": "module",
+      "logical_key": "engines/security-compliance-engine",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "engines/security-compliance-engine/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-test-quality-engine",
+      "kind": "module",
+      "logical_key": "engines/test-quality-engine",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "engines/test-quality-engine/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-mainframe-engine",
+      "kind": "module",
+      "logical_key": "engines/mainframe-engine",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "engines/mainframe-engine/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-enterprise-integration-engine",
+      "kind": "module",
+      "logical_key": "engines/enterprise-integration-engine",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "engines/enterprise-integration-engine/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-enterprise-suite-engine",
+      "kind": "module",
+      "logical_key": "engines/enterprise-suite-engine",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "engines/enterprise-suite-engine/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-software-delivery-platform-engine",
+      "kind": "module",
+      "logical_key": "engines/software-delivery-platform-engine",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "engines/software-delivery-platform-engine/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-ai-platform-engine",
+      "kind": "module",
+      "logical_key": "engines/ai-platform-engine",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "engines/ai-platform-engine/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-edge-iot-industrial-engine",
+      "kind": "module",
+      "logical_key": "engines/edge-iot-industrial-engine",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "engines/edge-iot-industrial-engine/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-operations-sre-itsm-engine",
+      "kind": "module",
+      "logical_key": "engines/operations-sre-itsm-engine",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "engines/operations-sre-itsm-engine/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-enterprise-architecture-engine",
+      "kind": "module",
+      "logical_key": "engines/enterprise-architecture-engine",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "engines/enterprise-architecture-engine/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-planning",
+      "kind": "module",
+      "logical_key": "modules/planning",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "modules/planning/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-recipe-governance",
+      "kind": "module",
+      "logical_key": "modules/recipe-governance",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "modules/recipe-governance/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-repair-orchestration",
+      "kind": "module",
+      "logical_key": "modules/repair-orchestration",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "modules/repair-orchestration/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-behavior-equivalence",
+      "kind": "module",
+      "logical_key": "modules/behavior-equivalence",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "modules/behavior-equivalence/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-production-hardening",
+      "kind": "module",
+      "logical_key": "modules/production-hardening",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "modules/production-hardening/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-production-cutover",
+      "kind": "module",
+      "logical_key": "modules/production-cutover",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "modules/production-cutover/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-enterprise-platform",
+      "kind": "module",
+      "logical_key": "modules/enterprise-platform",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "modules/enterprise-platform/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-commercial-loop",
+      "kind": "module",
+      "logical_key": "modules/commercial-loop",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "modules/commercial-loop/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-ecosystem-growth",
+      "kind": "module",
+      "logical_key": "modules/ecosystem-growth",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "modules/ecosystem-growth/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-company-series",
+      "kind": "module",
+      "logical_key": "modules/company-series",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "modules/company-series/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-product-roadmap-governance",
+      "kind": "module",
+      "logical_key": "modules/product-roadmap-governance",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "modules/product-roadmap-governance/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-migration-pack-certification",
+      "kind": "module",
+      "logical_key": "modules/migration-pack-certification",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "modules/migration-pack-certification/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-validation",
+      "kind": "module",
+      "logical_key": "modules/validation",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "modules/validation/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-delivery",
+      "kind": "module",
+      "logical_key": "modules/delivery",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "modules/delivery/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-enterprise-governance",
+      "kind": "module",
+      "logical_key": "modules/enterprise-governance",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "modules/enterprise-governance/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-commercial-operations",
+      "kind": "module",
+      "logical_key": "modules/commercial-operations",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "modules/commercial-operations/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-persistence",
+      "kind": "module",
+      "logical_key": "modules/persistence",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "modules/persistence/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-security",
+      "kind": "module",
+      "logical_key": "modules/security",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "modules/security/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-integrations",
+      "kind": "module",
+      "logical_key": "modules/integrations",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "modules/integrations/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-java-recipes",
+      "kind": "module",
+      "logical_key": "recipes/elmos-java-recipes",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "recipes/elmos-java-recipes/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-java-engine-worker",
+      "kind": "module",
+      "logical_key": "apps/java-engine-worker",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "apps/java-engine-worker/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-control-plane",
+      "kind": "module",
+      "logical_key": "apps/control-plane",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "apps/control-plane/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-workspace-service",
+      "kind": "module",
+      "logical_key": "apps/workspace-service",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "apps/workspace-service/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-egress-proxy",
+      "kind": "module",
+      "logical_key": "apps/egress-proxy",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "apps/egress-proxy/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-agent-gateway",
+      "kind": "module",
+      "logical_key": "apps/agent-gateway",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "apps/agent-gateway/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-enterprise-control",
+      "kind": "module",
+      "logical_key": "apps/enterprise-control",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "apps/enterprise-control/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-commercial-api",
+      "kind": "module",
+      "logical_key": "apps/commercial-api",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "apps/commercial-api/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-elmosctl",
+      "kind": "module",
+      "logical_key": "apps/elmosctl",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "apps/elmosctl/pom.xml"
+        }
+      ]
+    },
+    {
+      "id": "module.elmos-architecture-tests",
+      "kind": "module",
+      "logical_key": "modules/architecture-tests",
+      "owner": "elmos-platform-team",
+      "source_refs": [
+        {
+          "path": "modules/architecture-tests/pom.xml"
+        }
+      ]
+    }
+  ],
+  "pack_key": "elmos-local-rehearsal",
+  "schema_version": 1
+}

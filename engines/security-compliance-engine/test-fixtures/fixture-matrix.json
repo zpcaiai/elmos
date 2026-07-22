@@ -1,0 +1,26 @@
+{
+  "externalStatus": "NOT_RUN",
+  "fixtures": [
+    {"schema":"contracts/security-estate-schema/security-estate.schema.json","instance":"security-estate.json"},
+    {"schema":"contracts/security-finding-schema/security-finding.schema.json","instance":"security-finding.json"},
+    {"schema":"contracts/vulnerability-risk-schema/vulnerability-risk-decision.schema.json","instance":"vulnerability-risk-decision.json"},
+    {"schema":"contracts/security-control-schema/security-control.schema.json","instance":"security-control.json"},
+    {"schema":"contracts/threat-model-schema/threat-model.schema.json","instance":"threat-model.json"},
+    {"schema":"contracts/sbom-schema/sbom-document.schema.json","instance":"sbom-document.json"},
+    {"schema":"contracts/provenance-schema/provenance-statement.schema.json","instance":"provenance-statement.json"},
+    {"schema":"contracts/oscal-artifact-schema/control-assessment-result.schema.json","instance":"control-assessment-result.json"},
+    {"schema":"contracts/security-authorization-schema/security-authorization-decision.schema.json","instance":"security-authorization-decision.json"}
+  ],
+  "domains": ["estate","identity","secrets","supply-chain","static-analysis","dynamic-analysis","vulnerability","cloud","data-protection","threat-model","observability","compliance","oscal","authorization"],
+  "scenarioFixtures": {
+    "identity": ["shared-admin","no-mfa","overprivileged-service","workload-identity","pam","token-exchange","cross-tenant"],
+    "secrets": ["source-secret","git-history-secret","container-secret","iac-state-secret","expired-certificate","key-rotation","crypto-inventory"],
+    "supply-chain": ["incomplete-sbom","transitive-dependency","unsigned-artifact","provenance-mismatch","untrusted-builder","vex-not-affected","artifact-substitution"],
+    "static-analysis": ["java-sast","dotnet-sast","python-sast","frontend-sast","iac-scan","container-scan","database-script"],
+    "dynamic-analysis": ["authentication","authorization","cross-tenant","api-fuzz","file-upload","rate-limit","business-logic"],
+    "cloud": ["public-storage","wildcard-iam","public-database","privileged-pod","no-network-policy","runtime-shell","serverless-role"],
+    "data-protection": ["pii-log","pii-model-prompt","masking-only-ui","tokenization","deletion-lineage","cross-region"],
+    "threat-model": ["internet-api","build-pipeline","multi-tenant-saas","model-service","mobile-client","supply-chain"],
+    "compliance": ["control-mapping","partial-crosswalk","oscal-ssp","assessment-result","poam","expired-exception","authorization-reassessment"]
+  }
+}

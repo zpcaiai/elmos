@@ -1,0 +1,4 @@
+interface:
+  display_name: "Fault Model and Chaos Experiment Planner"
+  short_description: "Run this Batch 10 hardening capability"
+  default_prompt: "Use $fault-model-and-chaos-experiment-planner to perform this Batch 10 production-hardening task."

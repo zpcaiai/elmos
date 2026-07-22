@@ -1,0 +1,4 @@
+interface:
+  display_name: "Technical Migration Report Generator"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $technical-migration-report-generator to execute this ELMOS Runtime Skill with fail-closed evidence."

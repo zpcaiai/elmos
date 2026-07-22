@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/repair-loop/v1/diagnostic-cluster.schema.json",
+  "title": "Batch 8 Root Cause Cluster",
+  "type": "object",
+  "required": ["clusterId", "primaryCategory", "diagnosticIds", "suspectedRootEntities", "affectedModules", "causalChain", "confidence", "estimatedFixScope", "priority", "maximumSeverity"],
+  "properties": {
+    "clusterId": {"type": "string", "minLength": 1},
+    "primaryCategory": {"type": "string", "minLength": 1},
+    "diagnosticIds": {"type": "array", "items": {"type": "string"}, "minItems": 1, "uniqueItems": true},
+    "suspectedRootEntities": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "affectedModules": {"type": "array", "items": {"type": "string"}, "minItems": 1, "uniqueItems": true},
+    "causalChain": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+    "estimatedFixScope": {"type": "string", "minLength": 1},
+    "priority": {"enum": ["P0", "P1", "P2", "P3", "P4"]},
+    "maximumSeverity": {"enum": ["INFO", "WARNING", "ERROR", "BLOCKING", "CRITICAL"]}
+  },
+  "additionalProperties": false
+}

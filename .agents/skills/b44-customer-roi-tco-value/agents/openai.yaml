@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 44: Customer Roi Tco Value"
+  short_description: "Run evidence-bound Batch 44 customer roi tco value work"
+  default_prompt: "Use $b44-customer-roi-tco-value to implement and verify this capability with fail-closed evidence."

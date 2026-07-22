@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 27 Skill 011"
+  short_description: "Run ELMOS Product Batch 27 governance safely"
+  default_prompt: "Use $benefit-hypothesis-outcome-attribution-and-realization to implement its evidence-bound ELMOS Product Batch 27 contract."

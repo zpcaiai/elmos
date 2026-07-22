@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 550: agent performance and digital worker scorecard"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $agent-performance-and-digital-worker-scorecard to evaluate this capability with evidence."

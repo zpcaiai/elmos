@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B36: Site Local Durable Command Event Queue Wal And Outbox"
+  short_description: "Run ELMOS Product B36 contract with fail-closed evidence"
+  default_prompt: "Use $site-local-durable-command-event-queue-wal-and-outbox to implement its fail-closed ELMOS Product B36 contract."

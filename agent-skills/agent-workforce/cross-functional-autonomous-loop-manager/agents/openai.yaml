@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 586: cross functional autonomous loop manager"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $cross-functional-autonomous-loop-manager to evaluate this capability with evidence."

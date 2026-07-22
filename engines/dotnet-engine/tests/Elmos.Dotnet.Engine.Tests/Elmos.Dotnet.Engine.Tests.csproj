@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><IsPackable>false</IsPackable><IsTestProject>true</IsTestProject></PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio"><PrivateAssets>all</PrivateAssets><IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets></PackageReference>
+    <ProjectReference Include="../../src/Elmos.Dotnet.Contracts/Elmos.Dotnet.Contracts.csproj" />
+    <ProjectReference Include="../../src/Elmos.Dotnet.Domain/Elmos.Dotnet.Domain.csproj" />
+    <ProjectReference Include="../../src/Elmos.Dotnet.Application/Elmos.Dotnet.Application.csproj" />
+    <ProjectReference Include="../../src/Elmos.Dotnet.MSBuild/Elmos.Dotnet.MSBuild.csproj" />
+    <ProjectReference Include="../../src/Elmos.Dotnet.Roslyn/Elmos.Dotnet.Roslyn.csproj" />
+    <ProjectReference Include="../../src/Elmos.Dotnet.ProjectSystem/Elmos.Dotnet.ProjectSystem.csproj" />
+    <ProjectReference Include="../../src/Elmos.Dotnet.AspNet/Elmos.Dotnet.AspNet.csproj" />
+    <ProjectReference Include="../../src/Elmos.Dotnet.Wcf/Elmos.Dotnet.Wcf.csproj" />
+    <ProjectReference Include="../../src/Elmos.Dotnet.Ef/Elmos.Dotnet.Ef.csproj" />
+    <ProjectReference Include="../../src/Elmos.Dotnet.Validation/Elmos.Dotnet.Validation.csproj" />
+    <ProjectReference Include="../../src/Elmos.Dotnet.Infrastructure/Elmos.Dotnet.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>

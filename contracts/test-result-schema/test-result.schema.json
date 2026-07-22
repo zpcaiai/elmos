@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.test-result.v1",
+  "type": "object",
+  "required": ["testCaseId", "executionId", "attempt", "status", "sourceCommit", "environmentRef", "evidenceRefs"],
+  "properties": {
+    "testCaseId": {"type": "string"}, "executionId": {"type": "string"},
+    "attempt": {"type": "integer", "minimum": 1},
+    "status": {"enum": ["PASS", "FAIL", "SKIPPED", "DISABLED", "QUARANTINED", "FAILED_THEN_PASSED", "NOT_RUN", "INCONCLUSIVE"]},
+    "sourceCommit": {"type": "string"}, "environmentRef": {"type": "string"},
+    "durationMs": {"type": "integer", "minimum": 0},
+    "evidenceRefs": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

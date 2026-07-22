@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 583: autonomous go to market and customer operating system"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $autonomous-go-to-market-and-customer-operating-system to evaluate this capability with evidence."

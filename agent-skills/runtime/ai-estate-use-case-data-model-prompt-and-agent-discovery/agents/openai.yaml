@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 23 002"
+  short_description: "Run Batch 23 runtime contract safely"
+  default_prompt: "Use $ai-estate-use-case-data-model-prompt-and-agent-discovery to apply its fail-closed ELMOS runtime contract."

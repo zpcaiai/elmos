@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 710: master data distribution and synchronization"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $master-data-distribution-and-synchronization to evaluate this capability with evidence."

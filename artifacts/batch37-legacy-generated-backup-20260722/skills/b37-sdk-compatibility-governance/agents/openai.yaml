@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 37: Sdk Compatibility Governance"
+  short_description: "Run evidence-bound Batch 37 sdk compatibility governance work"
+  default_prompt: "Use $b37-sdk-compatibility-governance to implement and verify this capability with fail-closed evidence."

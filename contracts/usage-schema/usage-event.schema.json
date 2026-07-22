@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.usage-event.v1",
+  "title": "ELMOS Usage Event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "organizationId",
+    "resourceType",
+    "quantity",
+    "unit",
+    "occurredAt",
+    "sourceId",
+    "idempotencyKey",
+    "costSnapshotId"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string"
+    },
+    "organizationId": {
+      "type": "string"
+    },
+    "resourceType": {
+      "type": "string"
+    },
+    "quantity": {
+      "type": "number",
+      "minimum": 0
+    },
+    "unit": {
+      "type": "string"
+    },
+    "occurredAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "sourceId": {
+      "type": "string"
+    },
+    "idempotencyKey": {
+      "type": "string"
+    },
+    "costSnapshotId": {
+      "type": "string"
+    }
+  }
+}
+

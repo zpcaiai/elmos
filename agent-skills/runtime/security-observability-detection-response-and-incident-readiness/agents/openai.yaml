@@ -1,0 +1,4 @@
+interface:
+  display_name: "Security Observability Detection Response and Incident Readiness"
+  short_description: "Security Observability Detection Response and Incident Re helper"
+  default_prompt: "Use $security-observability-detection-response-and-incident-readiness to execute its ELMOS Batch 17 workflow safely."

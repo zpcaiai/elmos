@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 43: Event Schema Compatibility"
+  short_description: "Run evidence-bound Batch 43 event schema compatibility work"
+  default_prompt: "Use $b43-event-schema-compatibility to implement and verify this capability with fail-closed evidence."

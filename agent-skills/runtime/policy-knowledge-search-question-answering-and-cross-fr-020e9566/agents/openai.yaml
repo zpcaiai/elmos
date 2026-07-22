@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B38: Policy Knowledge Search Question Answering And Cross Framework Traceability"
+  short_description: "Run ELMOS Product B38 contract with fail-closed evidence"
+  default_prompt: "Use $policy-knowledge-search-question-answering-and-cross-fr-020e9566 to implement its fail-closed ELMOS Product B38 contract."

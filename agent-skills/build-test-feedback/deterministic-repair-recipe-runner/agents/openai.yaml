@@ -1,0 +1,4 @@
+interface:
+  display_name: "deterministic repair recipe runner"
+  short_description: "Run a bounded Batch 8 repair workflow"
+  default_prompt: "Use $deterministic-repair-recipe-runner to perform this Batch 8 repair step."

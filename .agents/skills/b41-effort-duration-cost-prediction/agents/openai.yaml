@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 41: Effort Duration Cost Prediction"
+  short_description: "Run evidence-bound Batch 41 effort duration cost prediction work"
+  default_prompt: "Use $b41-effort-duration-cost-prediction to implement and verify this capability with fail-closed evidence."

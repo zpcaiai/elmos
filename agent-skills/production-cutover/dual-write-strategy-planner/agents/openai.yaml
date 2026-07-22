@@ -1,0 +1,4 @@
+interface:
+  display_name: "Dual Write Strategy Planner"
+  short_description: "Run this Batch 11 cutover capability"
+  default_prompt: "Use $dual-write-strategy-planner to perform this Batch 11 production-cutover task."

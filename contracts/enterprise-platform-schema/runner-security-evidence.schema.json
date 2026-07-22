@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/enterprise-platform/runner-security-evidence.schema.json",
+  "title": "T-C Private Runner Security Evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["assessment_run_id", "platform_version", "status", "workload_identity_passed", "attestation_coverage", "runner_identity_copy_events", "cross_tenant_job_leaks", "sandbox_escape_findings", "unauthorized_egress_events", "secret_leak_events", "short_lived_credentials_passed", "source_stay_local_verified", "artifact_transfer_integrity_passed", "tenant_runner_isolation_passed", "lease_recovery_passed", "duplicate_non_idempotent_executions", "authority_id", "observed_at", "evidence_refs"],
+  "properties": {
+    "assessment_run_id": {"type": "string"}, "platform_version": {"type": "string"}, "status": {"const": "PASSED"},
+    "workload_identity_passed": {"const": true}, "attestation_coverage": {"const": 1}, "runner_identity_copy_events": {"const": 0},
+    "cross_tenant_job_leaks": {"const": 0}, "sandbox_escape_findings": {"const": 0}, "unauthorized_egress_events": {"const": 0}, "secret_leak_events": {"const": 0},
+    "short_lived_credentials_passed": {"const": true}, "source_stay_local_verified": {"const": true}, "artifact_transfer_integrity_passed": {"const": true},
+    "tenant_runner_isolation_passed": {"const": true}, "lease_recovery_passed": {"const": true}, "duplicate_non_idempotent_executions": {"const": 0},
+    "authority_id": {"type": "string", "minLength": 1}, "observed_at": {"type": "string", "format": "date-time"},
+    "evidence_refs": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+  }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 461: company operating system orchestrator"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $company-operating-system-orchestrator to evaluate this capability with evidence."

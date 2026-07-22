@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/framework/v1/batch-7-conformance-report.schema.json",
+  "title": "Batch 7 Conformance Report",
+  "type": "object",
+  "required": ["batch", "status", "frameworkRunId", "modules", "coverage", "fidelity", "blockingErrors", "openObligations", "eligibleForBatch8"],
+  "properties": {
+    "batch": {"const": 7},
+    "status": {"enum": ["PASSED", "BLOCKED"]},
+    "frameworkRunId": {"type": "string", "minLength": 1},
+    "modules": {"type": "array", "items": {"$ref": "#/$defs/moduleGate"}},
+    "coverage": {"$ref": "#/$defs/coverage"},
+    "fidelity": {"$ref": "#/$defs/fidelity"},
+    "blockingErrors": {"type": "array", "items": {"type": "string"}},
+    "openObligations": {"type": "array", "items": {"type": "string"}},
+    "eligibleForBatch8": {"type": "boolean"}
+  },
+  "$defs": {
+    "status": {"enum": ["PASSED", "FAILED", "BLOCKED", "NOT_RUN", "INCONCLUSIVE", "PASSED_WITH_OBLIGATIONS"]},
+    "rate": {"type": "number", "minimum": 0, "maximum": 1},
+    "moduleGate": {
+      "type": "object",
+      "required": ["targetModuleId", "gate", "status", "eligibleForBuildRepair", "eligibleForIntegrationTesting", "eligibleForProductionValidation", "restrictions", "evidenceRefs"],
+      "properties": {
+        "targetModuleId": {"type": "string", "minLength": 1},
+        "gate": {"enum": ["F-A", "F-B", "F-C", "F-D"]},
+        "status": {"$ref": "#/$defs/status"},
+        "eligibleForBuildRepair": {"type": "boolean"},
+        "eligibleForIntegrationTesting": {"type": "boolean"},
+        "eligibleForProductionValidation": {"type": "boolean"},
+        "restrictions": {"type": "array", "items": {"type": "string"}},
+        "evidenceRefs": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": false
+    },
+    "coverage": {
+      "type": "object",
+      "required": ["frameworkEntityLiftRate", "endpointMigrationRate", "providerMigrationRate", "validationMigrationRate", "ormMappingRate", "transactionMappingRate", "securityMappingRate", "configurationMappingRate", "messagingMappingRate", "cacheMappingRate", "schedulerMappingRate", "sourceTargetTraceCoverage"],
+      "properties": {
+        "frameworkEntityLiftRate": {"$ref": "#/$defs/rate"}, "endpointMigrationRate": {"$ref": "#/$defs/rate"},
+        "providerMigrationRate": {"$ref": "#/$defs/rate"}, "validationMigrationRate": {"$ref": "#/$defs/rate"},
+        "ormMappingRate": {"$ref": "#/$defs/rate"}, "transactionMappingRate": {"$ref": "#/$defs/rate"},
+        "securityMappingRate": {"$ref": "#/$defs/rate"}, "configurationMappingRate": {"$ref": "#/$defs/rate"},
+        "messagingMappingRate": {"$ref": "#/$defs/rate"}, "cacheMappingRate": {"$ref": "#/$defs/rate"},
+        "schedulerMappingRate": {"$ref": "#/$defs/rate"}, "sourceTargetTraceCoverage": {"$ref": "#/$defs/rate"}
+      }, "additionalProperties": false
+    },
+    "fidelity": {
+      "type": "object",
+      "required": ["routeContract", "requestBinding", "responseContract", "middlewareOrder", "diScope", "validation", "transaction", "authentication", "authorization", "messaging", "cache", "scheduler", "lifecycle"],
+      "properties": {
+        "routeContract": {"$ref": "#/$defs/rate"}, "requestBinding": {"$ref": "#/$defs/rate"},
+        "responseContract": {"$ref": "#/$defs/rate"}, "middlewareOrder": {"$ref": "#/$defs/rate"},
+        "diScope": {"$ref": "#/$defs/rate"}, "validation": {"$ref": "#/$defs/rate"},
+        "transaction": {"$ref": "#/$defs/rate"}, "authentication": {"$ref": "#/$defs/rate"},
+        "authorization": {"$ref": "#/$defs/rate"}, "messaging": {"$ref": "#/$defs/rate"},
+        "cache": {"$ref": "#/$defs/rate"}, "scheduler": {"$ref": "#/$defs/rate"},
+        "lifecycle": {"$ref": "#/$defs/rate"}
+      }, "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

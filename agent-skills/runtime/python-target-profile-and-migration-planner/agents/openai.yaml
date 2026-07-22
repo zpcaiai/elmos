@@ -1,0 +1,4 @@
+interface:
+  display_name: "Python Migration Planner"
+  short_description: "Plan distinct Web Data and AI modernization paths"
+  default_prompt: "Use $python-target-profile-and-migration-planner to build a staged Python migration DAG."

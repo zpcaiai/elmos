@@ -1,0 +1,5 @@
+interface:
+  display_name: "Marketplace Pricing Promotion And Revenue Share"
+  short_description: "Authoritative Batch 14 Skill 441 workflow"
+  default_prompt: "Use $marketplace-pricing-promotion-and-revenue-share to execute its evidence-bound Batch 14 workflow."
+

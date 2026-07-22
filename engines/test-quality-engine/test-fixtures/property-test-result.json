@@ -1,0 +1,1 @@
+{"propertyId":"inventory-nonnegative","propertyType":"INVARIANT","seed":42,"status":"PROPERTY_VIOLATED","minimalFailingExample":{"quantity":-1},"minimalFailingSequence":["create","cancel","retry-payment","refund"],"evidenceRefs":["evidence://property-1"]}

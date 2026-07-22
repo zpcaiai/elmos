@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 39: Global Observability Telemetry"
+  short_description: "Run evidence-bound Batch 39 global observability telemetry work"
+  default_prompt: "Use $b39-global-observability-telemetry to implement and verify this capability with fail-closed evidence."

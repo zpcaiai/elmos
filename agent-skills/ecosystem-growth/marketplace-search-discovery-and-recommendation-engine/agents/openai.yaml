@@ -1,0 +1,5 @@
+interface:
+  display_name: "Marketplace Search Discovery And Recommendation Engine"
+  short_description: "Authoritative Batch 14 Skill 439 workflow"
+  default_prompt: "Use $marketplace-search-discovery-and-recommendation-engine to execute its evidence-bound Batch 14 workflow."
+

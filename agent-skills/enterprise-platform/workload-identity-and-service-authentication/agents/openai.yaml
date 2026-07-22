@@ -1,0 +1,4 @@
+interface:
+  display_name: "workload-identity-and-service-authentication"
+  short_description: "Run this Batch 12 enterprise capability"
+  default_prompt: "Use $workload-identity-and-service-authentication to evaluate this enterprise platform capability with evidence."

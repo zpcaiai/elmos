@@ -1,0 +1,46 @@
+{
+  "expectations": [
+    {
+      "text": "The duplicate order event is idempotent and does not double-consume entitlement or allowance.",
+      "passed": true,
+      "evidence": "result.md requires a stable idempotency key, returns the original decision, and prohibits duplicate subscription, allowance, and lease effects."
+    },
+    {
+      "text": "Partial private capacity fulfillment is not reported as complete.",
+      "passed": true,
+      "evidence": "result.md keeps the order PARTIALLY_FULFILLED and the pending capacity item open."
+    },
+    {
+      "text": "Blocked Maven readiness prevents onboarding completion and the failed critical gate keeps the project RED despite 85% progress.",
+      "passed": true,
+      "evidence": "result.md explicitly decides NOT_READY and RED and states why customer preference and numeric progress cannot override those gates."
+    },
+    {
+      "text": "CRM, payment, tax, invoicing, revenue recognition, and accounting effects are not claimed as completed.",
+      "passed": true,
+      "evidence": "result.md lists these as integration boundaries, records NOT_CONFIGURED, and prohibits external completion claims."
+    }
+  ],
+  "summary": {"passed": 4, "failed": 0, "total": 4, "pass_rate": 1.0},
+  "execution_metrics": {
+    "tool_calls": {}, "total_tool_calls": 0, "total_steps": 1,
+    "errors_encountered": 0, "output_chars": 0, "transcript_chars": 0
+  },
+  "claims": [
+    {
+      "claim": "Numeric project progress does not override a failed critical gate.",
+      "type": "quality",
+      "verified": true,
+      "evidence": "The project-health bullet keeps RED and explicitly treats 85% as context rather than a release decision."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [],
+    "needs_review": ["No without-skill baseline was executed because this turn did not authorize subagent evaluation."],
+    "workarounds": ["Token and wall-clock metrics are unavailable for this inline evidence review and are recorded as zero rather than estimated."]
+  },
+  "eval_feedback": {
+    "suggestions": [],
+    "overall": "The assertions test idempotency, partial fulfillment, readiness, project truth, and absent integration behavior."
+  }
+}

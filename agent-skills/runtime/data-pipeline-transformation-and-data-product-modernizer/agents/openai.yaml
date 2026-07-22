@@ -1,0 +1,4 @@
+interface:
+  display_name: "Data Product Modernizer"
+  short_description: "Modernize pipelines backfills and products"
+  default_prompt: "Use $data-pipeline-transformation-and-data-product-modernizer to govern this ELMOS Batch 15 workflow."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B36: Local Retention Compaction Gc Disk Pressure And Evidence Preservation"
+  short_description: "Run ELMOS Product B36 contract with fail-closed evidence"
+  default_prompt: "Use $local-retention-compaction-gc-disk-pressure-and-evidenc-8c79a8af to implement its fail-closed ELMOS Product B36 contract."

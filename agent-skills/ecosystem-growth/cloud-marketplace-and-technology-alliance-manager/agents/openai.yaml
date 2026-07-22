@@ -1,0 +1,5 @@
+interface:
+  display_name: "Cloud Marketplace And Technology Alliance Manager"
+  short_description: "Authoritative Batch 14 Skill 454 workflow"
+  default_prompt: "Use $cloud-marketplace-and-technology-alliance-manager to execute its evidence-bound Batch 14 workflow."
+

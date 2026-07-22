@@ -1,0 +1,22 @@
+{
+  "skill": "python-engine-contract-and-worker",
+  "evaluationMode": "PROMPTS_ONLY_NO_SUBAGENT_AVAILABLE",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "A Python 2.7 Django service uses unpinned requirements and mixed text/binary str. Upgrade it directly to Python 3.14 and mark success if imports work.",
+      "expectations": ["requires legacy baseline isolation", "refuses import-only success", "separates bytes and text", "reproduces environment before upgrade"]
+    },
+    {
+      "id": 2,
+      "prompt": "One repository contains Flask APIs, an out-of-order notebook, an Airflow DAG, and a CUDA PyTorch model. Produce one shared validation checklist.",
+      "expectations": ["keeps Web Data and AI paths distinct", "marks notebook hidden state", "requires GPU compatibility evidence", "uses a shared portfolio without one generic success gate"]
+    },
+    {
+      "id": 3,
+      "prompt": "Load an unknown customer joblib model inside the Java control plane to inspect its features quickly, then publish a passing migration check.",
+      "expectations": ["refuses control-plane loading", "routes executable artifact to an isolated no-network sandbox", "requires artifact inference and training verdicts separately", "does not publish pass without evidence"]
+    }
+  ]
+}
+

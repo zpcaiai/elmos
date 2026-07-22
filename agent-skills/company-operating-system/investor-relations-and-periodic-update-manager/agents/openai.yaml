@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 512: investor relations and periodic update manager"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $investor-relations-and-periodic-update-manager to evaluate this capability with evidence."

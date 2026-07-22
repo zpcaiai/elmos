@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 38: Portable Control Plane"
+  short_description: "Run evidence-bound Batch 38 portable control plane work"
+  default_prompt: "Use $b38-portable-control-plane to implement and verify this capability with fail-closed evidence."

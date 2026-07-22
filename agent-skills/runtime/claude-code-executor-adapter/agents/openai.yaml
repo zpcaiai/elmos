@@ -1,0 +1,4 @@
+interface:
+  display_name: "Claude Code Executor Adapter"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $claude-code-executor-adapter to execute this ELMOS Runtime Skill with fail-closed evidence."

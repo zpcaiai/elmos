@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 700: master data management and entity resolution"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $master-data-management-and-entity-resolution to evaluate this capability with evidence."

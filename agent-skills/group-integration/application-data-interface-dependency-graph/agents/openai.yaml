@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 676: application data interface dependency graph"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $application-data-interface-dependency-graph to evaluate this capability with evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 706: group data reconciliation and quality gate"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $group-data-reconciliation-and-quality-gate to evaluate this capability with evidence."

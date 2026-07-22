@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 39: Problem Root Cause Loop"
+  short_description: "Run evidence-bound Batch 39 problem root cause loop work"
+  default_prompt: "Use $b39-problem-root-cause-loop to implement and verify this capability with fail-closed evidence."

@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "pack_key",
+    "oracles",
+    "precedence_rules",
+    "conflicts"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "pack_key": {
+      "type": "string"
+    },
+    "oracles": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "oracle_id",
+          "type",
+          "owner",
+          "scope",
+          "independence",
+          "trust_level",
+          "version",
+          "evidence_refs"
+        ],
+        "properties": {
+          "oracle_id": {
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              "business-rule",
+              "formal-spec",
+              "solver",
+              "reference-implementation",
+              "source-behavior",
+              "golden-master",
+              "contract",
+              "invariant",
+              "test",
+              "statistical",
+              "human-expert",
+              "llm-advisory"
+            ]
+          },
+          "owner": {
+            "type": "string"
+          },
+          "scope": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "independence": {
+            "enum": [
+              "independent",
+              "partially-independent",
+              "dependent",
+              "advisory-only"
+            ]
+          },
+          "trust_level": {
+            "enum": [
+              "authoritative",
+              "strong",
+              "supporting",
+              "advisory"
+            ]
+          },
+          "version": {
+            "type": "string"
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "precedence_rules": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "conflicts": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "approvals": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": true
+}

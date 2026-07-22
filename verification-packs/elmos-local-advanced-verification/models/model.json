@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "model_key": "verification-run-lifecycle",
+  "owner": "elmos-verification-engineering",
+  "states": [
+    "created",
+    "running",
+    "passed",
+    "failed",
+    "unknown"
+  ],
+  "initial_state": "created",
+  "commands": [
+    {
+      "command": "start",
+      "from": [
+        "created"
+      ],
+      "to": "running",
+      "effects": [
+        "bind-budget"
+      ]
+    },
+    {
+      "command": "pass",
+      "from": [
+        "running"
+      ],
+      "to": "passed",
+      "effects": [
+        "record-evidence"
+      ]
+    },
+    {
+      "command": "fail",
+      "from": [
+        "running"
+      ],
+      "to": "failed",
+      "effects": [
+        "record-counterexample"
+      ]
+    },
+    {
+      "command": "exhaust",
+      "from": [
+        "running"
+      ],
+      "to": "unknown",
+      "effects": [
+        "record-budget"
+      ]
+    }
+  ],
+  "invariants": [
+    "unknown-is-not-pass",
+    "terminal-results-have-evidence"
+  ],
+  "forbidden_transitions": [
+    {
+      "from": "unknown",
+      "event": "pass-without-new-run"
+    }
+  ],
+  "timeouts": []
+}

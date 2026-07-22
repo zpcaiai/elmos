@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 40: Security Architecture Review"
+  short_description: "Run evidence-bound Batch 40 security architecture review work"
+  default_prompt: "Use $b40-security-architecture-review to implement and verify this capability with fail-closed evidence."

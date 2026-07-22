@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B37: Evidence Classification Redaction Privacy And Source Locality"
+  short_description: "Run ELMOS Product B37 contract with fail-closed evidence"
+  default_prompt: "Use $evidence-classification-redaction-privacy-and-source-locality to implement its fail-closed ELMOS Product B37 contract."

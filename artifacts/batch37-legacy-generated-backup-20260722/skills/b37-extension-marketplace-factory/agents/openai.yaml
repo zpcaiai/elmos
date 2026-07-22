@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 37: Extension Marketplace Factory"
+  short_description: "Run evidence-bound Batch 37 extension marketplace factory work"
+  default_prompt: "Use $b37-extension-marketplace-factory to implement and verify this capability with fail-closed evidence."

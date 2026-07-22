@@ -1,0 +1,4 @@
+interface:
+  display_name: "Salesforce Org Metadata And Extension Modernizer"
+  short_description: "Govern evidence-bound enterprise suite modernization"
+  default_prompt: "Use $salesforce-org-metadata-and-extension-modernizer to govern this enterprise suite modernization task with fail-closed evidence."

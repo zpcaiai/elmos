@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "status": "not-run",
+  "source_digest": "sha256:865e6c4fb57d26426b4634bfc9a2175f86d33617620462802699e31e6ceeaead",
+  "dataset_digest": "sha256:272c5bf23c63d87c4ed524d46e72be69853e13ed04d00f839687505eddb23d50",
+  "evidence_refs": [],
+  "reason": "No real representative IDE or SCM workflow was executed."
+}

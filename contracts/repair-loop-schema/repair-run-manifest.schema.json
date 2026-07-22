@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/repair-loop/v1/repair-run-manifest.schema.json",
+  "title": "Batch 8 Repair Run Manifest",
+  "type": "object",
+  "required": ["repairRunId", "migrationId", "sourceSnapshotId", "targetSnapshotBefore", "targetSnapshotAfter", "environmentHash", "matrixIds", "commandIds", "diagnosticIds", "clusterIds", "patchIds", "configurationHash", "createdAt"],
+  "properties": {
+    "repairRunId": {"type": "string", "minLength": 1},
+    "migrationId": {"type": "string", "minLength": 1},
+    "sourceSnapshotId": {"type": "string", "minLength": 1},
+    "targetSnapshotBefore": {"type": "string", "minLength": 1},
+    "targetSnapshotAfter": {"type": "string", "minLength": 1},
+    "environmentHash": {"$ref": "#/$defs/hash"},
+    "matrixIds": {"$ref": "#/$defs/ids"},
+    "commandIds": {"$ref": "#/$defs/ids"},
+    "diagnosticIds": {"$ref": "#/$defs/ids"},
+    "clusterIds": {"$ref": "#/$defs/ids"},
+    "patchIds": {"$ref": "#/$defs/ids"},
+    "configurationHash": {"$ref": "#/$defs/hash"},
+    "createdAt": {"type": "string", "format": "date-time"}
+  },
+  "$defs": {
+    "hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "ids": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true}
+  },
+  "additionalProperties": false
+}

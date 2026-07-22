@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.workspace-request.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["workspaceId", "organizationId", "snapshotId", "imageDigest", "resources", "networkPolicyId"],
+  "properties": {
+    "workspaceId": {"type": "string", "minLength": 1},
+    "organizationId": {"type": "string", "minLength": 1},
+    "snapshotId": {"type": "string", "minLength": 1},
+    "imageDigest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "resources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["cpu", "memoryMb", "pids", "diskMb"],
+      "properties": {
+        "cpu": {"type": "number", "minimum": 0.25, "maximum": 16},
+        "memoryMb": {"type": "integer", "minimum": 512, "maximum": 65536},
+        "pids": {"type": "integer", "minimum": 32, "maximum": 4096},
+        "diskMb": {"type": "integer", "minimum": 1024, "maximum": 102400}
+      }
+    },
+    "networkPolicyId": {"type": "string", "minLength": 1}
+  }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Secrets Key Certificate and Cryptographic Agility Modernizer"
+  short_description: "Secrets Key Certificate and Cryptographic Agility Moderni helper"
+  default_prompt: "Use $secrets-key-certificate-and-cryptographic-agility-modernizer to execute its ELMOS Batch 17 workflow safely."

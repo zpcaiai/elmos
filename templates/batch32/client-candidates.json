@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "weights": {
+    "customer_demand": 2.0,
+    "migration_value": 2.0,
+    "representative_workloads": 1.5,
+    "engineering_reuse": 1.0,
+    "source_complexity": -0.5,
+    "visual_risk": -0.5,
+    "security_risk": -1.0
+  },
+  "candidates": [
+    {
+      "pack_key": "angularjs-to-react",
+      "customer_demand": 4,
+      "migration_value": 4,
+      "representative_workloads": 3,
+      "engineering_reuse": 4,
+      "source_complexity": 3,
+      "visual_risk": 3,
+      "security_risk": 2,
+      "evidence_notes": [
+        "Replace with actual design-partner evidence."
+      ]
+    }
+  ]
+}

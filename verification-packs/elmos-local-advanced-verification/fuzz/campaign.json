@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "campaign_key": "fuzz.structured-local",
+  "owner": "elmos-verification-engineering",
+  "targets": [
+    "StructuredFuzzEngine"
+  ],
+  "seed_corpus": [
+    "corpus/development/seed.json"
+  ],
+  "coverage_signal": "declared-semantic-signal",
+  "budgets": {
+    "max_cases": 1000,
+    "max_input_bytes": 4096
+  },
+  "sanitizers": [],
+  "dictionary_refs": []
+}

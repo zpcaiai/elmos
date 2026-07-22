@@ -1,0 +1,4 @@
+interface:
+  display_name: "compiler feedback agent"
+  short_description: "Run a bounded Batch 8 repair workflow"
+  default_prompt: "Use $compiler-feedback-agent to perform this Batch 8 repair step."

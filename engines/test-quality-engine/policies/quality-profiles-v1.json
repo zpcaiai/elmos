@@ -1,0 +1,10 @@
+{
+  "schema": "elmos.test-quality-profiles.v1",
+  "profiles": [
+    {"id": "STANDARD", "hardGates": ["TEST_COUNT_REGRESSION", "CRITICAL_RISK_UNCOVERED", "CONTRACT_BREAKING", "CRITICAL_JOURNEY_FLAKY", "STALE_EVIDENCE"]},
+    {"id": "HIGH_ASSURANCE", "hardGates": ["STANDARD", "MUTATION_REGRESSION", "ENVIRONMENT_FIDELITY", "PROPERTY_VIOLATION"]}
+  ],
+  "fixedPyramidPercentages": false,
+  "workerCanModifyGate": false,
+  "unknownCanPass": false
+}

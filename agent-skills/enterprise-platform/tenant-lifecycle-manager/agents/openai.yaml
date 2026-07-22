@@ -1,0 +1,4 @@
+interface:
+  display_name: "tenant-lifecycle-manager"
+  short_description: "Run this Batch 12 enterprise capability"
+  default_prompt: "Use $tenant-lifecycle-manager to evaluate this enterprise platform capability with evidence."

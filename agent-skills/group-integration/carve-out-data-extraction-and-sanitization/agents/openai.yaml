@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 726: carve out data extraction and sanitization"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $carve-out-data-extraction-and-sanitization to evaluate this capability with evidence."

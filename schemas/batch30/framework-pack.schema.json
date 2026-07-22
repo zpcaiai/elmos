@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "pack_key",
+    "version",
+    "mode",
+    "status",
+    "owner",
+    "maintenance_owner",
+    "source",
+    "target",
+    "paths",
+    "gates"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "pack_key": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{2,127}$"
+    },
+    "version": {
+      "type": "string"
+    },
+    "mode": {
+      "enum": [
+        "migration",
+        "upgrade",
+        "modernization",
+        "coexistence"
+      ]
+    },
+    "status": {
+      "enum": [
+        "research",
+        "experimental",
+        "limited",
+        "certified",
+        "deprecated",
+        "blocked"
+      ]
+    },
+    "owner": {
+      "type": "string"
+    },
+    "maintenance_owner": {
+      "type": "string"
+    },
+    "source": {
+      "$ref": "#/$defs/side"
+    },
+    "target": {
+      "$ref": "#/$defs/side"
+    },
+    "paths": {
+      "type": "object"
+    },
+    "gates": {
+      "type": "object"
+    }
+  },
+  "$defs": {
+    "side": {
+      "type": "object",
+      "required": [
+        "framework",
+        "framework_versions",
+        "runtime",
+        "runtime_versions"
+      ],
+      "properties": {
+        "framework": {
+          "type": "string"
+        },
+        "framework_versions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "runtime": {
+          "type": "string"
+        },
+        "runtime_versions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "build_tools": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "provider_versions": {
+          "type": "object"
+        }
+      }
+    }
+  }
+}

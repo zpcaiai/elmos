@@ -1,0 +1,10 @@
+server:
+  port: ${ELMOS_ENTERPRISE_INTEGRATION_PORT:8094}
+spring:
+  application:
+    name: elmos-enterprise-integration-engine
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

@@ -1,0 +1,8 @@
+{
+  "standardId": "standardId-fixture",
+  "technologyId": "technologyId-fixture",
+  "status": "REQUIRED",
+  "scope": {},
+  "versionPolicy": {},
+  "owner": "owner-fixture"
+}

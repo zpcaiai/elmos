@@ -1,0 +1,4 @@
+interface:
+  display_name: "poc-evidence-and-executive-report-builder"
+  short_description: "Run this Batch 13 commercial capability"
+  default_prompt: "Use $poc-evidence-and-executive-report-builder to evaluate this Batch 13 commercial capability with evidence."

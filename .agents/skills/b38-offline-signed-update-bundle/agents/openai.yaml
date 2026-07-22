@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 38: Offline Signed Update Bundle"
+  short_description: "Run evidence-bound Batch 38 offline signed update bundle work"
+  default_prompt: "Use $b38-offline-signed-update-bundle to implement and verify this capability with fail-closed evidence."

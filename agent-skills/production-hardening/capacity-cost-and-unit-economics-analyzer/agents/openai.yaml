@@ -1,0 +1,4 @@
+interface:
+  display_name: "Capacity Cost and Unit Economics Analyzer"
+  short_description: "Run this Batch 10 hardening capability"
+  default_prompt: "Use $capacity-cost-and-unit-economics-analyzer to perform this Batch 10 production-hardening task."

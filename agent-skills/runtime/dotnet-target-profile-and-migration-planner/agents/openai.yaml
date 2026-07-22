@@ -1,0 +1,4 @@
+interface:
+  display_name: "Dotnet Target Profile And Migration Planner"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $dotnet-target-profile-and-migration-planner to execute this ELMOS Runtime Skill with fail-closed evidence."

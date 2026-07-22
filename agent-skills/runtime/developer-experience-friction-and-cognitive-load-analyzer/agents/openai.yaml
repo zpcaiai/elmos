@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 22 012"
+  short_description: "Run Batch 22 runtime contract safely"
+  default_prompt: "Use $developer-experience-friction-and-cognitive-load-analyzer to apply its fail-closed ELMOS runtime contract."

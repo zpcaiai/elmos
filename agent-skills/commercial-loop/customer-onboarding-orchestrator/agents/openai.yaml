@@ -1,0 +1,4 @@
+interface:
+  display_name: "customer-onboarding-orchestrator"
+  short_description: "Run this Batch 13 commercial capability"
+  default_prompt: "Use $customer-onboarding-orchestrator to evaluate this Batch 13 commercial capability with evidence."

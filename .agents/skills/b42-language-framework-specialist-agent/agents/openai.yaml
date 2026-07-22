@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 42: Language Framework Specialist Agent"
+  short_description: "Run evidence-bound Batch 42 language framework specialist agent"
+  default_prompt: "Use $b42-language-framework-specialist-agent to implement and verify this capability with fail-closed evidence."

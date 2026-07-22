@@ -1,0 +1,5 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema","$id":"https://elmos.dev/schemas/lowering/v1/agent-packet.schema.json","title":"Agent Lowering Packet","type":"object","additionalProperties":false,
+  "required":["taskId","targetDeclarationId","targetLanguage","migrationMode","operationIds","typeIds","effectIds","obligationIds","constraints","validationCommands","expectedOutput","reason"],
+  "properties":{"taskId":{"type":"string"},"targetDeclarationId":{"type":"string"},"targetLanguage":{"enum":["java","python","csharp","typescript","javascript"]},"migrationMode":{"type":"string"},"operationIds":{"type":"array","items":{"type":"string"}},"typeIds":{"type":"array","items":{"type":"string"}},"effectIds":{"type":"array","items":{"type":"string"}},"obligationIds":{"type":"array","items":{"type":"string"}},"constraints":{"type":"array","items":{"type":"string"}},"validationCommands":{"type":"array","items":{"type":"string"}},"expectedOutput":{"enum":["structured-ast-patch","structured-diff","rule-proposal","unresolved-report"]},"reason":{"type":"string"}}
+}

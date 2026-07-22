@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B35: Github Cloud Ghes Instance Capability And Version Discovery"
+  short_description: "Run ELMOS Product B35 contract with fail-closed evidence"
+  default_prompt: "Use $github-cloud-ghes-instance-capability-and-version-discovery to implement its fail-closed ELMOS Product B35 contract."

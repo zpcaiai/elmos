@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B36: Firecracker Microvm Jailer Guest Agent Provider"
+  short_description: "Run ELMOS Product B36 contract with fail-closed evidence"
+  default_prompt: "Use $firecracker-microvm-jailer-guest-agent-provider to implement its fail-closed ELMOS Product B36 contract."

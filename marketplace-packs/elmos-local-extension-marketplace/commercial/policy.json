@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "policy_id": "marketplace-commercial-v1",
+  "models": [
+    "free",
+    "subscription",
+    "usage",
+    "enterprise",
+    "private"
+  ],
+  "metering_authority": "platform",
+  "entitlement_signing": true,
+  "revenue_share": {
+    "platform_percent": 20,
+    "publisher_percent": 80
+  },
+  "refund_policy": "versioned-policy-required",
+  "reconciliation": {
+    "frequency": "monthly",
+    "idempotent_events": true,
+    "dispute_evidence": true
+  },
+  "security_gate_independent": true
+}

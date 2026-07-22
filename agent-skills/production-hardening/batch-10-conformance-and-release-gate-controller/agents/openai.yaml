@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 10 Conformance and Release Gate Controller"
+  short_description: "Run this Batch 10 hardening capability"
+  default_prompt: "Use $batch-10-conformance-and-release-gate-controller to perform this Batch 10 production-hardening task."

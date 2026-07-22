@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 37: Extension Signing Sbom Provenance"
+  short_description: "Run evidence-bound Batch 37 extension signing sbom provenance wo"
+  default_prompt: "Use $b37-extension-signing-sbom-provenance to implement and verify this capability with fail-closed evidence."

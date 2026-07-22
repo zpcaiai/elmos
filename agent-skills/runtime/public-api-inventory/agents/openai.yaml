@@ -1,0 +1,4 @@
+interface:
+  display_name: "Public API Inventory"
+  short_description: "Inventory public HTTP and Java APIs"
+  default_prompt: "Use $public-api-inventory for ELMOS Batch 3 API evidence."

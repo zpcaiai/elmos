@@ -1,0 +1,5 @@
+interface:
+  display_name: "Regional Channel And Partner Replication Manager"
+  short_description: "Authoritative Batch 14 Skill 453 workflow"
+  default_prompt: "Use $regional-channel-and-partner-replication-manager to execute its evidence-bound Batch 14 workflow."
+

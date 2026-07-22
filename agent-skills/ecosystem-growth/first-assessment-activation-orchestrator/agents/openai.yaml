@@ -1,0 +1,5 @@
+interface:
+  display_name: "First Assessment Activation Orchestrator"
+  short_description: "Authoritative Batch 14 Skill 407 workflow"
+  default_prompt: "Use $first-assessment-activation-orchestrator to execute its evidence-bound Batch 14 workflow."
+

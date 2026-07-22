@@ -1,0 +1,4 @@
+interface:
+  display_name: "Module Dependency Graph"
+  short_description: "Map evidence-backed project dependencies"
+  default_prompt: "Use $module-dependency-graph to derive build-level coupling and migration candidates."

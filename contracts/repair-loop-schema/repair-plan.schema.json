@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/repair-loop/v1/repair-plan.schema.json",
+  "title": "Batch 8 Repair Plan",
+  "type": "object",
+  "required": ["planId", "clusterId", "strategy", "allowedFiles", "allowedDeclarations", "invariants", "localValidations", "regressionValidations", "rollbackSnapshotId", "humanReviewRequired"],
+  "properties": {
+    "planId": {"type": "string", "minLength": 1}, "clusterId": {"type": "string", "minLength": 1},
+    "strategy": {"enum": ["ENVIRONMENT", "DETERMINISTIC_RECIPE", "AGENT_PATCH", "HUMAN"]},
+    "ruleId": {"type": ["string", "null"]},
+    "allowedFiles": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "allowedDeclarations": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "invariants": {"type": "array", "items": {"type": "string"}, "minItems": 1, "uniqueItems": true},
+    "localValidations": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "regressionValidations": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "rollbackSnapshotId": {"type": "string", "minLength": 1},
+    "humanReviewRequired": {"type": "boolean"}
+  },
+  "additionalProperties": false
+}

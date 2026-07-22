@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 40: Sbom Component Identity"
+  short_description: "Run evidence-bound Batch 40 sbom component identity work"
+  default_prompt: "Use $b40-sbom-component-identity to implement and verify this capability with fail-closed evidence."

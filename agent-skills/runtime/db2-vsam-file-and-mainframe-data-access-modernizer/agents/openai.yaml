@@ -1,0 +1,4 @@
+interface:
+  display_name: "Db2 Vsam File And Mainframe Data Access Modernizer"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $db2-vsam-file-and-mainframe-data-access-modernizer to execute this ELMOS Runtime Skill with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 37: Framework Adapter Sdk"
+  short_description: "Run evidence-bound Batch 37 framework adapter sdk work"
+  default_prompt: "Use $b37-framework-adapter-sdk to implement and verify this capability with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 571: ai management system builder"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $ai-management-system-builder to evaluate this capability with evidence."

@@ -1,0 +1,144 @@
+openapi: 3.1.0
+info:
+  title: ELMOS Database and Data Platform Engine API
+  version: 1.0.0
+  description: Vendor-neutral Batch 15 worker contract. Production database operations require approved external Runners.
+servers:
+  - url: http://localhost:8089
+paths:
+  /engine/v1/capabilities:
+    get:
+      operationId: databaseDataCapabilities
+      responses:
+        "200":
+          description: Declared capabilities and Runner requirements.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Capabilities"
+  /engine/v1/scan:
+    post:
+      operationId: scanDatabaseEstate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JobRequest"
+      responses:
+        "202":
+          description: Accepted or fail-closed job result.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JobResponse"
+  /engine/v1/plan:
+    post:
+      operationId: planDatabaseMigration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JobRequest"
+      responses:
+        "202":
+          description: Accepted or fail-closed job result.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JobResponse"
+  /engine/v1/execute-step:
+    post:
+      operationId: executeDatabaseMigrationStep
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [organizationId, migrationRunId, migrationPlanVersion, stepDefinition, workspaceRef, sourceCommit, executionBudget, correlationId, idempotencyKey]
+      responses:
+        "202":
+          description: Accepted or fail-closed job result.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JobResponse"
+  /engine/v1/validate:
+    post:
+      operationId: validateDatabaseMigration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JobRequest"
+      responses:
+        "202":
+          description: Accepted or fail-closed validation result.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JobResponse"
+  /engine/v1/jobs/{jobId}:
+    get:
+      operationId: getDatabaseDataJob
+      parameters:
+        - { name: jobId, in: path, required: true, schema: { type: string } }
+        - { name: organizationId, in: query, required: true, schema: { type: string } }
+      responses:
+        "200":
+          description: Tenant-scoped job.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JobResponse"
+  /engine/v1/jobs/{jobId}/cancel:
+    post:
+      operationId: cancelDatabaseDataJob
+      parameters:
+        - { name: jobId, in: path, required: true, schema: { type: string } }
+        - { name: organizationId, in: query, required: true, schema: { type: string } }
+      responses:
+        "200":
+          description: Tenant-scoped cancellation result.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JobResponse"
+components:
+  schemas:
+    JobRequest:
+      type: object
+      additionalProperties: false
+      required: [organizationId, repositorySnapshotRef, workspaceRef, profile, correlationId, idempotencyKey]
+      properties:
+        organizationId: { type: string, minLength: 1 }
+        repositorySnapshotRef: { type: string, minLength: 1 }
+        workspaceRef: { type: string, minLength: 1 }
+        profile: { type: string, minLength: 1 }
+        correlationId: { type: string, minLength: 1 }
+        idempotencyKey: { type: string, minLength: 1 }
+    JobResponse:
+      type: object
+      required: [schemaVersion, jobId, status, evidenceRefs, result]
+      properties:
+        schemaVersion: { const: "1.0" }
+        jobId: { type: string }
+        status: { enum: [ACCEPTED, RUNNING, SUCCEEDED, FAILED, CANCELLED] }
+        evidenceRefs: { type: array, items: { type: string } }
+        result: { type: object }
+        error: { type: [object, "null"] }
+    Capabilities:
+      type: object
+      required: [schemaVersion, engineName, engineVersion, runnerProfiles, solutionFormats, sandboxRequirements]
+      properties:
+        schemaVersion: { const: "1.0" }
+        engineName: { const: ELMOS_DATABASE_DATA }
+        engineVersion: { type: string }
+        runnerProfiles: { type: array, items: { type: string } }
+        solutionFormats:
+          type: array
+          items: { enum: [OLTP_DATABASE, ANALYTICS_PLATFORM, BI_SEMANTIC] }
+        sandboxRequirements: { type: object }

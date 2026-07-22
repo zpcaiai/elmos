@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.io/company-series/batch-16/conformance-report.schema.json",
+  "title": "Batch 16 Conformance Report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "batch",
+    "model",
+    "program_id",
+    "source_version",
+    "organization_id",
+    "gate",
+    "status",
+    "ready",
+    "evidence_complete",
+    "supported_dimensions",
+    "blockers",
+    "restrictions",
+    "evaluated_at",
+    "evidence_refs",
+    "external_operation_executed"
+  ],
+  "properties": {
+    "batch": {
+      "const": 16
+    },
+    "model": {
+      "const": "AI-native operating system"
+    },
+    "program_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "organization_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "gate": {
+      "enum": [
+        "BLOCKED",
+        "AI16-A",
+        "AI16-B",
+        "AI16-C",
+        "AI16-D",
+        "AI16-E",
+        "AI16-F",
+        "AI16-G"
+      ]
+    },
+    "status": {
+      "enum": [
+        "BLOCKED",
+        "PARTIAL",
+        "bounded-autonomous-company-ready"
+      ]
+    },
+    "ready": {
+      "type": "boolean"
+    },
+    "evidence_complete": {
+      "type": "boolean"
+    },
+    "supported_dimensions": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "human-governance",
+          "company-constitution",
+          "autonomous-operations",
+          "agent-workforce",
+          "human-workforce",
+          "action-tools",
+          "evidence-evaluation",
+          "learning-correction"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "blockers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "restrictions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "evaluated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "external_operation_executed": {
+      "const": false
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "ready": {
+            "const": true
+          }
+        },
+        "required": [
+          "ready"
+        ]
+      },
+      "then": {
+        "properties": {
+          "gate": {
+            "const": "AI16-G"
+          },
+          "status": {
+            "const": "bounded-autonomous-company-ready"
+          },
+          "evidence_complete": {
+            "const": true
+          },
+          "blockers": {
+            "maxItems": 0
+          }
+        }
+      }
+    }
+  ]
+}

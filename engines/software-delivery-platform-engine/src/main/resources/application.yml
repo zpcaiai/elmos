@@ -1,0 +1,10 @@
+server:
+  port: ${ELMOS_SOFTWARE_DELIVERY_PLATFORM_PORT:8096}
+spring:
+  application:
+    name: elmos-software-delivery-platform-engine
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

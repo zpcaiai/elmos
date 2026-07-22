@@ -1,0 +1,148 @@
+openapi: 3.1.0
+info:
+  title: ELMOS Enterprise Suite Engine API
+  version: 1.0.0
+  description: Fail-closed ERP, CRM and enterprise suite modernization Worker contract.
+servers:
+  - url: http://localhost:8095
+paths:
+  /engine/v1/capabilities:
+    get:
+      operationId: getSuiteCapabilities
+      responses:
+        "200":
+          description: Suite engine capabilities and adapter status.
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/Capabilities"}
+  /engine/v1/scan:
+    post:
+      operationId: scanSuiteEstate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/JobRequest"}
+      responses:
+        "202": {$ref: "#/components/responses/JobAccepted"}
+  /engine/v1/plan:
+    post:
+      operationId: planSuiteModernization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/JobRequest"}
+      responses:
+        "202": {$ref: "#/components/responses/JobAccepted"}
+  /engine/v1/execute-step:
+    post:
+      operationId: executeSuiteStep
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/ExecuteStepRequest"}
+      responses:
+        "202": {$ref: "#/components/responses/JobAccepted"}
+  /engine/v1/validate:
+    post:
+      operationId: validateSuiteMigration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/JobRequest"}
+      responses:
+        "202": {$ref: "#/components/responses/JobAccepted"}
+  /engine/v1/jobs/{jobId}:
+    get:
+      operationId: getSuiteJob
+      parameters:
+        - {name: jobId, in: path, required: true, schema: {type: string}}
+        - {name: organizationId, in: query, required: true, schema: {type: string}}
+      responses:
+        "200":
+          description: Tenant-scoped job.
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/JobResponse"}
+  /engine/v1/jobs/{jobId}/cancel:
+    post:
+      operationId: cancelSuiteJob
+      parameters:
+        - {name: jobId, in: path, required: true, schema: {type: string}}
+        - {name: organizationId, in: query, required: true, schema: {type: string}}
+      responses:
+        "200":
+          description: Cancelled tenant-scoped job.
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/JobResponse"}
+components:
+  responses:
+    JobAccepted:
+      description: Request accepted by transport and resolved to a terminal fail-closed result when no adapter is configured.
+      content:
+        application/json:
+          schema: {$ref: "#/components/schemas/JobResponse"}
+  schemas:
+    Capabilities:
+      type: object
+      required: [schemaVersion, engineName, engineVersion, sandboxRequirements]
+      properties:
+        schemaVersion: {type: string}
+        engineName: {const: ELMOS_ENTERPRISE_SUITE}
+        engineVersion: {type: string}
+        languages: {type: array, items: {type: string}}
+        supportedTargetVersions: {type: array, items: {type: string}}
+        validationCapabilities: {type: array, items: {type: string}}
+        sandboxRequirements: {type: object}
+    JobRequest:
+      type: object
+      required: [organizationId, repositorySnapshotRef, workspaceRef, profile, correlationId, idempotencyKey]
+      properties:
+        organizationId: {type: string, minLength: 1}
+        repositorySnapshotRef: {type: string, minLength: 1}
+        workspaceRef: {type: string, minLength: 1}
+        profile: {type: string, minLength: 1}
+        correlationId: {type: string, minLength: 1}
+        idempotencyKey: {type: string, minLength: 1}
+      additionalProperties: false
+    ExecuteStepRequest:
+      type: object
+      required: [organizationId, migrationRunId, migrationPlanVersion, stepDefinition, workspaceRef, sourceCommit, executionBudget, correlationId, idempotencyKey]
+      properties:
+        organizationId: {type: string, minLength: 1}
+        migrationRunId: {type: string, minLength: 1}
+        migrationPlanVersion: {type: integer}
+        stepDefinition:
+          type: object
+          required: [stepId, executorType]
+          properties:
+            stepId: {type: string}
+            executorType: {type: string}
+            configuration: {type: object}
+        workspaceRef: {type: string}
+        sourceCommit: {type: string}
+        executionBudget: {type: object}
+        policy: {type: object}
+        correlationId: {type: string}
+        idempotencyKey: {type: string}
+      additionalProperties: false
+    JobResponse:
+      type: object
+      required: [schemaVersion, jobId, status, evidenceRefs, result]
+      properties:
+        schemaVersion: {type: string}
+        jobId: {type: string}
+        status: {enum: [ACCEPTED, RUNNING, SUCCEEDED, FAILED, CANCELLED]}
+        evidenceRefs: {type: array, items: {type: string}}
+        result: {type: object}
+        error:
+          oneOf:
+            - {type: "null"}
+            - type: object
+              properties:
+                errorCode: {type: string}
+                message: {type: string}

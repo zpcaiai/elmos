@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 537: multi agent team and organization topology"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $multi-agent-team-and-organization-topology to evaluate this capability with evidence."

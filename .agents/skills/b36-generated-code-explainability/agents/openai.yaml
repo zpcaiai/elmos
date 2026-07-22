@@ -1,0 +1,4 @@
+interface:
+  display_name: "B36 Code Explainability"
+  short_description: "Trace generated code to source and evidence"
+  default_prompt: "Use $b36-generated-code-explainability to explain generated constructs through immutable provenance."

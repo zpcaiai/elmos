@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 488: compensation bonus and equity manager"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $compensation-bonus-and-equity-manager to evaluate this capability with evidence."

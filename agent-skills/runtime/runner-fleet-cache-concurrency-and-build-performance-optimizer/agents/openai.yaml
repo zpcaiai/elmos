@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 22 014"
+  short_description: "Run Batch 22 runtime contract safely"
+  default_prompt: "Use $runner-fleet-cache-concurrency-and-build-performance-optimizer to apply its fail-closed ELMOS runtime contract."

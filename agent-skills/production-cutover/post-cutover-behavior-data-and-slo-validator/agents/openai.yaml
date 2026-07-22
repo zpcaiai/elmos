@@ -1,0 +1,4 @@
+interface:
+  display_name: "Post Cutover Behavior Data and Slo Validator"
+  short_description: "Run this Batch 11 cutover capability"
+  default_prompt: "Use $post-cutover-behavior-data-and-slo-validator to perform this Batch 11 production-cutover task."

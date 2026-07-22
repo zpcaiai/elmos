@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 41: Target Stack Recommendation"
+  short_description: "Run evidence-bound Batch 41 target stack recommendation work"
+  default_prompt: "Use $b41-target-stack-recommendation to implement and verify this capability with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 38: Zero Downtime Upgrade"
+  short_description: "Run evidence-bound Batch 38 zero downtime upgrade work"
+  default_prompt: "Use $b38-zero-downtime-upgrade to implement and verify this capability with fail-closed evidence."

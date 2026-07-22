@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 672: day one day hundred plan manager"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $day-one-day-hundred-plan-manager to evaluate this capability with evidence."

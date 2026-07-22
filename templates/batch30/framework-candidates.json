@@ -1,0 +1,28 @@
+{
+  "weights": {
+    "customer_demand": 0.18,
+    "revenue_potential": 0.14,
+    "strategic_fit": 0.12,
+    "technical_feasibility": 0.18,
+    "runtime_observability": 0.08,
+    "corpus_availability": 0.08,
+    "team_capability": 0.08,
+    "maintenance_efficiency": 0.07,
+    "provider_stability": 0.07
+  },
+  "candidates": [
+    {
+      "pack_key": "spring-boot-3-to-4",
+      "customer_demand": 0,
+      "revenue_potential": 0,
+      "strategic_fit": 0,
+      "technical_feasibility": 0,
+      "runtime_observability": 0,
+      "corpus_availability": 0,
+      "team_capability": 0,
+      "maintenance_efficiency": 0,
+      "provider_stability": 0,
+      "evidence_notes": []
+    }
+  ]
+}

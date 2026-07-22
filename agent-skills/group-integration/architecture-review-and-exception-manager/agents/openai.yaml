@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 736: architecture review and exception manager"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $architecture-review-and-exception-manager to evaluate this capability with evidence."

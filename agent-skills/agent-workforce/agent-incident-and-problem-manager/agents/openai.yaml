@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 558: agent incident and problem manager"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $agent-incident-and-problem-manager to evaluate this capability with evidence."

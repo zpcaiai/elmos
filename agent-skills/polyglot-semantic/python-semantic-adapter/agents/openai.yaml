@@ -1,0 +1,4 @@
+interface:
+  display_name: "Python Semantic Adapter"
+  short_description: "Combine LibCST losslessness with Pyright semantics"
+  default_prompt: "Use $python-semantic-adapter to extract honest Python static semantics and dynamic risks."

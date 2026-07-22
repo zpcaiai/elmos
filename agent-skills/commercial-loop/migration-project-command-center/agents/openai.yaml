@@ -1,0 +1,4 @@
+interface:
+  display_name: "migration-project-command-center"
+  short_description: "Run this Batch 13 commercial capability"
+  default_prompt: "Use $migration-project-command-center to evaluate this Batch 13 commercial capability with evidence."

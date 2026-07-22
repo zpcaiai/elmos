@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 614: finance ledger transaction and consistency control"
+  short_description: "Operate authoritative Batch 17 capability"
+  default_prompt: "Use $finance-ledger-transaction-and-consistency-control to evaluate this capability with evidence."

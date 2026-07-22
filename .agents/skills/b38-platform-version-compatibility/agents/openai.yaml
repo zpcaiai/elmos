@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 38: Platform Version Compatibility"
+  short_description: "Run evidence-bound Batch 38 platform version compatibility work"
+  default_prompt: "Use $b38-platform-version-compatibility to implement and verify this capability with fail-closed evidence."

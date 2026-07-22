@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.property-test-result.v1",
+  "type": "object",
+  "required": ["propertyId", "propertyType", "seed", "status", "evidenceRefs"],
+  "properties": {
+    "propertyId": {"type": "string"},
+    "propertyType": {"enum": ["ROUND_TRIP", "IDEMPOTENCY", "COMMUTATIVITY", "ASSOCIATIVITY", "INVARIANT", "MONOTONICITY", "BOUNDS", "EQUIVALENCE", "METAMORPHIC", "STATE_TRANSITION", "NO_CRASH"]},
+    "seed": {"type": "integer"},
+    "status": {"enum": ["PASS", "PROPERTY_VIOLATED", "NOT_RUN", "INCONCLUSIVE"]},
+    "minimalFailingExample": {}, "minimalFailingSequence": {"type": "array"},
+    "evidenceRefs": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,3929 @@
+{
+  "captured_at": "2026-07-22T03:37:26Z",
+  "files": [
+    {
+      "bytes": 816,
+      "path": "agent-skills/runtime/java-modernization-runtime/evals/files/legacy-shop/pom.xml",
+      "sha256": "5e6e93a2236279f411ea5e32483305596ccb632edc8ea1595d221f398f399e67"
+    },
+    {
+      "bytes": 487,
+      "path": "agent-skills/runtime/java-modernization-runtime/evals/files/legacy-shop/src/main/java/com/acme/LegacyOrderService.java",
+      "sha256": "1f2d90a65fe36d58cc27c50453cd4e7e6d74efe4b814a039422eb42c5638db92"
+    },
+    {
+      "bytes": 121,
+      "path": "agent-skills/runtime/java-modernization-runtime/evals/files/legacy-shop/src/test/java/com/acme/LegacyOrderServiceTest.java",
+      "sha256": "51ddf0f19c4fba2dc76fc393c2dbbdd2a21ddca0ff19b5d57c526f69c76824c6"
+    },
+    {
+      "bytes": 1332,
+      "path": "apps/agent-gateway/pom.xml",
+      "sha256": "47e84a221eb6a426e4c78cf8f01e42da95c87377a3f13810532f21a779799d32"
+    },
+    {
+      "bytes": 324,
+      "path": "apps/agent-gateway/src/main/java/io/elmos/agentgateway/AgentGatewayApplication.java",
+      "sha256": "729c0deee959fd5212eca25d179d47b84a7c36ec3815186279bd083cb80b4634"
+    },
+    {
+      "bytes": 4255,
+      "path": "apps/agent-gateway/src/main/java/io/elmos/agentgateway/AgentGatewayController.java",
+      "sha256": "7526bf06fdce3ac358474d15ccccfdc38479a24698d946db3016dc759cca5573"
+    },
+    {
+      "bytes": 766,
+      "path": "apps/agent-gateway/src/test/java/io/elmos/agentgateway/AgentGatewayControllerTest.java",
+      "sha256": "b6eb99e6d0a32a43682fd02ab7b7f32ed1f22399337d28ab7c7ad48cc9190806"
+    },
+    {
+      "bytes": 1334,
+      "path": "apps/commercial-api/pom.xml",
+      "sha256": "8b0b4fac2d19d0bf8863816ac0c4f4ba55fa1265c1c29b35e0632e2c79c327ac"
+    },
+    {
+      "bytes": 327,
+      "path": "apps/commercial-api/src/main/java/io/elmos/commercialapi/CommercialApiApplication.java",
+      "sha256": "be535806bb4b2e8a298a83eabeec4a23d4a54e62f43b5382ee0f002262bdbf3e"
+    },
+    {
+      "bytes": 6095,
+      "path": "apps/commercial-api/src/main/java/io/elmos/commercialapi/CommercialController.java",
+      "sha256": "0ddb77a1c5e4d6524aa7e01c51ba49aad84d2e590e8414a953f48aea986a9ef3"
+    },
+    {
+      "bytes": 527,
+      "path": "apps/commercial-api/src/test/java/io/elmos/commercialapi/CommercialControllerTest.java",
+      "sha256": "dc62c2e451a7570a41d0569539d34220069582a5003704aad265ba816757fb2c"
+    },
+    {
+      "bytes": 2697,
+      "path": "apps/control-plane/pom.xml",
+      "sha256": "69f6bc2a90df5b65daadca66134a9aadf2e6268c5e6ab771d88bccfc0e7b8bfb"
+    },
+    {
+      "bytes": 2184,
+      "path": "apps/control-plane/src/main/java/io/elmos/controlplane/CompositeController.java",
+      "sha256": "313af840e5da659aac367c10310a07cfd63616799d1b24522d3dfd828657de3c"
+    },
+    {
+      "bytes": 726,
+      "path": "apps/control-plane/src/main/java/io/elmos/controlplane/ControlPlaneApplication.java",
+      "sha256": "1d015b8a98a1d6f0d68ff9a8d414abee20b7305d48213663016321b6cf2765b5"
+    },
+    {
+      "bytes": 957,
+      "path": "apps/control-plane/src/main/java/io/elmos/controlplane/CrossDomainGovernanceController.java",
+      "sha256": "dc2547635cd09a1433d64463956b1e270493ce9a10c1425617a3b7add6468b9e"
+    },
+    {
+      "bytes": 2431,
+      "path": "apps/control-plane/src/main/java/io/elmos/controlplane/DatabaseDataController.java",
+      "sha256": "262d7fc5e516a3700bbc738a22c7e904cac9ec19ba8ee2e7ed2a2feb127f7714"
+    },
+    {
+      "bytes": 4913,
+      "path": "apps/control-plane/src/main/java/io/elmos/controlplane/DeliveryController.java",
+      "sha256": "057a074ca4e8f468bd4e101efa2a90d4e34d3e8dadd47b2c5a234a4fe9c86c29"
+    },
+    {
+      "bytes": 739,
+      "path": "apps/control-plane/src/main/java/io/elmos/controlplane/DemoController.java",
+      "sha256": "6507f2cba55c78e36802abd736c6fe8c6f76d6c7b1cb3712fe56c80c10a651f0"
+    },
+    {
+      "bytes": 2045,
+      "path": "apps/control-plane/src/main/java/io/elmos/controlplane/EnterpriseIntegrationController.java",
+      "sha256": "2ac5473184afac7d0217b79c60e0a6334400ca533686748626d342fcbfec1174"
+    },
+    {
+      "bytes": 2058,
+      "path": "apps/control-plane/src/main/java/io/elmos/controlplane/EnterpriseSuiteController.java",
+      "sha256": "0f65a9d9ea6ce61a5cdba056ca7cf897503768f4474963cdc3ee4aef2709bcc1"
+    },
+    {
+      "bytes": 2343,
+      "path": "apps/control-plane/src/main/java/io/elmos/controlplane/FrontendClientController.java",
+      "sha256": "89e92a2f26b97db5199892c32f027050c16c508b99fa82835660b836fc0d4089"
+    },
+    {
+      "bytes": 7425,
+      "path": "apps/control-plane/src/main/java/io/elmos/controlplane/GithubSnapshotConfiguration.java",
+      "sha256": "768db2728c810dc6ef4fb2f63dd91c7c8a23c4ece5d939b08aa1d0356440747c"
+    },
+    {
+      "bytes": 2229,
+      "path": "apps/control-plane/src/main/java/io/elmos/controlplane/GithubWebhookBodyLimitFilter.java",
+      "sha256": "0f0fa53c709e6d6eada839ce35ad86622b4447140c2feab314949ec2d442b237"
+    },
+    {
+      "bytes": 2004,
+      "path": "apps/control-plane/src/main/java/io/elmos/controlplane/GithubWebhookConfiguration.java",
+      "sha256": "f5ed55a956ae9eacdba19c3091c459b595ee581ea17d854945847b9bb409004c"
+    },
+    {
+      "bytes": 1940,
+      "path": "apps/control-plane/src/main/java/io/elmos/controlplane/GithubWebhookController.java",
+      "sha256": "4181cc76771bbe1206307b6621e7ceb86db1643dea8bd5c9b36fe0f34f7d3d3f"
+    },
+    {
+      "bytes": 114,
+      "path": "apps/control-plane/src/main/java/io/elmos/controlplane/GithubWebhookSecrets.java",
+      "sha256": "ba6611ba2abc9414f4d808c71c686ccf6fd684a7adf8f375724af3802a4f2259"
+    },
+    {
+      "bytes": 2505,
+      "path": "apps/control-plane/src/main/java/io/elmos/controlplane/InfrastructureController.java",
+      "sha256": "8b6da5691c0eb52fc1cf4b133437beb23dff21266c56748ad0a264a92fb4740c"
+    },
+    {
+      "bytes": 2118,
+      "path": "apps/control-plane/src/main/java/io/elmos/controlplane/MainframeController.java",
+      "sha256": "498750b91a9ddd5f5fcab424a087acc6c7cde7709d8651791d292b11b790147a"
+    },
+    {
+      "bytes": 1300,
+      "path": "apps/control-plane/src/main/java/io/elmos/controlplane/MigrationPackCertificationController.java",
+      "sha256": "2edaefa095ab3199249c22f454e5d23380e861aa5da55a07fc5d0e8f63980894"
+    },
+    {
+      "bytes": 2371,
+      "path": "apps/control-plane/src/main/java/io/elmos/controlplane/ProductRoadmapController.java",
+      "sha256": "ee37739b4560feb57792f521251efc7117898fe87868e1c0e53ce5d2f8223d20"
+    },
+    {
+      "bytes": 2312,
+      "path": "apps/control-plane/src/main/java/io/elmos/controlplane/SecurityComplianceController.java",
+      "sha256": "e882d0280cd5ed3e2a0c3609a46f27375ee8047298ccccad683c4f42b2135a11"
+    },
+    {
+      "bytes": 1901,
+      "path": "apps/control-plane/src/main/java/io/elmos/controlplane/SnapshotController.java",
+      "sha256": "bb64772d6a736667fd16a2872f44ba1b019c5feda947e70050575e013d355cd1"
+    },
+    {
+      "bytes": 2161,
+      "path": "apps/control-plane/src/main/java/io/elmos/controlplane/TestQualityController.java",
+      "sha256": "05bbc6bf16921634dddd0ecff203123561eefb388929b2008ac8be2d450e9ff6"
+    },
+    {
+      "bytes": 1735,
+      "path": "apps/control-plane/src/test/java/io/elmos/controlplane/CompositeControllerTest.java",
+      "sha256": "a4bf26adc93467ae81c43e5d5f2eaf79297c373c09add66c11bf958536bcf6cf"
+    },
+    {
+      "bytes": 809,
+      "path": "apps/control-plane/src/test/java/io/elmos/controlplane/CrossDomainGovernanceControllerTest.java",
+      "sha256": "7a72ba39211a58319e74efec8c84ba954b882e0a9a2aebb95bfa78eef41aa112"
+    },
+    {
+      "bytes": 2171,
+      "path": "apps/control-plane/src/test/java/io/elmos/controlplane/DatabaseDataControllerTest.java",
+      "sha256": "926b815543a6ff251729d222691a1994e02aee1267f9428c7288faaf30a52218"
+    },
+    {
+      "bytes": 805,
+      "path": "apps/control-plane/src/test/java/io/elmos/controlplane/DeliveryControllerTest.java",
+      "sha256": "fa4bbc9f9f01a05e42e9ca01dbd8a99d8a869997611dd5f4900de92ee9927826"
+    },
+    {
+      "bytes": 482,
+      "path": "apps/control-plane/src/test/java/io/elmos/controlplane/DemoControllerTest.java",
+      "sha256": "9f6c3bcc595990751e6de7c494b7e99fdd7a608730653679f21740c0a8d719f5"
+    },
+    {
+      "bytes": 1343,
+      "path": "apps/control-plane/src/test/java/io/elmos/controlplane/EnterpriseIntegrationControllerTest.java",
+      "sha256": "4109c0bd74684b224dba9dc269fef6cd881058d81dbb2943c048f8ff128beea7"
+    },
+    {
+      "bytes": 1378,
+      "path": "apps/control-plane/src/test/java/io/elmos/controlplane/EnterpriseSuiteControllerTest.java",
+      "sha256": "d0f6012134ab5b475dabec343d31dc907e45ae4268aefa263415461a5ef44460"
+    },
+    {
+      "bytes": 1287,
+      "path": "apps/control-plane/src/test/java/io/elmos/controlplane/FrontendClientControllerTest.java",
+      "sha256": "e63044edf2e2c63bac63cf980b22c3ab45d377cc667d7c367a337808fc503c0a"
+    },
+    {
+      "bytes": 1942,
+      "path": "apps/control-plane/src/test/java/io/elmos/controlplane/GithubWebhookControllerTest.java",
+      "sha256": "0de74be3e3ecb615e31552da2ca71053b20314103583e96921cab6ad93976760"
+    },
+    {
+      "bytes": 2244,
+      "path": "apps/control-plane/src/test/java/io/elmos/controlplane/InfrastructureControllerTest.java",
+      "sha256": "310135dadebf3eaf1327dd4bb560d027342117b5ac88cc9af46ce16e8fdbef1f"
+    },
+    {
+      "bytes": 1162,
+      "path": "apps/control-plane/src/test/java/io/elmos/controlplane/MainframeControllerTest.java",
+      "sha256": "1fe07224d1e1f1cbdb506eab742683d2a42f31cb230af3f0bf10553e8c9525f3"
+    },
+    {
+      "bytes": 978,
+      "path": "apps/control-plane/src/test/java/io/elmos/controlplane/MigrationPackCertificationControllerTest.java",
+      "sha256": "57b1451ca72f7194985105be85dd3ef8eaaa265bf491afa299aa412fd5f0ff92"
+    },
+    {
+      "bytes": 871,
+      "path": "apps/control-plane/src/test/java/io/elmos/controlplane/ProductRoadmapControllerTest.java",
+      "sha256": "db940ca3bbec7320a07b58c70b09b392e229f19061e60f0dfdf1d24c382b2864"
+    },
+    {
+      "bytes": 1538,
+      "path": "apps/control-plane/src/test/java/io/elmos/controlplane/SecurityComplianceControllerTest.java",
+      "sha256": "87f9f2bb941b2087a0524eabb06e5d58d6d4547cc49456e419ed11fdbaf6ebf6"
+    },
+    {
+      "bytes": 1275,
+      "path": "apps/control-plane/src/test/java/io/elmos/controlplane/TestQualityControllerTest.java",
+      "sha256": "a45f207c7776d0a67c78e88d8b0e9b77f8ed87ac7fc705b58af3e317ad52b971"
+    },
+    {
+      "bytes": 998,
+      "path": "apps/egress-proxy/pom.xml",
+      "sha256": "22aa8f63dcd2867c8b5c84665cf0b1cf01e3fc3ff515bb20062e42d0afa48b9c"
+    },
+    {
+      "bytes": 7620,
+      "path": "apps/egress-proxy/src/main/java/io/elmos/egressproxy/EgressProxyApplication.java",
+      "sha256": "1d176c4b75627dea0954a1ead6179aae0ad5f813d85a1ca8c0f3846c6df14397"
+    },
+    {
+      "bytes": 1270,
+      "path": "apps/egress-proxy/src/test/java/io/elmos/egressproxy/EgressProxyApplicationTest.java",
+      "sha256": "5f55bcc70209becb2ca870f0e3d5a3aaca65371ef9656e890b0a9c356d5a3356"
+    },
+    {
+      "bytes": 921,
+      "path": "apps/elmosctl/pom.xml",
+      "sha256": "e3af2be87f025c80f8d482a7f7ce946e30576617a948f1a6eb4e995ab8daeb5a"
+    },
+    {
+      "bytes": 2523,
+      "path": "apps/elmosctl/src/main/java/io/elmos/cli/ElmosCtl.java",
+      "sha256": "994cef98772b4b0481c4cc9539b56c7477b1ac891465141556a66bb900e13751"
+    },
+    {
+      "bytes": 996,
+      "path": "apps/elmosctl/src/test/java/io/elmos/cli/ElmosCtlTest.java",
+      "sha256": "ea4b152539547ad4ecdb6ea5a85c3b0180f22f2f8b6cebe268a6a8abb7e278b6"
+    },
+    {
+      "bytes": 1338,
+      "path": "apps/enterprise-control/pom.xml",
+      "sha256": "d1f481b6b83a87a2cf83e095d113fa95e9e0169cedaa35f2f84ac91efa4f6eb9"
+    },
+    {
+      "bytes": 339,
+      "path": "apps/enterprise-control/src/main/java/io/elmos/enterprisecontrol/EnterpriseControlApplication.java",
+      "sha256": "90273b090a007f90e7a1aed14e20bc411174b29d104f7df94bd706c564e26a45"
+    },
+    {
+      "bytes": 6454,
+      "path": "apps/enterprise-control/src/main/java/io/elmos/enterprisecontrol/EnterpriseController.java",
+      "sha256": "f3d514293e554fdc3093501ca4f315e6d148936074eb65ddd1df22bc2d9f6271"
+    },
+    {
+      "bytes": 548,
+      "path": "apps/enterprise-control/src/test/java/io/elmos/enterprisecontrol/EnterpriseControllerTest.java",
+      "sha256": "05c073aff460fbd7e74672c30e47fc2ffaa49055af2aa0e1fd01826b3cd87bd5"
+    },
+    {
+      "bytes": 2144,
+      "path": "apps/java-engine-worker/pom.xml",
+      "sha256": "18e6353640c089bd9254b7462b98a032256775fecb207c662cb6f1a091ff4cb1"
+    },
+    {
+      "bytes": 4275,
+      "path": "apps/java-engine-worker/src/main/java/io/elmos/worker/EngineController.java",
+      "sha256": "b09ca86b3e99a3b9fa71ae434108d180a5f75e3be7a249e2800d2ba6fe91994c"
+    },
+    {
+      "bytes": 3674,
+      "path": "apps/java-engine-worker/src/main/java/io/elmos/worker/EngineJobRegistry.java",
+      "sha256": "b64fa231800c9e4abdee03acc6735d17bb14e75a3a8a45bbf0a5c84fb5e2a0ce"
+    },
+    {
+      "bytes": 1418,
+      "path": "apps/java-engine-worker/src/main/java/io/elmos/worker/HealthPlanningConfiguration.java",
+      "sha256": "b30a1864979faf8be6d90fca8e619750eb52d8cbd2d68bff45746e174c227473"
+    },
+    {
+      "bytes": 1760,
+      "path": "apps/java-engine-worker/src/main/java/io/elmos/worker/HealthPlanningController.java",
+      "sha256": "e50dec3719057a62c5d7c7c272ee16efe4f28780e7650844175e83799e6f87fb"
+    },
+    {
+      "bytes": 326,
+      "path": "apps/java-engine-worker/src/main/java/io/elmos/worker/JavaEngineWorkerApplication.java",
+      "sha256": "6dbf0439b82ef15a0843b9e489eda4955d25b831e6526a02a26de9e2747c97c2"
+    },
+    {
+      "bytes": 2897,
+      "path": "apps/java-engine-worker/src/main/java/io/elmos/worker/RecipeGovernanceController.java",
+      "sha256": "8e2dbddfb6806da8939ae96a052089230e245545abb32bd71c819f695543f176"
+    },
+    {
+      "bytes": 3876,
+      "path": "apps/java-engine-worker/src/main/java/io/elmos/worker/ValidationController.java",
+      "sha256": "393a8db56045edf4a4ca2652ec9604cd70860c49e1e87998655256e31f9b9079"
+    },
+    {
+      "bytes": 1136,
+      "path": "apps/java-engine-worker/src/main/java/io/elmos/worker/WorkspacePathResolver.java",
+      "sha256": "99fcb693f065e2ca87f4ad6c1e801410d14cd749d5607bd970573ab9b42d217f"
+    },
+    {
+      "bytes": 2686,
+      "path": "apps/java-engine-worker/src/test/java/io/elmos/worker/EngineControllerTest.java",
+      "sha256": "b078b759db532446ea49d6e79e88dd4860aaca0197390621ce922dd6f78b781a"
+    },
+    {
+      "bytes": 1932,
+      "path": "apps/java-engine-worker/src/test/java/io/elmos/worker/HealthPlanningControllerTest.java",
+      "sha256": "24a7ace2e598c5498b31ee01618d0a29f2f4b41ce260388f45b07094ad71c341"
+    },
+    {
+      "bytes": 922,
+      "path": "apps/java-engine-worker/src/test/java/io/elmos/worker/ValidationControllerTest.java",
+      "sha256": "38a7c2c60ca365a657f00c4dc26968618a43527cd249fc5f7de526f6fcf5e2c0"
+    },
+    {
+      "bytes": 5854,
+      "path": "apps/web-console/.next/types/cache-life.d.ts",
+      "sha256": "d1986184a09a52db8228cb2bb2a61a8c05c9354e5b93cec8e2628d8579c892d7"
+    },
+    {
+      "bytes": 1397,
+      "path": "apps/web-console/.next/types/routes.d.ts",
+      "sha256": "a384610388221cd70cffb4503cee7853b8b076f2b4a55324b20a4bdbd25a3538"
+    },
+    {
+      "bytes": 2095,
+      "path": "apps/web-console/.next/types/validator.ts",
+      "sha256": "8c738d7ab02122bec55d98eab2f5e875f5306ebffe56a6be96f2da0916a7ea71"
+    },
+    {
+      "bytes": 357,
+      "path": "apps/web-console/app/layout.tsx",
+      "sha256": "7646081436d290ea8480ffdc77987bf6a12d815a6fd7ba1c7fbda6f2b2a64bcf"
+    },
+    {
+      "bytes": 18615,
+      "path": "apps/web-console/app/page.tsx",
+      "sha256": "195b6dd09b5d3bab20a81829135e7b45e7f41298c620d94d0ee636a0c472f233"
+    },
+    {
+      "bytes": 247,
+      "path": "apps/web-console/next-env.d.ts",
+      "sha256": "7b550dda9686c16f36a17bf9051d5dbf31e98555b30d114ac49fc49a1e712651"
+    },
+    {
+      "bytes": 2300,
+      "path": "apps/workspace-service/pom.xml",
+      "sha256": "6c7832e0e6e072ce6d73cf4a70246424126b9555b4c28022b999848b0ad7b76c"
+    },
+    {
+      "bytes": 3480,
+      "path": "apps/workspace-service/src/main/java/io/elmos/workspaceservice/DirectorySecretProvider.java",
+      "sha256": "dfc24128c450b3798762adc7635bd70aecf6984ce9a800a46d0547846f3ab7ee"
+    },
+    {
+      "bytes": 661,
+      "path": "apps/workspace-service/src/main/java/io/elmos/workspaceservice/DisabledWorkspaceProvisioner.java",
+      "sha256": "8c441f006820797c8916607bfdae523c1a71a9da73e5a9c8476b6213425e752e"
+    },
+    {
+      "bytes": 7274,
+      "path": "apps/workspace-service/src/main/java/io/elmos/workspaceservice/DockerNetworkPolicyEnforcer.java",
+      "sha256": "efd4caa9b970240f4eabae5ce9047eff9766d346a115246df35fb2947fd77eb8"
+    },
+    {
+      "bytes": 4617,
+      "path": "apps/workspace-service/src/main/java/io/elmos/workspaceservice/DockerSnapshotVolumeMaterializer.java",
+      "sha256": "00da5b63c5fe1f7f4d72803d96801bd242fc8551274be61d3bda10ba7fcca98f"
+    },
+    {
+      "bytes": 4100,
+      "path": "apps/workspace-service/src/main/java/io/elmos/workspaceservice/DockerTmpfsSecretMaterializer.java",
+      "sha256": "7855bba633936fcd3e7fc820ad6b605f64835392ddfbfde0f4cbb77a65a5d309"
+    },
+    {
+      "bytes": 12694,
+      "path": "apps/workspace-service/src/main/java/io/elmos/workspaceservice/DockerWorkspaceProvisioner.java",
+      "sha256": "778137d7a0e02ff169630209fe53f99d99c4896c0892b61483846b092c11f09a"
+    },
+    {
+      "bytes": 2756,
+      "path": "apps/workspace-service/src/main/java/io/elmos/workspaceservice/FileCommandArtifactStore.java",
+      "sha256": "cd0d1f08de5e73489cfe4731210eef3f198074d1144e0960243255c9d109cf3c"
+    },
+    {
+      "bytes": 1091,
+      "path": "apps/workspace-service/src/main/java/io/elmos/workspaceservice/JdbcWorkspaceSecretFinalizer.java",
+      "sha256": "515f6fd07bc109dcc77fc1b96e86710424649049f77b9be899998d260c3a13db"
+    },
+    {
+      "bytes": 1391,
+      "path": "apps/workspace-service/src/main/java/io/elmos/workspaceservice/SecretInjectionController.java",
+      "sha256": "dc2d7091989419175f705583266319773dcd5d31bf5320e27087b888722e12f8"
+    },
+    {
+      "bytes": 1090,
+      "path": "apps/workspace-service/src/main/java/io/elmos/workspaceservice/WorkspaceController.java",
+      "sha256": "7c2a318d0ec4670637c3d8766447f4f3bcedca0c911de36452bf511fd2428c73"
+    },
+    {
+      "bytes": 1974,
+      "path": "apps/workspace-service/src/main/java/io/elmos/workspaceservice/WorkspaceSecretRegistry.java",
+      "sha256": "70bea1afcb8f4a1e45c55df5b916c29b55009a63c5a57397bed21b43936b66e2"
+    },
+    {
+      "bytes": 367,
+      "path": "apps/workspace-service/src/main/java/io/elmos/workspaceservice/WorkspaceServiceApplication.java",
+      "sha256": "b4dec63a873c7711d12fb53f630bd679bd9add318026aaa5852a95bb9901d306"
+    },
+    {
+      "bytes": 6394,
+      "path": "apps/workspace-service/src/main/java/io/elmos/workspaceservice/WorkspaceServiceConfiguration.java",
+      "sha256": "ab304df87beb0db53483ea76e1ae3dbf0793ff561f10fe70b1ddaa394e8fc5ea"
+    },
+    {
+      "bytes": 2382,
+      "path": "apps/workspace-service/src/test/java/io/elmos/workspaceservice/DirectorySecretProviderTest.java",
+      "sha256": "2d89915a331f12b2bfc2bf7df07823fe870f6b3bcf5e94cfb8fc0269433527be"
+    },
+    {
+      "bytes": 3602,
+      "path": "apps/workspace-service/src/test/java/io/elmos/workspaceservice/SandboxImageDefinitionTest.java",
+      "sha256": "13c6499984fbc4a00791e58f29fb78068b8b240789a97edf564bd0976a5decad"
+    },
+    {
+      "bytes": 1111,
+      "path": "apps/workspace-service/src/test/java/io/elmos/workspaceservice/WorkspaceSecretRegistryTest.java",
+      "sha256": "729441beb1daec78d6219b8e4071f6d2d9b6e0acbecf7c19d8a09a023e93eb09"
+    },
+    {
+      "bytes": 835,
+      "path": "contracts/engine-api/pom.xml",
+      "sha256": "41c3418656a1b2a302ffe84d266aa4a2d811fc31872db24be381434cf0a89ca9"
+    },
+    {
+      "bytes": 10679,
+      "path": "contracts/engine-api/src/main/java/io/elmos/engine/api/EngineApi.java",
+      "sha256": "3b929fbaaf0971f5a7def28d8b424f282a4c9ce1bd864ca21703019b3a17984a"
+    },
+    {
+      "bytes": 1509,
+      "path": "contracts/engine-api/src/test/java/io/elmos/engine/api/EngineApiContractTest.java",
+      "sha256": "23a126f3faee841eaaded3a4fe138f63fab5809a477edd17a72a623e1898d37a"
+    },
+    {
+      "bytes": 1569,
+      "path": "engines/ai-platform-engine/pom.xml",
+      "sha256": "e07e17d6e6391c74982829c40128c6afcc7f10ada97213adc8d63eed161ac45c"
+    },
+    {
+      "bytes": 609,
+      "path": "engines/ai-platform-engine/src/main/java/io/elmos/ai/AiPlatformEngineApplication.java",
+      "sha256": "3ba295d4b8319225026b9f0c1cf56344b4bd1a571def48e5a7917a862b1270b1"
+    },
+    {
+      "bytes": 2286,
+      "path": "engines/ai-platform-engine/src/main/java/io/elmos/ai/AiPlatformEngineController.java",
+      "sha256": "c48d520c1a5d943229a66bd5d7c5aed3819e88b36c96601801a1eae4840092ca"
+    },
+    {
+      "bytes": 1138,
+      "path": "engines/ai-platform-engine/src/test/java/io/elmos/ai/Batch23EngineContractTest.java",
+      "sha256": "d2f1d4bf9e0e4cf4fa5103205929cc46ab4966ea917ff58ddd3507219791185f"
+    },
+    {
+      "bytes": 1415,
+      "path": "engines/database-data-engine/pom.xml",
+      "sha256": "fa5f6c27569f6236f250873e18c2b35a64d79ede6ff64c7e3b92456eede8d288"
+    },
+    {
+      "bytes": 7616,
+      "path": "engines/database-data-engine/src/main/java/io/elmos/databasedata/CanonicalDatabaseIr.java",
+      "sha256": "7313b170003c7355f237bf79d0f2b496e0b56fedc60f32aadac3d0f0b1a56096"
+    },
+    {
+      "bytes": 2582,
+      "path": "engines/database-data-engine/src/main/java/io/elmos/databasedata/DatabaseCutoverAdjudicator.java",
+      "sha256": "7ff1249211015c76faa5cd372509abaafe4174536b527d0a4218d9f1e789a86e"
+    },
+    {
+      "bytes": 348,
+      "path": "engines/database-data-engine/src/main/java/io/elmos/databasedata/DatabaseDataEngineApplication.java",
+      "sha256": "7c990a1ddcd11d744c1ec6039917a036fde8093fdf04485775f3c895a7a7629c"
+    },
+    {
+      "bytes": 2668,
+      "path": "engines/database-data-engine/src/main/java/io/elmos/databasedata/DatabaseDataEngineController.java",
+      "sha256": "30f4ca0456c2177f979db0e44a9242118947d7b232464c8dac4a4c82909a3f2e"
+    },
+    {
+      "bytes": 7966,
+      "path": "engines/database-data-engine/src/main/java/io/elmos/databasedata/DatabaseDataEngineService.java",
+      "sha256": "f3f0b9cc0debf2785110c48317b91237855367ae75945965f72b2362106f6ed7"
+    },
+    {
+      "bytes": 3563,
+      "path": "engines/database-data-engine/src/main/java/io/elmos/databasedata/DatabaseDataEvidenceMapper.java",
+      "sha256": "f0987c17486d0b332a17cc70e64a61cdf6b1f84f63643be5921155d811d531cd"
+    },
+    {
+      "bytes": 6900,
+      "path": "engines/database-data-engine/src/main/java/io/elmos/databasedata/DatabaseDataModels.java",
+      "sha256": "484a88429d1240e80dae2b0eaf74d2fbd7e0652d4390069caad50b66413277c2"
+    },
+    {
+      "bytes": 710,
+      "path": "engines/database-data-engine/src/main/java/io/elmos/databasedata/DatabaseMigrationLifecycle.java",
+      "sha256": "775aecaccb9e2cedbd6128706fa259e431294fa488cb54ce8b7bceb7f27d82a7"
+    },
+    {
+      "bytes": 6696,
+      "path": "engines/database-data-engine/src/main/java/io/elmos/databasedata/DatabaseModernizationPolicy.java",
+      "sha256": "59ffda77dce204b29049c6fdcccffbd19a37d6e35b65c91e4e5d74d832bf158a"
+    },
+    {
+      "bytes": 1741,
+      "path": "engines/database-data-engine/src/main/java/io/elmos/databasedata/DatabaseReplicationProvider.java",
+      "sha256": "67b4c93737a5cfbb2d79d4270fca29a6a10f2cc97fd1aff0a4cc2adaf6d15362"
+    },
+    {
+      "bytes": 3690,
+      "path": "engines/database-data-engine/src/main/java/io/elmos/databasedata/DatabaseTargetPlanner.java",
+      "sha256": "b1fd227ff82da420aeb15cc53858a7f7f8bceacf83422a163f94fe536f7a8090"
+    },
+    {
+      "bytes": 2380,
+      "path": "engines/database-data-engine/src/main/java/io/elmos/databasedata/VendorRunnerRegistry.java",
+      "sha256": "146ee5e9078567a73efad110f56ec0bb018a3926e93706d01409af3e89c15392"
+    },
+    {
+      "bytes": 5057,
+      "path": "engines/database-data-engine/src/test/java/io/elmos/databasedata/Batch15AcceptanceScenariosTest.java",
+      "sha256": "22eabaed6eb37f942050f2b7905ea5722521135032ca0a264d443c172373c0bc"
+    },
+    {
+      "bytes": 2681,
+      "path": "engines/database-data-engine/src/test/java/io/elmos/databasedata/Batch15ContractFixtureTest.java",
+      "sha256": "814315e91ef6962ec1f0924e7f1be91a02b90db83a8e10bc9c730466ea15446e"
+    },
+    {
+      "bytes": 2734,
+      "path": "engines/database-data-engine/src/test/java/io/elmos/databasedata/CanonicalDatabaseIrTest.java",
+      "sha256": "28ce2368278072bc28aad6268ebdb35f6d89748209c87f82d25015c4fd5b3ead"
+    },
+    {
+      "bytes": 836,
+      "path": "engines/database-data-engine/src/test/java/io/elmos/databasedata/DatabaseDataEngineControllerTest.java",
+      "sha256": "bcc249647640b41ca0202177c0f2c7f8d5217fc160c5a65039c8ea2751555583"
+    },
+    {
+      "bytes": 6121,
+      "path": "engines/database-data-engine/src/test/java/io/elmos/databasedata/DatabaseDataEngineTest.java",
+      "sha256": "ff95923410fcd53217a4c2168f5c8a04ed066aadc8ee35201583e1f6dc81b950"
+    },
+    {
+      "bytes": 4805,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Application/MigrationPlanner.cs",
+      "sha256": "87ba64ec9411fa882a3483d02d643fcb5968428cc4d79d63140d00b8dc1d6ce0"
+    },
+    {
+      "bytes": 1734,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Application/Ports.cs",
+      "sha256": "b4afcd842b6c778eed040b971a1a2bb2331c6cfdfaeefba5f47568f453ac94e7"
+    },
+    {
+      "bytes": 196,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Application/obj/Debug/net10.0/.NETCoreApp,Version=v10.0.AssemblyAttributes.cs",
+      "sha256": "f79c1ad9a9fc76110b3655f5bfb5ff4e3168e9addceff05b937c0796f0ec34eb"
+    },
+    {
+      "bytes": 983,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Application/obj/Debug/net10.0/Elmos.Dotnet.Application.AssemblyInfo.cs",
+      "sha256": "d944a57fc1f9b31c3fc31e91645db9de8189170b99837f9b633c66ee22b33e2a"
+    },
+    {
+      "bytes": 231,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Application/obj/Debug/net10.0/Elmos.Dotnet.Application.GlobalUsings.g.cs",
+      "sha256": "8f86a2cbf00ff3eee0bda2bc0eb5e1fc19c8544d5dc650c53d0132325956b592"
+    },
+    {
+      "bytes": 196,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Application/obj/Release/net10.0/.NETCoreApp,Version=v10.0.AssemblyAttributes.cs",
+      "sha256": "f79c1ad9a9fc76110b3655f5bfb5ff4e3168e9addceff05b937c0796f0ec34eb"
+    },
+    {
+      "bytes": 985,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Application/obj/Release/net10.0/Elmos.Dotnet.Application.AssemblyInfo.cs",
+      "sha256": "055b524e0511eb6e715a53a99f875eab4dc9cf1f6e186172e97d4473e06070de"
+    },
+    {
+      "bytes": 231,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Application/obj/Release/net10.0/Elmos.Dotnet.Application.GlobalUsings.g.cs",
+      "sha256": "8f86a2cbf00ff3eee0bda2bc0eb5e1fc19c8544d5dc650c53d0132325956b592"
+    },
+    {
+      "bytes": 846,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.AspNet/AspNetMigrationAdvisor.cs",
+      "sha256": "2f571bbcdb32077b71c12c8bad696e782951c0d2c6e8aa55ac5591c6032cf045"
+    },
+    {
+      "bytes": 196,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.AspNet/obj/Debug/net10.0/.NETCoreApp,Version=v10.0.AssemblyAttributes.cs",
+      "sha256": "f79c1ad9a9fc76110b3655f5bfb5ff4e3168e9addceff05b937c0796f0ec34eb"
+    },
+    {
+      "bytes": 968,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.AspNet/obj/Debug/net10.0/Elmos.Dotnet.AspNet.AssemblyInfo.cs",
+      "sha256": "b2ca94700070def8286e1558de696a065af9e3f41ae31c1ee585b79a13c8213f"
+    },
+    {
+      "bytes": 231,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.AspNet/obj/Debug/net10.0/Elmos.Dotnet.AspNet.GlobalUsings.g.cs",
+      "sha256": "8f86a2cbf00ff3eee0bda2bc0eb5e1fc19c8544d5dc650c53d0132325956b592"
+    },
+    {
+      "bytes": 196,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.AspNet/obj/Release/net10.0/.NETCoreApp,Version=v10.0.AssemblyAttributes.cs",
+      "sha256": "f79c1ad9a9fc76110b3655f5bfb5ff4e3168e9addceff05b937c0796f0ec34eb"
+    },
+    {
+      "bytes": 970,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.AspNet/obj/Release/net10.0/Elmos.Dotnet.AspNet.AssemblyInfo.cs",
+      "sha256": "6760ca7f351fee7ad511bdee106ddb1d1d15ad3f09cd5ac4d1c987f94fbfb1f4"
+    },
+    {
+      "bytes": 231,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.AspNet/obj/Release/net10.0/Elmos.Dotnet.AspNet.GlobalUsings.g.cs",
+      "sha256": "8f86a2cbf00ff3eee0bda2bc0eb5e1fc19c8544d5dc650c53d0132325956b592"
+    },
+    {
+      "bytes": 3036,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Contracts/EngineContracts.cs",
+      "sha256": "7cae92834e580bd102c19ebed1e4fe53fbf05945ff277db9f1a8a136b5242670"
+    },
+    {
+      "bytes": 196,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Contracts/obj/Debug/net10.0/.NETCoreApp,Version=v10.0.AssemblyAttributes.cs",
+      "sha256": "f79c1ad9a9fc76110b3655f5bfb5ff4e3168e9addceff05b937c0796f0ec34eb"
+    },
+    {
+      "bytes": 977,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Contracts/obj/Debug/net10.0/Elmos.Dotnet.Contracts.AssemblyInfo.cs",
+      "sha256": "f884f1f35ba06557edf2d7ebc3a97555dc5f70a7b81b7cdc48b40ff41638ffa0"
+    },
+    {
+      "bytes": 231,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Contracts/obj/Debug/net10.0/Elmos.Dotnet.Contracts.GlobalUsings.g.cs",
+      "sha256": "8f86a2cbf00ff3eee0bda2bc0eb5e1fc19c8544d5dc650c53d0132325956b592"
+    },
+    {
+      "bytes": 196,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Contracts/obj/Release/net10.0/.NETCoreApp,Version=v10.0.AssemblyAttributes.cs",
+      "sha256": "f79c1ad9a9fc76110b3655f5bfb5ff4e3168e9addceff05b937c0796f0ec34eb"
+    },
+    {
+      "bytes": 979,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Contracts/obj/Release/net10.0/Elmos.Dotnet.Contracts.AssemblyInfo.cs",
+      "sha256": "5aff6f9479355ae4c30c414724bc87852aab10db1f330ccd2a8ea1457e416dbe"
+    },
+    {
+      "bytes": 231,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Contracts/obj/Release/net10.0/Elmos.Dotnet.Contracts.GlobalUsings.g.cs",
+      "sha256": "8f86a2cbf00ff3eee0bda2bc0eb5e1fc19c8544d5dc650c53d0132325956b592"
+    },
+    {
+      "bytes": 3902,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Domain/DotnetDomain.cs",
+      "sha256": "7750ac211de796247693a3e6c75992c83bca61c708849c5d3590c8a2f1dee6cb"
+    },
+    {
+      "bytes": 196,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Domain/obj/Debug/net10.0/.NETCoreApp,Version=v10.0.AssemblyAttributes.cs",
+      "sha256": "f79c1ad9a9fc76110b3655f5bfb5ff4e3168e9addceff05b937c0796f0ec34eb"
+    },
+    {
+      "bytes": 968,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Domain/obj/Debug/net10.0/Elmos.Dotnet.Domain.AssemblyInfo.cs",
+      "sha256": "a8bee8867dbdfc02af421fdebafd45191434b54795aa0b55be0e190945c0466f"
+    },
+    {
+      "bytes": 231,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Domain/obj/Debug/net10.0/Elmos.Dotnet.Domain.GlobalUsings.g.cs",
+      "sha256": "8f86a2cbf00ff3eee0bda2bc0eb5e1fc19c8544d5dc650c53d0132325956b592"
+    },
+    {
+      "bytes": 196,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Domain/obj/Release/net10.0/.NETCoreApp,Version=v10.0.AssemblyAttributes.cs",
+      "sha256": "f79c1ad9a9fc76110b3655f5bfb5ff4e3168e9addceff05b937c0796f0ec34eb"
+    },
+    {
+      "bytes": 970,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Domain/obj/Release/net10.0/Elmos.Dotnet.Domain.AssemblyInfo.cs",
+      "sha256": "ed17ab61cbe552ec61c7b2ff6ac30cbd73b549b123b386d8af49a2645c1f3863"
+    },
+    {
+      "bytes": 231,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Domain/obj/Release/net10.0/Elmos.Dotnet.Domain.GlobalUsings.g.cs",
+      "sha256": "8f86a2cbf00ff3eee0bda2bc0eb5e1fc19c8544d5dc650c53d0132325956b592"
+    },
+    {
+      "bytes": 779,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Ef/EfMigrationPlanner.cs",
+      "sha256": "98619b5086841344f910a5d35b3c88b09c058ebb3b4c2d2c44a1ce8993fb8315"
+    },
+    {
+      "bytes": 196,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Ef/obj/Debug/net10.0/.NETCoreApp,Version=v10.0.AssemblyAttributes.cs",
+      "sha256": "f79c1ad9a9fc76110b3655f5bfb5ff4e3168e9addceff05b937c0796f0ec34eb"
+    },
+    {
+      "bytes": 956,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Ef/obj/Debug/net10.0/Elmos.Dotnet.Ef.AssemblyInfo.cs",
+      "sha256": "434ed16a0e58c6ba7d4323ef1c21ad2a9dba58d9de6debde779f05d75825c484"
+    },
+    {
+      "bytes": 231,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Ef/obj/Debug/net10.0/Elmos.Dotnet.Ef.GlobalUsings.g.cs",
+      "sha256": "8f86a2cbf00ff3eee0bda2bc0eb5e1fc19c8544d5dc650c53d0132325956b592"
+    },
+    {
+      "bytes": 196,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Ef/obj/Release/net10.0/.NETCoreApp,Version=v10.0.AssemblyAttributes.cs",
+      "sha256": "f79c1ad9a9fc76110b3655f5bfb5ff4e3168e9addceff05b937c0796f0ec34eb"
+    },
+    {
+      "bytes": 958,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Ef/obj/Release/net10.0/Elmos.Dotnet.Ef.AssemblyInfo.cs",
+      "sha256": "8860ac85dc4fcd239973276b648602dbd1e1fb5d3e1c8d323098ad13064d8074"
+    },
+    {
+      "bytes": 231,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Ef/obj/Release/net10.0/Elmos.Dotnet.Ef.GlobalUsings.g.cs",
+      "sha256": "8f86a2cbf00ff3eee0bda2bc0eb5e1fc19c8544d5dc650c53d0132325956b592"
+    },
+    {
+      "bytes": 15352,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Infrastructure/DotnetEngine.cs",
+      "sha256": "af1769410ab010a906b51b10baad387a0ef93829df9143d3b1a3bc5914d6591c"
+    },
+    {
+      "bytes": 998,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Infrastructure/UnifiedEvidenceMapper.cs",
+      "sha256": "4ec822026639b79cd1b93056020409de54271941e364a0c9c42372c09b54bb33"
+    },
+    {
+      "bytes": 196,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Infrastructure/obj/Debug/net10.0/.NETCoreApp,Version=v10.0.AssemblyAttributes.cs",
+      "sha256": "f79c1ad9a9fc76110b3655f5bfb5ff4e3168e9addceff05b937c0796f0ec34eb"
+    },
+    {
+      "bytes": 992,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Infrastructure/obj/Debug/net10.0/Elmos.Dotnet.Infrastructure.AssemblyInfo.cs",
+      "sha256": "9ca50f1b9f228813aec6e5d8a49a6e6703b18aa9c0953002f7127a05558eae6b"
+    },
+    {
+      "bytes": 231,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Infrastructure/obj/Debug/net10.0/Elmos.Dotnet.Infrastructure.GlobalUsings.g.cs",
+      "sha256": "8f86a2cbf00ff3eee0bda2bc0eb5e1fc19c8544d5dc650c53d0132325956b592"
+    },
+    {
+      "bytes": 196,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Infrastructure/obj/Release/net10.0/.NETCoreApp,Version=v10.0.AssemblyAttributes.cs",
+      "sha256": "f79c1ad9a9fc76110b3655f5bfb5ff4e3168e9addceff05b937c0796f0ec34eb"
+    },
+    {
+      "bytes": 994,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Infrastructure/obj/Release/net10.0/Elmos.Dotnet.Infrastructure.AssemblyInfo.cs",
+      "sha256": "14dc59db6fc7b78cb8122d3ac3d1d297b6b11695f1ec4d4e37ae136df3befa8a"
+    },
+    {
+      "bytes": 231,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Infrastructure/obj/Release/net10.0/Elmos.Dotnet.Infrastructure.GlobalUsings.g.cs",
+      "sha256": "8f86a2cbf00ff3eee0bda2bc0eb5e1fc19c8544d5dc650c53d0132325956b592"
+    },
+    {
+      "bytes": 11790,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.MSBuild/SafeSolutionDiscovery.cs",
+      "sha256": "ccaca8efe6ae0000560a6d54a0bc53f7a28dc020dcd35734c6d9cb1e30f24dfb"
+    },
+    {
+      "bytes": 4756,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.MSBuild/TechnologyFingerprinter.cs",
+      "sha256": "599b766093bdfa9d0e016feef7929827494d41b6f026777e12242f925c6faf5e"
+    },
+    {
+      "bytes": 196,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.MSBuild/obj/Debug/net10.0/.NETCoreApp,Version=v10.0.AssemblyAttributes.cs",
+      "sha256": "f79c1ad9a9fc76110b3655f5bfb5ff4e3168e9addceff05b937c0796f0ec34eb"
+    },
+    {
+      "bytes": 971,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.MSBuild/obj/Debug/net10.0/Elmos.Dotnet.MSBuild.AssemblyInfo.cs",
+      "sha256": "dbf2e216b0d3985953d556012b400ede2f4638a13a6366c6b93b8e965bac680b"
+    },
+    {
+      "bytes": 231,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.MSBuild/obj/Debug/net10.0/Elmos.Dotnet.MSBuild.GlobalUsings.g.cs",
+      "sha256": "8f86a2cbf00ff3eee0bda2bc0eb5e1fc19c8544d5dc650c53d0132325956b592"
+    },
+    {
+      "bytes": 196,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.MSBuild/obj/Release/net10.0/.NETCoreApp,Version=v10.0.AssemblyAttributes.cs",
+      "sha256": "f79c1ad9a9fc76110b3655f5bfb5ff4e3168e9addceff05b937c0796f0ec34eb"
+    },
+    {
+      "bytes": 973,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.MSBuild/obj/Release/net10.0/Elmos.Dotnet.MSBuild.AssemblyInfo.cs",
+      "sha256": "e807ed1e98c22e1f005aecdd6115a8f914b7d1ad695b4e5cc40323c61b84cce4"
+    },
+    {
+      "bytes": 231,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.MSBuild/obj/Release/net10.0/Elmos.Dotnet.MSBuild.GlobalUsings.g.cs",
+      "sha256": "8f86a2cbf00ff3eee0bda2bc0eb5e1fc19c8544d5dc650c53d0132325956b592"
+    },
+    {
+      "bytes": 5778,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.ProjectSystem/SdkProjectModernizer.cs",
+      "sha256": "e3d75dc792c867bedc9c6a7ca71a7b4d264dac369005e8d7ff8607250175f499"
+    },
+    {
+      "bytes": 196,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.ProjectSystem/obj/Debug/net10.0/.NETCoreApp,Version=v10.0.AssemblyAttributes.cs",
+      "sha256": "f79c1ad9a9fc76110b3655f5bfb5ff4e3168e9addceff05b937c0796f0ec34eb"
+    },
+    {
+      "bytes": 989,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.ProjectSystem/obj/Debug/net10.0/Elmos.Dotnet.ProjectSystem.AssemblyInfo.cs",
+      "sha256": "ced16f9289e26b96939e220ad8d6e3a29ac2d37c4f626e5b20d65f8ff8edade2"
+    },
+    {
+      "bytes": 231,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.ProjectSystem/obj/Debug/net10.0/Elmos.Dotnet.ProjectSystem.GlobalUsings.g.cs",
+      "sha256": "8f86a2cbf00ff3eee0bda2bc0eb5e1fc19c8544d5dc650c53d0132325956b592"
+    },
+    {
+      "bytes": 196,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.ProjectSystem/obj/Release/net10.0/.NETCoreApp,Version=v10.0.AssemblyAttributes.cs",
+      "sha256": "f79c1ad9a9fc76110b3655f5bfb5ff4e3168e9addceff05b937c0796f0ec34eb"
+    },
+    {
+      "bytes": 991,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.ProjectSystem/obj/Release/net10.0/Elmos.Dotnet.ProjectSystem.AssemblyInfo.cs",
+      "sha256": "02b4b146563d973055ddc6bb25c912b14aae9680e9f2cd78181f65a027ae072a"
+    },
+    {
+      "bytes": 231,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.ProjectSystem/obj/Release/net10.0/Elmos.Dotnet.ProjectSystem.GlobalUsings.g.cs",
+      "sha256": "8f86a2cbf00ff3eee0bda2bc0eb5e1fc19c8544d5dc650c53d0132325956b592"
+    },
+    {
+      "bytes": 6118,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Roslyn/RoslynGraphBuilder.cs",
+      "sha256": "a268b0b8c54b6bb82e1a4909085379b9372926a09993ff8f96c24dce4a60fd2c"
+    },
+    {
+      "bytes": 2214,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Roslyn/SandboxedMsBuildWorkspaceLoader.cs",
+      "sha256": "69a063a3d830afc34c8dccbb2c1b923871abda3d16eefec4cec5bccd75979255"
+    },
+    {
+      "bytes": 196,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Roslyn/obj/Debug/net10.0/.NETCoreApp,Version=v10.0.AssemblyAttributes.cs",
+      "sha256": "f79c1ad9a9fc76110b3655f5bfb5ff4e3168e9addceff05b937c0796f0ec34eb"
+    },
+    {
+      "bytes": 968,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Roslyn/obj/Debug/net10.0/Elmos.Dotnet.Roslyn.AssemblyInfo.cs",
+      "sha256": "1589e913fb475fcac3bce6bffb5c457cc57fd7147def48951d2c08a6243faf7c"
+    },
+    {
+      "bytes": 231,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Roslyn/obj/Debug/net10.0/Elmos.Dotnet.Roslyn.GlobalUsings.g.cs",
+      "sha256": "8f86a2cbf00ff3eee0bda2bc0eb5e1fc19c8544d5dc650c53d0132325956b592"
+    },
+    {
+      "bytes": 196,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Roslyn/obj/Release/net10.0/.NETCoreApp,Version=v10.0.AssemblyAttributes.cs",
+      "sha256": "f79c1ad9a9fc76110b3655f5bfb5ff4e3168e9addceff05b937c0796f0ec34eb"
+    },
+    {
+      "bytes": 970,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Roslyn/obj/Release/net10.0/Elmos.Dotnet.Roslyn.AssemblyInfo.cs",
+      "sha256": "b1bf2229ae1ae5297d156c6276b98292066495ba9648712f8122dfcb8efd8b23"
+    },
+    {
+      "bytes": 231,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Roslyn/obj/Release/net10.0/Elmos.Dotnet.Roslyn.GlobalUsings.g.cs",
+      "sha256": "8f86a2cbf00ff3eee0bda2bc0eb5e1fc19c8544d5dc650c53d0132325956b592"
+    },
+    {
+      "bytes": 1822,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Validation/DotnetValidationJudge.cs",
+      "sha256": "f24cc733d1ef42001a0b8954d8093d53d500748952583687925da4151b955cdd"
+    },
+    {
+      "bytes": 196,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Validation/obj/Debug/net10.0/.NETCoreApp,Version=v10.0.AssemblyAttributes.cs",
+      "sha256": "f79c1ad9a9fc76110b3655f5bfb5ff4e3168e9addceff05b937c0796f0ec34eb"
+    },
+    {
+      "bytes": 980,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Validation/obj/Debug/net10.0/Elmos.Dotnet.Validation.AssemblyInfo.cs",
+      "sha256": "7ace3d17e6e24fd037d9c788c80b4307dccb90665eb56b69294d8925a84477da"
+    },
+    {
+      "bytes": 231,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Validation/obj/Debug/net10.0/Elmos.Dotnet.Validation.GlobalUsings.g.cs",
+      "sha256": "8f86a2cbf00ff3eee0bda2bc0eb5e1fc19c8544d5dc650c53d0132325956b592"
+    },
+    {
+      "bytes": 196,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Validation/obj/Release/net10.0/.NETCoreApp,Version=v10.0.AssemblyAttributes.cs",
+      "sha256": "f79c1ad9a9fc76110b3655f5bfb5ff4e3168e9addceff05b937c0796f0ec34eb"
+    },
+    {
+      "bytes": 982,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Validation/obj/Release/net10.0/Elmos.Dotnet.Validation.AssemblyInfo.cs",
+      "sha256": "d425bb86544fbb948759406eae1b40917400f6d8777c398859a9d0dd89c4159f"
+    },
+    {
+      "bytes": 231,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Validation/obj/Release/net10.0/Elmos.Dotnet.Validation.GlobalUsings.g.cs",
+      "sha256": "8f86a2cbf00ff3eee0bda2bc0eb5e1fc19c8544d5dc650c53d0132325956b592"
+    },
+    {
+      "bytes": 882,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Wcf/WcfMigrationAdvisor.cs",
+      "sha256": "e2961f4b71ceb4df47c07cbd0783c8afe8ddf78e7f63c61980bb0f2e507af963"
+    },
+    {
+      "bytes": 196,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Wcf/obj/Debug/net10.0/.NETCoreApp,Version=v10.0.AssemblyAttributes.cs",
+      "sha256": "f79c1ad9a9fc76110b3655f5bfb5ff4e3168e9addceff05b937c0796f0ec34eb"
+    },
+    {
+      "bytes": 959,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Wcf/obj/Debug/net10.0/Elmos.Dotnet.Wcf.AssemblyInfo.cs",
+      "sha256": "e64e1368630f5cb7890d1055e85bdd58e9f14314100babeddf93a7c519b943c4"
+    },
+    {
+      "bytes": 231,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Wcf/obj/Debug/net10.0/Elmos.Dotnet.Wcf.GlobalUsings.g.cs",
+      "sha256": "8f86a2cbf00ff3eee0bda2bc0eb5e1fc19c8544d5dc650c53d0132325956b592"
+    },
+    {
+      "bytes": 196,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Wcf/obj/Release/net10.0/.NETCoreApp,Version=v10.0.AssemblyAttributes.cs",
+      "sha256": "f79c1ad9a9fc76110b3655f5bfb5ff4e3168e9addceff05b937c0796f0ec34eb"
+    },
+    {
+      "bytes": 961,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Wcf/obj/Release/net10.0/Elmos.Dotnet.Wcf.AssemblyInfo.cs",
+      "sha256": "1ba8c3bfd9e978c2b195131647891d5d3ed9286eda4d76dae0d71c4acf3d5bb8"
+    },
+    {
+      "bytes": 231,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Wcf/obj/Release/net10.0/Elmos.Dotnet.Wcf.GlobalUsings.g.cs",
+      "sha256": "8f86a2cbf00ff3eee0bda2bc0eb5e1fc19c8544d5dc650c53d0132325956b592"
+    },
+    {
+      "bytes": 2389,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Worker/Program.cs",
+      "sha256": "4b2d70f5cf3550ad2cfab2ad9948598e712e5ae31e5ded25af152ea7d4f61f1d"
+    },
+    {
+      "bytes": 196,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Worker/obj/Debug/net10.0/.NETCoreApp,Version=v10.0.AssemblyAttributes.cs",
+      "sha256": "f79c1ad9a9fc76110b3655f5bfb5ff4e3168e9addceff05b937c0796f0ec34eb"
+    },
+    {
+      "bytes": 968,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Worker/obj/Debug/net10.0/Elmos.Dotnet.Worker.AssemblyInfo.cs",
+      "sha256": "e5c6b6c4198837a3e72cd35b321a450af9e951e8f49d8e76bc65e0deb6c56b4d"
+    },
+    {
+      "bytes": 625,
+      "path": "engines/dotnet-engine/src/Elmos.Dotnet.Worker/obj/Debug/net10.0/Elmos.Dotnet.Worker.GlobalUsings.g.cs",
+      "sha256": "721da95e2f6f734b11a672ce509c68d617b641c6a979751ec6539e0a4c75a8cd"
+    },
+    {
+      "bytes": 322,
+      "path": "engines/dotnet-engine/test-fixtures/scenarios/mixed-legacy/LegacyService.cs",
+      "sha256": "b4ce64bf678d9597949fb9ff55a272f1f192a867e6b05c025c284c03d5dff9c8"
+    },
+    {
+      "bytes": 273,
+      "path": "engines/dotnet-engine/test-fixtures/scenarios/webforms-custom-wcf-edmx/App.cs",
+      "sha256": "5518c903f66b24915735f027479f85630d92b6d7462db9939363b58c47317bd5"
+    },
+    {
+      "bytes": 10519,
+      "path": "engines/dotnet-engine/tests/Elmos.Dotnet.Engine.Tests/Batch11Tests.cs",
+      "sha256": "4e121343e0294b44070a9f913ebac415655aa9ed40a560a38bb74090c601c1eb"
+    },
+    {
+      "bytes": 196,
+      "path": "engines/dotnet-engine/tests/Elmos.Dotnet.Engine.Tests/obj/Debug/net10.0/.NETCoreApp,Version=v10.0.AssemblyAttributes.cs",
+      "sha256": "f79c1ad9a9fc76110b3655f5bfb5ff4e3168e9addceff05b937c0796f0ec34eb"
+    },
+    {
+      "bytes": 986,
+      "path": "engines/dotnet-engine/tests/Elmos.Dotnet.Engine.Tests/obj/Debug/net10.0/Elmos.Dotnet.Engine.Tests.AssemblyInfo.cs",
+      "sha256": "8e0de4678f8f8595f46c078080ad9eb8b8b4108373e59928e062bfb60eab6ea2"
+    },
+    {
+      "bytes": 231,
+      "path": "engines/dotnet-engine/tests/Elmos.Dotnet.Engine.Tests/obj/Debug/net10.0/Elmos.Dotnet.Engine.Tests.GlobalUsings.g.cs",
+      "sha256": "8f86a2cbf00ff3eee0bda2bc0eb5e1fc19c8544d5dc650c53d0132325956b592"
+    },
+    {
+      "bytes": 196,
+      "path": "engines/dotnet-engine/tests/Elmos.Dotnet.Engine.Tests/obj/Release/net10.0/.NETCoreApp,Version=v10.0.AssemblyAttributes.cs",
+      "sha256": "f79c1ad9a9fc76110b3655f5bfb5ff4e3168e9addceff05b937c0796f0ec34eb"
+    },
+    {
+      "bytes": 988,
+      "path": "engines/dotnet-engine/tests/Elmos.Dotnet.Engine.Tests/obj/Release/net10.0/Elmos.Dotnet.Engine.Tests.AssemblyInfo.cs",
+      "sha256": "aa3a73bad3af897d5f7870ab467cdbac15fb4c694eb0d9c83674c752277d1bac"
+    },
+    {
+      "bytes": 231,
+      "path": "engines/dotnet-engine/tests/Elmos.Dotnet.Engine.Tests/obj/Release/net10.0/Elmos.Dotnet.Engine.Tests.GlobalUsings.g.cs",
+      "sha256": "8f86a2cbf00ff3eee0bda2bc0eb5e1fc19c8544d5dc650c53d0132325956b592"
+    },
+    {
+      "bytes": 1577,
+      "path": "engines/edge-iot-industrial-engine/pom.xml",
+      "sha256": "200064821a1f9c9df8441a546b204ccee42b869d5e3f2419f399b2f557662d2a"
+    },
+    {
+      "bytes": 631,
+      "path": "engines/edge-iot-industrial-engine/src/main/java/io/elmos/industrial/EdgeIotIndustrialEngineApplication.java",
+      "sha256": "81633c9c4cac437ce48001d88bf288e03a896532d6d9a13370afa7e1d1eb429c"
+    },
+    {
+      "bytes": 2138,
+      "path": "engines/edge-iot-industrial-engine/src/main/java/io/elmos/industrial/EdgeIotIndustrialEngineController.java",
+      "sha256": "7f7b6761475cae1cf7e27e38038a782e525f2c95406132253ab90713623cce55"
+    },
+    {
+      "bytes": 1169,
+      "path": "engines/edge-iot-industrial-engine/src/test/java/io/elmos/industrial/Batch24EngineContractTest.java",
+      "sha256": "b9c6098784f50faa1264b27af2274d9a2b5b61737446b8c6b5cad3c58440eb2f"
+    },
+    {
+      "bytes": 1581,
+      "path": "engines/enterprise-architecture-engine/pom.xml",
+      "sha256": "cd0ea85c15656980faa0f9947573b9b3fdcbe8b4f711f779724019a6bcd66a8d"
+    },
+    {
+      "bytes": 645,
+      "path": "engines/enterprise-architecture-engine/src/main/java/io/elmos/ea/EnterpriseArchitectureEngineApplication.java",
+      "sha256": "1dfc24caf6baf0e4500ef2c0168231dd6884cca63300a9800fea94b0353819c4"
+    },
+    {
+      "bytes": 2327,
+      "path": "engines/enterprise-architecture-engine/src/main/java/io/elmos/ea/EnterpriseArchitectureEngineController.java",
+      "sha256": "e51ccf2e32a47453920e9185e4b4eecd050304636109b6ca60c8cf31a867767b"
+    },
+    {
+      "bytes": 1196,
+      "path": "engines/enterprise-architecture-engine/src/test/java/io/elmos/ea/Batch26EngineContractTest.java",
+      "sha256": "61a76fefa22c2317f39017a377fd24ffb567b2bc1fb9da53fa00a72dab3662c3"
+    },
+    {
+      "bytes": 1369,
+      "path": "engines/enterprise-integration-engine/pom.xml",
+      "sha256": "358e51357b4e07a378101f80ed5457a8399cb2f6570ebfd30ebb46d9913c065a"
+    },
+    {
+      "bytes": 5735,
+      "path": "engines/enterprise-integration-engine/src/main/java/io/elmos/integration/Batch20IntegrationPolicy.java",
+      "sha256": "b99f29e543d89810f81de4970d60216025f3c9967d7c0b2dc6da7184a1dcab28"
+    },
+    {
+      "bytes": 365,
+      "path": "engines/enterprise-integration-engine/src/main/java/io/elmos/integration/EnterpriseIntegrationEngineApplication.java",
+      "sha256": "04dd9379c9a60f4ce82baf4e5c04db473157d1e4759bde924b23fad4ef557b14"
+    },
+    {
+      "bytes": 2054,
+      "path": "engines/enterprise-integration-engine/src/main/java/io/elmos/integration/EnterpriseIntegrationEngineController.java",
+      "sha256": "63a19bbe09feaec180a0439abd542aa8746ebd8c9017522b490b61fdf9e91870"
+    },
+    {
+      "bytes": 11554,
+      "path": "engines/enterprise-integration-engine/src/main/java/io/elmos/integration/EnterpriseIntegrationEngineService.java",
+      "sha256": "96248cd35259bf16ea106c2e2acc3ee94e4b0687ca9e0ee0cf17b33d18844ff2"
+    },
+    {
+      "bytes": 2968,
+      "path": "engines/enterprise-integration-engine/src/main/java/io/elmos/integration/IntegrationAdapterRegistry.java",
+      "sha256": "336b1826aded82bf1a79790e904269224b45c12f82ad33810065b54e2dcadd60"
+    },
+    {
+      "bytes": 2764,
+      "path": "engines/enterprise-integration-engine/src/main/java/io/elmos/integration/IntegrationModels.java",
+      "sha256": "35c24685f6055877e6876e2d92bf50e0f95a782958f90fb7a33ae5c61c99e09b"
+    },
+    {
+      "bytes": 4285,
+      "path": "engines/enterprise-integration-engine/src/test/java/io/elmos/integration/Batch20AcceptanceScenariosTest.java",
+      "sha256": "38402a5c6cb4170e3af4f02498c1c4b17e27ea23274456bc871af99d0dfea25c"
+    },
+    {
+      "bytes": 2510,
+      "path": "engines/enterprise-integration-engine/src/test/java/io/elmos/integration/Batch20ContractFixtureTest.java",
+      "sha256": "6c9fd190083521d5b1fd76596cf75ae7e6eb35dce848208242d0891bdbb8842d"
+    },
+    {
+      "bytes": 230,
+      "path": "engines/enterprise-integration-engine/src/test/java/io/elmos/integration/EnterpriseIntegrationEngineApplicationTest.java",
+      "sha256": "c37abb0c227df3c72e9527d4c3cb1bbd062ab552ddf74c413c9b0c8e4fbb31f7"
+    },
+    {
+      "bytes": 4061,
+      "path": "engines/enterprise-integration-engine/src/test/java/io/elmos/integration/EnterpriseIntegrationEngineServiceTest.java",
+      "sha256": "acf071940cc9a2ea4596e2aed021ac006fa760978728ad60a29ff8d783aa2f9c"
+    },
+    {
+      "bytes": 649,
+      "path": "engines/enterprise-integration-engine/src/test/java/io/elmos/integration/IntegrationAdapterRegistryTest.java",
+      "sha256": "45b219783f92aa6f10982bbcfed60439fb590a7295c08125d3a67845221928a6"
+    },
+    {
+      "bytes": 1363,
+      "path": "engines/enterprise-suite-engine/pom.xml",
+      "sha256": "19fc66cc97b5a7534e818f134a1fc43d14f187eb2e0f3466262ca9a7410c80db"
+    },
+    {
+      "bytes": 5936,
+      "path": "engines/enterprise-suite-engine/src/main/java/io/elmos/suite/Batch21SuitePolicy.java",
+      "sha256": "65ba87faf4895b72b56fb914e7dc5f083c65f32d2eb74271c26caaf991409fd6"
+    },
+    {
+      "bytes": 347,
+      "path": "engines/enterprise-suite-engine/src/main/java/io/elmos/suite/EnterpriseSuiteEngineApplication.java",
+      "sha256": "ee48b0bac075dda95c4a91520c88cea7e2731391dd0a97133e81074e60f5015d"
+    },
+    {
+      "bytes": 2018,
+      "path": "engines/enterprise-suite-engine/src/main/java/io/elmos/suite/EnterpriseSuiteEngineController.java",
+      "sha256": "902b059873ee8c78f6827063ba293462341a76e6b740b4f8fea1cfac2f5b8b69"
+    },
+    {
+      "bytes": 11861,
+      "path": "engines/enterprise-suite-engine/src/main/java/io/elmos/suite/EnterpriseSuiteEngineService.java",
+      "sha256": "2867b414743f3bfd6b98bec230f9b6d3ef18dff3a68ff59bf1601709a21f785d"
+    },
+    {
+      "bytes": 2664,
+      "path": "engines/enterprise-suite-engine/src/main/java/io/elmos/suite/SuiteAdapterRegistry.java",
+      "sha256": "ba1458e750e07a36ee5d1e287a0f716737114e7d42a5935ad48a951d7cbffa7c"
+    },
+    {
+      "bytes": 2988,
+      "path": "engines/enterprise-suite-engine/src/main/java/io/elmos/suite/SuiteModels.java",
+      "sha256": "b4baa15f08b5a959d1c1ac599f273d1432a23b836e2a8d88066d2daf9fbc8c2a"
+    },
+    {
+      "bytes": 4391,
+      "path": "engines/enterprise-suite-engine/src/test/java/io/elmos/suite/Batch21AcceptanceScenariosTest.java",
+      "sha256": "5753f9685f47eaa28623b22f69ab52eb4a4b18ee20d021dfb527bbf67af4c7ae"
+    },
+    {
+      "bytes": 2571,
+      "path": "engines/enterprise-suite-engine/src/test/java/io/elmos/suite/Batch21ContractFixtureTest.java",
+      "sha256": "502bf2ba3429cc09a2d317af6a170d8b58474ddf27135fac6be75fe147362b37"
+    },
+    {
+      "bytes": 289,
+      "path": "engines/enterprise-suite-engine/src/test/java/io/elmos/suite/EnterpriseSuiteEngineApplicationTest.java",
+      "sha256": "2ab1a011ed43b1561c928a122c5a545f89b122f4578e9ab9f780e79578caba66"
+    },
+    {
+      "bytes": 4151,
+      "path": "engines/enterprise-suite-engine/src/test/java/io/elmos/suite/EnterpriseSuiteEngineServiceTest.java",
+      "sha256": "ec9186c46d0fb8e110ddf9cd47aa1ebcdcb482269095c619387a2056ba6482f0"
+    },
+    {
+      "bytes": 611,
+      "path": "engines/enterprise-suite-engine/src/test/java/io/elmos/suite/SuiteAdapterRegistryTest.java",
+      "sha256": "aa95f66dac06ca4c19d48afe77b01edd8a9c20264b9d1b7aa5f438d8ba2e47fc"
+    },
+    {
+      "bytes": 345,
+      "path": "engines/frontend-client-engine/dist/src/analyzer.d.ts",
+      "sha256": "98f700d71240acd1320af5757b1649f0a273f4838bbb7866bb7a4c073fc6d824"
+    },
+    {
+      "bytes": 1929,
+      "path": "engines/frontend-client-engine/dist/src/contracts.d.ts",
+      "sha256": "897a4c0d5cf3c5fde83d8cb061f8e5a37367369dd097a449e72643eb06149e6f"
+    },
+    {
+      "bytes": 3278,
+      "path": "engines/frontend-client-engine/dist/src/domain.d.ts",
+      "sha256": "1ee7b63985cff1efaa8987b41758c638726d0701e5fb57c5a5200da92545935e"
+    },
+    {
+      "bytes": 600,
+      "path": "engines/frontend-client-engine/dist/src/engine.d.ts",
+      "sha256": "a3b21137fa04835b5202a3488ea61373a624ebf183c8711b55397120c41e66c8"
+    },
+    {
+      "bytes": 181,
+      "path": "engines/frontend-client-engine/dist/src/index.d.ts",
+      "sha256": "5fb63a8868ff4879446ac273d97626b0856ec6e53149a747e89990c239316ba5"
+    },
+    {
+      "bytes": 269,
+      "path": "engines/frontend-client-engine/dist/src/planner.d.ts",
+      "sha256": "e79d8108a57088cb870e89fe673fc9aa699202d1dbceb2c3b5d8c23a5d41f1e1"
+    },
+    {
+      "bytes": 3898,
+      "path": "engines/frontend-client-engine/dist/src/quality.d.ts",
+      "sha256": "a8fbc06f4023d251c3b08e9cafc1e3a9d24f3ba2eb188f516ba0f7480dafcbc6"
+    },
+    {
+      "bytes": 170,
+      "path": "engines/frontend-client-engine/dist/src/server.d.ts",
+      "sha256": "00d0482426f1c56078812cd064ba80c0d8759813df9b5261840d3a5e9d1f3c10"
+    },
+    {
+      "bytes": 11,
+      "path": "engines/frontend-client-engine/dist/test/batch14.test.d.ts",
+      "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+    },
+    {
+      "bytes": 11,
+      "path": "engines/frontend-client-engine/dist/test/server.test.d.ts",
+      "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+    },
+    {
+      "bytes": 8704,
+      "path": "engines/frontend-client-engine/src/analyzer.ts",
+      "sha256": "c530a03ccbb85d81bef1d391b2e783ff7365201392db3cae9de5763ce0050313"
+    },
+    {
+      "bytes": 1915,
+      "path": "engines/frontend-client-engine/src/contracts.ts",
+      "sha256": "2f51fd8d26ce7d9d978e8f0567b7dabfda77c37bfbdc16ac9d00b8f8150ed8e7"
+    },
+    {
+      "bytes": 4015,
+      "path": "engines/frontend-client-engine/src/domain.ts",
+      "sha256": "57f1b1c8d495ab89dbb8372c0253dfcce36708b6acb536fff5be2a78d349ca99"
+    },
+    {
+      "bytes": 8446,
+      "path": "engines/frontend-client-engine/src/engine.ts",
+      "sha256": "5b0a3f6221c0a9bbfecddb98841a98f29eab8b194c23c19f2dfd04e60b6e20b0"
+    },
+    {
+      "bytes": 181,
+      "path": "engines/frontend-client-engine/src/index.ts",
+      "sha256": "5fb63a8868ff4879446ac273d97626b0856ec6e53149a747e89990c239316ba5"
+    },
+    {
+      "bytes": 4778,
+      "path": "engines/frontend-client-engine/src/planner.ts",
+      "sha256": "bd446931f03dd3a22620ffb94e715e51348d0737c84464fa993b16b5f89c9d61"
+    },
+    {
+      "bytes": 8449,
+      "path": "engines/frontend-client-engine/src/quality.ts",
+      "sha256": "0dc9aa6b4d012e00c59cadedd78c55eb935f29025b38edd5b7cace24e5aac0ee"
+    },
+    {
+      "bytes": 3217,
+      "path": "engines/frontend-client-engine/src/server.ts",
+      "sha256": "b97d5e0e703e5927e2c3f3085c472b87c2cd32dd5c8a6957c8cffe8b2ecce812"
+    },
+    {
+      "bytes": 11624,
+      "path": "engines/frontend-client-engine/test/batch14.test.ts",
+      "sha256": "94b0cb7d3ec01ba505158edf7056b30298bd39385f412e24c94fd45a57ab4404"
+    },
+    {
+      "bytes": 2697,
+      "path": "engines/frontend-client-engine/test/server.test.ts",
+      "sha256": "189c290edf04e99d2b8e451eefdf83ec8eedb59fbfea35933941a0fc7a861322"
+    },
+    {
+      "bytes": 1416,
+      "path": "engines/infrastructure-engine/pom.xml",
+      "sha256": "1eca17b0c2c01fda9cc8e1a55cc4e5fd6f2b757f83bca624e384c59edccca717"
+    },
+    {
+      "bytes": 1265,
+      "path": "engines/infrastructure-engine/src/main/java/io/elmos/infrastructure/InfrastructureChangeGate.java",
+      "sha256": "9b425a5f94165524a1c5a5fa7290acab97c8d332f1eae9771cc9af82295aa227"
+    },
+    {
+      "bytes": 354,
+      "path": "engines/infrastructure-engine/src/main/java/io/elmos/infrastructure/InfrastructureEngineApplication.java",
+      "sha256": "172722edf98dbb0b9dcc9e3b27cdd01889b84bf526193fce35fbb6ee749eb46f"
+    },
+    {
+      "bytes": 2548,
+      "path": "engines/infrastructure-engine/src/main/java/io/elmos/infrastructure/InfrastructureEngineController.java",
+      "sha256": "1dd82c3466fa69be96a2441518d12cb17291a54b5d26336aaaa78eb8a4e8f0d9"
+    },
+    {
+      "bytes": 8348,
+      "path": "engines/infrastructure-engine/src/main/java/io/elmos/infrastructure/InfrastructureEngineService.java",
+      "sha256": "9a8e4e5793a0c4fbb7425959b95863fe8c3ad6bdec0dabc53f1252842950b624"
+    },
+    {
+      "bytes": 2317,
+      "path": "engines/infrastructure-engine/src/main/java/io/elmos/infrastructure/InfrastructureEvidenceMapper.java",
+      "sha256": "21ff5d311655a13372655c97f32fd1ba76953dda6f714685abb002ac6b80a33a"
+    },
+    {
+      "bytes": 419,
+      "path": "engines/infrastructure-engine/src/main/java/io/elmos/infrastructure/InfrastructureLifecycle.java",
+      "sha256": "f93d15411cfe5d5472850766437cc5ece9d0b9e0c783b5edf0d2c116019d99a1"
+    },
+    {
+      "bytes": 6258,
+      "path": "engines/infrastructure-engine/src/main/java/io/elmos/infrastructure/InfrastructureModels.java",
+      "sha256": "20f463c5a94220fef354ce7507e87bb96ec83cff124f1bd0ca95bb4bf1374182"
+    },
+    {
+      "bytes": 6033,
+      "path": "engines/infrastructure-engine/src/main/java/io/elmos/infrastructure/InfrastructureModernizationPolicy.java",
+      "sha256": "2354bf9bdb7f5f587205ddecd30d430f6e75189f0974fac3dfa16f9abd54e498"
+    },
+    {
+      "bytes": 692,
+      "path": "engines/infrastructure-engine/src/main/java/io/elmos/infrastructure/InfrastructureProvider.java",
+      "sha256": "784b6536da04638947456b8d8f1b47c3e64a864e052d3364e4bd2a82f804aa1e"
+    },
+    {
+      "bytes": 2226,
+      "path": "engines/infrastructure-engine/src/main/java/io/elmos/infrastructure/ProviderRunnerRegistry.java",
+      "sha256": "6b4ac09ed10e7cf9c628533b9613070656e8fcebe32b2790423cd2c65e88da7a"
+    },
+    {
+      "bytes": 3533,
+      "path": "engines/infrastructure-engine/src/main/java/io/elmos/infrastructure/WorkloadPlacementPlanner.java",
+      "sha256": "f784fcba1f89e831fae972d515d03b066b89f227574c5da5da4b07da229cef4f"
+    },
+    {
+      "bytes": 4614,
+      "path": "engines/infrastructure-engine/src/test/java/io/elmos/infrastructure/Batch16AcceptanceScenariosTest.java",
+      "sha256": "2f01cf33c3005ccce8535d2b88abb16a9849cd10bda5af84607c5670d249c966"
+    },
+    {
+      "bytes": 3118,
+      "path": "engines/infrastructure-engine/src/test/java/io/elmos/infrastructure/Batch16ContractFixtureTest.java",
+      "sha256": "05183ea1f76db45198103b3e28fa28f48c594b6f225960c9ef3f33ed5c245ebf"
+    },
+    {
+      "bytes": 2537,
+      "path": "engines/infrastructure-engine/src/test/java/io/elmos/infrastructure/InfrastructureDomainTest.java",
+      "sha256": "c98dc60bf8e7b53b26390253174f03e053984fc42bbe8c2ac67fd9fe8fe86c90"
+    },
+    {
+      "bytes": 829,
+      "path": "engines/infrastructure-engine/src/test/java/io/elmos/infrastructure/InfrastructureEngineControllerTest.java",
+      "sha256": "890a164bf6dfa17ca4de29e4bb4bffb7bf6e829f1ee1854e22173f2cda608026"
+    },
+    {
+      "bytes": 2956,
+      "path": "engines/infrastructure-engine/src/test/java/io/elmos/infrastructure/InfrastructureEngineTest.java",
+      "sha256": "75464148b093c919ee90ceb372967842ade03917c86091342921218cf1463d9a"
+    },
+    {
+      "bytes": 1356,
+      "path": "engines/mainframe-engine/pom.xml",
+      "sha256": "d92f5deae274521604c8a1736c1dfa5e32d2e854dfc2b2288e8a802f6842b765"
+    },
+    {
+      "bytes": 5364,
+      "path": "engines/mainframe-engine/src/main/java/io/elmos/mainframe/Batch19MainframePolicy.java",
+      "sha256": "97041349395bf4fd47f4fc70948abbcd4e1e7245cef3c5d1e414dca0de1fe753"
+    },
+    {
+      "bytes": 2437,
+      "path": "engines/mainframe-engine/src/main/java/io/elmos/mainframe/MainframeAdapterRegistry.java",
+      "sha256": "5f88054f7f0ffe6e798516ccdab5ee85d307dedf4134784d086dddf669dec7b0"
+    },
+    {
+      "bytes": 327,
+      "path": "engines/mainframe-engine/src/main/java/io/elmos/mainframe/MainframeEngineApplication.java",
+      "sha256": "857382e43568ce2d016bc0c85e2988026c64cc03605b0e03c3ff4af44d901302"
+    },
+    {
+      "bytes": 2582,
+      "path": "engines/mainframe-engine/src/main/java/io/elmos/mainframe/MainframeEngineController.java",
+      "sha256": "bb42e9f0d0b6ecc12d1f6d008e33c00ae1ee84d2be51a8b85bcb242836da87ca"
+    },
+    {
+      "bytes": 11212,
+      "path": "engines/mainframe-engine/src/main/java/io/elmos/mainframe/MainframeEngineService.java",
+      "sha256": "8a842d34dab0b168b7eb4cc72b7330fa1002323867bf3618cf4239968b802429"
+    },
+    {
+      "bytes": 2998,
+      "path": "engines/mainframe-engine/src/main/java/io/elmos/mainframe/MainframeModels.java",
+      "sha256": "44a16c20840cd45e92a58c67fbe5d5eb7bf469fdf0ed32eee4baaf539a343d61"
+    },
+    {
+      "bytes": 4240,
+      "path": "engines/mainframe-engine/src/test/java/io/elmos/mainframe/Batch19AcceptanceScenariosTest.java",
+      "sha256": "43ca69283745a39dddabbc9d55d2908aac1b949e408345a70ad795774ddd60b1"
+    },
+    {
+      "bytes": 2043,
+      "path": "engines/mainframe-engine/src/test/java/io/elmos/mainframe/Batch19ContractFixtureTest.java",
+      "sha256": "9eb66329b7a9b9a710dbf0156b83405a17916140ec60175744da8724ef4064ce"
+    },
+    {
+      "bytes": 639,
+      "path": "engines/mainframe-engine/src/test/java/io/elmos/mainframe/MainframeAdapterRegistryTest.java",
+      "sha256": "0156769f5fc06c4793886f8e5bc7d1146d7fe4f97e97cc2e3fd2d224860582bd"
+    },
+    {
+      "bytes": 216,
+      "path": "engines/mainframe-engine/src/test/java/io/elmos/mainframe/MainframeEngineApplicationTest.java",
+      "sha256": "89a612fc1298b3472fdbefd16040d5829dec0f37dd85fde4305ea86c24968f5e"
+    },
+    {
+      "bytes": 3548,
+      "path": "engines/mainframe-engine/src/test/java/io/elmos/mainframe/MainframeEngineServiceTest.java",
+      "sha256": "112a9758cd4061c5d62220cd37b9da3304cb0066298bb0ee6bd225681d1ef4ba"
+    },
+    {
+      "bytes": 1577,
+      "path": "engines/operations-sre-itsm-engine/pom.xml",
+      "sha256": "a70403a209611b0b8a201fb18ee6ce0ad692697cd5d147d7b971640dcd1133f8"
+    },
+    {
+      "bytes": 631,
+      "path": "engines/operations-sre-itsm-engine/src/main/java/io/elmos/operations/OperationsSreItsmEngineApplication.java",
+      "sha256": "0d9b49d84720363d1b204d24fd7293a53937453e9d14a1d353af8117da7a3fca"
+    },
+    {
+      "bytes": 2355,
+      "path": "engines/operations-sre-itsm-engine/src/main/java/io/elmos/operations/OperationsSreItsmEngineController.java",
+      "sha256": "30a428d89729004cff3ad13c1b3845e28f6dd993631a1575d63a90f7a9c7e674"
+    },
+    {
+      "bytes": 1171,
+      "path": "engines/operations-sre-itsm-engine/src/test/java/io/elmos/operations/Batch25EngineContractTest.java",
+      "sha256": "28427cf583b064db4c33707b1d0ed710481061071f367cc0dd5f8d04fbe10eb2"
+    },
+    {
+      "bytes": 103,
+      "path": "engines/python-engine/src/elmos_python/__init__.py",
+      "sha256": "16cb5f799c2ab8bcaca73ae7b78abf73558ad11548c4bdaf6272115ded5ca232"
+    },
+    {
+      "bytes": 2147,
+      "path": "engines/python-engine/src/elmos_python/codemod.py",
+      "sha256": "23aadc21708e85d887e7cf6fe99e7132b874f5c6d79fa3fcfa8784ff0ce2cddf"
+    },
+    {
+      "bytes": 4047,
+      "path": "engines/python-engine/src/elmos_python/contracts.py",
+      "sha256": "031e9b102091aa358d9f51b84c9e84d1f43e1ba153e5c4ecf73bdbf6cb0137ce"
+    },
+    {
+      "bytes": 15180,
+      "path": "engines/python-engine/src/elmos_python/discovery.py",
+      "sha256": "da608fdf719d226b0a22da833633e952756bf2977a8f642bcdf4bb8505ac6383"
+    },
+    {
+      "bytes": 3277,
+      "path": "engines/python-engine/src/elmos_python/domain.py",
+      "sha256": "015cbb41d321ff8dd1367ee847c524675b9163decd3d27240d3117dd9950ad07"
+    },
+    {
+      "bytes": 18523,
+      "path": "engines/python-engine/src/elmos_python/engine.py",
+      "sha256": "a01e51f2f550e9ee16eb0d21d503ef987b9c4a01ef45b20cae33c76afb89ae07"
+    },
+    {
+      "bytes": 4593,
+      "path": "engines/python-engine/src/elmos_python/environment.py",
+      "sha256": "6a08f66ca2039c7b7131dc543f933e4475ec05d3f95c03ee0f30a3f63ad791db"
+    },
+    {
+      "bytes": 1744,
+      "path": "engines/python-engine/src/elmos_python/evidence.py",
+      "sha256": "e03c3707043fc2086dc4e05310b6b4cb495f75b006888165dbbcf03fc4d992c4"
+    },
+    {
+      "bytes": 3170,
+      "path": "engines/python-engine/src/elmos_python/legacy.py",
+      "sha256": "a6b5118e0838b4b1198736c7b4801f5574e9d40d6178461291492f799bb7acb6"
+    },
+    {
+      "bytes": 3257,
+      "path": "engines/python-engine/src/elmos_python/ml.py",
+      "sha256": "44bfc8c7d7e5607bf27a08d793635eba18a0270da99cb8d940d7b98b0e51000a"
+    },
+    {
+      "bytes": 3653,
+      "path": "engines/python-engine/src/elmos_python/packaging.py",
+      "sha256": "c7f78bfce3cf7cf35f331f60718346c14bc00d668c3f8acbc5483a3f22fa5eb1"
+    },
+    {
+      "bytes": 3471,
+      "path": "engines/python-engine/src/elmos_python/pipeline.py",
+      "sha256": "c946948a22748664b1b732841c70dcf89dd3f913d02a5b3ddcaabcaa2af7465b"
+    },
+    {
+      "bytes": 8274,
+      "path": "engines/python-engine/src/elmos_python/planning.py",
+      "sha256": "730a421c313c4aa3e2b560f9f9e8eb64f755573b1ec234eda8ec1eead8ec70a0"
+    },
+    {
+      "bytes": 2998,
+      "path": "engines/python-engine/src/elmos_python/runners.py",
+      "sha256": "d0224898bfd95eabfe2a1ecbf4538ba07cdc4e5b57b08e9de1d8545eb9d39401"
+    },
+    {
+      "bytes": 6273,
+      "path": "engines/python-engine/src/elmos_python/semantic.py",
+      "sha256": "15264dbfaf89cd533e2530e869db440ebee29c67e9ee21fd7168740d2c476edb"
+    },
+    {
+      "bytes": 8204,
+      "path": "engines/python-engine/src/elmos_python/validation.py",
+      "sha256": "17ac8808764730a6d0b1817f83b43c472e4f75042944df4c264dbf840db3ed26"
+    },
+    {
+      "bytes": 3306,
+      "path": "engines/python-engine/src/elmos_python/web.py",
+      "sha256": "78c38a7860a02169821c71cc2e0973a9f4e10e399c8d59698ab19422973cebd0"
+    },
+    {
+      "bytes": 27,
+      "path": "engines/python-engine/src/elmos_python/worker/__init__.py",
+      "sha256": "cfe100e76889875162497ed6cec22076521660135cf87110dc32865b558e0d63"
+    },
+    {
+      "bytes": 2478,
+      "path": "engines/python-engine/src/elmos_python/worker/main.py",
+      "sha256": "d480738acef5180e7c16f8bdc8286ad866f34dbc7ca4071296af9b4d4593d0ef"
+    },
+    {
+      "bytes": 71,
+      "path": "engines/python-engine/test-fixtures/scenarios/django-legacy/settings.py",
+      "sha256": "5b244c50487eb01fe3882acfe27b0dc7d3e74eb1fe76643c5a91553ea198bd3d"
+    },
+    {
+      "bytes": 32,
+      "path": "engines/python-engine/test-fixtures/scenarios/django-legacy/urls.py",
+      "sha256": "4df27c85bbeaf2efe9eda484789bc7435f725781d58d33815452a416e16b793f"
+    },
+    {
+      "bytes": 115,
+      "path": "engines/python-engine/test-fixtures/scenarios/flask-context/app.py",
+      "sha256": "a13943523f990d3ae8ff8e8689dcfb16d6120ca2d92d53982c93aea5d85a9f48"
+    },
+    {
+      "bytes": 85,
+      "path": "engines/python-engine/test-fixtures/scenarios/monorepo/packages/model/train.py",
+      "sha256": "618d7eab7c8e7db5683859db6ea63824013544629e0728ec36c5b0a40ff15cb7"
+    },
+    {
+      "bytes": 91,
+      "path": "engines/python-engine/test-fixtures/scenarios/monorepo/packages/web/app.py",
+      "sha256": "2b507951b910d415bd751e06c3eec42478645cc5f72dc375b0090e932b0c58c8"
+    },
+    {
+      "bytes": 139,
+      "path": "engines/python-engine/test-fixtures/scenarios/native-numpy/setup.py",
+      "sha256": "2057a772aa5895a5109e2b806c6d88d059e054341d0eefe1674bd37d337891b7"
+    },
+    {
+      "bytes": 374,
+      "path": "engines/python-engine/test-fixtures/scenarios/python2-string-boundary/legacy.py",
+      "sha256": "fe5a5c279e12013aa8a11ddb2d3dd636402b7eb7b6e95e87f0c89c715b13f77f"
+    },
+    {
+      "bytes": 102,
+      "path": "engines/python-engine/test-fixtures/scenarios/semantic-codemod/legacy.py",
+      "sha256": "c9aec692c6cfc449d7e5d8e0028d586164fe823f49beef3d851ea9681a2a34a8"
+    },
+    {
+      "bytes": 161,
+      "path": "engines/python-engine/test-fixtures/scenarios/tensorflow1/train.py",
+      "sha256": "a9f3769d5f9b2d1fd797fb1f303998bdbca684025a303842e39fb86bc96d3fa4"
+    },
+    {
+      "bytes": 28,
+      "path": "engines/python-engine/test-fixtures/scenarios/unreproducible-requirements/app.py",
+      "sha256": "6b4ed3a98315c51603e62d254524db349ee7db515b606314ec5f6e7bc8f088c2"
+    },
+    {
+      "bytes": 19843,
+      "path": "engines/python-engine/tests/test_batch12.py",
+      "sha256": "e06a8fac3cecc2ee28f406732eedb8e1a54070a69cf1f7921120a83cf2209552"
+    },
+    {
+      "bytes": 1402,
+      "path": "engines/security-compliance-engine/pom.xml",
+      "sha256": "cbf0b42873fc8209d36f4a2f07c918b2673ccdc7b74a1e173653ad04f9abdae8"
+    },
+    {
+      "bytes": 6074,
+      "path": "engines/security-compliance-engine/src/main/java/io/elmos/securitycompliance/Batch17SecurityPolicy.java",
+      "sha256": "bd781f62762203db0481b3b9e704a2d86a3952ac7db2f153f70407dfd444d19a"
+    },
+    {
+      "bytes": 3277,
+      "path": "engines/security-compliance-engine/src/main/java/io/elmos/securitycompliance/SecurityAuthorizationPolicy.java",
+      "sha256": "29b0017adfc357e528e262a0772499820c0b534e959aa99e182d157765a0f4cd"
+    },
+    {
+      "bytes": 366,
+      "path": "engines/security-compliance-engine/src/main/java/io/elmos/securitycompliance/SecurityComplianceEngineApplication.java",
+      "sha256": "5b3b24d8f7bd90361b21b3cc6668ff331fb83f6e0174719038e3e0e2b8388d1e"
+    },
+    {
+      "bytes": 2240,
+      "path": "engines/security-compliance-engine/src/main/java/io/elmos/securitycompliance/SecurityComplianceEngineController.java",
+      "sha256": "32818846d258776537cbe9e46f8d5383ddad4b07e0188f1458f696d002c2f2c2"
+    },
+    {
+      "bytes": 8489,
+      "path": "engines/security-compliance-engine/src/main/java/io/elmos/securitycompliance/SecurityComplianceEngineService.java",
+      "sha256": "72e80276297372e9d884a0b167256150e75dbe2b4794d39c9ac7538b3390aba9"
+    },
+    {
+      "bytes": 8501,
+      "path": "engines/security-compliance-engine/src/main/java/io/elmos/securitycompliance/SecurityDomainModels.java",
+      "sha256": "e06dfa7f692ba5d8227aef7af9ed9a09255f7e95ddadeb899b297936c5e1dc32"
+    },
+    {
+      "bytes": 5889,
+      "path": "engines/security-compliance-engine/src/main/java/io/elmos/securitycompliance/SecurityModels.java",
+      "sha256": "b76179fc6e7db7d17ea479bc9070515c6644f3203816ae153de670f6d1264d68"
+    },
+    {
+      "bytes": 1431,
+      "path": "engines/security-compliance-engine/src/main/java/io/elmos/securitycompliance/SecurityToolAdapterRegistry.java",
+      "sha256": "cc3f59d9df19e669ae59e7e57e9cd8f506e9ccf5fb8644d8697c266f428028c7"
+    },
+    {
+      "bytes": 4645,
+      "path": "engines/security-compliance-engine/src/test/java/io/elmos/securitycompliance/Batch17AcceptanceScenariosTest.java",
+      "sha256": "4c1576ff40703fa6ebd61c6276e534d895c4ae297e9de43a379722bf97e624ac"
+    },
+    {
+      "bytes": 2830,
+      "path": "engines/security-compliance-engine/src/test/java/io/elmos/securitycompliance/Batch17ContractFixtureTest.java",
+      "sha256": "791dcd4f9b30686bda3a7c11765357c4f19edae37f570db6c6d3b0bce1d965ca"
+    },
+    {
+      "bytes": 439,
+      "path": "engines/security-compliance-engine/src/test/java/io/elmos/securitycompliance/SecurityComplianceEngineControllerTest.java",
+      "sha256": "55735f9e46d8ee15319e901687b5afe562c683f68a4f04f638b311e65b5aed5c"
+    },
+    {
+      "bytes": 3963,
+      "path": "engines/security-compliance-engine/src/test/java/io/elmos/securitycompliance/SecurityComplianceEngineTest.java",
+      "sha256": "bd7e9d4a7c9293aca6dd42de2e85c6523f53d04125bbe62465bffd6e736ab7ae"
+    },
+    {
+      "bytes": 2530,
+      "path": "engines/security-compliance-engine/src/test/java/io/elmos/securitycompliance/SecurityDomainModelsTest.java",
+      "sha256": "410a6cdba062548a1a2409dfdc31f4a4d12efc63cbeb7f27bfdd56dd06cbff77"
+    },
+    {
+      "bytes": 1033,
+      "path": "engines/security-compliance-engine/src/test/java/io/elmos/securitycompliance/SecurityToolAdapterRegistryTest.java",
+      "sha256": "86da17301028dc5b8a452493ad87e5cc2a20d5f305249f45f5a7706a7dc1dfe4"
+    },
+    {
+      "bytes": 1584,
+      "path": "engines/software-delivery-platform-engine/pom.xml",
+      "sha256": "6b3c319d7dc6613bbe5b2218fa61c914f316f5e7f96cd9c1b937658a03f3ab21"
+    },
+    {
+      "bytes": 657,
+      "path": "engines/software-delivery-platform-engine/src/main/java/io/elmos/delivery/SoftwareDeliveryPlatformEngineApplication.java",
+      "sha256": "ffbd6b857adc4b73a3fe0dfcc9e6884b05f2cab93d1fc396b4c5428381fcdbcc"
+    },
+    {
+      "bytes": 2178,
+      "path": "engines/software-delivery-platform-engine/src/main/java/io/elmos/delivery/SoftwareDeliveryPlatformEngineController.java",
+      "sha256": "1b5f61734d0a616b9af3a5f4df26ff83948d29c07cee75ad862127def0e52807"
+    },
+    {
+      "bytes": 1195,
+      "path": "engines/software-delivery-platform-engine/src/test/java/io/elmos/delivery/Batch22EngineContractTest.java",
+      "sha256": "3ac97b1b9b83bb593e37550030d723a20b5273fd6a2f69fb58ffd2054a49ef52"
+    },
+    {
+      "bytes": 1395,
+      "path": "engines/test-quality-engine/pom.xml",
+      "sha256": "397d01566065a54a45d6c1d44c69adbc8fa4990396c9535b983c1c857a0fc81a"
+    },
+    {
+      "bytes": 5379,
+      "path": "engines/test-quality-engine/src/main/java/io/elmos/testquality/Batch18QualityPolicy.java",
+      "sha256": "2a615ec6728f7841db1254ea7c78400602e722c6b8d5c6f1da4919f5392c4295"
+    },
+    {
+      "bytes": 7114,
+      "path": "engines/test-quality-engine/src/main/java/io/elmos/testquality/QualityDomainModels.java",
+      "sha256": "9e249b02235f112e6bb589d867b927715e26e8095ede0827aea89dbbc9294a39"
+    },
+    {
+      "bytes": 4666,
+      "path": "engines/test-quality-engine/src/main/java/io/elmos/testquality/QualityModels.java",
+      "sha256": "ded63dd25a85f1e1d34ee552cdd2a8158b874f8a15cbe8fb596b943765af1244"
+    },
+    {
+      "bytes": 345,
+      "path": "engines/test-quality-engine/src/main/java/io/elmos/testquality/TestQualityEngineApplication.java",
+      "sha256": "f5261362c7b34cc32fc28cb8272d2011a3e836e59c483fc827436a4a3cb4a754"
+    },
+    {
+      "bytes": 2401,
+      "path": "engines/test-quality-engine/src/main/java/io/elmos/testquality/TestQualityEngineController.java",
+      "sha256": "f6764d0439328c9a97c234f48084717903dee073cba03d65415925be701d027b"
+    },
+    {
+      "bytes": 10805,
+      "path": "engines/test-quality-engine/src/main/java/io/elmos/testquality/TestQualityEngineService.java",
+      "sha256": "a3bfcfe39cb0bd9abe118024317edca1fe0931e00bdb7c9aace11e2f5fda1d97"
+    },
+    {
+      "bytes": 3090,
+      "path": "engines/test-quality-engine/src/main/java/io/elmos/testquality/TestToolAdapterRegistry.java",
+      "sha256": "04e367cb33c1d30bc5c793046bec35efc33679bcdb404ae0db52f18b090f0a8f"
+    },
+    {
+      "bytes": 4591,
+      "path": "engines/test-quality-engine/src/test/java/io/elmos/testquality/Batch18AcceptanceScenariosTest.java",
+      "sha256": "616edd3c6e62828394bbf3eda0f7cdd408d62ba82719e3cb03280d3d22fece2a"
+    },
+    {
+      "bytes": 2305,
+      "path": "engines/test-quality-engine/src/test/java/io/elmos/testquality/Batch18ContractFixtureTest.java",
+      "sha256": "dcea73224004ba1625c7d89c6cbac9395d7829154b690ed8a79c0f341f03c2c7"
+    },
+    {
+      "bytes": 1384,
+      "path": "engines/test-quality-engine/src/test/java/io/elmos/testquality/QualityDomainModelsTest.java",
+      "sha256": "d323d112cf64be2786dc8a17e0fff4464846b03051ef5b792f8297ae2a26b4cb"
+    },
+    {
+      "bytes": 220,
+      "path": "engines/test-quality-engine/src/test/java/io/elmos/testquality/TestQualityEngineApplicationTest.java",
+      "sha256": "74e7641b173c362081d665c0969690bc8980e7812f225bf9ecd27a72e3ac7a4d"
+    },
+    {
+      "bytes": 2993,
+      "path": "engines/test-quality-engine/src/test/java/io/elmos/testquality/TestQualityEngineTest.java",
+      "sha256": "8a122b6eba073f329ba91ff39fc6f6388c6bd13cf89a93c2b7bc6435d5b9ed72"
+    },
+    {
+      "bytes": 542,
+      "path": "engines/test-quality-engine/src/test/java/io/elmos/testquality/TestToolAdapterRegistryTest.java",
+      "sha256": "0e5d55ed2481050d14d2329519a0762446b13a59eca63be621a000e8d6c2e010"
+    },
+    {
+      "bytes": 867,
+      "path": "modules/application/pom.xml",
+      "sha256": "88a841e2309f380c396e993fb4c87f434a3c032988b2009640cdd18f17e993ee"
+    },
+    {
+      "bytes": 3072,
+      "path": "modules/application/src/main/java/io/elmos/application/BatchOneDemoService.java",
+      "sha256": "9c8de8dc59da389ec68d586cc4057798b7e6f2a168a84a001bd3df72ee5c494f"
+    },
+    {
+      "bytes": 4196,
+      "path": "modules/application/src/main/java/io/elmos/application/CrossDomainDecisionGovernance.java",
+      "sha256": "5476c0c8cf989b8e85554eeb3d9027140a5831abb98fc2f5e481b40fb489b53f"
+    },
+    {
+      "bytes": 4840,
+      "path": "modules/application/src/main/java/io/elmos/application/DatabaseDataCutoverGovernance.java",
+      "sha256": "fb2a06d21ce31616d81f06f0937082c41c23d9afb76f3c3f216e0b8d2a8b8b66"
+    },
+    {
+      "bytes": 107,
+      "path": "modules/application/src/main/java/io/elmos/application/DemoPersistencePort.java",
+      "sha256": "b99fc6518dc64c44331afc8affc97082dcb70e8de2d130b618065d0e911da603"
+    },
+    {
+      "bytes": 562,
+      "path": "modules/application/src/main/java/io/elmos/application/DemoRecord.java",
+      "sha256": "b58667afc9ec08f850bd14e269466461228123ac81ee8f6eb2ebef9ec07f9ef1"
+    },
+    {
+      "bytes": 572,
+      "path": "modules/application/src/main/java/io/elmos/application/DemoRunResult.java",
+      "sha256": "0163632d397051d6ba4d9ee0baae14723d1b4d735e2903fe92dd094e3c2a7cb9"
+    },
+    {
+      "bytes": 4317,
+      "path": "modules/application/src/main/java/io/elmos/application/FrontendClientReleaseGovernance.java",
+      "sha256": "010990b70024902f89da29fe38692734a21acd580e4a2a903012816e8065e6e9"
+    },
+    {
+      "bytes": 5605,
+      "path": "modules/application/src/main/java/io/elmos/application/InfrastructureCutoverGovernance.java",
+      "sha256": "ed87d3537c35b358b31e9bc0ca7aed34e2d8f8f4c967abd0bfd8335a9e81c2f2"
+    },
+    {
+      "bytes": 4775,
+      "path": "modules/application/src/main/java/io/elmos/application/IntegrationCutoverGovernance.java",
+      "sha256": "9a1db4a415b36025493d5c10bd1366a56020a839ce7fcdae4e5f0e7efdad4a81"
+    },
+    {
+      "bytes": 5150,
+      "path": "modules/application/src/main/java/io/elmos/application/LanguageEngineRouter.java",
+      "sha256": "1f2600a6800a0980c050ba4f43b134bc9f44c6427c6827777cf9eafa497b6750"
+    },
+    {
+      "bytes": 4086,
+      "path": "modules/application/src/main/java/io/elmos/application/MainframeCutoverGovernance.java",
+      "sha256": "af2ce3099c55b93e50efb396c42204fdaec8667f872054ec6307758808c085b0"
+    },
+    {
+      "bytes": 564,
+      "path": "modules/application/src/main/java/io/elmos/application/ModernizationEnginePort.java",
+      "sha256": "931e8319812e41218c54d0b948d0f7d8ed83bcaf6fd02303f5cfb9fc64fa234d"
+    },
+    {
+      "bytes": 4172,
+      "path": "modules/application/src/main/java/io/elmos/application/SecurityAuthorizationGovernance.java",
+      "sha256": "c1a45a48224388a1c36b52b7c5a0c3ada897d141b18c9c8352389f1c7ea7cf98"
+    },
+    {
+      "bytes": 5096,
+      "path": "modules/application/src/main/java/io/elmos/application/SuiteCutoverGovernance.java",
+      "sha256": "84a141ea1cd426be6158d680d65e154dc2d824f05415442c845db0600793fac7"
+    },
+    {
+      "bytes": 4231,
+      "path": "modules/application/src/main/java/io/elmos/application/TestQualityGateGovernance.java",
+      "sha256": "1e4a4d09072abc31afcf47d4fbb759e7e298c8abb1962dfc07456ae74388f46f"
+    },
+    {
+      "bytes": 5048,
+      "path": "modules/application/src/main/java/io/elmos/application/UnifiedMigrationPortfolio.java",
+      "sha256": "70feff5b3089906c9a33cc91d1a787b6f6cc43666dfa1ba4525195da655cfd5a"
+    },
+    {
+      "bytes": 445,
+      "path": "modules/application/src/main/java/io/elmos/application/WorkflowStatePort.java",
+      "sha256": "57238080abb34e6a08f1ed8fb44d8cc6cb78308fa4556d9c112bc3737fe5b5b4"
+    },
+    {
+      "bytes": 893,
+      "path": "modules/application/src/test/java/io/elmos/application/BatchOneDemoServiceTest.java",
+      "sha256": "262c2080e2648d23f2d2ea8e3f402eefd3877fa8fe3599d16eb15ccb02db201a"
+    },
+    {
+      "bytes": 2180,
+      "path": "modules/application/src/test/java/io/elmos/application/CrossDomainDecisionGovernanceTest.java",
+      "sha256": "c258522b720b5fa953a6755e5025ca3164c0aff42ed8aa7e039c43ec93073584"
+    },
+    {
+      "bytes": 2304,
+      "path": "modules/application/src/test/java/io/elmos/application/FrontendClientReleaseGovernanceTest.java",
+      "sha256": "066b6dc6b9a90b747b898ac2963786c6ccddc5141ee1fb362490ece0de769119"
+    },
+    {
+      "bytes": 3649,
+      "path": "modules/application/src/test/java/io/elmos/application/IntegrationCutoverGovernanceTest.java",
+      "sha256": "10ec168d58d75deb738c89309d14771416fa04c801d30ba9f6592a26b1f9220b"
+    },
+    {
+      "bytes": 13414,
+      "path": "modules/application/src/test/java/io/elmos/application/LanguageEngineRouterTest.java",
+      "sha256": "f3c0e05f6375a148aaeb401a283cdfbe7f796679389eeb9c30cb32051aa90fb3"
+    },
+    {
+      "bytes": 2502,
+      "path": "modules/application/src/test/java/io/elmos/application/MainframeCutoverGovernanceTest.java",
+      "sha256": "9fa5f6989b6710c8e33292bd54f834eb37961de1de7dc15576e9210220209dbb"
+    },
+    {
+      "bytes": 2433,
+      "path": "modules/application/src/test/java/io/elmos/application/SecurityAuthorizationGovernanceTest.java",
+      "sha256": "fc58d64ee61718f7ded143c0f1e075c563ccb4d1513bd38d842c5929ff770f8d"
+    },
+    {
+      "bytes": 2403,
+      "path": "modules/application/src/test/java/io/elmos/application/SuiteCutoverGovernanceTest.java",
+      "sha256": "5410163b219b27188454245c49a7f6aa47ae9cb4710f2756dcfc7429bfea2961"
+    },
+    {
+      "bytes": 1566,
+      "path": "modules/application/src/test/java/io/elmos/application/TestQualityGateGovernanceTest.java",
+      "sha256": "1a87f8d841dea41b793af775186457b55db80ee7bfda367511fd9a4a282119f2"
+    },
+    {
+      "bytes": 7198,
+      "path": "modules/architecture-tests/pom.xml",
+      "sha256": "7b0863e5f767349ab45e0371dbd01d67b2d9ba0d3fa92bedb4dcec0fd1a6ebf1"
+    },
+    {
+      "bytes": 8446,
+      "path": "modules/architecture-tests/src/test/java/io/elmos/architecture/ArchitectureRulesTest.java",
+      "sha256": "36c0e1e0310b20fa9ab9590b76843e57ee7fc75d7398e54b98ab8ead7cee2b5e"
+    },
+    {
+      "bytes": 13567,
+      "path": "modules/architecture-tests/src/test/java/io/elmos/architecture/BatchFourteenGrowthAssuranceTest.java",
+      "sha256": "540704cbdecbbb02f91360235c017d1acd3612c6e946e1ac7a65330747250cda"
+    },
+    {
+      "bytes": 31261,
+      "path": "modules/architecture-tests/src/test/java/io/elmos/architecture/BatchOneToThirteenAssuranceTest.java",
+      "sha256": "4113c99f5996dd4a719bf2483ec3541055c319ec22ed4ea5f5ad4c6d46536c8b"
+    },
+    {
+      "bytes": 7218,
+      "path": "modules/architecture-tests/src/test/java/io/elmos/architecture/BatchTwentyTwoToTwentySixAssuranceTest.java",
+      "sha256": "2c0910b020e0c38441e740d5af6062b75ccfe399fb410514f78ffe00690d1b20"
+    },
+    {
+      "bytes": 8692,
+      "path": "modules/architecture-tests/src/test/java/io/elmos/architecture/CompanySeriesAssuranceTest.java",
+      "sha256": "17ce17691e7da02ba7dc17d3262eff033772cddcd420606764909d2de0b162cc"
+    },
+    {
+      "bytes": 2987,
+      "path": "modules/architecture-tests/src/test/java/io/elmos/architecture/DotnetEngineBoundaryTest.java",
+      "sha256": "f07cf78c683e4739696069d710f5b5481e1deb20e13e446512e0ad6bfd371fd3"
+    },
+    {
+      "bytes": 980,
+      "path": "modules/behavior-equivalence/pom.xml",
+      "sha256": "0af4de711ec65294f789f4544a966a33275709e2c9fae47b87546fdb02c5ad6b"
+    },
+    {
+      "bytes": 10629,
+      "path": "modules/behavior-equivalence/src/main/java/io/elmos/equivalence/BehaviorEquivalenceArtifactWriter.java",
+      "sha256": "26b5504a622f7c5ad9a67482458b336805ff25b1bb18ac4f86c93f98a636f444"
+    },
+    {
+      "bytes": 23115,
+      "path": "modules/behavior-equivalence/src/main/java/io/elmos/equivalence/BehaviorEquivalenceModels.java",
+      "sha256": "9b33c91121f3ddfd84a3301557f8a4a413f9fd035ddb059f91d7ae532d84f7d9"
+    },
+    {
+      "bytes": 854,
+      "path": "modules/behavior-equivalence/src/main/java/io/elmos/equivalence/BehaviorEquivalencePorts.java",
+      "sha256": "25c17409cf97351434690b764206afbe9108c63493a90f69b9bc4cda113ac346"
+    },
+    {
+      "bytes": 37469,
+      "path": "modules/behavior-equivalence/src/main/java/io/elmos/equivalence/BehaviorEquivalenceService.java",
+      "sha256": "52e57cbe189d56a4c14bf36dde7937d79fb5bd18bb39fe3f9f4c30e7af658f3a"
+    },
+    {
+      "bytes": 26167,
+      "path": "modules/behavior-equivalence/src/test/java/io/elmos/equivalence/BehaviorEquivalenceServiceTest.java",
+      "sha256": "f4d822742a04bb590e1ac1e7c30f2621cd9c1b15a14855fbed5a9a2cfdd6df89"
+    },
+    {
+      "bytes": 1001,
+      "path": "modules/commercial-loop/pom.xml",
+      "sha256": "927b353ffcd0fb676f0e77de29d88ab4239c517e13ed0f7422f49e0cb878d09b"
+    },
+    {
+      "bytes": 15487,
+      "path": "modules/commercial-loop/src/main/java/io/elmos/commercialloop/CommercialLoopArtifactWriter.java",
+      "sha256": "eaab7ba4b700c96ac18c2b8e50f1c1d65dbdfece52bb26a0d45b0d58d9b92e26"
+    },
+    {
+      "bytes": 2166,
+      "path": "modules/commercial-loop/src/main/java/io/elmos/commercialloop/CommercialLoopAuthorities.java",
+      "sha256": "42fb1e8b533155c81826fed608a2250db75219e1976e63f91cb21077dd54c0a5"
+    },
+    {
+      "bytes": 20651,
+      "path": "modules/commercial-loop/src/main/java/io/elmos/commercialloop/CommercialLoopModels.java",
+      "sha256": "66d3802a79323beb30d01e0468ed40762b341c11cbb5c1b26b7b81e2d60c0ce1"
+    },
+    {
+      "bytes": 21742,
+      "path": "modules/commercial-loop/src/main/java/io/elmos/commercialloop/CommercialLoopService.java",
+      "sha256": "dd7152fb3fcdd7476896aca9f5ea792b3d797bf6d2b3bde00dc578eefc4e79f7"
+    },
+    {
+      "bytes": 22639,
+      "path": "modules/commercial-loop/src/test/java/io/elmos/commercialloop/CommercialLoopServiceTest.java",
+      "sha256": "deb2786c29338b53e28776e90fd3894b173ac34456caec2b65a154007b59dbce"
+    },
+    {
+      "bytes": 657,
+      "path": "modules/commercial-operations/pom.xml",
+      "sha256": "445f8cb51a17258d8e3a0f469c6c8e466a6b7774d94cb27a9a9da82046e20b5a"
+    },
+    {
+      "bytes": 4155,
+      "path": "modules/commercial-operations/src/main/java/io/elmos/commercial/AssetAndKnowledgeGovernance.java",
+      "sha256": "15560d155fb32e2eb0519d56885615a9eb990fd0152b4bf2da2a74832305e5f0"
+    },
+    {
+      "bytes": 11780,
+      "path": "modules/commercial-operations/src/main/java/io/elmos/commercial/CommercialModels.java",
+      "sha256": "bb8fd8799d297cfed24b82f9100ff4c6ed9f87f00a132d5d266ce959d2b7ac41"
+    },
+    {
+      "bytes": 4600,
+      "path": "modules/commercial-operations/src/main/java/io/elmos/commercial/CustomerSuccessAndAnalyticsService.java",
+      "sha256": "d3d8f27c68fb6b4ffbd824294646865423a0afd77708c5890566d291f0724342"
+    },
+    {
+      "bytes": 8703,
+      "path": "modules/commercial-operations/src/main/java/io/elmos/commercial/EntitlementAndFulfillmentService.java",
+      "sha256": "0926038d9e64d974a5efecb44779eed242a6743b0b3ebd9075a264eab09a4119"
+    },
+    {
+      "bytes": 4957,
+      "path": "modules/commercial-operations/src/main/java/io/elmos/commercial/OnboardingAndProjectService.java",
+      "sha256": "8b632caa340c724c75d207d7394152f056411227a19d1450712f687e127a231e"
+    },
+    {
+      "bytes": 3752,
+      "path": "modules/commercial-operations/src/main/java/io/elmos/commercial/SlaAndSupportService.java",
+      "sha256": "ed94017ed647c30bf657adfcde3a9d66b14e40d101e337aef2dfc650b02d8708"
+    },
+    {
+      "bytes": 13747,
+      "path": "modules/commercial-operations/src/test/java/io/elmos/commercial/CommercialOperationsTest.java",
+      "sha256": "b64238834ae815d3f2ee8820065c71f6f441810488886c9c1b65772587f7aa5c"
+    },
+    {
+      "bytes": 747,
+      "path": "modules/company-series/pom.xml",
+      "sha256": "9ea0b9c4e20cfdf74f30de161e867805ebabbea4d46b7da4e26899ebb346ba20"
+    },
+    {
+      "bytes": 3908,
+      "path": "modules/company-series/src/main/java/io/elmos/companyseries/CompanySeriesArtifactWriter.java",
+      "sha256": "fc93b34b09098c6e1c9e1e4512da072ee1dd7ef807a3d2aeb5b1c26f8b2e83cb"
+    },
+    {
+      "bytes": 5970,
+      "path": "modules/company-series/src/main/java/io/elmos/companyseries/CompanySeriesEvaluator.java",
+      "sha256": "70977e5ef6ce0f9d89099601c24b9b16e673d3d040a814221928184e8241db12"
+    },
+    {
+      "bytes": 7282,
+      "path": "modules/company-series/src/main/java/io/elmos/companyseries/CompanySeriesModels.java",
+      "sha256": "75227a434dfc30cb409aad1f7cb8f88210e3d5f3ca509f90778af653f28a385a"
+    },
+    {
+      "bytes": 7431,
+      "path": "modules/company-series/src/main/java/io/elmos/companyseries/CompanySeriesPrograms.java",
+      "sha256": "cd76be7c251b9cb5739e7e08a1383c767a4d52f60d5c96b53896ffe9f5fe06d9"
+    },
+    {
+      "bytes": 6469,
+      "path": "modules/company-series/src/test/java/io/elmos/companyseries/CompanySeriesEvaluatorTest.java",
+      "sha256": "ab7671eb1f2cf28ecf212f383906bc60ee13161fea8f0ee921bbf64b22b7dae0"
+    },
+    {
+      "bytes": 513,
+      "path": "modules/composite-modernization/pom.xml",
+      "sha256": "9b45ed15001ee3364038d28793c6c3b846e255a255494628d4180ed552988ce3"
+    },
+    {
+      "bytes": 4284,
+      "path": "modules/composite-modernization/src/main/java/io/elmos/composite/BusinessJourneyValidator.java",
+      "sha256": "e7942952b88cbeea4e0b6b95ee8873406b6670520ef3717fd7fa950bc537aeb9"
+    },
+    {
+      "bytes": 6269,
+      "path": "modules/composite-modernization/src/main/java/io/elmos/composite/CompatibilityGovernance.java",
+      "sha256": "a9a13cb7ba21aaecfda65d2513e5cc23e41b63bcb69d131a5fc5400196b5ab52"
+    },
+    {
+      "bytes": 1564,
+      "path": "modules/composite-modernization/src/main/java/io/elmos/composite/CompositeEvidenceMapper.java",
+      "sha256": "15c1565acc18131002ca54b8a604a52b7c2b91333edd31e93f074e88594f5014"
+    },
+    {
+      "bytes": 1042,
+      "path": "modules/composite-modernization/src/main/java/io/elmos/composite/CompositeIds.java",
+      "sha256": "d3991817c06692eaa1017c66e0ccad264c042059753da1b381064b2ae86adabd"
+    },
+    {
+      "bytes": 8644,
+      "path": "modules/composite-modernization/src/main/java/io/elmos/composite/CompositeModels.java",
+      "sha256": "4d58d6a56d2bfe42c42cdee3ea59ef59d7e6579874e5570b28cd4d1f5ffd823d"
+    },
+    {
+      "bytes": 2344,
+      "path": "modules/composite-modernization/src/main/java/io/elmos/composite/CompositeModernizationOrchestrator.java",
+      "sha256": "4db3ad045144082c62ca037b32cc82af79311a2d98bbfbe58ab9009c40f48e0c"
+    },
+    {
+      "bytes": 8666,
+      "path": "modules/composite-modernization/src/main/java/io/elmos/composite/ContractCatalogService.java",
+      "sha256": "6e4b7e0e7cdaa23d885c25ad776edcf4fab7723719035f7a1ddee41e7a2d1975"
+    },
+    {
+      "bytes": 8039,
+      "path": "modules/composite-modernization/src/main/java/io/elmos/composite/DataMigrationController.java",
+      "sha256": "7379f13a7a7468898cc8a442cdc53863a4196bfb9a1e39ede50c7e3c3aa969be"
+    },
+    {
+      "bytes": 6008,
+      "path": "modules/composite-modernization/src/main/java/io/elmos/composite/DependencyGraphAnalyzer.java",
+      "sha256": "ea6adcfa8f7add0bc00bf21920232819730492c82f8698d94baa1ab49aa2ce05"
+    },
+    {
+      "bytes": 6306,
+      "path": "modules/composite-modernization/src/main/java/io/elmos/composite/MigrationWavePlanner.java",
+      "sha256": "a3bcfe7e43ba812659ae885cd9c618788b61bb9a97c3baf9f6b3e71618833889"
+    },
+    {
+      "bytes": 4539,
+      "path": "modules/composite-modernization/src/main/java/io/elmos/composite/ProgressiveTrafficController.java",
+      "sha256": "607bfc6b10a19f16535b1185192fdd587eeeb0c9b18e7eb2ed63a2bfa1b0706e"
+    },
+    {
+      "bytes": 7001,
+      "path": "modules/composite-modernization/src/main/java/io/elmos/composite/RuntimeTopologyCorrelator.java",
+      "sha256": "3f4bbbde17eb3801ca9adc4179e9b1f2e23c4fa6999f39492ed6488cce72a57a"
+    },
+    {
+      "bytes": 11456,
+      "path": "modules/composite-modernization/src/main/java/io/elmos/composite/ShadowTrafficValidator.java",
+      "sha256": "a256dde3f325c3360e2a88c69d55f9d5457a1462dfed4bca9240d5abafdd0d57"
+    },
+    {
+      "bytes": 10954,
+      "path": "modules/composite-modernization/src/main/java/io/elmos/composite/SystemCutoverOrchestrator.java",
+      "sha256": "ea8f5fa91ad043e7e47f20d54f1ef7f67c6c3a66389633cfa0f4ea4b9344d55e"
+    },
+    {
+      "bytes": 3788,
+      "path": "modules/composite-modernization/src/main/java/io/elmos/composite/SystemLandscapeService.java",
+      "sha256": "807be242ecba1680016813825e487d37a9d784fbff28222c1ce53bed6fb01fe2"
+    },
+    {
+      "bytes": 5189,
+      "path": "modules/composite-modernization/src/test/java/io/elmos/composite/CompositeGovernanceTest.java",
+      "sha256": "8382c29503dd19f54279aad4220d04832c2c86dba362b7e2c76ca74ac7ef2298"
+    },
+    {
+      "bytes": 21522,
+      "path": "modules/composite-modernization/src/test/java/io/elmos/composite/CompositeModernizationScenariosTest.java",
+      "sha256": "789a4564e03d3a47337f80d5ea11d1772b8b58360db05a9e186c8bb40bfb70ec"
+    },
+    {
+      "bytes": 1082,
+      "path": "modules/delivery/pom.xml",
+      "sha256": "7d284d4b332d598d6f2fcfead5c49c2ef84892e55932552c640ca9bb6456f6e0"
+    },
+    {
+      "bytes": 2515,
+      "path": "modules/delivery/src/main/java/io/elmos/delivery/AcceptancePolicy.java",
+      "sha256": "ddfe768d2466841312a8f63f0dd5fa4e71cd8cd075803206d2f5d136caf225f0"
+    },
+    {
+      "bytes": 8506,
+      "path": "modules/delivery/src/main/java/io/elmos/delivery/DeliveryModels.java",
+      "sha256": "1297edd9b2315a32e84d176613ff52f95c25143ab76de482c437afb047421a2f"
+    },
+    {
+      "bytes": 4942,
+      "path": "modules/delivery/src/main/java/io/elmos/delivery/DeliveryReadModel.java",
+      "sha256": "a271f3ee50337c989aa4fd91e2ad70ff4b4c029297401afb6a95a47cac068c8f"
+    },
+    {
+      "bytes": 7191,
+      "path": "modules/delivery/src/main/java/io/elmos/delivery/EvidencePackService.java",
+      "sha256": "0f582992b2998722b0a2969e1d320f94c39ac44a34a3d4b9f2cf67175ef9895a"
+    },
+    {
+      "bytes": 3011,
+      "path": "modules/delivery/src/main/java/io/elmos/delivery/ReportGenerator.java",
+      "sha256": "99b9679ce98b58cacdcd5966a6f86562a9cf0d8725ad0b2c4743b5b59b1f0422"
+    },
+    {
+      "bytes": 3818,
+      "path": "modules/delivery/src/main/java/io/elmos/delivery/RollbackPlanner.java",
+      "sha256": "ed407749bb02d75ff88cc1942bca418be06ca28814f326db5c3d1e73832a8a69"
+    },
+    {
+      "bytes": 2102,
+      "path": "modules/delivery/src/main/java/io/elmos/delivery/ScmDeliveryPolicy.java",
+      "sha256": "dd8d186f798bd3a36f9b380b822685acd34e9bb9584594f161d737d89d422ca1"
+    },
+    {
+      "bytes": 11176,
+      "path": "modules/delivery/src/test/java/io/elmos/delivery/DeliveryGovernanceTest.java",
+      "sha256": "92297c0f1b708f80cc28271ddaff38f24a289a134579926e1fec5df7f9218c72"
+    },
+    {
+      "bytes": 886,
+      "path": "modules/dependency-migration/pom.xml",
+      "sha256": "829cf13a69ffbbaca6c92a707835e3d2ae6fa81e125c98415c74dbeda326c952"
+    },
+    {
+      "bytes": 3695,
+      "path": "modules/dependency-migration/src/main/java/io/elmos/dependency/ApiSemanticProfiler.java",
+      "sha256": "73c8a520d21f2ef5ea02bde4b65b2c009a2a887a6405401cd61a81f2c5d849f7"
+    },
+    {
+      "bytes": 3474,
+      "path": "modules/dependency-migration/src/main/java/io/elmos/dependency/BuildDependencyPatchPlanner.java",
+      "sha256": "f54457fe5d2b81e8c8275abffb2636eaa210013684d5ed3a641e7ce164809ed1"
+    },
+    {
+      "bytes": 2334,
+      "path": "modules/dependency-migration/src/main/java/io/elmos/dependency/DependencyArtifactWriter.java",
+      "sha256": "8347a20bc07938ff2fe1a7dcf08c85c46746d9fcd678f616ee3dc0f9fce37424"
+    },
+    {
+      "bytes": 3641,
+      "path": "modules/dependency-migration/src/main/java/io/elmos/dependency/DependencyInventoryNormalizer.java",
+      "sha256": "074adaf9d7585d76983465b237696eb3375e233808e4a5c9724ec5e49f0386cb"
+    },
+    {
+      "bytes": 787,
+      "path": "modules/dependency-migration/src/main/java/io/elmos/dependency/DependencyMigrationIds.java",
+      "sha256": "406dd17c8db9c7ca02340e75eb06893630ee220d6ad8573a3317340294ee1eb1"
+    },
+    {
+      "bytes": 13521,
+      "path": "modules/dependency-migration/src/main/java/io/elmos/dependency/DependencyMigrationModels.java",
+      "sha256": "86bb9e784b7e5d2d0c4f7553785b27b15ceaab77098b5853fa1edab813234a62"
+    },
+    {
+      "bytes": 11009,
+      "path": "modules/dependency-migration/src/main/java/io/elmos/dependency/DependencyMigrationService.java",
+      "sha256": "e221970eb3da4e5b6051bf684069f6c4d9b58da931fbb41d28714a20abf8b98f"
+    },
+    {
+      "bytes": 13671,
+      "path": "modules/dependency-migration/src/main/java/io/elmos/dependency/DependencyStrategyPlanner.java",
+      "sha256": "2de08eb22e46fd63218097188bd1b7f6dc9bd8b6dba53432829424ea006ac577"
+    },
+    {
+      "bytes": 10848,
+      "path": "modules/dependency-migration/src/test/java/io/elmos/dependency/DependencyMigrationServiceTest.java",
+      "sha256": "ba5b53e083040ba6fccc6712f29c512a52106a8d9dba4a615b87939a12c972e1"
+    },
+    {
+      "bytes": 478,
+      "path": "modules/domain/pom.xml",
+      "sha256": "1c8b9c29d14f6095bd07e531595a2419d7eaaa4f263976392dd47b259ea938b2"
+    },
+    {
+      "bytes": 144,
+      "path": "modules/domain/src/main/java/io/elmos/domain/ArtifactRef.java",
+      "sha256": "2f8cf158ebe728d161967f4f3127ac89dfc5540f00cced7c6e9f7f28692f4e3f"
+    },
+    {
+      "bytes": 844,
+      "path": "modules/domain/src/main/java/io/elmos/domain/AssessmentRun.java",
+      "sha256": "d0df21fc12b9a96dc8392088de5e09c8e0302c32d367473cbf3766353465e8cb"
+    },
+    {
+      "bytes": 263,
+      "path": "modules/domain/src/main/java/io/elmos/domain/CommitSha.java",
+      "sha256": "5dbbce315cfe37317dd93c47ad8b44d21b5a3a6d1b1fe8a307e116529cff72c0"
+    },
+    {
+      "bytes": 609,
+      "path": "modules/domain/src/main/java/io/elmos/domain/DomainEvent.java",
+      "sha256": "be28b4c13675f3449135bd67a82fc026a41c4e4944c3d0b96ff528deda08b382"
+    },
+    {
+      "bytes": 149,
+      "path": "modules/domain/src/main/java/io/elmos/domain/DomainException.java",
+      "sha256": "e27a319a6c746df613811e3cbbf0db5bf30a7506fc01197f4ff45e17eac4c661"
+    },
+    {
+      "bytes": 224,
+      "path": "modules/domain/src/main/java/io/elmos/domain/EvidenceId.java",
+      "sha256": "3486d036e6c8adcbe32500b95712e89bf85378c0b240555494bcfbd2db934c97"
+    },
+    {
+      "bytes": 372,
+      "path": "modules/domain/src/main/java/io/elmos/domain/Identifiers.java",
+      "sha256": "8abe6d29ff4607e26d4e2befe6c5c57e63ef88bf9f5d0ebf5acef256c5a8e3b4"
+    },
+    {
+      "bytes": 3735,
+      "path": "modules/domain/src/main/java/io/elmos/domain/MigrationPlan.java",
+      "sha256": "236abc838399cd6f39209685c5db89b1c2d9fb13bbe8d846d7a2bd00a3d39694"
+    },
+    {
+      "bytes": 249,
+      "path": "modules/domain/src/main/java/io/elmos/domain/MigrationPlanId.java",
+      "sha256": "80dec3b7e86a7cb7cec7eb8c6b47def294546e42023838b87499e8eb46ad6606"
+    },
+    {
+      "bytes": 6030,
+      "path": "modules/domain/src/main/java/io/elmos/domain/MigrationRun.java",
+      "sha256": "f3bd447c2faff91cadfee6e0249621978b65dd20d281479e439cb205d5fa62dc"
+    },
+    {
+      "bytes": 244,
+      "path": "modules/domain/src/main/java/io/elmos/domain/MigrationRunId.java",
+      "sha256": "ef68149540aaf9b8bbdaf7cabe6cd672b30b12f87b7d4ceced43f7d4864cf90d"
+    },
+    {
+      "bytes": 569,
+      "path": "modules/domain/src/main/java/io/elmos/domain/MigrationState.java",
+      "sha256": "4b9439c222e73e8de53b12a40053696f45bfd2a256e6a3528e8e665ae84a95cb"
+    },
+    {
+      "bytes": 2057,
+      "path": "modules/domain/src/main/java/io/elmos/domain/MigrationStepRun.java",
+      "sha256": "0ab44d0abdda15bf10003d2a782c7f22ee823472c65a59df68901bc81d930d0d"
+    },
+    {
+      "bytes": 244,
+      "path": "modules/domain/src/main/java/io/elmos/domain/OrganizationId.java",
+      "sha256": "2fbc8402d7fbe49376457d4f5a2f96b0ce6159ecebee1609997a27bfe0c4814f"
+    },
+    {
+      "bytes": 492,
+      "path": "modules/domain/src/main/java/io/elmos/domain/Repository.java",
+      "sha256": "c83e0c75fa31c94b911561a0d89ef7b76f29db5fbaf7b2a952713d68ab8ed4e9"
+    },
+    {
+      "bytes": 234,
+      "path": "modules/domain/src/main/java/io/elmos/domain/RepositoryId.java",
+      "sha256": "dca49f5251e6d769a68bab41040dbb1b7b3375fb55983d475c0efee1e8e7e8d7"
+    },
+    {
+      "bytes": 632,
+      "path": "modules/domain/src/main/java/io/elmos/domain/RepositorySnapshot.java",
+      "sha256": "305c27dd513485f95f175406d18c07343195531c7f51ddb89ba29fe96c94cf1a"
+    },
+    {
+      "bytes": 224,
+      "path": "modules/domain/src/main/java/io/elmos/domain/SnapshotId.java",
+      "sha256": "fa78a26592305a2383ee2aba1fe0dc4dbf8297362d49f55a4661f0d45ca86cf2"
+    },
+    {
+      "bytes": 219,
+      "path": "modules/domain/src/main/java/io/elmos/domain/StepRunId.java",
+      "sha256": "b990d5f3768279f40d3862d2f9d174d24196e05a13294b65acf2cf43e2be29b2"
+    },
+    {
+      "bytes": 158,
+      "path": "modules/domain/src/main/java/io/elmos/domain/StepState.java",
+      "sha256": "0669d6bb2b2e0cd006bb56dd8fdcf53872cb2fb466df1dda54e726f1dc5c1445"
+    },
+    {
+      "bytes": 5803,
+      "path": "modules/domain/src/test/java/io/elmos/domain/MigrationRunTest.java",
+      "sha256": "bb3577a119777060f5b0b8fb03d3f7d7b3ae40c5c5cfb4928b9cddf20be3d57a"
+    },
+    {
+      "bytes": 1002,
+      "path": "modules/ecosystem-growth/pom.xml",
+      "sha256": "4c2ea63f056776d997b09fdeb1ec6ff1d1da6c89083cd636fd648aefe1ab31b3"
+    },
+    {
+      "bytes": 16945,
+      "path": "modules/ecosystem-growth/src/main/java/io/elmos/ecosystemgrowth/EcosystemGrowthArtifactWriter.java",
+      "sha256": "2a27ecd671114f6244d8eb1cb8a44edf0019f711f6625fc0fd228019fb4be47f"
+    },
+    {
+      "bytes": 1883,
+      "path": "modules/ecosystem-growth/src/main/java/io/elmos/ecosystemgrowth/EcosystemGrowthAuthorities.java",
+      "sha256": "00c1f8181596c8995de2813af2c4782c3bc9bca21f97b060222aabcc046a3d4c"
+    },
+    {
+      "bytes": 16880,
+      "path": "modules/ecosystem-growth/src/main/java/io/elmos/ecosystemgrowth/EcosystemGrowthModels.java",
+      "sha256": "820d068ef384484e9ecb39c90c4853cbb80b125ba5d7f651a3b5723f412aaced"
+    },
+    {
+      "bytes": 16910,
+      "path": "modules/ecosystem-growth/src/main/java/io/elmos/ecosystemgrowth/EcosystemGrowthService.java",
+      "sha256": "61cda85adfa0461772967598fc152e54350b3ce1dc7c9c8ed77a7bbaed4e3d7a"
+    },
+    {
+      "bytes": 20413,
+      "path": "modules/ecosystem-growth/src/test/java/io/elmos/ecosystemgrowth/EcosystemGrowthServiceTest.java",
+      "sha256": "b7cc465f07f9986a95cf3abd6ce02beec506725142335fc2dd0342b9eaf0db68"
+    },
+    {
+      "bytes": 511,
+      "path": "modules/enterprise-governance/pom.xml",
+      "sha256": "2aea2bbfef00bc32e26bef940d70981b35e49e87bdeebed1ab8f01c7bf2ade77"
+    },
+    {
+      "bytes": 6139,
+      "path": "modules/enterprise-governance/src/main/java/io/elmos/enterprise/DataAndDeploymentGovernance.java",
+      "sha256": "34140316b9ea2d96a734896b3844a7af6bf82c1d2f01c96808184026de0f6ad3"
+    },
+    {
+      "bytes": 12793,
+      "path": "modules/enterprise-governance/src/main/java/io/elmos/enterprise/EnterpriseModels.java",
+      "sha256": "26fd374f5312d8b94bd2e499451ec2ee77bbeaf08564231a956ce8dfd901c111"
+    },
+    {
+      "bytes": 8818,
+      "path": "modules/enterprise-governance/src/main/java/io/elmos/enterprise/PrivateExecutionGovernance.java",
+      "sha256": "a97656c434ac79f661ffc48514ec0e28582fffbadcc119b2212a9cacda31fd73"
+    },
+    {
+      "bytes": 9745,
+      "path": "modules/enterprise-governance/src/main/java/io/elmos/enterprise/TenantIdentityAuthorization.java",
+      "sha256": "f40e8ad11476c9fda460004e0c0fe7ef0354fdcdda92eafaae8cdfd69a4adbd3"
+    },
+    {
+      "bytes": 10340,
+      "path": "modules/enterprise-governance/src/main/java/io/elmos/enterprise/UsageAndAuditGovernance.java",
+      "sha256": "b54b6c93cc2ab09501af88b93c8766994482c1da6a2c9e0e919bfcc720cac6e0"
+    },
+    {
+      "bytes": 16205,
+      "path": "modules/enterprise-governance/src/test/java/io/elmos/enterprise/EnterpriseGovernanceTest.java",
+      "sha256": "39eb28b3c75095cad872a72fe1bae1e7e534c0d23d21988183586cd5806df9fe"
+    },
+    {
+      "bytes": 992,
+      "path": "modules/enterprise-platform/pom.xml",
+      "sha256": "fe3ea7d915d5f67b2e60f4460c2d09275535507ce9da065aa69aeb2ebca88d8b"
+    },
+    {
+      "bytes": 15330,
+      "path": "modules/enterprise-platform/src/main/java/io/elmos/platform/EnterprisePlatformArtifactWriter.java",
+      "sha256": "1b8bc49542ad8b817be344b213a5f3f30c64db0ce03dfb2f181beba7928843b1"
+    },
+    {
+      "bytes": 2290,
+      "path": "modules/enterprise-platform/src/main/java/io/elmos/platform/EnterprisePlatformAuthorities.java",
+      "sha256": "75f174a82a549fd55cd54939f2624b95e6efd2d3366583d9bdb9cec28111f5f2"
+    },
+    {
+      "bytes": 22480,
+      "path": "modules/enterprise-platform/src/main/java/io/elmos/platform/EnterprisePlatformModels.java",
+      "sha256": "dae008a414ac05199caf2972172f9a6afb2e27a345c83a601991b843637312a6"
+    },
+    {
+      "bytes": 23302,
+      "path": "modules/enterprise-platform/src/main/java/io/elmos/platform/EnterprisePlatformService.java",
+      "sha256": "96ee14457a4f13a67f2999c4ffeb9525ba190b18ef53fcb6ec404b87e66ad5e6"
+    },
+    {
+      "bytes": 23524,
+      "path": "modules/enterprise-platform/src/test/java/io/elmos/platform/EnterprisePlatformServiceTest.java",
+      "sha256": "7c3de20a1532b0aaf0493380c068ae22f77e3a24bd1ab8c0958273f34f82a835"
+    },
+    {
+      "bytes": 606,
+      "path": "modules/evidence/pom.xml",
+      "sha256": "7a52569eca8d6bb31cbf19ed688703bd9e1b43849df9a32521f31ec8b8be8c28"
+    },
+    {
+      "bytes": 892,
+      "path": "modules/evidence/src/main/java/io/elmos/evidence/AuditEvent.java",
+      "sha256": "b8709b6b848dcba235fa7d5b2af014aed457dc8d1a27180202fb799c7584d80b"
+    },
+    {
+      "bytes": 1684,
+      "path": "modules/evidence/src/main/java/io/elmos/evidence/Evidence.java",
+      "sha256": "ddddf5c7c7de581e55aca5e00fa405e70c0131b81d23fe8f99d4a949a35de91d"
+    },
+    {
+      "bytes": 100,
+      "path": "modules/evidence/src/main/java/io/elmos/evidence/EvidenceStatus.java",
+      "sha256": "2ddc5276afa38f136c0432f7e1edfb0c9ff941f61aa3a9cdb017c54b41c245d1"
+    },
+    {
+      "bytes": 377,
+      "path": "modules/evidence/src/main/java/io/elmos/evidence/EvidenceType.java",
+      "sha256": "a5e73196c488c897f2d79b3fb7e1a199d629e68dfe48c38abcff3fb00426dbce"
+    },
+    {
+      "bytes": 1365,
+      "path": "modules/evidence/src/main/java/io/elmos/evidence/ValidationPolicy.java",
+      "sha256": "c7062398e160f50add5bb78c08e4bee877917835cf729260d2d3f55ecc2537eb"
+    },
+    {
+      "bytes": 1075,
+      "path": "modules/evidence/src/test/java/io/elmos/evidence/ValidationPolicyTest.java",
+      "sha256": "8a1f1ce09c9c8250a14dc36d6b23175f17148726d6ea025133f0e8bb875f4549"
+    },
+    {
+      "bytes": 646,
+      "path": "modules/evidence-bound-engine/pom.xml",
+      "sha256": "a099a24cd40e1782f2ca54bdb81cb3b004c90cdaafedd3f981d407be9b289e64"
+    },
+    {
+      "bytes": 17533,
+      "path": "modules/evidence-bound-engine/src/main/java/io/elmos/executiondomain/DomainDefinitions.java",
+      "sha256": "2bd40c85e21aefd033ab33bf653de13d44a9042b6301e90ade20baf06476e9f7"
+    },
+    {
+      "bytes": 1834,
+      "path": "modules/evidence-bound-engine/src/main/java/io/elmos/executiondomain/DomainEngineDefinition.java",
+      "sha256": "73ed794820df59d4bd8f59b5fa8b12ce00520efb4d110abf587af09fc72f9ddc"
+    },
+    {
+      "bytes": 10441,
+      "path": "modules/evidence-bound-engine/src/main/java/io/elmos/executiondomain/EvidenceBoundDomainEngine.java",
+      "sha256": "a267a530d255ee5fba3cefcde1316c8a9b4221495a142abf4ce3c1a1c87c2d99"
+    },
+    {
+      "bytes": 7338,
+      "path": "modules/evidence-bound-engine/src/test/java/io/elmos/executiondomain/EvidenceBoundDomainEngineTest.java",
+      "sha256": "13a37440b9a8b6822cf21f00bcebedd8bd075091b49d9f22d9ddd6195c6419f8"
+    },
+    {
+      "bytes": 995,
+      "path": "modules/framework-migration/pom.xml",
+      "sha256": "cb9e14a84d326741b845042108379dcd209c7f4b192de6363363110027cf63ac"
+    },
+    {
+      "bytes": 6759,
+      "path": "modules/framework-migration/src/main/java/io/elmos/frameworkmigration/EvidenceFrameworkFingerprintDetector.java",
+      "sha256": "9beb308bfb53fcd4683fa8759107b659b6fa349d3737e267fecd3ab788bc25a7"
+    },
+    {
+      "bytes": 4948,
+      "path": "modules/framework-migration/src/main/java/io/elmos/frameworkmigration/FrameworkArtifactWriter.java",
+      "sha256": "55da91d55a206c6f846e25e5caa6c3261f97eb75fac6ee2867d31e34e20c5fce"
+    },
+    {
+      "bytes": 1680,
+      "path": "modules/framework-migration/src/main/java/io/elmos/frameworkmigration/FrameworkIds.java",
+      "sha256": "b9dcb6b797b8d9385da0abf56257adbe1a6e3af9ec43898200b1ca9b586193ec"
+    },
+    {
+      "bytes": 14133,
+      "path": "modules/framework-migration/src/main/java/io/elmos/frameworkmigration/FrameworkMigrationModels.java",
+      "sha256": "6b74257984b279ebef7efaba158872a9816e47d96c05daeb94d8f586e61dc6fd"
+    },
+    {
+      "bytes": 23795,
+      "path": "modules/framework-migration/src/main/java/io/elmos/frameworkmigration/FrameworkMigrationService.java",
+      "sha256": "c917f7968a8c0fe7912de39222561018d03a28a92e3266bd9b1aadda1833a7b4"
+    },
+    {
+      "bytes": 4077,
+      "path": "modules/framework-migration/src/main/java/io/elmos/frameworkmigration/FrameworkRecipeRegistry.java",
+      "sha256": "41d4ed63a8280fb3903e318518980d558b74312d38b2aeddd64c4415035eecd3"
+    },
+    {
+      "bytes": 19470,
+      "path": "modules/framework-migration/src/main/java/io/elmos/frameworkmigration/FrameworkSemanticValidator.java",
+      "sha256": "e23d432bef673a25d4256643b468a19c4a22504c7640d3200ad627ed6f212752"
+    },
+    {
+      "bytes": 20029,
+      "path": "modules/framework-migration/src/test/java/io/elmos/frameworkmigration/FrameworkMigrationServiceTest.java",
+      "sha256": "2c3e4c0a47769a5d11401a7d098b16e65c69e56e0ed2e64c9373b9638feeac39"
+    },
+    {
+      "bytes": 502,
+      "path": "modules/health-check/pom.xml",
+      "sha256": "2c9666c3a3b87a7ae51668494378c7a07a991a6decea327b2eb3327c321ed575"
+    },
+    {
+      "bytes": 846,
+      "path": "modules/health-check/src/main/java/io/elmos/health/BuildInventory.java",
+      "sha256": "66a10774147e0a504ca86335cc9f356254cc3c4ab4b49bd46a9d97b6f0057665"
+    },
+    {
+      "bytes": 4066,
+      "path": "modules/health-check/src/main/java/io/elmos/health/HealthModels.java",
+      "sha256": "f738fda347873aa3805eeaf5dca78e97ab69de3aea65a201c2b239f5b6e55f1f"
+    },
+    {
+      "bytes": 324,
+      "path": "modules/health-check/src/main/java/io/elmos/health/HealthReportStore.java",
+      "sha256": "2ec8341fd1842f34e7ef6b6cc72fde0dcd4ccae128fd10565b6e9b51112a5ab6"
+    },
+    {
+      "bytes": 10525,
+      "path": "modules/health-check/src/main/java/io/elmos/health/JavaLegacyHealthCheck.java",
+      "sha256": "f3c55803b1d1ba598e26387648638bded0f5d0c06ba4d5b78a89ddadd2700fa3"
+    },
+    {
+      "bytes": 9171,
+      "path": "modules/health-check/src/main/java/io/elmos/health/ProjectDiscovery.java",
+      "sha256": "9538631bdbf293296ba04f2122c5acc3dc8ab2fb575401d54471567ac3a61d3b"
+    },
+    {
+      "bytes": 716,
+      "path": "modules/health-check/src/main/java/io/elmos/health/ScanPolicy.java",
+      "sha256": "9b866ca0e773afd6b46c48a9ba93c519f642b8464ad05f952da6bee0121aff1f"
+    },
+    {
+      "bytes": 7301,
+      "path": "modules/health-check/src/main/java/io/elmos/health/SecurePomParser.java",
+      "sha256": "f3177ecd3e9104bb13e46ecdf3ba0c99d0dc3f6b4d2c05e325d2e25b1ed52c33"
+    },
+    {
+      "bytes": 7775,
+      "path": "modules/health-check/src/main/java/io/elmos/health/SourceRiskAnalyzer.java",
+      "sha256": "8ae33bbedd9a4dc9c8c4299a5e527e53aa6dc02c2c6e8fd1f081788584f723e8"
+    },
+    {
+      "bytes": 528,
+      "path": "modules/health-check/src/main/java/io/elmos/health/VulnerabilityProviders.java",
+      "sha256": "b8613fc2f7e2d3f505ce434290baafa55406fe8ae91c33be31de060136484f7e"
+    },
+    {
+      "bytes": 5060,
+      "path": "modules/health-check/src/test/java/io/elmos/health/JavaLegacyHealthCheckTest.java",
+      "sha256": "c5e7254c5a271c7b0d66615be2e048d719c2fbc21d9ae035642da81048aabe93"
+    },
+    {
+      "bytes": 956,
+      "path": "modules/intake/pom.xml",
+      "sha256": "0ed845a06e88fefd3b47d5a70f4c81f37b56cf24e975350118df9ba077e70bb6"
+    },
+    {
+      "bytes": 519,
+      "path": "modules/intake/src/main/java/io/elmos/intake/BaselineRunner.java",
+      "sha256": "4291fbb68a8411db526a02ee9f97a4135fac051a3f06a88b068d08b8b4b095ec"
+    },
+    {
+      "bytes": 24141,
+      "path": "modules/intake/src/main/java/io/elmos/intake/BuildManifestInspector.java",
+      "sha256": "385096d9bc2e518435135d4f76b7479e093c76e7e2a8ad350d3f003bc1d17e13"
+    },
+    {
+      "bytes": 11110,
+      "path": "modules/intake/src/main/java/io/elmos/intake/IntakeModels.java",
+      "sha256": "1bd3f9cf659448527fe5054bc8b659bc282d57fb7cf7eaaad8c4e2e78cfc9297"
+    },
+    {
+      "bytes": 3976,
+      "path": "modules/intake/src/main/java/io/elmos/intake/MigrationWorkspaceWriter.java",
+      "sha256": "e899f75149ce723499ed1365d8f388c70fdd2f30d2cddcd7a1ae0d9fadcaa1de"
+    },
+    {
+      "bytes": 16819,
+      "path": "modules/intake/src/main/java/io/elmos/intake/RepositoryIntakeService.java",
+      "sha256": "dbd6619c11ca177f45585c6708871e594b13c45abbccb665993188e06fba1615"
+    },
+    {
+      "bytes": 12379,
+      "path": "modules/intake/src/main/java/io/elmos/intake/SecureRepositoryScanner.java",
+      "sha256": "831d609df4ce0d220172f162b336b496f64804547837553c6caec4fc80a39dc3"
+    },
+    {
+      "bytes": 11142,
+      "path": "modules/intake/src/test/java/io/elmos/intake/RepositoryIntakeServiceTest.java",
+      "sha256": "fe7988e7db763174de852b416ca8893f3da4a9f1dada9b3064ede220905afd74"
+    },
+    {
+      "bytes": 1560,
+      "path": "modules/integrations/pom.xml",
+      "sha256": "69fe6b7fd7e03d34ea9e6436659087415fad5b8cb8bd7540ea606f0f5bbb68a3"
+    },
+    {
+      "bytes": 1732,
+      "path": "modules/integrations/src/main/java/io/elmos/integrations/GitHubAppJwt.java",
+      "sha256": "59fb9929545f22052928003b94e47457583fb0e43dd0b32caea1d30e6f17233e"
+    },
+    {
+      "bytes": 1158,
+      "path": "modules/integrations/src/main/java/io/elmos/integrations/GitHubPrivateKeyLoader.java",
+      "sha256": "b94837e9e79aa02138feb03e058140611c96e054645dfc5d6ef6f64691807a0f"
+    },
+    {
+      "bytes": 3024,
+      "path": "modules/integrations/src/main/java/io/elmos/integrations/GitHubRestInstallationTokenIssuer.java",
+      "sha256": "b9661a1206f587ef7c0a8e1b1964cda77983e86bab7d413baf642d803b5c94b2"
+    },
+    {
+      "bytes": 1853,
+      "path": "modules/integrations/src/main/java/io/elmos/integrations/HttpModernizationEngineAdapter.java",
+      "sha256": "f344f6482d500d7d89c44ab43475c4d62abaa47555cf5b3c197e424c0b8f1bfb"
+    },
+    {
+      "bytes": 6832,
+      "path": "modules/integrations/src/main/java/io/elmos/integrations/JGitSnapshotSourceAdapter.java",
+      "sha256": "d2ecd8a8681b679c735f5a11963e24f5868ec753431f8be70ff1d26a135f5f8a"
+    },
+    {
+      "bytes": 4497,
+      "path": "modules/integrations/src/main/java/io/elmos/integrations/LocalContentAddressedArtifactStore.java",
+      "sha256": "4dbb4d83bb3bf36b5c6185211e9289890c3d09d6ca4c4f0100d05564e11c53d5"
+    },
+    {
+      "bytes": 9098,
+      "path": "modules/integrations/src/main/java/io/elmos/integrations/OsvVulnerabilityProvider.java",
+      "sha256": "aebf76401c6258587e3e5d21ffa791875fb7cedbdbbcee58b6999614cb06a3d3"
+    },
+    {
+      "bytes": 1442,
+      "path": "modules/integrations/src/test/java/io/elmos/integrations/GitHubAppJwtTest.java",
+      "sha256": "67ac2164688759b42f1b53061f9ab0d5739b0553c5ae8e32f070e90cc84e3dc6"
+    },
+    {
+      "bytes": 2047,
+      "path": "modules/integrations/src/test/java/io/elmos/integrations/JGitSnapshotSourceAdapterTest.java",
+      "sha256": "339ef6ef0cf7e01c140fa755414f36557b136cce791e6e6766bbbeff36b0120d"
+    },
+    {
+      "bytes": 1278,
+      "path": "modules/integrations/src/test/java/io/elmos/integrations/LocalContentAddressedArtifactStoreTest.java",
+      "sha256": "5a3e3a6637516b57c0e98504263638fb039de92026441a688fb4e852a4be6333"
+    },
+    {
+      "bytes": 3272,
+      "path": "modules/integrations/src/test/java/io/elmos/integrations/OsvVulnerabilityProviderTest.java",
+      "sha256": "760b63a08468b0ed25a08fabfe7f02e2db3e33c1012b477cb53d92b29848c79e"
+    },
+    {
+      "bytes": 874,
+      "path": "modules/lowering/pom.xml",
+      "sha256": "6cd4348aec5f0b17aef2688fef2308b4d193d43c6ef7da4d324924ddb3d1008c"
+    },
+    {
+      "bytes": 3320,
+      "path": "modules/lowering/src/main/java/io/elmos/lowering/GeneratedRegionPatchManager.java",
+      "sha256": "944450fc944a878cfe399fb875c55c1dc59cd63f3c71356c80fa19a09d2c88d9"
+    },
+    {
+      "bytes": 4110,
+      "path": "modules/lowering/src/main/java/io/elmos/lowering/LoweringArtifactWriter.java",
+      "sha256": "bbd27e1750c9e849e3925e309554ae9554c23f8190d1cc89874b6c613d08c244"
+    },
+    {
+      "bytes": 1124,
+      "path": "modules/lowering/src/main/java/io/elmos/lowering/LoweringIds.java",
+      "sha256": "364496f9e09db161545e9c1bf9e70a8bf47d7c2e1b4cdbd66364a17df20b5dbd"
+    },
+    {
+      "bytes": 9394,
+      "path": "modules/lowering/src/main/java/io/elmos/lowering/LoweringModels.java",
+      "sha256": "3485720a82ab4daaad7f58d12cecf6eba66b23feda26f0e0e671ee1848f4a831"
+    },
+    {
+      "bytes": 9295,
+      "path": "modules/lowering/src/main/java/io/elmos/lowering/LoweringPlanner.java",
+      "sha256": "3f4be2fdd63264c08b6577033ca85c5213117707031222bd0b7a0fd28e89aebc"
+    },
+    {
+      "bytes": 3568,
+      "path": "modules/lowering/src/main/java/io/elmos/lowering/LoweringRuleRegistry.java",
+      "sha256": "e20dcbf6437b1a1c5e7ad6619b4209aeb1661e74197f76b2a60b71e5f2cbfaa2"
+    },
+    {
+      "bytes": 11872,
+      "path": "modules/lowering/src/main/java/io/elmos/lowering/MethodBodyLoweringService.java",
+      "sha256": "b1f23cbb00a88f825927f828a0a18aeaeb145907848d66d51aefe834ec55e255"
+    },
+    {
+      "bytes": 3613,
+      "path": "modules/lowering/src/main/java/io/elmos/lowering/TargetCapabilityMatrix.java",
+      "sha256": "0ccffc401e715963a1b50afa88f45f73331a3062bef6aa61b0dbc608589b442c"
+    },
+    {
+      "bytes": 1608,
+      "path": "modules/lowering/src/test/java/io/elmos/lowering/LoweringGovernanceTest.java",
+      "sha256": "8fee3d3ae31514f2e32ad77b47fcc8219efd895ce3c73cc7e6f6c1c969b4cb16"
+    },
+    {
+      "bytes": 8578,
+      "path": "modules/lowering/src/test/java/io/elmos/lowering/MethodBodyLoweringServiceTest.java",
+      "sha256": "2f1ed64d934a5e1b6608cc0c0cbfc3cf3977fe7836eb938bd4ffdaff27f9e1a4"
+    },
+    {
+      "bytes": 518,
+      "path": "modules/migration-pack-certification/pom.xml",
+      "sha256": "154ad10f94f32f95ff96651bd8a4d6ecaeae5658066570620207daf598016d5d"
+    },
+    {
+      "bytes": 3966,
+      "path": "modules/migration-pack-certification/src/main/java/io/elmos/migrationpack/MigrationPackAdmissionService.java",
+      "sha256": "6d9a3927206a3c1671c9cc22a080d51955d295f2bfb0962d90d697e2bc7fadfc"
+    },
+    {
+      "bytes": 3809,
+      "path": "modules/migration-pack-certification/src/main/java/io/elmos/migrationpack/MigrationPackCatalog.java",
+      "sha256": "4f95944d1f535998b29ef7d47a530ff9533c82241991c64ac0b882a014500585"
+    },
+    {
+      "bytes": 5662,
+      "path": "modules/migration-pack-certification/src/main/java/io/elmos/migrationpack/MigrationPackModels.java",
+      "sha256": "4cb1b44fadca91e169545b68db8f22f3ab0414abcc3e768eadaa806e6d775b33"
+    },
+    {
+      "bytes": 3639,
+      "path": "modules/migration-pack-certification/src/test/java/io/elmos/migrationpack/MigrationPackAdmissionServiceTest.java",
+      "sha256": "7ce06a593abf2fa37e6616cd2d45746cf44ac9433e29ed08ce698c430d74c7f4"
+    },
+    {
+      "bytes": 496,
+      "path": "modules/network-policy/pom.xml",
+      "sha256": "5a549caca76cf9e2db8549d2d7af5d100a752300df0f97c3fd3ab8542845f2bb"
+    },
+    {
+      "bytes": 2150,
+      "path": "modules/network-policy/src/main/java/io/elmos/network/NetworkDecisionService.java",
+      "sha256": "54903878b21db1704fb7d335302bac22f595a0b190bf149bdd54c11e6d42be24"
+    },
+    {
+      "bytes": 1168,
+      "path": "modules/network-policy/src/main/java/io/elmos/network/NetworkPolicy.java",
+      "sha256": "5a406d52824e90515acdcbeb7ca0b6b84c1fe059a91aaba1fb11ce7795fb67a1"
+    },
+    {
+      "bytes": 1674,
+      "path": "modules/network-policy/src/test/java/io/elmos/network/NetworkDecisionServiceTest.java",
+      "sha256": "8b8067bde794b2a1cda89a64f47720b7860219b8acd99b642876c4b9c3bb6e1a"
+    },
+    {
+      "bytes": 2596,
+      "path": "modules/persistence/pom.xml",
+      "sha256": "bff461f2080a5cd53cba2fc4a757c3dd987b9b7fbff43d3c4106d5a5da98a4bd"
+    },
+    {
+      "bytes": 883,
+      "path": "modules/persistence/src/main/java/io/elmos/persistence/JdbcApprovedImageRegistry.java",
+      "sha256": "ae9f86bb86b613133f11909480e09c836ee695bd1e9bc4c49960df12d458651e"
+    },
+    {
+      "bytes": 4082,
+      "path": "modules/persistence/src/main/java/io/elmos/persistence/JdbcDemoPersistence.java",
+      "sha256": "40ba0ed60d481593ef523ff0f896245f8ce7cc1431ea2c8ab2086f465f03bf98"
+    },
+    {
+      "bytes": 8724,
+      "path": "modules/persistence/src/main/java/io/elmos/persistence/JdbcGitHubInstallationStore.java",
+      "sha256": "d42013016c42f3e2fe093aae1825811230e6fc2bd93ef7bef1e785b7d8b42dca"
+    },
+    {
+      "bytes": 1255,
+      "path": "modules/persistence/src/main/java/io/elmos/persistence/JdbcGitHubRepositoryAuthorization.java",
+      "sha256": "61bf60bc3a6b88eb9aca90669ab90c06f860c77de7a3b43288333b16915b4c8a"
+    },
+    {
+      "bytes": 7729,
+      "path": "modules/persistence/src/main/java/io/elmos/persistence/JdbcHealthReportStore.java",
+      "sha256": "4509bf19cd9a9191ae8ffc944d79aaa548861d0df86673de6f6787f8b79bd056"
+    },
+    {
+      "bytes": 9005,
+      "path": "modules/persistence/src/main/java/io/elmos/persistence/JdbcMigrationPlanStore.java",
+      "sha256": "86f161eb55f7336d9e046ccccb8c42300a841f20901586234398cc658023a55f"
+    },
+    {
+      "bytes": 1905,
+      "path": "modules/persistence/src/main/java/io/elmos/persistence/JdbcSecretLeaseStore.java",
+      "sha256": "a463e9c972f4e341f471e050f36be462b58e46631ee9177c1cf11088b9bfac37"
+    },
+    {
+      "bytes": 4293,
+      "path": "modules/persistence/src/main/java/io/elmos/persistence/JdbcSnapshotStore.java",
+      "sha256": "4d6eb77d7c8338412279cf2ec2585630724b59ee945dec6ffdaf6c9fa8c62d52"
+    },
+    {
+      "bytes": 3111,
+      "path": "modules/persistence/src/main/java/io/elmos/persistence/JdbcWebhookDeliveryStore.java",
+      "sha256": "cc3f2cb0e8f5f289ef6ef92d7267fa55c5f71f2fc1dbb557823a6dfb1207add0"
+    },
+    {
+      "bytes": 1567,
+      "path": "modules/persistence/src/main/java/io/elmos/persistence/JdbcWorkflowStateAdapter.java",
+      "sha256": "d5c0baef6b8a9b148d2d6cb6095db40bc6f31b5faa86ed4a8bb6852f411a643f"
+    },
+    {
+      "bytes": 7098,
+      "path": "modules/persistence/src/main/java/io/elmos/persistence/JdbcWorkspaceLifecycleStore.java",
+      "sha256": "55602ecec717a1ce7e754c5627292d78766eee9d1c561214f3d5d47883f48856"
+    },
+    {
+      "bytes": 7569,
+      "path": "modules/persistence/src/test/java/io/elmos/persistence/FlywayMigrationTest.java",
+      "sha256": "74ba9d345b748d8b65ce2cd7aa7eff4e9b6fde1a77832315c956336e5b308fd6"
+    },
+    {
+      "bytes": 18371,
+      "path": "modules/persistence/src/test/java/io/elmos/persistence/TenantMigrationContractTest.java",
+      "sha256": "9d6c8ebebabad58e1c74d3733d38276b454f25fd9f184beba309df7ceda3bae7"
+    },
+    {
+      "bytes": 635,
+      "path": "modules/planning/pom.xml",
+      "sha256": "78431ac21c3cfaa8d4cd96f91c74b0a453c01ee79bdaedc8cc8a958059932194"
+    },
+    {
+      "bytes": 2483,
+      "path": "modules/planning/src/main/java/io/elmos/planning/CompatibilityMatrix.java",
+      "sha256": "7fc51674d1657fc7fc5ef62baeaa0e3b436844e6bd0751ec0a0c201f6f7aff22"
+    },
+    {
+      "bytes": 306,
+      "path": "modules/planning/src/main/java/io/elmos/planning/MigrationPlanStore.java",
+      "sha256": "1daf1590d6332c8980b2f39acd4ffc977e4687603e80c7c1c77e25f5f23ab25f"
+    },
+    {
+      "bytes": 16356,
+      "path": "modules/planning/src/main/java/io/elmos/planning/MigrationPlanner.java",
+      "sha256": "50fb48cd77084e156cc2decb9d15a975ea46d1ae44a8fc793d558dfcf9d2f733"
+    },
+    {
+      "bytes": 4358,
+      "path": "modules/planning/src/main/java/io/elmos/planning/PlanningModels.java",
+      "sha256": "d176ef17774d8da696e8c4bde6fea1d883b95442b158bfbcc64096f2ed5bc335"
+    },
+    {
+      "bytes": 4238,
+      "path": "modules/planning/src/test/java/io/elmos/planning/MigrationPlannerTest.java",
+      "sha256": "b7fd67618bd8b51d9f0fc4669c06825ed4c023665dc9e91c895e7f169aa868d2"
+    },
+    {
+      "bytes": 505,
+      "path": "modules/portfolio-scale/pom.xml",
+      "sha256": "fd65bac64063c2e2e980d411c654598e6fa5169c9e54922c8b09234662144521"
+    },
+    {
+      "bytes": 4986,
+      "path": "modules/portfolio-scale/src/main/java/io/elmos/portfolio/DurableWorkflowEngine.java",
+      "sha256": "c447ae807dddcd79c857e3024a20dadd3310af429c1500f1d02306e88ba116db"
+    },
+    {
+      "bytes": 1462,
+      "path": "modules/portfolio-scale/src/main/java/io/elmos/portfolio/HardConstraintScheduler.java",
+      "sha256": "e02b9f66f3e9ac03ed4e8e930d9dc535be491b1c21c3fc08967edecba4945537"
+    },
+    {
+      "bytes": 3680,
+      "path": "modules/portfolio-scale/src/main/java/io/elmos/portfolio/HierarchicalBudgetLedger.java",
+      "sha256": "83acf3c60453ae6652fd69f1be0490adeb001b352f0b6ef1ca3a45f37755e0ce"
+    },
+    {
+      "bytes": 4691,
+      "path": "modules/portfolio-scale/src/main/java/io/elmos/portfolio/MultiRepositoryChangeCoordinator.java",
+      "sha256": "0a8f516473d3b939b3ccffc2954562be9d497804a39a6488f63064bfa17497a5"
+    },
+    {
+      "bytes": 3090,
+      "path": "modules/portfolio-scale/src/main/java/io/elmos/portfolio/PortfolioCampaignCoordinator.java",
+      "sha256": "acef4f9f386a218414978b382f969a3b9938b438f27ad8945381d7cef4cd742c"
+    },
+    {
+      "bytes": 3718,
+      "path": "modules/portfolio-scale/src/main/java/io/elmos/portfolio/PortfolioControlTower.java",
+      "sha256": "cb538cb4e24112b4d2f7fb8882843e09bf67c41952b7d7be48bec814b652defd"
+    },
+    {
+      "bytes": 5377,
+      "path": "modules/portfolio-scale/src/main/java/io/elmos/portfolio/PortfolioPlanner.java",
+      "sha256": "491ed2f04bbce35ec3c180717cc1d30774722a0907a45a8aa06d1e68e3cc18e1"
+    },
+    {
+      "bytes": 10405,
+      "path": "modules/portfolio-scale/src/main/java/io/elmos/portfolio/PortfolioScaleModels.java",
+      "sha256": "269ba3631cd4e50459e55657020ff2578e0bc9339bd460c8c83eb19d5b328edc"
+    },
+    {
+      "bytes": 5746,
+      "path": "modules/portfolio-scale/src/main/java/io/elmos/portfolio/ResumableArtifactTransfer.java",
+      "sha256": "69b9cae001711aa76e00d88ac0753f8381910016cfd5b55fe51597dd61669f65"
+    },
+    {
+      "bytes": 3362,
+      "path": "modules/portfolio-scale/src/main/java/io/elmos/portfolio/TenantContentAddressedCache.java",
+      "sha256": "6f6e2216c0242c994246d144ad17b769b74998d39d4e885270ff95a093efaf0c"
+    },
+    {
+      "bytes": 3972,
+      "path": "modules/portfolio-scale/src/main/java/io/elmos/portfolio/TenantSemanticIndex.java",
+      "sha256": "b9a31376ba51a925d48441ce2e1a60e0226800a4c927c14305ff95d64983df06"
+    },
+    {
+      "bytes": 3358,
+      "path": "modules/portfolio-scale/src/main/java/io/elmos/portfolio/WeightedFairWorkQueue.java",
+      "sha256": "8ea7a340ae8eabfd85e3a60e35602a6e39f3e4ab17c1a109de5a9b6f471dcb8d"
+    },
+    {
+      "bytes": 8143,
+      "path": "modules/portfolio-scale/src/test/java/io/elmos/portfolio/PortfolioScaleAdvancedTest.java",
+      "sha256": "9b95935683dfa3ac78a9d3916065dcb1483298440b571be3bf4c571cc4ca48c6"
+    },
+    {
+      "bytes": 9206,
+      "path": "modules/portfolio-scale/src/test/java/io/elmos/portfolio/PortfolioScaleTest.java",
+      "sha256": "9e472d113afa2d3f0d9f2ca2113f9a413daefc1399ab600f8405b80513491762"
+    },
+    {
+      "bytes": 516,
+      "path": "modules/product-roadmap-governance/pom.xml",
+      "sha256": "d42f7e99b9f60e810291415b19cde2c6bd94ae3676d648f7720d5b2cca43920f"
+    },
+    {
+      "bytes": 10670,
+      "path": "modules/product-roadmap-governance/src/main/java/io/elmos/roadmap/ProductDomainControls.java",
+      "sha256": "246581843f661232d925bb364faec9b4cf1884d70b05e80fac40b349d919d45f"
+    },
+    {
+      "bytes": 4705,
+      "path": "modules/product-roadmap-governance/src/main/java/io/elmos/roadmap/ProductRoadmapCatalog.java",
+      "sha256": "27500c4dc16e6df1d102e4636834cc4d502d3fe1df3a54286925270f406f4605"
+    },
+    {
+      "bytes": 3840,
+      "path": "modules/product-roadmap-governance/src/main/java/io/elmos/roadmap/ProductRoadmapGovernance.java",
+      "sha256": "910c5cba7b4f9bd5a3ec35b525555d254bc664a2ba37243ea84e91d13dd54a79"
+    },
+    {
+      "bytes": 5987,
+      "path": "modules/product-roadmap-governance/src/main/java/io/elmos/roadmap/ProductRoadmapModels.java",
+      "sha256": "12b8accc6dfe9905f69c30abf8f65f795c9a55af7a53acd19662ff2ced40e848"
+    },
+    {
+      "bytes": 2631,
+      "path": "modules/product-roadmap-governance/src/test/java/io/elmos/roadmap/ProductDomainControlsTest.java",
+      "sha256": "71c5ce0d48696908c780e99fb3dc66070d05e0ab9fdfdc56e1c3b4305df29af5"
+    },
+    {
+      "bytes": 3596,
+      "path": "modules/product-roadmap-governance/src/test/java/io/elmos/roadmap/ProductRoadmapGovernanceTest.java",
+      "sha256": "1e5d1b43ed091923ba920c112906e38f0284de31ff56bc6f66daec7878a93cc3"
+    },
+    {
+      "bytes": 978,
+      "path": "modules/production-cutover/pom.xml",
+      "sha256": "820668ecfea295bbd2ad31fbdb760c53731dcca125764ef3447cbed3705b63fd"
+    },
+    {
+      "bytes": 17401,
+      "path": "modules/production-cutover/src/main/java/io/elmos/cutover/ProductionCutoverArtifactWriter.java",
+      "sha256": "b5fe2e6e0f7c2b38b4995b7a91427ea01fa64d04b096df64c8e320830df29f82"
+    },
+    {
+      "bytes": 2126,
+      "path": "modules/production-cutover/src/main/java/io/elmos/cutover/ProductionCutoverAuthorities.java",
+      "sha256": "161694427a5d74621e226afa79bc40f26f556b6fa1f1820643b7eb1991ca0c20"
+    },
+    {
+      "bytes": 27482,
+      "path": "modules/production-cutover/src/main/java/io/elmos/cutover/ProductionCutoverModels.java",
+      "sha256": "f6eb7bf36bbf34e46ab133c2db93db8f51767d6d8b0e9507d27539401e20a148"
+    },
+    {
+      "bytes": 24017,
+      "path": "modules/production-cutover/src/main/java/io/elmos/cutover/ProductionCutoverService.java",
+      "sha256": "bd37f026895d0395a054c74a806c016b44ee48d6221aab192ec3e8fe402a7a68"
+    },
+    {
+      "bytes": 3838,
+      "path": "modules/production-cutover/src/main/java/io/elmos/cutover/ProductionCutoverStateMachine.java",
+      "sha256": "8e7683ed29692908374cdf6ffcc26b2e67b89017b2dd94f420992f7f842fdea6"
+    },
+    {
+      "bytes": 22365,
+      "path": "modules/production-cutover/src/test/java/io/elmos/cutover/ProductionCutoverServiceTest.java",
+      "sha256": "33e02e93b354d479e19aa0a75ecdd628e9b36de22f27d793796a9c5f67e5e3bb"
+    },
+    {
+      "bytes": 980,
+      "path": "modules/production-hardening/pom.xml",
+      "sha256": "2b6a91e7211f412ca3e3cf786786a3f863c98ebb46fa98fb79139afff3b64353"
+    },
+    {
+      "bytes": 12821,
+      "path": "modules/production-hardening/src/main/java/io/elmos/hardening/ProductionHardeningArtifactWriter.java",
+      "sha256": "13269a454ad698b6f47470bbbf6834b34b63d8202a2216e7291207132bcbe49a"
+    },
+    {
+      "bytes": 2215,
+      "path": "modules/production-hardening/src/main/java/io/elmos/hardening/ProductionHardeningAuthorities.java",
+      "sha256": "15debdd87fb50de72a2d7aa0e2daa7c6bf69f05a40c77e60a50a0f8a4ea4ec4a"
+    },
+    {
+      "bytes": 24153,
+      "path": "modules/production-hardening/src/main/java/io/elmos/hardening/ProductionHardeningModels.java",
+      "sha256": "845dc4bc519cbb18667e5f9904e3d2d90ed8473fcec02d33d849cbc21df20201"
+    },
+    {
+      "bytes": 22354,
+      "path": "modules/production-hardening/src/main/java/io/elmos/hardening/ProductionHardeningService.java",
+      "sha256": "8348b6bb113684e698d9325be6933b3d420aca3cdfd9e1bb4ff426ab68ca16e1"
+    },
+    {
+      "bytes": 20265,
+      "path": "modules/production-hardening/src/test/java/io/elmos/hardening/ProductionHardeningServiceTest.java",
+      "sha256": "f6709007c9d5e112a6addf556f9a22aaa3cb07a2c50f0f12844eec3809611c1d"
+    },
+    {
+      "bytes": 623,
+      "path": "modules/recipe-governance/pom.xml",
+      "sha256": "f35737027107a2198ba2cf20e85512709a014668743d1934be640edaad002ea0"
+    },
+    {
+      "bytes": 4439,
+      "path": "modules/recipe-governance/src/main/java/io/elmos/recipe/PatchGovernance.java",
+      "sha256": "a5549200b37137b2b3df62dfa18f77b26251fd82128e5945afa35980f1b768e1"
+    },
+    {
+      "bytes": 11432,
+      "path": "modules/recipe-governance/src/main/java/io/elmos/recipe/RecipeGovernanceService.java",
+      "sha256": "498c4c8a929021562510d479ff1575c4587964adbced85f97f162433e82fdf92"
+    },
+    {
+      "bytes": 6440,
+      "path": "modules/recipe-governance/src/main/java/io/elmos/recipe/RecipeLicensePolicy.java",
+      "sha256": "12440603d9c4ed4859511152efab940ca44932940e549eadb4c8b9417ddcf87d"
+    },
+    {
+      "bytes": 15693,
+      "path": "modules/recipe-governance/src/main/java/io/elmos/recipe/RecipeModels.java",
+      "sha256": "82a0a198011e8d140a5987c72dcf04269433d83cb64dd1c37c489350ea6772e2"
+    },
+    {
+      "bytes": 5690,
+      "path": "modules/recipe-governance/src/main/java/io/elmos/recipe/RecipeOutcomeEvaluator.java",
+      "sha256": "23879d232bb5bae06e0c09a9160031fff33fa6aa012a6cc9d4e87c4557970026"
+    },
+    {
+      "bytes": 11535,
+      "path": "modules/recipe-governance/src/test/java/io/elmos/recipe/RecipeGovernanceTest.java",
+      "sha256": "7f24b9f92ee2a697d7aaa694ddd67b61b579444a0a812adfce56caadecfa2bf1"
+    },
+    {
+      "bytes": 980,
+      "path": "modules/repair-orchestration/pom.xml",
+      "sha256": "72ed5c5a9adf8fe785ba8eea857801401a55293f7f0b9a5bcc73d4ba44a5c99d"
+    },
+    {
+      "bytes": 2962,
+      "path": "modules/repair-orchestration/src/main/java/io/elmos/repair/AgentRouter.java",
+      "sha256": "dcd39bcdde2809869af8f9b68ac6cbe40dbfffaeb9442a7f53b3a912c29a477e"
+    },
+    {
+      "bytes": 2471,
+      "path": "modules/repair-orchestration/src/main/java/io/elmos/repair/BudgetController.java",
+      "sha256": "4b64c3ac09b40e1c148b68b123e73b4c8dc97158e8d7c97b6b354c50cee6a7e7"
+    },
+    {
+      "bytes": 4786,
+      "path": "modules/repair-orchestration/src/main/java/io/elmos/repair/FailureNormalizer.java",
+      "sha256": "f63847bedb7f7c4883c6f42857756e0e865a4acde2a1393002af7702c6705982"
+    },
+    {
+      "bytes": 1556,
+      "path": "modules/repair-orchestration/src/main/java/io/elmos/repair/ProviderPolicies.java",
+      "sha256": "834b3c9d76a64f8b44445e86c5c6b537dbf6a196ac6a2e5ce578559d3fc02254"
+    },
+    {
+      "bytes": 10934,
+      "path": "modules/repair-orchestration/src/main/java/io/elmos/repair/RepairArtifactWriter.java",
+      "sha256": "e6edcf0bf5a22693cce9701cf824a44f0830004e1893cc599080a17eb4df3b7c"
+    },
+    {
+      "bytes": 13853,
+      "path": "modules/repair-orchestration/src/main/java/io/elmos/repair/RepairDiagnosticProtocol.java",
+      "sha256": "f1ebc7be68a426b3f634d26621832f868b111251b2dd5aabd23774b2868fa7d6"
+    },
+    {
+      "bytes": 10751,
+      "path": "modules/repair-orchestration/src/main/java/io/elmos/repair/RepairExecutionPlanner.java",
+      "sha256": "51d20ef029caf39fb0c705c67f7ea9627176256d8fde4d6768ec91f7fd58bb79"
+    },
+    {
+      "bytes": 1611,
+      "path": "modules/repair-orchestration/src/main/java/io/elmos/repair/RepairLoopIds.java",
+      "sha256": "185fcd1e0bc7283b4c74372da97207c0e2bf331c668347a1a61a896beb91ea03"
+    },
+    {
+      "bytes": 26037,
+      "path": "modules/repair-orchestration/src/main/java/io/elmos/repair/RepairLoopModels.java",
+      "sha256": "c12935d5002c5ed49567f66441c6676924b72cbd658e412147e2258cdb5003d2"
+    },
+    {
+      "bytes": 23004,
+      "path": "modules/repair-orchestration/src/main/java/io/elmos/repair/RepairLoopPolicy.java",
+      "sha256": "a619013e9c3730516a0a8b4b49defa70493e5b8c91cd441fa8f5c4c3a8e71249"
+    },
+    {
+      "bytes": 39988,
+      "path": "modules/repair-orchestration/src/main/java/io/elmos/repair/RepairLoopService.java",
+      "sha256": "b663a4d2931b04bc738578358b86951b8a5e29f3b82391a22b01eec3153cc8d6"
+    },
+    {
+      "bytes": 11180,
+      "path": "modules/repair-orchestration/src/main/java/io/elmos/repair/RepairModels.java",
+      "sha256": "a889d11f35b28ae5342c5ef92e185f48212ba368159093cd7b86927c7549cdea"
+    },
+    {
+      "bytes": 5609,
+      "path": "modules/repair-orchestration/src/main/java/io/elmos/repair/RepairPolicyEngine.java",
+      "sha256": "06bf10ab836ab940256027f9fe6ac390586bb63dffb67610bfd95d8ef2dc81a9"
+    },
+    {
+      "bytes": 2813,
+      "path": "modules/repair-orchestration/src/main/java/io/elmos/repair/RepairTaskBuilder.java",
+      "sha256": "f5a766a41040482aae3bf2f2cd7a3c469652dcdcdb6a473add60931ba056a43e"
+    },
+    {
+      "bytes": 23082,
+      "path": "modules/repair-orchestration/src/test/java/io/elmos/repair/RepairLoopServiceTest.java",
+      "sha256": "c74e547033d1af4f46c1067b5a6fe0dff97d36b7f81fcc6afeb0694908f12f47"
+    },
+    {
+      "bytes": 9106,
+      "path": "modules/repair-orchestration/src/test/java/io/elmos/repair/RepairOrchestrationTest.java",
+      "sha256": "4b754b28a30444789733fb08a4e228ca370690b0ce317198f84fad61e1af9e76"
+    },
+    {
+      "bytes": 609,
+      "path": "modules/scm/pom.xml",
+      "sha256": "473aad0be05ca831e1a14c5b7fb930d3eb31a4bc1b8536d883f5fed6fc8f94b6"
+    },
+    {
+      "bytes": 1464,
+      "path": "modules/scm/src/main/java/io/elmos/scm/EphemeralCredential.java",
+      "sha256": "af928ef5b91dbbe74a70198d8125ce09aea019af9d2342972327e1a48d73f843"
+    },
+    {
+      "bytes": 1019,
+      "path": "modules/scm/src/main/java/io/elmos/scm/GitHubBranchWritePolicy.java",
+      "sha256": "acd251e6e310f272b2afd0e64954dd5530b0db9d25f5a881acd6b48d090f6d4b"
+    },
+    {
+      "bytes": 4262,
+      "path": "modules/scm/src/main/java/io/elmos/scm/GitHubInstallationLifecycleService.java",
+      "sha256": "934211be950d3f298faf1cfab037c4340a54fc3bdd43d8cf46cf0a2e6ec260bc"
+    },
+    {
+      "bytes": 5071,
+      "path": "modules/scm/src/main/java/io/elmos/scm/GitHubInstallationTokenBroker.java",
+      "sha256": "454973a7ccc1938c448863af0bddb9ec0428affa65de40b4ce5128608f38fc18"
+    },
+    {
+      "bytes": 1565,
+      "path": "modules/scm/src/main/java/io/elmos/scm/GithubWebhookVerifier.java",
+      "sha256": "7ef6871daa2ecc41939962637c76070cf9b0c1ee7139d55a15b10d46ac5da2df"
+    },
+    {
+      "bytes": 4604,
+      "path": "modules/scm/src/main/java/io/elmos/scm/WebhookIngestionService.java",
+      "sha256": "a4653c0be87297221d4a49abbf0bf37c007e9d7671803629abc7d70b162f1591"
+    },
+    {
+      "bytes": 2710,
+      "path": "modules/scm/src/test/java/io/elmos/scm/GitHubInstallationTokenBrokerTest.java",
+      "sha256": "599b4ed1546342818b283ff3e8ef2725af6ff567b02609e75a47e3f69064e442"
+    },
+    {
+      "bytes": 2783,
+      "path": "modules/scm/src/test/java/io/elmos/scm/GitHubPolicyTest.java",
+      "sha256": "1a3082967e91c4e0e57654434456332f032ff0f1a6ed98af5cd3e30fceb05d61"
+    },
+    {
+      "bytes": 2515,
+      "path": "modules/scm/src/test/java/io/elmos/scm/GithubWebhookVerifierTest.java",
+      "sha256": "0cf3b6c218f78fcdfe97dcae44e92eb709e07ff3d2bd6618da847e048c98acf8"
+    },
+    {
+      "bytes": 488,
+      "path": "modules/secret/pom.xml",
+      "sha256": "9307288cca281ea7799dfbd86ea8c478c4bda101389296821dc8fe45fd5b60da"
+    },
+    {
+      "bytes": 4326,
+      "path": "modules/secret/src/main/java/io/elmos/secret/SecretInjectionService.java",
+      "sha256": "9d05629b959f0b308fd5b42e5ed91032e65a5ff0f41d0e4fa092c769ad4626ce"
+    },
+    {
+      "bytes": 1106,
+      "path": "modules/secret/src/main/java/io/elmos/secret/SecretLease.java",
+      "sha256": "27f9a2ee21efe52e95ce9b0a07c5c566fd74886fad05f308942fd0fdebbcf7b8"
+    },
+    {
+      "bytes": 911,
+      "path": "modules/secret/src/main/java/io/elmos/secret/SecretRedactor.java",
+      "sha256": "7d73680debf9ea0d630de56ff1a71dd9a5f2bcc473415be1775449bab049ee18"
+    },
+    {
+      "bytes": 902,
+      "path": "modules/secret/src/main/java/io/elmos/secret/SecretValue.java",
+      "sha256": "ae5d35c865289e04592bdff09a30edf5bfa1a2f4cb37b0f1fb880f65324510ca"
+    },
+    {
+      "bytes": 2342,
+      "path": "modules/secret/src/test/java/io/elmos/secret/SecretSecurityTest.java",
+      "sha256": "f5a509e3a172f06b72d0bf27bf89da3cd744021e0f10fc1245ceef549bfc2f5b"
+    },
+    {
+      "bytes": 478,
+      "path": "modules/security/pom.xml",
+      "sha256": "76cbdd32e718259304c5ffefeb90cab26bcb4170459fe1a9dc8d57d6000c4937"
+    },
+    {
+      "bytes": 1676,
+      "path": "modules/security/src/main/java/io/elmos/security/SandboxPolicy.java",
+      "sha256": "d49c2c1fdb1621ce19d3a6563c5033c459ba7c5190c610f8316c30d4b4a5d57f"
+    },
+    {
+      "bytes": 779,
+      "path": "modules/security/src/test/java/io/elmos/security/SandboxPolicyTest.java",
+      "sha256": "8b268ae91b9fb23345e2e29fbd44a488738b2629260c41aa9f33d57d0ed7812f"
+    },
+    {
+      "bytes": 1065,
+      "path": "modules/semantic/pom.xml",
+      "sha256": "4abc0c3be5799b0e60e1d7ae69e8c3dcc51852f63b0a10fef6c535aee03e0531"
+    },
+    {
+      "bytes": 1759,
+      "path": "modules/semantic/src/main/java/io/elmos/semantic/AuthoritySemanticAdapter.java",
+      "sha256": "cfec007fa1e06e421a80eea6b5ff24fac857a13ee0652f193dd2fc61fad95cad"
+    },
+    {
+      "bytes": 12120,
+      "path": "modules/semantic/src/main/java/io/elmos/semantic/LosslessFallbackAdapter.java",
+      "sha256": "8410ae23fe4f7e9372fe7824055c83c7c024012c16283281a574f8d25ffaed31"
+    },
+    {
+      "bytes": 10449,
+      "path": "modules/semantic/src/main/java/io/elmos/semantic/PspArtifactWriter.java",
+      "sha256": "1153b66674a14903cc34e71da1e9fdb9f1e7ec8e4a92696eb7b9ff6572632f3a"
+    },
+    {
+      "bytes": 11464,
+      "path": "modules/semantic/src/main/java/io/elmos/semantic/PspModels.java",
+      "sha256": "9adbb962c4aea115a04526b3450e443def7731198232b3b6f35648e3d3afc2e8"
+    },
+    {
+      "bytes": 1269,
+      "path": "modules/semantic/src/main/java/io/elmos/semantic/SemanticAdapter.java",
+      "sha256": "7270606e321e8a0838483e2ea29def66b73fd1a52133b56bb77d8708b1f7a3e5"
+    },
+    {
+      "bytes": 12818,
+      "path": "modules/semantic/src/main/java/io/elmos/semantic/SemanticAnalysisOrchestrator.java",
+      "sha256": "a8e3fdb7a0fc647b053e99783ec0764686b28b314fb8f476d01747488c744f84"
+    },
+    {
+      "bytes": 12860,
+      "path": "modules/semantic/src/main/java/io/elmos/semantic/SemanticConformanceValidator.java",
+      "sha256": "43d133b5aa6f540228511b158cf185bd5bd7729e83b367377bf48cc3fc6a474a"
+    },
+    {
+      "bytes": 2585,
+      "path": "modules/semantic/src/main/java/io/elmos/semantic/SemanticIds.java",
+      "sha256": "f701a5be7ab633ecb4c474bb854b6e03a8d6e33905d744137a1666b1c67e34bc"
+    },
+    {
+      "bytes": 6298,
+      "path": "modules/semantic/src/main/java/io/elmos/semantic/SourceText.java",
+      "sha256": "60cf918558fae74abef561a454843a928084fce97dc1d61052c23b39dd5c1d9e"
+    },
+    {
+      "bytes": 10056,
+      "path": "modules/semantic/src/test/java/io/elmos/semantic/SemanticAnalysisPipelineTest.java",
+      "sha256": "1def53e3eca288e6bd63c8d94989e667c5a03473df4abf36795a46837f9d7c9e"
+    },
+    {
+      "bytes": 869,
+      "path": "modules/skeleton/pom.xml",
+      "sha256": "6223d5790157b271495027b853b846e51b6212c14cabb76f928ae23c24d5f13a"
+    },
+    {
+      "bytes": 12972,
+      "path": "modules/skeleton/src/main/java/io/elmos/skeleton/SkeletonGenerationService.java",
+      "sha256": "ebac6a0a063a32e04ddf9ea49adb64b5f2f04f92655e64c85fa333f1de4e5e52"
+    },
+    {
+      "bytes": 801,
+      "path": "modules/skeleton/src/main/java/io/elmos/skeleton/SkeletonIds.java",
+      "sha256": "b8869f3001f73d3958b7eb4a2add54e3558a940cff75ec74c175f29717e88bb9"
+    },
+    {
+      "bytes": 7603,
+      "path": "modules/skeleton/src/main/java/io/elmos/skeleton/SkeletonModels.java",
+      "sha256": "5f69622ad9f165c667d08afd4f570ba217193bde9ff8e86c41f9aad4a097e049"
+    },
+    {
+      "bytes": 8758,
+      "path": "modules/skeleton/src/main/java/io/elmos/skeleton/SkeletonPlanner.java",
+      "sha256": "9ae3e4cc752f160503052505cad3397eda46b260a622e488ac26bf710f30dac4"
+    },
+    {
+      "bytes": 5402,
+      "path": "modules/skeleton/src/test/java/io/elmos/skeleton/SkeletonGenerationServiceTest.java",
+      "sha256": "391a0cfbe8d27013670673925b00bdf0527581552aebe763f2eed67c2e98790c"
+    },
+    {
+      "bytes": 948,
+      "path": "modules/snapshot/pom.xml",
+      "sha256": "7867794328456e03c1ffc70331bf8758567a63c92affb1f9807505ac05f3211b"
+    },
+    {
+      "bytes": 9629,
+      "path": "modules/snapshot/src/main/java/io/elmos/snapshot/DeterministicSnapshotArchiver.java",
+      "sha256": "d35b1f894ea27ed653401e9edb2795a9fb3470c4c406a96ad8e25163bc6d097e"
+    },
+    {
+      "bytes": 5102,
+      "path": "modules/snapshot/src/main/java/io/elmos/snapshot/SnapshotCaptureService.java",
+      "sha256": "cb518b2ad3e6bcacdf95be5cb27869bb1e6e1ebdc5a4829df2b22855e2b5fc4c"
+    },
+    {
+      "bytes": 3055,
+      "path": "modules/snapshot/src/main/java/io/elmos/snapshot/SnapshotModel.java",
+      "sha256": "cb43ace925f5ffaa26c84c834fe2236ed8dd49a7651b1c3a53d8b12af5741723"
+    },
+    {
+      "bytes": 1494,
+      "path": "modules/snapshot/src/main/java/io/elmos/snapshot/SnapshotPorts.java",
+      "sha256": "8cb00aebb8e9938ded51a63df5ec18628806d4fe4dd41971ab02db4e300c3a30"
+    },
+    {
+      "bytes": 2188,
+      "path": "modules/snapshot/src/test/java/io/elmos/snapshot/DeterministicSnapshotArchiverTest.java",
+      "sha256": "3486b2988589be3e46cd8f4e295a77009159b565ac70e8a7fa3e3210cd3a4b5c"
+    },
+    {
+      "bytes": 2090,
+      "path": "modules/snapshot/src/test/java/io/elmos/snapshot/SnapshotCaptureServiceTest.java",
+      "sha256": "48d3c77f4e16945813ffe645abdd323975265bf1f74cf082c677b4a60026aab5"
+    },
+    {
+      "bytes": 1062,
+      "path": "modules/uir/pom.xml",
+      "sha256": "a2208f1c0d0fe370ab935a86b445074da6d8637e5793d127af447ade58d2a235"
+    },
+    {
+      "bytes": 30966,
+      "path": "modules/uir/src/main/java/io/elmos/uir/PspToUirLifter.java",
+      "sha256": "a44c57be846484ba501bbee46abf001c47290bb20e7c4f79ff83171970ebce56"
+    },
+    {
+      "bytes": 12071,
+      "path": "modules/uir/src/main/java/io/elmos/uir/UirArtifactWriter.java",
+      "sha256": "2be54ff7be3d0d703c7bd40b88ed2fb84ca2c4084d15168f2baad99c4db06004"
+    },
+    {
+      "bytes": 30420,
+      "path": "modules/uir/src/main/java/io/elmos/uir/UirConformanceValidator.java",
+      "sha256": "db21af68cdc37edc0c2b5a9124ea2aac9dc2199c840eff53c46d07a74fbe5608"
+    },
+    {
+      "bytes": 3947,
+      "path": "modules/uir/src/main/java/io/elmos/uir/UirDialectRegistry.java",
+      "sha256": "9ac107fca0f235d4e568daebfb6b6c145a39f6f6079b75bd7d0ec554f5084448"
+    },
+    {
+      "bytes": 1488,
+      "path": "modules/uir/src/main/java/io/elmos/uir/UirIds.java",
+      "sha256": "7c7e767dc83ce3a2c671a84bea42599ae4e5f1e161d35fa3e51aa3119d465fc5"
+    },
+    {
+      "bytes": 12359,
+      "path": "modules/uir/src/main/java/io/elmos/uir/UirModels.java",
+      "sha256": "3da383e4fe60713c6cbfa34ec14a29bfc3c2f6ddcb52485bb636398ef340ec1a"
+    },
+    {
+      "bytes": 17287,
+      "path": "modules/uir/src/test/java/io/elmos/uir/PspToUirPipelineTest.java",
+      "sha256": "2d0d1edd0136e3f8915a6c90109b40b102b0cb3cd547d8d835bbcdf17f660cac"
+    },
+    {
+      "bytes": 500,
+      "path": "modules/validation/pom.xml",
+      "sha256": "11532597cb755801fe708d1bfdb6e482312890ae7885a2855d5f5186b3851c18"
+    },
+    {
+      "bytes": 18593,
+      "path": "modules/validation/src/main/java/io/elmos/validation/IndependentValidationJudge.java",
+      "sha256": "c42e673e0919ff10b13a12f4e05c9c4b78e051bf9e47a4b0665dc706e3bc26d4"
+    },
+    {
+      "bytes": 7771,
+      "path": "modules/validation/src/main/java/io/elmos/validation/ValidationModels.java",
+      "sha256": "8221d148edf7eac2bc94682db51e6bf5b6e4f84eed71aabcc45c7242a95e946f"
+    },
+    {
+      "bytes": 10564,
+      "path": "modules/validation/src/test/java/io/elmos/validation/IndependentValidationJudgeTest.java",
+      "sha256": "f3d1ab1c17ec3196b7b275c40ed6df4612fb7599e7eee4473540994d337a50bb"
+    },
+    {
+      "bytes": 737,
+      "path": "modules/workflow/pom.xml",
+      "sha256": "e7e5d204907bfe18621b219ac109e144bc27f171e9b802dd3e3cbbe2422d821e"
+    },
+    {
+      "bytes": 2363,
+      "path": "modules/workflow/src/main/java/io/elmos/workflow/DurableWorkflowService.java",
+      "sha256": "9ff4f3a117ef2727be1f933eb51bfaef37e3b4af51e5ba277be71adf296c2b86"
+    },
+    {
+      "bytes": 1146,
+      "path": "modules/workflow/src/test/java/io/elmos/workflow/DurableWorkflowServiceTest.java",
+      "sha256": "8fe777c123391ebfb426ee1df0a285455e779742f5487308a6ec9e21751c975f"
+    },
+    {
+      "bytes": 491,
+      "path": "modules/workspace/pom.xml",
+      "sha256": "d49866eb0ea92489b79368ac3e7c08ed0886c5725a809e7669424909d36ca735"
+    },
+    {
+      "bytes": 3685,
+      "path": "modules/workspace/src/main/java/io/elmos/workspace/WorkspaceFinalizer.java",
+      "sha256": "bf38eaf8e00f2dea64c401b74f793380730f90e3a1633f539b81e14f8d2ac434"
+    },
+    {
+      "bytes": 1618,
+      "path": "modules/workspace/src/main/java/io/elmos/workspace/WorkspaceInfrastructurePorts.java",
+      "sha256": "a380bf95878c6e66627ce80d1d531a92dd97a4c088bf22a08f2c5b4d89906453"
+    },
+    {
+      "bytes": 4280,
+      "path": "modules/workspace/src/main/java/io/elmos/workspace/WorkspaceModels.java",
+      "sha256": "65a83fcd507c75eaca342d07cb5d893810c17d69fc2b85ff72eed017708d6888"
+    },
+    {
+      "bytes": 382,
+      "path": "modules/workspace/src/main/java/io/elmos/workspace/WorkspaceProvisioningPort.java",
+      "sha256": "f4dae10288d6b30d9b8ad12d397f5c44d8bc080f9b6c68d89f8891bdeab706d3"
+    },
+    {
+      "bytes": 2065,
+      "path": "modules/workspace/src/main/java/io/elmos/workspace/WorkspaceReaper.java",
+      "sha256": "f8e87a6c8e0a1b350909626a5e6dd3f7b0608db27d0ecd3ff74f4335bcf606c3"
+    },
+    {
+      "bytes": 2682,
+      "path": "modules/workspace/src/main/java/io/elmos/workspace/WorkspaceSecurityPolicy.java",
+      "sha256": "bfb054235a5a1884a6486bd92fce11fb150fcf39288787f23406784babd3eb8e"
+    },
+    {
+      "bytes": 4095,
+      "path": "modules/workspace/src/test/java/io/elmos/workspace/WorkspaceFinalizerTest.java",
+      "sha256": "22bd730e156d5d8b0df4c3e84be4df667bbe2d06aca267bfd18c642584db5d0a"
+    },
+    {
+      "bytes": 2077,
+      "path": "modules/workspace/src/test/java/io/elmos/workspace/WorkspaceSecurityPolicyTest.java",
+      "sha256": "3194dba315d08a7eb5f8baf735b8e09068238ad0c9762e4e5781761491993cd3"
+    },
+    {
+      "bytes": 8282,
+      "path": "pom.xml",
+      "sha256": "3afef79b50a756dc9b7fbe7b9a8ea5aa0b7f627661ae8730e00fa3a70fa1173f"
+    },
+    {
+      "bytes": 631,
+      "path": "recipes/elmos-java-recipes/pom.xml",
+      "sha256": "45e062bf38351d9c8dafbf6d14a16d4d2482c045d8089c61dc7c89416830573b"
+    },
+    {
+      "bytes": 424,
+      "path": "recipes/elmos-java-recipes/src/main/java/io/elmos/recipes/RewriteSpringFoundation.java",
+      "sha256": "5b2c8be62a2662931aeed4e86efba2962f864b5a2feea82ab8fa0cb42c6b6cde"
+    },
+    {
+      "bytes": 436,
+      "path": "recipes/elmos-java-recipes/src/test/java/io/elmos/recipes/RewriteSpringFoundationTest.java",
+      "sha256": "fb5eb2b354b87d7467639c47fd7a178ce1eabe194e2e34244e62bfd307b5b88f"
+    },
+    {
+      "bytes": 2136,
+      "path": "scripts/batch29/run_route_gate.py",
+      "sha256": "aca74e4ff75c0e1db1f60aa6f8dbb966470425cc15e5526ff3cb60910e3dc7f7"
+    },
+    {
+      "bytes": 2856,
+      "path": "scripts/batch29/scaffold_route.py",
+      "sha256": "e19b596d0867cb1c3801a2ac5d0476a03e319039c21729234ae5aa77a1426740"
+    },
+    {
+      "bytes": 1095,
+      "path": "scripts/batch29/score_routes.py",
+      "sha256": "749957ce66856c5c1cfa5e0c4b09b683e634885f845f05e2a3063183b0d86b82"
+    },
+    {
+      "bytes": 2884,
+      "path": "scripts/batch29/validate_route.py",
+      "sha256": "fc4e632485472ce72401e650a2fe5a205abd629b6abef1197f4d9fccd0c3ec8c"
+    },
+    {
+      "bytes": 1484,
+      "path": "scripts/batch29/validate_skill_bundle.py",
+      "sha256": "6422b4db87b9cb83f6634d445c48dc7fd1bb891da3910e10f9a045b4b8f86836"
+    },
+    {
+      "bytes": 2838,
+      "path": "scripts/batch30/run_framework_gate.py",
+      "sha256": "a82da87fba52ebf47a31e675be35ee15281a5f7127773eb599bc412ed3ddcb06"
+    },
+    {
+      "bytes": 4820,
+      "path": "scripts/batch30/scaffold_framework_pack.py",
+      "sha256": "c4add577bc13ab0c1d0122832ac190cc78a9f98cd2d32df60c27ed83ca348094"
+    },
+    {
+      "bytes": 1210,
+      "path": "scripts/batch30/score_framework_packs.py",
+      "sha256": "18d412ce9da7c49a39c3028236aa1b9d81c4156dcbbdab81e2a8e4b5e3f26c61"
+    },
+    {
+      "bytes": 4749,
+      "path": "scripts/batch30/validate_framework_pack.py",
+      "sha256": "eb8db3f250e3cf7428d7afbf20c7c3804fb6eef8afa54336bb1724684eb8715f"
+    },
+    {
+      "bytes": 1927,
+      "path": "scripts/batch30/validate_skill_bundle.py",
+      "sha256": "d91edc71a388c9f0780571780bcdfda04c93d69682740dd2056623e659df81ea"
+    },
+    {
+      "bytes": 4204,
+      "path": "scripts/batch31/run_database_gate.py",
+      "sha256": "5e94d7a96b0f657d1a5dd3a24404ff60449ec0c064d2946911084e336b714ae8"
+    },
+    {
+      "bytes": 5291,
+      "path": "scripts/batch31/scaffold_database_pack.py",
+      "sha256": "6a635e635cc575535037c049397d92d6a653242986c4cb0d2f90ee1cae010187"
+    },
+    {
+      "bytes": 918,
+      "path": "scripts/batch31/score_database_candidates.py",
+      "sha256": "2daa5ea98ba9a5e902629ec1339d68eff11ea82b5d52cd1067feab5a68e394cd"
+    },
+    {
+      "bytes": 1799,
+      "path": "scripts/batch31/validate_canonical_ir.py",
+      "sha256": "c3018f9b88b898ea1c0845e29306893c7c4e9baa9e28ca18dad0801dad81d8c3"
+    },
+    {
+      "bytes": 5013,
+      "path": "scripts/batch31/validate_database_pack.py",
+      "sha256": "b89db36378d4569b3dcaf5059944c4545e2f3c4538d4e347c8419d873a375b3e"
+    },
+    {
+      "bytes": 1653,
+      "path": "scripts/batch31/validate_skill_bundle.py",
+      "sha256": "914a404984ffe890be54ad17e9f8eccc87d2804f0a6eb2ffaffb90b0d52f294e"
+    },
+    {
+      "bytes": 5896,
+      "path": "scripts/batch32/run_client_gate.py",
+      "sha256": "f32077525f23c72aaf0403a7e53a5055d707a5a0adf9102a55eef7777820b27c"
+    },
+    {
+      "bytes": 8314,
+      "path": "scripts/batch32/scaffold_client_pack.py",
+      "sha256": "19ba21bdd3c7bb7669b8944809fcbfa76721413fe9d3e170ba33f0842dde55a4"
+    },
+    {
+      "bytes": 1164,
+      "path": "scripts/batch32/score_client_candidates.py",
+      "sha256": "83fd322eb6a232e80521cce863b07221e33e6f450426f4ca9f63add8221b7a0b"
+    },
+    {
+      "bytes": 8095,
+      "path": "scripts/batch32/validate_client_pack.py",
+      "sha256": "599a4d57a7354dbc2eed5f4613f75ab2e716a1a0aaa7d96080f1f15d252781a4"
+    },
+    {
+      "bytes": 2056,
+      "path": "scripts/batch32/validate_skill_bundle.py",
+      "sha256": "170ee9af5070a466b2cdcfe35535b179666b0b25e1d05d535a07a6de5faad2bd"
+    },
+    {
+      "bytes": 2701,
+      "path": "scripts/batch32/validate_ui_ir.py",
+      "sha256": "144a63839f24820490b3fb5a594032b10bc8d33f8762bdaf659ac95e15b04413"
+    },
+    {
+      "bytes": 1376,
+      "path": "scripts/batch33/_graph_validation.py",
+      "sha256": "647c9e56644e2fd18dd76d58177d48be62f0f0069f9b57bdad58f80eeb062d23"
+    },
+    {
+      "bytes": 5765,
+      "path": "scripts/batch33/run_cloud_gate.py",
+      "sha256": "15938a2f62a18b39a6d98ce0054dc524dbfc78eaadb01b0ea0c81b63dfbdd49e"
+    },
+    {
+      "bytes": 6752,
+      "path": "scripts/batch33/scaffold_cloud_pack.py",
+      "sha256": "56f244a9e8577de62e2217b13ed0fab6801143403c2630f735fe177293fc96df"
+    },
+    {
+      "bytes": 1017,
+      "path": "scripts/batch33/score_cloud_candidates.py",
+      "sha256": "bdf9ecc353151332889bf56475d7ab71b7402a9585c87a222c6b2aac7205358b"
+    },
+    {
+      "bytes": 4833,
+      "path": "scripts/batch33/validate_cloud_pack.py",
+      "sha256": "3fd39f0003d827a6ece8b5379afcfa28ee1efddae694077a7e77f3b9a007ef3d"
+    },
+    {
+      "bytes": 1288,
+      "path": "scripts/batch33/validate_iac_ir.py",
+      "sha256": "ce48e5a3bc78737d0348a4017d9b24314ea36f8f6a8ef3cbc412a9749f026229"
+    },
+    {
+      "bytes": 740,
+      "path": "scripts/batch33/validate_runtime_contract.py",
+      "sha256": "feaf1fd9f64708a319de3080d6de916954b10560b048947ea368fb437a60372b"
+    },
+    {
+      "bytes": 1997,
+      "path": "scripts/batch33/validate_skill_bundle.py",
+      "sha256": "7872abf5afc4c9563eabd08fa87fa5bd53251e92ec10ac093d7e320d4fd57e6e"
+    },
+    {
+      "bytes": 996,
+      "path": "scripts/batch34/_graph_validation.py",
+      "sha256": "c6c4191c7506209b0ded92bbe150042a0f7b7b3879eef1ac725c37a48c2b6da5"
+    },
+    {
+      "bytes": 12249,
+      "path": "scripts/batch34/run_local_portfolio_rehearsal.py",
+      "sha256": "470f77c34c8769af8126b6b080ffd54bfe1591a70db331e5068302b303c8ca9f"
+    },
+    {
+      "bytes": 6202,
+      "path": "scripts/batch34/run_portfolio_gate.py",
+      "sha256": "995897de24f87ef6046f558a0f0bef525fa5e76324aaf957d35597450e74fdd1"
+    },
+    {
+      "bytes": 4082,
+      "path": "scripts/batch34/scaffold_portfolio_pack.py",
+      "sha256": "e49207bd89b8860b432e4990a5456439ad11c28f3fd5bbdf955afe47d331b139"
+    },
+    {
+      "bytes": 875,
+      "path": "scripts/batch34/score_portfolio_candidates.py",
+      "sha256": "1ecbacd22feae3b4a69ae4d1cbffc9e8236008ae23144bbe95c74ef5aff15849"
+    },
+    {
+      "bytes": 1181,
+      "path": "scripts/batch34/validate_dependency_graph.py",
+      "sha256": "418820350e7ae5a5f41a1963dada275ca7690c43781b730978159ac0a5165def"
+    },
+    {
+      "bytes": 4763,
+      "path": "scripts/batch34/validate_portfolio_pack.py",
+      "sha256": "7b4286e62f1483df3630513f27f423070512492be1a96d5829aab54382a993e0"
+    },
+    {
+      "bytes": 1541,
+      "path": "scripts/batch34/validate_skill_bundle.py",
+      "sha256": "fc7f24f71992d7d5fd4e93db164c2334d43ad866a418b8d280671f124d900d07"
+    },
+    {
+      "bytes": 1617,
+      "path": "scripts/batch34/validate_work_units.py",
+      "sha256": "161208433991b867c26a58310deb09b01c4b5bf1419463d2d2140f939824f4cf"
+    },
+    {
+      "bytes": 12410,
+      "path": "scripts/mature_product_toolkit.py",
+      "sha256": "a490f68f8a2d26f4bdf5636d5d6370595937310756bda0c78f443f8814e8706d"
+    },
+    {
+      "bytes": 3829,
+      "path": "scripts/package_mature_product_series.py",
+      "sha256": "fa543bf0ae578a30a9faff366ef0f5d96fd9252b733927c8eab81d96a6e39ca0"
+    },
+    {
+      "bytes": 7902,
+      "path": "scripts/validate_mature_product_series.py",
+      "sha256": "341cfe325e33bf716266576779c6f538f41fef8dbc3c8e724f6b2f8dbf8b6a2f"
+    },
+    {
+      "bytes": 28605,
+      "path": "skills/generate_company_series_assets.py",
+      "sha256": "44d965cda4c4e56eae368f47a45375ae113b77323d445f68829cd05097ec0b84"
+    },
+    {
+      "bytes": 32484,
+      "path": "skills/generate_mature_product_batches_35_45.py",
+      "sha256": "96fecbdec6259019d520ea1176df333b677aa41f4a931e7781fba824e2d7d8e0"
+    },
+    {
+      "bytes": 1739,
+      "path": "tests/batch29/test_toolkit.py",
+      "sha256": "56682ebe52fdcfae09e4a58d3ad9d61cec2273bdebcfaf736f1cb1f7fa945681"
+    },
+    {
+      "bytes": 2865,
+      "path": "tests/batch30/test_toolkit.py",
+      "sha256": "8b3e657297e1a28cdc242997add6fc6928bc1c379625c4ebb9e92ddf0802013e"
+    },
+    {
+      "bytes": 6521,
+      "path": "tests/batch31/test_toolkit.py",
+      "sha256": "f0192bcdf786d05eacd13509fedeb86f856bda30e219f95c82ff4b06590670d4"
+    },
+    {
+      "bytes": 12144,
+      "path": "tests/batch32/test_toolkit.py",
+      "sha256": "2522c0e2057c857618ecd0b17ef935dcb1325b35ca6ad516f7139b8a48b76fd1"
+    },
+    {
+      "bytes": 10879,
+      "path": "tests/batch33/test_toolkit.py",
+      "sha256": "f5a0e432f8b611297a9c39311269454e0cdf497d8210c24b0ce531b571134813"
+    },
+    {
+      "bytes": 9443,
+      "path": "tests/batch34/test_toolkit.py",
+      "sha256": "222faebd047a358e96f6f4a9a35cf42b87c3b3dfccbce0631219bb0f51b8eb78"
+    },
+    {
+      "bytes": 2959,
+      "path": "tests/batch35/test_toolkit.py",
+      "sha256": "fe024083a4ee000ef3de9c2086fc9bb108fb13d01bee0b04fd61955cb5555c4b"
+    },
+    {
+      "bytes": 2962,
+      "path": "tests/batch36/test_toolkit.py",
+      "sha256": "af4331b1f135e1ab39a05d229f7fe662d73f5e0573f2a4f09c7dba15ea5c2c1c"
+    },
+    {
+      "bytes": 2943,
+      "path": "tests/batch37/test_toolkit.py",
+      "sha256": "142ead2e866b0cf13821359b2c5a0d3343ef886082794b6f6991e4095ea973a8"
+    },
+    {
+      "bytes": 2952,
+      "path": "tests/batch38/test_toolkit.py",
+      "sha256": "bb3b1ea9ba1ec2335babfaa6069cc62e8046eb27643b753e673ded44b205ef0d"
+    },
+    {
+      "bytes": 2941,
+      "path": "tests/batch39/test_toolkit.py",
+      "sha256": "255f3e107545bda60c115eef85fa43c7a8b3b568d431f5508d9192638a6c2de7"
+    },
+    {
+      "bytes": 2958,
+      "path": "tests/batch40/test_toolkit.py",
+      "sha256": "1f00d88c59e10ac882af54737009f99eb15b1ea8729348ae2cb5c32766db7c20"
+    },
+    {
+      "bytes": 2976,
+      "path": "tests/batch41/test_toolkit.py",
+      "sha256": "d8e9ab89a149d35ac37db270970425a50a3583f0218d209567aa833fcd280004"
+    },
+    {
+      "bytes": 2946,
+      "path": "tests/batch42/test_toolkit.py",
+      "sha256": "1d1f08d6b6fa05314a3be83fea14d8ef29352ea11d27703d1e184c8efd5e2ff0"
+    },
+    {
+      "bytes": 2963,
+      "path": "tests/batch43/test_toolkit.py",
+      "sha256": "bc2d269237dc1157c24ac1c132a74da6a9984618b25c3f29baee954f154c9212"
+    },
+    {
+      "bytes": 2972,
+      "path": "tests/batch44/test_toolkit.py",
+      "sha256": "e3be83731932d0eb5a567e76e78dcc545c35f5721d95562d0457b57cc32e47e8"
+    },
+    {
+      "bytes": 2968,
+      "path": "tests/batch45/test_toolkit.py",
+      "sha256": "9eea6031d92f49dc0437f441bc4a9c7a50ac2c238e77c35e0370020aa114610b"
+    },
+    {
+      "bytes": 7056,
+      "path": "tooling/generate_product_batch27_34_migrations.py",
+      "sha256": "9be5810af3625787fe7ed8d022194db140d7aaf965add2db79d7eba828585c2b"
+    },
+    {
+      "bytes": 8123,
+      "path": "tooling/sync_batch27_34_skills.py",
+      "sha256": "a0c84ec83e1e9de21fda543dc664f441fbab09a30961f4f2fb4f990baa6ca7c9"
+    },
+    {
+      "bytes": 2589,
+      "path": "tooling/validate_batch27_34_integration.py",
+      "sha256": "12c6d9847f89463606f55c867a8ea283ce72f5109ce05f69bb94717c8a80af06"
+    }
+  ],
+  "schema_version": 1,
+  "scope": "local-worktree",
+  "status": "passed",
+  "tree_digest": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954"
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Migration Pack M32 Skill 081"
+  short_description: "Run Migration Pack M32 certification safely"
+  default_prompt: "Use $b32-state-management-lifecycle to apply the independent, fail-closed Migration Pack M32 contract."

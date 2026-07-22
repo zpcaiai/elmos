@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 35: Metamorphic Testing"
+  short_description: "Run evidence-bound Batch 35 metamorphic testing work"
+  default_prompt: "Use $b35-metamorphic-testing to implement and verify this capability with fail-closed evidence."

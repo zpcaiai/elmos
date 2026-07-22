@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 29 Skill 006"
+  short_description: "Run ELMOS Product Batch 29 governance safely"
+  default_prompt: "Use $change-portfolio-saturation-capacity-and-collision-manager to implement its evidence-bound ELMOS Product Batch 29 contract."

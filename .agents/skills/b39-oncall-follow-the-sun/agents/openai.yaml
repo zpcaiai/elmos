@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 39: Oncall Follow The Sun"
+  short_description: "Run evidence-bound Batch 39 oncall follow the sun work"
+  default_prompt: "Use $b39-oncall-follow-the-sun to implement and verify this capability with fail-closed evidence."

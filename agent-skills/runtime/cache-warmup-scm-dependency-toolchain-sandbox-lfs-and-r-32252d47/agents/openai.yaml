@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B36: Cache Warmup Scm Dependency Toolchain Sandbox Lfs And Recipe Prefetch"
+  short_description: "Run ELMOS Product B36 contract with fail-closed evidence"
+  default_prompt: "Use $cache-warmup-scm-dependency-toolchain-sandbox-lfs-and-r-32252d47 to implement its fail-closed ELMOS Product B36 contract."

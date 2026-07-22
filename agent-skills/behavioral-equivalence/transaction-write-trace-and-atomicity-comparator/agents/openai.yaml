@@ -1,0 +1,4 @@
+interface:
+  display_name: "Transaction Write Trace And Atomicity Comparator"
+  short_description: "Run this Batch 9 behavioral capability"
+  default_prompt: "Use $transaction-write-trace-and-atomicity-comparator to perform this Batch 9 behavioral-equivalence task."

@@ -1,0 +1,13 @@
+{
+  "schemaVersion":"1.0",
+  "defaultNetwork":"DENY",
+  "secretValuesInEvidence":false,
+  "productionMutationAllowed":false,
+  "agentRiskAcceptanceAllowed":false,
+  "adapters":[
+    "ESTATE","IDENTITY","SECRET","CRYPTO","SAST","SCA","IAC","CONTAINER","DAST",
+    "API_SECURITY","CLOUD","RUNTIME","DLP","SBOM","PROVENANCE","VEX","OSCAL","SIEM"
+  ],
+  "initialStatus":"NOT_CONFIGURED",
+  "activeTestAuthorizationRequired":["DAST","API_SECURITY"]
+}

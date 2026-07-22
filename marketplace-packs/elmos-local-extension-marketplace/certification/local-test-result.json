@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "execution_kind": "real-local-maven",
+  "command": [
+    "/private/tmp/elmos-b36-tooling/apache-maven-3.9.11/bin/mvn",
+    "-q",
+    "-pl",
+    "modules/extension-marketplace",
+    "test"
+  ],
+  "return_code": 0,
+  "totals": {
+    "tests": 24,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "environment_digest": "sha256:a786a4208f28cd5f1a4351952879f9d0a4c7fb9b783684a733b173c6283f1e0c",
+  "stdout": "",
+  "stderr": ""
+}

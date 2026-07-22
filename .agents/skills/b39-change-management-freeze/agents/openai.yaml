@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 39: Change Management Freeze"
+  short_description: "Run evidence-bound Batch 39 change management freeze work"
+  default_prompt: "Use $b39-change-management-freeze to implement and verify this capability with fail-closed evidence."

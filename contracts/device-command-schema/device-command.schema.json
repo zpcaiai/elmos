@@ -1,0 +1,38 @@
+{
+  "$id": "elmos.device-command.v1",
+  "type": "object",
+  "required": [
+    "commandId",
+    "targetDeviceId",
+    "commandType",
+    "parameters",
+    "deadline",
+    "approvalPolicy",
+    "status"
+  ],
+  "properties": {
+    "commandId": {
+      "type": "string"
+    },
+    "targetDeviceId": {
+      "type": "string"
+    },
+    "commandType": {
+      "type": "string"
+    },
+    "parameters": {
+      "type": "object"
+    },
+    "deadline": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "approvalPolicy": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

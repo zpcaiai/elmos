@@ -1,0 +1,4 @@
+interface:
+  display_name: "Suite Business Process Test And Semantic Equivalence Engine"
+  short_description: "Govern evidence-bound enterprise suite modernization"
+  default_prompt: "Use $suite-business-process-test-and-semantic-equivalence-engine to govern this enterprise suite modernization task with fail-closed evidence."

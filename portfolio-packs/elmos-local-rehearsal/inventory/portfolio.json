@@ -1,0 +1,35 @@
+{
+  "captured_at": "2026-07-22T03:37:26Z",
+  "coverage": 1.0,
+  "pack_key": "elmos-local-rehearsal",
+  "repositories": [
+    {
+      "baseline_commit": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954",
+      "build_systems": [
+        "maven"
+      ],
+      "criticality": "P1",
+      "default_branch": "WORKTREE",
+      "evidence_refs": [
+        "certification/local-source-manifest.json"
+      ],
+      "id": "repo.elmos",
+      "languages": [
+        "java"
+      ],
+      "loc": 36564,
+      "name": "elmos",
+      "organization": "elmos-local-workspace",
+      "owner": "elmos-platform-team",
+      "regions": [
+        "local-macos"
+      ],
+      "scm_provider": "filesystem",
+      "size_bytes": 2785304,
+      "status": "active"
+    }
+  ],
+  "schema_version": 1,
+  "snapshot_digest": "sha256:6647d9e68c11cc180393306797cfcd8c741bd0cb9e3853553331286ed534d954",
+  "unreachable": []
+}

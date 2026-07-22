@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.security-control.v1",
+  "type": "object",
+  "required": ["controlId", "catalogId", "catalogVersion", "externalId", "title", "controlClass"],
+  "properties": {
+    "controlId": {"type": "string"}, "catalogId": {"type": "string"}, "catalogVersion": {"type": "string"},
+    "externalId": {"type": "string"}, "title": {"type": "string"},
+    "controlClass": {"enum": ["COMMON_CONTROL", "SYSTEM_SPECIFIC_CONTROL", "HYBRID_CONTROL"]},
+    "parameters": {"type": "array"}
+  },
+  "additionalProperties": false
+}

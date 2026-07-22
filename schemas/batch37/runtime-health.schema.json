@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "extension_id",
+    "version",
+    "owner",
+    "status",
+    "slos",
+    "reconciliation",
+    "circuit_breaker",
+    "auto_quarantine",
+    "open_critical_incidents"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "extension_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "healthy",
+        "degraded",
+        "quarantined",
+        "disabled"
+      ]
+    },
+    "slos": {
+      "type": "object",
+      "required": [
+        "availability_target",
+        "error_rate_max",
+        "p95_latency_ms_max"
+      ],
+      "properties": {
+        "availability_target": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "error_rate_max": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "p95_latency_ms_max": {
+          "type": "number",
+          "minimum": 1
+        }
+      },
+      "additionalProperties": true
+    },
+    "reconciliation": {
+      "type": "object",
+      "required": [
+        "desired_installations",
+        "actual_installations",
+        "drift_count",
+        "last_run"
+      ],
+      "properties": {
+        "desired_installations": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "actual_installations": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "drift_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "last_run": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": true
+    },
+    "circuit_breaker": {
+      "type": "object",
+      "required": [
+        "enabled",
+        "tested"
+      ],
+      "properties": {
+        "enabled": {
+          "const": true
+        },
+        "tested": {
+          "const": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "auto_quarantine": {
+      "const": true
+    },
+    "open_critical_incidents": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "additionalProperties": true,
+  "$id": "https://example.invalid/batch37/runtime-health.schema.json"
+}

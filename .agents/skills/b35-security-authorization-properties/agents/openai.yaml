@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 35: Security Properties"
+  short_description: "Verify authorization tenancy and denied side effects"
+  default_prompt: "Use $b35-security-authorization-properties to implement and verify this capability with fail-closed evidence."

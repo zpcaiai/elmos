@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 38: Self Hosted Edition"
+  short_description: "Run evidence-bound Batch 38 self hosted edition work"
+  default_prompt: "Use $b38-self-hosted-edition to implement and verify this capability with fail-closed evidence."

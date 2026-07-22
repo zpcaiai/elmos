@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "tenant_id",
+    "owner",
+    "allowlist_enforced",
+    "immutable_promotion",
+    "cross_tenant_sharing",
+    "private_extensions_isolated",
+    "reconciliation_drift"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "tenant_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "allowlist_enforced": {
+      "const": true
+    },
+    "immutable_promotion": {
+      "const": true
+    },
+    "cross_tenant_sharing": {
+      "const": false
+    },
+    "private_extensions_isolated": {
+      "const": true
+    },
+    "reconciliation_drift": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "promotion_stages": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "additionalProperties": true,
+  "$id": "https://example.invalid/batch37/private-marketplace.schema.json"
+}

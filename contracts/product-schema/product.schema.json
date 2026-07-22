@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.product.v1",
+  "title": "ELMOS Product",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "productId",
+    "edition",
+    "featureKeys",
+    "catalogVersion"
+  ],
+  "properties": {
+    "productId": {
+      "type": "string"
+    },
+    "edition": {
+      "enum": [
+        "COMMUNITY",
+        "TEAM",
+        "PROFESSIONAL",
+        "ENTERPRISE",
+        "PRIVATE_DEPLOYMENT",
+        "CUSTOM_CONTRACT"
+      ]
+    },
+    "featureKeys": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9.-]+$"
+      },
+      "uniqueItems": true
+    },
+    "catalogVersion": {
+      "type": "string"
+    }
+  }
+}
+

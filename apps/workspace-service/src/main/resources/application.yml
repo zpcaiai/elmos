@@ -1,0 +1,25 @@
+server:
+  port: ${ELMOS_WORKSPACE_SERVICE_PORT:8082}
+spring:
+  datasource:
+    url: ${ELMOS_DATABASE_URL:jdbc:postgresql://localhost:5432/elmos}
+    username: ${ELMOS_DATABASE_USER:elmos}
+    password: ${ELMOS_DATABASE_PASSWORD:elmos-local-only}
+  flyway:
+    enabled: true
+elmos:
+  workspace:
+    docker:
+      enabled: ${ELMOS_WORKSPACE_DOCKER_ENABLED:false}
+    snapshot-artifact-root: ${ELMOS_SNAPSHOT_ARTIFACT_ROOT:}
+    command-artifact-root: ${ELMOS_COMMAND_ARTIFACT_ROOT:}
+    snapshot-helper-image-digest: ${ELMOS_SNAPSHOT_HELPER_IMAGE_DIGEST:}
+    egress-proxy-image-digest: ${ELMOS_EGRESS_PROXY_IMAGE_DIGEST:}
+    secrets:
+      enabled: ${ELMOS_WORKSPACE_SECRETS_ENABLED:false}
+    provider-secret-root: ${ELMOS_PROVIDER_SECRET_ROOT:}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

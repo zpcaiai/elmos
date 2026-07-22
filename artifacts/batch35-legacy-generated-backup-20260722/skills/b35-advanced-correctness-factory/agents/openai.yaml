@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 35: Advanced Correctness Factory"
+  short_description: "Run evidence-bound Batch 35 advanced correctness factory work"
+  default_prompt: "Use $b35-advanced-correctness-factory to implement and verify this capability with fail-closed evidence."

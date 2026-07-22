@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-web-console-navigation-modernization",
+  "source_snapshot_digest": "ebb89f64a5a487c5bfd0103723dc2b9d26e678a519758a843267e0804207d973",
+  "routes": [
+    {"id":"route.overview","kind":"route","name":"总览","path":"/","references":["view.overview"],"source_refs":["apps/web-console/app/page.tsx"]},
+    {"id":"route.migration","kind":"route","name":"迁移工坊","path":"/migration","references":["view.migration-catalog","view.marketplace"],"source_refs":["apps/web-console/app/migration/page.tsx"]},
+    {"id":"route.commercialization","kind":"route","name":"商业化控制面","path":"/commercialization","references":["view.trust-chain"],"source_refs":["apps/web-console/app/commercialization/page.tsx"]}
+  ],
+  "views": [
+    {"id":"view.overview","kind":"view","name":"工作空间总览","references":["component.app-shell","component.status-chip"],"source_refs":["apps/web-console/app/page.tsx"]},
+    {"id":"view.migration-catalog","kind":"view","name":"M29-M37 能力目录","references":["component.capability-row","component.detail-panel","state.migration-view","resource.migration-capabilities"],"source_refs":["apps/web-console/app/migration/MigrationStudio.tsx"]},
+    {"id":"view.marketplace","kind":"view","name":"扩展 Marketplace","references":["component.status-chip","state.migration-view"],"source_refs":["apps/web-console/app/migration/MigrationStudio.tsx"]},
+    {"id":"view.trust-chain","kind":"view","name":"B34-B38 可信链","references":["component.trust-step","component.assurance-queue","state.selected-stage","resource.product-capabilities"],"source_refs":["apps/web-console/app/commercialization/CommercializationConsole.tsx"]}
+  ],
+  "components": [
+    {"id":"component.app-shell","kind":"component","name":"全局侧栏与顶栏","ownership":"shared","references":["state.current-route","action.navigate"],"source_refs":["apps/web-console/app/components/AppShell.tsx"]},
+    {"id":"component.status-chip","kind":"component","name":"文字与颜色双编码状态","ownership":"shared","references":["a11y.status-text"],"source_refs":["apps/web-console/app/components/StatusChip.tsx"]},
+    {"id":"component.capability-row","kind":"component","name":"能力目录行","stable_key":"capability.id","references":["action.select-capability","component.status-chip"],"source_refs":["apps/web-console/app/migration/MigrationStudio.tsx"]},
+    {"id":"component.detail-panel","kind":"component","name":"迁移能力详情","references":["state.selected-capability","component.status-chip"],"source_refs":["apps/web-console/app/migration/MigrationStudio.tsx"]},
+    {"id":"component.local-draft-dialog","kind":"component","name":"本地迁移评估草稿","references":["form.assessment-draft","permission.local-draft"],"source_refs":["apps/web-console/app/migration/MigrationStudio.tsx"]},
+    {"id":"component.trust-step","kind":"component","name":"可信链阶段","stable_key":"stage.batch","references":["action.select-stage","component.status-chip"],"source_refs":["apps/web-console/app/commercialization/CommercializationConsole.tsx"]},
+    {"id":"component.assurance-queue","kind":"component","name":"证据审阅队列","stable_key":"item.id","references":["permission.read-only-control"],"source_refs":["apps/web-console/app/commercialization/CommercializationConsole.tsx"]}
+  ],
+  "states": [
+    {"id":"state.current-route","kind":"route-state","name":"当前工作空间","references":[],"source_refs":["apps/web-console/app/components/AppShell.tsx"]},
+    {"id":"state.migration-view","kind":"local-state","name":"路线或 Marketplace 视图","references":["action.switch-view"],"source_refs":["apps/web-console/app/migration/MigrationStudio.tsx"]},
+    {"id":"state.selected-capability","kind":"local-state","name":"选中迁移能力","references":["action.select-capability"],"source_refs":["apps/web-console/app/migration/MigrationStudio.tsx"]},
+    {"id":"state.catalog-filter","kind":"local-state","name":"目录搜索与状态筛选","references":["action.filter-catalog"],"source_refs":["apps/web-console/app/migration/MigrationStudio.tsx"]},
+    {"id":"state.local-drafts","kind":"local-state","name":"内存中的评估草稿","references":["action.create-draft"],"source_refs":["apps/web-console/app/migration/MigrationStudio.tsx"]},
+    {"id":"state.selected-stage","kind":"local-state","name":"选中商业化控制阶段","references":["action.select-stage"],"source_refs":["apps/web-console/app/commercialization/CommercializationConsole.tsx"]}
+  ],
+  "actions": [
+    {"id":"action.navigate","kind":"navigation","name":"切换工作空间","references":["state.current-route"],"source_refs":["apps/web-console/app/components/AppShell.tsx"]},
+    {"id":"action.switch-view","kind":"interaction","name":"切换路线与 Marketplace","references":["state.migration-view"],"source_refs":["apps/web-console/app/migration/MigrationStudio.tsx"]},
+    {"id":"action.filter-catalog","kind":"interaction","name":"搜索并筛选能力","references":["state.catalog-filter"],"source_refs":["apps/web-console/app/migration/MigrationStudio.tsx"]},
+    {"id":"action.select-capability","kind":"interaction","name":"查看能力详情","references":["state.selected-capability"],"source_refs":["apps/web-console/app/migration/MigrationStudio.tsx"]},
+    {"id":"action.create-draft","kind":"form-submit","name":"保存内存草稿","references":["form.assessment-draft","state.local-drafts"],"source_refs":["apps/web-console/app/migration/MigrationStudio.tsx"]},
+    {"id":"action.refresh-capabilities","kind":"network-action","name":"刷新能力边界","references":["effect.load-product"],"source_refs":["apps/web-console/app/commercialization/CommercializationConsole.tsx"]},
+    {"id":"action.select-stage","kind":"interaction","name":"查看可信链阶段","references":["state.selected-stage"],"source_refs":["apps/web-console/app/commercialization/CommercializationConsole.tsx"]}
+  ],
+  "effects": [
+    {"id":"effect.load-migration","kind":"network-effect","name":"读取迁移能力并安全回退","references":["resource.migration-capabilities"],"source_refs":["apps/web-console/app/migration/MigrationStudio.tsx"]},
+    {"id":"effect.load-product","kind":"network-effect","name":"读取商业化能力并安全回退","references":["resource.product-capabilities"],"source_refs":["apps/web-console/app/commercialization/CommercializationConsole.tsx"]}
+  ],
+  "forms": [
+    {"id":"form.assessment-draft","kind":"form","name":"迁移评估草稿","fields":["name","source","target","scope"],"validation":"name required","side_effect":"memory-only","references":["binding.assessment-draft"],"source_refs":["apps/web-console/app/migration/MigrationStudio.tsx"]}
+  ],
+  "bindings": [
+    {"id":"binding.assessment-draft","kind":"form-binding","name":"FormData 到内存 Draft","references":["state.local-drafts"],"source_refs":["apps/web-console/app/migration/MigrationStudio.tsx"]}
+  ],
+  "permissions": [
+    {"id":"permission.read-only-control","kind":"permission","name":"控制面只读与准备决策","effect":"deny external mutation","references":[],"source_refs":["apps/web-console/app/commercialization/CommercializationConsole.tsx"]},
+    {"id":"permission.local-draft","kind":"permission","name":"仅本地内存草稿","effect":"no repository upload or execution","references":[],"source_refs":["apps/web-console/app/migration/MigrationStudio.tsx"]}
+  ],
+  "resources": [
+    {"id":"resource.migration-capabilities","kind":"api-resource","name":"迁移能力 API","method":"GET","path":"/api/capabilities/migration","fallback":"repository contract","references":["effect.load-migration"],"source_refs":["apps/web-console/app/api/capabilities/migration/route.ts"]},
+    {"id":"resource.product-capabilities","kind":"api-resource","name":"商业化能力 API","method":"GET","path":"/api/capabilities/product","fallback":"repository contract","references":["effect.load-product"],"source_refs":["apps/web-console/app/api/capabilities/product/route.ts"]}
+  ],
+  "design_tokens": [
+    {"id":"token.console","kind":"design-token-set","name":"ELMOS Console tokens","references":[],"source_refs":["apps/web-console/app/styles.css"]}
+  ],
+  "accessibility": [
+    {"id":"a11y.status-text","kind":"accessibility-contract","name":"状态不得只依赖颜色","references":[],"source_refs":["apps/web-console/app/components/StatusChip.tsx"]},
+    {"id":"a11y.keyboard-focus","kind":"accessibility-contract","name":"键盘焦点与跳转链接","references":["component.app-shell"],"source_refs":["apps/web-console/app/styles.css","apps/web-console/app/layout.tsx"]}
+  ],
+  "source_map": [
+    {"node_id":"route.overview","owner":"web-console"},{"node_id":"route.migration","owner":"web-console"},{"node_id":"route.commercialization","owner":"web-console"},
+    {"node_id":"view.overview","owner":"web-console"},{"node_id":"view.migration-catalog","owner":"web-console"},{"node_id":"view.marketplace","owner":"web-console"},{"node_id":"view.trust-chain","owner":"web-console"},
+    {"node_id":"component.app-shell","owner":"shared-ui"},{"node_id":"component.status-chip","owner":"shared-ui"},{"node_id":"component.capability-row","owner":"migration-ui"},{"node_id":"component.detail-panel","owner":"migration-ui"},{"node_id":"component.local-draft-dialog","owner":"migration-ui"},{"node_id":"component.trust-step","owner":"commercialization-ui"},{"node_id":"component.assurance-queue","owner":"commercialization-ui"},
+    {"node_id":"state.current-route","owner":"shared-ui"},{"node_id":"state.migration-view","owner":"migration-ui"},{"node_id":"state.selected-capability","owner":"migration-ui"},{"node_id":"state.catalog-filter","owner":"migration-ui"},{"node_id":"state.local-drafts","owner":"migration-ui"},{"node_id":"state.selected-stage","owner":"commercialization-ui"},
+    {"node_id":"action.navigate","owner":"shared-ui"},{"node_id":"action.switch-view","owner":"migration-ui"},{"node_id":"action.filter-catalog","owner":"migration-ui"},{"node_id":"action.select-capability","owner":"migration-ui"},{"node_id":"action.create-draft","owner":"migration-ui"},{"node_id":"action.refresh-capabilities","owner":"commercialization-ui"},{"node_id":"action.select-stage","owner":"commercialization-ui"},
+    {"node_id":"effect.load-migration","owner":"migration-ui"},{"node_id":"effect.load-product","owner":"commercialization-ui"},
+    {"node_id":"form.assessment-draft","owner":"migration-ui"},{"node_id":"binding.assessment-draft","owner":"migration-ui"},
+    {"node_id":"permission.read-only-control","owner":"control-plane"},{"node_id":"permission.local-draft","owner":"migration-ui"},
+    {"node_id":"resource.migration-capabilities","owner":"web-console-api"},{"node_id":"resource.product-capabilities","owner":"web-console-api"},
+    {"node_id":"token.console","owner":"shared-ui"},{"node_id":"a11y.status-text","owner":"shared-ui"},{"node_id":"a11y.keyboard-focus","owner":"shared-ui"}
+  ],
+  "unknowns": [
+    {"id":"unknown.browser-evidence","severity":"critical","status":"PARTIAL","detail":"Chrome 150 桌面和移动视口交互已运行；独立辅助技术、跨浏览器和 holdout 仍为 NOT_RUN"},
+    {"id":"unknown.control-plane-runtime","severity":"noncritical","status":"CONDITIONAL","detail":"页面通过安全回退支持未启动的控制面"}
+  ]
+}

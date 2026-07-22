@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 45: Route Breadth Certification"
+  short_description: "Run evidence-bound Batch 45 route breadth certification work"
+  default_prompt: "Use $b45-route-breadth-certification to implement and verify this capability with fail-closed evidence."

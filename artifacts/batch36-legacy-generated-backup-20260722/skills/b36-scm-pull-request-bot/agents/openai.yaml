@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 36: Scm Pull Request Bot"
+  short_description: "Run evidence-bound Batch 36 scm pull request bot work"
+  default_prompt: "Use $b36-scm-pull-request-bot to implement and verify this capability with fail-closed evidence."

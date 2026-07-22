@@ -1,0 +1,4 @@
+interface:
+  display_name: "B36 Offline Workflow"
+  short_description: "Validate private and air-gapped workflows"
+  default_prompt: "Use $b36-offline-private-developer-workflow to design signed, no-network private developer workflows."

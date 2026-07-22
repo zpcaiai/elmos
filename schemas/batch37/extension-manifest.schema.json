@@ -1,0 +1,224 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "extension_id",
+    "name",
+    "kind",
+    "version",
+    "publisher_id",
+    "product_compatibility",
+    "entrypoints",
+    "capabilities",
+    "permissions",
+    "dependencies",
+    "configuration_schema",
+    "lifecycle",
+    "artifacts"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "extension_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9.-]{2,127}$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "kind": {
+      "enum": [
+        "language-adapter",
+        "framework-adapter",
+        "transformation-recipe",
+        "dependency-mapping",
+        "comparator-normalizer",
+        "evidence-collector",
+        "runner-job",
+        "vertical-pack",
+        "policy-extension"
+      ]
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "publisher_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "product_compatibility": {
+      "type": "object",
+      "required": [
+        "product",
+        "protocol",
+        "sdk"
+      ],
+      "properties": {
+        "product": {
+          "type": "string"
+        },
+        "protocol": {
+          "type": "string"
+        },
+        "sdk": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "entrypoints": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "required": [
+          "name",
+          "operation",
+          "handler"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "operation": {
+            "type": "string"
+          },
+          "handler": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "permissions": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "workspace-read",
+          "workspace-write",
+          "artifact-read",
+          "artifact-write",
+          "repository-read",
+          "repository-write",
+          "network-egress",
+          "secret-read",
+          "model-call",
+          "runner-job",
+          "evidence-write",
+          "policy-evaluate",
+          "billing-meter"
+        ]
+      }
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "required": [
+          "id",
+          "version"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "optional": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "configuration_schema": {
+      "type": "string"
+    },
+    "lifecycle": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "required": [
+        "activate",
+        "health",
+        "quiesce",
+        "shutdown",
+        "uninstall"
+      ],
+      "properties": {
+        "activate": {
+          "type": "string"
+        },
+        "health": {
+          "type": "string"
+        },
+        "quiesce": {
+          "type": "string"
+        },
+        "shutdown": {
+          "type": "string"
+        },
+        "uninstall": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "artifacts": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "required": [
+        "package_ref",
+        "package_digest",
+        "signature_ref",
+        "sbom_ref",
+        "provenance_ref"
+      ],
+      "properties": {
+        "package_ref": {
+          "type": "string"
+        },
+        "package_digest": {
+          "type": "string"
+        },
+        "signature_ref": {
+          "type": "string"
+        },
+        "sbom_ref": {
+          "type": "string"
+        },
+        "provenance_ref": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "data_classification": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "side_effects": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": true,
+  "$id": "https://example.invalid/batch37/extension-manifest.schema.json"
+}

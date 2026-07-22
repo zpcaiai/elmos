@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 713: security control baseline harmonizer"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $security-control-baseline-harmonizer to evaluate this capability with evidence."

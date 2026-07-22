@@ -1,0 +1,4 @@
+interface:
+  display_name: "B36 IntelliJ Plugin"
+  short_description: "Implement an exact IntelliJ workflow adapter"
+  default_prompt: "Use $b36-intellij-plugin to implement and validate the IntelliJ-specific developer workflow."

@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "period",
+    "owner",
+    "currency",
+    "metering_digest",
+    "invoice_total",
+    "refunds",
+    "chargebacks",
+    "taxes",
+    "payouts",
+    "revenue_share",
+    "reconciliation_difference",
+    "fraud_findings_open",
+    "approvals"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "period": {
+      "type": "string",
+      "minLength": 1
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "currency": {
+      "type": "string",
+      "minLength": 1
+    },
+    "metering_digest": {
+      "type": "string",
+      "pattern": "^sha256:[A-Za-z0-9._:-]+$"
+    },
+    "invoice_total": {
+      "type": "number"
+    },
+    "refunds": {
+      "type": "number"
+    },
+    "chargebacks": {
+      "type": "number"
+    },
+    "taxes": {
+      "type": "number"
+    },
+    "payouts": {
+      "type": "number"
+    },
+    "revenue_share": {
+      "type": "number"
+    },
+    "reconciliation_difference": {
+      "type": "number"
+    },
+    "fraud_findings_open": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "approvals": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "additionalProperties": true,
+  "$id": "https://example.invalid/batch37/commercial-settlement.schema.json"
+}

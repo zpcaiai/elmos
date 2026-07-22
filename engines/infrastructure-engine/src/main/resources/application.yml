@@ -1,0 +1,10 @@
+server:
+  port: ${ELMOS_INFRASTRUCTURE_PORT:8090}
+spring:
+  application:
+    name: elmos-infrastructure-engine
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

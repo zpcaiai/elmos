@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/enterprise-platform/model-cost-evidence.schema.json",
+  "title": "T-D Model Governance, Metering and Billing Evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["assessment_run_id", "platform_version", "status", "model_gateway_bypass_paths", "model_data_policy_violations", "prompt_secret_leaks", "cross_tenant_prompt_cache_events", "model_provenance_coverage", "quota_bypass_events", "duplicate_meter_events", "usage_ledger_integrity_passed", "historical_ledger_mutation_events", "billing_reconciliation_difference", "duplicate_charges", "fair_scheduling_passed", "starvation_events", "budget_controls_passed", "entitlement_controls_passed", "authority_id", "observed_at", "evidence_refs"],
+  "properties": {
+    "assessment_run_id": {"type": "string", "minLength": 1}, "platform_version": {"type": "string", "minLength": 1}, "status": {"const": "PASSED"},
+    "model_gateway_bypass_paths": {"const": 0}, "model_data_policy_violations": {"const": 0}, "prompt_secret_leaks": {"const": 0},
+    "cross_tenant_prompt_cache_events": {"const": 0}, "model_provenance_coverage": {"const": 1}, "quota_bypass_events": {"const": 0},
+    "duplicate_meter_events": {"const": 0}, "usage_ledger_integrity_passed": {"const": true}, "historical_ledger_mutation_events": {"const": 0},
+    "billing_reconciliation_difference": {"type": "number", "minimum": 0}, "duplicate_charges": {"const": 0}, "fair_scheduling_passed": {"const": true},
+    "starvation_events": {"const": 0}, "budget_controls_passed": {"const": true}, "entitlement_controls_passed": {"const": true},
+    "authority_id": {"type": "string", "minLength": 1}, "observed_at": {"type": "string", "format": "date-time"},
+    "evidence_refs": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+  }
+}

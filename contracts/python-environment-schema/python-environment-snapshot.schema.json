@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.io/schemas/python-environment-snapshot.v1.json",
+  "title": "Python Environment Snapshot",
+  "type": "object",
+  "required": ["pythonVersion", "implementation", "platform", "abi", "distributions", "lockFiles", "nativeLibraries", "environmentKeys", "reproducibilityStatus", "reproductionDefinition", "findings"],
+  "properties": {
+    "pythonVersion": {"type": "string"},
+    "implementation": {"type": "string"},
+    "platform": {"type": "object", "additionalProperties": {"type": "string"}},
+    "abi": {"type": "string"},
+    "distributions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "version"],
+        "properties": {
+          "name": {"type": "string"},
+          "version": {"type": "string"},
+          "artifactHash": {"type": ["string", "null"], "pattern": "^sha256:[0-9a-f]{64}$"},
+          "marker": {"type": ["string", "null"]}
+        },
+        "additionalProperties": false
+      }
+    },
+    "lockFiles": {"type": "array", "items": {"type": "string"}},
+    "nativeLibraries": {"type": "array", "items": {"type": "string"}},
+    "environmentKeys": {"type": "array", "items": {"type": "string"}},
+    "reproducibilityStatus": {"enum": ["BITWISE_REPRODUCIBLE", "DEPENDENCY_REPRODUCIBLE", "FUNCTIONALLY_REPRODUCIBLE", "PARTIALLY_REPRODUCIBLE", "UNREPRODUCIBLE"]},
+    "reproductionDefinition": {"type": "string"},
+    "findings": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}
+

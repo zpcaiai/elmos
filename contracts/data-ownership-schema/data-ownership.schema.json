@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/composite/data-ownership/1.0.0",
+  "title": "ELMOS Data Ownership Record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "dataAssetId", "organizationId", "authoritativeWriter", "authoritativeStore", "state", "effectiveAt", "evidenceRefs"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "dataAssetId": { "type": "string", "minLength": 1 },
+    "organizationId": { "type": "string", "minLength": 1 },
+    "authoritativeWriter": { "type": "string", "minLength": 1 },
+    "authoritativeStore": { "type": "string", "minLength": 1 },
+    "state": { "enum": ["LEGACY_AUTHORITATIVE", "LEGACY_WRITE_NEW_SHADOW", "LEGACY_WRITE_NEW_REPLICA", "DUAL_WRITE_LEGACY_AUTH", "DUAL_WRITE_NEW_AUTH", "NEW_WRITE_LEGACY_REPLICA", "NEW_AUTHORITATIVE", "LEGACY_READ_ONLY", "DECOMMISSIONED"] },
+    "effectiveAt": { "type": "string", "format": "date-time" },
+    "replicas": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+    "evidenceRefs": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string" } }
+  }
+}

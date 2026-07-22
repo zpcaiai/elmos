@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 36: Ide Protocol Agent Bridge"
+  short_description: "Run evidence-bound Batch 36 ide protocol agent bridge work"
+  default_prompt: "Use $b36-ide-protocol-agent-bridge to implement and verify this capability with fail-closed evidence."

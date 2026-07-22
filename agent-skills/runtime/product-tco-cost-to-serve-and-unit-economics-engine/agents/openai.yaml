@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 27 Skill 006"
+  short_description: "Run ELMOS Product Batch 27 governance safely"
+  default_prompt: "Use $product-tco-cost-to-serve-and-unit-economics-engine to implement its evidence-bound ELMOS Product Batch 27 contract."

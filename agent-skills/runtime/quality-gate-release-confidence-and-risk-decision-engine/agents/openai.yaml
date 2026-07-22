@@ -1,0 +1,4 @@
+interface:
+  display_name: "quality-gate-release-confidence-and-risk-decision-engine"
+  short_description: "Apply this Batch 18 quality workflow safely"
+  default_prompt: "Use $quality-gate-release-confidence-and-risk-decision-engine to implement this test-quality task with fail-closed evidence boundaries."

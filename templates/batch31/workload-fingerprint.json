@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "pack_key": "unset-to-unset",
+  "snapshot_digest": "UNSET",
+  "engine_facts": {},
+  "object_counts": {},
+  "runtime_workload": {
+    "top_queries": [],
+    "plans": [],
+    "locks": [],
+    "jobs": []
+  },
+  "unknowns": [],
+  "coverage": 0
+}

@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.tenant-context.v1",
+  "title": "ELMOS Tenant Context",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizationId",
+    "actorId",
+    "roles",
+    "authenticationAssurance",
+    "dataRegion",
+    "correlationId"
+  ],
+  "properties": {
+    "organizationId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "actorId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "roles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "authenticationAssurance": {
+      "enum": [
+        "PASSWORD",
+        "MFA",
+        "PHISHING_RESISTANT",
+        "HARDWARE_BOUND",
+        "SERVICE_IDENTITY",
+        "UNKNOWN"
+      ]
+    },
+    "dataRegion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "correlationId": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}
+

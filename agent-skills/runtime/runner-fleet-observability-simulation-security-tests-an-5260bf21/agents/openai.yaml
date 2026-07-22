@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B36: Runner Fleet Observability Simulation Security Tests And Release Gates"
+  short_description: "Run ELMOS Product B36 contract with fail-closed evidence"
+  default_prompt: "Use $runner-fleet-observability-simulation-security-tests-an-5260bf21 to implement its fail-closed ELMOS Product B36 contract."

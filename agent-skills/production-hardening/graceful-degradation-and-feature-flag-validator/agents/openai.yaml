@@ -1,0 +1,4 @@
+interface:
+  display_name: "Graceful Degradation and Feature Flag Validator"
+  short_description: "Run this Batch 10 hardening capability"
+  default_prompt: "Use $graceful-degradation-and-feature-flag-validator to perform this Batch 10 production-hardening task."

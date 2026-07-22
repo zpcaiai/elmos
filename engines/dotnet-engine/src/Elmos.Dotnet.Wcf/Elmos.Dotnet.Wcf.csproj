@@ -1,0 +1,1 @@
+<Project Sdk="Microsoft.NET.Sdk"><ItemGroup><ProjectReference Include="../Elmos.Dotnet.Domain/Elmos.Dotnet.Domain.csproj" /></ItemGroup></Project>

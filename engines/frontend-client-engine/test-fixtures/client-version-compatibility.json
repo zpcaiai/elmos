@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "1.0",
+  "organizationId": "org-b14",
+  "clientId": "orders-mobile",
+  "clientVersion": "5.4.1",
+  "platform": "ANDROID",
+  "bffVersion": "3.2.0",
+  "backendVersion": "4.0.0",
+  "contractVersion": "orders-v3",
+  "status": "SUPPORTED_WITH_ADAPTER",
+  "expiresAt": "2027-01-31T00:00:00Z",
+  "evidenceRefs": ["ev-contract-replay"]
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Custom Recipe Authoring Pipeline"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $custom-recipe-authoring-pipeline to execute this ELMOS Runtime Skill with fail-closed evidence."

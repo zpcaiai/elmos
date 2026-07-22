@@ -1,0 +1,4 @@
+interface:
+  display_name: "failure attribution and baseline comparator"
+  short_description: "Run a bounded Batch 8 repair workflow"
+  default_prompt: "Use $failure-attribution-and-baseline-comparator to perform this Batch 8 repair step."

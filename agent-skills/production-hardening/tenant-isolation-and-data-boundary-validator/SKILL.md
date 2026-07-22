@@ -1,0 +1,32 @@
+---
+name: tenant-isolation-and-data-boundary-validator
+description: "Use when Batch 10 must test cross-tenant isolation and data-boundary enforcement."
+---
+
+# Tenant Isolation And Data Boundary Validator
+
+Read `../references/batch-10-production-hardening.md` completely before acting. Use `modules/production-hardening` for gate semantics and validate machine artifacts against `contracts/production-hardening-schema`.
+
+## Required inputs
+
+- Batch 8 and Batch 9 pass evidence plus one immutable `artifact_id` and target Snapshot.
+- The affected service IDs, approved risk profiles, sanitized workload model and scenario scope.
+- Named external authority, tool/config versions and append-only evidence workspace.
+
+## Workflow
+
+1. Verify admission, artifact binding, non-production isolation and the service-specific risk controls.
+2. Test cross-tenant isolation and data-boundary enforcement.
+3. Preserve raw evidence references, uncertainty, tool failures, abort reasons and open risks; never substitute Agent opinion for execution.
+4. Return explicit `PASSED`, `FAILED`, `NOT_RUN`, `BLOCKED`, `INCONCLUSIVE` or `NOT_APPLICABLE` status for every required check.
+
+## Fail closed
+
+- Block on cross-tenant read or write, shared-cache leak, missing tenant context or real customer data.
+- Never access production resources, retain secrets, approve waivers, weaken thresholds or execute production deployment/cutover.
+- A tool failure or missing, stale, duplicate or mismatched result remains blocked and is not silently retried into a pass.
+
+## Output
+
+Produce tenant matrix, attempted boundary violations and zero-leak decision evidence. Bind every object to the immutable artifact and authority evidence. The strongest possible Batch 10 claim is eligibility for progressive delivery; always keep `production_ready=false` and `eligible_for_cutover=false`.
+

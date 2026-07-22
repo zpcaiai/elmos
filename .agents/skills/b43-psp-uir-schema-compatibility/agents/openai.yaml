@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 43: Psp Uir Schema Compatibility"
+  short_description: "Run evidence-bound Batch 43 psp uir schema compatibility work"
+  default_prompt: "Use $b43-psp-uir-schema-compatibility to implement and verify this capability with fail-closed evidence."

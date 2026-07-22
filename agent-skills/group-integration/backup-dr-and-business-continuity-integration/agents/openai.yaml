@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 716: backup dr and business continuity integration"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $backup-dr-and-business-continuity-integration to evaluate this capability with evidence."

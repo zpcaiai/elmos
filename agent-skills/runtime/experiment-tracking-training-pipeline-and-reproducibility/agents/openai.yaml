@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 23 005"
+  short_description: "Run Batch 23 runtime contract safely"
+  default_prompt: "Use $experiment-tracking-training-pipeline-and-reproducibility to apply its fail-closed ELMOS runtime contract."

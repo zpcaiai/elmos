@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "profile_key": "unset-target",
+  "owner": "UNASSIGNED",
+  "provider": "UNSET",
+  "regions": [
+    "UNSET"
+  ],
+  "account_model": "UNSET",
+  "iac_tool": {
+    "name": "UNSET",
+    "version": "UNSET"
+  },
+  "state_backend": {
+    "type": "UNSET",
+    "locking": "UNSET",
+    "encryption": "UNSET"
+  },
+  "container": {
+    "builder": "UNSET",
+    "base_image_policy": "signed-digest-only"
+  },
+  "orchestrator": {
+    "name": "none",
+    "version": "n/a"
+  },
+  "identity": {
+    "workload_identity": "UNSET",
+    "human_identity": "UNSET"
+  },
+  "network": {
+    "topology": "UNSET",
+    "default_egress": "deny"
+  },
+  "dns": {
+    "provider": "UNSET",
+    "strategy": "UNSET"
+  },
+  "service_mesh": {
+    "enabled": false,
+    "provider": "none"
+  },
+  "serverless": {
+    "enabled": false,
+    "provider": "none"
+  },
+  "managed_services": [],
+  "api_gateway": {
+    "provider": "UNSET",
+    "strategy": "UNSET"
+  },
+  "observability": {
+    "telemetry": "UNSET",
+    "retention": "UNSET"
+  },
+  "security": {
+    "policy_bundle": "UNSET",
+    "encryption": "UNSET"
+  },
+  "cost": {
+    "budget_currency": "USD",
+    "monthly_limit": 0
+  },
+  "provision": {
+    "commands": []
+  },
+  "validate": {
+    "commands": []
+  },
+  "destroy": {
+    "commands": []
+  },
+  "lifecycle": {
+    "support_until": "UNSET",
+    "upgrade_policy": "UNSET"
+  }
+}

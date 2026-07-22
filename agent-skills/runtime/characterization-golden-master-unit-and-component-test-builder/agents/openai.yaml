@@ -1,0 +1,4 @@
+interface:
+  display_name: "characterization-golden-master-unit-and-component-test-builder"
+  short_description: "Apply this Batch 18 quality workflow safely"
+  default_prompt: "Use $characterization-golden-master-unit-and-component-test-builder to implement this test-quality task with fail-closed evidence boundaries."

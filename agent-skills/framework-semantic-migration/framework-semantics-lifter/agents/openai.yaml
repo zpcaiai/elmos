@@ -1,0 +1,4 @@
+interface:
+  display_name: "framework-semantics-lifter"
+  short_description: "Plan and verify AFSM framework migration"
+  default_prompt: "Use $framework-semantics-lifter to perform this Batch 7 framework migration step."

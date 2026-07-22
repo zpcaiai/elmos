@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 542: tool permission and action policy enforcer"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $tool-permission-and-action-policy-enforcer to evaluate this capability with evidence."

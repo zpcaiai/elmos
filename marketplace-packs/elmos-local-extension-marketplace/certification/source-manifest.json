@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "skill_source_digest": "sha256:275b0bd61698d90cbde77f258a8cfc2560f85c4fbd438d16d8d983b5ca0c4f35",
+  "runtime_source_digest": "sha256:9cfa26e70b476bb9eae494a3af8b13e37a8a0401fce36a5d4f47d7987dc2e4f6",
+  "environment_digest": "sha256:a786a4208f28cd5f1a4351952879f9d0a4c7fb9b783684a733b173c6283f1e0c",
+  "java_version": "openjdk version \"21.0.11\" 2026-04-21",
+  "maven_version": "Apache Maven 3.9.11 (3e54c93a704957b63ee3494413a2b544fd3d825b)"
+}

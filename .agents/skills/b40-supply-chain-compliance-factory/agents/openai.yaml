@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 40: Supply Chain Compliance Factory"
+  short_description: "Run evidence-bound Batch 40 supply chain compliance factory work"
+  default_prompt: "Use $b40-supply-chain-compliance-factory to implement and verify this capability with fail-closed evidence."

@@ -1,0 +1,1 @@
+{"schemaVersion":"1.0","agreementId":"partner-a-orders","partnerId":"partner-a","protocol":"AS2","documentTypes":["X12_850"],"certificateRefs":["secret-ref://partner-a/current","secret-ref://partner-a/next"],"certificateOverlapWindow":true,"transportAckPolicy":"SIGNED_ASYNC_MDN","businessAckPolicy":"X12_997_THEN_BUSINESS_ACK","status":"TESTING"}

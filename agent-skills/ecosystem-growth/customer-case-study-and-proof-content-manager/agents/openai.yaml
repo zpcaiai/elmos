@@ -1,0 +1,5 @@
+interface:
+  display_name: "Customer Case Study And Proof Content Manager"
+  short_description: "Authoritative Batch 14 Skill 420 workflow"
+  default_prompt: "Use $customer-case-study-and-proof-content-manager to execute its evidence-bound Batch 14 workflow."
+

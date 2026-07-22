@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "command": "/opt/homebrew/bin/mvn -B -pl modules/advanced-verification -am test",
+  "exit_code": 0,
+  "totals": {
+    "tests": 14,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "suites": [
+    {
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "name": "io.elmos.verification.AdvancedVerificationTechniquesTest"
+    },
+    {
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "name": "io.elmos.verification.VerificationGovernanceTest"
+    }
+  ],
+  "stdout_tail": [
+    "[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.140 s -- in io.elmos.verification.AdvancedVerificationTechniquesTest",
+    "[INFO] Running io.elmos.verification.VerificationGovernanceTest",
+    "[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.034 s -- in io.elmos.verification.VerificationGovernanceTest",
+    "[INFO] ",
+    "[INFO] Results:",
+    "[INFO] ",
+    "[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0",
+    "[INFO] ",
+    "[INFO] ------------------------------------------------------------------------",
+    "[INFO] Reactor Summary for ELMOS 0.1.0-SNAPSHOT:",
+    "[INFO] ",
+    "[INFO] ELMOS .............................................. SUCCESS [  0.186 s]",
+    "[INFO] elmos-portfolio-scale .............................. SUCCESS [  0.995 s]",
+    "[INFO] elmos-advanced-verification ........................ SUCCESS [  0.678 s]",
+    "[INFO] ------------------------------------------------------------------------",
+    "[INFO] BUILD SUCCESS",
+    "[INFO] ------------------------------------------------------------------------",
+    "[INFO] Total time:  2.194 s",
+    "[INFO] Finished at: 2026-07-22T12:18:04+08:00",
+    "[INFO] ------------------------------------------------------------------------"
+  ],
+  "stderr_tail": [],
+  "environment": {
+    "maven_executable": "/opt/homebrew/bin/mvn",
+    "java_home": "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home",
+    "java_version": "openjdk version \"21.0.11\" 2026-04-21\nOpenJDK Runtime Environment Homebrew (build 21.0.11)\nOpenJDK 64-Bit Server VM Homebrew (build 21.0.11, mixed mode, sharing)",
+    "maven_version": "Apache Maven 3.9.10 (5f519b97e944483d878815739f519b2eade0a91d)\nMaven home: /opt/homebrew/Cellar/maven/3.9.10/libexec\nJava version: 21.0.11, vendor: Homebrew, runtime: /opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home\nDefault locale: en_US, platform encoding: UTF-8\nOS name: \"mac os x\", version: \"26.5.2\", arch: \"aarch64\", family: \"mac\"",
+    "platform": "darwin"
+  },
+  "environment_digest": "sha256:2d793667b581a70ad75b6956efdd710d49796d5a3c8c0ca16194622b23e21810"
+}

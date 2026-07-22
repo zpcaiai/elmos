@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 34 Skill 036"
+  short_description: "Run Product Batch 34 evidence contract safely"
+  default_prompt: "Use $machine-credential-secret-broker-rotation-revocation-an-00a3e9e4 to implement its fail-closed ELMOS Product Batch 34 contract."

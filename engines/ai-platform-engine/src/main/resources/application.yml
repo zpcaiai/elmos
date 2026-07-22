@@ -1,0 +1,10 @@
+server:
+  port: ${ELMOS_AI_PLATFORM_PORT:8097}
+spring:
+  application:
+    name: elmos-ai-platform-engine
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

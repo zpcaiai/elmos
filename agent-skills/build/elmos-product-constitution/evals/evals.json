@@ -1,0 +1,41 @@
+{
+  "skill_name": "elmos-product-constitution",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "An authenticated org-a operator sends a create-migration request whose JSON body says organizationId=org-b. A proposed repository query fetches MigrationRun by id without an organization predicate. Decide the implementation and evidence requirements.",
+      "expected_output": "Reject the body-derived tenant, derive org-a from the authenticated server context, require tenant-scoped persistence plus PostgreSQL RLS, and record a denied cross-tenant attempt without exposing org-b data.",
+      "files": [],
+      "expectations": [
+        "The decision rejects organizationId from the request body as a tenant authority.",
+        "The repository lookup is constrained by server-derived organization and backed by row-level security.",
+        "The cross-tenant attempt returns a non-enumerating denial and emits immutable audit evidence.",
+        "The output does not suggest disabling RLS or running customer work in the control plane."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "A private migration contains restricted source code. Its approved private model provider is unavailable, a public model is healthy, and the tenant has no remaining model budget. Decide routing, usage, secret, and workflow state.",
+      "expected_output": "Do not fail over to the public provider, do not issue a secret or charge for an invocation that did not start, and transition to a blocked or human-required state with evidence.",
+      "files": [],
+      "expectations": [
+        "Restricted code is not routed to the public provider even though it is healthy.",
+        "The budget failure and private-provider outage lead to BLOCKED or HUMAN_REQUIRED rather than success.",
+        "No provider secret is issued and no completed usage charge is posted for a call that never began.",
+        "The decision records policy, correlation, classification, provider status, and reason evidence."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "The same enterprise order event is delivered twice. One private Runner is fulfilled but another contracted capacity item is pending. Maven readiness is blocked, project progress is 85%, and the critical transaction gate failed. A customer asks to mark onboarding complete and the project green; CRM, payment, and accounting adapters are absent. Decide the commercial state and allowed side effects.",
+      "expected_output": "Handle the order idempotently as partial fulfillment, keep onboarding not ready and project red, preserve the failed critical gate, and expose external commercial side effects as not configured rather than claiming completion.",
+      "files": [],
+      "expectations": [
+        "The duplicate order event is idempotent and does not double-consume entitlement or allowance.",
+        "Partial private capacity fulfillment is not reported as complete.",
+        "Blocked Maven readiness prevents onboarding completion and the failed critical gate keeps the project RED despite 85% progress.",
+        "CRM, payment, tax, invoicing, revenue recognition, and accounting effects are not claimed as completed."
+      ]
+    }
+  ]
+}

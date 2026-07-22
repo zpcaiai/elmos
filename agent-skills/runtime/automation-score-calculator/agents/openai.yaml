@@ -1,0 +1,4 @@
+interface:
+  display_name: "Automation Score Calculator"
+  short_description: "Estimate deterministic automation potential"
+  default_prompt: "Use $automation-score-calculator for ELMOS Batch 4 automation scoring."

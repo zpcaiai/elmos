@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B38: Governance Records Retention Legal Hold Privilege And Disposition"
+  short_description: "Run ELMOS Product B38 contract with fail-closed evidence"
+  default_prompt: "Use $governance-records-retention-legal-hold-privilege-and-d-131f90e3 to implement its fail-closed ELMOS Product B38 contract."

@@ -1,0 +1,5 @@
+interface:
+  display_name: "Community Contribution And Reputation System"
+  short_description: "Authoritative Batch 14 Skill 433 workflow"
+  default_prompt: "Use $community-contribution-and-reputation-system to execute its evidence-bound Batch 14 workflow."
+

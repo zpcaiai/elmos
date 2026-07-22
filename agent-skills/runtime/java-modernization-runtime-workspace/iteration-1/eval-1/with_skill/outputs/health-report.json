@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "1.0",
+  "reportId": "health-b060bd2b37dfac6bda4682a4",
+  "snapshotId": "eval-snapshot",
+  "generatedAt": "2026-07-20T15:56:14.222107Z",
+  "buildSystem": "MAVEN",
+  "detectedJavaVersion": "8",
+  "springBootVersion": "2.7.18",
+  "springCloudVersion": null,
+  "modules": [
+    {
+      "path": ".",
+      "groupId": "com.acme",
+      "artifactId": "legacy-shop",
+      "version": "1.0.0",
+      "buildSystem": "MAVEN",
+      "declaredModules": []
+    }
+  ],
+  "dependencies": [
+    {"groupId": "org.springframework.boot", "artifactId": "spring-boot-starter-web", "version": null, "scope": "compile", "modulePath": ".", "direct": true},
+    {"groupId": "org.springframework.boot", "artifactId": "spring-boot-starter-data-jpa", "version": null, "scope": "compile", "modulePath": ".", "direct": true},
+    {"groupId": "org.junit.jupiter", "artifactId": "junit-jupiter", "version": null, "scope": "test", "modulePath": ".", "direct": true}
+  ],
+  "vulnerabilities": [],
+  "vulnerabilityEvidence": {
+    "status": "INCONCLUSIVE",
+    "provider": "NONE",
+    "observedAt": "2026-07-20T15:56:14.221307Z",
+    "databaseVersion": null,
+    "errorCode": "VULNERABILITY_PROVIDER_NOT_CONFIGURED"
+  },
+  "findings": [
+    {"code": "DYNAMIC_NATIVE_QUERY", "category": "DATABASE", "severity": "HIGH", "location": "src/main/java/com/acme/LegacyOrderService.java", "message": "Concatenated native query requires injection and compatibility review", "status": "FAIL", "attributes": {}},
+    {"code": "LEGACY_JAVAX_API", "category": "COMPATIBILITY", "severity": "HIGH", "location": "src/main/java/com/acme/LegacyOrderService.java", "message": "Jakarta namespace migration is required", "status": "FAIL", "attributes": {}},
+    {"code": "PRIVATE_TRANSACTIONAL_METHOD", "category": "TRANSACTION", "severity": "HIGH", "location": "src/main/java/com/acme/LegacyOrderService.java", "message": "Private transactional method may not be proxied", "status": "FAIL", "attributes": {}},
+    {"code": "TRANSITIVE_GRAPH_REQUIRES_BUILD_EVIDENCE", "category": "DEPENDENCY", "severity": "MEDIUM", "location": ".", "message": "Static scan contains declared dependencies; transitive resolution must be attached from an approved build", "status": "INCONCLUSIVE", "attributes": {"declaredDependencies": "3"}}
+  ],
+  "publicApis": [],
+  "testReadiness": {
+    "productionFiles": 1,
+    "testFiles": 1,
+    "junitDetected": true,
+    "integrationTestsDetected": false,
+    "coveragePluginDetected": false,
+    "testToProductionRatio": 1.0,
+    "status": "PASS"
+  },
+  "targetRecommendation": {
+    "javaVersion": 21,
+    "springBootLine": "3.x",
+    "rationale": "Java 21 is the default ELMOS modernization baseline; Java 17 or 25 requires an explicit organization compatibility profile",
+    "status": "PASS",
+    "assumptions": []
+  },
+  "healthScore": 61,
+  "overallRisk": "HIGH",
+  "status": "INCONCLUSIVE",
+  "evidenceDigests": [
+    "pom.xml:sha256:5e6e93a2236279f411ea5e32483305596ccb632edc8ea1595d221f398f399e67",
+    "src/main/java/com/acme/LegacyOrderService.java:sha256:1f2d90a65fe36d58cc27c50453cd4e7e6d74efe4b814a039422eb42c5638db92",
+    "src/test/java/com/acme/LegacyOrderServiceTest.java:sha256:51ddf0f19c4fba2dc76fc393c2dbbdd2a21ddca0ff19b5d57c526f69c76824c6"
+  ]
+}

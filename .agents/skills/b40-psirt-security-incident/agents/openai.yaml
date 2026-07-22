@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 40: Psirt Security Incident"
+  short_description: "Run evidence-bound Batch 40 psirt security incident work"
+  default_prompt: "Use $b40-psirt-security-incident to implement and verify this capability with fail-closed evidence."

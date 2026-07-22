@@ -1,0 +1,4 @@
+interface:
+  display_name: "workflow bpmn saga and process orchestration modernizer"
+  short_description: "Govern integration modernization safely"
+  default_prompt: "Use $workflow-bpmn-saga-and-process-orchestration-modernizer to modernize this integration scope safely."

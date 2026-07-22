@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 36: Offline Private Developer Workflow"
+  short_description: "Run evidence-bound Batch 36 offline private developer workflow w"
+  default_prompt: "Use $b36-offline-private-developer-workflow to implement and verify this capability with fail-closed evidence."

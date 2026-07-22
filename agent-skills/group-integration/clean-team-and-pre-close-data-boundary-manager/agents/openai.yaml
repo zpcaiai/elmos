@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 671: clean team and pre close data boundary manager"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $clean-team-and-pre-close-data-boundary-manager to evaluate this capability with evidence."

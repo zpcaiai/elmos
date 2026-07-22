@@ -1,0 +1,4 @@
+interface:
+  display_name: "Progressive Infrastructure Release And Environment Promotion"
+  short_description: "Govern Batch 16 infrastructure modernization"
+  default_prompt: "Use $progressive-infrastructure-release-and-environment-promotion to produce a governed infrastructure modernization artifact."

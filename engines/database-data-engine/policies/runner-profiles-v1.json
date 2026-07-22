@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "1.0",
+  "defaultNetwork": "DENY",
+  "credentialMode": "SHORT_LIVED_JOB_LEASE",
+  "discoveryPermissions": ["METADATA_READ", "CATALOG_READ", "PLAN_READ", "PERFORMANCE_VIEW_READ"],
+  "productionCapabilitiesRequiringApproval": ["DDL", "DML", "REPLICATION_ADMIN", "LOGGING_CHANGE", "CDC_START", "WRITER_CUTOVER"],
+  "profiles": [
+    { "name": "ORACLE", "status": "NOT_CONFIGURED" },
+    { "name": "SQL_SERVER", "status": "NOT_CONFIGURED" },
+    { "name": "MYSQL", "status": "NOT_CONFIGURED" },
+    { "name": "POSTGRESQL", "status": "NOT_CONFIGURED" },
+    { "name": "DATA_PLATFORM", "status": "NOT_CONFIGURED" },
+    { "name": "BI_VALIDATION", "status": "NOT_CONFIGURED" }
+  ]
+}

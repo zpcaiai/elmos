@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 37 marketplace-sre-incident-dr-operations"
+  short_description: "Run evidence-bound Batch 37 extension workflow"
+  default_prompt: "Use $b37-marketplace-sre-incident-dr-operations to implement and verify this exact extension ecosystem capability."

@@ -1,0 +1,16 @@
+BATCH36_PYTHON ?= /opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python
+
+.PHONY: batch36-check batch36-scaffold batch36-gate
+
+batch36-check:
+	$(BATCH36_PYTHON) scripts/mature_product_toolkit.py validate --batch 36
+	$(BATCH36_PYTHON) -m unittest discover -s tests/batch36 -p 'test_*.py'
+
+batch36-scaffold:
+	@test -n "$(PACK)" || (echo "PACK=<pack-key> required" && exit 2)
+	@test -n "$(OWNER)" || (echo "OWNER=<owner> required" && exit 2)
+	$(BATCH36_PYTHON) scripts/mature_product_toolkit.py scaffold --batch 36 --key $(PACK) --owner $(OWNER)
+
+batch36-gate:
+	@test -n "$(PACK)" || (echo "PACK=<pack-key> required" && exit 2)
+	$(BATCH36_PYTHON) scripts/mature_product_toolkit.py gate --batch 36 mature-product-packs/batch36/$(PACK)

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Python ELMOS Evidence"
+  short_description: "Map Python evidence into shared ELMOS contracts"
+  default_prompt: "Use $python-elmos-unified-evidence-integration to integrate this Python result."

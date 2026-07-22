@@ -1,0 +1,4 @@
+interface:
+  display_name: "Resumable Backfill Executor"
+  short_description: "Run this Batch 11 cutover capability"
+  default_prompt: "Use $resumable-backfill-executor to perform this Batch 11 production-cutover task."

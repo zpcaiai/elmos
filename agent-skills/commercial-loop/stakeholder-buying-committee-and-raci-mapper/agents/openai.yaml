@@ -1,0 +1,4 @@
+interface:
+  display_name: "stakeholder-buying-committee-and-raci-mapper"
+  short_description: "Run this Batch 13 commercial capability"
+  default_prompt: "Use $stakeholder-buying-committee-and-raci-mapper to evaluate this Batch 13 commercial capability with evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "runner-scheduler-lease-and-job-dispatcher"
+  short_description: "Run this Batch 12 enterprise capability"
+  default_prompt: "Use $runner-scheduler-lease-and-job-dispatcher to evaluate this enterprise platform capability with evidence."

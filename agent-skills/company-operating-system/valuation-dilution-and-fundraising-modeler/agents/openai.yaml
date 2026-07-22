@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 508: valuation dilution and fundraising modeler"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $valuation-dilution-and-fundraising-modeler to evaluate this capability with evidence."
