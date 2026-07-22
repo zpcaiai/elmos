@@ -42,7 +42,7 @@
   "distribution_tool_sha256": "fa543bf0ae578a30a9faff366ef0f5d96fd9252b733927c8eab81d96a6e39ca0",
   "installed_payload": {
     "files": 820,
-    "sha256": "99b37f1769fa1248b4eb1a72d10ecaf7296f78ff5b07aef9a2540e7af1128a09",
+    "sha256": "b368cd233f6f37551f262af4b198f7d492a5cd7417d342c32f5731693e374734",
     "digest_method": "SHA-256 over UTF-8 sorted repository-relative path, NUL, file SHA-256 hex, and newline, excluding this self-referential manifest",
     "skills": 248,
     "openai_yaml": 248,
