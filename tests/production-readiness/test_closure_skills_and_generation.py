@@ -52,10 +52,12 @@ class ClosureSkillsAndGenerationTests(unittest.TestCase):
         config = json.loads((ROOT / "vercel.json").read_text(encoding="utf-8"))
         self.assertEqual("nextjs", config["framework"])
         self.assertEqual("apps/web-console/.next", config["outputDirectory"])
-        self.assertEqual("pnpm --dir apps/web-console build", config["buildCommand"])
-        self.assertIn("pnpm@10.12.4", config["installCommand"])
-        self.assertIn(
-            "pnpm --dir apps/web-console install --frozen-lockfile",
+        self.assertEqual(
+            "npx --yes pnpm@10.12.4 --dir apps/web-console build",
+            config["buildCommand"],
+        )
+        self.assertEqual(
+            "npx --yes pnpm@10.12.4 --dir apps/web-console install --frozen-lockfile",
             config["installCommand"],
         )
 
