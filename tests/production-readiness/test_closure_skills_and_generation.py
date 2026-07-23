@@ -49,17 +49,14 @@ class ClosureSkillsAndGenerationTests(unittest.TestCase):
         self.assertNotIn("/opt/homebrew/bin/uv", makefile)
 
     def test_vercel_deploys_the_nested_nextjs_console_instead_of_an_empty_root(self) -> None:
-        config = json.loads((ROOT / "vercel.json").read_text(encoding="utf-8"))
+        app_root = ROOT / "apps" / "web-console"
+        config = json.loads((app_root / "vercel.json").read_text(encoding="utf-8"))
+        package = json.loads((app_root / "package.json").read_text(encoding="utf-8"))
         self.assertEqual("nextjs", config["framework"])
-        self.assertEqual("apps/web-console/.next", config["outputDirectory"])
-        self.assertEqual(
-            "npx --yes pnpm@10.12.4 --dir apps/web-console build",
-            config["buildCommand"],
-        )
-        self.assertEqual(
-            "npx --yes pnpm@10.12.4 --dir apps/web-console install --frozen-lockfile",
-            config["installCommand"],
-        )
+        self.assertEqual("@elmos/web-console", package["name"])
+        self.assertEqual("pnpm@10.12.4", package["packageManager"])
+        self.assertEqual("next build", package["scripts"]["build"])
+        self.assertFalse((ROOT / "vercel.json").exists())
 
     def test_skill_inventory_ui_matches_callable_repository_directories(self) -> None:
         catalog = (

@@ -29,7 +29,7 @@
 | 前端与 .NET 将解析器、路径或异常消息直接返回 | 客户端迁移、.NET 迁移、运维安全 | 所有公开响应使用稳定错误码和固定安全文案；底层异常仅能进入受控诊断证据 | TypeScript HTTP/引擎负向测试、.NET 路径泄漏测试、跨语言静态泄漏扫描 |
 | 项目生成计划刷新即丢失 | 多语言项目生成、Web 产品体验 | 本地创建、读取、恢复、删除闭环；恢复后重新锁定命令；损坏或超限数据被过滤 | Next.js 类型检查/生产构建和 production-readiness 源码契约测试 |
 | 新 Skill 分发未进入总生产就绪门禁且 Makefile 绑定 Homebrew 路径 | 产品商业化、CI/开发者体验 | 使用可覆盖的 `UV ?= uv`；总门禁与 CI 纳入 Batch 97-104 及 Product Closure/Convergence | production-readiness 测试检查依赖集合与平台无关命令 |
-| Vercel 从仓库根目录部署时未识别嵌套 Next.js 应用，生成空部署并返回边缘层 404 | Web 产品体验、运维部署 | 根目录 `vercel.json` 固定 Next.js 框架、pnpm 版本、嵌套安装/构建命令与 `.next` 输出目录；不增加重写或额外公开入口 | production-readiness 配置测试、Web 生产构建、推送后的 Vercel 部署与根路由验证 |
+| Vercel 从仓库根目录部署时未识别嵌套 Next.js 应用，生成空部署并返回边缘层 404 | Web 产品体验、运维部署 | Vercel 项目 Root Directory 精确设置为 `apps/web-console`，应用目录内声明 Next.js 框架并由锁定的 pnpm 版本安装/构建；不增加重写或额外公开入口 | production-readiness 配置测试、Web 生产构建、推送后的 Vercel 部署与根路由验证 |
 
 ## CI 业务线映射
 
