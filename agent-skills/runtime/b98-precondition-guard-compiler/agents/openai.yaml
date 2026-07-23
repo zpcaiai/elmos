@@ -1,0 +1,4 @@
+interface:
+  display_name: "B98 Precondition Guard Compiler"
+  short_description: "Run this ELMOS product-closure Skill safely"
+  default_prompt: "Use $b98-precondition-guard-compiler to execute this ELMOS product-closure Skill with fail-closed evidence."

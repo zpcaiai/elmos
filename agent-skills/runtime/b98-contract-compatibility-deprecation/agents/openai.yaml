@@ -1,0 +1,4 @@
+interface:
+  display_name: "B98 Contract Compatibility Deprecation"
+  short_description: "Run this ELMOS product-closure Skill safely"
+  default_prompt: "Use $b98-contract-compatibility-deprecation to execute this ELMOS product-closure Skill with fail-closed evidence."

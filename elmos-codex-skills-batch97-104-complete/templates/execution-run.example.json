@@ -1,0 +1,10 @@
+{
+  "schema_version": "elmos.execution-run.v1",
+  "run_id": "run-template-not-started",
+  "contract_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "scope": {"tenant": "template", "subject": "B98-S01", "environment": "not-run"},
+  "state": "planned",
+  "steps": [],
+  "budget": {"wall_seconds": 300, "max_attempts": 1},
+  "evidence_refs": []
+}

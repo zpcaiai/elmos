@@ -1,0 +1,33 @@
+{
+  "schema_version": "elmos.batch97-104-normalization.v1",
+  "source_package": "elmos-codex-skills-batch97-104-complete",
+  "source_version": "1.0.0",
+  "normalized_version": "1.0.1-repository.1",
+  "source_tree_sha256": "8c2f126d010a93c614c0822ede18b11eb4cf7d0ea8e8e69a027bd1949b11f3f5",
+  "repairs": [
+    {
+      "code": "DUPLICATE_OUTPUTS",
+      "affected_skills": 32,
+      "status": "repaired"
+    },
+    {
+      "code": "BLOCKING_DEPENDENCY_CYCLES",
+      "affected_skills": [
+        "B101-S16",
+        "B102-S15"
+      ],
+      "status": "repaired"
+    },
+    {
+      "code": "MISSING_CODEX_INTERFACES",
+      "affected_skills": 128,
+      "status": "repaired"
+    },
+    {
+      "code": "INCOMPLETE_FILE_INVENTORY",
+      "status": "repaired"
+    }
+  ],
+  "identity_policy": "batch-local-product-closure; global PG IDs remain unassigned",
+  "external_evidence_status": "NOT_RUN"
+}

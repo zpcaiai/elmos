@@ -1,0 +1,4 @@
+interface:
+  display_name: "B98 Contract Signing Provenance"
+  short_description: "Run this ELMOS product-closure Skill safely"
+  default_prompt: "Use $b98-contract-signing-provenance to execute this ELMOS product-closure Skill with fail-closed evidence."

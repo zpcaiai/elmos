@@ -9,6 +9,7 @@ import json
 import re
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlparse
 
 import yaml
 
@@ -38,7 +39,12 @@ DATABASE_SERVICES = (
     "apps/control-plane/src/main/resources",
     "apps/workspace-service/src/main/resources",
 )
+COMPOSE_FILE = "deploy/compose/docker-compose.yml"
+WEB_CONSOLE_SERVICE = "web-console"
+CONTROL_PLANE_SERVICE = "control-plane"
+CONTROL_PLANE_COMPOSE_URL = "http://control-plane:8080"
 PORT_PATTERN = re.compile(r"^\$\{[A-Z0-9_]+:(\d+)}$")
+EXCEPTION_MESSAGE_PATTERN = re.compile(r"\b(?:[A-Za-z_][A-Za-z0-9_]*\.)?getMessage\(\)")
 
 
 def _load_yaml(path: Path) -> dict[str, Any]:
@@ -113,6 +119,69 @@ def validate_prod_database_config(relative_root: str, config: dict[str, Any]) ->
     return errors
 
 
+def _service_environment(service: dict[str, Any]) -> dict[str, str]:
+    environment = service.get("environment", {})
+    if isinstance(environment, dict):
+        return {str(key): str(value) for key, value in environment.items()}
+    if isinstance(environment, list):
+        values: dict[str, str] = {}
+        for item in environment:
+            if isinstance(item, str) and "=" in item:
+                key, value = item.split("=", 1)
+                values[key] = value
+        return values
+    return {}
+
+
+def _service_dependencies(service: dict[str, Any]) -> set[str]:
+    dependencies = service.get("depends_on", [])
+    if isinstance(dependencies, dict):
+        return {str(name) for name in dependencies}
+    if isinstance(dependencies, list):
+        return {str(name) for name in dependencies}
+    return set()
+
+
+def validate_compose_web_routing(relative: str, compose: dict[str, Any]) -> list[str]:
+    errors: list[str] = []
+    services = compose.get("services")
+    if not isinstance(services, dict):
+        return [f"{relative}:services:OBJECT_REQUIRED"]
+    web = services.get(WEB_CONSOLE_SERVICE)
+    if not isinstance(web, dict):
+        return [f"{relative}:services.{WEB_CONSOLE_SERVICE}:SERVICE_REQUIRED"]
+
+    backend_url = _service_environment(web).get("CONTROL_PLANE_BASE_URL")
+    if backend_url != CONTROL_PLANE_COMPOSE_URL:
+        errors.append(
+            f"{relative}:services.{WEB_CONSOLE_SERVICE}.environment.CONTROL_PLANE_BASE_URL:"
+            f"expected={CONTROL_PLANE_COMPOSE_URL!r}:actual={backend_url!r}"
+        )
+    if backend_url:
+        parsed = urlparse(backend_url)
+        if parsed.hostname in {"localhost", "127.0.0.1", "::1"}:
+            errors.append(f"{relative}:services.{WEB_CONSOLE_SERVICE}:LOOPBACK_BACKEND_FORBIDDEN")
+        if parsed.hostname and parsed.hostname not in services:
+            errors.append(
+                f"{relative}:services.{WEB_CONSOLE_SERVICE}:UNKNOWN_BACKEND_SERVICE:{parsed.hostname}"
+            )
+    if CONTROL_PLANE_SERVICE not in services:
+        errors.append(f"{relative}:services.{CONTROL_PLANE_SERVICE}:SERVICE_REQUIRED")
+    if CONTROL_PLANE_SERVICE not in _service_dependencies(web):
+        errors.append(
+            f"{relative}:services.{WEB_CONSOLE_SERVICE}.depends_on:{CONTROL_PLANE_SERVICE}:REQUIRED"
+        )
+    return errors
+
+
+def validate_exception_handler_source(relative: str, source: str) -> list[str]:
+    if "@ExceptionHandler" not in source:
+        return []
+    if EXCEPTION_MESSAGE_PATTERN.search(source):
+        return [f"{relative}:EXPLICIT_EXCEPTION_MESSAGE_DISCLOSURE"]
+    return []
+
+
 def validate_repository(root: Path = ROOT) -> dict[str, Any]:
     errors: list[str] = []
     artifacts: list[dict[str, Any]] = []
@@ -145,18 +214,46 @@ def validate_repository(root: Path = ROOT) -> dict[str, Any]:
             continue
         artifacts.append(_artifact(prod_path, root))
         errors.extend(validate_prod_database_config(relative_root, _load_yaml(prod_path)))
+    compose_path = root / COMPOSE_FILE
+    compose_service_count = 0
+    compose_errors: list[str] = []
+    if not compose_path.is_file():
+        compose_errors.append(f"{COMPOSE_FILE}:COMPOSE_CONFIG_MISSING")
+    else:
+        artifacts.append(_artifact(compose_path, root))
+        compose = _load_yaml(compose_path)
+        services = compose.get("services")
+        compose_service_count = len(services) if isinstance(services, dict) else 0
+        compose_errors.extend(validate_compose_web_routing(COMPOSE_FILE, compose))
+    errors.extend(compose_errors)
+    handler_errors: list[str] = []
+    handler_file_count = 0
+    for source_root in (root / "apps", root / "engines"):
+        if not source_root.is_dir():
+            continue
+        for path in source_root.rglob("*.java"):
+            source = path.read_text(encoding="utf-8")
+            if "@ExceptionHandler" in source:
+                handler_file_count += 1
+            handler_errors.extend(
+                validate_exception_handler_source(path.relative_to(root).as_posix(), source)
+            )
+    errors.extend(handler_errors)
     return {
         "status": "PASS" if not errors else "FAIL",
         "service_count": len(SERVICE_CONFIGS),
         "database_service_count": len(DATABASE_SERVICES),
+        "compose_service_count": compose_service_count,
         "unique_application_names": len(names),
         "unique_default_ports": len(ports),
+        "explicit_exception_handler_files": handler_file_count,
         "checks": {
             "graceful_shutdown": True,
-            "safe_error_responses": True,
+            "safe_error_responses": not handler_errors,
             "liveness_readiness_probes": True,
             "externalized_shutdown_timeout": True,
             "production_database_fail_closed": True,
+            "web_control_plane_routing": not compose_errors,
         },
         "external_evidence_status": "NOT_RUN",
         "engineering_evidence_only": True,

@@ -1,0 +1,349 @@
+{
+  "batch": 101,
+  "title": "Three Golden Route Packs",
+  "subject": "deliver real Java, .NET and Python modernization routes from repository connection and baseline through deterministic transformation, constrained repair, verification, PR, rollback and route certification",
+  "skill_count": 16,
+  "local_id_range": [
+    "B101-S01",
+    "B101-S16"
+  ],
+  "global_id_policy": "unassigned-to-avoid-collision-with-existing-batch81-96; use scripts/remap_global_ids.py after resolving the installed global range",
+  "skills": [
+    {
+      "id": "B101-S01",
+      "global_id": null,
+      "batch": 101,
+      "name": "b101-golden-route-common-contract",
+      "title": "Golden Route Common Contract",
+      "purpose": "Define the common repository-to-PR lifecycle, evidence, state and rollback contract shared by Java, .NET and Python routes.",
+      "path": "agent-skills/runtime/b101-golden-route-common-contract/SKILL.md",
+      "catalog_path": "skills/batch-101/B101-S01-golden-route-common-contract.md",
+      "depends_on": [
+        "B100-S16",
+        "B97-S12",
+        "B98-S16",
+        "B99-S16"
+      ],
+      "outputs": [
+        "golden_route_contract.json",
+        "route_state_model.json",
+        "common_validation.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "7ededc79e2f34670506c0d22317d568a16434cacb44f2a33a441f23ca38a52e8"
+    },
+    {
+      "id": "B101-S02",
+      "global_id": null,
+      "batch": 101,
+      "name": "b101-java-route-discovery-baseline",
+      "title": "Java Route Discovery and Baseline",
+      "purpose": "Discover Maven and Gradle Java estates and reproduce a clean immutable baseline build and test profile.",
+      "path": "agent-skills/runtime/b101-java-route-discovery-baseline/SKILL.md",
+      "catalog_path": "skills/batch-101/B101-S02-java-route-discovery-baseline.md",
+      "depends_on": [
+        "B101-S01"
+      ],
+      "outputs": [
+        "java_route_profile.json",
+        "java_baseline_result.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "9cbd7a1c6925f3c81c906a1f600f1f9604a0ac32bdb84596bb728fa64160b0b4"
+    },
+    {
+      "id": "B101-S03",
+      "global_id": null,
+      "batch": 101,
+      "name": "b101-java8-21-modernization-recipe",
+      "title": "Java 8 to 21 Modernization Recipe",
+      "purpose": "Apply deterministic language, dependency, module and runtime upgrades with compatibility obligations.",
+      "path": "agent-skills/runtime/b101-java8-21-modernization-recipe/SKILL.md",
+      "catalog_path": "skills/batch-101/B101-S03-java8-21-modernization-recipe.md",
+      "depends_on": [
+        "B101-S02"
+      ],
+      "outputs": [
+        "java_upgrade_plan.json",
+        "java_patch_set/",
+        "compatibility_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "9728815f4833ac868ea3df979cd362093a3b6d89f104ac600e12d5f5cfcdabb5"
+    },
+    {
+      "id": "B101-S04",
+      "global_id": null,
+      "batch": 101,
+      "name": "b101-spring-boot-modernization-route",
+      "title": "Spring Boot Modernization Route",
+      "purpose": "Migrate Spring Boot, Security, Data, MVC/WebFlux, configuration and observability with endpoint-level fidelity.",
+      "path": "agent-skills/runtime/b101-spring-boot-modernization-route/SKILL.md",
+      "catalog_path": "skills/batch-101/B101-S04-spring-boot-modernization-route.md",
+      "depends_on": [
+        "B101-S03"
+      ],
+      "outputs": [
+        "spring_route_plan.json",
+        "spring_patch_set/",
+        "endpoint_mapping.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "aa719feea8d7d092ebc3c585c223c8d0031c69adf67eb1acc929ea2684bf3858"
+    },
+    {
+      "id": "B101-S05",
+      "global_id": null,
+      "batch": 101,
+      "name": "b101-java-data-messaging-scheduler-route",
+      "title": "Java Data Messaging and Scheduler Route",
+      "purpose": "Preserve JPA/JDBC transactions, schema, Kafka/JMS acknowledgment, cache and scheduler semantics.",
+      "path": "agent-skills/runtime/b101-java-data-messaging-scheduler-route/SKILL.md",
+      "catalog_path": "skills/batch-101/B101-S05-java-data-messaging-scheduler-route.md",
+      "depends_on": [
+        "B101-S04"
+      ],
+      "outputs": [
+        "java_runtime_semantics.json",
+        "differential_results.json",
+        "risk_register.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "89f2559d43b51ae6dbc4a8180d441a2ddb5d55e6216131692e8147c7ce82e7a8"
+    },
+    {
+      "id": "B101-S06",
+      "global_id": null,
+      "batch": 101,
+      "name": "b101-java-route-verification-pr",
+      "title": "Java Route Verification and PR",
+      "purpose": "Build, test, run differential journeys, generate an evidence-backed PR and prove rollback for the Java route.",
+      "path": "agent-skills/runtime/b101-java-route-verification-pr/SKILL.md",
+      "catalog_path": "skills/batch-101/B101-S06-java-route-verification-pr.md",
+      "depends_on": [
+        "B101-S05"
+      ],
+      "outputs": [
+        "java_route_result.json",
+        "pull_request_bundle/",
+        "rollback_result.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "8b5f5f9686a22f5d74d194b28877cb3ce81916df74228bba7674771ef9cb866a"
+    },
+    {
+      "id": "B101-S07",
+      "global_id": null,
+      "batch": 101,
+      "name": "b101-dotnet-route-discovery-baseline",
+      "title": ".NET Route Discovery and Baseline",
+      "purpose": "Discover solutions, projects, packages, frameworks, workloads and reproduce the source baseline.",
+      "path": "agent-skills/runtime/b101-dotnet-route-discovery-baseline/SKILL.md",
+      "catalog_path": "skills/batch-101/B101-S07-dotnet-route-discovery-baseline.md",
+      "depends_on": [
+        "B101-S06"
+      ],
+      "outputs": [
+        "dotnet_route_profile.json",
+        "dotnet_baseline_result.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "7ede688d26e8bfcee4013ddddbf636dba28251f1d44df455dc0e471df0e31bb1"
+    },
+    {
+      "id": "B101-S08",
+      "global_id": null,
+      "batch": 101,
+      "name": "b101-framework-to-modern-dotnet-route",
+      "title": ".NET Framework to Modern .NET Route",
+      "purpose": "Plan and implement staged migration from .NET Framework to supported modern .NET targets.",
+      "path": "agent-skills/runtime/b101-framework-to-modern-dotnet-route/SKILL.md",
+      "catalog_path": "skills/batch-101/B101-S08-framework-to-modern-dotnet-route.md",
+      "depends_on": [
+        "B101-S07"
+      ],
+      "outputs": [
+        "dotnet_upgrade_plan.json",
+        "dotnet_patch_set/",
+        "compatibility_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "f02e248d147f99bd6cb9b86298a9a70ff33c86e1d713b4f2478ef8e1fb1a5190"
+    },
+    {
+      "id": "B101-S09",
+      "global_id": null,
+      "batch": 101,
+      "name": "b101-aspnet-ef-wcf-modernization-route",
+      "title": "ASP.NET EF and WCF Modernization Route",
+      "purpose": "Modernize ASP.NET, authentication, middleware, Entity Framework and WCF boundaries with contract preservation.",
+      "path": "agent-skills/runtime/b101-aspnet-ef-wcf-modernization-route/SKILL.md",
+      "catalog_path": "skills/batch-101/B101-S09-aspnet-ef-wcf-modernization-route.md",
+      "depends_on": [
+        "B101-S08"
+      ],
+      "outputs": [
+        "dotnet_framework_mapping.json",
+        "dotnet_service_patch_set/",
+        "contract_results.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "3fa642ef4a5e544ae311d7d7238e1f37e729e13c8323a83bce86f16e887e8cae"
+    },
+    {
+      "id": "B101-S10",
+      "global_id": null,
+      "batch": 101,
+      "name": "b101-dotnet-route-verification-pr",
+      "title": ".NET Route Verification and PR",
+      "purpose": "Execute Windows/Linux-aware build, tests, runtime probes, differential journeys, PR and rollback evidence.",
+      "path": "agent-skills/runtime/b101-dotnet-route-verification-pr/SKILL.md",
+      "catalog_path": "skills/batch-101/B101-S10-dotnet-route-verification-pr.md",
+      "depends_on": [
+        "B101-S09"
+      ],
+      "outputs": [
+        "dotnet_route_result.json",
+        "pull_request_bundle/",
+        "rollback_result.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "49a9c45b01fb27619382b99787c21ddc348c18dd1506a17761391d9bfb95de51"
+    },
+    {
+      "id": "B101-S11",
+      "global_id": null,
+      "batch": 101,
+      "name": "b101-python-route-discovery-environment",
+      "title": "Python Route Discovery and Environment",
+      "purpose": "Discover Python versions, dependency managers, native extensions, notebooks, web apps, data and ML workloads and reproduce environments.",
+      "path": "agent-skills/runtime/b101-python-route-discovery-environment/SKILL.md",
+      "catalog_path": "skills/batch-101/B101-S11-python-route-discovery-environment.md",
+      "depends_on": [
+        "B101-S10"
+      ],
+      "outputs": [
+        "python_route_profile.json",
+        "python_environment_result.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "65cc7225f3a60029dda7d71ac0a0c0fae47ea32053c641fbc110a059e3068130"
+    },
+    {
+      "id": "B101-S12",
+      "global_id": null,
+      "batch": 101,
+      "name": "b101-python2-legacy-upgrade-route",
+      "title": "Python 2 and Legacy Upgrade Route",
+      "purpose": "Upgrade Python 2 or legacy Python code, packaging and syntax with semantic and encoding fidelity.",
+      "path": "agent-skills/runtime/b101-python2-legacy-upgrade-route/SKILL.md",
+      "catalog_path": "skills/batch-101/B101-S12-python2-legacy-upgrade-route.md",
+      "depends_on": [
+        "B101-S11"
+      ],
+      "outputs": [
+        "python_upgrade_plan.json",
+        "python_patch_set/",
+        "compatibility_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "641e6796681101658fbc946b21de85b606f14ba8b1dc0aa3953266f2c3309afe"
+    },
+    {
+      "id": "B101-S13",
+      "global_id": null,
+      "batch": 101,
+      "name": "b101-django-flask-modernization-route",
+      "title": "Django and Flask Modernization Route",
+      "purpose": "Modernize Django or Flask routing, middleware, auth, ORM, sessions, migrations and deployment behavior.",
+      "path": "agent-skills/runtime/b101-django-flask-modernization-route/SKILL.md",
+      "catalog_path": "skills/batch-101/B101-S13-django-flask-modernization-route.md",
+      "depends_on": [
+        "B101-S12"
+      ],
+      "outputs": [
+        "python_web_mapping.json",
+        "python_web_patch_set/",
+        "contract_results.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "c05b168df988338de78b1d8f53cbaf01c3b4f92e96e388158e43535e29bc3583"
+    },
+    {
+      "id": "B101-S14",
+      "global_id": null,
+      "batch": 101,
+      "name": "b101-python-data-ml-pipeline-route",
+      "title": "Python Data and ML Pipeline Route",
+      "purpose": "Modernize batch, notebook, orchestration, numerical and ML pipelines with data and model behavior evidence.",
+      "path": "agent-skills/runtime/b101-python-data-ml-pipeline-route/SKILL.md",
+      "catalog_path": "skills/batch-101/B101-S14-python-data-ml-pipeline-route.md",
+      "depends_on": [
+        "B101-S13"
+      ],
+      "outputs": [
+        "pipeline_mapping.json",
+        "numerical_results.json",
+        "model_validation.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "b3830733339484a98ad3c89be417de7a24c39d4d8eb72a5a5c729732631108c5"
+    },
+    {
+      "id": "B101-S15",
+      "global_id": null,
+      "batch": 101,
+      "name": "b101-python-route-verification-pr",
+      "title": "Python Route Verification and PR",
+      "purpose": "Run environment, test, web/data/ML journey, package, PR and rollback validation for the Python route.",
+      "path": "agent-skills/runtime/b101-python-route-verification-pr/SKILL.md",
+      "catalog_path": "skills/batch-101/B101-S15-python-route-verification-pr.md",
+      "depends_on": [
+        "B101-S14"
+      ],
+      "outputs": [
+        "python_route_result.json",
+        "pull_request_bundle/",
+        "rollback_result.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "f6400dc45f349b256a39e4a18d71518ee7372e01a87fee69fe12cfc4a3cff6c9"
+    },
+    {
+      "id": "B101-S16",
+      "global_id": null,
+      "batch": 101,
+      "name": "b101-golden-route-certification-gate",
+      "title": "Golden Route Certification Gate",
+      "purpose": "Certify Java, .NET and Python route packs against representative holdout repositories and exact evidence.",
+      "path": "agent-skills/runtime/b101-golden-route-certification-gate/SKILL.md",
+      "catalog_path": "skills/batch-101/B101-S16-golden-route-certification-gate.md",
+      "depends_on": [
+        "B101-S15"
+      ],
+      "outputs": [
+        "route_certification_result.json",
+        "route_support_matrix.json",
+        "completion_report.md",
+        "evidence_bundle.json"
+      ],
+      "sha256": "b69ed3def3dcc1a858845bba5c372a879960accff96823ebd6e1229be528d619"
+    }
+  ],
+  "version": "1.0.1-repository.1"
+}

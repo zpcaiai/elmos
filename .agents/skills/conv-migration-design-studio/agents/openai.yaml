@@ -1,0 +1,4 @@
+interface:
+  display_name: "Conv Migration Design Studio"
+  short_description: "Run this ELMOS product-convergence Skill with evidence"
+  default_prompt: "Use $conv-migration-design-studio to execute this ELMOS product-convergence Skill with fail-closed evidence."

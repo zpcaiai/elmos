@@ -1,0 +1,4 @@
+interface:
+  display_name: "Product Scope Core Domain Pack Governance"
+  short_description: "Run this ELMOS product-closure Skill with evidence"
+  default_prompt: "Use $product-scope-core-domain-pack-governance to execute this ELMOS product-closure Skill with fail-closed evidence."

@@ -137,6 +137,8 @@ services:
     ports: ["8085:8085"]
   web-console:
     build: ../../apps/web-console
+    environment:
+      CONTROL_PLANE_BASE_URL: http://control-plane:8080
     ports: ["3000:3000"]
     depends_on: [control-plane]
 volumes:

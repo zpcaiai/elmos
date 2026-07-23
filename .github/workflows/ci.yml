@@ -30,6 +30,61 @@ jobs:
       - name: Verify Maven reactor
         run: mvn -B -ntp verify
 
+  dotnet-engine:
+    name: .NET Engine
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - name: Set up .NET 10
+        uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5.4.0
+        with:
+          dotnet-version: "10.0.x"
+          cache: true
+          cache-dependency-path: engines/dotnet-engine/**/packages.lock.json
+      - name: Restore locked dependencies
+        run: dotnet restore engines/dotnet-engine/Elmos.Dotnet.slnx --locked-mode
+      - name: Test .NET Engine
+        run: dotnet test engines/dotnet-engine/Elmos.Dotnet.slnx --configuration Release --no-restore
+
+  python-engine:
+    name: Python Engine
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - name: Set up Python 3.14
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.14"
+      - name: Install locked uv tool
+        run: python -m pip install --disable-pip-version-check uv==0.11.16
+      - name: Test and type-check Python Engine
+        run: |
+          uv --directory engines/python-engine run --locked pytest
+          uv --directory engines/python-engine run --locked ruff check src tests
+          uv --directory engines/python-engine run --locked mypy src
+
+  frontend-client-engine:
+    name: Frontend Client Engine
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - name: Set up Node.js 24
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: "24"
+      - name: Install locked pnpm tool
+        run: npm install --global pnpm@10.12.4
+      - name: Install locked dependencies
+        run: pnpm --dir engines/frontend-client-engine install --frozen-lockfile
+      - name: Test Frontend Client Engine
+        run: pnpm --dir engines/frontend-client-engine check
+
   project-synthesis:
     name: Project Synthesis and operability
     runs-on: ubuntu-24.04
@@ -58,6 +113,8 @@ jobs:
         run: |
           uv run --with 'jsonschema>=4.23' --with pyyaml python scripts/mature_product_toolkit.py validate --batch 45
           uv run --with 'jsonschema>=4.23' --with pyyaml python -m unittest discover -s tests/batch45 -p 'test_*.py'
+      - name: Verify Batch 97-104 Skill distribution
+        run: make batch97-104-skills
 
   web-console:
     name: Web Console

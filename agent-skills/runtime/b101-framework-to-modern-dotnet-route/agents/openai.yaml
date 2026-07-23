@@ -1,0 +1,4 @@
+interface:
+  display_name: "B101 Framework to Modern Dotnet Route"
+  short_description: "Run this ELMOS product-closure Skill safely"
+  default_prompt: "Use $b101-framework-to-modern-dotnet-route to execute this ELMOS product-closure Skill with fail-closed evidence."

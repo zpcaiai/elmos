@@ -26,5 +26,5 @@ final class HealthPlanningController {
         return planner.plan(report, PlanningModels.OrganizationPolicy.defaults());
     }
     @ExceptionHandler({IllegalArgumentException.class, SecurityException.class}) @ResponseStatus(HttpStatus.BAD_REQUEST)
-    Map<String,Object> badRequest(RuntimeException error) { return Map.of("errorCode", "ENGINE_INPUT_REJECTED", "message", error.getMessage(), "retryable", false); }
+    Map<String,Object> badRequest(RuntimeException error) { return Map.of("errorCode", "ENGINE_INPUT_REJECTED", "message", "The health planning request was rejected by its contract.", "retryable", false); }
 }

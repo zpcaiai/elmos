@@ -1,0 +1,4 @@
+interface:
+  display_name: "Conv Java Spring Csharp Reference Route"
+  short_description: "Run this ELMOS product-convergence Skill with evidence"
+  default_prompt: "Use $conv-java-spring-csharp-reference-route to execute this ELMOS product-convergence Skill with fail-closed evidence."

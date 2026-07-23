@@ -1,0 +1,4 @@
+interface:
+  display_name: "B102 Golden Master Capture"
+  short_description: "Run this ELMOS product-closure Skill safely"
+  default_prompt: "Use $b102-golden-master-capture to execute this ELMOS product-closure Skill with fail-closed evidence."

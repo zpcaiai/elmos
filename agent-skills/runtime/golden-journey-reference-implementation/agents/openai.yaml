@@ -1,0 +1,4 @@
+interface:
+  display_name: "Golden Journey Reference Implementation"
+  short_description: "Run this ELMOS product-closure Skill with evidence"
+  default_prompt: "Use $golden-journey-reference-implementation to execute this ELMOS product-closure Skill with fail-closed evidence."

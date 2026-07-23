@@ -36,7 +36,7 @@ public final class EnterpriseIntegrationController {
 
     @ExceptionHandler(IllegalArgumentException.class) @ResponseStatus(HttpStatus.BAD_REQUEST)
     Map<String, Object> badRequest(IllegalArgumentException error) {
-        return Map.of("errorCode", "INTEGRATION_REQUEST_REJECTED", "message", error.getMessage(), "retryable", false);
+        return Map.of("errorCode", "INTEGRATION_REQUEST_REJECTED", "message", "The enterprise integration request was rejected by its contract.", "retryable", false);
     }
 
     public record Capabilities(String engine, String workerApi, boolean executesIntegrationChanges,

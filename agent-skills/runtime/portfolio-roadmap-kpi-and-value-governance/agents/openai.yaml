@@ -1,0 +1,4 @@
+interface:
+  display_name: "Portfolio Roadmap Kpi and Value Governance"
+  short_description: "Run this ELMOS product-closure Skill with evidence"
+  default_prompt: "Use $portfolio-roadmap-kpi-and-value-governance to execute this ELMOS product-closure Skill with fail-closed evidence."

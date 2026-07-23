@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/execution-run-v1",
+  "type": "object",
+  "required": ["schema_version", "run_id", "contract_hash", "scope", "state", "steps", "budget", "evidence_refs"],
+  "properties": {
+    "schema_version": {"const": "elmos.execution-run.v1"},
+    "run_id": {"type": "string", "minLength": 1},
+    "contract_hash": {"$ref": "#/$defs/digest"},
+    "scope": {
+      "type": "object",
+      "required": ["tenant", "subject", "environment"],
+      "properties": {
+        "tenant": {"type": "string", "minLength": 1},
+        "subject": {"type": "string", "minLength": 1},
+        "environment": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "state": {"enum": ["planned", "queued", "running", "paused", "cancelling", "cancelled", "failed", "blocked", "completed"]},
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "state"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "state": {"enum": ["planned", "running", "completed", "failed", "blocked", "cancelled"]},
+          "evidence_refs": {"$ref": "#/$defs/digest_array"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "budget": {
+      "type": "object",
+      "required": ["wall_seconds"],
+      "properties": {
+        "wall_seconds": {"type": "integer", "minimum": 1},
+        "max_attempts": {"type": "integer", "minimum": 1}
+      },
+      "additionalProperties": false
+    },
+    "evidence_refs": {"$ref": "#/$defs/digest_array"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"state": {"const": "completed"}}, "required": ["state"]},
+      "then": {"properties": {"steps": {"minItems": 1}, "evidence_refs": {"minItems": 1}}}
+    }
+  ],
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "digest_array": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/digest"}}
+  },
+  "additionalProperties": false
+}

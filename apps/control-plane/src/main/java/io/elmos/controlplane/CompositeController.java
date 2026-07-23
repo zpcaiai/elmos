@@ -42,7 +42,7 @@ public final class CompositeController {
     @ExceptionHandler({IllegalArgumentException.class, IllegalStateException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     Map<String, Object> badRequest(RuntimeException error) {
-        return Map.of("errorCode", "COMPOSITE_REQUEST_REJECTED", "message", error.getMessage(),
+        return Map.of("errorCode", "COMPOSITE_REQUEST_REJECTED", "message", "The composite modernization request was rejected by its contract.",
                 "retryable", false);
     }
 }

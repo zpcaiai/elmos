@@ -1,0 +1,13 @@
+{
+  "schema_version": "elmos.semantic-equivalence-result.v1",
+  "scope": {
+    "route": "java",
+    "source_snapshot": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "target_snapshot": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "oracle_refs": [],
+  "comparisons": [],
+  "differences": [],
+  "state": "not_run",
+  "evidence_refs": []
+}

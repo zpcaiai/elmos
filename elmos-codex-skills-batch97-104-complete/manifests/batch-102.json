@@ -1,0 +1,347 @@
+{
+  "batch": 102,
+  "title": "Semantic Equivalence Lab Pack",
+  "subject": "prove modernization and generation correctness using oracle governance, characterization, golden masters, differential execution, contracts, invariants, concurrency, performance, security, property testing, human review and evidence freshness",
+  "skill_count": 16,
+  "local_id_range": [
+    "B102-S01",
+    "B102-S16"
+  ],
+  "global_id_policy": "unassigned-to-avoid-collision-with-existing-batch81-96; use scripts/remap_global_ids.py after resolving the installed global range",
+  "skills": [
+    {
+      "id": "B102-S01",
+      "global_id": null,
+      "batch": 102,
+      "name": "b102-oracle-registry-governance",
+      "title": "Oracle Registry and Governance",
+      "purpose": "Register authoritative, supporting and prohibited oracle types with ownership and confidence.",
+      "path": "agent-skills/runtime/b102-oracle-registry-governance/SKILL.md",
+      "catalog_path": "skills/batch-102/B102-S01-oracle-registry-governance.md",
+      "depends_on": [
+        "B101-S16"
+      ],
+      "outputs": [
+        "oracle_registry.json",
+        "oracle_policy.json",
+        "oracle_validation.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "9edaff6ce3af3e66c0279b111dd4b76008c6fb005ed87f8f3d617029b3f110b1"
+    },
+    {
+      "id": "B102-S02",
+      "global_id": null,
+      "batch": 102,
+      "name": "b102-characterization-test-miner",
+      "title": "Characterization Test Miner",
+      "purpose": "Mine observed source behavior into stable tests without freezing known defects uncritically.",
+      "path": "agent-skills/runtime/b102-characterization-test-miner/SKILL.md",
+      "catalog_path": "skills/batch-102/B102-S02-characterization-test-miner.md",
+      "depends_on": [
+        "B102-S01"
+      ],
+      "outputs": [
+        "characterization_tests/",
+        "behavior_inventory.json",
+        "mining_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "7d87442e74e551c20ae12ffbab17a0500f40112b4bf26f770650c035742bd0d8"
+    },
+    {
+      "id": "B102-S03",
+      "global_id": null,
+      "batch": 102,
+      "name": "b102-golden-master-capture",
+      "title": "Golden Master Capture",
+      "purpose": "Capture canonical outputs, state transitions and side effects with normalization and approval.",
+      "path": "agent-skills/runtime/b102-golden-master-capture/SKILL.md",
+      "catalog_path": "skills/batch-102/B102-S03-golden-master-capture.md",
+      "depends_on": [
+        "B102-S02"
+      ],
+      "outputs": [
+        "golden_masters/",
+        "normalization_rules.json",
+        "capture_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "b2ba0c3f540276b634022478fab628fe44555ef16b86efea6be0bcdad163cbc7"
+    },
+    {
+      "id": "B102-S04",
+      "global_id": null,
+      "batch": 102,
+      "name": "b102-differential-execution-harness",
+      "title": "Differential Execution Harness",
+      "purpose": "Run source and target against identical inputs, environments and controlled dependencies and compare observations.",
+      "path": "agent-skills/runtime/b102-differential-execution-harness/SKILL.md",
+      "catalog_path": "skills/batch-102/B102-S04-differential-execution-harness.md",
+      "depends_on": [
+        "B102-S03",
+        "B99-S08",
+        "B100-S12"
+      ],
+      "outputs": [
+        "differential_results.json",
+        "execution_traces/",
+        "difference_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "181be46a0dde5a16f18f9ad04b58b6d45adb3577a60ac4b67128c506fa29b72d"
+    },
+    {
+      "id": "B102-S05",
+      "global_id": null,
+      "batch": 102,
+      "name": "b102-api-contract-equivalence",
+      "title": "API Contract Equivalence",
+      "purpose": "Compare routes, methods, auth, validation, error models, schemas, ordering, pagination and compatibility.",
+      "path": "agent-skills/runtime/b102-api-contract-equivalence/SKILL.md",
+      "catalog_path": "skills/batch-102/B102-S05-api-contract-equivalence.md",
+      "depends_on": [
+        "B102-S04"
+      ],
+      "outputs": [
+        "api_equivalence.json",
+        "contract_diff.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "8b5939f33668189eb420ed253a391228e12c3b8024fa7ec43622fbc86b19089a"
+    },
+    {
+      "id": "B102-S06",
+      "global_id": null,
+      "batch": 102,
+      "name": "b102-data-query-equivalence",
+      "title": "Data and Query Equivalence",
+      "purpose": "Compare schema, constraints, data transformations, query results, ordering, precision and null semantics.",
+      "path": "agent-skills/runtime/b102-data-query-equivalence/SKILL.md",
+      "catalog_path": "skills/batch-102/B102-S06-data-query-equivalence.md",
+      "depends_on": [
+        "B102-S05"
+      ],
+      "outputs": [
+        "data_equivalence.json",
+        "query_diff.json",
+        "reconciliation_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "11dc90b182552969eb7131bf8a68b3aa56f6f2490d2c57ad7a19ae1fa4c6df4d"
+    },
+    {
+      "id": "B102-S07",
+      "global_id": null,
+      "batch": 102,
+      "name": "b102-business-invariant-engine",
+      "title": "Business Invariant Engine",
+      "purpose": "Define and evaluate business invariants across state, balance, inventory, permissions, audit and reporting.",
+      "path": "agent-skills/runtime/b102-business-invariant-engine/SKILL.md",
+      "catalog_path": "skills/batch-102/B102-S07-business-invariant-engine.md",
+      "depends_on": [
+        "B102-S06"
+      ],
+      "outputs": [
+        "business_invariants.json",
+        "invariant_results.json",
+        "coverage_map.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "048fd5af4223ddb9fd93cf20c83e7346b80258f17af2b51de743f2775161a307"
+    },
+    {
+      "id": "B102-S08",
+      "global_id": null,
+      "batch": 102,
+      "name": "b102-messaging-idempotency-equivalence",
+      "title": "Messaging and Idempotency Equivalence",
+      "purpose": "Compare delivery, acknowledgment, retry, ordering, deduplication and side-effect idempotency.",
+      "path": "agent-skills/runtime/b102-messaging-idempotency-equivalence/SKILL.md",
+      "catalog_path": "skills/batch-102/B102-S08-messaging-idempotency-equivalence.md",
+      "depends_on": [
+        "B102-S07"
+      ],
+      "outputs": [
+        "messaging_equivalence.json",
+        "duplicate_delivery_results.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "c664f39643f584e4c8a32fe569cd9942c85665082624a927fe3e803a1fe05f18"
+    },
+    {
+      "id": "B102-S09",
+      "global_id": null,
+      "batch": 102,
+      "name": "b102-transaction-concurrency-equivalence",
+      "title": "Transaction and Concurrency Equivalence",
+      "purpose": "Compare transaction boundaries, isolation, locking, deadlocks, retries and race-sensitive outcomes.",
+      "path": "agent-skills/runtime/b102-transaction-concurrency-equivalence/SKILL.md",
+      "catalog_path": "skills/batch-102/B102-S09-transaction-concurrency-equivalence.md",
+      "depends_on": [
+        "B102-S08"
+      ],
+      "outputs": [
+        "transaction_equivalence.json",
+        "concurrency_results.json",
+        "deadlock_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "613e29b5c003d52defd3063ffb66a6a720a5855e204db5f04718089579eaf7dd"
+    },
+    {
+      "id": "B102-S10",
+      "global_id": null,
+      "batch": 102,
+      "name": "b102-time-randomness-environment-control",
+      "title": "Time Randomness and Environment Control",
+      "purpose": "Control clocks, time zones, random seeds, locale, ports and environment-dependent behavior.",
+      "path": "agent-skills/runtime/b102-time-randomness-environment-control/SKILL.md",
+      "catalog_path": "skills/batch-102/B102-S10-time-randomness-environment-control.md",
+      "depends_on": [
+        "B102-S09"
+      ],
+      "outputs": [
+        "environment_control.json",
+        "repeatability_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "38f388e12b359030a592cab4fa541bd1bbb7cb070d872020263fba16921e15b8"
+    },
+    {
+      "id": "B102-S11",
+      "global_id": null,
+      "batch": 102,
+      "name": "b102-performance-resource-equivalence",
+      "title": "Performance and Resource Equivalence",
+      "purpose": "Compare latency, throughput, memory, CPU, allocation, artifact size and capacity under representative workloads.",
+      "path": "agent-skills/runtime/b102-performance-resource-equivalence/SKILL.md",
+      "catalog_path": "skills/batch-102/B102-S11-performance-resource-equivalence.md",
+      "depends_on": [
+        "B102-S10"
+      ],
+      "outputs": [
+        "performance_equivalence.json",
+        "benchmark_results.json",
+        "budget_findings.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "fc39cca33adb37478d82c98b3d47195af33a9dde97df6de6968d41d0e3898f10"
+    },
+    {
+      "id": "B102-S12",
+      "global_id": null,
+      "batch": 102,
+      "name": "b102-security-behavior-equivalence",
+      "title": "Security Behavior Equivalence",
+      "purpose": "Compare identity, authentication, authorization, tenant isolation, validation, secrets and audit behavior.",
+      "path": "agent-skills/runtime/b102-security-behavior-equivalence/SKILL.md",
+      "catalog_path": "skills/batch-102/B102-S12-security-behavior-equivalence.md",
+      "depends_on": [
+        "B102-S11"
+      ],
+      "outputs": [
+        "security_equivalence.json",
+        "attack_results.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "bbc970cbacc0ae9e74ee1977c8d030f0c78e1749730aae5c1ae7b6ac053a123c"
+    },
+    {
+      "id": "B102-S13",
+      "global_id": null,
+      "batch": 102,
+      "name": "b102-metamorphic-property-testing",
+      "title": "Metamorphic and Property Testing",
+      "purpose": "Generate properties and transformations that reveal defects beyond example-based tests.",
+      "path": "agent-skills/runtime/b102-metamorphic-property-testing/SKILL.md",
+      "catalog_path": "skills/batch-102/B102-S13-metamorphic-property-testing.md",
+      "depends_on": [
+        "B102-S12"
+      ],
+      "outputs": [
+        "property_catalog.json",
+        "property_results.json",
+        "counterexamples/",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "e568168834d63963c8d5b9836d469c5838ebb780bcb8913c57a32e78b70ccefa"
+    },
+    {
+      "id": "B102-S14",
+      "global_id": null,
+      "batch": 102,
+      "name": "b102-human-oracle-approval",
+      "title": "Human Oracle and Approval",
+      "purpose": "Capture expert judgments for irreducible semantics with exact scope, evidence and separation of duties.",
+      "path": "agent-skills/runtime/b102-human-oracle-approval/SKILL.md",
+      "catalog_path": "skills/batch-102/B102-S14-human-oracle-approval.md",
+      "depends_on": [
+        "B102-S13"
+      ],
+      "outputs": [
+        "human_oracle_decision.json",
+        "review_packet/",
+        "approval_audit.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "d565409b509428f288e844b6948289da08436ad3c1bfccd9db3a6a9861226f98"
+    },
+    {
+      "id": "B102-S15",
+      "global_id": null,
+      "batch": 102,
+      "name": "b102-equivalence-evidence-freshness",
+      "title": "Equivalence Evidence Freshness",
+      "purpose": "Invalidate equivalence results when code, tests, data, environment, dependency, tool or policy changes.",
+      "path": "agent-skills/runtime/b102-equivalence-evidence-freshness/SKILL.md",
+      "catalog_path": "skills/batch-102/B102-S15-equivalence-evidence-freshness.md",
+      "depends_on": [
+        "B102-S14"
+      ],
+      "outputs": [
+        "freshness_graph.json",
+        "invalidated_results.json",
+        "retest_plan.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "e54b9d93f74487e8a549ec6a25fc13efe15c91a89d8df079e9acccbc142fea1a"
+    },
+    {
+      "id": "B102-S16",
+      "global_id": null,
+      "batch": 102,
+      "name": "b102-semantic-equivalence-certification-gate",
+      "title": "Semantic Equivalence Certification Gate",
+      "purpose": "Certify exact route and journey scopes only when authoritative oracles, representative tests and fresh evidence agree.",
+      "path": "agent-skills/runtime/b102-semantic-equivalence-certification-gate/SKILL.md",
+      "catalog_path": "skills/batch-102/B102-S16-semantic-equivalence-certification-gate.md",
+      "depends_on": [
+        "B102-S15"
+      ],
+      "outputs": [
+        "equivalence_certification_result.json",
+        "accepted_differences.json",
+        "completion_report.md",
+        "evidence_bundle.json"
+      ],
+      "sha256": "8546c9dc267c088443eddb94eb2130c200bd7928453052cd35560f469c0375aa"
+    }
+  ],
+  "version": "1.0.1-repository.1"
+}

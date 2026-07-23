@@ -22,5 +22,5 @@ public final class OperationsSreItsmEngineController {
     @PostMapping("/validate") @ResponseStatus(HttpStatus.ACCEPTED) public JobResponse validate(@Valid @RequestBody JobRequest request) { return engine.evaluate("validate", request); }
     @GetMapping("/jobs/{jobId}") public JobResponse job(@RequestParam String organizationId, @PathVariable String jobId) { return engine.job(organizationId, jobId); }
     @PostMapping("/jobs/{jobId}/cancel") public JobResponse cancel(@RequestParam String organizationId, @PathVariable String jobId) { return engine.cancel(organizationId, jobId); }
-    @ExceptionHandler(IllegalArgumentException.class) @ResponseStatus(HttpStatus.BAD_REQUEST) Map<String,Object> badRequest(IllegalArgumentException e) { return Map.of("errorCode", "OPERATIONS_REQUEST_REJECTED", "message", e.getMessage(), "retryable", false); }
+    @ExceptionHandler(IllegalArgumentException.class) @ResponseStatus(HttpStatus.BAD_REQUEST) Map<String,Object> badRequest(IllegalArgumentException e) { return Map.of("errorCode", "OPERATIONS_REQUEST_REJECTED", "message", "The operations engine request was rejected by its contract.", "retryable", false); }
 }

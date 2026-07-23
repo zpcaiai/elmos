@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "skills"
+  ],
+  "properties": {
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "skill_id",
+          "name",
+          "version",
+          "layer",
+          "owner",
+          "path"
+        ],
+        "properties": {
+          "skill_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "layer": {
+            "enum": [
+              "meta",
+              "orchestrator",
+              "implementation",
+              "test",
+              "operations"
+            ]
+          },
+          "owner": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "prerequisites": {
+            "type": "array"
+          },
+          "allowed_tools": {
+            "type": "array"
+          },
+          "deprecated_by": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "capabilities"
+  ],
+  "properties": {
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "capability_id",
+          "type",
+          "version",
+          "status",
+          "owner"
+        ],
+        "properties": {
+          "capability_id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "certified",
+              "supported",
+              "conditional",
+              "experimental",
+              "detected-only",
+              "blocked",
+              "deprecated"
+            ]
+          },
+          "owner": {
+            "type": "string"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "constraints": {
+            "type": "array"
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

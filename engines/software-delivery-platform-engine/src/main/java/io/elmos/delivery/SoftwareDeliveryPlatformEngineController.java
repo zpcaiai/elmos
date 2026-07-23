@@ -21,5 +21,5 @@ public final class SoftwareDeliveryPlatformEngineController {
     @PostMapping("/self-service") @ResponseStatus(HttpStatus.ACCEPTED) public JobResponse selfService(@Valid @RequestBody ExecuteStepRequest request) { return engine.execute("self-service", request); }
     @GetMapping("/jobs/{jobId}") public JobResponse job(@RequestParam String organizationId, @PathVariable String jobId) { return engine.job(organizationId, jobId); }
     @PostMapping("/jobs/{jobId}/cancel") public JobResponse cancel(@RequestParam String organizationId, @PathVariable String jobId) { return engine.cancel(organizationId, jobId); }
-    @ExceptionHandler(IllegalArgumentException.class) @ResponseStatus(HttpStatus.BAD_REQUEST) Map<String,Object> badRequest(IllegalArgumentException e) { return Map.of("errorCode", "PLATFORM_REQUEST_REJECTED", "message", e.getMessage(), "retryable", false); }
+    @ExceptionHandler(IllegalArgumentException.class) @ResponseStatus(HttpStatus.BAD_REQUEST) Map<String,Object> badRequest(IllegalArgumentException e) { return Map.of("errorCode", "PLATFORM_REQUEST_REJECTED", "message", "The software delivery request was rejected by its contract.", "retryable", false); }
 }

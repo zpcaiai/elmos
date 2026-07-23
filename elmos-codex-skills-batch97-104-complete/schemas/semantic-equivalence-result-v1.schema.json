@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/semantic-equivalence-result-v1",
+  "type": "object",
+  "required": ["schema_version", "scope", "oracle_refs", "comparisons", "differences", "state", "evidence_refs"],
+  "properties": {
+    "schema_version": {"const": "elmos.semantic-equivalence-result.v1"},
+    "scope": {
+      "type": "object",
+      "required": ["route", "source_snapshot", "target_snapshot"],
+      "properties": {
+        "route": {"enum": ["java", "dotnet", "python"]},
+        "source_snapshot": {"$ref": "#/$defs/digest"},
+        "target_snapshot": {"$ref": "#/$defs/digest"}
+      },
+      "additionalProperties": false
+    },
+    "oracle_refs": {"$ref": "#/$defs/digest_array"},
+    "comparisons": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "result", "evidence_refs"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "result": {"enum": ["equivalent", "different", "inconclusive", "not_run"]},
+          "evidence_refs": {"$ref": "#/$defs/digest_array"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "differences": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "state": {"enum": ["not_run", "failed", "blocked", "conditional", "passed"]},
+    "evidence_refs": {"$ref": "#/$defs/digest_array"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"state": {"const": "passed"}}, "required": ["state"]},
+      "then": {
+        "properties": {
+          "oracle_refs": {"minItems": 1},
+          "comparisons": {"minItems": 1},
+          "differences": {"maxItems": 0},
+          "evidence_refs": {"minItems": 1}
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "digest_array": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/digest"}}
+  },
+  "additionalProperties": false
+}

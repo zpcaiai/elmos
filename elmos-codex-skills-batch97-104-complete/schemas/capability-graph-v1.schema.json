@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/capability-graph-v1",
+  "type": "object",
+  "required": ["schema_version", "snapshot_id", "generated_at", "nodes", "edges"],
+  "properties": {
+    "schema_version": {"const": "elmos.capability-graph.v1"},
+    "snapshot_id": {"$ref": "#/$defs/digest"},
+    "generated_at": {"type": "string", "format": "date-time"},
+    "nodes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "type", "name", "version", "provenance"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "type": {"enum": ["capability", "skill", "tool", "runtime", "artifact", "test", "evidence", "policy", "route", "domain"]},
+          "name": {"type": "string", "minLength": 1},
+          "version": {"type": "string", "minLength": 1},
+          "provenance": {
+            "type": "object",
+            "required": ["source", "source_digest"],
+            "properties": {
+              "source": {"type": "string", "minLength": 1},
+              "source_digest": {"$ref": "#/$defs/digest"}
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["from", "to", "relation", "confidence", "blocking"],
+        "properties": {
+          "from": {"type": "string", "minLength": 1},
+          "to": {"type": "string", "minLength": 1},
+          "relation": {"enum": ["depends", "requires", "requires_tool", "route_includes", "produces", "verifies", "governed_by"]},
+          "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+          "blocking": {"type": "boolean"}
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  },
+  "additionalProperties": false
+}

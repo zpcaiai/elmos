@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/route-pack-result-v1",
+  "type": "object",
+  "required": ["schema_version", "route", "source_snapshot", "target_snapshot", "stages", "state", "evidence_refs"],
+  "properties": {
+    "schema_version": {"const": "elmos.route-pack-result.v1"},
+    "route": {"enum": ["java", "dotnet", "python"]},
+    "source_snapshot": {"$ref": "#/$defs/digest"},
+    "target_snapshot": {"$ref": "#/$defs/digest"},
+    "stages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "state", "evidence_refs"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "state": {"enum": ["not_run", "blocked", "failed", "passed"]},
+          "evidence_refs": {"$ref": "#/$defs/digest_array"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "state": {"enum": ["not_run", "blocked", "failed", "conditional", "passed"]},
+    "evidence_refs": {"$ref": "#/$defs/digest_array"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"state": {"enum": ["conditional", "passed"]}}, "required": ["state"]},
+      "then": {"properties": {"stages": {"minItems": 1}, "evidence_refs": {"minItems": 1}}}
+    }
+  ],
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "digest_array": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/digest"}}
+  },
+  "additionalProperties": false
+}

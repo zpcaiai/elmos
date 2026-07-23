@@ -61,6 +61,6 @@ public final class ProductCommercializationController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     Map<String, Object> badRequest(IllegalArgumentException error) {
         return Map.of("errorCode", "PRODUCT_COMMERCIALIZATION_ADMISSION_REJECTED",
-                "message", error.getMessage(), "retryable", false);
+                "message", "The product commercialization request was rejected by its contract.", "retryable", false);
     }
 }

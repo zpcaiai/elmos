@@ -1,0 +1,4 @@
+interface:
+  display_name: "B104 Disaster Recovery Replay Certification"
+  short_description: "Run this ELMOS product-closure Skill safely"
+  default_prompt: "Use $b104-disaster-recovery-replay-certification to execute this ELMOS product-closure Skill with fail-closed evidence."

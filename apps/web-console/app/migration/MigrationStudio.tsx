@@ -7,7 +7,29 @@ import { migrationCapabilities as fallbackCapabilities } from "../lib/catalog";
 import type { CapabilityResponse, MigrationCapability } from "../lib/contracts";
 
 type StudioView = "routes" | "marketplace";
-type Draft = { name: string; source: string; target: string };
+type Draft = {
+  id: string;
+  name: string;
+  source: string;
+  target: string;
+  scope: string;
+  capabilityId: string | null;
+  createdAt: string;
+};
+
+const DRAFT_STORAGE_KEY = "elmos.migration-assessment-drafts.v1";
+
+function isStoredDraft(value: unknown): value is Draft {
+  if (!value || typeof value !== "object") return false;
+  const draft = value as Partial<Draft>;
+  return typeof draft.id === "string"
+    && typeof draft.name === "string"
+    && typeof draft.source === "string"
+    && typeof draft.target === "string"
+    && typeof draft.scope === "string"
+    && (draft.capabilityId === null || typeof draft.capabilityId === "string")
+    && typeof draft.createdAt === "string";
+}
 
 const extensions: Array<{
   name: string;
@@ -35,6 +57,8 @@ export function MigrationStudio() {
   const [note, setNote] = useState("正在读取能力契约…");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [drafts, setDrafts] = useState<Draft[]>([]);
+  const [draftsReady, setDraftsReady] = useState(false);
+  const [draftCapability, setDraftCapability] = useState<string | null>(null);
   const [feedback, setFeedback] = useState("");
   const dialogReturnFocus = useRef<HTMLElement | null>(null);
   const dialogPanel = useRef<HTMLElement>(null);
@@ -50,6 +74,22 @@ export function MigrationStudio() {
       })
       .catch(() => setNote("能力 API 不可用；继续显示仓库契约，外部执行保持 NOT_RUN。"));
   }, []);
+
+  useEffect(() => {
+    try {
+      const stored = JSON.parse(window.localStorage.getItem(DRAFT_STORAGE_KEY) ?? "[]") as unknown;
+      if (Array.isArray(stored)) setDrafts(stored.filter(isStoredDraft).slice(0, 50));
+    } catch {
+      window.localStorage.removeItem(DRAFT_STORAGE_KEY);
+    } finally {
+      setDraftsReady(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!draftsReady) return;
+    window.localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(drafts));
+  }, [drafts, draftsReady]);
 
   useEffect(() => {
     if (!dialogOpen) return;
@@ -96,8 +136,9 @@ export function MigrationStudio() {
   const selectedCapability = capabilities.find((capability) => capability.id === selected) ?? capabilities[0];
   const filtersActive = query.trim().length > 0 || statusFilter !== "ALL";
 
-  function openDialog() {
+  function openDialog(capabilityId?: string) {
     dialogReturnFocus.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    setDraftCapability(capabilityId ?? null);
     setDialogOpen(true);
   }
 
@@ -116,13 +157,23 @@ export function MigrationStudio() {
     const form = new FormData(event.currentTarget);
     const name = String(form.get("name") ?? "").trim() || "未命名评估";
     setDrafts((current) => [{
+      id: crypto.randomUUID(),
       name,
       source: String(form.get("source") ?? "Unknown"),
       target: String(form.get("target") ?? "Unknown"),
+      scope: String(form.get("scope") ?? "单仓评估"),
+      capabilityId: draftCapability,
+      createdAt: new Date().toISOString(),
     }, ...current]);
-    setFeedback(`“${name}”已保存为本地草稿，不会触发外部执行。`);
+    setFeedback(`“${name}”已持久保存到此浏览器，不会触发外部执行。`);
     closeDialog();
     event.currentTarget.reset();
+  }
+
+  function removeDraft(id: string) {
+    const removed = drafts.find((draft) => draft.id === id);
+    setDrafts((current) => current.filter((draft) => draft.id !== id));
+    if (removed) setFeedback(`“${removed.name}”已从此浏览器删除。`);
   }
 
   return (
@@ -133,7 +184,7 @@ export function MigrationStudio() {
           <h1>迁移工坊</h1>
           <p>把路线选择、开发者预览、证据门禁与扩展生态放在同一个清晰工作流里。</p>
         </div>
-        <button className="button button-primary" onClick={openDialog}><Icon name="plus" size={17} />新建评估</button>
+        <button className="button button-primary" onClick={() => openDialog()}><Icon name="plus" size={17} />新建评估</button>
       </section>
 
       <section className="metric-grid metric-grid-four" aria-label="迁移能力摘要">
@@ -163,7 +214,7 @@ export function MigrationStudio() {
               <label className="select-field"><Icon name="filter" size={16} /><span className="sr-only">状态筛选</span><select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}><option value="ALL">全部状态</option><option value="READY">契约就绪</option><option value="EXPERIMENTAL">实验性</option></select></label>
             </div>
             <div className="catalog-summary-bar" aria-live="polite"><span>显示 <strong>{visibleCapabilities.length}</strong> / {capabilities.length} 个能力</span>{filtersActive && <button type="button" onClick={clearFilters}>清除筛选</button>}</div>
-            {drafts.length > 0 && <div className="draft-list">{drafts.map((draft, index) => <div className="draft-row" key={`${draft.name}-${index}`}><span className="capability-icon accent-cyan"><Icon name="spark" size={18} /></span><div><strong>{draft.name}</strong><small>{draft.source} → {draft.target} · 仅 UI 草稿</small></div><StatusChip status="DRAFT" compact /></div>)}</div>}
+            {drafts.length > 0 && <div className="draft-list">{drafts.map((draft) => <div className="draft-row" key={draft.id}><span className="capability-icon accent-cyan"><Icon name="spark" size={18} /></span><div><strong>{draft.name}</strong><small>{draft.source} → {draft.target} · {draft.scope}{draft.capabilityId ? ` · ${draft.capabilityId}` : ""}</small></div><StatusChip status="DRAFT" compact /><button type="button" className="icon-button" aria-label={`删除草稿 ${draft.name}`} onClick={() => removeDraft(draft.id)}><Icon name="close" size={13} /></button></div>)}</div>}
             <div className="capability-list">
               {visibleCapabilities.map((capability) => (
                 <button className={`capability-row ${selected === capability.id ? "selected" : ""}`} key={capability.id} onClick={() => setSelected(capability.id)} aria-pressed={selected === capability.id}>
@@ -192,7 +243,7 @@ export function MigrationStudio() {
             </dl>
             <div className="gate-block"><span>唯一认证门禁</span><code>{selectedCapability.gateCommand}</code></div>
             {selectedCapability.id === "M36" && <div className="feature-callout"><Icon name="spark" size={17} /><div><strong>开发者预览已接入</strong><small>支持来源—目标导航、受保护区域和无写入预览；真实 IDE Host 证据仍未运行。</small></div></div>}
-            <div className="detail-actions"><button className="button button-secondary" onClick={openDialog}>以此创建草稿</button><a className="icon-button bordered" href={`/api/capabilities/migration`} target="_blank" rel="noreferrer" aria-label="打开能力 API"><Icon name="external" size={17} /></a></div>
+            <div className="detail-actions"><button className="button button-secondary" onClick={() => openDialog(selectedCapability.id)}>以此创建草稿</button><a className="icon-button bordered" href={`/api/capabilities/migration`} target="_blank" rel="noreferrer" aria-label="打开能力 API"><Icon name="external" size={17} /></a></div>
           </aside>}
         </section>
       ) : (
@@ -205,12 +256,12 @@ export function MigrationStudio() {
         <div className="dialog-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) closeDialog(); }}>
           <section ref={dialogPanel} className="modal-card" role="dialog" aria-modal="true" aria-labelledby="new-assessment-title" aria-describedby="new-assessment-description">
             <div className="modal-heading"><div><span className="overline">LOCAL DRAFT</span><h2 id="new-assessment-title">新建迁移评估</h2></div><button className="icon-button" aria-label="关闭" onClick={closeDialog}><Icon name="close" /></button></div>
-            <p className="modal-intro" id="new-assessment-description">这里只建立可编辑草稿，不会上传仓库、运行客户代码或触发认证。按 ESC 可随时关闭。</p>
+            <p className="modal-intro" id="new-assessment-description">草稿只保存在当前浏览器，不会上传仓库、运行客户代码或触发认证。按 ESC 可随时关闭。</p>
             <form onSubmit={createDraft} className="form-stack">
               <label><span>评估名称</span><input ref={draftNameInput} name="name" required autoComplete="off" placeholder="例如：订单服务现代化" /></label>
               <div className="form-grid"><label><span>源技术栈</span><select name="source" defaultValue="Java 8 / Spring 4"><option>Java 8 / Spring 4</option><option>C# / .NET Framework 4.8</option><option>Python 3.8 / Django 2.2</option><option>AngularJS 1.8</option></select></label><label><span>目标技术栈</span><select name="target" defaultValue="Java 21 / Spring Boot 3"><option>Java 21 / Spring Boot 3</option><option>.NET 10</option><option>Python 3.14 / Django 5</option><option>React 19 / Next.js 16</option></select></label></div>
               <label><span>工作范围</span><select name="scope" defaultValue="单仓评估"><option>单仓评估</option><option>多仓依赖评估</option><option>组合级发现</option></select></label>
-              <div className="form-note"><Icon name="lock" size={16} />凭证、生产数据与客户代码不会写入此草稿。</div>
+              <div className="form-note"><Icon name="lock" size={16} />凭证、生产数据与客户代码不会写入此草稿。{draftCapability ? ` 当前关联能力：${draftCapability}。` : ""}</div>
               <div className="modal-actions"><button type="button" className="button button-secondary" onClick={closeDialog}>取消</button><button className="button button-primary" type="submit">保存本地草稿</button></div>
             </form>
           </section>

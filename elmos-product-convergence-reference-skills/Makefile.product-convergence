@@ -1,0 +1,8 @@
+
+validate-product-convergence:
+	python3 scripts/product-convergence/validate_skill_bundle.py .
+	python3 scripts/product-convergence/validate_convergence_bundle.py product-convergence
+	python3 -m unittest tests/product-convergence/test_toolkit.py
+
+product-convergence-gate:
+	python3 scripts/product-convergence/run_convergence_gate.py product-convergence

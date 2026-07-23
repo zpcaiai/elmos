@@ -42,6 +42,6 @@ final class RecipeGovernanceController {
     }
     @ExceptionHandler({IllegalArgumentException.class, IllegalStateException.class, SecurityException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST) Map<String,Object> badRequest(RuntimeException error) {
-        return Map.of("errorCode", "RECIPE_GOVERNANCE_REJECTED", "message", error.getMessage(), "retryable", false);
+        return Map.of("errorCode", "RECIPE_GOVERNANCE_REJECTED", "message", "The recipe governance request was rejected by its contract.", "retryable", false);
     }
 }

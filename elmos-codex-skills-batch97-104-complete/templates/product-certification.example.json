@@ -1,0 +1,10 @@
+{
+  "schema_version": "elmos.product-certification.v1",
+  "release": "0.0.0-template",
+  "scope": {"environment": "not-run", "artifact_digests": []},
+  "status": "not_run",
+  "evidence_refs": [],
+  "board": [],
+  "limitations": ["Template only; no product execution or external review evidence exists."],
+  "signature": null
+}

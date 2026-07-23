@@ -1,0 +1,4 @@
+interface:
+  display_name: "Execution Reliability State Protocol Hardening"
+  short_description: "Run this ELMOS product-closure Skill with evidence"
+  default_prompt: "Use $execution-reliability-state-protocol-hardening to execute this ELMOS product-closure Skill with fail-closed evidence."

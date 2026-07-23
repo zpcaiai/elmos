@@ -206,6 +206,14 @@ Use `.agents/skills/b37-*` for extension manifests, ABI and SDK contracts, sandb
 - The supplied source evaluator is non-authoritative because it does not enforce exact 640-result completeness or fail-closed `NOT_RUN`. Use the installed source-coverage, evidence-integrity, anti-cheating, and final-release test Skills as scoped guidance; the repository validator and gate remain authoritative for this supplement.
 - `NOT_RUN`, missing or reordered results, ID relabeling, namespace collision suppression, static-as-native claims, fabricated/synthetic evidence, self-verification, missing authorization, incomplete repeats, weakened tolerances or safety controls, and zero-tolerance findings fail closed. The earlier generated 120-case design is superseded and must not overwrite the imported suite.
 
+## Batch 97-104 product-closure Skills
+
+- Canonical normalized sources live in `elmos-codex-skills-batch97-104-complete/`; installed Runtime Skills live under `agent-skills/runtime/b97-*` through `b104-*` and retain exact source digests plus Codex interfaces.
+- Preserve exactly 128 Skills, 16 per Batch, with Batch-local IDs `B97-S01` through `B104-S16`. These IDs belong to the `batch-local-product-closure` namespace; never infer, mutate, or advertise a global PG allocation without a separately approved namespace authority.
+- Compile each Markdown Skill through `scripts/compile_skill_contract.py` before runtime use. Inputs, outputs, permissions, ordered steps, rollback, unit/integration/negative tests, evidence requirements and verification states must remain non-empty and schema-valid.
+- Product-closure certification is fail-closed. Content-addressed evidence must be byte-bound, authorized and independently verified; templates, static validation and generated artifacts remain engineering evidence. The local gate may return at most `ready_for_external_gate` and never `certified`.
+- Run `make batch97-104-skills` for immutable package, DAG, compiled-contract, Schema, installer, installed-interface and anti-fabrication validation. Real runners, golden routes, equivalence, scale, security, customer, support and external certification evidence remain `NOT_RUN` until authorized execution occurs.
+
 ## Batch 38-45 strict test suite
 
 - Start this qualification with `$tst-b38-45-strict-suite-orchestrator`, then use the exact Batch or cross-cutting `$tst-*` Skill owning the selected case IDs.
@@ -214,3 +222,14 @@ Use `.agents/skills/b37-*` for extension manifests, ABI and SDK contracts, sandb
 - Every passed case must bind exact case/catalog, artifact/environment files, byte-counted raw evidence roles, replay, authorization, separate executor/verifier, and independent development/holdout/representative corpora.
 - Only `scripts/test-suite-b38-45/run_strict_gate.py` may derive the Batch 38-45 suite decision. Certification requires eight eligible `CERTIFIED` M38-M45 domain gates, two distinct design partners, one independent review, an exact 400-result signed request, and a separate non-revoked trust store.
 - Run `make test-suite-b38-45-check` for local toolkit validation. `make test-suite-b38-45-gate` must fail closed while field evidence remains `NOT_RUN`.
+
+## Product closure Batch 56A and convergence overlay
+
+- Product Batch 56A is a reviewed-design closure overlay, not Migration Pack M56 and not a numeric continuation that changes Product B34-B55 semantics. Start closure work with `$elmos-product-closure-maturity-orchestrator`, then invoke the smallest exact Product 56A Runtime Skill.
+- Product Convergence is a cross-Batch implementation/reference overlay, not a new feature Batch. Start with `$conv-product-convergence-orchestrator`, then use the narrowest exact `$conv-*` Skill.
+- Preserve the immutable canonical sources under `elmos-codex-skills-batch56a-product-closure/` and `elmos-product-convergence-reference-skills/`. Installed aliases, provenance digests and Codex interfaces are governed by `tooling/import_product_closure_convergence.py`.
+- Source validators and static package tests are engineering evidence only. They cannot prove real providers, Private Runner isolation, runtime journeys, customer acceptance, independent review, unit economics, GA, production safety or certification.
+- The checked-in convergence plan, capability registry, dependency graph, evidence graph, benchmark corpus, handoff package and Reference Route are fail-closed scaffolds. Empty graphs, draft plans, fuzzy `current`/`latest`/`x` versions, boolean-only criteria or arbitrary digest strings cannot prepare an external readiness review.
+- Only `scripts/product-closure-batch56a/run_product_closure_gate.py` and `scripts/product-convergence/run_repository_convergence_gate.py` may prepare the corresponding repository readiness decisions. Their maximum local result is `READY_FOR_EXTERNAL_GATE`; they never approve GA or production certification.
+- `NOT_RUN`, missing evidence files, digest or byte-count mismatch, path escape, self-verification, fewer than two independent design-partner organizations, missing independent review, or any P0/zero-tolerance finding fails closed. Keep current external evidence `NOT_RUN` until authorized real execution occurs.
+- Run `make product-closure-convergence-skills` for source, install, interface and anti-fabrication regression validation. `make product-closure-gate` and `make product-convergence-gate` are expected to fail closed for the checked-in templates.

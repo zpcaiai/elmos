@@ -1,0 +1,4 @@
+interface:
+  display_name: "B101 Dotnet Route Verification PR"
+  short_description: "Run this ELMOS product-closure Skill safely"
+  default_prompt: "Use $b101-dotnet-route-verification-pr to execute this ELMOS product-closure Skill with fail-closed evidence."

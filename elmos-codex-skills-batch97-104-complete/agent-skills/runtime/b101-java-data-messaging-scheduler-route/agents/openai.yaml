@@ -1,0 +1,4 @@
+interface:
+  display_name: "B101 Java Data Messaging Scheduler Route"
+  short_description: "Run this ELMOS product-closure Skill safely"
+  default_prompt: "Use $b101-java-data-messaging-scheduler-route to execute this ELMOS product-closure Skill with fail-closed evidence."

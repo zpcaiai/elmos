@@ -22,5 +22,5 @@ public final class EnterpriseArchitectureEngineController {
     @PostMapping("/conformance") @ResponseStatus(HttpStatus.ACCEPTED) public JobResponse conformance(@Valid @RequestBody JobRequest request) { return engine.evaluate("conformance", request); }
     @GetMapping("/jobs/{jobId}") public JobResponse job(@RequestParam String organizationId, @PathVariable String jobId) { return engine.job(organizationId, jobId); }
     @PostMapping("/jobs/{jobId}/cancel") public JobResponse cancel(@RequestParam String organizationId, @PathVariable String jobId) { return engine.cancel(organizationId, jobId); }
-    @ExceptionHandler(IllegalArgumentException.class) @ResponseStatus(HttpStatus.BAD_REQUEST) Map<String,Object> badRequest(IllegalArgumentException e) { return Map.of("errorCode", "EA_REQUEST_REJECTED", "message", e.getMessage(), "retryable", false); }
+    @ExceptionHandler(IllegalArgumentException.class) @ResponseStatus(HttpStatus.BAD_REQUEST) Map<String,Object> badRequest(IllegalArgumentException e) { return Map.of("errorCode", "EA_REQUEST_REJECTED", "message", "The enterprise architecture request was rejected by its contract.", "retryable", false); }
 }

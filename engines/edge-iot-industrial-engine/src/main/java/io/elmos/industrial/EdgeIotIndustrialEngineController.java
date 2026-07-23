@@ -21,5 +21,5 @@ public final class EdgeIotIndustrialEngineController {
     @PostMapping("/command") @ResponseStatus(HttpStatus.ACCEPTED) public JobResponse command(@Valid @RequestBody ExecuteStepRequest request) { return engine.execute("command", request); }
     @GetMapping("/jobs/{jobId}") public JobResponse job(@RequestParam String organizationId, @PathVariable String jobId) { return engine.job(organizationId, jobId); }
     @PostMapping("/jobs/{jobId}/cancel") public JobResponse cancel(@RequestParam String organizationId, @PathVariable String jobId) { return engine.cancel(organizationId, jobId); }
-    @ExceptionHandler(IllegalArgumentException.class) @ResponseStatus(HttpStatus.BAD_REQUEST) Map<String,Object> badRequest(IllegalArgumentException e) { return Map.of("errorCode", "OT_REQUEST_REJECTED", "message", e.getMessage(), "retryable", false); }
+    @ExceptionHandler(IllegalArgumentException.class) @ResponseStatus(HttpStatus.BAD_REQUEST) Map<String,Object> badRequest(IllegalArgumentException e) { return Map.of("errorCode", "OT_REQUEST_REJECTED", "message", "The industrial engine request was rejected by its contract.", "retryable", false); }
 }

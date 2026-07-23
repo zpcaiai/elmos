@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Icon, type IconName } from "../components/Icon";
 import { StatusChip } from "../components/StatusChip";
+import { installedSkillInventory } from "../lib/catalog";
 
 type Namespace = "migration" | "product";
 type RangeItem = { range: string; title: string; count: number; source: string; status: string; icon: IconName; note: string };
@@ -40,7 +41,7 @@ export function SkillsWorkspace() {
 
     <section className="metric-grid metric-grid-four" aria-label="Skills 资格摘要">
       <article className="metric-card metric-card-accent"><span>组合包契约</span><strong>1,824</strong><small>官方结构 1,824 / 1,824</small></article>
-      <article className="metric-card"><span>Codex / Runtime</span><strong className="metric-pair">530 <i>/</i> 2,097</strong><small>均具有可调用界面</small></article>
+      <article className="metric-card"><span>Codex / Runtime</span><strong className="metric-pair">{installedSkillInventory.codexSkillCount.toLocaleString("en-US")} <i>/</i> {installedSkillInventory.runtimeSkillCount.toLocaleString("en-US")}</strong><small>按含 SKILL.md 的可调用目录统计</small></article>
       <article className="metric-card"><span>严格用例目录</span><strong>408</strong><small>Batch 1–37 · 八类变体</small></article>
       <article className="metric-card"><span>外部认证用例</span><strong className="warning-text">0 / 408</strong><small>全部保持 NOT_RUN</small></article>
     </section>

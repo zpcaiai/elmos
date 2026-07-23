@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/evidence-record-v1",
+  "type": "object",
+  "required": ["schema_version", "evidence_id", "type", "subject", "producer", "created_at", "expires_at", "input_hashes", "artifact_hashes", "state", "signature"],
+  "properties": {
+    "schema_version": {"const": "elmos.evidence-record.v1"},
+    "evidence_id": {"type": "string", "minLength": 1},
+    "type": {"type": "string", "minLength": 1},
+    "subject": {
+      "type": "object",
+      "required": ["id", "scope"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "scope": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "producer": {
+      "type": "object",
+      "required": ["id", "kind"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "kind": {"enum": ["human", "workload", "tool"]}
+      },
+      "additionalProperties": false
+    },
+    "created_at": {"type": "string", "format": "date-time"},
+    "expires_at": {"type": ["string", "null"], "format": "date-time"},
+    "input_hashes": {"$ref": "#/$defs/digest_map"},
+    "artifact_hashes": {"$ref": "#/$defs/digest_map"},
+    "state": {"enum": ["not_run", "valid", "stale", "revoked", "invalid"]},
+    "signature": {"type": ["object", "null"]}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"state": {"const": "valid"}}, "required": ["state"]},
+      "then": {
+        "properties": {
+          "input_hashes": {"minProperties": 1},
+          "artifact_hashes": {"minProperties": 1},
+          "signature": {"type": "object", "minProperties": 1}
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "digest_map": {"type": "object", "additionalProperties": {"$ref": "#/$defs/digest"}}
+  },
+  "additionalProperties": false
+}

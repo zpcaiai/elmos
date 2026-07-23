@@ -25,6 +25,6 @@ public final class MigrationPackCertificationController {
 
     @ExceptionHandler(IllegalArgumentException.class) @ResponseStatus(HttpStatus.BAD_REQUEST)
     Map<String, Object> badRequest(IllegalArgumentException error) {
-        return Map.of("errorCode", "MIGRATION_PACK_ADMISSION_REJECTED", "message", error.getMessage(), "retryable", false);
+        return Map.of("errorCode", "MIGRATION_PACK_ADMISSION_REJECTED", "message", "The migration pack admission request was rejected by its contract.", "retryable", false);
     }
 }

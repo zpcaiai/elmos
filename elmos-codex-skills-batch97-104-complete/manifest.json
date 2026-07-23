@@ -1,0 +1,4881 @@
+{
+  "package": "elmos-codex-skills-batch97-104-complete",
+  "version": "1.0.1-repository.1",
+  "skill_count": 128,
+  "batches": [
+    97,
+    98,
+    99,
+    100,
+    101,
+    102,
+    103,
+    104
+  ],
+  "local_id_range": [
+    "B97-S01",
+    "B104-S16"
+  ],
+  "global_id_policy": "unassigned; preserve batch-local product-closure identity until a separately approved global namespace allocation exists",
+  "skills": [
+    {
+      "id": "B97-S01",
+      "global_id": null,
+      "batch": 97,
+      "name": "b97-legacy-skill-estate-inventory",
+      "title": "Legacy Skill Estate Inventory",
+      "purpose": "Inventory every installed Skill, schema, tool, runtime, route, policy, test and evidence asset from Batch 1–96 without treating filenames as authoritative identity.",
+      "path": "agent-skills/runtime/b97-legacy-skill-estate-inventory/SKILL.md",
+      "catalog_path": "skills/batch-97/B97-S01-legacy-skill-estate-inventory.md",
+      "depends_on": [],
+      "outputs": [
+        "skill_estate.json",
+        "inventory_findings.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "3ebab17ed60b8d2220348861432bf1c702af2e3901060abc79378ddf19096380"
+    },
+    {
+      "id": "B97-S02",
+      "global_id": null,
+      "batch": 97,
+      "name": "b97-capability-ontology-foundation",
+      "title": "Capability Ontology Foundation",
+      "purpose": "Define the canonical ELMOS capability vocabulary, hierarchy, boundaries and relation types used by every product line.",
+      "path": "agent-skills/runtime/b97-capability-ontology-foundation/SKILL.md",
+      "catalog_path": "skills/batch-97/B97-S02-capability-ontology-foundation.md",
+      "depends_on": [
+        "B97-S01"
+      ],
+      "outputs": [
+        "capability_ontology.json",
+        "ontology_decisions.md",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "8ebb8792d14483d6dc1ac2ce9f1590355791bd10c28b9dbd18be4a52ca1fd4c8"
+    },
+    {
+      "id": "B97-S03",
+      "global_id": null,
+      "batch": 97,
+      "name": "b97-skill-metadata-normalizer",
+      "title": "Skill Metadata Normalizer",
+      "purpose": "Normalize heterogeneous Skill metadata into one versioned machine-readable representation while preserving source identity and uncertainty.",
+      "path": "agent-skills/runtime/b97-skill-metadata-normalizer/SKILL.md",
+      "catalog_path": "skills/batch-97/B97-S03-skill-metadata-normalizer.md",
+      "depends_on": [
+        "B97-S02"
+      ],
+      "outputs": [
+        "normalized_skills.json",
+        "normalization_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "90549b2b295ec37d4860795ca4932ab53e7d1bfbe56ccb499b9d56c7b91832be"
+    },
+    {
+      "id": "B97-S04",
+      "global_id": null,
+      "batch": 97,
+      "name": "b97-capability-node-builder",
+      "title": "Capability Node Builder",
+      "purpose": "Build typed capability, Skill, tool, runtime, artifact, test, evidence and policy nodes from the normalized estate.",
+      "path": "agent-skills/runtime/b97-capability-node-builder/SKILL.md",
+      "catalog_path": "skills/batch-97/B97-S04-capability-node-builder.md",
+      "depends_on": [
+        "B97-S03"
+      ],
+      "outputs": [
+        "capability_nodes.json",
+        "node_build_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "e4ba4f262afc79215e2f7ff23f579721455591df0f2ede0fafaeea80d769db67"
+    },
+    {
+      "id": "B97-S05",
+      "global_id": null,
+      "batch": 97,
+      "name": "b97-dependency-edge-resolver",
+      "title": "Dependency Edge Resolver",
+      "purpose": "Resolve explicit and inferred dependencies with confidence, evidence, direction and blocking semantics.",
+      "path": "agent-skills/runtime/b97-dependency-edge-resolver/SKILL.md",
+      "catalog_path": "skills/batch-97/B97-S05-dependency-edge-resolver.md",
+      "depends_on": [
+        "B97-S04"
+      ],
+      "outputs": [
+        "dependency_edges.json",
+        "dependency_findings.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "fdf5b6f5dc330870da7b00abb3954d643bbbca5c3a5f548cd4d45242454852c2"
+    },
+    {
+      "id": "B97-S06",
+      "global_id": null,
+      "batch": 97,
+      "name": "b97-conflict-overlap-detector",
+      "title": "Conflict and Overlap Detector",
+      "purpose": "Detect duplicate, overlapping, contradictory and mutually exclusive Skills or policies before runtime selection.",
+      "path": "agent-skills/runtime/b97-conflict-overlap-detector/SKILL.md",
+      "catalog_path": "skills/batch-97/B97-S06-conflict-overlap-detector.md",
+      "depends_on": [
+        "B97-S05"
+      ],
+      "outputs": [
+        "conflict_graph.json",
+        "overlap_candidates.json",
+        "resolution_queue.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "12bd8eb5a62cb36a5c94da052a73bb221c2a919a05b17dc3bd1e0c2163238f68"
+    },
+    {
+      "id": "B97-S07",
+      "global_id": null,
+      "batch": 97,
+      "name": "b97-lifecycle-deprecation-model",
+      "title": "Lifecycle and Deprecation Model",
+      "purpose": "Implement proposed, experimental, supported, deprecated, retired and blocked lifecycle states with transition controls.",
+      "path": "agent-skills/runtime/b97-lifecycle-deprecation-model/SKILL.md",
+      "catalog_path": "skills/batch-97/B97-S07-lifecycle-deprecation-model.md",
+      "depends_on": [
+        "B97-S06"
+      ],
+      "outputs": [
+        "lifecycle_registry.json",
+        "deprecation_plan.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "42d0a95636b315e81d1e0299a226a6d02d87648bed0c6860e9b04576c2b583ad"
+    },
+    {
+      "id": "B97-S08",
+      "global_id": null,
+      "batch": 97,
+      "name": "b97-version-compatibility-matrix",
+      "title": "Version Compatibility Matrix",
+      "purpose": "Model ELMOS Core, Skill, contract, toolchain, route and domain-pack compatibility using exact ranges and evidence.",
+      "path": "agent-skills/runtime/b97-version-compatibility-matrix/SKILL.md",
+      "catalog_path": "skills/batch-97/B97-S08-version-compatibility-matrix.md",
+      "depends_on": [
+        "B97-S07"
+      ],
+      "outputs": [
+        "compatibility_matrix.json",
+        "compatibility_findings.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "7e7ecff80eb253ffc5547d93f238fdb46e00717c7de74b2046f47dfa9473213d"
+    },
+    {
+      "id": "B97-S09",
+      "global_id": null,
+      "batch": 97,
+      "name": "b97-ownership-governance-registry",
+      "title": "Ownership and Governance Registry",
+      "purpose": "Assign accountable owners, reviewers, security contacts and change authorities to every governed asset.",
+      "path": "agent-skills/runtime/b97-ownership-governance-registry/SKILL.md",
+      "catalog_path": "skills/batch-97/B97-S09-ownership-governance-registry.md",
+      "depends_on": [
+        "B97-S08"
+      ],
+      "outputs": [
+        "ownership_registry.json",
+        "unowned_assets.json",
+        "governance_report.md",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "8f9a8320b99621438e8afe01e008fd9c4f34ecc37b10fe9f51ca080dd3218b2b"
+    },
+    {
+      "id": "B97-S10",
+      "global_id": null,
+      "batch": 97,
+      "name": "b97-evidence-requirement-graph",
+      "title": "Evidence Requirement Graph",
+      "purpose": "Link capabilities and Skills to the exact evidence types, freshness windows and independent approvals required for each verification state.",
+      "path": "agent-skills/runtime/b97-evidence-requirement-graph/SKILL.md",
+      "catalog_path": "skills/batch-97/B97-S10-evidence-requirement-graph.md",
+      "depends_on": [
+        "B97-S09"
+      ],
+      "outputs": [
+        "evidence_requirement_graph.json",
+        "evidence_gap_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "1c51da0792492358704720c2744db84effe85ba985444120086fac259b1363da"
+    },
+    {
+      "id": "B97-S11",
+      "global_id": null,
+      "batch": 97,
+      "name": "b97-tool-runtime-requirement-graph",
+      "title": "Tool and Runtime Requirement Graph",
+      "purpose": "Map Skills to exact compilers, SDKs, services, runner profiles, licenses, devices and cloud capabilities.",
+      "path": "agent-skills/runtime/b97-tool-runtime-requirement-graph/SKILL.md",
+      "catalog_path": "skills/batch-97/B97-S11-tool-runtime-requirement-graph.md",
+      "depends_on": [
+        "B97-S10"
+      ],
+      "outputs": [
+        "runtime_requirement_graph.json",
+        "runner_match_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "623c8a3126395822df53ffc79889504819b67e8ae2650ad6dc9a1c7026245a9c"
+    },
+    {
+      "id": "B97-S12",
+      "global_id": null,
+      "batch": 97,
+      "name": "b97-route-domain-pack-composer",
+      "title": "Route and Domain Pack Composer",
+      "purpose": "Compose reusable core primitives, route packs and domain policies without duplicating implementation logic.",
+      "path": "agent-skills/runtime/b97-route-domain-pack-composer/SKILL.md",
+      "catalog_path": "skills/batch-97/B97-S12-route-domain-pack-composer.md",
+      "depends_on": [
+        "B97-S11"
+      ],
+      "outputs": [
+        "composition_plan.json",
+        "composed_pack_manifest.json",
+        "composition_findings.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "725103b3762bf1c15a71b1db0cc887f249ccdbc14220131664bb90c89bc6a5da"
+    },
+    {
+      "id": "B97-S13",
+      "global_id": null,
+      "batch": 97,
+      "name": "b97-capability-graph-query-api",
+      "title": "Capability Graph Query API",
+      "purpose": "Expose bounded, tenant-safe graph queries for discovery, dependency closure, impact analysis and execution planning.",
+      "path": "agent-skills/runtime/b97-capability-graph-query-api/SKILL.md",
+      "catalog_path": "skills/batch-97/B97-S13-capability-graph-query-api.md",
+      "depends_on": [
+        "B97-S12"
+      ],
+      "outputs": [
+        "capability_graph_openapi.yaml",
+        "query_examples.json",
+        "api_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "6e283b63985978f4cb3a4af0a6c1b9153988d8054e48e716b87ff33017dab93b"
+    },
+    {
+      "id": "B97-S14",
+      "global_id": null,
+      "batch": 97,
+      "name": "b97-legacy-estate-migration-planner",
+      "title": "Legacy Estate Migration Planner",
+      "purpose": "Plan non-destructive migration from Batch 1–96 manifests into the canonical graph with rollback and reconciliation.",
+      "path": "agent-skills/runtime/b97-legacy-estate-migration-planner/SKILL.md",
+      "catalog_path": "skills/batch-97/B97-S14-legacy-estate-migration-planner.md",
+      "depends_on": [
+        "B97-S13"
+      ],
+      "outputs": [
+        "estate_migration_plan.json",
+        "identity_mapping.json",
+        "rollback_plan.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "7e902cffbf1ff2a01fcd8338f687643ac6c7f1f07c511dcffa78b35b112a302b"
+    },
+    {
+      "id": "B97-S15",
+      "global_id": null,
+      "batch": 97,
+      "name": "b97-graph-change-impact-analyzer",
+      "title": "Graph Change Impact Analyzer",
+      "purpose": "Calculate downstream compatibility, route, policy, evidence and certification impact for every graph change.",
+      "path": "agent-skills/runtime/b97-graph-change-impact-analyzer/SKILL.md",
+      "catalog_path": "skills/batch-97/B97-S15-graph-change-impact-analyzer.md",
+      "depends_on": [
+        "B97-S14"
+      ],
+      "outputs": [
+        "impact_report.json",
+        "invalidated_claims.json",
+        "notification_plan.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "3e3c410cf8af30b48d2f53f960479d764f8cc9cd0bd74dd1a63fa656939e226b"
+    },
+    {
+      "id": "B97-S16",
+      "global_id": null,
+      "batch": 97,
+      "name": "b97-capability-graph-certification-gate",
+      "title": "Capability Graph Certification Gate",
+      "purpose": "Certify the canonical graph only when inventory, ontology, identity, dependencies, conflicts, ownership, compatibility and evidence requirements are complete.",
+      "path": "agent-skills/runtime/b97-capability-graph-certification-gate/SKILL.md",
+      "catalog_path": "skills/batch-97/B97-S16-capability-graph-certification-gate.md",
+      "depends_on": [
+        "B97-S15"
+      ],
+      "outputs": [
+        "graph_certification_result.json",
+        "signed_graph_snapshot.json",
+        "completion_report.md",
+        "evidence_bundle.json"
+      ],
+      "sha256": "0b9db31c37163f72447792ba313190c11c949dd587e90de59866da1bfeabe6a4"
+    },
+    {
+      "id": "B98-S01",
+      "global_id": null,
+      "batch": 98,
+      "name": "b98-executable-skill-contract-schema",
+      "title": "Executable Skill Contract Schema",
+      "purpose": "Define the authoritative versioned contract that makes a Skill executable rather than prose-only.",
+      "path": "agent-skills/runtime/b98-executable-skill-contract-schema/SKILL.md",
+      "catalog_path": "skills/batch-98/B98-S01-executable-skill-contract-schema.md",
+      "depends_on": [
+        "B97-S16"
+      ],
+      "outputs": [
+        "executable_skill_contract.schema.json",
+        "schema_examples/",
+        "schema_validation.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "77d56f8409969ec524b67bbc56d7a646e93f789e584cbe6975a6ddfaee9c1efc"
+    },
+    {
+      "id": "B98-S02",
+      "global_id": null,
+      "batch": 98,
+      "name": "b98-skill-markdown-contract-compiler",
+      "title": "Skill Markdown Contract Compiler",
+      "purpose": "Compile approved Skill Markdown and frontmatter into deterministic executable contracts with source maps.",
+      "path": "agent-skills/runtime/b98-skill-markdown-contract-compiler/SKILL.md",
+      "catalog_path": "skills/batch-98/B98-S02-skill-markdown-contract-compiler.md",
+      "depends_on": [
+        "B98-S01",
+        "B97-S03"
+      ],
+      "outputs": [
+        "compiled_skill_contract.json",
+        "skill_source_map.json",
+        "compiler_diagnostics.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "20abe3520e05530b0bc1a6c177f0aacdb2ff43c30e117b214069552f6f268b02"
+    },
+    {
+      "id": "B98-S03",
+      "global_id": null,
+      "batch": 98,
+      "name": "b98-input-output-schema-binder",
+      "title": "Input and Output Schema Binder",
+      "purpose": "Bind every input and output to exact schemas, content types, ownership and retention rules.",
+      "path": "agent-skills/runtime/b98-input-output-schema-binder/SKILL.md",
+      "catalog_path": "skills/batch-98/B98-S03-input-output-schema-binder.md",
+      "depends_on": [
+        "B98-S02"
+      ],
+      "outputs": [
+        "io_binding.json",
+        "io_validation_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "0f26560247407c1256f87f284c136678d4f6d8671487025daf02d569233e4954"
+    },
+    {
+      "id": "B98-S04",
+      "global_id": null,
+      "batch": 98,
+      "name": "b98-precondition-guard-compiler",
+      "title": "Precondition and Guard Compiler",
+      "purpose": "Compile preconditions, stop conditions and approval requirements into fail-closed executable guards.",
+      "path": "agent-skills/runtime/b98-precondition-guard-compiler/SKILL.md",
+      "catalog_path": "skills/batch-98/B98-S04-precondition-guard-compiler.md",
+      "depends_on": [
+        "B98-S03"
+      ],
+      "outputs": [
+        "guard_program.json",
+        "guard_test_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "5e7beaa814308da662747142f8b1ccbe4aec0428f63da7d5fe1b3dcadfaa08c5"
+    },
+    {
+      "id": "B98-S05",
+      "global_id": null,
+      "batch": 98,
+      "name": "b98-permission-capability-declaration",
+      "title": "Permission and Capability Declaration",
+      "purpose": "Declare least-privilege process, filesystem, network, repository, secret, cloud and signing capabilities for each Skill.",
+      "path": "agent-skills/runtime/b98-permission-capability-declaration/SKILL.md",
+      "catalog_path": "skills/batch-98/B98-S05-permission-capability-declaration.md",
+      "depends_on": [
+        "B98-S04"
+      ],
+      "outputs": [
+        "permission_manifest.json",
+        "permission_diff.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "a4a48e6ffb8db01c7843eb243f617131c7dd3cceff357b5291ccf6a9a8204dfc"
+    },
+    {
+      "id": "B98-S06",
+      "global_id": null,
+      "batch": 98,
+      "name": "b98-execution-step-compiler",
+      "title": "Execution Step Compiler",
+      "purpose": "Compile workflows into typed, idempotent and resumable execution steps with explicit inputs, outputs and effects.",
+      "path": "agent-skills/runtime/b98-execution-step-compiler/SKILL.md",
+      "catalog_path": "skills/batch-98/B98-S06-execution-step-compiler.md",
+      "depends_on": [
+        "B98-S05"
+      ],
+      "outputs": [
+        "execution_steps.json",
+        "step_graph.json",
+        "compiler_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "9676b376e9425cfcadb07188587731cea48ec691cd0cdae7e53cbe5fbd04f1db"
+    },
+    {
+      "id": "B98-S07",
+      "global_id": null,
+      "batch": 98,
+      "name": "b98-rollback-compensation-compiler",
+      "title": "Rollback and Compensation Compiler",
+      "purpose": "Compile reversible actions, compensations and irreversible decision gates into runtime-ready plans.",
+      "path": "agent-skills/runtime/b98-rollback-compensation-compiler/SKILL.md",
+      "catalog_path": "skills/batch-98/B98-S07-rollback-compensation-compiler.md",
+      "depends_on": [
+        "B98-S06"
+      ],
+      "outputs": [
+        "rollback_plan.json",
+        "compensation_plan.json",
+        "rollback_validation.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "52abf9f1227237de74247bad45c795626b5fe25100d137eb240b99b38cf025e0"
+    },
+    {
+      "id": "B98-S08",
+      "global_id": null,
+      "batch": 98,
+      "name": "b98-test-evidence-contract-compiler",
+      "title": "Test and Evidence Contract Compiler",
+      "purpose": "Compile required tests and evidence into machine-enforced obligations bound to exact states and scopes.",
+      "path": "agent-skills/runtime/b98-test-evidence-contract-compiler/SKILL.md",
+      "catalog_path": "skills/batch-98/B98-S08-test-evidence-contract-compiler.md",
+      "depends_on": [
+        "B98-S07"
+      ],
+      "outputs": [
+        "test_contract.json",
+        "evidence_contract.json",
+        "obligation_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "b860571a0b2039e9c1a2454305f8cb17071e8c92845c577aa22a59d889c7832c"
+    },
+    {
+      "id": "B98-S09",
+      "global_id": null,
+      "batch": 98,
+      "name": "b98-deterministic-variable-resolver",
+      "title": "Deterministic Variable Resolver",
+      "purpose": "Resolve parameters, defaults, environment references and secrets without hidden nondeterminism or plaintext exposure.",
+      "path": "agent-skills/runtime/b98-deterministic-variable-resolver/SKILL.md",
+      "catalog_path": "skills/batch-98/B98-S09-deterministic-variable-resolver.md",
+      "depends_on": [
+        "B98-S08"
+      ],
+      "outputs": [
+        "resolved_parameters.json",
+        "resolution_trace.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "3d66217f2c52796bebe97864b6dac8cc957ec25a58f4ae7fa534b15d5e5bb56f"
+    },
+    {
+      "id": "B98-S10",
+      "global_id": null,
+      "batch": 98,
+      "name": "b98-contract-signing-provenance",
+      "title": "Contract Signing and Provenance",
+      "purpose": "Sign executable contracts and bind them to source Skill, compiler, policy and dependency snapshots.",
+      "path": "agent-skills/runtime/b98-contract-signing-provenance/SKILL.md",
+      "catalog_path": "skills/batch-98/B98-S10-contract-signing-provenance.md",
+      "depends_on": [
+        "B98-S09"
+      ],
+      "outputs": [
+        "signed_contract.json",
+        "provenance_statement.json",
+        "signature_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "8c27a4ab0481916f11ce3adb63b2c55a189dbe399383cb2fabdd09a41c76c9cf"
+    },
+    {
+      "id": "B98-S11",
+      "global_id": null,
+      "batch": 98,
+      "name": "b98-skill-registry-service",
+      "title": "Skill Registry Service",
+      "purpose": "Implement tenant-aware storage, retrieval, lifecycle and immutable versioning for executable Skill contracts.",
+      "path": "agent-skills/runtime/b98-skill-registry-service/SKILL.md",
+      "catalog_path": "skills/batch-98/B98-S11-skill-registry-service.md",
+      "depends_on": [
+        "B98-S10"
+      ],
+      "outputs": [
+        "skill_registry_openapi.yaml",
+        "registry_schema.sql",
+        "registry_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "03a0bab1dc1533733412eb9d126d82b5edfa76c7ea9b6958c16249798fa4d233"
+    },
+    {
+      "id": "B98-S12",
+      "global_id": null,
+      "batch": 98,
+      "name": "b98-capability-search-ranking",
+      "title": "Capability Search and Ranking",
+      "purpose": "Rank candidate Skills by capability fit, evidence, compatibility, cost, risk and historical outcomes without loading the full estate.",
+      "path": "agent-skills/runtime/b98-capability-search-ranking/SKILL.md",
+      "catalog_path": "skills/batch-98/B98-S12-capability-search-ranking.md",
+      "depends_on": [
+        "B98-S11",
+        "B97-S12"
+      ],
+      "outputs": [
+        "candidate_rankings.json",
+        "ranking_explanations.json",
+        "evaluation_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "bf79d8ad986814d883eeaaa57b287595d63c3d514c57d64034437696b4ee4cf8"
+    },
+    {
+      "id": "B98-S13",
+      "global_id": null,
+      "batch": 98,
+      "name": "b98-dependency-closure-resolver",
+      "title": "Dependency Closure Resolver",
+      "purpose": "Resolve the minimal compatible dependency closure for a selected Skill or route pack.",
+      "path": "agent-skills/runtime/b98-dependency-closure-resolver/SKILL.md",
+      "catalog_path": "skills/batch-98/B98-S13-dependency-closure-resolver.md",
+      "depends_on": [
+        "B98-S12",
+        "B97-S05"
+      ],
+      "outputs": [
+        "dependency_lock.json",
+        "resolution_report.json",
+        "unsat_core.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "e4289e2aad9b8420ecf21e87b27121199dbc138119ae0f9f9d6f08c94761832b"
+    },
+    {
+      "id": "B98-S14",
+      "global_id": null,
+      "batch": 98,
+      "name": "b98-skill-conflict-arbitrator",
+      "title": "Skill Conflict Arbitrator",
+      "purpose": "Arbitrate overlapping write sets, contradictory policies and competing implementations before execution.",
+      "path": "agent-skills/runtime/b98-skill-conflict-arbitrator/SKILL.md",
+      "catalog_path": "skills/batch-98/B98-S14-skill-conflict-arbitrator.md",
+      "depends_on": [
+        "B98-S13"
+      ],
+      "outputs": [
+        "arbitration_result.json",
+        "write_set_plan.json",
+        "approval_request.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "982b2306f58863e2d4b102d5cfe8589bd7e3f6c56a14cc36141d09be5bd8229e"
+    },
+    {
+      "id": "B98-S15",
+      "global_id": null,
+      "batch": 98,
+      "name": "b98-contract-compatibility-deprecation",
+      "title": "Contract Compatibility and Deprecation",
+      "purpose": "Validate contract schema evolution, behavior compatibility, replacement paths and deprecation windows.",
+      "path": "agent-skills/runtime/b98-contract-compatibility-deprecation/SKILL.md",
+      "catalog_path": "skills/batch-98/B98-S15-contract-compatibility-deprecation.md",
+      "depends_on": [
+        "B98-S14"
+      ],
+      "outputs": [
+        "compatibility_report.json",
+        "migration_guide.md",
+        "deprecation_notice.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "e4247bf284df3a56ecd419449e8c18145de44cd8553801dd06a8aa06fdbed6b3"
+    },
+    {
+      "id": "B98-S16",
+      "global_id": null,
+      "batch": 98,
+      "name": "b98-executable-contract-certification-gate",
+      "title": "Executable Contract Certification Gate",
+      "purpose": "Certify executable contracts only when compilation, guards, permissions, dependencies, rollback, tests, evidence and signatures are complete.",
+      "path": "agent-skills/runtime/b98-executable-contract-certification-gate/SKILL.md",
+      "catalog_path": "skills/batch-98/B98-S16-executable-contract-certification-gate.md",
+      "depends_on": [
+        "B98-S15"
+      ],
+      "outputs": [
+        "contract_certification_result.json",
+        "contract_release_manifest.json",
+        "completion_report.md",
+        "evidence_bundle.json"
+      ],
+      "sha256": "9b5643a613de97250aa92903b66ded8d7990172e897a2c3dc581affe75a529bc"
+    },
+    {
+      "id": "B99-S01",
+      "global_id": null,
+      "batch": 99,
+      "name": "b99-durable-run-state-model",
+      "title": "Durable Run State Model",
+      "purpose": "Define the authoritative run, task, step and effect state machines with legal transitions and terminal semantics.",
+      "path": "agent-skills/runtime/b99-durable-run-state-model/SKILL.md",
+      "catalog_path": "skills/batch-99/B99-S01-durable-run-state-model.md",
+      "depends_on": [
+        "B98-S16"
+      ],
+      "outputs": [
+        "run_state_model.json",
+        "transition_table.json",
+        "model_validation.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "06151bd04c1ca8f607af5304f46d8a9e4e5b8dd301b55a8da0552399fbf57c66"
+    },
+    {
+      "id": "B99-S02",
+      "global_id": null,
+      "batch": 99,
+      "name": "b99-plan-to-dag-compiler",
+      "title": "Plan to DAG Compiler",
+      "purpose": "Compile selected executable Skill contracts into a deterministic dependency-aware execution DAG.",
+      "path": "agent-skills/runtime/b99-plan-to-dag-compiler/SKILL.md",
+      "catalog_path": "skills/batch-99/B99-S02-plan-to-dag-compiler.md",
+      "depends_on": [
+        "B99-S01",
+        "B98-S06",
+        "B98-S13"
+      ],
+      "outputs": [
+        "execution_dag.json",
+        "dag_source_map.json",
+        "dag_validation.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "5143bec29fc11a928a7406e7d7823248e4bff8c028030b1b0e4056613c823b28"
+    },
+    {
+      "id": "B99-S03",
+      "global_id": null,
+      "batch": 99,
+      "name": "b99-durable-scheduler-queue",
+      "title": "Durable Scheduler and Queue",
+      "purpose": "Schedule runnable DAG nodes with persistence, priorities, fairness, backpressure and tenant isolation.",
+      "path": "agent-skills/runtime/b99-durable-scheduler-queue/SKILL.md",
+      "catalog_path": "skills/batch-99/B99-S03-durable-scheduler-queue.md",
+      "depends_on": [
+        "B99-S02"
+      ],
+      "outputs": [
+        "scheduler_policy.json",
+        "queue_metrics.json",
+        "scheduler_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "de9cfb59ac04f571543794f67774de904c58c32e5dc89fb5cadd7cd232f4874d"
+    },
+    {
+      "id": "B99-S04",
+      "global_id": null,
+      "batch": 99,
+      "name": "b99-task-lease-heartbeat",
+      "title": "Task Lease and Heartbeat",
+      "purpose": "Implement exclusive task claims, heartbeat renewal, expiry and safe reclaim without duplicate effects.",
+      "path": "agent-skills/runtime/b99-task-lease-heartbeat/SKILL.md",
+      "catalog_path": "skills/batch-99/B99-S04-task-lease-heartbeat.md",
+      "depends_on": [
+        "B99-S03"
+      ],
+      "outputs": [
+        "lease_protocol.json",
+        "lease_test_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "d0c69d5026c74c67ac1e1eb81814841f402dd5ed48351e531bdaedde6e9e31b4"
+    },
+    {
+      "id": "B99-S05",
+      "global_id": null,
+      "batch": 99,
+      "name": "b99-retry-backoff-policy",
+      "title": "Retry and Backoff Policy",
+      "purpose": "Apply bounded, classified and budget-aware retries without converting deterministic failures into loops.",
+      "path": "agent-skills/runtime/b99-retry-backoff-policy/SKILL.md",
+      "catalog_path": "skills/batch-99/B99-S05-retry-backoff-policy.md",
+      "depends_on": [
+        "B99-S04"
+      ],
+      "outputs": [
+        "retry_policy.json",
+        "retry_trace.json",
+        "policy_test_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "5aa010582212c8e730fcc81785113faae7b3009861109d00c9864d8f892d752b"
+    },
+    {
+      "id": "B99-S06",
+      "global_id": null,
+      "batch": 99,
+      "name": "b99-idempotency-effect-journal",
+      "title": "Idempotency and Effect Journal",
+      "purpose": "Record external effects and enforce idempotency keys, deduplication and reconciliation.",
+      "path": "agent-skills/runtime/b99-idempotency-effect-journal/SKILL.md",
+      "catalog_path": "skills/batch-99/B99-S06-idempotency-effect-journal.md",
+      "depends_on": [
+        "B99-S05",
+        "B98-S07"
+      ],
+      "outputs": [
+        "effect_journal_schema.sql",
+        "idempotency_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "79a9833fe358621f80570a1ebef129c6f220f2875d73edb5214244eff46ac278"
+    },
+    {
+      "id": "B99-S07",
+      "global_id": null,
+      "batch": 99,
+      "name": "b99-cancellation-propagation",
+      "title": "Cancellation Propagation",
+      "purpose": "Propagate user, policy, budget and incident cancellation through workflows, runners and external effects.",
+      "path": "agent-skills/runtime/b99-cancellation-propagation/SKILL.md",
+      "catalog_path": "skills/batch-99/B99-S07-cancellation-propagation.md",
+      "depends_on": [
+        "B99-S06"
+      ],
+      "outputs": [
+        "cancellation_protocol.json",
+        "cancellation_test_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "41d712bae3c590c1143b48c5dd6f28217332305130f6e33f822d442e68c216f1"
+    },
+    {
+      "id": "B99-S08",
+      "global_id": null,
+      "batch": 99,
+      "name": "b99-pause-resume-checkpoint",
+      "title": "Pause Resume and Checkpoint",
+      "purpose": "Persist resumable checkpoints and approval pauses without replaying completed side effects.",
+      "path": "agent-skills/runtime/b99-pause-resume-checkpoint/SKILL.md",
+      "catalog_path": "skills/batch-99/B99-S08-pause-resume-checkpoint.md",
+      "depends_on": [
+        "B99-S07"
+      ],
+      "outputs": [
+        "checkpoint_schema.json",
+        "resume_trace.json",
+        "checkpoint_validation.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "b1499c5d5e43afc164159ad2714c04bcf0a2b44eaef093cdafa2db61bb4eb4ae"
+    },
+    {
+      "id": "B99-S09",
+      "global_id": null,
+      "batch": 99,
+      "name": "b99-saga-compensation-engine",
+      "title": "Saga Compensation Engine",
+      "purpose": "Coordinate compensations for partial cross-system failure while preserving audit and residual-risk truth.",
+      "path": "agent-skills/runtime/b99-saga-compensation-engine/SKILL.md",
+      "catalog_path": "skills/batch-99/B99-S09-saga-compensation-engine.md",
+      "depends_on": [
+        "B99-S08"
+      ],
+      "outputs": [
+        "saga_plan.json",
+        "compensation_result.json",
+        "residual_risk.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "fba32a3753e3eed23b88c1721d5300923f640f1385a8f1915d4b6cccf2bc7481"
+    },
+    {
+      "id": "B99-S10",
+      "global_id": null,
+      "batch": 99,
+      "name": "b99-workflow-versioning-replay",
+      "title": "Workflow Versioning and Replay",
+      "purpose": "Support deterministic workflow code evolution, replay and migration for in-flight runs.",
+      "path": "agent-skills/runtime/b99-workflow-versioning-replay/SKILL.md",
+      "catalog_path": "skills/batch-99/B99-S10-workflow-versioning-replay.md",
+      "depends_on": [
+        "B99-S09"
+      ],
+      "outputs": [
+        "workflow_version_map.json",
+        "replay_report.json",
+        "migration_plan.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "0a56ff44e8e50d54daaa7e52c802cc0d2cca8a8b4e2b42b324574ab2dfa37931"
+    },
+    {
+      "id": "B99-S11",
+      "global_id": null,
+      "batch": 99,
+      "name": "b99-external-effect-outbox-inbox",
+      "title": "External Effect Outbox and Inbox",
+      "purpose": "Provide durable outbox/inbox patterns for messages, webhooks and provider calls with deduplication.",
+      "path": "agent-skills/runtime/b99-external-effect-outbox-inbox/SKILL.md",
+      "catalog_path": "skills/batch-99/B99-S11-external-effect-outbox-inbox.md",
+      "depends_on": [
+        "B99-S10"
+      ],
+      "outputs": [
+        "outbox_schema.sql",
+        "delivery_protocol.json",
+        "delivery_test_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "6cebf01e970e2c317fea0a35acb133ad7e49b588904b5c257e3b284b29a1d246"
+    },
+    {
+      "id": "B99-S12",
+      "global_id": null,
+      "batch": 99,
+      "name": "b99-execution-budget-quota",
+      "title": "Execution Budget and Quota",
+      "purpose": "Enforce time, token, compute, storage, network and external-operation budgets at run and tenant scope.",
+      "path": "agent-skills/runtime/b99-execution-budget-quota/SKILL.md",
+      "catalog_path": "skills/batch-99/B99-S12-execution-budget-quota.md",
+      "depends_on": [
+        "B99-S11"
+      ],
+      "outputs": [
+        "budget_policy.json",
+        "usage_ledger.json",
+        "budget_test_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "125f0fa24f2b47f9517699bca3b24383b4d7e065ca12d831201b3a956357f81b"
+    },
+    {
+      "id": "B99-S13",
+      "global_id": null,
+      "batch": 99,
+      "name": "b99-concurrency-fairness-controller",
+      "title": "Concurrency and Fairness Controller",
+      "purpose": "Control global, tenant, repository and resource-key concurrency with anti-starvation behavior.",
+      "path": "agent-skills/runtime/b99-concurrency-fairness-controller/SKILL.md",
+      "catalog_path": "skills/batch-99/B99-S13-concurrency-fairness-controller.md",
+      "depends_on": [
+        "B99-S12"
+      ],
+      "outputs": [
+        "concurrency_policy.json",
+        "fairness_report.json",
+        "lock_test_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "0d77f6befe1b54f60bc9d16d65cb91d18c711cd95fa3015e46a57a1b7ca70aeb"
+    },
+    {
+      "id": "B99-S14",
+      "global_id": null,
+      "batch": 99,
+      "name": "b99-failure-classification-diagnostics",
+      "title": "Failure Classification and Diagnostics",
+      "purpose": "Classify model, contract, dependency, build, test, runtime, policy, infrastructure and user failures before repair.",
+      "path": "agent-skills/runtime/b99-failure-classification-diagnostics/SKILL.md",
+      "catalog_path": "skills/batch-99/B99-S14-failure-classification-diagnostics.md",
+      "depends_on": [
+        "B99-S13"
+      ],
+      "outputs": [
+        "failure_record.json",
+        "failure_fingerprint.json",
+        "diagnostic_bundle.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "1cf411917a78eb6a5d2596c0549480e2a27fd6a70c80668bcec029d93955369c"
+    },
+    {
+      "id": "B99-S15",
+      "global_id": null,
+      "batch": 99,
+      "name": "b99-runtime-observability-tracing",
+      "title": "Runtime Observability and Tracing",
+      "purpose": "Instrument runs, DAG nodes, runner tasks, tool calls, effects and evidence with correlated telemetry.",
+      "path": "agent-skills/runtime/b99-runtime-observability-tracing/SKILL.md",
+      "catalog_path": "skills/batch-99/B99-S15-runtime-observability-tracing.md",
+      "depends_on": [
+        "B99-S14"
+      ],
+      "outputs": [
+        "telemetry_contract.json",
+        "dashboard_queries.json",
+        "observability_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "52d2293714d3d7cdbe85d01d4096c0b69eae12daff5670f62391f2c11908be48"
+    },
+    {
+      "id": "B99-S16",
+      "global_id": null,
+      "batch": 99,
+      "name": "b99-durable-runtime-certification-gate",
+      "title": "Durable Runtime Certification Gate",
+      "purpose": "Certify runtime behavior only after recovery, retry, cancellation, replay, budget, fairness and failure-injection evidence passes.",
+      "path": "agent-skills/runtime/b99-durable-runtime-certification-gate/SKILL.md",
+      "catalog_path": "skills/batch-99/B99-S16-durable-runtime-certification-gate.md",
+      "depends_on": [
+        "B99-S15",
+        "B98-S16"
+      ],
+      "outputs": [
+        "runtime_certification_result.json",
+        "runtime_release_manifest.json",
+        "completion_report.md",
+        "evidence_bundle.json"
+      ],
+      "sha256": "a9a8e78c6142c163f6fbe8697bdc6e71b648af760b6fbf845662f9e558017662"
+    },
+    {
+      "id": "B100-S01",
+      "global_id": null,
+      "batch": 100,
+      "name": "b100-runner-enrollment-workload-identity",
+      "title": "Runner Enrollment and Workload Identity",
+      "purpose": "Enroll runners with unique short-lived workload identities and explicit tenant or fleet ownership.",
+      "path": "agent-skills/runtime/b100-runner-enrollment-workload-identity/SKILL.md",
+      "catalog_path": "skills/batch-100/B100-S01-runner-enrollment-workload-identity.md",
+      "depends_on": [
+        "B99-S16"
+      ],
+      "outputs": [
+        "runner_identity.json",
+        "enrollment_record.json",
+        "identity_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "e46783df452f653e7b90c4a29891a1b79e743804092d5164fe0565cd097626e3"
+    },
+    {
+      "id": "B100-S02",
+      "global_id": null,
+      "batch": 100,
+      "name": "b100-runner-mtls-channel",
+      "title": "Runner mTLS Channel",
+      "purpose": "Establish mutually authenticated, rotated and policy-bound runner control channels.",
+      "path": "agent-skills/runtime/b100-runner-mtls-channel/SKILL.md",
+      "catalog_path": "skills/batch-100/B100-S02-runner-mtls-channel.md",
+      "depends_on": [
+        "B100-S01"
+      ],
+      "outputs": [
+        "mtls_profile.json",
+        "certificate_inventory.json",
+        "channel_test_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "ee801648a57729552e70eedd4c51c26187949f71484cc80ad8987b8362e19db9"
+    },
+    {
+      "id": "B100-S03",
+      "global_id": null,
+      "batch": 100,
+      "name": "b100-runner-attestation-posture",
+      "title": "Runner Attestation and Posture",
+      "purpose": "Attest runner software, image, kernel, configuration and policy posture before sensitive tasks.",
+      "path": "agent-skills/runtime/b100-runner-attestation-posture/SKILL.md",
+      "catalog_path": "skills/batch-100/B100-S03-runner-attestation-posture.md",
+      "depends_on": [
+        "B100-S02"
+      ],
+      "outputs": [
+        "attestation_statement.json",
+        "posture_result.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "5648c46141b22ea1270bc8786a3856ae275eff5f516332331d894e4623de2976"
+    },
+    {
+      "id": "B100-S04",
+      "global_id": null,
+      "batch": 100,
+      "name": "b100-signed-task-envelope-verifier",
+      "title": "Signed Task Envelope Verifier",
+      "purpose": "Verify task signature, nonce, audience, scope, expiry and capability manifest before claim.",
+      "path": "agent-skills/runtime/b100-signed-task-envelope-verifier/SKILL.md",
+      "catalog_path": "skills/batch-100/B100-S04-signed-task-envelope-verifier.md",
+      "depends_on": [
+        "B100-S03",
+        "B98-S05"
+      ],
+      "outputs": [
+        "task_envelope.schema.json",
+        "verification_result.json",
+        "replay_test_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "a9b1d024a6df28038360f00e08fa3e172bcbd764e5950b92fc894843ea06903f"
+    },
+    {
+      "id": "B100-S05",
+      "global_id": null,
+      "batch": 100,
+      "name": "b100-sandbox-profile-selector",
+      "title": "Sandbox Profile Selector",
+      "purpose": "Select container, microVM, VM, device or isolated-host profiles based on risk and tool requirements.",
+      "path": "agent-skills/runtime/b100-sandbox-profile-selector/SKILL.md",
+      "catalog_path": "skills/batch-100/B100-S05-sandbox-profile-selector.md",
+      "depends_on": [
+        "B100-S04"
+      ],
+      "outputs": [
+        "sandbox_selection.json",
+        "profile_matrix.json",
+        "selection_test_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "1d9de72c34695d1816afcb7bfccb7518a58d433740470a5f83664474c8a28acc"
+    },
+    {
+      "id": "B100-S06",
+      "global_id": null,
+      "batch": 100,
+      "name": "b100-workspace-filesystem-isolation",
+      "title": "Workspace and Filesystem Isolation",
+      "purpose": "Create per-task isolated workspaces with safe mounts, path controls, cleanup and residue detection.",
+      "path": "agent-skills/runtime/b100-workspace-filesystem-isolation/SKILL.md",
+      "catalog_path": "skills/batch-100/B100-S06-workspace-filesystem-isolation.md",
+      "depends_on": [
+        "B100-S05"
+      ],
+      "outputs": [
+        "workspace_manifest.json",
+        "mount_policy.json",
+        "cleanup_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "ab0a0b01c3985d4d6115b38dfbc2723a34c217cacbf6230d0223e1e2de4f1c5e"
+    },
+    {
+      "id": "B100-S07",
+      "global_id": null,
+      "batch": 100,
+      "name": "b100-process-execution-allowlist",
+      "title": "Process Execution Allowlist",
+      "purpose": "Execute only inspected, declared and policy-authorized commands without arbitrary shell escape.",
+      "path": "agent-skills/runtime/b100-process-execution-allowlist/SKILL.md",
+      "catalog_path": "skills/batch-100/B100-S07-process-execution-allowlist.md",
+      "depends_on": [
+        "B100-S06"
+      ],
+      "outputs": [
+        "process_policy.json",
+        "command_trace.json",
+        "process_test_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "e2bf48596d00000f1d641fdfc0665fc614a94975868db74b7296a925868a4a2e"
+    },
+    {
+      "id": "B100-S08",
+      "global_id": null,
+      "batch": 100,
+      "name": "b100-network-egress-control",
+      "title": "Network Egress Control",
+      "purpose": "Apply default-deny DNS, IP, port, protocol and identity-aware egress controls per task.",
+      "path": "agent-skills/runtime/b100-network-egress-control/SKILL.md",
+      "catalog_path": "skills/batch-100/B100-S08-network-egress-control.md",
+      "depends_on": [
+        "B100-S07"
+      ],
+      "outputs": [
+        "egress_policy.json",
+        "network_trace.json",
+        "egress_test_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "3e0f21fdb76157fd1b96fe820a5fff2e5c0547412ade9851917d9c17d930333d"
+    },
+    {
+      "id": "B100-S09",
+      "global_id": null,
+      "batch": 100,
+      "name": "b100-secret-broker-redaction",
+      "title": "Secret Broker and Redaction",
+      "purpose": "Inject task-scoped secrets by reference, redact all surfaces and revoke immediately after use.",
+      "path": "agent-skills/runtime/b100-secret-broker-redaction/SKILL.md",
+      "catalog_path": "skills/batch-100/B100-S09-secret-broker-redaction.md",
+      "depends_on": [
+        "B100-S08"
+      ],
+      "outputs": [
+        "secret_lease.json",
+        "redaction_report.json",
+        "revocation_evidence.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "f4522e0633b6aa5e3f287024ee82420d52f879ccf20000b259754841c1bb54e9"
+    },
+    {
+      "id": "B100-S10",
+      "global_id": null,
+      "batch": 100,
+      "name": "b100-resource-quota-enforcer",
+      "title": "Resource Quota Enforcer",
+      "purpose": "Enforce CPU, memory, disk, inode, process, network and wall-clock budgets against hostile workloads.",
+      "path": "agent-skills/runtime/b100-resource-quota-enforcer/SKILL.md",
+      "catalog_path": "skills/batch-100/B100-S10-resource-quota-enforcer.md",
+      "depends_on": [
+        "B100-S09"
+      ],
+      "outputs": [
+        "resource_profile.json",
+        "usage_report.json",
+        "quota_test_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "e50d478c8df8e70095f8ad6f1dc37db6b7cdb6fe3899903fe04b0d63bb62d97b"
+    },
+    {
+      "id": "B100-S11",
+      "global_id": null,
+      "batch": 100,
+      "name": "b100-artifact-signing-upload",
+      "title": "Artifact Signing and Upload",
+      "purpose": "Hash, sign, scan and upload artifacts through content-addressed, tenant-isolated channels.",
+      "path": "agent-skills/runtime/b100-artifact-signing-upload/SKILL.md",
+      "catalog_path": "skills/batch-100/B100-S11-artifact-signing-upload.md",
+      "depends_on": [
+        "B100-S10"
+      ],
+      "outputs": [
+        "artifact_manifest.json",
+        "signature_bundle.json",
+        "upload_receipt.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "60a23b2325b5c4b1f734e8b79715f05aee46573d94a04bb974a817b0a981958c"
+    },
+    {
+      "id": "B100-S12",
+      "global_id": null,
+      "batch": 100,
+      "name": "b100-runner-lease-cancel-protocol",
+      "title": "Runner Lease and Cancel Protocol",
+      "purpose": "Coordinate task leases, heartbeat, cancellation, result fencing and stale runner behavior.",
+      "path": "agent-skills/runtime/b100-runner-lease-cancel-protocol/SKILL.md",
+      "catalog_path": "skills/batch-100/B100-S12-runner-lease-cancel-protocol.md",
+      "depends_on": [
+        "B100-S11",
+        "B99-S04",
+        "B99-S07"
+      ],
+      "outputs": [
+        "runner_lease.json",
+        "cancel_trace.json",
+        "protocol_test_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "aee3637fd34f34d066be9217899afb92fec33bdebc7a3edebd56df4ed8a1a53b"
+    },
+    {
+      "id": "B100-S13",
+      "global_id": null,
+      "batch": 100,
+      "name": "b100-fleet-routing-capability-match",
+      "title": "Fleet Routing and Capability Match",
+      "purpose": "Route tasks to compatible, healthy and authorized runners by platform, toolchain, trust and locality.",
+      "path": "agent-skills/runtime/b100-fleet-routing-capability-match/SKILL.md",
+      "catalog_path": "skills/batch-100/B100-S13-fleet-routing-capability-match.md",
+      "depends_on": [
+        "B100-S12"
+      ],
+      "outputs": [
+        "routing_decision.json",
+        "fleet_inventory.json",
+        "routing_test_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "3c5e7a709f0e9fd66bffe4bba8bd228a3a66eef05e68f6691a21acb99f8f0afd"
+    },
+    {
+      "id": "B100-S14",
+      "global_id": null,
+      "batch": 100,
+      "name": "b100-runner-upgrade-drain",
+      "title": "Runner Upgrade and Drain",
+      "purpose": "Patch runners safely through staged rollout, drain, rollback and version compatibility checks.",
+      "path": "agent-skills/runtime/b100-runner-upgrade-drain/SKILL.md",
+      "catalog_path": "skills/batch-100/B100-S14-runner-upgrade-drain.md",
+      "depends_on": [
+        "B100-S13"
+      ],
+      "outputs": [
+        "upgrade_plan.json",
+        "drain_report.json",
+        "rollback_evidence.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "a3d8c168b6d8ec095430409556d869dd4d3e39e5487d149e1dbefe951528bd98"
+    },
+    {
+      "id": "B100-S15",
+      "global_id": null,
+      "batch": 100,
+      "name": "b100-runner-quarantine-revocation",
+      "title": "Runner Quarantine and Revocation",
+      "purpose": "Quarantine compromised or unhealthy runners, revoke credentials and preserve forensic evidence.",
+      "path": "agent-skills/runtime/b100-runner-quarantine-revocation/SKILL.md",
+      "catalog_path": "skills/batch-100/B100-S15-runner-quarantine-revocation.md",
+      "depends_on": [
+        "B100-S14"
+      ],
+      "outputs": [
+        "quarantine_record.json",
+        "revocation_receipt.json",
+        "forensic_bundle.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "fab885101506a477e4d12defc703049f265272d33d5ca54c6dfe8627ffe99b2b"
+    },
+    {
+      "id": "B100-S16",
+      "global_id": null,
+      "batch": 100,
+      "name": "b100-runner-fabric-certification-gate",
+      "title": "Runner Fabric Certification Gate",
+      "purpose": "Certify runner profiles only after identity, attestation, isolation, malicious workload, cancellation and recovery tests pass.",
+      "path": "agent-skills/runtime/b100-runner-fabric-certification-gate/SKILL.md",
+      "catalog_path": "skills/batch-100/B100-S16-runner-fabric-certification-gate.md",
+      "depends_on": [
+        "B100-S15",
+        "B99-S16"
+      ],
+      "outputs": [
+        "runner_certification_result.json",
+        "certified_profiles.json",
+        "completion_report.md",
+        "evidence_bundle.json"
+      ],
+      "sha256": "001fbec0f3be12e87fd3d39ac68fa0a55e2ddfda10f1f269ffcb5dc72028503b"
+    },
+    {
+      "id": "B101-S01",
+      "global_id": null,
+      "batch": 101,
+      "name": "b101-golden-route-common-contract",
+      "title": "Golden Route Common Contract",
+      "purpose": "Define the common repository-to-PR lifecycle, evidence, state and rollback contract shared by Java, .NET and Python routes.",
+      "path": "agent-skills/runtime/b101-golden-route-common-contract/SKILL.md",
+      "catalog_path": "skills/batch-101/B101-S01-golden-route-common-contract.md",
+      "depends_on": [
+        "B100-S16",
+        "B97-S12",
+        "B98-S16",
+        "B99-S16"
+      ],
+      "outputs": [
+        "golden_route_contract.json",
+        "route_state_model.json",
+        "common_validation.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "7ededc79e2f34670506c0d22317d568a16434cacb44f2a33a441f23ca38a52e8"
+    },
+    {
+      "id": "B101-S02",
+      "global_id": null,
+      "batch": 101,
+      "name": "b101-java-route-discovery-baseline",
+      "title": "Java Route Discovery and Baseline",
+      "purpose": "Discover Maven and Gradle Java estates and reproduce a clean immutable baseline build and test profile.",
+      "path": "agent-skills/runtime/b101-java-route-discovery-baseline/SKILL.md",
+      "catalog_path": "skills/batch-101/B101-S02-java-route-discovery-baseline.md",
+      "depends_on": [
+        "B101-S01"
+      ],
+      "outputs": [
+        "java_route_profile.json",
+        "java_baseline_result.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "9cbd7a1c6925f3c81c906a1f600f1f9604a0ac32bdb84596bb728fa64160b0b4"
+    },
+    {
+      "id": "B101-S03",
+      "global_id": null,
+      "batch": 101,
+      "name": "b101-java8-21-modernization-recipe",
+      "title": "Java 8 to 21 Modernization Recipe",
+      "purpose": "Apply deterministic language, dependency, module and runtime upgrades with compatibility obligations.",
+      "path": "agent-skills/runtime/b101-java8-21-modernization-recipe/SKILL.md",
+      "catalog_path": "skills/batch-101/B101-S03-java8-21-modernization-recipe.md",
+      "depends_on": [
+        "B101-S02"
+      ],
+      "outputs": [
+        "java_upgrade_plan.json",
+        "java_patch_set/",
+        "compatibility_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "9728815f4833ac868ea3df979cd362093a3b6d89f104ac600e12d5f5cfcdabb5"
+    },
+    {
+      "id": "B101-S04",
+      "global_id": null,
+      "batch": 101,
+      "name": "b101-spring-boot-modernization-route",
+      "title": "Spring Boot Modernization Route",
+      "purpose": "Migrate Spring Boot, Security, Data, MVC/WebFlux, configuration and observability with endpoint-level fidelity.",
+      "path": "agent-skills/runtime/b101-spring-boot-modernization-route/SKILL.md",
+      "catalog_path": "skills/batch-101/B101-S04-spring-boot-modernization-route.md",
+      "depends_on": [
+        "B101-S03"
+      ],
+      "outputs": [
+        "spring_route_plan.json",
+        "spring_patch_set/",
+        "endpoint_mapping.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "aa719feea8d7d092ebc3c585c223c8d0031c69adf67eb1acc929ea2684bf3858"
+    },
+    {
+      "id": "B101-S05",
+      "global_id": null,
+      "batch": 101,
+      "name": "b101-java-data-messaging-scheduler-route",
+      "title": "Java Data Messaging and Scheduler Route",
+      "purpose": "Preserve JPA/JDBC transactions, schema, Kafka/JMS acknowledgment, cache and scheduler semantics.",
+      "path": "agent-skills/runtime/b101-java-data-messaging-scheduler-route/SKILL.md",
+      "catalog_path": "skills/batch-101/B101-S05-java-data-messaging-scheduler-route.md",
+      "depends_on": [
+        "B101-S04"
+      ],
+      "outputs": [
+        "java_runtime_semantics.json",
+        "differential_results.json",
+        "risk_register.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "89f2559d43b51ae6dbc4a8180d441a2ddb5d55e6216131692e8147c7ce82e7a8"
+    },
+    {
+      "id": "B101-S06",
+      "global_id": null,
+      "batch": 101,
+      "name": "b101-java-route-verification-pr",
+      "title": "Java Route Verification and PR",
+      "purpose": "Build, test, run differential journeys, generate an evidence-backed PR and prove rollback for the Java route.",
+      "path": "agent-skills/runtime/b101-java-route-verification-pr/SKILL.md",
+      "catalog_path": "skills/batch-101/B101-S06-java-route-verification-pr.md",
+      "depends_on": [
+        "B101-S05"
+      ],
+      "outputs": [
+        "java_route_result.json",
+        "pull_request_bundle/",
+        "rollback_result.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "8b5f5f9686a22f5d74d194b28877cb3ce81916df74228bba7674771ef9cb866a"
+    },
+    {
+      "id": "B101-S07",
+      "global_id": null,
+      "batch": 101,
+      "name": "b101-dotnet-route-discovery-baseline",
+      "title": ".NET Route Discovery and Baseline",
+      "purpose": "Discover solutions, projects, packages, frameworks, workloads and reproduce the source baseline.",
+      "path": "agent-skills/runtime/b101-dotnet-route-discovery-baseline/SKILL.md",
+      "catalog_path": "skills/batch-101/B101-S07-dotnet-route-discovery-baseline.md",
+      "depends_on": [
+        "B101-S06"
+      ],
+      "outputs": [
+        "dotnet_route_profile.json",
+        "dotnet_baseline_result.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "7ede688d26e8bfcee4013ddddbf636dba28251f1d44df455dc0e471df0e31bb1"
+    },
+    {
+      "id": "B101-S08",
+      "global_id": null,
+      "batch": 101,
+      "name": "b101-framework-to-modern-dotnet-route",
+      "title": ".NET Framework to Modern .NET Route",
+      "purpose": "Plan and implement staged migration from .NET Framework to supported modern .NET targets.",
+      "path": "agent-skills/runtime/b101-framework-to-modern-dotnet-route/SKILL.md",
+      "catalog_path": "skills/batch-101/B101-S08-framework-to-modern-dotnet-route.md",
+      "depends_on": [
+        "B101-S07"
+      ],
+      "outputs": [
+        "dotnet_upgrade_plan.json",
+        "dotnet_patch_set/",
+        "compatibility_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "f02e248d147f99bd6cb9b86298a9a70ff33c86e1d713b4f2478ef8e1fb1a5190"
+    },
+    {
+      "id": "B101-S09",
+      "global_id": null,
+      "batch": 101,
+      "name": "b101-aspnet-ef-wcf-modernization-route",
+      "title": "ASP.NET EF and WCF Modernization Route",
+      "purpose": "Modernize ASP.NET, authentication, middleware, Entity Framework and WCF boundaries with contract preservation.",
+      "path": "agent-skills/runtime/b101-aspnet-ef-wcf-modernization-route/SKILL.md",
+      "catalog_path": "skills/batch-101/B101-S09-aspnet-ef-wcf-modernization-route.md",
+      "depends_on": [
+        "B101-S08"
+      ],
+      "outputs": [
+        "dotnet_framework_mapping.json",
+        "dotnet_service_patch_set/",
+        "contract_results.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "3fa642ef4a5e544ae311d7d7238e1f37e729e13c8323a83bce86f16e887e8cae"
+    },
+    {
+      "id": "B101-S10",
+      "global_id": null,
+      "batch": 101,
+      "name": "b101-dotnet-route-verification-pr",
+      "title": ".NET Route Verification and PR",
+      "purpose": "Execute Windows/Linux-aware build, tests, runtime probes, differential journeys, PR and rollback evidence.",
+      "path": "agent-skills/runtime/b101-dotnet-route-verification-pr/SKILL.md",
+      "catalog_path": "skills/batch-101/B101-S10-dotnet-route-verification-pr.md",
+      "depends_on": [
+        "B101-S09"
+      ],
+      "outputs": [
+        "dotnet_route_result.json",
+        "pull_request_bundle/",
+        "rollback_result.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "49a9c45b01fb27619382b99787c21ddc348c18dd1506a17761391d9bfb95de51"
+    },
+    {
+      "id": "B101-S11",
+      "global_id": null,
+      "batch": 101,
+      "name": "b101-python-route-discovery-environment",
+      "title": "Python Route Discovery and Environment",
+      "purpose": "Discover Python versions, dependency managers, native extensions, notebooks, web apps, data and ML workloads and reproduce environments.",
+      "path": "agent-skills/runtime/b101-python-route-discovery-environment/SKILL.md",
+      "catalog_path": "skills/batch-101/B101-S11-python-route-discovery-environment.md",
+      "depends_on": [
+        "B101-S10"
+      ],
+      "outputs": [
+        "python_route_profile.json",
+        "python_environment_result.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "65cc7225f3a60029dda7d71ac0a0c0fae47ea32053c641fbc110a059e3068130"
+    },
+    {
+      "id": "B101-S12",
+      "global_id": null,
+      "batch": 101,
+      "name": "b101-python2-legacy-upgrade-route",
+      "title": "Python 2 and Legacy Upgrade Route",
+      "purpose": "Upgrade Python 2 or legacy Python code, packaging and syntax with semantic and encoding fidelity.",
+      "path": "agent-skills/runtime/b101-python2-legacy-upgrade-route/SKILL.md",
+      "catalog_path": "skills/batch-101/B101-S12-python2-legacy-upgrade-route.md",
+      "depends_on": [
+        "B101-S11"
+      ],
+      "outputs": [
+        "python_upgrade_plan.json",
+        "python_patch_set/",
+        "compatibility_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "641e6796681101658fbc946b21de85b606f14ba8b1dc0aa3953266f2c3309afe"
+    },
+    {
+      "id": "B101-S13",
+      "global_id": null,
+      "batch": 101,
+      "name": "b101-django-flask-modernization-route",
+      "title": "Django and Flask Modernization Route",
+      "purpose": "Modernize Django or Flask routing, middleware, auth, ORM, sessions, migrations and deployment behavior.",
+      "path": "agent-skills/runtime/b101-django-flask-modernization-route/SKILL.md",
+      "catalog_path": "skills/batch-101/B101-S13-django-flask-modernization-route.md",
+      "depends_on": [
+        "B101-S12"
+      ],
+      "outputs": [
+        "python_web_mapping.json",
+        "python_web_patch_set/",
+        "contract_results.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "c05b168df988338de78b1d8f53cbaf01c3b4f92e96e388158e43535e29bc3583"
+    },
+    {
+      "id": "B101-S14",
+      "global_id": null,
+      "batch": 101,
+      "name": "b101-python-data-ml-pipeline-route",
+      "title": "Python Data and ML Pipeline Route",
+      "purpose": "Modernize batch, notebook, orchestration, numerical and ML pipelines with data and model behavior evidence.",
+      "path": "agent-skills/runtime/b101-python-data-ml-pipeline-route/SKILL.md",
+      "catalog_path": "skills/batch-101/B101-S14-python-data-ml-pipeline-route.md",
+      "depends_on": [
+        "B101-S13"
+      ],
+      "outputs": [
+        "pipeline_mapping.json",
+        "numerical_results.json",
+        "model_validation.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "b3830733339484a98ad3c89be417de7a24c39d4d8eb72a5a5c729732631108c5"
+    },
+    {
+      "id": "B101-S15",
+      "global_id": null,
+      "batch": 101,
+      "name": "b101-python-route-verification-pr",
+      "title": "Python Route Verification and PR",
+      "purpose": "Run environment, test, web/data/ML journey, package, PR and rollback validation for the Python route.",
+      "path": "agent-skills/runtime/b101-python-route-verification-pr/SKILL.md",
+      "catalog_path": "skills/batch-101/B101-S15-python-route-verification-pr.md",
+      "depends_on": [
+        "B101-S14"
+      ],
+      "outputs": [
+        "python_route_result.json",
+        "pull_request_bundle/",
+        "rollback_result.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "f6400dc45f349b256a39e4a18d71518ee7372e01a87fee69fe12cfc4a3cff6c9"
+    },
+    {
+      "id": "B101-S16",
+      "global_id": null,
+      "batch": 101,
+      "name": "b101-golden-route-certification-gate",
+      "title": "Golden Route Certification Gate",
+      "purpose": "Certify Java, .NET and Python route packs against representative holdout repositories and exact evidence.",
+      "path": "agent-skills/runtime/b101-golden-route-certification-gate/SKILL.md",
+      "catalog_path": "skills/batch-101/B101-S16-golden-route-certification-gate.md",
+      "depends_on": [
+        "B101-S15"
+      ],
+      "outputs": [
+        "route_certification_result.json",
+        "route_support_matrix.json",
+        "completion_report.md",
+        "evidence_bundle.json"
+      ],
+      "sha256": "b69ed3def3dcc1a858845bba5c372a879960accff96823ebd6e1229be528d619"
+    },
+    {
+      "id": "B102-S01",
+      "global_id": null,
+      "batch": 102,
+      "name": "b102-oracle-registry-governance",
+      "title": "Oracle Registry and Governance",
+      "purpose": "Register authoritative, supporting and prohibited oracle types with ownership and confidence.",
+      "path": "agent-skills/runtime/b102-oracle-registry-governance/SKILL.md",
+      "catalog_path": "skills/batch-102/B102-S01-oracle-registry-governance.md",
+      "depends_on": [
+        "B101-S16"
+      ],
+      "outputs": [
+        "oracle_registry.json",
+        "oracle_policy.json",
+        "oracle_validation.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "9edaff6ce3af3e66c0279b111dd4b76008c6fb005ed87f8f3d617029b3f110b1"
+    },
+    {
+      "id": "B102-S02",
+      "global_id": null,
+      "batch": 102,
+      "name": "b102-characterization-test-miner",
+      "title": "Characterization Test Miner",
+      "purpose": "Mine observed source behavior into stable tests without freezing known defects uncritically.",
+      "path": "agent-skills/runtime/b102-characterization-test-miner/SKILL.md",
+      "catalog_path": "skills/batch-102/B102-S02-characterization-test-miner.md",
+      "depends_on": [
+        "B102-S01"
+      ],
+      "outputs": [
+        "characterization_tests/",
+        "behavior_inventory.json",
+        "mining_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "7d87442e74e551c20ae12ffbab17a0500f40112b4bf26f770650c035742bd0d8"
+    },
+    {
+      "id": "B102-S03",
+      "global_id": null,
+      "batch": 102,
+      "name": "b102-golden-master-capture",
+      "title": "Golden Master Capture",
+      "purpose": "Capture canonical outputs, state transitions and side effects with normalization and approval.",
+      "path": "agent-skills/runtime/b102-golden-master-capture/SKILL.md",
+      "catalog_path": "skills/batch-102/B102-S03-golden-master-capture.md",
+      "depends_on": [
+        "B102-S02"
+      ],
+      "outputs": [
+        "golden_masters/",
+        "normalization_rules.json",
+        "capture_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "b2ba0c3f540276b634022478fab628fe44555ef16b86efea6be0bcdad163cbc7"
+    },
+    {
+      "id": "B102-S04",
+      "global_id": null,
+      "batch": 102,
+      "name": "b102-differential-execution-harness",
+      "title": "Differential Execution Harness",
+      "purpose": "Run source and target against identical inputs, environments and controlled dependencies and compare observations.",
+      "path": "agent-skills/runtime/b102-differential-execution-harness/SKILL.md",
+      "catalog_path": "skills/batch-102/B102-S04-differential-execution-harness.md",
+      "depends_on": [
+        "B102-S03",
+        "B99-S08",
+        "B100-S12"
+      ],
+      "outputs": [
+        "differential_results.json",
+        "execution_traces/",
+        "difference_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "181be46a0dde5a16f18f9ad04b58b6d45adb3577a60ac4b67128c506fa29b72d"
+    },
+    {
+      "id": "B102-S05",
+      "global_id": null,
+      "batch": 102,
+      "name": "b102-api-contract-equivalence",
+      "title": "API Contract Equivalence",
+      "purpose": "Compare routes, methods, auth, validation, error models, schemas, ordering, pagination and compatibility.",
+      "path": "agent-skills/runtime/b102-api-contract-equivalence/SKILL.md",
+      "catalog_path": "skills/batch-102/B102-S05-api-contract-equivalence.md",
+      "depends_on": [
+        "B102-S04"
+      ],
+      "outputs": [
+        "api_equivalence.json",
+        "contract_diff.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "8b5939f33668189eb420ed253a391228e12c3b8024fa7ec43622fbc86b19089a"
+    },
+    {
+      "id": "B102-S06",
+      "global_id": null,
+      "batch": 102,
+      "name": "b102-data-query-equivalence",
+      "title": "Data and Query Equivalence",
+      "purpose": "Compare schema, constraints, data transformations, query results, ordering, precision and null semantics.",
+      "path": "agent-skills/runtime/b102-data-query-equivalence/SKILL.md",
+      "catalog_path": "skills/batch-102/B102-S06-data-query-equivalence.md",
+      "depends_on": [
+        "B102-S05"
+      ],
+      "outputs": [
+        "data_equivalence.json",
+        "query_diff.json",
+        "reconciliation_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "11dc90b182552969eb7131bf8a68b3aa56f6f2490d2c57ad7a19ae1fa4c6df4d"
+    },
+    {
+      "id": "B102-S07",
+      "global_id": null,
+      "batch": 102,
+      "name": "b102-business-invariant-engine",
+      "title": "Business Invariant Engine",
+      "purpose": "Define and evaluate business invariants across state, balance, inventory, permissions, audit and reporting.",
+      "path": "agent-skills/runtime/b102-business-invariant-engine/SKILL.md",
+      "catalog_path": "skills/batch-102/B102-S07-business-invariant-engine.md",
+      "depends_on": [
+        "B102-S06"
+      ],
+      "outputs": [
+        "business_invariants.json",
+        "invariant_results.json",
+        "coverage_map.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "048fd5af4223ddb9fd93cf20c83e7346b80258f17af2b51de743f2775161a307"
+    },
+    {
+      "id": "B102-S08",
+      "global_id": null,
+      "batch": 102,
+      "name": "b102-messaging-idempotency-equivalence",
+      "title": "Messaging and Idempotency Equivalence",
+      "purpose": "Compare delivery, acknowledgment, retry, ordering, deduplication and side-effect idempotency.",
+      "path": "agent-skills/runtime/b102-messaging-idempotency-equivalence/SKILL.md",
+      "catalog_path": "skills/batch-102/B102-S08-messaging-idempotency-equivalence.md",
+      "depends_on": [
+        "B102-S07"
+      ],
+      "outputs": [
+        "messaging_equivalence.json",
+        "duplicate_delivery_results.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "c664f39643f584e4c8a32fe569cd9942c85665082624a927fe3e803a1fe05f18"
+    },
+    {
+      "id": "B102-S09",
+      "global_id": null,
+      "batch": 102,
+      "name": "b102-transaction-concurrency-equivalence",
+      "title": "Transaction and Concurrency Equivalence",
+      "purpose": "Compare transaction boundaries, isolation, locking, deadlocks, retries and race-sensitive outcomes.",
+      "path": "agent-skills/runtime/b102-transaction-concurrency-equivalence/SKILL.md",
+      "catalog_path": "skills/batch-102/B102-S09-transaction-concurrency-equivalence.md",
+      "depends_on": [
+        "B102-S08"
+      ],
+      "outputs": [
+        "transaction_equivalence.json",
+        "concurrency_results.json",
+        "deadlock_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "613e29b5c003d52defd3063ffb66a6a720a5855e204db5f04718089579eaf7dd"
+    },
+    {
+      "id": "B102-S10",
+      "global_id": null,
+      "batch": 102,
+      "name": "b102-time-randomness-environment-control",
+      "title": "Time Randomness and Environment Control",
+      "purpose": "Control clocks, time zones, random seeds, locale, ports and environment-dependent behavior.",
+      "path": "agent-skills/runtime/b102-time-randomness-environment-control/SKILL.md",
+      "catalog_path": "skills/batch-102/B102-S10-time-randomness-environment-control.md",
+      "depends_on": [
+        "B102-S09"
+      ],
+      "outputs": [
+        "environment_control.json",
+        "repeatability_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "38f388e12b359030a592cab4fa541bd1bbb7cb070d872020263fba16921e15b8"
+    },
+    {
+      "id": "B102-S11",
+      "global_id": null,
+      "batch": 102,
+      "name": "b102-performance-resource-equivalence",
+      "title": "Performance and Resource Equivalence",
+      "purpose": "Compare latency, throughput, memory, CPU, allocation, artifact size and capacity under representative workloads.",
+      "path": "agent-skills/runtime/b102-performance-resource-equivalence/SKILL.md",
+      "catalog_path": "skills/batch-102/B102-S11-performance-resource-equivalence.md",
+      "depends_on": [
+        "B102-S10"
+      ],
+      "outputs": [
+        "performance_equivalence.json",
+        "benchmark_results.json",
+        "budget_findings.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "fc39cca33adb37478d82c98b3d47195af33a9dde97df6de6968d41d0e3898f10"
+    },
+    {
+      "id": "B102-S12",
+      "global_id": null,
+      "batch": 102,
+      "name": "b102-security-behavior-equivalence",
+      "title": "Security Behavior Equivalence",
+      "purpose": "Compare identity, authentication, authorization, tenant isolation, validation, secrets and audit behavior.",
+      "path": "agent-skills/runtime/b102-security-behavior-equivalence/SKILL.md",
+      "catalog_path": "skills/batch-102/B102-S12-security-behavior-equivalence.md",
+      "depends_on": [
+        "B102-S11"
+      ],
+      "outputs": [
+        "security_equivalence.json",
+        "attack_results.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "bbc970cbacc0ae9e74ee1977c8d030f0c78e1749730aae5c1ae7b6ac053a123c"
+    },
+    {
+      "id": "B102-S13",
+      "global_id": null,
+      "batch": 102,
+      "name": "b102-metamorphic-property-testing",
+      "title": "Metamorphic and Property Testing",
+      "purpose": "Generate properties and transformations that reveal defects beyond example-based tests.",
+      "path": "agent-skills/runtime/b102-metamorphic-property-testing/SKILL.md",
+      "catalog_path": "skills/batch-102/B102-S13-metamorphic-property-testing.md",
+      "depends_on": [
+        "B102-S12"
+      ],
+      "outputs": [
+        "property_catalog.json",
+        "property_results.json",
+        "counterexamples/",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "e568168834d63963c8d5b9836d469c5838ebb780bcb8913c57a32e78b70ccefa"
+    },
+    {
+      "id": "B102-S14",
+      "global_id": null,
+      "batch": 102,
+      "name": "b102-human-oracle-approval",
+      "title": "Human Oracle and Approval",
+      "purpose": "Capture expert judgments for irreducible semantics with exact scope, evidence and separation of duties.",
+      "path": "agent-skills/runtime/b102-human-oracle-approval/SKILL.md",
+      "catalog_path": "skills/batch-102/B102-S14-human-oracle-approval.md",
+      "depends_on": [
+        "B102-S13"
+      ],
+      "outputs": [
+        "human_oracle_decision.json",
+        "review_packet/",
+        "approval_audit.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "d565409b509428f288e844b6948289da08436ad3c1bfccd9db3a6a9861226f98"
+    },
+    {
+      "id": "B102-S15",
+      "global_id": null,
+      "batch": 102,
+      "name": "b102-equivalence-evidence-freshness",
+      "title": "Equivalence Evidence Freshness",
+      "purpose": "Invalidate equivalence results when code, tests, data, environment, dependency, tool or policy changes.",
+      "path": "agent-skills/runtime/b102-equivalence-evidence-freshness/SKILL.md",
+      "catalog_path": "skills/batch-102/B102-S15-equivalence-evidence-freshness.md",
+      "depends_on": [
+        "B102-S14"
+      ],
+      "outputs": [
+        "freshness_graph.json",
+        "invalidated_results.json",
+        "retest_plan.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "e54b9d93f74487e8a549ec6a25fc13efe15c91a89d8df079e9acccbc142fea1a"
+    },
+    {
+      "id": "B102-S16",
+      "global_id": null,
+      "batch": 102,
+      "name": "b102-semantic-equivalence-certification-gate",
+      "title": "Semantic Equivalence Certification Gate",
+      "purpose": "Certify exact route and journey scopes only when authoritative oracles, representative tests and fresh evidence agree.",
+      "path": "agent-skills/runtime/b102-semantic-equivalence-certification-gate/SKILL.md",
+      "catalog_path": "skills/batch-102/B102-S16-semantic-equivalence-certification-gate.md",
+      "depends_on": [
+        "B102-S15"
+      ],
+      "outputs": [
+        "equivalence_certification_result.json",
+        "accepted_differences.json",
+        "completion_report.md",
+        "evidence_bundle.json"
+      ],
+      "sha256": "8546c9dc267c088443eddb94eb2130c200bd7928453052cd35560f469c0375aa"
+    },
+    {
+      "id": "B103-S01",
+      "global_id": null,
+      "batch": 103,
+      "name": "b103-canonical-evidence-record-schema",
+      "title": "Canonical Evidence Record Schema",
+      "purpose": "Define one versioned evidence record for source, execution, tests, artifacts, approvals, limitations and state claims.",
+      "path": "agent-skills/runtime/b103-canonical-evidence-record-schema/SKILL.md",
+      "catalog_path": "skills/batch-103/B103-S01-canonical-evidence-record-schema.md",
+      "depends_on": [
+        "B102-S16"
+      ],
+      "outputs": [
+        "evidence_record.schema.json",
+        "evidence_examples/",
+        "schema_validation.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "287fa1bf4d2b9323c1e3e0b037adb3357c7cda17f136fc4b06841ed368f38ded"
+    },
+    {
+      "id": "B103-S02",
+      "global_id": null,
+      "batch": 103,
+      "name": "b103-content-addressed-evidence-store",
+      "title": "Content Addressed Evidence Store",
+      "purpose": "Store immutable evidence and artifacts by digest with tenant isolation, retention and legal-hold support.",
+      "path": "agent-skills/runtime/b103-content-addressed-evidence-store/SKILL.md",
+      "catalog_path": "skills/batch-103/B103-S02-content-addressed-evidence-store.md",
+      "depends_on": [
+        "B103-S01"
+      ],
+      "outputs": [
+        "evidence_store_schema.sql",
+        "storage_policy.json",
+        "store_validation.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "f54b8af56ce9aa192b59a27455b5c64d85de24f69fdf7b37a2fcd728d5b158e0"
+    },
+    {
+      "id": "B103-S03",
+      "global_id": null,
+      "batch": 103,
+      "name": "b103-evidence-lineage-graph",
+      "title": "Evidence Lineage Graph",
+      "purpose": "Link requirements, Skills, contracts, runs, steps, tool calls, patches, tests, artifacts, approvals and gates.",
+      "path": "agent-skills/runtime/b103-evidence-lineage-graph/SKILL.md",
+      "catalog_path": "skills/batch-103/B103-S03-evidence-lineage-graph.md",
+      "depends_on": [
+        "B103-S02",
+        "B97-S10",
+        "B99-S15"
+      ],
+      "outputs": [
+        "evidence_lineage.json",
+        "lineage_gap_report.json",
+        "graph_validation.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "a6400a469f81e29798b770d0547f8cfda4090cd20dc73a0957e99066c577350c"
+    },
+    {
+      "id": "B103-S04",
+      "global_id": null,
+      "batch": 103,
+      "name": "b103-run-environment-fingerprint",
+      "title": "Run and Environment Fingerprint",
+      "purpose": "Fingerprint source state, runner, OS, toolchains, dependencies, services, test data and policies for reproducibility.",
+      "path": "agent-skills/runtime/b103-run-environment-fingerprint/SKILL.md",
+      "catalog_path": "skills/batch-103/B103-S04-run-environment-fingerprint.md",
+      "depends_on": [
+        "B103-S03"
+      ],
+      "outputs": [
+        "environment_fingerprint.json",
+        "reproduction_manifest.json",
+        "fingerprint_validation.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "c7c0d8eafc6c3a4d46fc1b6ea004a4ed163b405df46eb1e93ccff496b23185f3"
+    },
+    {
+      "id": "B103-S05",
+      "global_id": null,
+      "batch": 103,
+      "name": "b103-artifact-provenance-signing",
+      "title": "Artifact Provenance and Signing",
+      "purpose": "Generate signed provenance for patches, binaries, images, reports and route packs.",
+      "path": "agent-skills/runtime/b103-artifact-provenance-signing/SKILL.md",
+      "catalog_path": "skills/batch-103/B103-S05-artifact-provenance-signing.md",
+      "depends_on": [
+        "B103-S04"
+      ],
+      "outputs": [
+        "provenance_statement.json",
+        "signature_bundle.json",
+        "verification_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "887370d49c92c2ef47214a7d5ff3965374ade5708ee8ee8b79b0ac4fe2542e1b"
+    },
+    {
+      "id": "B103-S06",
+      "global_id": null,
+      "batch": 103,
+      "name": "b103-tool-model-invocation-record",
+      "title": "Tool and Model Invocation Record",
+      "purpose": "Record every consequential tool and model invocation with inputs, outputs, policy, cost and redaction.",
+      "path": "agent-skills/runtime/b103-tool-model-invocation-record/SKILL.md",
+      "catalog_path": "skills/batch-103/B103-S06-tool-model-invocation-record.md",
+      "depends_on": [
+        "B103-S05"
+      ],
+      "outputs": [
+        "invocation_records.jsonl",
+        "redaction_report.json",
+        "usage_summary.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "72a9bd7cd6ffad4b7c6710e65d7c36d4b8bf86449c823ddd263040aa0a206909"
+    },
+    {
+      "id": "B103-S07",
+      "global_id": null,
+      "batch": 103,
+      "name": "b103-test-result-normalizer",
+      "title": "Test Result Normalizer",
+      "purpose": "Normalize unit, integration, E2E, security, performance, device, infrastructure and manual results without erasing skips or flakes.",
+      "path": "agent-skills/runtime/b103-test-result-normalizer/SKILL.md",
+      "catalog_path": "skills/batch-103/B103-S07-test-result-normalizer.md",
+      "depends_on": [
+        "B103-S06"
+      ],
+      "outputs": [
+        "normalized_test_results.json",
+        "test_identity_map.json",
+        "normalization_findings.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "c54f8211698f895a61cc1e47b7a47f742c9f52c7bb296c422e6a917ff701989e"
+    },
+    {
+      "id": "B103-S08",
+      "global_id": null,
+      "batch": 103,
+      "name": "b103-approval-waiver-governance",
+      "title": "Approval and Waiver Governance",
+      "purpose": "Govern approvals and tightly bounded expiring waivers with separation of duties and non-waivable P0 rules.",
+      "path": "agent-skills/runtime/b103-approval-waiver-governance/SKILL.md",
+      "catalog_path": "skills/batch-103/B103-S08-approval-waiver-governance.md",
+      "depends_on": [
+        "B103-S07"
+      ],
+      "outputs": [
+        "approval_record.json",
+        "waiver_record.json",
+        "governance_validation.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "c68be92e694f8bafa06b714a3df4f177f6f3694740d6bd8c1de9cc95c7fee18c"
+    },
+    {
+      "id": "B103-S09",
+      "global_id": null,
+      "batch": 103,
+      "name": "b103-evidence-expiry-invalidation",
+      "title": "Evidence Expiry and Invalidation",
+      "purpose": "Expire and invalidate evidence on time or causal change and propagate revocation to certifications.",
+      "path": "agent-skills/runtime/b103-evidence-expiry-invalidation/SKILL.md",
+      "catalog_path": "skills/batch-103/B103-S09-evidence-expiry-invalidation.md",
+      "depends_on": [
+        "B103-S08"
+      ],
+      "outputs": [
+        "evidence_freshness.json",
+        "revocation_events.json",
+        "revalidation_plan.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "6a6db48c8fcbb8b347cde52df5261953fb1cefe8af4765d571b761f230a359ab"
+    },
+    {
+      "id": "B103-S10",
+      "global_id": null,
+      "batch": 103,
+      "name": "b103-immutable-audit-ledger",
+      "title": "Immutable Audit Ledger",
+      "purpose": "Record actor, decision, mutation, access and certification events in tamper-evident sequence.",
+      "path": "agent-skills/runtime/b103-immutable-audit-ledger/SKILL.md",
+      "catalog_path": "skills/batch-103/B103-S10-immutable-audit-ledger.md",
+      "depends_on": [
+        "B103-S09"
+      ],
+      "outputs": [
+        "audit_ledger.schema.json",
+        "ledger_verification.json",
+        "retention_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "f08237ed1e6249a96284f10f677085119d5bda0a1bf16a656f7e2012f7481470"
+    },
+    {
+      "id": "B103-S11",
+      "global_id": null,
+      "batch": 103,
+      "name": "b103-certification-policy-engine",
+      "title": "Certification Policy Engine",
+      "purpose": "Evaluate versioned certification rules deterministically against exact evidence scopes.",
+      "path": "agent-skills/runtime/b103-certification-policy-engine/SKILL.md",
+      "catalog_path": "skills/batch-103/B103-S11-certification-policy-engine.md",
+      "depends_on": [
+        "B103-S10",
+        "B98-S08"
+      ],
+      "outputs": [
+        "certification_policy.json",
+        "gate_decision.json",
+        "decision_trace.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "099dd6c3d6f08daa4aaafdd2f3a7b9a45eeb2a1a8bb382f6a3497328cb78ff75"
+    },
+    {
+      "id": "B103-S12",
+      "global_id": null,
+      "batch": 103,
+      "name": "b103-scoped-certification-state",
+      "title": "Scoped Certification State",
+      "purpose": "Represent certification by exact repository, commit, route, environment, journey, artifact and time scope.",
+      "path": "agent-skills/runtime/b103-scoped-certification-state/SKILL.md",
+      "catalog_path": "skills/batch-103/B103-S12-scoped-certification-state.md",
+      "depends_on": [
+        "B103-S11"
+      ],
+      "outputs": [
+        "certification_record.json",
+        "scope_manifest.json",
+        "state_validation.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "8d9c62b4790a27f07ad642e6dfd9f8ce6ae66b59dd0dd6f109c33303483080fa"
+    },
+    {
+      "id": "B103-S13",
+      "global_id": null,
+      "batch": 103,
+      "name": "b103-independent-verifier-workflow",
+      "title": "Independent Verifier Workflow",
+      "purpose": "Run evidence review and selected re-execution by an identity independent from implementation.",
+      "path": "agent-skills/runtime/b103-independent-verifier-workflow/SKILL.md",
+      "catalog_path": "skills/batch-103/B103-S13-independent-verifier-workflow.md",
+      "depends_on": [
+        "B103-S12"
+      ],
+      "outputs": [
+        "verifier_plan.json",
+        "verification_result.json",
+        "review_audit.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "d0d05a10d4cdd9a09c8875a4daca3b851172bcc79a54dd60d260d04aa4c677fb"
+    },
+    {
+      "id": "B103-S14",
+      "global_id": null,
+      "batch": 103,
+      "name": "b103-evidence-export-portability",
+      "title": "Evidence Export and Portability",
+      "purpose": "Export redacted, signed and independently verifiable evidence packs for customers, auditors and air-gapped review.",
+      "path": "agent-skills/runtime/b103-evidence-export-portability/SKILL.md",
+      "catalog_path": "skills/batch-103/B103-S14-evidence-export-portability.md",
+      "depends_on": [
+        "B103-S13"
+      ],
+      "outputs": [
+        "evidence_export.zip",
+        "export_manifest.json",
+        "offline_verify.sh",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "7ec15bd57543a8f320f29e68b9814a04f09e2494df46f6f7a5dbd66184342982"
+    },
+    {
+      "id": "B103-S15",
+      "global_id": null,
+      "batch": 103,
+      "name": "b103-assurance-cockpit-read-model",
+      "title": "Assurance Cockpit Read Model",
+      "purpose": "Build evidence-backed read models for progress, coverage, risk, exceptions, freshness and certification state.",
+      "path": "agent-skills/runtime/b103-assurance-cockpit-read-model/SKILL.md",
+      "catalog_path": "skills/batch-103/B103-S15-assurance-cockpit-read-model.md",
+      "depends_on": [
+        "B103-S14"
+      ],
+      "outputs": [
+        "assurance_read_model.json",
+        "dashboard_contract.json",
+        "read_model_tests.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "12bb4b0dbf4492212d414679ed64aee778ea8b07b3e3034a6c3f6b2fbf2a0c76"
+    },
+    {
+      "id": "B103-S16",
+      "global_id": null,
+      "batch": 103,
+      "name": "b103-anti-fake-certification-gate",
+      "title": "Anti-Fake Certification Gate",
+      "purpose": "Reject fabricated, incomplete, stale, mock-only, self-approved or scope-inflated certifications.",
+      "path": "agent-skills/runtime/b103-anti-fake-certification-gate/SKILL.md",
+      "catalog_path": "skills/batch-103/B103-S16-anti-fake-certification-gate.md",
+      "depends_on": [
+        "B103-S15"
+      ],
+      "outputs": [
+        "certification_result.json",
+        "rejection_reasons.json",
+        "completion_report.md",
+        "evidence_bundle.json"
+      ],
+      "sha256": "9fc876586cfe91543e355054e0e53e9d82fd1a4a5e7d2665ec5b24a2f6a5d524"
+    },
+    {
+      "id": "B104-S01",
+      "global_id": null,
+      "batch": 104,
+      "name": "b104-certification-corpus-governance",
+      "title": "Certification Corpus Governance",
+      "purpose": "Govern representative public, synthetic and customer-approved repositories with licensing, privacy and contamination controls.",
+      "path": "agent-skills/runtime/b104-certification-corpus-governance/SKILL.md",
+      "catalog_path": "skills/batch-104/B104-S01-certification-corpus-governance.md",
+      "depends_on": [
+        "B103-S16"
+      ],
+      "outputs": [
+        "corpus_registry.json",
+        "license_report.json",
+        "contamination_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "bdb383e34699386a48f661f4d7dc39a40f031d80d2202248c230e1f98d7f9d83"
+    },
+    {
+      "id": "B104-S02",
+      "global_id": null,
+      "batch": 104,
+      "name": "b104-representative-repository-selection",
+      "title": "Representative Repository Selection",
+      "purpose": "Select repositories by language, framework, size, topology, dependency, quality and failure characteristics.",
+      "path": "agent-skills/runtime/b104-representative-repository-selection/SKILL.md",
+      "catalog_path": "skills/batch-104/B104-S02-representative-repository-selection.md",
+      "depends_on": [
+        "B104-S01"
+      ],
+      "outputs": [
+        "repository_sample.json",
+        "coverage_matrix.json",
+        "selection_rationale.md",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "33924cea37f4888a02569739e3eaf602942e2e097822bd21b51e2b26753466ff"
+    },
+    {
+      "id": "B104-S03",
+      "global_id": null,
+      "batch": 104,
+      "name": "b104-certification-environment-matrix",
+      "title": "Certification Environment Matrix",
+      "purpose": "Define and provision supported OS, architecture, runtime, database, container, cluster, CI and cloud matrices.",
+      "path": "agent-skills/runtime/b104-certification-environment-matrix/SKILL.md",
+      "catalog_path": "skills/batch-104/B104-S03-certification-environment-matrix.md",
+      "depends_on": [
+        "B104-S02"
+      ],
+      "outputs": [
+        "environment_matrix.json",
+        "provisioning_plan.json",
+        "matrix_readiness.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "8c5a4a064d4de3c667fe67c26246e4a8628f5f3b2876c392c87ca75578704a50"
+    },
+    {
+      "id": "B104-S04",
+      "global_id": null,
+      "batch": 104,
+      "name": "b104-clean-room-end-to-end-benchmark",
+      "title": "Clean Room End to End Benchmark",
+      "purpose": "Run repository-to-report, patch, build, test, PR, evidence and rollback from empty trusted environments.",
+      "path": "agent-skills/runtime/b104-clean-room-end-to-end-benchmark/SKILL.md",
+      "catalog_path": "skills/batch-104/B104-S04-clean-room-end-to-end-benchmark.md",
+      "depends_on": [
+        "B104-S03",
+        "B101-S16",
+        "B102-S16",
+        "B103-S16"
+      ],
+      "outputs": [
+        "clean_room_results.json",
+        "run_artifacts/",
+        "benchmark_report.md",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "ece9fcf0fa93b826e970ea04640cb420b693d16f6f9d806e2589ed6d10300792"
+    },
+    {
+      "id": "B104-S05",
+      "global_id": null,
+      "batch": 104,
+      "name": "b104-portfolio-scale-benchmark",
+      "title": "Portfolio Scale Benchmark",
+      "purpose": "Measure thousand-repository and million-line scheduling, storage, runner, graph, evidence and control-plane behavior.",
+      "path": "agent-skills/runtime/b104-portfolio-scale-benchmark/SKILL.md",
+      "catalog_path": "skills/batch-104/B104-S05-portfolio-scale-benchmark.md",
+      "depends_on": [
+        "B104-S04"
+      ],
+      "outputs": [
+        "scale_results.json",
+        "capacity_model.json",
+        "bottleneck_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "4ce01030623d569f3799fdc30b380f50c91c15953f4acbc9d091d1d44aacefd5"
+    },
+    {
+      "id": "B104-S06",
+      "global_id": null,
+      "batch": 104,
+      "name": "b104-fault-injection-resilience-campaign",
+      "title": "Fault Injection and Resilience Campaign",
+      "purpose": "Inject runner death, network loss, provider limits, registry failure, database locks, queue duplication and budget exhaustion.",
+      "path": "agent-skills/runtime/b104-fault-injection-resilience-campaign/SKILL.md",
+      "catalog_path": "skills/batch-104/B104-S06-fault-injection-resilience-campaign.md",
+      "depends_on": [
+        "B104-S05"
+      ],
+      "outputs": [
+        "fault_campaign.json",
+        "fault_results.json",
+        "residual_risk.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "afd305c0b9ed314abdb6e044c5fa0ee902005aae4100c09d8c760ba3b5c0bdfc"
+    },
+    {
+      "id": "B104-S07",
+      "global_id": null,
+      "batch": 104,
+      "name": "b104-security-red-team-campaign",
+      "title": "Security Red Team Campaign",
+      "purpose": "Attack repository ingestion, prompts, sandboxes, secrets, supply chain, tenancy, APIs, CI and evidence gates.",
+      "path": "agent-skills/runtime/b104-security-red-team-campaign/SKILL.md",
+      "catalog_path": "skills/batch-104/B104-S07-security-red-team-campaign.md",
+      "depends_on": [
+        "B104-S06"
+      ],
+      "outputs": [
+        "red_team_plan.json",
+        "security_findings.json",
+        "remediation_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "8f78b0cd206570007a577b5287e5951aceffec869d6fcd123cbd53326c5298f9"
+    },
+    {
+      "id": "B104-S08",
+      "global_id": null,
+      "batch": 104,
+      "name": "b104-upgrade-rollback-certification",
+      "title": "Upgrade and Rollback Certification",
+      "purpose": "Certify ELMOS Core, Skill, schema, workflow, runner and route upgrades with rollback and in-flight compatibility.",
+      "path": "agent-skills/runtime/b104-upgrade-rollback-certification/SKILL.md",
+      "catalog_path": "skills/batch-104/B104-S08-upgrade-rollback-certification.md",
+      "depends_on": [
+        "B104-S07"
+      ],
+      "outputs": [
+        "upgrade_results.json",
+        "rollback_results.json",
+        "compatibility_matrix.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "6798d4c525cfce33b9029ff7c67433d203ce0756b650a455228900de6f8ce17f"
+    },
+    {
+      "id": "B104-S09",
+      "global_id": null,
+      "batch": 104,
+      "name": "b104-disaster-recovery-replay-certification",
+      "title": "Disaster Recovery and Replay Certification",
+      "purpose": "Prove backup, restore, regional recovery, workflow replay and external-effect reconciliation.",
+      "path": "agent-skills/runtime/b104-disaster-recovery-replay-certification/SKILL.md",
+      "catalog_path": "skills/batch-104/B104-S09-disaster-recovery-replay-certification.md",
+      "depends_on": [
+        "B104-S08"
+      ],
+      "outputs": [
+        "dr_plan.json",
+        "restore_results.json",
+        "replay_results.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "b5860e08ba3d9490ee2bf6a06637e24889214af2475209c301b159b7ac042924"
+    },
+    {
+      "id": "B104-S10",
+      "global_id": null,
+      "batch": 104,
+      "name": "b104-customer-pilot-onboarding",
+      "title": "Customer Pilot Onboarding",
+      "purpose": "Onboard pilots with repository access, privacy, route fit, success criteria, support and exit plans.",
+      "path": "agent-skills/runtime/b104-customer-pilot-onboarding/SKILL.md",
+      "catalog_path": "skills/batch-104/B104-S10-customer-pilot-onboarding.md",
+      "depends_on": [
+        "B104-S09"
+      ],
+      "outputs": [
+        "pilot_charter.json",
+        "onboarding_checklist.json",
+        "risk_acceptance.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "95d2749855b28d5e0d5e06dae5f380dfe3438b8704f832f6a9d0cfedf6ba2f96"
+    },
+    {
+      "id": "B104-S11",
+      "global_id": null,
+      "batch": 104,
+      "name": "b104-customer-acceptance-protocol",
+      "title": "Customer Acceptance Protocol",
+      "purpose": "Run customer-observed functional, behavioral, security, performance and operational acceptance.",
+      "path": "agent-skills/runtime/b104-customer-acceptance-protocol/SKILL.md",
+      "catalog_path": "skills/batch-104/B104-S11-customer-acceptance-protocol.md",
+      "depends_on": [
+        "B104-S10"
+      ],
+      "outputs": [
+        "acceptance_plan.json",
+        "acceptance_results.json",
+        "customer_decision.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "fd249a86d8d7fcdf590d8172e84f6398947fbaa8706e63e8381a06cd63aa9122"
+    },
+    {
+      "id": "B104-S12",
+      "global_id": null,
+      "batch": 104,
+      "name": "b104-operational-slo-readiness",
+      "title": "Operational SLO and Readiness",
+      "purpose": "Define and validate availability, latency, durability, recovery, support and evidence freshness SLOs.",
+      "path": "agent-skills/runtime/b104-operational-slo-readiness/SKILL.md",
+      "catalog_path": "skills/batch-104/B104-S12-operational-slo-readiness.md",
+      "depends_on": [
+        "B104-S11"
+      ],
+      "outputs": [
+        "slo_catalog.json",
+        "slo_results.json",
+        "readiness_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "d0c327dce0e9faf87b6457025019378a17a1a53548f9345923ecf10074d9d45f"
+    },
+    {
+      "id": "B104-S13",
+      "global_id": null,
+      "batch": 104,
+      "name": "b104-cost-unit-economics-certification",
+      "title": "Cost and Unit Economics Certification",
+      "purpose": "Measure per-repository, per-LOC, per-runner-hour, per-model and support cost with margin scenarios.",
+      "path": "agent-skills/runtime/b104-cost-unit-economics-certification/SKILL.md",
+      "catalog_path": "skills/batch-104/B104-S13-cost-unit-economics-certification.md",
+      "depends_on": [
+        "B104-S12"
+      ],
+      "outputs": [
+        "cost_model.json",
+        "unit_economics.json",
+        "cost_benchmark.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "ac36a0951b6575fc0ed41b806b416d4d8cd2663f0fb6d6dd29d055cc2de35a36"
+    },
+    {
+      "id": "B104-S14",
+      "global_id": null,
+      "batch": 104,
+      "name": "b104-support-incident-runbook-readiness",
+      "title": "Support Incident and Runbook Readiness",
+      "purpose": "Validate support intake, triage, escalation, status communication, forensic preservation and corrective action.",
+      "path": "agent-skills/runtime/b104-support-incident-runbook-readiness/SKILL.md",
+      "catalog_path": "skills/batch-104/B104-S14-support-incident-runbook-readiness.md",
+      "depends_on": [
+        "B104-S13"
+      ],
+      "outputs": [
+        "support_model.json",
+        "incident_drill_results.json",
+        "runbook_inventory.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "bc40fe9605d77790ac2eb2936fec1789871bb575ffd807dc6c13c2ed267a150d"
+    },
+    {
+      "id": "B104-S15",
+      "global_id": null,
+      "batch": 104,
+      "name": "b104-release-readiness-review",
+      "title": "Release Readiness Review",
+      "purpose": "Aggregate engineering, security, legal, operations, support, cost and customer evidence into a decision packet.",
+      "path": "agent-skills/runtime/b104-release-readiness-review/SKILL.md",
+      "catalog_path": "skills/batch-104/B104-S15-release-readiness-review.md",
+      "depends_on": [
+        "B104-S14"
+      ],
+      "outputs": [
+        "release_packet/",
+        "release_risk_register.json",
+        "readiness_decision.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "74f459457ed67d89d6de71952351507465e8100c9bd4424ef100be4ed11e8aec"
+    },
+    {
+      "id": "B104-S16",
+      "global_id": null,
+      "batch": 104,
+      "name": "b104-product-certification-board-gate",
+      "title": "Product Certification Board Gate",
+      "purpose": "Issue certified, limited, experimental or blocked status for an exact ELMOS release and support matrix.",
+      "path": "agent-skills/runtime/b104-product-certification-board-gate/SKILL.md",
+      "catalog_path": "skills/batch-104/B104-S16-product-certification-board-gate.md",
+      "depends_on": [
+        "B104-S15"
+      ],
+      "outputs": [
+        "product_certification_result.json",
+        "certified_support_matrix.json",
+        "completion_report.md",
+        "evidence_bundle.json"
+      ],
+      "sha256": "744f86c35daec57414516cf142398cab9e0d046695e5d39fba80d44e0e07915a"
+    }
+  ],
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "size_bytes": 606,
+      "sha256": "69eab3fe49e28e2ec97d89a2d2a83e8d64e302ed0aed0e009646770f0443e8f0"
+    },
+    {
+      "path": "Makefile",
+      "size_bytes": 116,
+      "sha256": "8aa45e46ef075920ed8ab3c658ad5afda9ae1e26b142ba5a3f7d31857586b782"
+    },
+    {
+      "path": "NORMALIZATION.json",
+      "size_bytes": 894,
+      "sha256": "8492051983ab8940578cb5167e31d93a51573ac05365b8a8652cda5597915af3"
+    },
+    {
+      "path": "README.md",
+      "size_bytes": 2414,
+      "sha256": "8724ddfc8dddcd1f84b4ae871be849a947bac676daa4dc10db656e3a47f6775c"
+    },
+    {
+      "path": "SKILL_CATALOG.csv",
+      "size_bytes": 33504,
+      "sha256": "4fae49a221862dd68d0b4e26d0ebd7b152eac864a53f0007f0aeffbd3851924e"
+    },
+    {
+      "path": "VALIDATION.md",
+      "size_bytes": 1407,
+      "sha256": "c5d4eb771dfe70b262a93c341ec70cadf0105667f70088a60efe099933599fd9"
+    },
+    {
+      "path": "agent-skills/runtime/b100-artifact-signing-upload/SKILL.md",
+      "size_bytes": 13480,
+      "sha256": "60a23b2325b5c4b1f734e8b79715f05aee46573d94a04bb974a817b0a981958c"
+    },
+    {
+      "path": "agent-skills/runtime/b100-artifact-signing-upload/agents/openai.yaml",
+      "size_bytes": 250,
+      "sha256": "909d88ef05f3d8956a25aa8ec424b6ab70514a486162dfab92c21c4bb292bb5c"
+    },
+    {
+      "path": "agent-skills/runtime/b100-fleet-routing-capability-match/SKILL.md",
+      "size_bytes": 13550,
+      "sha256": "3c5e7a709f0e9fd66bffe4bba8bd228a3a66eef05e68f6691a21acb99f8f0afd"
+    },
+    {
+      "path": "agent-skills/runtime/b100-fleet-routing-capability-match/agents/openai.yaml",
+      "size_bytes": 264,
+      "sha256": "be452db509cba2eace1f6c343c460f220e5261ab4e067a1a6e068801eabb302e"
+    },
+    {
+      "path": "agent-skills/runtime/b100-network-egress-control/SKILL.md",
+      "size_bytes": 13466,
+      "sha256": "3e0f21fdb76157fd1b96fe820a5fff2e5c0547412ade9851917d9c17d930333d"
+    },
+    {
+      "path": "agent-skills/runtime/b100-network-egress-control/agents/openai.yaml",
+      "size_bytes": 248,
+      "sha256": "3bcbdc64844fe4cf2b0a291e99f9e959e90cbe6ece5ee0316d53faaa02329365"
+    },
+    {
+      "path": "agent-skills/runtime/b100-process-execution-allowlist/SKILL.md",
+      "size_bytes": 13515,
+      "sha256": "e2bf48596d00000f1d641fdfc0665fc614a94975868db74b7296a925868a4a2e"
+    },
+    {
+      "path": "agent-skills/runtime/b100-process-execution-allowlist/agents/openai.yaml",
+      "size_bytes": 258,
+      "sha256": "fd206c7197e65bdb509e51410de09056a19ab64b8407a8eb04e77e4e20f26f58"
+    },
+    {
+      "path": "agent-skills/runtime/b100-resource-quota-enforcer/SKILL.md",
+      "size_bytes": 13440,
+      "sha256": "e50d478c8df8e70095f8ad6f1dc37db6b7cdb6fe3899903fe04b0d63bb62d97b"
+    },
+    {
+      "path": "agent-skills/runtime/b100-resource-quota-enforcer/agents/openai.yaml",
+      "size_bytes": 250,
+      "sha256": "0ed9b61ab5e1afeaf71761db425ba1d80804260ee36d4fb629afa1eb5e85d052"
+    },
+    {
+      "path": "agent-skills/runtime/b100-runner-attestation-posture/SKILL.md",
+      "size_bytes": 13487,
+      "sha256": "5648c46141b22ea1270bc8786a3856ae275eff5f516332331d894e4623de2976"
+    },
+    {
+      "path": "agent-skills/runtime/b100-runner-attestation-posture/agents/openai.yaml",
+      "size_bytes": 256,
+      "sha256": "a4088c592b1ca40ed23e73082bc68ec86d18111a83d44892f928829d57efcba3"
+    },
+    {
+      "path": "agent-skills/runtime/b100-runner-enrollment-workload-identity/SKILL.md",
+      "size_bytes": 13542,
+      "sha256": "e46783df452f653e7b90c4a29891a1b79e743804092d5164fe0565cd097626e3"
+    },
+    {
+      "path": "agent-skills/runtime/b100-runner-enrollment-workload-identity/agents/openai.yaml",
+      "size_bytes": 274,
+      "sha256": "370fe0d64ef414cd46f1494ee94562f60b96987268ef9b2ed96169ea4408cc27"
+    },
+    {
+      "path": "agent-skills/runtime/b100-runner-fabric-certification-gate/SKILL.md",
+      "size_bytes": 13649,
+      "sha256": "001fbec0f3be12e87fd3d39ac68fa0a55e2ddfda10f1f269ffcb5dc72028503b"
+    },
+    {
+      "path": "agent-skills/runtime/b100-runner-fabric-certification-gate/agents/openai.yaml",
+      "size_bytes": 268,
+      "sha256": "df3d0a8a683c21ac47cbc01c5df07c12ff7d23ac1d1b72044ae135b6e21c9c0b"
+    },
+    {
+      "path": "agent-skills/runtime/b100-runner-lease-cancel-protocol/SKILL.md",
+      "size_bytes": 13525,
+      "sha256": "aee3637fd34f34d066be9217899afb92fec33bdebc7a3edebd56df4ed8a1a53b"
+    },
+    {
+      "path": "agent-skills/runtime/b100-runner-lease-cancel-protocol/agents/openai.yaml",
+      "size_bytes": 260,
+      "sha256": "1b9b87ad6e97796efc4e722cc2e77fa63d5f64f7dd79ce142edfb4653137e12a"
+    },
+    {
+      "path": "agent-skills/runtime/b100-runner-mtls-channel/SKILL.md",
+      "size_bytes": 13431,
+      "sha256": "ee801648a57729552e70eedd4c51c26187949f71484cc80ad8987b8362e19db9"
+    },
+    {
+      "path": "agent-skills/runtime/b100-runner-mtls-channel/agents/openai.yaml",
+      "size_bytes": 242,
+      "sha256": "1970325563b75b26ae32ca864abd763dcb728cbc1bca3abb559aa20ab59d8e11"
+    },
+    {
+      "path": "agent-skills/runtime/b100-runner-quarantine-revocation/SKILL.md",
+      "size_bytes": 13521,
+      "sha256": "fab885101506a477e4d12defc703049f265272d33d5ca54c6dfe8627ffe99b2b"
+    },
+    {
+      "path": "agent-skills/runtime/b100-runner-quarantine-revocation/agents/openai.yaml",
+      "size_bytes": 260,
+      "sha256": "2ec7ce3cff74e0879934ff759c70f86b33c89385abfd4305ba8d45d8c2e953b8"
+    },
+    {
+      "path": "agent-skills/runtime/b100-runner-upgrade-drain/SKILL.md",
+      "size_bytes": 13420,
+      "sha256": "a3d8c168b6d8ec095430409556d869dd4d3e39e5487d149e1dbefe951528bd98"
+    },
+    {
+      "path": "agent-skills/runtime/b100-runner-upgrade-drain/agents/openai.yaml",
+      "size_bytes": 244,
+      "sha256": "eb7a1e0e98628c3c80111e7577d5385b9c380beeb6dbb2f25dee17001f57c46e"
+    },
+    {
+      "path": "agent-skills/runtime/b100-sandbox-profile-selector/SKILL.md",
+      "size_bytes": 13535,
+      "sha256": "1d9de72c34695d1816afcb7bfccb7518a58d433740470a5f83664474c8a28acc"
+    },
+    {
+      "path": "agent-skills/runtime/b100-sandbox-profile-selector/agents/openai.yaml",
+      "size_bytes": 252,
+      "sha256": "c756f053470c0d31d809bc1cf95f88df2ac38950129b8360e76705bc0cdb6908"
+    },
+    {
+      "path": "agent-skills/runtime/b100-secret-broker-redaction/SKILL.md",
+      "size_bytes": 13494,
+      "sha256": "f4522e0633b6aa5e3f287024ee82420d52f879ccf20000b259754841c1bb54e9"
+    },
+    {
+      "path": "agent-skills/runtime/b100-secret-broker-redaction/agents/openai.yaml",
+      "size_bytes": 250,
+      "sha256": "298ad0b36bf138019481e0e3bd07558db0272a35459b061574300686ad7301ae"
+    },
+    {
+      "path": "agent-skills/runtime/b100-signed-task-envelope-verifier/SKILL.md",
+      "size_bytes": 13502,
+      "sha256": "a9b1d024a6df28038360f00e08fa3e172bcbd764e5950b92fc894843ea06903f"
+    },
+    {
+      "path": "agent-skills/runtime/b100-signed-task-envelope-verifier/agents/openai.yaml",
+      "size_bytes": 262,
+      "sha256": "c8b307c337d06edbc6e34cd0165363b93ee3a059265cddb1063f6e0b22aca23d"
+    },
+    {
+      "path": "agent-skills/runtime/b100-workspace-filesystem-isolation/SKILL.md",
+      "size_bytes": 13532,
+      "sha256": "ab0a0b01c3985d4d6115b38dfbc2723a34c217cacbf6230d0223e1e2de4f1c5e"
+    },
+    {
+      "path": "agent-skills/runtime/b100-workspace-filesystem-isolation/agents/openai.yaml",
+      "size_bytes": 264,
+      "sha256": "36e86200187ff993475a4e2caf493d0682320b4283d0cd918ca2ee4f9556f18d"
+    },
+    {
+      "path": "agent-skills/runtime/b101-aspnet-ef-wcf-modernization-route/SKILL.md",
+      "size_bytes": 13583,
+      "sha256": "3fa642ef4a5e544ae311d7d7238e1f37e729e13c8323a83bce86f16e887e8cae"
+    },
+    {
+      "path": "agent-skills/runtime/b101-aspnet-ef-wcf-modernization-route/agents/openai.yaml",
+      "size_bytes": 270,
+      "sha256": "05fa6e7e3098c288fb1aba55b82f2d4fd593978c6e6f03a95d623e815943d199"
+    },
+    {
+      "path": "agent-skills/runtime/b101-django-flask-modernization-route/SKILL.md",
+      "size_bytes": 13525,
+      "sha256": "c05b168df988338de78b1d8f53cbaf01c3b4f92e96e388158e43535e29bc3583"
+    },
+    {
+      "path": "agent-skills/runtime/b101-django-flask-modernization-route/agents/openai.yaml",
+      "size_bytes": 268,
+      "sha256": "bee4fd97167c62419a0d97d9d8a0d1ec0a26366ea063b14f1ae46d9840a88fcb"
+    },
+    {
+      "path": "agent-skills/runtime/b101-dotnet-route-discovery-baseline/SKILL.md",
+      "size_bytes": 13497,
+      "sha256": "7ede688d26e8bfcee4013ddddbf636dba28251f1d44df455dc0e471df0e31bb1"
+    },
+    {
+      "path": "agent-skills/runtime/b101-dotnet-route-discovery-baseline/agents/openai.yaml",
+      "size_bytes": 266,
+      "sha256": "0001b419061ef3dfb9d2e6602cd17459dd4ef9ca5467363b595f2aeb4b57e486"
+    },
+    {
+      "path": "agent-skills/runtime/b101-dotnet-route-verification-pr/SKILL.md",
+      "size_bytes": 13538,
+      "sha256": "49a9c45b01fb27619382b99787c21ddc348c18dd1506a17761391d9bfb95de51"
+    },
+    {
+      "path": "agent-skills/runtime/b101-dotnet-route-verification-pr/agents/openai.yaml",
+      "size_bytes": 260,
+      "sha256": "48e716bdb0b777c412207c9f70b70761cc1b33153a02ecffff9df02dbad7fdda"
+    },
+    {
+      "path": "agent-skills/runtime/b101-framework-to-modern-dotnet-route/SKILL.md",
+      "size_bytes": 13582,
+      "sha256": "f02e248d147f99bd6cb9b86298a9a70ff33c86e1d713b4f2478ef8e1fb1a5190"
+    },
+    {
+      "path": "agent-skills/runtime/b101-framework-to-modern-dotnet-route/agents/openai.yaml",
+      "size_bytes": 268,
+      "sha256": "aa7d4b7e12a40d0c6347d93c657d42089858913e6840ee6d61586f8d24deac1c"
+    },
+    {
+      "path": "agent-skills/runtime/b101-golden-route-certification-gate/SKILL.md",
+      "size_bytes": 13585,
+      "sha256": "b69ed3def3dcc1a858845bba5c372a879960accff96823ebd6e1229be528d619"
+    },
+    {
+      "path": "agent-skills/runtime/b101-golden-route-certification-gate/agents/openai.yaml",
+      "size_bytes": 266,
+      "sha256": "b34e788d0093aa1b2beed78a7603b98c34ad89ec4380e7c6cb861c753fd65775"
+    },
+    {
+      "path": "agent-skills/runtime/b101-golden-route-common-contract/SKILL.md",
+      "size_bytes": 13598,
+      "sha256": "7ededc79e2f34670506c0d22317d568a16434cacb44f2a33a441f23ca38a52e8"
+    },
+    {
+      "path": "agent-skills/runtime/b101-golden-route-common-contract/agents/openai.yaml",
+      "size_bytes": 260,
+      "sha256": "077a429c8f2a67cb8db1bf795fdb25f7d1ccac52103d66706b16fa46c57c7bf6"
+    },
+    {
+      "path": "agent-skills/runtime/b101-java-data-messaging-scheduler-route/SKILL.md",
+      "size_bytes": 13557,
+      "sha256": "89f2559d43b51ae6dbc4a8180d441a2ddb5d55e6216131692e8147c7ce82e7a8"
+    },
+    {
+      "path": "agent-skills/runtime/b101-java-data-messaging-scheduler-route/agents/openai.yaml",
+      "size_bytes": 274,
+      "sha256": "2ff5d1a475c0ba764f7316dba1d123c1618d2e01d550c6d90007f0e2563a7c83"
+    },
+    {
+      "path": "agent-skills/runtime/b101-java-route-discovery-baseline/SKILL.md",
+      "size_bytes": 13549,
+      "sha256": "9cbd7a1c6925f3c81c906a1f600f1f9604a0ac32bdb84596bb728fa64160b0b4"
+    },
+    {
+      "path": "agent-skills/runtime/b101-java-route-discovery-baseline/agents/openai.yaml",
+      "size_bytes": 262,
+      "sha256": "54bc44911e55d6e9aa0ef25a6eb40a336fea1f2f30e4899ebe39e3e21055b4ce"
+    },
+    {
+      "path": "agent-skills/runtime/b101-java-route-verification-pr/SKILL.md",
+      "size_bytes": 13516,
+      "sha256": "8b5f5f9686a22f5d74d194b28877cb3ce81916df74228bba7674771ef9cb866a"
+    },
+    {
+      "path": "agent-skills/runtime/b101-java-route-verification-pr/agents/openai.yaml",
+      "size_bytes": 256,
+      "sha256": "535bfd1925211d9a1542a3465ca420003d672f37976bd00a39205d3739984b4f"
+    },
+    {
+      "path": "agent-skills/runtime/b101-java8-21-modernization-recipe/SKILL.md",
+      "size_bytes": 13554,
+      "sha256": "9728815f4833ac868ea3df979cd362093a3b6d89f104ac600e12d5f5cfcdabb5"
+    },
+    {
+      "path": "agent-skills/runtime/b101-java8-21-modernization-recipe/agents/openai.yaml",
+      "size_bytes": 262,
+      "sha256": "2b35fffba45961e5827ac1c032056225ff5ac5f5d67ee75fbab61d6c430e3699"
+    },
+    {
+      "path": "agent-skills/runtime/b101-python-data-ml-pipeline-route/SKILL.md",
+      "size_bytes": 13580,
+      "sha256": "b3830733339484a98ad3c89be417de7a24c39d4d8eb72a5a5c729732631108c5"
+    },
+    {
+      "path": "agent-skills/runtime/b101-python-data-ml-pipeline-route/agents/openai.yaml",
+      "size_bytes": 262,
+      "sha256": "421b1121482d60e14e0ccc50c2a06f72ed9c2e2856cedd34e2c641736b77ddc8"
+    },
+    {
+      "path": "agent-skills/runtime/b101-python-route-discovery-environment/SKILL.md",
+      "size_bytes": 13629,
+      "sha256": "65cc7225f3a60029dda7d71ac0a0c0fae47ea32053c641fbc110a059e3068130"
+    },
+    {
+      "path": "agent-skills/runtime/b101-python-route-discovery-environment/agents/openai.yaml",
+      "size_bytes": 272,
+      "sha256": "67d240eed4e629ce98ef9f26681d4def43ddae06038abe7aa3ef13d25f731b26"
+    },
+    {
+      "path": "agent-skills/runtime/b101-python-route-verification-pr/SKILL.md",
+      "size_bytes": 13525,
+      "sha256": "f6400dc45f349b256a39e4a18d71518ee7372e01a87fee69fe12cfc4a3cff6c9"
+    },
+    {
+      "path": "agent-skills/runtime/b101-python-route-verification-pr/agents/openai.yaml",
+      "size_bytes": 260,
+      "sha256": "79b21afe37caebab56c5b290771bd466e90f75d79d241745a2eea806290d0b19"
+    },
+    {
+      "path": "agent-skills/runtime/b101-python2-legacy-upgrade-route/SKILL.md",
+      "size_bytes": 13538,
+      "sha256": "641e6796681101658fbc946b21de85b606f14ba8b1dc0aa3953266f2c3309afe"
+    },
+    {
+      "path": "agent-skills/runtime/b101-python2-legacy-upgrade-route/agents/openai.yaml",
+      "size_bytes": 260,
+      "sha256": "0c517d71a662e787bd1d4def3c60aa846606b1dc8e9bb934711ed8661235074d"
+    },
+    {
+      "path": "agent-skills/runtime/b101-spring-boot-modernization-route/SKILL.md",
+      "size_bytes": 13573,
+      "sha256": "aa719feea8d7d092ebc3c585c223c8d0031c69adf67eb1acc929ea2684bf3858"
+    },
+    {
+      "path": "agent-skills/runtime/b101-spring-boot-modernization-route/agents/openai.yaml",
+      "size_bytes": 266,
+      "sha256": "cb7579f2b7b88010321302159adf23c0d01c62166b22e72230392fdd6426a148"
+    },
+    {
+      "path": "agent-skills/runtime/b102-api-contract-equivalence/SKILL.md",
+      "size_bytes": 13510,
+      "sha256": "8b5939f33668189eb420ed253a391228e12c3b8024fa7ec43622fbc86b19089a"
+    },
+    {
+      "path": "agent-skills/runtime/b102-api-contract-equivalence/agents/openai.yaml",
+      "size_bytes": 252,
+      "sha256": "9fa57ea73b9fb8e317cb92dbff81155790f9ff134e11136579a47618eeb97b69"
+    },
+    {
+      "path": "agent-skills/runtime/b102-business-invariant-engine/SKILL.md",
+      "size_bytes": 13629,
+      "sha256": "048fd5af4223ddb9fd93cf20c83e7346b80258f17af2b51de743f2775161a307"
+    },
+    {
+      "path": "agent-skills/runtime/b102-business-invariant-engine/agents/openai.yaml",
+      "size_bytes": 254,
+      "sha256": "d67d372687061a314c154575e46a6f687e16d20d8e4170555c92562193cffc91"
+    },
+    {
+      "path": "agent-skills/runtime/b102-characterization-test-miner/SKILL.md",
+      "size_bytes": 13589,
+      "sha256": "7d87442e74e551c20ae12ffbab17a0500f40112b4bf26f770650c035742bd0d8"
+    },
+    {
+      "path": "agent-skills/runtime/b102-characterization-test-miner/agents/openai.yaml",
+      "size_bytes": 258,
+      "sha256": "75bbb1bf8ee43b26d238b254f3e042bc56a639ee76d74b016ef650df5fbd9807"
+    },
+    {
+      "path": "agent-skills/runtime/b102-data-query-equivalence/SKILL.md",
+      "size_bytes": 13541,
+      "sha256": "11dc90b182552969eb7131bf8a68b3aa56f6f2490d2c57ad7a19ae1fa4c6df4d"
+    },
+    {
+      "path": "agent-skills/runtime/b102-data-query-equivalence/agents/openai.yaml",
+      "size_bytes": 248,
+      "sha256": "27a47db318bf54c7ec8539f73b24677bade724755fc4a374c9894b73e41c59ed"
+    },
+    {
+      "path": "agent-skills/runtime/b102-differential-execution-harness/SKILL.md",
+      "size_bytes": 13667,
+      "sha256": "181be46a0dde5a16f18f9ad04b58b6d45adb3577a60ac4b67128c506fa29b72d"
+    },
+    {
+      "path": "agent-skills/runtime/b102-differential-execution-harness/agents/openai.yaml",
+      "size_bytes": 264,
+      "sha256": "64cd3b8f5041a794761542d04828abc8a5e351f948970e298448e0bf46b2d777"
+    },
+    {
+      "path": "agent-skills/runtime/b102-equivalence-evidence-freshness/SKILL.md",
+      "size_bytes": 13625,
+      "sha256": "e54b9d93f74487e8a549ec6a25fc13efe15c91a89d8df079e9acccbc142fea1a"
+    },
+    {
+      "path": "agent-skills/runtime/b102-equivalence-evidence-freshness/agents/openai.yaml",
+      "size_bytes": 264,
+      "sha256": "8baa0b0657b167cde709673de68778dd37cbc5506b08f43493ae84bb4ec37db9"
+    },
+    {
+      "path": "agent-skills/runtime/b102-golden-master-capture/SKILL.md",
+      "size_bytes": 13527,
+      "sha256": "b2ba0c3f540276b634022478fab628fe44555ef16b86efea6be0bcdad163cbc7"
+    },
+    {
+      "path": "agent-skills/runtime/b102-golden-master-capture/agents/openai.yaml",
+      "size_bytes": 246,
+      "sha256": "a38cc9a8435f61e135ee68ac33870fbe2b2f834f642539d494477633937cd5bc"
+    },
+    {
+      "path": "agent-skills/runtime/b102-human-oracle-approval/SKILL.md",
+      "size_bytes": 13496,
+      "sha256": "d565409b509428f288e844b6948289da08436ad3c1bfccd9db3a6a9861226f98"
+    },
+    {
+      "path": "agent-skills/runtime/b102-human-oracle-approval/agents/openai.yaml",
+      "size_bytes": 246,
+      "sha256": "5987f9da8201136f05f3182dbfa8f8419e020ab761d8ae42dcf115f6df00cba7"
+    },
+    {
+      "path": "agent-skills/runtime/b102-messaging-idempotency-equivalence/SKILL.md",
+      "size_bytes": 13579,
+      "sha256": "c664f39643f584e4c8a32fe569cd9942c85665082624a927fe3e803a1fe05f18"
+    },
+    {
+      "path": "agent-skills/runtime/b102-messaging-idempotency-equivalence/agents/openai.yaml",
+      "size_bytes": 270,
+      "sha256": "1433f51eeeca362e4cfc764a11f3d490df00ce61a003f48e224a3e3165433eb5"
+    },
+    {
+      "path": "agent-skills/runtime/b102-metamorphic-property-testing/SKILL.md",
+      "size_bytes": 13585,
+      "sha256": "e568168834d63963c8d5b9836d469c5838ebb780bcb8913c57a32e78b70ccefa"
+    },
+    {
+      "path": "agent-skills/runtime/b102-metamorphic-property-testing/agents/openai.yaml",
+      "size_bytes": 260,
+      "sha256": "be23a409d537035551306740868ba42d8f582da5b969f1d4b44b692f4037d8e0"
+    },
+    {
+      "path": "agent-skills/runtime/b102-oracle-registry-governance/SKILL.md",
+      "size_bytes": 13555,
+      "sha256": "9edaff6ce3af3e66c0279b111dd4b76008c6fb005ed87f8f3d617029b3f110b1"
+    },
+    {
+      "path": "agent-skills/runtime/b102-oracle-registry-governance/agents/openai.yaml",
+      "size_bytes": 256,
+      "sha256": "3d9f0fd28b3ae159d0add71330549d6568cc2a4455271ac332f79bc642b17166"
+    },
+    {
+      "path": "agent-skills/runtime/b102-performance-resource-equivalence/SKILL.md",
+      "size_bytes": 13638,
+      "sha256": "fc39cca33adb37478d82c98b3d47195af33a9dde97df6de6968d41d0e3898f10"
+    },
+    {
+      "path": "agent-skills/runtime/b102-performance-resource-equivalence/agents/openai.yaml",
+      "size_bytes": 268,
+      "sha256": "5464f11a4feee33744ad020d16762cdde3c2936710a5e1fc14c0f2327c1e6e58"
+    },
+    {
+      "path": "agent-skills/runtime/b102-security-behavior-equivalence/SKILL.md",
+      "size_bytes": 13577,
+      "sha256": "bbc970cbacc0ae9e74ee1977c8d030f0c78e1749730aae5c1ae7b6ac053a123c"
+    },
+    {
+      "path": "agent-skills/runtime/b102-security-behavior-equivalence/agents/openai.yaml",
+      "size_bytes": 262,
+      "sha256": "cdfb2355ff96603f5f4df2f8d6d376869752b793aa52013ca74adc2e804e17d6"
+    },
+    {
+      "path": "agent-skills/runtime/b102-semantic-equivalence-certification-gate/SKILL.md",
+      "size_bytes": 13714,
+      "sha256": "8546c9dc267c088443eddb94eb2130c200bd7928453052cd35560f469c0375aa"
+    },
+    {
+      "path": "agent-skills/runtime/b102-semantic-equivalence-certification-gate/agents/openai.yaml",
+      "size_bytes": 282,
+      "sha256": "2343c81fc0b3a87b693b0a8064b894df1fc2fccac3425852970d3b9579736461"
+    },
+    {
+      "path": "agent-skills/runtime/b102-time-randomness-environment-control/SKILL.md",
+      "size_bytes": 13556,
+      "sha256": "38f388e12b359030a592cab4fa541bd1bbb7cb070d872020263fba16921e15b8"
+    },
+    {
+      "path": "agent-skills/runtime/b102-time-randomness-environment-control/agents/openai.yaml",
+      "size_bytes": 274,
+      "sha256": "0f12c143dde0e7b6a2a82797073bdc49389648236e8017ad14e6dbb09b9bb7b5"
+    },
+    {
+      "path": "agent-skills/runtime/b102-transaction-concurrency-equivalence/SKILL.md",
+      "size_bytes": 13641,
+      "sha256": "613e29b5c003d52defd3063ffb66a6a720a5855e204db5f04718089579eaf7dd"
+    },
+    {
+      "path": "agent-skills/runtime/b102-transaction-concurrency-equivalence/agents/openai.yaml",
+      "size_bytes": 274,
+      "sha256": "039930ec371224af10f1521318b71f40cc2621598fdd8493c32a7e291bcc0308"
+    },
+    {
+      "path": "agent-skills/runtime/b103-anti-fake-certification-gate/SKILL.md",
+      "size_bytes": 13512,
+      "sha256": "9fc876586cfe91543e355054e0e53e9d82fd1a4a5e7d2665ec5b24a2f6a5d524"
+    },
+    {
+      "path": "agent-skills/runtime/b103-anti-fake-certification-gate/agents/openai.yaml",
+      "size_bytes": 260,
+      "sha256": "f1745c48ba2b700d6729e1bc5b28eb174a4e212f07b01628d1077bc287491f0c"
+    },
+    {
+      "path": "agent-skills/runtime/b103-approval-waiver-governance/SKILL.md",
+      "size_bytes": 13503,
+      "sha256": "c68be92e694f8bafa06b714a3df4f177f6f3694740d6bd8c1de9cc95c7fee18c"
+    },
+    {
+      "path": "agent-skills/runtime/b103-approval-waiver-governance/agents/openai.yaml",
+      "size_bytes": 256,
+      "sha256": "6463acad51c7a678f145759943631e3d1766c960b9df017b480c344d2af79bc8"
+    },
+    {
+      "path": "agent-skills/runtime/b103-artifact-provenance-signing/SKILL.md",
+      "size_bytes": 13535,
+      "sha256": "887370d49c92c2ef47214a7d5ff3965374ade5708ee8ee8b79b0ac4fe2542e1b"
+    },
+    {
+      "path": "agent-skills/runtime/b103-artifact-provenance-signing/agents/openai.yaml",
+      "size_bytes": 258,
+      "sha256": "85f0a48a039595d92a3d89ff49a5751679766be3f5adb8996f17af56c892fb2d"
+    },
+    {
+      "path": "agent-skills/runtime/b103-assurance-cockpit-read-model/SKILL.md",
+      "size_bytes": 13552,
+      "sha256": "12bb4b0dbf4492212d414679ed64aee778ea8b07b3e3034a6c3f6b2fbf2a0c76"
+    },
+    {
+      "path": "agent-skills/runtime/b103-assurance-cockpit-read-model/agents/openai.yaml",
+      "size_bytes": 260,
+      "sha256": "d66cb0379483867ccc245dba67687e0935c8abc90d18a132866489564a8911d7"
+    },
+    {
+      "path": "agent-skills/runtime/b103-canonical-evidence-record-schema/SKILL.md",
+      "size_bytes": 13592,
+      "sha256": "287fa1bf4d2b9323c1e3e0b037adb3357c7cda17f136fc4b06841ed368f38ded"
+    },
+    {
+      "path": "agent-skills/runtime/b103-canonical-evidence-record-schema/agents/openai.yaml",
+      "size_bytes": 268,
+      "sha256": "f376e849136e869bb249b0ad6a6e87a3dff76a729c6a96eb21cd47a8d0962075"
+    },
+    {
+      "path": "agent-skills/runtime/b103-certification-policy-engine/SKILL.md",
+      "size_bytes": 13530,
+      "sha256": "099dd6c3d6f08daa4aaafdd2f3a7b9a45eeb2a1a8bb382f6a3497328cb78ff75"
+    },
+    {
+      "path": "agent-skills/runtime/b103-certification-policy-engine/agents/openai.yaml",
+      "size_bytes": 258,
+      "sha256": "76907d252ac43fc62d4b66a2ef606535702df4668e6f55b5404848a37010f26d"
+    },
+    {
+      "path": "agent-skills/runtime/b103-content-addressed-evidence-store/SKILL.md",
+      "size_bytes": 13594,
+      "sha256": "f54b8af56ce9aa192b59a27455b5c64d85de24f69fdf7b37a2fcd728d5b158e0"
+    },
+    {
+      "path": "agent-skills/runtime/b103-content-addressed-evidence-store/agents/openai.yaml",
+      "size_bytes": 268,
+      "sha256": "f1b6fdfb7fa1b94c9a01b05e3c16e8c364cd1c8817f3b7bdedd5b628c0e4108b"
+    },
+    {
+      "path": "agent-skills/runtime/b103-evidence-expiry-invalidation/SKILL.md",
+      "size_bytes": 13543,
+      "sha256": "6a6db48c8fcbb8b347cde52df5261953fb1cefe8af4765d571b761f230a359ab"
+    },
+    {
+      "path": "agent-skills/runtime/b103-evidence-expiry-invalidation/agents/openai.yaml",
+      "size_bytes": 260,
+      "sha256": "50452ae3d0f8c50d3cb240611e2523a688c36ad5c76d1d54495675ba4cc8ca6f"
+    },
+    {
+      "path": "agent-skills/runtime/b103-evidence-export-portability/SKILL.md",
+      "size_bytes": 13585,
+      "sha256": "7ec15bd57543a8f320f29e68b9814a04f09e2494df46f6f7a5dbd66184342982"
+    },
+    {
+      "path": "agent-skills/runtime/b103-evidence-export-portability/agents/openai.yaml",
+      "size_bytes": 258,
+      "sha256": "32307ffee6c097c1647ee53a34783097cd91da73c2346402580ebbdd78fabd32"
+    },
+    {
+      "path": "agent-skills/runtime/b103-evidence-lineage-graph/SKILL.md",
+      "size_bytes": 13541,
+      "sha256": "a6400a469f81e29798b770d0547f8cfda4090cd20dc73a0957e99066c577350c"
+    },
+    {
+      "path": "agent-skills/runtime/b103-evidence-lineage-graph/agents/openai.yaml",
+      "size_bytes": 248,
+      "sha256": "7fcb8a551a657a2ba1d6c953501210b50041230fec5cd097e9f6a2b085890c7a"
+    },
+    {
+      "path": "agent-skills/runtime/b103-immutable-audit-ledger/SKILL.md",
+      "size_bytes": 13470,
+      "sha256": "f08237ed1e6249a96284f10f677085119d5bda0a1bf16a656f7e2012f7481470"
+    },
+    {
+      "path": "agent-skills/runtime/b103-immutable-audit-ledger/agents/openai.yaml",
+      "size_bytes": 248,
+      "sha256": "fea93498203828c9e5610fa6b4a311a6643e9c967e397eed01fba45137804cee"
+    },
+    {
+      "path": "agent-skills/runtime/b103-independent-verifier-workflow/SKILL.md",
+      "size_bytes": 13544,
+      "sha256": "d0d05a10d4cdd9a09c8875a4daca3b851172bcc79a54dd60d260d04aa4c677fb"
+    },
+    {
+      "path": "agent-skills/runtime/b103-independent-verifier-workflow/agents/openai.yaml",
+      "size_bytes": 262,
+      "sha256": "f2e88d20be50453d4da6f1b9d40917efc20e92ba324f8d76d9bb4ad584cea741"
+    },
+    {
+      "path": "agent-skills/runtime/b103-run-environment-fingerprint/SKILL.md",
+      "size_bytes": 13626,
+      "sha256": "c7c0d8eafc6c3a4d46fc1b6ea004a4ed163b405df46eb1e93ccff496b23185f3"
+    },
+    {
+      "path": "agent-skills/runtime/b103-run-environment-fingerprint/agents/openai.yaml",
+      "size_bytes": 258,
+      "sha256": "93297513ad20523d554b266be746a2994e7997e40cca6c6afeedcdf2f9a48f1e"
+    },
+    {
+      "path": "agent-skills/runtime/b103-scoped-certification-state/SKILL.md",
+      "size_bytes": 13571,
+      "sha256": "8d9c62b4790a27f07ad642e6dfd9f8ce6ae66b59dd0dd6f109c33303483080fa"
+    },
+    {
+      "path": "agent-skills/runtime/b103-scoped-certification-state/agents/openai.yaml",
+      "size_bytes": 256,
+      "sha256": "1d70ede1e852ff13680c2b267e45ed77ae36dbb716fa1e7043385062bcccd1bb"
+    },
+    {
+      "path": "agent-skills/runtime/b103-test-result-normalizer/SKILL.md",
+      "size_bytes": 13590,
+      "sha256": "c54f8211698f895a61cc1e47b7a47f742c9f52c7bb296c422e6a917ff701989e"
+    },
+    {
+      "path": "agent-skills/runtime/b103-test-result-normalizer/agents/openai.yaml",
+      "size_bytes": 248,
+      "sha256": "87e7ccd2e4fe008c14dc9674fb28cbbc0b1aa7929c67026c647c63a8b077b342"
+    },
+    {
+      "path": "agent-skills/runtime/b103-tool-model-invocation-record/SKILL.md",
+      "size_bytes": 13507,
+      "sha256": "72a9bd7cd6ffad4b7c6710e65d7c36d4b8bf86449c823ddd263040aa0a206909"
+    },
+    {
+      "path": "agent-skills/runtime/b103-tool-model-invocation-record/agents/openai.yaml",
+      "size_bytes": 260,
+      "sha256": "6b3436bdf9156c17af2b63f12a01fc6a486e4db11b6209ed600c717b04ed9977"
+    },
+    {
+      "path": "agent-skills/runtime/b104-certification-corpus-governance/SKILL.md",
+      "size_bytes": 13634,
+      "sha256": "bdb383e34699386a48f661f4d7dc39a40f031d80d2202248c230e1f98d7f9d83"
+    },
+    {
+      "path": "agent-skills/runtime/b104-certification-corpus-governance/agents/openai.yaml",
+      "size_bytes": 266,
+      "sha256": "e58a5c088a29fc88130bf6f746313674caae5abc7c72885ae1f381488c0f7692"
+    },
+    {
+      "path": "agent-skills/runtime/b104-certification-environment-matrix/SKILL.md",
+      "size_bytes": 13659,
+      "sha256": "8c5a4a064d4de3c667fe67c26246e4a8628f5f3b2876c392c87ca75578704a50"
+    },
+    {
+      "path": "agent-skills/runtime/b104-certification-environment-matrix/agents/openai.yaml",
+      "size_bytes": 268,
+      "sha256": "1b6221d8fa8cd3449ea870f2014fcc79943e816fbe1670f0ae6283ef6044d4d4"
+    },
+    {
+      "path": "agent-skills/runtime/b104-clean-room-end-to-end-benchmark/SKILL.md",
+      "size_bytes": 13666,
+      "sha256": "ece9fcf0fa93b826e970ea04640cb420b693d16f6f9d806e2589ed6d10300792"
+    },
+    {
+      "path": "agent-skills/runtime/b104-clean-room-end-to-end-benchmark/agents/openai.yaml",
+      "size_bytes": 266,
+      "sha256": "9630589bd94302cbf0827d7501608553dccd7ad6c1986c9097f9913201d93bb4"
+    },
+    {
+      "path": "agent-skills/runtime/b104-cost-unit-economics-certification/SKILL.md",
+      "size_bytes": 13593,
+      "sha256": "ac36a0951b6575fc0ed41b806b416d4d8cd2663f0fb6d6dd29d055cc2de35a36"
+    },
+    {
+      "path": "agent-skills/runtime/b104-cost-unit-economics-certification/agents/openai.yaml",
+      "size_bytes": 270,
+      "sha256": "60024275bf874b8fe3dab4a875250666ca8c12cc2280a0a0ae0dc1790830ef8d"
+    },
+    {
+      "path": "agent-skills/runtime/b104-customer-acceptance-protocol/SKILL.md",
+      "size_bytes": 13610,
+      "sha256": "fd249a86d8d7fcdf590d8172e84f6398947fbaa8706e63e8381a06cd63aa9122"
+    },
+    {
+      "path": "agent-skills/runtime/b104-customer-acceptance-protocol/agents/openai.yaml",
+      "size_bytes": 260,
+      "sha256": "f988c20837733ef9797e1efc8b97d1b58b71b0897a65f44d4abc95f78710f09a"
+    },
+    {
+      "path": "agent-skills/runtime/b104-customer-pilot-onboarding/SKILL.md",
+      "size_bytes": 13579,
+      "sha256": "95d2749855b28d5e0d5e06dae5f380dfe3438b8704f832f6a9d0cfedf6ba2f96"
+    },
+    {
+      "path": "agent-skills/runtime/b104-customer-pilot-onboarding/agents/openai.yaml",
+      "size_bytes": 254,
+      "sha256": "2f25652a0521852acd928008a9e88fc1768bc3e15d93605070ab85f81ee98d13"
+    },
+    {
+      "path": "agent-skills/runtime/b104-disaster-recovery-replay-certification/SKILL.md",
+      "size_bytes": 13617,
+      "sha256": "b5860e08ba3d9490ee2bf6a06637e24889214af2475209c301b159b7ac042924"
+    },
+    {
+      "path": "agent-skills/runtime/b104-disaster-recovery-replay-certification/agents/openai.yaml",
+      "size_bytes": 280,
+      "sha256": "77de4c1dc431af4be81b9c33d06faf190281985b49b0b34c307af8ec40ef82e9"
+    },
+    {
+      "path": "agent-skills/runtime/b104-fault-injection-resilience-campaign/SKILL.md",
+      "size_bytes": 13685,
+      "sha256": "afd305c0b9ed314abdb6e044c5fa0ee902005aae4100c09d8c760ba3b5c0bdfc"
+    },
+    {
+      "path": "agent-skills/runtime/b104-fault-injection-resilience-campaign/agents/openai.yaml",
+      "size_bytes": 274,
+      "sha256": "035d01f29935ae95159c2c9df96b41da4513cf82b9e689d71f7ea2d8ec1925da"
+    },
+    {
+      "path": "agent-skills/runtime/b104-operational-slo-readiness/SKILL.md",
+      "size_bytes": 13561,
+      "sha256": "d0c327dce0e9faf87b6457025019378a17a1a53548f9345923ecf10074d9d45f"
+    },
+    {
+      "path": "agent-skills/runtime/b104-operational-slo-readiness/agents/openai.yaml",
+      "size_bytes": 254,
+      "sha256": "ee28beea7ee6859853ec0baa7ee60e7b1d4658696b614d68c99cf138db8c343e"
+    },
+    {
+      "path": "agent-skills/runtime/b104-portfolio-scale-benchmark/SKILL.md",
+      "size_bytes": 13570,
+      "sha256": "4ce01030623d569f3799fdc30b380f50c91c15953f4acbc9d091d1d44aacefd5"
+    },
+    {
+      "path": "agent-skills/runtime/b104-portfolio-scale-benchmark/agents/openai.yaml",
+      "size_bytes": 254,
+      "sha256": "0a08062a6932207edda74b4b0f1104579b684aefadde51c113837885eb7e1b54"
+    },
+    {
+      "path": "agent-skills/runtime/b104-product-certification-board-gate/SKILL.md",
+      "size_bytes": 13670,
+      "sha256": "744f86c35daec57414516cf142398cab9e0d046695e5d39fba80d44e0e07915a"
+    },
+    {
+      "path": "agent-skills/runtime/b104-product-certification-board-gate/agents/openai.yaml",
+      "size_bytes": 268,
+      "sha256": "651054aacae26ae4235267f4d118e3e6d386f93831896f4d750b8a7ebc462993"
+    },
+    {
+      "path": "agent-skills/runtime/b104-release-readiness-review/SKILL.md",
+      "size_bytes": 13614,
+      "sha256": "74f459457ed67d89d6de71952351507465e8100c9bd4424ef100be4ed11e8aec"
+    },
+    {
+      "path": "agent-skills/runtime/b104-release-readiness-review/agents/openai.yaml",
+      "size_bytes": 252,
+      "sha256": "e582407484945056b2a6387632983f8792f575a6e642a7c3b1a2e3611723ac51"
+    },
+    {
+      "path": "agent-skills/runtime/b104-representative-repository-selection/SKILL.md",
+      "size_bytes": 13618,
+      "sha256": "33924cea37f4888a02569739e3eaf602942e2e097822bd21b51e2b26753466ff"
+    },
+    {
+      "path": "agent-skills/runtime/b104-representative-repository-selection/agents/openai.yaml",
+      "size_bytes": 274,
+      "sha256": "54343ff4b28f882f22083e0e3dfe86afe3015e1dad5b91420ac877b3839bf8fe"
+    },
+    {
+      "path": "agent-skills/runtime/b104-security-red-team-campaign/SKILL.md",
+      "size_bytes": 13661,
+      "sha256": "8f78b0cd206570007a577b5287e5951aceffec869d6fcd123cbd53326c5298f9"
+    },
+    {
+      "path": "agent-skills/runtime/b104-security-red-team-campaign/agents/openai.yaml",
+      "size_bytes": 256,
+      "sha256": "a445a2bc35de29cc64a787bcda1c9a0d6812146ebdef7d9a54edf6638c6371e8"
+    },
+    {
+      "path": "agent-skills/runtime/b104-support-incident-runbook-readiness/SKILL.md",
+      "size_bytes": 13681,
+      "sha256": "bc40fe9605d77790ac2eb2936fec1789871bb575ffd807dc6c13c2ed267a150d"
+    },
+    {
+      "path": "agent-skills/runtime/b104-support-incident-runbook-readiness/agents/openai.yaml",
+      "size_bytes": 272,
+      "sha256": "fc0e0556a2d2ab688661e7c780619c2d0f8a983a87c7f20c66580f0210dd704f"
+    },
+    {
+      "path": "agent-skills/runtime/b104-upgrade-rollback-certification/SKILL.md",
+      "size_bytes": 13656,
+      "sha256": "6798d4c525cfce33b9029ff7c67433d203ce0756b650a455228900de6f8ce17f"
+    },
+    {
+      "path": "agent-skills/runtime/b104-upgrade-rollback-certification/agents/openai.yaml",
+      "size_bytes": 264,
+      "sha256": "00104bad15cb756c49cb75bd0eb154d4dade100727ffefa688ebeb2c5a58c217"
+    },
+    {
+      "path": "agent-skills/runtime/b97-capability-graph-certification-gate/SKILL.md",
+      "size_bytes": 13762,
+      "sha256": "0b9db31c37163f72447792ba313190c11c949dd587e90de59866da1bfeabe6a4"
+    },
+    {
+      "path": "agent-skills/runtime/b97-capability-graph-certification-gate/agents/openai.yaml",
+      "size_bytes": 272,
+      "sha256": "55dd210d12fb96cba5b0525bfdf5d885d6459134546aaf2a964fabaeb6b3f1cc"
+    },
+    {
+      "path": "agent-skills/runtime/b97-capability-graph-query-api/SKILL.md",
+      "size_bytes": 13572,
+      "sha256": "6e283b63985978f4cb3a4af0a6c1b9153988d8054e48e716b87ff33017dab93b"
+    },
+    {
+      "path": "agent-skills/runtime/b97-capability-graph-query-api/agents/openai.yaml",
+      "size_bytes": 254,
+      "sha256": "ecbd050585538eaf9de1e8f2780468d282ff1d0f078365aa9cf378654c71fc08"
+    },
+    {
+      "path": "agent-skills/runtime/b97-capability-node-builder/SKILL.md",
+      "size_bytes": 13548,
+      "sha256": "e4ba4f262afc79215e2f7ff23f579721455591df0f2ede0fafaeea80d769db67"
+    },
+    {
+      "path": "agent-skills/runtime/b97-capability-node-builder/agents/openai.yaml",
+      "size_bytes": 248,
+      "sha256": "8447701efc6b2cfe00176c712c0f6ca8216df8a491814b99bcae965d6a359bd4"
+    },
+    {
+      "path": "agent-skills/runtime/b97-capability-ontology-foundation/SKILL.md",
+      "size_bytes": 13674,
+      "sha256": "8ebb8792d14483d6dc1ac2ce9f1590355791bd10c28b9dbd18be4a52ca1fd4c8"
+    },
+    {
+      "path": "agent-skills/runtime/b97-capability-ontology-foundation/agents/openai.yaml",
+      "size_bytes": 262,
+      "sha256": "ef58d05b5bc5f4467954dd4af3c945cf9d8d77d09d28de5d8a990cdcb1ccf891"
+    },
+    {
+      "path": "agent-skills/runtime/b97-conflict-overlap-detector/SKILL.md",
+      "size_bytes": 13659,
+      "sha256": "12bd8eb5a62cb36a5c94da052a73bb221c2a919a05b17dc3bd1e0c2163238f68"
+    },
+    {
+      "path": "agent-skills/runtime/b97-conflict-overlap-detector/agents/openai.yaml",
+      "size_bytes": 252,
+      "sha256": "d93b6006e15dff50046d230e2b9c2b87889fcd481140cd1afd1e8744abb5c01d"
+    },
+    {
+      "path": "agent-skills/runtime/b97-dependency-edge-resolver/SKILL.md",
+      "size_bytes": 13616,
+      "sha256": "fdf5b6f5dc330870da7b00abb3954d643bbbca5c3a5f548cd4d45242454852c2"
+    },
+    {
+      "path": "agent-skills/runtime/b97-dependency-edge-resolver/agents/openai.yaml",
+      "size_bytes": 250,
+      "sha256": "c4b07a57a15437c67ee1c2e025da2ec793513dd417645a98fbff64ab85e743de"
+    },
+    {
+      "path": "agent-skills/runtime/b97-evidence-requirement-graph/SKILL.md",
+      "size_bytes": 13701,
+      "sha256": "1c51da0792492358704720c2744db84effe85ba985444120086fac259b1363da"
+    },
+    {
+      "path": "agent-skills/runtime/b97-evidence-requirement-graph/agents/openai.yaml",
+      "size_bytes": 254,
+      "sha256": "05d3c0cd19336b0adb1073734b9b347907299669db26a0510ca74cbeeb65beb1"
+    },
+    {
+      "path": "agent-skills/runtime/b97-graph-change-impact-analyzer/SKILL.md",
+      "size_bytes": 13666,
+      "sha256": "3e3c410cf8af30b48d2f53f960479d764f8cc9cd0bd74dd1a63fa656939e226b"
+    },
+    {
+      "path": "agent-skills/runtime/b97-graph-change-impact-analyzer/agents/openai.yaml",
+      "size_bytes": 258,
+      "sha256": "0f7be958e897e68f4b5ce77c56754d7a73ebc6d1a23c637ce08927019c75f560"
+    },
+    {
+      "path": "agent-skills/runtime/b97-legacy-estate-migration-planner/SKILL.md",
+      "size_bytes": 13654,
+      "sha256": "7e902cffbf1ff2a01fcd8338f687643ac6c7f1f07c511dcffa78b35b112a302b"
+    },
+    {
+      "path": "agent-skills/runtime/b97-legacy-estate-migration-planner/agents/openai.yaml",
+      "size_bytes": 264,
+      "sha256": "6668d11e8e0afa2af646844710040819bd83166e191479f3a3a6cb43d0a14650"
+    },
+    {
+      "path": "agent-skills/runtime/b97-legacy-skill-estate-inventory/SKILL.md",
+      "size_bytes": 13837,
+      "sha256": "3ebab17ed60b8d2220348861432bf1c702af2e3901060abc79378ddf19096380"
+    },
+    {
+      "path": "agent-skills/runtime/b97-legacy-skill-estate-inventory/agents/openai.yaml",
+      "size_bytes": 260,
+      "sha256": "5201c1ee2d9414d1a6dcdc42c4fcadbd3b2d67ed658043e1b963f8c8817fa8ef"
+    },
+    {
+      "path": "agent-skills/runtime/b97-lifecycle-deprecation-model/SKILL.md",
+      "size_bytes": 13674,
+      "sha256": "42d0a95636b315e81d1e0299a226a6d02d87648bed0c6860e9b04576c2b583ad"
+    },
+    {
+      "path": "agent-skills/runtime/b97-lifecycle-deprecation-model/agents/openai.yaml",
+      "size_bytes": 256,
+      "sha256": "9d1f1ce50ddd8c1ffe911eb7f0ece491db2375d926b6ac3ff5f1ba27f2ab4148"
+    },
+    {
+      "path": "agent-skills/runtime/b97-ownership-governance-registry/SKILL.md",
+      "size_bytes": 13631,
+      "sha256": "8f9a8320b99621438e8afe01e008fd9c4f34ecc37b10fe9f51ca080dd3218b2b"
+    },
+    {
+      "path": "agent-skills/runtime/b97-ownership-governance-registry/agents/openai.yaml",
+      "size_bytes": 260,
+      "sha256": "f7f145f4e05bd13ed9fcb2dd8b68fe5165fda3cbd47e8e09cf8b9933842d620f"
+    },
+    {
+      "path": "agent-skills/runtime/b97-route-domain-pack-composer/SKILL.md",
+      "size_bytes": 13660,
+      "sha256": "725103b3762bf1c15a71b1db0cc887f249ccdbc14220131664bb90c89bc6a5da"
+    },
+    {
+      "path": "agent-skills/runtime/b97-route-domain-pack-composer/agents/openai.yaml",
+      "size_bytes": 254,
+      "sha256": "9faed48f39d567478dc32f59934ab2b562f055c2ebd70ecb582779b143befd20"
+    },
+    {
+      "path": "agent-skills/runtime/b97-skill-metadata-normalizer/SKILL.md",
+      "size_bytes": 13663,
+      "sha256": "90549b2b295ec37d4860795ca4932ab53e7d1bfbe56ccb499b9d56c7b91832be"
+    },
+    {
+      "path": "agent-skills/runtime/b97-skill-metadata-normalizer/agents/openai.yaml",
+      "size_bytes": 252,
+      "sha256": "00074a2ec9185070be6fc3612206f607ba9c74e79ccf8e93d0851f748fa703f5"
+    },
+    {
+      "path": "agent-skills/runtime/b97-tool-runtime-requirement-graph/SKILL.md",
+      "size_bytes": 13661,
+      "sha256": "623c8a3126395822df53ffc79889504819b67e8ae2650ad6dc9a1c7026245a9c"
+    },
+    {
+      "path": "agent-skills/runtime/b97-tool-runtime-requirement-graph/agents/openai.yaml",
+      "size_bytes": 262,
+      "sha256": "042563547bdf723be59d1a3f1ad2d202d0186281b3ea1e7837d325fcc4e97d74"
+    },
+    {
+      "path": "agent-skills/runtime/b97-version-compatibility-matrix/SKILL.md",
+      "size_bytes": 13678,
+      "sha256": "7e7ecff80eb253ffc5547d93f238fdb46e00717c7de74b2046f47dfa9473213d"
+    },
+    {
+      "path": "agent-skills/runtime/b97-version-compatibility-matrix/agents/openai.yaml",
+      "size_bytes": 258,
+      "sha256": "b41c5ff5f81942a8ffd66e177b05934bb5fa253490c36ebc0c7d12a7022e32bc"
+    },
+    {
+      "path": "agent-skills/runtime/b98-capability-search-ranking/SKILL.md",
+      "size_bytes": 13667,
+      "sha256": "bf79d8ad986814d883eeaaa57b287595d63c3d514c57d64034437696b4ee4cf8"
+    },
+    {
+      "path": "agent-skills/runtime/b98-capability-search-ranking/agents/openai.yaml",
+      "size_bytes": 252,
+      "sha256": "17c8f7cc56d506ee3ce14e826c1fa302c89f1c37e13d7dbc39e3c0f1cc8a84d5"
+    },
+    {
+      "path": "agent-skills/runtime/b98-contract-compatibility-deprecation/SKILL.md",
+      "size_bytes": 13649,
+      "sha256": "e4247bf284df3a56ecd419449e8c18145de44cd8553801dd06a8aa06fdbed6b3"
+    },
+    {
+      "path": "agent-skills/runtime/b98-contract-compatibility-deprecation/agents/openai.yaml",
+      "size_bytes": 270,
+      "sha256": "4590e60be26bf7bcdfa72cabb84b1f5e26ef42f46fe18c4e2a272216106df883"
+    },
+    {
+      "path": "agent-skills/runtime/b98-contract-signing-provenance/SKILL.md",
+      "size_bytes": 13609,
+      "sha256": "8c27a4ab0481916f11ce3adb63b2c55a189dbe399383cb2fabdd09a41c76c9cf"
+    },
+    {
+      "path": "agent-skills/runtime/b98-contract-signing-provenance/agents/openai.yaml",
+      "size_bytes": 256,
+      "sha256": "a3e3303e59f8c79c266e28fafe8c8779310fc6fe5471383cdccbf2f2691bb896"
+    },
+    {
+      "path": "agent-skills/runtime/b98-dependency-closure-resolver/SKILL.md",
+      "size_bytes": 13580,
+      "sha256": "e4289e2aad9b8420ecf21e87b27121199dbc138119ae0f9f9d6f08c94761832b"
+    },
+    {
+      "path": "agent-skills/runtime/b98-dependency-closure-resolver/agents/openai.yaml",
+      "size_bytes": 256,
+      "sha256": "29110b93dcf891318e4990ef840a7257e35ef5bffcb32c8107fb8a6a49acb2eb"
+    },
+    {
+      "path": "agent-skills/runtime/b98-deterministic-variable-resolver/SKILL.md",
+      "size_bytes": 13663,
+      "sha256": "3d66217f2c52796bebe97864b6dac8cc957ec25a58f4ae7fa534b15d5e5bb56f"
+    },
+    {
+      "path": "agent-skills/runtime/b98-deterministic-variable-resolver/agents/openai.yaml",
+      "size_bytes": 264,
+      "sha256": "3c267060c12dd29b7a3f22de2623817274c7ea318d3abab17f284516e1ae3cd5"
+    },
+    {
+      "path": "agent-skills/runtime/b98-executable-contract-certification-gate/SKILL.md",
+      "size_bytes": 13756,
+      "sha256": "9b5643a613de97250aa92903b66ded8d7990172e897a2c3dc581affe75a529bc"
+    },
+    {
+      "path": "agent-skills/runtime/b98-executable-contract-certification-gate/agents/openai.yaml",
+      "size_bytes": 278,
+      "sha256": "e846e3001128851c908cdb20239d7e37f961f169ede54bd01ee9d71cbf9a9d25"
+    },
+    {
+      "path": "agent-skills/runtime/b98-executable-skill-contract-schema/SKILL.md",
+      "size_bytes": 13627,
+      "sha256": "77d56f8409969ec524b67bbc56d7a646e93f789e584cbe6975a6ddfaee9c1efc"
+    },
+    {
+      "path": "agent-skills/runtime/b98-executable-skill-contract-schema/agents/openai.yaml",
+      "size_bytes": 266,
+      "sha256": "7125b843e33f74240cf8898276e517431f2a4a7b59b747186a692db7c3f84a14"
+    },
+    {
+      "path": "agent-skills/runtime/b98-execution-step-compiler/SKILL.md",
+      "size_bytes": 13557,
+      "sha256": "9676b376e9425cfcadb07188587731cea48ec691cd0cdae7e53cbe5fbd04f1db"
+    },
+    {
+      "path": "agent-skills/runtime/b98-execution-step-compiler/agents/openai.yaml",
+      "size_bytes": 248,
+      "sha256": "7c78e94c0ef469ad5cc931a084fcbb7c1332031ad50d03084104099a519c0cb9"
+    },
+    {
+      "path": "agent-skills/runtime/b98-input-output-schema-binder/SKILL.md",
+      "size_bytes": 13548,
+      "sha256": "0f26560247407c1256f87f284c136678d4f6d8671487025daf02d569233e4954"
+    },
+    {
+      "path": "agent-skills/runtime/b98-input-output-schema-binder/agents/openai.yaml",
+      "size_bytes": 254,
+      "sha256": "7cd8923c93f102c510e5b2406e770e4214e46e79687847f624350cb1162229bb"
+    },
+    {
+      "path": "agent-skills/runtime/b98-permission-capability-declaration/SKILL.md",
+      "size_bytes": 13644,
+      "sha256": "a4a48e6ffb8db01c7843eb243f617131c7dd3cceff357b5291ccf6a9a8204dfc"
+    },
+    {
+      "path": "agent-skills/runtime/b98-permission-capability-declaration/agents/openai.yaml",
+      "size_bytes": 268,
+      "sha256": "201f85f93307d9efb7467645a2e2811299cc43115d00a8693a2aa19b5699ace3"
+    },
+    {
+      "path": "agent-skills/runtime/b98-precondition-guard-compiler/SKILL.md",
+      "size_bytes": 13565,
+      "sha256": "5e7beaa814308da662747142f8b1ccbe4aec0428f63da7d5fe1b3dcadfaa08c5"
+    },
+    {
+      "path": "agent-skills/runtime/b98-precondition-guard-compiler/agents/openai.yaml",
+      "size_bytes": 256,
+      "sha256": "77464fa033b948874a595d933fa6228222335138460fab63cf85297a440aae60"
+    },
+    {
+      "path": "agent-skills/runtime/b98-rollback-compensation-compiler/SKILL.md",
+      "size_bytes": 13597,
+      "sha256": "52abf9f1227237de74247bad45c795626b5fe25100d137eb240b99b38cf025e0"
+    },
+    {
+      "path": "agent-skills/runtime/b98-rollback-compensation-compiler/agents/openai.yaml",
+      "size_bytes": 262,
+      "sha256": "edbcfdedaf603ebac6a6082798e57311824c33398e139ceeebdf7b09e588a84c"
+    },
+    {
+      "path": "agent-skills/runtime/b98-skill-conflict-arbitrator/SKILL.md",
+      "size_bytes": 13604,
+      "sha256": "982b2306f58863e2d4b102d5cfe8589bd7e3f6c56a14cc36141d09be5bd8229e"
+    },
+    {
+      "path": "agent-skills/runtime/b98-skill-conflict-arbitrator/agents/openai.yaml",
+      "size_bytes": 252,
+      "sha256": "b6151bb2fb7d37ae05ca0f38237694bb29bbe0a9f32decf8010994bdae096fa2"
+    },
+    {
+      "path": "agent-skills/runtime/b98-skill-markdown-contract-compiler/SKILL.md",
+      "size_bytes": 13658,
+      "sha256": "20abe3520e05530b0bc1a6c177f0aacdb2ff43c30e117b214069552f6f268b02"
+    },
+    {
+      "path": "agent-skills/runtime/b98-skill-markdown-contract-compiler/agents/openai.yaml",
+      "size_bytes": 266,
+      "sha256": "972a98b2cbf53fc8d72d27a915b7035edf54fbd2b42e5d6f449f2a91e8c85cf6"
+    },
+    {
+      "path": "agent-skills/runtime/b98-skill-registry-service/SKILL.md",
+      "size_bytes": 13578,
+      "sha256": "03a0bab1dc1533733412eb9d126d82b5edfa76c7ea9b6958c16249798fa4d233"
+    },
+    {
+      "path": "agent-skills/runtime/b98-skill-registry-service/agents/openai.yaml",
+      "size_bytes": 246,
+      "sha256": "baf594ef63415c1b6abdbf165163a72113a4eda73d779e5d4121fffe457bc444"
+    },
+    {
+      "path": "agent-skills/runtime/b98-test-evidence-contract-compiler/SKILL.md",
+      "size_bytes": 13623,
+      "sha256": "b860571a0b2039e9c1a2454305f8cb17071e8c92845c577aa22a59d889c7832c"
+    },
+    {
+      "path": "agent-skills/runtime/b98-test-evidence-contract-compiler/agents/openai.yaml",
+      "size_bytes": 264,
+      "sha256": "52214b6f8667a412820a7938658eb85dedeeed68fb26f19c43d02e1f0928a354"
+    },
+    {
+      "path": "agent-skills/runtime/b99-cancellation-propagation/SKILL.md",
+      "size_bytes": 13517,
+      "sha256": "41d712bae3c590c1143b48c5dd6f28217332305130f6e33f822d442e68c216f1"
+    },
+    {
+      "path": "agent-skills/runtime/b99-cancellation-propagation/agents/openai.yaml",
+      "size_bytes": 250,
+      "sha256": "0ad4bd23055ccb2426862b907786dd8ac514f8cfc06550cc7135c7965db4491e"
+    },
+    {
+      "path": "agent-skills/runtime/b99-concurrency-fairness-controller/SKILL.md",
+      "size_bytes": 13508,
+      "sha256": "0d77f6befe1b54f60bc9d16d65cb91d18c711cd95fa3015e46a57a1b7ca70aeb"
+    },
+    {
+      "path": "agent-skills/runtime/b99-concurrency-fairness-controller/agents/openai.yaml",
+      "size_bytes": 264,
+      "sha256": "08dc25dabeab15b37c152a691625c2b71069ac650c61939cfb99f2acd9ca3774"
+    },
+    {
+      "path": "agent-skills/runtime/b99-durable-run-state-model/SKILL.md",
+      "size_bytes": 13529,
+      "sha256": "06151bd04c1ca8f607af5304f46d8a9e4e5b8dd301b55a8da0552399fbf57c66"
+    },
+    {
+      "path": "agent-skills/runtime/b99-durable-run-state-model/agents/openai.yaml",
+      "size_bytes": 248,
+      "sha256": "5dd37c9783f78c83b4567ed0251a18c2f76854c042ad5a61cb43b5cf44804cae"
+    },
+    {
+      "path": "agent-skills/runtime/b99-durable-runtime-certification-gate/SKILL.md",
+      "size_bytes": 13633,
+      "sha256": "a9a8e78c6142c163f6fbe8697bdc6e71b648af760b6fbf845662f9e558017662"
+    },
+    {
+      "path": "agent-skills/runtime/b99-durable-runtime-certification-gate/agents/openai.yaml",
+      "size_bytes": 270,
+      "sha256": "b403e44349a5e13bbbafc8439fa142aee0a5a75b605a4c7d561fa1d647ffbe04"
+    },
+    {
+      "path": "agent-skills/runtime/b99-durable-scheduler-queue/SKILL.md",
+      "size_bytes": 13466,
+      "sha256": "de9cfb59ac04f571543794f67774de904c58c32e5dc89fb5cadd7cd232f4874d"
+    },
+    {
+      "path": "agent-skills/runtime/b99-durable-scheduler-queue/agents/openai.yaml",
+      "size_bytes": 248,
+      "sha256": "8506a94bb2f4c0e7ed71f62d9cb53cccb7a3cb19a0373d88a819205f45f6f756"
+    },
+    {
+      "path": "agent-skills/runtime/b99-execution-budget-quota/SKILL.md",
+      "size_bytes": 13449,
+      "sha256": "125f0fa24f2b47f9517699bca3b24383b4d7e065ca12d831201b3a956357f81b"
+    },
+    {
+      "path": "agent-skills/runtime/b99-execution-budget-quota/agents/openai.yaml",
+      "size_bytes": 246,
+      "sha256": "ee18b8aaa4af5b47042ba43d67b09a10cdd2f100167560b2495416961fca190d"
+    },
+    {
+      "path": "agent-skills/runtime/b99-external-effect-outbox-inbox/SKILL.md",
+      "size_bytes": 13499,
+      "sha256": "6cebf01e970e2c317fea0a35acb133ad7e49b588904b5c257e3b284b29a1d246"
+    },
+    {
+      "path": "agent-skills/runtime/b99-external-effect-outbox-inbox/agents/openai.yaml",
+      "size_bytes": 258,
+      "sha256": "d0000b476e6c612237020c9bc8686080d6f3250f5c797b2f29542a86efbb4423"
+    },
+    {
+      "path": "agent-skills/runtime/b99-failure-classification-diagnostics/SKILL.md",
+      "size_bytes": 13629,
+      "sha256": "1cf411917a78eb6a5d2596c0549480e2a27fd6a70c80668bcec029d93955369c"
+    },
+    {
+      "path": "agent-skills/runtime/b99-failure-classification-diagnostics/agents/openai.yaml",
+      "size_bytes": 270,
+      "sha256": "ab70f032ac93174ae9aab858f43f3e9b9a2d30279752dfbcf754a6281ed61f73"
+    },
+    {
+      "path": "agent-skills/runtime/b99-idempotency-effect-journal/SKILL.md",
+      "size_bytes": 13487,
+      "sha256": "79a9833fe358621f80570a1ebef129c6f220f2875d73edb5214244eff46ac278"
+    },
+    {
+      "path": "agent-skills/runtime/b99-idempotency-effect-journal/agents/openai.yaml",
+      "size_bytes": 254,
+      "sha256": "97343b9b55a1f5c8c3f4a159f2c67692787e12838f49c8917fa64c5687145a00"
+    },
+    {
+      "path": "agent-skills/runtime/b99-pause-resume-checkpoint/SKILL.md",
+      "size_bytes": 13474,
+      "sha256": "b1499c5d5e43afc164159ad2714c04bcf0a2b44eaef093cdafa2db61bb4eb4ae"
+    },
+    {
+      "path": "agent-skills/runtime/b99-pause-resume-checkpoint/agents/openai.yaml",
+      "size_bytes": 248,
+      "sha256": "1a718915731720bd0a8bfb6b05bc867eb74b31a2db72145193bb0e4228f9b9e8"
+    },
+    {
+      "path": "agent-skills/runtime/b99-plan-to-dag-compiler/SKILL.md",
+      "size_bytes": 13510,
+      "sha256": "5143bec29fc11a928a7406e7d7823248e4bff8c028030b1b0e4056613c823b28"
+    },
+    {
+      "path": "agent-skills/runtime/b99-plan-to-dag-compiler/agents/openai.yaml",
+      "size_bytes": 242,
+      "sha256": "c4df1f5cb6aa5dbb3b3ed581da4c13e392a67d593886dcaa6b41f73cb6e4f40c"
+    },
+    {
+      "path": "agent-skills/runtime/b99-retry-backoff-policy/SKILL.md",
+      "size_bytes": 13460,
+      "sha256": "5aa010582212c8e730fcc81785113faae7b3009861109d00c9864d8f892d752b"
+    },
+    {
+      "path": "agent-skills/runtime/b99-retry-backoff-policy/agents/openai.yaml",
+      "size_bytes": 242,
+      "sha256": "916a9a5d707e78694d85089f7897bfa84b47f92d6bab7788edbd7c87bbe17416"
+    },
+    {
+      "path": "agent-skills/runtime/b99-runtime-observability-tracing/SKILL.md",
+      "size_bytes": 13489,
+      "sha256": "52d2293714d3d7cdbe85d01d4096c0b69eae12daff5670f62391f2c11908be48"
+    },
+    {
+      "path": "agent-skills/runtime/b99-runtime-observability-tracing/agents/openai.yaml",
+      "size_bytes": 260,
+      "sha256": "ef72c27a0866533e9accadea410f624adf746d0026922364b0e6c7a64b29452d"
+    },
+    {
+      "path": "agent-skills/runtime/b99-saga-compensation-engine/SKILL.md",
+      "size_bytes": 13510,
+      "sha256": "fba32a3753e3eed23b88c1721d5300923f640f1385a8f1915d4b6cccf2bc7481"
+    },
+    {
+      "path": "agent-skills/runtime/b99-saga-compensation-engine/agents/openai.yaml",
+      "size_bytes": 250,
+      "sha256": "0da4390100bf1be03c8321446dabc504ef00d45bfeaef6528b5521e51143a904"
+    },
+    {
+      "path": "agent-skills/runtime/b99-task-lease-heartbeat/SKILL.md",
+      "size_bytes": 13422,
+      "sha256": "d0c69d5026c74c67ac1e1eb81814841f402dd5ed48351e531bdaedde6e9e31b4"
+    },
+    {
+      "path": "agent-skills/runtime/b99-task-lease-heartbeat/agents/openai.yaml",
+      "size_bytes": 242,
+      "sha256": "0860ab87e092e2ce64e861bdd9c30f49778e4485bbcf5a6e416112b4588a6a6f"
+    },
+    {
+      "path": "agent-skills/runtime/b99-workflow-versioning-replay/SKILL.md",
+      "size_bytes": 13518,
+      "sha256": "0a56ff44e8e50d54daaa7e52c802cc0d2cca8a8b4e2b42b324574ab2dfa37931"
+    },
+    {
+      "path": "agent-skills/runtime/b99-workflow-versioning-replay/agents/openai.yaml",
+      "size_bytes": 254,
+      "sha256": "3d4ba81947fff28c7ee73ab12da412d2490645c7956af536df79c733afd10ed6"
+    },
+    {
+      "path": "docs/SKILL_CATALOG.md",
+      "size_bytes": 11469,
+      "sha256": "1544bbbcc13cab5d19e5e8dfeda3bf1bfa93cf43d11f1899688c1427e4a982e8"
+    },
+    {
+      "path": "docs/batch-100-overview.md",
+      "size_bytes": 3775,
+      "sha256": "8b4a3879ebe69020565babc17d17b66498ebf4ede1f8a061cdc3750eaceb68e4"
+    },
+    {
+      "path": "docs/batch-101-overview.md",
+      "size_bytes": 4076,
+      "sha256": "0fbb4764be5573d6c2cf470a4e84ac72b5e52369c590de7a89ff03f595dfa211"
+    },
+    {
+      "path": "docs/batch-102-overview.md",
+      "size_bytes": 3972,
+      "sha256": "1e60d1016cea5280232fde57eead495fdccf090d6340f40017cc6663d7c19f89"
+    },
+    {
+      "path": "docs/batch-103-overview.md",
+      "size_bytes": 3898,
+      "sha256": "cac4da062e4a7ab600c84f0cc1b3e99d9bf5324de0ad635ae22636a3ad4d4c35"
+    },
+    {
+      "path": "docs/batch-104-overview.md",
+      "size_bytes": 4126,
+      "sha256": "3baca94b9eb3a9cd24d8577d1bbb3d5afdf74f8624b8b524a67c7832e6c1c527"
+    },
+    {
+      "path": "docs/batch-97-overview.md",
+      "size_bytes": 4195,
+      "sha256": "2a0dfd3042def18564dd7ae26aa347593e7babf190ad511d62bd6717f696c9c4"
+    },
+    {
+      "path": "docs/batch-98-overview.md",
+      "size_bytes": 4015,
+      "sha256": "3954feb5bd76e6c215e2dd730e780f5830c171d15c27d4c3f78e64240b6691dd"
+    },
+    {
+      "path": "docs/batch-99-overview.md",
+      "size_bytes": 3814,
+      "sha256": "9012367c82546fc39ca854a2d33ea0a89ce32bdbef40aaeeab1bdef3e98fe4c5"
+    },
+    {
+      "path": "index.json",
+      "size_bytes": 19912,
+      "sha256": "a7a194c92b774243149bcbc5de4b539de145bdc598be0f7dfb98d6e31c911aaa"
+    },
+    {
+      "path": "install.sh",
+      "size_bytes": 944,
+      "sha256": "cfc5ff01790840ebe08b635323a8a36c12d41348df2df02d9c28f5d3264b4ecb"
+    },
+    {
+      "path": "manifests/batch-100.json",
+      "size_bytes": 13047,
+      "sha256": "a1f496f3714c893a9322e97606fbbd15f5ad8221f2fa9115320de97dfaaef050"
+    },
+    {
+      "path": "manifests/batch-101.json",
+      "size_bytes": 13461,
+      "sha256": "bf276b1c1dd6b6115911f6481f173b6da08db78e89d600c64090b508112cbfa4"
+    },
+    {
+      "path": "manifests/batch-102.json",
+      "size_bytes": 13219,
+      "sha256": "58080c6300d0e586561b00f20910c8d120fa88edf54c6541c1bb8b2f80f08bbb"
+    },
+    {
+      "path": "manifests/batch-103.json",
+      "size_bytes": 13287,
+      "sha256": "d1088b10c0dcd26e8862d116c2a8b1177bc0582ebcc2b094211cb8da7b20da44"
+    },
+    {
+      "path": "manifests/batch-104.json",
+      "size_bytes": 13521,
+      "sha256": "34df53195ce8ef0bae23fb090faaf169d9894b0135a63dd0a92772b9dee44e38"
+    },
+    {
+      "path": "manifests/batch-97.json",
+      "size_bytes": 13093,
+      "sha256": "63df65ed0ff01ba90bcc343db5a333eab077d858a73253e74a394e5a9caee0aa"
+    },
+    {
+      "path": "manifests/batch-98.json",
+      "size_bytes": 13206,
+      "sha256": "42d4406693a6c19c9aa1e0fc4943dd4375cf6b1660382c726b7f50a84a16a750"
+    },
+    {
+      "path": "manifests/batch-99.json",
+      "size_bytes": 12944,
+      "sha256": "9e7ec48f7e8bfa53fbfbe908a0a519f9774579395f83cd38ec21eb00c52c2dd9"
+    },
+    {
+      "path": "references/product-lines.md",
+      "size_bytes": 242,
+      "sha256": "9972f97346265cc083c0cbb8a39e0c091267f79fc203c305bea833c73534eca5"
+    },
+    {
+      "path": "references/trust-boundaries.md",
+      "size_bytes": 227,
+      "sha256": "bc8fc2b74dbb21cfa27d9808885319624cf40a3b9d2df0d2571bebbbb4d181e9"
+    },
+    {
+      "path": "references/verification-state-model.md",
+      "size_bytes": 325,
+      "sha256": "b18292299ec4f4c663a054a95808f7246f9fd0231e9d0cbfb5a3f4c032ded1c1"
+    },
+    {
+      "path": "schemas/capability-graph-v1.schema.json",
+      "size_bytes": 2012,
+      "sha256": "b60f4c7ea8505cb71a33f97ea24bdd33caf7ffe68cf50b89d717825063f0e956"
+    },
+    {
+      "path": "schemas/evidence-record-v1.schema.json",
+      "size_bytes": 1903,
+      "sha256": "831b1ec10d390ad5153848e73995c9a8068a4e62ef52bf6c21f029f407d83697"
+    },
+    {
+      "path": "schemas/executable-skill-contract-v1.schema.json",
+      "size_bytes": 5848,
+      "sha256": "030545dea688a98d5b98742b4e5c921c56d323a7d3a6ccd87c1556c2b9a4a4ed"
+    },
+    {
+      "path": "schemas/execution-run-v1.schema.json",
+      "size_bytes": 2062,
+      "sha256": "6e61425cad10377c9f0a874355cf276411fc3cbfe4169de19e5d141be0f90a95"
+    },
+    {
+      "path": "schemas/product-certification-v1.schema.json",
+      "size_bytes": 2170,
+      "sha256": "42de1ccd597e9cd8d407478fb13a52d79fbeaecab65c8d04f1f99bd2b35285f9"
+    },
+    {
+      "path": "schemas/route-pack-result-v1.schema.json",
+      "size_bytes": 1484,
+      "sha256": "ab3f8046b58765efabf15007bf2314b0c119fb6d242d46802f6bbf6c61b98593"
+    },
+    {
+      "path": "schemas/runner-attestation-v1.schema.json",
+      "size_bytes": 1529,
+      "sha256": "1609b237fd6e932d32d41eedefc5175a939703ce7ea7a5e8bdc38ae900639408"
+    },
+    {
+      "path": "schemas/semantic-equivalence-result-v1.schema.json",
+      "size_bytes": 1966,
+      "sha256": "0b62619537e803d44aa21e155863e7757a2287c8a9a00b4f45be877e00ba3c60"
+    },
+    {
+      "path": "scripts/compile_skill_contract.py",
+      "size_bytes": 6075,
+      "sha256": "f8dbffe891cb0fb6d53f09807c92df4db53fe6e2b6108c7e83e4aa37be1427bc"
+    },
+    {
+      "path": "scripts/install_skills.py",
+      "size_bytes": 5049,
+      "sha256": "bc8ee6fe0d1a97b658e82547b3912b0e78772fc63a71a5e3571ead701813f0b2"
+    },
+    {
+      "path": "scripts/remap_global_ids.py",
+      "size_bytes": 2566,
+      "sha256": "950be7dffc791db13ee2882517c87556ed9269c891ff051c234f33449bca3124"
+    },
+    {
+      "path": "scripts/run_certification_gate.py",
+      "size_bytes": 11272,
+      "sha256": "cea33689abffeadf2b004fadf3a11faa32c80257afaaa87c5e45a19f719389bf"
+    },
+    {
+      "path": "scripts/validate_capability_graph.py",
+      "size_bytes": 5794,
+      "sha256": "b5d076a25a928ac8778371549e82561784d60cc8fb50dd38d97a9f0741dae487"
+    },
+    {
+      "path": "scripts/validate_package.py",
+      "size_bytes": 15529,
+      "sha256": "7155d18e6cb5f893269a2bf95ea3d2edcb6cb0ce2f9994b950d231de12f2fd1a"
+    },
+    {
+      "path": "skills/batch-100/B100-S01-runner-enrollment-workload-identity.md",
+      "size_bytes": 13542,
+      "sha256": "e46783df452f653e7b90c4a29891a1b79e743804092d5164fe0565cd097626e3"
+    },
+    {
+      "path": "skills/batch-100/B100-S02-runner-mtls-channel.md",
+      "size_bytes": 13431,
+      "sha256": "ee801648a57729552e70eedd4c51c26187949f71484cc80ad8987b8362e19db9"
+    },
+    {
+      "path": "skills/batch-100/B100-S03-runner-attestation-posture.md",
+      "size_bytes": 13487,
+      "sha256": "5648c46141b22ea1270bc8786a3856ae275eff5f516332331d894e4623de2976"
+    },
+    {
+      "path": "skills/batch-100/B100-S04-signed-task-envelope-verifier.md",
+      "size_bytes": 13502,
+      "sha256": "a9b1d024a6df28038360f00e08fa3e172bcbd764e5950b92fc894843ea06903f"
+    },
+    {
+      "path": "skills/batch-100/B100-S05-sandbox-profile-selector.md",
+      "size_bytes": 13535,
+      "sha256": "1d9de72c34695d1816afcb7bfccb7518a58d433740470a5f83664474c8a28acc"
+    },
+    {
+      "path": "skills/batch-100/B100-S06-workspace-filesystem-isolation.md",
+      "size_bytes": 13532,
+      "sha256": "ab0a0b01c3985d4d6115b38dfbc2723a34c217cacbf6230d0223e1e2de4f1c5e"
+    },
+    {
+      "path": "skills/batch-100/B100-S07-process-execution-allowlist.md",
+      "size_bytes": 13515,
+      "sha256": "e2bf48596d00000f1d641fdfc0665fc614a94975868db74b7296a925868a4a2e"
+    },
+    {
+      "path": "skills/batch-100/B100-S08-network-egress-control.md",
+      "size_bytes": 13466,
+      "sha256": "3e0f21fdb76157fd1b96fe820a5fff2e5c0547412ade9851917d9c17d930333d"
+    },
+    {
+      "path": "skills/batch-100/B100-S09-secret-broker-redaction.md",
+      "size_bytes": 13494,
+      "sha256": "f4522e0633b6aa5e3f287024ee82420d52f879ccf20000b259754841c1bb54e9"
+    },
+    {
+      "path": "skills/batch-100/B100-S10-resource-quota-enforcer.md",
+      "size_bytes": 13440,
+      "sha256": "e50d478c8df8e70095f8ad6f1dc37db6b7cdb6fe3899903fe04b0d63bb62d97b"
+    },
+    {
+      "path": "skills/batch-100/B100-S11-artifact-signing-upload.md",
+      "size_bytes": 13480,
+      "sha256": "60a23b2325b5c4b1f734e8b79715f05aee46573d94a04bb974a817b0a981958c"
+    },
+    {
+      "path": "skills/batch-100/B100-S12-runner-lease-cancel-protocol.md",
+      "size_bytes": 13525,
+      "sha256": "aee3637fd34f34d066be9217899afb92fec33bdebc7a3edebd56df4ed8a1a53b"
+    },
+    {
+      "path": "skills/batch-100/B100-S13-fleet-routing-capability-match.md",
+      "size_bytes": 13550,
+      "sha256": "3c5e7a709f0e9fd66bffe4bba8bd228a3a66eef05e68f6691a21acb99f8f0afd"
+    },
+    {
+      "path": "skills/batch-100/B100-S14-runner-upgrade-drain.md",
+      "size_bytes": 13420,
+      "sha256": "a3d8c168b6d8ec095430409556d869dd4d3e39e5487d149e1dbefe951528bd98"
+    },
+    {
+      "path": "skills/batch-100/B100-S15-runner-quarantine-revocation.md",
+      "size_bytes": 13521,
+      "sha256": "fab885101506a477e4d12defc703049f265272d33d5ca54c6dfe8627ffe99b2b"
+    },
+    {
+      "path": "skills/batch-100/B100-S16-runner-fabric-certification-gate.md",
+      "size_bytes": 13649,
+      "sha256": "001fbec0f3be12e87fd3d39ac68fa0a55e2ddfda10f1f269ffcb5dc72028503b"
+    },
+    {
+      "path": "skills/batch-101/B101-S01-golden-route-common-contract.md",
+      "size_bytes": 13598,
+      "sha256": "7ededc79e2f34670506c0d22317d568a16434cacb44f2a33a441f23ca38a52e8"
+    },
+    {
+      "path": "skills/batch-101/B101-S02-java-route-discovery-baseline.md",
+      "size_bytes": 13549,
+      "sha256": "9cbd7a1c6925f3c81c906a1f600f1f9604a0ac32bdb84596bb728fa64160b0b4"
+    },
+    {
+      "path": "skills/batch-101/B101-S03-java8-21-modernization-recipe.md",
+      "size_bytes": 13554,
+      "sha256": "9728815f4833ac868ea3df979cd362093a3b6d89f104ac600e12d5f5cfcdabb5"
+    },
+    {
+      "path": "skills/batch-101/B101-S04-spring-boot-modernization-route.md",
+      "size_bytes": 13573,
+      "sha256": "aa719feea8d7d092ebc3c585c223c8d0031c69adf67eb1acc929ea2684bf3858"
+    },
+    {
+      "path": "skills/batch-101/B101-S05-java-data-messaging-scheduler-route.md",
+      "size_bytes": 13557,
+      "sha256": "89f2559d43b51ae6dbc4a8180d441a2ddb5d55e6216131692e8147c7ce82e7a8"
+    },
+    {
+      "path": "skills/batch-101/B101-S06-java-route-verification-pr.md",
+      "size_bytes": 13516,
+      "sha256": "8b5f5f9686a22f5d74d194b28877cb3ce81916df74228bba7674771ef9cb866a"
+    },
+    {
+      "path": "skills/batch-101/B101-S07-dotnet-route-discovery-baseline.md",
+      "size_bytes": 13497,
+      "sha256": "7ede688d26e8bfcee4013ddddbf636dba28251f1d44df455dc0e471df0e31bb1"
+    },
+    {
+      "path": "skills/batch-101/B101-S08-framework-to-modern-dotnet-route.md",
+      "size_bytes": 13582,
+      "sha256": "f02e248d147f99bd6cb9b86298a9a70ff33c86e1d713b4f2478ef8e1fb1a5190"
+    },
+    {
+      "path": "skills/batch-101/B101-S09-aspnet-ef-wcf-modernization-route.md",
+      "size_bytes": 13583,
+      "sha256": "3fa642ef4a5e544ae311d7d7238e1f37e729e13c8323a83bce86f16e887e8cae"
+    },
+    {
+      "path": "skills/batch-101/B101-S10-dotnet-route-verification-pr.md",
+      "size_bytes": 13538,
+      "sha256": "49a9c45b01fb27619382b99787c21ddc348c18dd1506a17761391d9bfb95de51"
+    },
+    {
+      "path": "skills/batch-101/B101-S11-python-route-discovery-environment.md",
+      "size_bytes": 13629,
+      "sha256": "65cc7225f3a60029dda7d71ac0a0c0fae47ea32053c641fbc110a059e3068130"
+    },
+    {
+      "path": "skills/batch-101/B101-S12-python2-legacy-upgrade-route.md",
+      "size_bytes": 13538,
+      "sha256": "641e6796681101658fbc946b21de85b606f14ba8b1dc0aa3953266f2c3309afe"
+    },
+    {
+      "path": "skills/batch-101/B101-S13-django-flask-modernization-route.md",
+      "size_bytes": 13525,
+      "sha256": "c05b168df988338de78b1d8f53cbaf01c3b4f92e96e388158e43535e29bc3583"
+    },
+    {
+      "path": "skills/batch-101/B101-S14-python-data-ml-pipeline-route.md",
+      "size_bytes": 13580,
+      "sha256": "b3830733339484a98ad3c89be417de7a24c39d4d8eb72a5a5c729732631108c5"
+    },
+    {
+      "path": "skills/batch-101/B101-S15-python-route-verification-pr.md",
+      "size_bytes": 13525,
+      "sha256": "f6400dc45f349b256a39e4a18d71518ee7372e01a87fee69fe12cfc4a3cff6c9"
+    },
+    {
+      "path": "skills/batch-101/B101-S16-golden-route-certification-gate.md",
+      "size_bytes": 13585,
+      "sha256": "b69ed3def3dcc1a858845bba5c372a879960accff96823ebd6e1229be528d619"
+    },
+    {
+      "path": "skills/batch-102/B102-S01-oracle-registry-governance.md",
+      "size_bytes": 13555,
+      "sha256": "9edaff6ce3af3e66c0279b111dd4b76008c6fb005ed87f8f3d617029b3f110b1"
+    },
+    {
+      "path": "skills/batch-102/B102-S02-characterization-test-miner.md",
+      "size_bytes": 13589,
+      "sha256": "7d87442e74e551c20ae12ffbab17a0500f40112b4bf26f770650c035742bd0d8"
+    },
+    {
+      "path": "skills/batch-102/B102-S03-golden-master-capture.md",
+      "size_bytes": 13527,
+      "sha256": "b2ba0c3f540276b634022478fab628fe44555ef16b86efea6be0bcdad163cbc7"
+    },
+    {
+      "path": "skills/batch-102/B102-S04-differential-execution-harness.md",
+      "size_bytes": 13667,
+      "sha256": "181be46a0dde5a16f18f9ad04b58b6d45adb3577a60ac4b67128c506fa29b72d"
+    },
+    {
+      "path": "skills/batch-102/B102-S05-api-contract-equivalence.md",
+      "size_bytes": 13510,
+      "sha256": "8b5939f33668189eb420ed253a391228e12c3b8024fa7ec43622fbc86b19089a"
+    },
+    {
+      "path": "skills/batch-102/B102-S06-data-query-equivalence.md",
+      "size_bytes": 13541,
+      "sha256": "11dc90b182552969eb7131bf8a68b3aa56f6f2490d2c57ad7a19ae1fa4c6df4d"
+    },
+    {
+      "path": "skills/batch-102/B102-S07-business-invariant-engine.md",
+      "size_bytes": 13629,
+      "sha256": "048fd5af4223ddb9fd93cf20c83e7346b80258f17af2b51de743f2775161a307"
+    },
+    {
+      "path": "skills/batch-102/B102-S08-messaging-idempotency-equivalence.md",
+      "size_bytes": 13579,
+      "sha256": "c664f39643f584e4c8a32fe569cd9942c85665082624a927fe3e803a1fe05f18"
+    },
+    {
+      "path": "skills/batch-102/B102-S09-transaction-concurrency-equivalence.md",
+      "size_bytes": 13641,
+      "sha256": "613e29b5c003d52defd3063ffb66a6a720a5855e204db5f04718089579eaf7dd"
+    },
+    {
+      "path": "skills/batch-102/B102-S10-time-randomness-environment-control.md",
+      "size_bytes": 13556,
+      "sha256": "38f388e12b359030a592cab4fa541bd1bbb7cb070d872020263fba16921e15b8"
+    },
+    {
+      "path": "skills/batch-102/B102-S11-performance-resource-equivalence.md",
+      "size_bytes": 13638,
+      "sha256": "fc39cca33adb37478d82c98b3d47195af33a9dde97df6de6968d41d0e3898f10"
+    },
+    {
+      "path": "skills/batch-102/B102-S12-security-behavior-equivalence.md",
+      "size_bytes": 13577,
+      "sha256": "bbc970cbacc0ae9e74ee1977c8d030f0c78e1749730aae5c1ae7b6ac053a123c"
+    },
+    {
+      "path": "skills/batch-102/B102-S13-metamorphic-property-testing.md",
+      "size_bytes": 13585,
+      "sha256": "e568168834d63963c8d5b9836d469c5838ebb780bcb8913c57a32e78b70ccefa"
+    },
+    {
+      "path": "skills/batch-102/B102-S14-human-oracle-approval.md",
+      "size_bytes": 13496,
+      "sha256": "d565409b509428f288e844b6948289da08436ad3c1bfccd9db3a6a9861226f98"
+    },
+    {
+      "path": "skills/batch-102/B102-S15-equivalence-evidence-freshness.md",
+      "size_bytes": 13625,
+      "sha256": "e54b9d93f74487e8a549ec6a25fc13efe15c91a89d8df079e9acccbc142fea1a"
+    },
+    {
+      "path": "skills/batch-102/B102-S16-semantic-equivalence-certification-gate.md",
+      "size_bytes": 13714,
+      "sha256": "8546c9dc267c088443eddb94eb2130c200bd7928453052cd35560f469c0375aa"
+    },
+    {
+      "path": "skills/batch-103/B103-S01-canonical-evidence-record-schema.md",
+      "size_bytes": 13592,
+      "sha256": "287fa1bf4d2b9323c1e3e0b037adb3357c7cda17f136fc4b06841ed368f38ded"
+    },
+    {
+      "path": "skills/batch-103/B103-S02-content-addressed-evidence-store.md",
+      "size_bytes": 13594,
+      "sha256": "f54b8af56ce9aa192b59a27455b5c64d85de24f69fdf7b37a2fcd728d5b158e0"
+    },
+    {
+      "path": "skills/batch-103/B103-S03-evidence-lineage-graph.md",
+      "size_bytes": 13541,
+      "sha256": "a6400a469f81e29798b770d0547f8cfda4090cd20dc73a0957e99066c577350c"
+    },
+    {
+      "path": "skills/batch-103/B103-S04-run-environment-fingerprint.md",
+      "size_bytes": 13626,
+      "sha256": "c7c0d8eafc6c3a4d46fc1b6ea004a4ed163b405df46eb1e93ccff496b23185f3"
+    },
+    {
+      "path": "skills/batch-103/B103-S05-artifact-provenance-signing.md",
+      "size_bytes": 13535,
+      "sha256": "887370d49c92c2ef47214a7d5ff3965374ade5708ee8ee8b79b0ac4fe2542e1b"
+    },
+    {
+      "path": "skills/batch-103/B103-S06-tool-model-invocation-record.md",
+      "size_bytes": 13507,
+      "sha256": "72a9bd7cd6ffad4b7c6710e65d7c36d4b8bf86449c823ddd263040aa0a206909"
+    },
+    {
+      "path": "skills/batch-103/B103-S07-test-result-normalizer.md",
+      "size_bytes": 13590,
+      "sha256": "c54f8211698f895a61cc1e47b7a47f742c9f52c7bb296c422e6a917ff701989e"
+    },
+    {
+      "path": "skills/batch-103/B103-S08-approval-waiver-governance.md",
+      "size_bytes": 13503,
+      "sha256": "c68be92e694f8bafa06b714a3df4f177f6f3694740d6bd8c1de9cc95c7fee18c"
+    },
+    {
+      "path": "skills/batch-103/B103-S09-evidence-expiry-invalidation.md",
+      "size_bytes": 13543,
+      "sha256": "6a6db48c8fcbb8b347cde52df5261953fb1cefe8af4765d571b761f230a359ab"
+    },
+    {
+      "path": "skills/batch-103/B103-S10-immutable-audit-ledger.md",
+      "size_bytes": 13470,
+      "sha256": "f08237ed1e6249a96284f10f677085119d5bda0a1bf16a656f7e2012f7481470"
+    },
+    {
+      "path": "skills/batch-103/B103-S11-certification-policy-engine.md",
+      "size_bytes": 13530,
+      "sha256": "099dd6c3d6f08daa4aaafdd2f3a7b9a45eeb2a1a8bb382f6a3497328cb78ff75"
+    },
+    {
+      "path": "skills/batch-103/B103-S12-scoped-certification-state.md",
+      "size_bytes": 13571,
+      "sha256": "8d9c62b4790a27f07ad642e6dfd9f8ce6ae66b59dd0dd6f109c33303483080fa"
+    },
+    {
+      "path": "skills/batch-103/B103-S13-independent-verifier-workflow.md",
+      "size_bytes": 13544,
+      "sha256": "d0d05a10d4cdd9a09c8875a4daca3b851172bcc79a54dd60d260d04aa4c677fb"
+    },
+    {
+      "path": "skills/batch-103/B103-S14-evidence-export-portability.md",
+      "size_bytes": 13585,
+      "sha256": "7ec15bd57543a8f320f29e68b9814a04f09e2494df46f6f7a5dbd66184342982"
+    },
+    {
+      "path": "skills/batch-103/B103-S15-assurance-cockpit-read-model.md",
+      "size_bytes": 13552,
+      "sha256": "12bb4b0dbf4492212d414679ed64aee778ea8b07b3e3034a6c3f6b2fbf2a0c76"
+    },
+    {
+      "path": "skills/batch-103/B103-S16-anti-fake-certification-gate.md",
+      "size_bytes": 13512,
+      "sha256": "9fc876586cfe91543e355054e0e53e9d82fd1a4a5e7d2665ec5b24a2f6a5d524"
+    },
+    {
+      "path": "skills/batch-104/B104-S01-certification-corpus-governance.md",
+      "size_bytes": 13634,
+      "sha256": "bdb383e34699386a48f661f4d7dc39a40f031d80d2202248c230e1f98d7f9d83"
+    },
+    {
+      "path": "skills/batch-104/B104-S02-representative-repository-selection.md",
+      "size_bytes": 13618,
+      "sha256": "33924cea37f4888a02569739e3eaf602942e2e097822bd21b51e2b26753466ff"
+    },
+    {
+      "path": "skills/batch-104/B104-S03-certification-environment-matrix.md",
+      "size_bytes": 13659,
+      "sha256": "8c5a4a064d4de3c667fe67c26246e4a8628f5f3b2876c392c87ca75578704a50"
+    },
+    {
+      "path": "skills/batch-104/B104-S04-clean-room-end-to-end-benchmark.md",
+      "size_bytes": 13666,
+      "sha256": "ece9fcf0fa93b826e970ea04640cb420b693d16f6f9d806e2589ed6d10300792"
+    },
+    {
+      "path": "skills/batch-104/B104-S05-portfolio-scale-benchmark.md",
+      "size_bytes": 13570,
+      "sha256": "4ce01030623d569f3799fdc30b380f50c91c15953f4acbc9d091d1d44aacefd5"
+    },
+    {
+      "path": "skills/batch-104/B104-S06-fault-injection-resilience-campaign.md",
+      "size_bytes": 13685,
+      "sha256": "afd305c0b9ed314abdb6e044c5fa0ee902005aae4100c09d8c760ba3b5c0bdfc"
+    },
+    {
+      "path": "skills/batch-104/B104-S07-security-red-team-campaign.md",
+      "size_bytes": 13661,
+      "sha256": "8f78b0cd206570007a577b5287e5951aceffec869d6fcd123cbd53326c5298f9"
+    },
+    {
+      "path": "skills/batch-104/B104-S08-upgrade-rollback-certification.md",
+      "size_bytes": 13656,
+      "sha256": "6798d4c525cfce33b9029ff7c67433d203ce0756b650a455228900de6f8ce17f"
+    },
+    {
+      "path": "skills/batch-104/B104-S09-disaster-recovery-replay-certification.md",
+      "size_bytes": 13617,
+      "sha256": "b5860e08ba3d9490ee2bf6a06637e24889214af2475209c301b159b7ac042924"
+    },
+    {
+      "path": "skills/batch-104/B104-S10-customer-pilot-onboarding.md",
+      "size_bytes": 13579,
+      "sha256": "95d2749855b28d5e0d5e06dae5f380dfe3438b8704f832f6a9d0cfedf6ba2f96"
+    },
+    {
+      "path": "skills/batch-104/B104-S11-customer-acceptance-protocol.md",
+      "size_bytes": 13610,
+      "sha256": "fd249a86d8d7fcdf590d8172e84f6398947fbaa8706e63e8381a06cd63aa9122"
+    },
+    {
+      "path": "skills/batch-104/B104-S12-operational-slo-readiness.md",
+      "size_bytes": 13561,
+      "sha256": "d0c327dce0e9faf87b6457025019378a17a1a53548f9345923ecf10074d9d45f"
+    },
+    {
+      "path": "skills/batch-104/B104-S13-cost-unit-economics-certification.md",
+      "size_bytes": 13593,
+      "sha256": "ac36a0951b6575fc0ed41b806b416d4d8cd2663f0fb6d6dd29d055cc2de35a36"
+    },
+    {
+      "path": "skills/batch-104/B104-S14-support-incident-runbook-readiness.md",
+      "size_bytes": 13681,
+      "sha256": "bc40fe9605d77790ac2eb2936fec1789871bb575ffd807dc6c13c2ed267a150d"
+    },
+    {
+      "path": "skills/batch-104/B104-S15-release-readiness-review.md",
+      "size_bytes": 13614,
+      "sha256": "74f459457ed67d89d6de71952351507465e8100c9bd4424ef100be4ed11e8aec"
+    },
+    {
+      "path": "skills/batch-104/B104-S16-product-certification-board-gate.md",
+      "size_bytes": 13670,
+      "sha256": "744f86c35daec57414516cf142398cab9e0d046695e5d39fba80d44e0e07915a"
+    },
+    {
+      "path": "skills/batch-97/B97-S01-legacy-skill-estate-inventory.md",
+      "size_bytes": 13837,
+      "sha256": "3ebab17ed60b8d2220348861432bf1c702af2e3901060abc79378ddf19096380"
+    },
+    {
+      "path": "skills/batch-97/B97-S02-capability-ontology-foundation.md",
+      "size_bytes": 13674,
+      "sha256": "8ebb8792d14483d6dc1ac2ce9f1590355791bd10c28b9dbd18be4a52ca1fd4c8"
+    },
+    {
+      "path": "skills/batch-97/B97-S03-skill-metadata-normalizer.md",
+      "size_bytes": 13663,
+      "sha256": "90549b2b295ec37d4860795ca4932ab53e7d1bfbe56ccb499b9d56c7b91832be"
+    },
+    {
+      "path": "skills/batch-97/B97-S04-capability-node-builder.md",
+      "size_bytes": 13548,
+      "sha256": "e4ba4f262afc79215e2f7ff23f579721455591df0f2ede0fafaeea80d769db67"
+    },
+    {
+      "path": "skills/batch-97/B97-S05-dependency-edge-resolver.md",
+      "size_bytes": 13616,
+      "sha256": "fdf5b6f5dc330870da7b00abb3954d643bbbca5c3a5f548cd4d45242454852c2"
+    },
+    {
+      "path": "skills/batch-97/B97-S06-conflict-overlap-detector.md",
+      "size_bytes": 13659,
+      "sha256": "12bd8eb5a62cb36a5c94da052a73bb221c2a919a05b17dc3bd1e0c2163238f68"
+    },
+    {
+      "path": "skills/batch-97/B97-S07-lifecycle-deprecation-model.md",
+      "size_bytes": 13674,
+      "sha256": "42d0a95636b315e81d1e0299a226a6d02d87648bed0c6860e9b04576c2b583ad"
+    },
+    {
+      "path": "skills/batch-97/B97-S08-version-compatibility-matrix.md",
+      "size_bytes": 13678,
+      "sha256": "7e7ecff80eb253ffc5547d93f238fdb46e00717c7de74b2046f47dfa9473213d"
+    },
+    {
+      "path": "skills/batch-97/B97-S09-ownership-governance-registry.md",
+      "size_bytes": 13631,
+      "sha256": "8f9a8320b99621438e8afe01e008fd9c4f34ecc37b10fe9f51ca080dd3218b2b"
+    },
+    {
+      "path": "skills/batch-97/B97-S10-evidence-requirement-graph.md",
+      "size_bytes": 13701,
+      "sha256": "1c51da0792492358704720c2744db84effe85ba985444120086fac259b1363da"
+    },
+    {
+      "path": "skills/batch-97/B97-S11-tool-runtime-requirement-graph.md",
+      "size_bytes": 13661,
+      "sha256": "623c8a3126395822df53ffc79889504819b67e8ae2650ad6dc9a1c7026245a9c"
+    },
+    {
+      "path": "skills/batch-97/B97-S12-route-domain-pack-composer.md",
+      "size_bytes": 13660,
+      "sha256": "725103b3762bf1c15a71b1db0cc887f249ccdbc14220131664bb90c89bc6a5da"
+    },
+    {
+      "path": "skills/batch-97/B97-S13-capability-graph-query-api.md",
+      "size_bytes": 13572,
+      "sha256": "6e283b63985978f4cb3a4af0a6c1b9153988d8054e48e716b87ff33017dab93b"
+    },
+    {
+      "path": "skills/batch-97/B97-S14-legacy-estate-migration-planner.md",
+      "size_bytes": 13654,
+      "sha256": "7e902cffbf1ff2a01fcd8338f687643ac6c7f1f07c511dcffa78b35b112a302b"
+    },
+    {
+      "path": "skills/batch-97/B97-S15-graph-change-impact-analyzer.md",
+      "size_bytes": 13666,
+      "sha256": "3e3c410cf8af30b48d2f53f960479d764f8cc9cd0bd74dd1a63fa656939e226b"
+    },
+    {
+      "path": "skills/batch-97/B97-S16-capability-graph-certification-gate.md",
+      "size_bytes": 13762,
+      "sha256": "0b9db31c37163f72447792ba313190c11c949dd587e90de59866da1bfeabe6a4"
+    },
+    {
+      "path": "skills/batch-98/B98-S01-executable-skill-contract-schema.md",
+      "size_bytes": 13627,
+      "sha256": "77d56f8409969ec524b67bbc56d7a646e93f789e584cbe6975a6ddfaee9c1efc"
+    },
+    {
+      "path": "skills/batch-98/B98-S02-skill-markdown-contract-compiler.md",
+      "size_bytes": 13658,
+      "sha256": "20abe3520e05530b0bc1a6c177f0aacdb2ff43c30e117b214069552f6f268b02"
+    },
+    {
+      "path": "skills/batch-98/B98-S03-input-output-schema-binder.md",
+      "size_bytes": 13548,
+      "sha256": "0f26560247407c1256f87f284c136678d4f6d8671487025daf02d569233e4954"
+    },
+    {
+      "path": "skills/batch-98/B98-S04-precondition-guard-compiler.md",
+      "size_bytes": 13565,
+      "sha256": "5e7beaa814308da662747142f8b1ccbe4aec0428f63da7d5fe1b3dcadfaa08c5"
+    },
+    {
+      "path": "skills/batch-98/B98-S05-permission-capability-declaration.md",
+      "size_bytes": 13644,
+      "sha256": "a4a48e6ffb8db01c7843eb243f617131c7dd3cceff357b5291ccf6a9a8204dfc"
+    },
+    {
+      "path": "skills/batch-98/B98-S06-execution-step-compiler.md",
+      "size_bytes": 13557,
+      "sha256": "9676b376e9425cfcadb07188587731cea48ec691cd0cdae7e53cbe5fbd04f1db"
+    },
+    {
+      "path": "skills/batch-98/B98-S07-rollback-compensation-compiler.md",
+      "size_bytes": 13597,
+      "sha256": "52abf9f1227237de74247bad45c795626b5fe25100d137eb240b99b38cf025e0"
+    },
+    {
+      "path": "skills/batch-98/B98-S08-test-evidence-contract-compiler.md",
+      "size_bytes": 13623,
+      "sha256": "b860571a0b2039e9c1a2454305f8cb17071e8c92845c577aa22a59d889c7832c"
+    },
+    {
+      "path": "skills/batch-98/B98-S09-deterministic-variable-resolver.md",
+      "size_bytes": 13663,
+      "sha256": "3d66217f2c52796bebe97864b6dac8cc957ec25a58f4ae7fa534b15d5e5bb56f"
+    },
+    {
+      "path": "skills/batch-98/B98-S10-contract-signing-provenance.md",
+      "size_bytes": 13609,
+      "sha256": "8c27a4ab0481916f11ce3adb63b2c55a189dbe399383cb2fabdd09a41c76c9cf"
+    },
+    {
+      "path": "skills/batch-98/B98-S11-skill-registry-service.md",
+      "size_bytes": 13578,
+      "sha256": "03a0bab1dc1533733412eb9d126d82b5edfa76c7ea9b6958c16249798fa4d233"
+    },
+    {
+      "path": "skills/batch-98/B98-S12-capability-search-ranking.md",
+      "size_bytes": 13667,
+      "sha256": "bf79d8ad986814d883eeaaa57b287595d63c3d514c57d64034437696b4ee4cf8"
+    },
+    {
+      "path": "skills/batch-98/B98-S13-dependency-closure-resolver.md",
+      "size_bytes": 13580,
+      "sha256": "e4289e2aad9b8420ecf21e87b27121199dbc138119ae0f9f9d6f08c94761832b"
+    },
+    {
+      "path": "skills/batch-98/B98-S14-skill-conflict-arbitrator.md",
+      "size_bytes": 13604,
+      "sha256": "982b2306f58863e2d4b102d5cfe8589bd7e3f6c56a14cc36141d09be5bd8229e"
+    },
+    {
+      "path": "skills/batch-98/B98-S15-contract-compatibility-deprecation.md",
+      "size_bytes": 13649,
+      "sha256": "e4247bf284df3a56ecd419449e8c18145de44cd8553801dd06a8aa06fdbed6b3"
+    },
+    {
+      "path": "skills/batch-98/B98-S16-executable-contract-certification-gate.md",
+      "size_bytes": 13756,
+      "sha256": "9b5643a613de97250aa92903b66ded8d7990172e897a2c3dc581affe75a529bc"
+    },
+    {
+      "path": "skills/batch-99/B99-S01-durable-run-state-model.md",
+      "size_bytes": 13529,
+      "sha256": "06151bd04c1ca8f607af5304f46d8a9e4e5b8dd301b55a8da0552399fbf57c66"
+    },
+    {
+      "path": "skills/batch-99/B99-S02-plan-to-dag-compiler.md",
+      "size_bytes": 13510,
+      "sha256": "5143bec29fc11a928a7406e7d7823248e4bff8c028030b1b0e4056613c823b28"
+    },
+    {
+      "path": "skills/batch-99/B99-S03-durable-scheduler-queue.md",
+      "size_bytes": 13466,
+      "sha256": "de9cfb59ac04f571543794f67774de904c58c32e5dc89fb5cadd7cd232f4874d"
+    },
+    {
+      "path": "skills/batch-99/B99-S04-task-lease-heartbeat.md",
+      "size_bytes": 13422,
+      "sha256": "d0c69d5026c74c67ac1e1eb81814841f402dd5ed48351e531bdaedde6e9e31b4"
+    },
+    {
+      "path": "skills/batch-99/B99-S05-retry-backoff-policy.md",
+      "size_bytes": 13460,
+      "sha256": "5aa010582212c8e730fcc81785113faae7b3009861109d00c9864d8f892d752b"
+    },
+    {
+      "path": "skills/batch-99/B99-S06-idempotency-effect-journal.md",
+      "size_bytes": 13487,
+      "sha256": "79a9833fe358621f80570a1ebef129c6f220f2875d73edb5214244eff46ac278"
+    },
+    {
+      "path": "skills/batch-99/B99-S07-cancellation-propagation.md",
+      "size_bytes": 13517,
+      "sha256": "41d712bae3c590c1143b48c5dd6f28217332305130f6e33f822d442e68c216f1"
+    },
+    {
+      "path": "skills/batch-99/B99-S08-pause-resume-checkpoint.md",
+      "size_bytes": 13474,
+      "sha256": "b1499c5d5e43afc164159ad2714c04bcf0a2b44eaef093cdafa2db61bb4eb4ae"
+    },
+    {
+      "path": "skills/batch-99/B99-S09-saga-compensation-engine.md",
+      "size_bytes": 13510,
+      "sha256": "fba32a3753e3eed23b88c1721d5300923f640f1385a8f1915d4b6cccf2bc7481"
+    },
+    {
+      "path": "skills/batch-99/B99-S10-workflow-versioning-replay.md",
+      "size_bytes": 13518,
+      "sha256": "0a56ff44e8e50d54daaa7e52c802cc0d2cca8a8b4e2b42b324574ab2dfa37931"
+    },
+    {
+      "path": "skills/batch-99/B99-S11-external-effect-outbox-inbox.md",
+      "size_bytes": 13499,
+      "sha256": "6cebf01e970e2c317fea0a35acb133ad7e49b588904b5c257e3b284b29a1d246"
+    },
+    {
+      "path": "skills/batch-99/B99-S12-execution-budget-quota.md",
+      "size_bytes": 13449,
+      "sha256": "125f0fa24f2b47f9517699bca3b24383b4d7e065ca12d831201b3a956357f81b"
+    },
+    {
+      "path": "skills/batch-99/B99-S13-concurrency-fairness-controller.md",
+      "size_bytes": 13508,
+      "sha256": "0d77f6befe1b54f60bc9d16d65cb91d18c711cd95fa3015e46a57a1b7ca70aeb"
+    },
+    {
+      "path": "skills/batch-99/B99-S14-failure-classification-diagnostics.md",
+      "size_bytes": 13629,
+      "sha256": "1cf411917a78eb6a5d2596c0549480e2a27fd6a70c80668bcec029d93955369c"
+    },
+    {
+      "path": "skills/batch-99/B99-S15-runtime-observability-tracing.md",
+      "size_bytes": 13489,
+      "sha256": "52d2293714d3d7cdbe85d01d4096c0b69eae12daff5670f62391f2c11908be48"
+    },
+    {
+      "path": "skills/batch-99/B99-S16-durable-runtime-certification-gate.md",
+      "size_bytes": 13633,
+      "sha256": "a9a8e78c6142c163f6fbe8697bdc6e71b648af760b6fbf845662f9e558017662"
+    },
+    {
+      "path": "templates/capability-graph.example.json",
+      "size_bytes": 535,
+      "sha256": "aa71cd81ef381313ec3128e752d2a3ea5e78045e5ae3288934e887be63cd0e32"
+    },
+    {
+      "path": "templates/evidence-record.example.json",
+      "size_bytes": 387,
+      "sha256": "aaab4a8b83ddaaaf0ded6456a124baef8367c05dc41b8a2606ce887771f0c365"
+    },
+    {
+      "path": "templates/executable-skill-contract.example.json",
+      "size_bytes": 2624,
+      "sha256": "771da32b421c05b5e449882e47b5a7f01098067c9ec551d15d51c5a164938283"
+    },
+    {
+      "path": "templates/execution-run.example.json",
+      "size_bytes": 380,
+      "sha256": "f66a1146df29f271cefc9aa533b3f7e1a4e0808151f67c53ff4752c0391e9006"
+    },
+    {
+      "path": "templates/product-certification.example.json",
+      "size_bytes": 327,
+      "sha256": "8052650475d166f94e9465f6cf7d12eed5b7bbc59686d160053ea2a10f3cf6d4"
+    },
+    {
+      "path": "templates/route-pack-result.example.json",
+      "size_bytes": 325,
+      "sha256": "8216be695a66741f074499ab32fbc6249a71130a99e6a5d8bc1eeeae4493fb18"
+    },
+    {
+      "path": "templates/runner-attestation.example.json",
+      "size_bytes": 448,
+      "sha256": "2a070864acc1486620b7b75e886a63c7c5b1219f5a34d937c9a7d7eee3d7bddc"
+    },
+    {
+      "path": "templates/semantic-equivalence-result.example.json",
+      "size_bytes": 405,
+      "sha256": "1f38da8e75f2fbf5f90b285b471dc49a447c0499585bc3b3e726fc76ffed2def"
+    },
+    {
+      "path": "tests/test_toolkit.py",
+      "size_bytes": 13740,
+      "sha256": "050d8892e75fd90920f12ea26dae95c221c790a76e64ab774c37cf20a67abf83"
+    },
+    {
+      "path": "validate.sh",
+      "size_bytes": 713,
+      "sha256": "63219b093a0197b41242bcbd311821a8157fca147f499292aaf796b4a7308c8b"
+    }
+  ],
+  "repository_normalization": "NORMALIZATION.json"
+}

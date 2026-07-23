@@ -34,7 +34,7 @@ public final class EnterpriseSuiteController {
     }
     @ExceptionHandler(IllegalArgumentException.class) @ResponseStatus(HttpStatus.BAD_REQUEST)
     Map<String, Object> badRequest(IllegalArgumentException error) {
-        return Map.of("errorCode", "SUITE_REQUEST_REJECTED", "message", error.getMessage(), "retryable", false);
+        return Map.of("errorCode", "SUITE_REQUEST_REJECTED", "message", "The enterprise suite request was rejected by its contract.", "retryable", false);
     }
     public record Capabilities(String engine, String workerApi, boolean executesSuiteChanges,
                                String decisionAuthority, List<String> prohibitedDirectActions) {}

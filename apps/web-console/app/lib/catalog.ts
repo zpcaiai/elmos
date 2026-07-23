@@ -1,4 +1,24 @@
-import type { MigrationCapability, ProductStage } from "./contracts";
+import type { GenerationStage, GenerationTarget, MigrationCapability, ProductStage } from "./contracts";
+
+export const generationTargets: GenerationTarget[] = [
+  { id: "java", language: "Java", runtime: "21", framework: "Spring Boot 3.5.3", port: 8081, accent: "amber", icon: "code" },
+  { id: "python", language: "Python", runtime: "3.12", framework: "FastAPI 0.116.1", port: 8082, accent: "blue", icon: "spark" },
+  { id: "csharp", language: "C#", runtime: ".NET 10", framework: "ASP.NET Core", port: 8083, accent: "violet", icon: "layers" },
+];
+
+export const generationStages: GenerationStage[] = [
+  { batch: "B46–B48", title: "需求发现", detail: "澄清实体、需求与验收条件" },
+  { batch: "B49–B50", title: "架构约束", detail: "冻结运行时与框架版本" },
+  { batch: "B51–B52", title: "工程蓝图", detail: "规划 API、测试和配置" },
+  { batch: "B53–B57", title: "多语言发射", detail: "按所选目标生成独立项目" },
+  { batch: "B58–B60", title: "验证与交付", detail: "构建、探针与证据归档" },
+];
+
+export const installedSkillInventory = {
+  codexSkillCount: 562,
+  runtimeSkillCount: 2244,
+  countingRule: "directories-with-SKILL.md",
+} as const;
 
 export const migrationCapabilities: MigrationCapability[] = [
   { id: "M29", batch: 29, title: "跨语言路由", domain: "Directed language routes", description: "精确的源语言到目标语言路径、类型语义与保守认证。", skillCount: 20, schemaCount: 3, gateCommand: "scripts/batch29/run_route_gate.py", status: "READY", icon: "code", accent: "cyan" },

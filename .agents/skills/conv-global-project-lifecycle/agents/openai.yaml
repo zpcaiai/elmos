@@ -1,0 +1,4 @@
+interface:
+  display_name: "Conv Global Project Lifecycle"
+  short_description: "Run this ELMOS product-convergence Skill with evidence"
+  default_prompt: "Use $conv-global-project-lifecycle to execute this ELMOS product-convergence Skill with fail-closed evidence."

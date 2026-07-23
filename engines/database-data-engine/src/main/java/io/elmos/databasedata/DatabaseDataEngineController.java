@@ -66,7 +66,7 @@ public final class DatabaseDataEngineController {
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     Map<String, Object> badRequest(IllegalArgumentException error) {
-        return Map.of("errorCode", "DATABASE_REQUEST_REJECTED", "message", error.getMessage(),
+        return Map.of("errorCode", "DATABASE_REQUEST_REJECTED", "message", "The database engine request was rejected by its contract.",
                 "retryable", false);
     }
 }

@@ -1,0 +1,286 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/executable-skill-contract-v1",
+  "title": "ELMOS Executable Skill Contract v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "id",
+    "name",
+    "version",
+    "batch",
+    "inputs",
+    "outputs",
+    "permissions",
+    "steps",
+    "rollback",
+    "tests",
+    "evidence",
+    "verification_states",
+    "source_hash",
+    "signature"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "elmos.executable-skill-contract.v1"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^B(?:9[7-9]|10[0-4])-S(?:0[1-9]|1[0-6])$"
+    },
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "maxLength": 64
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$"
+    },
+    "batch": {
+      "type": "integer",
+      "minimum": 97,
+      "maximum": 104
+    },
+    "inputs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "outputs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "permissions": {
+      "type": "object",
+      "required": [
+        "default",
+        "external_effects",
+        "secrets"
+      ],
+      "properties": {
+        "default": {
+          "const": "deny"
+        },
+        "external_effects": {
+          "const": "authorization-required"
+        },
+        "secrets": {
+          "const": "broker-reference-only"
+        }
+      },
+      "additionalProperties": false
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 10,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/effect_step"
+      }
+    },
+    "rollback": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/rollback_step"
+      }
+    },
+    "tests": {
+      "type": "array",
+      "minItems": 3,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/test_contract"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "properties": {
+              "type": {
+                "const": "unit"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "type": {
+                "const": "integration"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "type": {
+                "const": "negative"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          }
+        }
+      ]
+    },
+    "evidence": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "required": [
+          "type",
+          "required",
+          "source_section"
+        ],
+        "properties": {
+          "type": {
+            "const": "evidence_bundle"
+          },
+          "required": {
+            "const": true
+          },
+          "source_section": {
+            "const": "Evidence Contract"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "verification_states": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "specified",
+          "implemented",
+          "statically_validated",
+          "integration_tested",
+          "runtime_verified",
+          "independently_verified",
+          "certified"
+        ]
+      }
+    },
+    "source_hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "signature": {
+      "type": [
+        "object",
+        "null"
+      ]
+    }
+  },
+  "$defs": {
+    "effect_step": {
+      "type": "object",
+      "required": [
+        "id",
+        "title",
+        "instruction",
+        "effect"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^step-[0-9]{2}$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instruction": {
+          "type": "string",
+          "minLength": 1
+        },
+        "effect": {
+          "const": "declared-at-runtime"
+        }
+      },
+      "additionalProperties": false
+    },
+    "rollback_step": {
+      "type": "object",
+      "required": [
+        "id",
+        "instruction",
+        "effect"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^rollback-[0-9]{2}$"
+        },
+        "instruction": {
+          "type": "string",
+          "minLength": 1
+        },
+        "effect": {
+          "const": "declared-at-runtime"
+        }
+      },
+      "additionalProperties": false
+    },
+    "test_contract": {
+      "type": "object",
+      "required": [
+        "id",
+        "type",
+        "priority",
+        "required",
+        "instruction"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^(?:unit|integration|negative)-[0-9]{2}$"
+        },
+        "type": {
+          "enum": [
+            "unit",
+            "integration",
+            "negative"
+          ]
+        },
+        "priority": {
+          "enum": [
+            "P0",
+            "P1"
+          ]
+        },
+        "required": {
+          "const": true
+        },
+        "instruction": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

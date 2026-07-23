@@ -1,0 +1,4 @@
+interface:
+  display_name: "Conv Cross Batch Integration Anti Fragmentation"
+  short_description: "Run this ELMOS product-convergence Skill with evidence"
+  default_prompt: "Use $conv-cross-batch-integration-anti-fragmentation to execute this ELMOS product-convergence Skill with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "B104 Support Incident Runbook Readiness"
+  short_description: "Run this ELMOS product-closure Skill safely"
+  default_prompt: "Use $b104-support-incident-runbook-readiness to execute this ELMOS product-closure Skill with fail-closed evidence."

@@ -1,0 +1,137 @@
+{
+  "schemaVersion": "1.0",
+  "package": "elmos-codex-skills-batch56a-product-closure",
+  "batch": "56A",
+  "title": "ELMOS Product Closure & Maturity Consolidation",
+  "skillCount": 16,
+  "skills": [
+    {
+      "id": "CLO56A001",
+      "name": "elmos-product-closure-maturity-orchestrator",
+      "title": "ELMOS Product Closure & Maturity Orchestrator",
+      "path": "agent-skills/runtime/elmos-product-closure-maturity-orchestrator/SKILL.md",
+      "batch": "56A",
+      "maturity": "reviewed-design"
+    },
+    {
+      "id": "CLO56A002",
+      "name": "canonical-domain-kernel-consolidation",
+      "title": "Canonical Domain Kernel Consolidation",
+      "path": "agent-skills/runtime/canonical-domain-kernel-consolidation/SKILL.md",
+      "batch": "56A",
+      "maturity": "reviewed-design"
+    },
+    {
+      "id": "CLO56A003",
+      "name": "skill-registry-capability-graph-and-resolver",
+      "title": "Skill Registry, Capability Graph & Resolver",
+      "path": "agent-skills/runtime/skill-registry-capability-graph-and-resolver/SKILL.md",
+      "batch": "56A",
+      "maturity": "reviewed-design"
+    },
+    {
+      "id": "CLO56A004",
+      "name": "golden-journey-reference-implementation",
+      "title": "Golden Journey Reference Implementation",
+      "path": "agent-skills/runtime/golden-journey-reference-implementation/SKILL.md",
+      "batch": "56A",
+      "maturity": "reviewed-design"
+    },
+    {
+      "id": "CLO56A005",
+      "name": "provider-certification-factory",
+      "title": "Provider Certification Factory",
+      "path": "agent-skills/runtime/provider-certification-factory/SKILL.md",
+      "batch": "56A",
+      "maturity": "reviewed-design"
+    },
+    {
+      "id": "CLO56A006",
+      "name": "execution-reliability-state-protocol-hardening",
+      "title": "Execution Reliability & State Protocol Hardening",
+      "path": "agent-skills/runtime/execution-reliability-state-protocol-hardening/SKILL.md",
+      "batch": "56A",
+      "maturity": "reviewed-design"
+    },
+    {
+      "id": "CLO56A007",
+      "name": "system-of-record-authority-matrix",
+      "title": "System of Record & Authority Matrix",
+      "path": "agent-skills/runtime/system-of-record-authority-matrix/SKILL.md",
+      "batch": "56A",
+      "maturity": "reviewed-design"
+    },
+    {
+      "id": "CLO56A008",
+      "name": "agent-plan-contract-capability-token-and-replay",
+      "title": "Agent Plan Contract, Capability Token & Replay",
+      "path": "agent-skills/runtime/agent-plan-contract-capability-token-and-replay/SKILL.md",
+      "batch": "56A",
+      "maturity": "reviewed-design"
+    },
+    {
+      "id": "CLO56A009",
+      "name": "runtime-certification-lab-and-evidence-factory",
+      "title": "Runtime Certification Lab & Evidence Factory",
+      "path": "agent-skills/runtime/runtime-certification-lab-and-evidence-factory/SKILL.md",
+      "batch": "56A",
+      "maturity": "reviewed-design"
+    },
+    {
+      "id": "CLO56A010",
+      "name": "product-experience-role-workbench-and-onboarding",
+      "title": "Product Experience, Role Workbench & Onboarding",
+      "path": "agent-skills/runtime/product-experience-role-workbench-and-onboarding/SKILL.md",
+      "batch": "56A",
+      "maturity": "reviewed-design"
+    },
+    {
+      "id": "CLO56A011",
+      "name": "product-scope-core-domain-pack-governance",
+      "title": "Product Scope & Domain Pack Governance",
+      "path": "agent-skills/runtime/product-scope-core-domain-pack-governance/SKILL.md",
+      "batch": "56A",
+      "maturity": "reviewed-design"
+    },
+    {
+      "id": "CLO56A012",
+      "name": "platform-upgrade-schema-workflow-and-skill-lifecycle",
+      "title": "Platform Upgrade, Schema, Workflow & Skill Lifecycle",
+      "path": "agent-skills/runtime/platform-upgrade-schema-workflow-and-skill-lifecycle/SKILL.md",
+      "batch": "56A",
+      "maturity": "reviewed-design"
+    },
+    {
+      "id": "CLO56A013",
+      "name": "ga-commercial-installation-support-and-dr-readiness",
+      "title": "GA, Commercial, Installation, Support & DR Readiness",
+      "path": "agent-skills/runtime/ga-commercial-installation-support-and-dr-readiness/SKILL.md",
+      "batch": "56A",
+      "maturity": "reviewed-design"
+    },
+    {
+      "id": "CLO56A014",
+      "name": "portfolio-roadmap-kpi-and-value-governance",
+      "title": "Portfolio Roadmap, KPI & Value Governance",
+      "path": "agent-skills/runtime/portfolio-roadmap-kpi-and-value-governance/SKILL.md",
+      "batch": "56A",
+      "maturity": "reviewed-design"
+    },
+    {
+      "id": "CLO56A015",
+      "name": "closure-security-privacy-resilience-and-trust-review",
+      "title": "Closure Security, Privacy, Resilience & Trust Review",
+      "path": "agent-skills/runtime/closure-security-privacy-resilience-and-trust-review/SKILL.md",
+      "batch": "56A",
+      "maturity": "reviewed-design"
+    },
+    {
+      "id": "CLO56A016",
+      "name": "product-closure-conformance-and-release-gates",
+      "title": "Product Closure Conformance & Release Gates",
+      "path": "agent-skills/runtime/product-closure-conformance-and-release-gates/SKILL.md",
+      "batch": "56A",
+      "maturity": "reviewed-design"
+    }
+  ]
+}

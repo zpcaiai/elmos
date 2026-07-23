@@ -1,0 +1,4 @@
+interface:
+  display_name: "Conv Product Convergence Orchestrator"
+  short_description: "Run this ELMOS product-convergence Skill with evidence"
+  default_prompt: "Use $conv-product-convergence-orchestrator to execute this ELMOS product-convergence Skill with fail-closed evidence."

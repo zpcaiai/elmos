@@ -40,6 +40,6 @@ public final class SecurityComplianceController {
     @ExceptionHandler({IllegalArgumentException.class, IllegalStateException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     Map<String, Object> badRequest(RuntimeException error) {
-        return Map.of("errorCode", "SECURITY_REQUEST_REJECTED", "message", error.getMessage(), "retryable", false);
+        return Map.of("errorCode", "SECURITY_REQUEST_REJECTED", "message", "The security and compliance request was rejected by its contract.", "retryable", false);
     }
 }

@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "skillId",
+    "status",
+    "tests",
+    "evidenceRefs"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0"
+    },
+    "skillId": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "BLOCKED",
+        "CONDITIONAL",
+        "COMPLETED"
+      ]
+    },
+    "tests": {
+      "type": "object",
+      "required": [
+        "passed",
+        "failed",
+        "notRun"
+      ],
+      "properties": {
+        "passed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "failed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "notRun": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "evidenceRefs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

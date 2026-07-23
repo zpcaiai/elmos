@@ -1,0 +1,13 @@
+{
+  "schema_version": "elmos.evidence-record.v1",
+  "evidence_id": "ev-template-not-run",
+  "type": "static_validation",
+  "subject": {"id": "B97-S01", "scope": "template-only"},
+  "producer": {"id": "tool-template", "kind": "tool"},
+  "created_at": "2026-07-22T00:00:00Z",
+  "expires_at": null,
+  "input_hashes": {},
+  "artifact_hashes": {},
+  "state": "not_run",
+  "signature": null
+}

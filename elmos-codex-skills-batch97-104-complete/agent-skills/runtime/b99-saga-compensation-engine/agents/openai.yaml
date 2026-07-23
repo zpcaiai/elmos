@@ -1,0 +1,4 @@
+interface:
+  display_name: "B99 Saga Compensation Engine"
+  short_description: "Run this ELMOS product-closure Skill safely"
+  default_prompt: "Use $b99-saga-compensation-engine to execute this ELMOS product-closure Skill with fail-closed evidence."

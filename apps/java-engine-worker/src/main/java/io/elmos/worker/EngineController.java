@@ -33,7 +33,7 @@ public class EngineController {
             "Provision an approved digest-pinned Runner and bind the request to its lease and immutable snapshot.");}
     @GetMapping("/jobs/{jobId}") public EngineApi.JobResponse job(@PathVariable String jobId,@RequestParam String organizationId){return jobs.get(organizationId,jobId);}
     @PostMapping("/jobs/{jobId}/cancel") public EngineApi.JobResponse cancel(@PathVariable String jobId,@RequestParam String organizationId){return jobs.cancel(organizationId,jobId);}
-    @ExceptionHandler(EngineJobRegistry.JobNotFoundException.class) @ResponseStatus(HttpStatus.NOT_FOUND) Map<String,Object> notFound(RuntimeException error){return Map.of("errorCode","INTERNAL_ENGINE_ERROR","message",error.getMessage(),"retryable",false);}
+    @ExceptionHandler(EngineJobRegistry.JobNotFoundException.class) @ResponseStatus(HttpStatus.NOT_FOUND) Map<String,Object> notFound(RuntimeException error){return Map.of("errorCode","ENGINE_JOB_NOT_FOUND","message","The requested engine job was not found.","retryable",false);}
     @ExceptionHandler({EngineJobRegistry.IdempotencyConflictException.class, EngineJobRegistry.JobConflictException.class})
-    @ResponseStatus(HttpStatus.CONFLICT) Map<String,Object> conflict(RuntimeException error){return Map.of("errorCode","ENGINE_JOB_CONFLICT","message",error.getMessage(),"retryable",false);}
+    @ResponseStatus(HttpStatus.CONFLICT) Map<String,Object> conflict(RuntimeException error){return Map.of("errorCode","ENGINE_JOB_CONFLICT","message","The engine job conflicts with its current or idempotent state.","retryable",false);}
 }

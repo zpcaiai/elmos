@@ -1,0 +1,4 @@
+interface:
+  display_name: "B104 Customer Acceptance Protocol"
+  short_description: "Run this ELMOS product-closure Skill safely"
+  default_prompt: "Use $b104-customer-acceptance-protocol to execute this ELMOS product-closure Skill with fail-closed evidence."

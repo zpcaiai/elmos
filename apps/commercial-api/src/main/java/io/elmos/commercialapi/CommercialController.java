@@ -81,6 +81,6 @@ public final class CommercialController {
     }
     @ExceptionHandler({IllegalArgumentException.class, IllegalStateException.class, SecurityException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST) Map<String,Object> bad(RuntimeException error) {
-        return Map.of("errorCode", "COMMERCIAL_POLICY_REJECTED", "message", error.getMessage(), "retryable", false);
+        return Map.of("errorCode", "COMMERCIAL_POLICY_REJECTED", "message", "The commercial request was rejected by its policy contract.", "retryable", false);
     }
 }

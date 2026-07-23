@@ -1,0 +1,4 @@
+interface:
+  display_name: "B103 Test Result Normalizer"
+  short_description: "Run this ELMOS product-closure Skill safely"
+  default_prompt: "Use $b103-test-result-normalizer to execute this ELMOS product-closure Skill with fail-closed evidence."

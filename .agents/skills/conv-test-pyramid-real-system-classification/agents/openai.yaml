@@ -1,0 +1,4 @@
+interface:
+  display_name: "Conv Test Pyramid Real System Classification"
+  short_description: "Run this ELMOS product-convergence Skill with evidence"
+  default_prompt: "Use $conv-test-pyramid-real-system-classification to execute this ELMOS product-convergence Skill with fail-closed evidence."

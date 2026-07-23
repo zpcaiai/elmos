@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agent Plan Contract Capability Token and Replay"
+  short_description: "Run this ELMOS product-closure Skill with evidence"
+  default_prompt: "Use $agent-plan-contract-capability-token-and-replay to execute this ELMOS product-closure Skill with fail-closed evidence."

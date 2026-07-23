@@ -1,0 +1,10 @@
+{
+  "schema_version": "elmos.runner-attestation.v1",
+  "runner_id": "runner-template-not-attested",
+  "identity": {"subject": "spiffe://template.invalid/runner", "issuer": "template-only"},
+  "image_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "posture": {"status": "not_run", "profile": "template-only"},
+  "issued_at": "2026-07-22T00:00:00Z",
+  "expires_at": "2026-07-22T00:00:01Z",
+  "signature": null
+}

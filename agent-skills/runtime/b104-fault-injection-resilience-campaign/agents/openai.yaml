@@ -1,0 +1,4 @@
+interface:
+  display_name: "B104 Fault Injection Resilience Campaign"
+  short_description: "Run this ELMOS product-closure Skill safely"
+  default_prompt: "Use $b104-fault-injection-resilience-campaign to execute this ELMOS product-closure Skill with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "B98 Executable Contract Certification Gate"
+  short_description: "Run this ELMOS product-closure Skill safely"
+  default_prompt: "Use $b98-executable-contract-certification-gate to execute this ELMOS product-closure Skill with fail-closed evidence."

@@ -1,0 +1,47 @@
+{
+  "schema_version": "elmos.executable-skill-contract.v1",
+  "id": "B98-S01",
+  "name": "b98-executable-skill-contract-schema",
+  "version": "1.0.0",
+  "batch": 98,
+  "inputs": [
+    "approved_requirement_baseline"
+  ],
+  "outputs": [
+    "executable_skill_contract.schema.json"
+  ],
+  "permissions": {
+    "default": "deny",
+    "external_effects": "authorization-required",
+    "secrets": "broker-reference-only"
+  },
+  "steps": [
+    {"id": "step-01", "title": "Resolve scope", "instruction": "Bind the exact approved scope.", "effect": "declared-at-runtime"},
+    {"id": "step-02", "title": "Load closure", "instruction": "Load the governed dependency closure.", "effect": "declared-at-runtime"},
+    {"id": "step-03", "title": "Validate guards", "instruction": "Validate identity and permission guards.", "effect": "declared-at-runtime"},
+    {"id": "step-04", "title": "Plan", "instruction": "Create the typed execution plan.", "effect": "declared-at-runtime"},
+    {"id": "step-05", "title": "Isolate", "instruction": "Prepare an isolated execution environment.", "effect": "declared-at-runtime"},
+    {"id": "step-06", "title": "Implement", "instruction": "Apply the smallest bounded change.", "effect": "declared-at-runtime"},
+    {"id": "step-07", "title": "Validate", "instruction": "Run deterministic local checks.", "effect": "declared-at-runtime"},
+    {"id": "step-08", "title": "Integrate", "instruction": "Exercise integration and failure paths.", "effect": "declared-at-runtime"},
+    {"id": "step-09", "title": "Recover", "instruction": "Verify recovery and cleanup.", "effect": "declared-at-runtime"},
+    {"id": "step-10", "title": "Decide", "instruction": "Publish evidence and evaluate the gate.", "effect": "declared-at-runtime"}
+  ],
+  "rollback": [
+    {"id": "rollback-01", "instruction": "Execute the declared rollback or compensation.", "effect": "declared-at-runtime"}
+  ],
+  "tests": [
+    {"id": "unit-01", "type": "unit", "priority": "P1", "required": true, "instruction": "Validate deterministic compilation."},
+    {"id": "integration-01", "type": "integration", "priority": "P0", "required": true, "instruction": "Validate real adjacent interfaces."},
+    {"id": "negative-01", "type": "negative", "priority": "P0", "required": true, "instruction": "Reject incomplete or unsafe contracts."}
+  ],
+  "evidence": [
+    {"type": "evidence_bundle", "required": true, "source_section": "Evidence Contract"}
+  ],
+  "verification_states": [
+    "specified",
+    "implemented"
+  ],
+  "source_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "signature": null
+}

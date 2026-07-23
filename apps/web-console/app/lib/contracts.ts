@@ -42,3 +42,35 @@ export type ProductCapabilityResponse = {
   stages: ProductStage[];
   note?: string;
 };
+
+export type GenerationTargetId = "java" | "python" | "csharp";
+
+export type GenerationTarget = {
+  id: GenerationTargetId;
+  language: string;
+  runtime: string;
+  framework: string;
+  port: number;
+  accent: "amber" | "blue" | "violet";
+  icon: "code" | "spark" | "layers";
+};
+
+export type GenerationStage = {
+  batch: string;
+  title: string;
+  detail: string;
+};
+
+export type GenerationCapabilityResponse = {
+  source: "REPOSITORY_CONTRACT";
+  fetchedAt: string;
+  schemaVersion: "1.0.0";
+  projectSkillCount: 170;
+  targets: GenerationTarget[];
+  stages: GenerationStage[];
+  generationStatus: "NOT_RUN";
+  externalExecutionEvidence: "NOT_RUN";
+  productionDeliveryStatus: "NOT_RUN";
+  certificationStatus: "NOT_CERTIFIED";
+  note: string;
+};

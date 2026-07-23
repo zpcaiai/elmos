@@ -1,42 +1,25 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { generationStages, generationTargets } from "../lib/catalog";
+import type { GenerationCapabilityResponse, GenerationTargetId } from "../lib/contracts";
 import { Icon, type IconName } from "../components/Icon";
 import { StatusChip } from "../components/StatusChip";
-
-type TargetId = "java" | "python" | "csharp";
-
-type TargetProfile = {
-  id: TargetId;
-  language: string;
-  runtime: string;
-  framework: string;
-  port: number;
-  accent: "amber" | "blue" | "violet";
-  icon: IconName;
-};
 
 type GenerationDraft = {
   name: string;
   namespace: string;
   description: string;
   entity: string;
-  targets: TargetId[];
+  reviewer: string;
+  targets: GenerationTargetId[];
 };
 
-const targetProfiles: TargetProfile[] = [
-  { id: "java", language: "Java", runtime: "21", framework: "Spring Boot 3.5.3", port: 8081, accent: "amber", icon: "code" },
-  { id: "python", language: "Python", runtime: "3.12", framework: "FastAPI 0.116.1", port: 8082, accent: "blue", icon: "spark" },
-  { id: "csharp", language: "C#", runtime: ".NET 10", framework: "ASP.NET Core", port: 8083, accent: "violet", icon: "layers" },
-];
-
-const phases = [
-  { batch: "B46–B48", title: "需求发现", detail: "澄清实体、需求与验收条件" },
-  { batch: "B49–B50", title: "架构约束", detail: "冻结运行时与框架版本" },
-  { batch: "B51–B52", title: "工程蓝图", detail: "规划 API、测试和配置" },
-  { batch: "B53–B57", title: "多语言发射", detail: "按所选目标生成独立项目" },
-  { batch: "B58–B60", title: "验证与交付", detail: "构建、探针与证据归档" },
-];
+type WorkflowCommand = {
+  id: "draft" | "approve" | "generate" | "verify";
+  label: string;
+  command: string;
+};
 
 const plannedAssets = [
   { icon: "code" as IconName, title: "CRUD 与健康检查", detail: "类型化接口与 OpenAPI" },
@@ -49,25 +32,65 @@ function shellQuote(value: string) {
   return `'${value.replaceAll("'", "'\\''")}'`;
 }
 
+function buildWorkflowCommands(draft: GenerationDraft): WorkflowCommand[] {
+  const workspace = `generated/${draft.name}`;
+  return [
+    {
+      id: "draft",
+      label: "1 · 创建草稿",
+      command: `uv run elmos-project-synthesis draft --name ${shellQuote(draft.name)} --namespace ${shellQuote(draft.namespace)} --description ${shellQuote(draft.description)} --entity ${shellQuote(draft.entity)} ${draft.targets.map((target) => `--language ${target}`).join(" ")} --output synthesis-request.json`,
+    },
+    {
+      id: "approve",
+      label: "2 · 审阅并批准",
+      command: `uv run elmos-project-synthesis approve --request synthesis-request.json --actor ${shellQuote(draft.reviewer)} --output approved-request.json`,
+    },
+    {
+      id: "generate",
+      label: "3 · 生成工作区",
+      command: `uv run elmos-project-synthesis generate --request approved-request.json --output ${shellQuote(workspace)}`,
+    },
+    {
+      id: "verify",
+      label: "4 · 真实构建验证",
+      command: `uv run elmos-project-synthesis verify --workspace ${shellQuote(workspace)} --evidence verification.json`,
+    },
+  ];
+}
+
 export function ProjectGenerationStudio() {
   const [name, setName] = useState("order-service");
   const [namespace, setNamespace] = useState("io.elmos.orders");
   const [description, setDescription] = useState("提供订单创建、查询与状态管理的服务");
   const [entity, setEntity] = useState("order");
-  const [targets, setTargets] = useState<TargetId[]>(["java", "python"]);
+  const [reviewer, setReviewer] = useState("user:reviewer");
+  const [targets, setTargets] = useState<GenerationTargetId[]>(["java", "python"]);
   const [draft, setDraft] = useState<GenerationDraft | null>(null);
+  const [capability, setCapability] = useState<GenerationCapabilityResponse | null>(null);
   const [feedback, setFeedback] = useState("");
   const [targetError, setTargetError] = useState("");
   const feedbackTimer = useRef<number | null>(null);
 
   const selectedProfiles = useMemo(
-    () => targetProfiles.filter((profile) => targets.includes(profile.id)),
+    () => generationTargets.filter((profile) => targets.includes(profile.id)),
     [targets],
   );
 
-  const preview = draft ?? { name, namespace, description, entity, targets };
-  const previewProfiles = targetProfiles.filter((profile) => preview.targets.includes(profile.id));
-  const command = `elmos-project-synthesis draft --name ${shellQuote(preview.name || "project-name")} --namespace ${shellQuote(preview.namespace || "com.example.project")} --description ${shellQuote(preview.description || "project description")} --entity ${shellQuote(preview.entity || "entity")} ${preview.targets.map((target) => `--language ${target}`).join(" ")} --output synthesis-request.json`;
+  const preview = draft ?? { name, namespace, description, entity, reviewer, targets };
+  const previewProfiles = generationTargets.filter((profile) => preview.targets.includes(profile.id));
+  const workflowCommands = buildWorkflowCommands(preview);
+  const workflowScript = workflowCommands.map((item) => item.command).join("\n");
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch("/api/capabilities/generation", { cache: "no-store", signal: controller.signal })
+      .then((response) => response.ok ? response.json() : Promise.reject(new Error("capability unavailable")))
+      .then((payload: GenerationCapabilityResponse) => setCapability(payload))
+      .catch((error: unknown) => {
+        if (!(error instanceof DOMException && error.name === "AbortError")) setCapability(null);
+      });
+    return () => controller.abort();
+  }, []);
 
   useEffect(() => () => {
     if (feedbackTimer.current !== null) window.clearTimeout(feedbackTimer.current);
@@ -82,10 +105,14 @@ export function ProjectGenerationStudio() {
     }, 4800);
   }
 
-  function toggleTarget(id: TargetId) {
+  function invalidateDraft() {
+    setDraft(null);
+  }
+
+  function toggleTarget(id: GenerationTargetId) {
     setTargets((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id]);
     setTargetError("");
-    setDraft(null);
+    invalidateDraft();
   }
 
   function createDraft(event: FormEvent<HTMLFormElement>) {
@@ -94,15 +121,26 @@ export function ProjectGenerationStudio() {
       setTargetError("请至少选择一个目标技术栈。");
       return;
     }
-    const nextDraft = { name: name.trim(), namespace: namespace.trim(), description: description.trim(), entity: entity.trim(), targets };
+    const nextDraft = {
+      name: name.trim(),
+      namespace: namespace.trim(),
+      description: description.trim(),
+      entity: entity.trim(),
+      reviewer: reviewer.trim(),
+      targets,
+    };
     setDraft(nextDraft);
-    announce(`“${nextDraft.name}”的生成计划已保存为当前页面草稿；未执行任何代码生成。`);
+    announce(`“${nextDraft.name}”的四阶段生成交接已就绪；仍未执行任何代码生成。`);
   }
 
-  async function copyCommand() {
+  async function copyText(value: string, successMessage: string) {
+    if (!draft) {
+      announce("请先提交并锁定当前计划预览，再复制受控命令。");
+      return;
+    }
     try {
-      await navigator.clipboard.writeText(command);
-      announce("CLI 草稿命令已复制，可在受控终端中执行。");
+      await navigator.clipboard.writeText(value);
+      announce(successMessage);
     } catch {
       announce("浏览器未允许访问剪贴板，请手动选择并复制命令。");
     }
@@ -114,43 +152,44 @@ export function ProjectGenerationStudio() {
         <div>
           <span className="overline">PROJECT SYNTHESIS · B46–B60</span>
           <h1>多语言项目生成</h1>
-          <p>用同一份项目意图规划 Java、Python 与 C# 工程；先看清目标、资产和验证边界，再交给受控生成流程。</p>
+          <p>用同一份项目意图规划 Java、Python 与 C# 工程；完成草稿、审批、生成和验证交接，再进入受控终端执行。</p>
         </div>
-        <div className="generation-header-status"><StatusChip status="DRAFT" /><StatusChip status="NOT_RUN" /></div>
+        <div className="generation-header-status"><StatusChip status={draft ? "REVIEW" : "DRAFT"} /><StatusChip status="NOT_RUN" /></div>
       </section>
 
       <section className="metric-grid metric-grid-four" aria-label="项目生成能力摘要">
-        <article className="metric-card"><span>项目生成 Skills</span><strong>170</strong><small>B46–B60 结构化能力</small></article>
-        <article className="metric-card"><span>精确目标栈</span><strong>3</strong><small>Java / Python / C#</small></article>
+        <article className="metric-card"><span>项目生成 Skills</span><strong>{capability?.projectSkillCount ?? 170}</strong><small>B46–B60 结构化能力</small></article>
+        <article className="metric-card"><span>精确目标栈</span><strong>{capability?.targets.length ?? generationTargets.length}</strong><small>Java / Python / C#</small></article>
         <article className="metric-card"><span>已选目标</span><strong>{selectedProfiles.length}</strong><small>一个意图，多份独立工程</small></article>
-        <article className="metric-card"><span>外部执行</span><strong className="metric-word warning-text">NOT_RUN</strong><small>当前页面仅保存内存草稿</small></article>
+        <article className="metric-card"><span>外部执行</span><strong className="metric-word warning-text">NOT_RUN</strong><small>当前页面只准备命令交接</small></article>
       </section>
 
       <section className="source-notice generation-notice" role="status">
         <Icon name="lock" size={16} />
-        <span>能力来自仓库内 Project Synthesis 1.0.0 契约；目标版本不可任意组合，实际生成、构建与认证均未运行。</span>
-        <StatusChip status="REPOSITORY_CONTRACT" compact />
+        <span>{capability?.note ?? "正在读取仓库内 Project Synthesis 契约；页面不会上传内容或执行生成器。"}</span>
+        <StatusChip status={capability?.source ?? "REPOSITORY_CONTRACT"} compact />
       </section>
 
       <div className="generation-layout">
         <form className="surface-card generation-form" onSubmit={createDraft} aria-labelledby="generation-form-title">
           <div className="generation-section-heading">
-            <div><span className="overline">PROJECT INTENT</span><h2 id="generation-form-title">描述你要生成的项目</h2></div>
+            <div><span className="overline">PROJECT INTENT</span><h2 id="generation-form-title">描述并审阅项目意图</h2></div>
             <span className="step-label">01 / 02</span>
           </div>
 
           <div className="generation-fields">
-            <label className="generation-field"><span>项目名称</span><input value={name} onChange={(event) => { setName(event.target.value); setDraft(null); }} required pattern={"[a-z][a-z0-9\\-]{1,62}[a-z0-9]"} autoComplete="off" aria-describedby="project-name-hint" /><small id="project-name-hint">小写字母、数字与连字符，例如 order-service</small></label>
-            <label className="generation-field"><span>命名空间</span><input value={namespace} onChange={(event) => { setNamespace(event.target.value); setDraft(null); }} required pattern={"[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+"} autoComplete="off" aria-describedby="namespace-hint" /><small id="namespace-hint">稳定的点分命名空间，例如 io.elmos.orders</small></label>
-            <label className="generation-field generation-field-wide"><span>项目说明</span><textarea value={description} onChange={(event) => { setDescription(event.target.value); setDraft(null); }} required rows={4} maxLength={500} aria-describedby="description-hint" /><small id="description-hint">说明业务目标，不要粘贴凭证、生产数据或客户代码。</small></label>
-            <label className="generation-field generation-field-wide"><span>核心实体</span><input value={entity} onChange={(event) => { setEntity(event.target.value); setDraft(null); }} required pattern={"[a-z][a-z0-9\\-]{1,62}[a-z0-9]"} autoComplete="off" aria-describedby="entity-hint" /><small id="entity-hint">当前契约生成单实体、内存 CRUD starter；持久化与身份能力不在此范围。</small></label>
+            <label className="generation-field"><span>项目名称</span><input value={name} onChange={(event) => { setName(event.target.value); invalidateDraft(); }} required pattern={"[a-z][a-z0-9\\-]{1,62}[a-z0-9]"} autoComplete="off" aria-describedby="project-name-hint" /><small id="project-name-hint">小写字母、数字与连字符，例如 order-service</small></label>
+            <label className="generation-field"><span>命名空间</span><input value={namespace} onChange={(event) => { setNamespace(event.target.value); invalidateDraft(); }} required pattern={"[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+"} autoComplete="off" aria-describedby="namespace-hint" /><small id="namespace-hint">稳定的点分命名空间，例如 io.elmos.orders</small></label>
+            <label className="generation-field generation-field-wide"><span>项目说明</span><textarea value={description} onChange={(event) => { setDescription(event.target.value); invalidateDraft(); }} required rows={4} maxLength={500} aria-describedby="description-hint" /><small id="description-hint">说明业务目标，不要粘贴凭证、生产数据或客户代码。</small></label>
+            <label className="generation-field"><span>核心实体</span><input value={entity} onChange={(event) => { setEntity(event.target.value); invalidateDraft(); }} required pattern={"[a-z][a-z0-9\\-]{1,62}[a-z0-9]"} autoComplete="off" aria-describedby="entity-hint" /><small id="entity-hint">当前契约生成单实体、内存 CRUD starter。</small></label>
+            <label className="generation-field"><span>审批者标识</span><input value={reviewer} onChange={(event) => { setReviewer(event.target.value); invalidateDraft(); }} required pattern={"[a-zA-Z0-9][a-zA-Z0-9._:@/\\-]{2,199}"} autoComplete="off" aria-describedby="reviewer-hint" /><small id="reviewer-hint">写入批准摘要，例如 user:reviewer；不填写密钥或邮箱凭证。</small></label>
           </div>
 
           <fieldset className="target-fieldset" aria-describedby="target-hint target-error">
             <legend><span><span className="overline">EXACT TARGETS</span><strong>选择目标技术栈</strong></span><span className="step-label">02 / 02</span></legend>
             <p id="target-hint">每个选项都是版本锁定的完整目标配置，可同时选择。</p>
             <div className="target-grid">
-              {targetProfiles.map((profile) => {
+              {generationTargets.map((profile) => {
                 const checked = targets.includes(profile.id);
                 return (
                   <label className={`target-card target-${profile.accent} ${checked ? "selected" : ""}`} key={profile.id}>
@@ -171,18 +210,18 @@ export function ProjectGenerationStudio() {
           </div>
 
           <div className="generation-submit-row">
-            <div><Icon name="lock" size={16} /><span><strong>仅保存当前页面草稿</strong><small>不会上传、审批或运行生成器</small></span></div>
-            <button className="button button-primary" type="submit"><Icon name="spark" size={16} />生成计划预览</button>
+            <div><Icon name="lock" size={16} /><span><strong>本页只锁定交接预览</strong><small>批准摘要仍由 CLI 在受控终端生成</small></span></div>
+            <button className="button button-primary" type="submit"><Icon name="spark" size={16} />准备完整生成交接</button>
           </div>
         </form>
 
         <aside className="generation-preview" aria-label="生成计划预览">
           <div className="generation-preview-hero">
-            <div className="preview-status-row"><span className="overline">LIVE PLAN PREVIEW</span><StatusChip status={draft ? "DRAFT" : "REVIEW"} compact /></div>
+            <div className="preview-status-row"><span className="overline">GOVERNED PLAN PREVIEW</span><StatusChip status={draft ? "REVIEW" : "DRAFT"} compact /></div>
             <span className="preview-project-icon"><Icon name="repository" size={24} /></span>
             <h2>{preview.name || "未命名项目"}</h2>
             <p>{preview.description || "填写项目说明后，这里会显示生成计划摘要。"}</p>
-            <div className="preview-tags"><span>{preview.entity || "未指定实体"}</span><span>{preview.namespace || "未指定命名空间"}</span></div>
+            <div className="preview-tags"><span>{preview.entity || "未指定实体"}</span><span>{preview.namespace || "未指定命名空间"}</span><span>{preview.reviewer || "未指定审批者"}</span></div>
           </div>
 
           <div className="preview-section">
@@ -194,16 +233,23 @@ export function ProjectGenerationStudio() {
           </div>
 
           <div className="preview-section pipeline-section">
-            <div className="preview-section-title"><span>受控生成阶段</span><b>5</b></div>
+            <div className="preview-section-title"><span>受控生成阶段</span><b>{generationStages.length}</b></div>
             <ol className="generation-pipeline">
-              {phases.map((phase, index) => <li key={phase.batch}><i>{index + 1}</i><span><strong>{phase.title}</strong><small>{phase.batch} · {phase.detail}</small></span></li>)}
+              {generationStages.map((phase, index) => <li key={phase.batch}><i>{index + 1}</i><span><strong>{phase.title}</strong><small>{phase.batch} · {phase.detail}</small></span></li>)}
             </ol>
           </div>
 
           <div className="preview-command">
-            <div><span>CLI 草稿参考</span><button type="button" onClick={copyCommand}><Icon name="copy" size={13} />复制命令</button></div>
-            <code>{command}</code>
-            <small>命名空间、目标语言与端口和 Project Synthesis 1.0.0 引擎保持一致；此界面不会执行命令。</small>
+            <div><span>完整 CLI 交接</span><button type="button" disabled={!draft} onClick={() => copyText(workflowScript, "四阶段 CLI 命令已复制，请在项目合成引擎目录中依次执行。")}><Icon name="copy" size={13} />复制全部</button></div>
+            <ol className="workflow-command-list">
+              {workflowCommands.map((item) => (
+                <li className="workflow-command-item" key={item.id}>
+                  <div><strong>{item.label}</strong><button type="button" disabled={!draft} aria-label={`复制${item.label}命令`} onClick={() => copyText(item.command, `${item.label}命令已复制。`)}><Icon name="copy" size={12} />复制</button></div>
+                  <code>{item.command}</code>
+                </li>
+              ))}
+            </ol>
+            <small>{draft ? "命令与 Project Synthesis 1.0.0 CLI 完全对应；按顺序执行，任何一步失败都应停止。" : "先提交有效表单以锁定命令，防止复制仍在变化的未审阅输入。"}</small>
           </div>
 
           <div className="generation-boundary">

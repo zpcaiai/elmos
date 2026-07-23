@@ -1,0 +1,4 @@
+interface:
+  display_name: "Product Closure Conformance and Release Gates"
+  short_description: "Run this ELMOS product-closure Skill with evidence"
+  default_prompt: "Use $product-closure-conformance-and-release-gates to execute this ELMOS product-closure Skill with fail-closed evidence."

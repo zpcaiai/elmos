@@ -1,0 +1,4 @@
+interface:
+  display_name: "Closure Security Privacy Resilience and Trust Review"
+  short_description: "Run this ELMOS product-closure Skill with evidence"
+  default_prompt: "Use $closure-security-privacy-resilience-and-trust-review to execute this ELMOS product-closure Skill with fail-closed evidence."

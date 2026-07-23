@@ -1,0 +1,4 @@
+interface:
+  display_name: "Conv Verified Migrated Workload Metrics"
+  short_description: "Run this ELMOS product-convergence Skill with evidence"
+  default_prompt: "Use $conv-verified-migrated-workload-metrics to execute this ELMOS product-convergence Skill with fail-closed evidence."

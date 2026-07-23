@@ -42,7 +42,7 @@ public final class FrontendClientController {
     @ExceptionHandler({IllegalArgumentException.class, IllegalStateException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     Map<String, Object> badRequest(RuntimeException error) {
-        return Map.of("errorCode", "FRONTEND_CLIENT_REQUEST_REJECTED", "message", error.getMessage(),
+        return Map.of("errorCode", "FRONTEND_CLIENT_REQUEST_REJECTED", "message", "The frontend client request was rejected by its contract.",
                 "retryable", false);
     }
 }

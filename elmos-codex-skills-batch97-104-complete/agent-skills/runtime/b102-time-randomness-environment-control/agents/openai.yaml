@@ -1,0 +1,4 @@
+interface:
+  display_name: "B102 Time Randomness Environment Control"
+  short_description: "Run this ELMOS product-closure Skill safely"
+  default_prompt: "Use $b102-time-randomness-environment-control to execute this ELMOS product-closure Skill with fail-closed evidence."

@@ -85,6 +85,6 @@ public final class EnterpriseController {
     }
     @ExceptionHandler({IllegalArgumentException.class, IllegalStateException.class, SecurityException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST) Map<String,Object> bad(RuntimeException error) {
-        return Map.of("errorCode", "ENTERPRISE_POLICY_REJECTED", "message", error.getMessage(), "retryable", false);
+        return Map.of("errorCode", "ENTERPRISE_POLICY_REJECTED", "message", "The enterprise request was rejected by its policy contract.", "retryable", false);
     }
 }

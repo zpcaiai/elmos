@@ -1,0 +1,4 @@
+interface:
+  display_name: "B102 Metamorphic Property Testing"
+  short_description: "Run this ELMOS product-closure Skill safely"
+  default_prompt: "Use $b102-metamorphic-property-testing to execute this ELMOS product-closure Skill with fail-closed evidence."

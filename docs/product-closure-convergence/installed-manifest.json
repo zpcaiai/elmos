@@ -1,0 +1,850 @@
+{
+  "batch56a": {
+    "external_evidence": "NOT_RUN",
+    "maximum_local_decision": "READY_FOR_EXTERNAL_GATE",
+    "package": "elmos-codex-skills-batch56a-product-closure",
+    "skill_count": 16,
+    "skills": [
+      {
+        "id": "CLO56A001",
+        "installed_path": "agent-skills/runtime/elmos-product-closure-maturity-orchestrator/SKILL.md",
+        "installed_sha256": "sha256:ec141bd15808683283206015ad5bbec9a818170a6f9740e33ca00c301d09805f",
+        "interface_sha256": "sha256:1c4415809191e11e9da2b080d27140ac5c24d61d252c62c8c65080e87065f147",
+        "maturity": "reviewed-design",
+        "name": "elmos-product-closure-maturity-orchestrator",
+        "source_path": "elmos-codex-skills-batch56a-product-closure/agent-skills/runtime/elmos-product-closure-maturity-orchestrator/SKILL.md",
+        "source_sha256": "sha256:7fb6be4355cd9a2086c585426633f293d0a2d61f3c3281f9eddcd49bdfcffd5d"
+      },
+      {
+        "id": "CLO56A002",
+        "installed_path": "agent-skills/runtime/canonical-domain-kernel-consolidation/SKILL.md",
+        "installed_sha256": "sha256:1f15683e5101795caa58d08ae452229de6c4eef31a149595377ca3308376173c",
+        "interface_sha256": "sha256:8b22fe5a1b37104f17fe51a807621335a92f63faac0e8bca4c15f2a3300f7829",
+        "maturity": "reviewed-design",
+        "name": "canonical-domain-kernel-consolidation",
+        "source_path": "elmos-codex-skills-batch56a-product-closure/agent-skills/runtime/canonical-domain-kernel-consolidation/SKILL.md",
+        "source_sha256": "sha256:0cb662ca44b85d150ec537b60087aa6a1bd539607952fa9647b9c1822b2fdb35"
+      },
+      {
+        "id": "CLO56A003",
+        "installed_path": "agent-skills/runtime/skill-registry-capability-graph-and-resolver/SKILL.md",
+        "installed_sha256": "sha256:f11ba590d7bbfa19308d78d1502bebc3b78c9c207bc2e743469eda7be9beaff0",
+        "interface_sha256": "sha256:fccac53c94fe278fed1a5d5bfc0200b278403716522376e55058a7166e155819",
+        "maturity": "reviewed-design",
+        "name": "skill-registry-capability-graph-and-resolver",
+        "source_path": "elmos-codex-skills-batch56a-product-closure/agent-skills/runtime/skill-registry-capability-graph-and-resolver/SKILL.md",
+        "source_sha256": "sha256:916c86536e8eb585188d0e5c0e3efffbcbab82e510c21d762ea58d4e9a7f5dbb"
+      },
+      {
+        "id": "CLO56A004",
+        "installed_path": "agent-skills/runtime/golden-journey-reference-implementation/SKILL.md",
+        "installed_sha256": "sha256:052a382f1a05e4766b47237a2ae8d1725441e38216b08c9a309b8c5942888a50",
+        "interface_sha256": "sha256:f29304e78100e6374181cee037ceed3a291aa298c919499bcbbc60ab5814aa7a",
+        "maturity": "reviewed-design",
+        "name": "golden-journey-reference-implementation",
+        "source_path": "elmos-codex-skills-batch56a-product-closure/agent-skills/runtime/golden-journey-reference-implementation/SKILL.md",
+        "source_sha256": "sha256:9347914e711cf5ad821862bc5764228725c3d7bb790e7217ac3279570dd94753"
+      },
+      {
+        "id": "CLO56A005",
+        "installed_path": "agent-skills/runtime/provider-certification-factory/SKILL.md",
+        "installed_sha256": "sha256:4eb1433dc6a8962dbf797261af31be0c5b0c00b05b608a0e1d488e3ede70d19c",
+        "interface_sha256": "sha256:7995e4907141ff72385488113b8818b8dd8def6624951303dd916384fb189af3",
+        "maturity": "reviewed-design",
+        "name": "provider-certification-factory",
+        "source_path": "elmos-codex-skills-batch56a-product-closure/agent-skills/runtime/provider-certification-factory/SKILL.md",
+        "source_sha256": "sha256:ae1744a2828358c53d156a002fbf5ccab9d3c8ea0b33f64252ed1625d6c05a31"
+      },
+      {
+        "id": "CLO56A006",
+        "installed_path": "agent-skills/runtime/execution-reliability-state-protocol-hardening/SKILL.md",
+        "installed_sha256": "sha256:99a2e31f7d32648f441bd3db59ca209e80c22dbd72ecf8926a0371ee79bae224",
+        "interface_sha256": "sha256:b65bd989ddedd6bdbbcfcf509a9da2b9d1e50494a20e3792a31cffabcb219434",
+        "maturity": "reviewed-design",
+        "name": "execution-reliability-state-protocol-hardening",
+        "source_path": "elmos-codex-skills-batch56a-product-closure/agent-skills/runtime/execution-reliability-state-protocol-hardening/SKILL.md",
+        "source_sha256": "sha256:2d2c316ac7eb85af7307ab012c599cde2de9c26b7d20df91b3616c8d5d53dc15"
+      },
+      {
+        "id": "CLO56A007",
+        "installed_path": "agent-skills/runtime/system-of-record-authority-matrix/SKILL.md",
+        "installed_sha256": "sha256:0b999f9a3cb36c1137682b9be99798d2c08bf0802d362fb23311a6d879f5dfed",
+        "interface_sha256": "sha256:1bcba27846a2b736359bb71ecf5ace33021f7939d48df80e1c0adb1da308c2f4",
+        "maturity": "reviewed-design",
+        "name": "system-of-record-authority-matrix",
+        "source_path": "elmos-codex-skills-batch56a-product-closure/agent-skills/runtime/system-of-record-authority-matrix/SKILL.md",
+        "source_sha256": "sha256:22c2595f8fbdb1b24bfc970f458916f37a5da68b754cad032e38e5a3a1dfaf25"
+      },
+      {
+        "id": "CLO56A008",
+        "installed_path": "agent-skills/runtime/agent-plan-contract-capability-token-and-replay/SKILL.md",
+        "installed_sha256": "sha256:d663289c18fe756bfb291a433b1b35881cb92c2af04196421c135e4081e76e0f",
+        "interface_sha256": "sha256:9db86f9f283fb11da12efa2e789ffc6a2e238c64904b7a433b469dfa489578f1",
+        "maturity": "reviewed-design",
+        "name": "agent-plan-contract-capability-token-and-replay",
+        "source_path": "elmos-codex-skills-batch56a-product-closure/agent-skills/runtime/agent-plan-contract-capability-token-and-replay/SKILL.md",
+        "source_sha256": "sha256:63b5847c4d343a8baca76baadf210dae5f035990189e827dccd375793839ada3"
+      },
+      {
+        "id": "CLO56A009",
+        "installed_path": "agent-skills/runtime/runtime-certification-lab-and-evidence-factory/SKILL.md",
+        "installed_sha256": "sha256:03694a5d2b0c0ef10d3498bcc77f65a92f64199f2f15d9a853ff9557970d6251",
+        "interface_sha256": "sha256:1a6c30b8a1aba9d94f0abe5c4d6f5216c8e7ee3ee14e2d12a0cb5447baa3c683",
+        "maturity": "reviewed-design",
+        "name": "runtime-certification-lab-and-evidence-factory",
+        "source_path": "elmos-codex-skills-batch56a-product-closure/agent-skills/runtime/runtime-certification-lab-and-evidence-factory/SKILL.md",
+        "source_sha256": "sha256:578f773bc2c731f1efc2af9dc25a4dd285e1663eb7ccc703f2824106438bcf88"
+      },
+      {
+        "id": "CLO56A010",
+        "installed_path": "agent-skills/runtime/product-experience-role-workbench-and-onboarding/SKILL.md",
+        "installed_sha256": "sha256:2c56b5828a6f0c1dc15fc8d6c197e679c2a0fb78ef4e4a1e471c6f227612c6de",
+        "interface_sha256": "sha256:3d80ece39cd617aa3dd245ae5e0dd18104a242a2445bfab48957108ee5b1efc7",
+        "maturity": "reviewed-design",
+        "name": "product-experience-role-workbench-and-onboarding",
+        "source_path": "elmos-codex-skills-batch56a-product-closure/agent-skills/runtime/product-experience-role-workbench-and-onboarding/SKILL.md",
+        "source_sha256": "sha256:7f7a9b68be4c2b3fb03a34f1dada17d82e4864a223c3ba77b68247853ce3b019"
+      },
+      {
+        "id": "CLO56A011",
+        "installed_path": "agent-skills/runtime/product-scope-core-domain-pack-governance/SKILL.md",
+        "installed_sha256": "sha256:8665248943386a3ba6a13c1f0bd2229371082d14a873a639557b2fea2873c788",
+        "interface_sha256": "sha256:b3c847b85926a34886828ce184efe8a73ee97562e202cb69cd052d932eff88a1",
+        "maturity": "reviewed-design",
+        "name": "product-scope-core-domain-pack-governance",
+        "source_path": "elmos-codex-skills-batch56a-product-closure/agent-skills/runtime/product-scope-core-domain-pack-governance/SKILL.md",
+        "source_sha256": "sha256:418309a73f5fba81c336a5a30fb7256fa02bd24d1035c5072e02e29cae514acf"
+      },
+      {
+        "id": "CLO56A012",
+        "installed_path": "agent-skills/runtime/platform-upgrade-schema-workflow-and-skill-lifecycle/SKILL.md",
+        "installed_sha256": "sha256:5c1d853f1fe591052d03942a05b735eeee7a3241490864afd540b0f17e1a992f",
+        "interface_sha256": "sha256:ddf451f2ade2dc3c1d2a94c15ed351e3dd2c0b0d6aa50c95af773dd9cdf9ccc9",
+        "maturity": "reviewed-design",
+        "name": "platform-upgrade-schema-workflow-and-skill-lifecycle",
+        "source_path": "elmos-codex-skills-batch56a-product-closure/agent-skills/runtime/platform-upgrade-schema-workflow-and-skill-lifecycle/SKILL.md",
+        "source_sha256": "sha256:24b014616c392f445e3b72aa9b35dee96d2b8e4691f69e8f423db7be362e6d35"
+      },
+      {
+        "id": "CLO56A013",
+        "installed_path": "agent-skills/runtime/ga-commercial-installation-support-and-dr-readiness/SKILL.md",
+        "installed_sha256": "sha256:86cd95c299f82521fb36a6b0d71040119adc727547a3cca81c03e3f5eef01816",
+        "interface_sha256": "sha256:65518a0160bc81e1ccbe2781e01d07a71281d005f41af9fa6f2323ff39db5518",
+        "maturity": "reviewed-design",
+        "name": "ga-commercial-installation-support-and-dr-readiness",
+        "source_path": "elmos-codex-skills-batch56a-product-closure/agent-skills/runtime/ga-commercial-installation-support-and-dr-readiness/SKILL.md",
+        "source_sha256": "sha256:9d82b894ff221a2ce23db48b5acd233a4b0a5eb9c7fac2c56f18cf2061e71d84"
+      },
+      {
+        "id": "CLO56A014",
+        "installed_path": "agent-skills/runtime/portfolio-roadmap-kpi-and-value-governance/SKILL.md",
+        "installed_sha256": "sha256:08c1926d1ecf5045aeaf51e1bcd786321cd365ed95981af112f36136380f0732",
+        "interface_sha256": "sha256:b57f57c4f89a46f6498030e7b8b4755059b2b618ab301e8011c395968232a45f",
+        "maturity": "reviewed-design",
+        "name": "portfolio-roadmap-kpi-and-value-governance",
+        "source_path": "elmos-codex-skills-batch56a-product-closure/agent-skills/runtime/portfolio-roadmap-kpi-and-value-governance/SKILL.md",
+        "source_sha256": "sha256:e6979081bcd9ce20f2ab1d80eb1241aa0a7892b7ba887931902a9e8f1046d1f7"
+      },
+      {
+        "id": "CLO56A015",
+        "installed_path": "agent-skills/runtime/closure-security-privacy-resilience-and-trust-review/SKILL.md",
+        "installed_sha256": "sha256:72942d349ef8b389d724e8f5262d3f275a878bdf756dbbe673f2112680dedf2e",
+        "interface_sha256": "sha256:f3fc46f1e394af96dc8f31fae1a32bcfcf806d738247df4024c0dc4800c3da23",
+        "maturity": "reviewed-design",
+        "name": "closure-security-privacy-resilience-and-trust-review",
+        "source_path": "elmos-codex-skills-batch56a-product-closure/agent-skills/runtime/closure-security-privacy-resilience-and-trust-review/SKILL.md",
+        "source_sha256": "sha256:f163d09cdd8b2908dc0ef0f52ec7b9b84096ea093d5bb3a9fed15ae898a82a9a"
+      },
+      {
+        "id": "CLO56A016",
+        "installed_path": "agent-skills/runtime/product-closure-conformance-and-release-gates/SKILL.md",
+        "installed_sha256": "sha256:6b338ed4388e5c5e2074f8dd196c1d945ada132f91645764f3682ba338dee0ab",
+        "interface_sha256": "sha256:77cbb588c4248b7075adec5c1b463b67c070919587501c5c060d57b3709e4cd4",
+        "maturity": "reviewed-design",
+        "name": "product-closure-conformance-and-release-gates",
+        "source_path": "elmos-codex-skills-batch56a-product-closure/agent-skills/runtime/product-closure-conformance-and-release-gates/SKILL.md",
+        "source_sha256": "sha256:79ca759da41b644257456146228602e4ab24f85b0b6bd26f4e51b7e3b772e5ba"
+      }
+    ]
+  },
+  "convergence": {
+    "external_evidence": "NOT_RUN",
+    "maximum_local_decision": "READY_FOR_EXTERNAL_GATE",
+    "package": "elmos-product-convergence-reference-skills",
+    "skill_count": 32,
+    "skills": [
+      {
+        "id": "CONV-001",
+        "installed_path": ".agents/skills/conv-product-convergence-orchestrator/SKILL.md",
+        "installed_sha256": "sha256:dd59f00d295193976ec85866202f97e133e8eb037d534c207bfc0c65574c6506",
+        "interface_sha256": "sha256:30135ca3cdeda5e73ac98fc80a24177ccb0b1c05934dd4b198af95f6cc48976e",
+        "layer": "orchestrator",
+        "name": "conv-product-convergence-orchestrator",
+        "source_path": "elmos-product-convergence-reference-skills/.agents/skills/conv-product-convergence-orchestrator/SKILL.md",
+        "source_sha256": "sha256:dd59f00d295193976ec85866202f97e133e8eb037d534c207bfc0c65574c6506"
+      },
+      {
+        "id": "CONV-002",
+        "installed_path": ".agents/skills/conv-capability-package-metamodel/SKILL.md",
+        "installed_sha256": "sha256:50f418488acbca7b328dd1eedbf65dfe40ccda1af49308a89a33617b3191f737",
+        "interface_sha256": "sha256:5e8f601ab2dbd76c4bddd4e01e52b18f1f8bac2d3670f0eea2373b660ce3d49d",
+        "layer": "implementation",
+        "name": "conv-capability-package-metamodel",
+        "source_path": "elmos-product-convergence-reference-skills/.agents/skills/conv-capability-package-metamodel/SKILL.md",
+        "source_sha256": "sha256:50f418488acbca7b328dd1eedbf65dfe40ccda1af49308a89a33617b3191f737"
+      },
+      {
+        "id": "CONV-003",
+        "installed_path": ".agents/skills/conv-capability-dependency-graph/SKILL.md",
+        "installed_sha256": "sha256:7a6ac0418e6d8772f2c5af257c01277ff6273341166d3b715ef5fc38e3ffbf54",
+        "interface_sha256": "sha256:59080dc0622531d3175b55b25abce609ea97e6b1c27474a6a750c7fad50512eb",
+        "layer": "implementation",
+        "name": "conv-capability-dependency-graph",
+        "source_path": "elmos-product-convergence-reference-skills/.agents/skills/conv-capability-dependency-graph/SKILL.md",
+        "source_sha256": "sha256:7a6ac0418e6d8772f2c5af257c01277ff6273341166d3b715ef5fc38e3ffbf54"
+      },
+      {
+        "id": "CONV-004",
+        "installed_path": ".agents/skills/conv-global-project-lifecycle/SKILL.md",
+        "installed_sha256": "sha256:be6c8157129ddd2c0a2bb1dbe8648b9b6bfa8dbbabcb3f2381459254e97d9e33",
+        "interface_sha256": "sha256:29b1d42bfec8a90f41205e9b5d131d7716b42b533def01ab8c4cb6dce54bbdfd",
+        "layer": "implementation",
+        "name": "conv-global-project-lifecycle",
+        "source_path": "elmos-product-convergence-reference-skills/.agents/skills/conv-global-project-lifecycle/SKILL.md",
+        "source_sha256": "sha256:be6c8157129ddd2c0a2bb1dbe8648b9b6bfa8dbbabcb3f2381459254e97d9e33"
+      },
+      {
+        "id": "CONV-005",
+        "installed_path": ".agents/skills/conv-durable-workflow-runtime/SKILL.md",
+        "installed_sha256": "sha256:3f45d1616b8e92cc503fc7873fa054beae836917b7df794560d53dd80aa63dfb",
+        "interface_sha256": "sha256:4a25e4ea3c2aa99c25dc72dcf04598f6c3fc70db170fef64cb05f0a934b31793",
+        "layer": "implementation",
+        "name": "conv-durable-workflow-runtime",
+        "source_path": "elmos-product-convergence-reference-skills/.agents/skills/conv-durable-workflow-runtime/SKILL.md",
+        "source_sha256": "sha256:3f45d1616b8e92cc503fc7873fa054beae836917b7df794560d53dd80aa63dfb"
+      },
+      {
+        "id": "CONV-006",
+        "installed_path": ".agents/skills/conv-global-evidence-graph/SKILL.md",
+        "installed_sha256": "sha256:d98b4c40fde8d962b8acb0f26395d90e18f9e8d81818c62a966945546eba6218",
+        "interface_sha256": "sha256:4b362e2b2cbf296c004712bbf69ef32df726cef4926452098b3b77196ca8f581",
+        "layer": "implementation",
+        "name": "conv-global-evidence-graph",
+        "source_path": "elmos-product-convergence-reference-skills/.agents/skills/conv-global-evidence-graph/SKILL.md",
+        "source_sha256": "sha256:d98b4c40fde8d962b8acb0f26395d90e18f9e8d81818c62a966945546eba6218"
+      },
+      {
+        "id": "CONV-007",
+        "installed_path": ".agents/skills/conv-unified-policy-engine/SKILL.md",
+        "installed_sha256": "sha256:2634c5ddcceb7e1e2ae6804f16c382e64c47bf0097cdf8606eba86d911aba029",
+        "interface_sha256": "sha256:15f7a23b4e0ead9e951cf79e78996dd82b9d4a52cd6889ad14603ce4b932b3ca",
+        "layer": "implementation",
+        "name": "conv-unified-policy-engine",
+        "source_path": "elmos-product-convergence-reference-skills/.agents/skills/conv-unified-policy-engine/SKILL.md",
+        "source_sha256": "sha256:2634c5ddcceb7e1e2ae6804f16c382e64c47bf0097cdf8606eba86d911aba029"
+      },
+      {
+        "id": "CONV-008",
+        "installed_path": ".agents/skills/conv-capability-registry-support-matrix/SKILL.md",
+        "installed_sha256": "sha256:e3f45178e56bd4fca8be7639e683c8ae378e04975e561d597f9f952c30b3e5ef",
+        "interface_sha256": "sha256:eee64d0d0bf6c07ba7c013e40fb00c1000fc09f40fdfa68c0119883d64abbeb7",
+        "layer": "implementation",
+        "name": "conv-capability-registry-support-matrix",
+        "source_path": "elmos-product-convergence-reference-skills/.agents/skills/conv-capability-registry-support-matrix/SKILL.md",
+        "source_sha256": "sha256:e3f45178e56bd4fca8be7639e683c8ae378e04975e561d597f9f952c30b3e5ef"
+      },
+      {
+        "id": "CONV-009",
+        "installed_path": ".agents/skills/conv-pack-lifecycle-certification-unifier/SKILL.md",
+        "installed_sha256": "sha256:a986f4dd24c62a0c5a8ecd0a9918229dbced008854a70e8150efe7726f83e572",
+        "interface_sha256": "sha256:6dc39d4dc32b29c51e44e5ad6f484f6dc9d134b4d2a409d9e21b638ec160d289",
+        "layer": "implementation",
+        "name": "conv-pack-lifecycle-certification-unifier",
+        "source_path": "elmos-product-convergence-reference-skills/.agents/skills/conv-pack-lifecycle-certification-unifier/SKILL.md",
+        "source_sha256": "sha256:a986f4dd24c62a0c5a8ecd0a9918229dbced008854a70e8150efe7726f83e572"
+      },
+      {
+        "id": "CONV-010",
+        "installed_path": ".agents/skills/conv-core-extension-boundary/SKILL.md",
+        "installed_sha256": "sha256:c438d233a14f82da1f7404fbb0780ed2ded28fd9481012e90417ba0d998e84ed",
+        "interface_sha256": "sha256:069ac40dd0f8bae0b234919e63da254fe00ec8caaba7c335a4c006578e274913",
+        "layer": "implementation",
+        "name": "conv-core-extension-boundary",
+        "source_path": "elmos-product-convergence-reference-skills/.agents/skills/conv-core-extension-boundary/SKILL.md",
+        "source_sha256": "sha256:c438d233a14f82da1f7404fbb0780ed2ded28fd9481012e90417ba0d998e84ed"
+      },
+      {
+        "id": "CONV-011",
+        "installed_path": ".agents/skills/conv-skill-layering-routing/SKILL.md",
+        "installed_sha256": "sha256:a6522ca1fdacb548ada19823eb7f7e9a3ef793031685d6645c7b400b1e6f4370",
+        "interface_sha256": "sha256:ec4239e5a975e0f7b5a8af56873f4e4bd9c2b2a4273504b5e09287c601c60d99",
+        "layer": "implementation",
+        "name": "conv-skill-layering-routing",
+        "source_path": "elmos-product-convergence-reference-skills/.agents/skills/conv-skill-layering-routing/SKILL.md",
+        "source_sha256": "sha256:a6522ca1fdacb548ada19823eb7f7e9a3ef793031685d6645c7b400b1e6f4370"
+      },
+      {
+        "id": "CONV-012",
+        "installed_path": ".agents/skills/conv-skill-registry-compiler/SKILL.md",
+        "installed_sha256": "sha256:eb5d78b0a828e0e8d415dab46d400824afd50bdb710cf106f48373948d4f8361",
+        "interface_sha256": "sha256:72ac9444effe4a91cced620deb4fe7896444a15394c66b7b710b2e35e5bbc669",
+        "layer": "implementation",
+        "name": "conv-skill-registry-compiler",
+        "source_path": "elmos-product-convergence-reference-skills/.agents/skills/conv-skill-registry-compiler/SKILL.md",
+        "source_sha256": "sha256:eb5d78b0a828e0e8d415dab46d400824afd50bdb710cf106f48373948d4f8361"
+      },
+      {
+        "id": "CONV-013",
+        "installed_path": ".agents/skills/conv-duplicate-skill-consolidation/SKILL.md",
+        "installed_sha256": "sha256:bae368f13668b461c9847695ad7131c6c3d281d94cbca36d06eaae48bd197143",
+        "interface_sha256": "sha256:09cd1dfe364d685fe051085963e64aa5b8f90bc668e2e6253518fa2abdfc0570",
+        "layer": "implementation",
+        "name": "conv-duplicate-skill-consolidation",
+        "source_path": "elmos-product-convergence-reference-skills/.agents/skills/conv-duplicate-skill-consolidation/SKILL.md",
+        "source_sha256": "sha256:bae368f13668b461c9847695ad7131c6c3d281d94cbca36d06eaae48bd197143"
+      },
+      {
+        "id": "CONV-014",
+        "installed_path": ".agents/skills/conv-cross-batch-contract-normalization/SKILL.md",
+        "installed_sha256": "sha256:52d1aabec3e0ce8946e966e5412bc1943cfe7762ff72dfa03c69b215b2525275",
+        "interface_sha256": "sha256:7718cbad8209b6324f1f1cd9f98f786e36d742cfc342e0be30687b0ba77497b1",
+        "layer": "implementation",
+        "name": "conv-cross-batch-contract-normalization",
+        "source_path": "elmos-product-convergence-reference-skills/.agents/skills/conv-cross-batch-contract-normalization/SKILL.md",
+        "source_sha256": "sha256:52d1aabec3e0ce8946e966e5412bc1943cfe7762ff72dfa03c69b215b2525275"
+      },
+      {
+        "id": "CONV-015",
+        "installed_path": ".agents/skills/conv-architecture-decision-change-control/SKILL.md",
+        "installed_sha256": "sha256:dcc769ad4fd93b060fdb8ba6654152e0b731cfccd7318a67bede0bdc2552d45f",
+        "interface_sha256": "sha256:572cf8e967ce31905ee2ce23f41ec6c4487b0efe375434b08bc2dacaa8dec05d",
+        "layer": "implementation",
+        "name": "conv-architecture-decision-change-control",
+        "source_path": "elmos-product-convergence-reference-skills/.agents/skills/conv-architecture-decision-change-control/SKILL.md",
+        "source_sha256": "sha256:dcc769ad4fd93b060fdb8ba6654152e0b731cfccd7318a67bede0bdc2552d45f"
+      },
+      {
+        "id": "CONV-016",
+        "installed_path": ".agents/skills/conv-test-pyramid-real-system-classification/SKILL.md",
+        "installed_sha256": "sha256:6226c8ee2cc8085820dcaca40d6d5216de7dcbb291d7c373b36e9818f4002b3c",
+        "interface_sha256": "sha256:700f4fb93dab260370e3ecdd6fe8c3cd45995d083c8c474d9c92ce8e766a153f",
+        "layer": "implementation",
+        "name": "conv-test-pyramid-real-system-classification",
+        "source_path": "elmos-product-convergence-reference-skills/.agents/skills/conv-test-pyramid-real-system-classification/SKILL.md",
+        "source_sha256": "sha256:6226c8ee2cc8085820dcaca40d6d5216de7dcbb291d7c373b36e9818f4002b3c"
+      },
+      {
+        "id": "CONV-017",
+        "installed_path": ".agents/skills/conv-benchmark-corpus-governance/SKILL.md",
+        "installed_sha256": "sha256:f0ee562497129feccb15def41c23ce985afa0f4e307649296c3ffd678b716439",
+        "interface_sha256": "sha256:2c7bea795374ab5910a7a7ec51a8878e0a23c6f9f1987f7da30932bba2be7b0f",
+        "layer": "implementation",
+        "name": "conv-benchmark-corpus-governance",
+        "source_path": "elmos-product-convergence-reference-skills/.agents/skills/conv-benchmark-corpus-governance/SKILL.md",
+        "source_sha256": "sha256:f0ee562497129feccb15def41c23ce985afa0f4e307649296c3ffd678b716439"
+      },
+      {
+        "id": "CONV-018",
+        "installed_path": ".agents/skills/conv-maintainability-gate/SKILL.md",
+        "installed_sha256": "sha256:5cf3af055a15011ee1481681df75eebc3fdd5feba7529a2827dbf4dd7b7371af",
+        "interface_sha256": "sha256:7a27e818e732f1119a935850378aa877c4c684e181af59a9b76ba3de1a28332f",
+        "layer": "implementation",
+        "name": "conv-maintainability-gate",
+        "source_path": "elmos-product-convergence-reference-skills/.agents/skills/conv-maintainability-gate/SKILL.md",
+        "source_sha256": "sha256:5cf3af055a15011ee1481681df75eebc3fdd5feba7529a2827dbf4dd7b7371af"
+      },
+      {
+        "id": "CONV-019",
+        "installed_path": ".agents/skills/conv-reference-route-acceptance-profile/SKILL.md",
+        "installed_sha256": "sha256:11f0f88919f5d22bb6fbf9a32f008334ed4e7d54b4aed46728ed2e3a595cccc5",
+        "interface_sha256": "sha256:d13623860c0429f2fa81c186a312898c8c37db05ca4728381ce159083289a6a0",
+        "layer": "implementation",
+        "name": "conv-reference-route-acceptance-profile",
+        "source_path": "elmos-product-convergence-reference-skills/.agents/skills/conv-reference-route-acceptance-profile/SKILL.md",
+        "source_sha256": "sha256:11f0f88919f5d22bb6fbf9a32f008334ed4e7d54b4aed46728ed2e3a595cccc5"
+      },
+      {
+        "id": "CONV-020",
+        "installed_path": ".agents/skills/conv-cross-batch-integration-anti-fragmentation/SKILL.md",
+        "installed_sha256": "sha256:402ab9a84e406825a0ac49adbd8c6951175ee8a2333bf6c4ed1d32871c3b9ffc",
+        "interface_sha256": "sha256:e73207b8d624316ffada10504b31a9c8e3b648c2a2da48597c7653748aab2d92",
+        "layer": "implementation",
+        "name": "conv-cross-batch-integration-anti-fragmentation",
+        "source_path": "elmos-product-convergence-reference-skills/.agents/skills/conv-cross-batch-integration-anti-fragmentation/SKILL.md",
+        "source_sha256": "sha256:402ab9a84e406825a0ac49adbd8c6951175ee8a2333bf6c4ed1d32871c3b9ffc"
+      },
+      {
+        "id": "CONV-021",
+        "installed_path": ".agents/skills/conv-product-information-architecture/SKILL.md",
+        "installed_sha256": "sha256:58da7c4947b65e263b68aef6b74ca1987620d4e795bace3f1d07dee500e47178",
+        "interface_sha256": "sha256:209d6804a238fac96f67705d1ca813b7ec7f0e8106fb3e4ceaf4e0f2eff655f9",
+        "layer": "implementation",
+        "name": "conv-product-information-architecture",
+        "source_path": "elmos-product-convergence-reference-skills/.agents/skills/conv-product-information-architecture/SKILL.md",
+        "source_sha256": "sha256:58da7c4947b65e263b68aef6b74ca1987620d4e795bace3f1d07dee500e47178"
+      },
+      {
+        "id": "CONV-022",
+        "installed_path": ".agents/skills/conv-migration-design-studio/SKILL.md",
+        "installed_sha256": "sha256:b1425067915ae886cc9d20390f27137934be148c4751387cbd38e5740767772f",
+        "interface_sha256": "sha256:670a2a03d4af6ce8e65883e5513dd50dc6d99803709bee189bb8532adc8e1808",
+        "layer": "implementation",
+        "name": "conv-migration-design-studio",
+        "source_path": "elmos-product-convergence-reference-skills/.agents/skills/conv-migration-design-studio/SKILL.md",
+        "source_sha256": "sha256:b1425067915ae886cc9d20390f27137934be148c4751387cbd38e5740767772f"
+      },
+      {
+        "id": "CONV-023",
+        "installed_path": ".agents/skills/conv-customer-handoff-operability/SKILL.md",
+        "installed_sha256": "sha256:44adf6a2106f276eaad5e45fbde941c682d575a668ed1674a099eedaad84ffbf",
+        "interface_sha256": "sha256:5cc6ead4841816d4eff8d2fcf2fd7d13094dbd8c0e8418ae6b05f099ab377947",
+        "layer": "implementation",
+        "name": "conv-customer-handoff-operability",
+        "source_path": "elmos-product-convergence-reference-skills/.agents/skills/conv-customer-handoff-operability/SKILL.md",
+        "source_sha256": "sha256:44adf6a2106f276eaad5e45fbde941c682d575a668ed1674a099eedaad84ffbf"
+      },
+      {
+        "id": "CONV-024",
+        "installed_path": ".agents/skills/conv-verified-migrated-workload-metrics/SKILL.md",
+        "installed_sha256": "sha256:80d4ff3cb115101f9f4dc82ee81813a6034de4c808a86b3503f1067bb71b4286",
+        "interface_sha256": "sha256:08d616942b506eb5cd5a27b512ad091a6710cf92f2d617894ac97956a5bf06b1",
+        "layer": "implementation",
+        "name": "conv-verified-migrated-workload-metrics",
+        "source_path": "elmos-product-convergence-reference-skills/.agents/skills/conv-verified-migrated-workload-metrics/SKILL.md",
+        "source_sha256": "sha256:80d4ff3cb115101f9f4dc82ee81813a6034de4c808a86b3503f1067bb71b4286"
+      },
+      {
+        "id": "CONV-025",
+        "installed_path": ".agents/skills/conv-control-plane-modular-monolith/SKILL.md",
+        "installed_sha256": "sha256:9c8e13c028ad15faabd80f9cbac4d990dc346a7d579e707a0b8ac284175dc514",
+        "interface_sha256": "sha256:25f334a763f3eb8de1745eae6055325ac10b13561f08675e06f65e36fe8b042a",
+        "layer": "implementation",
+        "name": "conv-control-plane-modular-monolith",
+        "source_path": "elmos-product-convergence-reference-skills/.agents/skills/conv-control-plane-modular-monolith/SKILL.md",
+        "source_sha256": "sha256:9c8e13c028ad15faabd80f9cbac4d990dc346a7d579e707a0b8ac284175dc514"
+      },
+      {
+        "id": "CONV-026",
+        "installed_path": ".agents/skills/conv-private-runner-reference-implementation/SKILL.md",
+        "installed_sha256": "sha256:70d941f0044dbfc4f9c5f241c94082fa99996cfc96f5b523c9e306dacd2e3495",
+        "interface_sha256": "sha256:cd5ac6cd4cd49efe543807101fad810a8302fb0c2f33421243ddb764318b9bcb",
+        "layer": "implementation",
+        "name": "conv-private-runner-reference-implementation",
+        "source_path": "elmos-product-convergence-reference-skills/.agents/skills/conv-private-runner-reference-implementation/SKILL.md",
+        "source_sha256": "sha256:70d941f0044dbfc4f9c5f241c94082fa99996cfc96f5b523c9e306dacd2e3495"
+      },
+      {
+        "id": "CONV-027",
+        "installed_path": ".agents/skills/conv-deterministic-migration-engine-reference/SKILL.md",
+        "installed_sha256": "sha256:3bbe1e58c65b65d5645f217e79459373d181589d1b1d0405e814fbbd35515928",
+        "interface_sha256": "sha256:44d9909ba6893867543e91b30ec255c70f906564ed864d9e68d7ca617e24521c",
+        "layer": "implementation",
+        "name": "conv-deterministic-migration-engine-reference",
+        "source_path": "elmos-product-convergence-reference-skills/.agents/skills/conv-deterministic-migration-engine-reference/SKILL.md",
+        "source_sha256": "sha256:3bbe1e58c65b65d5645f217e79459373d181589d1b1d0405e814fbbd35515928"
+      },
+      {
+        "id": "CONV-028",
+        "installed_path": ".agents/skills/conv-java-spring-csharp-reference-route/SKILL.md",
+        "installed_sha256": "sha256:e10ca3877f69a9b4da529b08719dacbd35b91d909ad6361ddceacff711e59644",
+        "interface_sha256": "sha256:d1dbc2e9ea6b663d1024a3ff63ee61e480f5794948458c595110336ac7e54677",
+        "layer": "implementation",
+        "name": "conv-java-spring-csharp-reference-route",
+        "source_path": "elmos-product-convergence-reference-skills/.agents/skills/conv-java-spring-csharp-reference-route/SKILL.md",
+        "source_sha256": "sha256:e10ca3877f69a9b4da529b08719dacbd35b91d909ad6361ddceacff711e59644"
+      },
+      {
+        "id": "CONV-029",
+        "installed_path": ".agents/skills/conv-validation-lab-evidence-store/SKILL.md",
+        "installed_sha256": "sha256:6733697082911c9551b6e1a5eaa7415840359f80bf8b188c8914ce7ac649c4f7",
+        "interface_sha256": "sha256:644d396351c174b9b45921b0e577823460418259b562601d67d49f5c2372303f",
+        "layer": "implementation",
+        "name": "conv-validation-lab-evidence-store",
+        "source_path": "elmos-product-convergence-reference-skills/.agents/skills/conv-validation-lab-evidence-store/SKILL.md",
+        "source_sha256": "sha256:6733697082911c9551b6e1a5eaa7415840359f80bf8b188c8914ce7ac649c4f7"
+      },
+      {
+        "id": "CONV-030",
+        "installed_path": ".agents/skills/conv-design-partner-pilot/SKILL.md",
+        "installed_sha256": "sha256:3a1efbd282939be59129d7eb146f314401120f19276e123e4faf70d3f312f181",
+        "interface_sha256": "sha256:81654570d5682f3a4b94227d994a25f9c50d550a7aa75770fc764bec1ca3848a",
+        "layer": "implementation",
+        "name": "conv-design-partner-pilot",
+        "source_path": "elmos-product-convergence-reference-skills/.agents/skills/conv-design-partner-pilot/SKILL.md",
+        "source_sha256": "sha256:3a1efbd282939be59129d7eb146f314401120f19276e123e4faf70d3f312f181"
+      },
+      {
+        "id": "CONV-031",
+        "installed_path": ".agents/skills/conv-edition-commercial-package-simplification/SKILL.md",
+        "installed_sha256": "sha256:685cc5a946a41f0c29da410bb106d13dd24772154cb1f771b05fb286ae451c9e",
+        "interface_sha256": "sha256:d9dc4e584606c06bcc5503ac6e9adbc9a264c25f9a0b3ed8f3dd106ce340af14",
+        "layer": "implementation",
+        "name": "conv-edition-commercial-package-simplification",
+        "source_path": "elmos-product-convergence-reference-skills/.agents/skills/conv-edition-commercial-package-simplification/SKILL.md",
+        "source_sha256": "sha256:685cc5a946a41f0c29da410bb106d13dd24772154cb1f771b05fb286ae451c9e"
+      },
+      {
+        "id": "CONV-032",
+        "installed_path": ".agents/skills/conv-product-convergence-readiness-gate/SKILL.md",
+        "installed_sha256": "sha256:fad959d32d8637b011710ec2f58b126afcc94d55f9588ba436b715764b193b4a",
+        "interface_sha256": "sha256:4f6bda7f72276c48484ed1b17eef406e5cb3a3ef4756d3c9d127510ea9daeda9",
+        "layer": "orchestrator",
+        "name": "conv-product-convergence-readiness-gate",
+        "source_path": "elmos-product-convergence-reference-skills/.agents/skills/conv-product-convergence-readiness-gate/SKILL.md",
+        "source_sha256": "sha256:fad959d32d8637b011710ec2f58b126afcc94d55f9588ba436b715764b193b4a"
+      }
+    ]
+  },
+  "integrated_assets": [
+    {
+      "installed_path": "schemas/product-closure-batch56a/closure-result.schema.json",
+      "sha256": "sha256:f988620ea4670d00ddadd56fe8991663eccb995c7ed78d3a7968cab6eb8487c5",
+      "source_path": "elmos-codex-skills-batch56a-product-closure/schemas/closure-result.schema.json"
+    },
+    {
+      "installed_path": "schemas/product-closure-batch56a/product-closure-gate.schema.json",
+      "sha256": "sha256:f197ec49a790ab3aa166b4e67476f757b016ee5b90d1671783f99c7b0c119eca",
+      "source_path": "elmos-codex-skills-batch56a-product-closure/schemas/product-closure-gate.schema.json"
+    },
+    {
+      "installed_path": "schemas/product-closure-batch56a/skill-registry-entry.schema.json",
+      "sha256": "sha256:882d694aed8bf0d7070bb6f85e379da95e64ca965c33edf086885910d81b7841",
+      "source_path": "elmos-codex-skills-batch56a-product-closure/schemas/skill-registry-entry.schema.json"
+    },
+    {
+      "installed_path": "templates/product-closure-batch56a/product-closure-gate.example.json",
+      "sha256": "sha256:8129591eaa9866da9e6dac11fd7cb1989880ec73cbd6e7d1cd51822c788b3ff6",
+      "source_path": "elmos-codex-skills-batch56a-product-closure/templates/product-closure-gate.example.json"
+    },
+    {
+      "installed_path": "templates/product-closure-batch56a/skill-registry-entry.example.json",
+      "sha256": "sha256:d0164d36b0b3839c5352cb169471ce80143b65f1f59e297f447e78d7fe276c62",
+      "source_path": "elmos-codex-skills-batch56a-product-closure/templates/skill-registry-entry.example.json"
+    },
+    {
+      "installed_path": "docs/product-closure-batch56a/docs/batch-56a-overview.md",
+      "sha256": "sha256:cce9eaca58a1e3b4f3fc36f3f2e40cf52225d2aed0b8f2d27e0c4dd67e75ab16",
+      "source_path": "elmos-codex-skills-batch56a-product-closure/docs/batch-56a-overview.md"
+    },
+    {
+      "installed_path": "docs/product-closure-batch56a/docs/closure-roadmap.md",
+      "sha256": "sha256:24ea61b3f96f6cc4128f5016b332815d058eed89c45c74f879af2b2a323a449d",
+      "source_path": "elmos-codex-skills-batch56a-product-closure/docs/closure-roadmap.md"
+    },
+    {
+      "installed_path": "docs/product-closure-batch56a/docs/product-maturity-kpis.md",
+      "sha256": "sha256:791dc8ecd8bd81080df5cf7250179ef0ea48715f3ed5919dbdf78e27ba73543e",
+      "source_path": "elmos-codex-skills-batch56a-product-closure/docs/product-maturity-kpis.md"
+    },
+    {
+      "installed_path": "docs/product-closure-batch56a/references/source-analysis.md",
+      "sha256": "sha256:cdd7005e001a817042dbecbf1229adf660335367d4827eaaab1780b8db7dca22",
+      "source_path": "elmos-codex-skills-batch56a-product-closure/references/source-analysis.md"
+    },
+    {
+      "installed_path": "schemas/product-convergence/benchmark-corpus.schema.json",
+      "sha256": "sha256:1607b16a6f2c575443acdef436367d741178057ec2bd8f06e8e96b975b325850",
+      "source_path": "elmos-product-convergence-reference-skills/schemas/product-convergence/benchmark-corpus.schema.json"
+    },
+    {
+      "installed_path": "schemas/product-convergence/capability-package.schema.json",
+      "sha256": "sha256:cd937d513f34bfe8b8dd8ac01a64c773c429e2fdfe727aa59c49338b57944130",
+      "source_path": "elmos-product-convergence-reference-skills/schemas/product-convergence/capability-package.schema.json"
+    },
+    {
+      "installed_path": "schemas/product-convergence/capability-registry.schema.json",
+      "sha256": "sha256:6fc492876d88b3fcf286cef28acc818e7e9175abc5fde1b2d1a79bf762b9ea25",
+      "source_path": "elmos-product-convergence-reference-skills/schemas/product-convergence/capability-registry.schema.json"
+    },
+    {
+      "installed_path": "schemas/product-convergence/dependency-graph.schema.json",
+      "sha256": "sha256:01b4902d159bce2253e4993214827b9d4d13ec951c7826b705aeee0b601759e0",
+      "source_path": "elmos-product-convergence-reference-skills/schemas/product-convergence/dependency-graph.schema.json"
+    },
+    {
+      "installed_path": "schemas/product-convergence/evidence-graph.schema.json",
+      "sha256": "sha256:a0fc1668309e821fd8d97513d22c674898f0dd19159f5d93be820571620d46fb",
+      "source_path": "elmos-product-convergence-reference-skills/schemas/product-convergence/evidence-graph.schema.json"
+    },
+    {
+      "installed_path": "schemas/product-convergence/handoff-package.schema.json",
+      "sha256": "sha256:5d5e4d1ca35eb5fd582e047fc06a16f412b583a90c881b7fd137e856ddedb5ce",
+      "source_path": "elmos-product-convergence-reference-skills/schemas/product-convergence/handoff-package.schema.json"
+    },
+    {
+      "installed_path": "schemas/product-convergence/policy-decision.schema.json",
+      "sha256": "sha256:2008ebe61a7b1ae77580979fc8dd3ecba96f9424cd77c35a3d955c6aa16c53c5",
+      "source_path": "elmos-product-convergence-reference-skills/schemas/product-convergence/policy-decision.schema.json"
+    },
+    {
+      "installed_path": "schemas/product-convergence/project-lifecycle.schema.json",
+      "sha256": "sha256:4c7a078dc5495f1551c4313fee21835c96f13df50ab1f5793b7b2a7ade7f3898",
+      "source_path": "elmos-product-convergence-reference-skills/schemas/product-convergence/project-lifecycle.schema.json"
+    },
+    {
+      "installed_path": "schemas/product-convergence/readiness-gate.schema.json",
+      "sha256": "sha256:2c09e3d8df826be57ccdd36ca0bc13dfcb74e9dc0f1e9055b101af201c251bc2",
+      "source_path": "elmos-product-convergence-reference-skills/schemas/product-convergence/readiness-gate.schema.json"
+    },
+    {
+      "installed_path": "schemas/product-convergence/reference-route-plan.schema.json",
+      "sha256": "sha256:1f0b41c90191957429390103c17e247e30cc4e9d930fd0976683cd9a1d6e26fc",
+      "source_path": "elmos-product-convergence-reference-skills/schemas/product-convergence/reference-route-plan.schema.json"
+    },
+    {
+      "installed_path": "schemas/product-convergence/skill-registry.schema.json",
+      "sha256": "sha256:596a9aa444ef71549aaa06d6ffde483b5114fedf87139582a3791beca73a4187",
+      "source_path": "elmos-product-convergence-reference-skills/schemas/product-convergence/skill-registry.schema.json"
+    },
+    {
+      "installed_path": "schemas/product-convergence/workflow-definition.schema.json",
+      "sha256": "sha256:672d0f35df019dff05cd38e35b4ac8a55cda9ac1fcd2026edbb3dfa196bd1374",
+      "source_path": "elmos-product-convergence-reference-skills/schemas/product-convergence/workflow-definition.schema.json"
+    },
+    {
+      "installed_path": "templates/product-convergence/benchmark-corpus.json",
+      "sha256": "sha256:6d73c4aded485206b816b8cdcc02a33875ea2906f5d3225693b23944e88801d6",
+      "source_path": "elmos-product-convergence-reference-skills/templates/product-convergence/benchmark-corpus.json"
+    },
+    {
+      "installed_path": "templates/product-convergence/capability-registry.json",
+      "sha256": "sha256:82589a72a6f7a42ceb3623eae23b5f933309673ff73a05bab857fefc8a7b98c2",
+      "source_path": "elmos-product-convergence-reference-skills/templates/product-convergence/capability-registry.json"
+    },
+    {
+      "installed_path": "templates/product-convergence/convergence-plan.json",
+      "sha256": "sha256:6721b67ce8525df87dc7801967db98098bee3b8d232dd66ad83d5ff2f2aaa9a8",
+      "source_path": "elmos-product-convergence-reference-skills/templates/product-convergence/convergence-plan.json"
+    },
+    {
+      "installed_path": "templates/product-convergence/deferred-scope.json",
+      "sha256": "sha256:7fb5185752c2458699909ac1c92d5d3f5ce6c6d4ef1c55999bcc8faa9be575e8",
+      "source_path": "elmos-product-convergence-reference-skills/templates/product-convergence/deferred-scope.json"
+    },
+    {
+      "installed_path": "templates/product-convergence/dependency-graph.json",
+      "sha256": "sha256:1ddf1d31190da6e68449f240aefa5e9b87896f675196008d26c8ea7431ec8b4c",
+      "source_path": "elmos-product-convergence-reference-skills/templates/product-convergence/dependency-graph.json"
+    },
+    {
+      "installed_path": "templates/product-convergence/evidence-graph.json",
+      "sha256": "sha256:1ddf1d31190da6e68449f240aefa5e9b87896f675196008d26c8ea7431ec8b4c",
+      "source_path": "elmos-product-convergence-reference-skills/templates/product-convergence/evidence-graph.json"
+    },
+    {
+      "installed_path": "templates/product-convergence/handoff-package.json",
+      "sha256": "sha256:5cea2fafac6483601cb28c50d6fdce74c697de8e7036d4abcae1780b447ac365",
+      "source_path": "elmos-product-convergence-reference-skills/templates/product-convergence/handoff-package.json"
+    },
+    {
+      "installed_path": "templates/product-convergence/policy-sample.json",
+      "sha256": "sha256:bd4cc91ec36ef5ab535e2d4acaa4b9c6955b4836d8b5eadd521108d927b78005",
+      "source_path": "elmos-product-convergence-reference-skills/templates/product-convergence/policy-sample.json"
+    },
+    {
+      "installed_path": "templates/product-convergence/product-navigation.json",
+      "sha256": "sha256:8d9437d0a745aa233378a3b5212bfe135dc013210e4ed609118957f34ba5e9e2",
+      "source_path": "elmos-product-convergence-reference-skills/templates/product-convergence/product-navigation.json"
+    },
+    {
+      "installed_path": "templates/product-convergence/project-lifecycle.json",
+      "sha256": "sha256:c37180986d542aa77707df0dc55ceacee8696af121b155d2603f9d0b2e256819",
+      "source_path": "elmos-product-convergence-reference-skills/templates/product-convergence/project-lifecycle.json"
+    },
+    {
+      "installed_path": "templates/product-convergence/readiness-gate.json",
+      "sha256": "sha256:8817148048db5ed4f3a442eede3e81ffb96b323519f9016bb148a34dba6fa5f6",
+      "source_path": "elmos-product-convergence-reference-skills/templates/product-convergence/readiness-gate.json"
+    },
+    {
+      "installed_path": "templates/product-convergence/reference-route-plan.json",
+      "sha256": "sha256:fd077bf75cfcd57f6b1da656a6205301a861a43c3c8ef53c0edbef6593194b5b",
+      "source_path": "elmos-product-convergence-reference-skills/templates/product-convergence/reference-route-plan.json"
+    },
+    {
+      "installed_path": "templates/product-convergence/skill-registry.json",
+      "sha256": "sha256:b636f4ca4bb38737f098288a77075881ea266723b0afa64654cf5d0f27d5e8a7",
+      "source_path": "elmos-product-convergence-reference-skills/templates/product-convergence/skill-registry.json"
+    },
+    {
+      "installed_path": "templates/product-convergence/success-metrics.json",
+      "sha256": "sha256:87afa92253d8cfae47b3276149255dd2faedcc7fa1f45d094e60192bec392903",
+      "source_path": "elmos-product-convergence-reference-skills/templates/product-convergence/success-metrics.json"
+    },
+    {
+      "installed_path": "templates/product-convergence/workflow-definition.json",
+      "sha256": "sha256:2563545d88c43df12f5a4aa815c7f50c8cdb548412debacbbeaef869815deb98",
+      "source_path": "elmos-product-convergence-reference-skills/templates/product-convergence/workflow-definition.json"
+    },
+    {
+      "installed_path": "scripts/product-convergence/common.py",
+      "sha256": "sha256:ef4a7ca630c41cfd4d9b33bd854dfeb260555cf9e0fe198cc46f1d960f319cb6",
+      "source_path": "elmos-product-convergence-reference-skills/scripts/product-convergence/common.py"
+    },
+    {
+      "installed_path": "scripts/product-convergence/compute_checksums.py",
+      "sha256": "sha256:09ea17adad35d43de16f4c9b7631e331501ace2804957a032ef1a9088b06c503",
+      "source_path": "elmos-product-convergence-reference-skills/scripts/product-convergence/compute_checksums.py"
+    },
+    {
+      "installed_path": "scripts/product-convergence/run_convergence_gate.py",
+      "sha256": "sha256:a5b84fc784334f64e7b6c08612843962a1ada2f30ea360d65eac16b5f9d7e3bf",
+      "source_path": "elmos-product-convergence-reference-skills/scripts/product-convergence/run_convergence_gate.py"
+    },
+    {
+      "installed_path": "scripts/product-convergence/scaffold_convergence_workspace.py",
+      "sha256": "sha256:bb4dc167f74b2b3f93699666cbe9c185372745aa535cb6ce79283f8d2d85617a",
+      "source_path": "elmos-product-convergence-reference-skills/scripts/product-convergence/scaffold_convergence_workspace.py"
+    },
+    {
+      "installed_path": "scripts/product-convergence/validate_capability_registry.py",
+      "sha256": "sha256:8553ae96ead74970365a23e21d3c915561573487058996ca8819924d5e5e329f",
+      "source_path": "elmos-product-convergence-reference-skills/scripts/product-convergence/validate_capability_registry.py"
+    },
+    {
+      "installed_path": "scripts/product-convergence/validate_convergence_bundle.py",
+      "sha256": "sha256:d47a1a7def8a762421248593d9e44699aa2a23a84a8649c152778aa212c46a96",
+      "source_path": "elmos-product-convergence-reference-skills/scripts/product-convergence/validate_convergence_bundle.py"
+    },
+    {
+      "installed_path": "scripts/product-convergence/validate_dependency_graph.py",
+      "sha256": "sha256:77d55eeb257af0c9c3746b1caf7469f8e3e683702bf921e9c93aa687c0318ff3",
+      "source_path": "elmos-product-convergence-reference-skills/scripts/product-convergence/validate_dependency_graph.py"
+    },
+    {
+      "installed_path": "scripts/product-convergence/validate_evidence_graph.py",
+      "sha256": "sha256:ba9d3b455e85d4e1b378555349178a6fc87f9f42aec6104b6cce37ba465df3e2",
+      "source_path": "elmos-product-convergence-reference-skills/scripts/product-convergence/validate_evidence_graph.py"
+    },
+    {
+      "installed_path": "scripts/product-convergence/validate_reference_route.py",
+      "sha256": "sha256:6740619b355935a35c8b513b58107d161959f444dd0a6f19d4924db20040aaff",
+      "source_path": "elmos-product-convergence-reference-skills/scripts/product-convergence/validate_reference_route.py"
+    },
+    {
+      "installed_path": "scripts/product-convergence/validate_skill_bundle.py",
+      "sha256": "sha256:6508020f5a446482e91d937dd279f1a075405f583a95700fdf47d9e4547b885c",
+      "source_path": "elmos-product-convergence-reference-skills/scripts/product-convergence/validate_skill_bundle.py"
+    },
+    {
+      "installed_path": "scripts/product-convergence/validate_skill_registry.py",
+      "sha256": "sha256:0f40468b605e92bc062a11e733755070fd981527ceae9f341ef4425e542ec6d7",
+      "source_path": "elmos-product-convergence-reference-skills/scripts/product-convergence/validate_skill_registry.py"
+    },
+    {
+      "installed_path": "tests/product-convergence/test_toolkit.py",
+      "sha256": "sha256:bde9f1b3bbdda4e2aa0aa1982127463c5c31b1d75c1ffdd7b2882a5fa7dd56fa",
+      "source_path": "elmos-product-convergence-reference-skills/tests/product-convergence/test_toolkit.py"
+    },
+    {
+      "installed_path": "docs/product-convergence/CONSOLIDATION_RULES.md",
+      "sha256": "sha256:3b3954e251e83592134c976c84986d1269b6be607ef3104c448386df91a10ee7",
+      "source_path": "elmos-product-convergence-reference-skills/docs/product-convergence/CONSOLIDATION_RULES.md"
+    },
+    {
+      "installed_path": "docs/product-convergence/README.md",
+      "sha256": "sha256:a7c11d469ce598845423788c65c97031c4834590ce55858f410b527d05c87b46",
+      "source_path": "elmos-product-convergence-reference-skills/docs/product-convergence/README.md"
+    },
+    {
+      "installed_path": "docs/product-convergence/REFERENCE_IMPLEMENTATION_ROADMAP.md",
+      "sha256": "sha256:889c6f23f8a73da19c1177bd8ea5bd18e800ddbea042eb258acc371211654699",
+      "source_path": "elmos-product-convergence-reference-skills/docs/product-convergence/REFERENCE_IMPLEMENTATION_ROADMAP.md"
+    },
+    {
+      "installed_path": "docs/product-convergence/TARGET_ARCHITECTURE.md",
+      "sha256": "sha256:14aeabe037ce0681bc8abf01f0bbee44e96db4e0b7f303711257a508b25b623b",
+      "source_path": "elmos-product-convergence-reference-skills/docs/product-convergence/TARGET_ARCHITECTURE.md"
+    },
+    {
+      "installed_path": "docs/product-convergence/VERIFIED_MIGRATED_WORKLOAD.md",
+      "sha256": "sha256:e6265c2464d3415c92833a50afc4682260cb87ab6492f828b1485272be10c499",
+      "source_path": "elmos-product-convergence-reference-skills/docs/product-convergence/VERIFIED_MIGRATED_WORKLOAD.md"
+    },
+    {
+      "installed_path": "product-convergence/benchmark-corpus.json",
+      "sha256": "sha256:6d73c4aded485206b816b8cdcc02a33875ea2906f5d3225693b23944e88801d6",
+      "source_path": "elmos-product-convergence-reference-skills/product-convergence/benchmark-corpus.json"
+    },
+    {
+      "installed_path": "product-convergence/capability-registry.json",
+      "sha256": "sha256:82589a72a6f7a42ceb3623eae23b5f933309673ff73a05bab857fefc8a7b98c2",
+      "source_path": "elmos-product-convergence-reference-skills/product-convergence/capability-registry.json"
+    },
+    {
+      "installed_path": "product-convergence/convergence-plan.json",
+      "sha256": "sha256:6721b67ce8525df87dc7801967db98098bee3b8d232dd66ad83d5ff2f2aaa9a8",
+      "source_path": "elmos-product-convergence-reference-skills/product-convergence/convergence-plan.json"
+    },
+    {
+      "installed_path": "product-convergence/deferred-scope.json",
+      "sha256": "sha256:7fb5185752c2458699909ac1c92d5d3f5ce6c6d4ef1c55999bcc8faa9be575e8",
+      "source_path": "elmos-product-convergence-reference-skills/product-convergence/deferred-scope.json"
+    },
+    {
+      "installed_path": "product-convergence/dependency-graph.json",
+      "sha256": "sha256:1ddf1d31190da6e68449f240aefa5e9b87896f675196008d26c8ea7431ec8b4c",
+      "source_path": "elmos-product-convergence-reference-skills/product-convergence/dependency-graph.json"
+    },
+    {
+      "installed_path": "product-convergence/evidence-graph.json",
+      "sha256": "sha256:1ddf1d31190da6e68449f240aefa5e9b87896f675196008d26c8ea7431ec8b4c",
+      "source_path": "elmos-product-convergence-reference-skills/product-convergence/evidence-graph.json"
+    },
+    {
+      "installed_path": "product-convergence/handoff-package.json",
+      "sha256": "sha256:5cea2fafac6483601cb28c50d6fdce74c697de8e7036d4abcae1780b447ac365",
+      "source_path": "elmos-product-convergence-reference-skills/product-convergence/handoff-package.json"
+    },
+    {
+      "installed_path": "product-convergence/policy-sample.json",
+      "sha256": "sha256:bd4cc91ec36ef5ab535e2d4acaa4b9c6955b4836d8b5eadd521108d927b78005",
+      "source_path": "elmos-product-convergence-reference-skills/product-convergence/policy-sample.json"
+    },
+    {
+      "installed_path": "product-convergence/product-navigation.json",
+      "sha256": "sha256:8d9437d0a745aa233378a3b5212bfe135dc013210e4ed609118957f34ba5e9e2",
+      "source_path": "elmos-product-convergence-reference-skills/product-convergence/product-navigation.json"
+    },
+    {
+      "installed_path": "product-convergence/project-lifecycle.json",
+      "sha256": "sha256:c37180986d542aa77707df0dc55ceacee8696af121b155d2603f9d0b2e256819",
+      "source_path": "elmos-product-convergence-reference-skills/product-convergence/project-lifecycle.json"
+    },
+    {
+      "installed_path": "product-convergence/readiness-gate.json",
+      "sha256": "sha256:8817148048db5ed4f3a442eede3e81ffb96b323519f9016bb148a34dba6fa5f6",
+      "source_path": "elmos-product-convergence-reference-skills/product-convergence/readiness-gate.json"
+    },
+    {
+      "installed_path": "product-convergence/reference-route-plan.json",
+      "sha256": "sha256:fd077bf75cfcd57f6b1da656a6205301a861a43c3c8ef53c0edbef6593194b5b",
+      "source_path": "elmos-product-convergence-reference-skills/product-convergence/reference-route-plan.json"
+    },
+    {
+      "installed_path": "product-convergence/results/convergence-gate-result.json",
+      "sha256": "sha256:3fd18bf7ee0014668af4a6acec9b4a2ac550dd755b1aab2e82d3ed39f887006a",
+      "source_path": "elmos-product-convergence-reference-skills/product-convergence/results/convergence-gate-result.json"
+    },
+    {
+      "installed_path": "product-convergence/skill-registry.json",
+      "sha256": "sha256:b636f4ca4bb38737f098288a77075881ea266723b0afa64654cf5d0f27d5e8a7",
+      "source_path": "elmos-product-convergence-reference-skills/product-convergence/skill-registry.json"
+    },
+    {
+      "installed_path": "product-convergence/success-metrics.json",
+      "sha256": "sha256:87afa92253d8cfae47b3276149255dd2faedcc7fa1f45d094e60192bec392903",
+      "source_path": "elmos-product-convergence-reference-skills/product-convergence/success-metrics.json"
+    },
+    {
+      "installed_path": "product-convergence/workflow-definition.json",
+      "sha256": "sha256:2563545d88c43df12f5a4aa815c7f50c8cdb548412debacbbeaef869815deb98",
+      "source_path": "elmos-product-convergence-reference-skills/product-convergence/workflow-definition.json"
+    }
+  ],
+  "namespace_policy": {
+    "batch56a": "Product closure reviewed-design overlay; not Migration M56",
+    "convergence": "Repository implementation overlay; does not add a feature Batch"
+  },
+  "schema_version": "1.0"
+}

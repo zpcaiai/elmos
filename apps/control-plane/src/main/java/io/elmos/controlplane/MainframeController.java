@@ -37,6 +37,6 @@ public final class MainframeController {
     @ExceptionHandler({IllegalArgumentException.class, IllegalStateException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     Map<String,Object> badRequest(RuntimeException error) {
-        return Map.of("errorCode", "MAINFRAME_REQUEST_REJECTED", "message", error.getMessage(), "retryable", false);
+        return Map.of("errorCode", "MAINFRAME_REQUEST_REJECTED", "message", "The mainframe request was rejected by its contract.", "retryable", false);
     }
 }

@@ -1,0 +1,352 @@
+{
+  "batch": 100,
+  "title": "Hardened Runner Fabric Pack",
+  "subject": "secure runner enrollment, workload identity, mTLS, attestation, task signatures, sandboxing, isolation, egress, secrets, quotas, signed artifacts, fleet routing, revocation and certification",
+  "skill_count": 16,
+  "local_id_range": [
+    "B100-S01",
+    "B100-S16"
+  ],
+  "global_id_policy": "unassigned-to-avoid-collision-with-existing-batch81-96; use scripts/remap_global_ids.py after resolving the installed global range",
+  "skills": [
+    {
+      "id": "B100-S01",
+      "global_id": null,
+      "batch": 100,
+      "name": "b100-runner-enrollment-workload-identity",
+      "title": "Runner Enrollment and Workload Identity",
+      "purpose": "Enroll runners with unique short-lived workload identities and explicit tenant or fleet ownership.",
+      "path": "agent-skills/runtime/b100-runner-enrollment-workload-identity/SKILL.md",
+      "catalog_path": "skills/batch-100/B100-S01-runner-enrollment-workload-identity.md",
+      "depends_on": [
+        "B99-S16"
+      ],
+      "outputs": [
+        "runner_identity.json",
+        "enrollment_record.json",
+        "identity_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "e46783df452f653e7b90c4a29891a1b79e743804092d5164fe0565cd097626e3"
+    },
+    {
+      "id": "B100-S02",
+      "global_id": null,
+      "batch": 100,
+      "name": "b100-runner-mtls-channel",
+      "title": "Runner mTLS Channel",
+      "purpose": "Establish mutually authenticated, rotated and policy-bound runner control channels.",
+      "path": "agent-skills/runtime/b100-runner-mtls-channel/SKILL.md",
+      "catalog_path": "skills/batch-100/B100-S02-runner-mtls-channel.md",
+      "depends_on": [
+        "B100-S01"
+      ],
+      "outputs": [
+        "mtls_profile.json",
+        "certificate_inventory.json",
+        "channel_test_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "ee801648a57729552e70eedd4c51c26187949f71484cc80ad8987b8362e19db9"
+    },
+    {
+      "id": "B100-S03",
+      "global_id": null,
+      "batch": 100,
+      "name": "b100-runner-attestation-posture",
+      "title": "Runner Attestation and Posture",
+      "purpose": "Attest runner software, image, kernel, configuration and policy posture before sensitive tasks.",
+      "path": "agent-skills/runtime/b100-runner-attestation-posture/SKILL.md",
+      "catalog_path": "skills/batch-100/B100-S03-runner-attestation-posture.md",
+      "depends_on": [
+        "B100-S02"
+      ],
+      "outputs": [
+        "attestation_statement.json",
+        "posture_result.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "5648c46141b22ea1270bc8786a3856ae275eff5f516332331d894e4623de2976"
+    },
+    {
+      "id": "B100-S04",
+      "global_id": null,
+      "batch": 100,
+      "name": "b100-signed-task-envelope-verifier",
+      "title": "Signed Task Envelope Verifier",
+      "purpose": "Verify task signature, nonce, audience, scope, expiry and capability manifest before claim.",
+      "path": "agent-skills/runtime/b100-signed-task-envelope-verifier/SKILL.md",
+      "catalog_path": "skills/batch-100/B100-S04-signed-task-envelope-verifier.md",
+      "depends_on": [
+        "B100-S03",
+        "B98-S05"
+      ],
+      "outputs": [
+        "task_envelope.schema.json",
+        "verification_result.json",
+        "replay_test_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "a9b1d024a6df28038360f00e08fa3e172bcbd764e5950b92fc894843ea06903f"
+    },
+    {
+      "id": "B100-S05",
+      "global_id": null,
+      "batch": 100,
+      "name": "b100-sandbox-profile-selector",
+      "title": "Sandbox Profile Selector",
+      "purpose": "Select container, microVM, VM, device or isolated-host profiles based on risk and tool requirements.",
+      "path": "agent-skills/runtime/b100-sandbox-profile-selector/SKILL.md",
+      "catalog_path": "skills/batch-100/B100-S05-sandbox-profile-selector.md",
+      "depends_on": [
+        "B100-S04"
+      ],
+      "outputs": [
+        "sandbox_selection.json",
+        "profile_matrix.json",
+        "selection_test_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "1d9de72c34695d1816afcb7bfccb7518a58d433740470a5f83664474c8a28acc"
+    },
+    {
+      "id": "B100-S06",
+      "global_id": null,
+      "batch": 100,
+      "name": "b100-workspace-filesystem-isolation",
+      "title": "Workspace and Filesystem Isolation",
+      "purpose": "Create per-task isolated workspaces with safe mounts, path controls, cleanup and residue detection.",
+      "path": "agent-skills/runtime/b100-workspace-filesystem-isolation/SKILL.md",
+      "catalog_path": "skills/batch-100/B100-S06-workspace-filesystem-isolation.md",
+      "depends_on": [
+        "B100-S05"
+      ],
+      "outputs": [
+        "workspace_manifest.json",
+        "mount_policy.json",
+        "cleanup_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "ab0a0b01c3985d4d6115b38dfbc2723a34c217cacbf6230d0223e1e2de4f1c5e"
+    },
+    {
+      "id": "B100-S07",
+      "global_id": null,
+      "batch": 100,
+      "name": "b100-process-execution-allowlist",
+      "title": "Process Execution Allowlist",
+      "purpose": "Execute only inspected, declared and policy-authorized commands without arbitrary shell escape.",
+      "path": "agent-skills/runtime/b100-process-execution-allowlist/SKILL.md",
+      "catalog_path": "skills/batch-100/B100-S07-process-execution-allowlist.md",
+      "depends_on": [
+        "B100-S06"
+      ],
+      "outputs": [
+        "process_policy.json",
+        "command_trace.json",
+        "process_test_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "e2bf48596d00000f1d641fdfc0665fc614a94975868db74b7296a925868a4a2e"
+    },
+    {
+      "id": "B100-S08",
+      "global_id": null,
+      "batch": 100,
+      "name": "b100-network-egress-control",
+      "title": "Network Egress Control",
+      "purpose": "Apply default-deny DNS, IP, port, protocol and identity-aware egress controls per task.",
+      "path": "agent-skills/runtime/b100-network-egress-control/SKILL.md",
+      "catalog_path": "skills/batch-100/B100-S08-network-egress-control.md",
+      "depends_on": [
+        "B100-S07"
+      ],
+      "outputs": [
+        "egress_policy.json",
+        "network_trace.json",
+        "egress_test_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "3e0f21fdb76157fd1b96fe820a5fff2e5c0547412ade9851917d9c17d930333d"
+    },
+    {
+      "id": "B100-S09",
+      "global_id": null,
+      "batch": 100,
+      "name": "b100-secret-broker-redaction",
+      "title": "Secret Broker and Redaction",
+      "purpose": "Inject task-scoped secrets by reference, redact all surfaces and revoke immediately after use.",
+      "path": "agent-skills/runtime/b100-secret-broker-redaction/SKILL.md",
+      "catalog_path": "skills/batch-100/B100-S09-secret-broker-redaction.md",
+      "depends_on": [
+        "B100-S08"
+      ],
+      "outputs": [
+        "secret_lease.json",
+        "redaction_report.json",
+        "revocation_evidence.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "f4522e0633b6aa5e3f287024ee82420d52f879ccf20000b259754841c1bb54e9"
+    },
+    {
+      "id": "B100-S10",
+      "global_id": null,
+      "batch": 100,
+      "name": "b100-resource-quota-enforcer",
+      "title": "Resource Quota Enforcer",
+      "purpose": "Enforce CPU, memory, disk, inode, process, network and wall-clock budgets against hostile workloads.",
+      "path": "agent-skills/runtime/b100-resource-quota-enforcer/SKILL.md",
+      "catalog_path": "skills/batch-100/B100-S10-resource-quota-enforcer.md",
+      "depends_on": [
+        "B100-S09"
+      ],
+      "outputs": [
+        "resource_profile.json",
+        "usage_report.json",
+        "quota_test_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "e50d478c8df8e70095f8ad6f1dc37db6b7cdb6fe3899903fe04b0d63bb62d97b"
+    },
+    {
+      "id": "B100-S11",
+      "global_id": null,
+      "batch": 100,
+      "name": "b100-artifact-signing-upload",
+      "title": "Artifact Signing and Upload",
+      "purpose": "Hash, sign, scan and upload artifacts through content-addressed, tenant-isolated channels.",
+      "path": "agent-skills/runtime/b100-artifact-signing-upload/SKILL.md",
+      "catalog_path": "skills/batch-100/B100-S11-artifact-signing-upload.md",
+      "depends_on": [
+        "B100-S10"
+      ],
+      "outputs": [
+        "artifact_manifest.json",
+        "signature_bundle.json",
+        "upload_receipt.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "60a23b2325b5c4b1f734e8b79715f05aee46573d94a04bb974a817b0a981958c"
+    },
+    {
+      "id": "B100-S12",
+      "global_id": null,
+      "batch": 100,
+      "name": "b100-runner-lease-cancel-protocol",
+      "title": "Runner Lease and Cancel Protocol",
+      "purpose": "Coordinate task leases, heartbeat, cancellation, result fencing and stale runner behavior.",
+      "path": "agent-skills/runtime/b100-runner-lease-cancel-protocol/SKILL.md",
+      "catalog_path": "skills/batch-100/B100-S12-runner-lease-cancel-protocol.md",
+      "depends_on": [
+        "B100-S11",
+        "B99-S04",
+        "B99-S07"
+      ],
+      "outputs": [
+        "runner_lease.json",
+        "cancel_trace.json",
+        "protocol_test_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "aee3637fd34f34d066be9217899afb92fec33bdebc7a3edebd56df4ed8a1a53b"
+    },
+    {
+      "id": "B100-S13",
+      "global_id": null,
+      "batch": 100,
+      "name": "b100-fleet-routing-capability-match",
+      "title": "Fleet Routing and Capability Match",
+      "purpose": "Route tasks to compatible, healthy and authorized runners by platform, toolchain, trust and locality.",
+      "path": "agent-skills/runtime/b100-fleet-routing-capability-match/SKILL.md",
+      "catalog_path": "skills/batch-100/B100-S13-fleet-routing-capability-match.md",
+      "depends_on": [
+        "B100-S12"
+      ],
+      "outputs": [
+        "routing_decision.json",
+        "fleet_inventory.json",
+        "routing_test_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "3c5e7a709f0e9fd66bffe4bba8bd228a3a66eef05e68f6691a21acb99f8f0afd"
+    },
+    {
+      "id": "B100-S14",
+      "global_id": null,
+      "batch": 100,
+      "name": "b100-runner-upgrade-drain",
+      "title": "Runner Upgrade and Drain",
+      "purpose": "Patch runners safely through staged rollout, drain, rollback and version compatibility checks.",
+      "path": "agent-skills/runtime/b100-runner-upgrade-drain/SKILL.md",
+      "catalog_path": "skills/batch-100/B100-S14-runner-upgrade-drain.md",
+      "depends_on": [
+        "B100-S13"
+      ],
+      "outputs": [
+        "upgrade_plan.json",
+        "drain_report.json",
+        "rollback_evidence.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "a3d8c168b6d8ec095430409556d869dd4d3e39e5487d149e1dbefe951528bd98"
+    },
+    {
+      "id": "B100-S15",
+      "global_id": null,
+      "batch": 100,
+      "name": "b100-runner-quarantine-revocation",
+      "title": "Runner Quarantine and Revocation",
+      "purpose": "Quarantine compromised or unhealthy runners, revoke credentials and preserve forensic evidence.",
+      "path": "agent-skills/runtime/b100-runner-quarantine-revocation/SKILL.md",
+      "catalog_path": "skills/batch-100/B100-S15-runner-quarantine-revocation.md",
+      "depends_on": [
+        "B100-S14"
+      ],
+      "outputs": [
+        "quarantine_record.json",
+        "revocation_receipt.json",
+        "forensic_bundle.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "fab885101506a477e4d12defc703049f265272d33d5ca54c6dfe8627ffe99b2b"
+    },
+    {
+      "id": "B100-S16",
+      "global_id": null,
+      "batch": 100,
+      "name": "b100-runner-fabric-certification-gate",
+      "title": "Runner Fabric Certification Gate",
+      "purpose": "Certify runner profiles only after identity, attestation, isolation, malicious workload, cancellation and recovery tests pass.",
+      "path": "agent-skills/runtime/b100-runner-fabric-certification-gate/SKILL.md",
+      "catalog_path": "skills/batch-100/B100-S16-runner-fabric-certification-gate.md",
+      "depends_on": [
+        "B100-S15",
+        "B99-S16"
+      ],
+      "outputs": [
+        "runner_certification_result.json",
+        "certified_profiles.json",
+        "completion_report.md",
+        "evidence_bundle.json"
+      ],
+      "sha256": "001fbec0f3be12e87fd3d39ac68fa0a55e2ddfda10f1f269ffcb5dc72028503b"
+    }
+  ],
+  "version": "1.0.1-repository.1"
+}

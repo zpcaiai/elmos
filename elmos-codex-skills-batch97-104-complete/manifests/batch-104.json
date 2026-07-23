@@ -1,0 +1,352 @@
+{
+  "batch": 104,
+  "title": "Real World Product Certification Pack",
+  "subject": "certify ELMOS as a product using governed corpora, representative environments, clean-room and scale benchmarks, fault injection, red-team security, rollback, DR, customer pilots, SLOs, cost, support and release board evidence",
+  "skill_count": 16,
+  "local_id_range": [
+    "B104-S01",
+    "B104-S16"
+  ],
+  "global_id_policy": "unassigned-to-avoid-collision-with-existing-batch81-96; use scripts/remap_global_ids.py after resolving the installed global range",
+  "skills": [
+    {
+      "id": "B104-S01",
+      "global_id": null,
+      "batch": 104,
+      "name": "b104-certification-corpus-governance",
+      "title": "Certification Corpus Governance",
+      "purpose": "Govern representative public, synthetic and customer-approved repositories with licensing, privacy and contamination controls.",
+      "path": "agent-skills/runtime/b104-certification-corpus-governance/SKILL.md",
+      "catalog_path": "skills/batch-104/B104-S01-certification-corpus-governance.md",
+      "depends_on": [
+        "B103-S16"
+      ],
+      "outputs": [
+        "corpus_registry.json",
+        "license_report.json",
+        "contamination_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "bdb383e34699386a48f661f4d7dc39a40f031d80d2202248c230e1f98d7f9d83"
+    },
+    {
+      "id": "B104-S02",
+      "global_id": null,
+      "batch": 104,
+      "name": "b104-representative-repository-selection",
+      "title": "Representative Repository Selection",
+      "purpose": "Select repositories by language, framework, size, topology, dependency, quality and failure characteristics.",
+      "path": "agent-skills/runtime/b104-representative-repository-selection/SKILL.md",
+      "catalog_path": "skills/batch-104/B104-S02-representative-repository-selection.md",
+      "depends_on": [
+        "B104-S01"
+      ],
+      "outputs": [
+        "repository_sample.json",
+        "coverage_matrix.json",
+        "selection_rationale.md",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "33924cea37f4888a02569739e3eaf602942e2e097822bd21b51e2b26753466ff"
+    },
+    {
+      "id": "B104-S03",
+      "global_id": null,
+      "batch": 104,
+      "name": "b104-certification-environment-matrix",
+      "title": "Certification Environment Matrix",
+      "purpose": "Define and provision supported OS, architecture, runtime, database, container, cluster, CI and cloud matrices.",
+      "path": "agent-skills/runtime/b104-certification-environment-matrix/SKILL.md",
+      "catalog_path": "skills/batch-104/B104-S03-certification-environment-matrix.md",
+      "depends_on": [
+        "B104-S02"
+      ],
+      "outputs": [
+        "environment_matrix.json",
+        "provisioning_plan.json",
+        "matrix_readiness.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "8c5a4a064d4de3c667fe67c26246e4a8628f5f3b2876c392c87ca75578704a50"
+    },
+    {
+      "id": "B104-S04",
+      "global_id": null,
+      "batch": 104,
+      "name": "b104-clean-room-end-to-end-benchmark",
+      "title": "Clean Room End to End Benchmark",
+      "purpose": "Run repository-to-report, patch, build, test, PR, evidence and rollback from empty trusted environments.",
+      "path": "agent-skills/runtime/b104-clean-room-end-to-end-benchmark/SKILL.md",
+      "catalog_path": "skills/batch-104/B104-S04-clean-room-end-to-end-benchmark.md",
+      "depends_on": [
+        "B104-S03",
+        "B101-S16",
+        "B102-S16",
+        "B103-S16"
+      ],
+      "outputs": [
+        "clean_room_results.json",
+        "run_artifacts/",
+        "benchmark_report.md",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "ece9fcf0fa93b826e970ea04640cb420b693d16f6f9d806e2589ed6d10300792"
+    },
+    {
+      "id": "B104-S05",
+      "global_id": null,
+      "batch": 104,
+      "name": "b104-portfolio-scale-benchmark",
+      "title": "Portfolio Scale Benchmark",
+      "purpose": "Measure thousand-repository and million-line scheduling, storage, runner, graph, evidence and control-plane behavior.",
+      "path": "agent-skills/runtime/b104-portfolio-scale-benchmark/SKILL.md",
+      "catalog_path": "skills/batch-104/B104-S05-portfolio-scale-benchmark.md",
+      "depends_on": [
+        "B104-S04"
+      ],
+      "outputs": [
+        "scale_results.json",
+        "capacity_model.json",
+        "bottleneck_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "4ce01030623d569f3799fdc30b380f50c91c15953f4acbc9d091d1d44aacefd5"
+    },
+    {
+      "id": "B104-S06",
+      "global_id": null,
+      "batch": 104,
+      "name": "b104-fault-injection-resilience-campaign",
+      "title": "Fault Injection and Resilience Campaign",
+      "purpose": "Inject runner death, network loss, provider limits, registry failure, database locks, queue duplication and budget exhaustion.",
+      "path": "agent-skills/runtime/b104-fault-injection-resilience-campaign/SKILL.md",
+      "catalog_path": "skills/batch-104/B104-S06-fault-injection-resilience-campaign.md",
+      "depends_on": [
+        "B104-S05"
+      ],
+      "outputs": [
+        "fault_campaign.json",
+        "fault_results.json",
+        "residual_risk.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "afd305c0b9ed314abdb6e044c5fa0ee902005aae4100c09d8c760ba3b5c0bdfc"
+    },
+    {
+      "id": "B104-S07",
+      "global_id": null,
+      "batch": 104,
+      "name": "b104-security-red-team-campaign",
+      "title": "Security Red Team Campaign",
+      "purpose": "Attack repository ingestion, prompts, sandboxes, secrets, supply chain, tenancy, APIs, CI and evidence gates.",
+      "path": "agent-skills/runtime/b104-security-red-team-campaign/SKILL.md",
+      "catalog_path": "skills/batch-104/B104-S07-security-red-team-campaign.md",
+      "depends_on": [
+        "B104-S06"
+      ],
+      "outputs": [
+        "red_team_plan.json",
+        "security_findings.json",
+        "remediation_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "8f78b0cd206570007a577b5287e5951aceffec869d6fcd123cbd53326c5298f9"
+    },
+    {
+      "id": "B104-S08",
+      "global_id": null,
+      "batch": 104,
+      "name": "b104-upgrade-rollback-certification",
+      "title": "Upgrade and Rollback Certification",
+      "purpose": "Certify ELMOS Core, Skill, schema, workflow, runner and route upgrades with rollback and in-flight compatibility.",
+      "path": "agent-skills/runtime/b104-upgrade-rollback-certification/SKILL.md",
+      "catalog_path": "skills/batch-104/B104-S08-upgrade-rollback-certification.md",
+      "depends_on": [
+        "B104-S07"
+      ],
+      "outputs": [
+        "upgrade_results.json",
+        "rollback_results.json",
+        "compatibility_matrix.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "6798d4c525cfce33b9029ff7c67433d203ce0756b650a455228900de6f8ce17f"
+    },
+    {
+      "id": "B104-S09",
+      "global_id": null,
+      "batch": 104,
+      "name": "b104-disaster-recovery-replay-certification",
+      "title": "Disaster Recovery and Replay Certification",
+      "purpose": "Prove backup, restore, regional recovery, workflow replay and external-effect reconciliation.",
+      "path": "agent-skills/runtime/b104-disaster-recovery-replay-certification/SKILL.md",
+      "catalog_path": "skills/batch-104/B104-S09-disaster-recovery-replay-certification.md",
+      "depends_on": [
+        "B104-S08"
+      ],
+      "outputs": [
+        "dr_plan.json",
+        "restore_results.json",
+        "replay_results.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "b5860e08ba3d9490ee2bf6a06637e24889214af2475209c301b159b7ac042924"
+    },
+    {
+      "id": "B104-S10",
+      "global_id": null,
+      "batch": 104,
+      "name": "b104-customer-pilot-onboarding",
+      "title": "Customer Pilot Onboarding",
+      "purpose": "Onboard pilots with repository access, privacy, route fit, success criteria, support and exit plans.",
+      "path": "agent-skills/runtime/b104-customer-pilot-onboarding/SKILL.md",
+      "catalog_path": "skills/batch-104/B104-S10-customer-pilot-onboarding.md",
+      "depends_on": [
+        "B104-S09"
+      ],
+      "outputs": [
+        "pilot_charter.json",
+        "onboarding_checklist.json",
+        "risk_acceptance.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "95d2749855b28d5e0d5e06dae5f380dfe3438b8704f832f6a9d0cfedf6ba2f96"
+    },
+    {
+      "id": "B104-S11",
+      "global_id": null,
+      "batch": 104,
+      "name": "b104-customer-acceptance-protocol",
+      "title": "Customer Acceptance Protocol",
+      "purpose": "Run customer-observed functional, behavioral, security, performance and operational acceptance.",
+      "path": "agent-skills/runtime/b104-customer-acceptance-protocol/SKILL.md",
+      "catalog_path": "skills/batch-104/B104-S11-customer-acceptance-protocol.md",
+      "depends_on": [
+        "B104-S10"
+      ],
+      "outputs": [
+        "acceptance_plan.json",
+        "acceptance_results.json",
+        "customer_decision.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "fd249a86d8d7fcdf590d8172e84f6398947fbaa8706e63e8381a06cd63aa9122"
+    },
+    {
+      "id": "B104-S12",
+      "global_id": null,
+      "batch": 104,
+      "name": "b104-operational-slo-readiness",
+      "title": "Operational SLO and Readiness",
+      "purpose": "Define and validate availability, latency, durability, recovery, support and evidence freshness SLOs.",
+      "path": "agent-skills/runtime/b104-operational-slo-readiness/SKILL.md",
+      "catalog_path": "skills/batch-104/B104-S12-operational-slo-readiness.md",
+      "depends_on": [
+        "B104-S11"
+      ],
+      "outputs": [
+        "slo_catalog.json",
+        "slo_results.json",
+        "readiness_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "d0c327dce0e9faf87b6457025019378a17a1a53548f9345923ecf10074d9d45f"
+    },
+    {
+      "id": "B104-S13",
+      "global_id": null,
+      "batch": 104,
+      "name": "b104-cost-unit-economics-certification",
+      "title": "Cost and Unit Economics Certification",
+      "purpose": "Measure per-repository, per-LOC, per-runner-hour, per-model and support cost with margin scenarios.",
+      "path": "agent-skills/runtime/b104-cost-unit-economics-certification/SKILL.md",
+      "catalog_path": "skills/batch-104/B104-S13-cost-unit-economics-certification.md",
+      "depends_on": [
+        "B104-S12"
+      ],
+      "outputs": [
+        "cost_model.json",
+        "unit_economics.json",
+        "cost_benchmark.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "ac36a0951b6575fc0ed41b806b416d4d8cd2663f0fb6d6dd29d055cc2de35a36"
+    },
+    {
+      "id": "B104-S14",
+      "global_id": null,
+      "batch": 104,
+      "name": "b104-support-incident-runbook-readiness",
+      "title": "Support Incident and Runbook Readiness",
+      "purpose": "Validate support intake, triage, escalation, status communication, forensic preservation and corrective action.",
+      "path": "agent-skills/runtime/b104-support-incident-runbook-readiness/SKILL.md",
+      "catalog_path": "skills/batch-104/B104-S14-support-incident-runbook-readiness.md",
+      "depends_on": [
+        "B104-S13"
+      ],
+      "outputs": [
+        "support_model.json",
+        "incident_drill_results.json",
+        "runbook_inventory.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "bc40fe9605d77790ac2eb2936fec1789871bb575ffd807dc6c13c2ed267a150d"
+    },
+    {
+      "id": "B104-S15",
+      "global_id": null,
+      "batch": 104,
+      "name": "b104-release-readiness-review",
+      "title": "Release Readiness Review",
+      "purpose": "Aggregate engineering, security, legal, operations, support, cost and customer evidence into a decision packet.",
+      "path": "agent-skills/runtime/b104-release-readiness-review/SKILL.md",
+      "catalog_path": "skills/batch-104/B104-S15-release-readiness-review.md",
+      "depends_on": [
+        "B104-S14"
+      ],
+      "outputs": [
+        "release_packet/",
+        "release_risk_register.json",
+        "readiness_decision.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "74f459457ed67d89d6de71952351507465e8100c9bd4424ef100be4ed11e8aec"
+    },
+    {
+      "id": "B104-S16",
+      "global_id": null,
+      "batch": 104,
+      "name": "b104-product-certification-board-gate",
+      "title": "Product Certification Board Gate",
+      "purpose": "Issue certified, limited, experimental or blocked status for an exact ELMOS release and support matrix.",
+      "path": "agent-skills/runtime/b104-product-certification-board-gate/SKILL.md",
+      "catalog_path": "skills/batch-104/B104-S16-product-certification-board-gate.md",
+      "depends_on": [
+        "B104-S15"
+      ],
+      "outputs": [
+        "product_certification_result.json",
+        "certified_support_matrix.json",
+        "completion_report.md",
+        "evidence_bundle.json"
+      ],
+      "sha256": "744f86c35daec57414516cf142398cab9e0d046695e5d39fba80d44e0e07915a"
+    }
+  ],
+  "version": "1.0.1-repository.1"
+}

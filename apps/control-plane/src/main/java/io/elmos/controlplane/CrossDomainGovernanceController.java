@@ -17,6 +17,6 @@ public final class CrossDomainGovernanceController {
     }
     @ExceptionHandler(IllegalArgumentException.class) @ResponseStatus(HttpStatus.BAD_REQUEST)
     Map<String,Object> badRequest(IllegalArgumentException error) {
-        return Map.of("errorCode", "DOMAIN_GOVERNANCE_REQUEST_REJECTED", "message", error.getMessage(), "retryable", false);
+        return Map.of("errorCode", "DOMAIN_GOVERNANCE_REQUEST_REJECTED", "message", "The cross-domain governance request was rejected by its contract.", "retryable", false);
     }
 }

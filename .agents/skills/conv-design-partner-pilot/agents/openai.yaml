@@ -1,0 +1,4 @@
+interface:
+  display_name: "Conv Design Partner Pilot"
+  short_description: "Run this ELMOS product-convergence Skill with evidence"
+  default_prompt: "Use $conv-design-partner-pilot to execute this ELMOS product-convergence Skill with fail-closed evidence."

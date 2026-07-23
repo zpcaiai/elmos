@@ -1,0 +1,4 @@
+interface:
+  display_name: "Conv Cross Batch Contract Normalization"
+  short_description: "Run this ELMOS product-convergence Skill with evidence"
+  default_prompt: "Use $conv-cross-batch-contract-normalization to execute this ELMOS product-convergence Skill with fail-closed evidence."

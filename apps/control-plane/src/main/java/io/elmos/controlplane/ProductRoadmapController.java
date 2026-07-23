@@ -47,6 +47,6 @@ public final class ProductRoadmapController {
 
     @ExceptionHandler(IllegalArgumentException.class) @ResponseStatus(HttpStatus.BAD_REQUEST)
     Map<String, Object> badRequest(IllegalArgumentException error) {
-        return Map.of("errorCode", "PRODUCT_ROADMAP_REQUEST_REJECTED", "message", error.getMessage(), "retryable", false);
+        return Map.of("errorCode", "PRODUCT_ROADMAP_REQUEST_REJECTED", "message", "The product roadmap request was rejected by its contract.", "retryable", false);
     }
 }

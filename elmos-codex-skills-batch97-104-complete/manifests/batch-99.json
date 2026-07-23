@@ -1,0 +1,350 @@
+{
+  "batch": 99,
+  "title": "Durable Runtime Kernel Pack",
+  "subject": "execute compiled Skills through durable state machines, DAG planning, scheduling, leases, retries, cancellation, compensation, replay, budgets, observability and conservative runtime certification",
+  "skill_count": 16,
+  "local_id_range": [
+    "B99-S01",
+    "B99-S16"
+  ],
+  "global_id_policy": "unassigned-to-avoid-collision-with-existing-batch81-96; use scripts/remap_global_ids.py after resolving the installed global range",
+  "skills": [
+    {
+      "id": "B99-S01",
+      "global_id": null,
+      "batch": 99,
+      "name": "b99-durable-run-state-model",
+      "title": "Durable Run State Model",
+      "purpose": "Define the authoritative run, task, step and effect state machines with legal transitions and terminal semantics.",
+      "path": "agent-skills/runtime/b99-durable-run-state-model/SKILL.md",
+      "catalog_path": "skills/batch-99/B99-S01-durable-run-state-model.md",
+      "depends_on": [
+        "B98-S16"
+      ],
+      "outputs": [
+        "run_state_model.json",
+        "transition_table.json",
+        "model_validation.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "06151bd04c1ca8f607af5304f46d8a9e4e5b8dd301b55a8da0552399fbf57c66"
+    },
+    {
+      "id": "B99-S02",
+      "global_id": null,
+      "batch": 99,
+      "name": "b99-plan-to-dag-compiler",
+      "title": "Plan to DAG Compiler",
+      "purpose": "Compile selected executable Skill contracts into a deterministic dependency-aware execution DAG.",
+      "path": "agent-skills/runtime/b99-plan-to-dag-compiler/SKILL.md",
+      "catalog_path": "skills/batch-99/B99-S02-plan-to-dag-compiler.md",
+      "depends_on": [
+        "B99-S01",
+        "B98-S06",
+        "B98-S13"
+      ],
+      "outputs": [
+        "execution_dag.json",
+        "dag_source_map.json",
+        "dag_validation.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "5143bec29fc11a928a7406e7d7823248e4bff8c028030b1b0e4056613c823b28"
+    },
+    {
+      "id": "B99-S03",
+      "global_id": null,
+      "batch": 99,
+      "name": "b99-durable-scheduler-queue",
+      "title": "Durable Scheduler and Queue",
+      "purpose": "Schedule runnable DAG nodes with persistence, priorities, fairness, backpressure and tenant isolation.",
+      "path": "agent-skills/runtime/b99-durable-scheduler-queue/SKILL.md",
+      "catalog_path": "skills/batch-99/B99-S03-durable-scheduler-queue.md",
+      "depends_on": [
+        "B99-S02"
+      ],
+      "outputs": [
+        "scheduler_policy.json",
+        "queue_metrics.json",
+        "scheduler_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "de9cfb59ac04f571543794f67774de904c58c32e5dc89fb5cadd7cd232f4874d"
+    },
+    {
+      "id": "B99-S04",
+      "global_id": null,
+      "batch": 99,
+      "name": "b99-task-lease-heartbeat",
+      "title": "Task Lease and Heartbeat",
+      "purpose": "Implement exclusive task claims, heartbeat renewal, expiry and safe reclaim without duplicate effects.",
+      "path": "agent-skills/runtime/b99-task-lease-heartbeat/SKILL.md",
+      "catalog_path": "skills/batch-99/B99-S04-task-lease-heartbeat.md",
+      "depends_on": [
+        "B99-S03"
+      ],
+      "outputs": [
+        "lease_protocol.json",
+        "lease_test_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "d0c69d5026c74c67ac1e1eb81814841f402dd5ed48351e531bdaedde6e9e31b4"
+    },
+    {
+      "id": "B99-S05",
+      "global_id": null,
+      "batch": 99,
+      "name": "b99-retry-backoff-policy",
+      "title": "Retry and Backoff Policy",
+      "purpose": "Apply bounded, classified and budget-aware retries without converting deterministic failures into loops.",
+      "path": "agent-skills/runtime/b99-retry-backoff-policy/SKILL.md",
+      "catalog_path": "skills/batch-99/B99-S05-retry-backoff-policy.md",
+      "depends_on": [
+        "B99-S04"
+      ],
+      "outputs": [
+        "retry_policy.json",
+        "retry_trace.json",
+        "policy_test_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "5aa010582212c8e730fcc81785113faae7b3009861109d00c9864d8f892d752b"
+    },
+    {
+      "id": "B99-S06",
+      "global_id": null,
+      "batch": 99,
+      "name": "b99-idempotency-effect-journal",
+      "title": "Idempotency and Effect Journal",
+      "purpose": "Record external effects and enforce idempotency keys, deduplication and reconciliation.",
+      "path": "agent-skills/runtime/b99-idempotency-effect-journal/SKILL.md",
+      "catalog_path": "skills/batch-99/B99-S06-idempotency-effect-journal.md",
+      "depends_on": [
+        "B99-S05",
+        "B98-S07"
+      ],
+      "outputs": [
+        "effect_journal_schema.sql",
+        "idempotency_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "79a9833fe358621f80570a1ebef129c6f220f2875d73edb5214244eff46ac278"
+    },
+    {
+      "id": "B99-S07",
+      "global_id": null,
+      "batch": 99,
+      "name": "b99-cancellation-propagation",
+      "title": "Cancellation Propagation",
+      "purpose": "Propagate user, policy, budget and incident cancellation through workflows, runners and external effects.",
+      "path": "agent-skills/runtime/b99-cancellation-propagation/SKILL.md",
+      "catalog_path": "skills/batch-99/B99-S07-cancellation-propagation.md",
+      "depends_on": [
+        "B99-S06"
+      ],
+      "outputs": [
+        "cancellation_protocol.json",
+        "cancellation_test_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "41d712bae3c590c1143b48c5dd6f28217332305130f6e33f822d442e68c216f1"
+    },
+    {
+      "id": "B99-S08",
+      "global_id": null,
+      "batch": 99,
+      "name": "b99-pause-resume-checkpoint",
+      "title": "Pause Resume and Checkpoint",
+      "purpose": "Persist resumable checkpoints and approval pauses without replaying completed side effects.",
+      "path": "agent-skills/runtime/b99-pause-resume-checkpoint/SKILL.md",
+      "catalog_path": "skills/batch-99/B99-S08-pause-resume-checkpoint.md",
+      "depends_on": [
+        "B99-S07"
+      ],
+      "outputs": [
+        "checkpoint_schema.json",
+        "resume_trace.json",
+        "checkpoint_validation.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "b1499c5d5e43afc164159ad2714c04bcf0a2b44eaef093cdafa2db61bb4eb4ae"
+    },
+    {
+      "id": "B99-S09",
+      "global_id": null,
+      "batch": 99,
+      "name": "b99-saga-compensation-engine",
+      "title": "Saga Compensation Engine",
+      "purpose": "Coordinate compensations for partial cross-system failure while preserving audit and residual-risk truth.",
+      "path": "agent-skills/runtime/b99-saga-compensation-engine/SKILL.md",
+      "catalog_path": "skills/batch-99/B99-S09-saga-compensation-engine.md",
+      "depends_on": [
+        "B99-S08"
+      ],
+      "outputs": [
+        "saga_plan.json",
+        "compensation_result.json",
+        "residual_risk.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "fba32a3753e3eed23b88c1721d5300923f640f1385a8f1915d4b6cccf2bc7481"
+    },
+    {
+      "id": "B99-S10",
+      "global_id": null,
+      "batch": 99,
+      "name": "b99-workflow-versioning-replay",
+      "title": "Workflow Versioning and Replay",
+      "purpose": "Support deterministic workflow code evolution, replay and migration for in-flight runs.",
+      "path": "agent-skills/runtime/b99-workflow-versioning-replay/SKILL.md",
+      "catalog_path": "skills/batch-99/B99-S10-workflow-versioning-replay.md",
+      "depends_on": [
+        "B99-S09"
+      ],
+      "outputs": [
+        "workflow_version_map.json",
+        "replay_report.json",
+        "migration_plan.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "0a56ff44e8e50d54daaa7e52c802cc0d2cca8a8b4e2b42b324574ab2dfa37931"
+    },
+    {
+      "id": "B99-S11",
+      "global_id": null,
+      "batch": 99,
+      "name": "b99-external-effect-outbox-inbox",
+      "title": "External Effect Outbox and Inbox",
+      "purpose": "Provide durable outbox/inbox patterns for messages, webhooks and provider calls with deduplication.",
+      "path": "agent-skills/runtime/b99-external-effect-outbox-inbox/SKILL.md",
+      "catalog_path": "skills/batch-99/B99-S11-external-effect-outbox-inbox.md",
+      "depends_on": [
+        "B99-S10"
+      ],
+      "outputs": [
+        "outbox_schema.sql",
+        "delivery_protocol.json",
+        "delivery_test_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "6cebf01e970e2c317fea0a35acb133ad7e49b588904b5c257e3b284b29a1d246"
+    },
+    {
+      "id": "B99-S12",
+      "global_id": null,
+      "batch": 99,
+      "name": "b99-execution-budget-quota",
+      "title": "Execution Budget and Quota",
+      "purpose": "Enforce time, token, compute, storage, network and external-operation budgets at run and tenant scope.",
+      "path": "agent-skills/runtime/b99-execution-budget-quota/SKILL.md",
+      "catalog_path": "skills/batch-99/B99-S12-execution-budget-quota.md",
+      "depends_on": [
+        "B99-S11"
+      ],
+      "outputs": [
+        "budget_policy.json",
+        "usage_ledger.json",
+        "budget_test_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "125f0fa24f2b47f9517699bca3b24383b4d7e065ca12d831201b3a956357f81b"
+    },
+    {
+      "id": "B99-S13",
+      "global_id": null,
+      "batch": 99,
+      "name": "b99-concurrency-fairness-controller",
+      "title": "Concurrency and Fairness Controller",
+      "purpose": "Control global, tenant, repository and resource-key concurrency with anti-starvation behavior.",
+      "path": "agent-skills/runtime/b99-concurrency-fairness-controller/SKILL.md",
+      "catalog_path": "skills/batch-99/B99-S13-concurrency-fairness-controller.md",
+      "depends_on": [
+        "B99-S12"
+      ],
+      "outputs": [
+        "concurrency_policy.json",
+        "fairness_report.json",
+        "lock_test_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "0d77f6befe1b54f60bc9d16d65cb91d18c711cd95fa3015e46a57a1b7ca70aeb"
+    },
+    {
+      "id": "B99-S14",
+      "global_id": null,
+      "batch": 99,
+      "name": "b99-failure-classification-diagnostics",
+      "title": "Failure Classification and Diagnostics",
+      "purpose": "Classify model, contract, dependency, build, test, runtime, policy, infrastructure and user failures before repair.",
+      "path": "agent-skills/runtime/b99-failure-classification-diagnostics/SKILL.md",
+      "catalog_path": "skills/batch-99/B99-S14-failure-classification-diagnostics.md",
+      "depends_on": [
+        "B99-S13"
+      ],
+      "outputs": [
+        "failure_record.json",
+        "failure_fingerprint.json",
+        "diagnostic_bundle.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "1cf411917a78eb6a5d2596c0549480e2a27fd6a70c80668bcec029d93955369c"
+    },
+    {
+      "id": "B99-S15",
+      "global_id": null,
+      "batch": 99,
+      "name": "b99-runtime-observability-tracing",
+      "title": "Runtime Observability and Tracing",
+      "purpose": "Instrument runs, DAG nodes, runner tasks, tool calls, effects and evidence with correlated telemetry.",
+      "path": "agent-skills/runtime/b99-runtime-observability-tracing/SKILL.md",
+      "catalog_path": "skills/batch-99/B99-S15-runtime-observability-tracing.md",
+      "depends_on": [
+        "B99-S14"
+      ],
+      "outputs": [
+        "telemetry_contract.json",
+        "dashboard_queries.json",
+        "observability_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "52d2293714d3d7cdbe85d01d4096c0b69eae12daff5670f62391f2c11908be48"
+    },
+    {
+      "id": "B99-S16",
+      "global_id": null,
+      "batch": 99,
+      "name": "b99-durable-runtime-certification-gate",
+      "title": "Durable Runtime Certification Gate",
+      "purpose": "Certify runtime behavior only after recovery, retry, cancellation, replay, budget, fairness and failure-injection evidence passes.",
+      "path": "agent-skills/runtime/b99-durable-runtime-certification-gate/SKILL.md",
+      "catalog_path": "skills/batch-99/B99-S16-durable-runtime-certification-gate.md",
+      "depends_on": [
+        "B99-S15",
+        "B98-S16"
+      ],
+      "outputs": [
+        "runtime_certification_result.json",
+        "runtime_release_manifest.json",
+        "completion_report.md",
+        "evidence_bundle.json"
+      ],
+      "sha256": "a9a8e78c6142c163f6fbe8697bdc6e71b648af760b6fbf845662f9e558017662"
+    }
+  ],
+  "version": "1.0.1-repository.1"
+}

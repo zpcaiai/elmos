@@ -1,0 +1,12 @@
+{
+  "skillId": "CLO56A003",
+  "name": "skill-registry-capability-graph-and-resolver",
+  "version": "1.0.0",
+  "maturity": "REVIEWED",
+  "capabilitiesProvided": [
+    "skill.resolve"
+  ],
+  "capabilitiesRequired": [
+    "manifest.read"
+  ]
+}

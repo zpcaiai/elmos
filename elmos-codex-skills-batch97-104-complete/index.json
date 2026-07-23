@@ -1,0 +1,773 @@
+{
+  "package": "elmos-codex-skills-batch97-104-complete",
+  "skills": [
+    {
+      "id": "B97-S01",
+      "name": "b97-legacy-skill-estate-inventory",
+      "batch": 97,
+      "title": "Legacy Skill Estate Inventory"
+    },
+    {
+      "id": "B97-S02",
+      "name": "b97-capability-ontology-foundation",
+      "batch": 97,
+      "title": "Capability Ontology Foundation"
+    },
+    {
+      "id": "B97-S03",
+      "name": "b97-skill-metadata-normalizer",
+      "batch": 97,
+      "title": "Skill Metadata Normalizer"
+    },
+    {
+      "id": "B97-S04",
+      "name": "b97-capability-node-builder",
+      "batch": 97,
+      "title": "Capability Node Builder"
+    },
+    {
+      "id": "B97-S05",
+      "name": "b97-dependency-edge-resolver",
+      "batch": 97,
+      "title": "Dependency Edge Resolver"
+    },
+    {
+      "id": "B97-S06",
+      "name": "b97-conflict-overlap-detector",
+      "batch": 97,
+      "title": "Conflict and Overlap Detector"
+    },
+    {
+      "id": "B97-S07",
+      "name": "b97-lifecycle-deprecation-model",
+      "batch": 97,
+      "title": "Lifecycle and Deprecation Model"
+    },
+    {
+      "id": "B97-S08",
+      "name": "b97-version-compatibility-matrix",
+      "batch": 97,
+      "title": "Version Compatibility Matrix"
+    },
+    {
+      "id": "B97-S09",
+      "name": "b97-ownership-governance-registry",
+      "batch": 97,
+      "title": "Ownership and Governance Registry"
+    },
+    {
+      "id": "B97-S10",
+      "name": "b97-evidence-requirement-graph",
+      "batch": 97,
+      "title": "Evidence Requirement Graph"
+    },
+    {
+      "id": "B97-S11",
+      "name": "b97-tool-runtime-requirement-graph",
+      "batch": 97,
+      "title": "Tool and Runtime Requirement Graph"
+    },
+    {
+      "id": "B97-S12",
+      "name": "b97-route-domain-pack-composer",
+      "batch": 97,
+      "title": "Route and Domain Pack Composer"
+    },
+    {
+      "id": "B97-S13",
+      "name": "b97-capability-graph-query-api",
+      "batch": 97,
+      "title": "Capability Graph Query API"
+    },
+    {
+      "id": "B97-S14",
+      "name": "b97-legacy-estate-migration-planner",
+      "batch": 97,
+      "title": "Legacy Estate Migration Planner"
+    },
+    {
+      "id": "B97-S15",
+      "name": "b97-graph-change-impact-analyzer",
+      "batch": 97,
+      "title": "Graph Change Impact Analyzer"
+    },
+    {
+      "id": "B97-S16",
+      "name": "b97-capability-graph-certification-gate",
+      "batch": 97,
+      "title": "Capability Graph Certification Gate"
+    },
+    {
+      "id": "B98-S01",
+      "name": "b98-executable-skill-contract-schema",
+      "batch": 98,
+      "title": "Executable Skill Contract Schema"
+    },
+    {
+      "id": "B98-S02",
+      "name": "b98-skill-markdown-contract-compiler",
+      "batch": 98,
+      "title": "Skill Markdown Contract Compiler"
+    },
+    {
+      "id": "B98-S03",
+      "name": "b98-input-output-schema-binder",
+      "batch": 98,
+      "title": "Input and Output Schema Binder"
+    },
+    {
+      "id": "B98-S04",
+      "name": "b98-precondition-guard-compiler",
+      "batch": 98,
+      "title": "Precondition and Guard Compiler"
+    },
+    {
+      "id": "B98-S05",
+      "name": "b98-permission-capability-declaration",
+      "batch": 98,
+      "title": "Permission and Capability Declaration"
+    },
+    {
+      "id": "B98-S06",
+      "name": "b98-execution-step-compiler",
+      "batch": 98,
+      "title": "Execution Step Compiler"
+    },
+    {
+      "id": "B98-S07",
+      "name": "b98-rollback-compensation-compiler",
+      "batch": 98,
+      "title": "Rollback and Compensation Compiler"
+    },
+    {
+      "id": "B98-S08",
+      "name": "b98-test-evidence-contract-compiler",
+      "batch": 98,
+      "title": "Test and Evidence Contract Compiler"
+    },
+    {
+      "id": "B98-S09",
+      "name": "b98-deterministic-variable-resolver",
+      "batch": 98,
+      "title": "Deterministic Variable Resolver"
+    },
+    {
+      "id": "B98-S10",
+      "name": "b98-contract-signing-provenance",
+      "batch": 98,
+      "title": "Contract Signing and Provenance"
+    },
+    {
+      "id": "B98-S11",
+      "name": "b98-skill-registry-service",
+      "batch": 98,
+      "title": "Skill Registry Service"
+    },
+    {
+      "id": "B98-S12",
+      "name": "b98-capability-search-ranking",
+      "batch": 98,
+      "title": "Capability Search and Ranking"
+    },
+    {
+      "id": "B98-S13",
+      "name": "b98-dependency-closure-resolver",
+      "batch": 98,
+      "title": "Dependency Closure Resolver"
+    },
+    {
+      "id": "B98-S14",
+      "name": "b98-skill-conflict-arbitrator",
+      "batch": 98,
+      "title": "Skill Conflict Arbitrator"
+    },
+    {
+      "id": "B98-S15",
+      "name": "b98-contract-compatibility-deprecation",
+      "batch": 98,
+      "title": "Contract Compatibility and Deprecation"
+    },
+    {
+      "id": "B98-S16",
+      "name": "b98-executable-contract-certification-gate",
+      "batch": 98,
+      "title": "Executable Contract Certification Gate"
+    },
+    {
+      "id": "B99-S01",
+      "name": "b99-durable-run-state-model",
+      "batch": 99,
+      "title": "Durable Run State Model"
+    },
+    {
+      "id": "B99-S02",
+      "name": "b99-plan-to-dag-compiler",
+      "batch": 99,
+      "title": "Plan to DAG Compiler"
+    },
+    {
+      "id": "B99-S03",
+      "name": "b99-durable-scheduler-queue",
+      "batch": 99,
+      "title": "Durable Scheduler and Queue"
+    },
+    {
+      "id": "B99-S04",
+      "name": "b99-task-lease-heartbeat",
+      "batch": 99,
+      "title": "Task Lease and Heartbeat"
+    },
+    {
+      "id": "B99-S05",
+      "name": "b99-retry-backoff-policy",
+      "batch": 99,
+      "title": "Retry and Backoff Policy"
+    },
+    {
+      "id": "B99-S06",
+      "name": "b99-idempotency-effect-journal",
+      "batch": 99,
+      "title": "Idempotency and Effect Journal"
+    },
+    {
+      "id": "B99-S07",
+      "name": "b99-cancellation-propagation",
+      "batch": 99,
+      "title": "Cancellation Propagation"
+    },
+    {
+      "id": "B99-S08",
+      "name": "b99-pause-resume-checkpoint",
+      "batch": 99,
+      "title": "Pause Resume and Checkpoint"
+    },
+    {
+      "id": "B99-S09",
+      "name": "b99-saga-compensation-engine",
+      "batch": 99,
+      "title": "Saga Compensation Engine"
+    },
+    {
+      "id": "B99-S10",
+      "name": "b99-workflow-versioning-replay",
+      "batch": 99,
+      "title": "Workflow Versioning and Replay"
+    },
+    {
+      "id": "B99-S11",
+      "name": "b99-external-effect-outbox-inbox",
+      "batch": 99,
+      "title": "External Effect Outbox and Inbox"
+    },
+    {
+      "id": "B99-S12",
+      "name": "b99-execution-budget-quota",
+      "batch": 99,
+      "title": "Execution Budget and Quota"
+    },
+    {
+      "id": "B99-S13",
+      "name": "b99-concurrency-fairness-controller",
+      "batch": 99,
+      "title": "Concurrency and Fairness Controller"
+    },
+    {
+      "id": "B99-S14",
+      "name": "b99-failure-classification-diagnostics",
+      "batch": 99,
+      "title": "Failure Classification and Diagnostics"
+    },
+    {
+      "id": "B99-S15",
+      "name": "b99-runtime-observability-tracing",
+      "batch": 99,
+      "title": "Runtime Observability and Tracing"
+    },
+    {
+      "id": "B99-S16",
+      "name": "b99-durable-runtime-certification-gate",
+      "batch": 99,
+      "title": "Durable Runtime Certification Gate"
+    },
+    {
+      "id": "B100-S01",
+      "name": "b100-runner-enrollment-workload-identity",
+      "batch": 100,
+      "title": "Runner Enrollment and Workload Identity"
+    },
+    {
+      "id": "B100-S02",
+      "name": "b100-runner-mtls-channel",
+      "batch": 100,
+      "title": "Runner mTLS Channel"
+    },
+    {
+      "id": "B100-S03",
+      "name": "b100-runner-attestation-posture",
+      "batch": 100,
+      "title": "Runner Attestation and Posture"
+    },
+    {
+      "id": "B100-S04",
+      "name": "b100-signed-task-envelope-verifier",
+      "batch": 100,
+      "title": "Signed Task Envelope Verifier"
+    },
+    {
+      "id": "B100-S05",
+      "name": "b100-sandbox-profile-selector",
+      "batch": 100,
+      "title": "Sandbox Profile Selector"
+    },
+    {
+      "id": "B100-S06",
+      "name": "b100-workspace-filesystem-isolation",
+      "batch": 100,
+      "title": "Workspace and Filesystem Isolation"
+    },
+    {
+      "id": "B100-S07",
+      "name": "b100-process-execution-allowlist",
+      "batch": 100,
+      "title": "Process Execution Allowlist"
+    },
+    {
+      "id": "B100-S08",
+      "name": "b100-network-egress-control",
+      "batch": 100,
+      "title": "Network Egress Control"
+    },
+    {
+      "id": "B100-S09",
+      "name": "b100-secret-broker-redaction",
+      "batch": 100,
+      "title": "Secret Broker and Redaction"
+    },
+    {
+      "id": "B100-S10",
+      "name": "b100-resource-quota-enforcer",
+      "batch": 100,
+      "title": "Resource Quota Enforcer"
+    },
+    {
+      "id": "B100-S11",
+      "name": "b100-artifact-signing-upload",
+      "batch": 100,
+      "title": "Artifact Signing and Upload"
+    },
+    {
+      "id": "B100-S12",
+      "name": "b100-runner-lease-cancel-protocol",
+      "batch": 100,
+      "title": "Runner Lease and Cancel Protocol"
+    },
+    {
+      "id": "B100-S13",
+      "name": "b100-fleet-routing-capability-match",
+      "batch": 100,
+      "title": "Fleet Routing and Capability Match"
+    },
+    {
+      "id": "B100-S14",
+      "name": "b100-runner-upgrade-drain",
+      "batch": 100,
+      "title": "Runner Upgrade and Drain"
+    },
+    {
+      "id": "B100-S15",
+      "name": "b100-runner-quarantine-revocation",
+      "batch": 100,
+      "title": "Runner Quarantine and Revocation"
+    },
+    {
+      "id": "B100-S16",
+      "name": "b100-runner-fabric-certification-gate",
+      "batch": 100,
+      "title": "Runner Fabric Certification Gate"
+    },
+    {
+      "id": "B101-S01",
+      "name": "b101-golden-route-common-contract",
+      "batch": 101,
+      "title": "Golden Route Common Contract"
+    },
+    {
+      "id": "B101-S02",
+      "name": "b101-java-route-discovery-baseline",
+      "batch": 101,
+      "title": "Java Route Discovery and Baseline"
+    },
+    {
+      "id": "B101-S03",
+      "name": "b101-java8-21-modernization-recipe",
+      "batch": 101,
+      "title": "Java 8 to 21 Modernization Recipe"
+    },
+    {
+      "id": "B101-S04",
+      "name": "b101-spring-boot-modernization-route",
+      "batch": 101,
+      "title": "Spring Boot Modernization Route"
+    },
+    {
+      "id": "B101-S05",
+      "name": "b101-java-data-messaging-scheduler-route",
+      "batch": 101,
+      "title": "Java Data Messaging and Scheduler Route"
+    },
+    {
+      "id": "B101-S06",
+      "name": "b101-java-route-verification-pr",
+      "batch": 101,
+      "title": "Java Route Verification and PR"
+    },
+    {
+      "id": "B101-S07",
+      "name": "b101-dotnet-route-discovery-baseline",
+      "batch": 101,
+      "title": ".NET Route Discovery and Baseline"
+    },
+    {
+      "id": "B101-S08",
+      "name": "b101-framework-to-modern-dotnet-route",
+      "batch": 101,
+      "title": ".NET Framework to Modern .NET Route"
+    },
+    {
+      "id": "B101-S09",
+      "name": "b101-aspnet-ef-wcf-modernization-route",
+      "batch": 101,
+      "title": "ASP.NET EF and WCF Modernization Route"
+    },
+    {
+      "id": "B101-S10",
+      "name": "b101-dotnet-route-verification-pr",
+      "batch": 101,
+      "title": ".NET Route Verification and PR"
+    },
+    {
+      "id": "B101-S11",
+      "name": "b101-python-route-discovery-environment",
+      "batch": 101,
+      "title": "Python Route Discovery and Environment"
+    },
+    {
+      "id": "B101-S12",
+      "name": "b101-python2-legacy-upgrade-route",
+      "batch": 101,
+      "title": "Python 2 and Legacy Upgrade Route"
+    },
+    {
+      "id": "B101-S13",
+      "name": "b101-django-flask-modernization-route",
+      "batch": 101,
+      "title": "Django and Flask Modernization Route"
+    },
+    {
+      "id": "B101-S14",
+      "name": "b101-python-data-ml-pipeline-route",
+      "batch": 101,
+      "title": "Python Data and ML Pipeline Route"
+    },
+    {
+      "id": "B101-S15",
+      "name": "b101-python-route-verification-pr",
+      "batch": 101,
+      "title": "Python Route Verification and PR"
+    },
+    {
+      "id": "B101-S16",
+      "name": "b101-golden-route-certification-gate",
+      "batch": 101,
+      "title": "Golden Route Certification Gate"
+    },
+    {
+      "id": "B102-S01",
+      "name": "b102-oracle-registry-governance",
+      "batch": 102,
+      "title": "Oracle Registry and Governance"
+    },
+    {
+      "id": "B102-S02",
+      "name": "b102-characterization-test-miner",
+      "batch": 102,
+      "title": "Characterization Test Miner"
+    },
+    {
+      "id": "B102-S03",
+      "name": "b102-golden-master-capture",
+      "batch": 102,
+      "title": "Golden Master Capture"
+    },
+    {
+      "id": "B102-S04",
+      "name": "b102-differential-execution-harness",
+      "batch": 102,
+      "title": "Differential Execution Harness"
+    },
+    {
+      "id": "B102-S05",
+      "name": "b102-api-contract-equivalence",
+      "batch": 102,
+      "title": "API Contract Equivalence"
+    },
+    {
+      "id": "B102-S06",
+      "name": "b102-data-query-equivalence",
+      "batch": 102,
+      "title": "Data and Query Equivalence"
+    },
+    {
+      "id": "B102-S07",
+      "name": "b102-business-invariant-engine",
+      "batch": 102,
+      "title": "Business Invariant Engine"
+    },
+    {
+      "id": "B102-S08",
+      "name": "b102-messaging-idempotency-equivalence",
+      "batch": 102,
+      "title": "Messaging and Idempotency Equivalence"
+    },
+    {
+      "id": "B102-S09",
+      "name": "b102-transaction-concurrency-equivalence",
+      "batch": 102,
+      "title": "Transaction and Concurrency Equivalence"
+    },
+    {
+      "id": "B102-S10",
+      "name": "b102-time-randomness-environment-control",
+      "batch": 102,
+      "title": "Time Randomness and Environment Control"
+    },
+    {
+      "id": "B102-S11",
+      "name": "b102-performance-resource-equivalence",
+      "batch": 102,
+      "title": "Performance and Resource Equivalence"
+    },
+    {
+      "id": "B102-S12",
+      "name": "b102-security-behavior-equivalence",
+      "batch": 102,
+      "title": "Security Behavior Equivalence"
+    },
+    {
+      "id": "B102-S13",
+      "name": "b102-metamorphic-property-testing",
+      "batch": 102,
+      "title": "Metamorphic and Property Testing"
+    },
+    {
+      "id": "B102-S14",
+      "name": "b102-human-oracle-approval",
+      "batch": 102,
+      "title": "Human Oracle and Approval"
+    },
+    {
+      "id": "B102-S15",
+      "name": "b102-equivalence-evidence-freshness",
+      "batch": 102,
+      "title": "Equivalence Evidence Freshness"
+    },
+    {
+      "id": "B102-S16",
+      "name": "b102-semantic-equivalence-certification-gate",
+      "batch": 102,
+      "title": "Semantic Equivalence Certification Gate"
+    },
+    {
+      "id": "B103-S01",
+      "name": "b103-canonical-evidence-record-schema",
+      "batch": 103,
+      "title": "Canonical Evidence Record Schema"
+    },
+    {
+      "id": "B103-S02",
+      "name": "b103-content-addressed-evidence-store",
+      "batch": 103,
+      "title": "Content Addressed Evidence Store"
+    },
+    {
+      "id": "B103-S03",
+      "name": "b103-evidence-lineage-graph",
+      "batch": 103,
+      "title": "Evidence Lineage Graph"
+    },
+    {
+      "id": "B103-S04",
+      "name": "b103-run-environment-fingerprint",
+      "batch": 103,
+      "title": "Run and Environment Fingerprint"
+    },
+    {
+      "id": "B103-S05",
+      "name": "b103-artifact-provenance-signing",
+      "batch": 103,
+      "title": "Artifact Provenance and Signing"
+    },
+    {
+      "id": "B103-S06",
+      "name": "b103-tool-model-invocation-record",
+      "batch": 103,
+      "title": "Tool and Model Invocation Record"
+    },
+    {
+      "id": "B103-S07",
+      "name": "b103-test-result-normalizer",
+      "batch": 103,
+      "title": "Test Result Normalizer"
+    },
+    {
+      "id": "B103-S08",
+      "name": "b103-approval-waiver-governance",
+      "batch": 103,
+      "title": "Approval and Waiver Governance"
+    },
+    {
+      "id": "B103-S09",
+      "name": "b103-evidence-expiry-invalidation",
+      "batch": 103,
+      "title": "Evidence Expiry and Invalidation"
+    },
+    {
+      "id": "B103-S10",
+      "name": "b103-immutable-audit-ledger",
+      "batch": 103,
+      "title": "Immutable Audit Ledger"
+    },
+    {
+      "id": "B103-S11",
+      "name": "b103-certification-policy-engine",
+      "batch": 103,
+      "title": "Certification Policy Engine"
+    },
+    {
+      "id": "B103-S12",
+      "name": "b103-scoped-certification-state",
+      "batch": 103,
+      "title": "Scoped Certification State"
+    },
+    {
+      "id": "B103-S13",
+      "name": "b103-independent-verifier-workflow",
+      "batch": 103,
+      "title": "Independent Verifier Workflow"
+    },
+    {
+      "id": "B103-S14",
+      "name": "b103-evidence-export-portability",
+      "batch": 103,
+      "title": "Evidence Export and Portability"
+    },
+    {
+      "id": "B103-S15",
+      "name": "b103-assurance-cockpit-read-model",
+      "batch": 103,
+      "title": "Assurance Cockpit Read Model"
+    },
+    {
+      "id": "B103-S16",
+      "name": "b103-anti-fake-certification-gate",
+      "batch": 103,
+      "title": "Anti-Fake Certification Gate"
+    },
+    {
+      "id": "B104-S01",
+      "name": "b104-certification-corpus-governance",
+      "batch": 104,
+      "title": "Certification Corpus Governance"
+    },
+    {
+      "id": "B104-S02",
+      "name": "b104-representative-repository-selection",
+      "batch": 104,
+      "title": "Representative Repository Selection"
+    },
+    {
+      "id": "B104-S03",
+      "name": "b104-certification-environment-matrix",
+      "batch": 104,
+      "title": "Certification Environment Matrix"
+    },
+    {
+      "id": "B104-S04",
+      "name": "b104-clean-room-end-to-end-benchmark",
+      "batch": 104,
+      "title": "Clean Room End to End Benchmark"
+    },
+    {
+      "id": "B104-S05",
+      "name": "b104-portfolio-scale-benchmark",
+      "batch": 104,
+      "title": "Portfolio Scale Benchmark"
+    },
+    {
+      "id": "B104-S06",
+      "name": "b104-fault-injection-resilience-campaign",
+      "batch": 104,
+      "title": "Fault Injection and Resilience Campaign"
+    },
+    {
+      "id": "B104-S07",
+      "name": "b104-security-red-team-campaign",
+      "batch": 104,
+      "title": "Security Red Team Campaign"
+    },
+    {
+      "id": "B104-S08",
+      "name": "b104-upgrade-rollback-certification",
+      "batch": 104,
+      "title": "Upgrade and Rollback Certification"
+    },
+    {
+      "id": "B104-S09",
+      "name": "b104-disaster-recovery-replay-certification",
+      "batch": 104,
+      "title": "Disaster Recovery and Replay Certification"
+    },
+    {
+      "id": "B104-S10",
+      "name": "b104-customer-pilot-onboarding",
+      "batch": 104,
+      "title": "Customer Pilot Onboarding"
+    },
+    {
+      "id": "B104-S11",
+      "name": "b104-customer-acceptance-protocol",
+      "batch": 104,
+      "title": "Customer Acceptance Protocol"
+    },
+    {
+      "id": "B104-S12",
+      "name": "b104-operational-slo-readiness",
+      "batch": 104,
+      "title": "Operational SLO and Readiness"
+    },
+    {
+      "id": "B104-S13",
+      "name": "b104-cost-unit-economics-certification",
+      "batch": 104,
+      "title": "Cost and Unit Economics Certification"
+    },
+    {
+      "id": "B104-S14",
+      "name": "b104-support-incident-runbook-readiness",
+      "batch": 104,
+      "title": "Support Incident and Runbook Readiness"
+    },
+    {
+      "id": "B104-S15",
+      "name": "b104-release-readiness-review",
+      "batch": 104,
+      "title": "Release Readiness Review"
+    },
+    {
+      "id": "B104-S16",
+      "name": "b104-product-certification-board-gate",
+      "batch": 104,
+      "title": "Product Certification Board Gate"
+    }
+  ]
+}

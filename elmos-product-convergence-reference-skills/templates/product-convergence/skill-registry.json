@@ -1,0 +1,452 @@
+{
+  "skills": [
+    {
+      "skill_id": "CONV-001",
+      "name": "conv-product-convergence-orchestrator",
+      "version": "1.0.0",
+      "layer": "orchestrator",
+      "owner": "product-convergence-team",
+      "path": ".agents/skills/conv-product-convergence-orchestrator/SKILL.md",
+      "prerequisites": [],
+      "allowed_tools": [
+        "filesystem",
+        "tests"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "CONV-002",
+      "name": "conv-capability-package-metamodel",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "product-convergence-team",
+      "path": ".agents/skills/conv-capability-package-metamodel/SKILL.md",
+      "prerequisites": [],
+      "allowed_tools": [
+        "filesystem",
+        "tests"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "CONV-003",
+      "name": "conv-capability-dependency-graph",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "product-convergence-team",
+      "path": ".agents/skills/conv-capability-dependency-graph/SKILL.md",
+      "prerequisites": [],
+      "allowed_tools": [
+        "filesystem",
+        "tests"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "CONV-004",
+      "name": "conv-global-project-lifecycle",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "product-convergence-team",
+      "path": ".agents/skills/conv-global-project-lifecycle/SKILL.md",
+      "prerequisites": [],
+      "allowed_tools": [
+        "filesystem",
+        "tests"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "CONV-005",
+      "name": "conv-durable-workflow-runtime",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "product-convergence-team",
+      "path": ".agents/skills/conv-durable-workflow-runtime/SKILL.md",
+      "prerequisites": [],
+      "allowed_tools": [
+        "filesystem",
+        "tests"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "CONV-006",
+      "name": "conv-global-evidence-graph",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "product-convergence-team",
+      "path": ".agents/skills/conv-global-evidence-graph/SKILL.md",
+      "prerequisites": [],
+      "allowed_tools": [
+        "filesystem",
+        "tests"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "CONV-007",
+      "name": "conv-unified-policy-engine",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "product-convergence-team",
+      "path": ".agents/skills/conv-unified-policy-engine/SKILL.md",
+      "prerequisites": [],
+      "allowed_tools": [
+        "filesystem",
+        "tests"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "CONV-008",
+      "name": "conv-capability-registry-support-matrix",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "product-convergence-team",
+      "path": ".agents/skills/conv-capability-registry-support-matrix/SKILL.md",
+      "prerequisites": [],
+      "allowed_tools": [
+        "filesystem",
+        "tests"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "CONV-009",
+      "name": "conv-pack-lifecycle-certification-unifier",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "product-convergence-team",
+      "path": ".agents/skills/conv-pack-lifecycle-certification-unifier/SKILL.md",
+      "prerequisites": [],
+      "allowed_tools": [
+        "filesystem",
+        "tests"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "CONV-010",
+      "name": "conv-core-extension-boundary",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "product-convergence-team",
+      "path": ".agents/skills/conv-core-extension-boundary/SKILL.md",
+      "prerequisites": [],
+      "allowed_tools": [
+        "filesystem",
+        "tests"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "CONV-011",
+      "name": "conv-skill-layering-routing",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "product-convergence-team",
+      "path": ".agents/skills/conv-skill-layering-routing/SKILL.md",
+      "prerequisites": [],
+      "allowed_tools": [
+        "filesystem",
+        "tests"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "CONV-012",
+      "name": "conv-skill-registry-compiler",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "product-convergence-team",
+      "path": ".agents/skills/conv-skill-registry-compiler/SKILL.md",
+      "prerequisites": [],
+      "allowed_tools": [
+        "filesystem",
+        "tests"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "CONV-013",
+      "name": "conv-duplicate-skill-consolidation",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "product-convergence-team",
+      "path": ".agents/skills/conv-duplicate-skill-consolidation/SKILL.md",
+      "prerequisites": [],
+      "allowed_tools": [
+        "filesystem",
+        "tests"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "CONV-014",
+      "name": "conv-cross-batch-contract-normalization",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "product-convergence-team",
+      "path": ".agents/skills/conv-cross-batch-contract-normalization/SKILL.md",
+      "prerequisites": [],
+      "allowed_tools": [
+        "filesystem",
+        "tests"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "CONV-015",
+      "name": "conv-architecture-decision-change-control",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "product-convergence-team",
+      "path": ".agents/skills/conv-architecture-decision-change-control/SKILL.md",
+      "prerequisites": [],
+      "allowed_tools": [
+        "filesystem",
+        "tests"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "CONV-016",
+      "name": "conv-test-pyramid-real-system-classification",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "product-convergence-team",
+      "path": ".agents/skills/conv-test-pyramid-real-system-classification/SKILL.md",
+      "prerequisites": [],
+      "allowed_tools": [
+        "filesystem",
+        "tests"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "CONV-017",
+      "name": "conv-benchmark-corpus-governance",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "product-convergence-team",
+      "path": ".agents/skills/conv-benchmark-corpus-governance/SKILL.md",
+      "prerequisites": [],
+      "allowed_tools": [
+        "filesystem",
+        "tests"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "CONV-018",
+      "name": "conv-maintainability-gate",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "product-convergence-team",
+      "path": ".agents/skills/conv-maintainability-gate/SKILL.md",
+      "prerequisites": [],
+      "allowed_tools": [
+        "filesystem",
+        "tests"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "CONV-019",
+      "name": "conv-reference-route-acceptance-profile",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "product-convergence-team",
+      "path": ".agents/skills/conv-reference-route-acceptance-profile/SKILL.md",
+      "prerequisites": [],
+      "allowed_tools": [
+        "filesystem",
+        "tests"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "CONV-020",
+      "name": "conv-cross-batch-integration-anti-fragmentation",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "product-convergence-team",
+      "path": ".agents/skills/conv-cross-batch-integration-anti-fragmentation/SKILL.md",
+      "prerequisites": [],
+      "allowed_tools": [
+        "filesystem",
+        "tests"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "CONV-021",
+      "name": "conv-product-information-architecture",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "product-convergence-team",
+      "path": ".agents/skills/conv-product-information-architecture/SKILL.md",
+      "prerequisites": [],
+      "allowed_tools": [
+        "filesystem",
+        "tests"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "CONV-022",
+      "name": "conv-migration-design-studio",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "product-convergence-team",
+      "path": ".agents/skills/conv-migration-design-studio/SKILL.md",
+      "prerequisites": [],
+      "allowed_tools": [
+        "filesystem",
+        "tests"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "CONV-023",
+      "name": "conv-customer-handoff-operability",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "product-convergence-team",
+      "path": ".agents/skills/conv-customer-handoff-operability/SKILL.md",
+      "prerequisites": [],
+      "allowed_tools": [
+        "filesystem",
+        "tests"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "CONV-024",
+      "name": "conv-verified-migrated-workload-metrics",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "product-convergence-team",
+      "path": ".agents/skills/conv-verified-migrated-workload-metrics/SKILL.md",
+      "prerequisites": [],
+      "allowed_tools": [
+        "filesystem",
+        "tests"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "CONV-025",
+      "name": "conv-control-plane-modular-monolith",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "product-convergence-team",
+      "path": ".agents/skills/conv-control-plane-modular-monolith/SKILL.md",
+      "prerequisites": [],
+      "allowed_tools": [
+        "filesystem",
+        "tests"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "CONV-026",
+      "name": "conv-private-runner-reference-implementation",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "product-convergence-team",
+      "path": ".agents/skills/conv-private-runner-reference-implementation/SKILL.md",
+      "prerequisites": [],
+      "allowed_tools": [
+        "filesystem",
+        "tests"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "CONV-027",
+      "name": "conv-deterministic-migration-engine-reference",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "product-convergence-team",
+      "path": ".agents/skills/conv-deterministic-migration-engine-reference/SKILL.md",
+      "prerequisites": [],
+      "allowed_tools": [
+        "filesystem",
+        "tests"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "CONV-028",
+      "name": "conv-java-spring-csharp-reference-route",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "product-convergence-team",
+      "path": ".agents/skills/conv-java-spring-csharp-reference-route/SKILL.md",
+      "prerequisites": [],
+      "allowed_tools": [
+        "filesystem",
+        "tests"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "CONV-029",
+      "name": "conv-validation-lab-evidence-store",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "product-convergence-team",
+      "path": ".agents/skills/conv-validation-lab-evidence-store/SKILL.md",
+      "prerequisites": [],
+      "allowed_tools": [
+        "filesystem",
+        "tests"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "CONV-030",
+      "name": "conv-design-partner-pilot",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "product-convergence-team",
+      "path": ".agents/skills/conv-design-partner-pilot/SKILL.md",
+      "prerequisites": [],
+      "allowed_tools": [
+        "filesystem",
+        "tests"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "CONV-031",
+      "name": "conv-edition-commercial-package-simplification",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "product-convergence-team",
+      "path": ".agents/skills/conv-edition-commercial-package-simplification/SKILL.md",
+      "prerequisites": [],
+      "allowed_tools": [
+        "filesystem",
+        "tests"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "CONV-032",
+      "name": "conv-product-convergence-readiness-gate",
+      "version": "1.0.0",
+      "layer": "orchestrator",
+      "owner": "product-convergence-team",
+      "path": ".agents/skills/conv-product-convergence-readiness-gate/SKILL.md",
+      "prerequisites": [],
+      "allowed_tools": [
+        "filesystem",
+        "tests"
+      ],
+      "deprecated_by": null
+    }
+  ]
+}

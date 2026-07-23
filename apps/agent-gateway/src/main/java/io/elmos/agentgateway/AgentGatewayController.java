@@ -63,6 +63,6 @@ public final class AgentGatewayController {
     }
     @ExceptionHandler({IllegalArgumentException.class, IllegalStateException.class, SecurityException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST) Map<String,Object> badRequest(RuntimeException error) {
-        return Map.of("errorCode", "AGENT_REQUEST_REJECTED", "message", error.getMessage(), "retryable", false);
+        return Map.of("errorCode", "AGENT_REQUEST_REJECTED", "message", "The agent request was rejected by its policy contract.", "retryable", false);
     }
 }

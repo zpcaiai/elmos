@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/runner-attestation-v1",
+  "type": "object",
+  "required": ["schema_version", "runner_id", "identity", "image_digest", "posture", "issued_at", "expires_at", "signature"],
+  "properties": {
+    "schema_version": {"const": "elmos.runner-attestation.v1"},
+    "runner_id": {"type": "string", "minLength": 1},
+    "identity": {
+      "type": "object",
+      "required": ["subject", "issuer"],
+      "properties": {
+        "subject": {"type": "string", "minLength": 1},
+        "issuer": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "image_digest": {"$ref": "#/$defs/digest"},
+    "posture": {
+      "type": "object",
+      "required": ["status", "profile"],
+      "properties": {
+        "status": {"enum": ["not_run", "trusted", "untrusted", "quarantined"]},
+        "profile": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "issued_at": {"type": "string", "format": "date-time"},
+    "expires_at": {"type": "string", "format": "date-time"},
+    "signature": {"type": ["object", "null"]}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"posture": {"properties": {"status": {"const": "trusted"}}, "required": ["status"]}}},
+      "then": {"properties": {"signature": {"type": "object", "minProperties": 1}}}
+    }
+  ],
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,348 @@
+{
+  "batch": 98,
+  "title": "Executable Skill Contract and Registry Pack",
+  "subject": "compile Markdown Skills into signed executable contracts with schemas, permissions, rollback, tests, registry, search, dependency resolution and compatibility governance",
+  "skill_count": 16,
+  "local_id_range": [
+    "B98-S01",
+    "B98-S16"
+  ],
+  "global_id_policy": "unassigned-to-avoid-collision-with-existing-batch81-96; use scripts/remap_global_ids.py after resolving the installed global range",
+  "skills": [
+    {
+      "id": "B98-S01",
+      "global_id": null,
+      "batch": 98,
+      "name": "b98-executable-skill-contract-schema",
+      "title": "Executable Skill Contract Schema",
+      "purpose": "Define the authoritative versioned contract that makes a Skill executable rather than prose-only.",
+      "path": "agent-skills/runtime/b98-executable-skill-contract-schema/SKILL.md",
+      "catalog_path": "skills/batch-98/B98-S01-executable-skill-contract-schema.md",
+      "depends_on": [
+        "B97-S16"
+      ],
+      "outputs": [
+        "executable_skill_contract.schema.json",
+        "schema_examples/",
+        "schema_validation.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "77d56f8409969ec524b67bbc56d7a646e93f789e584cbe6975a6ddfaee9c1efc"
+    },
+    {
+      "id": "B98-S02",
+      "global_id": null,
+      "batch": 98,
+      "name": "b98-skill-markdown-contract-compiler",
+      "title": "Skill Markdown Contract Compiler",
+      "purpose": "Compile approved Skill Markdown and frontmatter into deterministic executable contracts with source maps.",
+      "path": "agent-skills/runtime/b98-skill-markdown-contract-compiler/SKILL.md",
+      "catalog_path": "skills/batch-98/B98-S02-skill-markdown-contract-compiler.md",
+      "depends_on": [
+        "B98-S01",
+        "B97-S03"
+      ],
+      "outputs": [
+        "compiled_skill_contract.json",
+        "skill_source_map.json",
+        "compiler_diagnostics.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "20abe3520e05530b0bc1a6c177f0aacdb2ff43c30e117b214069552f6f268b02"
+    },
+    {
+      "id": "B98-S03",
+      "global_id": null,
+      "batch": 98,
+      "name": "b98-input-output-schema-binder",
+      "title": "Input and Output Schema Binder",
+      "purpose": "Bind every input and output to exact schemas, content types, ownership and retention rules.",
+      "path": "agent-skills/runtime/b98-input-output-schema-binder/SKILL.md",
+      "catalog_path": "skills/batch-98/B98-S03-input-output-schema-binder.md",
+      "depends_on": [
+        "B98-S02"
+      ],
+      "outputs": [
+        "io_binding.json",
+        "io_validation_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "0f26560247407c1256f87f284c136678d4f6d8671487025daf02d569233e4954"
+    },
+    {
+      "id": "B98-S04",
+      "global_id": null,
+      "batch": 98,
+      "name": "b98-precondition-guard-compiler",
+      "title": "Precondition and Guard Compiler",
+      "purpose": "Compile preconditions, stop conditions and approval requirements into fail-closed executable guards.",
+      "path": "agent-skills/runtime/b98-precondition-guard-compiler/SKILL.md",
+      "catalog_path": "skills/batch-98/B98-S04-precondition-guard-compiler.md",
+      "depends_on": [
+        "B98-S03"
+      ],
+      "outputs": [
+        "guard_program.json",
+        "guard_test_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "5e7beaa814308da662747142f8b1ccbe4aec0428f63da7d5fe1b3dcadfaa08c5"
+    },
+    {
+      "id": "B98-S05",
+      "global_id": null,
+      "batch": 98,
+      "name": "b98-permission-capability-declaration",
+      "title": "Permission and Capability Declaration",
+      "purpose": "Declare least-privilege process, filesystem, network, repository, secret, cloud and signing capabilities for each Skill.",
+      "path": "agent-skills/runtime/b98-permission-capability-declaration/SKILL.md",
+      "catalog_path": "skills/batch-98/B98-S05-permission-capability-declaration.md",
+      "depends_on": [
+        "B98-S04"
+      ],
+      "outputs": [
+        "permission_manifest.json",
+        "permission_diff.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "a4a48e6ffb8db01c7843eb243f617131c7dd3cceff357b5291ccf6a9a8204dfc"
+    },
+    {
+      "id": "B98-S06",
+      "global_id": null,
+      "batch": 98,
+      "name": "b98-execution-step-compiler",
+      "title": "Execution Step Compiler",
+      "purpose": "Compile workflows into typed, idempotent and resumable execution steps with explicit inputs, outputs and effects.",
+      "path": "agent-skills/runtime/b98-execution-step-compiler/SKILL.md",
+      "catalog_path": "skills/batch-98/B98-S06-execution-step-compiler.md",
+      "depends_on": [
+        "B98-S05"
+      ],
+      "outputs": [
+        "execution_steps.json",
+        "step_graph.json",
+        "compiler_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "9676b376e9425cfcadb07188587731cea48ec691cd0cdae7e53cbe5fbd04f1db"
+    },
+    {
+      "id": "B98-S07",
+      "global_id": null,
+      "batch": 98,
+      "name": "b98-rollback-compensation-compiler",
+      "title": "Rollback and Compensation Compiler",
+      "purpose": "Compile reversible actions, compensations and irreversible decision gates into runtime-ready plans.",
+      "path": "agent-skills/runtime/b98-rollback-compensation-compiler/SKILL.md",
+      "catalog_path": "skills/batch-98/B98-S07-rollback-compensation-compiler.md",
+      "depends_on": [
+        "B98-S06"
+      ],
+      "outputs": [
+        "rollback_plan.json",
+        "compensation_plan.json",
+        "rollback_validation.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "52abf9f1227237de74247bad45c795626b5fe25100d137eb240b99b38cf025e0"
+    },
+    {
+      "id": "B98-S08",
+      "global_id": null,
+      "batch": 98,
+      "name": "b98-test-evidence-contract-compiler",
+      "title": "Test and Evidence Contract Compiler",
+      "purpose": "Compile required tests and evidence into machine-enforced obligations bound to exact states and scopes.",
+      "path": "agent-skills/runtime/b98-test-evidence-contract-compiler/SKILL.md",
+      "catalog_path": "skills/batch-98/B98-S08-test-evidence-contract-compiler.md",
+      "depends_on": [
+        "B98-S07"
+      ],
+      "outputs": [
+        "test_contract.json",
+        "evidence_contract.json",
+        "obligation_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "b860571a0b2039e9c1a2454305f8cb17071e8c92845c577aa22a59d889c7832c"
+    },
+    {
+      "id": "B98-S09",
+      "global_id": null,
+      "batch": 98,
+      "name": "b98-deterministic-variable-resolver",
+      "title": "Deterministic Variable Resolver",
+      "purpose": "Resolve parameters, defaults, environment references and secrets without hidden nondeterminism or plaintext exposure.",
+      "path": "agent-skills/runtime/b98-deterministic-variable-resolver/SKILL.md",
+      "catalog_path": "skills/batch-98/B98-S09-deterministic-variable-resolver.md",
+      "depends_on": [
+        "B98-S08"
+      ],
+      "outputs": [
+        "resolved_parameters.json",
+        "resolution_trace.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "3d66217f2c52796bebe97864b6dac8cc957ec25a58f4ae7fa534b15d5e5bb56f"
+    },
+    {
+      "id": "B98-S10",
+      "global_id": null,
+      "batch": 98,
+      "name": "b98-contract-signing-provenance",
+      "title": "Contract Signing and Provenance",
+      "purpose": "Sign executable contracts and bind them to source Skill, compiler, policy and dependency snapshots.",
+      "path": "agent-skills/runtime/b98-contract-signing-provenance/SKILL.md",
+      "catalog_path": "skills/batch-98/B98-S10-contract-signing-provenance.md",
+      "depends_on": [
+        "B98-S09"
+      ],
+      "outputs": [
+        "signed_contract.json",
+        "provenance_statement.json",
+        "signature_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "8c27a4ab0481916f11ce3adb63b2c55a189dbe399383cb2fabdd09a41c76c9cf"
+    },
+    {
+      "id": "B98-S11",
+      "global_id": null,
+      "batch": 98,
+      "name": "b98-skill-registry-service",
+      "title": "Skill Registry Service",
+      "purpose": "Implement tenant-aware storage, retrieval, lifecycle and immutable versioning for executable Skill contracts.",
+      "path": "agent-skills/runtime/b98-skill-registry-service/SKILL.md",
+      "catalog_path": "skills/batch-98/B98-S11-skill-registry-service.md",
+      "depends_on": [
+        "B98-S10"
+      ],
+      "outputs": [
+        "skill_registry_openapi.yaml",
+        "registry_schema.sql",
+        "registry_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "03a0bab1dc1533733412eb9d126d82b5edfa76c7ea9b6958c16249798fa4d233"
+    },
+    {
+      "id": "B98-S12",
+      "global_id": null,
+      "batch": 98,
+      "name": "b98-capability-search-ranking",
+      "title": "Capability Search and Ranking",
+      "purpose": "Rank candidate Skills by capability fit, evidence, compatibility, cost, risk and historical outcomes without loading the full estate.",
+      "path": "agent-skills/runtime/b98-capability-search-ranking/SKILL.md",
+      "catalog_path": "skills/batch-98/B98-S12-capability-search-ranking.md",
+      "depends_on": [
+        "B98-S11",
+        "B97-S12"
+      ],
+      "outputs": [
+        "candidate_rankings.json",
+        "ranking_explanations.json",
+        "evaluation_report.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "bf79d8ad986814d883eeaaa57b287595d63c3d514c57d64034437696b4ee4cf8"
+    },
+    {
+      "id": "B98-S13",
+      "global_id": null,
+      "batch": 98,
+      "name": "b98-dependency-closure-resolver",
+      "title": "Dependency Closure Resolver",
+      "purpose": "Resolve the minimal compatible dependency closure for a selected Skill or route pack.",
+      "path": "agent-skills/runtime/b98-dependency-closure-resolver/SKILL.md",
+      "catalog_path": "skills/batch-98/B98-S13-dependency-closure-resolver.md",
+      "depends_on": [
+        "B98-S12",
+        "B97-S05"
+      ],
+      "outputs": [
+        "dependency_lock.json",
+        "resolution_report.json",
+        "unsat_core.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "e4289e2aad9b8420ecf21e87b27121199dbc138119ae0f9f9d6f08c94761832b"
+    },
+    {
+      "id": "B98-S14",
+      "global_id": null,
+      "batch": 98,
+      "name": "b98-skill-conflict-arbitrator",
+      "title": "Skill Conflict Arbitrator",
+      "purpose": "Arbitrate overlapping write sets, contradictory policies and competing implementations before execution.",
+      "path": "agent-skills/runtime/b98-skill-conflict-arbitrator/SKILL.md",
+      "catalog_path": "skills/batch-98/B98-S14-skill-conflict-arbitrator.md",
+      "depends_on": [
+        "B98-S13"
+      ],
+      "outputs": [
+        "arbitration_result.json",
+        "write_set_plan.json",
+        "approval_request.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "982b2306f58863e2d4b102d5cfe8589bd7e3f6c56a14cc36141d09be5bd8229e"
+    },
+    {
+      "id": "B98-S15",
+      "global_id": null,
+      "batch": 98,
+      "name": "b98-contract-compatibility-deprecation",
+      "title": "Contract Compatibility and Deprecation",
+      "purpose": "Validate contract schema evolution, behavior compatibility, replacement paths and deprecation windows.",
+      "path": "agent-skills/runtime/b98-contract-compatibility-deprecation/SKILL.md",
+      "catalog_path": "skills/batch-98/B98-S15-contract-compatibility-deprecation.md",
+      "depends_on": [
+        "B98-S14"
+      ],
+      "outputs": [
+        "compatibility_report.json",
+        "migration_guide.md",
+        "deprecation_notice.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ],
+      "sha256": "e4247bf284df3a56ecd419449e8c18145de44cd8553801dd06a8aa06fdbed6b3"
+    },
+    {
+      "id": "B98-S16",
+      "global_id": null,
+      "batch": 98,
+      "name": "b98-executable-contract-certification-gate",
+      "title": "Executable Contract Certification Gate",
+      "purpose": "Certify executable contracts only when compilation, guards, permissions, dependencies, rollback, tests, evidence and signatures are complete.",
+      "path": "agent-skills/runtime/b98-executable-contract-certification-gate/SKILL.md",
+      "catalog_path": "skills/batch-98/B98-S16-executable-contract-certification-gate.md",
+      "depends_on": [
+        "B98-S15"
+      ],
+      "outputs": [
+        "contract_certification_result.json",
+        "contract_release_manifest.json",
+        "completion_report.md",
+        "evidence_bundle.json"
+      ],
+      "sha256": "9b5643a613de97250aa92903b66ded8d7990172e897a2c3dc581affe75a529bc"
+    }
+  ],
+  "version": "1.0.1-repository.1"
+}

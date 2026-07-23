@@ -1,0 +1,9 @@
+{
+  "schema_version": "elmos.route-pack-result.v1",
+  "route": "java",
+  "source_snapshot": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "target_snapshot": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "stages": [],
+  "state": "not_run",
+  "evidence_refs": []
+}

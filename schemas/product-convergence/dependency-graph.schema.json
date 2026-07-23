@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "nodes",
+    "edges"
+  ],
+  "properties": {
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "kind"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "consumer",
+          "provider",
+          "dependency_type",
+          "required_status"
+        ],
+        "properties": {
+          "consumer": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "dependency_type": {
+            "enum": [
+              "build",
+              "runtime",
+              "certification",
+              "commercial",
+              "optional"
+            ]
+          },
+          "required_status": {
+            "type": "string"
+          },
+          "optional": {
+            "type": "boolean"
+          },
+          "evidence_freshness_days": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "B99 Durable Run State Model"
+  short_description: "Run this ELMOS product-closure Skill safely"
+  default_prompt: "Use $b99-durable-run-state-model to execute this ELMOS product-closure Skill with fail-closed evidence."

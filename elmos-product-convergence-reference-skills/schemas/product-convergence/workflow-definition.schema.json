@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "workflow_id",
+    "version",
+    "steps"
+  ],
+  "properties": {
+    "workflow_id": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "step_id",
+          "kind",
+          "idempotency"
+        ],
+        "properties": {
+          "step_id": {
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "activity",
+              "human-task",
+              "approval",
+              "child-workflow",
+              "compensation"
+            ]
+          },
+          "idempotency": {
+            "type": "string"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "timeout_seconds": {
+            "type": "integer"
+          },
+          "compensation_step": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}

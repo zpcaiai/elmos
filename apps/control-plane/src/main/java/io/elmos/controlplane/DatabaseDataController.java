@@ -44,7 +44,7 @@ public final class DatabaseDataController {
     @ExceptionHandler({IllegalArgumentException.class, IllegalStateException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     Map<String, Object> badRequest(RuntimeException error) {
-        return Map.of("errorCode", "DATABASE_DATA_REQUEST_REJECTED", "message", error.getMessage(),
+        return Map.of("errorCode", "DATABASE_DATA_REQUEST_REJECTED", "message", "The database and data request was rejected by its contract.",
                 "retryable", false);
     }
 }
