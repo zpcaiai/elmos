@@ -46,7 +46,10 @@ public final class InfrastructureEngineService {
                         "writeSequence", List.of("PLAN", "POLICY", "COST", "SECURITY", "APPROVAL", "APPLY", "VALIDATION", "EVIDENCE"),
                         "productionWrites", "NAMED_APPROVAL_REQUIRED",
                         "providerExecution", "RUNNER_REQUIRED_FAIL_CLOSED",
-                        "runnerStatus", "NOT_CONFIGURED"));
+                        "runnerStatus", "NOT_CONFIGURED",
+                        "jobStatePersistence", "EPHEMERAL_PROCESS_LOCAL",
+                        "durableStateAuthority", "ELMOS_CONTROL_PLANE",
+                        "restartRecovery", "NOT_SUPPORTED_BY_WORKER"));
     }
 
     public JobResponse scan(JobRequest request) {
@@ -67,7 +70,7 @@ public final class InfrastructureEngineService {
     public JobResponse executeStep(ExecuteStepRequest request) {
         require(request.organizationId(), "organizationId"); require(request.migrationRunId(), "migrationRunId");
         require(request.workspaceRef(), "workspaceRef"); require(request.idempotencyKey(), "idempotencyKey");
-        return once("execute-step", request.organizationId(), request.idempotencyKey(), request.toString(), jobId -> {
+        return once("execute-step", request.organizationId(), request.idempotencyKey(), EngineApi.idempotencyMaterial(request), jobId -> {
             boolean hasPlan = request.policy() != null && request.policy().get("immutablePlanRef") instanceof String value && !value.isBlank();
             boolean approved = request.policy() != null && request.policy().get("approvedBy") instanceof String value && !value.isBlank();
             ErrorCode code = !hasPlan ? ErrorCode.INFRASTRUCTURE_PLAN_REQUIRED
@@ -78,16 +81,14 @@ public final class InfrastructureEngineService {
 
     public JobResponse job(String organizationId, String jobId) {
         require(organizationId, "organizationId"); require(jobId, "jobId");
-        return jobs.getOrDefault(organizationId + ":" + jobId,
-                failure(jobId, ErrorCode.UNKNOWN, "job is not visible to this organization"));
+        var existing = jobs.get(organizationId + ":" + jobId);
+        if (existing == null) throw new EngineApi.JobNotFoundException(jobId);
+        return existing;
     }
 
     public JobResponse cancel(String organizationId, String jobId) {
         var existing = job(organizationId, jobId);
-        if (existing.error() != null) return existing;
-        if (List.of(JobStatus.SUCCEEDED, JobStatus.FAILED, JobStatus.CANCELLED).contains(existing.status())) {
-            return failure(jobId, ErrorCode.POLICY_BLOCKED, "terminal job cannot be cancelled");
-        }
+        if (EngineApi.isTerminal(existing.status())) throw new EngineApi.JobConflictException(jobId);
         var cancelled = new JobResponse(existing.schemaVersion(), existing.jobId(), JobStatus.CANCELLED,
                 existing.evidenceRefs(), existing.result(), null);
         jobs.put(organizationId + ":" + jobId, cancelled);
@@ -98,7 +99,7 @@ public final class InfrastructureEngineService {
         require(request.organizationId(), "organizationId"); require(request.repositorySnapshotRef(), "repositorySnapshotRef");
         require(request.workspaceRef(), "workspaceRef"); require(request.profile(), "profile");
         require(request.correlationId(), "correlationId"); require(request.idempotencyKey(), "idempotencyKey");
-        return once(operation, request.organizationId(), request.idempotencyKey(), request.toString(), action);
+        return once(operation, request.organizationId(), request.idempotencyKey(), EngineApi.idempotencyMaterial(request), action);
     }
 
     private JobResponse once(String operation, String organizationId, String key, String input, Function<String, JobResponse> action) {
@@ -107,7 +108,7 @@ public final class InfrastructureEngineService {
         var previous = idempotency.get(scopedKey);
         if (previous != null) {
             if (!previous.fingerprint().equals(fingerprint)) {
-                return failure(previous.response().jobId(), ErrorCode.POLICY_BLOCKED, "idempotency key was reused with different input");
+                throw new EngineApi.IdempotencyConflictException(key);
             }
             return previous.response();
         }

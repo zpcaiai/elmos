@@ -1,5 +1,6 @@
 package io.elmos.executiondomain;
 
+import io.elmos.engine.api.EngineApi;
 import io.elmos.engine.api.EngineApi.*;
 
 import java.nio.charset.StandardCharsets;
@@ -41,6 +42,9 @@ public final class EvidenceBoundDomainEngine {
                         Map.entry("shortLivedJobLease", true),
                         Map.entry("environmentScopeRequired", true),
                         Map.entry("controlPlaneExecution", false),
+                        Map.entry("jobStatePersistence", "EPHEMERAL_PROCESS_LOCAL"),
+                        Map.entry("durableStateAuthority", "ELMOS_CONTROL_PLANE"),
+                        Map.entry("restartRecovery", "NOT_SUPPORTED_BY_WORKER"),
                         Map.entry("productionMutationDefault", "DENY"),
                         Map.entry("humanDecisionAutoGrant", false),
                         Map.entry("workerModifiedGate", false),
@@ -82,7 +86,7 @@ public final class EvidenceBoundDomainEngine {
         require(request.sourceCommit(), "sourceCommit");
         require(request.idempotencyKey(), "idempotencyKey");
         if (request.stepDefinition() == null) throw new IllegalArgumentException("stepDefinition is required");
-        return once(action, request.organizationId(), request.idempotencyKey(), request.toString(), id -> {
+        return once(action, request.organizationId(), request.idempotencyKey(), EngineApi.idempotencyMaterial(request), id -> {
             if (!definition.executors().contains(request.stepDefinition().executorType())) {
                 return failure(request.organizationId(), id, ErrorCode.POLICY_BLOCKED,
                         "executor is outside this engine's bounded domain", "NOT_RUN");
@@ -114,15 +118,16 @@ public final class EvidenceBoundDomainEngine {
         require(organizationId, "organizationId"); require(jobId, "jobId");
         StoredJob stored = jobs.get(jobId);
         if (stored == null || !stored.organizationId().equals(organizationId)) {
-            throw new IllegalArgumentException("job not found");
+            throw new JobNotFoundException(jobId);
         }
         return stored.response();
     }
 
     public JobResponse cancel(String organizationId, String jobId) {
         JobResponse current = job(organizationId, jobId);
+        if (EngineApi.isTerminal(current.status())) throw new JobConflictException(jobId);
         JobResponse cancelled = new JobResponse(current.schemaVersion(), current.jobId(), JobStatus.CANCELLED,
-                current.evidenceRefs(), result("NOT_RUN"), null);
+                current.evidenceRefs(), current.result(), current.error());
         jobs.put(jobId, new StoredJob(organizationId, cancelled));
         return cancelled;
     }
@@ -132,7 +137,7 @@ public final class EvidenceBoundDomainEngine {
         require(request.repositorySnapshotRef(), "repositorySnapshotRef");
         require(request.workspaceRef(), "workspaceRef");
         require(request.idempotencyKey(), "idempotencyKey");
-        return once(action, request.organizationId(), request.idempotencyKey(), request.toString(), work);
+        return once(action, request.organizationId(), request.idempotencyKey(), EngineApi.idempotencyMaterial(request), work);
     }
 
     private JobResponse once(String action, String organizationId, String key, String material,
@@ -142,7 +147,7 @@ public final class EvidenceBoundDomainEngine {
         IdempotentResult prior = idempotency.get(scope);
         if (prior != null) {
             if (!prior.fingerprint().equals(fingerprint)) {
-                throw new IllegalArgumentException("idempotency key reused with different request");
+                throw new IdempotencyConflictException(key);
             }
             return prior.response();
         }

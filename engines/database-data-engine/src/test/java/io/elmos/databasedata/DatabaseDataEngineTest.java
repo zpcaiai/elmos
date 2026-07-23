@@ -44,9 +44,10 @@ class DatabaseDataEngineTest {
         var engine = new DatabaseDataEngineService();
         var first = engine.scan(request("same", "ORACLE"));
         assertSame(first, engine.scan(request("same", "ORACLE")));
-        var conflict = engine.scan(request("same", "MYSQL"));
-        assertEquals(EngineApi.ErrorCode.POLICY_BLOCKED, conflict.error().errorCode());
-        assertEquals(EngineApi.ErrorCode.UNKNOWN, engine.job("org-2", first.jobId()).error().errorCode());
+        assertThrows(EngineApi.IdempotencyConflictException.class, () -> engine.scan(request("same", "MYSQL")));
+        assertThrows(EngineApi.JobNotFoundException.class, () -> engine.job("org-2", first.jobId()));
+        assertThrows(EngineApi.JobConflictException.class, () -> engine.cancel("org-1", first.jobId()));
+        assertSame(first, engine.job("org-1", first.jobId()));
     }
 
     @Test void discoveryPermissionsAreReadOnlyAndWritesRequireApproval() {

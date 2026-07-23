@@ -163,6 +163,15 @@ test("changed-input idempotency reuse conflicts", () => {
   assert.equal(conflict.evidenceRefs.length, 0);
 });
 
+test("invalid source entries fail without disclosing customer paths", () => {
+  const engine = new FrontendClientEngine();
+  const response = engine.scan({ organizationId: "org-1", snapshotId: "snap-1", idempotencyKey: "invalid-file",
+    workspaceRef: "app-1", input: { files: { "customers/acme/private.ts": 42 } } });
+  assert.equal(response.error?.errorCode, "FRONTEND_ROUTE_DISCOVERY_FAILED");
+  assert.equal(response.error?.message, "Frontend route discovery failed without successful execution.");
+  assert.doesNotMatch(response.error?.message ?? "", /acme|private\.ts/);
+});
+
 test("customer transformation fails closed without an approved runner", () => {
   const engine = new FrontendClientEngine();
   const response = engine.executeStep({ organizationId: "org-1", snapshotId: "snap-1", idempotencyKey: "exec-1", workspaceRef: "app-1", planId: "plan-1", stepId: "route-1", runnerProfile: "MODERN_WEB" });

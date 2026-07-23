@@ -67,6 +67,8 @@ def test_capabilities_declare_third_engine_and_five_runner_types(tmp_path: Path)
     assert capabilities.engine == "ELMOS_PYTHON"
     assert capabilities.source_versions[0] == "2.7"
     assert "3.15" not in capabilities.supported_target_versions
+    assert capabilities.sandbox_requirements["jobStatePersistence"] == "EPHEMERAL_PROCESS_LOCAL"
+    assert capabilities.sandbox_requirements["durableStateAuthority"] == "ELMOS_CONTROL_PLANE"
     assert set(capabilities.runner_profiles) == {
         "PYTHON_LEGACY_LINUX",
         "PYTHON_MODERN_CPU",
@@ -391,9 +393,12 @@ def test_engine_jobs_are_tenant_scoped_and_idempotency_binds_inputs(tmp_path: Pa
     repeated = engine.scan(request("workspace", "same"))
     conflict = engine.scan(request("workspace", "same", snapshot="other"))
     assert first.job_id == repeated.job_id
-    assert conflict.error and conflict.error.error_code == ErrorCode.POLICY_BLOCKED
-    assert engine.get_job("org-b", first.job_id).status == JobStatus.FAILED
-    assert engine.cancel("org-a", first.job_id).error is not None
+    assert conflict.error and conflict.error.error_code == ErrorCode.IDEMPOTENCY_CONFLICT
+    hidden = engine.get_job("org-b", first.job_id)
+    assert hidden.error and hidden.error.error_code == ErrorCode.JOB_NOT_FOUND
+    terminal = engine.cancel("org-a", first.job_id)
+    assert terminal.error and terminal.error.error_code == ErrorCode.JOB_TERMINAL
+    assert engine.get_job("org-a", first.job_id) == first
 
 
 def test_execute_step_applies_bounded_idempotent_libcst_change(tmp_path: Path) -> None:

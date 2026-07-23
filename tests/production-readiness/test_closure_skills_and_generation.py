@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-import unittest
+import json
 import re
+import unittest
 from pathlib import Path
 
 import yaml
@@ -33,6 +34,30 @@ class ClosureSkillsAndGenerationTests(unittest.TestCase):
         self.assertIn("dotnet restore engines/dotnet-engine/Elmos.Dotnet.slnx --locked-mode", rendered)
         self.assertIn("uv --directory engines/python-engine run --locked pytest", rendered)
         self.assertIn("pnpm --dir engines/frontend-client-engine install --frozen-lockfile", rendered)
+        self.assertIn("make product-closure-convergence-skills", rendered)
+
+    def test_production_readiness_covers_all_current_skill_distributions_portably(self) -> None:
+        makefile = (ROOT / "Makefile").read_text(encoding="utf-8")
+        target = re.search(r"production-readiness-check:([^\n]+)", makefile)
+        self.assertIsNotNone(target)
+        prerequisites = set(target.group(1).split())
+        self.assertTrue(
+            {"batch45-check", "project-synthesis", "batch97-104-skills", "product-closure-convergence-skills", "web"}
+            .issubset(prerequisites)
+        )
+        self.assertIn("UV ?= uv", makefile)
+        self.assertNotIn("/opt/homebrew/bin/uv", makefile)
+
+    def test_vercel_deploys_the_nested_nextjs_console_instead_of_an_empty_root(self) -> None:
+        config = json.loads((ROOT / "vercel.json").read_text(encoding="utf-8"))
+        self.assertEqual("nextjs", config["framework"])
+        self.assertEqual("apps/web-console/.next", config["outputDirectory"])
+        self.assertEqual("pnpm --dir apps/web-console build", config["buildCommand"])
+        self.assertIn("pnpm@10.12.4", config["installCommand"])
+        self.assertIn(
+            "pnpm --dir apps/web-console install --frozen-lockfile",
+            config["installCommand"],
+        )
 
     def test_skill_inventory_ui_matches_callable_repository_directories(self) -> None:
         catalog = (
@@ -93,6 +118,24 @@ class ClosureSkillsAndGenerationTests(unittest.TestCase):
         self.assertIn("approved-request.json", source)
         self.assertIn("verification.json", source)
         self.assertIn("disabled={!draft}", source)
+
+    def test_generation_drafts_close_local_create_restore_delete_loop(self) -> None:
+        source = (
+            ROOT
+            / "apps"
+            / "web-console"
+            / "app"
+            / "generation"
+            / "ProjectGenerationStudio.tsx"
+        ).read_text(encoding="utf-8")
+        self.assertIn('DRAFT_STORAGE_KEY = "elmos.project-generation-drafts.v1"', source)
+        self.assertIn("window.localStorage.getItem(DRAFT_STORAGE_KEY)", source)
+        self.assertIn("window.localStorage.setItem(DRAFT_STORAGE_KEY", source)
+        self.assertIn("function restoreDraft", source)
+        self.assertIn("function removeDraft", source)
+        self.assertIn("createdAt: new Date().toISOString()", source)
+        self.assertIn(".slice(0, 50)", source)
+        self.assertIn("isStoredGenerationDraft", source)
 
     def test_generation_capability_route_preserves_evidence_boundaries(self) -> None:
         route = (

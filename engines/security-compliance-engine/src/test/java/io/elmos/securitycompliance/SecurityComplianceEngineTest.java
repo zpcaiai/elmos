@@ -28,7 +28,11 @@ class SecurityComplianceEngineTest {
         assertEquals(EngineApi.ErrorCode.SECURITY_TOOL_UNAVAILABLE, first.error().errorCode());
         assertEquals("NOT_RUN", first.result().get("externalStatus"));
         assertEquals(false, first.result().get("evidenceFabricated"));
-        assertNotEquals(first, engine.job("org-b", first.jobId()));
+        assertThrows(EngineApi.IdempotencyConflictException.class, () -> engine.scan(
+                new EngineApi.JobRequest("org-a", "snapshot://changed", "workspace://a", "STANDARD", "corr-2", "scan-1")));
+        assertThrows(EngineApi.JobNotFoundException.class, () -> engine.job("org-b", first.jobId()));
+        assertThrows(EngineApi.JobConflictException.class, () -> engine.cancel("org-a", first.jobId()));
+        assertEquals(first, engine.job("org-a", first.jobId()));
     }
 
     @Test void activeTestNeedsExplicitApprovalBeforeAdapterSelection() {

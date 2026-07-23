@@ -44,8 +44,11 @@ class TestQualityEngineTest {
     @Test void idempotencyIsTenantScopedAndRejectsChangedInput() {
         var first = engine.plan(request("same"));
         assertEquals(first, engine.plan(request("same")));
-        var conflict = engine.plan(new EngineApi.JobRequest("org-1", "snapshot-2", "workspace-1", "STANDARD", "corr", "same"));
-        assertEquals(EngineApi.ErrorCode.POLICY_BLOCKED, conflict.error().errorCode());
+        assertThrows(EngineApi.IdempotencyConflictException.class, () -> engine.plan(
+                new EngineApi.JobRequest("org-1", "snapshot-2", "workspace-1", "STANDARD", "corr", "same")));
+        assertThrows(EngineApi.JobNotFoundException.class, () -> engine.job("org-2", first.jobId()));
+        assertThrows(EngineApi.JobConflictException.class, () -> engine.cancel("org-1", first.jobId()));
+        assertEquals(first, engine.job("org-1", first.jobId()));
     }
 
     private EngineApi.JobRequest request(String key) {

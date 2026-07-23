@@ -115,6 +115,8 @@ jobs:
           uv run --with 'jsonschema>=4.23' --with pyyaml python -m unittest discover -s tests/batch45 -p 'test_*.py'
       - name: Verify Batch 97-104 Skill distribution
         run: make batch97-104-skills
+      - name: Verify Product closure and convergence distributions
+        run: make product-closure-convergence-skills
 
   web-console:
     name: Web Console

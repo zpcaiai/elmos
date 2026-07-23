@@ -34,4 +34,13 @@ class SecretSecurityTest {
         assertEquals(List.of("provider-1"), revoked);
         assertFalse(saved.toString().contains("sentinel-value"));
     }
+
+    @Test void secretRequestsRejectMissingIdentityTypeAndLifetimeBeforeProviderAccess() {
+        assertThrows(IllegalArgumentException.class, () -> new SecretInjectionService.SecretRequest(
+                " ", SecretLease.SecretType.MAVEN_SERVER_TOKEN, Duration.ofMinutes(1)));
+        assertThrows(NullPointerException.class, () -> new SecretInjectionService.SecretRequest(
+                "workspace-1", null, Duration.ofMinutes(1)));
+        assertThrows(NullPointerException.class, () -> new SecretInjectionService.SecretRequest(
+                "workspace-1", SecretLease.SecretType.MAVEN_SERVER_TOKEN, null));
+    }
 }

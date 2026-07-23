@@ -45,6 +45,8 @@ class EvidenceBoundDomainEngineTest {
         assertEquals(false, capabilities.sandboxRequirements().get("controlPlaneExecution"));
         assertEquals("DENY", capabilities.sandboxRequirements().get("productionMutationDefault"));
         assertEquals(false, capabilities.sandboxRequirements().get("humanDecisionAutoGrant"));
+        assertEquals("EPHEMERAL_PROCESS_LOCAL", capabilities.sandboxRequirements().get("jobStatePersistence"));
+        assertEquals("ELMOS_CONTROL_PLANE", capabilities.sandboxRequirements().get("durableStateAuthority"));
         @SuppressWarnings("unchecked") Map<String, String> adapters =
                 (Map<String, String>) capabilities.sandboxRequirements().get("adapterStatus");
         assertEquals(definition.adapters().size(), adapters.size());
@@ -90,8 +92,13 @@ class EvidenceBoundDomainEngineTest {
         var request = job("idempotent-" + definition.engineName());
         var first = domain.discover(request);
         assertEquals(first, domain.discover(request));
-        assertThrows(IllegalArgumentException.class, () -> domain.job("another-org", first.jobId()));
-        assertEquals(EngineApi.JobStatus.CANCELLED, domain.cancel("org", first.jobId()).status());
+        assertThrows(EngineApi.IdempotencyConflictException.class, () -> domain.discover(
+                new EngineApi.JobRequest("org", "changed-snapshot", "workspace", "DEFAULT", "corr-retry",
+                        request.idempotencyKey())));
+        assertThrows(EngineApi.JobNotFoundException.class, () -> domain.job("another-org", first.jobId()));
+        assertThrows(EngineApi.JobConflictException.class, () -> domain.cancel("org", first.jobId()));
+        assertEquals(EngineApi.JobStatus.FAILED, domain.job("org", first.jobId()).status());
+        assertEquals(first, domain.discover(request), "terminal conflict must not split idempotent and job state");
     }
 
     @ParameterizedTest @MethodSource("domainDefinitions")

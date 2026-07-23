@@ -55,7 +55,10 @@ public final class DatabaseDataEngineService {
                                 "PLAN_READ", "PERFORMANCE_VIEW_READ"),
                         "productionWrites", "NAMED_APPROVAL_REQUIRED",
                         "customerCodeExecution", "RUNNER_REQUIRED_FAIL_CLOSED",
-                        "runnerStatus", "NOT_CONFIGURED"));
+                        "runnerStatus", "NOT_CONFIGURED",
+                        "jobStatePersistence", "EPHEMERAL_PROCESS_LOCAL",
+                        "durableStateAuthority", "ELMOS_CONTROL_PLANE",
+                        "restartRecovery", "NOT_SUPPORTED_BY_WORKER"));
     }
 
     public JobResponse scan(JobRequest request) {
@@ -78,7 +81,7 @@ public final class DatabaseDataEngineService {
         require(request.migrationRunId(), "migrationRunId");
         require(request.workspaceRef(), "workspaceRef");
         require(request.idempotencyKey(), "idempotencyKey");
-        return once("execute-step", request.organizationId(), request.idempotencyKey(), request.toString(),
+        return once("execute-step", request.organizationId(), request.idempotencyKey(), EngineApi.idempotencyMaterial(request),
                 jobId -> failure(jobId,
                         request.stepDefinition().executorType() == ExecutorType.DATABASE_CDC
                                 ? ErrorCode.DATABASE_CDC_PERMISSION_REQUIRED : ErrorCode.DATABASE_RUNNER_REQUIRED,
@@ -88,16 +91,14 @@ public final class DatabaseDataEngineService {
     public JobResponse job(String organizationId, String jobId) {
         require(organizationId, "organizationId");
         require(jobId, "jobId");
-        return jobs.getOrDefault(organizationId + ":" + jobId,
-                failure(jobId, ErrorCode.UNKNOWN, "job is not visible to this organization"));
+        var existing = jobs.get(organizationId + ":" + jobId);
+        if (existing == null) throw new EngineApi.JobNotFoundException(jobId);
+        return existing;
     }
 
     public JobResponse cancel(String organizationId, String jobId) {
         var existing = job(organizationId, jobId);
-        if (existing.error() != null) return existing;
-        if (List.of(JobStatus.SUCCEEDED, JobStatus.FAILED, JobStatus.CANCELLED).contains(existing.status())) {
-            return failure(jobId, ErrorCode.POLICY_BLOCKED, "terminal job cannot be cancelled");
-        }
+        if (EngineApi.isTerminal(existing.status())) throw new EngineApi.JobConflictException(jobId);
         var cancelled = new JobResponse(existing.schemaVersion(), existing.jobId(), JobStatus.CANCELLED,
                 existing.evidenceRefs(), existing.result(), null);
         jobs.put(organizationId + ":" + jobId, cancelled);
@@ -111,7 +112,7 @@ public final class DatabaseDataEngineService {
         require(request.profile(), "profile");
         require(request.correlationId(), "correlationId");
         require(request.idempotencyKey(), "idempotencyKey");
-        return once(operation, request.organizationId(), request.idempotencyKey(), request.toString(), action);
+        return once(operation, request.organizationId(), request.idempotencyKey(), EngineApi.idempotencyMaterial(request), action);
     }
 
     private JobResponse once(String operation, String organizationId, String key, String input,
@@ -121,8 +122,7 @@ public final class DatabaseDataEngineService {
         var previous = idempotency.get(scopedKey);
         if (previous != null) {
             if (!previous.fingerprint().equals(currentFingerprint)) {
-                return failure(previous.response().jobId(), ErrorCode.POLICY_BLOCKED,
-                        "idempotency key was reused with different input");
+                throw new EngineApi.IdempotencyConflictException(key);
             }
             return previous.response();
         }

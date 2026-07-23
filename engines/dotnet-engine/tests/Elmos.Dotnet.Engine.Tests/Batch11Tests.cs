@@ -27,6 +27,8 @@ public sealed class Batch11Tests : IDisposable
         Assert.Contains("C_SHARP", capabilities.Languages);
         Assert.Contains("VISUAL_BASIC_INVENTORY", capabilities.Languages);
         Assert.Equal(3, capabilities.RunnerProfiles.Count);
+        Assert.Equal("EPHEMERAL_PROCESS_LOCAL", capabilities.JobStatePersistence);
+        Assert.Equal("ELMOS_CONTROL_PLANE", capabilities.DurableStateAuthority);
     }
 
     [Fact]
@@ -142,9 +144,11 @@ public sealed class Batch11Tests : IDisposable
         Assert.Equal(first.JobId, repeated.JobId);
         Assert.NotEqual(first.JobId, otherTenant.JobId);
         Assert.Equal(JobStatus.Failed, engine.GetJob("org-b", first.JobId).Status);
-        Assert.Equal(DotnetErrorCode.PolicyBlocked, conflictingReplay.Error?.ErrorCode);
+        Assert.Equal(DotnetErrorCode.JobNotFound, engine.GetJob("org-b", first.JobId).Error?.ErrorCode);
+        Assert.Equal(DotnetErrorCode.IdempotencyConflict, conflictingReplay.Error?.ErrorCode);
         Assert.Contains("different immutable inputs", conflictingReplay.Error?.Message);
-        Assert.Equal(DotnetErrorCode.PolicyBlocked, engine.Cancel("org-a", first.JobId).Error?.ErrorCode);
+        Assert.Equal(DotnetErrorCode.JobTerminal, engine.Cancel("org-a", first.JobId).Error?.ErrorCode);
+        Assert.Equal(first, engine.GetJob("org-a", first.JobId));
     }
 
     [Fact]
@@ -160,6 +164,59 @@ public sealed class Batch11Tests : IDisposable
         var conflict = engine.ExecuteStep(request with { ExecutionBudget = new ExecutionBudget(60, 10, 10_000, 0) });
         Assert.Equal(JobStatus.Failed, conflict.Status);
         Assert.Contains("different immutable inputs", conflict.Error?.Message);
+    }
+
+    [Fact]
+    public void JobOptionsUseCanonicalNestedKeyOrderingForIdempotency()
+    {
+        Write("App.csproj", "<Project Sdk=\"Microsoft.NET.Sdk\"><PropertyGroup><TargetFramework>net10.0</TargetFramework></PropertyGroup></Project>");
+        var engine = new DotnetEngine(root);
+        var first = engine.Scan(new("org", "snapshot", ".", "STATIC", "corr-1", "canonical-options",
+            new Dictionary<string, object?> { ["nested"] = new Dictionary<string, object?> { ["z"] = 1, ["a"] = 2 } }));
+        var repeated = engine.Scan(new("org", "snapshot", ".", "STATIC", "corr-2", "canonical-options",
+            new Dictionary<string, object?> { ["nested"] = new Dictionary<string, object?> { ["a"] = 2, ["z"] = 1 } }));
+        Assert.Equal(first.JobId, repeated.JobId);
+        Assert.NotEqual(DotnetErrorCode.IdempotencyConflict, repeated.Error?.ErrorCode);
+
+        var missingOptions = engine.Scan(new("org", "snapshot", ".", "STATIC", "corr-3", "empty-options"));
+        var explicitEmpty = engine.Scan(new("org", "snapshot", ".", "STATIC", "corr-4", "empty-options",
+            new Dictionary<string, object?>()));
+        Assert.Equal(missingOptions.JobId, explicitEmpty.JobId);
+
+        var delimiterValue = engine.Scan(new("org", "snapshot", ".", "STATIC", "corr-5", "delimiter-options",
+            new Dictionary<string, object?> { ["a"] = "b, c=d" }));
+        var separateValues = engine.Scan(new("org", "snapshot", ".", "STATIC", "corr-6", "delimiter-options",
+            new Dictionary<string, object?> { ["a"] = "b", ["c"] = "d" }));
+        Assert.Equal(DotnetErrorCode.IdempotencyConflict, separateValues.Error?.ErrorCode);
+        Assert.NotEqual(delimiterValue, separateValues);
+    }
+
+    [Fact]
+    public void ExecuteRejectsInvalidNestedContractBeforeAnyWork()
+    {
+        var engine = new DotnetEngine(root);
+        var step = new StepDefinition("step", ExecutorType.TestRunner, new Dictionary<string, object?>());
+        var invalidBudget = new ExecuteStepRequest("org", "run", 1, step, ".", "sha",
+            new ExecutionBudget(0, 1, 0, 0), new Dictionary<string, object?>(), "corr", "invalid-budget");
+        var invalidVersion = invalidBudget with
+        {
+            MigrationPlanVersion = 0,
+            ExecutionBudget = new ExecutionBudget(1, 1, 0, 0),
+            IdempotencyKey = "invalid-version"
+        };
+        Assert.Equal(DotnetErrorCode.InvalidRequest, engine.ExecuteStep(invalidBudget).Error?.ErrorCode);
+        Assert.Equal(DotnetErrorCode.InvalidRequest, engine.ExecuteStep(invalidVersion).Error?.ErrorCode);
+    }
+
+    [Fact]
+    public void WorkspaceErrorsDoNotExposeRejectedPaths()
+    {
+        var engine = new DotnetEngine(root);
+        var secretPath = Path.Combine(root, "..", "private-customer-secret");
+        var response = engine.Scan(new("org", "snapshot", secretPath, "STATIC", "corr", "path"));
+        Assert.Equal(DotnetErrorCode.WorkspaceOutsideApprovedRoot, response.Error?.ErrorCode);
+        Assert.Equal("The workspace request was rejected by the approved-root policy.", response.Error?.Message);
+        Assert.DoesNotContain("private-customer-secret", response.Error?.Message);
     }
 
     [Fact]

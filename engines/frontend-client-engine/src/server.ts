@@ -22,10 +22,15 @@ function send(response: ServerResponse, status: number, value: unknown): void {
   response.end(JSON.stringify(value));
 }
 
-function statusFor(response: JobResponse): number {
+function statusFor(response: JobResponse, successStatus: 200 | 202): number {
   if (response.error?.errorCode === "IDEMPOTENCY_CONFLICT" || response.error?.errorCode === "JOB_TERMINAL") return 409;
   if (response.error?.errorCode === "JOB_NOT_FOUND") return 404;
-  return 202;
+  return successStatus;
+}
+
+function sendJob(response: ServerResponse, value: JobResponse, successStatus: 200 | 202): void {
+  const status = statusFor(value, successStatus);
+  send(response, status, status >= 400 ? value.error : value);
 }
 
 export const server = createServer(async (request, response) => {
@@ -36,12 +41,12 @@ export const server = createServer(async (request, response) => {
     const match = url.pathname.match(/^\/engine\/v1\/jobs\/([^/]+)$/);
     if (request.method === "GET" && match) {
       const result = engine.job(url.searchParams.get("organizationId") ?? "", match[1]!);
-      return send(response, statusFor(result), result);
+      return sendJob(response, result, 200);
     }
     const cancel = url.pathname.match(/^\/engine\/v1\/jobs\/([^/]+)\/cancel$/);
     if (request.method === "POST" && cancel) {
       const result = engine.cancel(url.searchParams.get("organizationId") ?? "", cancel[1]!);
-      return send(response, statusFor(result), result);
+      return sendJob(response, result, 200);
     }
     if (request.method === "POST" && url.pathname.startsWith("/engine/v1/")) {
       const value = await body(request) as EngineJobRequest;
@@ -50,11 +55,11 @@ export const server = createServer(async (request, response) => {
         : url.pathname === "/engine/v1/validate" ? engine.validate(value)
         : url.pathname === "/engine/v1/execute-step" ? engine.executeStep(value as ExecuteStepRequest)
         : undefined;
-      if (result) return send(response, statusFor(result), result);
+      if (result) return sendJob(response, result, 202);
     }
     send(response, 404, { errorCode: "NOT_FOUND" });
-  } catch (error) {
-    send(response, 400, { errorCode: "FRONTEND_REQUEST_REJECTED", message: error instanceof Error ? error.message : String(error) });
+  } catch {
+    send(response, 400, { errorCode: "FRONTEND_REQUEST_REJECTED", message: "The frontend engine request was rejected by its contract." });
   }
 });
 

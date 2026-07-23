@@ -6,13 +6,18 @@ import type { GenerationCapabilityResponse, GenerationTargetId } from "../lib/co
 import { Icon, type IconName } from "../components/Icon";
 import { StatusChip } from "../components/StatusChip";
 
-type GenerationDraft = {
+type GenerationIntent = {
   name: string;
   namespace: string;
   description: string;
   entity: string;
   reviewer: string;
   targets: GenerationTargetId[];
+};
+
+type GenerationDraft = GenerationIntent & {
+  id: string;
+  createdAt: string;
 };
 
 type WorkflowCommand = {
@@ -28,11 +33,28 @@ const plannedAssets = [
   { icon: "cloud" as IconName, title: "运行清单", detail: "Kubernetes 探针与资源" },
 ];
 
+const DRAFT_STORAGE_KEY = "elmos.project-generation-drafts.v1";
+const generationTargetIds = new Set<GenerationTargetId>(generationTargets.map((target) => target.id));
+
+function isStoredGenerationDraft(value: unknown): value is GenerationDraft {
+  if (!value || typeof value !== "object") return false;
+  const draft = value as Partial<GenerationDraft>;
+  return typeof draft.id === "string" && draft.id.length <= 100
+    && typeof draft.createdAt === "string" && !Number.isNaN(Date.parse(draft.createdAt))
+    && typeof draft.name === "string" && draft.name.length <= 64
+    && typeof draft.namespace === "string" && draft.namespace.length <= 200
+    && typeof draft.description === "string" && draft.description.length <= 500
+    && typeof draft.entity === "string" && draft.entity.length <= 64
+    && typeof draft.reviewer === "string" && draft.reviewer.length <= 200
+    && Array.isArray(draft.targets) && draft.targets.length > 0
+    && draft.targets.every((target): target is GenerationTargetId => typeof target === "string" && generationTargetIds.has(target as GenerationTargetId));
+}
+
 function shellQuote(value: string) {
   return `'${value.replaceAll("'", "'\\''")}'`;
 }
 
-function buildWorkflowCommands(draft: GenerationDraft): WorkflowCommand[] {
+function buildWorkflowCommands(draft: GenerationIntent): WorkflowCommand[] {
   const workspace = `generated/${draft.name}`;
   return [
     {
@@ -66,6 +88,8 @@ export function ProjectGenerationStudio() {
   const [reviewer, setReviewer] = useState("user:reviewer");
   const [targets, setTargets] = useState<GenerationTargetId[]>(["java", "python"]);
   const [draft, setDraft] = useState<GenerationDraft | null>(null);
+  const [savedDrafts, setSavedDrafts] = useState<GenerationDraft[]>([]);
+  const [draftsReady, setDraftsReady] = useState(false);
   const [capability, setCapability] = useState<GenerationCapabilityResponse | null>(null);
   const [feedback, setFeedback] = useState("");
   const [targetError, setTargetError] = useState("");
@@ -91,6 +115,27 @@ export function ProjectGenerationStudio() {
       });
     return () => controller.abort();
   }, []);
+
+  useEffect(() => {
+    try {
+      const stored = JSON.parse(window.localStorage.getItem(DRAFT_STORAGE_KEY) ?? "[]") as unknown;
+      if (Array.isArray(stored)) setSavedDrafts(stored.filter(isStoredGenerationDraft).slice(0, 50));
+    } catch {
+      try { window.localStorage.removeItem(DRAFT_STORAGE_KEY); } catch { /* Storage may be disabled by policy. */ }
+      setFeedback("本地草稿存储不可用；当前页面仍可准备一次性交接，但刷新后不会恢复。");
+    } finally {
+      setDraftsReady(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!draftsReady) return;
+    try {
+      window.localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(savedDrafts));
+    } catch {
+      announce("浏览器未允许保存本地草稿；请在离开页面前复制已锁定的交接命令。");
+    }
+  }, [draftsReady, savedDrafts]);
 
   useEffect(() => () => {
     if (feedbackTimer.current !== null) window.clearTimeout(feedbackTimer.current);
@@ -121,7 +166,9 @@ export function ProjectGenerationStudio() {
       setTargetError("请至少选择一个目标技术栈。");
       return;
     }
-    const nextDraft = {
+    const nextDraft: GenerationDraft = {
+      id: crypto.randomUUID(),
+      createdAt: new Date().toISOString(),
       name: name.trim(),
       namespace: namespace.trim(),
       description: description.trim(),
@@ -130,7 +177,27 @@ export function ProjectGenerationStudio() {
       targets,
     };
     setDraft(nextDraft);
-    announce(`“${nextDraft.name}”的四阶段生成交接已就绪；仍未执行任何代码生成。`);
+    setSavedDrafts((current) => [nextDraft, ...current].slice(0, 50));
+    announce(`“${nextDraft.name}”的四阶段生成交接已保存到此浏览器；仍未执行任何代码生成。`);
+  }
+
+  function restoreDraft(saved: GenerationDraft) {
+    setName(saved.name);
+    setNamespace(saved.namespace);
+    setDescription(saved.description);
+    setEntity(saved.entity);
+    setReviewer(saved.reviewer);
+    setTargets(saved.targets);
+    setTargetError("");
+    setDraft(saved);
+    announce(`已恢复“${saved.name}”并重新锁定其受控命令。`);
+  }
+
+  function removeDraft(id: string) {
+    const removed = savedDrafts.find((item) => item.id === id);
+    setSavedDrafts((current) => current.filter((item) => item.id !== id));
+    if (draft?.id === id) setDraft(null);
+    if (removed) announce(`“${removed.name}”已从此浏览器删除。`);
   }
 
   async function copyText(value: string, successMessage: string) {
@@ -203,6 +270,28 @@ export function ProjectGenerationStudio() {
             </div>
             <span className="field-error" id="target-error" role="alert">{targetError}</span>
           </fieldset>
+
+          <section className="generation-draft-library" aria-labelledby="generation-drafts-title">
+            <div className="generation-section-heading compact">
+              <div><span className="overline">LOCAL REVIEW DRAFTS</span><h3 id="generation-drafts-title">已保存的生成交接</h3></div>
+              <span>{savedDrafts.length} / 50</span>
+            </div>
+            {savedDrafts.length === 0 ? (
+              <p className="generation-drafts-empty">提交有效项目意图后，草稿会保存在当前浏览器，刷新页面仍可恢复。</p>
+            ) : (
+              <div className="generation-draft-list">
+                {savedDrafts.map((saved) => (
+                  <article className={`generation-draft-row ${draft?.id === saved.id ? "active" : ""}`} key={saved.id}>
+                    <span className="capability-icon accent-cyan"><Icon name="repository" size={17} /></span>
+                    <div><strong>{saved.name}</strong><small>{saved.targets.join(" + ")} · {new Date(saved.createdAt).toLocaleString("zh-CN")}</small></div>
+                    <StatusChip status={draft?.id === saved.id ? "REVIEW" : "DRAFT"} compact />
+                    <button type="button" className="button button-secondary compact-button" onClick={() => restoreDraft(saved)} aria-label={`恢复草稿 ${saved.name}`}>恢复</button>
+                    <button type="button" className="icon-button" onClick={() => removeDraft(saved.id)} aria-label={`删除草稿 ${saved.name}`}><Icon name="close" size={13} /></button>
+                  </article>
+                ))}
+              </div>
+            )}
+          </section>
 
           <div className="planned-assets" aria-labelledby="assets-title">
             <div className="generation-section-heading compact"><div><span className="overline">PLANNED ASSETS</span><h3 id="assets-title">生成计划包含</h3></div><span>实际未生成</span></div>

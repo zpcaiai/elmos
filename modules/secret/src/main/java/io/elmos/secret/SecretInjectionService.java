@@ -6,7 +6,13 @@ import java.time.Instant;
 import java.util.Objects;
 
 public final class SecretInjectionService {
-    public record SecretRequest(String workspaceId, SecretLease.SecretType type, Duration requestedTtl) {}
+    public record SecretRequest(String workspaceId, SecretLease.SecretType type, Duration requestedTtl) {
+        public SecretRequest {
+            if (workspaceId == null || workspaceId.isBlank()) throw new IllegalArgumentException("workspaceId is required");
+            Objects.requireNonNull(type, "secret type is required");
+            Objects.requireNonNull(requestedTtl, "requestedTtl is required");
+        }
+    }
     public record ProviderLease(String providerLeaseId, SecretValue value, Instant issuedAt, Instant expiresAt) {}
     public interface SecretProviderPort {
         ProviderLease issue(SecretRequest request);
@@ -28,11 +34,16 @@ public final class SecretInjectionService {
     }
 
     public SecretLease inject(String leaseId, SecretRequest request) {
-        Objects.requireNonNull(request);
+        if (leaseId == null || !leaseId.matches("[A-Za-z0-9._:-]{1,64}")) throw new IllegalArgumentException("leaseId is invalid");
+        Objects.requireNonNull(request, "secret request is required");
         if (request.requestedTtl().isNegative() || request.requestedTtl().isZero() || request.requestedTtl().compareTo(MAX_TTL) > 0) {
             throw new SecurityException("secret lease TTL is outside policy");
         }
-        ProviderLease issued = provider.issue(request);
+        ProviderLease issued = Objects.requireNonNull(provider.issue(request), "provider lease is required");
+        Objects.requireNonNull(issued.providerLeaseId(), "provider lease id is required");
+        Objects.requireNonNull(issued.value(), "provider secret value is required");
+        Objects.requireNonNull(issued.issuedAt(), "provider issuedAt is required");
+        Objects.requireNonNull(issued.expiresAt(), "provider expiresAt is required");
         try (SecretValue value = issued.value()) {
             if (issued.issuedAt().isAfter(clock.instant().plusSeconds(30)) || !issued.expiresAt().isAfter(clock.instant())
                     || Duration.between(issued.issuedAt(), issued.expiresAt()).compareTo(request.requestedTtl()) > 0) {

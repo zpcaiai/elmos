@@ -51,6 +51,9 @@ public final class MainframeEngineService {
                         Map.entry("shortLivedJobLease", true),
                         Map.entry("datasetAllowlist", true),
                         Map.entry("controlPlaneExecution", false),
+                        Map.entry("jobStatePersistence", "EPHEMERAL_PROCESS_LOCAL"),
+                        Map.entry("durableStateAuthority", "ELMOS_CONTROL_PLANE"),
+                        Map.entry("restartRecovery", "NOT_SUPPORTED_BY_WORKER"),
                         Map.entry("arbitraryJcl", false),
                         Map.entry("productionWritesDefault", "DENY"),
                         Map.entry("promotionRequiresIndependentApproval", true),
@@ -84,7 +87,7 @@ public final class MainframeEngineService {
         require(request.organizationId(), "organizationId"); require(request.migrationRunId(), "migrationRunId");
         require(request.workspaceRef(), "workspaceRef"); require(request.sourceCommit(), "sourceCommit");
         require(request.idempotencyKey(), "idempotencyKey");
-        return once("execute", request.organizationId(), request.idempotencyKey(), request.toString(), id -> {
+        return once("execute", request.organizationId(), request.idempotencyKey(), EngineApi.idempotencyMaterial(request), id -> {
             if (!EXECUTORS.contains(request.stepDefinition().executorType())) {
                 return failure(request.organizationId(), id, ErrorCode.POLICY_BLOCKED, "executor is not a Mainframe runner", "NOT_RUN");
             }
@@ -120,27 +123,28 @@ public final class MainframeEngineService {
     public JobResponse job(String organizationId, String jobId) {
         require(organizationId, "organizationId"); require(jobId, "jobId");
         StoredJob stored = jobs.get(jobId);
-        if (stored == null || !stored.organizationId().equals(organizationId)) throw new IllegalArgumentException("job not found");
+        if (stored == null || !stored.organizationId().equals(organizationId)) throw new EngineApi.JobNotFoundException(jobId);
         return stored.response();
     }
     public JobResponse cancel(String organizationId, String jobId) {
         JobResponse current = job(organizationId, jobId);
+        if (EngineApi.isTerminal(current.status())) throw new EngineApi.JobConflictException(jobId);
         JobResponse cancelled = new JobResponse(current.schemaVersion(), current.jobId(), JobStatus.CANCELLED,
-                current.evidenceRefs(), Map.of("externalStatus", "NOT_RUN", "customerCodeExecuted", false), null);
+                current.evidenceRefs(), current.result(), current.error());
         jobs.put(jobId, new StoredJob(organizationId, cancelled)); return cancelled;
     }
 
     private JobResponse once(String action, JobRequest request, Function<String, JobResponse> work) {
         require(request.organizationId(), "organizationId"); require(request.repositorySnapshotRef(), "repositorySnapshotRef");
         require(request.workspaceRef(), "workspaceRef"); require(request.idempotencyKey(), "idempotencyKey");
-        return once(action, request.organizationId(), request.idempotencyKey(), request.toString(), work);
+        return once(action, request.organizationId(), request.idempotencyKey(), EngineApi.idempotencyMaterial(request), work);
     }
     private JobResponse once(String action, String organizationId, String key, String material, Function<String, JobResponse> work) {
         String scope = organizationId + ":" + action + ":" + key;
         String fingerprint = hash(material);
         IdempotentResult prior = idempotency.get(scope);
         if (prior != null) {
-            if (!prior.fingerprint().equals(fingerprint)) throw new IllegalArgumentException("idempotency key reused with different request");
+            if (!prior.fingerprint().equals(fingerprint)) throw new EngineApi.IdempotencyConflictException(key);
             return prior.response();
         }
         String jobId = "mf-" + hash(scope).substring(0, 20);

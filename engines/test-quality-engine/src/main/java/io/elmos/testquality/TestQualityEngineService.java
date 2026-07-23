@@ -40,11 +40,15 @@ public final class TestQualityEngineService {
                 List.of("ROOTLESS_EPHEMERAL", "NAMESPACE_ISOLATED", "PERFORMANCE_DEDICATED"),
                 adapters.statusSummary(), List.of(),
                 List.of("DISCOVERY_RECONCILIATION", "RISK_COVERAGE", "ASSERTION_STRENGTH", "MUTATION_EFFECTIVENESS", "FLAKY_RELIABILITY", "ENVIRONMENT_FIDELITY", "EVIDENCE_FRESHNESS"),
-                Map.of("network", "DENY_BY_DEFAULT", "runnerStatus", "NOT_CONFIGURED",
-                        "namespaceIsolation", true, "shortLivedEnvironmentLease", true,
-                        "shortLivedTestDataLease", true, "preserveFailingEvidence", true,
-                        "workerCanModifyGate", false, "aiAutoPromotion", false,
-                        "notRunCanPass", false, "productionSecretsAllowed", false));
+                Map.ofEntries(
+                        Map.entry("network", "DENY_BY_DEFAULT"), Map.entry("runnerStatus", "NOT_CONFIGURED"),
+                        Map.entry("namespaceIsolation", true), Map.entry("shortLivedEnvironmentLease", true),
+                        Map.entry("shortLivedTestDataLease", true), Map.entry("preserveFailingEvidence", true),
+                        Map.entry("workerCanModifyGate", false), Map.entry("aiAutoPromotion", false),
+                        Map.entry("notRunCanPass", false), Map.entry("productionSecretsAllowed", false),
+                        Map.entry("jobStatePersistence", "EPHEMERAL_PROCESS_LOCAL"),
+                        Map.entry("durableStateAuthority", "ELMOS_CONTROL_PLANE"),
+                        Map.entry("restartRecovery", "NOT_SUPPORTED_BY_WORKER")));
     }
 
     public JobResponse discover(JobRequest request) {
@@ -69,7 +73,7 @@ public final class TestQualityEngineService {
         require(request.organizationId(), "organizationId"); require(request.migrationRunId(), "migrationRunId");
         require(request.workspaceRef(), "workspaceRef"); require(request.sourceCommit(), "sourceCommit");
         require(request.idempotencyKey(), "idempotencyKey");
-        return once("execute", request.organizationId(), request.idempotencyKey(), request.toString(), id -> {
+        return once("execute", request.organizationId(), request.idempotencyKey(), EngineApi.idempotencyMaterial(request), id -> {
             if (!TEST_EXECUTORS.contains(request.stepDefinition().executorType())) {
                 return failure(id, ErrorCode.POLICY_BLOCKED, "executor is not a Test Quality runner", "NOT_RUN");
             }
@@ -102,15 +106,13 @@ public final class TestQualityEngineService {
 
     public JobResponse job(String organizationId, String jobId) {
         require(organizationId, "organizationId"); require(jobId, "jobId");
-        return jobs.getOrDefault(organizationId + ":" + jobId,
-                failure(jobId, ErrorCode.UNKNOWN, "job is not visible to this organization", "NOT_RUN"));
+        var existing = jobs.get(organizationId + ":" + jobId);
+        if (existing == null) throw new EngineApi.JobNotFoundException(jobId);
+        return existing;
     }
     public JobResponse cancel(String organizationId, String jobId) {
         var existing = job(organizationId, jobId);
-        if (existing.error() != null) return existing;
-        if (List.of(JobStatus.SUCCEEDED, JobStatus.FAILED, JobStatus.CANCELLED).contains(existing.status())) {
-            return failure(jobId, ErrorCode.POLICY_BLOCKED, "terminal job cannot be cancelled", "NOT_RUN");
-        }
+        if (EngineApi.isTerminal(existing.status())) throw new EngineApi.JobConflictException(jobId);
         var cancelled = new JobResponse(existing.schemaVersion(), existing.jobId(), JobStatus.CANCELLED,
                 existing.evidenceRefs(), existing.result(), null);
         jobs.put(organizationId + ":" + jobId, cancelled); return cancelled;
@@ -120,14 +122,13 @@ public final class TestQualityEngineService {
         require(request.organizationId(), "organizationId"); require(request.repositorySnapshotRef(), "repositorySnapshotRef");
         require(request.workspaceRef(), "workspaceRef"); require(request.profile(), "profile");
         require(request.correlationId(), "correlationId"); require(request.idempotencyKey(), "idempotencyKey");
-        return once(operation, request.organizationId(), request.idempotencyKey(), request.toString(), action);
+        return once(operation, request.organizationId(), request.idempotencyKey(), EngineApi.idempotencyMaterial(request), action);
     }
     private JobResponse once(String operation, String organizationId, String key, String input, Function<String, JobResponse> action) {
         String scopedKey = organizationId + ":" + operation + ":" + key;
         String fingerprint = hash(operation + "\n" + input); var previous = idempotency.get(scopedKey);
         if (previous != null) {
-            if (!previous.fingerprint().equals(fingerprint)) return failure(previous.response().jobId(), ErrorCode.POLICY_BLOCKED,
-                    "idempotency key was reused with different input", "NOT_RUN");
+            if (!previous.fingerprint().equals(fingerprint)) throw new EngineApi.IdempotencyConflictException(key);
             return previous.response();
         }
         String jobId = hash(scopedKey).substring(0, 24); JobResponse response = action.apply(jobId);

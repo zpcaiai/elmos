@@ -45,8 +45,12 @@ public sealed class DotnetEngine : IDotnetEngine
 
     public EngineCapabilities Capabilities() => CapabilityManifest.Current;
 
-    public EngineJobResponse Scan(EngineJobRequest request) => RunIdempotent(request.OrganizationId, "scan", request.IdempotencyKey, HashInput(request.RepositorySnapshotRef, request.WorkspaceRef, request.Profile, SerializeMap(request.Options)), () =>
+    public EngineJobResponse Scan(EngineJobRequest request)
     {
+        var invalid = ValidateJobRequest(request);
+        if (invalid is not null) return InvalidRequest(invalid);
+        return RunIdempotent(request.OrganizationId, "scan", request.IdempotencyKey, HashInput(request.RepositorySnapshotRef, request.WorkspaceRef, request.Profile, SerializeMap(request.Options)), () =>
+        {
         var workspace = ResolveWorkspace(request.WorkspaceRef);
         var inventory = discovery.Scan(workspace, request.RepositorySnapshotRef);
         var fingerprint = fingerprinter.Fingerprint(workspace, inventory);
@@ -65,10 +69,15 @@ public sealed class DotnetEngine : IDotnetEngine
             ["evidenceExtensions"] = artifacts,
             ["dynamicMsBuildEvaluation"] = "NOT_RUN_REQUIRES_SANDBOXED_WINDOWS_RUNNER"
         });
-    });
+        });
+    }
 
-    public EngineJobResponse Plan(EngineJobRequest request) => RunIdempotent(request.OrganizationId, "plan", request.IdempotencyKey, HashInput(request.RepositorySnapshotRef, request.WorkspaceRef, request.Profile, SerializeMap(request.Options)), () =>
+    public EngineJobResponse Plan(EngineJobRequest request)
     {
+        var invalid = ValidateJobRequest(request);
+        if (invalid is not null) return InvalidRequest(invalid);
+        return RunIdempotent(request.OrganizationId, "plan", request.IdempotencyKey, HashInput(request.RepositorySnapshotRef, request.WorkspaceRef, request.Profile, SerializeMap(request.Options)), () =>
+        {
         var workspace = ResolveWorkspace(request.WorkspaceRef);
         var inventory = discovery.Scan(workspace, request.RepositorySnapshotRef);
         var fingerprint = fingerprinter.Fingerprint(workspace, inventory);
@@ -77,12 +86,13 @@ public sealed class DotnetEngine : IDotnetEngine
         var plan = planner.Plan(inventory, fingerprint, graph, policy);
         var evidence = evidenceMapper.Map(request.OrganizationId, request.RepositorySnapshotRef, "DOTNET_MIGRATION_PLAN", plan, plan.Risks.Count == 0 ? EvidenceStatus.Passed : EvidenceStatus.Inconclusive);
         return Success(StableJobId(request.OrganizationId, "plan", request.IdempotencyKey), ["sha256:" + evidence.ContentHash], new Dictionary<string, object?> { ["plan"] = plan, ["evidenceExtension"] = evidence });
-    });
+        });
+    }
 
     public EngineJobResponse ExecuteStep(ExecuteStepRequest request)
     {
-        if (request.StepDefinition is null)
-            return Failure("dotnet-invalid-request", DotnetErrorCode.PolicyBlocked, "stepDefinition is required.", "Submit a versioned approved migration step.");
+        var invalid = ValidateExecuteRequest(request);
+        if (invalid is not null) return InvalidRequest(invalid);
         return RunIdempotent(request.OrganizationId, "execute", request.IdempotencyKey, HashInput(
             request.MigrationRunId, request.MigrationPlanVersion.ToString(), request.StepDefinition.StepId,
             request.StepDefinition.ExecutorType.ToString(), request.WorkspaceRef, request.SourceCommit,
@@ -108,8 +118,12 @@ public sealed class DotnetEngine : IDotnetEngine
         });
     }
 
-    public EngineJobResponse Validate(EngineJobRequest request) => RunIdempotent(request.OrganizationId, "validate", request.IdempotencyKey, HashInput(request.RepositorySnapshotRef, request.WorkspaceRef, request.Profile, SerializeMap(request.Options)), () =>
+    public EngineJobResponse Validate(EngineJobRequest request)
     {
+        var invalid = ValidateJobRequest(request);
+        if (invalid is not null) return InvalidRequest(invalid);
+        return RunIdempotent(request.OrganizationId, "validate", request.IdempotencyKey, HashInput(request.RepositorySnapshotRef, request.WorkspaceRef, request.Profile, SerializeMap(request.Options)), () =>
+        {
         var input = new ValidationInput(
             OptionInt(request.Options, "baselineTests", 0), OptionInt(request.Options, "migratedTests", 0),
             OptionBool(request.Options, "baselineWindowsPassed"), OptionBool(request.Options, "migratedWindowsPassed"),
@@ -120,15 +134,16 @@ public sealed class DotnetEngine : IDotnetEngine
         return decision.Status == EvidenceStatus.Passed
             ? Success(jobId, ["sha256:" + evidence.ContentHash], new Dictionary<string, object?> { ["decision"] = decision, ["evidenceExtension"] = evidence })
             : new("1.0", jobId, JobStatus.Failed, ["sha256:" + evidence.ContentHash], new Dictionary<string, object?> { ["decision"] = decision, ["evidenceExtension"] = evidence }, new(DotnetErrorCode.ValidationFailed, "Independent .NET validation gates did not pass.", false, ["sha256:" + evidence.ContentHash], null, null, "Resolve failed or missing gates; do not promote the migration."));
-    });
+        });
+    }
 
-    public EngineJobResponse GetJob(string organizationId, string jobId) => jobs.TryGetValue(jobId, out var stored) && stored.OrganizationId == organizationId ? stored.Response : Failure(jobId, DotnetErrorCode.PolicyBlocked, "Job is not visible in this organization.", "Verify the organization and job identifier.");
+    public EngineJobResponse GetJob(string organizationId, string jobId) => jobs.TryGetValue(jobId, out var stored) && stored.OrganizationId == organizationId ? stored.Response : Failure(jobId, DotnetErrorCode.JobNotFound, "The requested engine job was not found.", "Verify the organization and job identifier.");
 
     public EngineJobResponse Cancel(string organizationId, string jobId)
     {
-        if (!jobs.TryGetValue(jobId, out var stored) || stored.OrganizationId != organizationId) return Failure(jobId, DotnetErrorCode.PolicyBlocked, "Job is not visible in this organization.", "Verify the organization and job identifier.");
+        if (!jobs.TryGetValue(jobId, out var stored) || stored.OrganizationId != organizationId) return Failure(jobId, DotnetErrorCode.JobNotFound, "The requested engine job was not found.", "Verify the organization and job identifier.");
         if (stored.Response.Status is JobStatus.Succeeded or JobStatus.Failed or JobStatus.Cancelled)
-            return Failure(jobId, DotnetErrorCode.PolicyBlocked, "A terminal job cannot be cancelled or rewritten.", "Retain the historical result and submit a new idempotency key for a new attempt.");
+            return Failure(jobId, DotnetErrorCode.JobTerminal, "A terminal job cannot be cancelled or rewritten.", "Retain the historical result and submit a new idempotency key for a new attempt.");
         var cancelled = stored.Response with { Status = JobStatus.Cancelled };
         jobs[jobId] = stored with { Response = cancelled };
         return cancelled;
@@ -142,12 +157,12 @@ public sealed class DotnetEngine : IDotnetEngine
                 return Failure("dotnet-invalid-request", DotnetErrorCode.PolicyBlocked, "organizationId and idempotencyKey are required.", "Provide a server-derived organization and stable idempotency key.");
             var scope = organizationId + "|" + operation + "|" + key;
             if (idempotency.TryGetValue(scope, out var existingId) && jobs.TryGetValue(existingId, out var existing))
-                return existing.InputHash == inputHash ? existing.Response : Failure(existingId, DotnetErrorCode.PolicyBlocked, "The idempotency key was already used with different immutable inputs.", "Use the original inputs or submit a new idempotency key.");
+                return existing.InputHash == inputHash ? existing.Response : Failure(existingId, DotnetErrorCode.IdempotencyConflict, "The idempotency key was already used with different immutable inputs.", "Use the original inputs or submit a new idempotency key.");
             EngineJobResponse response;
             try { response = action(); }
-            catch (InvalidOperationException exception) { response = Failure(StableJobId(organizationId, operation, key), DotnetErrorCode.WorkspaceOutsideApprovedRoot, exception.Message, "Use a materialized immutable snapshot inside the approved workspace root."); }
-            catch (DirectoryNotFoundException exception) { response = Failure(StableJobId(organizationId, operation, key), DotnetErrorCode.DotnetSolutionNotFound, exception.Message, "Materialize the immutable snapshot before invoking the engine."); }
-            catch (Exception exception) { response = Failure(StableJobId(organizationId, operation, key), DotnetErrorCode.InternalEngineError, exception.Message, "Inspect the sanitized engine evidence and retry only if policy permits."); }
+            catch (InvalidOperationException) { response = Failure(StableJobId(organizationId, operation, key), DotnetErrorCode.WorkspaceOutsideApprovedRoot, "The workspace request was rejected by the approved-root policy.", "Use a materialized immutable snapshot inside the approved workspace root."); }
+            catch (DirectoryNotFoundException) { response = Failure(StableJobId(organizationId, operation, key), DotnetErrorCode.DotnetSolutionNotFound, "The requested .NET workspace or solution was not found.", "Materialize the immutable snapshot before invoking the engine."); }
+            catch (Exception) { response = Failure(StableJobId(organizationId, operation, key), DotnetErrorCode.InternalEngineError, "The .NET engine failed without recording successful execution.", "Inspect the sanitized engine evidence and retry only if policy permits."); }
             var stored = new StoredJob(organizationId, scope, inputHash, response);
             jobs[response.JobId] = stored;
             idempotency[scope] = response.JobId;
@@ -165,9 +180,53 @@ public sealed class DotnetEngine : IDotnetEngine
 
     private static EngineJobResponse Success(string id, IReadOnlyList<string> refs, IReadOnlyDictionary<string, object?> result) => new("1.0", id, JobStatus.Succeeded, refs, result, null);
     private static EngineJobResponse Failure(string id, DotnetErrorCode code, string message, string action) => new("1.0", id, JobStatus.Failed, [], new Dictionary<string, object?>(), new(code, message, false, [], null, null, action));
+    private static EngineJobResponse InvalidRequest(string reason) => Failure("dotnet-invalid-request", DotnetErrorCode.InvalidRequest, reason, "Correct the request contract before retrying.");
+    private static string? ValidateJobRequest(EngineJobRequest? request)
+    {
+        if (request is null) return "A request body is required.";
+        if (string.IsNullOrWhiteSpace(request.OrganizationId) || string.IsNullOrWhiteSpace(request.RepositorySnapshotRef)
+            || string.IsNullOrWhiteSpace(request.WorkspaceRef) || string.IsNullOrWhiteSpace(request.Profile)
+            || string.IsNullOrWhiteSpace(request.CorrelationId) || string.IsNullOrWhiteSpace(request.IdempotencyKey))
+            return "All required job request fields must be non-blank.";
+        return null;
+    }
+    private static string? ValidateExecuteRequest(ExecuteStepRequest? request)
+    {
+        if (request is null) return "A request body is required.";
+        if (string.IsNullOrWhiteSpace(request.OrganizationId) || string.IsNullOrWhiteSpace(request.MigrationRunId)
+            || string.IsNullOrWhiteSpace(request.WorkspaceRef) || string.IsNullOrWhiteSpace(request.SourceCommit)
+            || string.IsNullOrWhiteSpace(request.CorrelationId) || string.IsNullOrWhiteSpace(request.IdempotencyKey))
+            return "All required execute-step fields must be non-blank.";
+        if (request.MigrationPlanVersion <= 0) return "migrationPlanVersion must be positive.";
+        if (request.StepDefinition is null || string.IsNullOrWhiteSpace(request.StepDefinition.StepId)
+            || request.StepDefinition.Configuration is null) return "A complete stepDefinition is required.";
+        if (request.ExecutionBudget is null) return "executionBudget is required.";
+        if (request.ExecutionBudget.TimeoutSeconds <= 0 || request.ExecutionBudget.CpuSeconds <= 0
+            || request.ExecutionBudget.MaxBytesWritten < 0 || request.ExecutionBudget.MaxAgentCredits < 0)
+            return "Execution budget values are outside the allowed range.";
+        if (request.Policy is null) return "policy is required.";
+        return null;
+    }
     private static string StableJobId(string organizationId, string operation, string key) => "dotnet-" + Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(organizationId + "|" + operation + "|" + key + "|1.0.0"))).ToLowerInvariant()[..24];
-    private static string HashInput(params string?[] values) => Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(string.Join("\u001f", values)))).ToLowerInvariant();
-    private static string SerializeMap(IReadOnlyDictionary<string, object?>? values) => values is null ? "null" : string.Join("\u001e", values.OrderBy(entry => entry.Key, StringComparer.Ordinal).Select(entry => entry.Key + "=" + (entry.Value is JsonElement element ? element.GetRawText() : JsonSerializer.Serialize(entry.Value))));
+    private static string HashInput(params string?[] values) => Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(string.Concat(values.Select(value => LengthPrefix(value ?? "")))))).ToLowerInvariant();
+    private static string SerializeMap(IReadOnlyDictionary<string, object?>? values) => values is null || values.Count == 0 ? "" : string.Concat(values.OrderBy(entry => entry.Key, StringComparer.Ordinal).Select(entry => LengthPrefix(entry.Key) + LengthPrefix(SerializeValue(entry.Value))));
+    private static string SerializeValue(object? value) => value switch
+    {
+        null => "null",
+        JsonElement element => SerializeElement(element),
+        IReadOnlyDictionary<string, object?> map => "M" + SerializeMap(map),
+        IEnumerable<object?> items => "L" + string.Concat(items.Select(item => LengthPrefix(SerializeValue(item)))),
+        _ => JsonSerializer.Serialize(value)
+    };
+    private static string SerializeElement(JsonElement element) => element.ValueKind switch
+    {
+        JsonValueKind.Object => "M" + string.Concat(element.EnumerateObject().OrderBy(property => property.Name, StringComparer.Ordinal).Select(property => LengthPrefix(property.Name) + LengthPrefix(SerializeElement(property.Value)))),
+        JsonValueKind.Array => "L" + string.Concat(element.EnumerateArray().Select(item => LengthPrefix(SerializeElement(item)))),
+        JsonValueKind.String => JsonSerializer.Serialize(element.GetString()),
+        JsonValueKind.Null => "null",
+        _ => element.GetRawText()
+    };
+    private static string LengthPrefix(string value) => value.Length + ":" + value;
     private static void Require(string value, string name) { if (string.IsNullOrWhiteSpace(value)) throw new ArgumentException($"{name} is required", name); }
     private static string ValueAsString(object value) => value is JsonElement element ? element.GetString() ?? element.GetRawText() : value.ToString() ?? "";
     private static string OptionString(IReadOnlyDictionary<string, object?>? options, string key, string fallback) => options is not null && options.TryGetValue(key, out var value) && value is not null ? ValueAsString(value) : fallback;

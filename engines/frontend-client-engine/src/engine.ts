@@ -50,7 +50,9 @@ export class FrontendClientEngine {
       desktopFrameworks: ["ELECTRON", "WPF", "WINFORMS", "WEBVIEW", "JAVA_DESKTOP_INVENTORY", "QT_INVENTORY"],
       mobileFrameworks: ["ANDROID_VIEWS", "ANDROID_COMPOSE", "UIKIT", "SWIFTUI", "REACT_NATIVE", "FLUTTER", "CORDOVA", "IONIC"],
       runnerProfiles: { WEB_LEGACY: "NOT_CONFIGURED", MODERN_WEB: "NOT_CONFIGURED", BROWSER_MATRIX: "NOT_CONFIGURED", DESKTOP_WINDOWS: "NOT_CONFIGURED", DESKTOP_MACOS: "NOT_CONFIGURED", ANDROID: "NOT_CONFIGURED", IOS: "NOT_CONFIGURED" },
-      staticAnalysis: "READY", customerCodeExecution: "RUNNER_REQUIRED_FAIL_CLOSED"
+      staticAnalysis: "READY", customerCodeExecution: "RUNNER_REQUIRED_FAIL_CLOSED",
+      jobStatePersistence: "EPHEMERAL_PROCESS_LOCAL", durableStateAuthority: "ELMOS_CONTROL_PLANE",
+      restartRecovery: "NOT_SUPPORTED_BY_WORKER"
     };
   }
 
@@ -65,7 +67,8 @@ export class FrontendClientEngine {
           result: { configured: true, executed: true, customerCodeExecuted: false, inventory, graph } };
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        return problem(jobId, message === "FRONTEND_WORKSPACE_NOT_FOUND" ? "FRONTEND_WORKSPACE_NOT_FOUND" : "FRONTEND_ROUTE_DISCOVERY_FAILED", message);
+        return problem(jobId, message === "FRONTEND_WORKSPACE_NOT_FOUND" ? "FRONTEND_WORKSPACE_NOT_FOUND" : "FRONTEND_ROUTE_DISCOVERY_FAILED",
+          message === "FRONTEND_WORKSPACE_NOT_FOUND" ? "The frontend workspace input was not found." : "Frontend route discovery failed without successful execution.");
       }
     });
   }
@@ -82,8 +85,8 @@ export class FrontendClientEngine {
         return { schemaVersion: "1.0", jobId, status: plan.blockers.length ? "FAILED" : "SUCCEEDED",
           evidenceRefs: [`artifact://frontend-plan/${hash}`], result: { configured: true, executed: true, customerCodeExecuted: false, plan },
           ...(plan.blockers.length ? { error: { errorCode: "FRONTEND_PLAN_BLOCKED" as const, message: plan.blockers.join(","), retryable: false } } : {}) };
-      } catch (error) {
-        return problem(jobId, "FRONTEND_ROUTE_DISCOVERY_FAILED", error instanceof Error ? error.message : String(error));
+      } catch {
+        return problem(jobId, "FRONTEND_ROUTE_DISCOVERY_FAILED", "Frontend migration planning rejected incomplete or invalid inputs.");
       }
     });
   }

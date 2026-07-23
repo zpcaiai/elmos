@@ -25,16 +25,17 @@ app.MapGet("/health", () => Results.Ok(new { status = "UP", engine = "ELMOS_DOTN
 
 app.Run();
 
-static IResult Accepted(EngineJobResponse response) => response.Error is
-{ ErrorCode: DotnetErrorCode.PolicyBlocked, Message: var message }
-    && message.Contains("idempotency", StringComparison.OrdinalIgnoreCase)
-    ? Results.Conflict(response)
-    : Results.Accepted($"/engine/v1/jobs/{response.JobId}", response);
+static IResult Accepted(EngineJobResponse response) => response.Error?.ErrorCode switch
+{
+    DotnetErrorCode.InvalidRequest => Results.BadRequest(response.Error),
+    DotnetErrorCode.IdempotencyConflict => Results.Conflict(response.Error),
+    _ => Results.Accepted($"/engine/v1/jobs/{response.JobId}", response)
+};
 static IResult Visible(EngineJobResponse response) => response.Error switch
 {
-    { ErrorCode: DotnetErrorCode.PolicyBlocked, Message: var message }
-        when message.StartsWith("Job is not visible", StringComparison.Ordinal) => Results.NotFound(response),
-    not null => Results.Conflict(response),
+    { ErrorCode: DotnetErrorCode.JobNotFound } => Results.NotFound(response.Error),
+    { ErrorCode: DotnetErrorCode.JobTerminal } => Results.Conflict(response.Error),
+    not null => Results.Conflict(response.Error),
     _ => Results.Ok(response)
 };
 

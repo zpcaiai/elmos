@@ -99,6 +99,9 @@ class PythonEngine:
                 "network": "DENY_BY_DEFAULT",
                 "controlPlaneSecrets": "FORBIDDEN",
                 "customerCodeInControlPlane": False,
+                "jobStatePersistence": "EPHEMERAL_PROCESS_LOCAL",
+                "durableStateAuthority": "ELMOS_CONTROL_PLANE",
+                "restartRecovery": "NOT_SUPPORTED_BY_WORKER",
             },
         )
 
@@ -146,8 +149,8 @@ class PythonEngine:
             if stored is None or stored[0] != organization_id:
                 return self._failure(
                     job_id,
-                    ErrorCode.POLICY_BLOCKED,
-                    "Job is not visible in this organization.",
+                    ErrorCode.JOB_NOT_FOUND,
+                    "The requested engine job was not found.",
                     "Use the owning organization context.",
                 )
             return stored[2]
@@ -158,14 +161,14 @@ class PythonEngine:
             if stored is None or stored[0] != organization_id:
                 return self._failure(
                     job_id,
-                    ErrorCode.POLICY_BLOCKED,
-                    "Job is not visible in this organization.",
+                    ErrorCode.JOB_NOT_FOUND,
+                    "The requested engine job was not found.",
                     "Use the owning organization context.",
                 )
             if stored[2].status in {JobStatus.SUCCEEDED, JobStatus.FAILED, JobStatus.CANCELLED}:
                 return self._failure(
                     job_id,
-                    ErrorCode.POLICY_BLOCKED,
+                    ErrorCode.JOB_TERMINAL,
                     "Terminal job state cannot be rewritten by cancellation.",
                     "Inspect the immutable terminal result.",
                 )
@@ -381,7 +384,7 @@ class PythonEngine:
                 if existing[0] != input_hash:
                     return self._failure(
                         existing[1].job_id,
-                        ErrorCode.POLICY_BLOCKED,
+                        ErrorCode.IDEMPOTENCY_CONFLICT,
                         "Idempotency key was already bound to different immutable inputs.",
                         "Use the original inputs or a new idempotency key.",
                     )

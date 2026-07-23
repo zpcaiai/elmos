@@ -58,4 +58,7 @@ export interface Capabilities {
   readonly runnerProfiles: Readonly<Record<string, "NOT_CONFIGURED">>;
   readonly staticAnalysis: "READY";
   readonly customerCodeExecution: "RUNNER_REQUIRED_FAIL_CLOSED";
+  readonly jobStatePersistence: "EPHEMERAL_PROCESS_LOCAL";
+  readonly durableStateAuthority: "ELMOS_CONTROL_PLANE";
+  readonly restartRecovery: "NOT_SUPPORTED_BY_WORKER";
 }

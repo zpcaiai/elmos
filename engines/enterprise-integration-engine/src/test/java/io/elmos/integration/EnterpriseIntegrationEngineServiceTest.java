@@ -62,7 +62,12 @@ class EnterpriseIntegrationEngineServiceTest {
 
     @Test void jobsAreTenantScoped() {
         var response = service.scan(job("tenant-job"));
-        assertThrows(IllegalArgumentException.class, () -> service.job("other-org", response.jobId()));
+        assertThrows(EngineApi.IdempotencyConflictException.class, () -> service.scan(
+                new EngineApi.JobRequest("org-1", "snapshot://changed", "workspace://1", "STANDARD", "corr-2", "tenant-job")));
+        assertThrows(EngineApi.JobNotFoundException.class, () -> service.job("other-org", response.jobId()));
+        assertThrows(EngineApi.JobConflictException.class, () -> service.cancel("org-1", response.jobId()));
+        assertEquals(response, service.job("org-1", response.jobId()));
+        assertEquals(response, service.scan(job("tenant-job")));
     }
 
     private static EngineApi.JobRequest job(String key) {

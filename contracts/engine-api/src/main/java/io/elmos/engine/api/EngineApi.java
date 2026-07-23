@@ -1,12 +1,20 @@
 package io.elmos.engine.api;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
 
 public final class EngineApi {
     private EngineApi() {}
@@ -141,19 +149,63 @@ public final class EngineApi {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record JobRequest(@NotBlank String organizationId, @NotBlank String repositorySnapshotRef,
                              @NotBlank String workspaceRef, @NotBlank String profile,
-                             @NotBlank String correlationId, @NotBlank String idempotencyKey) {}
+                             @NotBlank String correlationId, @NotBlank String idempotencyKey,
+                             @NotNull Map<String,Object> options) {
+        public JobRequest {
+            requireText(organizationId, "organizationId");
+            requireText(repositorySnapshotRef, "repositorySnapshotRef");
+            requireText(workspaceRef, "workspaceRef");
+            requireText(profile, "profile");
+            requireText(correlationId, "correlationId");
+            requireText(idempotencyKey, "idempotencyKey");
+            options = canonicalMap(options);
+        }
+
+        public JobRequest(String organizationId, String repositorySnapshotRef, String workspaceRef, String profile,
+                          String correlationId, String idempotencyKey) {
+            this(organizationId, repositorySnapshotRef, workspaceRef, profile, correlationId, idempotencyKey, Map.of());
+        }
+    }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record ExecuteStepRequest(@NotBlank String organizationId, @NotBlank String migrationRunId, int migrationPlanVersion,
-                                     @NotNull StepDefinition stepDefinition, @NotBlank String workspaceRef,
-                                     @NotBlank String sourceCommit, @NotNull ExecutionBudget executionBudget,
+    public record ExecuteStepRequest(@NotBlank String organizationId, @NotBlank String migrationRunId,
+                                     @Positive int migrationPlanVersion,
+                                     @NotNull @Valid StepDefinition stepDefinition, @NotBlank String workspaceRef,
+                                     @NotBlank String sourceCommit, @NotNull @Valid ExecutionBudget executionBudget,
                                      Map<String,Object> policy, @NotBlank String correlationId,
-                                     @NotBlank String idempotencyKey) {}
+                                     @NotBlank String idempotencyKey) {
+        public ExecuteStepRequest {
+            requireText(organizationId, "organizationId");
+            requireText(migrationRunId, "migrationRunId");
+            if (migrationPlanVersion <= 0) throw new IllegalArgumentException("migrationPlanVersion must be positive");
+            Objects.requireNonNull(stepDefinition, "stepDefinition is required");
+            requireText(workspaceRef, "workspaceRef");
+            requireText(sourceCommit, "sourceCommit");
+            Objects.requireNonNull(executionBudget, "executionBudget is required");
+            policy = canonicalMap(policy);
+            requireText(correlationId, "correlationId");
+            requireText(idempotencyKey, "idempotencyKey");
+        }
+    }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record StepDefinition(@NotBlank String stepId, @NotNull ExecutorType executorType,
-                                 Map<String,Object> configuration) {}
-    public record ExecutionBudget(long timeoutSeconds, long cpuSeconds, long maxBytesWritten, long maxAgentCredits) {}
+                                 @NotNull Map<String,Object> configuration) {
+        public StepDefinition {
+            requireText(stepId, "stepId");
+            Objects.requireNonNull(executorType, "executorType is required");
+            configuration = canonicalMap(configuration);
+        }
+    }
+    public record ExecutionBudget(@Positive long timeoutSeconds, @Positive long cpuSeconds,
+                                  @PositiveOrZero long maxBytesWritten, @PositiveOrZero long maxAgentCredits) {
+        public ExecutionBudget {
+            if (timeoutSeconds <= 0) throw new IllegalArgumentException("timeoutSeconds must be positive");
+            if (cpuSeconds <= 0) throw new IllegalArgumentException("cpuSeconds must be positive");
+            if (maxBytesWritten < 0) throw new IllegalArgumentException("maxBytesWritten must be non-negative");
+            if (maxAgentCredits < 0) throw new IllegalArgumentException("maxAgentCredits must be non-negative");
+        }
+    }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record JobResponse(String schemaVersion, String jobId, JobStatus status, List<String> evidenceRefs,
@@ -162,4 +214,105 @@ public final class EngineApi {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record EngineError(ErrorCode errorCode, String message, boolean retryable, List<String> evidenceRefs,
                               String failedCommand, String sanitizedLogRef, String suggestedAction) {}
+
+    public static boolean isTerminal(JobStatus status) {
+        return status == JobStatus.SUCCEEDED || status == JobStatus.FAILED || status == JobStatus.CANCELLED;
+    }
+
+    public static String idempotencyMaterial(Object request) {
+        if (request instanceof JobRequest job) {
+            return lengthPrefixed(job.repositorySnapshotRef(), job.workspaceRef(), job.profile(), job.options());
+        }
+        if (request instanceof ExecuteStepRequest execute) {
+            return lengthPrefixed(execute.migrationRunId(), execute.migrationPlanVersion(),
+                    execute.stepDefinition().stepId(), execute.stepDefinition().executorType().name(),
+                    execute.stepDefinition().configuration(), execute.workspaceRef(), execute.sourceCommit(),
+                    execute.executionBudget().timeoutSeconds(), execute.executionBudget().cpuSeconds(),
+                    execute.executionBudget().maxBytesWritten(), execute.executionBudget().maxAgentCredits(),
+                    execute.policy());
+        }
+        return lengthPrefixed(request);
+    }
+
+    public static final class JobNotFoundException extends RuntimeException {
+        public JobNotFoundException(String jobId) { super("job not found: " + jobId); }
+    }
+
+    public static final class JobConflictException extends RuntimeException {
+        public JobConflictException(String jobId) { super("job is already terminal: " + jobId); }
+    }
+
+    public static final class IdempotencyConflictException extends RuntimeException {
+        public IdempotencyConflictException(String key) { super("idempotency key was already used: " + key); }
+    }
+
+    private static void requireText(String value, String name) {
+        if (value == null || value.isBlank()) throw new IllegalArgumentException(name + " is required");
+    }
+
+    private static Map<String, Object> canonicalMap(Map<String, Object> value) {
+        if (value == null || value.isEmpty()) return Map.of();
+        var sorted = new TreeMap<String, Object>();
+        value.forEach((key, item) -> {
+            if (key == null) throw new IllegalArgumentException("map keys must be strings");
+            sorted.put(key, canonicalValue(item));
+        });
+        return Collections.unmodifiableMap(sorted);
+    }
+
+    private static Object canonicalValue(Object value) {
+        if (value instanceof Map<?, ?> map) {
+            var sorted = new TreeMap<String, Object>();
+            map.forEach((key, item) -> {
+                if (!(key instanceof String text)) throw new IllegalArgumentException("nested map keys must be strings");
+                sorted.put(text, canonicalValue(item));
+            });
+            return Collections.unmodifiableMap(sorted);
+        }
+        if (value instanceof List<?> list) {
+            var canonical = new ArrayList<>(list.size());
+            list.forEach(item -> canonical.add(canonicalValue(item)));
+            return Collections.unmodifiableList(canonical);
+        }
+        return value;
+    }
+
+    private static String lengthPrefixed(Object... values) {
+        var material = new StringBuilder();
+        for (Object value : values) {
+            String text = canonicalText(value);
+            material.append(text.length()).append(':').append(text);
+        }
+        return material.toString();
+    }
+
+    private static String canonicalText(Object value) {
+        if (value == null) return "N";
+        if (value instanceof String text) return "S" + text;
+        if (value instanceof Boolean flag) return flag ? "B1" : "B0";
+        if (value instanceof Number number) {
+            try {
+                return "D" + new BigDecimal(number.toString()).stripTrailingZeros().toPlainString();
+            } catch (NumberFormatException invalidJsonNumber) {
+                throw new IllegalArgumentException("numeric request values must be finite JSON numbers", invalidJsonNumber);
+            }
+        }
+        if (value instanceof Enum<?> enumeration) return "E" + enumeration.name();
+        if (value instanceof Map<?, ?> map) {
+            var entries = new TreeMap<String, Object>();
+            map.forEach((key, item) -> {
+                if (!(key instanceof String text)) throw new IllegalArgumentException("request map keys must be strings");
+                entries.put(text, item);
+            });
+            var content = new StringBuilder("M");
+            entries.forEach((key, item) -> content.append(lengthPrefixed(key, item)));
+            return content.toString();
+        }
+        if (value instanceof List<?> list) {
+            var content = new StringBuilder("L");
+            list.forEach(item -> content.append(lengthPrefixed(item)));
+            return content.toString();
+        }
+        return "O" + value.getClass().getName() + ":" + value;
+    }
 }

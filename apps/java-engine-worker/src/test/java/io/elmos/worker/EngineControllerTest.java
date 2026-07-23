@@ -14,7 +14,8 @@ class EngineControllerTest {
     @Test void unavailableGenericExecutorIsIdempotentAndFailsClosedWithoutFabricatedEvidence() {
         var controller=new EngineController();
         var request=new EngineApi.JobRequest("org","artifact:snapshot","workspace:isolated","scan","corr","same-key");
-        var first=controller.scan(request); var second=controller.scan(request);
+        var first=controller.scan(request);
+        var second=controller.scan(new EngineApi.JobRequest("org","artifact:snapshot","workspace:isolated","scan","corr-retry","same-key"));
         assertEquals(first.jobId(),second.jobId());
         assertEquals(EngineApi.JobStatus.FAILED,first.status());
         assertEquals(EngineApi.ErrorCode.POLICY_BLOCKED,first.error().errorCode());
@@ -22,14 +23,14 @@ class EngineControllerTest {
         assertEquals(Boolean.FALSE,first.result().get("executed"));
         assertEquals(Boolean.FALSE,first.result().get("customerCodeExecuted"));
         assertFalse(first.result().containsKey("simulated"));
-        assertThrows(EngineJobRegistry.JobConflictException.class,()->controller.cancel(first.jobId(),"org"));
-        assertThrows(EngineJobRegistry.JobNotFoundException.class,()->controller.job(first.jobId(),"other-org"));
+        assertThrows(EngineApi.JobConflictException.class,()->controller.cancel(first.jobId(),"org"));
+        assertThrows(EngineApi.JobNotFoundException.class,()->controller.job(first.jobId(),"other-org"));
     }
 
     @Test void sameIdempotencyKeyWithDifferentInputIsRejected() {
         var controller=new EngineController();
         controller.scan(new EngineApi.JobRequest("org","artifact:snapshot-a","workspace:isolated","scan","corr","same-key"));
-        assertThrows(EngineJobRegistry.IdempotencyConflictException.class,()->controller.scan(
+        assertThrows(EngineApi.IdempotencyConflictException.class,()->controller.scan(
                 new EngineApi.JobRequest("org","artifact:snapshot-b","workspace:isolated","scan","corr","same-key")));
     }
 

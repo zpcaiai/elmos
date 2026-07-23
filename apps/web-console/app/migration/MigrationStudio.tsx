@@ -80,7 +80,8 @@ export function MigrationStudio() {
       const stored = JSON.parse(window.localStorage.getItem(DRAFT_STORAGE_KEY) ?? "[]") as unknown;
       if (Array.isArray(stored)) setDrafts(stored.filter(isStoredDraft).slice(0, 50));
     } catch {
-      window.localStorage.removeItem(DRAFT_STORAGE_KEY);
+      try { window.localStorage.removeItem(DRAFT_STORAGE_KEY); } catch { /* Storage may be disabled by policy. */ }
+      setFeedback("本地草稿存储不可用；迁移能力目录仍可浏览，但刷新后不会恢复草稿。");
     } finally {
       setDraftsReady(true);
     }
@@ -88,7 +89,11 @@ export function MigrationStudio() {
 
   useEffect(() => {
     if (!draftsReady) return;
-    window.localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(drafts));
+    try {
+      window.localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(drafts));
+    } catch {
+      setFeedback("浏览器未允许保存本地草稿；请勿依赖当前草稿跨刷新恢复。");
+    }
   }, [drafts, draftsReady]);
 
   useEffect(() => {

@@ -23,7 +23,7 @@ final class EngineJobRegistry {
         var existing = idempotency.get(scope);
         if (existing != null) {
             if (!existing.requestFingerprint().equals(fingerprint)) {
-                throw new IdempotencyConflictException(key);
+                throw new EngineApi.IdempotencyConflictException(key);
             }
             return jobs.get(existing.jobId()).response();
         }
@@ -36,11 +36,10 @@ final class EngineJobRegistry {
         jobs.put(jobId, new TenantJob(organizationId, response));
         return response;
     }
-    EngineApi.JobResponse get(String organizationId,String id){var value=jobs.get(id);if(value==null||!value.organizationId().equals(organizationId))throw new JobNotFoundException(id);return value.response();}
+    EngineApi.JobResponse get(String organizationId,String id){var value=jobs.get(id);if(value==null||!value.organizationId().equals(organizationId))throw new EngineApi.JobNotFoundException(id);return value.response();}
     EngineApi.JobResponse cancel(String organizationId,String id){
         var current=get(organizationId,id);
-        if (current.status()==EngineApi.JobStatus.SUCCEEDED || current.status()==EngineApi.JobStatus.FAILED
-                || current.status()==EngineApi.JobStatus.CANCELLED) throw new JobConflictException(id);
+        if (EngineApi.isTerminal(current.status())) throw new EngineApi.JobConflictException(id);
         var cancelled=new EngineApi.JobResponse(current.schemaVersion(),id,EngineApi.JobStatus.CANCELLED,
                 current.evidenceRefs(),current.result(),current.error());
         jobs.put(id,new TenantJob(organizationId,cancelled));
@@ -50,10 +49,7 @@ final class EngineJobRegistry {
     private String fingerprint(String operation, Object request) {
         try {
             var digest=MessageDigest.getInstance("SHA-256");
-            return java.util.HexFormat.of().formatHex(digest.digest((operation+"\n"+request).getBytes(StandardCharsets.UTF_8)));
+            return java.util.HexFormat.of().formatHex(digest.digest((operation+"\n"+EngineApi.idempotencyMaterial(request)).getBytes(StandardCharsets.UTF_8)));
         } catch (NoSuchAlgorithmException error) { throw new IllegalStateException("SHA-256 unavailable", error); }
     }
-    static final class JobNotFoundException extends RuntimeException { JobNotFoundException(String id){super("job not found: "+id);} }
-    static final class IdempotencyConflictException extends RuntimeException { IdempotencyConflictException(String key){super("idempotency key was already used with different input: "+key);} }
-    static final class JobConflictException extends RuntimeException { JobConflictException(String id){super("job is already terminal: "+id);} }
 }

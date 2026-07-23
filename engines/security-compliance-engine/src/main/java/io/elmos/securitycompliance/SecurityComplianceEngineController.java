@@ -29,6 +29,12 @@ public final class SecurityComplianceEngineController {
     @PostMapping("/jobs/{jobId}/cancel")
     public EngineApi.JobResponse cancel(@RequestParam String organizationId, @PathVariable String jobId) { return engine.cancel(organizationId, jobId); }
 
+    @ExceptionHandler(EngineApi.JobNotFoundException.class) @ResponseStatus(HttpStatus.NOT_FOUND)
+    Map<String, Object> notFound(EngineApi.JobNotFoundException error) { return Map.of("errorCode", "ENGINE_JOB_NOT_FOUND", "message", "The requested engine job was not found.", "retryable", false); }
+
+    @ExceptionHandler({EngineApi.JobConflictException.class, EngineApi.IdempotencyConflictException.class}) @ResponseStatus(HttpStatus.CONFLICT)
+    Map<String, Object> conflict(RuntimeException error) { return Map.of("errorCode", "ENGINE_JOB_CONFLICT", "message", "The engine job conflicts with its terminal or idempotent state.", "retryable", false); }
+
     @ExceptionHandler(IllegalArgumentException.class) @ResponseStatus(HttpStatus.BAD_REQUEST)
     Map<String, Object> badRequest(IllegalArgumentException error) {
         return Map.of("errorCode", "SECURITY_REQUEST_REJECTED", "message", "The security engine request was rejected by its contract.", "retryable", false);

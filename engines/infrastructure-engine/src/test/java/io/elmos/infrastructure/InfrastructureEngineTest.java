@@ -49,7 +49,10 @@ class InfrastructureEngineTest {
         var repeated = engine.scan(request("same-key"));
         assertEquals(first.jobId(), repeated.jobId());
         var changed = new EngineApi.JobRequest("org-1", "snapshot:other", "workspace:1", "READ_ONLY", "corr", "same-key");
-        assertEquals(ErrorCode.POLICY_BLOCKED, engine.scan(changed).error().errorCode());
+        assertThrows(EngineApi.IdempotencyConflictException.class, () -> engine.scan(changed));
+        assertThrows(EngineApi.JobNotFoundException.class, () -> engine.job("org-2", first.jobId()));
+        assertThrows(EngineApi.JobConflictException.class, () -> engine.cancel("org-1", first.jobId()));
+        assertEquals(first, engine.job("org-1", first.jobId()));
     }
 
     private EngineApi.JobRequest request(String key) {

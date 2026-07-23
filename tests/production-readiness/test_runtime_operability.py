@@ -10,6 +10,8 @@ from tooling.validate_runtime_operability import (
     validate_service_config,
     validate_compose_web_routing,
     validate_exception_handler_source,
+    validate_engine_job_controller_source,
+    validate_public_error_boundary_source,
 )
 
 
@@ -24,6 +26,8 @@ class RuntimeOperabilityTests(unittest.TestCase):
         self.assertTrue(report["checks"]["web_control_plane_routing"])
         self.assertTrue(report["checks"]["safe_error_responses"])
         self.assertGreaterEqual(report["explicit_exception_handler_files"], 20)
+        self.assertGreaterEqual(report["engine_job_lifecycle_controllers"], 13)
+        self.assertTrue(report["checks"]["engine_job_lifecycle_http_semantics"])
         self.assertEqual("NOT_RUN", report["external_evidence_status"])
 
     def test_explicit_exception_messages_cannot_bypass_safe_server_config(self) -> None:
@@ -37,6 +41,18 @@ class RuntimeOperabilityTests(unittest.TestCase):
         self.assertTrue(any("EXPLICIT_EXCEPTION_MESSAGE_DISCLOSURE" in error for error in errors))
         safe = unsafe.replace('error.getMessage()', '"The request was rejected."')
         self.assertEqual([], validate_exception_handler_source("SafeController.java", safe))
+
+    def test_polyglot_public_errors_cannot_echo_internal_exception_messages(self) -> None:
+        self.assertTrue(validate_public_error_boundary_source("DotnetEngine.cs", "return exception.Message;"))
+        self.assertTrue(validate_public_error_boundary_source("server.ts", "message: String(error)"))
+        self.assertEqual([], validate_public_error_boundary_source("server.ts", 'message: "Request rejected."'))
+
+    def test_engine_job_controllers_must_preserve_404_and_409_semantics(self) -> None:
+        unsafe = '@GetMapping("/jobs/{jobId}") public Object job() { return null; }'
+        errors = validate_engine_job_controller_source("EngineController.java", unsafe)
+        self.assertEqual(5, len(errors))
+        safe = unsafe + " JobNotFoundException.class HttpStatus.NOT_FOUND JobConflictException.class IdempotencyConflictException.class HttpStatus.CONFLICT"
+        self.assertEqual([], validate_engine_job_controller_source("EngineController.java", safe))
 
     def test_web_console_uses_compose_service_discovery(self) -> None:
         valid = {

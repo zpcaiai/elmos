@@ -45,6 +45,12 @@ CONTROL_PLANE_SERVICE = "control-plane"
 CONTROL_PLANE_COMPOSE_URL = "http://control-plane:8080"
 PORT_PATTERN = re.compile(r"^\$\{[A-Z0-9_]+:(\d+)}$")
 EXCEPTION_MESSAGE_PATTERN = re.compile(r"\b(?:[A-Za-z_][A-Za-z0-9_]*\.)?getMessage\(\)")
+DOTNET_EXCEPTION_MESSAGE_PATTERN = re.compile(r"\b(?:exception|error)\.Message\b", re.IGNORECASE)
+TYPESCRIPT_EXCEPTION_MESSAGE_PATTERN = re.compile(r"\b(?:error\.message|String\(error\))")
+PUBLIC_ERROR_BOUNDARY_FILES = (
+    "engines/dotnet-engine/src/Elmos.Dotnet.Infrastructure/DotnetEngine.cs",
+    "engines/frontend-client-engine/src/server.ts",
+)
 
 
 def _load_yaml(path: Path) -> dict[str, Any]:
@@ -182,6 +188,30 @@ def validate_exception_handler_source(relative: str, source: str) -> list[str]:
     return []
 
 
+def validate_public_error_boundary_source(relative: str, source: str) -> list[str]:
+    pattern = (
+        DOTNET_EXCEPTION_MESSAGE_PATTERN
+        if relative.endswith("DotnetEngine.cs")
+        else TYPESCRIPT_EXCEPTION_MESSAGE_PATTERN
+    )
+    if pattern.search(source):
+        return [f"{relative}:PUBLIC_EXCEPTION_DETAIL_DISCLOSURE"]
+    return []
+
+
+def validate_engine_job_controller_source(relative: str, source: str) -> list[str]:
+    if '"/jobs/{jobId}"' not in source:
+        return []
+    required = (
+        "JobNotFoundException.class",
+        "HttpStatus.NOT_FOUND",
+        "JobConflictException.class",
+        "IdempotencyConflictException.class",
+        "HttpStatus.CONFLICT",
+    )
+    return [f"{relative}:JOB_LIFECYCLE_HANDLER_REQUIRED:{token}" for token in required if token not in source]
+
+
 def validate_repository(root: Path = ROOT) -> dict[str, Any]:
     errors: list[str] = []
     artifacts: list[dict[str, Any]] = []
@@ -228,6 +258,8 @@ def validate_repository(root: Path = ROOT) -> dict[str, Any]:
     errors.extend(compose_errors)
     handler_errors: list[str] = []
     handler_file_count = 0
+    lifecycle_errors: list[str] = []
+    lifecycle_controller_count = 0
     for source_root in (root / "apps", root / "engines"):
         if not source_root.is_dir():
             continue
@@ -238,7 +270,22 @@ def validate_repository(root: Path = ROOT) -> dict[str, Any]:
             handler_errors.extend(
                 validate_exception_handler_source(path.relative_to(root).as_posix(), source)
             )
+            if '"/jobs/{jobId}"' in source:
+                lifecycle_controller_count += 1
+                lifecycle_errors.extend(
+                    validate_engine_job_controller_source(path.relative_to(root).as_posix(), source)
+                )
     errors.extend(handler_errors)
+    errors.extend(lifecycle_errors)
+    public_error_errors: list[str] = []
+    for relative in PUBLIC_ERROR_BOUNDARY_FILES:
+        path = root / relative
+        if not path.is_file():
+            public_error_errors.append(f"{relative}:PUBLIC_ERROR_BOUNDARY_MISSING")
+            continue
+        artifacts.append(_artifact(path, root))
+        public_error_errors.extend(validate_public_error_boundary_source(relative, path.read_text(encoding="utf-8")))
+    errors.extend(public_error_errors)
     return {
         "status": "PASS" if not errors else "FAIL",
         "service_count": len(SERVICE_CONFIGS),
@@ -247,9 +294,11 @@ def validate_repository(root: Path = ROOT) -> dict[str, Any]:
         "unique_application_names": len(names),
         "unique_default_ports": len(ports),
         "explicit_exception_handler_files": handler_file_count,
+        "engine_job_lifecycle_controllers": lifecycle_controller_count,
         "checks": {
             "graceful_shutdown": True,
-            "safe_error_responses": not handler_errors,
+            "safe_error_responses": not handler_errors and not public_error_errors,
+            "engine_job_lifecycle_http_semantics": not lifecycle_errors,
             "liveness_readiness_probes": True,
             "externalized_shutdown_timeout": True,
             "production_database_fail_closed": True,

@@ -17,7 +17,8 @@ public enum DotnetErrorCode
     MsBuildVersionIncompatible, MsBuildEvaluationFailed, VisualStudioComponentMissing,
     TargetingPackMissing, NugetRestoreFailed, RoslynLoadFailed, ProjectTypeUnsupported,
     WindowsRunnerRequired, ModernDotnetRunnerRequired, WorkspaceOutsideApprovedRoot,
-    PolicyBlocked, ValidationFailed, InternalEngineError
+    PolicyBlocked, ValidationFailed, InvalidRequest, IdempotencyConflict,
+    JobNotFound, JobTerminal, InternalEngineError
 }
 
 public sealed record EngineCapabilities(
@@ -29,7 +30,10 @@ public sealed record EngineCapabilities(
     IReadOnlyList<string> ProjectFormats,
     IReadOnlyList<string> SourceFrameworks,
     IReadOnlyList<string> MigrationCapabilities,
-    IReadOnlyList<RunnerProfile> RunnerProfiles);
+    IReadOnlyList<RunnerProfile> RunnerProfiles,
+    string JobStatePersistence,
+    string DurableStateAuthority,
+    string RestartRecovery);
 
 public sealed record EngineJobRequest(
     string OrganizationId,
@@ -81,5 +85,6 @@ public static class CapabilityManifest
         ["LEGACY_CSPROJ", "SDK_STYLE_CSPROJ", "VBPROJ"],
         ["NET_FRAMEWORK", "NET_CORE", "NET"],
         ["PROJECT_SYSTEM", "ASP_NET", "WCF", "EF6", "ROSLYN", "VALIDATION"],
-        [RunnerProfile.WindowsLegacy, RunnerProfile.ModernWindows, RunnerProfile.ModernLinux]);
+        [RunnerProfile.WindowsLegacy, RunnerProfile.ModernWindows, RunnerProfile.ModernLinux],
+        "EPHEMERAL_PROCESS_LOCAL", "ELMOS_CONTROL_PLANE", "NOT_SUPPORTED_BY_WORKER");
 }

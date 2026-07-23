@@ -1,8 +1,8 @@
 openapi: 3.1.0
 info:
   title: ELMOS Modernization Engine API
-  version: 1.2.0
-  description: Shared Java/.NET/Python execution-plane contract; identity, workflow, billing, audit and delivery remain in the ELMOS control plane.
+  version: 1.3.0
+  description: Shared Java/.NET/Python execution-plane contract; identity, workflow, durable job state, billing, audit and delivery remain in the ELMOS control plane. Worker job lookup is process-local and does not promise restart recovery.
 paths:
   /engine/v1/capabilities:
     get:
@@ -87,7 +87,7 @@ paths:
         - { in: query, name: organizationId, required: true, schema: { type: string } }
       responses:
         '200': { description: Tenant-scoped job status, content: { application/json: { schema: { $ref: '#/components/schemas/JobResponse' } } } }
-        '404': { description: Job absent or not visible in this organization }
+        '404': { $ref: '#/components/responses/JobNotFound' }
   /engine/v1/jobs/{jobId}/cancel:
     post:
       operationId: cancelJob
@@ -96,7 +96,7 @@ paths:
         - { in: query, name: organizationId, required: true, schema: { type: string } }
       responses:
         '200': { description: Tenant-scoped job cancelled, content: { application/json: { schema: { $ref: '#/components/schemas/JobResponse' } } } }
-        '404': { description: Job absent or not visible in this organization }
+        '404': { $ref: '#/components/responses/JobNotFound' }
         '409': { $ref: '#/components/responses/JobConflict' }
 components:
   responses:
@@ -105,6 +105,9 @@ components:
       content: { application/json: { schema: { $ref: '#/components/schemas/JobResponse' } } }
     JobConflict:
       description: Idempotency key was reused with different input, or the requested state transition conflicts with a terminal job.
+      content: { application/json: { schema: { $ref: '#/components/schemas/EngineProblem' } } }
+    JobNotFound:
+      description: Job is absent or not visible in this organization; tenant visibility is not disclosed.
       content: { application/json: { schema: { $ref: '#/components/schemas/EngineProblem' } } }
   schemas:
     Capabilities:
@@ -129,7 +132,13 @@ components:
         availableRecipes: { type: array, items: { type: string } }
         validationCapabilities: { type: array, items: { type: string } }
         migrationCapabilities: { type: array, items: { type: string } }
-        sandboxRequirements: { type: object, additionalProperties: true }
+        sandboxRequirements:
+          type: object
+          description: Includes jobStatePersistence=EPHEMERAL_PROCESS_LOCAL, durableStateAuthority=ELMOS_CONTROL_PLANE and restartRecovery=NOT_SUPPORTED_BY_WORKER for in-process worker registries.
+          additionalProperties: true
+        jobStatePersistence: { type: string, description: Capability alias emitted by workers that do not nest this field under sandboxRequirements. }
+        durableStateAuthority: { type: string }
+        restartRecovery: { type: string }
       additionalProperties: true
     JobRequest:
       type: object
@@ -152,7 +161,7 @@ components:
         stepDefinition: { $ref: '#/components/schemas/StepDefinition' }
         workspaceRef: { type: string, minLength: 1 }
         sourceCommit: { type: string, minLength: 1 }
-        executionBudget: { type: object, additionalProperties: true }
+        executionBudget: { $ref: '#/components/schemas/ExecutionBudget' }
         policy: { type: object, additionalProperties: true }
         correlationId: { type: string, minLength: 1 }
         idempotencyKey: { type: string, minLength: 1 }
@@ -162,8 +171,17 @@ components:
       properties:
         stepId: { type: string, minLength: 1 }
         executorType:
-          enum: [SCANNER, OPENREWRITE, MSBUILD_EVALUATION, ROSLYN_TRANSFORMATION, PROJECT_SYSTEM_TRANSFORMATION, ASPNET_MIGRATION, WCF_MIGRATION, EF_MIGRATION, LIBCST, PYTHON_AST, UV, PIP, CONDA, MYPY, PYRIGHT, PYTEST, DATABASE_SCANNER, DATABASE_CONVERTER, DATABASE_QUERY_VALIDATOR, DATABASE_BULK_LOADER, DATABASE_CDC, DATA_QUALITY, DATA_PLATFORM, BI_VALIDATOR, INFRASTRUCTURE_SCANNER, VM_IMAGE_BUILDER, CONTAINER_BUILDER, KUBERNETES_VALIDATOR, SERVERLESS_VALIDATOR, IAC_PLANNER, IAC_APPLIER, NETWORK_VALIDATOR, OBSERVABILITY_VALIDATOR, FINOPS_VALIDATOR, RESILIENCE_VALIDATOR, MULTICLOUD_VALIDATOR, INFRASTRUCTURE_CUTOVER, DATA_VALIDATOR, MODEL_VALIDATOR, BUILD_TOOL, TEST_RUNNER, CODING_AGENT, SONARQUBE, CONTRACT_CHECKER, HUMAN_REVIEW, UNKNOWN]
+          enum: [SCANNER, OPENREWRITE, MSBUILD_EVALUATION, ROSLYN_TRANSFORMATION, PROJECT_SYSTEM_TRANSFORMATION, ASPNET_MIGRATION, WCF_MIGRATION, EF_MIGRATION, LIBCST, PYTHON_AST, UV, PIP, CONDA, MYPY, PYRIGHT, PYTEST, DATABASE_SCANNER, DATABASE_CONVERTER, DATABASE_QUERY_VALIDATOR, DATABASE_BULK_LOADER, DATABASE_CDC, DATA_QUALITY, DATA_PLATFORM, BI_VALIDATOR, INFRASTRUCTURE_SCANNER, VM_IMAGE_BUILDER, CONTAINER_BUILDER, KUBERNETES_VALIDATOR, SERVERLESS_VALIDATOR, IAC_PLANNER, IAC_APPLIER, NETWORK_VALIDATOR, OBSERVABILITY_VALIDATOR, FINOPS_VALIDATOR, RESILIENCE_VALIDATOR, MULTICLOUD_VALIDATOR, INFRASTRUCTURE_CUTOVER, SECURITY_ESTATE_DISCOVERY, IDENTITY_VALIDATOR, SECRET_SCANNER, CRYPTO_VALIDATOR, SAST, SCA, IAC_SECURITY_SCANNER, CONTAINER_SECURITY_SCANNER, DAST, API_SECURITY, RUNTIME_SECURITY, CLOUD_SECURITY, DLP, THREAT_MODELER, SBOM_GENERATOR, PROVENANCE_VERIFIER, VEX_VALIDATOR, CONTROL_ASSESSOR, OSCAL_VALIDATOR, SECURITY_AUTHORIZATION_REVIEW, UNIT_TEST, INTEGRATION_TEST, BROWSER_CLIENT_TEST, DATA_ML_TEST, PERFORMANCE_TEST, MUTATION_TEST, MAINFRAME_DISCOVERY, MAINFRAME_ANALYSIS, MAINFRAME_BUILD, MAINFRAME_TEST, MAINFRAME_PARALLEL_RUN, MAINFRAME_CUTOVER, INTEGRATION_DISCOVERY, INTEGRATION_ANALYSIS, BROKER_VALIDATION, API_GATEWAY_VALIDATION, B2B_VALIDATION, WORKFLOW_VALIDATION, INTEGRATION_REPLAY, INTEGRATION_CUTOVER, SUITE_DISCOVERY, SUITE_ANALYSIS, SAP_VALIDATION, ORACLE_VALIDATION, DYNAMICS_VALIDATION, SALESFORCE_VALIDATION, MASTER_DATA_VALIDATION, SUITE_DATA_MIGRATION, BUSINESS_PROCESS_VALIDATION, SUITE_INTEGRATION_VALIDATION, SUITE_CUTOVER, DELIVERY_DISCOVERY, SCM_MIGRATION, PIPELINE_VALIDATION, ARTIFACT_PROMOTION, ENVIRONMENT_LIFECYCLE, PLATFORM_ACCEPTANCE, SELF_SERVICE_OPERATION, AI_DISCOVERY, CPU_TRAINING, GPU_TRAINING, AI_EVALUATION, RAG_VALIDATION, AGENT_SANDBOX, AI_DEPLOYMENT, AI_MONITORING, OT_DISCOVERY, PROTOCOL_VALIDATION, EDGE_RUNTIME_VALIDATION, OTA_VALIDATION, EDGE_AI_VALIDATION, SIL_VALIDATION, HIL_VALIDATION, OT_COMMAND, OT_CUTOVER, OPERATIONS_DISCOVERY, EVENT_CORRELATION, INCIDENT_SIMULATION, RUNBOOK_AUTOMATION, CAPACITY_SIMULATION, CONTINUITY_DRILL, OPERATIONS_REMEDIATION, OPERATIONS_CHANGE, EA_DISCOVERY, EA_ASSESSMENT, EA_OPTION_EVALUATION, EA_ROADMAP_SIMULATION, EA_DECISION, EA_CONFORMANCE, DATA_VALIDATOR, MODEL_VALIDATOR, BUILD_TOOL, TEST_RUNNER, CODING_AGENT, SONARQUBE, CONTRACT_CHECKER, HUMAN_REVIEW, UNKNOWN]
         configuration: { type: object, additionalProperties: true }
+    ExecutionBudget:
+      type: object
+      additionalProperties: false
+      required: [timeoutSeconds, cpuSeconds, maxBytesWritten, maxAgentCredits]
+      properties:
+        timeoutSeconds: { type: integer, format: int64, minimum: 1 }
+        cpuSeconds: { type: integer, format: int64, minimum: 1 }
+        maxBytesWritten: { type: integer, format: int64, minimum: 0 }
+        maxAgentCredits: { type: integer, format: int64, minimum: 0 }
     JobResponse:
       type: object
       required: [schemaVersion, jobId, status, evidenceRefs, result]
