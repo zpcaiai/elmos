@@ -232,7 +232,7 @@ class ProductClosureConvergenceIntegrationTest(unittest.TestCase):
         report = json.loads(result.stdout)
         self.assertEqual(16, report["batch56a_runtime_skills"])
         self.assertEqual(32, report["convergence_agent_skills"])
-        self.assertEqual(48, report["official_installed_skill_validation"])
+        self.assertEqual(48, report["skill_creator_compatible_validation"])
         self.assertEqual("NOT_RUN", report["external_evidence"])
 
     def test_batch56_normalizes_provenance_without_invalid_frontmatter(self) -> None:

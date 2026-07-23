@@ -96,6 +96,14 @@ class ClosureSkillsAndGenerationTests(unittest.TestCase):
             self.assertTrue(interface["display_name"].startswith("ELMOS"))
             self.assertGreaterEqual(len(interface["short_description"]), 25)
 
+    def test_closure_skill_import_is_repository_self_contained(self) -> None:
+        source = (
+            ROOT / "tooling" / "import_product_closure_convergence.py"
+        ).read_text(encoding="utf-8")
+        self.assertNotIn("/Users/", source)
+        self.assertNotIn(".codex/skills", source)
+        self.assertIn("skill_creator_tools.validate_skill", source)
+
     def test_generation_ui_exposes_the_exact_governed_cli_sequence(self) -> None:
         source = (
             ROOT

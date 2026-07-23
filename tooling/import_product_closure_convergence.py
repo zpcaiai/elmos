@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import importlib.util
 import json
 import re
 from pathlib import Path
@@ -14,6 +13,8 @@ from typing import Any
 
 import yaml
 
+import skill_creator_tools
+
 
 ROOT = Path(__file__).resolve().parents[1]
 BATCH56_PACKAGE = ROOT / "elmos-codex-skills-batch56a-product-closure"
@@ -21,9 +22,6 @@ CONVERGENCE_PACKAGE = ROOT / "elmos-product-convergence-reference-skills"
 RUNTIME_ROOT = ROOT / "agent-skills" / "runtime"
 AGENT_SKILL_ROOT = ROOT / ".agents" / "skills"
 INSTALL_MANIFEST = ROOT / "docs" / "product-closure-convergence" / "installed-manifest.json"
-SKILL_CREATOR = Path("/Users/stephen/.codex/skills/.system/skill-creator")
-GENERATOR_PATH = SKILL_CREATOR / "scripts" / "generate_openai_yaml.py"
-VALIDATOR_PATH = SKILL_CREATOR / "scripts" / "quick_validate.py"
 EXPECTED_BATCH56_IDS = [f"CLO56A{number:03d}" for number in range(1, 17)]
 EXPECTED_CONVERGENCE_IDS = [f"CONV-{number:03d}" for number in range(1, 33)]
 CACHE_PARTS = {"__pycache__", ".DS_Store"}
@@ -66,17 +64,7 @@ def safe_relative(root: Path, relative: str) -> Path:
 
 
 def load_skill_tools() -> tuple[ModuleType, Any]:
-    if not GENERATOR_PATH.is_file() or not VALIDATOR_PATH.is_file():
-        fail("official skill-creator tools are unavailable")
-    generator_spec = importlib.util.spec_from_file_location("closure_interface_generator", GENERATOR_PATH)
-    validator_spec = importlib.util.spec_from_file_location("closure_skill_validator", VALIDATOR_PATH)
-    if generator_spec is None or generator_spec.loader is None or validator_spec is None or validator_spec.loader is None:
-        fail("cannot load official skill-creator tools")
-    generator = importlib.util.module_from_spec(generator_spec)
-    validator = importlib.util.module_from_spec(validator_spec)
-    generator_spec.loader.exec_module(generator)
-    validator_spec.loader.exec_module(validator)
-    return generator, validator.validate_skill
+    return skill_creator_tools, skill_creator_tools.validate_skill
 
 
 def parse_frontmatter(path: Path) -> tuple[dict[str, Any], str]:
@@ -214,7 +202,7 @@ def validate_convergence_source(validate_skill: Any) -> list[dict[str, Any]]:
             fail(f"convergence Skill path mismatch: {name}")
         valid, message = validate_skill(source.parent)
         if not valid:
-            fail(f"official convergence Skill validation failed for {name}: {message}")
+            fail(f"skill-creator-compatible convergence validation failed for {name}: {message}")
         names.add(name)
     return skills
 
@@ -352,7 +340,7 @@ def verify() -> None:
             fail(f"Batch 56A installed Skill is missing or changed: {entry['name']}")
         valid, message = validate_skill(target)
         if not valid:
-            fail(f"official installed Batch 56A validation failed for {entry['name']}: {message}")
+            fail(f"skill-creator-compatible installed Batch 56A validation failed for {entry['name']}: {message}")
         if (target / "agents" / "openai.yaml").read_text(encoding="utf-8") != expected_interface(entry["name"], generator, "product-closure"):
             fail(f"Batch 56A interface is missing or changed: {entry['name']}")
     for entry in convergence_skills:
@@ -362,7 +350,7 @@ def verify() -> None:
             fail(f"convergence installed Skill is missing or changed: {entry['name']}")
         valid, message = validate_skill(target)
         if not valid:
-            fail(f"official installed convergence validation failed for {entry['name']}: {message}")
+            fail(f"skill-creator-compatible installed convergence validation failed for {entry['name']}: {message}")
         if (target / "agents" / "openai.yaml").read_text(encoding="utf-8") != expected_interface(entry["name"], generator, "product-convergence"):
             fail(f"convergence interface is missing or changed: {entry['name']}")
     for source, target in integrated_asset_pairs():
@@ -379,7 +367,7 @@ def verify() -> None:
                 "status": "PASS",
                 "batch56a_runtime_skills": 16,
                 "convergence_agent_skills": 32,
-                "official_installed_skill_validation": 48,
+                "skill_creator_compatible_validation": 48,
                 "interfaces": 48,
                 "integrated_assets": len(integrated_asset_pairs()),
                 "external_evidence": "NOT_RUN",
