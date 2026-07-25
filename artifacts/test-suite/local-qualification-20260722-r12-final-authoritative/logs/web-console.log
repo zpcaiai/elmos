@@ -1,0 +1,57 @@
+CI=true PATH="/Users/stephen/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/:$PATH" pnpm dlx pnpm@10.12.4 --dir apps/web-console install --frozen-lockfile
+Recreating /Users/stephen/DevProjects/AIProjects/elmos/apps/web-console/node_modules
+Lockfile is up to date, resolution step is skipped
+Progress: resolved 1, reused 0, downloaded 0, added 0
+Packages: +28
+++++++++++++++++++++++++++++
+Progress: resolved 28, reused 28, downloaded 0, added 27
+Progress: resolved 28, reused 28, downloaded 0, added 28
+Progress: resolved 28, reused 28, downloaded 0, added 28, done
+.../sharp@0.34.5/node_modules/sharp install$ node install/check.js || npm run build
+.../sharp@0.34.5/node_modules/sharp install: Done
+
+dependencies:
++ next 16.2.10
++ react 19.2.7
++ react-dom 19.2.7
+
+devDependencies:
++ @types/node 24.3.0
++ @types/react 19.1.10
++ @types/react-dom 19.1.7
++ typescript 5.9.2
+
+Done in 3.4s using pnpm v10.12.4
+PATH="/Users/stephen/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/:$PATH" pnpm dlx pnpm@10.12.4 --dir apps/web-console check
+
+> @elmos/web-console@0.1.0 check /Users/stephen/DevProjects/AIProjects/elmos/apps/web-console
+> tsc --noEmit && next build
+
+▲ Next.js 16.2.10 (Turbopack)
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 1908ms
+  Running TypeScript ...
+  Finished TypeScript in 2.1s ...
+  Collecting page data using 7 workers ...
+  Generating static pages using 7 workers (0/7) ...
+  Generating static pages using 7 workers (1/7) 
+  Generating static pages using 7 workers (3/7) 
+  Generating static pages using 7 workers (5/7) 
+✓ Generating static pages using 7 workers (7/7) in 185ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ƒ /api/capabilities/migration
+├ ƒ /api/capabilities/product
+├ ○ /commercialization
+├ ○ /icon.svg
+├ ○ /migration
+└ ○ /skills
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

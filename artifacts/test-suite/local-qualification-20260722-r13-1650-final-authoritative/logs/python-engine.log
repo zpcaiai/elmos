@@ -1,0 +1,7 @@
+/opt/homebrew/bin/uv --directory engines/python-engine run --locked pytest
+...............................                                          [100%]
+31 passed in 0.37s
+/opt/homebrew/bin/uv --directory engines/python-engine run --locked ruff check src tests
+All checks passed!
+/opt/homebrew/bin/uv --directory engines/python-engine run --locked mypy src
+Success: no issues found in 19 source files

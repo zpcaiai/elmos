@@ -1,0 +1,1573 @@
+JAVA_HOME="/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home" "/opt/homebrew/bin/mvn" -B verify
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO] 
+[INFO] ELMOS                                                              [pom]
+[INFO] elmos-domain                                                       [jar]
+[INFO] elmos-evidence                                                     [jar]
+[INFO] elmos-engine-api                                                   [jar]
+[INFO] elmos-evidence-bound-engine                                        [jar]
+[INFO] elmos-application                                                  [jar]
+[INFO] elmos-workflow                                                     [jar]
+[INFO] elmos-scm                                                          [jar]
+[INFO] elmos-snapshot                                                     [jar]
+[INFO] elmos-secret                                                       [jar]
+[INFO] elmos-network-policy                                               [jar]
+[INFO] elmos-workspace                                                    [jar]
+[INFO] elmos-health-check                                                 [jar]
+[INFO] elmos-intake                                                       [jar]
+[INFO] elmos-semantic                                                     [jar]
+[INFO] elmos-uir                                                          [jar]
+[INFO] elmos-skeleton                                                     [jar]
+[INFO] elmos-lowering                                                     [jar]
+[INFO] elmos-dependency-migration                                         [jar]
+[INFO] elmos-framework-migration                                          [jar]
+[INFO] elmos-composite-modernization                                      [jar]
+[INFO] elmos-portfolio-scale                                              [jar]
+[INFO] elmos-advanced-verification                                        [jar]
+[INFO] ELMOS Developer Workflow                                           [jar]
+[INFO] ELMOS Extension Marketplace                                        [jar]
+[INFO] elmos-source-control-workspace-governance                          [jar]
+[INFO] elmos-secure-execution-plane                                       [jar]
+[INFO] elmos-evidence-assurance-fabric                                    [jar]
+[INFO] elmos-continuous-authorization                                     [jar]
+[INFO] elmos-database-data-engine                                         [jar]
+[INFO] elmos-infrastructure-engine                                        [jar]
+[INFO] elmos-security-compliance-engine                                   [jar]
+[INFO] elmos-test-quality-engine                                          [jar]
+[INFO] elmos-mainframe-engine                                             [jar]
+[INFO] elmos-enterprise-integration-engine                                [jar]
+[INFO] elmos-enterprise-suite-engine                                      [jar]
+[INFO] elmos-software-delivery-platform-engine                            [jar]
+[INFO] elmos-ai-platform-engine                                           [jar]
+[INFO] elmos-edge-iot-industrial-engine                                   [jar]
+[INFO] elmos-operations-sre-itsm-engine                                   [jar]
+[INFO] elmos-enterprise-architecture-engine                               [jar]
+[INFO] elmos-planning                                                     [jar]
+[INFO] elmos-recipe-governance                                            [jar]
+[INFO] elmos-repair-orchestration                                         [jar]
+[INFO] elmos-behavior-equivalence                                         [jar]
+[INFO] elmos-production-hardening                                         [jar]
+[INFO] elmos-production-cutover                                           [jar]
+[INFO] elmos-enterprise-platform                                          [jar]
+[INFO] elmos-commercial-loop                                              [jar]
+[INFO] elmos-ecosystem-growth                                             [jar]
+[INFO] elmos-company-series                                               [jar]
+[INFO] elmos-product-roadmap-governance                                   [jar]
+[INFO] elmos-migration-pack-certification                                 [jar]
+[INFO] elmos-validation                                                   [jar]
+[INFO] elmos-delivery                                                     [jar]
+[INFO] elmos-enterprise-governance                                        [jar]
+[INFO] elmos-commercial-operations                                        [jar]
+[INFO] elmos-persistence                                                  [jar]
+[INFO] elmos-security                                                     [jar]
+[INFO] elmos-integrations                                                 [jar]
+[INFO] elmos-java-recipes                                                 [jar]
+[INFO] elmos-java-engine-worker                                           [jar]
+[INFO] elmos-control-plane                                                [jar]
+[INFO] elmos-workspace-service                                            [jar]
+[INFO] elmos-egress-proxy                                                 [jar]
+[INFO] elmos-agent-gateway                                                [jar]
+[INFO] elmos-enterprise-control                                           [jar]
+[INFO] elmos-commercial-api                                               [jar]
+[INFO] elmos-elmosctl                                                     [jar]
+[INFO] elmos-architecture-tests                                           [jar]
+[INFO] 
+[INFO] -----------------------< io.elmos:elmos-parent >------------------------
+[INFO] Building ELMOS 0.1.0-SNAPSHOT                                     [1/70]
+[INFO]   from pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.6.1:enforce (baseline) @ elmos-parent ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.version.RequireJavaVersion passed
+[INFO] Rule 1: org.apache.maven.enforcer.rules.version.RequireMavenVersion passed
+[INFO] 
+[INFO] -----------------------< io.elmos:elmos-domain >------------------------
+[INFO] Building elmos-domain 0.1.0-SNAPSHOT                              [2/70]
+[INFO]   from modules/domain/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.6.1:enforce (baseline) @ elmos-domain ---
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ elmos-domain ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/domain/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ elmos-domain ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 20 source files with javac [debug parameters release 21] to target/classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ elmos-domain ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/domain/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ elmos-domain ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [debug parameters release 21] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ elmos-domain ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running io.elmos.domain.MigrationRunTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.119 s -- in io.elmos.domain.MigrationRunTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ elmos-domain ---
+[INFO] Building jar: /Users/stephen/DevProjects/AIProjects/elmos/modules/domain/target/elmos-domain-0.1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] ----------------------< io.elmos:elmos-evidence >-----------------------
+[INFO] Building elmos-evidence 0.1.0-SNAPSHOT                            [3/70]
+[INFO]   from modules/evidence/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.6.1:enforce (baseline) @ elmos-evidence ---
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ elmos-evidence ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/evidence/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ elmos-evidence ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 5 source files with javac [debug parameters release 21] to target/classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ elmos-evidence ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/evidence/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ elmos-evidence ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [debug parameters release 21] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ elmos-evidence ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running io.elmos.evidence.ValidationPolicyTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.190 s -- in io.elmos.evidence.ValidationPolicyTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ elmos-evidence ---
+[INFO] Building jar: /Users/stephen/DevProjects/AIProjects/elmos/modules/evidence/target/elmos-evidence-0.1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] ---------------------< io.elmos:elmos-engine-api >----------------------
+[INFO] Building elmos-engine-api 0.1.0-SNAPSHOT                          [4/70]
+[INFO]   from contracts/engine-api/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.6.1:enforce (baseline) @ elmos-engine-api ---
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ elmos-engine-api ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ elmos-engine-api ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 1 source file with javac [debug parameters release 21] to target/classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ elmos-engine-api ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/contracts/engine-api/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ elmos-engine-api ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [debug parameters release 21] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ elmos-engine-api ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running io.elmos.engine.api.EngineApiContractTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.222 s -- in io.elmos.engine.api.EngineApiContractTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ elmos-engine-api ---
+[INFO] Building jar: /Users/stephen/DevProjects/AIProjects/elmos/contracts/engine-api/target/elmos-engine-api-0.1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] ----------------< io.elmos:elmos-evidence-bound-engine >----------------
+[INFO] Building elmos-evidence-bound-engine 0.1.0-SNAPSHOT               [5/70]
+[INFO]   from modules/evidence-bound-engine/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.6.1:enforce (baseline) @ elmos-evidence-bound-engine ---
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ elmos-evidence-bound-engine ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/evidence-bound-engine/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ elmos-evidence-bound-engine ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 3 source files with javac [debug parameters release 21] to target/classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ elmos-evidence-bound-engine ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/evidence-bound-engine/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ elmos-evidence-bound-engine ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [debug parameters release 21] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ elmos-evidence-bound-engine ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running io.elmos.executiondomain.EvidenceBoundDomainEngineTest
+[INFO] Tests run: 26, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.297 s -- in io.elmos.executiondomain.EvidenceBoundDomainEngineTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 26, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ elmos-evidence-bound-engine ---
+[INFO] Building jar: /Users/stephen/DevProjects/AIProjects/elmos/modules/evidence-bound-engine/target/elmos-evidence-bound-engine-0.1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] ---------------------< io.elmos:elmos-application >---------------------
+[INFO] Building elmos-application 0.1.0-SNAPSHOT                         [6/70]
+[INFO]   from modules/application/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.6.1:enforce (baseline) @ elmos-application ---
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ elmos-application ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/application/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ elmos-application ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 17 source files with javac [debug parameters release 21] to target/classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ elmos-application ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/application/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ elmos-application ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 9 source files with javac [debug parameters release 21] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ elmos-application ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running io.elmos.application.SecurityAuthorizationGovernanceTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.130 s -- in io.elmos.application.SecurityAuthorizationGovernanceTest
+[INFO] Running io.elmos.application.TestQualityGateGovernanceTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.010 s -- in io.elmos.application.TestQualityGateGovernanceTest
+[INFO] Running io.elmos.application.IntegrationCutoverGovernanceTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.037 s -- in io.elmos.application.IntegrationCutoverGovernanceTest
+[INFO] Running io.elmos.application.LanguageEngineRouterTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.014 s -- in io.elmos.application.LanguageEngineRouterTest
+[INFO] Running io.elmos.application.BatchOneDemoServiceTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.049 s -- in io.elmos.application.BatchOneDemoServiceTest
+[INFO] Running io.elmos.application.SuiteCutoverGovernanceTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.010 s -- in io.elmos.application.SuiteCutoverGovernanceTest
+[INFO] Running io.elmos.application.MainframeCutoverGovernanceTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.008 s -- in io.elmos.application.MainframeCutoverGovernanceTest
+[INFO] Running io.elmos.application.FrontendClientReleaseGovernanceTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.011 s -- in io.elmos.application.FrontendClientReleaseGovernanceTest
+[INFO] Running io.elmos.application.CrossDomainDecisionGovernanceTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.010 s -- in io.elmos.application.CrossDomainDecisionGovernanceTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 26, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ elmos-application ---
+[INFO] Building jar: /Users/stephen/DevProjects/AIProjects/elmos/modules/application/target/elmos-application-0.1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] ----------------------< io.elmos:elmos-workflow >-----------------------
+[INFO] Building elmos-workflow 0.1.0-SNAPSHOT                            [7/70]
+[INFO]   from modules/workflow/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.6.1:enforce (baseline) @ elmos-workflow ---
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ elmos-workflow ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/workflow/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ elmos-workflow ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [debug parameters release 21] to target/classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ elmos-workflow ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/workflow/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ elmos-workflow ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [debug parameters release 21] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ elmos-workflow ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running io.elmos.workflow.DurableWorkflowServiceTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.067 s -- in io.elmos.workflow.DurableWorkflowServiceTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ elmos-workflow ---
+[INFO] Building jar: /Users/stephen/DevProjects/AIProjects/elmos/modules/workflow/target/elmos-workflow-0.1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] -------------------------< io.elmos:elmos-scm >-------------------------
+[INFO] Building elmos-scm 0.1.0-SNAPSHOT                                 [8/70]
+[INFO]   from modules/scm/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.6.1:enforce (baseline) @ elmos-scm ---
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ elmos-scm ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/scm/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ elmos-scm ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 6 source files with javac [debug parameters release 21] to target/classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ elmos-scm ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/scm/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ elmos-scm ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 3 source files with javac [debug parameters release 21] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ elmos-scm ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running io.elmos.scm.GithubWebhookVerifierTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.189 s -- in io.elmos.scm.GithubWebhookVerifierTest
+[INFO] Running io.elmos.scm.GitHubInstallationTokenBrokerTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.036 s -- in io.elmos.scm.GitHubInstallationTokenBrokerTest
+[INFO] Running io.elmos.scm.GitHubPolicyTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.011 s -- in io.elmos.scm.GitHubPolicyTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ elmos-scm ---
+[INFO] Building jar: /Users/stephen/DevProjects/AIProjects/elmos/modules/scm/target/elmos-scm-0.1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] ----------------------< io.elmos:elmos-snapshot >-----------------------
+[INFO] Building elmos-snapshot 0.1.0-SNAPSHOT                            [9/70]
+[INFO]   from modules/snapshot/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.6.1:enforce (baseline) @ elmos-snapshot ---
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ elmos-snapshot ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/snapshot/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ elmos-snapshot ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 4 source files with javac [debug parameters release 21] to target/classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ elmos-snapshot ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/snapshot/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ elmos-snapshot ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 2 source files with javac [debug parameters release 21] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ elmos-snapshot ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running io.elmos.snapshot.SnapshotCaptureServiceTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.892 s -- in io.elmos.snapshot.SnapshotCaptureServiceTest
+[INFO] Running io.elmos.snapshot.DeterministicSnapshotArchiverTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.231 s -- in io.elmos.snapshot.DeterministicSnapshotArchiverTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ elmos-snapshot ---
+[INFO] Building jar: /Users/stephen/DevProjects/AIProjects/elmos/modules/snapshot/target/elmos-snapshot-0.1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] -----------------------< io.elmos:elmos-secret >------------------------
+[INFO] Building elmos-secret 0.1.0-SNAPSHOT                             [10/70]
+[INFO]   from modules/secret/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.6.1:enforce (baseline) @ elmos-secret ---
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ elmos-secret ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/secret/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ elmos-secret ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 4 source files with javac [debug parameters release 21] to target/classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ elmos-secret ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/secret/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ elmos-secret ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [debug parameters release 21] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ elmos-secret ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running io.elmos.secret.SecretSecurityTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.088 s -- in io.elmos.secret.SecretSecurityTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ elmos-secret ---
+[INFO] Building jar: /Users/stephen/DevProjects/AIProjects/elmos/modules/secret/target/elmos-secret-0.1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] -------------------< io.elmos:elmos-network-policy >--------------------
+[INFO] Building elmos-network-policy 0.1.0-SNAPSHOT                     [11/70]
+[INFO]   from modules/network-policy/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.6.1:enforce (baseline) @ elmos-network-policy ---
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ elmos-network-policy ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/network-policy/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ elmos-network-policy ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 2 source files with javac [debug parameters release 21] to target/classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ elmos-network-policy ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/network-policy/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ elmos-network-policy ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [debug parameters release 21] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ elmos-network-policy ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running io.elmos.network.NetworkDecisionServiceTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.057 s -- in io.elmos.network.NetworkDecisionServiceTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ elmos-network-policy ---
+[INFO] Building jar: /Users/stephen/DevProjects/AIProjects/elmos/modules/network-policy/target/elmos-network-policy-0.1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] ----------------------< io.elmos:elmos-workspace >----------------------
+[INFO] Building elmos-workspace 0.1.0-SNAPSHOT                          [12/70]
+[INFO]   from modules/workspace/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.6.1:enforce (baseline) @ elmos-workspace ---
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ elmos-workspace ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/workspace/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ elmos-workspace ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 6 source files with javac [debug parameters release 21] to target/classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ elmos-workspace ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/workspace/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ elmos-workspace ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 2 source files with javac [debug parameters release 21] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ elmos-workspace ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running io.elmos.workspace.WorkspaceFinalizerTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.124 s -- in io.elmos.workspace.WorkspaceFinalizerTest
+[INFO] Running io.elmos.workspace.WorkspaceSecurityPolicyTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.011 s -- in io.elmos.workspace.WorkspaceSecurityPolicyTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ elmos-workspace ---
+[INFO] Building jar: /Users/stephen/DevProjects/AIProjects/elmos/modules/workspace/target/elmos-workspace-0.1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] --------------------< io.elmos:elmos-health-check >---------------------
+[INFO] Building elmos-health-check 0.1.0-SNAPSHOT                       [13/70]
+[INFO]   from modules/health-check/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.6.1:enforce (baseline) @ elmos-health-check ---
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ elmos-health-check ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/health-check/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ elmos-health-check ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 9 source files with javac [debug parameters release 21] to target/classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ elmos-health-check ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/health-check/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ elmos-health-check ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [debug parameters release 21] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ elmos-health-check ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running io.elmos.health.JavaLegacyHealthCheckTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.211 s -- in io.elmos.health.JavaLegacyHealthCheckTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ elmos-health-check ---
+[INFO] Building jar: /Users/stephen/DevProjects/AIProjects/elmos/modules/health-check/target/elmos-health-check-0.1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] -----------------------< io.elmos:elmos-intake >------------------------
+[INFO] Building elmos-intake 0.1.0-SNAPSHOT                             [14/70]
+[INFO]   from modules/intake/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.6.1:enforce (baseline) @ elmos-intake ---
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ elmos-intake ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/intake/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ elmos-intake ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 6 source files with javac [debug parameters release 21] to target/classes
+[INFO] /Users/stephen/DevProjects/AIProjects/elmos/modules/intake/src/main/java/io/elmos/intake/BuildManifestInspector.java: /Users/stephen/DevProjects/AIProjects/elmos/modules/intake/src/main/java/io/elmos/intake/BuildManifestInspector.java uses or overrides a deprecated API.
+[INFO] /Users/stephen/DevProjects/AIProjects/elmos/modules/intake/src/main/java/io/elmos/intake/BuildManifestInspector.java: Recompile with -Xlint:deprecation for details.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ elmos-intake ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/intake/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ elmos-intake ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [debug parameters release 21] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ elmos-intake ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running io.elmos.intake.RepositoryIntakeServiceTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.261 s -- in io.elmos.intake.RepositoryIntakeServiceTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ elmos-intake ---
+[INFO] Building jar: /Users/stephen/DevProjects/AIProjects/elmos/modules/intake/target/elmos-intake-0.1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] ----------------------< io.elmos:elmos-semantic >-----------------------
+[INFO] Building elmos-semantic 0.1.0-SNAPSHOT                           [15/70]
+[INFO]   from modules/semantic/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.6.1:enforce (baseline) @ elmos-semantic ---
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ elmos-semantic ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/semantic/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ elmos-semantic ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 9 source files with javac [debug parameters release 21] to target/classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ elmos-semantic ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/semantic/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ elmos-semantic ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [debug parameters release 21] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ elmos-semantic ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running io.elmos.semantic.SemanticAnalysisPipelineTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.935 s -- in io.elmos.semantic.SemanticAnalysisPipelineTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ elmos-semantic ---
+[INFO] Building jar: /Users/stephen/DevProjects/AIProjects/elmos/modules/semantic/target/elmos-semantic-0.1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] -------------------------< io.elmos:elmos-uir >-------------------------
+[INFO] Building elmos-uir 0.1.0-SNAPSHOT                                [16/70]
+[INFO]   from modules/uir/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.6.1:enforce (baseline) @ elmos-uir ---
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ elmos-uir ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/uir/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ elmos-uir ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 6 source files with javac [debug parameters release 21] to target/classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ elmos-uir ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/uir/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ elmos-uir ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [debug parameters release 21] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ elmos-uir ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running io.elmos.uir.PspToUirPipelineTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.601 s -- in io.elmos.uir.PspToUirPipelineTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ elmos-uir ---
+[INFO] Building jar: /Users/stephen/DevProjects/AIProjects/elmos/modules/uir/target/elmos-uir-0.1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] ----------------------< io.elmos:elmos-skeleton >-----------------------
+[INFO] Building elmos-skeleton 0.1.0-SNAPSHOT                           [17/70]
+[INFO]   from modules/skeleton/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.6.1:enforce (baseline) @ elmos-skeleton ---
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ elmos-skeleton ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/skeleton/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ elmos-skeleton ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 4 source files with javac [debug parameters release 21] to target/classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ elmos-skeleton ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/skeleton/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ elmos-skeleton ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [debug parameters release 21] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ elmos-skeleton ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running io.elmos.skeleton.SkeletonGenerationServiceTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.786 s -- in io.elmos.skeleton.SkeletonGenerationServiceTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ elmos-skeleton ---
+[INFO] Building jar: /Users/stephen/DevProjects/AIProjects/elmos/modules/skeleton/target/elmos-skeleton-0.1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] ----------------------< io.elmos:elmos-lowering >-----------------------
+[INFO] Building elmos-lowering 0.1.0-SNAPSHOT                           [18/70]
+[INFO]   from modules/lowering/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.6.1:enforce (baseline) @ elmos-lowering ---
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ elmos-lowering ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/lowering/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ elmos-lowering ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 8 source files with javac [debug parameters release 21] to target/classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ elmos-lowering ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/lowering/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ elmos-lowering ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 2 source files with javac [debug parameters release 21] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ elmos-lowering ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running io.elmos.lowering.LoweringGovernanceTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.068 s -- in io.elmos.lowering.LoweringGovernanceTest
+[INFO] Running io.elmos.lowering.MethodBodyLoweringServiceTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.005 s -- in io.elmos.lowering.MethodBodyLoweringServiceTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ elmos-lowering ---
+[INFO] Building jar: /Users/stephen/DevProjects/AIProjects/elmos/modules/lowering/target/elmos-lowering-0.1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] ----------------< io.elmos:elmos-dependency-migration >-----------------
+[INFO] Building elmos-dependency-migration 0.1.0-SNAPSHOT               [19/70]
+[INFO]   from modules/dependency-migration/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.6.1:enforce (baseline) @ elmos-dependency-migration ---
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ elmos-dependency-migration ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/dependency-migration/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ elmos-dependency-migration ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 8 source files with javac [debug parameters release 21] to target/classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ elmos-dependency-migration ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/dependency-migration/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ elmos-dependency-migration ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [debug parameters release 21] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ elmos-dependency-migration ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running io.elmos.dependency.DependencyMigrationServiceTest
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.797 s -- in io.elmos.dependency.DependencyMigrationServiceTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ elmos-dependency-migration ---
+[INFO] Building jar: /Users/stephen/DevProjects/AIProjects/elmos/modules/dependency-migration/target/elmos-dependency-migration-0.1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] -----------------< io.elmos:elmos-framework-migration >-----------------
+[INFO] Building elmos-framework-migration 0.1.0-SNAPSHOT                [20/70]
+[INFO]   from modules/framework-migration/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.6.1:enforce (baseline) @ elmos-framework-migration ---
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ elmos-framework-migration ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/framework-migration/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ elmos-framework-migration ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 7 source files with javac [debug parameters release 21] to target/classes
+[INFO] /Users/stephen/DevProjects/AIProjects/elmos/modules/framework-migration/src/main/java/io/elmos/frameworkmigration/FrameworkIds.java: /Users/stephen/DevProjects/AIProjects/elmos/modules/framework-migration/src/main/java/io/elmos/frameworkmigration/FrameworkIds.java uses or overrides a deprecated API.
+[INFO] /Users/stephen/DevProjects/AIProjects/elmos/modules/framework-migration/src/main/java/io/elmos/frameworkmigration/FrameworkIds.java: Recompile with -Xlint:deprecation for details.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ elmos-framework-migration ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/framework-migration/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ elmos-framework-migration ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [debug parameters release 21] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ elmos-framework-migration ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running io.elmos.frameworkmigration.FrameworkMigrationServiceTest
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.019 s -- in io.elmos.frameworkmigration.FrameworkMigrationServiceTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ elmos-framework-migration ---
+[INFO] Building jar: /Users/stephen/DevProjects/AIProjects/elmos/modules/framework-migration/target/elmos-framework-migration-0.1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] ---------------< io.elmos:elmos-composite-modernization >---------------
+[INFO] Building elmos-composite-modernization 0.1.0-SNAPSHOT            [21/70]
+[INFO]   from modules/composite-modernization/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.6.1:enforce (baseline) @ elmos-composite-modernization ---
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ elmos-composite-modernization ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/composite-modernization/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ elmos-composite-modernization ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 15 source files with javac [debug parameters release 21] to target/classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ elmos-composite-modernization ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/composite-modernization/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ elmos-composite-modernization ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 2 source files with javac [debug parameters release 21] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ elmos-composite-modernization ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running io.elmos.composite.CompositeModernizationScenariosTest
+[INFO] Tests run: 24, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.850 s -- in io.elmos.composite.CompositeModernizationScenariosTest
+[INFO] Running io.elmos.composite.CompositeGovernanceTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.030 s -- in io.elmos.composite.CompositeGovernanceTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 29, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ elmos-composite-modernization ---
+[INFO] Building jar: /Users/stephen/DevProjects/AIProjects/elmos/modules/composite-modernization/target/elmos-composite-modernization-0.1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] -------------------< io.elmos:elmos-portfolio-scale >-------------------
+[INFO] Building elmos-portfolio-scale 0.1.0-SNAPSHOT                    [22/70]
+[INFO]   from modules/portfolio-scale/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.6.1:enforce (baseline) @ elmos-portfolio-scale ---
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ elmos-portfolio-scale ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/portfolio-scale/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ elmos-portfolio-scale ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 12 source files with javac [debug parameters release 21] to target/classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ elmos-portfolio-scale ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/portfolio-scale/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ elmos-portfolio-scale ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 2 source files with javac [debug parameters release 21] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ elmos-portfolio-scale ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running io.elmos.portfolio.PortfolioScaleTest
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.696 s -- in io.elmos.portfolio.PortfolioScaleTest
+[INFO] Running io.elmos.portfolio.PortfolioScaleAdvancedTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.341 s -- in io.elmos.portfolio.PortfolioScaleAdvancedTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ elmos-portfolio-scale ---
+[INFO] Building jar: /Users/stephen/DevProjects/AIProjects/elmos/modules/portfolio-scale/target/elmos-portfolio-scale-0.1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] ----------------< io.elmos:elmos-advanced-verification >----------------
+[INFO] Building elmos-advanced-verification 0.1.0-SNAPSHOT              [23/70]
+[INFO]   from modules/advanced-verification/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.6.1:enforce (baseline) @ elmos-advanced-verification ---
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ elmos-advanced-verification ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/advanced-verification/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ elmos-advanced-verification ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 14 source files with javac [debug parameters release 21] to target/classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ elmos-advanced-verification ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/advanced-verification/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ elmos-advanced-verification ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 2 source files with javac [debug parameters release 21] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ elmos-advanced-verification ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running io.elmos.verification.AdvancedVerificationTechniquesTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.212 s -- in io.elmos.verification.AdvancedVerificationTechniquesTest
+[INFO] Running io.elmos.verification.VerificationGovernanceTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.092 s -- in io.elmos.verification.VerificationGovernanceTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ elmos-advanced-verification ---
+[INFO] Building jar: /Users/stephen/DevProjects/AIProjects/elmos/modules/advanced-verification/target/elmos-advanced-verification-0.1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] -----------------< io.elmos:elmos-developer-workflow >------------------
+[INFO] Building ELMOS Developer Workflow 0.1.0-SNAPSHOT                 [24/70]
+[INFO]   from modules/developer-workflow/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.6.1:enforce (baseline) @ elmos-developer-workflow ---
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ elmos-developer-workflow ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/developer-workflow/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ elmos-developer-workflow ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 16 source files with javac [debug parameters release 21] to target/classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ elmos-developer-workflow ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/developer-workflow/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ elmos-developer-workflow ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 2 source files with javac [debug parameters release 21] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ elmos-developer-workflow ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running io.elmos.developerworkflow.DeveloperWorkflowCoreTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.183 s -- in io.elmos.developerworkflow.DeveloperWorkflowCoreTest
+[INFO] Running io.elmos.developerworkflow.DeveloperWorkflowGovernanceTest
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.046 s -- in io.elmos.developerworkflow.DeveloperWorkflowGovernanceTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ elmos-developer-workflow ---
+[INFO] Building jar: /Users/stephen/DevProjects/AIProjects/elmos/modules/developer-workflow/target/elmos-developer-workflow-0.1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] ----------------< io.elmos:elmos-extension-marketplace >----------------
+[INFO] Building ELMOS Extension Marketplace 0.1.0-SNAPSHOT              [25/70]
+[INFO]   from modules/extension-marketplace/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.6.1:enforce (baseline) @ elmos-extension-marketplace ---
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ elmos-extension-marketplace ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/extension-marketplace/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ elmos-extension-marketplace ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 12 source files with javac [debug parameters release 21] to target/classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ elmos-extension-marketplace ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/extension-marketplace/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ elmos-extension-marketplace ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 2 source files with javac [debug parameters release 21] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ elmos-extension-marketplace ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running io.elmos.marketplace.MarketplaceLifecycleTest
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.263 s -- in io.elmos.marketplace.MarketplaceLifecycleTest
+[INFO] Running io.elmos.marketplace.MarketplaceCoreTest
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.145 s -- in io.elmos.marketplace.MarketplaceCoreTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 24, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ elmos-extension-marketplace ---
+[INFO] Building jar: /Users/stephen/DevProjects/AIProjects/elmos/modules/extension-marketplace/target/elmos-extension-marketplace-0.1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] ---------< io.elmos:elmos-source-control-workspace-governance >---------
+[INFO] Building elmos-source-control-workspace-governance 0.1.0-SNAPSHOT [26/70]
+[INFO]   from modules/source-control-workspace-governance/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.6.1:enforce (baseline) @ elmos-source-control-workspace-governance ---
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ elmos-source-control-workspace-governance ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/source-control-workspace-governance/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ elmos-source-control-workspace-governance ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 2 source files with javac [debug parameters release 21] to target/classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ elmos-source-control-workspace-governance ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/source-control-workspace-governance/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ elmos-source-control-workspace-governance ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [debug parameters release 21] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ elmos-source-control-workspace-governance ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running io.elmos.product.scmworkspace.ScmWorkspaceAdmissionServiceTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.141 s -- in io.elmos.product.scmworkspace.ScmWorkspaceAdmissionServiceTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ elmos-source-control-workspace-governance ---
+[INFO] Building jar: /Users/stephen/DevProjects/AIProjects/elmos/modules/source-control-workspace-governance/target/elmos-source-control-workspace-governance-0.1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] ---------------< io.elmos:elmos-secure-execution-plane >----------------
+[INFO] Building elmos-secure-execution-plane 0.1.0-SNAPSHOT             [27/70]
+[INFO]   from modules/secure-execution-plane/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.6.1:enforce (baseline) @ elmos-secure-execution-plane ---
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ elmos-secure-execution-plane ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/secure-execution-plane/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ elmos-secure-execution-plane ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 2 source files with javac [debug parameters release 21] to target/classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ elmos-secure-execution-plane ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/secure-execution-plane/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ elmos-secure-execution-plane ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [debug parameters release 21] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ elmos-secure-execution-plane ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running io.elmos.product.execution.SecureExecutionAdmissionServiceTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.103 s -- in io.elmos.product.execution.SecureExecutionAdmissionServiceTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ elmos-secure-execution-plane ---
+[INFO] Building jar: /Users/stephen/DevProjects/AIProjects/elmos/modules/secure-execution-plane/target/elmos-secure-execution-plane-0.1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] --------------< io.elmos:elmos-evidence-assurance-fabric >--------------
+[INFO] Building elmos-evidence-assurance-fabric 0.1.0-SNAPSHOT          [28/70]
+[INFO]   from modules/evidence-assurance-fabric/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.6.1:enforce (baseline) @ elmos-evidence-assurance-fabric ---
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ elmos-evidence-assurance-fabric ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/evidence-assurance-fabric/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ elmos-evidence-assurance-fabric ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 2 source files with javac [debug parameters release 21] to target/classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ elmos-evidence-assurance-fabric ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/evidence-assurance-fabric/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ elmos-evidence-assurance-fabric ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [debug parameters release 21] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ elmos-evidence-assurance-fabric ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running io.elmos.product.assurance.EvidenceAssuranceServiceTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.124 s -- in io.elmos.product.assurance.EvidenceAssuranceServiceTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ elmos-evidence-assurance-fabric ---
+[INFO] Building jar: /Users/stephen/DevProjects/AIProjects/elmos/modules/evidence-assurance-fabric/target/elmos-evidence-assurance-fabric-0.1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] --------------< io.elmos:elmos-continuous-authorization >---------------
+[INFO] Building elmos-continuous-authorization 0.1.0-SNAPSHOT           [29/70]
+[INFO]   from modules/continuous-authorization/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.6.1:enforce (baseline) @ elmos-continuous-authorization ---
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ elmos-continuous-authorization ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/continuous-authorization/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ elmos-continuous-authorization ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 2 source files with javac [debug parameters release 21] to target/classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ elmos-continuous-authorization ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/modules/continuous-authorization/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ elmos-continuous-authorization ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [debug parameters release 21] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ elmos-continuous-authorization ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running io.elmos.product.policy.ContinuousAuthorizationServiceTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.135 s -- in io.elmos.product.policy.ContinuousAuthorizationServiceTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ elmos-continuous-authorization ---
+[INFO] Building jar: /Users/stephen/DevProjects/AIProjects/elmos/modules/continuous-authorization/target/elmos-continuous-authorization-0.1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] ----------------< io.elmos:elmos-database-data-engine >-----------------
+[INFO] Building elmos-database-data-engine 0.1.0-SNAPSHOT               [30/70]
+[INFO]   from engines/database-data-engine/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.6.1:enforce (baseline) @ elmos-database-data-engine ---
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ elmos-database-data-engine ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ elmos-database-data-engine ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 12 source files with javac [debug parameters release 21] to target/classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ elmos-database-data-engine ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/engines/database-data-engine/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ elmos-database-data-engine ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 5 source files with javac [debug parameters release 21] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ elmos-database-data-engine ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running io.elmos.databasedata.Batch15ContractFixtureTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.380 s -- in io.elmos.databasedata.Batch15ContractFixtureTest
+[INFO] Running io.elmos.databasedata.DatabaseDataEngineTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.192 s -- in io.elmos.databasedata.DatabaseDataEngineTest
+[INFO] Running io.elmos.databasedata.Batch15AcceptanceScenariosTest
+[INFO] Tests run: 24, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.055 s -- in io.elmos.databasedata.Batch15AcceptanceScenariosTest
+[INFO] Running io.elmos.databasedata.CanonicalDatabaseIrTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.025 s -- in io.elmos.databasedata.CanonicalDatabaseIrTest
+[INFO] Running io.elmos.databasedata.DatabaseDataEngineControllerTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in io.elmos.databasedata.DatabaseDataEngineControllerTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 40, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ elmos-database-data-engine ---
+[INFO] Building jar: /Users/stephen/DevProjects/AIProjects/elmos/engines/database-data-engine/target/elmos-database-data-engine-0.1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] --- spring-boot:3.5.3:repackage (default) @ elmos-database-data-engine ---
+[INFO] Attaching repackaged archive /Users/stephen/DevProjects/AIProjects/elmos/engines/database-data-engine/target/elmos-database-data-engine-0.1.0-SNAPSHOT-exec.jar with classifier exec
+[INFO] 
+[INFO] ----------------< io.elmos:elmos-infrastructure-engine >----------------
+[INFO] Building elmos-infrastructure-engine 0.1.0-SNAPSHOT              [31/70]
+[INFO]   from engines/infrastructure-engine/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.6.1:enforce (baseline) @ elmos-infrastructure-engine ---
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ elmos-infrastructure-engine ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ elmos-infrastructure-engine ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 11 source files with javac [debug parameters release 21] to target/classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ elmos-infrastructure-engine ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/engines/infrastructure-engine/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ elmos-infrastructure-engine ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 5 source files with javac [debug parameters release 21] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ elmos-infrastructure-engine ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running io.elmos.infrastructure.InfrastructureEngineTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.255 s -- in io.elmos.infrastructure.InfrastructureEngineTest
+[INFO] Running io.elmos.infrastructure.InfrastructureDomainTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.033 s -- in io.elmos.infrastructure.InfrastructureDomainTest
+[INFO] Running io.elmos.infrastructure.Batch16ContractFixtureTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.388 s -- in io.elmos.infrastructure.Batch16ContractFixtureTest
+[INFO] Running io.elmos.infrastructure.InfrastructureEngineControllerTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.014 s -- in io.elmos.infrastructure.InfrastructureEngineControllerTest
+[INFO] Running io.elmos.infrastructure.Batch16AcceptanceScenariosTest
+[INFO] Tests run: 26, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.084 s -- in io.elmos.infrastructure.Batch16AcceptanceScenariosTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 42, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ elmos-infrastructure-engine ---
+[INFO] Building jar: /Users/stephen/DevProjects/AIProjects/elmos/engines/infrastructure-engine/target/elmos-infrastructure-engine-0.1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] --- spring-boot:3.5.3:repackage (default) @ elmos-infrastructure-engine ---
+[INFO] Attaching repackaged archive /Users/stephen/DevProjects/AIProjects/elmos/engines/infrastructure-engine/target/elmos-infrastructure-engine-0.1.0-SNAPSHOT-exec.jar with classifier exec
+[INFO] 
+[INFO] -------------< io.elmos:elmos-security-compliance-engine >--------------
+[INFO] Building elmos-security-compliance-engine 0.1.0-SNAPSHOT         [32/70]
+[INFO]   from engines/security-compliance-engine/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.6.1:enforce (baseline) @ elmos-security-compliance-engine ---
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ elmos-security-compliance-engine ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ elmos-security-compliance-engine ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 8 source files with javac [debug parameters release 21] to target/classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ elmos-security-compliance-engine ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/engines/security-compliance-engine/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ elmos-security-compliance-engine ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 6 source files with javac [debug parameters release 21] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ elmos-security-compliance-engine ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running io.elmos.securitycompliance.SecurityDomainModelsTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.078 s -- in io.elmos.securitycompliance.SecurityDomainModelsTest
+[INFO] Running io.elmos.securitycompliance.SecurityComplianceEngineControllerTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in io.elmos.securitycompliance.SecurityComplianceEngineControllerTest
+[INFO] Running io.elmos.securitycompliance.SecurityToolAdapterRegistryTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.012 s -- in io.elmos.securitycompliance.SecurityToolAdapterRegistryTest
+[INFO] Running io.elmos.securitycompliance.Batch17AcceptanceScenariosTest
+[INFO] Tests run: 30, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.062 s -- in io.elmos.securitycompliance.Batch17AcceptanceScenariosTest
+[INFO] Running io.elmos.securitycompliance.SecurityComplianceEngineTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.137 s -- in io.elmos.securitycompliance.SecurityComplianceEngineTest
+[INFO] Running io.elmos.securitycompliance.Batch17ContractFixtureTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.372 s -- in io.elmos.securitycompliance.Batch17ContractFixtureTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 45, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ elmos-security-compliance-engine ---
+[INFO] Building jar: /Users/stephen/DevProjects/AIProjects/elmos/engines/security-compliance-engine/target/elmos-security-compliance-engine-0.1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] --- spring-boot:3.5.3:repackage (default) @ elmos-security-compliance-engine ---
+[INFO] Attaching repackaged archive /Users/stephen/DevProjects/AIProjects/elmos/engines/security-compliance-engine/target/elmos-security-compliance-engine-0.1.0-SNAPSHOT-exec.jar with classifier exec
+[INFO] 
+[INFO] -----------------< io.elmos:elmos-test-quality-engine >-----------------
+[INFO] Building elmos-test-quality-engine 0.1.0-SNAPSHOT                [33/70]
+[INFO]   from engines/test-quality-engine/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.6.1:enforce (baseline) @ elmos-test-quality-engine ---
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ elmos-test-quality-engine ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ elmos-test-quality-engine ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 7 source files with javac [debug parameters release 21] to target/classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ elmos-test-quality-engine ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/engines/test-quality-engine/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ elmos-test-quality-engine ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 6 source files with javac [debug parameters release 21] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ elmos-test-quality-engine ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running io.elmos.testquality.TestQualityEngineTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.268 s -- in io.elmos.testquality.TestQualityEngineTest
+[INFO] Running io.elmos.testquality.TestQualityEngineApplicationTest
+17:19:52.507 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [io.elmos.testquality.TestQualityEngineApplicationTest]: TestQualityEngineApplicationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+17:19:52.724 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration io.elmos.testquality.TestQualityEngineApplication for test class io.elmos.testquality.TestQualityEngineApplicationTest
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.3)
+
+2026-07-22T17:19:53.456+08:00  INFO 57964 --- [elmos-test-quality-engine] [           main] i.e.t.TestQualityEngineApplicationTest   : Starting TestQualityEngineApplicationTest using Java 21.0.11 with PID 57964 (started by stephen in /Users/stephen/DevProjects/AIProjects/elmos/engines/test-quality-engine)
+2026-07-22T17:19:53.459+08:00  INFO 57964 --- [elmos-test-quality-engine] [           main] i.e.t.TestQualityEngineApplicationTest   : No active profile set, falling back to 1 default profile: "default"
+2026-07-22T17:19:55.586+08:00  INFO 57964 --- [elmos-test-quality-engine] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 2 endpoints beneath base path '/actuator'
+2026-07-22T17:19:55.672+08:00  INFO 57964 --- [elmos-test-quality-engine] [           main] i.e.t.TestQualityEngineApplicationTest   : Started TestQualityEngineApplicationTest in 2.804 seconds (process running for 4.559)
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.611 s -- in io.elmos.testquality.TestQualityEngineApplicationTest
+[INFO] Running io.elmos.testquality.Batch18ContractFixtureTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.053 s -- in io.elmos.testquality.Batch18ContractFixtureTest
+[INFO] Running io.elmos.testquality.QualityDomainModelsTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.015 s -- in io.elmos.testquality.QualityDomainModelsTest
+[INFO] Running io.elmos.testquality.TestToolAdapterRegistryTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in io.elmos.testquality.TestToolAdapterRegistryTest
+[INFO] Running io.elmos.testquality.Batch18AcceptanceScenariosTest
+[INFO] Tests run: 30, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.038 s -- in io.elmos.testquality.Batch18AcceptanceScenariosTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 43, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ elmos-test-quality-engine ---
+[INFO] Building jar: /Users/stephen/DevProjects/AIProjects/elmos/engines/test-quality-engine/target/elmos-test-quality-engine-0.1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] --- spring-boot:3.5.3:repackage (default) @ elmos-test-quality-engine ---
+[INFO] Attaching repackaged archive /Users/stephen/DevProjects/AIProjects/elmos/engines/test-quality-engine/target/elmos-test-quality-engine-0.1.0-SNAPSHOT-exec.jar with classifier exec
+[INFO] 
+[INFO] ------------------< io.elmos:elmos-mainframe-engine >-------------------
+[INFO] Building elmos-mainframe-engine 0.1.0-SNAPSHOT                   [34/70]
+[INFO]   from engines/mainframe-engine/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.6.1:enforce (baseline) @ elmos-mainframe-engine ---
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ elmos-mainframe-engine ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ elmos-mainframe-engine ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 6 source files with javac [debug parameters release 21] to target/classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ elmos-mainframe-engine ---
+[INFO] skip non existing resourceDirectory /Users/stephen/DevProjects/AIProjects/elmos/engines/mainframe-engine/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ elmos-mainframe-engine ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 5 source files with javac [debug parameters release 21] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ elmos-mainframe-engine ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running io.elmos.mainframe.MainframeEngineApplicationTest
+17:19:59.596 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [io.elmos.mainframe.MainframeEngineApplicationTest]: MainframeEngineApplicationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+17:19:59.746 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration io.elmos.mainframe.MainframeEngineApplication for test class io.elmos.mainframe.MainframeEngineApplicationTest
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.3)
+
+2026-07-22T17:20:00.272+08:00  INFO 58489 --- [elmos-mainframe-engine] [           main] i.e.m.MainframeEngineApplicationTest     : Starting MainframeEngineApplicationTest using Java 21.0.11 with PID 58489 (started by stephen in /Users/stephen/DevProjects/AIProjects/elmos/engines/mainframe-engine)
+2026-07-22T17:20:00.279+08:00  INFO 58489 --- [elmos-mainframe-engine] [           main] i.e.m.MainframeEngineApplicationTest     : No active profile set, falling back to 1 default profile: "default"
+2026-07-22T17:20:04.919+08:00  INFO 58489 --- [elmos-mainframe-engine] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 2 endpoints beneath base path '/actuator'
+2026-07-22T17:20:05.006+08:00  INFO 58489 --- [elmos-mainframe-engine] [           main] i.e.m.MainframeEngineApplicationTest     : Started MainframeEngineApplicationTest in 5.097 seconds (process running for 6.439)
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.879 s -- in io.elmos.mainframe.MainframeEngineApplicationTest
+[INFO] Running io.elmos.mainframe.Batch19ContractFixtureTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.037 s -- in io.elmos.mainframe.Batch19ContractFixtureTest
+[INFO] Running io.elmos.mainframe.Batch19AcceptanceScenariosTest
+[INFO] Tests run: 30, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.048 s -- in io.elmos.mainframe.Batch19AcceptanceScenariosTest
+[INFO] Running io.elmos.mainframe.MainframeEngineServiceTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.050 s -- in io.elmos.mainframe.MainframeEngineServiceTest
+[INFO] Running io.elmos.mainframe.MainframeAdapterRegistryTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in io.elmos.mainframe.MainframeAdapterRegistryTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 41, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ elmos-mainframe-engine ---
+[INFO] Building jar: /Users/stephen/DevProjects/AIProjects/elmos/engines/mainframe-engine/target/elmos-mainframe-engine-0.1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] --- spring-boot:3.5.3:repackage (default) @ elmos-mainframe-engine ---
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary for ELMOS 0.1.0-SNAPSHOT:
+[INFO] 
+[INFO] ELMOS .............................................. SUCCESS [  0.266 s]
+[INFO] elmos-domain ....................................... SUCCESS [  3.611 s]
+[INFO] elmos-evidence ..................................... SUCCESS [  1.104 s]
+[INFO] elmos-engine-api ................................... SUCCESS [  1.386 s]
+[INFO] elmos-evidence-bound-engine ........................ SUCCESS [  1.775 s]
+[INFO] elmos-application .................................. SUCCESS [  2.143 s]
+[INFO] elmos-workflow ..................................... SUCCESS [  0.749 s]
+[INFO] elmos-scm .......................................... SUCCESS [  0.903 s]
+[INFO] elmos-snapshot ..................................... SUCCESS [  2.381 s]
+[INFO] elmos-secret ....................................... SUCCESS [  0.701 s]
+[INFO] elmos-network-policy ............................... SUCCESS [  0.723 s]
+[INFO] elmos-workspace .................................... SUCCESS [  0.849 s]
+[INFO] elmos-health-check ................................. SUCCESS [  0.849 s]
+[INFO] elmos-intake ....................................... SUCCESS [  3.465 s]
+[INFO] elmos-semantic ..................................... SUCCESS [  3.240 s]
+[INFO] elmos-uir .......................................... SUCCESS [  4.039 s]
+[INFO] elmos-skeleton ..................................... SUCCESS [  2.556 s]
+[INFO] elmos-lowering ..................................... SUCCESS [  5.334 s]
+[INFO] elmos-dependency-migration ......................... SUCCESS [  2.971 s]
+[INFO] elmos-framework-migration .......................... SUCCESS [  3.340 s]
+[INFO] elmos-composite-modernization ...................... SUCCESS [  5.704 s]
+[INFO] elmos-portfolio-scale .............................. SUCCESS [  5.442 s]
+[INFO] elmos-advanced-verification ........................ SUCCESS [  2.450 s]
+[INFO] ELMOS Developer Workflow ........................... SUCCESS [  1.881 s]
+[INFO] ELMOS Extension Marketplace ........................ SUCCESS [  2.324 s]
+[INFO] elmos-source-control-workspace-governance .......... SUCCESS [  1.718 s]
+[INFO] elmos-secure-execution-plane ....................... SUCCESS [  1.360 s]
+[INFO] elmos-evidence-assurance-fabric .................... SUCCESS [  1.292 s]
+[INFO] elmos-continuous-authorization ..................... SUCCESS [  1.250 s]
+[INFO] elmos-database-data-engine ......................... SUCCESS [  6.266 s]
+[INFO] elmos-infrastructure-engine ........................ SUCCESS [  3.826 s]
+[INFO] elmos-security-compliance-engine ................... SUCCESS [  2.337 s]
+[INFO] elmos-test-quality-engine .......................... SUCCESS [  7.437 s]
+[INFO] elmos-mainframe-engine ............................. FAILURE [  8.674 s]
+[INFO] elmos-enterprise-integration-engine ................ SKIPPED
+[INFO] elmos-enterprise-suite-engine ...................... SKIPPED
+[INFO] elmos-software-delivery-platform-engine ............ SKIPPED
+[INFO] elmos-ai-platform-engine ........................... SKIPPED
+[INFO] elmos-edge-iot-industrial-engine ................... SKIPPED
+[INFO] elmos-operations-sre-itsm-engine ................... SKIPPED
+[INFO] elmos-enterprise-architecture-engine ............... SKIPPED
+[INFO] elmos-planning ..................................... SKIPPED
+[INFO] elmos-recipe-governance ............................ SKIPPED
+[INFO] elmos-repair-orchestration ......................... SKIPPED
+[INFO] elmos-behavior-equivalence ......................... SKIPPED
+[INFO] elmos-production-hardening ......................... SKIPPED
+[INFO] elmos-production-cutover ........................... SKIPPED
+[INFO] elmos-enterprise-platform .......................... SKIPPED
+[INFO] elmos-commercial-loop .............................. SKIPPED
+[INFO] elmos-ecosystem-growth ............................. SKIPPED
+[INFO] elmos-company-series ............................... SKIPPED
+[INFO] elmos-product-roadmap-governance ................... SKIPPED
+[INFO] elmos-migration-pack-certification ................. SKIPPED
+[INFO] elmos-validation ................................... SKIPPED
+[INFO] elmos-delivery ..................................... SKIPPED
+[INFO] elmos-enterprise-governance ........................ SKIPPED
+[INFO] elmos-commercial-operations ........................ SKIPPED
+[INFO] elmos-persistence .................................. SKIPPED
+[INFO] elmos-security ..................................... SKIPPED
+[INFO] elmos-integrations ................................. SKIPPED
+[INFO] elmos-java-recipes ................................. SKIPPED
+[INFO] elmos-java-engine-worker ........................... SKIPPED
+[INFO] elmos-control-plane ................................ SKIPPED
+[INFO] elmos-workspace-service ............................ SKIPPED
+[INFO] elmos-egress-proxy ................................. SKIPPED
+[INFO] elmos-agent-gateway ................................ SKIPPED
+[INFO] elmos-enterprise-control ........................... SKIPPED
+[INFO] elmos-commercial-api ............................... SKIPPED
+[INFO] elmos-elmosctl ..................................... SKIPPED
+[INFO] elmos-architecture-tests ........................... SKIPPED
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  01:34 min
+[INFO] Finished at: 2026-07-22T17:20:06+08:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.springframework.boot:spring-boot-maven-plugin:3.5.3:repackage (default) on project elmos-mainframe-engine: No space left on device -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException
+[ERROR] 
+[ERROR] After correcting the problems, you can resume the build with the command
+[ERROR]   mvn <args> -rf :elmos-mainframe-engine
+[Fatal Error] pom.xml:1:10: DOCTYPE is disallowed when the feature "http://apache.org/xml/features/disallow-doctype-decl" set to true.
+Jul 22, 2026 5:19:14 PM org.junit.jupiter.engine.extension.TempDirectory$CloseablePath$1 warnAboutLinkWithTargetOutsideTempDir
+WARNING: Deleting symbolic link from location inside of temp dir (/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/junit-3706511786564564943/reports) to location outside of temp dir (/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/junit-3706511786564564943-outside) but not the target file/directory
+Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build as described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
+WARNING: A Java agent has been loaded dynamically (/Users/stephen/.m2/repository/net/bytebuddy/byte-buddy-agent/1.17.6/byte-buddy-agent-1.17.6.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build as described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
+WARNING: A Java agent has been loaded dynamically (/Users/stephen/.m2/repository/net/bytebuddy/byte-buddy-agent/1.17.6/byte-buddy-agent-1.17.6.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+make: *** [backend] Error 1

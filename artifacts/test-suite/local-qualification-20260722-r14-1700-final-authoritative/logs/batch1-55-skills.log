@@ -1,0 +1,27 @@
+/opt/homebrew/bin/uv run --quiet --with pyyaml python tooling/validate_batch1_55_skill_pack.py
+{
+  "structural_status": "PASS",
+  "overall_completion": "NOT_COMPLETE",
+  "official_skill_validation": {
+    "valid": 1824,
+    "failed": 0
+  },
+  "interfaces": {
+    "valid": 1824,
+    "failed": 0
+  },
+  "namespace_counts": {
+    "migration-pack": 820,
+    "product-commercialization": 1004
+  },
+  "migration_batch_range": "M1-M45",
+  "product_batch_range": "B34-B55",
+  "deterministic_aliases": 1015,
+  "source_incomplete": 448,
+  "planning_edition": 752,
+  "external_evidence": "NOT_RUN"
+}
+/opt/homebrew/bin/uv run --quiet --with pyyaml python tooling/ensure_runtime_skill_interfaces.py --check --root .agents/skills
+{'skill_root': '/Users/stephen/DevProjects/AIProjects/elmos/.agents/skills', 'skills': 425, 'interfaces_updated': 0, 'interfaces_valid': 425}
+/opt/homebrew/bin/uv run --quiet --with pyyaml python tooling/ensure_runtime_skill_interfaces.py --check --root agent-skills/runtime
+{'skill_root': '/Users/stephen/DevProjects/AIProjects/elmos/agent-skills/runtime', 'skills': 1647, 'interfaces_updated': 0, 'interfaces_valid': 1647}

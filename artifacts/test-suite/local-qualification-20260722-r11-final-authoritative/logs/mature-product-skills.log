@@ -1,0 +1,5 @@
+/opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python scripts/batch29/validate_skill_bundle.py
+ERROR: .agents/skills/elmos-project-synthesis/SKILL.md: missing heading ## Verification
+ERROR: .agents/skills/elmos-project-synthesis/SKILL.md: missing heading ## Stop and escalate when
+ERROR: .agents/skills/elmos-project-synthesis/SKILL.md: missing heading ## Definition of done
+make[1]: *** [b29-skills-test] Error 1

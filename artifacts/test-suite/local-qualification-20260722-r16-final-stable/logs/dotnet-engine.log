@@ -1,0 +1,31 @@
+PATH="/opt/homebrew/bin:$PATH" dotnet test engines/dotnet-engine/Elmos.Dotnet.slnx
+  Determining projects to restore...
+  Restored /Users/stephen/DevProjects/AIProjects/elmos/engines/dotnet-engine/src/Elmos.Dotnet.Validation/Elmos.Dotnet.Validation.csproj (in 198 ms).
+  Restored /Users/stephen/DevProjects/AIProjects/elmos/engines/dotnet-engine/src/Elmos.Dotnet.Application/Elmos.Dotnet.Application.csproj (in 190 ms).
+  Restored /Users/stephen/DevProjects/AIProjects/elmos/engines/dotnet-engine/src/Elmos.Dotnet.Contracts/Elmos.Dotnet.Contracts.csproj (in 181 ms).
+  Restored /Users/stephen/DevProjects/AIProjects/elmos/engines/dotnet-engine/src/Elmos.Dotnet.AspNet/Elmos.Dotnet.AspNet.csproj (in 192 ms).
+  Restored /Users/stephen/DevProjects/AIProjects/elmos/engines/dotnet-engine/src/Elmos.Dotnet.Ef/Elmos.Dotnet.Ef.csproj (in 203 ms).
+  Restored /Users/stephen/DevProjects/AIProjects/elmos/engines/dotnet-engine/src/Elmos.Dotnet.ProjectSystem/Elmos.Dotnet.ProjectSystem.csproj (in 193 ms).
+  Restored /Users/stephen/DevProjects/AIProjects/elmos/engines/dotnet-engine/src/Elmos.Dotnet.MSBuild/Elmos.Dotnet.MSBuild.csproj (in 200 ms).
+  Restored /Users/stephen/DevProjects/AIProjects/elmos/engines/dotnet-engine/src/Elmos.Dotnet.Domain/Elmos.Dotnet.Domain.csproj (in 3 ms).
+  Restored /Users/stephen/DevProjects/AIProjects/elmos/engines/dotnet-engine/src/Elmos.Dotnet.Wcf/Elmos.Dotnet.Wcf.csproj (in 10 ms).
+  Restored /Users/stephen/DevProjects/AIProjects/elmos/engines/dotnet-engine/src/Elmos.Dotnet.Roslyn/Elmos.Dotnet.Roslyn.csproj (in 3.36 sec).
+  Restored /Users/stephen/DevProjects/AIProjects/elmos/engines/dotnet-engine/src/Elmos.Dotnet.Infrastructure/Elmos.Dotnet.Infrastructure.csproj (in 3.38 sec).
+  Restored /Users/stephen/DevProjects/AIProjects/elmos/engines/dotnet-engine/src/Elmos.Dotnet.Worker/Elmos.Dotnet.Worker.csproj (in 3.69 sec).
+  Restored /Users/stephen/DevProjects/AIProjects/elmos/engines/dotnet-engine/tests/Elmos.Dotnet.Engine.Tests/Elmos.Dotnet.Engine.Tests.csproj (in 3.38 sec).
+  Elmos.Dotnet.Contracts -> /Users/stephen/DevProjects/AIProjects/elmos/engines/dotnet-engine/src/Elmos.Dotnet.Contracts/bin/Debug/net10.0/Elmos.Dotnet.Contracts.dll
+  Elmos.Dotnet.Domain -> /Users/stephen/DevProjects/AIProjects/elmos/engines/dotnet-engine/src/Elmos.Dotnet.Domain/bin/Debug/net10.0/Elmos.Dotnet.Domain.dll
+  Elmos.Dotnet.AspNet -> /Users/stephen/DevProjects/AIProjects/elmos/engines/dotnet-engine/src/Elmos.Dotnet.AspNet/bin/Debug/net10.0/Elmos.Dotnet.AspNet.dll
+  Elmos.Dotnet.Ef -> /Users/stephen/DevProjects/AIProjects/elmos/engines/dotnet-engine/src/Elmos.Dotnet.Ef/bin/Debug/net10.0/Elmos.Dotnet.Ef.dll
+  Elmos.Dotnet.Application -> /Users/stephen/DevProjects/AIProjects/elmos/engines/dotnet-engine/src/Elmos.Dotnet.Application/bin/Debug/net10.0/Elmos.Dotnet.Application.dll
+  Elmos.Dotnet.Wcf -> /Users/stephen/DevProjects/AIProjects/elmos/engines/dotnet-engine/src/Elmos.Dotnet.Wcf/bin/Debug/net10.0/Elmos.Dotnet.Wcf.dll
+  Elmos.Dotnet.Validation -> /Users/stephen/DevProjects/AIProjects/elmos/engines/dotnet-engine/src/Elmos.Dotnet.Validation/bin/Debug/net10.0/Elmos.Dotnet.Validation.dll
+  Elmos.Dotnet.ProjectSystem -> /Users/stephen/DevProjects/AIProjects/elmos/engines/dotnet-engine/src/Elmos.Dotnet.ProjectSystem/bin/Debug/net10.0/Elmos.Dotnet.ProjectSystem.dll
+  Elmos.Dotnet.Roslyn -> /Users/stephen/DevProjects/AIProjects/elmos/engines/dotnet-engine/src/Elmos.Dotnet.Roslyn/bin/Debug/net10.0/Elmos.Dotnet.Roslyn.dll
+  Elmos.Dotnet.MSBuild -> /Users/stephen/DevProjects/AIProjects/elmos/engines/dotnet-engine/src/Elmos.Dotnet.MSBuild/bin/Debug/net10.0/Elmos.Dotnet.MSBuild.dll
+  Elmos.Dotnet.Infrastructure -> /Users/stephen/DevProjects/AIProjects/elmos/engines/dotnet-engine/src/Elmos.Dotnet.Infrastructure/bin/Debug/net10.0/Elmos.Dotnet.Infrastructure.dll
+  Elmos.Dotnet.Engine.Tests -> /Users/stephen/DevProjects/AIProjects/elmos/engines/dotnet-engine/tests/Elmos.Dotnet.Engine.Tests/bin/Debug/net10.0/Elmos.Dotnet.Engine.Tests.dll
+Test run for /Users/stephen/DevProjects/AIProjects/elmos/engines/dotnet-engine/tests/Elmos.Dotnet.Engine.Tests/bin/Debug/net10.0/Elmos.Dotnet.Engine.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    12, Skipped:     0, Total:    12, Duration: 2 s - Elmos.Dotnet.Engine.Tests.dll (net10.0)

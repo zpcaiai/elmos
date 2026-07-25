@@ -1,0 +1,124 @@
+{
+  "report_version": 1,
+  "plan_id": "elmos-local-engineering-qualification",
+  "scope": "local-engineering-evidence-only",
+  "status": "PASSED",
+  "started_at": "2026-07-22T06:54:40.868078Z",
+  "finished_at": "2026-07-22T07:07:31.143756Z",
+  "artifact_manifest": {
+    "path": "artifact-manifest.json",
+    "sha256": "4ce20b9e5c0dbda3b44abfdab89df03fc815d6a5d98b31371de7805e02dcbd6f"
+  },
+  "environment_manifest": {
+    "path": "environment-manifest.json",
+    "sha256": "0a7227df2714b469c73213cb7abb538e7af8319c4af2dcd31bede6c729c4cfd6"
+  },
+  "plan_digest": "sha256:2a9443925fbec866ebd8902baca04ca76452703319f279583b8f3e523790e2fa",
+  "commands": [
+    {
+      "id": "strict-toolkit",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "tests/test-suite/test_toolkit.py"
+      ],
+      "started_at": "2026-07-22T06:54:40.868096Z",
+      "finished_at": "2026-07-22T06:55:27.270060Z",
+      "exit_code": 0,
+      "timed_out": false,
+      "log": "logs/strict-toolkit.log",
+      "log_sha256": "bc5013b84eb524f9c33dd3e8bf7db594cab79de16d86cec7206679ebf08ce087",
+      "log_bytes": 113
+    },
+    {
+      "id": "mature-product-skills",
+      "command": [
+        "make",
+        "mature-product-skills"
+      ],
+      "started_at": "2026-07-22T06:55:27.270472Z",
+      "finished_at": "2026-07-22T07:01:12.705025Z",
+      "exit_code": 0,
+      "timed_out": false,
+      "log": "logs/mature-product-skills.log",
+      "log_sha256": "7f5eb911faab84be3a25e8145ab172e6b620e8d00d7e5e8a85b4cea76149bea9",
+      "log_bytes": 31582
+    },
+    {
+      "id": "java-reactor",
+      "command": [
+        "make",
+        "backend"
+      ],
+      "started_at": "2026-07-22T07:01:12.705664Z",
+      "finished_at": "2026-07-22T07:06:28.320557Z",
+      "exit_code": 0,
+      "timed_out": false,
+      "log": "logs/java-reactor.log",
+      "log_sha256": "688e2b1c326ff936227283328ff82277541c84d0e43842a785746869e4b9c542",
+      "log_bytes": 168756
+    },
+    {
+      "id": "dotnet-engine",
+      "command": [
+        "make",
+        "dotnet"
+      ],
+      "started_at": "2026-07-22T07:06:28.321181Z",
+      "finished_at": "2026-07-22T07:06:49.851206Z",
+      "exit_code": 0,
+      "timed_out": false,
+      "log": "logs/dotnet-engine.log",
+      "log_sha256": "88d9cd86e7f1ea89d1debc772bab977c2dcd4c0a0f1d1cb3ba6d84d39561fee3",
+      "log_bytes": 2500
+    },
+    {
+      "id": "python-engine",
+      "command": [
+        "make",
+        "python"
+      ],
+      "started_at": "2026-07-22T07:06:49.851565Z",
+      "finished_at": "2026-07-22T07:06:55.256908Z",
+      "exit_code": 0,
+      "timed_out": false,
+      "log": "logs/python-engine.log",
+      "log_sha256": "7179dae0ae50ddacf73bd7f3a94c6bf9c9518ea111b81ab75add8aa700eacd07",
+      "log_bytes": 403
+    },
+    {
+      "id": "frontend-client",
+      "command": [
+        "make",
+        "frontend"
+      ],
+      "started_at": "2026-07-22T07:06:55.257095Z",
+      "finished_at": "2026-07-22T07:07:07.443047Z",
+      "exit_code": 0,
+      "timed_out": false,
+      "log": "logs/frontend-client.log",
+      "log_sha256": "42ae7956eeb6f850e1121521cacbd0876a00b5c61137f4080f9e0d3d9bc02640",
+      "log_bytes": 3781
+    },
+    {
+      "id": "web-console",
+      "command": [
+        "make",
+        "web"
+      ],
+      "started_at": "2026-07-22T07:07:07.443348Z",
+      "finished_at": "2026-07-22T07:07:31.143532Z",
+      "exit_code": 0,
+      "timed_out": false,
+      "log": "logs/web-console.log",
+      "log_sha256": "51b6e31503a8d7519612e2661487aab6e2f11d38c096360d908b7ad82403c382",
+      "log_bytes": 1323
+    }
+  ],
+  "certification_case_updates": [],
+  "certification_decision": "BLOCKED",
+  "field_evidence_status": "NOT_RUN",
+  "boundary": "Local engineering checks do not satisfy the 408 exact certification cases.",
+  "report_digest": "sha256:76021ec7d6a82208d304ad27a1d77bf6267ccff633bf3973177b05ab0b9897d2"
+}

@@ -1,0 +1,39 @@
+CI=true PATH="/Users/stephen/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/:$PATH" pnpm dlx pnpm@10.12.4 --dir apps/web-console install --frozen-lockfile
+Lockfile is up to date, resolution step is skipped
+Already up to date
+
+Done in 395ms using pnpm v10.12.4
+PATH="/Users/stephen/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/:$PATH" pnpm dlx pnpm@10.12.4 --dir apps/web-console check
+
+> @elmos/web-console@0.1.0 check /Users/stephen/DevProjects/AIProjects/elmos/apps/web-console
+> tsc --noEmit && next build
+
+▲ Next.js 16.2.10 (Turbopack)
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 4.6s
+  Running TypeScript ...
+  Finished TypeScript in 3.8s ...
+  Collecting page data using 7 workers ...
+  Generating static pages using 7 workers (0/8) ...
+  Generating static pages using 7 workers (2/8) 
+  Generating static pages using 7 workers (4/8) 
+  Generating static pages using 7 workers (6/8) 
+✓ Generating static pages using 7 workers (8/8) in 257ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ƒ /api/capabilities/migration
+├ ƒ /api/capabilities/product
+├ ○ /commercialization
+├ ○ /generation
+├ ○ /icon.svg
+├ ○ /migration
+└ ○ /skills
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

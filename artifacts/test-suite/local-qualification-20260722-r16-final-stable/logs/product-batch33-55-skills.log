@@ -1,0 +1,3 @@
+/opt/homebrew/bin/uv run --quiet --with pyyaml python tooling/validate_product_batch33_55_integration.py
+expected 1,647 Runtime Skills, found 1842
+make: *** [product-batch33-55-skills] Error 1

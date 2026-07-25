@@ -1,0 +1,67 @@
+CI=true PATH="/Users/stephen/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/:$PATH" pnpm dlx pnpm@10.12.4 --dir engines/frontend-client-engine install --frozen-lockfile
+Lockfile is up to date, resolution step is skipped
+Progress: resolved 1, reused 0, downloaded 0, added 0
+Packages: +3
++++
+Progress: resolved 3, reused 3, downloaded 0, added 3, done
+
+devDependencies:
++ @types/node 24.3.0
++ typescript 5.9.2
+
+Done in 384ms using pnpm v10.12.4
+PATH="/Users/stephen/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/:$PATH" pnpm dlx pnpm@10.12.4 --dir engines/frontend-client-engine check
+
+> @elmos/frontend-client-engine@1.0.0 check /Users/stephen/DevProjects/AIProjects/elmos/engines/frontend-client-engine
+> pnpm run test
+
+
+> @elmos/frontend-client-engine@1.0.0 test /Users/stephen/DevProjects/AIProjects/elmos/engines/frontend-client-engine
+> pnpm run build && node --test dist/test/*.test.js
+
+
+> @elmos/frontend-client-engine@1.0.0 build /Users/stephen/DevProjects/AIProjects/elmos/engines/frontend-client-engine
+> tsc -p tsconfig.json
+
+✔ scenario 1 reports AngularJS EOL and inventory evidence (2.482875ms)
+✔ scenario 2 does not mechanically lower interdependent watches (0.154292ms)
+✔ scenario 3 expands Angular upgrades one major at a time (0.290625ms)
+✔ scenario 4 makes Vue compatibility temporary and removable (0.088083ms)
+✔ scenario 5 blocks private Vue VNode assumptions (0.099458ms)
+✔ scenario 6 classifies DOM measurement separately from ordinary effects (0.092625ms)
+✔ scenario 7 preserves class error boundaries (0.089625ms)
+✔ scenario 8 detects mixed React and jQuery DOM ownership (0.148667ms)
+✔ scenario 9 stages jQuery 1 to 4 migration and removes Migrate (0.483958ms)
+✔ scenario 10 treats font drift as an unstable visual environment (0.703834ms)
+✔ scenario 11 compares an approved design change against target authority (0.419416ms)
+✔ scenario 12 automated accessibility success cannot claim full pass (0.227083ms)
+✔ scenario 13 a focus regression fails independently of visual equality (0.072875ms)
+✔ scenario 14 unsafe Electron IPC is critical input to the security gate (0.148792ms)
+✔ scenario 15 desktop device dependencies block full web replacement (0.060959ms)
+✔ scenario 16 active old mobile versions block backend field removal (0.0665ms)
+✔ scenario 17 offline duplicate replay requires idempotency (0.088375ms)
+✔ scenario 18 deep-link removal requires redirect coverage (0.075166ms)
+✔ scenario 19 service-worker release retains old chunks or reload strategy (0.058834ms)
+✔ scenario 20 BFF cannot become the pricing domain owner (0.052041ms)
+✔ scenario 21 coordinated cutover requires every client and backend (0.060542ms)
+✔ scenario 22 no-equivalent design component requires human design (0.035833ms)
+✔ static scan emits immutable evidence without executing customer code (9.984708ms)
+✔ changed-input idempotency reuse conflicts (0.570959ms)
+✔ customer transformation fails closed without an approved runner (0.240583ms)
+✔ validation is inconclusive without manual evidence when required (0.258917ms)
+✔ frontend lifecycle advances exactly one state and rejects skipped gates (0.407667ms)
+✔ UX redesign planning is evidence-producing but policy-blocked without named approval (0.296292ms)
+✔ UI graph separates routes, components, permissions and dynamic uncertainty (0.773667ms)
+✔ six Batch 14 schema fixtures are versioned and satisfy declared required fields (2.983208ms)
+✔ acceptance fixture declares all 22 scenarios exactly once (0.453834ms)
+✔ HTTP capabilities disclose every unconfigured Runner profile (23.929375ms)
+✔ HTTP execute-step accepts the job transport but returns terminal fail-closed state (14.840416ms)
+✔ HTTP idempotency conflict and tenant-scoped job visibility use 409 and 404 (5.75725ms)
+ℹ tests 34
+ℹ suites 0
+ℹ pass 34
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 157.881334

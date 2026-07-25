@@ -1,0 +1,56 @@
+CI=true PATH="/Users/stephen/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/:$PATH" pnpm dlx pnpm@10.12.4 --dir apps/web-console install --frozen-lockfile
+Lockfile is up to date, resolution step is skipped
+Progress: resolved 1, reused 0, downloaded 0, added 0
+Packages: +28
+++++++++++++++++++++++++++++
+Progress: resolved 28, reused 27, downloaded 0, added 27
+Progress: resolved 28, reused 28, downloaded 0, added 27
+Progress: resolved 28, reused 28, downloaded 0, added 28
+Progress: resolved 28, reused 28, downloaded 0, added 28, done
+
+dependencies:
++ next 16.2.10
++ react 19.2.7
++ react-dom 19.2.7
+
+devDependencies:
++ @types/node 24.3.0
++ @types/react 19.1.10
++ @types/react-dom 19.1.7
++ typescript 5.9.2
+
+Done in 4.8s using pnpm v10.12.4
+PATH="/Users/stephen/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/:$PATH" pnpm dlx pnpm@10.12.4 --dir apps/web-console check
+
+> @elmos/web-console@0.1.0 check /Users/stephen/DevProjects/AIProjects/elmos/apps/web-console
+> tsc --noEmit && next build
+
+▲ Next.js 16.2.10 (Turbopack)
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 3.8s
+  Running TypeScript ...
+  Finished TypeScript in 4.6s ...
+  Collecting page data using 7 workers ...
+  Generating static pages using 7 workers (0/8) ...
+  Generating static pages using 7 workers (2/8) 
+  Generating static pages using 7 workers (4/8) 
+  Generating static pages using 7 workers (6/8) 
+✓ Generating static pages using 7 workers (8/8) in 583ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ƒ /api/capabilities/migration
+├ ƒ /api/capabilities/product
+├ ○ /commercialization
+├ ○ /generation
+├ ○ /icon.svg
+├ ○ /migration
+└ ○ /skills
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

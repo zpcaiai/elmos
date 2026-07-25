@@ -1,0 +1,230 @@
+{
+  "report_version": 1,
+  "plan_id": "elmos-local-engineering-qualification",
+  "scope": "local-engineering-evidence-only",
+  "status": "FAILED",
+  "started_at": "2026-07-22T08:31:46.216882Z",
+  "finished_at": "2026-07-22T08:35:09.896896Z",
+  "artifact_manifest": {
+    "path": "artifact-manifest.json",
+    "sha256": "1c3f134862b7ba21536ebc464d9b04a616e6b0d597c651279c2d20a26366219f"
+  },
+  "post_run_artifact_manifest": {
+    "path": "post-run-artifact-manifest.json",
+    "sha256": "dc055bb3f0d8671a6a00898231c9aa59e265b9c6b5165181823dfaa7339b6c8d"
+  },
+  "source_snapshot_consistent": false,
+  "source_drift": {
+    "added": [
+      "client-packs/elmos-web-console-navigation-modernization/corpus/development/journeys/skills-qualification.json",
+      "client-packs/elmos-web-console-navigation-modernization/source-snapshots/history/v0.1-ui-manifest.json",
+      "client-packs/elmos-web-console-navigation-modernization/transformations/styling/quality-polish.json",
+      "engines/project-synthesis-engine/src/elmos_project_synthesis/dotnet_target.py",
+      "engines/project-synthesis-engine/src/elmos_project_synthesis/java_target.py",
+      "engines/project-synthesis-engine/src/elmos_project_synthesis/python_target.py"
+    ],
+    "removed": [],
+    "changed": [
+      "apps/web-console/tsconfig.tsbuildinfo",
+      "client-packs/elmos-web-console-navigation-modernization/README.md",
+      "client-packs/elmos-web-console-navigation-modernization/certification/certification.json",
+      "client-packs/elmos-web-console-navigation-modernization/certification/gap-inventory.md",
+      "client-packs/elmos-web-console-navigation-modernization/support-matrix.json",
+      "client-packs/elmos-web-console-navigation-modernization/target-profile/profile.json"
+    ]
+  },
+  "environment_manifest": {
+    "path": "environment-manifest.json",
+    "sha256": "879872abb0538bddaa1e95ea71861c9c191790c4c349d50e9124bec90b7f3816"
+  },
+  "plan_digest": "sha256:fe1409562a4ca644d7ea1a210b6be6a3e7211d5e40cc37e6cdc6538d84813483",
+  "commands": [
+    {
+      "id": "test-suite-check",
+      "command": [
+        "make",
+        "test-suite-check"
+      ],
+      "started_at": "2026-07-22T08:31:46.216902Z",
+      "finished_at": "2026-07-22T08:32:09.806818Z",
+      "exit_code": 0,
+      "timed_out": false,
+      "log": "logs/test-suite-check.log",
+      "log_sha256": "4af385e8d93097ae7595c8fdd732b0b9a6a166c97dabcebfcf9982e3a6c1fc34",
+      "log_bytes": 1209
+    },
+    {
+      "id": "batch1-55-skills",
+      "command": [
+        "make",
+        "batch1-55-skills"
+      ],
+      "started_at": "2026-07-22T08:32:09.807018Z",
+      "finished_at": "2026-07-22T08:32:12.326060Z",
+      "exit_code": 2,
+      "timed_out": false,
+      "log": "logs/batch1-55-skills.log",
+      "log_sha256": "27ed99ba216d3a1cefdc9ee1e9bbfbe0c84b4500ddb9eb55073eb11bdbec7bcc",
+      "log_bytes": 842
+    },
+    {
+      "id": "product-batch33-55-skills",
+      "command": [
+        "make",
+        "product-batch33-55-skills"
+      ],
+      "started_at": "2026-07-22T08:32:12.326190Z",
+      "finished_at": "2026-07-22T08:32:14.846319Z",
+      "exit_code": 0,
+      "timed_out": false,
+      "log": "logs/product-batch33-55-skills.log",
+      "log_sha256": "51db39cb92ba8e3d8e92101fb17e0d2b5bf7e0b69e21f3d4d811038406c70420",
+      "log_bytes": 1158
+    },
+    {
+      "id": "mature-product-skills",
+      "command": [
+        "make",
+        "mature-product-skills"
+      ],
+      "started_at": "2026-07-22T08:32:14.846470Z",
+      "finished_at": "2026-07-22T08:32:14.941840Z",
+      "exit_code": 2,
+      "timed_out": false,
+      "log": "logs/mature-product-skills.log",
+      "log_sha256": "dde2cc8af35d385d1e353de2a057e6d88ce9dd7f8e374d5187370e79a3fbea8f",
+      "log_bytes": 432
+    },
+    {
+      "id": "java-reactor",
+      "command": [
+        "make",
+        "backend"
+      ],
+      "started_at": "2026-07-22T08:32:14.941993Z",
+      "finished_at": "2026-07-22T08:34:20.630605Z",
+      "exit_code": 2,
+      "timed_out": false,
+      "log": "logs/java-reactor.log",
+      "log_sha256": "9adf3cd862bf6e671eeed4056964947c2957580c7ab3f6e3afd31489ac5d5b94",
+      "log_bytes": 195817,
+      "cleanup_after": {
+        "command": [
+          "python3",
+          "scripts/test-suite/cleanup_qualification_outputs.py",
+          "java"
+        ],
+        "started_at": "2026-07-22T08:34:17.729522Z",
+        "finished_at": "2026-07-22T08:34:20.630141Z",
+        "exit_code": 0,
+        "timed_out": false,
+        "log": "logs/java-reactor.cleanup.log",
+        "log_sha256": "1ea714ffc100d3b42111d700aa819ccb094f6e0e5dd161221286aa09a72d21fa",
+        "log_bytes": 64
+      }
+    },
+    {
+      "id": "dotnet-engine",
+      "command": [
+        "make",
+        "dotnet"
+      ],
+      "started_at": "2026-07-22T08:34:20.631068Z",
+      "finished_at": "2026-07-22T08:34:38.713064Z",
+      "exit_code": 0,
+      "timed_out": false,
+      "log": "logs/dotnet-engine.log",
+      "log_sha256": "6a82158e075c052c6ac3cb66305b2fda8f8579707978be7f3a34abc64ef23b1a",
+      "log_bytes": 4346,
+      "cleanup_after": {
+        "command": [
+          "python3",
+          "scripts/test-suite/cleanup_qualification_outputs.py",
+          "dotnet"
+        ],
+        "started_at": "2026-07-22T08:34:38.544954Z",
+        "finished_at": "2026-07-22T08:34:38.712628Z",
+        "exit_code": 0,
+        "timed_out": false,
+        "log": "logs/dotnet-engine.cleanup.log",
+        "log_sha256": "8b1e38b0c7263a1498801987d5579eac1b05bd74275052045f5aebdfda4ce1c3",
+        "log_bytes": 65
+      }
+    },
+    {
+      "id": "python-engine",
+      "command": [
+        "make",
+        "python"
+      ],
+      "started_at": "2026-07-22T08:34:38.713536Z",
+      "finished_at": "2026-07-22T08:34:44.277032Z",
+      "exit_code": 0,
+      "timed_out": false,
+      "log": "logs/python-engine.log",
+      "log_sha256": "53da53dff79efc59878f09324edb5e85283460f7166eae34323cab05b8257048",
+      "log_bytes": 403
+    },
+    {
+      "id": "frontend-client",
+      "command": [
+        "make",
+        "frontend"
+      ],
+      "started_at": "2026-07-22T08:34:44.277147Z",
+      "finished_at": "2026-07-22T08:34:48.374297Z",
+      "exit_code": 0,
+      "timed_out": false,
+      "log": "logs/frontend-client.log",
+      "log_sha256": "ef9bde7d5c91d4005012877da29b90ab8caa10e6042919e4aa2bf930c10e593c",
+      "log_bytes": 3965,
+      "cleanup_after": {
+        "command": [
+          "python3",
+          "scripts/test-suite/cleanup_qualification_outputs.py",
+          "frontend"
+        ],
+        "started_at": "2026-07-22T08:34:48.292384Z",
+        "finished_at": "2026-07-22T08:34:48.373932Z",
+        "exit_code": 0,
+        "timed_out": false,
+        "log": "logs/frontend-client.cleanup.log",
+        "log_sha256": "f25aefe359992149d4643b568a6cf42fb7e5a360165e78c95c634408b34d5181",
+        "log_bytes": 66
+      }
+    },
+    {
+      "id": "web-console",
+      "command": [
+        "make",
+        "web"
+      ],
+      "started_at": "2026-07-22T08:34:48.374677Z",
+      "finished_at": "2026-07-22T08:35:05.711747Z",
+      "exit_code": 0,
+      "timed_out": false,
+      "log": "logs/web-console.log",
+      "log_sha256": "41cbc73893f0aff82af0ef3dcbf1e0cb24b99f07de7f3d8798bd3b0bb16531e1",
+      "log_bytes": 1984,
+      "cleanup_after": {
+        "command": [
+          "python3",
+          "scripts/test-suite/cleanup_qualification_outputs.py",
+          "web"
+        ],
+        "started_at": "2026-07-22T08:35:04.555560Z",
+        "finished_at": "2026-07-22T08:35:05.711388Z",
+        "exit_code": 0,
+        "timed_out": false,
+        "log": "logs/web-console.cleanup.log",
+        "log_sha256": "766c1e35900cef32b3bbeb1a696f0acdb668b29a451af081c632bdc75f88d7c4",
+        "log_bytes": 62
+      }
+    }
+  ],
+  "certification_case_updates": [],
+  "certification_decision": "BLOCKED",
+  "field_evidence_status": "NOT_RUN",
+  "boundary": "Local engineering checks do not satisfy the 408 exact certification cases.",
+  "report_digest": "sha256:63bce32fa80556cf3f007125f0494fbc5da141f8df3f6c8be2c8bb01f0499b2e"
+}

@@ -1,0 +1,36 @@
+python3 tooling/validate_project_synthesis_integration.py
+OK: 417 Project Synthesis skills, 27 schemas, Batch 46-80 runtime integration
+/opt/homebrew/bin/uv run --quiet --with 'jsonschema>=4.23' python tooling/validate_project_synthesis_batch61_65_schemas.py
+PASS: 5 Batch 61-65 Schemas and examples; certification fixture remains planning-only
+/opt/homebrew/bin/uv --directory engines/project-synthesis-engine run --locked pytest
+.....                                                                    [100%]
+5 passed in 0.20s
+/opt/homebrew/bin/uv --directory engines/project-synthesis-engine run --locked ruff check src tests scripts
+All checks passed!
+/opt/homebrew/bin/uv --directory engines/project-synthesis-engine run --locked mypy src
+Success: no issues found in 10 source files
+/opt/homebrew/bin/uv --directory engines/project-synthesis-engine run --locked python scripts/run_acceptance.py
+{
+  "build_and_analysis_count": 7,
+  "external_certification_status": "NOT_RUN",
+  "generated_file_count": 60,
+  "production_delivery_status": "NOT_RUN",
+  "startup_probes": [
+    {
+      "port": 8081,
+      "response": "{\"service\":\"work-order-service\",\"status\":\"UP\"}",
+      "status": "PASSED"
+    },
+    {
+      "port": 8082,
+      "response": "{\"status\":\"UP\",\"service\":\"work-order-service\"}",
+      "status": "PASSED"
+    },
+    {
+      "port": 8083,
+      "response": "{\"status\":\"UP\",\"service\":\"work-order-service\"}",
+      "status": "PASSED"
+    }
+  ],
+  "status": "PASSED"
+}
