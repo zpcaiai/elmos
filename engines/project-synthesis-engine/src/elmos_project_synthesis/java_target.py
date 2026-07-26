@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import json
+from html import escape
 
-from .models import FieldSpec, SynthesisRequest
+from .container_images import MAVEN_IMAGE, TEMURIN_JRE_IMAGE
+from .models import FieldSpec, SynthesisRequest, pascal
 from .rendering import (
     camel,
     clean,
@@ -41,15 +43,6 @@ def _field_declaration(field: FieldSpec) -> str:
 def render_java(request: SynthesisRequest, port: int) -> dict[str, str]:
     package_path = request.namespace.replace(".", "/")
     app_class = f"{request.project_class}Application"
-    entity_class = request.entity_class
-    request_class = f"Create{entity_class}Request"
-    record_fields = ",\n        ".join(_field_declaration(field) for field in request.entity.fields)
-    entity_fields = ",\n        ".join(
-        ["String id", *(f"{_java_type(field)} {camel(field.name)}" for field in request.entity.fields)]
-    )
-    request_args = ", ".join(f"request.{camel(field.name)}()" for field in request.entity.fields)
-    sample = json.dumps(sample_payload(request), separators=(",", ":"))
-    java_sample = sample.replace("\\", "\\\\").replace('"', '\\"')
     app_slug = request.project_name
     files: dict[str, str] = {
         ".gitignore": gitignore(),
@@ -72,7 +65,7 @@ def render_java(request: SynthesisRequest, port: int) -> dict[str, str]:
               <artifactId>{app_slug}</artifactId>
               <version>1.0.0-SNAPSHOT</version>
               <name>{app_slug}</name>
-              <description>{request.description}</description>
+              <description>{escape(request.description)}</description>
               <properties>
                 <java.version>21</java.version>
               </properties>
@@ -121,98 +114,6 @@ def render_java(request: SynthesisRequest, port: int) -> dict[str, str]:
             }}
             """
         ),
-        f"src/main/java/{package_path}/api/{entity_class}.java": clean(
-            f"""
-            package {request.namespace}.api;
-
-            public record {entity_class}(
-                    {entity_fields}
-            ) {{}}
-            """
-        ),
-        f"src/main/java/{package_path}/api/{request_class}.java": clean(
-            f"""
-            package {request.namespace}.api;
-
-            public record {request_class}(
-                    {record_fields}
-            ) {{}}
-            """
-        ),
-        f"src/main/java/{package_path}/api/{entity_class}Repository.java": clean(
-            f"""
-            package {request.namespace}.api;
-
-            import org.springframework.stereotype.Repository;
-
-            import java.util.Comparator;
-            import java.util.List;
-            import java.util.Optional;
-            import java.util.UUID;
-            import java.util.concurrent.ConcurrentHashMap;
-
-            @Repository
-            public class {entity_class}Repository {{
-                private final ConcurrentHashMap<String, {entity_class}> records = new ConcurrentHashMap<>();
-
-                public List<{entity_class}> findAll() {{
-                    return records.values().stream().sorted(Comparator.comparing({entity_class}::id)).toList();
-                }}
-
-                public Optional<{entity_class}> findById(String id) {{
-                    return Optional.ofNullable(records.get(id));
-                }}
-
-                public {entity_class} create({request_class} request) {{
-                    var value = new {entity_class}(UUID.randomUUID().toString(), {request_args});
-                    records.put(value.id(), value);
-                    return value;
-                }}
-            }}
-            """
-        ),
-        f"src/main/java/{package_path}/api/{entity_class}Controller.java": clean(
-            f"""
-            package {request.namespace}.api;
-
-            import jakarta.validation.Valid;
-            import org.springframework.http.ResponseEntity;
-            import org.springframework.web.bind.annotation.*;
-
-            import java.net.URI;
-            import java.util.List;
-
-            @RestController
-            @RequestMapping("/api/v1/{request.entity.plural}")
-            public class {entity_class}Controller {{
-                private final {entity_class}Repository repository;
-
-                public {entity_class}Controller({entity_class}Repository repository) {{
-                    this.repository = repository;
-                }}
-
-                @GetMapping
-                public List<{entity_class}> list() {{
-                    return repository.findAll();
-                }}
-
-                @GetMapping("/{{id}}")
-                public ResponseEntity<{entity_class}> get(@PathVariable String id) {{
-                    return repository.findById(id)
-                            .map(ResponseEntity::ok)
-                            .orElseGet(() -> ResponseEntity.notFound().build());
-                }}
-
-                @PostMapping
-                public ResponseEntity<{entity_class}> create(@Valid @RequestBody {request_class} request) {{
-                    var created = repository.create(request);
-                    return ResponseEntity
-                            .created(URI.create("/api/v1/{request.entity.plural}/" + created.id()))
-                            .body(created);
-                }}
-            }}
-            """
-        ),
         f"src/main/java/{package_path}/api/HealthController.java": clean(
             f"""
             package {request.namespace}.api;
@@ -249,55 +150,17 @@ def render_java(request: SynthesisRequest, port: int) -> dict[str, str]:
                 root: ${{LOG_LEVEL:INFO}}
             """
         ),
-        f"src/test/java/{package_path}/api/{entity_class}ApiTest.java": clean(
-            f"""
-            package {request.namespace}.api;
-
-            import org.junit.jupiter.api.Test;
-            import org.springframework.beans.factory.annotation.Autowired;
-            import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-            import org.springframework.boot.test.context.SpringBootTest;
-            import org.springframework.http.MediaType;
-            import org.springframework.test.web.servlet.MockMvc;
-
-            import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-            import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-            import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-            import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-            @SpringBootTest
-            @AutoConfigureMockMvc
-            class {entity_class}ApiTest {{
-                @Autowired MockMvc mvc;
-
-                @Test
-                void requirementTracedCrudAndHealthJourney() throws Exception {{
-                    mvc.perform(get("/health"))
-                            .andExpect(status().isOk())
-                            .andExpect(jsonPath("$.status").value("UP"));
-                    mvc.perform(post("/api/v1/{request.entity.plural}")
-                                    .contentType(MediaType.APPLICATION_JSON)
-                                    .content("{java_sample}"))
-                            .andExpect(status().isCreated())
-                            .andExpect(jsonPath("$.id").isNotEmpty());
-                    mvc.perform(get("/api/v1/{request.entity.plural}"))
-                            .andExpect(status().isOk())
-                            .andExpect(jsonPath("$[0].id").isNotEmpty());
-                }}
-            }}
-            """
-        ),
         "openapi.yaml": openapi_yaml(request, server_port=port),
         "Dockerfile": clean(
             f"""
-            FROM maven:3.9.10-eclipse-temurin-21 AS build
+            FROM {MAVEN_IMAGE} AS build
             WORKDIR /workspace
             COPY pom.xml ./
             RUN mvn -B -DskipTests dependency:go-offline
             COPY src ./src
             RUN mvn -B package
 
-            FROM eclipse-temurin:21.0.7_6-jre-alpine
+            FROM {TEMURIN_JRE_IMAGE}
             RUN addgroup -S app && adduser -S -G app -u 10001 app
             WORKDIR /app
             COPY --from=build /workspace/target/*.jar app.jar
@@ -319,8 +182,8 @@ def render_java(request: SynthesisRequest, port: int) -> dict[str, str]:
               test:
                 runs-on: ubuntu-latest
                 steps:
-                  - uses: actions/checkout@v4
-                  - uses: actions/setup-java@v4
+                  - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+                  - uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4
                     with:
                       distribution: temurin
                       java-version: '21'
@@ -347,4 +210,193 @@ def render_java(request: SynthesisRequest, port: int) -> dict[str, str]:
             commands=f"mvn -B test\nPORT={port} mvn spring-boot:run",
         ),
     }
+    for entity in request.entities:
+        entity_class = pascal(entity.singular)
+        request_class = f"Upsert{entity_class}Request"
+        record_fields = ",\n        ".join(_field_declaration(field) for field in entity.fields)
+        entity_fields = ",\n        ".join(
+            ["String id", *(f"{_java_type(field)} {camel(field.name)}" for field in entity.fields)]
+        )
+        request_args = ", ".join(f"request.{camel(field.name)}()" for field in entity.fields)
+        sample = json.dumps(sample_payload(request, entity), separators=(",", ":"))
+        java_sample = sample.replace("\\", "\\\\").replace('"', '\\"')
+        files.update(
+            {
+                f"src/main/java/{package_path}/api/{entity_class}.java": clean(
+                    f"""
+                    package {request.namespace}.api;
+
+                    public record {entity_class}(
+                            {entity_fields}
+                    ) {{}}
+                    """
+                ),
+                f"src/main/java/{package_path}/api/{request_class}.java": clean(
+                    f"""
+                    package {request.namespace}.api;
+
+                    public record {request_class}(
+                            {record_fields}
+                    ) {{}}
+                    """
+                ),
+                f"src/main/java/{package_path}/api/{entity_class}Repository.java": clean(
+                    f"""
+                    package {request.namespace}.api;
+
+                    import org.springframework.stereotype.Repository;
+
+                    import java.util.Comparator;
+                    import java.util.List;
+                    import java.util.Optional;
+                    import java.util.UUID;
+                    import java.util.concurrent.ConcurrentHashMap;
+
+                    @Repository
+                    public class {entity_class}Repository {{
+                        private final ConcurrentHashMap<String, {entity_class}> records = new ConcurrentHashMap<>();
+
+                        public List<{entity_class}> findAll() {{
+                            return records.values().stream()
+                                    .sorted(Comparator.comparing({entity_class}::id))
+                                    .toList();
+                        }}
+
+                        public Optional<{entity_class}> findById(String id) {{
+                            return Optional.ofNullable(records.get(id));
+                        }}
+
+                        public {entity_class} create({request_class} request) {{
+                            var value = new {entity_class}(UUID.randomUUID().toString(), {request_args});
+                            records.put(value.id(), value);
+                            return value;
+                        }}
+
+                        public Optional<{entity_class}> update(String id, {request_class} request) {{
+                            if (!records.containsKey(id)) {{
+                                return Optional.empty();
+                            }}
+                            var value = new {entity_class}(id, {request_args});
+                            records.put(id, value);
+                            return Optional.of(value);
+                        }}
+
+                        public boolean delete(String id) {{
+                            return records.remove(id) != null;
+                        }}
+                    }}
+                    """
+                ),
+                f"src/main/java/{package_path}/api/{entity_class}Controller.java": clean(
+                    f"""
+                    package {request.namespace}.api;
+
+                    import jakarta.validation.Valid;
+                    import org.springframework.http.ResponseEntity;
+                    import org.springframework.web.bind.annotation.*;
+
+                    import java.net.URI;
+                    import java.util.List;
+
+                    @RestController
+                    @RequestMapping("/api/v1/{entity.plural}")
+                    public class {entity_class}Controller {{
+                        private final {entity_class}Repository repository;
+
+                        public {entity_class}Controller({entity_class}Repository repository) {{
+                            this.repository = repository;
+                        }}
+
+                        @GetMapping
+                        public List<{entity_class}> list() {{
+                            return repository.findAll();
+                        }}
+
+                        @GetMapping("/{{id}}")
+                        public ResponseEntity<{entity_class}> get(@PathVariable String id) {{
+                            return repository.findById(id)
+                                    .map(ResponseEntity::ok)
+                                    .orElseGet(() -> ResponseEntity.notFound().build());
+                        }}
+
+                        @PostMapping
+                        public ResponseEntity<{entity_class}> create(
+                                @Valid @RequestBody {request_class} request) {{
+                            var created = repository.create(request);
+                            return ResponseEntity
+                                    .created(URI.create("/api/v1/{entity.plural}/" + created.id()))
+                                    .body(created);
+                        }}
+
+                        @PutMapping("/{{id}}")
+                        public ResponseEntity<{entity_class}> update(
+                                @PathVariable String id,
+                                @Valid @RequestBody {request_class} request) {{
+                            return repository.update(id, request)
+                                    .map(ResponseEntity::ok)
+                                    .orElseGet(() -> ResponseEntity.notFound().build());
+                        }}
+
+                        @DeleteMapping("/{{id}}")
+                        public ResponseEntity<Void> delete(@PathVariable String id) {{
+                            return repository.delete(id)
+                                    ? ResponseEntity.noContent().build()
+                                    : ResponseEntity.notFound().build();
+                        }}
+                    }}
+                    """
+                ),
+                f"src/test/java/{package_path}/api/{entity_class}ApiTest.java": clean(
+                    f"""
+                    package {request.namespace}.api;
+
+                    import org.junit.jupiter.api.Test;
+                    import org.springframework.beans.factory.annotation.Autowired;
+                    import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+                    import org.springframework.boot.test.context.SpringBootTest;
+                    import org.springframework.http.MediaType;
+                    import org.springframework.test.web.servlet.MockMvc;
+
+                    import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+                    import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+                    import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+                    import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+                    import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+                    import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+                    @SpringBootTest
+                    @AutoConfigureMockMvc
+                    class {entity_class}ApiTest {{
+                        @Autowired MockMvc mvc;
+
+                        @Test
+                        void requirementTracedCrudAndHealthJourney() throws Exception {{
+                            mvc.perform(get("/health"))
+                                    .andExpect(status().isOk())
+                                    .andExpect(jsonPath("$.status").value("UP"));
+                            var result = mvc.perform(post("/api/v1/{entity.plural}")
+                                            .contentType(MediaType.APPLICATION_JSON)
+                                            .content("{java_sample}"))
+                                    .andExpect(status().isCreated())
+                                    .andExpect(jsonPath("$.id").isNotEmpty())
+                                    .andReturn();
+                            var id = com.jayway.jsonpath.JsonPath
+                                    .parse(result.getResponse().getContentAsString())
+                                    .read("$.id", String.class);
+                            mvc.perform(get("/api/v1/{entity.plural}/" + id))
+                                    .andExpect(status().isOk());
+                            mvc.perform(put("/api/v1/{entity.plural}/" + id)
+                                            .contentType(MediaType.APPLICATION_JSON)
+                                            .content("{java_sample}"))
+                                    .andExpect(status().isOk());
+                            mvc.perform(delete("/api/v1/{entity.plural}/" + id))
+                                    .andExpect(status().isNoContent());
+                            mvc.perform(get("/api/v1/{entity.plural}/" + id))
+                                    .andExpect(status().isNotFound());
+                        }}
+                    }}
+                    """
+                ),
+            }
+        )
     return files

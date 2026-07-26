@@ -1,0 +1,57 @@
+{
+  "authorization": "local-engineering-validation",
+  "behavior_case_count": 3,
+  "behavior_pass_rate": 1.0,
+  "certification_status": "EXPERIMENTAL",
+  "corpus": "real-repository",
+  "critical_unknown_semantics": 0,
+  "executor": "local-toolchain",
+  "external_certification_status": "NOT_RUN",
+  "independent_verifier": "NOT_RUN",
+  "limitations": [
+    "Only typed, side-effect-free functions using return, if, literals, names, and supported binary operators are in scope.",
+    "Object graphs, exceptions, async, reflection, I/O, framework, database, and concurrency semantics remain outside this route profile."
+  ],
+  "route": "csharp-to-typescript",
+  "schema_version": "1.0.0",
+  "scope": "typed-pure-function-v1",
+  "semantic_ir_sha256": "sha256:d6905538d3c540dec2b49167a130c0caac9691316c819a9b1e39cc65088a37e2",
+  "source": {
+    "analyzer": "Microsoft.CodeAnalysis.CSharp",
+    "analyzer_version": "5.6.0.0",
+    "language": "csharp",
+    "path": "Difference.cs",
+    "sha256": "sha256:c2e15ecc364c7b758e9f217c158cdde9d566c2def8b293cf2377a3b4536ad0a5"
+  },
+  "source_map_coverage": 1.0,
+  "status": "PASSED",
+  "target": {
+    "language": "typescript",
+    "path": "migrated.ts",
+    "sha256": "sha256:039ca090b056dfe0ce397ac5b20c40a436000b3a265f615af7725caad2007570"
+  },
+  "validation": {
+    "case_count": 3,
+    "commands": [
+      {
+        "command": [
+          "/Users/stephen/DevProjects/AIProjects/elmos/engines/frontend-client-engine/node_modules/.bin/tsc",
+          "-p",
+          "tsconfig.json"
+        ],
+        "stderr": "",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "/opt/homebrew/bin/node",
+          "dist/route_harness.js"
+        ],
+        "stderr": "",
+        "stdout": ""
+      }
+    ],
+    "language": "typescript",
+    "status": "PASSED"
+  }
+}

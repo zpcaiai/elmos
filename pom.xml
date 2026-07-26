@@ -70,6 +70,8 @@
         <module>modules/integrations</module>
         <module>recipes/elmos-java-recipes</module>
         <module>apps/java-engine-worker</module>
+        <module>apps/java-engine-transformer</module>
+        <module>apps/java-engine-verifier</module>
         <module>apps/control-plane</module>
         <module>apps/workspace-service</module>
         <module>apps/egress-proxy</module>

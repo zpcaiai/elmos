@@ -5,7 +5,7 @@ import re
 from textwrap import dedent
 from typing import Any
 
-from .models import FieldSpec, SynthesisRequest
+from .models import EntitySpec, FieldSpec, SynthesisRequest, pascal
 
 
 def clean(text: str) -> str:
@@ -39,12 +39,12 @@ def sample_value(field: FieldSpec) -> Any:
     }[field.type]
 
 
-def sample_payload(request: SynthesisRequest) -> dict[str, Any]:
-    return {field.name: sample_value(field) for field in request.entity.fields}
+def sample_payload(request: SynthesisRequest, entity: EntitySpec | None = None) -> dict[str, Any]:
+    selected = entity or request.entity
+    return {field.name: sample_value(field) for field in selected.fields}
 
 
 def openapi_yaml(request: SynthesisRequest, *, server_port: int) -> str:
-    entity = request.entity
     lines = [
         "openapi: 3.1.0",
         "info:",
@@ -60,42 +60,81 @@ def openapi_yaml(request: SynthesisRequest, *, server_port: int) -> str:
         "      responses:",
         "        '200':",
         "          description: Service is healthy",
-        f"  /api/v1/{entity.plural}:",
-        "    get:",
-        f"      operationId: list{request.entity_class}s",
-        "      responses:",
-        "        '200':",
-        "          description: All records",
-        "    post:",
-        f"      operationId: create{request.entity_class}",
-        "      requestBody:",
-        "        required: true",
-        "        content:",
-        "          application/json:",
-        "            schema:",
-        f"              $ref: '#/components/schemas/{request.entity_class}Create'",
-        "      responses:",
-        "        '201':",
-        "          description: Created",
-        f"  /api/v1/{entity.plural}/{{id}}:",
-        "    get:",
-        f"      operationId: get{request.entity_class}",
-        "      parameters:",
-        "        - name: id",
-        "          in: path",
-        "          required: true",
-        "          schema:",
-        "            type: string",
-        "      responses:",
-        "        '200':",
-        "          description: Found",
-        "        '404':",
-        "          description: Not found",
-        "components:",
-        "  schemas:",
     ]
 
-    def append_schema(name: str, *, include_id: bool) -> None:
+    for entity in request.entities:
+        entity_class = pascal(entity.singular)
+        lines.extend(
+            [
+                f"  /api/v1/{entity.plural}:",
+                "    get:",
+                f"      operationId: list{entity_class}s",
+                "      responses:",
+                "        '200':",
+                "          description: All records",
+                "    post:",
+                f"      operationId: create{entity_class}",
+                "      requestBody:",
+                "        required: true",
+                "        content:",
+                "          application/json:",
+                "            schema:",
+                f"              $ref: '#/components/schemas/{entity_class}Create'",
+                "      responses:",
+                "        '201':",
+                "          description: Created",
+                f"  /api/v1/{entity.plural}/{{id}}:",
+                "    get:",
+                f"      operationId: get{entity_class}",
+                "      parameters:",
+                "        - $ref: '#/components/parameters/RecordId'",
+                "      responses:",
+                "        '200':",
+                "          description: Found",
+                "        '404':",
+                "          description: Not found",
+                "    put:",
+                f"      operationId: update{entity_class}",
+                "      parameters:",
+                "        - $ref: '#/components/parameters/RecordId'",
+                "      requestBody:",
+                "        required: true",
+                "        content:",
+                "          application/json:",
+                "            schema:",
+                f"              $ref: '#/components/schemas/{entity_class}Create'",
+                "      responses:",
+                "        '200':",
+                "          description: Updated",
+                "        '404':",
+                "          description: Not found",
+                "    delete:",
+                f"      operationId: delete{entity_class}",
+                "      parameters:",
+                "        - $ref: '#/components/parameters/RecordId'",
+                "      responses:",
+                "        '204':",
+                "          description: Deleted",
+                "        '404':",
+                "          description: Not found",
+            ]
+        )
+
+    lines.extend(
+        [
+            "components:",
+            "  parameters:",
+            "    RecordId:",
+            "      name: id",
+            "      in: path",
+            "      required: true",
+            "      schema:",
+            "        type: string",
+            "  schemas:",
+        ]
+    )
+
+    def append_schema(entity: EntitySpec, name: str, *, include_id: bool) -> None:
         required = (["id"] if include_id else []) + [field.name for field in entity.fields if field.required]
         lines.extend([f"    {name}:", "      type: object", "      additionalProperties: false", "      required:"])
         lines.extend(f"        - {field_name}" for field_name in required)
@@ -114,8 +153,10 @@ def openapi_yaml(request: SynthesisRequest, *, server_port: int) -> str:
             if schema_format:
                 lines.append(f"          format: {schema_format}")
 
-    append_schema(request.entity_class, include_id=True)
-    append_schema(f"{request.entity_class}Create", include_id=False)
+    for entity in request.entities:
+        entity_class = pascal(entity.singular)
+        append_schema(entity, entity_class, include_id=True)
+        append_schema(entity, f"{entity_class}Create", include_id=False)
     return "\n".join(lines) + "\n"
 
 
@@ -168,6 +209,88 @@ def env_example(request: SynthesisRequest, port: int) -> str:
 
 def kubernetes_yaml(request: SynthesisRequest, *, language: str, port: int) -> str:
     app = f"{request.project_name}-{language}"
+    readiness_path = "/health/ready" if request.requires_database else "/health"
+    liveness_path = "/health/live" if request.requires_database else "/health"
+    production_environment = ""
+    secret_volume = ""
+    network_policy = ""
+    if request.requires_authentication:
+        auth_secret_key = "jwt-hmac" if request.auth_mode == "jwt" else "oidc-jwks"
+        auth_secret_env = "ELMOS_JWT_HMAC_SECRET_FILE" if request.auth_mode == "jwt" else "ELMOS_OIDC_JWKS_FILE"
+        production_environment = f"""
+                    - name: ELMOS_DATABASE_URL_FILE
+                      value: /run/secrets/database-url
+                    - name: {auth_secret_env}
+                      value: /run/secrets/{auth_secret_key}
+                    - name: ELMOS_AUTH_ISSUER
+                      valueFrom:
+                        configMapKeyRef:
+                          name: {app}-runtime
+                          key: auth-issuer
+                    - name: ELMOS_AUTH_AUDIENCE
+                      valueFrom:
+                        configMapKeyRef:
+                          name: {app}-runtime
+                          key: auth-audience"""
+        secret_volume = f"""
+                  volumeMounts:
+                    - name: runtime-secrets
+                      mountPath: /run/secrets
+                      readOnly: true
+              volumes:
+                - name: runtime-secrets
+                  secret:
+                    secretName: {app}-runtime
+                    defaultMode: 0400
+                    items:
+                      - key: database-url
+                        path: database-url
+                      - key: {auth_secret_key}
+                        path: {auth_secret_key}"""
+        network_policy = f"""
+        ---
+        apiVersion: networking.k8s.io/v1
+        kind: NetworkPolicy
+        metadata:
+          name: {app}-default-deny
+        spec:
+          podSelector:
+            matchLabels:
+              app: {app}
+          policyTypes: ["Ingress", "Egress"]
+          ingress:
+            - from:
+                - podSelector: {{}}
+              ports:
+                - protocol: TCP
+                  port: {port}
+          egress:
+            - to:
+                - namespaceSelector:
+                    matchLabels:
+                      kubernetes.io/metadata.name: kube-system
+              ports:
+                - protocol: UDP
+                  port: 53
+                - protocol: TCP
+                  port: 53
+            - to:
+                - podSelector:
+                    matchLabels:
+                      elmos.io/database-for: {app}
+              ports:
+                - protocol: TCP
+                  port: 5432
+        ---
+        apiVersion: policy/v1
+        kind: PodDisruptionBudget
+        metadata:
+          name: {app}
+        spec:
+          minAvailable: 1
+          selector:
+            matchLabels:
+              app: {app}"""
     return clean(
         f"""
         apiVersion: apps/v1
@@ -201,15 +324,16 @@ def kubernetes_yaml(request: SynthesisRequest, *, language: str, port: int) -> s
                       value: "{port}"
                     - name: APP_ENV
                       value: production
+        {production_environment}
                   readinessProbe:
                     httpGet:
-                      path: /health
+                      path: {readiness_path}
                       port: http
                     initialDelaySeconds: 5
                     periodSeconds: 5
                   livenessProbe:
                     httpGet:
-                      path: /health
+                      path: {liveness_path}
                       port: http
                     initialDelaySeconds: 15
                     periodSeconds: 10
@@ -225,6 +349,7 @@ def kubernetes_yaml(request: SynthesisRequest, *, language: str, port: int) -> s
                     readOnlyRootFilesystem: true
                     capabilities:
                       drop: ["ALL"]
+        {secret_volume}
         ---
         apiVersion: v1
         kind: Service
@@ -237,11 +362,13 @@ def kubernetes_yaml(request: SynthesisRequest, *, language: str, port: int) -> s
             - name: http
               port: 80
               targetPort: http
+        {network_policy}
         """
     )
 
 
 def target_readme(request: SynthesisRequest, *, language: str, framework: str, port: int, commands: str) -> str:
+    resources = ", ".join(f"`/api/v1/{entity.plural}`" for entity in request.entities)
     return clean(
         f"""
         # {request.project_name} — {language}
@@ -249,7 +376,7 @@ def target_readme(request: SynthesisRequest, *, language: str, framework: str, p
         {request.description}
 
         Generated from the approved ELMOS requirement baseline using the `{framework}` profile.
-        It is a complete runnable starter with CRUD, health, tests, externalized configuration,
+        It is a runnable starter with full in-memory CRUD, health, tests, externalized configuration,
         CI, a non-root container, Kubernetes resources, OpenAPI, and requirement traceability.
 
         ## Run and test
@@ -258,13 +385,14 @@ def target_readme(request: SynthesisRequest, *, language: str, framework: str, p
         {commands}
         ```
 
-        The API listens on `http://localhost:{port}`. Health is `GET /health`; the primary
-        collection is `/api/v1/{request.entity.plural}`.
+        The API listens on `http://localhost:{port}`. Health is `GET /health`; generated
+        collections are {resources}.
 
         ## Evidence boundary
 
-        Local build/startup evidence is engineering evidence only. Authentication, durable
-        database storage, immutable image digests, production secrets, deployment, SLOs,
+        Local build/startup evidence is engineering evidence only. The requested authentication
+        profile is `{request.auth_mode}` and persistence profile is `{request.persistence}`.
+        Provider enforcement, durable database migration, immutable image digests, deployment, SLOs,
         backup/restore, and external certification remain `NOT_RUN` until configured and tested.
         """
     )

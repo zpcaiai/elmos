@@ -55,4 +55,16 @@ Use the canonical specifications under `elmos-project-synthesis-batch46-60/skill
 | BEAM | 94 / source PG379–PG390 | Erlang/Elixir/Gleam, OTP/supervision/distribution, messaging, upgrades, partitions/overload and release evidence |
 | Lua / OpenResty | 95 / source PG391–PG402 | Lua/OpenResty/embedded scripting, sandboxing, resources, gateway/plugin behavior, tests and deployment evidence |
 
-The repository engine currently provides a conservative runnable starter profile: one primary CRUD aggregate, Java 21/Spring Boot 3.5.3, Python 3.12/FastAPI 0.116.1, and .NET 10/ASP.NET Core. It emits configuration, tests, OpenAPI, CI, non-root containers, Kubernetes, traceability and a content-addressed manifest. Batch 66–95 expands governed Skill routing and exact evidence contracts; it does not silently expand the bundled emitter. Batch 81–95 source IDs are package-local and overlap the global PG sequence. Other languages/assets, vendor platforms, physical systems, durable databases, deployment, cutover and production certification require explicit selected Skills, real native tools/environments, safety approval and external evidence.
+The repository engine currently emits eight conservative runnable API starter
+profiles for multiple CRUD aggregates: Java, Python, C#, TypeScript, Go,
+Kotlin, PHP, and Rust. Exact versions, source Skills, maturity states, and
+claim ceilings are authoritative only through
+`docs/project-synthesis/bundled-emitter-support.json`. It emits configuration,
+tests, OpenAPI, CI, non-root containers, Kubernetes, traceability, and a
+content-addressed manifest. A profile remains `experimental` when exact native
+build/startup evidence is absent. Batch 72–95 expands governed Skill routing
+and exact evidence contracts; it does not silently expand the bundled emitter.
+Batch 81–95 source IDs are package-local and overlap the global PG sequence.
+Vendor platforms, physical systems, deployment, cutover, independent review,
+and production certification require explicit selected Skills, real native
+tools/environments, safety approval, and external evidence.

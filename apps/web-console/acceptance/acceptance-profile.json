@@ -1,0 +1,45 @@
+{
+  "schema_version": "1.0.0",
+  "journey": "project-synthesis-generation",
+  "application": {
+    "framework": "Next.js 16.2.10",
+    "react": "19.2.7",
+    "language": "TypeScript 5.9.2",
+    "package_manager": "pnpm 10.12.4"
+  },
+  "browsers": [
+    "Playwright 1.61.1 managed Chromium",
+    "Playwright 1.61.1 managed Firefox",
+    "Playwright 1.61.1 managed WebKit"
+  ],
+  "devices": [
+    "desktop 1440x900",
+    "mobile 390x844",
+    "mobile 393x852"
+  ],
+  "locales": ["zh-CN"],
+  "themes": ["light"],
+  "accessibility": {
+    "automated": "axe-core 4.12.1 with zero violations",
+    "targeted": [
+      "keyboard focus entry",
+      "live status announcements",
+      "native labels and fieldsets",
+      "reduced-motion policy"
+    ]
+  },
+  "p0_journeys": [
+    "review all eight exact targets",
+    "analyze and review structured requirements",
+    "generate and verify a Python project",
+    "inspect artifact tree and download archive",
+    "start runtime and wait for health status UP",
+    "stop runtime"
+  ],
+  "security": {
+    "runner": "explicit opt-in, bearer credential, tenant and actor binding",
+    "network": "localhost health probes only during generated runtime validation",
+    "secrets": "runner token stays in page memory and is redacted from logs"
+  },
+  "certification_status": "NOT_CERTIFIED"
+}

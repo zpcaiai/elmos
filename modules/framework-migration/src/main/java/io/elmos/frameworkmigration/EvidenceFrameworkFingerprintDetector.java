@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 import static io.elmos.frameworkmigration.FrameworkMigrationModels.*;
 
-/** Evidence-only detector for the five Batch 7 framework families. It never loads application code. */
+/** Evidence-only detector for the supported Batch 7 framework families. It never loads application code. */
 public final class EvidenceFrameworkFingerprintDetector implements FingerprintDetector {
     @Override
     public FrameworkFingerprint detect(List<FrameworkSignal> supplied,
@@ -18,13 +18,18 @@ public final class EvidenceFrameworkFingerprintDetector implements FingerprintDe
                         && signal.sourceRef() != null && !signal.sourceRef().isBlank())
                 .toList();
         Map<String,List<FrameworkSignal>> matches = new LinkedHashMap<>();
-        for (String family : List.of("spring-boot", "fastapi", "aspnet-core", "nestjs", "express")) {
+        for (String family : List.of(
+                "spring-boot", "spring-framework", "fastapi", "aspnet-core", "nestjs", "express")) {
             matches.put(family, new ArrayList<>());
         }
         for (FrameworkSignal signal : signals) {
             String value = signal.value().toLowerCase(Locale.ROOT);
-            if (containsAny(value, "spring-boot", "@restcontroller", "@controller", "webflux", "spring.mvc"))
+            if (containsAny(value, "spring-boot", "@springbootapplication", "enableautoconfiguration"))
                 matches.get("spring-boot").add(signal);
+            if (containsAny(value, "org.springframework", "spring-webmvc", "@restcontroller", "@controller",
+                    "webflux", "spring.mvc", "dispatcherservlet", "contextloaderlistener",
+                    "applicationcontext.xml", "web.xml", "<bean", "javax.servlet", "jakarta.servlet"))
+                matches.get("spring-framework").add(signal);
             if (containsAny(value, "fastapi", "apirouter", "depends(", "pydantic"))
                 matches.get("fastapi").add(signal);
             if (containsAny(value, "microsoft.aspnetcore", "mapget(", "mapcontrollers", "controllerbase"))
@@ -36,6 +41,15 @@ public final class EvidenceFrameworkFingerprintDetector implements FingerprintDe
         }
         if (!matches.get("nestjs").isEmpty()) {
             matches.get("express").removeIf(signal -> signal.value().toLowerCase(Locale.ROOT).contains("express"));
+        }
+        // Spring Boot is layered on Spring Framework. Once Boot-specific evidence exists,
+        // retain classic XML/MVC evidence as components of that same runtime instead of
+        // incorrectly reporting two competing framework families.
+        if (!matches.get("spring-boot").isEmpty()) {
+            matches.get("spring-framework").stream()
+                    .filter(signal -> !matches.get("spring-boot").contains(signal))
+                    .forEach(matches.get("spring-boot")::add);
+            matches.get("spring-framework").clear();
         }
         List<Map.Entry<String,List<FrameworkSignal>>> ranked = matches.entrySet().stream()
                 .filter(entry -> !entry.getValue().isEmpty())
@@ -58,21 +72,32 @@ public final class EvidenceFrameworkFingerprintDetector implements FingerprintDe
                 .sorted(Comparator.comparing(FrameworkSignal::sourceRef).thenComparing(FrameworkSignal::value)).toList();
         String values = evidence.stream().map(FrameworkSignal::value).collect(Collectors.joining(" ")).toLowerCase(Locale.ROOT);
         String webMode = switch (family) {
-            case "spring-boot" -> values.contains("webflux") || values.contains("reactive") ? "reactive" : "servlet";
+            case "spring-boot", "spring-framework" ->
+                    values.contains("webflux") || values.contains("reactive") ? "reactive" : "servlet";
             case "aspnet-core" -> values.contains("mapget(") || values.contains("minimal") ? "minimal-api" : "controller";
             default -> "async-request-response";
         };
-        if (family.equals("spring-boot") && values.contains("webflux")
+        if (family.startsWith("spring-") && values.contains("webflux")
                 && (values.contains("spring-mvc") || values.contains("starter-web"))) {
             diagnostics.add("mixed-spring-mvc-and-webflux");
         }
+        boolean xmlConfigured = containsAny(values, "applicationcontext.xml", "web.xml", "<bean",
+                "dispatcherservlet", "contextloaderlistener");
+        boolean annotationConfigured = containsAny(values, "@restcontroller", "@controller",
+                "@springbootapplication");
         String programmingModel = switch (family) {
-            case "spring-boot" -> "annotated-controller";
+            case "spring-boot", "spring-framework" -> xmlConfigured
+                    ? annotationConfigured ? "xml-annotation-hybrid" : "xml-configured"
+                    : "annotated-controller";
             case "fastapi" -> "decorated-path-operation";
             case "aspnet-core" -> webMode.equals("minimal-api") ? "minimal-api" : "controller";
             case "nestjs" -> "decorated-controller";
             default -> "router-middleware";
         };
+        if (family.startsWith("spring-")
+                && containsAny(values, "javax.servlet", "javax.persistence", "javax.validation")) {
+            diagnostics.add("legacy-javax-namespace-requires-explicit-jakarta-plan");
+        }
         String adapter = family.equals("nestjs")
                 ? (values.contains("fastify") ? "fastify" : values.contains("express") ? "express" : null) : null;
         String version = signals.stream().filter(signal -> signal.kind().equalsIgnoreCase("framework-version"))

@@ -16,7 +16,7 @@ class SnapshotCaptureServiceTest {
     @Test void capturesImmutableCommitAndAlwaysClosesCredentialAndStaging() throws Exception {
         Files.writeString(temp.resolve("pom.xml"), "<project/>"); AtomicBoolean stagingClosed = new AtomicBoolean();
         EphemeralCredential credential = new EphemeralCredential("token".toCharArray()); List<String> stored = new ArrayList<>(); List<SnapshotModel.RepositorySnapshot> saved = new ArrayList<>();
-        var service = new SnapshotCaptureService((repository, external, installation) -> credential,
+        var service = new SnapshotCaptureService((organization, repository, external, installation) -> credential,
                 (repository, ref, secret) -> new SnapshotPorts.ResolvedRef("a".repeat(40), "b".repeat(40)),
                 (repository, ref, secret) -> new SnapshotPorts.FetchedSource(temp, () -> stagingClosed.set(true)),
                 new DeterministicSnapshotArchiver(), (digest, size, content, media) -> { stored.add(digest); return "artifact:" + digest; },

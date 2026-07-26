@@ -183,6 +183,38 @@ class FrameworkMigrationServiceTest {
         assertTrue(mixed.diagnostics().contains("mixed-spring-mvc-and-webflux"));
     }
 
+    @Test void classicSpringXmlApplicationIsNotMisclassifiedAsSpringBoot() {
+        EvidenceFrameworkFingerprintDetector detector = new EvidenceFrameworkFingerprintDetector();
+        FrameworkFingerprint classic = detector.detect(List.of(
+                new FrameworkSignal("dependency", "org.springframework:spring-webmvc", "pom.xml:44"),
+                new FrameworkSignal("configuration", "WEB-INF/web.xml DispatcherServlet", "web.xml:8"),
+                new FrameworkSignal("configuration", "applicationContext.xml <bean", "applicationContext.xml:2"),
+                new FrameworkSignal("framework-version", "4.3.30.RELEASE", "effective-pom.json")),
+                request(recipes()).targetProfile());
+
+        assertTrue(classic.complete());
+        assertEquals("spring-framework", classic.family());
+        assertEquals("servlet", classic.webMode());
+        assertEquals("xml-configured", classic.programmingModel());
+        assertTrue(classic.components().stream().anyMatch(value -> value.contains("DispatcherServlet")));
+    }
+
+    @Test void springBootWithLegacyXmlRemainsBootButExposesJakartaBlocker() {
+        EvidenceFrameworkFingerprintDetector detector = new EvidenceFrameworkFingerprintDetector();
+        FrameworkFingerprint legacyBoot = detector.detect(List.of(
+                new FrameworkSignal("dependency", "org.springframework.boot:spring-boot-starter-web", "pom.xml:20"),
+                new FrameworkSignal("annotation", "@SpringBootApplication @RestController", "Application.java:4"),
+                new FrameworkSignal("configuration", "WEB-INF/web.xml javax.servlet.DispatcherType", "web.xml:5"),
+                new FrameworkSignal("framework-version", "2.7.18", "effective-pom.json")),
+                request(recipes()).targetProfile());
+
+        assertEquals("spring-boot", legacyBoot.family());
+        assertEquals("xml-annotation-hybrid", legacyBoot.programmingModel());
+        assertFalse(legacyBoot.complete());
+        assertTrue(legacyBoot.diagnostics()
+                .contains("legacy-javax-namespace-requires-explicit-jakarta-plan"));
+    }
+
     @Test void canonicalHashDoesNotDependOnMapInsertionOrder() {
         Map<String,String> first = new LinkedHashMap<>(); first.put("b", "2"); first.put("a", "1");
         Map<String,String> second = new LinkedHashMap<>(); second.put("a", "1"); second.put("b", "2");

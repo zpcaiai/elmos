@@ -1,0 +1,35 @@
+server:
+  port: ${ELMOS_VERIFIER_PORT:8082}
+  shutdown: graceful
+  error:
+    include-message: never
+    include-binding-errors: never
+    include-stacktrace: never
+spring:
+  application:
+    name: elmos-java-engine-verifier
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+        add-additional-paths: true
+      show-details: never
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+elmos:
+  verifier:
+    id: ${ELMOS_VERIFIER_ID:java-engine-verifier}
+    input-root: ${ELMOS_VERIFIER_INPUT_ROOT:/input/runs}
+    evidence-root: ${ELMOS_VERIFIER_EVIDENCE_ROOT:/verification}
+    secret-file: ${ELMOS_VERIFIER_SECRET_FILE:/run/secrets/elmos_verifier_hmac}
+    one-time-secret: ${ELMOS_VERIFIER_HMAC_SECRET_VALUE:}
+    java-home: ${ELMOS_VERIFIER_JAVA_HOME:/opt/java/openjdk}
+    maven-executable: ${ELMOS_VERIFIER_MAVEN_EXECUTABLE:/usr/share/maven/bin/mvn}
+    dependency-cache-root: ${ELMOS_VERIFIER_DEPENDENCY_CACHE_ROOT:}
+    timeout-minutes: ${ELMOS_VERIFIER_TIMEOUT_MINUTES:30}
+    auth-window-seconds: ${ELMOS_VERIFIER_AUTH_WINDOW_SECONDS:90}

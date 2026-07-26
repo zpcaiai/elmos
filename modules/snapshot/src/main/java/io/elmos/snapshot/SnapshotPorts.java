@@ -18,11 +18,20 @@ public final class SnapshotPorts {
         @Override public void close() throws Exception { cleanup.close(); }
     }
     public interface RepositoryCredentialBroker {
-        EphemeralCredential issue(String repositoryId, long repositoryExternalId, long installationExternalId);
+        EphemeralCredential issue(String organizationId, String repositoryId,
+                                  long repositoryExternalId, long installationExternalId);
     }
 
     public interface ArtifactStore {
         String putIfAbsent(String sha256, long size, InputStream content, String mediaType);
+    }
+
+    /**
+     * Read access is deliberately separate from writes so a production
+     * deployment can give the materializer only content-addressed read rights.
+     */
+    public interface ArtifactReader {
+        InputStream open(String reference);
     }
 
     public interface SnapshotStore {

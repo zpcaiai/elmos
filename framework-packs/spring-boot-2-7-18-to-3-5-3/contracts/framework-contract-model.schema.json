@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/framework-contract-model-1.0.json",
+  "title": "ELMOS Framework Contract Model",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "pack_key",
+    "source_commit",
+    "source_snapshot_sha256",
+    "extraction_status",
+    "exact_tuple",
+    "capabilities",
+    "unknowns",
+    "ordering_and_defaults"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "pack_key": {"const": "spring-boot-2-7-18-to-3-5-3"},
+    "source_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "source_snapshot_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "extraction_status": {"const": "STATIC_AND_SOURCE_BASELINE"},
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "status", "source_traces", "obligations"]
+      }
+    },
+    "unknowns": {"type": "array", "items": {"type": "string"}},
+    "ordering_and_defaults": {"type": "object"}
+  },
+  "additionalProperties": true
+}

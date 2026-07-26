@@ -1,0 +1,84 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+
+import argparse
+import json
+import tempfile
+from pathlib import Path
+
+from elmos_project_synthesis.intake import approve_request, create_draft
+from elmos_project_synthesis.verification import verify_workspace
+from elmos_project_synthesis.workspace import generate_workspace
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Run the exact local Python/PostgreSQL production-profile acceptance.")
+    parser.add_argument("--auth-mode", choices=("jwt", "oidc"), required=True)
+    return parser.parse_args()
+
+
+def main() -> int:
+    arguments = parse_args()
+    request = approve_request(
+        create_draft(
+            name=f"enterprise-orders-{arguments.auth_mode}",
+            description="Durable authenticated and tenant-isolated order API.",
+            entities=(
+                {
+                    "singular": "customer",
+                    "plural": "customers",
+                    "fields": [{"name": "name", "type": "string", "required": True}],
+                },
+                {
+                    "singular": "order",
+                    "plural": "orders",
+                    "fields": [
+                        {"name": "customer_id", "type": "string", "required": True},
+                        {"name": "total", "type": "number", "required": True},
+                    ],
+                },
+            ),
+            relations=(
+                {
+                    "source": "order",
+                    "target": "customer",
+                    "source_field": "customer_id",
+                    "target_field": "id",
+                    "kind": "many-to-one",
+                    "required": True,
+                },
+            ),
+            languages=("python",),
+            persistence="postgresql",
+            auth_mode=arguments.auth_mode,
+        ),
+        actor="acceptance:production-profile",
+        approved_at="2026-07-26T00:00:00+00:00",
+    )
+    with tempfile.TemporaryDirectory(prefix="elmos-production-profile-") as temporary:
+        workspace = Path(temporary) / "workspace"
+        manifest = generate_workspace(request, workspace)
+        evidence = verify_workspace(workspace)
+    probes = [item for item in evidence["results"] if item.get("kind") == "startup-probe"]
+    result = {
+        "schema_version": "1.0.0",
+        "status": evidence["status"],
+        "auth_mode": arguments.auth_mode,
+        "generated_file_count": manifest["file_count"],
+        "startup_probes": [
+            {
+                "status": item["status"],
+                "integration_status": item["integration_status"],
+                "response": item["response"],
+            }
+            for item in probes
+        ],
+        "production_delivery_status": evidence["production_delivery_status"],
+        "external_certification_status": evidence["external_certification_status"],
+    }
+    print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
+    return 0 if result["status"] == "PASSED" else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

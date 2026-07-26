@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "profile_key": "spring-boot-2-7-18-to-3-5-3-target",
+  "version": "0.1.0",
+  "owner": "ELMOS Java Modernization Team",
+  "framework": "spring-boot",
+  "framework_versions": ["3.5.3"],
+  "runtime": "java",
+  "runtime_versions": ["21"],
+  "architecture_style": "modular-monolith-compatible-spring-boot-application",
+  "providers": {
+    "serializer": {"provider": "jackson", "version": "managed-by-spring-boot-3.5.3"},
+    "dependency_injection": {"provider": "spring-framework", "version": "managed-by-spring-boot-3.5.3"},
+    "validation": {"namespace": "jakarta.validation", "version": "managed-by-spring-boot-3.5.3"},
+    "authentication": {"strategy": "preserve-and-independently-verify", "automatic_support": false},
+    "authorization": {"strategy": "preserve-and-independently-verify", "automatic_support": false},
+    "persistence": {"strategy": "preserve-and-independently-verify", "automatic_support": false},
+    "messaging": {"strategy": "detect-and-block-without-provider-profile"},
+    "cache": {"strategy": "detect-and-block-without-provider-profile"},
+    "scheduler": {"strategy": "preserve-and-replay"},
+    "observability": {"provider": "spring-boot-actuator", "health_path": "/actuator/health"}
+  },
+  "build": {
+    "commands": [
+      "mvn -B --no-transfer-progress test",
+      "mvn -B --no-transfer-progress verify",
+      "mvn -B --no-transfer-progress package -DskipTests"
+    ],
+    "toolchain_digests": [
+      "maven:3.9.11-eclipse-temurin-21@sha256:6fdc855a6ed81d288ca7ca37ac6ff5e9308b612485c0801d70b25a858c83d237"
+    ]
+  },
+  "startup": {
+    "command": "java -jar target/<verified-boot-artifact>.jar",
+    "health_check": "GET http://127.0.0.1:<ephemeral-port>/actuator/health"
+  }
+}

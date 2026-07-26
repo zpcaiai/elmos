@@ -1,0 +1,9 @@
+{
+  "cases_file": "cases.json",
+  "corpus": "real-repository",
+  "independent": true,
+  "rule_authoring_input": false,
+  "schema_version": 1,
+  "source_file": "difference.ts",
+  "source_language": "typescript"
+}

@@ -9,8 +9,8 @@
       "owner": "elmos-web-console",
       "source_versions": ["16.2.10"],
       "target_versions": ["16.2.10"],
-      "evidence_refs": ["certification/local-ui-polish-evidence.json"],
-      "reason": "Local Chrome navigation passed; independent matrix remains NOT_RUN."
+      "evidence_refs": ["certification/local-ui-polish-evidence.json","certification/local-cross-browser-generation-evidence.json"],
+      "reason": "Local Chromium, Firefox, WebKit and mobile navigation passed; independent customer matrix remains NOT_RUN."
     },
     {
       "id": "component-and-view",
@@ -19,7 +19,7 @@
       "owner": "elmos-web-console",
       "source_versions": ["16.2.10"],
       "target_versions": ["16.2.10"],
-      "evidence_refs": ["certification/local-ui-polish-evidence.json","certification/local-project-generation-evidence.json"],
+      "evidence_refs": ["certification/local-ui-polish-evidence.json","certification/local-project-generation-evidence.json","certification/local-cross-browser-generation-evidence.json"],
       "reason": "Local view, component, and project-generation preview journeys passed; holdout remains NOT_RUN."
     },
     {
@@ -39,8 +39,8 @@
       "owner": "elmos-web-console",
       "source_versions": ["native-formdata"],
       "target_versions": ["native-formdata"],
-      "evidence_refs": ["certification/local-ui-evidence.json","certification/local-project-generation-evidence.json"],
-      "reason": "Memory-only assessment and project-generation drafts passed in local Chrome evidence."
+      "evidence_refs": ["certification/local-ui-evidence.json","certification/local-project-generation-evidence.json","certification/local-cross-browser-generation-evidence.json"],
+      "reason": "Memory-only assessment and project-generation drafts passed in the local Playwright browser matrix."
     },
     {
       "id": "identity-and-permission",
@@ -59,7 +59,7 @@
       "owner": "elmos-accessibility-review",
       "source_versions": ["elmos-console-0.3.0"],
       "target_versions": ["elmos-console-0.4.0"],
-      "evidence_refs": ["certification/local-ui-polish-evidence.json","certification/local-project-generation-evidence.json"],
+      "evidence_refs": ["certification/local-ui-polish-evidence.json","certification/local-project-generation-evidence.json","certification/local-cross-browser-generation-evidence.json"],
       "reason": "Local keyboard, focus, target-size, overflow, and visual inspection passed; assistive technology and approved baseline remain NOT_RUN."
     }
   ]

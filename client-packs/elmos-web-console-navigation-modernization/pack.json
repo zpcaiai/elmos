@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "pack_key": "elmos-web-console-navigation-modernization",
-  "version": "0.4.0",
+  "version": "0.6.0",
   "mode": "modernization",
   "status": "experimental",
   "owner": "elmos-web-console",
@@ -32,11 +32,13 @@
     "api_client": [],
     "identity": [],
     "i18n": ["zh-CN-visible-copy"],
-    "test_tools": ["playwright-chrome-150.0.7871.129"],
+    "test_tools": ["playwright-1.61.1"],
     "browsers": [
-      "chrome-150.0.7871.129"
+      "chromium-revision-1228",
+      "firefox-revision-1532",
+      "webkit-revision-2311"
     ],
-    "devices": ["desktop-1440x1000", "tablet-1024x768", "mobile-390x844"]
+    "devices": ["desktop-1440x900", "mobile-chromium-390x844", "mobile-webkit-393x852"]
   },
   "target": {
     "stack": "nextjs-app-router",
@@ -58,19 +60,21 @@
     "state": ["react-use-state-19.2.7"],
     "forms": ["react-controlled-native-validation-memory-only"],
     "styling": ["css-custom-properties"],
-    "design_system": ["elmos-console-0.4.0"],
-    "api_client": [],
-    "identity": [],
+    "design_system": ["elmos-console-0.5.0"],
+    "api_client": ["next-server-bound-java-engine-proxy"],
+    "identity": ["server-bound-local-organization-context"],
     "i18n": ["zh-CN-visible-copy"],
-    "test_tools": ["playwright-chrome-150.0.7871.129"],
+    "test_tools": ["playwright-1.61.1"],
     "browsers": [
-      "chrome-150.0.7871.129"
+      "chromium-revision-1228",
+      "firefox-revision-1532",
+      "webkit-revision-2311"
     ],
-    "devices": ["desktop-1440x1000", "tablet-1024x768", "mobile-390x844"]
+    "devices": ["desktop-1440x900", "mobile-chromium-390x844", "mobile-webkit-393x852"]
   },
   "scope": {
-    "journeys": ["workspace-navigation", "local-assessment-draft", "trust-chain-review", "skills-qualification", "project-generation-draft", "global-command-navigation", "mobile-bottom-navigation"],
-    "routes": ["/", "/migration", "/commercialization", "/generation", "/skills"],
+    "journeys": ["workspace-navigation", "real-spring-upgrade-lifecycle", "trust-chain-review", "skills-qualification", "project-generation-draft", "global-command-navigation", "mobile-bottom-navigation"],
+    "routes": ["/", "/spring", "/migration", "/commercialization", "/generation", "/skills"],
     "component_roots": ["apps/web-console/app"],
     "excluded": ["external certification", "production mutation", "customer data"]
   },

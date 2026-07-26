@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "pack_key": "spring-boot-2-7-18-to-3-5-3",
+  "rewrite_spring": "6.35.0",
+  "rewrite_maven_plugin": "6.44.0",
+  "recipes": [
+    "io.elmos.openrewrite.SpringBoot2_7_18To3_5_3Java21"
+  ],
+  "recipe_config": "recipes/spring-boot-2.7.18-to-3.5.3.yml",
+  "exact_target_binding": true,
+  "supported_source_version_authority": "spring-boot-starter-parent",
+  "maximum_rewrite_cycles": 2,
+  "second_cycle_condition": "target Maven test failed",
+  "regex_as_semantic_core": false
+}

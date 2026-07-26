@@ -27,6 +27,27 @@ management:
 elmos:
   worker:
     workspace-root: ${ELMOS_WORKSPACE_ROOT:/workspace}
+    spring-upgrade:
+      enabled: ${ELMOS_SPRING_UPGRADE_ENABLED:false}
+      rootless-runner-attested: ${ELMOS_SPRING_UPGRADE_ROOTLESS_ATTESTED:false}
+      default-deny-network-attested: ${ELMOS_SPRING_UPGRADE_NETWORK_POLICY_ATTESTED:false}
+      independent-verifier-enabled: ${ELMOS_SPRING_UPGRADE_VERIFIER_ENABLED:false}
+      independent-verifier-id: ${ELMOS_SPRING_UPGRADE_VERIFIER_ID:java-engine-verifier}
+      independent-verifier-base-url: ${ELMOS_SPRING_UPGRADE_VERIFIER_BASE_URL:http://java-engine-verifier:8082}
+      independent-verifier-secret-file: ${ELMOS_SPRING_UPGRADE_VERIFIER_SECRET_FILE:/run/secrets/elmos_verifier_hmac}
+      workspace-root: ${ELMOS_SPRING_UPGRADE_WORKSPACE_ROOT:/tmp/elmos-private-runner}
+      source-java-home: ${ELMOS_SOURCE_JAVA_HOME:/opt/java/openjdk-17}
+      target-java-home: ${ELMOS_TARGET_JAVA_HOME:/opt/java/openjdk}
+      maven-executable: ${ELMOS_MAVEN_EXECUTABLE:mvn}
+      allowed-git-hosts: ${ELMOS_ALLOWED_GIT_HOSTS:github.com}
+      allow-file-repositories: ${ELMOS_ALLOW_FILE_REPOSITORIES:false}
+      transformer-broker-enabled: ${ELMOS_SPRING_TRANSFORMER_BROKER_ENABLED:false}
+      transformer-broker-base-url: ${ELMOS_SPRING_TRANSFORMER_BROKER_BASE_URL:http://workspace-service:8082}
+      transformer-broker-secret-file: ${ELMOS_SPRING_TRANSFORMER_BROKER_SECRET_FILE:/run/secrets/elmos_transformer_hmac}
+      local-engineering-enabled: ${ELMOS_SPRING_LOCAL_ENGINEERING_ENABLED:false}
+      runtime-runner-enabled: ${ELMOS_SPRING_RUNTIME_RUNNER_ENABLED:false}
+      runtime-runner-base-url: ${ELMOS_SPRING_RUNTIME_RUNNER_BASE_URL:http://workspace-service:8082}
+      runtime-runner-secret-file: ${ELMOS_SPRING_RUNTIME_RUNNER_SECRET_FILE:/run/secrets/elmos-runtime-hmac}
     osv:
       enabled: ${ELMOS_OSV_ENABLED:false}
       api-base: ${ELMOS_OSV_API_BASE:https://api.osv.dev/}

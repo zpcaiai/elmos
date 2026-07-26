@@ -1,0 +1,26 @@
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: io.elmos.openrewrite.SpringBoot2_7_18To3_5_3Java21
+displayName: Migrate Spring Boot 2.7.18 on Java 17 to Spring Boot 3.5.3 on Java 21
+description: >-
+  Applies the versioned Spring and Java migrations, then binds the supported
+  Spring Boot parent and Java property to the exact ELMOS route tuple.
+recipeList:
+  - org.openrewrite.maven.UpgradeParentVersion:
+      groupId: org.springframework.boot
+      artifactId: spring-boot-starter-parent
+      newVersion: 3.5.3
+  - org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5
+  - org.openrewrite.java.migrate.UpgradeToJava21
+  - org.openrewrite.maven.ChangeParentPom:
+      oldGroupId: org.springframework.boot
+      oldArtifactId: spring-boot-starter-parent
+      newGroupId: org.springframework.boot
+      newArtifactId: spring-boot-starter-parent
+      newVersion: 3.5.3
+      allowVersionDowngrades: true
+  - org.openrewrite.maven.ChangePropertyValue:
+      key: java.version
+      newValue: "21"
+      addIfMissing: true
+      trustParent: false

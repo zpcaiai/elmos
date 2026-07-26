@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "pack_key": "spring-boot-2-7-18-to-3-5-3",
+  "tuples": [
+    {
+      "id": "source",
+      "spring_boot": "2.7.18",
+      "java": "17",
+      "build": "maven-3.9.11",
+      "status": "supported-input-only"
+    },
+    {
+      "id": "target",
+      "spring_boot": "3.5.3",
+      "java": "21",
+      "build": "maven-3.9.11",
+      "status": "experimental-output"
+    }
+  ],
+  "upgrade_edges": [
+    {
+      "from": "source",
+      "to": "target",
+      "directional": true,
+      "rewrite_spring": "6.35.0",
+      "rewrite_maven_plugin": "6.44.0",
+      "recipes": [
+        "io.elmos.openrewrite.SpringBoot2_7_18To3_5_3Java21"
+      ]
+    }
+  ]
+}

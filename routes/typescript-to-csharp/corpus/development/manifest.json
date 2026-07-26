@@ -1,0 +1,9 @@
+{
+  "cases_file": "cases.json",
+  "corpus": "development",
+  "independent": false,
+  "rule_authoring_input": true,
+  "schema_version": 1,
+  "source_file": "pricing.ts",
+  "source_language": "typescript"
+}

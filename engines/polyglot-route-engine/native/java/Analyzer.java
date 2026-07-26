@@ -1,0 +1,213 @@
+import com.sun.source.tree.BinaryTree;
+import com.sun.source.tree.BlockTree;
+import com.sun.source.tree.ExpressionTree;
+import com.sun.source.tree.IdentifierTree;
+import com.sun.source.tree.IfTree;
+import com.sun.source.tree.LiteralTree;
+import com.sun.source.tree.MethodTree;
+import com.sun.source.tree.ParenthesizedTree;
+import com.sun.source.tree.ReturnTree;
+import com.sun.source.tree.StatementTree;
+import com.sun.source.tree.Tree;
+import com.sun.source.tree.VariableTree;
+import com.sun.source.util.JavacTask;
+import com.sun.source.util.TreePathScanner;
+
+import javax.tools.Diagnostic;
+import javax.tools.DiagnosticCollector;
+import javax.tools.JavaCompiler;
+import javax.tools.JavaFileObject;
+import javax.tools.StandardJavaFileManager;
+import javax.tools.ToolProvider;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+public final class Analyzer {
+    private Analyzer() {}
+
+    public static void main(String[] args) throws Exception {
+        if (args.length != 2) {
+            throw new IllegalArgumentException("usage: Analyzer.java <source> <function>");
+        }
+        Path source = Path.of(args[0]).toAbsolutePath().normalize();
+        String functionName = args[1];
+        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        if (compiler == null) throw new IllegalStateException("JDK_COMPILER_UNAVAILABLE");
+        DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
+        List<Map<String, Object>> functions = new ArrayList<>();
+        try (StandardJavaFileManager files = compiler.getStandardFileManager(diagnostics, Locale.ROOT, StandardCharsets.UTF_8)) {
+            Iterable<? extends JavaFileObject> units = files.getJavaFileObjects(source);
+            JavacTask task = (JavacTask) compiler.getTask(
+                    null, files, diagnostics, List.of("--release", "21", "-proc:none", "-Xlint:none"), null, units);
+            var trees = task.parse();
+            task.analyze();
+            for (var unit : trees) {
+                new FunctionScanner(functionName, functions).scan(unit, null);
+            }
+        }
+        List<String> errors = diagnostics.getDiagnostics().stream()
+                .filter(item -> item.getKind() == Diagnostic.Kind.ERROR)
+                .map(item -> item.getCode() + ":" + item.getLineNumber())
+                .sorted()
+                .toList();
+        if (functions.isEmpty()) errors = append(errors, "FUNCTION_NOT_FOUND:" + functionName);
+        Map<String, Object> output = new LinkedHashMap<>();
+        output.put("schema_version", "1.0.0");
+        output.put("source_language", "java");
+        output.put("source_file", source.getFileName().toString());
+        output.put("analyzer", "JDK JavacTask Tree API");
+        output.put("analyzer_version", System.getProperty("java.version"));
+        output.put("functions", functions);
+        output.put("diagnostics", errors);
+        System.out.println(Json.write(output));
+    }
+
+    private static List<String> append(List<String> values, String value) {
+        List<String> copy = new ArrayList<>(values);
+        copy.add(value);
+        return List.copyOf(copy);
+    }
+
+    private static final class FunctionScanner extends TreePathScanner<Void, Void> {
+        private final String expectedName;
+        private final List<Map<String, Object>> functions;
+
+        private FunctionScanner(String expectedName, List<Map<String, Object>> functions) {
+            this.expectedName = expectedName;
+            this.functions = functions;
+        }
+
+        @Override
+        public Void visitMethod(MethodTree method, Void unused) {
+            if (!method.getName().contentEquals(expectedName) || method.getBody() == null) return null;
+            List<Map<String, Object>> parameters = new ArrayList<>();
+            for (VariableTree parameter : method.getParameters()) {
+                parameters.add(Map.of(
+                        "name", parameter.getName().toString(),
+                        "type", type(parameter.getType().toString())));
+            }
+            Map<String, Object> function = new LinkedHashMap<>();
+            function.put("name", method.getName().toString());
+            function.put("parameters", parameters);
+            function.put("return_type", type(method.getReturnType().toString()));
+            function.put("body", statements(method.getBody().getStatements()));
+            functions.add(function);
+            return null;
+        }
+    }
+
+    private static String type(String sourceType) {
+        String normalized = sourceType.replace("java.lang.", "").toLowerCase(Locale.ROOT);
+        return switch (normalized) {
+            case "byte", "short", "int", "long", "integer" -> "integer";
+            case "float", "double", "bigdecimal" -> "number";
+            case "boolean" -> "boolean";
+            case "string", "charsequence" -> "string";
+            default -> throw new IllegalArgumentException("JAVA_UNSUPPORTED_TYPE:" + sourceType);
+        };
+    }
+
+    private static List<Map<String, Object>> statements(List<? extends StatementTree> source) {
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (StatementTree statement : source) {
+            if (statement instanceof ReturnTree returning && returning.getExpression() != null) {
+                result.add(Map.of("kind", "return", "expression", expression(returning.getExpression())));
+            } else if (statement instanceof IfTree conditional) {
+                Map<String, Object> item = new LinkedHashMap<>();
+                item.put("kind", "if");
+                item.put("condition", expression(conditional.getCondition()));
+                item.put("then", statementBody(conditional.getThenStatement()));
+                item.put("else", conditional.getElseStatement() == null
+                        ? List.of()
+                        : statementBody(conditional.getElseStatement()));
+                result.add(item);
+            } else {
+                throw new IllegalArgumentException("JAVA_UNSUPPORTED_STATEMENT:" + statement.getKind());
+            }
+        }
+        return result;
+    }
+
+    private static List<Map<String, Object>> statementBody(StatementTree statement) {
+        if (statement instanceof BlockTree block) return statements(block.getStatements());
+        return statements(List.of(statement));
+    }
+
+    private static Map<String, Object> expression(ExpressionTree tree) {
+        if (tree instanceof ParenthesizedTree parenthesized) return expression(parenthesized.getExpression());
+        if (tree instanceof IdentifierTree identifier) return Map.of("kind", "name", "value", identifier.getName().toString());
+        if (tree instanceof LiteralTree literal) return Map.of("kind", "literal", "value", literal.getValue());
+        if (tree instanceof BinaryTree binary) {
+            return Map.of(
+                    "kind", "binary",
+                    "operator", operator(binary.getKind()),
+                    "left", expression(binary.getLeftOperand()),
+                    "right", expression(binary.getRightOperand()));
+        }
+        throw new IllegalArgumentException("JAVA_UNSUPPORTED_EXPRESSION:" + tree.getKind());
+    }
+
+    private static String operator(Tree.Kind kind) {
+        return switch (kind) {
+            case PLUS -> "+";
+            case MINUS -> "-";
+            case MULTIPLY -> "*";
+            case DIVIDE -> "/";
+            case REMAINDER -> "%";
+            case LESS_THAN -> "<";
+            case LESS_THAN_EQUAL -> "<=";
+            case GREATER_THAN -> ">";
+            case GREATER_THAN_EQUAL -> ">=";
+            case EQUAL_TO -> "==";
+            case NOT_EQUAL_TO -> "!=";
+            case CONDITIONAL_AND -> "&&";
+            case CONDITIONAL_OR -> "||";
+            default -> throw new IllegalArgumentException("JAVA_UNSUPPORTED_OPERATOR:" + kind);
+        };
+    }
+
+    private static final class Json {
+        private Json() {}
+
+        static String write(Object value) {
+            if (value == null) return "null";
+            if (value instanceof String text) return quote(text);
+            if (value instanceof Number || value instanceof Boolean) return value.toString();
+            if (value instanceof Map<?, ?> map) {
+                List<String> entries = new ArrayList<>();
+                for (var entry : map.entrySet()) entries.add(quote(entry.getKey().toString()) + ":" + write(entry.getValue()));
+                return "{" + String.join(",", entries) + "}";
+            }
+            if (value instanceof Iterable<?> items) {
+                List<String> entries = new ArrayList<>();
+                for (Object item : items) entries.add(write(item));
+                return "[" + String.join(",", entries) + "]";
+            }
+            throw new IllegalArgumentException("JSON_UNSUPPORTED_VALUE:" + value.getClass());
+        }
+
+        private static String quote(String value) {
+            StringBuilder result = new StringBuilder("\"");
+            for (int index = 0; index < value.length(); index++) {
+                char character = value.charAt(index);
+                switch (character) {
+                    case '"' -> result.append("\\\"");
+                    case '\\' -> result.append("\\\\");
+                    case '\n' -> result.append("\\n");
+                    case '\r' -> result.append("\\r");
+                    case '\t' -> result.append("\\t");
+                    default -> {
+                        if (character < 0x20) result.append(String.format("\\u%04x", (int) character));
+                        else result.append(character);
+                    }
+                }
+            }
+            return result.append('"').toString();
+        }
+    }
+}

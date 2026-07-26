@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import json
 
-from .models import FieldSpec, SynthesisRequest
+from .container_images import DOTNET_ASPNET_IMAGE, DOTNET_SDK_IMAGE
+from .models import EntitySpec, FieldSpec, SynthesisRequest, pascal
 from .rendering import (
     clean,
     dockerignore,
@@ -31,33 +32,129 @@ def _csharp_type(field: FieldSpec) -> str:
 
 def render_dotnet(request: SynthesisRequest, port: int) -> dict[str, str]:
     project_class = request.project_class
-    entity_class = request.entity_class
     api_project = f"{project_class}.Api"
     test_project = f"{project_class}.Api.Tests"
-    field_declarations = ",\n    ".join(
-        f"{_csharp_type(field)} {pascal_identifier(field.name)}" for field in request.entity.fields
-    )
-    request_args = ", ".join(f"request.{pascal_identifier(field.name)}" for field in request.entity.fields)
-    sample_values = sample_payload(request)
-    csharp_values: list[str] = []
-    for field in request.entity.fields:
-        value = sample_values[field.name]
-        if field.type == "string":
-            rendered = json.dumps(value, ensure_ascii=False)
-        elif field.type in {"integer", "number"}:
-            rendered = str(value)
-        elif field.type == "boolean":
-            rendered = str(value).lower()
-        else:
-            rendered = f'DateTimeOffset.Parse("{value}")'
-        csharp_values.append(f"{pascal_identifier(field.name)} = {rendered}")
-    sample = "new { " + ", ".join(csharp_values) + " }"
-    string_guards = [
-        f"string.IsNullOrWhiteSpace(request.{pascal_identifier(field.name)})"
-        for field in request.entity.fields
-        if field.required and field.type == "string"
-    ]
-    guard = " || ".join(string_guards) or "false"
+    model_blocks: list[str] = []
+    store_blocks: list[str] = []
+    route_blocks: list[str] = []
+    test_blocks: list[str] = []
+
+    def csharp_sample(entity: EntitySpec) -> str:
+        sample_values = sample_payload(request, entity)
+        values: list[str] = []
+        for field in entity.fields:
+            value = sample_values[field.name]
+            if field.type == "string":
+                rendered = json.dumps(value, ensure_ascii=False)
+            elif field.type in {"integer", "number"}:
+                rendered = str(value)
+            elif field.type == "boolean":
+                rendered = str(value).lower()
+            else:
+                rendered = f'DateTimeOffset.Parse("{value}")'
+            values.append(f"{pascal_identifier(field.name)} = {rendered}")
+        return "new { " + ", ".join(values) + " }"
+
+    for entity in request.entities:
+        entity_class = pascal(entity.singular)
+        field_declarations = ",\n    ".join(
+            f"{_csharp_type(field)} {pascal_identifier(field.name)}" for field in entity.fields
+        )
+        request_args = ", ".join(f"request.{pascal_identifier(field.name)}" for field in entity.fields)
+        string_guards = [
+            f"string.IsNullOrWhiteSpace(request.{pascal_identifier(field.name)})"
+            for field in entity.fields
+            if field.required and field.type == "string"
+        ]
+        guard_clause = ""
+        if string_guards:
+            guard = " || ".join(string_guards)
+            guard_clause = clean(
+                f"""
+                if ({guard})
+                {{
+                    return Results.ValidationProblem(new Dictionary<string, string[]>
+                    {{
+                        ["request"] = ["All required string fields must be non-empty."]
+                    }});
+                }}
+                """
+            ).rstrip()
+        store_name = f"{pascal_identifier(entity.plural)}Records"
+        model_blocks.append(
+            clean(
+                f"""
+                public sealed record {entity_class}Upsert(
+                    {field_declarations}
+                );
+
+                public sealed record {entity_class}(
+                    string Id,
+                    {field_declarations}
+                );
+                """
+            ).rstrip()
+        )
+        store_blocks.append(f"var {store_name} = new ConcurrentDictionary<string, {entity_class}>();")
+        route_blocks.append(
+            clean(
+                f"""
+                app.MapGet("/api/v1/{entity.plural}", () =>
+                    Results.Ok({store_name}.Values.OrderBy(value => value.Id)));
+                app.MapGet("/api/v1/{entity.plural}/{{id}}", (string id) =>
+                    {store_name}.TryGetValue(id, out var value) ? Results.Ok(value) : Results.NotFound());
+                app.MapPost("/api/v1/{entity.plural}", ({entity_class}Upsert request) =>
+                {{
+                    {guard_clause}
+                    var value = new {entity_class}(Guid.NewGuid().ToString(), {request_args});
+                    {store_name}[value.Id] = value;
+                    return Results.Created($"/api/v1/{entity.plural}/{{value.Id}}", value);
+                }});
+                app.MapPut("/api/v1/{entity.plural}/{{id}}", (string id, {entity_class}Upsert request) =>
+                {{
+                    if (!{store_name}.ContainsKey(id))
+                    {{
+                        return Results.NotFound();
+                    }}
+                    {guard_clause}
+                    var value = new {entity_class}(id, {request_args});
+                    {store_name}[id] = value;
+                    return Results.Ok(value);
+                }});
+                app.MapDelete("/api/v1/{entity.plural}/{{id}}", (string id) =>
+                    {store_name}.TryRemove(id, out _) ? Results.NoContent() : Results.NotFound());
+                """
+            ).rstrip()
+        )
+        sample = csharp_sample(entity)
+        test_blocks.append(
+            clean(
+                f"""
+                [Fact]
+                public async Task {entity_class}FullCrudJourney()
+                {{
+                    using var payload = JsonContent.Create({sample});
+                    var created = await _client.PostAsync("/api/v1/{entity.plural}", payload);
+                    Assert.Equal(HttpStatusCode.Created, created.StatusCode);
+                    var record = await created.Content.ReadFromJsonAsync<Dictionary<string, object>>();
+                    var id = record!["id"].ToString();
+
+                    var listing = await _client.GetAsync("/api/v1/{entity.plural}");
+                    Assert.Equal(HttpStatusCode.OK, listing.StatusCode);
+                    var fetched = await _client.GetAsync($"/api/v1/{entity.plural}/{{id}}");
+                    Assert.Equal(HttpStatusCode.OK, fetched.StatusCode);
+
+                    using var updatePayload = JsonContent.Create({sample});
+                    var updated = await _client.PutAsync($"/api/v1/{entity.plural}/{{id}}", updatePayload);
+                    Assert.Equal(HttpStatusCode.OK, updated.StatusCode);
+                    var deleted = await _client.DeleteAsync($"/api/v1/{entity.plural}/{{id}}");
+                    Assert.Equal(HttpStatusCode.NoContent, deleted.StatusCode);
+                    Assert.Equal(HttpStatusCode.NotFound,
+                        (await _client.GetAsync($"/api/v1/{entity.plural}/{{id}}")).StatusCode);
+                }}
+                """
+            ).rstrip()
+        )
     files: dict[str, str] = {
         ".gitignore": gitignore(),
         ".dockerignore": dockerignore(),
@@ -126,14 +223,7 @@ def render_dotnet(request: SynthesisRequest, port: int) -> dict[str, str]:
             f"""
             namespace Generated.Api;
 
-            public sealed record {entity_class}Create(
-                {field_declarations}
-            );
-
-            public sealed record {entity_class}(
-                string Id,
-                {field_declarations}
-            );
+            {chr(10).join(model_blocks)}
             """
         ),
         f"src/{api_project}/Program.cs": clean(
@@ -144,26 +234,11 @@ def render_dotnet(request: SynthesisRequest, port: int) -> dict[str, str]:
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddProblemDetails();
             var app = builder.Build();
-            var records = new ConcurrentDictionary<string, {entity_class}>();
+            {chr(10).join(store_blocks)}
 
             app.UseExceptionHandler();
             app.MapGet("/health", () => Results.Ok(new {{ status = "UP", service = "{request.project_name}" }}));
-            app.MapGet("/api/v1/{request.entity.plural}", () => Results.Ok(records.Values.OrderBy(value => value.Id)));
-            app.MapGet("/api/v1/{request.entity.plural}/{{id}}", (string id) =>
-                records.TryGetValue(id, out var value) ? Results.Ok(value) : Results.NotFound());
-            app.MapPost("/api/v1/{request.entity.plural}", ({entity_class}Create request) =>
-            {{
-                if ({guard})
-                {{
-                    return Results.ValidationProblem(new Dictionary<string, string[]>
-                    {{
-                        ["request"] = ["All required string fields must be non-empty."]
-                    }});
-                }}
-                var value = new {entity_class}(Guid.NewGuid().ToString(), {request_args});
-                records[value.Id] = value;
-                return Results.Created($"/api/v1/{request.entity.plural}/{{value.Id}}", value);
-            }});
+            {chr(10).join(route_blocks)}
 
             app.Run();
 
@@ -246,30 +321,25 @@ def render_dotnet(request: SynthesisRequest, port: int) -> dict[str, str]:
                 }}
 
                 [Fact]
-                public async Task RequirementTracedCrudAndHealthJourney()
+                public async Task HealthJourney()
                 {{
                     var health = await _client.GetAsync("/health");
                     Assert.Equal(HttpStatusCode.OK, health.StatusCode);
-
-                    using var payload = JsonContent.Create({sample});
-                    var created = await _client.PostAsync("/api/v1/{request.entity.plural}", payload);
-                    Assert.Equal(HttpStatusCode.Created, created.StatusCode);
-
-                    var listing = await _client.GetAsync("/api/v1/{request.entity.plural}");
-                    Assert.Equal(HttpStatusCode.OK, listing.StatusCode);
                 }}
+
+                {chr(10).join(test_blocks)}
             }}
             """
         ),
         "openapi.yaml": openapi_yaml(request, server_port=port),
         "Dockerfile": clean(
             f"""
-            FROM mcr.microsoft.com/dotnet/sdk:10.0.301 AS build
+            FROM {DOTNET_SDK_IMAGE} AS build
             WORKDIR /workspace
             COPY . .
             RUN dotnet publish src/{api_project}/{api_project}.csproj -c Release -o /out --no-self-contained
 
-            FROM mcr.microsoft.com/dotnet/aspnet:10.0.9
+            FROM {DOTNET_ASPNET_IMAGE}
             RUN groupadd --system app && useradd --system --gid app --uid 10001 app
             WORKDIR /app
             COPY --from=build /out .
@@ -292,8 +362,8 @@ def render_dotnet(request: SynthesisRequest, port: int) -> dict[str, str]:
               test:
                 runs-on: ubuntu-latest
                 steps:
-                  - uses: actions/checkout@v4
-                  - uses: actions/setup-dotnet@v4
+                  - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+                  - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
                     with:
                       dotnet-version: '10.0.x'
                   - run: dotnet restore {project_class}.slnx --locked-mode
@@ -305,7 +375,7 @@ def render_dotnet(request: SynthesisRequest, port: int) -> dict[str, str]:
             DOTNET ?= dotnet
             .PHONY: restore test run publish
             restore:
-            \t$(DOTNET) restore {project_class}.slnx --use-lock-file
+            \t$(DOTNET) restore {project_class}.slnx --locked-mode
             test:
             \t$(DOTNET) test {project_class}.slnx
             run:
@@ -320,7 +390,7 @@ def render_dotnet(request: SynthesisRequest, port: int) -> dict[str, str]:
             framework="ASP.NET Core 10.0",
             port=port,
             commands=(
-                f"dotnet restore {project_class}.slnx --use-lock-file\n"
+                f"dotnet restore {project_class}.slnx --locked-mode\n"
                 f"dotnet test {project_class}.slnx\n"
                 f"ASPNETCORE_URLS=http://localhost:{port} dotnet run --project src/{api_project}/{api_project}.csproj"
             ),

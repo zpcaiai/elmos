@@ -7,6 +7,7 @@ import io.elmos.persistence.JdbcSnapshotStore;
 import io.elmos.scm.GitHubInstallationTokenBroker;
 import io.elmos.snapshot.DeterministicSnapshotArchiver;
 import io.elmos.snapshot.SnapshotCaptureService;
+import io.elmos.snapshot.SnapshotMaterializationService;
 import io.elmos.snapshot.SnapshotPorts;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -66,7 +67,8 @@ class GithubSnapshotConfiguration {
         return new JGitSnapshotSourceAdapter(locations, Path.of(stagingRoot));
     }
 
-    @Bean SnapshotPorts.ArtifactStore snapshotArtifactStore(@Value("${elmos.snapshot.artifact-root:}") String artifactRoot,
+    @Bean LocalContentAddressedArtifactStore snapshotArtifactStore(
+            @Value("${elmos.snapshot.artifact-root:}") String artifactRoot,
             @Value("${elmos.snapshot.max-artifact-bytes:1073741824}") long maxArtifactBytes) {
         if (artifactRoot.isBlank()) throw new IllegalStateException("snapshot artifact root is required");
         return new LocalContentAddressedArtifactStore(Path.of(artifactRoot), maxArtifactBytes);
@@ -74,10 +76,23 @@ class GithubSnapshotConfiguration {
 
     @Bean SnapshotCaptureService snapshotCaptureService(GitHubInstallationTokenBroker broker,
             JGitSnapshotSourceAdapter source, SnapshotPorts.ArtifactStore artifacts, JdbcSnapshotStore snapshots, Clock clock) {
-        SnapshotPorts.RepositoryCredentialBroker credentials = (repositoryId, repositoryExternalId, installationExternalId) ->
-                broker.issue(repositoryId, repositoryExternalId, installationExternalId,
+        SnapshotPorts.RepositoryCredentialBroker credentials =
+                (organizationId, repositoryId, repositoryExternalId, installationExternalId) ->
+                broker.issue(organizationId, repositoryId, repositoryExternalId, installationExternalId,
                         GitHubInstallationTokenBroker.Operation.CAPTURE_SNAPSHOT);
         return new SnapshotCaptureService(credentials, source, source, new DeterministicSnapshotArchiver(), artifacts, snapshots, clock);
+    }
+
+    @Bean SnapshotMaterializationService snapshotMaterializationService(
+            LocalContentAddressedArtifactStore artifacts,
+            ObjectMapper mapper,
+            @Value("${elmos.snapshot.materialized-root:}") String materializedRoot
+    ) {
+        if (materializedRoot.isBlank()) {
+            throw new IllegalStateException("snapshot materialized root is required");
+        }
+        return new SnapshotMaterializationService(
+                Path.of(materializedRoot), artifacts, mapper);
     }
 
     private static char[] readOwnerOnlySecret(Path rawPath) {
@@ -101,7 +116,8 @@ class GithubSnapshotConfiguration {
 
     private static String leaseDigest(GitHubInstallationTokenBroker.LeaseMetadata metadata) {
         try {
-            String value = metadata.repositoryExternalId() + ":" + metadata.installationExternalId() + ":" +
+            String value = metadata.organizationId() + ":" + metadata.repositoryExternalId()
+                    + ":" + metadata.installationExternalId() + ":" +
                     metadata.operation() + ":" + metadata.expiresAt() + ":" + new TreeSet<>(metadata.permissions().stream()
                     .map(permission -> permission.name() + "=" + permission.access()).toList());
             return "sha256:" + HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(value.getBytes(java.nio.charset.StandardCharsets.UTF_8)));

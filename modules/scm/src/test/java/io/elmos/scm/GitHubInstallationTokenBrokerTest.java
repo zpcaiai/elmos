@@ -12,10 +12,13 @@ class GitHubInstallationTokenBrokerTest {
 
     @Test void scopesTokenAndAuditsMetadataOnly() {
         AtomicReference<GitHubInstallationTokenBroker.LeaseMetadata> audit = new AtomicReference<>();
-        GitHubInstallationTokenBroker broker = new GitHubInstallationTokenBroker((a,b,c) -> true,
+        GitHubInstallationTokenBroker broker = new GitHubInstallationTokenBroker((a,b,c,d) -> true,
                 (installation, repository, permissions) -> new GitHubInstallationTokenBroker.TokenGrant(
                         "github_pat_secret".toCharArray(), now, now.plusSeconds(3600), permissions), audit::set, clock);
-        EphemeralCredential credential = broker.issue("repo-1", 11, 22, GitHubInstallationTokenBroker.Operation.CAPTURE_SNAPSHOT);
+        EphemeralCredential credential = broker.issue(
+                "org-a", "repo-1", 11, 22,
+                GitHubInstallationTokenBroker.Operation.CAPTURE_SNAPSHOT);
+        assertEquals("org-a", audit.get().organizationId());
         assertEquals(Set.of(new GitHubInstallationTokenBroker.Permission("contents", GitHubInstallationTokenBroker.Access.READ),
                 new GitHubInstallationTokenBroker.Permission("metadata", GitHubInstallationTokenBroker.Access.READ)), audit.get().permissions());
         assertFalse(audit.get().toString().contains("github_pat_secret"));
@@ -25,14 +28,19 @@ class GitHubInstallationTokenBrokerTest {
     }
 
     @Test void rejectsUnauthorizedOverlongAndOverprivilegedGrants() {
-        var denied = new GitHubInstallationTokenBroker((a,b,c) -> false, (a,b,c) -> null, ignored -> {}, clock);
-        assertThrows(SecurityException.class, () -> denied.issue("repo", 1, 2, GitHubInstallationTokenBroker.Operation.CAPTURE_SNAPSHOT));
-        var overlong = new GitHubInstallationTokenBroker((a,b,c) -> true,
+        var denied = new GitHubInstallationTokenBroker((a,b,c,d) -> false, (a,b,c) -> null, ignored -> {}, clock);
+        assertThrows(SecurityException.class, () -> denied.issue(
+                "org", "repo", 1, 2, GitHubInstallationTokenBroker.Operation.CAPTURE_SNAPSHOT));
+        var overlong = new GitHubInstallationTokenBroker((a,b,c,d) -> true,
                 (a,b,permissions) -> new GitHubInstallationTokenBroker.TokenGrant("x".toCharArray(), now, now.plusSeconds(3601), permissions), ignored -> {}, clock);
-        assertThrows(SecurityException.class, () -> overlong.issue("repo", 1, 2, GitHubInstallationTokenBroker.Operation.CAPTURE_SNAPSHOT));
-        var broad = new GitHubInstallationTokenBroker((a,b,c) -> true,
+        assertThrows(SecurityException.class, () -> overlong.issue(
+                "org", "repo", 1, 2, GitHubInstallationTokenBroker.Operation.CAPTURE_SNAPSHOT));
+        var broad = new GitHubInstallationTokenBroker((a,b,c,d) -> true,
                 (a,b,permissions) -> new GitHubInstallationTokenBroker.TokenGrant("x".toCharArray(), now, now.plusSeconds(60),
                         Set.of(new GitHubInstallationTokenBroker.Permission("contents", GitHubInstallationTokenBroker.Access.WRITE))), ignored -> {}, clock);
-        assertThrows(SecurityException.class, () -> broad.issue("repo", 1, 2, GitHubInstallationTokenBroker.Operation.CAPTURE_SNAPSHOT));
+        assertThrows(SecurityException.class, () -> broad.issue(
+                "org", "repo", 1, 2, GitHubInstallationTokenBroker.Operation.CAPTURE_SNAPSHOT));
+        assertThrows(SecurityException.class, () -> broad.issue(
+                "", "repo", 1, 2, GitHubInstallationTokenBroker.Operation.CAPTURE_SNAPSHOT));
     }
 }

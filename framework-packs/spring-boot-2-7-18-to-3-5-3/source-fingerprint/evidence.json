@@ -1,0 +1,15 @@
+{
+  "coverage": 1.0,
+  "evidence_refs": [
+    "certification/local-reference-evidence.json"
+  ],
+  "exact_tuple": {
+    "framework": "spring-boot",
+    "runtime": "java",
+    "runtime_version": "17",
+    "version": "2.7.18"
+  },
+  "execution_status": "PASSED_LOCAL",
+  "pack_key": "spring-boot-2-7-18-to-3-5-3",
+  "schema_version": 1
+}

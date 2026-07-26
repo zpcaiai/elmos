@@ -4,47 +4,47 @@ import { StatusChip } from "./components/StatusChip";
 
 const workspaces = [
   {
-    eyebrow: "M29–M37",
-    title: "迁移工坊",
-    description: "从语言路由、框架和数据库，到开发者工作流与扩展市场，统一查看精确契约和外部门禁。",
-    href: "/migration",
-    icon: "route" as const,
+    eyebrow: "BATCH 30 · SPRING",
+    title: "Spring 老项目翻新",
+    description: "识别经典 Spring、XML 与旧 Boot，显式处理 Java、Jakarta、Security、JPA、配置和真实启动证据。",
+    href: "/spring",
+    icon: "workflow" as const,
+    accent: "blue",
+    meta: "3 种源形态 · 1 个精确实验 Pack",
+  },
+  {
+    eyebrow: "BATCH 29 · DIRECTED ROUTES",
+    title: "全库跨语言转换",
+    description: "在 Java、C#、Python、TypeScript 的 12 条方向路线中选择精确路径，查看语义风险、阻断项和交接命令。",
+    href: "/translation",
+    icon: "code" as const,
     accent: "cyan",
-    meta: "200 Skills · 9 个能力包",
+    meta: "4 种语言 · 12 个本地实验 Profile",
   },
   {
-    eyebrow: "PRODUCT B34–B38",
-    title: "商业化控制面",
-    description: "在同一条可信链路里审阅租户、SCM、Runner、证据与持续授权，所有缺失信息默认阻断。",
-    href: "/commercialization",
-    icon: "shield" as const,
-    accent: "violet",
-    meta: "5 个控制域 · Fail closed",
-  },
-  {
-    eyebrow: "PROJECT SYNTHESIS · B46–B60",
+    eyebrow: "PROJECT SYNTHESIS · B46–B80",
     title: "多语言项目生成",
-    description: "用一个清晰的本地草稿规划 Java、Python 与 C# 项目骨架，预览工程资产和验证阶段，不直接执行生成。",
+    description: "用同一份受审项目意图规划多目标工程、资产图和构建图，区分内置生成器与专用 Runtime Skill 路由。",
     href: "/generation",
     icon: "spark" as const,
-    accent: "blue",
-    meta: "170 Skills · 3 个精确目标栈",
+    accent: "violet",
+    meta: "草稿 → 批准 → 生成 → 验证",
   },
   {
-    eyebrow: "BATCH 1–55",
-    title: "Skills 与验证",
-    description: "检查 Migration 与 Product 双命名空间、来源完整性、严格测试和认证阻断状态。",
-    href: "/skills",
-    icon: "test" as const,
+    eyebrow: "GOVERNANCE · M29–M37",
+    title: "迁移能力与验证",
+    description: "检查迁移能力包、开发者工作流、外部控制面和严格门禁；结构就绪不自动升级为运行或认证结论。",
+    href: "/migration",
+    icon: "shield" as const,
     accent: "green",
-    meta: "1,824 contracts · 408 strict cases",
+    meta: "Fail closed · External evidence NOT_RUN",
   },
 ];
 
 const attention = [
-  ["外部 Runner 与 Sandbox", "尚未绑定真实执行环境", "NOT_RUN"],
-  ["独立 Holdout 证据", "本地构建不能替代独立验证", "NOT_RUN"],
-  ["签名与发布授权", "需要外部信任根和人工批准", "BLOCKED"],
+  ["12 条路线独立验证", "本地三类语料已通过，客户仓库与独立验证仍未运行", "NOT_RUN"],
+  ["Spring 外部 Runner 证据", "实验 Pack 已闭环，真实客户仓库、holdout 与独立执行未运行", "NOT_RUN"],
+  ["多语言生成外部工具链", "浏览器只准备受控交接，不执行生成", "NOT_RUN"],
 ];
 
 export default function Home() {
@@ -53,16 +53,16 @@ export default function Home() {
       <section className="welcome-card">
         <div className="welcome-copy">
           <span className="overline">ELMOS CONTROL CENTER</span>
-          <h1>把复杂迁移，变成可解释的决策。</h1>
+          <h1>三条业务线，一套可验证的交付闭环。</h1>
           <p>
-            从迁移路线、多语言项目生成、商业化控制到 Skills 资格验证，所有本地能力、未知项和外部门禁都在同一处清晰呈现。任何执行、认证、合并或发布仍由对应门禁和人工权限决定。
+            Spring 老项目翻新、全库跨语言转换与多语言项目生成分别拥有清晰入口、精确状态、阻断原因和恢复动作。任何执行、认证、合并或发布仍由对应门禁和人工权限决定。
           </p>
           <div className="welcome-actions">
-            <Link className="button button-primary" href="/migration">
-              进入迁移工坊 <Icon name="arrow" size={16} />
+            <Link className="button button-primary" href="/spring">
+              评估 Spring 老项目 <Icon name="arrow" size={16} />
             </Link>
-            <Link className="button button-secondary" href="/commercialization">
-              查看控制面
+            <Link className="button button-secondary" href="/translation">
+              选择跨语言路线
             </Link>
           </div>
         </div>
@@ -77,9 +77,9 @@ export default function Home() {
       </section>
 
       <section className="overview-metrics" aria-label="平台结构摘要">
-        <article><span className="metric-icon tone-cyan"><Icon name="spark" size={18} /></span><div><small>组合 Skill 契约</small><strong>1,824</strong><em>结构就绪</em></div></article>
-        <article><span className="metric-icon tone-violet"><Icon name="layers" size={18} /></span><div><small>双命名空间</small><strong>820 <i>/</i> 1,004</strong><em>Migration / Product</em></div></article>
-        <article><span className="metric-icon tone-amber"><Icon name="test" size={18} /></span><div><small>严格认证用例</small><strong>408</strong><em>全部保持 NOT_RUN</em></div></article>
+        <article><span className="metric-icon tone-cyan"><Icon name="workflow" size={18} /></span><div><small>Spring 实验 Pack</small><strong>1</strong><em>外部证据 NOT_RUN</em></div></article>
+        <article><span className="metric-icon tone-violet"><Icon name="route" size={18} /></span><div><small>跨语言方向</small><strong>12</strong><em>本地 Profile 已通过</em></div></article>
+        <article><span className="metric-icon tone-amber"><Icon name="spark" size={18} /></span><div><small>项目生成目标</small><strong>8</strong><em>逐目标验证</em></div></article>
         <article><span className="metric-icon tone-green"><Icon name="shield" size={18} /></span><div><small>外部认证</small><strong>0</strong><em>Fail closed</em></div></article>
       </section>
 

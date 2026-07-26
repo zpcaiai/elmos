@@ -1,0 +1,1066 @@
+package io.elmos.worker;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import io.elmos.snapshot.DeterministicSnapshotArchiver;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.lib.Constants;
+import org.eclipse.jgit.revwalk.RevWalk;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.security.MessageDigest;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
+
+import static io.elmos.worker.SpringUpgradeModels.*;
+
+/**
+ * Executes only inside a pre-approved private Runner. It never invokes a shell and never accepts
+ * embedded credentials. Production deployment must place this worker in the rootless Workspace
+ * security domain; the default configuration keeps this adapter disabled.
+ */
+final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPort {
+    private static final long MAX_SOURCE_BYTES = 512L * 1024 * 1024;
+    private static final int MAX_SOURCE_FILES = 100_000;
+    private static final Set<String> EXCLUDED = Set.of(
+            ".git", "target", ".gradle", ".idea", ".vscode", ".elmos",
+            ".env", "id_rsa", "id_ed25519"
+    );
+    private final Path workspaceRoot;
+    private final Path sourceJavaHome;
+    private final Path targetJavaHome;
+    private final String mavenExecutable;
+    private final Set<String> allowedGitHosts;
+    private final boolean allowFileRepositories;
+    private final boolean mavenOffline;
+    private final ObjectMapper json;
+
+    LocalSpringUpgradeExecutionPort(Path workspaceRoot, Path sourceJavaHome, Path targetJavaHome,
+                                    String mavenExecutable, Set<String> allowedGitHosts,
+                                    boolean allowFileRepositories, ObjectMapper json) {
+        this(workspaceRoot, sourceJavaHome, targetJavaHome, mavenExecutable, allowedGitHosts,
+                allowFileRepositories, false, json);
+    }
+
+    LocalSpringUpgradeExecutionPort(Path workspaceRoot, Path sourceJavaHome, Path targetJavaHome,
+                                    String mavenExecutable, Set<String> allowedGitHosts,
+                                    boolean allowFileRepositories, boolean mavenOffline,
+                                    ObjectMapper json) {
+        this.workspaceRoot = normalizeRoot(workspaceRoot);
+        this.sourceJavaHome = requireJavaHome(sourceJavaHome, 17, "source");
+        this.targetJavaHome = requireJavaHome(targetJavaHome, 21, "target");
+        this.mavenExecutable = requireMaven(mavenExecutable, this.targetJavaHome);
+        this.allowedGitHosts = Set.copyOf(allowedGitHosts);
+        this.allowFileRepositories = allowFileRepositories;
+        this.mavenOffline = mavenOffline;
+        this.json = Objects.requireNonNull(json);
+    }
+
+    @Override public ExecutionResult execute(StartRequest request, Path rawRunRoot, Control control) {
+        Path runRoot = confined(rawRunRoot);
+        createDirectory(runRoot);
+        Path source = runRoot.resolve("source");
+        SourceIdentity identity = prepare(request, source, control);
+        checkCancelled(control);
+
+        control.stage(Stage.LOCK_SNAPSHOT, "Creating deterministic immutable source snapshot");
+        DeterministicSnapshotArchiver.SnapshotArchive archive;
+        DeterministicSnapshotArchiver.SnapshotContext snapshotContext =
+                new DeterministicSnapshotArchiver.SnapshotContext(
+                        request.sourceMode() == SourceMode.PUBLIC_GIT ? "PUBLIC_GIT" : "MATERIALIZED",
+                        safeRepositoryId(request.repositoryUrl()), safeFullName(request.repositoryUrl()),
+                        request.requestedRef(), identity.commitSha(), identity.treeSha());
+        try {
+            archive = new DeterministicSnapshotArchiver().archive(source, snapshotContext);
+        } catch (RuntimeException error) {
+            throw blocked("SOURCE_SNAPSHOT_REJECTED",
+                    "Source content violated deterministic snapshot limits or safety policy.");
+        }
+        if (Files.exists(source.resolve(".gitmodules"), LinkOption.NOFOLLOW_LINKS))
+            throw blocked("SUBMODULE_AUTHORIZATION_REQUIRED", "Submodules require separate repository authorization and hydration.");
+        if (containsGitLfsPointer(source))
+            throw blocked("GIT_LFS_HYDRATION_REQUIRED", "Git LFS pointers must be hydrated and verified before migration.");
+        String snapshotId = request.snapshotId() == null || request.snapshotId().isBlank()
+                ? "snapshot-" + archive.archiveSha256().substring(0, 24) : request.snapshotId();
+        write(runRoot.resolve("evidence/source-snapshot-manifest.json"), archive.manifest());
+        control.log("snapshot locked sha256:" + archive.archiveSha256());
+
+        control.stage(Stage.FINGERPRINT, "Detecting exact Java, Spring Boot, build and active capability tuple");
+        Fingerprint fingerprint = fingerprint(source);
+        requireExactSupportedTuple(fingerprint);
+        control.log("fingerprint spring-boot=" + fingerprint.springBootVersion()
+                + " java=" + fingerprint.javaVersion() + " build=" + fingerprint.buildTool());
+
+        control.stage(Stage.SOURCE_BASELINE,
+                "Running the source repository's complete Maven verify lifecycle with Java 17");
+        Path sourceBaseline = runRoot.resolve("source-baseline");
+        copyTree(source, sourceBaseline);
+        TestSummary sourceTests;
+        try {
+            /*
+             * Run verify, not only test. Customer repositories frequently bind
+             * coverage, static-analysis, integration-test and packaging gates
+             * after the test phase. A route must establish those source gates
+             * before transformation so that the independent verifier is not
+             * the first component to discover an already-failing baseline.
+             *
+             * The command runs only in the disposable baseline copy. The
+             * locked Snapshot remains read-only by construction even when a
+             * repository commits target/ or a build plugin mutates its tree.
+             */
+            runMaven(sourceBaseline, sourceJavaHome, control, List.of("verify"), Duration.ofMinutes(25));
+            sourceTests = testSummary(sourceBaseline);
+            requireSourceTests(sourceTests);
+            writeJson(runRoot.resolve("evidence/source-test-summary.json"), sourceTests);
+            validateSourceStartup(sourceBaseline, runRoot, control);
+        } finally {
+            deleteTree(sourceBaseline);
+        }
+        DeterministicSnapshotArchiver.SnapshotArchive postBaseline;
+        try {
+            postBaseline = new DeterministicSnapshotArchiver().archive(source, snapshotContext);
+        } catch (RuntimeException error) {
+            throw blocked("SOURCE_BASELINE_MUTATED_SNAPSHOT",
+                    "Source baseline execution changed or invalidated the locked Snapshot.");
+        }
+        if (!archive.archiveSha256().equals(postBaseline.archiveSha256())) {
+            throw blocked("SOURCE_BASELINE_MUTATED_SNAPSHOT",
+                    "Source baseline execution changed content outside disposable build outputs.");
+        }
+        control.log("source snapshot remained immutable after baseline execution");
+
+        control.stage(Stage.EXTRACT_FCM, "Extracting versioned Framework Contract Model before transformation");
+        Path fcm = runRoot.resolve("evidence/framework-contract-model.json");
+        writeJson(fcm, fcm(identity, archive.archiveSha256(), fingerprint));
+
+        Path migrated = runRoot.resolve("migrated");
+        copyTree(source, migrated);
+        control.stage(Stage.OPENREWRITE, "Applying pinned OpenRewrite Spring Boot 3.5 and Java 21 recipes");
+        runRewrite(migrated, control);
+        checkCancelled(control);
+
+        control.stage(Stage.BUILD_AND_TEST,
+                "Running the target repository's complete Maven verify lifecycle with Java 21");
+        CommandOutcome firstBuild = runMavenOutcome(migrated, targetJavaHome, control,
+                List.of("verify"), Duration.ofMinutes(30));
+        if (firstBuild.exitCode() != 0) {
+            control.stage(Stage.DETERMINISTIC_REPAIR,
+                    "Target build failed; applying one bounded deterministic OpenRewrite repair cycle");
+            runRewrite(migrated, control);
+            runMaven(migrated, targetJavaHome, control, List.of("verify"), Duration.ofMinutes(30));
+        }
+        TestSummary targetTests = testSummary(migrated);
+        requireTestParity(sourceTests, targetTests);
+        writeJson(runRoot.resolve("evidence/target-test-summary.json"), targetTests);
+        writeJson(runRoot.resolve("evidence/test-parity.json"), Map.of(
+                "schema_version", "1.0",
+                "status", "PASS",
+                "source_executed", sourceTests.executed(),
+                "target_executed", targetTests.executed(),
+                "source_skipped", sourceTests.skipped(),
+                "target_skipped", targetTests.skipped(),
+                "preserved_test_identities", sourceTests.testIdentities(),
+                "new_target_test_identities", targetTests.testIdentities().stream()
+                        .filter(value -> !sourceTests.testIdentities().contains(value))
+                        .toList()
+        ));
+
+        control.stage(Stage.PACKAGE_ARTIFACT, "Packaging migrated repository as a content-addressed ZIP");
+        Path artifact = runRoot.resolve("artifacts/migrated-spring-boot-3.5.3.zip");
+        createDirectory(artifact.getParent());
+        zip(migrated, artifact);
+        String artifactSha = sha256(artifact);
+        control.log("artifact sha256:" + artifactSha + " bytes=" + size(artifact));
+        return new ExecutionResult(identity.commitSha(), snapshotId, archive.archiveSha256(), fingerprint,
+                runRoot.relativize(fcm).toString(), migrated, artifact, artifactSha, size(artifact),
+                List.of("/actuator/health", "/health"));
+    }
+
+    @Override public RuntimeHandle start(
+            ExecutionResult result,
+            StartRequest request,
+            Path rawRunRoot,
+            Control control
+    ) {
+        Path runRoot = confined(rawRunRoot);
+        control.stage(Stage.START_APPLICATION, "Starting verified artifact with Java 21");
+        Path jar = bootJar(result.migratedRepository());
+        int port = reservePort();
+        Path log = runRoot.resolve("runtime/application.log");
+        createDirectory(log.getParent());
+        ProcessBuilder builder = new ProcessBuilder(targetJavaHome.resolve("bin/java").toString(), "-jar", jar.toString());
+        builder.directory(result.migratedRepository().toFile());
+        builder.environment().put("JAVA_HOME", targetJavaHome.toString());
+        builder.environment().put("SERVER_PORT", Integer.toString(port));
+        builder.environment().put("MANAGEMENT_SERVER_PORT", Integer.toString(port));
+        builder.redirectErrorStream(true);
+        builder.redirectOutput(ProcessBuilder.Redirect.appendTo(log.toFile()));
+        try {
+            Process process = builder.start();
+            control.process(process);
+            control.stage(Stage.HEALTH_CHECK, "Waiting for application health endpoint");
+            String health = waitForHealth(process, port, result.healthCandidates(), control);
+            control.log("application healthy on loopback port " + port + " path " + health);
+            return new RuntimeHandle(process, null, request.organizationId(), port, health);
+        } catch (IOException error) {
+            throw blocked("APPLICATION_START_FAILED", "Verified artifact could not be started in the private Runner.");
+        }
+    }
+
+    @Override public void stop(RuntimeHandle handle, Control control) {
+        if (handle == null || handle.process() == null) return;
+        control.stage(Stage.STOP_APPLICATION, "Stopping application and waiting for graceful shutdown");
+        Process process = handle.process();
+        process.destroy();
+        try {
+            if (!process.waitFor(15, TimeUnit.SECONDS)) process.destroyForcibly().waitFor(5, TimeUnit.SECONDS);
+        } catch (InterruptedException error) {
+            Thread.currentThread().interrupt();
+            process.destroyForcibly();
+        }
+        control.log("application stopped");
+    }
+
+    private void validateSourceStartup(Path source, Path runRoot, Control control) {
+        Path jar = bootJar(source);
+        int port = reservePort();
+        Path log = runRoot.resolve("evidence/source-startup.log");
+        createDirectory(log.getParent());
+        ProcessBuilder builder = new ProcessBuilder(
+                sourceJavaHome.resolve("bin/java").toString(),
+                "-jar",
+                jar.toString()
+        );
+        builder.directory(source.toFile());
+        builder.environment().put("JAVA_HOME", sourceJavaHome.toString());
+        builder.environment().put("SERVER_PORT", Integer.toString(port));
+        builder.environment().put("MANAGEMENT_SERVER_PORT", Integer.toString(port));
+        builder.redirectErrorStream(true);
+        builder.redirectOutput(ProcessBuilder.Redirect.appendTo(log.toFile()));
+        Process process = null;
+        try {
+            process = builder.start();
+            control.process(process);
+            String path = waitForHealth(process, port, List.of("/actuator/health", "/health"), control);
+            control.log("source baseline healthy on loopback path " + path);
+        } catch (IOException error) {
+            throw blocked("SOURCE_STARTUP_FAILED",
+                    "Source baseline could not be started with the exact Java 17 toolchain.");
+        } finally {
+            if (process != null && process.isAlive()) {
+                process.destroy();
+                try {
+                    if (!process.waitFor(10, TimeUnit.SECONDS)) process.destroyForcibly();
+                } catch (InterruptedException error) {
+                    Thread.currentThread().interrupt();
+                    process.destroyForcibly();
+                }
+            }
+        }
+    }
+
+    @Override public boolean configured() { return true; }
+    @Override public String configurationReason() {
+        return "Local execution adapter is enabled; deployment authority must still prove rootless Workspace isolation.";
+    }
+
+    @Override public String runtimeConfigurationReason() {
+        return "In-process application startup is disabled for product use; configure the rootless per-run Runtime service.";
+    }
+
+    private SourceIdentity prepare(StartRequest request, Path source, Control control) {
+        control.stage(Stage.IMPORT_GIT, request.sourceMode() == SourceMode.PUBLIC_GIT
+                ? "Importing public Git repository without credentials" : "Reading pre-materialized immutable snapshot");
+        if (request.sourceMode() == SourceMode.PUBLIC_GIT) return clonePublic(request, source);
+        if (request.materializedRelativePath() == null || request.materializedRelativePath().isBlank())
+            throw blocked("MATERIALIZED_SNAPSHOT_PATH_REQUIRED", "A snapshot-bound relative path is required.");
+        Path materialized = confined(workspaceRoot.resolve(request.materializedRelativePath()));
+        if (!Files.isDirectory(materialized, LinkOption.NOFOLLOW_LINKS))
+            throw blocked("MATERIALIZED_SNAPSHOT_UNAVAILABLE", "The immutable snapshot workspace is unavailable.");
+        copyTree(materialized, source);
+        String commit = requireCommit(request.expectedCommitSha());
+        return new SourceIdentity(commit, "0".repeat(40));
+    }
+
+    private SourceIdentity clonePublic(StartRequest request, Path source) {
+        URI uri = validateRepositoryUri(request.repositoryUrl());
+        String branch = normalizeRef(request.requestedRef());
+        try (Git git = Git.cloneRepository().setURI(uri.toString()).setBranch(branch)
+                .setDepth(1).setCloneSubmodules(false).setDirectory(source.toFile()).call()) {
+            var head = git.getRepository().resolve(Constants.HEAD + "^{commit}");
+            if (head == null) throw blocked("GIT_COMMIT_UNRESOLVED", "Git did not resolve an immutable commit.");
+            String commit = head.name();
+            if (request.expectedCommitSha() != null && !request.expectedCommitSha().isBlank()
+                    && !commit.equals(requireCommit(request.expectedCommitSha())))
+                throw blocked("GIT_COMMIT_MISMATCH", "Resolved commit differs from the requested immutable commit.");
+            try (RevWalk walk = new RevWalk(git.getRepository())) {
+                return new SourceIdentity(commit, walk.parseCommit(head).getTree().getId().name());
+            }
+        } catch (BlockedException error) {
+            throw error;
+        } catch (Exception error) {
+            deleteTree(source);
+            throw blocked("PUBLIC_GIT_IMPORT_FAILED", "The public repository could not be imported at the requested ref.");
+        }
+    }
+
+    Fingerprint fingerprint(Path root) {
+        Path pom = root.resolve("pom.xml");
+        if (!Files.isRegularFile(pom, LinkOption.NOFOLLOW_LINKS))
+            throw blocked("MAVEN_POM_REQUIRED", "This exact route currently supports Maven projects with a root pom.xml.");
+        Document document = parsePom(pom);
+        String boot = springBootVersion(document);
+        String java = property(document, "java.version");
+        if (blank(java)) java = property(document, "maven.compiler.release");
+        if (blank(java)) java = property(document, "maven.compiler.source");
+        List<String> modules = children(document, "modules", "module");
+        String pomText = read(pom);
+        Map<String,List<String>> traces = new TreeMap<>();
+        List<String> capabilities = new ArrayList<>();
+        capability(pomText, root, traces, capabilities, "web", "spring-boot-starter-web", "@RestController", "@Controller");
+        capability(pomText, root, traces, capabilities, "spring-boot-parent", "spring-boot-starter-parent");
+        capability(pomText, root, traces, capabilities, "security", "spring-boot-starter-security", "@EnableWebSecurity", "SecurityFilterChain");
+        capability(pomText, root, traces, capabilities, "persistence", "spring-boot-starter-data-jpa", "@Entity", "JpaRepository");
+        capability(pomText, root, traces, capabilities, "transactions", "spring-tx", "@Transactional");
+        capability(pomText, root, traces, capabilities, "validation", "spring-boot-starter-validation", "@Valid", "@Validated");
+        capability(pomText, root, traces, capabilities, "actuator", "spring-boot-starter-actuator", "management.endpoints");
+        capability(pomText, root, traces, capabilities, "messaging", "spring-kafka", "@KafkaListener", "JmsListener");
+        capability(pomText, root, traces, capabilities, "scheduler", "spring-context", "@Scheduled", "@EnableScheduling");
+        List<String> unknowns = new ArrayList<>();
+        if (findFiles(root, ".java").stream().anyMatch(path -> read(path).contains("WebSecurityConfigurerAdapter")))
+            unknowns.add("legacy-security-adapter-requires-rewrite-and-contract-review");
+        if (Files.exists(root.resolve(".gitmodules"))) unknowns.add("submodules-present");
+        return new Fingerprint(blank(boot) ? "UNKNOWN" : boot, blank(java) ? "UNKNOWN" : java.trim(),
+                "maven", modules, capabilities.stream().distinct().sorted().toList(), unknowns, traces);
+    }
+
+    private void runRewrite(Path root, Control control) {
+        Path recipeConfig = installExactRecipe(root);
+        runMaven(root, targetJavaHome, control, List.of(
+                "org.openrewrite.maven:rewrite-maven-plugin:" + REWRITE_MAVEN_PLUGIN + ":run",
+                "-Drewrite.configLocation=" + root.relativize(recipeConfig),
+                "-Drewrite.activeRecipes=io.elmos.openrewrite.SpringBoot2_7_18To3_5_3Java21",
+                "-Drewrite.recipeArtifactCoordinates=org.openrewrite.recipe:rewrite-spring:" + REWRITE_SPRING,
+                "-Drewrite.exportDatatables=true"
+        ), Duration.ofMinutes(30));
+    }
+
+    private static Path installExactRecipe(Path root) {
+        String resource = "/rewrite/spring-boot-2.7.18-to-3.5.3.yml";
+        byte[] expected;
+        try (var input = LocalSpringUpgradeExecutionPort.class.getResourceAsStream(resource)) {
+            if (input == null) throw new IOException("exact recipe resource is missing");
+            expected = input.readAllBytes();
+        } catch (IOException error) {
+            throw blocked("EXACT_RECIPE_UNAVAILABLE",
+                    "The immutable exact-version OpenRewrite recipe is unavailable.");
+        }
+        Path target = root.resolve(".elmos/openrewrite.yml");
+        if (Files.exists(target, LinkOption.NOFOLLOW_LINKS)) {
+            try {
+                if (!MessageDigest.isEqual(expected, Files.readAllBytes(target))) {
+                    throw blocked("EXACT_RECIPE_DIGEST_MISMATCH",
+                            "The installed exact-version OpenRewrite recipe changed during execution.");
+                }
+            } catch (IOException error) {
+                throw blocked("EXACT_RECIPE_UNAVAILABLE",
+                        "The immutable exact-version OpenRewrite recipe could not be verified.");
+            }
+        } else {
+            write(target, expected);
+        }
+        return target;
+    }
+
+    private CommandOutcome runMavenOutcome(Path root, Path javaHome, Control control,
+                                           List<String> goals, Duration timeout) {
+        checkCancelled(control);
+        List<String> argv = new ArrayList<>();
+        argv.add(mavenExecutable);
+        argv.add("-B");
+        argv.add("--no-transfer-progress");
+        if (mavenOffline) argv.add("--offline");
+        argv.addAll(goals);
+        ProcessBuilder builder = new ProcessBuilder(argv).directory(root.toFile()).redirectErrorStream(true);
+        builder.environment().put("JAVA_HOME", javaHome.toString());
+        builder.environment().put("MAVEN_OPTS", mavenOptions(builder.environment()));
+        Process process = null;
+        Thread output = null;
+        try {
+            process = builder.start();
+            control.process(process);
+            Process observedProcess = process;
+            output = Thread.ofVirtual().start(() -> {
+                try (var reader = observedProcess.inputReader(StandardCharsets.UTF_8)) {
+                    reader.lines().forEach(control::log);
+                } catch (IOException error) {
+                    control.log("command output collection failed");
+                }
+            });
+            boolean completed = process.waitFor(timeout.toMillis(), TimeUnit.MILLISECONDS);
+            if (!completed) {
+                process.destroyForcibly();
+                output.join(Duration.ofSeconds(5));
+                throw blocked("RUNNER_COMMAND_TIMEOUT", "The bounded Maven command exceeded its execution budget.");
+            }
+            output.join(Duration.ofSeconds(5));
+            return new CommandOutcome(process.exitValue());
+        } catch (BlockedException error) {
+            throw error;
+        } catch (InterruptedException error) {
+            Thread.currentThread().interrupt();
+            throw blocked("RUN_CANCELLED", "The migration command was interrupted.");
+        } catch (IOException error) {
+            throw blocked("RUNNER_COMMAND_UNAVAILABLE", "The approved Maven toolchain could not be started.");
+        } finally {
+            if (process != null && process.isAlive()) process.destroyForcibly();
+            if (output != null && output.isAlive()) {
+                try {
+                    output.join(Duration.ofSeconds(5));
+                } catch (InterruptedException error) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }
+    }
+
+    private static String mavenOptions(Map<String, String> environment) {
+        String base = "-Djava.awt.headless=true -Duser.timezone=UTC";
+        String proxyValue = firstNonBlank(
+                environment.get("HTTPS_PROXY"),
+                environment.get("https_proxy")
+        );
+        if (proxyValue == null) return base;
+        try {
+            URI proxy = URI.create(proxyValue);
+            String host = proxy.getHost();
+            int port = proxy.getPort() < 0 ? 80 : proxy.getPort();
+            if (!"http".equalsIgnoreCase(proxy.getScheme())
+                    || host == null
+                    || !host.matches("[A-Za-z0-9.-]{1,253}")
+                    || port < 1
+                    || port > 65535
+                    || proxy.getUserInfo() != null
+                    || proxy.getQuery() != null
+                    || proxy.getFragment() != null
+                    || !(proxy.getPath() == null || proxy.getPath().isEmpty()
+                    || "/".equals(proxy.getPath()))) {
+                throw new IllegalArgumentException("invalid proxy");
+            }
+            return base
+                    + " -Dhttps.proxyHost=" + host
+                    + " -Dhttps.proxyPort=" + port
+                    + " -Dhttp.proxyHost=" + host
+                    + " -Dhttp.proxyPort=" + port
+                    + " -Dhttp.nonProxyHosts=localhost|127.*|[::1]"
+                    + " -Dhttps.nonProxyHosts=localhost|127.*|[::1]";
+        } catch (IllegalArgumentException error) {
+            throw blocked("EGRESS_PROXY_CONFIGURATION_INVALID",
+                    "Approved Maven egress proxy configuration is invalid.");
+        }
+    }
+
+    private static String firstNonBlank(String first, String second) {
+        if (first != null && !first.isBlank()) return first;
+        if (second != null && !second.isBlank()) return second;
+        return null;
+    }
+
+    private void runMaven(Path root, Path javaHome, Control control, List<String> goals, Duration timeout) {
+        CommandOutcome outcome = runMavenOutcome(root, javaHome, control, goals, timeout);
+        if (outcome.exitCode() != 0)
+            throw blocked("MAVEN_COMMAND_FAILED", "A required Maven/OpenRewrite command failed; inspect the redacted run log.");
+    }
+
+    private Map<String,Object> fcm(SourceIdentity identity, String snapshotDigest, Fingerprint fingerprint) {
+        Map<String,Object> model = new LinkedHashMap<>();
+        model.put("schema_version", "1.0");
+        model.put("pack_key", PACK_KEY);
+        model.put("source_commit", identity.commitSha());
+        model.put("source_snapshot_sha256", snapshotDigest);
+        model.put("extraction_status", "STATIC_AND_SOURCE_BASELINE");
+        model.put("exact_tuple", ExactTuple.supported("maven-3.9.11", "maven-3.9.11"));
+        model.put("capabilities", fingerprint.activeCapabilities().stream().map(capability -> Map.of(
+                "id", capability,
+                "status", "observed",
+                "source_traces", fingerprint.sourceTraces().getOrDefault(capability, List.of()),
+                "obligations", List.of("target-build", "startup", "behavior-comparison")
+        )).toList());
+        model.put("unknowns", fingerprint.unknowns());
+        model.put("ordering_and_defaults", Map.of(
+                "security_filter_order", "preserve-and-verify",
+                "configuration_precedence", "preserve-and-verify",
+                "transaction_defaults", "preserve-and-verify"));
+        return model;
+    }
+
+    private void requireExactSupportedTuple(Fingerprint fingerprint) {
+        if (!SOURCE_BOOT.equals(fingerprint.springBootVersion()) || !SOURCE_JAVA.equals(fingerprint.javaVersion()))
+            throw blocked("UNSUPPORTED_SOURCE_TUPLE", "Supported source tuple is exactly Spring Boot 2.7.18 with Java 17.");
+        if (!"maven".equals(fingerprint.buildTool()))
+            throw blocked("UNSUPPORTED_BUILD_TOOL", "This exact route currently supports Maven only.");
+        if (!fingerprint.activeCapabilities().contains("spring-boot-parent"))
+            throw blocked("UNSUPPORTED_BOOT_VERSION_AUTHORITY",
+                    "This exact route currently requires spring-boot-starter-parent as the source version authority.");
+    }
+
+    private String waitForHealth(Process process, int port, List<String> candidates, Control control) {
+        HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(2)).build();
+        Instant deadline = Instant.now().plusSeconds(60);
+        while (Instant.now().isBefore(deadline)) {
+            checkCancelled(control);
+            if (!process.isAlive()) throw blocked("APPLICATION_EXITED_BEFORE_HEALTHY", "The application exited before becoming healthy.");
+            for (String path : candidates) {
+                try {
+                    var response = client.send(HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + port + path))
+                                    .timeout(Duration.ofSeconds(2)).GET().build(),
+                            HttpResponse.BodyHandlers.discarding());
+                    if (response.statusCode() >= 200 && response.statusCode() < 300) return path;
+                } catch (IOException ignored) {
+                    // Retry until the bounded deadline.
+                } catch (InterruptedException error) {
+                    Thread.currentThread().interrupt();
+                    throw blocked("HEALTH_CHECK_INTERRUPTED", "Application health checking was interrupted.");
+                }
+            }
+            try { Thread.sleep(500); }
+            catch (InterruptedException error) {
+                Thread.currentThread().interrupt();
+                throw blocked("HEALTH_CHECK_INTERRUPTED", "Application health checking was interrupted.");
+            }
+        }
+        process.destroyForcibly();
+        throw blocked("APPLICATION_HEALTH_TIMEOUT", "The application did not become healthy within 60 seconds.");
+    }
+
+    private void capability(String pom, Path root, Map<String,List<String>> traces, List<String> capabilities,
+                            String id, String... needles) {
+        List<String> found = new ArrayList<>();
+        for (String needle : needles) {
+            if (pom.contains(needle)) found.add("pom.xml:" + needle);
+            for (Path file : findFiles(root, ".java", ".yml", ".yaml", ".properties")) {
+                if (read(file).contains(needle)) found.add(root.relativize(file).toString() + ":" + needle);
+            }
+        }
+        if (!found.isEmpty()) {
+            capabilities.add(id);
+            traces.put(id, found.stream().distinct().sorted().limit(100).toList());
+        }
+    }
+
+    private static Document parsePom(Path pom) {
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setNamespaceAware(true);
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+            factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+            return factory.newDocumentBuilder().parse(pom.toFile());
+        } catch (Exception error) {
+            throw blocked("POM_PARSE_FAILED", "The Maven project model could not be parsed safely.");
+        }
+    }
+
+    private static TestSummary testSummary(Path root) {
+        List<Path> reports;
+        try (var stream = Files.walk(root)) {
+            reports = stream
+                    .filter(path -> Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS))
+                    .filter(path -> path.getParent() != null
+                            && path.getParent().getFileName().toString().equals("surefire-reports"))
+                    .filter(path -> path.getFileName().toString().startsWith("TEST-")
+                            && path.getFileName().toString().endsWith(".xml"))
+                    .sorted()
+                    .toList();
+        } catch (IOException error) {
+            throw blocked("TEST_EVIDENCE_UNAVAILABLE",
+                    "Maven test reports could not be enumerated.");
+        }
+        long tests = 0;
+        long failures = 0;
+        long errors = 0;
+        long skipped = 0;
+        Set<String> identities = new TreeSet<>();
+        for (Path report : reports) {
+            Document document = parseXml(report, "TEST_REPORT_INVALID",
+                    "Maven test report is invalid.");
+            Element suite = document.getDocumentElement();
+            tests = Math.addExact(tests, longAttribute(suite, "tests"));
+            failures = Math.addExact(failures, longAttribute(suite, "failures"));
+            errors = Math.addExact(errors, longAttribute(suite, "errors"));
+            skipped = Math.addExact(skipped, longAttribute(suite, "skipped"));
+            NodeList cases = suite.getElementsByTagName("testcase");
+            for (int index = 0; index < cases.getLength(); index++) {
+                if (cases.item(index) instanceof Element test) {
+                    String className = test.getAttribute("classname").trim();
+                    String name = test.getAttribute("name").trim();
+                    if (!className.isBlank() && !name.isBlank()) {
+                        identities.add(className + "#" + name);
+                    }
+                }
+            }
+        }
+        return new TestSummary(
+                reports.stream().map(root::relativize).map(Path::toString).toList(),
+                tests,
+                failures,
+                errors,
+                skipped,
+                tests - failures - errors - skipped,
+                List.copyOf(identities)
+        );
+    }
+
+    private static void requireSourceTests(TestSummary summary) {
+        if (summary.tests() <= 0 || summary.testIdentities().isEmpty()) {
+            throw blocked("SOURCE_TEST_CORPUS_EMPTY",
+                    "The exact migration route requires at least one executable source test; add characterization tests first.");
+        }
+        if (summary.failures() != 0 || summary.errors() != 0) {
+            throw blocked("SOURCE_TEST_BASELINE_FAILED",
+                    "Source test baseline is not green.");
+        }
+    }
+
+    private static void requireTestParity(TestSummary source, TestSummary target) {
+        if (target.failures() != 0 || target.errors() != 0) {
+            throw blocked("TARGET_TESTS_FAILED",
+                    "Target tests are not green.");
+        }
+        if (target.tests() < source.tests()
+                || target.executed() < source.executed()
+                || target.skipped() > source.skipped()
+                || !new HashSet<>(target.testIdentities()).containsAll(source.testIdentities())) {
+            throw blocked("TEST_CORPUS_WEAKENED",
+                    "Target test execution dropped, skipped, or renamed source test identities.");
+        }
+    }
+
+    private static long longAttribute(Element element, String name) {
+        String value = element.getAttribute(name);
+        if (value == null || value.isBlank()) return 0;
+        try {
+            long parsed = Long.parseLong(value);
+            if (parsed < 0) throw new NumberFormatException("negative");
+            return parsed;
+        } catch (NumberFormatException error) {
+            throw blocked("TEST_REPORT_INVALID", "Maven test report counters are invalid.");
+        }
+    }
+
+    private static Document parseXml(Path path, String code, String message) {
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setNamespaceAware(true);
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+            factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+            return factory.newDocumentBuilder().parse(path.toFile());
+        } catch (Exception error) {
+            throw blocked(code, message);
+        }
+    }
+
+    private static String springBootVersion(Document document) {
+        Element root = document.getDocumentElement();
+        Element parent = direct(root, "parent");
+        if (parent != null && "spring-boot-starter-parent".equals(text(parent, "artifactId")))
+            return resolveProperty(document, text(parent, "version"));
+        for (Element dependency : descendants(root, "dependency")) {
+            if ("org.springframework.boot".equals(text(dependency, "groupId"))
+                    && "spring-boot-dependencies".equals(text(dependency, "artifactId")))
+                return resolveProperty(document, text(dependency, "version"));
+        }
+        return resolveProperty(document, property(document, "spring-boot.version"));
+    }
+
+    private static String property(Document document, String name) {
+        Element properties = direct(document.getDocumentElement(), "properties");
+        if (properties == null) return "";
+        NodeList children = properties.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            Node child = children.item(i);
+            if (child instanceof Element element && local(element).equals(name)) return element.getTextContent().trim();
+        }
+        return "";
+    }
+
+    private static String resolveProperty(Document document, String value) {
+        if (value == null) return "";
+        String trimmed = value.trim();
+        if (trimmed.matches("\\$\\{[^}]+}")) return property(document, trimmed.substring(2, trimmed.length() - 1));
+        return trimmed;
+    }
+
+    private static List<String> children(Document document, String parentName, String childName) {
+        Element parent = direct(document.getDocumentElement(), parentName);
+        if (parent == null) return List.of();
+        List<String> result = new ArrayList<>();
+        for (Element child : directChildren(parent, childName)) result.add(child.getTextContent().trim());
+        return result;
+    }
+
+    private static Element direct(Element parent, String name) {
+        return directChildren(parent, name).stream().findFirst().orElse(null);
+    }
+
+    private static List<Element> directChildren(Element parent, String name) {
+        List<Element> result = new ArrayList<>();
+        NodeList nodes = parent.getChildNodes();
+        for (int i = 0; i < nodes.getLength(); i++) {
+            Node child = nodes.item(i);
+            if (child instanceof Element element && local(element).equals(name)) result.add(element);
+        }
+        return result;
+    }
+
+    private static List<Element> descendants(Element root, String name) {
+        List<Element> result = new ArrayList<>();
+        NodeList nodes = root.getElementsByTagNameNS("*", name);
+        for (int i = 0; i < nodes.getLength(); i++) if (nodes.item(i) instanceof Element element) result.add(element);
+        return result;
+    }
+
+    private static String text(Element parent, String child) {
+        Element value = direct(parent, child);
+        return value == null ? "" : value.getTextContent().trim();
+    }
+
+    private static String local(Element element) {
+        return element.getLocalName() == null ? element.getTagName() : element.getLocalName();
+    }
+
+    private URI validateRepositoryUri(String value) {
+        try {
+            URI uri = URI.create(value);
+            if (uri.getUserInfo() != null || uri.getQuery() != null || uri.getFragment() != null)
+                throw blocked("GIT_URL_REJECTED", "Repository URLs cannot contain credentials, queries, or fragments.");
+            if ("https".equalsIgnoreCase(uri.getScheme())) {
+                if (uri.getHost() == null || !allowedGitHosts.contains(uri.getHost().toLowerCase(Locale.ROOT)))
+                    throw blocked("GIT_HOST_NOT_ALLOWED", "Repository host is not in the approved exact host allowlist.");
+                return uri;
+            }
+            if ("file".equalsIgnoreCase(uri.getScheme()) && allowFileRepositories) return uri;
+            throw blocked("GIT_SCHEME_NOT_ALLOWED", "Only approved HTTPS or explicitly enabled controlled file repositories are supported.");
+        } catch (RuntimeException error) {
+            if (error instanceof BlockedException blocked) throw blocked;
+            throw blocked("GIT_URL_REJECTED", "Repository URL is invalid.");
+        }
+    }
+
+    private static String normalizeRef(String value) {
+        if (value == null || value.isBlank() || value.length() > 256 || value.contains("..") || value.contains("@{")
+                || value.startsWith("-") || !value.matches("(?:refs/(?:heads|tags)/)?[A-Za-z0-9._/-]+"))
+            throw blocked("GIT_REF_REJECTED", "Git ref is outside the supported safe grammar.");
+        return value.startsWith("refs/") ? value : "refs/heads/" + value;
+    }
+
+    private static String requireCommit(String value) {
+        if (value == null || !value.matches("[0-9a-f]{40}"))
+            throw blocked("IMMUTABLE_COMMIT_REQUIRED", "A full lowercase 40-character commit SHA is required.");
+        return value;
+    }
+
+    private static Path normalizeRoot(Path root) {
+        Path normalized = Objects.requireNonNull(root).toAbsolutePath().normalize();
+        createDirectory(normalized);
+        return normalized;
+    }
+
+    private Path confined(Path raw) {
+        Path path = raw.toAbsolutePath().normalize();
+        if (!path.startsWith(workspaceRoot) || path.equals(workspaceRoot))
+            throw blocked("WORKSPACE_PATH_REJECTED", "Run paths must remain below the configured private workspace root.");
+        return path;
+    }
+
+    private static Path requireJavaHome(Path home, int expectedMajor, String label) {
+        Path normalized = Objects.requireNonNull(home).toAbsolutePath().normalize();
+        Path java = normalized.resolve("bin/java");
+        if (!Files.isExecutable(java)) throw new IllegalStateException(label + " JAVA_HOME is unavailable");
+        try {
+            Process process = new ProcessBuilder(java.toString(), "-version").redirectErrorStream(true).start();
+            String output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+            if (!process.waitFor(10, TimeUnit.SECONDS) || process.exitValue() != 0
+                    || !(output.contains("version \"" + expectedMajor + ".")
+                    || output.contains("version \"" + expectedMajor + "\"")))
+                throw new IllegalStateException(label + " JAVA_HOME does not provide Java " + expectedMajor);
+            return normalized;
+        } catch (IOException | InterruptedException error) {
+            if (error instanceof InterruptedException) Thread.currentThread().interrupt();
+            throw new IllegalStateException(label + " JAVA_HOME could not be verified", error);
+        }
+    }
+
+    private static String requireMaven(String command, Path javaHome) {
+        if (command == null || command.isBlank() || command.indexOf('\0') >= 0)
+            throw new IllegalArgumentException("Maven executable is required");
+        ProcessBuilder builder = new ProcessBuilder(command, "-version").redirectErrorStream(true);
+        builder.environment().put("JAVA_HOME", javaHome.toString());
+        try {
+            Process process = builder.start();
+            String output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+            if (!process.waitFor(15, TimeUnit.SECONDS) || process.exitValue() != 0
+                    || !output.contains("Apache Maven 3.9.11")) {
+                process.destroyForcibly();
+                throw new IllegalStateException("approved Maven executable must be exactly 3.9.11");
+            }
+            return command;
+        } catch (IOException | InterruptedException error) {
+            if (error instanceof InterruptedException) Thread.currentThread().interrupt();
+            throw new IllegalStateException("approved Maven executable could not be verified", error);
+        }
+    }
+
+    private static List<Path> findFiles(Path root, String... suffixes) {
+        try (var stream = Files.walk(root)) {
+            Set<String> suffix = Set.of(suffixes);
+            return stream.filter(path -> Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS))
+                    .filter(path -> !containsExcludedSegment(path))
+                    .filter(path -> suffix.stream().anyMatch(value -> path.getFileName().toString().endsWith(value)))
+                    .limit(MAX_SOURCE_FILES + 1L).toList();
+        } catch (IOException error) {
+            throw blocked("SOURCE_SCAN_FAILED", "Source files could not be enumerated safely.");
+        }
+    }
+
+    private static void copyTree(Path source, Path target) {
+        deleteTree(target);
+        final long[] bytes = {0};
+        final int[] files = {0};
+        try {
+            Files.walkFileTree(source, EnumSet.noneOf(FileVisitOption.class), Integer.MAX_VALUE, new SimpleFileVisitor<>() {
+                @Override public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                    Path relative = source.relativize(dir);
+                    if (!relative.toString().isEmpty() && containsExcludedSegment(relative))
+                        return FileVisitResult.SKIP_SUBTREE;
+                    Files.createDirectories(target.resolve(relative));
+                    return FileVisitResult.CONTINUE;
+                }
+                @Override public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    Path relative = source.relativize(file);
+                    if (containsExcludedSegment(relative)) return FileVisitResult.CONTINUE;
+                    if (attrs.isSymbolicLink()) throw new SecurityException("symbolic links require snapshot materializer review");
+                    files[0]++;
+                    bytes[0] = Math.addExact(bytes[0], attrs.size());
+                    if (files[0] > MAX_SOURCE_FILES || bytes[0] > MAX_SOURCE_BYTES)
+                        throw new SecurityException("source copy limits exceeded");
+                    Files.copy(file, target.resolve(relative), StandardCopyOption.COPY_ATTRIBUTES);
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        } catch (IOException | SecurityException error) {
+            deleteTree(target);
+            throw blocked("SOURCE_MATERIALIZATION_FAILED", "Source snapshot could not be materialized safely.");
+        }
+    }
+
+    private static void zip(Path source, Path target) {
+        try (ZipOutputStream output = new ZipOutputStream(Files.newOutputStream(target))) {
+            List<Path> paths;
+            try (var stream = Files.walk(source)) {
+                paths = stream.filter(path -> !path.equals(source))
+                        .filter(path -> !containsExcludedSegment(source.relativize(path)))
+                        .sorted().toList();
+            }
+            for (Path path : paths) {
+                String name = source.relativize(path).toString().replace(FileSystems.getDefault().getSeparator(), "/");
+                ZipEntry entry = new ZipEntry(Files.isDirectory(path) ? name + "/" : name);
+                entry.setTime(0);
+                output.putNextEntry(entry);
+                if (Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS)) Files.copy(path, output);
+                output.closeEntry();
+            }
+        } catch (IOException error) {
+            throw blocked("ARTIFACT_PACKAGE_FAILED", "Migrated source artifact could not be packaged.");
+        }
+    }
+
+    private static Path bootJar(Path root) {
+        try (var stream = Files.list(root.resolve("target"))) {
+            return stream.filter(path -> path.getFileName().toString().endsWith(".jar"))
+                    .filter(path -> !path.getFileName().toString().endsWith(".original"))
+                    .filter(path -> !path.getFileName().toString().startsWith("original-"))
+                    .filter(LocalSpringUpgradeExecutionPort::isExecutableBootJar)
+                    .sorted().findFirst()
+                    .orElseThrow(() -> blocked("BOOT_JAR_NOT_FOUND", "Verified Spring Boot artifact was not found."));
+        } catch (IOException error) {
+            throw blocked("BOOT_JAR_NOT_FOUND", "Verified Spring Boot artifact was not found.");
+        }
+    }
+
+    private static boolean isExecutableBootJar(Path path) {
+        try (ZipFile archive = new ZipFile(path.toFile())) {
+            return archive.getEntry("BOOT-INF/classes/") != null
+                    && archive.getEntry("META-INF/MANIFEST.MF") != null;
+        } catch (IOException error) {
+            return false;
+        }
+    }
+
+    private static boolean containsExcludedSegment(Path path) {
+        for (Path segment : path) {
+            String name = segment.toString();
+            if (EXCLUDED.contains(name) || name.startsWith("elmos-secret-")) return true;
+        }
+        return false;
+    }
+
+    private static boolean containsGitLfsPointer(Path root) {
+        for (Path path : findFiles(root, "")) {
+            try {
+                if (Files.size(path) <= 1024
+                        && Files.readString(path, StandardCharsets.UTF_8)
+                        .startsWith("version https://git-lfs.github.com/spec/v1")) return true;
+            } catch (IOException | RuntimeException ignored) {
+                // Non-text files and unreadable optional content are not treated as LFS pointers.
+            }
+        }
+        return false;
+    }
+
+    private static int reservePort() {
+        try (var socket = new java.net.ServerSocket()) {
+            socket.bind(new InetSocketAddress("127.0.0.1", 0));
+            return socket.getLocalPort();
+        } catch (IOException error) {
+            throw blocked("RUNTIME_PORT_UNAVAILABLE", "A loopback runtime port could not be reserved.");
+        }
+    }
+
+    private static void createDirectory(Path path) {
+        try { Files.createDirectories(path); }
+        catch (IOException error) { throw new IllegalStateException("workspace directory is unavailable", error); }
+    }
+
+    private static void deleteTree(Path target) {
+        if (target == null || !Files.exists(target, LinkOption.NOFOLLOW_LINKS)) return;
+        try {
+            Files.walkFileTree(target, new SimpleFileVisitor<>() {
+                @Override public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    Files.deleteIfExists(file);
+                    return FileVisitResult.CONTINUE;
+                }
+                @Override public FileVisitResult postVisitDirectory(Path dir, IOException error) throws IOException {
+                    if (error != null) throw error;
+                    Files.deleteIfExists(dir);
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        } catch (IOException error) {
+            throw new IllegalStateException("workspace cleanup failed", error);
+        }
+    }
+
+    private void writeJson(Path path, Object value) {
+        try {
+            createDirectory(path.getParent());
+            json.writerWithDefaultPrettyPrinter()
+                    .with(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS)
+                    .writeValue(path.toFile(), value);
+        } catch (IOException error) {
+            throw blocked("EVIDENCE_WRITE_FAILED", "Framework evidence could not be written.");
+        }
+    }
+
+    private static void write(Path path, byte[] bytes) {
+        try {
+            createDirectory(path.getParent());
+            Files.write(path, bytes, StandardOpenOption.CREATE_NEW);
+        } catch (IOException error) {
+            throw blocked("EVIDENCE_WRITE_FAILED", "Snapshot evidence could not be written.");
+        }
+    }
+
+    private static String read(Path path) {
+        try {
+            if (Files.size(path) > 4 * 1024 * 1024) return "";
+            return Files.readString(path, StandardCharsets.UTF_8);
+        } catch (IOException error) {
+            return "";
+        }
+    }
+
+    private static long size(Path path) {
+        try { return Files.size(path); }
+        catch (IOException error) { throw new IllegalStateException(error); }
+    }
+
+    private static String sha256(Path path) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            try (var input = Files.newInputStream(path)) {
+                byte[] buffer = new byte[64 * 1024];
+                int count;
+                while ((count = input.read(buffer)) >= 0) digest.update(buffer, 0, count);
+            }
+            return HexFormat.of().formatHex(digest.digest());
+        } catch (Exception error) {
+            throw new IllegalStateException("artifact digest failed", error);
+        }
+    }
+
+    private static String safeRepositoryId(String url) {
+        return "public-" + Integer.toUnsignedString(Objects.toString(url, "").hashCode(), 36);
+    }
+
+    private static String safeFullName(String url) {
+        try {
+            URI uri = URI.create(url);
+            String path = uri.getPath();
+            if (path != null) {
+                String clean = path.startsWith("/") ? path.substring(1) : path;
+                if (clean.endsWith(".git")) clean = clean.substring(0, clean.length() - 4);
+                if (clean.matches("[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+")) return clean;
+            }
+        } catch (RuntimeException ignored) { }
+        return "public/unknown";
+    }
+
+    private static boolean blank(String value) { return value == null || value.isBlank(); }
+    private static BlockedException blocked(String code, String message) { return new BlockedException(code, message); }
+    private static void checkCancelled(Control control) {
+        if (control.cancelled()) throw blocked("RUN_CANCELLED", "The migration run was cancelled.");
+    }
+
+    private record SourceIdentity(String commitSha, String treeSha) {}
+    private record CommandOutcome(int exitCode) {}
+    private record TestSummary(
+            List<String> reports,
+            long tests,
+            long failures,
+            long errors,
+            long skipped,
+            long executed,
+            List<String> testIdentities
+    ) {
+        private TestSummary {
+            reports = List.copyOf(reports);
+            testIdentities = List.copyOf(testIdentities);
+        }
+    }
+}

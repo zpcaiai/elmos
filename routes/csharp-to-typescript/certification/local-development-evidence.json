@@ -1,0 +1,57 @@
+{
+  "authorization": "local-engineering-validation",
+  "behavior_case_count": 3,
+  "behavior_pass_rate": 1.0,
+  "certification_status": "EXPERIMENTAL",
+  "corpus": "development",
+  "critical_unknown_semantics": 0,
+  "executor": "local-toolchain",
+  "external_certification_status": "NOT_RUN",
+  "independent_verifier": "NOT_RUN",
+  "limitations": [
+    "Only typed, side-effect-free functions using return, if, literals, names, and supported binary operators are in scope.",
+    "Object graphs, exceptions, async, reflection, I/O, framework, database, and concurrency semantics remain outside this route profile."
+  ],
+  "route": "csharp-to-typescript",
+  "schema_version": "1.0.0",
+  "scope": "typed-pure-function-v1",
+  "semantic_ir_sha256": "sha256:273865bcde5c1d21c3b06d7df0b73d46fc822570558ee3cbc7d5e88692162e18",
+  "source": {
+    "analyzer": "Microsoft.CodeAnalysis.CSharp",
+    "analyzer_version": "5.6.0.0",
+    "language": "csharp",
+    "path": "Pricing.cs",
+    "sha256": "sha256:068529dab349fae96d0d284203057cfb4e2e3eee24b692d89490416f61203cab"
+  },
+  "source_map_coverage": 1.0,
+  "status": "PASSED",
+  "target": {
+    "language": "typescript",
+    "path": "migrated.ts",
+    "sha256": "sha256:b3d004e774de233e05efd8bfed2c1c5711807f5e90000d9bf068da04de2b9a18"
+  },
+  "validation": {
+    "case_count": 3,
+    "commands": [
+      {
+        "command": [
+          "/Users/stephen/DevProjects/AIProjects/elmos/engines/frontend-client-engine/node_modules/.bin/tsc",
+          "-p",
+          "tsconfig.json"
+        ],
+        "stderr": "",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "/opt/homebrew/bin/node",
+          "dist/route_harness.js"
+        ],
+        "stderr": "",
+        "stdout": ""
+      }
+    ],
+    "language": "typescript",
+    "status": "PASSED"
+  }
+}

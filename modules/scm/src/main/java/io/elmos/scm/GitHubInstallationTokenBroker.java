@@ -23,10 +23,12 @@ public final class GitHubInstallationTokenBroker {
         @Override public void close() { java.util.Arrays.fill(value, '\0'); }
         @Override public String toString() { return "TokenGrant[REDACTED," + expiresAt + "]"; }
     }
-    public record LeaseMetadata(String repositoryId, long repositoryExternalId, long installationExternalId,
+    public record LeaseMetadata(String organizationId, String repositoryId,
+                                long repositoryExternalId, long installationExternalId,
                                 Operation operation, Instant issuedAt, Instant expiresAt, Set<Permission> permissions) {}
     public interface RepositoryAuthorizationPort {
-        boolean isAuthorized(String repositoryId, long repositoryExternalId, long installationExternalId);
+        boolean isAuthorized(String organizationId, String repositoryId,
+                             long repositoryExternalId, long installationExternalId);
     }
     public interface InstallationTokenIssuer {
         TokenGrant issue(long installationExternalId, long repositoryExternalId, Set<Permission> permissions);
@@ -56,9 +58,13 @@ public final class GitHubInstallationTokenBroker {
         this.clock = Objects.requireNonNull(clock);
     }
 
-    public EphemeralCredential issue(String repositoryId, long repositoryExternalId,
+    public EphemeralCredential issue(String organizationId, String repositoryId, long repositoryExternalId,
                                      long installationExternalId, Operation operation) {
-        if (!authorization.isAuthorized(repositoryId, repositoryExternalId, installationExternalId)) {
+        if (organizationId == null || organizationId.isBlank()) {
+            throw new SecurityException("trusted organization identity is required");
+        }
+        if (!authorization.isAuthorized(
+                organizationId, repositoryId, repositoryExternalId, installationExternalId)) {
             throw new SecurityException("repository is not authorized for the installation");
         }
         Set<Permission> required = REQUIRED.get(Objects.requireNonNull(operation));
@@ -71,7 +77,8 @@ public final class GitHubInstallationTokenBroker {
             if (!grant.permissions().equals(required)) {
                 throw new SecurityException("installation token permissions differ from the requested minimum");
             }
-            LeaseMetadata metadata = new LeaseMetadata(repositoryId, repositoryExternalId, installationExternalId,
+            LeaseMetadata metadata = new LeaseMetadata(
+                    organizationId, repositoryId, repositoryExternalId, installationExternalId,
                     operation, grant.issuedAt(), grant.expiresAt(), grant.permissions());
             audit.issued(metadata);
             char[] raw = grant.value();

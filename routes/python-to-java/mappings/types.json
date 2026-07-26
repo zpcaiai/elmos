@@ -1,0 +1,13 @@
+{
+  "money_policy": "OUT_OF_SCOPE_REQUIRES_DECIMAL_PACK",
+  "schema_version": 1,
+  "source": "python",
+  "target": "java",
+  "types": [
+    "integer",
+    "number",
+    "boolean",
+    "string"
+  ],
+  "unknown_type_policy": "BLOCK"
+}

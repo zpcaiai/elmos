@@ -33,6 +33,7 @@ elmos:
   snapshot:
     staging-root: ${ELMOS_SNAPSHOT_STAGING_ROOT:}
     artifact-root: ${ELMOS_SNAPSHOT_ARTIFACT_ROOT:}
+    materialized-root: ${ELMOS_SNAPSHOT_MATERIALIZED_ROOT:}
     max-artifact-bytes: ${ELMOS_SNAPSHOT_MAX_ARTIFACT_BYTES:1073741824}
 management:
   endpoint:

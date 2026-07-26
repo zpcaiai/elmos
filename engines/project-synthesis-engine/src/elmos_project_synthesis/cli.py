@@ -5,12 +5,19 @@ import json
 import os
 import sys
 import tempfile
+import zipfile
 from pathlib import Path
 from typing import Any
 
 from .intake import approve_request, create_draft
-from .models import RequestValidationError
-from .verification import verify_workspace
+from .models import (
+    SUPPORTED_AUTH_MODES,
+    SUPPORTED_LANGUAGES,
+    SUPPORTED_PERSISTENCE,
+    SUPPORTED_PROJECT_KINDS,
+    RequestValidationError,
+)
+from .verification import runtime_commands, verify_workspace
 from .workspace import WorkspaceConflictError, generate_workspace
 
 
@@ -45,6 +52,93 @@ def _write_json(path: Path, value: dict[str, Any]) -> None:
         temporary.unlink(missing_ok=True)
 
 
+def _draft_from_intent(intent: dict[str, Any]) -> dict[str, Any]:
+    languages = intent.get("languages", intent.get("targets", SUPPORTED_DEFAULT_TARGETS))
+    if not isinstance(languages, list) or not all(isinstance(item, str) for item in languages):
+        raise ValueError("INTENT_LANGUAGES_MUST_BE_ARRAY")
+    business_rules = intent.get("business_rules", [])
+    if not isinstance(business_rules, list):
+        raise ValueError("INTENT_BUSINESS_RULES_MUST_BE_ARRAY")
+    return create_draft(
+        name=str(intent.get("name", "")),
+        description=str(intent.get("description", "")),
+        entity=str(intent["entity"]) if intent.get("entity") else None,
+        entities=intent.get("entities") if isinstance(intent.get("entities"), list) else None,
+        relations=intent.get("relations", []) if isinstance(intent.get("relations", []), list) else [],
+        business_rules=business_rules,
+        permissions=intent.get("permissions", []) if isinstance(intent.get("permissions", []), list) else [],
+        namespace=str(intent["namespace"]) if intent.get("namespace") else None,
+        languages=languages,
+        project_kind=str(intent.get("project_kind", "api")),
+        persistence=str(intent.get("persistence", "in-memory")),
+        auth_mode=str(intent.get("auth_mode", "none")),
+    )
+
+
+SUPPORTED_DEFAULT_TARGETS = list(SUPPORTED_LANGUAGES)
+
+
+def _archive_workspace(workspace: Path, destination: Path, *, evidence: Path | None = None) -> dict[str, Any]:
+    root = workspace.resolve(strict=True)
+    manifest_path = root / ".elmos" / "generation-manifest.json"
+    manifest = _read_json(manifest_path)
+    entries = manifest.get("files")
+    if not isinstance(entries, list):
+        raise ValueError("GENERATION_MANIFEST_FILES_INVALID")
+    destination = destination.expanduser().resolve(strict=False)
+    if destination.exists() and (destination.is_symlink() or not destination.is_file()):
+        raise ValueError("ARCHIVE_OUTPUT_MUST_BE_REGULAR_FILE")
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    descriptor, temporary_name = tempfile.mkstemp(
+        prefix=f".{destination.name}.elmos-",
+        suffix=".tmp",
+        dir=destination.parent,
+    )
+    os.close(descriptor)
+    temporary = Path(temporary_name)
+    archived_paths: set[str] = set()
+    try:
+        with zipfile.ZipFile(temporary, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
+            for entry in entries:
+                if not isinstance(entry, dict) or not isinstance(entry.get("path"), str):
+                    raise ValueError("GENERATION_MANIFEST_ENTRY_INVALID")
+                relative = Path(entry["path"])
+                if relative.is_absolute() or ".." in relative.parts:
+                    raise ValueError("GENERATION_MANIFEST_PATH_UNSAFE")
+                source = root / relative
+                if not source.is_file():
+                    raise ValueError(f"GENERATION_ARTIFACT_MISSING:{relative.as_posix()}")
+                archive.write(source, arcname=f"{root.name}/{relative.as_posix()}")
+                archived_paths.add(relative.as_posix())
+            derived_lockfiles = [
+                root / "python" / "uv.lock",
+                root / "typescript" / "pnpm-lock.yaml",
+                root / "kotlin" / "gradle.lockfile",
+                root / "rust" / "Cargo.lock",
+                *sorted((root / "dotnet").glob("**/packages.lock.json")),
+            ]
+            for source in derived_lockfiles:
+                if not source.is_file():
+                    continue
+                relative = source.relative_to(root)
+                if relative.as_posix() in archived_paths:
+                    continue
+                archive.write(source, arcname=f"{root.name}/{relative.as_posix()}")
+                archived_paths.add(relative.as_posix())
+            archive.write(manifest_path, arcname=f"{root.name}/.elmos/generation-manifest.json")
+            if evidence is not None and evidence.is_file():
+                archive.write(evidence, arcname=f"{root.name}/.elmos/verification.json")
+        temporary.replace(destination)
+    finally:
+        temporary.unlink(missing_ok=True)
+    return {
+        "status": "ARCHIVED",
+        "path": str(destination),
+        "byte_count": destination.stat().st_size,
+        "artifact_count": len(archived_paths) + 1 + int(evidence is not None and evidence.is_file()),
+    }
+
+
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="elmos-project-synthesis")
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -54,8 +148,15 @@ def _parser() -> argparse.ArgumentParser:
     draft.add_argument("--description", required=True)
     draft.add_argument("--entity")
     draft.add_argument("--namespace")
-    draft.add_argument("--language", action="append", choices=["java", "python", "csharp"])
+    draft.add_argument("--language", action="append", choices=list(SUPPORTED_LANGUAGES))
+    draft.add_argument("--project-kind", choices=list(SUPPORTED_PROJECT_KINDS), default="api")
+    draft.add_argument("--persistence", choices=list(SUPPORTED_PERSISTENCE), default="in-memory")
+    draft.add_argument("--auth-mode", choices=list(SUPPORTED_AUTH_MODES), default="none")
     draft.add_argument("--output", type=Path, required=True)
+
+    analyze = subparsers.add_parser("analyze", help="Analyze a typed natural-language intent JSON")
+    analyze.add_argument("--intent", type=Path, required=True)
+    analyze.add_argument("--output", type=Path, required=True)
 
     approve = subparsers.add_parser("approve", help="Hash-bind a reviewed requirement baseline")
     approve.add_argument("--request", type=Path, required=True)
@@ -69,6 +170,19 @@ def _parser() -> argparse.ArgumentParser:
     verify = subparsers.add_parser("verify", help="Run real target builds and tests")
     verify.add_argument("--workspace", type=Path, required=True)
     verify.add_argument("--evidence", type=Path)
+
+    pipeline = subparsers.add_parser(
+        "pipeline",
+        help="Approve a reviewed draft, generate, verify, and create a source artifact",
+    )
+    pipeline.add_argument("--request", type=Path, required=True)
+    pipeline.add_argument("--actor", required=True)
+    pipeline.add_argument("--output", type=Path, required=True)
+    pipeline.add_argument("--evidence", type=Path, required=True)
+    pipeline.add_argument("--archive", type=Path, required=True)
+
+    runtime_plan = subparsers.add_parser("runtime-plan", help="Emit allowlisted runtime commands")
+    runtime_plan.add_argument("--workspace", type=Path, required=True)
     return parser
 
 
@@ -81,18 +195,52 @@ def main(argv: list[str] | None = None) -> int:
                 description=args.description,
                 entity=args.entity,
                 namespace=args.namespace,
-                languages=args.language or ("java", "python", "csharp"),
+                languages=args.language or SUPPORTED_LANGUAGES,
+                project_kind=args.project_kind,
+                persistence=args.persistence,
+                auth_mode=args.auth_mode,
             )
+            _write_json(args.output, result)
+        elif args.command == "analyze":
+            result = _draft_from_intent(_read_json(args.intent))
             _write_json(args.output, result)
         elif args.command == "approve":
             result = approve_request(_read_json(args.request), actor=args.actor)
             _write_json(args.output, result)
         elif args.command == "generate":
             result = generate_workspace(_read_json(args.request), args.output)
-        else:
+        elif args.command == "verify":
             result = verify_workspace(args.workspace)
             if args.evidence:
                 _write_json(args.evidence, result)
+        elif args.command == "pipeline":
+            approved = approve_request(_read_json(args.request), actor=args.actor)
+            manifest = generate_workspace(approved, args.output)
+            evidence = verify_workspace(args.output)
+            _write_json(args.evidence, evidence)
+            archive = _archive_workspace(args.output, args.archive, evidence=args.evidence)
+            runnable_languages = {
+                item.get("language")
+                for item in evidence["results"]
+                if item.get("kind") == "startup-probe" and item.get("status") == "PASSED"
+            }
+            result = {
+                "status": evidence["status"],
+                "manifest": manifest,
+                "verification": evidence,
+                "archive": archive,
+                "runtime_plan": [
+                    plan for plan in runtime_commands(args.output) if plan["language"] in runnable_languages
+                ],
+                "production_delivery_status": "NOT_RUN",
+                "external_certification_status": "NOT_RUN",
+            }
+        else:
+            result = {
+                "status": "READY",
+                "workspace": str(args.workspace.resolve(strict=True)),
+                "runtime_plan": runtime_commands(args.workspace),
+            }
         print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
         return 0 if result.get("status") != "FAILED" else 1
     except (

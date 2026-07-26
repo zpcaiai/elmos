@@ -7,7 +7,10 @@ Experimental, exact Batch 32 client pack for the Next.js 16.2.10 Web Console.
 - `/`: workspace overview and explicit authority boundary.
 - `/migration`: M29-M37 capability catalog, M36 developer-workflow detail, M37 Marketplace, and memory-only assessment drafts.
 - `/commercialization`: Product B34-B38 trust-chain review, blockers, restrictions, and synthetic assurance queue.
-- `/generation`: Project Synthesis B46-B60 intent form, exact Java/Python/C# targets, live plan preview, and memory-only draft feedback.
+- `/generation`: Project Synthesis intent form for eight exact target profiles,
+  Python PostgreSQL/JWT/OIDC production configuration, structured rule and
+  permission review, durable tenant-bound jobs, content-addressed downloads,
+  and rootless one-click runtime controls.
 - `/skills`: Batch 1-55 dual-namespace provenance, strict-case inventory, and explicit external-certification blocker.
 - `/api/capabilities/*`: read-only capability adapters with a fail-closed repository-contract fallback.
 
@@ -15,8 +18,20 @@ Shared navigation now includes a Command-K keyboard palette with Arrow/Enter/Esc
 
 Migration filtering now reports its result count, supports explicit reset and empty states, and returns focus after the accessible memory-only draft dialog closes. Commercialization trust stages use keyboard-operable tab semantics, while the mobile assurance queue preserves subject, stage, owner, and status rather than hiding columns.
 
-Project generation exposes only the three repository-supported tuples: Java 21 / Spring Boot 3.5.3, Python 3.12 / FastAPI 0.116.1, and C# / .NET 10 / ASP.NET Core. Native validation and an explicit at-least-one-target error guard the form; submitting only creates a page-memory preview and never invokes the generator or approval workflow.
+Project generation exposes Java, Python, C#, TypeScript, Go, Kotlin, PHP and
+Rust starter profiles with visible maturity. Java/Python/C# are `limited`; the
+five added emitters remain `experimental`. The production selector accepts only
+the implemented Python + PostgreSQL 17.5 + JWT/OIDC tuple. Native validation,
+analysis-digest approval, exact tenant/Actor binding and a short-lived Runner
+lease gate execution. Production mode requires the rootless container executor;
+host execution is explicitly development-only.
 
 ## Evidence boundary
 
-Local TypeScript, production build, runtime routes, API fallback, Google Chrome 150.0.7871.129 desktop/tablet/mobile interaction, keyboard navigation, in-viewport target size, console-error, and overflow checks passed. Cross-browser, assistive-technology, independent holdout, representative workload, and external control-plane execution remain `NOT_RUN`. This pack is experimental and makes no certification claim.
+Local TypeScript, production build, runtime routes, API fallback, declared
+Playwright browser/device journeys, keyboard navigation, target size,
+console-error and overflow checks are engineering evidence only. The exact
+external work is defined in `acceptance/external-validation-plan.json`.
+Assistive-technology review, independent user acceptance, representative
+workload execution and external conformance remain `NOT_RUN`. This pack is
+experimental and makes no certification claim.

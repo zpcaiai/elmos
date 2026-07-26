@@ -1,0 +1,9 @@
+{
+  "corpus": "representative-local-synthetic",
+  "customer_repository": false,
+  "external_execution": "NOT_RUN",
+  "inputs": [
+    1001
+  ],
+  "schema_version": 1
+}

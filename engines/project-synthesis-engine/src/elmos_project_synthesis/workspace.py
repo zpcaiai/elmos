@@ -9,10 +9,16 @@ from pathlib import Path, PurePosixPath
 from typing import Any, cast
 
 from .dotnet_target import render_dotnet
+from .go_target import render_go
 from .java_target import render_java
-from .models import SynthesisRequest, request_payload, sha256_json
+from .kotlin_target import render_kotlin
+from .models import TARGET_PROFILES, SynthesisRequest, request_payload, sha256_json
+from .php_target import render_php
+from .production_profile import render_production_assets
 from .python_target import render_python
 from .rendering import clean, pretty_json
+from .rust_target import render_rust
+from .typescript_target import render_typescript
 
 
 class WorkspaceConflictError(RuntimeError):
@@ -35,14 +41,18 @@ def _safe_path(root: Path, relative: str) -> Path:
 
 
 def _target_directory(language: str) -> str:
-    return {"java": "java", "python": "python", "csharp": "dotnet"}[language]
+    return str(TARGET_PROFILES[language]["directory"])
 
 
 def _render_psir(request: SynthesisRequest) -> dict[str, Any]:
     payload = request_payload(request.raw)
     return {
-        "schema_version": "1.0.0",
+        "schema_version": "1.1.0",
         "project": payload["project"],
+        "entities": payload["entities"],
+        "relations": payload["relations"],
+        "business_rules": payload["business_rules"],
+        "permissions": payload["permissions"],
         "requirements": payload["requirements"],
         "acceptance_criteria": payload["acceptance_criteria"],
         "actors": payload.get("actors", []),
@@ -61,12 +71,14 @@ def _render_blueprint(request: SynthesisRequest) -> dict[str, Any]:
             "language": target.language,
             "profile": f"{target.framework}-{target.runtime}",
             "port": target.port,
-            "storage": "in-memory",
+            "storage": request.persistence,
+            "auth_mode": request.auth_mode,
+            "toolchain": TARGET_PROFILES[target.language]["toolchain"],
         }
         for target in request.targets
     ]
     return {
-        "schema_version": "1.0.0",
+        "schema_version": "1.1.0",
         "project": {
             "id": request.raw["project"]["id"],
             "name": request.project_name,
@@ -80,9 +92,12 @@ def _render_blueprint(request: SynthesisRequest) -> dict[str, Any]:
         },
         "runtime": {target.language: target.runtime for target in request.targets},
         "dependencies": [
-            {"target": "java", "catalog": "spring-boot-3.5.3"},
-            {"target": "python", "catalog": "fastapi-0.116.1"},
-            {"target": "csharp", "catalog": "aspnet-core-10.0.9"},
+            {
+                "target": target.language,
+                "catalog": f"{target.framework}-{target.runtime}",
+                "source_skill": TARGET_PROFILES[target.language]["source_skill"],
+            }
+            for target in request.targets
         ],
         "build": {"reproducible_intent": True, "external_dependency_resolution_evidence": "NOT_RUN"},
         "configuration": [
@@ -90,6 +105,29 @@ def _render_blueprint(request: SynthesisRequest) -> dict[str, Any]:
             {"key": "APP_ENV", "secret": False},
             {"key": "PORT", "secret": False},
             {"key": "LOG_LEVEL", "secret": False},
+            *(
+                [{"key": "ELMOS_DATABASE_URL_FILE", "secret": True, "transport": "file-reference"}]
+                if request.requires_database
+                else []
+            ),
+            *(
+                [
+                    {"key": "ELMOS_AUTH_ISSUER", "secret": False},
+                    {"key": "ELMOS_AUTH_AUDIENCE", "secret": False},
+                    {"key": "ELMOS_JWT_HMAC_SECRET_FILE", "secret": True, "transport": "file-reference"},
+                ]
+                if request.auth_mode == "jwt"
+                else []
+            ),
+            *(
+                [
+                    {"key": "ELMOS_AUTH_ISSUER", "secret": False},
+                    {"key": "ELMOS_AUTH_AUDIENCE", "secret": False},
+                    {"key": "ELMOS_OIDC_JWKS_FILE", "secret": True, "transport": "file-reference"},
+                ]
+                if request.auth_mode == "oidc"
+                else []
+            ),
         ],
         "quality": {"unit_tests": True, "lint": True, "type_check": True, "startup_probe": True},
         "generation_units": [
@@ -98,10 +136,124 @@ def _render_blueprint(request: SynthesisRequest) -> dict[str, Any]:
                 "kind": "project",
                 "target_path": _target_directory(target.language),
                 "ownership": "managed",
-                "source_refs": ["REQ-CRUD-001", "REQ-HEALTH-001", "REQ-DELIVERY-001"],
+                "source_refs": [
+                    *[f"REQ-CRUD-{index:03d}" for index in range(1, len(request.entities) + 1)],
+                    "REQ-HEALTH-001",
+                    "REQ-DELIVERY-001",
+                ],
             }
             for target in request.targets
         ],
+    }
+
+
+def _render_asset_graph(request: SynthesisRequest) -> dict[str, Any]:
+    nodes: list[dict[str, Any]] = [
+        {
+            "id": "approved-request",
+            "kind": "requirement-baseline",
+            "path": "requirements/approved-request.json",
+            "status": "APPROVED",
+            "sha256": request.request_hash,
+        },
+        {
+            "id": "psir",
+            "kind": "typed-ir",
+            "path": "requirements/psir.json",
+            "status": "GENERATED",
+        },
+        {
+            "id": "project-blueprint",
+            "kind": "architecture-blueprint",
+            "path": "requirements/project-blueprint.json",
+            "status": "GENERATED",
+        },
+    ]
+    edges: list[dict[str, str]] = [
+        {"from": "approved-request", "to": "psir", "relation": "normalizes-to"},
+        {"from": "psir", "to": "project-blueprint", "relation": "plans"},
+    ]
+    for target in request.targets:
+        source_id = f"{target.language}-source"
+        evidence_id = f"{target.language}-verification"
+        nodes.extend(
+            [
+                {
+                    "id": source_id,
+                    "kind": "generated-project",
+                    "path": _target_directory(target.language),
+                    "status": "GENERATED",
+                    "source_skill": TARGET_PROFILES[target.language]["source_skill"],
+                },
+                {
+                    "id": evidence_id,
+                    "kind": "verification-evidence",
+                    "path": f".elmos/verification/{target.language}.json",
+                    "status": "NOT_RUN",
+                },
+            ]
+        )
+        edges.extend(
+            [
+                {"from": "project-blueprint", "to": source_id, "relation": "emits"},
+                {"from": source_id, "to": evidence_id, "relation": "requires-verification"},
+            ]
+        )
+    return {
+        "schema_version": "1.0.0",
+        "graph_kind": "project-synthesis-asset-graph",
+        "nodes": nodes,
+        "edges": edges,
+        "external_evidence_status": "NOT_RUN",
+    }
+
+
+def _render_build_graph(request: SynthesisRequest) -> dict[str, Any]:
+    nodes: list[dict[str, Any]] = [
+        {
+            "id": "approved-request",
+            "kind": "approval",
+            "status": "APPROVED",
+        }
+    ]
+    edges: list[dict[str, str]] = []
+    for target in request.targets:
+        profile = TARGET_PROFILES[target.language]
+        phases = (
+            ("generate", "generation", "GENERATED"),
+            ("build", "native-build", "NOT_RUN"),
+            ("test", "native-test", "NOT_RUN"),
+            ("startup", "startup-probe", "NOT_RUN"),
+        )
+        previous = "approved-request"
+        for phase, kind, status in phases:
+            node_id = f"{target.language}-{phase}"
+            node: dict[str, Any] = {
+                "id": node_id,
+                "language": target.language,
+                "kind": kind,
+                "status": status,
+            }
+            if phase != "generate":
+                node["required_runtime"] = target.runtime
+                node["required_framework"] = target.framework
+                node["required_toolchain"] = profile["toolchain"]
+            else:
+                node["source_skill"] = profile["source_skill"]
+            nodes.append(node)
+            edges.append({"from": previous, "to": node_id, "relation": "must-complete-before"})
+            previous = node_id
+    return {
+        "schema_version": "1.0.0",
+        "graph_kind": "polyglot-build-graph",
+        "execution_policy": {
+            "independent_targets": True,
+            "fail_closed_on_missing_toolchain": True,
+            "generated_is_not_verified": True,
+        },
+        "nodes": nodes,
+        "edges": edges,
+        "external_execution_status": "NOT_RUN",
     }
 
 
@@ -116,8 +268,8 @@ def _compose(request: SynthesisRequest) -> str:
                 "    environment:",
                 f"      APP_NAME: {request.project_name}-{target.language}",
                 "      APP_ENV: development",
-                f"      PORT: \"{target.port}\"",
-                f"    ports: [\"{target.port}:{target.port}\"]",
+                f'      PORT: "{target.port}"',
+                f'    ports: ["{target.port}:{target.port}"]',
                 "    read_only: true",
                 "    tmpfs: [/tmp]",
                 "    security_opt: [no-new-privileges:true]",
@@ -139,11 +291,30 @@ def _root_readme(request: SynthesisRequest) -> str:
         build_commands.append("(cd java && mvn -B test)")
     if any(target.language == "python" for target in request.targets):
         build_commands.append(
-            "(cd python && uv sync --python 3.12 && uv run pytest "
+            "(cd python && uv lock && uv sync --locked --python 3.12 && uv run pytest "
             "&& uv run ruff check src tests && uv run mypy src)"
         )
     if any(target.language == "csharp" for target in request.targets):
-        build_commands.append("(cd dotnet && dotnet restore --use-lock-file && dotnet test)")
+        build_commands.append(
+            "(cd dotnet && dotnet restore --use-lock-file && dotnet restore --locked-mode && dotnet test)"
+        )
+    if any(target.language == "typescript" for target in request.targets):
+        build_commands.append(
+            "(cd typescript && pnpm install --lockfile-only && pnpm install --frozen-lockfile "
+            "&& pnpm check && pnpm test && pnpm build)"
+        )
+    if any(target.language == "go" for target in request.targets):
+        build_commands.append("(cd go && go vet ./... && go test -race ./... && go build ./...)")
+    if any(target.language == "kotlin" for target in request.targets):
+        build_commands.append("(cd kotlin && gradle --no-daemon --write-locks test build)")
+    if any(target.language == "php" for target in request.targets):
+        build_commands.append("(cd php && php -l src/Store.php && php tests/run.php)")
+    if any(target.language == "rust" for target in request.targets):
+        build_commands.append(
+            "(cd rust && cargo generate-lockfile && cargo fmt --check "
+            "&& cargo clippy --locked --all-targets --all-features -- -D warnings "
+            "&& cargo test --locked --all-features)"
+        )
     commands = "\n".join(build_commands)
     return clean(
         f"""
@@ -173,13 +344,15 @@ def _root_readme(request: SynthesisRequest) -> str:
         - `requirements/approved-request.json`: immutable approved input.
         - `requirements/psir.json`: normalized Project Synthesis IR.
         - `requirements/project-blueprint.json`: selected language/runtime/build profiles.
+        - `requirements/asset-graph.json`: generated assets and missing evidence links.
+        - `requirements/build-graph.json`: per-target generate/build/test/startup dependencies.
         - `.elmos/generation-manifest.json`: ownership, hashes, trace links, and claim boundary.
 
         ## Current boundary
 
-        The generated starter uses in-memory persistence and intentionally omits authentication
-        until a durable data profile, identity provider, tenant model, and authorization policy
-        are explicitly selected. Local generation is `GENERATED`; production delivery and all
+        The selected persistence profile is `{request.persistence}` and authentication profile is
+        `{request.auth_mode}`. Provider integration, production data migration, tenant enforcement,
+        and external recovery remain separate gates. Local generation is `GENERATED`; production delivery and all
         external certification remain `NOT_RUN`.
         """
     )
@@ -192,6 +365,8 @@ def render_workspace(request: SynthesisRequest) -> dict[str, str]:
         "requirements/approved-request.json": pretty_json(request.raw),
         "requirements/psir.json": pretty_json(_render_psir(request)),
         "requirements/project-blueprint.json": pretty_json(_render_blueprint(request)),
+        "requirements/asset-graph.json": pretty_json(_render_asset_graph(request)),
+        "requirements/build-graph.json": pretty_json(_render_build_graph(request)),
         "docs/traceability.md": clean(
             """
             # Requirement traceability
@@ -212,6 +387,11 @@ def render_workspace(request: SynthesisRequest) -> dict[str, str]:
             "java": render_java,
             "python": render_python,
             "csharp": render_dotnet,
+            "typescript": render_typescript,
+            "go": render_go,
+            "kotlin": render_kotlin,
+            "php": render_php,
+            "rust": render_rust,
         }[target.language](request, target.port)
         prefix = _target_directory(target.language)
         for relative, content in rendered.items():
@@ -219,19 +399,36 @@ def render_workspace(request: SynthesisRequest) -> dict[str, str]:
             if path in files:
                 raise WorkspaceConflictError(f"DUPLICATE_GENERATED_PATH:{path}")
             files[path] = content
+            if relative == ".github/workflows/ci.yml":
+                root_workflow = f".github/workflows/{target.language}-ci.yml"
+                monorepo_content = content
+                if "        defaults:\n" not in monorepo_content:
+                    monorepo_content = monorepo_content.replace(
+                        "        runs-on: ubuntu-latest\n",
+                        "        runs-on: ubuntu-latest\n"
+                        "        defaults:\n"
+                        "          run:\n"
+                        f"            working-directory: {prefix}\n",
+                        1,
+                    )
+                files[root_workflow] = monorepo_content
+    for path, content in render_production_assets(request).items():
+        if path in files:
+            raise WorkspaceConflictError(f"DUPLICATE_GENERATED_PATH:{path}")
+        files[path] = content
     manifest_entries = [
         {
             "path": path,
             "sha256": _sha256_text(content),
             "ownership": "managed",
-            "source_refs": ["approved-request", "PG001-PG170"],
+            "source_refs": ["approved-request", "PG001-PG417"],
         }
         for path, content in sorted(files.items())
     ]
     manifest = {
-        "schema_version": "1.0.0",
+        "schema_version": "1.1.0",
         "engine": "elmos.project-synthesis",
-        "engine_version": "1.0.0",
+        "engine_version": "1.2.0",
         "request_sha256": request.request_hash,
         "approved_payload_sha256": request.raw["approval"]["approved_payload_sha256"],
         "status": "GENERATED",
@@ -260,7 +457,7 @@ def _load_existing_manifest(root: Path) -> dict[str, Any] | None:
 def _assert_existing_files_unmodified(root: Path, manifest: dict[str, Any]) -> None:
     if (
         manifest.get("engine") != "elmos.project-synthesis"
-        or manifest.get("engine_version") != "1.0.0"
+        or manifest.get("engine_version") != "1.2.0"
         or manifest.get("status") != "GENERATED"
     ):
         raise WorkspaceConflictError("EXISTING_MANIFEST_IDENTITY_INVALID")
@@ -298,7 +495,7 @@ def _write_text_atomic(target: Path, content: str) -> None:
             handle.write(content)
             handle.flush()
             os.fsync(handle.fileno())
-        temporary.chmod(0o644)
+        temporary.chmod(0o755 if target.suffix == ".sh" else 0o644)
         temporary.replace(target)
     finally:
         temporary.unlink(missing_ok=True)

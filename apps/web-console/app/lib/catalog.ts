@@ -1,28 +1,34 @@
 import type { GenerationStage, GenerationTarget, MigrationCapability, ProductStage } from "./contracts";
 
 export const generationTargets: GenerationTarget[] = [
-  { id: "java", language: "Java", runtime: "21", framework: "Spring Boot 3.5.3", port: 8081, accent: "amber", icon: "code" },
-  { id: "python", language: "Python", runtime: "3.12", framework: "FastAPI 0.116.1", port: 8082, accent: "blue", icon: "spark" },
-  { id: "csharp", language: "C#", runtime: ".NET 10", framework: "ASP.NET Core", port: 8083, accent: "violet", icon: "layers" },
+  { id: "java", language: "Java", runtime: "21", framework: "Spring Boot 3.5.3", port: 8081, sourceSkill: "PG077–PG088", verificationCommand: "mvn -B package", verificationStatus: "NOT_RUN", maturity: "limited", productionProfiles: [], accent: "amber", icon: "code" },
+  { id: "python", language: "Python", runtime: "3.12", framework: "FastAPI 0.116.1", port: 8082, sourceSkill: "PG089–PG100", verificationCommand: "uv run pytest && uv run mypy src", verificationStatus: "NOT_RUN", maturity: "limited", productionProfiles: ["postgresql+jwt", "postgresql+oidc"], accent: "blue", icon: "spark" },
+  { id: "csharp", language: "C#", runtime: ".NET 10.0.301", framework: "ASP.NET Core 10", port: 8083, sourceSkill: "PG101–PG112", verificationCommand: "dotnet test -c Release", verificationStatus: "NOT_RUN", maturity: "limited", productionProfiles: [], accent: "violet", icon: "layers" },
+  { id: "typescript", language: "TypeScript", runtime: "Node 26.0.0", framework: "NestJS 11.1.6 / Fastify 5.6.1", port: 8084, sourceSkill: "PG226", verificationCommand: "pnpm check && pnpm test && pnpm build", verificationStatus: "NOT_RUN", maturity: "experimental", productionProfiles: [], accent: "cyan", icon: "code" },
+  { id: "go", language: "Go", runtime: "1.25.0", framework: "net/http", port: 8085, sourceSkill: "PG237", verificationCommand: "go vet ./... && go test -race ./...", verificationStatus: "NOT_RUN", maturity: "experimental", productionProfiles: [], accent: "green", icon: "code" },
+  { id: "kotlin", language: "Kotlin", runtime: "2.2.20 / JVM 21", framework: "Ktor 3.2.3", port: 8086, sourceSkill: "PG250", verificationCommand: "gradle --no-daemon test build", verificationStatus: "NOT_RUN", maturity: "experimental", productionProfiles: [], accent: "violet", icon: "layers" },
+  { id: "php", language: "PHP", runtime: "8.4.12", framework: "Native HTTP modular service", port: 8087, sourceSkill: "PG263", verificationCommand: "php -l src/Store.php && php tests/run.php", verificationStatus: "NOT_RUN", maturity: "experimental", productionProfiles: [], accent: "blue", icon: "spark" },
+  { id: "rust", language: "Rust", runtime: "1.89.0", framework: "Axum 0.8.4", port: 8088, sourceSkill: "PG287", verificationCommand: "cargo clippy && cargo test --locked", verificationStatus: "NOT_RUN", maturity: "experimental", productionProfiles: [], accent: "amber", icon: "code" },
 ];
 
 export const generationStages: GenerationStage[] = [
   { batch: "B46–B48", title: "需求发现", detail: "澄清实体、需求与验收条件" },
   { batch: "B49–B50", title: "架构约束", detail: "冻结运行时与框架版本" },
   { batch: "B51–B52", title: "工程蓝图", detail: "规划 API、测试和配置" },
-  { batch: "B53–B57", title: "多语言发射", detail: "按所选目标生成独立项目" },
-  { batch: "B58–B60", title: "验证与交付", detail: "构建、探针与证据归档" },
+  { batch: "B53–B57", title: "核心目标发射", detail: "Java、Python 与 C# 独立工程" },
+  { batch: "B66–B71", title: "Polyglot 发射", detail: "TypeScript、Go、Kotlin、PHP 与 Rust" },
+  { batch: "B80", title: "构建与交付", detail: "逐目标构建、探针、资产图与证据归档" },
 ];
 
 export const installedSkillInventory = {
-  codexSkillCount: 562,
-  runtimeSkillCount: 2244,
+  codexSkillCount: 572,
+  runtimeSkillCount: 2260,
   countingRule: "directories-with-SKILL.md",
 } as const;
 
 export const migrationCapabilities: MigrationCapability[] = [
-  { id: "M29", batch: 29, title: "跨语言路由", domain: "Directed language routes", description: "精确的源语言到目标语言路径、类型语义与保守认证。", skillCount: 20, schemaCount: 3, gateCommand: "scripts/batch29/run_route_gate.py", status: "READY", icon: "code", accent: "cyan" },
-  { id: "M30", batch: 30, title: "框架现代化", domain: "Framework modernization", description: "通过 FCM 保留安全、事务、启动和真实行为契约。", skillCount: 20, schemaCount: 4, gateCommand: "scripts/batch30/run_framework_gate.py", status: "READY", icon: "workflow", accent: "blue" },
+  { id: "M29", batch: 29, title: "跨语言路由", domain: "Directed language routes", description: "12 个方向的受限纯函数 Profile 已通过精确本地工具链与三类语料；任意整库语义、独立验证与外部认证仍为 NOT_RUN。", skillCount: 20, schemaCount: 3, gateCommand: "scripts/batch29/run_route_gate.py", status: "EXPERIMENTAL", icon: "code", accent: "cyan" },
+  { id: "M30", batch: 30, title: "框架现代化", domain: "Framework modernization", description: "经典 Spring/旧 Boot 识别与 FCM 核心已接入；精确实验 Pack 已落库，真实 Runner、holdout 与独立验证仍为 NOT_RUN。", skillCount: 20, schemaCount: 4, gateCommand: "scripts/batch30/run_framework_gate.py", status: "REVIEW", icon: "workflow", accent: "blue" },
   { id: "M31", batch: 31, title: "数据库与数据平台", domain: "Database & data", description: "类型、约束、SQL、ETL 与逐项对账的精确迁移。", skillCount: 22, schemaCount: 6, gateCommand: "scripts/batch31/run_database_gate.py", status: "READY", icon: "database", accent: "violet" },
   { id: "M32", batch: 32, title: "前端与客户端", domain: "Frontend & client", description: "路由、状态、权限、可访问性与真实浏览器旅程。", skillCount: 20, schemaCount: 7, gateCommand: "scripts/batch32/run_client_gate.py", status: "READY", icon: "layers", accent: "amber" },
   { id: "M33", batch: 33, title: "Cloud / IaC / DevOps", domain: "Cloud & infrastructure", description: "架构契约、IaC IR、计划、回滚与安全边界。", skillCount: 20, schemaCount: 8, gateCommand: "scripts/batch33/run_cloud_gate.py", status: "READY", icon: "cloud", accent: "blue" },

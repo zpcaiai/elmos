@@ -1,0 +1,63 @@
+{
+  "gates": {
+    "critical_data_regressions_allowed": 0,
+    "critical_security_regressions_allowed": 0,
+    "critical_transaction_regressions_allowed": 0,
+    "critical_unknowns_allowed": 0,
+    "holdout_required": true,
+    "real_source_runtime": true,
+    "real_target_runtime": true,
+    "representative_repository_required": true,
+    "startup_required": true
+  },
+  "maintenance_owner": "ELMOS Framework Pack Maintainers",
+  "mode": "upgrade",
+  "owner": "ELMOS Java Modernization Team",
+  "pack_key": "spring-boot-2-7-18-to-3-5-3",
+  "paths": {
+    "certification": "certification",
+    "contracts": "contracts",
+    "corpus": "corpus",
+    "source_fingerprint": "source-fingerprint",
+    "support_matrix": "support-matrix.json",
+    "target_profile": "target-profile/profile.json"
+  },
+  "review_date": "2026-10-26",
+  "schema_version": 1,
+  "source": {
+    "build_tools": [
+      "maven-3.9.11"
+    ],
+    "framework": "spring-boot",
+    "framework_versions": [
+      "2.7.18"
+    ],
+    "provider_versions": {
+      "servlet": "4.0",
+      "validation": "2.0"
+    },
+    "runtime": "java",
+    "runtime_versions": [
+      "17"
+    ]
+  },
+  "status": "experimental",
+  "target": {
+    "build_tools": [
+      "maven-3.9.11"
+    ],
+    "framework": "spring-boot",
+    "framework_versions": [
+      "3.5.3"
+    ],
+    "provider_versions": {
+      "servlet": "6.1",
+      "validation": "3.1"
+    },
+    "runtime": "java",
+    "runtime_versions": [
+      "21"
+    ]
+  },
+  "version": "0.2.0"
+}

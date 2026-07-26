@@ -27,6 +27,35 @@ elmos:
     command-artifact-root: ${ELMOS_COMMAND_ARTIFACT_ROOT:}
     snapshot-helper-image-digest: ${ELMOS_SNAPSHOT_HELPER_IMAGE_DIGEST:}
     egress-proxy-image-digest: ${ELMOS_EGRESS_PROXY_IMAGE_DIGEST:}
+    spring-runtime:
+      enabled: ${ELMOS_SPRING_RUNTIME_ENABLED:false}
+      image-digest: ${ELMOS_JAVA_RUNTIME_IMAGE_DIGEST:}
+      service-artifact-root: ${ELMOS_JAVA_UPGRADE_ARTIFACT_ROOT:}
+      host-artifact-root: ${ELMOS_JAVA_UPGRADE_ARTIFACT_HOST_ROOT:}
+      hmac-secret-file: ${ELMOS_SPRING_RUNTIME_HMAC_SECRET_FILE:}
+      auth-window-seconds: ${ELMOS_SPRING_RUNTIME_AUTH_WINDOW_SECONDS:90}
+    spring-verifier:
+      enabled: ${ELMOS_EPHEMERAL_SPRING_VERIFIER_ENABLED:false}
+      image-digest: ${ELMOS_SPRING_VERIFIER_IMAGE_DIGEST:}
+      id: ${ELMOS_SPRING_VERIFIER_ID:}
+      internal-network-name: ${ELMOS_JAVA_UPGRADE_INTERNAL_NETWORK:}
+      egress-proxy-url: ${ELMOS_JAVA_UPGRADE_EGRESS_PROXY_URL:}
+      service-input-root: ${ELMOS_SPRING_VERIFIER_SERVICE_INPUT_ROOT:}
+      host-input-root: ${ELMOS_SPRING_VERIFIER_HOST_INPUT_ROOT:}
+      service-evidence-root: ${ELMOS_SPRING_VERIFIER_SERVICE_EVIDENCE_ROOT:}
+      host-evidence-root: ${ELMOS_SPRING_VERIFIER_HOST_EVIDENCE_ROOT:}
+      hmac-secret-file: ${ELMOS_SPRING_VERIFIER_HMAC_SECRET_FILE:}
+      auth-window-seconds: ${ELMOS_SPRING_VERIFIER_AUTH_WINDOW_SECONDS:90}
+    spring-transformer:
+      enabled: ${ELMOS_EPHEMERAL_SPRING_TRANSFORMER_ENABLED:false}
+      image-digest: ${ELMOS_SPRING_TRANSFORMER_IMAGE_DIGEST:}
+      internal-network-name: ${ELMOS_JAVA_UPGRADE_INTERNAL_NETWORK:}
+      egress-proxy-url: ${ELMOS_JAVA_UPGRADE_EGRESS_PROXY_URL:}
+      allowed-git-hosts: ${ELMOS_ALLOWED_GIT_HOSTS:github.com}
+      service-run-root: ${ELMOS_SPRING_TRANSFORMER_SERVICE_RUN_ROOT:}
+      host-run-root: ${ELMOS_SPRING_TRANSFORMER_HOST_RUN_ROOT:}
+      hmac-secret-file: ${ELMOS_SPRING_TRANSFORMER_HMAC_SECRET_FILE:}
+      auth-window-seconds: ${ELMOS_SPRING_TRANSFORMER_AUTH_WINDOW_SECONDS:90}
     secrets:
       enabled: ${ELMOS_WORKSPACE_SECRETS_ENABLED:false}
     provider-secret-root: ${ELMOS_PROVIDER_SECRET_ROOT:}

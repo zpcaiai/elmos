@@ -1,0 +1,43 @@
+{
+  "framework_profiles": [],
+  "gates": {
+    "critical_behavior_regressions_allowed": 0,
+    "critical_unknowns_allowed": 0,
+    "holdout_required": true,
+    "real_target_compiler": true,
+    "representative_repository_required": true,
+    "source_map_required": true
+  },
+  "maintenance_owner": "ELMOS Polyglot Route Maintainers",
+  "owner": "ELMOS Migration Platform",
+  "paths": {
+    "certification": "certification",
+    "corpus": "corpus",
+    "support_matrix": "support-matrix.json"
+  },
+  "profiles": {
+    "semantic_profile": "typed-pure-function-v1",
+    "target_profile": "typescript-native-compiler"
+  },
+  "review_date": "2026-10-26",
+  "route_key": "java-to-typescript",
+  "schema_version": 1,
+  "source": {
+    "engine_path": "engines/polyglot-route-engine/native/java/Analyzer.java",
+    "language": "java",
+    "versions": [
+      "Java 21.0.11",
+      "JDK Compiler Tree API"
+    ]
+  },
+  "status": "experimental",
+  "target": {
+    "engine_path": "engines/polyglot-route-engine/src/elmos_polyglot_route/emitter.py",
+    "language": "typescript",
+    "versions": [
+      "TypeScript 5.9.2",
+      "Node.js 26.0.0"
+    ]
+  },
+  "version": "1.0.0"
+}

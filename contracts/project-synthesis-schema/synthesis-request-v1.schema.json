@@ -1,14 +1,17 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "elmos.project-synthesis.request.v1",
-  "title": "ELMOS approved project synthesis request",
+  "$id": "elmos.project-synthesis.request.v1.1",
+  "title": "ELMOS governed project synthesis request",
   "type": "object",
   "additionalProperties": false,
   "required": [
     "schema_version",
     "project",
     "actors",
-    "entity",
+    "entities",
+    "relations",
+    "business_rules",
+    "permissions",
     "requirements",
     "acceptance_criteria",
     "constraints",
@@ -19,69 +22,302 @@
     "approval"
   ],
   "properties": {
-    "schema_version": {"const": "1.0.0"},
+    "schema_version": {"const": "1.1.0"},
     "project": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "name", "description", "namespace"],
+      "required": ["id", "name", "description", "namespace", "kind", "persistence", "auth_mode"],
       "properties": {
         "id": {"type": "string", "pattern": "^PRJ-[A-Z0-9-]+$"},
         "name": {"type": "string", "pattern": "^[a-z][a-z0-9-]{1,62}[a-z0-9]$"},
-        "description": {"type": "string", "minLength": 1},
-        "namespace": {"type": "string", "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$"}
+        "description": {"type": "string", "minLength": 1, "maxLength": 4000},
+        "namespace": {"type": "string", "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$"},
+        "kind": {"const": "api"},
+        "persistence": {"enum": ["in-memory", "postgresql"]},
+        "auth_mode": {"enum": ["none", "jwt", "oidc"]}
       }
     },
-    "actors": {"type": "array", "items": {"type": "object"}},
+    "actors": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/actor"}
+    },
+    "entities": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "items": {"$ref": "#/$defs/entity"}
+    },
+    "relations": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/relation"}
+    },
+    "business_rules": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/business_rule"}
+    },
+    "permissions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/permission"}
+    },
+    "requirements": {
+      "type": "array",
+      "minItems": 3,
+      "items": {"$ref": "#/$defs/requirement"}
+    },
+    "acceptance_criteria": {
+      "type": "array",
+      "minItems": 3,
+      "items": {"$ref": "#/$defs/acceptance_criterion"}
+    },
+    "constraints": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/constraint"}
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/assumption"}
+    },
+    "quality_attributes": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/quality_attribute"}
+    },
+    "targets": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {"$ref": "#/$defs/target"}
+    },
+    "open_questions": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/open_question"}
+    },
+    "approval": {"$ref": "#/$defs/approval"}
+  },
+  "$defs": {
+    "identifier": {"type": "string", "pattern": "^[a-z][a-z0-9_]{0,62}$"},
+    "actor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "kind"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 100},
+        "name": {"type": "string", "minLength": 1, "maxLength": 200},
+        "kind": {"enum": ["human", "service", "system"]}
+      }
+    },
+    "field": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "type", "required"],
+      "properties": {
+        "name": {"$ref": "#/$defs/identifier"},
+        "type": {"enum": ["string", "integer", "number", "boolean", "datetime"]},
+        "required": {"type": "boolean"}
+      }
+    },
     "entity": {
       "type": "object",
       "additionalProperties": false,
       "required": ["singular", "plural", "fields"],
       "properties": {
-        "singular": {"type": "string", "pattern": "^[a-z][a-z0-9_]{0,62}$"},
-        "plural": {"type": "string", "pattern": "^[a-z][a-z0-9_]{0,62}$"},
+        "singular": {"$ref": "#/$defs/identifier"},
+        "plural": {"$ref": "#/$defs/identifier"},
         "fields": {
           "type": "array",
           "minItems": 1,
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["name", "type", "required"],
-            "properties": {
-              "name": {"type": "string", "pattern": "^[a-z][a-z0-9_]{0,62}$"},
-              "type": {"enum": ["string", "integer", "number", "boolean", "datetime"]},
-              "required": {"type": "boolean"}
+          "maxItems": 50,
+          "items": {"$ref": "#/$defs/field"}
+        }
+      }
+    },
+    "relation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "target", "kind", "required"],
+      "properties": {
+        "source": {"$ref": "#/$defs/identifier"},
+        "target": {"$ref": "#/$defs/identifier"},
+        "source_field": {"$ref": "#/$defs/identifier"},
+        "target_field": {"$ref": "#/$defs/identifier"},
+        "kind": {"enum": ["one-to-one", "one-to-many", "many-to-one", "many-to-many"]},
+        "required": {"type": "boolean"}
+      },
+      "dependentRequired": {
+        "source_field": ["target_field"],
+        "target_field": ["source_field"]
+      }
+    },
+    "business_rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "statement", "enforcement"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 100},
+        "statement": {"type": "string", "minLength": 1, "maxLength": 2000},
+        "enforcement": {"enum": ["application", "database", "policy", "manual"]},
+        "predicate": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["type"],
+              "properties": {
+                "type": {"const": "record-exists-on-mutation"}
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["type", "entity", "field", "operator", "value"],
+              "properties": {
+                "type": {"const": "field-comparison"},
+                "entity": {"type": "string", "pattern": "^[a-z][a-z0-9_]{0,62}$"},
+                "field": {"type": "string", "pattern": "^[a-z][a-z0-9_]{0,62}$"},
+                "operator": {"enum": ["gte", "gt", "lte", "lt", "eq", "neq"]},
+                "value": {"type": ["string", "number", "integer", "boolean"]}
+              }
             }
-          }
+          ]
         }
       }
     },
-    "requirements": {"type": "array", "minItems": 3, "items": {"type": "object"}},
-    "acceptance_criteria": {"type": "array", "minItems": 3, "items": {"type": "object"}},
-    "constraints": {"type": "array", "items": {"type": "object"}},
-    "assumptions": {"type": "array", "items": {"type": "object"}},
-    "quality_attributes": {"type": "array", "items": {"type": "object"}},
-    "targets": {
-      "type": "array",
-      "minItems": 1,
-      "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": ["language", "framework", "runtime", "port"],
-        "properties": {
-          "language": {"enum": ["java", "python", "csharp"]},
-          "framework": {"enum": ["spring-boot", "fastapi", "aspnet-core"]},
-          "runtime": {"enum": ["21", "3.12", "10.0"]},
-          "port": {"type": "integer", "minimum": 1024, "maximum": 65535}
+    "permission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["actor", "action", "resource", "effect"],
+      "properties": {
+        "actor": {"type": "string", "minLength": 1, "maxLength": 100},
+        "action": {"enum": ["create", "read", "update", "delete", "manage"]},
+        "resource": {"type": "string", "minLength": 1, "maxLength": 100},
+        "effect": {"enum": ["allow", "deny"]}
+      }
+    },
+    "source_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_id", "location"],
+      "properties": {
+        "source_id": {"type": "string", "minLength": 1, "maxLength": 200},
+        "location": {"type": "string", "minLength": 1, "maxLength": 500}
+      }
+    },
+    "requirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "statement", "status", "priority", "risk", "source_refs"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 100},
+        "kind": {"enum": ["functional", "nonfunctional", "policy-derived"]},
+        "statement": {"type": "string", "minLength": 1, "maxLength": 2000},
+        "status": {"enum": ["draft", "approved", "rejected"]},
+        "priority": {"enum": ["must", "should", "could"]},
+        "risk": {"enum": ["low", "medium", "high", "critical"]},
+        "source_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/source_ref"}
         }
       }
     },
-    "open_questions": {"type": "array", "items": {"type": "object"}},
+    "acceptance_criterion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "requirement_ids", "statement", "verification_type"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 100},
+        "requirement_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1, "maxLength": 100}
+        },
+        "statement": {"type": "string", "minLength": 1, "maxLength": 2000},
+        "verification_type": {"enum": ["test", "analysis", "inspection", "external"]}
+      }
+    },
+    "constraint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "category", "statement", "hard"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "category": {"type": "string", "minLength": 1},
+        "statement": {"type": "string", "minLength": 1},
+        "hard": {"type": "boolean"}
+      }
+    },
+    "assumption": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "statement", "status", "impact"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "statement": {"type": "string", "minLength": 1},
+        "status": {"enum": ["proposed", "accepted", "rejected"]},
+        "impact": {"enum": ["low", "medium", "high", "critical"]}
+      }
+    },
+    "quality_attribute": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "scenario", "measure"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "name": {"type": "string", "minLength": 1},
+        "scenario": {"type": "string", "minLength": 1},
+        "measure": {"type": "string", "minLength": 1}
+      }
+    },
+    "target": {
+      "oneOf": [
+        {"$ref": "#/$defs/java_target"},
+        {"$ref": "#/$defs/python_target"},
+        {"$ref": "#/$defs/csharp_target"},
+        {"$ref": "#/$defs/typescript_target"},
+        {"$ref": "#/$defs/go_target"},
+        {"$ref": "#/$defs/kotlin_target"},
+        {"$ref": "#/$defs/php_target"},
+        {"$ref": "#/$defs/rust_target"}
+      ]
+    },
+    "target_base": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["language", "framework", "runtime", "port"],
+      "properties": {
+        "language": {"type": "string"},
+        "framework": {"type": "string"},
+        "runtime": {"type": "string"},
+        "port": {"type": "integer", "minimum": 1024, "maximum": 65535}
+      }
+    },
+    "java_target": {"allOf": [{"$ref": "#/$defs/target_base"}, {"properties": {"language": {"const": "java"}, "framework": {"const": "spring-boot"}, "runtime": {"const": "21"}, "port": {"const": 8081}}}]},
+    "python_target": {"allOf": [{"$ref": "#/$defs/target_base"}, {"properties": {"language": {"const": "python"}, "framework": {"const": "fastapi"}, "runtime": {"const": "3.12"}, "port": {"const": 8082}}}]},
+    "csharp_target": {"allOf": [{"$ref": "#/$defs/target_base"}, {"properties": {"language": {"const": "csharp"}, "framework": {"const": "aspnet-core"}, "runtime": {"const": "10.0"}, "port": {"const": 8083}}}]},
+    "typescript_target": {"allOf": [{"$ref": "#/$defs/target_base"}, {"properties": {"language": {"const": "typescript"}, "framework": {"const": "nestjs-fastify"}, "runtime": {"const": "26.0.0"}, "port": {"const": 8084}}}]},
+    "go_target": {"allOf": [{"$ref": "#/$defs/target_base"}, {"properties": {"language": {"const": "go"}, "framework": {"const": "net-http"}, "runtime": {"const": "1.25.0"}, "port": {"const": 8085}}}]},
+    "kotlin_target": {"allOf": [{"$ref": "#/$defs/target_base"}, {"properties": {"language": {"const": "kotlin"}, "framework": {"const": "ktor"}, "runtime": {"const": "2.2.20"}, "port": {"const": 8086}}}]},
+    "php_target": {"allOf": [{"$ref": "#/$defs/target_base"}, {"properties": {"language": {"const": "php"}, "framework": {"const": "native-http"}, "runtime": {"const": "8.4.12"}, "port": {"const": 8087}}}]},
+    "rust_target": {"allOf": [{"$ref": "#/$defs/target_base"}, {"properties": {"language": {"const": "rust"}, "framework": {"const": "axum"}, "runtime": {"const": "1.89.0"}, "port": {"const": 8088}}}]},
+    "open_question": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "question", "impact"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "question": {"type": "string", "minLength": 1},
+        "impact": {"enum": ["low", "medium", "high", "critical"]}
+      }
+    },
     "approval": {
       "type": "object",
+      "additionalProperties": false,
       "required": ["status"],
       "properties": {
         "status": {"enum": ["DRAFT", "APPROVED"]},
-        "approved_by": {"type": "string"},
+        "approved_by": {"type": "string", "minLength": 1},
         "approved_at": {"type": "string", "format": "date-time"},
         "approved_payload_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
       }

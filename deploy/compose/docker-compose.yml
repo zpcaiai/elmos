@@ -31,7 +31,14 @@ services:
       postgres: { condition: service_healthy }
   java-engine-worker:
     build: { context: ../.., dockerfile: apps/java-engine-worker/Dockerfile }
+    environment:
+      ELMOS_SPRING_UPGRADE_ENABLED: "false"
+      ELMOS_SPRING_UPGRADE_ROOTLESS_ATTESTED: "false"
+      ELMOS_SPRING_UPGRADE_NETWORK_POLICY_ATTESTED: "false"
+      ELMOS_SPRING_UPGRADE_VERIFIER_ENABLED: "false"
+      ELMOS_SPRING_UPGRADE_WORKSPACE_ROOT: /workspace/private-runner
     ports: ["8081:8081"]
+    volumes: ["java-engine-workspaces:/workspace/private-runner"]
   dotnet-engine-worker:
     build: { context: ../.., dockerfile: engines/dotnet-engine/Dockerfile }
     environment:
@@ -137,12 +144,30 @@ services:
     ports: ["8085:8085"]
   web-console:
     build: ../../apps/web-console
+    user: "10001:10001"
+    init: true
+    read_only: true
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    tmpfs:
+      - "/tmp:rw,noexec,nosuid,size=64m"
     environment:
       CONTROL_PLANE_BASE_URL: http://control-plane:8080
+      JAVA_ENGINE_BASE_URL: http://java-engine-worker:8081
+      ELMOS_SPRING_PROXY_ENABLED: "false"
+      ELMOS_LOCAL_RUNNER_ENABLED: "false"
+      ELMOS_TRUSTED_SINGLE_TENANT_ORGANIZATION_ID: ""
     ports: ["3000:3000"]
     depends_on: [control-plane]
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:3000/api/health?probe=readiness"]
+      interval: 15s
+      timeout: 3s
+      retries: 4
+      start_period: 20s
 volumes:
   postgres-data:
   minio-data:
   dotnet-workspaces:
   python-workspaces:
+  java-engine-workspaces:

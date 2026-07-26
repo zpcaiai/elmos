@@ -6,6 +6,7 @@ import tempfile
 from pathlib import Path
 
 from elmos_project_synthesis.intake import approve_request, create_draft
+from elmos_project_synthesis.models import SUPPORTED_LANGUAGES
 from elmos_project_synthesis.verification import verify_workspace
 from elmos_project_synthesis.workspace import generate_workspace
 
@@ -14,8 +15,9 @@ def main() -> int:
     request = approve_request(
         create_draft(
             name="work-order-service",
-            description="生成用于创建、查询和跟踪维修工单的 Java、Python 和 C# 服务。",
+            description="生成用于创建、查询和跟踪维修工单的八语言 API 服务。",
             entity="work_order",
+            languages=SUPPORTED_LANGUAGES,
         ),
         actor="acceptance:local",
         approved_at="2026-07-22T00:00:00+00:00",

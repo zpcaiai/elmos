@@ -9,7 +9,8 @@ import java.security.MessageDigest;
 import java.util.HexFormat;
 import java.util.Objects;
 
-public final class LocalContentAddressedArtifactStore implements SnapshotPorts.ArtifactStore {
+public final class LocalContentAddressedArtifactStore
+        implements SnapshotPorts.ArtifactStore, SnapshotPorts.ArtifactReader {
     private final Path root; private final long maxArtifactBytes;
     public LocalContentAddressedArtifactStore(Path root, long maxArtifactBytes) {
         this.root = Objects.requireNonNull(root).toAbsolutePath().normalize(); this.maxArtifactBytes = maxArtifactBytes;
@@ -39,7 +40,7 @@ public final class LocalContentAddressedArtifactStore implements SnapshotPorts.A
         } catch (RuntimeException error) { throw error; }
         catch (Exception error) { throw new IllegalStateException("ARTIFACT_STORE_FAILED", error); }
     }
-    public InputStream open(String reference) {
+    @Override public InputStream open(String reference) {
         String sha = parse(reference); try { return Files.newInputStream(path(sha), StandardOpenOption.READ); }
         catch (IOException error) { throw new IllegalArgumentException("artifact is unavailable", error); }
     }

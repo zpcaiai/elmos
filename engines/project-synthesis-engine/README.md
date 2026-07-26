@@ -2,15 +2,16 @@
 
 The engine turns a bounded natural-language project intent into an approved,
 hash-bound requirement baseline and then generates independent Java, Python,
-and C# starter projects. Drafting does not generate code; generation requires a
-reviewed approval artifact.
+C#, TypeScript, Go, Kotlin, PHP, and Rust starter projects. Drafting does not
+generate code; generation requires a reviewed approval artifact.
 
 ## Prerequisites
 
 - Python 3.12–3.14
 - `uv` 0.11.16 or a compatible locked runner
-- the native Java 21, Python 3.12, and/or .NET 10 toolchain for each selected
-  target you intend to verify
+- the exact native toolchain for every target you intend to verify: Java 21,
+  Python 3.12, .NET SDK 10.0.301, Node 26.0.0 with pnpm 10.12.4, Go 1.25.0,
+  Kotlin 2.2.20 on JVM 21 with Gradle 8.14.3, PHP 8.4.12, or Rust 1.89.0
 
 ```bash
 cd engines/project-synthesis-engine
@@ -27,12 +28,48 @@ uv run elmos-project-synthesis draft \
   --entity order \
   --language java \
   --language python \
+  --language typescript \
   --output synthesis-request.json
 ```
+
+For the exact Python enterprise profile, select the production tuple explicitly:
+
+```bash
+uv run elmos-project-synthesis draft \
+  --name order-service \
+  --namespace io.elmos.orders \
+  --description 'Create, list, and retrieve tenant-bound orders.' \
+  --entity order \
+  --language python \
+  --persistence postgresql \
+  --auth-mode jwt \
+  --output synthesis-request.json
+```
+
+Replace `jwt` with `oidc` for the separately verified OIDC profile. Any other
+production language, persistence, or authentication tuple is rejected instead
+of being weakened to the in-memory starter.
 
 The draft records requirements, acceptance criteria, assumptions, exact target
 profiles, and open questions. Names, descriptions, namespaces, target profiles,
 and ports are validated before the file is written.
+
+For multi-entity natural-language intake, explicit markers take precedence over
+fuzzy domain keywords. A single description can declare the complete starter
+graph, for example:
+
+```text
+实体: product, inventory;
+product字段: name:string:required, price:number:required;
+inventory字段: product_id:string:required, quantity:integer:required;
+关系: inventory.product_id -> product.id;
+规则: inventory.quantity must be non-negative;
+权限: admin:create/read/update/delete:inventory;
+权限: viewer:read:product
+```
+
+An unparseable explicit relation or permission marker creates a blocking open
+question; it is never silently replaced by a weaker interpretation.
 
 ## 2. Review and approve the baseline
 
@@ -57,6 +94,10 @@ uv run elmos-project-synthesis generate \
 The generator rejects broad output targets, non-empty unmanaged directories,
 modified managed files, unsafe paths, invalid manifests, and a changed approved
 baseline. Use a new output directory for a materially different approval.
+Generated GitHub Actions references are pinned to immutable upstream commit
+digests, and every non-`scratch` generated container base is pinned to an
+official multi-architecture manifest SHA-256. Human-readable release labels
+and image tags aid review but never determine immutable execution identity.
 
 ## 4. Run real target verification
 
@@ -68,11 +109,52 @@ uv run elmos-project-synthesis verify \
 
 Verification invokes only the selected native toolchains. A missing toolchain,
 failed build, failed test, or failed startup probe returns a non-success result.
+The optional runtime plan is also bound to the same exact toolchain selection;
+it omits a target instead of falling back to a different version:
+
+```bash
+uv run elmos-project-synthesis runtime-plan \
+  --workspace generated/order-service
+```
+
+The governed Web Console pipeline exposes a one-click runtime only for targets
+whose real build, tests, and service-identity health probe passed. Production
+mode uses a rootless container engine, per-job internal-only networking,
+loopback publication, a read-only filesystem, dropped capabilities,
+`no-new-privileges`, and CPU/memory/PID limits. Host execution is an explicit
+development-only profile and is rejected when `NODE_ENV=production`.
+After a browser refresh, an operator can recover an atomically persisted task by
+its complete UUID, tenant, actor, and a re-entered short-lived token. The token
+is not written to browser storage, and a tenant/actor mismatch fails closed.
 
 ## Evidence boundary
 
-Generated starters use in-memory persistence and do not enable authentication,
-tenant isolation, production secrets, image approval, deployment, SLO, backup,
-restore, DR, or certification. Generation status may be `GENERATED`; production
-delivery remains `NOT_RUN` and certification remains `NOT_CERTIFIED` until the
-separate governed workflows actually run.
+All eight emitters accept the exact `api` + `in-memory` + `auth=none` starter.
+Java, Python and C# are `limited`; TypeScript, Go, Kotlin, PHP and Rust are
+`experimental`. Python also accepts the exact PostgreSQL 17.5 + JWT/OIDC
+production profile. That profile emits executable default-deny authorization,
+tenant-bound queries plus forced PostgreSQL RLS, forward migrations, file-based
+Secret references, Prometheus metrics, structured request logs, Kubernetes
+security/network policy, SLO definitions, and backup/restore runbooks.
+Uncompiled rules, ambiguous production relations and every unsupported
+profile/target tuple fail closed.
+
+The two local production-profile paths are replayable separately:
+
+```bash
+uv run python scripts/run_production_acceptance.py --auth-mode jwt
+uv run python scripts/run_production_acceptance.py --auth-mode oidc
+```
+
+Each command generates a fresh managed workspace and requires the exact local
+Python and PostgreSQL toolchains. It applies forward migrations, starts the
+database and API, creates only ephemeral local identity material, and runs the
+tenant-isolation CRUD test. A successful local result does not change
+`production_delivery_status` or `external_certification_status`; both remain
+`NOT_RUN`.
+
+Generated assets and local execution are engineering evidence. Image approval,
+real provider provisioning, production migration/deployment, alert delivery,
+restore/DR exercises, assistive-technology review, independent user acceptance,
+external assessment and certification remain `NOT_RUN` / `NOT_CERTIFIED` until
+their authorized independent evidence exists.

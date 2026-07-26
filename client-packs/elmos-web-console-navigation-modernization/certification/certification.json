@@ -28,11 +28,13 @@
       "api_client": [],
       "identity": [],
       "i18n": ["zh-CN-visible-copy"],
-      "test_tools": ["playwright-chrome-150.0.7871.129"],
+      "test_tools": ["playwright-1.61.1"],
       "browsers": [
-        "chrome-150.0.7871.129"
+        "chromium-revision-1228",
+        "firefox-revision-1532",
+        "webkit-revision-2311"
       ],
-      "devices": ["desktop-1440x1000", "tablet-1024x768", "mobile-390x844"]
+      "devices": ["desktop-1440x900", "mobile-chromium-390x844", "mobile-webkit-393x852"]
     },
     "target": {
       "stack": "nextjs-app-router",
@@ -54,21 +56,24 @@
       "state": ["react-use-state-19.2.7"],
       "forms": ["react-controlled-native-validation-memory-only"],
       "styling": ["css-custom-properties"],
-      "design_system": ["elmos-console-0.4.0"],
+      "design_system": ["elmos-console-0.5.0"],
       "api_client": [],
       "identity": [],
       "i18n": ["zh-CN-visible-copy"],
-      "test_tools": ["playwright-chrome-150.0.7871.129"],
+      "test_tools": ["playwright-1.61.1"],
       "browsers": [
-        "chrome-150.0.7871.129"
+        "chromium-revision-1228",
+        "firefox-revision-1532",
+        "webkit-revision-2311"
       ],
-      "devices": ["desktop-1440x1000", "tablet-1024x768", "mobile-390x844"]
+      "devices": ["desktop-1440x900", "mobile-chromium-390x844", "mobile-webkit-393x852"]
     }
   },
   "evidence_refs": [
     "certification/local-ui-polish-evidence.json",
     "certification/local-ui-workflow-polish-evidence.json",
-    "certification/local-project-generation-evidence.json"
+    "certification/local-project-generation-evidence.json",
+    "certification/local-cross-browser-generation-evidence.json"
   ],
   "recertification_triggers": []
 }

@@ -1,14 +1,16 @@
 {
   "profile_key": "elmos-web-console-navigation-modernization-acceptance",
-  "version": "0.4.0",
+  "version": "0.6.0",
   "owner": "elmos-accessibility-review",
   "browser_matrix": [
-    "chrome-150.0.7871.129-local"
+    "chromium-revision-1228-local",
+    "firefox-revision-1532-local",
+    "webkit-revision-2311-local"
   ],
   "device_matrix": [
-    "desktop-1440x1000",
-    "tablet-1024x768",
-    "mobile-390x844"
+    "desktop-1440x900",
+    "mobile-chromium-390x844",
+    "mobile-webkit-393x852"
   ],
   "locales": [
     "zh-CN"
@@ -45,6 +47,7 @@
     "authorization_regressions": 0
   },
   "p0_journeys": [
+    "real-spring-upgrade-lifecycle",
     "workspace-navigation",
     "skills-qualification",
     "global-command-navigation",

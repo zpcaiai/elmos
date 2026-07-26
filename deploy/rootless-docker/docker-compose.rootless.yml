@@ -1,4 +1,76 @@
 services:
+  web-console:
+    networks:
+      - default
+      - java-upgrade
+    environment:
+      ELMOS_SPRING_PROXY_ENABLED: "true"
+      ELMOS_TRUSTED_SINGLE_TENANT_ORGANIZATION_ID: "${ELMOS_TRUSTED_SINGLE_TENANT_ORGANIZATION_ID:?required}"
+  java-engine-worker:
+    ports: !reset []
+    user: "10001:10001"
+    read_only: true
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    pids_limit: 512
+    mem_limit: 4g
+    cpus: 4
+    networks:
+      - java-upgrade
+    tmpfs:
+      - "/tmp:rw,noexec,nosuid,size=256m"
+    environment:
+      ELMOS_SPRING_UPGRADE_ENABLED: "true"
+      ELMOS_SPRING_UPGRADE_ROOTLESS_ATTESTED: "${ELMOS_SPRING_UPGRADE_ROOTLESS_ATTESTED:?required}"
+      ELMOS_SPRING_UPGRADE_NETWORK_POLICY_ATTESTED: "${ELMOS_SPRING_UPGRADE_NETWORK_POLICY_ATTESTED:?required}"
+      ELMOS_SPRING_UPGRADE_VERIFIER_ENABLED: "true"
+      ELMOS_SPRING_UPGRADE_VERIFIER_ID: "${ELMOS_SPRING_UPGRADE_VERIFIER_ID:?required}"
+      ELMOS_SPRING_UPGRADE_VERIFIER_BASE_URL: "http://workspace-service:8082"
+      ELMOS_SPRING_UPGRADE_VERIFIER_SECRET_FILE: "/run/secrets/elmos-verifier-hmac"
+      ELMOS_SPRING_TRANSFORMER_BROKER_ENABLED: "true"
+      ELMOS_SPRING_TRANSFORMER_BROKER_BASE_URL: "http://workspace-service:8082"
+      ELMOS_SPRING_TRANSFORMER_BROKER_SECRET_FILE: "/run/secrets/elmos-transformer-hmac"
+      ELMOS_SPRING_LOCAL_ENGINEERING_ENABLED: "false"
+      ELMOS_SPRING_RUNTIME_RUNNER_ENABLED: "true"
+      ELMOS_SPRING_RUNTIME_RUNNER_BASE_URL: "http://workspace-service:8082"
+      ELMOS_SPRING_RUNTIME_RUNNER_SECRET_FILE: "/run/secrets/elmos-runtime-hmac"
+      ELMOS_ALLOWED_GIT_HOSTS: "${ELMOS_ALLOWED_GIT_HOSTS:-github.com}"
+      ELMOS_ALLOW_FILE_REPOSITORIES: "false"
+      HTTPS_PROXY: "http://java-upgrade-egress-proxy:8080"
+      https_proxy: "http://java-upgrade-egress-proxy:8080"
+      NO_PROXY: "workspace-service,127.0.0.1,localhost"
+      no_proxy: "workspace-service,127.0.0.1,localhost"
+    volumes: !override
+      - "${ELMOS_JAVA_UPGRADE_WORKSPACE_HOST_PATH:?required}:/workspace/private-runner"
+      - "${ELMOS_VERIFIER_HMAC_SECRET_HOST_PATH:?required}:/run/secrets/elmos-verifier-hmac:ro"
+      - "${ELMOS_TRANSFORMER_HMAC_SECRET_HOST_PATH:?required}:/run/secrets/elmos-transformer-hmac:ro"
+      - "${ELMOS_SPRING_RUNTIME_HMAC_SECRET_HOST_PATH:?required}:/run/secrets/elmos-runtime-hmac:ro"
+    depends_on:
+      java-upgrade-egress-proxy:
+        condition: service_started
+      workspace-service:
+        condition: service_healthy
+  java-upgrade-egress-proxy:
+    build: { context: ../.., dockerfile: apps/egress-proxy/Dockerfile }
+    user: "10001:10001"
+    init: true
+    read_only: true
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    pids_limit: 256
+    mem_limit: 512m
+    cpus: 1
+    networks:
+      - default
+      - java-upgrade
+    tmpfs:
+      - "/tmp:rw,noexec,nosuid,size=32m"
+    environment:
+      ELMOS_PROXY_PORT: "8080"
+      ELMOS_WORKSPACE_ID: "java-upgrade-private-runner"
+      ELMOS_NETWORK_POLICY_ID: "java-upgrade-approved-egress"
+      ELMOS_NETWORK_POLICY_VERSION: "${ELMOS_NETWORK_POLICY_VERSION:?required}"
+      ELMOS_EGRESS_ALLOWED_HOSTS: "${ELMOS_JAVA_UPGRADE_EGRESS_HOSTS:-github.com,api.github.com,objects.githubusercontent.com,repo.maven.apache.org}"
   control-plane:
     user: "${ELMOS_ROOTLESS_UID:?required}:${ELMOS_ROOTLESS_GID:?required}"
     environment:
@@ -7,12 +79,18 @@ services:
       ELMOS_GITHUB_APP_PRIVATE_KEY_PATH: /run/secrets/github-app-private-key.pem
       ELMOS_SNAPSHOT_STAGING_ROOT: /var/lib/elmos/snapshot-staging
       ELMOS_SNAPSHOT_ARTIFACT_ROOT: /var/lib/elmos/snapshot-artifacts
+      ELMOS_SNAPSHOT_MATERIALIZED_ROOT: /var/lib/elmos/materialized-snapshots
     volumes:
       - "${ELMOS_SNAPSHOT_ARTIFACT_HOST_PATH:?required}:/var/lib/elmos/snapshot-artifacts"
+      - "${ELMOS_JAVA_UPGRADE_WORKSPACE_HOST_PATH:?required}:/var/lib/elmos/materialized-snapshots"
       - "${ELMOS_GITHUB_APP_PRIVATE_KEY_HOST_PATH:?required}:/run/secrets/github-app-private-key.pem:ro"
       - snapshot-staging:/var/lib/elmos/snapshot-staging
   workspace-service:
+    ports: !reset []
     user: "${ELMOS_ROOTLESS_UID:?required}:${ELMOS_ROOTLESS_GID:?required}"
+    networks:
+      - default
+      - java-upgrade
     environment:
       DOCKER_HOST: unix:///run/docker.sock
       ELMOS_WORKSPACE_DOCKER_ENABLED: "true"
@@ -22,11 +100,43 @@ services:
       ELMOS_PROVIDER_SECRET_ROOT: /run/elmos/provider-secrets
       ELMOS_SNAPSHOT_HELPER_IMAGE_DIGEST: "${ELMOS_SNAPSHOT_HELPER_IMAGE_DIGEST:?required}"
       ELMOS_EGRESS_PROXY_IMAGE_DIGEST: "${ELMOS_EGRESS_PROXY_IMAGE_DIGEST:?required}"
+      ELMOS_SPRING_RUNTIME_ENABLED: "true"
+      ELMOS_JAVA_RUNTIME_IMAGE_DIGEST: "${ELMOS_JAVA_RUNTIME_IMAGE_DIGEST:?required}"
+      ELMOS_JAVA_UPGRADE_ARTIFACT_ROOT: "/var/lib/elmos/java-verifier-evidence"
+      ELMOS_JAVA_UPGRADE_ARTIFACT_HOST_ROOT: "${ELMOS_VERIFIER_EVIDENCE_HOST_PATH:?required}"
+      ELMOS_SPRING_RUNTIME_HMAC_SECRET_FILE: "/run/secrets/elmos-runtime-hmac"
+      ELMOS_EPHEMERAL_SPRING_VERIFIER_ENABLED: "true"
+      ELMOS_SPRING_VERIFIER_IMAGE_DIGEST: "${ELMOS_SPRING_VERIFIER_IMAGE_DIGEST:?required}"
+      ELMOS_SPRING_VERIFIER_ID: "${ELMOS_SPRING_UPGRADE_VERIFIER_ID:?required}"
+      ELMOS_JAVA_UPGRADE_INTERNAL_NETWORK: "elmos-java-upgrade-internal"
+      ELMOS_JAVA_UPGRADE_EGRESS_PROXY_URL: "http://java-upgrade-egress-proxy:8080"
+      ELMOS_SPRING_VERIFIER_SERVICE_INPUT_ROOT: "/var/lib/elmos/java-upgrade-runs"
+      ELMOS_SPRING_VERIFIER_HOST_INPUT_ROOT: "${ELMOS_JAVA_UPGRADE_WORKSPACE_HOST_PATH:?required}"
+      ELMOS_SPRING_VERIFIER_SERVICE_EVIDENCE_ROOT: "/var/lib/elmos/java-verifier-evidence"
+      ELMOS_SPRING_VERIFIER_HOST_EVIDENCE_ROOT: "${ELMOS_VERIFIER_EVIDENCE_HOST_PATH:?required}"
+      ELMOS_SPRING_VERIFIER_HMAC_SECRET_FILE: "/run/secrets/elmos-verifier-hmac"
+      ELMOS_EPHEMERAL_SPRING_TRANSFORMER_ENABLED: "true"
+      ELMOS_SPRING_TRANSFORMER_IMAGE_DIGEST: "${ELMOS_SPRING_TRANSFORMER_IMAGE_DIGEST:?required}"
+      ELMOS_SPRING_TRANSFORMER_SERVICE_RUN_ROOT: "/var/lib/elmos/java-upgrade-runs"
+      ELMOS_SPRING_TRANSFORMER_HOST_RUN_ROOT: "${ELMOS_JAVA_UPGRADE_WORKSPACE_HOST_PATH:?required}"
+      ELMOS_SPRING_TRANSFORMER_HMAC_SECRET_FILE: "/run/secrets/elmos-transformer-hmac"
+      ELMOS_ALLOWED_GIT_HOSTS: "${ELMOS_ALLOWED_GIT_HOSTS:-github.com}"
     volumes:
       - "${ELMOS_ROOTLESS_DOCKER_SOCKET:?required}:/run/docker.sock"
       - "${ELMOS_SNAPSHOT_ARTIFACT_HOST_PATH:?required}:/var/lib/elmos/snapshot-artifacts:ro"
       - "${ELMOS_COMMAND_ARTIFACT_HOST_PATH:?required}:/var/lib/elmos/command-artifacts"
       - "${ELMOS_PROVIDER_SECRET_HOST_PATH:?required}:/run/elmos/provider-secrets"
+      - "${ELMOS_JAVA_UPGRADE_WORKSPACE_HOST_PATH:?required}:/var/lib/elmos/java-upgrade-runs:ro"
+      - "${ELMOS_VERIFIER_EVIDENCE_HOST_PATH:?required}:/var/lib/elmos/java-verifier-evidence"
+      - "${ELMOS_SPRING_RUNTIME_HMAC_SECRET_HOST_PATH:?required}:/run/secrets/elmos-runtime-hmac:ro"
+      - "${ELMOS_VERIFIER_HMAC_SECRET_HOST_PATH:?required}:/run/secrets/elmos-verifier-hmac:ro"
+      - "${ELMOS_TRANSFORMER_HMAC_SECRET_HOST_PATH:?required}:/run/secrets/elmos-transformer-hmac:ro"
+    healthcheck:
+      test: ["CMD", "bash", "-ec", "exec 3<>/dev/tcp/127.0.0.1/8082"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 20s
   software-delivery-platform-engine-worker:
     user: "${ELMOS_ROOTLESS_UID:?required}:${ELMOS_ROOTLESS_GID:?required}"
     read_only: true
@@ -54,3 +164,8 @@ services:
     tmpfs: ["/tmp:rw,noexec,nosuid,size=64m"]
 volumes:
   snapshot-staging:
+
+networks:
+  java-upgrade:
+    name: elmos-java-upgrade-internal
+    internal: true

@@ -114,10 +114,11 @@ class ClosureSkillsAndGenerationTests(unittest.TestCase):
             / "ProjectGenerationStudio.tsx"
         ).read_text(encoding="utf-8")
         commands = (
-            "uv run elmos-project-synthesis draft",
+            "uv run elmos-project-synthesis analyze",
             "uv run elmos-project-synthesis approve",
             "uv run elmos-project-synthesis generate",
             "uv run elmos-project-synthesis verify",
+            "uv run elmos-project-synthesis runtime-plan",
         )
         positions = [source.index(command) for command in commands]
         self.assertEqual(sorted(positions), positions)
@@ -160,6 +161,40 @@ class ClosureSkillsAndGenerationTests(unittest.TestCase):
         self.assertIn('certificationStatus: "NOT_CERTIFIED"', route)
         self.assertNotIn("child_process", route)
         self.assertNotIn("exec(", route)
+
+    def test_python_production_profile_has_one_postgresql_17_5_contract(self) -> None:
+        contract_paths = (
+            ROOT
+            / "apps"
+            / "web-console"
+            / "app"
+            / "generation"
+            / "ProjectGenerationStudio.tsx",
+            ROOT
+            / "engines"
+            / "project-synthesis-engine"
+            / "src"
+            / "elmos_project_synthesis"
+            / "container_images.py",
+            ROOT
+            / "engines"
+            / "project-synthesis-engine"
+            / "src"
+            / "elmos_project_synthesis"
+            / "python_production_target.py",
+            ROOT / "engines" / "project-synthesis-engine" / "README.md",
+            ROOT / "scripts" / "operations" / "rootless_project_runner.py",
+            ROOT / "docs" / "BUSINESS_LINE_CLOSURE_MATRIX.md",
+            ROOT / "docs" / "project-synthesis" / "BUNDLED_EMITTER_SUPPORT.md",
+        )
+        contents = "\n".join(path.read_text(encoding="utf-8") for path in contract_paths)
+        forbidden_version = ".".join(("17", "6"))
+        self.assertNotIn(forbidden_version, contents)
+        self.assertIn("PostgreSQL 17.5", contents)
+        self.assertRegex(
+            contents,
+            r"postgres:17\.5-alpine@sha256:[0-9a-f]{64}",
+        )
 
     def test_migration_drafts_close_the_local_create_read_delete_loop(self) -> None:
         source = (

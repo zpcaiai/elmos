@@ -1,0 +1,96 @@
+{
+  "capabilities": [
+    {
+      "evidence_refs": [
+        "certification/local-reference-evidence.json"
+      ],
+      "id": "web",
+      "reason": "Real local source and target builds, startup, and behavior parity passed.",
+      "status": "experimental",
+      "strategy": "framework-contract-and-real-runtime"
+    },
+    {
+      "evidence_refs": [],
+      "id": "dependency-injection",
+      "reason": "Not yet implemented",
+      "status": "detected-only",
+      "strategy": "framework-contract"
+    },
+    {
+      "evidence_refs": [
+        "certification/local-reference-evidence.json"
+      ],
+      "id": "configuration",
+      "reason": "Real local source and target builds, startup, and behavior parity passed.",
+      "status": "experimental",
+      "strategy": "framework-contract-and-real-runtime"
+    },
+    {
+      "evidence_refs": [],
+      "id": "validation",
+      "reason": "Not yet implemented",
+      "status": "detected-only",
+      "strategy": "framework-contract"
+    },
+    {
+      "evidence_refs": [],
+      "id": "authentication",
+      "reason": "Requires target-profile certification",
+      "status": "blocked",
+      "strategy": "human-review"
+    },
+    {
+      "evidence_refs": [],
+      "id": "authorization",
+      "reason": "Requires target-profile certification",
+      "status": "blocked",
+      "strategy": "human-review"
+    },
+    {
+      "evidence_refs": [],
+      "id": "persistence",
+      "reason": "Not yet implemented",
+      "status": "detected-only",
+      "strategy": "contract-mapping"
+    },
+    {
+      "evidence_refs": [],
+      "id": "transactions",
+      "reason": "Requires provider-specific certification",
+      "status": "blocked",
+      "strategy": "human-review"
+    },
+    {
+      "evidence_refs": [],
+      "id": "messaging",
+      "reason": "Not yet implemented",
+      "status": "detected-only",
+      "strategy": "retained-provider-or-adapter"
+    },
+    {
+      "evidence_refs": [],
+      "id": "cache",
+      "reason": "Not yet implemented",
+      "status": "detected-only",
+      "strategy": "provider-profile"
+    },
+    {
+      "evidence_refs": [],
+      "id": "scheduler",
+      "reason": "Not yet implemented",
+      "status": "detected-only",
+      "strategy": "provider-profile"
+    },
+    {
+      "evidence_refs": [
+        "certification/local-reference-evidence.json"
+      ],
+      "id": "lifecycle",
+      "reason": "Real local source and target builds, startup, and behavior parity passed.",
+      "status": "experimental",
+      "strategy": "framework-contract-and-real-runtime"
+    }
+  ],
+  "pack_key": "spring-boot-2-7-18-to-3-5-3",
+  "schema_version": 1
+}

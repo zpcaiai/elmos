@@ -12,6 +12,7 @@
     <Project Path="src/Elmos.Dotnet.Validation/Elmos.Dotnet.Validation.csproj" />
     <Project Path="src/Elmos.Dotnet.Infrastructure/Elmos.Dotnet.Infrastructure.csproj" />
     <Project Path="src/Elmos.Dotnet.Worker/Elmos.Dotnet.Worker.csproj" />
+    <Project Path="src/Elmos.Dotnet.SemanticCli/Elmos.Dotnet.SemanticCli.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Elmos.Dotnet.Engine.Tests/Elmos.Dotnet.Engine.Tests.csproj" />

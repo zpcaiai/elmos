@@ -1,9 +1,9 @@
 [project]
 name = "elmos-project-synthesis"
-version = "1.0.0"
+version = "1.2.0"
 description = "Evidence-bounded ELMOS project synthesis engine"
 requires-python = ">=3.12,<3.15"
-dependencies = []
+dependencies = ["cryptography==46.0.3"]
 
 [project.scripts]
 elmos-project-synthesis = "elmos_project_synthesis.cli:main"

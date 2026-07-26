@@ -1,0 +1,59 @@
+{
+  "authorization": "local-engineering-validation",
+  "behavior_case_count": 3,
+  "behavior_pass_rate": 1.0,
+  "certification_status": "EXPERIMENTAL",
+  "corpus": "holdout",
+  "critical_unknown_semantics": 0,
+  "executor": "local-toolchain",
+  "external_certification_status": "NOT_RUN",
+  "independent_verifier": "NOT_RUN",
+  "limitations": [
+    "Only typed, side-effect-free functions using return, if, literals, names, and supported binary operators are in scope.",
+    "Object graphs, exceptions, async, reflection, I/O, framework, database, and concurrency semantics remain outside this route profile."
+  ],
+  "route": "typescript-to-java",
+  "schema_version": "1.0.0",
+  "scope": "typed-pure-function-v1",
+  "semantic_ir_sha256": "sha256:008df2b5940c28cd7f4f626ddb0a3f25b0c70c1922aacb7150fdb8826ed6980e",
+  "source": {
+    "analyzer": "TypeScript Compiler API",
+    "analyzer_version": "5.9.2",
+    "language": "typescript",
+    "path": "clamp.ts",
+    "sha256": "sha256:430f057f1a72ced96fcf3633ba01befa6605ada6c11f5437a27a130b2f6fd05e"
+  },
+  "source_map_coverage": 1.0,
+  "status": "PASSED",
+  "target": {
+    "language": "java",
+    "path": "Migrated.java",
+    "sha256": "sha256:f44e9758a15a6b5a0375640e24486ac4dc2de09b0ef0880d721099e580ef51b0"
+  },
+  "validation": {
+    "case_count": 3,
+    "commands": [
+      {
+        "command": [
+          "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/javac",
+          "Migrated.java",
+          "RouteHarness.java"
+        ],
+        "stderr": "",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/java",
+          "-cp",
+          ".",
+          "RouteHarness"
+        ],
+        "stderr": "",
+        "stdout": ""
+      }
+    ],
+    "language": "java",
+    "status": "PASSED"
+  }
+}

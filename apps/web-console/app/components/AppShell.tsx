@@ -7,14 +7,22 @@ import { Icon, type IconName } from "./Icon";
 
 const navigation: Array<{ href: string; label: string; hint: string; icon: IconName }> = [
   { href: "/", label: "总览", hint: "Overview", icon: "home" },
+  { href: "/spring", label: "Spring 老项目翻新", hint: "Legacy modernization", icon: "workflow" },
+  { href: "/translation", label: "全库跨语言转换", hint: "Directed routes", icon: "code" },
+  { href: "/generation", label: "多语言项目生成", hint: "Project synthesis", icon: "spark" },
   { href: "/migration", label: "迁移工坊", hint: "Migration", icon: "route" },
   { href: "/commercialization", label: "商业化控制面", hint: "Control plane", icon: "shield" },
-  { href: "/generation", label: "多语言项目生成", hint: "Project synthesis", icon: "spark" },
   { href: "/skills", label: "Skills 与验证", hint: "Qualification", icon: "test" },
 ];
 
+const mobileNavigation = navigation.filter((item) =>
+  ["/", "/spring", "/translation", "/generation", "/skills"].includes(item.href),
+);
+
 const commands = [
   ...navigation.map((item) => ({ ...item, group: "页面", keywords: `${item.label} ${item.hint}` })),
+  { href: "/spring", label: "评估 Spring 老项目", hint: "XML / Java 8 / Jakarta / Boot 3.5.3", icon: "workflow" as IconName, group: "业务线", keywords: "Spring 老项目 翻新 XML Java 8 Jakarta Security JPA" },
+  { href: "/translation", label: "选择跨语言方向路线", hint: "Java / C# / Python / TypeScript", icon: "code" as IconName, group: "业务线", keywords: "跨语言 转换 12 routes Java C# Python TypeScript" },
   { href: "/migration", label: "查看 M36 开发者工作流", hint: "IDE / CLI / PR Bot", icon: "spark" as IconName, group: "能力", keywords: "M36 开发者 IDE CLI PR Bot" },
   { href: "/migration", label: "查看 M37 扩展 Marketplace", hint: "SDK / Signing / Revocation", icon: "box" as IconName, group: "能力", keywords: "M37 Marketplace SDK 签名 撤销" },
   { href: "/commercialization", label: "查看 B34–B38 可信链", hint: "Tenant / Runner / Evidence / Policy", icon: "shield" as IconName, group: "能力", keywords: "B34 B35 B36 B37 B38 租户 runner 证据 授权" },
@@ -141,9 +149,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <main id="main-content" className="main-content" tabIndex={-1}>{children}</main>
       </div>
       <nav className="mobile-bottom-nav" aria-label="移动端主导航">
-        {navigation.map((item) => {
+        {mobileNavigation.map((item) => {
           const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
-          return <Link href={item.href} className={active ? "active" : ""} aria-current={active ? "page" : undefined} key={item.href}><Icon name={item.icon} size={19} /><span>{item.label.replace("商业化控制面", "控制面").replace("多语言项目生成", "生成").replace("Skills 与验证", "验证")}</span></Link>;
+          return <Link href={item.href} className={active ? "active" : ""} aria-current={active ? "page" : undefined} key={item.href}><Icon name={item.icon} size={19} /><span>{item.label.replace("Spring 老项目翻新", "Spring").replace("全库跨语言转换", "转换").replace("多语言项目生成", "生成").replace("Skills 与验证", "验证")}</span></Link>;
         })}
       </nav>
       {commandOpen && <div className="command-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) closeCommand(); }}>

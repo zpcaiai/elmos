@@ -216,7 +216,7 @@ export function MigrationStudio() {
           <div className="catalog-panel">
             <div className="catalog-toolbar">
               <label className="search-field"><Icon name="search" size={17} /><span className="sr-only">搜索能力</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜索能力、Batch 或领域" /></label>
-              <label className="select-field"><Icon name="filter" size={16} /><span className="sr-only">状态筛选</span><select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}><option value="ALL">全部状态</option><option value="READY">契约就绪</option><option value="EXPERIMENTAL">实验性</option></select></label>
+              <label className="select-field"><Icon name="filter" size={16} /><span className="sr-only">状态筛选</span><select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}><option value="ALL">全部状态</option><option value="READY">契约就绪</option><option value="REVIEW">待审阅</option><option value="BLOCKED">已阻断</option><option value="EXPERIMENTAL">实验性</option></select></label>
             </div>
             <div className="catalog-summary-bar" aria-live="polite"><span>显示 <strong>{visibleCapabilities.length}</strong> / {capabilities.length} 个能力</span>{filtersActive && <button type="button" onClick={clearFilters}>清除筛选</button>}</div>
             {drafts.length > 0 && <div className="draft-list">{drafts.map((draft) => <div className="draft-row" key={draft.id}><span className="capability-icon accent-cyan"><Icon name="spark" size={18} /></span><div><strong>{draft.name}</strong><small>{draft.source} → {draft.target} · {draft.scope}{draft.capabilityId ? ` · ${draft.capabilityId}` : ""}</small></div><StatusChip status="DRAFT" compact /><button type="button" className="icon-button" aria-label={`删除草稿 ${draft.name}`} onClick={() => removeDraft(draft.id)}><Icon name="close" size={13} /></button></div>)}</div>}
@@ -247,6 +247,8 @@ export function MigrationStudio() {
               <div><dt>外部证据</dt><dd className="warning-text">NOT_RUN</dd></div>
             </dl>
             <div className="gate-block"><span>唯一认证门禁</span><code>{selectedCapability.gateCommand}</code></div>
+            {selectedCapability.id === "M29" && <div className="feature-callout"><Icon name="code" size={17} /><div><strong>12 个本地实验 Profile 已精确验证</strong><small>结论只覆盖 typed-pure-function-v1；整库拆分、独立验证与外部认证仍需单独证据。</small><a className="text-link" href="/translation">打开跨语言转换 <Icon name="arrow" size={13} /></a></div></div>}
+            {selectedCapability.id === "M30" && <div className="feature-callout"><Icon name="workflow" size={17} /><div><strong>Spring 老项目专属流程已接入</strong><small>支持经典 Spring XML、注解与旧 Boot 画像；外部运行与升级认证仍为 NOT_RUN。</small><a className="text-link" href="/spring">打开 Spring 翻新 <Icon name="arrow" size={13} /></a></div></div>}
             {selectedCapability.id === "M36" && <div className="feature-callout"><Icon name="spark" size={17} /><div><strong>开发者预览已接入</strong><small>支持来源—目标导航、受保护区域和无写入预览；真实 IDE Host 证据仍未运行。</small></div></div>}
             <div className="detail-actions"><button className="button button-secondary" onClick={() => openDialog(selectedCapability.id)}>以此创建草稿</button><a className="icon-button bordered" href={`/api/capabilities/migration`} target="_blank" rel="noreferrer" aria-label="打开能力 API"><Icon name="external" size={17} /></a></div>
           </aside>}

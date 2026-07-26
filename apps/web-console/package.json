@@ -7,7 +7,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "check": "tsc --noEmit && next build"
+    "check": "tsc --noEmit && next build",
+    "test:e2e": "playwright test",
+    "test:e2e:chromium": "playwright test --project=chromium --project=mobile-chromium"
   },
   "dependencies": {
     "next": "16.2.10",
@@ -15,6 +17,8 @@
     "react-dom": "19.2.7"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.12.1",
+    "@playwright/test": "1.61.1",
     "@types/node": "24.3.0",
     "@types/react": "19.1.10",
     "@types/react-dom": "19.1.7",

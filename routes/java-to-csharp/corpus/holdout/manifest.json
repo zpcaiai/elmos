@@ -1,0 +1,9 @@
+{
+  "cases_file": "cases.json",
+  "corpus": "holdout",
+  "independent": true,
+  "rule_authoring_input": false,
+  "schema_version": 1,
+  "source_file": "Clamp.java",
+  "source_language": "java"
+}

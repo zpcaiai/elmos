@@ -1,0 +1,156 @@
+{
+  "schema_version": "1.0",
+  "evidence_class": "LOCAL_ENGINEERING",
+  "certification_eligible": false,
+  "executed_at": "2026-07-26T13:30:40Z",
+  "completed_at": "2026-07-26T13:42:44Z",
+  "route": {
+    "pack_key": "spring-boot-2-7-18-to-3-5-3",
+    "source_spring_boot": "2.7.18",
+    "source_java": "17",
+    "source_build": "maven-3.9.11",
+    "target_spring_boot": "3.5.3",
+    "target_java": "21",
+    "target_build": "maven-3.9.11",
+    "rewrite_spring": "6.35.0",
+    "rewrite_maven_plugin": "6.44.0"
+  },
+  "run": {
+    "run_id": "233e249e-2d7d-45a4-bbeb-8df27e9bacfc",
+    "retry_of_run_id": "b6bf5a66-e602-4a98-b922-be7442751e0f",
+    "attempt": 5,
+    "source_mode": "MATERIALIZED_SNAPSHOT",
+    "fixture_commit_identity": "0000000000000000000000000000000000000000",
+    "snapshot_id": "snapshot-reference",
+    "snapshot_sha256": "813fc35bd93b54b826614bdd0650be6e7141274a05336f6a7bf19b18a11e9003",
+    "status": "SUCCEEDED",
+    "stage": "READY"
+  },
+  "transformation": {
+    "execution_status": "PASSED_LOCAL",
+    "one_shot_transformer_api_status": "PASSED_LOCAL",
+    "one_shot_transformer_run_id": "ab8c0a30-4e9d-4127-9806-f28769f1bd3c",
+    "one_shot_transformer_maven_offline": true,
+    "one_shot_transformer_fcm_sha256": "aac9014de94c17c0d06f8f939246214a16c3fb67ea3e8c07daeff20c5ddd9f33",
+    "one_shot_transformer_artifact_sha256": "aba49d4836a6b6e785273e56d7c241d143dae837b285abd3acb47072a93c4256",
+    "openrewrite_actual_execution": true,
+    "fcm_extracted_before_transformation": true,
+    "source_snapshot_revalidated_after_baseline": true,
+    "source_snapshot_mutation_outside_disposable_build_outputs": 0,
+    "secret_file_copy_exclusions_enforced": true,
+    "source_build_and_startup": "PASSED_LOCAL",
+    "target_build_and_tests": "PASSED_LOCAL",
+    "source_tests_executed": 1,
+    "target_tests_executed": 1,
+    "source_tests_skipped": 0,
+    "target_tests_skipped": 0,
+    "preserved_test_identities": [
+      "io.elmos.reference.OrderControllerTest#preservesOrderContract"
+    ]
+  },
+  "authority_separation": {
+    "status": "PASSED_LOCAL_STRUCTURE",
+    "transformer_writable_subtree": "execution/",
+    "authority_state_outside_transformer_subtree": true,
+    "authority_fcm_path": "evidence/framework-contract-model.json",
+    "authority_fcm_sha256": "aac9014de94c17c0d06f8f939246214a16c3fb67ea3e8c07daeff20c5ddd9f33",
+    "output_realpath_confinement": true,
+    "artifact_digest_recomputed_before_promotion": true,
+    "exact_fcm_tuple_revalidated_before_promotion": true,
+    "product_bind_boundary_execution": "NOT_RUN"
+  },
+  "reproducibility": {
+    "status": "PASSED_LOCAL",
+    "cross_jvm_runs": [
+      "b6bf5a66-e602-4a98-b922-be7442751e0f",
+      "233e249e-2d7d-45a4-bbeb-8df27e9bacfc"
+    ],
+    "fcm_byte_identical": true,
+    "fcm_sha256": "aac9014de94c17c0d06f8f939246214a16c3fb67ea3e8c07daeff20c5ddd9f33",
+    "download_zip_digest_identical": true,
+    "download_zip_sha256": "aba49d4836a6b6e785273e56d7c241d143dae837b285abd3acb47072a93c4256"
+  },
+  "controlled_git_import": {
+    "status": "PASSED_LOCAL",
+    "run_id": "fadb4773-8495-4122-81e5-78557a756888",
+    "transport": "file",
+    "public_https": false,
+    "requested_ref": "main",
+    "expected_commit_sha": "5cd998f2014c38fb22439abb020b48f651ce763f",
+    "resolved_commit_sha": "5cd998f2014c38fb22439abb020b48f651ce763f",
+    "snapshot_id": "snapshot-813fc35bd93b54b826614bdd",
+    "snapshot_sha256": "813fc35bd93b54b826614bdd0650be6e7141274a05336f6a7bf19b18a11e9003",
+    "independent_validation": "PASS",
+    "download_zip_sha256": "aba49d4836a6b6e785273e56d7c241d143dae837b285abd3acb47072a93c4256"
+  },
+  "artifact": {
+    "download_zip_sha256": "aba49d4836a6b6e785273e56d7c241d143dae837b285abd3acb47072a93c4256",
+    "download_zip_bytes": 4315,
+    "download_round_trip_digest_match": true
+  },
+  "local_verifier_service": {
+    "status": "PASSED_LOCAL",
+    "verifier_id": "local-independent-verifier",
+    "fresh_artifact_workspace": true,
+    "transform_capability": false,
+    "physically_separate_process": true,
+    "organizationally_independent": false,
+    "maven_offline": true,
+    "dependency_cache_immutable": false,
+    "decision_sha256": "b809a196e357d982f281c279e311caaf5728bbc377cb06a69765122699132402",
+    "log_sha256": "c7fb5bdf51646dcdad12357dc9e228b9fdab5ec230ee42ef76d81e7dc9724050",
+    "log_bytes": 6074,
+    "verified_runtime_jar_sha256": "dce980cbfceade642b2de8cb00c27028e310e26b6f6fca5f99e4b4addb70a9ec",
+    "verified_runtime_jar_bytes": 25162630
+  },
+  "local_runtime_probe": {
+    "execution_status": "PASSED_LOCAL",
+    "artifact_source": "VERIFIER_BUILT_JAR",
+    "health_path": "/actuator/health",
+    "health_status": "UP",
+    "representative_endpoint": "/api/orders/42",
+    "representative_response_contract": "PASSED_LOCAL",
+    "graceful_stop": "PASSED_LOCAL"
+  },
+  "product_runtime_api": {
+    "execution_status": "BLOCKED_EXPECTED",
+    "error_code": "ISOLATED_APPLICATION_RUNNER_NOT_CONFIGURED",
+    "reason": "The current host did not expose an attested rootless Docker daemon."
+  },
+  "ui_engineering_evidence": {
+    "production_build": "PASSED_LOCAL",
+    "journey_tests": 10,
+    "journey_failures": 0,
+    "browsers": [
+      "chromium",
+      "firefox",
+      "webkit",
+      "mobile-chromium",
+      "mobile-webkit"
+    ],
+    "journeys": [
+      "successful import-to-stop lifecycle with mocked API boundary",
+      "visible fail-closed unsupported-route lifecycle"
+    ]
+  },
+  "not_run": {
+    "public_git_import": "NOT_RUN",
+    "github_app_private_repository": "NOT_RUN",
+    "ephemeral_rootless_transformer": "NOT_RUN",
+    "rootless_transformer_execution_bind_isolation": "NOT_RUN",
+    "ephemeral_rootless_verifier": "NOT_RUN",
+    "isolated_rootless_runtime": "NOT_RUN",
+    "customer_repository": "NOT_RUN",
+    "independent_external_review": "NOT_RUN",
+    "holdout_customer_workload": "NOT_RUN"
+  },
+  "limitations": [
+    "This execution used the checked-in development fixture through a materialized Snapshot, not a public or private customer Git repository.",
+    "The Git clone, exact-ref and Commit-lock path was executed against a controlled local Git repository; public HTTPS Git and GitHub App private-repository imports remain NOT_RUN.",
+    "The verifier ran as a separate local service but was executed by the same operator and is not independent external review.",
+    "The local verifier used an offline host Maven cache that was not mounted read-only; the product image uses a digest-bound immutable cache, but that rootless path remains NOT_RUN.",
+    "The local execution adapter proves logical execution/authority path separation and deterministic promotion checks; only the product rootless bind can enforce that filesystem boundary against hostile repository code, and it remains NOT_RUN on this host.",
+    "The verified JAR was started as local engineering evidence; the product runtime API correctly failed closed because no attested rootless daemon was available.",
+    "Raw run files were generated under a temporary local workspace and are not promoted to immutable certification Evidence by this summary."
+  ]
+}

@@ -26,7 +26,9 @@ public final class SnapshotCaptureService {
 
     public SnapshotModel.RepositorySnapshot capture(CaptureRequest request) {
         validate(request);
-        try (EphemeralCredential credential = credentials.issue(request.repositoryId(), request.repositoryExternalId(), request.installationExternalId())) {
+        try (EphemeralCredential credential = credentials.issue(
+                request.organizationId(), request.repositoryId(),
+                request.repositoryExternalId(), request.installationExternalId())) {
             SnapshotPorts.ResolvedRef resolved = refs.resolve(request.repositoryId(), request.requestedRef(), credential);
             if (resolved.commitSha() == null || !resolved.commitSha().matches("[0-9a-f]{40}")) throw new SecurityException("SCM did not resolve an immutable commit SHA");
             SnapshotModel.RepositorySnapshot reusable = snapshots.findReusable(request.repositoryId(), resolved.commitSha(), SCHEMA_VERSION);

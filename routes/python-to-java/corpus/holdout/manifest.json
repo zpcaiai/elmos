@@ -1,0 +1,9 @@
+{
+  "cases_file": "cases.json",
+  "corpus": "holdout",
+  "independent": true,
+  "rule_authoring_input": false,
+  "schema_version": 1,
+  "source_file": "clamp.py",
+  "source_language": "python"
+}
