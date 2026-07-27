@@ -213,6 +213,20 @@ def _runtime_tool(language: str, tool_name: str, fallback: str | None = None) ->
     return selected or _resolve_tool(tool_name, fallback)
 
 
+def _planned_runtime_tool(
+    language: str,
+    tool_name: str,
+    fallback: str | None = None,
+) -> tuple[str, dict[str, str]]:
+    tool = _runtime_tool(language, tool_name, fallback)
+    if tool is not None:
+        return tool, {"execution_status": "READY"}
+    return tool_name, {
+        "execution_status": "NOT_RUN",
+        "blocking_reason": f"EXACT_TOOLCHAIN_NOT_AVAILABLE:{language}:{tool_name}",
+    }
+
+
 def _health_response_matches(
     http_status: int,
     payload: Any,
@@ -363,8 +377,8 @@ def runtime_commands(workspace: Path) -> list[dict[str, Any]]:
             jars = [
                 path for path in sorted((root / "java" / "target").glob("*.jar")) if not path.name.endswith(".original")
             ]
-            tool = _runtime_tool("java", "java")
-            if jars and tool:
+            tool, execution = _planned_runtime_tool("java", "java")
+            if jars:
                 commands.append(
                     {
                         "language": language,
@@ -372,12 +386,13 @@ def runtime_commands(workspace: Path) -> list[dict[str, Any]]:
                         "command": [tool, "-jar", str(jars[0])],
                         "environment": {"PORT": str(port), "SERVER_ADDRESS": "127.0.0.1"},
                         "port": port,
+                        **execution,
                     }
                 )
         elif language == "python":
             packages = sorted((root / "python" / "src").glob("*/__main__.py"))
-            tool = _runtime_tool("python", "uv", "/opt/homebrew/bin/uv")
-            if packages and tool:
+            tool, execution = _planned_runtime_tool("python", "uv", "/opt/homebrew/bin/uv")
+            if packages:
                 storage = application.get("storage")
                 auth_mode = application.get("auth_mode")
                 state = root / "python" / ".elmos-runtime"
@@ -397,6 +412,7 @@ def runtime_commands(workspace: Path) -> list[dict[str, Any]]:
                     },
                     "providers": ["postgresql"] if storage == "postgresql" else [],
                     "port": port,
+                    **execution,
                 }
                 if storage == "postgresql":
                     integration_environment = {
@@ -420,8 +436,8 @@ def runtime_commands(workspace: Path) -> list[dict[str, Any]]:
                 commands.append(plan)
         elif language == "csharp":
             projects = sorted((root / "dotnet" / "src").glob("*/*.csproj"))
-            tool = _runtime_tool("csharp", "dotnet", "/opt/homebrew/bin/dotnet")
-            if projects and tool:
+            tool, execution = _planned_runtime_tool("csharp", "dotnet", "/opt/homebrew/bin/dotnet")
+            if projects:
                 commands.append(
                     {
                         "language": language,
@@ -437,74 +453,75 @@ def runtime_commands(workspace: Path) -> list[dict[str, Any]]:
                         ],
                         "environment": {"ASPNETCORE_URLS": f"http://127.0.0.1:{port}"},
                         "port": port,
+                        **execution,
                     }
                 )
         elif language == "typescript":
-            tool = _runtime_tool("typescript", "pnpm")
-            if tool:
-                commands.append(
-                    {
-                        "language": language,
-                        "cwd": str(root / "typescript"),
-                        "command": [tool, "start"],
-                        "environment": {"PORT": str(port), "HOST": "127.0.0.1"},
-                        "port": port,
-                    }
-                )
+            tool, execution = _planned_runtime_tool("typescript", "pnpm")
+            commands.append(
+                {
+                    "language": language,
+                    "cwd": str(root / "typescript"),
+                    "command": [tool, "start"],
+                    "environment": {"PORT": str(port), "HOST": "127.0.0.1"},
+                    "port": port,
+                    **execution,
+                }
+            )
         elif language == "go":
-            tool = _runtime_tool("go", "go")
-            if tool:
-                commands.append(
-                    {
-                        "language": language,
-                        "cwd": str(root / "go"),
-                        "command": [tool, "run", "."],
-                        "environment": {"PORT": str(port), "HOST": "127.0.0.1"},
-                        "port": port,
-                    }
-                )
+            tool, execution = _planned_runtime_tool("go", "go")
+            commands.append(
+                {
+                    "language": language,
+                    "cwd": str(root / "go"),
+                    "command": [tool, "run", "."],
+                    "environment": {"PORT": str(port), "HOST": "127.0.0.1"},
+                    "port": port,
+                    **execution,
+                }
+            )
         elif language == "kotlin":
-            tool = _runtime_tool("kotlin", "gradle")
-            if tool:
-                commands.append(
-                    {
-                        "language": language,
-                        "cwd": str(root / "kotlin"),
-                        "command": [tool, "--no-daemon", "run"],
-                        "environment": {"PORT": str(port), "HOST": "127.0.0.1"},
-                        "port": port,
-                        "startup_timeout_seconds": 120,
-                    }
-                )
+            tool, execution = _planned_runtime_tool("kotlin", "gradle")
+            commands.append(
+                {
+                    "language": language,
+                    "cwd": str(root / "kotlin"),
+                    "command": [tool, "--no-daemon", "run"],
+                    "environment": {"PORT": str(port), "HOST": "127.0.0.1"},
+                    "port": port,
+                    "startup_timeout_seconds": 120,
+                    **execution,
+                }
+            )
         elif language == "php":
-            tool = _runtime_tool("php", "php")
-            if tool:
-                commands.append(
-                    {
-                        "language": language,
-                        "cwd": str(root / "php"),
-                        "command": [
-                            tool,
-                            "-S",
-                            f"127.0.0.1:{port}",
-                            "public/index.php",
-                        ],
-                        "environment": {"PORT": str(port)},
-                        "port": port,
-                    }
-                )
+            tool, execution = _planned_runtime_tool("php", "php")
+            commands.append(
+                {
+                    "language": language,
+                    "cwd": str(root / "php"),
+                    "command": [
+                        tool,
+                        "-S",
+                        f"127.0.0.1:{port}",
+                        "public/index.php",
+                    ],
+                    "environment": {"PORT": str(port)},
+                    "port": port,
+                    **execution,
+                }
+            )
         elif language == "rust":
-            tool = _runtime_tool("rust", "cargo")
-            if tool:
-                commands.append(
-                    {
-                        "language": language,
-                        "cwd": str(root / "rust"),
-                        "command": [tool, "run", "--locked"],
-                        "environment": {"PORT": str(port), "HOST": "127.0.0.1"},
-                        "port": port,
-                    }
-                )
+            tool, execution = _planned_runtime_tool("rust", "cargo")
+            commands.append(
+                {
+                    "language": language,
+                    "cwd": str(root / "rust"),
+                    "command": [tool, "run", "--locked"],
+                    "environment": {"PORT": str(port), "HOST": "127.0.0.1"},
+                    "port": port,
+                    **execution,
+                }
+            )
     return commands
 
 
