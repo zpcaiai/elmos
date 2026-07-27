@@ -3,6 +3,8 @@ from __future__ import annotations
 import ast
 import json
 import re
+import subprocess
+import tempfile
 import tomllib
 import zipfile
 from pathlib import Path
@@ -11,6 +13,7 @@ from xml.etree import ElementTree
 import pytest
 import yaml
 
+import elmos_project_synthesis.cleanup as cleanup
 import elmos_project_synthesis.verification as verification
 from elmos_project_synthesis.cli import _archive_workspace, main
 from elmos_project_synthesis.intake import approve_request, create_draft
@@ -494,6 +497,26 @@ def test_python_enterprise_profile_renders_durable_auth_enforcement(auth_mode: s
     assert workflow["jobs"]["test"]["services"]["postgres"]["image"].startswith("postgres:17.5-alpine@sha256:")
     assert json.loads(files["security/policy-contract.json"])["default_decision"] == "deny"
     assert json.loads(files["operations/slo-contract.json"])["status"] == "DEFINED_NOT_EVIDENCED"
+    assert (
+        json.loads(files["observability/observability-contract.json"])["metrics"]["implementation_status"]
+        == "GENERATED"
+    )
+    assert "pg_dump" in files["operations/backup.sh"]
+    assert "sha256sum" in files["operations/backup.sh"]
+    assert "sha256sum -c" in files["operations/restore.sh"]
+    assert "pg_restore" in files["operations/restore.sh"]
+    assert files["database/postgres-image.txt"].startswith("postgres:17.5-alpine@sha256:")
+    deployment = files["deploy/kubernetes.yaml"]
+    assert "readOnlyRootFilesystem: true" in deployment
+    assert "runAsNonRoot: true" in deployment
+    assert "kind: NetworkPolicy" in deployment
+    assert "policyTypes:" in deployment
+    assert "- Egress" in deployment
+    assert "kind: PodDisruptionBudget" in deployment
+    assert "defaultMode: 256" in deployment
+    dockerfile = files["python/Dockerfile"]
+    assert "USER 10001:10001" in dockerfile
+    assert "HEALTHCHECK" in dockerfile
     tomllib.loads(files["python/pyproject.toml"])
     for path, content in files.items():
         if path.startswith("python/") and path.endswith(".py"):
@@ -603,6 +626,109 @@ def test_toolchain_version_mismatch_remains_not_run() -> None:
     assert matched is False
     assert results[0]["status"] == "NOT_RUN"
     assert "EXPECTED:" in results[0]["output"]
+
+
+def test_native_verification_timeout_fails_closed(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def time_out(*args: object, **kwargs: object) -> None:
+        raise subprocess.TimeoutExpired(["native-build"], 30, output="partial output")
+
+    monkeypatch.setattr(verification.subprocess, "run", time_out)
+    result = verification._run(
+        ["native-build"],
+        tmp_path,
+        language="test-runtime",
+        timeout_seconds=30,
+    )
+
+    assert result["status"] == "FAILED"
+    assert result["exit_code"] is None
+    assert "COMMAND_TIMEOUT:30s" in result["output"]
+    assert "partial output" in result["output"]
+
+
+def test_acceptance_cleanup_retries_transient_directory_not_empty(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    temporary = Path(tempfile.mkdtemp(prefix="elmos-project-synthesis-test-"))
+    (temporary / "artifact.txt").write_text("bounded fixture", encoding="utf-8")
+    original_rmtree = cleanup.shutil.rmtree
+    attempts = 0
+
+    def transient_rmtree(path: Path) -> None:
+        nonlocal attempts
+        attempts += 1
+        if attempts == 1:
+            raise OSError(66, "Directory not empty")
+        original_rmtree(path)
+
+    monkeypatch.setattr(cleanup.shutil, "rmtree", transient_rmtree)
+    monkeypatch.setattr(cleanup.time, "sleep", lambda _: None)
+
+    assert (
+        cleanup.cleanup_acceptance_directory(
+            temporary,
+            expected_prefix="elmos-project-synthesis-test-",
+        )
+        is None
+    )
+    assert attempts == 2
+    assert not temporary.exists()
+
+
+def test_acceptance_cleanup_rejects_unowned_or_unbounded_targets(tmp_path: Path) -> None:
+    with pytest.raises(ValueError, match="ACCEPTANCE_CLEANUP_PATH_UNSAFE"):
+        cleanup.cleanup_acceptance_directory(
+            tmp_path,
+            expected_prefix="elmos-project-synthesis-",
+        )
+    with pytest.raises(ValueError, match="ACCEPTANCE_CLEANUP_PATH_UNSAFE"):
+        cleanup.cleanup_acceptance_directory(
+            Path(tempfile.gettempdir()) / "elmos-project-synthesis-bounded",
+            expected_prefix="elmos-project-synthesis-",
+            attempts=11,
+        )
+
+
+def test_python_lock_cache_is_content_addressed_and_owner_only(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    workspace = tmp_path / "python"
+    workspace.mkdir()
+    (workspace / "pyproject.toml").write_text("[project]\nname='cached-project'\n", encoding="utf-8")
+    expected = "version = 1\nrevision = 3\n"
+    (workspace / "uv.lock").write_text(expected, encoding="utf-8")
+    cache = tmp_path / "lock-cache"
+    monkeypatch.setenv("ELMOS_PROJECT_SYNTHESIS_LOCK_CACHE", str(cache))
+
+    verification._store_cached_python_lock(workspace)
+    entries = list(cache.glob("*.lock"))
+    assert len(entries) == 1
+    assert entries[0].stat().st_mode & 0o077 == 0
+
+    (workspace / "uv.lock").unlink()
+    assert verification._restore_cached_python_lock(workspace) is True
+    assert (workspace / "uv.lock").read_text(encoding="utf-8") == expected
+
+
+def test_python_lock_cache_rejects_permissive_entries(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    workspace = tmp_path / "python"
+    workspace.mkdir()
+    (workspace / "pyproject.toml").write_text("[project]\nname='cached-project'\n", encoding="utf-8")
+    cache = tmp_path / "lock-cache"
+    monkeypatch.setenv("ELMOS_PROJECT_SYNTHESIS_LOCK_CACHE", str(cache))
+    entry = verification._python_lock_cache_path(workspace)
+    entry.write_text("tampered", encoding="utf-8")
+    entry.chmod(0o644)
+
+    with pytest.raises(RuntimeError, match="PYTHON_LOCK_CACHE_ENTRY_UNSAFE"):
+        verification._restore_cached_python_lock(workspace)
 
 
 def test_toolchain_selection_uses_an_exact_fallback(

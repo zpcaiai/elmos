@@ -6,6 +6,7 @@ services:
     environment:
       ELMOS_SPRING_PROXY_ENABLED: "true"
       ELMOS_TRUSTED_SINGLE_TENANT_ORGANIZATION_ID: "${ELMOS_TRUSTED_SINGLE_TENANT_ORGANIZATION_ID:?required}"
+      ELMOS_CONTROL_PLANE_BASE_URL: "http://control-plane:8080"
   java-engine-worker:
     ports: !reset []
     user: "10001:10001"
@@ -76,7 +77,13 @@ services:
     environment:
       ELMOS_GITHUB_APP_ENABLED: "${ELMOS_GITHUB_APP_ENABLED:-false}"
       ELMOS_GITHUB_APP_ID: "${ELMOS_GITHUB_APP_ID:-}"
+      ELMOS_GITHUB_APP_SLUG: "${ELMOS_GITHUB_APP_SLUG:-}"
+      ELMOS_GITHUB_APP_CLIENT_ID: "${ELMOS_GITHUB_APP_CLIENT_ID:-}"
       ELMOS_GITHUB_APP_PRIVATE_KEY_PATH: /run/secrets/github-app-private-key.pem
+      ELMOS_GITHUB_APP_CLIENT_SECRET_PATH: /run/secrets/github-app-client-secret
+      ELMOS_GITHUB_ONBOARDING_STATE_SECRET_PATH: /run/secrets/github-onboarding-state
+      ELMOS_GITHUB_APP_CALLBACK_URL: "${ELMOS_GITHUB_APP_CALLBACK_URL:-}"
+      ELMOS_GITHUB_APP_SUCCESS_URL: "${ELMOS_GITHUB_APP_SUCCESS_URL:-}"
       ELMOS_SNAPSHOT_STAGING_ROOT: /var/lib/elmos/snapshot-staging
       ELMOS_SNAPSHOT_ARTIFACT_ROOT: /var/lib/elmos/snapshot-artifacts
       ELMOS_SNAPSHOT_MATERIALIZED_ROOT: /var/lib/elmos/materialized-snapshots
@@ -84,6 +91,8 @@ services:
       - "${ELMOS_SNAPSHOT_ARTIFACT_HOST_PATH:?required}:/var/lib/elmos/snapshot-artifacts"
       - "${ELMOS_JAVA_UPGRADE_WORKSPACE_HOST_PATH:?required}:/var/lib/elmos/materialized-snapshots"
       - "${ELMOS_GITHUB_APP_PRIVATE_KEY_HOST_PATH:?required}:/run/secrets/github-app-private-key.pem:ro"
+      - "${ELMOS_GITHUB_APP_CLIENT_SECRET_HOST_PATH:?required}:/run/secrets/github-app-client-secret:ro"
+      - "${ELMOS_GITHUB_ONBOARDING_STATE_SECRET_HOST_PATH:?required}:/run/secrets/github-onboarding-state:ro"
       - snapshot-staging:/var/lib/elmos/snapshot-staging
   workspace-service:
     ports: !reset []

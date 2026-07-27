@@ -17,7 +17,6 @@ from pathlib import Path
 from types import ModuleType
 from typing import Any
 
-
 ROOT = Path(__file__).resolve().parents[1]
 PACKAGE_NAME = "elmos-batch81-95-slightly-strict-test-skills"
 PACKAGE_ROOT = ROOT / PACKAGE_NAME
@@ -83,7 +82,15 @@ def copy_exact(source: Path, destination: Path) -> None:
 
 def load_generator() -> ModuleType:
     if not SKILL_GENERATOR.is_file():
-        raise SystemExit(f"Skill interface generator is missing: {SKILL_GENERATOR}")
+        compatibility = ROOT / "tooling" / "skill_creator_tools.py"
+        spec = importlib.util.spec_from_file_location(
+            "batch81_95_repository_interface_generator", compatibility
+        )
+        if spec is None or spec.loader is None:
+            raise SystemExit(f"Cannot load repository Skill interface generator: {compatibility}")
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module
     spec = importlib.util.spec_from_file_location("batch81_95_test_interface_generator", SKILL_GENERATOR)
     if spec is None or spec.loader is None:
         raise SystemExit(f"Cannot load Skill interface generator: {SKILL_GENERATOR}")
@@ -273,9 +280,10 @@ def validate_source(
         raise SystemExit("Test package manifest identity or exact counts are invalid")
     if manifest.get("source_package_sha256") != EXPECTED_SOURCE_ZIP_SHA256:
         raise SystemExit("Test package source ZIP digest declaration is invalid")
-    if require_source_zip:
-        if not SOURCE_ZIP.is_file() or sha256_file(SOURCE_ZIP) != EXPECTED_SOURCE_ZIP_SHA256:
-            raise SystemExit("Declared Language Pack source ZIP is missing or has the wrong digest")
+    if require_source_zip and (
+        not SOURCE_ZIP.is_file() or sha256_file(SOURCE_ZIP) != EXPECTED_SOURCE_ZIP_SHA256
+    ):
+        raise SystemExit("Declared Language Pack source ZIP is missing or has the wrong digest")
 
     test_skills = manifest.get("test_skills")
     if not isinstance(test_skills, list) or len(test_skills) != EXPECTED_TEST_SKILLS:

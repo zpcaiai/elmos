@@ -25,6 +25,14 @@ elmos:
       enabled: ${ELMOS_GITHUB_APP_ENABLED:false}
       id: ${ELMOS_GITHUB_APP_ID:}
       private-key-path: ${ELMOS_GITHUB_APP_PRIVATE_KEY_PATH:}
+      slug: ${ELMOS_GITHUB_APP_SLUG:}
+      client-id: ${ELMOS_GITHUB_APP_CLIENT_ID:}
+      client-secret-path: ${ELMOS_GITHUB_APP_CLIENT_SECRET_PATH:}
+      callback-url: ${ELMOS_GITHUB_APP_CALLBACK_URL:}
+      success-url: ${ELMOS_GITHUB_APP_SUCCESS_URL:}
+      onboarding-state-secret-path: ${ELMOS_GITHUB_ONBOARDING_STATE_SECRET_PATH:}
+    api-version: ${ELMOS_GITHUB_API_VERSION:2026-03-10}
+    web-base-url: ${ELMOS_GITHUB_WEB_BASE_URL:https://github.com}
     api-base-url: ${ELMOS_GITHUB_API_BASE_URL:https://api.github.com}
     webhook:
       secret: ${ELMOS_GITHUB_WEBHOOK_SECRET:}

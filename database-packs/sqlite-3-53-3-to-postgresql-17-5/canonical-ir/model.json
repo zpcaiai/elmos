@@ -1,0 +1,80 @@
+{
+  "objects": [
+    {
+      "dependencies": [],
+      "id": "table:work_orders",
+      "kind": "table",
+      "logical_name": "work_orders",
+      "semantics": {
+        "columns": [
+          {
+            "generated": true,
+            "name": "id",
+            "nullable": false,
+            "type": "signed-64"
+          },
+          {
+            "name": "tenant_id",
+            "nullable": false,
+            "type": "unicode-text"
+          },
+          {
+            "minimum": 0,
+            "name": "amount_cents",
+            "nullable": false,
+            "type": "signed-64"
+          },
+          {
+            "name": "created_at",
+            "nullable": false,
+            "timezone": "UTC",
+            "type": "instant"
+          }
+        ],
+        "primary_key": [
+          "id"
+        ]
+      },
+      "source_ref": "source-snapshots/ddl/source.sql"
+    },
+    {
+      "dependencies": [
+        "table:work_orders"
+      ],
+      "id": "index:tenant-created",
+      "kind": "index",
+      "logical_name": "idx_work_orders_tenant_created",
+      "semantics": {
+        "columns": [
+          "tenant_id",
+          "created_at"
+        ],
+        "unique": false
+      },
+      "source_ref": "source-snapshots/ddl/source.sql"
+    }
+  ],
+  "pack_key": "sqlite-3-53-3-to-postgresql-17-5",
+  "pipelines": [],
+  "queries": [
+    {
+      "dependencies": [
+        "table:work_orders"
+      ],
+      "id": "query:tenant-orders",
+      "kind": "select",
+      "logical_name": "tenant_orders",
+      "semantics": {
+        "ordering": [
+          "id ASC"
+        ],
+        "parameterized": true,
+        "tenant_scoped": true
+      },
+      "source_ref": "corpus/development/query.sql"
+    }
+  ],
+  "schema_version": 1,
+  "source_snapshot_digest": "sha256:9b7defefdecca924c8fa34d25b378bbc6df29854d4b96c57b07f570f56129065",
+  "unsupported_extensions": []
+}

@@ -1,0 +1,62 @@
+{
+  "authority": {
+    "after_cutover": "NOT_RUN",
+    "before_cutover": "source"
+  },
+  "backfill": {
+    "batch_size": 1000,
+    "checkpoint": "primary-key",
+    "idempotent": true
+  },
+  "cdc": {
+    "reason": "SQLite reference slice uses offline cutover.",
+    "status": "NOT_RUN"
+  },
+  "owner": "ELMOS Database Migration",
+  "privacy": {
+    "data": "synthetic",
+    "production_data": false
+  },
+  "reconciliation": {
+    "grain": "row",
+    "keys": [
+      "id"
+    ],
+    "required_difference_count": 0
+  },
+  "rollback": {
+    "strategy": "retain-source-and-drop-disposable-target"
+  },
+  "schema_version": 1,
+  "source": {
+    "charset": "UTF-8",
+    "collation": "BINARY",
+    "dialect": "sqlite",
+    "driver_versions": [
+      "python-stdlib:3.14.6"
+    ],
+    "edition": "public-domain",
+    "engine": "sqlite",
+    "extensions": [],
+    "timezone": "UTC-text-ISO8601",
+    "versions": [
+      "3.53.3"
+    ]
+  },
+  "strategy": "offline-bounded-reference",
+  "target": {
+    "charset": "UTF8",
+    "collation": "C",
+    "dialect": "postgresql",
+    "driver_versions": [
+      "psql:17.5"
+    ],
+    "edition": "community",
+    "engine": "postgresql",
+    "extensions": [],
+    "timezone": "UTC",
+    "versions": [
+      "17.5"
+    ]
+  }
+}

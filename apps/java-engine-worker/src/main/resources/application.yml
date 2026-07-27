@@ -39,6 +39,7 @@ elmos:
       source-java-home: ${ELMOS_SOURCE_JAVA_HOME:/opt/java/openjdk-17}
       target-java-home: ${ELMOS_TARGET_JAVA_HOME:/opt/java/openjdk}
       maven-executable: ${ELMOS_MAVEN_EXECUTABLE:mvn}
+      maven-dependency-seed: ${ELMOS_MAVEN_DEPENDENCY_SEED:}
       allowed-git-hosts: ${ELMOS_ALLOWED_GIT_HOSTS:github.com}
       allow-file-repositories: ${ELMOS_ALLOW_FILE_REPOSITORIES:false}
       transformer-broker-enabled: ${ELMOS_SPRING_TRANSFORMER_BROKER_ENABLED:false}

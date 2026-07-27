@@ -1,0 +1,25 @@
+{
+  "evidence_refs": [
+    "certification/local-engine-evidence.json"
+  ],
+  "external_certification": "NOT_RUN",
+  "limitations": [
+    "Offline bounded workload only; CDC and production cutover are NOT_RUN."
+  ],
+  "metrics": {
+    "canonical_ir_coverage": 1.0,
+    "data_reconciliation_pass_rate": 1.0,
+    "query_performance_slo_pass_rate": 1.0,
+    "query_semantic_pass_rate": 1.0,
+    "representative_workload_pass_rate": 1.0,
+    "schema_conversion_pass_rate": 1.0,
+    "source_map_coverage": 1.0,
+    "target_provision_pass_rate": 1.0,
+    "transaction_contract_pass_rate": 1.0,
+    "type_boundary_pass_rate": 1.0,
+    "workload_fingerprint_coverage": 1.0
+  },
+  "pack_key": "sqlite-3-53-3-to-postgresql-17-5",
+  "schema_version": 1,
+  "status": "experimental"
+}

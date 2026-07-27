@@ -22,8 +22,8 @@ public final class GitHubInstallationLifecycleService {
         void replaceAuthorizedRepositories(long githubInstallationId, Set<Repository> repositories, Instant synchronizedAt);
     }
 
-    private static final Map<String,String> REQUIRED_APP_PERMISSIONS = Map.of(
-            "metadata", "read", "contents", "write", "pull_requests", "write", "checks", "write");
+    private static final Map<String,String> REQUIRED_SNAPSHOT_PERMISSIONS = Map.of(
+            "metadata", "read", "contents", "read");
     private final Store store;
     public GitHubInstallationLifecycleService(Store store) { this.store = Objects.requireNonNull(store); }
 
@@ -61,8 +61,17 @@ public final class GitHubInstallationLifecycleService {
     }
 
     private static void validatePermissions(Map<String,String> granted) {
-        REQUIRED_APP_PERMISSIONS.forEach((name, access) -> {
-            if (!access.equalsIgnoreCase(granted.get(name))) throw new SecurityException("GitHub App permission is missing: " + name + "=" + access);
+        REQUIRED_SNAPSHOT_PERMISSIONS.forEach((name, access) -> {
+            if (!allows(granted.get(name), access)) {
+                throw new SecurityException("GitHub App permission is missing: " + name + "=" + access);
+            }
         });
+    }
+
+    private static boolean allows(String granted, String required) {
+        if (granted == null) return false;
+        if (required.equalsIgnoreCase(granted)) return true;
+        return "read".equalsIgnoreCase(required)
+                && ("write".equalsIgnoreCase(granted) || "admin".equalsIgnoreCase(granted));
     }
 }

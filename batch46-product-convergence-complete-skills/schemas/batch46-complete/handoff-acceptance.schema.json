@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "artifacts",
+    "exercises",
+    "accepted_by"
+  ],
+  "properties": {
+    "artifacts": {
+      "type": "array",
+      "minItems": 10
+    },
+    "exercises": {
+      "type": "array",
+      "minItems": 6,
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "status",
+          "evidence"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "not-run",
+              "passed",
+              "failed",
+              "blocked"
+            ]
+          },
+          "evidence": {
+            "type": "array"
+          }
+        }
+      }
+    },
+    "accepted_by": {
+      "type": "array",
+      "minItems": 0
+    }
+  },
+  "additionalProperties": false
+}

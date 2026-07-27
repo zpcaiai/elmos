@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import platform
@@ -8,6 +9,7 @@ import shutil
 import signal
 import subprocess
 import sys
+import tempfile
 import time
 import urllib.error
 import urllib.request
@@ -116,8 +118,44 @@ def _result(
     }
 
 
-def _run(command: list[str], cwd: Path, *, language: str, kind: str = "build-analysis") -> dict[str, Any]:
-    completed = subprocess.run(command, cwd=cwd, text=True, capture_output=True, check=False)  # noqa: S603
+def _run(
+    command: list[str],
+    cwd: Path,
+    *,
+    language: str,
+    kind: str = "build-analysis",
+    timeout_seconds: int = 300,
+) -> dict[str, Any]:
+    if not 30 <= timeout_seconds <= 900:
+        raise ValueError("COMMAND_TIMEOUT_OUT_OF_RANGE")
+    try:
+        completed = subprocess.run(  # noqa: S603
+            command,
+            cwd=cwd,
+            text=True,
+            capture_output=True,
+            check=False,
+            timeout=timeout_seconds,
+        )
+    except subprocess.TimeoutExpired as error:
+        stdout = (
+            error.stdout.decode("utf-8", errors="replace")
+            if isinstance(error.stdout, bytes)
+            else error.stdout or ""
+        )
+        stderr = (
+            error.stderr.decode("utf-8", errors="replace")
+            if isinstance(error.stderr, bytes)
+            else error.stderr or ""
+        )
+        return _result(
+            language=language,
+            kind=kind,
+            command=command,
+            status="FAILED",
+            exit_code=None,
+            output=f"COMMAND_TIMEOUT:{timeout_seconds}s\n{stdout}{stderr}",
+        )
     output = completed.stdout + completed.stderr
     return _result(
         language=language,
@@ -138,6 +176,63 @@ def _missing(language: str, tool: str) -> dict[str, Any]:
         exit_code=None,
         output=f"REQUIRED_TOOL_NOT_FOUND:{tool}",
     )
+
+
+def _python_lock_cache_path(python_workspace: Path) -> Path:
+    pyproject = python_workspace / "pyproject.toml"
+    digest = hashlib.sha256(pyproject.read_bytes()).hexdigest()
+    configured = os.getenv("ELMOS_PROJECT_SYNTHESIS_LOCK_CACHE", "").strip()
+    cache_root = (
+        Path(configured).expanduser()
+        if configured
+        else Path.home() / ".cache" / "elmos" / "project-synthesis" / "locks"
+    )
+    if not cache_root.is_absolute() or cache_root.is_symlink():
+        raise RuntimeError("PYTHON_LOCK_CACHE_PATH_UNSAFE")
+    cache_root.mkdir(parents=True, exist_ok=True, mode=0o700)
+    cache_root.chmod(0o700)
+    resolved = cache_root.resolve(strict=True)
+    if resolved.is_symlink():
+        raise RuntimeError("PYTHON_LOCK_CACHE_PATH_UNSAFE")
+    return resolved / f"{digest}.lock"
+
+
+def _restore_cached_python_lock(python_workspace: Path) -> bool:
+    cached = _python_lock_cache_path(python_workspace)
+    if not cached.exists():
+        return False
+    if cached.is_symlink() or not cached.is_file():
+        raise RuntimeError("PYTHON_LOCK_CACHE_ENTRY_UNSAFE")
+    details = cached.stat()
+    if details.st_size <= 0 or details.st_size > 2_000_000 or details.st_mode & 0o077:
+        raise RuntimeError("PYTHON_LOCK_CACHE_ENTRY_UNSAFE")
+    (python_workspace / "uv.lock").write_bytes(cached.read_bytes())
+    return True
+
+
+def _store_cached_python_lock(python_workspace: Path) -> None:
+    source = python_workspace / "uv.lock"
+    if source.is_symlink() or not source.is_file() or not 0 < source.stat().st_size <= 2_000_000:
+        raise RuntimeError("GENERATED_PYTHON_LOCK_INVALID")
+    cached = _python_lock_cache_path(python_workspace)
+    temporary_name: str | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="wb",
+            dir=cached.parent,
+            prefix=f".{cached.name}.",
+            delete=False,
+        ) as temporary:
+            temporary.write(source.read_bytes())
+            temporary.flush()
+            os.fsync(temporary.fileno())
+            temporary_name = temporary.name
+        os.chmod(temporary_name, 0o600)
+        os.replace(temporary_name, cached)
+        temporary_name = None
+    finally:
+        if temporary_name is not None:
+            Path(temporary_name).unlink(missing_ok=True)
 
 
 def _check_exact_toolchain(
@@ -587,19 +682,23 @@ def verify_workspace(workspace: Path) -> dict[str, Any]:
         if tool is None:
             results.append(_missing("python", "uv"))
         else:
+            python_workspace = root / "python"
+            lock_was_cached = _restore_cached_python_lock(python_workspace)
             python_commands = (
-                [tool, "lock"],
+                [tool, "lock", "--check"] if lock_was_cached else [tool, "lock"],
                 [tool, "sync", "--locked", "--python", "3.12"],
                 [tool, "run", "--python", "3.12", "python", "--version"],
                 [tool, "run", "pytest", "-m", "not integration"],
                 [tool, "run", "ruff", "check", "src", "tests"],
                 [tool, "run", "mypy", "src"],
             )
-            for command in python_commands:
-                result = _run(command, root / "python", language="python")
+            for index, command in enumerate(python_commands):
+                result = _run(command, python_workspace, language="python")
                 results.append(result)
                 if result["status"] != "PASSED":
                     break
+                if index == 0 and not lock_was_cached:
+                    _store_cached_python_lock(python_workspace)
             else:
                 build_passed.add("python")
 

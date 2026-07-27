@@ -395,7 +395,11 @@ def render_workspace(request: SynthesisRequest) -> dict[str, str]:
         }[target.language](request, target.port)
         prefix = _target_directory(target.language)
         for relative, content in rendered.items():
-            path = f"{prefix}/{relative}"
+            path = (
+                relative
+                if request.requires_database and relative == "deploy/kubernetes.yaml"
+                else f"{prefix}/{relative}"
+            )
             if path in files:
                 raise WorkspaceConflictError(f"DUPLICATE_GENERATED_PATH:{path}")
             files[path] = content

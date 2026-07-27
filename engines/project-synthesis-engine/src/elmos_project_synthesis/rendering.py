@@ -241,7 +241,7 @@ def kubernetes_yaml(request: SynthesisRequest, *, language: str, port: int) -> s
                 - name: runtime-secrets
                   secret:
                     secretName: {app}-runtime
-                    defaultMode: 0400
+                    defaultMode: 256
                     items:
                       - key: database-url
                         path: database-url
@@ -257,7 +257,9 @@ def kubernetes_yaml(request: SynthesisRequest, *, language: str, port: int) -> s
           podSelector:
             matchLabels:
               app: {app}
-          policyTypes: ["Ingress", "Egress"]
+          policyTypes:
+            - Ingress
+            - Egress
           ingress:
             - from:
                 - podSelector: {{}}

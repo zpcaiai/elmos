@@ -50,7 +50,7 @@ class BatchOneToThirteenAssuranceTest {
                     .map(path -> path.getFileName().toString().replaceFirst("__.*", ""))
                     .collect(Collectors.toSet());
         }
-        Set<String> expected = IntStream.rangeClosed(1, 47).mapToObj(value -> "V" + value)
+        Set<String> expected = IntStream.rangeClosed(1, 48).mapToObj(value -> "V" + value)
                 .collect(Collectors.toSet());
         assertEquals(expected, actual);
     }

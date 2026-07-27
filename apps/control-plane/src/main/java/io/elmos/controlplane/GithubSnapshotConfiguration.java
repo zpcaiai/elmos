@@ -3,7 +3,9 @@ package io.elmos.controlplane;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.elmos.integrations.*;
 import io.elmos.persistence.JdbcGitHubRepositoryAuthorization;
+import io.elmos.persistence.JdbcGitHubInstallationStore;
 import io.elmos.persistence.JdbcSnapshotStore;
+import io.elmos.scm.GitHubInstallationLifecycleService;
 import io.elmos.scm.GitHubInstallationTokenBroker;
 import io.elmos.snapshot.DeterministicSnapshotArchiver;
 import io.elmos.snapshot.SnapshotCaptureService;
@@ -40,6 +42,81 @@ class GithubSnapshotConfiguration {
         if (!"https".equals(uri.getScheme()) || uri.getUserInfo() != null || uri.getQuery() != null || uri.getFragment() != null)
             throw new SecurityException("GitHub API base URL must be credential-free HTTPS");
         return new GitHubRestInstallationTokenIssuer(builder, apiBaseUrl, appJwt, clock);
+    }
+
+    @Bean GitHubInstallationLifecycleService gitHubInstallationLifecycleService(
+            JdbcGitHubInstallationStore store
+    ) {
+        return new GitHubInstallationLifecycleService(store);
+    }
+
+    @Bean JdbcGithubOnboardingStateStore githubOnboardingStateStore(
+            JdbcClient jdbc,
+            Clock clock
+    ) {
+        return new JdbcGithubOnboardingStateStore(jdbc, clock);
+    }
+
+    @Bean GitHubAppOnboardingClient gitHubAppOnboardingClient(
+            RestClient.Builder builder,
+            GitHubAppJwt appJwt,
+            @Value("${elmos.github.api-base-url:https://api.github.com}") String apiBaseUrl,
+            @Value("${elmos.github.web-base-url:https://github.com}") String githubBaseUrl,
+            @Value("${elmos.github.api-version:2026-03-10}") String apiVersion,
+            @Value("${elmos.github.app.client-id:}") String clientId,
+            @Value("${elmos.github.app.client-secret-path:}") String clientSecretPath,
+            @Value("${elmos.github.app.callback-url:}") String callbackUrl
+    ) {
+        if (clientSecretPath.isBlank()) {
+            throw new IllegalStateException("GitHub App client secret path is required");
+        }
+        Path secretPath = Path.of(clientSecretPath);
+        return new GitHubAppOnboardingClient(
+                builder,
+                apiBaseUrl,
+                githubBaseUrl,
+                apiVersion,
+                clientId,
+                callbackUrl,
+                () -> readOwnerOnlySecret(secretPath),
+                appJwt
+        );
+    }
+
+    @Bean GithubInstallationOnboardingService githubInstallationOnboardingService(
+            GitHubAppOnboardingClient github,
+            GitHubInstallationLifecycleService lifecycle,
+            JdbcGithubOnboardingStateStore states,
+            ObjectMapper mapper,
+            Clock clock,
+            @Value("${elmos.github.app.slug:}") String appSlug,
+            @Value("${elmos.github.app.client-id:}") String clientId,
+            @Value("${elmos.github.app.callback-url:}") String callbackUrl,
+            @Value("${elmos.github.app.success-url:}") String successUrl,
+            @Value("${elmos.github.web-base-url:https://github.com}") String githubBaseUrl,
+            @Value("${elmos.github.app.onboarding-state-secret-path:}") String stateSecretPath
+    ) {
+        if (stateSecretPath.isBlank()) {
+            throw new IllegalStateException("GitHub App onboarding state secret path is required");
+        }
+        byte[] stateSecret = readOwnerOnlyBytes(Path.of(stateSecretPath), 4096);
+        try {
+            return new GithubInstallationOnboardingService(
+                    appSlug,
+                    clientId,
+                    callbackUrl,
+                    successUrl,
+                    githubBaseUrl,
+                    stateSecret,
+                    mapper,
+                    states,
+                    github,
+                    lifecycle,
+                    clock
+            );
+        } finally {
+            Arrays.fill(stateSecret, (byte) 0);
+        }
     }
 
     @Bean GitHubInstallationTokenBroker installationTokenBroker(JdbcGitHubRepositoryAuthorization authorization,
@@ -112,6 +189,32 @@ class GithubSnapshotConfiguration {
             }
         } catch (RuntimeException error) { throw error; }
         catch (Exception error) { throw new IllegalStateException("GitHub App private key is unavailable", error); }
+    }
+
+    private static byte[] readOwnerOnlyBytes(Path rawPath, long maximumBytes) {
+        Path path = rawPath.toAbsolutePath().normalize();
+        try {
+            if (Files.isSymbolicLink(path)
+                    || !Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS)
+                    || Files.size(path) < 32
+                    || Files.size(path) > maximumBytes) {
+                throw new SecurityException("GitHub App secret file is invalid");
+            }
+            try {
+                Set<PosixFilePermission> permissions =
+                        Files.getPosixFilePermissions(path, LinkOption.NOFOLLOW_LINKS);
+                if (permissions.stream().anyMatch(value ->
+                        value.name().startsWith("GROUP_")
+                                || value.name().startsWith("OTHERS_"))) {
+                    throw new SecurityException("GitHub App secret file must be owner-only");
+                }
+            } catch (UnsupportedOperationException ignored) { }
+            return Files.readAllBytes(path);
+        } catch (RuntimeException error) {
+            throw error;
+        } catch (Exception error) {
+            throw new IllegalStateException("GitHub App secret is unavailable", error);
+        }
     }
 
     private static String leaseDigest(GitHubInstallationTokenBroker.LeaseMetadata metadata) {

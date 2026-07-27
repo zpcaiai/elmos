@@ -62,6 +62,7 @@ public final class EphemeralTransformerController {
             @Value("${elmos.transformer.source-java-home:/opt/java/openjdk-17}") String sourceJavaHome,
             @Value("${elmos.transformer.target-java-home:/opt/java/openjdk}") String targetJavaHome,
             @Value("${elmos.transformer.maven-executable:/usr/share/maven/bin/mvn}") String mavenExecutable,
+            @Value("${elmos.transformer.maven-dependency-seed:/opt/elmos/maven-seed}") String mavenDependencySeed,
             @Value("${elmos.transformer.allowed-git-hosts:github.com}") String allowedGitHosts,
             @Value("${elmos.transformer.one-time-secret:}") String oneTimeSecret,
             @Value("${elmos.transformer.auth-window-seconds:90}") long authWindowSeconds
@@ -90,6 +91,7 @@ public final class EphemeralTransformerController {
                 hosts(allowedGitHosts),
                 false,
                 true,
+                Path.of(mavenDependencySeed),
                 json
         );
     }

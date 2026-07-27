@@ -1,0 +1,1532 @@
+{
+  "skills": [
+    {
+      "skill_id": "1497",
+      "name": "b46-product-convergence-reference-implementation-factory",
+      "version": "1.0.0",
+      "layer": "orchestrator",
+      "owner": "platform-engineering",
+      "triggers": [
+        "b46-product-convergence-reference-implementation-factory"
+      ],
+      "prerequisites": [
+        "1498-1536"
+      ],
+      "allowed_tools": [
+        "repository",
+        "shell",
+        "test-runner"
+      ],
+      "required_inputs": [
+        "repository",
+        "contracts"
+      ],
+      "outputs": [
+        "code",
+        "tests",
+        "evidence"
+      ],
+      "risks": [
+        "incorrect-certification"
+      ],
+      "evidence": [
+        "test-results"
+      ],
+      "tests": [
+        "batch46-complete"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "1498",
+      "name": "b46-unified-capability-package-metamodel",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "platform-engineering",
+      "triggers": [
+        "b46-unified-capability-package-metamodel"
+      ],
+      "prerequisites": [
+        "1497"
+      ],
+      "allowed_tools": [
+        "repository",
+        "shell",
+        "test-runner"
+      ],
+      "required_inputs": [
+        "repository",
+        "contracts"
+      ],
+      "outputs": [
+        "code",
+        "tests",
+        "evidence"
+      ],
+      "risks": [
+        "incorrect-certification"
+      ],
+      "evidence": [
+        "test-results"
+      ],
+      "tests": [
+        "batch46-complete"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "1499",
+      "name": "b46-capability-dependency-graph",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "platform-engineering",
+      "triggers": [
+        "b46-capability-dependency-graph"
+      ],
+      "prerequisites": [
+        "1498"
+      ],
+      "allowed_tools": [
+        "repository",
+        "shell",
+        "test-runner"
+      ],
+      "required_inputs": [
+        "repository",
+        "contracts"
+      ],
+      "outputs": [
+        "code",
+        "tests",
+        "evidence"
+      ],
+      "risks": [
+        "incorrect-certification"
+      ],
+      "evidence": [
+        "test-results"
+      ],
+      "tests": [
+        "batch46-complete"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "1500",
+      "name": "b46-global-migration-lifecycle-state-machine",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "platform-engineering",
+      "triggers": [
+        "b46-global-migration-lifecycle-state-machine"
+      ],
+      "prerequisites": [
+        "1498",
+        "1501",
+        "1503"
+      ],
+      "allowed_tools": [
+        "repository",
+        "shell",
+        "test-runner"
+      ],
+      "required_inputs": [
+        "repository",
+        "contracts"
+      ],
+      "outputs": [
+        "code",
+        "tests",
+        "evidence"
+      ],
+      "risks": [
+        "incorrect-certification"
+      ],
+      "evidence": [
+        "test-results"
+      ],
+      "tests": [
+        "batch46-complete"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "1501",
+      "name": "b46-durable-workflow-runtime-kernel",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "platform-engineering",
+      "triggers": [
+        "b46-durable-workflow-runtime-kernel"
+      ],
+      "prerequisites": [
+        "1500"
+      ],
+      "allowed_tools": [
+        "repository",
+        "shell",
+        "test-runner"
+      ],
+      "required_inputs": [
+        "repository",
+        "contracts"
+      ],
+      "outputs": [
+        "code",
+        "tests",
+        "evidence"
+      ],
+      "risks": [
+        "incorrect-certification"
+      ],
+      "evidence": [
+        "test-results"
+      ],
+      "tests": [
+        "batch46-complete"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "1502",
+      "name": "b46-unified-policy-engine",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "platform-engineering",
+      "triggers": [
+        "b46-unified-policy-engine"
+      ],
+      "prerequisites": [
+        "1498",
+        "1501"
+      ],
+      "allowed_tools": [
+        "repository",
+        "shell",
+        "test-runner"
+      ],
+      "required_inputs": [
+        "repository",
+        "contracts"
+      ],
+      "outputs": [
+        "code",
+        "tests",
+        "evidence"
+      ],
+      "risks": [
+        "incorrect-certification"
+      ],
+      "evidence": [
+        "test-results"
+      ],
+      "tests": [
+        "batch46-complete"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "1503",
+      "name": "b46-global-evidence-graph",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "platform-engineering",
+      "triggers": [
+        "b46-global-evidence-graph"
+      ],
+      "prerequisites": [
+        "1498",
+        "1501"
+      ],
+      "allowed_tools": [
+        "repository",
+        "shell",
+        "test-runner"
+      ],
+      "required_inputs": [
+        "repository",
+        "contracts"
+      ],
+      "outputs": [
+        "code",
+        "tests",
+        "evidence"
+      ],
+      "risks": [
+        "incorrect-certification"
+      ],
+      "evidence": [
+        "test-results"
+      ],
+      "tests": [
+        "batch46-complete"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "1504",
+      "name": "b46-capability-registry-support-matrix",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "platform-engineering",
+      "triggers": [
+        "b46-capability-registry-support-matrix"
+      ],
+      "prerequisites": [
+        "1498",
+        "1499",
+        "1503"
+      ],
+      "allowed_tools": [
+        "repository",
+        "shell",
+        "test-runner"
+      ],
+      "required_inputs": [
+        "repository",
+        "contracts"
+      ],
+      "outputs": [
+        "code",
+        "tests",
+        "evidence"
+      ],
+      "risks": [
+        "incorrect-certification"
+      ],
+      "evidence": [
+        "test-results"
+      ],
+      "tests": [
+        "batch46-complete"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "1505",
+      "name": "b46-pack-lifecycle-version-certification",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "platform-engineering",
+      "triggers": [
+        "b46-pack-lifecycle-version-certification"
+      ],
+      "prerequisites": [
+        "1498",
+        "1499",
+        "1504"
+      ],
+      "allowed_tools": [
+        "repository",
+        "shell",
+        "test-runner"
+      ],
+      "required_inputs": [
+        "repository",
+        "contracts"
+      ],
+      "outputs": [
+        "code",
+        "tests",
+        "evidence"
+      ],
+      "risks": [
+        "incorrect-certification"
+      ],
+      "evidence": [
+        "test-results"
+      ],
+      "tests": [
+        "batch46-complete"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "1506",
+      "name": "b46-core-extension-boundary-plugin-kernel",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "platform-engineering",
+      "triggers": [
+        "b46-core-extension-boundary-plugin-kernel"
+      ],
+      "prerequisites": [
+        "1498",
+        "1504"
+      ],
+      "allowed_tools": [
+        "repository",
+        "shell",
+        "test-runner"
+      ],
+      "required_inputs": [
+        "repository",
+        "contracts"
+      ],
+      "outputs": [
+        "code",
+        "tests",
+        "evidence"
+      ],
+      "risks": [
+        "incorrect-certification"
+      ],
+      "evidence": [
+        "test-results"
+      ],
+      "tests": [
+        "batch46-complete"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "1507",
+      "name": "b46-meta-skill-layering-capability-resolver",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "platform-engineering",
+      "triggers": [
+        "b46-meta-skill-layering-capability-resolver"
+      ],
+      "prerequisites": [
+        "1504"
+      ],
+      "allowed_tools": [
+        "repository",
+        "shell",
+        "test-runner"
+      ],
+      "required_inputs": [
+        "repository",
+        "contracts"
+      ],
+      "outputs": [
+        "code",
+        "tests",
+        "evidence"
+      ],
+      "risks": [
+        "incorrect-certification"
+      ],
+      "evidence": [
+        "test-results"
+      ],
+      "tests": [
+        "batch46-complete"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "1508",
+      "name": "b46-skill-registry-compiler-governance",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "platform-engineering",
+      "triggers": [
+        "b46-skill-registry-compiler-governance"
+      ],
+      "prerequisites": [
+        "1507"
+      ],
+      "allowed_tools": [
+        "repository",
+        "shell",
+        "test-runner"
+      ],
+      "required_inputs": [
+        "repository",
+        "contracts"
+      ],
+      "outputs": [
+        "code",
+        "tests",
+        "evidence"
+      ],
+      "risks": [
+        "incorrect-certification"
+      ],
+      "evidence": [
+        "test-results"
+      ],
+      "tests": [
+        "batch46-complete"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "1509",
+      "name": "b46-skill-deduplication-foundation-extraction",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "platform-engineering",
+      "triggers": [
+        "b46-skill-deduplication-foundation-extraction"
+      ],
+      "prerequisites": [
+        "1508"
+      ],
+      "allowed_tools": [
+        "repository",
+        "shell",
+        "test-runner"
+      ],
+      "required_inputs": [
+        "repository",
+        "contracts"
+      ],
+      "outputs": [
+        "code",
+        "tests",
+        "evidence"
+      ],
+      "risks": [
+        "incorrect-certification"
+      ],
+      "evidence": [
+        "test-results"
+      ],
+      "tests": [
+        "batch46-complete"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "1510",
+      "name": "b46-test-pyramid-real-system-classification",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "platform-engineering",
+      "triggers": [
+        "b46-test-pyramid-real-system-classification"
+      ],
+      "prerequisites": [
+        "1503",
+        "1504"
+      ],
+      "allowed_tools": [
+        "repository",
+        "shell",
+        "test-runner"
+      ],
+      "required_inputs": [
+        "repository",
+        "contracts"
+      ],
+      "outputs": [
+        "code",
+        "tests",
+        "evidence"
+      ],
+      "risks": [
+        "incorrect-certification"
+      ],
+      "evidence": [
+        "test-results"
+      ],
+      "tests": [
+        "batch46-complete"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "1511",
+      "name": "b46-benchmark-corpus-governance",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "platform-engineering",
+      "triggers": [
+        "b46-benchmark-corpus-governance"
+      ],
+      "prerequisites": [
+        "1510"
+      ],
+      "allowed_tools": [
+        "repository",
+        "shell",
+        "test-runner"
+      ],
+      "required_inputs": [
+        "repository",
+        "contracts"
+      ],
+      "outputs": [
+        "code",
+        "tests",
+        "evidence"
+      ],
+      "risks": [
+        "incorrect-certification"
+      ],
+      "evidence": [
+        "test-results"
+      ],
+      "tests": [
+        "batch46-complete"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "1512",
+      "name": "b46-maintainability-idiomaticity-gate",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "platform-engineering",
+      "triggers": [
+        "b46-maintainability-idiomaticity-gate"
+      ],
+      "prerequisites": [
+        "1510",
+        "1511"
+      ],
+      "allowed_tools": [
+        "repository",
+        "shell",
+        "test-runner"
+      ],
+      "required_inputs": [
+        "repository",
+        "contracts"
+      ],
+      "outputs": [
+        "code",
+        "tests",
+        "evidence"
+      ],
+      "risks": [
+        "incorrect-certification"
+      ],
+      "evidence": [
+        "test-results"
+      ],
+      "tests": [
+        "batch46-complete"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "1513",
+      "name": "b46-product-information-architecture-customer-journey",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "platform-engineering",
+      "triggers": [
+        "b46-product-information-architecture-customer-journey"
+      ],
+      "prerequisites": [
+        "1500",
+        "1504"
+      ],
+      "allowed_tools": [
+        "repository",
+        "shell",
+        "test-runner"
+      ],
+      "required_inputs": [
+        "repository",
+        "contracts"
+      ],
+      "outputs": [
+        "code",
+        "tests",
+        "evidence"
+      ],
+      "risks": [
+        "incorrect-certification"
+      ],
+      "evidence": [
+        "test-results"
+      ],
+      "tests": [
+        "batch46-complete"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "1514",
+      "name": "b46-migration-design-studio",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "platform-engineering",
+      "triggers": [
+        "b46-migration-design-studio"
+      ],
+      "prerequisites": [
+        "1513",
+        "1499"
+      ],
+      "allowed_tools": [
+        "repository",
+        "shell",
+        "test-runner"
+      ],
+      "required_inputs": [
+        "repository",
+        "contracts"
+      ],
+      "outputs": [
+        "code",
+        "tests",
+        "evidence"
+      ],
+      "risks": [
+        "incorrect-certification"
+      ],
+      "evidence": [
+        "test-results"
+      ],
+      "tests": [
+        "batch46-complete"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "1515",
+      "name": "b46-customer-handoff-maintenance-acceptance",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "platform-engineering",
+      "triggers": [
+        "b46-customer-handoff-maintenance-acceptance"
+      ],
+      "prerequisites": [
+        "1512",
+        "1513"
+      ],
+      "allowed_tools": [
+        "repository",
+        "shell",
+        "test-runner"
+      ],
+      "required_inputs": [
+        "repository",
+        "contracts"
+      ],
+      "outputs": [
+        "code",
+        "tests",
+        "evidence"
+      ],
+      "risks": [
+        "incorrect-certification"
+      ],
+      "evidence": [
+        "test-results"
+      ],
+      "tests": [
+        "batch46-complete"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "1516",
+      "name": "b46-control-plane-modular-monolith",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "platform-engineering",
+      "triggers": [
+        "b46-control-plane-modular-monolith"
+      ],
+      "prerequisites": [
+        "1501",
+        "1502",
+        "1503",
+        "1504"
+      ],
+      "allowed_tools": [
+        "repository",
+        "shell",
+        "test-runner"
+      ],
+      "required_inputs": [
+        "repository",
+        "contracts"
+      ],
+      "outputs": [
+        "code",
+        "tests",
+        "evidence"
+      ],
+      "risks": [
+        "incorrect-certification"
+      ],
+      "evidence": [
+        "test-results"
+      ],
+      "tests": [
+        "batch46-complete"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "1517",
+      "name": "b46-private-runner-reference-execution-plane",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "platform-engineering",
+      "triggers": [
+        "b46-private-runner-reference-execution-plane"
+      ],
+      "prerequisites": [
+        "1501",
+        "1502",
+        "1503"
+      ],
+      "allowed_tools": [
+        "repository",
+        "shell",
+        "test-runner"
+      ],
+      "required_inputs": [
+        "repository",
+        "contracts"
+      ],
+      "outputs": [
+        "code",
+        "tests",
+        "evidence"
+      ],
+      "risks": [
+        "incorrect-certification"
+      ],
+      "evidence": [
+        "test-results"
+      ],
+      "tests": [
+        "batch46-complete"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "1518",
+      "name": "b46-deterministic-transformation-priority",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "platform-engineering",
+      "triggers": [
+        "b46-deterministic-transformation-priority"
+      ],
+      "prerequisites": [
+        "1502",
+        "1508"
+      ],
+      "allowed_tools": [
+        "repository",
+        "shell",
+        "test-runner"
+      ],
+      "required_inputs": [
+        "repository",
+        "contracts"
+      ],
+      "outputs": [
+        "code",
+        "tests",
+        "evidence"
+      ],
+      "risks": [
+        "incorrect-certification"
+      ],
+      "evidence": [
+        "test-results"
+      ],
+      "tests": [
+        "batch46-complete"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "1519",
+      "name": "b46-reference-route-java-spring-csharp-aspnet",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "platform-engineering",
+      "triggers": [
+        "b46-reference-route-java-spring-csharp-aspnet"
+      ],
+      "prerequisites": [
+        "1516",
+        "1517",
+        "1518"
+      ],
+      "allowed_tools": [
+        "repository",
+        "shell",
+        "test-runner"
+      ],
+      "required_inputs": [
+        "repository",
+        "contracts"
+      ],
+      "outputs": [
+        "code",
+        "tests",
+        "evidence"
+      ],
+      "risks": [
+        "incorrect-certification"
+      ],
+      "evidence": [
+        "test-results"
+      ],
+      "tests": [
+        "batch46-complete"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "1520",
+      "name": "b46-reference-repository-corpus-design-partner",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "platform-engineering",
+      "triggers": [
+        "b46-reference-repository-corpus-design-partner"
+      ],
+      "prerequisites": [
+        "1511",
+        "1519"
+      ],
+      "allowed_tools": [
+        "repository",
+        "shell",
+        "test-runner"
+      ],
+      "required_inputs": [
+        "repository",
+        "contracts"
+      ],
+      "outputs": [
+        "code",
+        "tests",
+        "evidence"
+      ],
+      "risks": [
+        "incorrect-certification"
+      ],
+      "evidence": [
+        "test-results"
+      ],
+      "tests": [
+        "batch46-complete"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "1521",
+      "name": "b46-unified-evals-benchmark-platform",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "platform-engineering",
+      "triggers": [
+        "b46-unified-evals-benchmark-platform"
+      ],
+      "prerequisites": [
+        "1510",
+        "1511",
+        "1503"
+      ],
+      "allowed_tools": [
+        "repository",
+        "shell",
+        "test-runner"
+      ],
+      "required_inputs": [
+        "repository",
+        "contracts"
+      ],
+      "outputs": [
+        "code",
+        "tests",
+        "evidence"
+      ],
+      "risks": [
+        "incorrect-certification"
+      ],
+      "evidence": [
+        "test-results"
+      ],
+      "tests": [
+        "batch46-complete"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "1522",
+      "name": "b46-recipe-promotion-knowledge-governance",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "platform-engineering",
+      "triggers": [
+        "b46-recipe-promotion-knowledge-governance"
+      ],
+      "prerequisites": [
+        "1511",
+        "1521",
+        "1502"
+      ],
+      "allowed_tools": [
+        "repository",
+        "shell",
+        "test-runner"
+      ],
+      "required_inputs": [
+        "repository",
+        "contracts"
+      ],
+      "outputs": [
+        "code",
+        "tests",
+        "evidence"
+      ],
+      "risks": [
+        "incorrect-certification"
+      ],
+      "evidence": [
+        "test-results"
+      ],
+      "tests": [
+        "batch46-complete"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "1523",
+      "name": "b46-product-edition-scope-rationalization",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "platform-engineering",
+      "triggers": [
+        "b46-product-edition-scope-rationalization"
+      ],
+      "prerequisites": [
+        "1504",
+        "1505"
+      ],
+      "allowed_tools": [
+        "repository",
+        "shell",
+        "test-runner"
+      ],
+      "required_inputs": [
+        "repository",
+        "contracts"
+      ],
+      "outputs": [
+        "code",
+        "tests",
+        "evidence"
+      ],
+      "risks": [
+        "incorrect-certification"
+      ],
+      "evidence": [
+        "test-results"
+      ],
+      "tests": [
+        "batch46-complete"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "1524",
+      "name": "b46-standardized-product-packaging-delivery-contract",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "platform-engineering",
+      "triggers": [
+        "b46-standardized-product-packaging-delivery-contract"
+      ],
+      "prerequisites": [
+        "1523",
+        "1525"
+      ],
+      "allowed_tools": [
+        "repository",
+        "shell",
+        "test-runner"
+      ],
+      "required_inputs": [
+        "repository",
+        "contracts"
+      ],
+      "outputs": [
+        "code",
+        "tests",
+        "evidence"
+      ],
+      "risks": [
+        "incorrect-certification"
+      ],
+      "evidence": [
+        "test-results"
+      ],
+      "tests": [
+        "batch46-complete"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "1525",
+      "name": "b46-verified-migrated-workload-value-metric",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "platform-engineering",
+      "triggers": [
+        "b46-verified-migrated-workload-value-metric"
+      ],
+      "prerequisites": [
+        "1512",
+        "1515",
+        "1521"
+      ],
+      "allowed_tools": [
+        "repository",
+        "shell",
+        "test-runner"
+      ],
+      "required_inputs": [
+        "repository",
+        "contracts"
+      ],
+      "outputs": [
+        "code",
+        "tests",
+        "evidence"
+      ],
+      "risks": [
+        "incorrect-certification"
+      ],
+      "evidence": [
+        "test-results"
+      ],
+      "tests": [
+        "batch46-complete"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "1526",
+      "name": "b46-descope-defer-portfolio-governance",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "platform-engineering",
+      "triggers": [
+        "b46-descope-defer-portfolio-governance"
+      ],
+      "prerequisites": [
+        "1523",
+        "1525"
+      ],
+      "allowed_tools": [
+        "repository",
+        "shell",
+        "test-runner"
+      ],
+      "required_inputs": [
+        "repository",
+        "contracts"
+      ],
+      "outputs": [
+        "code",
+        "tests",
+        "evidence"
+      ],
+      "risks": [
+        "incorrect-certification"
+      ],
+      "evidence": [
+        "test-results"
+      ],
+      "tests": [
+        "batch46-complete"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "1527",
+      "name": "b46-reference-architecture-blueprint",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "platform-engineering",
+      "triggers": [
+        "b46-reference-architecture-blueprint"
+      ],
+      "prerequisites": [
+        "1506",
+        "1516",
+        "1517"
+      ],
+      "allowed_tools": [
+        "repository",
+        "shell",
+        "test-runner"
+      ],
+      "required_inputs": [
+        "repository",
+        "contracts"
+      ],
+      "outputs": [
+        "code",
+        "tests",
+        "evidence"
+      ],
+      "risks": [
+        "incorrect-certification"
+      ],
+      "evidence": [
+        "test-results"
+      ],
+      "tests": [
+        "batch46-complete"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "1528",
+      "name": "b46-convergence-roadmap-p0-p3",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "platform-engineering",
+      "triggers": [
+        "b46-convergence-roadmap-p0-p3"
+      ],
+      "prerequisites": [
+        "1527",
+        "1526"
+      ],
+      "allowed_tools": [
+        "repository",
+        "shell",
+        "test-runner"
+      ],
+      "required_inputs": [
+        "repository",
+        "contracts"
+      ],
+      "outputs": [
+        "code",
+        "tests",
+        "evidence"
+      ],
+      "risks": [
+        "incorrect-certification"
+      ],
+      "evidence": [
+        "test-results"
+      ],
+      "tests": [
+        "batch46-complete"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "1529",
+      "name": "b46-integration-contract-anti-corruption-layer",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "platform-engineering",
+      "triggers": [
+        "b46-integration-contract-anti-corruption-layer"
+      ],
+      "prerequisites": [
+        "1498",
+        "1500",
+        "1501",
+        "1506"
+      ],
+      "allowed_tools": [
+        "repository",
+        "shell",
+        "test-runner"
+      ],
+      "required_inputs": [
+        "repository",
+        "contracts"
+      ],
+      "outputs": [
+        "code",
+        "tests",
+        "evidence"
+      ],
+      "risks": [
+        "incorrect-certification"
+      ],
+      "evidence": [
+        "test-results"
+      ],
+      "tests": [
+        "batch46-complete"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "1530",
+      "name": "b46-reference-implementation-release-train",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "platform-engineering",
+      "triggers": [
+        "b46-reference-implementation-release-train"
+      ],
+      "prerequisites": [
+        "1516",
+        "1517",
+        "1519",
+        "1521"
+      ],
+      "allowed_tools": [
+        "repository",
+        "shell",
+        "test-runner"
+      ],
+      "required_inputs": [
+        "repository",
+        "contracts"
+      ],
+      "outputs": [
+        "code",
+        "tests",
+        "evidence"
+      ],
+      "risks": [
+        "incorrect-certification"
+      ],
+      "evidence": [
+        "test-results"
+      ],
+      "tests": [
+        "batch46-complete"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "1531",
+      "name": "b46-convergence-observability-debt-dashboard",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "platform-engineering",
+      "triggers": [
+        "b46-convergence-observability-debt-dashboard"
+      ],
+      "prerequisites": [
+        "1508",
+        "1509",
+        "1528"
+      ],
+      "allowed_tools": [
+        "repository",
+        "shell",
+        "test-runner"
+      ],
+      "required_inputs": [
+        "repository",
+        "contracts"
+      ],
+      "outputs": [
+        "code",
+        "tests",
+        "evidence"
+      ],
+      "risks": [
+        "incorrect-certification"
+      ],
+      "evidence": [
+        "test-results"
+      ],
+      "tests": [
+        "batch46-complete"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "1532",
+      "name": "b46-design-partner-production-validation",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "platform-engineering",
+      "triggers": [
+        "b46-design-partner-production-validation"
+      ],
+      "prerequisites": [
+        "1520",
+        "1530",
+        "1515"
+      ],
+      "allowed_tools": [
+        "repository",
+        "shell",
+        "test-runner"
+      ],
+      "required_inputs": [
+        "repository",
+        "contracts"
+      ],
+      "outputs": [
+        "code",
+        "tests",
+        "evidence"
+      ],
+      "risks": [
+        "incorrect-certification"
+      ],
+      "evidence": [
+        "test-results"
+      ],
+      "tests": [
+        "batch46-complete"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "1533",
+      "name": "b46-repeatable-profitable-delivery-model",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "platform-engineering",
+      "triggers": [
+        "b46-repeatable-profitable-delivery-model"
+      ],
+      "prerequisites": [
+        "1524",
+        "1525",
+        "1532"
+      ],
+      "allowed_tools": [
+        "repository",
+        "shell",
+        "test-runner"
+      ],
+      "required_inputs": [
+        "repository",
+        "contracts"
+      ],
+      "outputs": [
+        "code",
+        "tests",
+        "evidence"
+      ],
+      "risks": [
+        "incorrect-certification"
+      ],
+      "evidence": [
+        "test-results"
+      ],
+      "tests": [
+        "batch46-complete"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "1534",
+      "name": "b46-customer-success-sla-operations-proof",
+      "version": "1.0.0",
+      "layer": "implementation",
+      "owner": "platform-engineering",
+      "triggers": [
+        "b46-customer-success-sla-operations-proof"
+      ],
+      "prerequisites": [
+        "1532",
+        "1533"
+      ],
+      "allowed_tools": [
+        "repository",
+        "shell",
+        "test-runner"
+      ],
+      "required_inputs": [
+        "repository",
+        "contracts"
+      ],
+      "outputs": [
+        "code",
+        "tests",
+        "evidence"
+      ],
+      "risks": [
+        "incorrect-certification"
+      ],
+      "evidence": [
+        "test-results"
+      ],
+      "tests": [
+        "batch46-complete"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "1535",
+      "name": "b46-reference-product-acceptance-review",
+      "version": "1.0.0",
+      "layer": "orchestrator",
+      "owner": "platform-engineering",
+      "triggers": [
+        "b46-reference-product-acceptance-review"
+      ],
+      "prerequisites": [
+        "1498-1534"
+      ],
+      "allowed_tools": [
+        "repository",
+        "shell",
+        "test-runner"
+      ],
+      "required_inputs": [
+        "repository",
+        "contracts"
+      ],
+      "outputs": [
+        "code",
+        "tests",
+        "evidence"
+      ],
+      "risks": [
+        "incorrect-certification"
+      ],
+      "evidence": [
+        "test-results"
+      ],
+      "tests": [
+        "batch46-complete"
+      ],
+      "deprecated_by": null
+    },
+    {
+      "skill_id": "1536",
+      "name": "b46-product-convergence-complete-certification-gate",
+      "version": "1.0.0",
+      "layer": "orchestrator",
+      "owner": "platform-engineering",
+      "triggers": [
+        "b46-product-convergence-complete-certification-gate"
+      ],
+      "prerequisites": [
+        "1535"
+      ],
+      "allowed_tools": [
+        "repository",
+        "shell",
+        "test-runner"
+      ],
+      "required_inputs": [
+        "repository",
+        "contracts"
+      ],
+      "outputs": [
+        "code",
+        "tests",
+        "evidence"
+      ],
+      "risks": [
+        "incorrect-certification"
+      ],
+      "evidence": [
+        "test-results"
+      ],
+      "tests": [
+        "batch46-complete"
+      ],
+      "deprecated_by": null
+    }
+  ]
+}

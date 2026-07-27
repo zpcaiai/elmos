@@ -8,7 +8,7 @@ import java.nio.file.Path;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TenantMigrationContractTest {
-    @Test void batchNineThroughFortySevenMigrationsEnforceTenantAndAppendOnlyBoundaries() throws Exception {
+    @Test void batchNineThroughFortyEightMigrationsEnforceTenantAndAppendOnlyBoundaries() throws Exception {
         Path root = Path.of(System.getProperty("basedir"), "src", "main", "resources", "db", "migration");
         String v9 = Files.readString(root.resolve("V9__enterprise_identity_tenant_and_private_execution.sql"));
         String v10 = Files.readString(root.resolve("V10__commercial_operations_and_asset_reuse.sql"));
@@ -48,6 +48,7 @@ class TenantMigrationContractTest {
         String v45 = Files.readString(root.resolve("V45__product_external_evidence_producers.sql"));
         String v46 = Files.readString(root.resolve("V46__product_assurance_analytics.sql"));
         String v47 = Files.readString(root.resolve("V47__product_continuous_authorization.sql"));
+        String v48 = Files.readString(root.resolve("V48__github_app_onboarding_state.sql"));
         assertTrue(v9.contains("FORCE ROW LEVEL SECURITY"));
         assertTrue(v9.contains("current_setting(''app.organization_id'', true)"));
         assertTrue(v9.contains("elmos_forbid_append_only_mutation"));
@@ -292,5 +293,9 @@ class TenantMigrationContractTest {
         assertTrue(v46.contains("('analytics', 'metric_definitions')"));
         assertTrue(v47.contains("('authorization', 'decisions')"));
         assertTrue(v47.contains("('policy', 'policy_exceptions')"));
+        assertTrue(v48.contains("FORCE ROW LEVEL SECURITY"));
+        assertTrue(v48.contains("current_setting('app.organization_id', true)"));
+        assertTrue(v48.contains("github_app_onboarding_tenant_isolation"));
+        assertFalse(v48.contains("secret_value"));
     }
 }

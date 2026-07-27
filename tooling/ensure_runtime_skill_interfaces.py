@@ -12,6 +12,8 @@ from pathlib import Path
 
 import yaml
 
+import skill_creator_tools
+
 
 ROOT = Path(__file__).resolve().parents[1]
 RUNTIME = ROOT / "agent-skills" / "runtime"
@@ -21,6 +23,8 @@ VALIDATOR = SKILL_CREATOR / "scripts" / "quick_validate.py"
 
 
 def load_validator():
+    if not VALIDATOR.is_file():
+        return skill_creator_tools.validate_skill
     spec = importlib.util.spec_from_file_location("elmos_runtime_skill_validator", VALIDATOR)
     if spec is None or spec.loader is None:
         raise SystemExit(f"Cannot load official Skill validator: {VALIDATOR}")
@@ -64,24 +68,39 @@ def main() -> None:
         if args.check:
             missing.append(name)
             continue
-        display = name.replace("-", " ").title()
+        display = skill_creator_tools.format_display_name(name)
         short = "Run this ELMOS Runtime Skill with evidence controls"
         prompt = f"Use ${name} to execute this ELMOS Runtime Skill with fail-closed evidence."
-        subprocess.run(
-            [
-                sys.executable,
-                str(GENERATOR),
-                str(skill_dir),
-                "--interface",
-                f"display_name={display}",
-                "--interface",
-                f"short_description={short}",
-                "--interface",
-                f"default_prompt={prompt}",
-            ],
-            check=True,
-            stdout=subprocess.DEVNULL,
-        )
+        if GENERATOR.is_file():
+            subprocess.run(
+                [
+                    sys.executable,
+                    str(GENERATOR),
+                    str(skill_dir),
+                    "--interface",
+                    f"display_name={display}",
+                    "--interface",
+                    f"short_description={short}",
+                    "--interface",
+                    f"default_prompt={prompt}",
+                ],
+                check=True,
+                stdout=subprocess.DEVNULL,
+            )
+        else:
+            interface.parent.mkdir(parents=True, exist_ok=True)
+            interface.write_text(
+                "\n".join(
+                    [
+                        "interface:",
+                        f"  display_name: {skill_creator_tools.yaml_quote(display)}",
+                        f"  short_description: {skill_creator_tools.yaml_quote(short)}",
+                        f"  default_prompt: {skill_creator_tools.yaml_quote(prompt)}",
+                        "",
+                    ]
+                ),
+                encoding="utf-8",
+            )
         updated.append(name)
 
     if missing:

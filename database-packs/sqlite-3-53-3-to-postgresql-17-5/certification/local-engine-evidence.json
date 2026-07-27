@@ -1,0 +1,80 @@
+{
+  "checks": {
+    "backup_restore_reconciliation": true,
+    "cleanup_completed": true,
+    "row_level_reconciliation": true,
+    "source_negative_constraint": true,
+    "source_query_plan": [
+      [
+        4,
+        0,
+        63,
+        "SEARCH work_orders USING INDEX idx_work_orders_tenant_created (tenant_id=?)"
+      ]
+    ],
+    "source_rows": [
+      [
+        "1",
+        "tenant-a",
+        "1250",
+        "2026-07-26T01:00:00+00:00"
+      ],
+      [
+        "2",
+        "tenant-a",
+        "500",
+        "2026-07-26T02:00:00+00:00"
+      ],
+      [
+        "3",
+        "tenant-b",
+        "9999",
+        "2026-07-26T03:00:00+00:00"
+      ]
+    ],
+    "source_transaction_rollback": true,
+    "target_negative_constraint": true,
+    "target_query_plan": [
+      "Sort  (cost=12.72..12.73 rows=5 width=56)",
+      "  Sort Key: created_at",
+      "  ->  Bitmap Heap Scan on work_orders  (cost=4.19..12.66 rows=5 width=56)",
+      "        Recheck Cond: (tenant_id = 'tenant-a'::text)",
+      "        ->  Bitmap Index Scan on idx_work_orders_tenant_created  (cost=0.00..4.19 rows=5 width=0)",
+      "              Index Cond: (tenant_id = 'tenant-a'::text)"
+    ],
+    "target_rows": [
+      [
+        "1",
+        "tenant-a",
+        "1250",
+        "2026-07-26T01:00:00+00:00"
+      ],
+      [
+        "2",
+        "tenant-a",
+        "500",
+        "2026-07-26T02:00:00+00:00"
+      ],
+      [
+        "3",
+        "tenant-b",
+        "9999",
+        "2026-07-26T03:00:00+00:00"
+      ]
+    ],
+    "target_transaction_rollback": true,
+    "tenant_query_reconciliation": true
+  },
+  "environment": {
+    "data": "synthetic",
+    "network": "loopback-only",
+    "production_write": false,
+    "source_engine": "SQLite 3.53.3",
+    "target_engine": "PostgreSQL 17.5"
+  },
+  "execution_status": "PASSED_LOCAL",
+  "external_execution": "NOT_RUN",
+  "independent_verification": "NOT_RUN",
+  "pack_key": "sqlite-3-53-3-to-postgresql-17-5",
+  "schema_version": 1
+}

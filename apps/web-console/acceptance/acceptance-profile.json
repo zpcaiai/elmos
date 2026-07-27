@@ -32,10 +32,18 @@
     "review all eight exact targets",
     "analyze and review structured requirements",
     "generate and verify a Python project",
+    "generate and verify the exact Python PostgreSQL 17.5 plus JWT and OIDC enterprise profiles",
+    "verify tenant-bound relationship CRUD and forced PostgreSQL RLS",
     "inspect artifact tree and download archive",
     "start runtime and wait for health status UP",
     "stop runtime"
   ],
+  "production_profiles": {
+    "python-postgresql-jwt": "LOCAL_ENGINEERING_PASSED",
+    "python-postgresql-oidc": "LOCAL_ENGINEERING_PASSED",
+    "external_delivery": "NOT_RUN",
+    "external_certification": "NOT_CERTIFIED"
+  },
   "security": {
     "runner": "explicit opt-in, bearer credential, tenant and actor binding",
     "network": "localhost health probes only during generated runtime validation",

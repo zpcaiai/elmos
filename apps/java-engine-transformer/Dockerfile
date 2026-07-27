@@ -23,16 +23,18 @@ RUN --mount=type=cache,target=/root/.m2 \
 FROM maven:3.9.11-eclipse-temurin-21@sha256:6fdc855a6ed81d288ca7ca37ac6ff5e9308b612485c0801d70b25a858c83d237
 RUN groupadd --gid 10001 elmos \
     && useradd --uid 10001 --gid 10001 --create-home --home-dir /home/elmos --shell /usr/sbin/nologin elmos \
-    && mkdir -p /app /workspace/run /home/elmos/.m2 \
+    && mkdir -p /app /workspace/run \
     && chown -R 10001:10001 /app /workspace /home/elmos
 COPY --from=java17 /opt/java/openjdk /opt/java/openjdk-17
 COPY --from=build /src/apps/java-engine-transformer/target/elmos-java-engine-transformer-0.1.0-SNAPSHOT-exec.jar /app/app.jar
-COPY --from=build --chown=10001:10001 /opt/elmos/maven-seed /opt/elmos/maven-seed
+COPY --from=build /opt/elmos/maven-seed /opt/elmos/maven-seed
 COPY --chown=10001:10001 apps/java-engine-transformer/entrypoint.sh /app/entrypoint.sh
-RUN chmod 0555 /app/entrypoint.sh
+RUN chmod -R a-w /opt/elmos/maven-seed \
+    && chmod 0555 /app/entrypoint.sh
 ENV ELMOS_SOURCE_JAVA_HOME=/opt/java/openjdk-17 \
     ELMOS_TARGET_JAVA_HOME=/opt/java/openjdk \
-    ELMOS_MAVEN_EXECUTABLE=/usr/share/maven/bin/mvn
+    ELMOS_MAVEN_EXECUTABLE=/usr/share/maven/bin/mvn \
+    ELMOS_MAVEN_DEPENDENCY_SEED=/opt/elmos/maven-seed
 USER 10001:10001
 EXPOSE 8083
 ENTRYPOINT ["/app/entrypoint.sh"]

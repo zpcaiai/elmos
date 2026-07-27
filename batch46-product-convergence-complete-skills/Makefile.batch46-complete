@@ -1,0 +1,7 @@
+validate-b46-complete:
+	python3 scripts/batch46-complete/validate_skill_bundle.py .
+	python3 scripts/batch46-complete/validate_convergence_pack.py convergence-packs/reference-product
+	python3 -m unittest tests/batch46-complete/test_toolkit.py
+
+gate-b46-complete:
+	python3 scripts/batch46-complete/run_convergence_gate.py convergence-packs/reference-product

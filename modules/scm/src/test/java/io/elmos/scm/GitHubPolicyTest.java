@@ -26,9 +26,12 @@ class GitHubPolicyTest {
             public void replaceAuthorizedRepositories(long id, Set<GitHubInstallationLifecycleService.Repository> repositories, Instant at) {}
         };
         var service = new GitHubInstallationLifecycleService(store); Instant now = Instant.parse("2026-07-20T00:00:00Z");
-        Map<String,String> permissions = Map.of("metadata","read","contents","write","pull_requests","write","checks","write");
+        Map<String,String> permissions = Map.of("metadata","read","contents","read");
         service.bind(new GitHubInstallationLifecycleService.Installation("i1","c1","org1",9,1,"example","Organization","selected",permissions, GitHubInstallationLifecycleService.Status.ACTIVE,now,now));
         assertThrows(SecurityException.class, () -> service.bind(new GitHubInstallationLifecycleService.Installation("i2","c2","org2",9,1,"example","Organization","selected",permissions, GitHubInstallationLifecycleService.Status.ACTIVE,now,now)));
+        assertThrows(SecurityException.class, () -> service.bind(new GitHubInstallationLifecycleService.Installation(
+                "i3","c3","org1",10,1,"example","Organization","selected",
+                Map.of("metadata","read"), GitHubInstallationLifecycleService.Status.ACTIVE,now,now)));
         service.suspend(9, now.plusSeconds(1)); assertThrows(SecurityException.class, () -> service.requireActive(9));
     }
 }

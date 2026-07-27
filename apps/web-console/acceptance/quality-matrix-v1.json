@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "profile": "project-synthesis-generation",
   "matrix": [
-    {"browser": "chromium", "viewport": "1440x900", "locale": "zh-CN", "axe": true, "keyboard": true, "p0_runner": true},
+    {"browser": "chromium", "viewport": "1440x900", "locale": "zh-CN", "axe": true, "keyboard": true, "p0_runner": true, "enterprise_postgresql_jwt_oidc_runner": true},
     {"browser": "firefox", "viewport": "1440x900", "locale": "zh-CN", "axe": true, "keyboard": true, "p0_runner": false},
     {"browser": "webkit", "viewport": "1440x900", "locale": "zh-CN", "axe": true, "keyboard": true, "p0_runner": false},
     {"browser": "chromium", "viewport": "390x844", "locale": "zh-CN", "axe": true, "keyboard": true, "responsive": true, "p0_runner": false},

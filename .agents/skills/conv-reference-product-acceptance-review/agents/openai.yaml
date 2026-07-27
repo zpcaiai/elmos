@@ -1,0 +1,4 @@
+interface:
+  display_name: "Conv Reference Product Acceptance Review"
+  short_description: "Run this ELMOS product-convergence Skill with evidence"
+  default_prompt: "Use $conv-reference-product-acceptance-review to execute this ELMOS product-convergence Skill with fail-closed evidence."

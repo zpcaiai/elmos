@@ -34,6 +34,8 @@ ELMOS 也支持绿色项目合成：仓库级 `$elmos-project-synthesis` Skill �
 
 ELMOS 通过锁定的 `org.openrewrite.recipe:rewrite-spring:6.35.0` 复用同目录 `rewrite-spring` 的 Recipe 能力，不复制其 198 个 Java 源文件，也不形成私有分叉。审计时的上游快照为 `ae11461b732e13c27bc7b8ed9b1b2943b8e4944f`，详见 `docs/adr/0001-rewrite-spring-foundation.md`。
 
+Web Console `/spring` 与 Java Engine `/engine/v1/spring-upgrades` 提供一条精确的真实迁移旅程：导入公开 Git 或已物化 Snapshot、锁定 Commit 和确定性 Snapshot、识别 Boot 2.7.18 / Java 17 / Maven、先提取 FCM，再执行固定的 OpenRewrite Recipe，使用 Java 21 编译测试、从内容寻址 ZIP 做新目录验证，验证通过后才开放下载与一键启动、健康检查、日志、停止和重试。默认配置全部关闭；只有已经证明 rootless、只读根、能力移除、默认拒绝网络且绑定独立验证器的 Private Runner 才能启用。可重复的本地开发语料命令为 `ELMOS_MAVEN_EXECUTABLE=/path/to/apache-maven-3.9.11/bin/mvn python3 scripts/batch30/run_spring_boot_reference.py --repo-root .`；执行器拒绝其他 Maven 版本和仓库自带的 `mvnw`，其本地结果不替代客户仓库、Rootless Runner 或独立外部评审证据。
+
 ## 验证
 
 ```bash
@@ -237,6 +239,15 @@ B016–B035 的 20 个 Build Skills 位于 `agent-skills/build`；Batch 9/10 的
 - `make product-closure-gate` 与 `make product-convergence-gate` 是失败关闭门禁；当前模板缺少获批真实运行、独立验证、两家 Design Partner 和外部 Review 证据，预期返回 `BLOCKED`/非零。仓库级最高状态仅为 `READY_FOR_EXTERNAL_GATE`，不会批准 GA、生产认证或客户验收。
 
 完整边界与验证证据见 `docs/product-closure-convergence/VERIFICATION.md`。
+
+## Product Batch 56 reviewed-guidance 覆盖层
+
+- `elmos-codex-skills-batch56-product-closure/` 原样保留 25 个源文件及 `C56-01–16` 身份。该包与 Product 56A、Migration M56、Product Convergence 和 Batch 97–104 均为独立命名空间。
+- 5 个超长源名称和 1 个 Product 56A 精确名称冲突已通过确定性 `b56-*` 别名解决；别名、来源摘要及完整重叠关系记录在 `docs/product-closure-batch56/`，没有覆盖既有 Runtime Skill。
+- 这 16 个 Skill 是默认不激活的补充实施指导。产品闭环入口与唯一就绪权威仍是 Product 56A；静态文件不能批准 GA、生产认证、部署或客户验收。
+- 运行 `make product-batch56-skills` 可复验源清单、16 个安装 Skill/接口、别名、来源绑定和失败关闭状态。当前外部证据保持 `NOT_RUN`。
+
+详见 `docs/product-closure-batch56/SOURCE_AUDIT.md` 与 `docs/product-closure-batch56/VERIFICATION.md`。
 
 ## 本地演示
 

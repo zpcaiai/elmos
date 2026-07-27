@@ -1,0 +1,153 @@
+{
+  "activation_default": "inactive",
+  "namespace": "product-batch56-reviewed-guidance",
+  "readiness_authority": "scripts/product-closure-batch56a/run_product_closure_gate.py",
+  "relationships": [
+    {
+      "installed_alias": "b56-elmos-product-closure-orchestrator",
+      "product_56a_source_ids": [
+        "CLO56A001"
+      ],
+      "relationship": "supplementary-overlap",
+      "source_id": "C56-01",
+      "source_name": "elmos-product-closure-orchestrator"
+    },
+    {
+      "installed_alias": "b56-canonical-domain-kernel-consolidation",
+      "product_56a_source_ids": [
+        "CLO56A002"
+      ],
+      "relationship": "supplementary-overlap",
+      "source_id": "C56-02",
+      "source_name": "canonical-domain-kernel-consolidation"
+    },
+    {
+      "installed_alias": "b56-skill-registry-capability-graph-and-activation-resolver",
+      "product_56a_source_ids": [
+        "CLO56A003"
+      ],
+      "relationship": "supplementary-overlap",
+      "source_id": "C56-03",
+      "source_name": "skill-registry-capability-graph-and-activation-resolver"
+    },
+    {
+      "installed_alias": "b56-system-of-record-authority-and-master-data-governance",
+      "product_56a_source_ids": [
+        "CLO56A007"
+      ],
+      "relationship": "supplementary-overlap",
+      "source_id": "C56-04",
+      "source_name": "system-of-record-authority-and-master-data-governance"
+    },
+    {
+      "installed_alias": "b56-golden-journey-modernization-reference-implementation",
+      "product_56a_source_ids": [
+        "CLO56A004"
+      ],
+      "relationship": "supplementary-overlap",
+      "source_id": "C56-05",
+      "source_name": "golden-journey-modernization-reference-implementation"
+    },
+    {
+      "installed_alias": "b56-composite-application-data-infrastructure-cutover-journey",
+      "product_56a_source_ids": [
+        "CLO56A004"
+      ],
+      "relationship": "supplementary-overlap",
+      "source_id": "C56-06",
+      "source_name": "composite-application-data-infrastructure-cutover-journey"
+    },
+    {
+      "installed_alias": "b56-agent-plan-capability-context-replay-and-economics-2e0a3b58",
+      "product_56a_source_ids": [
+        "CLO56A008"
+      ],
+      "relationship": "supplementary-overlap",
+      "source_id": "C56-07",
+      "source_name": "agent-plan-capability-context-replay-and-economics-governance"
+    },
+    {
+      "installed_alias": "b56-provider-certification-factory-and-support-matrix",
+      "product_56a_source_ids": [
+        "CLO56A005"
+      ],
+      "relationship": "supplementary-overlap",
+      "source_id": "C56-08",
+      "source_name": "provider-certification-factory-and-support-matrix"
+    },
+    {
+      "installed_alias": "b56-execution-state-idempotency-reconciliation-compensa-90e7d783",
+      "product_56a_source_ids": [
+        "CLO56A006"
+      ],
+      "relationship": "supplementary-overlap",
+      "source_id": "C56-09",
+      "source_name": "execution-state-idempotency-reconciliation-compensation-and-replay"
+    },
+    {
+      "installed_alias": "b56-certification-lab-golden-corpus-holdout-chaos-and-r-83a57894",
+      "product_56a_source_ids": [
+        "CLO56A009"
+      ],
+      "relationship": "supplementary-overlap",
+      "source_id": "C56-10",
+      "source_name": "certification-lab-golden-corpus-holdout-chaos-and-runtime-evidence"
+    },
+    {
+      "installed_alias": "b56-product-experience-role-workspaces-and-onboarding",
+      "product_56a_source_ids": [
+        "CLO56A010"
+      ],
+      "relationship": "supplementary-overlap",
+      "source_id": "C56-11",
+      "source_name": "product-experience-role-workspaces-and-onboarding"
+    },
+    {
+      "installed_alias": "b56-upgrade-schema-event-workflow-skill-and-provider-lifecycle",
+      "product_56a_source_ids": [
+        "CLO56A012"
+      ],
+      "relationship": "supplementary-overlap",
+      "source_id": "C56-12",
+      "source_name": "upgrade-schema-event-workflow-skill-and-provider-lifecycle"
+    },
+    {
+      "installed_alias": "b56-commercial-product-edition-metering-billing-support-7d81f20f",
+      "product_56a_source_ids": [
+        "CLO56A013"
+      ],
+      "relationship": "supplementary-overlap",
+      "source_id": "C56-13",
+      "source_name": "commercial-product-edition-metering-billing-support-and-sla-readiness"
+    },
+    {
+      "installed_alias": "b56-domain-pack-governance-and-industry-safety-certification",
+      "product_56a_source_ids": [
+        "CLO56A011"
+      ],
+      "relationship": "supplementary-overlap",
+      "source_id": "C56-14",
+      "source_name": "domain-pack-governance-and-industry-safety-certification"
+    },
+    {
+      "installed_alias": "b56-portfolio-consolidation-dependency-conflict-and-tec-7c28347b",
+      "product_56a_source_ids": [
+        "CLO56A014"
+      ],
+      "relationship": "supplementary-overlap",
+      "source_id": "C56-15",
+      "source_name": "portfolio-consolidation-dependency-conflict-and-technical-debt-burn-down"
+    },
+    {
+      "installed_alias": "b56-ga-readiness-customer-pilot-operational-trust-and-f-e83fb298",
+      "product_56a_source_ids": [
+        "CLO56A015",
+        "CLO56A016"
+      ],
+      "relationship": "supplementary-overlap",
+      "source_id": "C56-16",
+      "source_name": "ga-readiness-customer-pilot-operational-trust-and-final-release-gate"
+    }
+  ],
+  "schema_version": "1.0"
+}

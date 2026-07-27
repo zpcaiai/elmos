@@ -11,8 +11,8 @@ import re
 from collections import Counter, defaultdict
 from pathlib import Path
 
+import skill_creator_tools
 import yaml
-
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_PACK = ROOT / "elmos-codex-skills-batch1-55-complete"
@@ -80,7 +80,7 @@ def installed_name(source_name: str) -> str:
 
 def load_official_validator():
     if not OFFICIAL_VALIDATOR.is_file():
-        fail(f"official skill-creator validator is missing: {OFFICIAL_VALIDATOR}")
+        return skill_creator_tools.validate_skill
     spec = importlib.util.spec_from_file_location("elmos_batch1_55_validator", OFFICIAL_VALIDATOR)
     if spec is None or spec.loader is None:
         fail("cannot load official skill-creator validator")
@@ -182,7 +182,7 @@ def main() -> None:
             fail(f"frontmatter/directory mismatch for {name}")
         valid, message = official_validate(skill_path.parent)
         if not valid:
-            fail(f"official Skill validation failed for {name}: {message}")
+            fail(f"skill-creator-compatible validation failed for {name}: {message}")
         official_valid += 1
         validate_interface(skill_path.parent, name)
 
@@ -213,6 +213,11 @@ def main() -> None:
                 "structural_status": "PASS",
                 "overall_completion": "NOT_COMPLETE",
                 "official_skill_validation": {"valid": official_valid, "failed": 0},
+                "validator_contract": (
+                    "official-skill-creator"
+                    if OFFICIAL_VALIDATOR.is_file()
+                    else "repository-pinned-skill-creator-compatible"
+                ),
                 "interfaces": {"valid": official_valid, "failed": 0},
                 "namespace_counts": manifest["namespaceCounts"],
                 "migration_batch_range": "M1-M45",

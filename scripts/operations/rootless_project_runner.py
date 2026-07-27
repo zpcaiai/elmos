@@ -39,6 +39,8 @@ HEALTH_PATHS = {language: "/health" for language in LANGUAGE_DIRECTORIES}
 IDENTIFIER = re.compile(r"^[a-z0-9][a-z0-9-]{2,80}$")
 NETWORK_IDENTIFIER = re.compile(r"^[a-z0-9][a-z0-9_.-]{2,62}$")
 UUID = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$")
+IMMUTABLE_IMAGE = re.compile(r"^[^@\s]+@sha256:[0-9a-f]{64}$")
+FROM_IMAGE = re.compile(r"^\s*FROM\s+(?:--platform=\S+\s+)?(?P<image>\S+)", re.IGNORECASE)
 POSTGRES_IMAGE = (
     "postgres:17.5-alpine@"
     "sha256:6567bca8d7bc8c82c5922425a0baee57be8402df92bae5eacad5f01ae9544daa"
@@ -203,6 +205,60 @@ def _validate_build_network(engine: Path, network: str) -> None:
         or labels.get("io.elmos.approved") != "true"
     ):
         raise RunnerError("BUILD_NETWORK_NOT_APPROVED")
+
+
+def _required_images(target: Path) -> tuple[str, ...]:
+    dockerfile = target / "Dockerfile"
+    try:
+        lines = dockerfile.read_text(encoding="utf-8").splitlines()
+    except (OSError, UnicodeError) as error:
+        raise RunnerError("TARGET_DOCKERFILE_UNREADABLE") from error
+    images: list[str] = []
+    for line in lines:
+        match = FROM_IMAGE.match(line)
+        if match is None:
+            continue
+        image = match.group("image")
+        if image.lower() == "scratch":
+            continue
+        if IMMUTABLE_IMAGE.fullmatch(image) is None:
+            raise RunnerError(f"TOOLCHAIN_IMAGE_NOT_IMMUTABLE:{image[:256]}")
+        if image not in images:
+            images.append(image)
+    if not images:
+        raise RunnerError("TOOLCHAIN_IMAGE_INVENTORY_EMPTY")
+    return tuple(images)
+
+
+def _image_cache_status(engine: Path, images: tuple[str, ...]) -> tuple[str, ...]:
+    missing: list[str] = []
+    for image in images:
+        result = _run([str(engine), "image", "inspect", image], timeout=30)
+        if result.returncode != 0:
+            missing.append(image)
+    return tuple(missing)
+
+
+def _diagnose(arguments: argparse.Namespace) -> dict[str, Any]:
+    engine = Path(arguments.engine)
+    preflight = _preflight(engine)
+    workspace, target = _validated_workspace(arguments.workspace, arguments.language)
+    build_network = arguments.build_network
+    _validate_build_network(engine, build_network)
+    images = _required_images(target)
+    missing = _image_cache_status(engine, images)
+    if build_network == "none" and missing:
+        names = ",".join(missing)
+        raise RunnerError(f"TOOLCHAIN_IMAGES_NOT_AVAILABLE_OFFLINE:{names[:1800]}")
+    return {
+        **preflight,
+        "workspace": str(workspace),
+        "language": arguments.language,
+        "build_network": build_network,
+        "toolchain_cache": "CACHED" if not missing else "APPROVED_BUILD_EGRESS_REQUIRED",
+        "required_images": list(images),
+        "missing_images": list(missing),
+    }
 
 
 def _wait_healthy(engine: Path, container: str, *, timeout: float = 60.0) -> None:
@@ -510,7 +566,7 @@ def _authentication_arguments(
 
 def _start(arguments: argparse.Namespace) -> dict[str, Any]:
     engine = Path(arguments.engine)
-    _preflight(engine)
+    _diagnose(arguments)
     language = arguments.language
     workspace, target = _validated_workspace(arguments.workspace, language)
     port = arguments.port
@@ -532,7 +588,6 @@ def _start(arguments: argparse.Namespace) -> dict[str, Any]:
     }:
         raise RunnerError("RUNTIME_PROFILE_INVALID")
     build_network = arguments.build_network
-    _validate_build_network(engine, build_network)
     build = _run(
         [
             str(engine),
@@ -728,6 +783,11 @@ def parser() -> argparse.ArgumentParser:
     subcommands = root.add_subparsers(dest="command", required=True)
     preflight = subcommands.add_parser("preflight")
     preflight.add_argument("--engine", required=True)
+    diagnose = subcommands.add_parser("diagnose")
+    diagnose.add_argument("--engine", required=True)
+    diagnose.add_argument("--workspace", required=True)
+    diagnose.add_argument("--language", choices=sorted(LANGUAGE_DIRECTORIES), required=True)
+    diagnose.add_argument("--build-network", default="none")
     start = subcommands.add_parser("start")
     start.add_argument("--engine", required=True)
     start.add_argument("--workspace", required=True)
@@ -755,6 +815,7 @@ def main() -> int:
     try:
         result = {
             "preflight": lambda: _preflight(Path(arguments.engine)),
+            "diagnose": lambda: _diagnose(arguments),
             "start": lambda: _start(arguments),
             "status": lambda: _status(arguments),
             "stop": lambda: _stop(arguments),

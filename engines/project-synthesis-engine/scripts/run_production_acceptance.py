@@ -6,6 +6,7 @@ import json
 import tempfile
 from pathlib import Path
 
+from elmos_project_synthesis.cleanup import cleanup_acceptance_directory
 from elmos_project_synthesis.intake import approve_request, create_draft
 from elmos_project_synthesis.verification import verify_workspace
 from elmos_project_synthesis.workspace import generate_workspace
@@ -55,10 +56,17 @@ def main() -> int:
         actor="acceptance:production-profile",
         approved_at="2026-07-26T00:00:00+00:00",
     )
-    with tempfile.TemporaryDirectory(prefix="elmos-production-profile-") as temporary:
-        workspace = Path(temporary) / "workspace"
+    temporary = Path(tempfile.mkdtemp(prefix="elmos-production-profile-"))
+    cleanup_error: str | None = None
+    try:
+        workspace = temporary / "workspace"
         manifest = generate_workspace(request, workspace)
         evidence = verify_workspace(workspace)
+    finally:
+        cleanup_error = cleanup_acceptance_directory(
+            temporary,
+            expected_prefix="elmos-production-profile-",
+        )
     probes = [item for item in evidence["results"] if item.get("kind") == "startup-probe"]
     result = {
         "schema_version": "1.0.0",
@@ -73,9 +81,25 @@ def main() -> int:
             }
             for item in probes
         ],
+        "failures": [
+            {
+                "language": item["language"],
+                "kind": item["kind"],
+                "command": item["command"],
+                "exit_code": item["exit_code"],
+                "output": str(item.get("output", ""))[-4_000:],
+            }
+            for item in evidence["results"]
+            if item.get("status") == "FAILED"
+        ],
         "production_delivery_status": evidence["production_delivery_status"],
         "external_certification_status": evidence["external_certification_status"],
+        "cleanup_status": "PASSED" if cleanup_error is None else "FAILED",
     }
+    if cleanup_error is not None:
+        result["cleanup_error"] = cleanup_error
+        result["cleanup_path"] = str(temporary)
+        result["status"] = "FAILED"
     print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
     return 0 if result["status"] == "PASSED" else 1
 

@@ -6,9 +6,6 @@ import re
 from pathlib import Path
 from typing import Any
 
-import yaml
-
-
 MAX_SKILL_NAME_LENGTH = 64
 ACRONYMS = {
     "GH",
@@ -58,8 +55,49 @@ def format_display_name(skill_name: str) -> str:
     return " ".join(formatted)
 
 
+def write_openai_yaml(
+    skill_dir: str | Path,
+    skill_name: str,
+    interface_overrides: list[str] | None = None,
+) -> Path:
+    """Write the deterministic interface subset used by repository importers."""
+    interface = {
+        "display_name": format_display_name(skill_name),
+        "short_description": "Run this ELMOS Skill with evidence controls",
+        "default_prompt": (
+            f"Use ${skill_name} to execute this ELMOS Skill with fail-closed evidence."
+        ),
+    }
+    for override in interface_overrides or []:
+        if "=" not in override:
+            raise ValueError(f"Invalid interface override: {override}")
+        key, value = override.split("=", 1)
+        if key not in interface or not value.strip():
+            raise ValueError(f"Invalid interface override: {override}")
+        interface[key] = value
+    target = Path(skill_dir) / "agents" / "openai.yaml"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(
+        "\n".join(
+            [
+                "interface:",
+                f"  display_name: {yaml_quote(interface['display_name'])}",
+                f"  short_description: {yaml_quote(interface['short_description'])}",
+                f"  default_prompt: {yaml_quote(interface['default_prompt'])}",
+                "",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    return target
+
+
 def validate_skill(skill_path: str | Path) -> tuple[bool, str]:
     """Validate the frontmatter contract used by Codex skill-creator."""
+    try:
+        import yaml
+    except ModuleNotFoundError:
+        return False, "PyYAML is required for Skill frontmatter validation"
     skill_md = Path(skill_path) / "SKILL.md"
     if not skill_md.exists():
         return False, "SKILL.md not found"

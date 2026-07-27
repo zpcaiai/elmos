@@ -24,6 +24,7 @@ class SpringUpgradeConfiguration {
             @Value("${elmos.worker.spring-upgrade.source-java-home:/opt/java/openjdk-17}") String sourceJavaHome,
             @Value("${elmos.worker.spring-upgrade.target-java-home:/opt/java/openjdk-21}") String targetJavaHome,
             @Value("${elmos.worker.spring-upgrade.maven-executable:mvn}") String mavenExecutable,
+            @Value("${elmos.worker.spring-upgrade.maven-dependency-seed:}") String mavenDependencySeed,
             @Value("${elmos.worker.spring-upgrade.allowed-git-hosts:github.com}") String allowedHosts,
             @Value("${elmos.worker.spring-upgrade.allow-file-repositories:false}") boolean allowFileRepositories,
             @Value("${elmos.worker.spring-upgrade.transformer-broker-enabled:false}") boolean transformerBrokerEnabled,
@@ -53,6 +54,8 @@ class SpringUpgradeConfiguration {
                     mavenExecutable,
                     hosts(allowedHosts),
                     allowFileRepositories,
+                    false,
+                    optionalPath(mavenDependencySeed),
                     json
             );
         } else {
@@ -136,5 +139,9 @@ class SpringUpgradeConfiguration {
                 .filter(host -> !host.isBlank())
                 .map(host -> host.toLowerCase(Locale.ROOT))
                 .collect(Collectors.toUnmodifiableSet());
+    }
+
+    private static Path optionalPath(String value) {
+        return value == null || value.isBlank() ? null : Path.of(value);
     }
 }

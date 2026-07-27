@@ -264,3 +264,69 @@ test("Spring 迁移失败保持可见且不伪造 Run、Artifact 或验证通过
   await expect(page.getByText("NOT_RUN", { exact: true }).first()).toBeVisible();
   await expect(page.getByRole("button", { name: "下载新项目 ZIP" })).toHaveCount(0);
 });
+
+test("Rootless Runtime 未证明时禁用自动启动并持续展示安全阻断原因", async ({ page }) => {
+  await page.route("**/api/spring-upgrades/capabilities", (route) =>
+    fulfillJson(route, {
+      ...capabilities,
+      runtimeRunnerConfigured: false,
+      runtimeRunnerReason: "未发现受证明的 Rootless Docker socket；禁止降级到宿主机进程。",
+    }));
+  await page.route("**/api/github-repositories", (route) =>
+    fulfillJson(route, { status: "NOT_CONFIGURED", repositories: [] }));
+
+  await page.goto("/spring");
+
+  await expect(page.getByText("BLOCKED · 不降级执行")).toBeVisible();
+  await expect(page.getByText("未发现受证明的 Rootless Docker socket；禁止降级到宿主机进程。").first())
+    .toBeVisible();
+  await expect(page.getByLabel("验证通过后自动一键启动")).toBeDisabled();
+  await expect(page.getByRole("button", { name: "一键启动" })).toBeDisabled();
+});
+
+test("GitHub App 私有仓库入口只跳转经过校验的 GitHub HTTPS 安装地址", async ({ page }) => {
+  await page.route("**/api/spring-upgrades/capabilities", (route) =>
+    fulfillJson(route, capabilities));
+  await page.route("**/api/github-repositories", (route) =>
+    fulfillJson(route, { status: "NOT_CONFIGURED", repositories: [] }));
+  await page.route("**/api/github-installation", (route) =>
+    fulfillJson(route, {
+      status: "AWAITING_GITHUB_INSTALLATION",
+      installationUrl: "https://github.com/apps/elmos/installations/new?state=signed-state",
+      expiresAt: "2026-07-26T10:10:00Z",
+    }));
+  await page.route("https://github.com/apps/elmos/installations/new?state=signed-state", (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "text/html",
+      body: "<html><title>GitHub App installation</title><body>GitHub 安装页</body></html>",
+    }));
+
+  await page.goto("/spring");
+  await page.getByLabel("输入方式").selectOption("GITHUB_APP");
+  await expect(page.getByText("最长 1 小时的短期 Token", { exact: false })).toBeVisible();
+  await page.getByRole("button", { name: "安装 / 更新 GitHub App" }).click();
+
+  await expect(page).toHaveURL(
+    "https://github.com/apps/elmos/installations/new?state=signed-state",
+  );
+});
+
+test("页面刷新后仅凭会话内 Run ID 恢复最近运行", async ({ page }) => {
+  await page.addInitScript(({ key, value }) => {
+    window.sessionStorage.setItem(key, value);
+  }, { key: "elmos.spring.latest-run-id", value: runId });
+  await page.route("**/api/spring-upgrades/**", async (route) => {
+    const path = new URL(route.request().url()).pathname;
+    if (path.endsWith("/capabilities")) return fulfillJson(route, capabilities);
+    return fulfillJson(route, completedRun());
+  });
+  await page.route("**/api/github-repositories", (route) =>
+    fulfillJson(route, { status: "NOT_CONFIGURED", repositories: [] }));
+
+  await page.goto("/spring");
+
+  await expect(page.getByText("已恢复本浏览器会话中的最近一次迁移运行。")).toBeVisible();
+  await expect(page.getByText(`${runId.slice(0, 8)} · #1`)).toBeVisible();
+  await expect(page.getByRole("button", { name: "下载新项目 ZIP" })).toBeVisible();
+});

@@ -1,0 +1,4 @@
+interface:
+  display_name: "B56 Portfolio Consolidation Dependency Conflict and Tec 7c28347b"
+  short_description: "Run this Product Batch 56 guidance Skill safely"
+  default_prompt: "Use $b56-portfolio-consolidation-dependency-conflict-and-tec-7c28347b as inactive Product Batch 56 guidance; preserve Product 56A authority and fail closed on missing evidence."

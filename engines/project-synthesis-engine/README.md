@@ -139,6 +139,27 @@ security/network policy, SLO definitions, and backup/restore runbooks.
 Uncompiled rules, ambiguous production relations and every unsupported
 profile/target tuple fail closed.
 
+The portable starter acceptance executes every exact toolchain available on the
+current host and preserves unavailable targets as `NOT_RUN`:
+
+```bash
+uv run python scripts/run_acceptance.py
+```
+
+Use `--require-all-toolchains` when the environment is expected to contain the
+complete eight-target matrix; then any unavailable exact toolchain returns
+non-zero. A failed build always returns non-zero in both modes.
+
+Python verification stores a content-addressed `uv.lock` under
+`~/.cache/elmos/project-synthesis/locks` after the first successful resolution,
+then restores it with owner-only permissions and validates it with
+`uv lock --check`. Set `ELMOS_PROJECT_SYNTHESIS_LOCK_CACHE` to an absolute
+private cache directory when a controlled runner needs a different location.
+The cache makes repeated identical generation resilient to transient index
+failures; the first unseen `pyproject.toml` still requires a pre-warmed cache or
+authorized package-index access, so this is not a claim of arbitrary offline
+execution.
+
 The two local production-profile paths are replayable separately:
 
 ```bash

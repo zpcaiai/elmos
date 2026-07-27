@@ -10,6 +10,10 @@ const repositoryRoot = path.resolve(__dirname, "../..");
 const runnerToken = "elmos-e2e-local-token-32-characters";
 const uvPath = process.env.ELMOS_UV_PATH ?? "/opt/homebrew/bin/uv";
 const webPort = Number.parseInt(process.env.ELMOS_E2E_PORT ?? "3200", 10);
+const webServerMode = process.env.ELMOS_E2E_WEB_SERVER_MODE ?? "development";
+if (!["development", "production"].includes(webServerMode)) {
+  throw new Error("ELMOS_E2E_WEB_SERVER_MODE_INVALID");
+}
 const configuredRunnerRoot = process.env.ELMOS_E2E_RUNNER_ROOT;
 const runnerRoot = configuredRunnerRoot
   ?? path.join(tmpdir(), `elmos-web-console-e2e-${process.pid}`);
@@ -44,7 +48,9 @@ export default defineConfig({
     video: "off",
   },
   webServer: {
-    command: `pnpm dev --hostname 127.0.0.1 --port ${webPort}`,
+    command: webServerMode === "production"
+      ? `pnpm build && pnpm start --hostname 127.0.0.1 --port ${webPort}`
+      : `pnpm dev --hostname 127.0.0.1 --port ${webPort}`,
     url: `${baseURL}/api/capabilities/generation`,
     reuseExistingServer: false,
     timeout: 120_000,

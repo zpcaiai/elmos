@@ -11,12 +11,12 @@ from pathlib import Path
 from validate_product_batch33_38_integration import (
     COMPLETE_MANIFEST,
     LEGACY_MANIFEST,
+    OFFICIAL_VALIDATOR,
     ROOT,
     RUNTIME,
     fail,
     load_official_validator,
 )
-
 
 BATCH39_MANIFEST = ROOT / "docs" / "product-batches39-complete" / "skill-source-manifest.json"
 BATCH40_55_MANIFEST = ROOT / "docs" / "product-batches40-55-complete" / "skill-source-manifest.json"
@@ -115,7 +115,7 @@ def main() -> None:
             fail(f"prior canonical Product Runtime digest mismatch: {name}")
         valid, message = validate_skill(runtime.parent)
         if not valid:
-            fail(f"official prior Product validation failed for {name}: {message}")
+            fail(f"skill-creator-compatible prior Product validation failed for {name}: {message}")
         interface = (runtime.parent / "agents" / "openai.yaml").read_text(encoding="utf-8")
         if "default_prompt:" not in interface or f"${name}" not in interface:
             fail(f"prior Product interface does not invoke ${name}")
@@ -137,7 +137,7 @@ def main() -> None:
         for skill_dir in (source.parent, runtime.parent):
             valid, message = validate_skill(skill_dir)
             if not valid:
-                fail(f"official Product B40-B55 validation failed for {name}: {message}")
+                fail(f"skill-creator-compatible Product B40-B55 validation failed for {name}: {message}")
             interface = (skill_dir / "agents" / "openai.yaml").read_text(encoding="utf-8")
             if "default_prompt:" not in interface or f"${name}" not in interface:
                 fail(f"Product B40-B55 interface does not invoke ${name}")
@@ -160,6 +160,11 @@ def main() -> None:
         json.dumps(
             {
                 "official_skill_validation": {"valid": 1107, "failed": 0},
+                "validator_contract": (
+                    "official-skill-creator"
+                    if OFFICIAL_VALIDATOR.is_file()
+                    else "repository-pinned-skill-creator-compatible"
+                ),
                 "prior_product_runtime_skills_validated": 339,
                 "prior_source_package_archives": "NOT_REVALIDATED",
                 "batch40_55_skill_counts": dict(batch_counts),

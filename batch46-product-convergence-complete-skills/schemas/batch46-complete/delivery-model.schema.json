@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "unit_cost",
+    "gross_margin",
+    "cycle_time_days",
+    "manual_hours",
+    "expert_bottlenecks",
+    "risk_reserve",
+    "repeatable_projects"
+  ],
+  "properties": {
+    "unit_cost": {
+      "type": "number",
+      "minimum": 0
+    },
+    "gross_margin": {
+      "type": "number",
+      "minimum": 0
+    },
+    "cycle_time_days": {
+      "type": "number",
+      "minimum": 1
+    },
+    "manual_hours": {
+      "type": "number",
+      "minimum": 0
+    },
+    "expert_bottlenecks": {
+      "type": "array"
+    },
+    "risk_reserve": {
+      "type": "number",
+      "minimum": 0
+    },
+    "repeatable_projects": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false
+}

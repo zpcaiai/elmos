@@ -25,6 +25,7 @@ elmos:
     source-java-home: ${ELMOS_SOURCE_JAVA_HOME:/opt/java/openjdk-17}
     target-java-home: ${ELMOS_TARGET_JAVA_HOME:/opt/java/openjdk}
     maven-executable: ${ELMOS_MAVEN_EXECUTABLE:/usr/share/maven/bin/mvn}
+    maven-dependency-seed: ${ELMOS_MAVEN_DEPENDENCY_SEED:/opt/elmos/maven-seed}
     allowed-git-hosts: ${ELMOS_ALLOWED_GIT_HOSTS:github.com}
     one-time-secret: ${ELMOS_TRANSFORMER_HMAC_SECRET_VALUE:}
     auth-window-seconds: ${ELMOS_TRANSFORMER_AUTH_WINDOW_SECONDS:90}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { Icon } from "../components/Icon";
 import { StatusChip } from "../components/StatusChip";
 
@@ -99,7 +99,14 @@ type RepositoryCatalog = {
   repositories: ConnectedRepository[];
   message?: string;
 };
+type GithubInstallationBegin = {
+  status: "AWAITING_GITHUB_INSTALLATION";
+  installationUrl: string;
+  expiresAt: string;
+};
+type FeedbackKind = "success" | "error";
 
+const latestRunStorageKey = "elmos.spring.latest-run-id";
 const stageCards: Array<{ stages: Stage[]; title: string; detail: string }> = [
   { stages: ["IMPORT_GIT"], title: "导入 Git 仓库", detail: "仅允许批准的 HTTPS Git host，拒绝 URL 凭证。" },
   { stages: ["LOCK_SNAPSHOT"], title: "锁定 Commit / Snapshot", detail: "解析 40 位 Commit，并生成确定性内容摘要。" },
@@ -162,10 +169,30 @@ export function SpringModernizationStudio() {
   const [showLogs, setShowLogs] = useState(false);
   const [busy, setBusy] = useState(false);
   const [feedback, setFeedback] = useState("");
+  const [feedbackKind, setFeedbackKind] = useState<FeedbackKind>("success");
+  const restoredRun = useRef(false);
+
+  const notify = useCallback((message: string, kind: FeedbackKind = "success") => {
+    setFeedback(message);
+    setFeedbackKind(kind);
+  }, []);
+
+  const refreshGithubCatalog = useCallback(async () => {
+    const catalog = await api<RepositoryCatalog>("/api/github-repositories");
+    setGithubCatalogStatus(catalog.status);
+    setGithubRepositories(catalog.repositories);
+    const first = catalog.repositories[0];
+    if (first) {
+      setGithubRepositoryId((value) => value || first.repositoryId);
+      setRequestedRef((value) => value || first.defaultBranch);
+    }
+    return catalog;
+  }, []);
 
   const refresh = useCallback(async (runId: string, includeLogs = showLogs) => {
     const next = await api<Run>(`/api/spring-upgrades/${runId}`);
     setRun(next);
+    window.sessionStorage.setItem(latestRunStorageKey, next.runId);
     if (includeLogs) setLogs(await api<LogResponse>(`/api/spring-upgrades/${runId}/logs`));
     return next;
   }, [showLogs]);
@@ -179,39 +206,47 @@ export function SpringModernizationStudio() {
       .catch((error: Error) => {
         setCapability(null);
         setCapabilityError(error.message);
-        setFeedback(error.message);
+        notify(error.message, "error");
       });
-  }, []);
+  }, [notify]);
 
   useEffect(() => {
-    api<RepositoryCatalog>("/api/github-repositories")
-      .then((catalog) => {
-        setGithubCatalogStatus(catalog.status);
-        setGithubRepositories(catalog.repositories);
-        const first = catalog.repositories[0];
-        if (first) {
-          setGithubRepositoryId((value) => value || first.repositoryId);
-        }
-      })
+    refreshGithubCatalog()
       .catch(() => {
         setGithubCatalogStatus("NOT_CONFIGURED");
         setGithubRepositories([]);
       });
-  }, []);
+  }, [refreshGithubCatalog]);
+
+  useEffect(() => {
+    if (restoredRun.current) return;
+    restoredRun.current = true;
+    const runId = window.sessionStorage.getItem(latestRunStorageKey);
+    if (!runId || !/^[0-9a-f-]{36}$/i.test(runId)) {
+      window.sessionStorage.removeItem(latestRunStorageKey);
+      return;
+    }
+    refresh(runId)
+      .then(() => notify("已恢复本浏览器会话中的最近一次迁移运行。"))
+      .catch(() => {
+        window.sessionStorage.removeItem(latestRunStorageKey);
+        notify("最近一次迁移运行无法恢复；请重新提交或确认租户与 Runner。", "error");
+      });
+  }, [notify, refresh]);
 
   useEffect(() => {
     if (!run || !["QUEUED", "RUNNING"].includes(run.status) && run.runtimeStatus !== "STARTING") return;
     const timer = window.setInterval(() => {
-      refresh(run.runId).catch((error: Error) => setFeedback(error.message));
+      refresh(run.runId).catch((error: Error) => notify(error.message, "error"));
     }, 1_500);
     return () => window.clearInterval(timer);
-  }, [refresh, run]);
+  }, [notify, refresh, run]);
 
   useEffect(() => {
-    if (!feedback) return;
+    if (!feedback || feedbackKind === "error") return;
     const timer = window.setTimeout(() => setFeedback(""), 6_000);
     return () => window.clearTimeout(timer);
-  }, [feedback]);
+  }, [feedback, feedbackKind]);
 
   const githubSourceReady = sourceMode !== "GITHUB_APP"
     || githubCatalogStatus === "READY" && Boolean(githubRepositoryId);
@@ -272,11 +307,30 @@ export function SpringModernizationStudio() {
         }),
       });
       setRun(next);
+      window.sessionStorage.setItem(latestRunStorageKey, next.runId);
       setLogs(null);
-      setFeedback("迁移已排队；页面会持续读取真实阶段和证据状态。");
+      notify("迁移已排队；页面会持续读取真实阶段和证据状态。");
     } catch (error) {
-      setFeedback(error instanceof Error ? error.message : "提交失败");
+      notify(error instanceof Error ? error.message : "提交失败", "error");
     } finally {
+      setBusy(false);
+    }
+  }
+
+  async function connectGithubApp() {
+    setBusy(true);
+    setFeedback("");
+    try {
+      const result = await api<GithubInstallationBegin>("/api/github-installation", {
+        method: "POST",
+      });
+      const target = new URL(result.installationUrl);
+      if (target.protocol !== "https:" || target.hostname !== "github.com") {
+        throw new Error("GITHUB_APP_INSTALL_URL_INVALID: 安装地址未通过安全校验");
+      }
+      window.location.assign(target.toString());
+    } catch (error) {
+      notify((error as Error).message, "error");
       setBusy(false);
     }
   }
@@ -291,9 +345,10 @@ export function SpringModernizationStudio() {
         body: JSON.stringify(body ?? {}),
       });
       setRun(next);
-      setFeedback("操作已受理，状态将自动刷新。");
+      window.sessionStorage.setItem(latestRunStorageKey, next.runId);
+      notify("操作已受理，状态将自动刷新。");
     } catch (error) {
-      setFeedback(error instanceof Error ? error.message : "操作失败");
+      notify(error instanceof Error ? error.message : "操作失败", "error");
     } finally {
       setBusy(false);
     }
@@ -307,7 +362,7 @@ export function SpringModernizationStudio() {
       try {
         setLogs(await api<LogResponse>(`/api/spring-upgrades/${run.runId}/logs`));
       } catch (error) {
-        setFeedback(error instanceof Error ? error.message : "日志不可用");
+        notify(error instanceof Error ? error.message : "日志不可用", "error");
       }
     }
   }
@@ -345,9 +400,9 @@ export function SpringModernizationStudio() {
       anchor.download = "migrated-spring-boot-3.5.3.zip";
       anchor.click();
       URL.revokeObjectURL(url);
-      setFeedback("ZIP 的长度和 SHA-256 已在浏览器复算并与独立验证证据一致。");
+      notify("ZIP 的长度和 SHA-256 已在浏览器复算并与独立验证证据一致。");
     } catch (error) {
-      setFeedback(error instanceof Error ? error.message : "归档下载失败");
+      notify(error instanceof Error ? error.message : "归档下载失败", "error");
     } finally {
       setBusy(false);
     }
@@ -447,6 +502,27 @@ export function SpringModernizationStudio() {
                     Transformer、日志或 Snapshot。
                   </small>
                 </div>
+                <div className="business-actions spring-field-wide">
+                  <button
+                    className="button button-secondary"
+                    type="button"
+                    disabled={busy}
+                    onClick={connectGithubApp}
+                  >
+                    <Icon name="repository" size={16} />
+                    安装 / 更新 GitHub App
+                  </button>
+                  <button
+                    className="button button-ghost"
+                    type="button"
+                    disabled={busy}
+                    onClick={() => refreshGithubCatalog()
+                      .then(() => notify("已刷新授权仓库"))
+                      .catch((error: Error) => notify(error.message, "error"))}
+                  >
+                    刷新授权仓库
+                  </button>
+                </div>
               </>
             ) : (
               <>
@@ -484,6 +560,11 @@ export function SpringModernizationStudio() {
             <div><dt>Artifact</dt><dd>{formatBytes(run?.artifactSize)} · {shortDigest(run?.artifactSha256)}</dd></div>
             <div><dt>Health</dt><dd>{run?.runtimeStatus === "HEALTHY" ? `127.0.0.1:${run.runtimePort}${run.healthPath}` : run?.runtimeStatus ?? "NOT_RUN"}</dd></div>
           </dl>
+          <div className="locked-target">
+            <span>隔离 Runtime Runner</span>
+            <strong>{runtimeReady ? "READY · 可一键启动" : "BLOCKED · 不降级执行"}</strong>
+            <small>{capability?.runtimeRunnerReason ?? "正在读取 Runtime Runner 能力。"}</small>
+          </div>
           {run?.fingerprint && (
             <div className="spring-fingerprint">
               <strong>检测结果</strong>
@@ -536,8 +617,19 @@ export function SpringModernizationStudio() {
         </section>
       )}
 
-      <div className={`feedback-toast ${feedback ? "visible" : ""}`} role="status" aria-live="polite" aria-atomic="true">
-        <span><Icon name="check" size={17} /></span>{feedback}
+      <div
+        className={`feedback-toast ${feedbackKind === "error" ? "feedback-error" : ""} ${feedback ? "visible" : ""}`}
+        role={feedbackKind === "error" ? "alert" : "status"}
+        aria-live={feedbackKind === "error" ? "assertive" : "polite"}
+        aria-atomic="true"
+      >
+        <span><Icon name={feedbackKind === "error" ? "lock" : "check"} size={17} /></span>
+        <span className="feedback-message">{feedback}</span>
+        {feedbackKind === "error" && feedback && (
+          <button type="button" aria-label="关闭错误提示" onClick={() => setFeedback("")}>
+            <Icon name="close" size={15} />
+          </button>
+        )}
       </div>
     </div>
   );

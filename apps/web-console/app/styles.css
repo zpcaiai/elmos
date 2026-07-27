@@ -275,6 +275,11 @@ a.secondary-link:hover { background: rgba(255,255,255,.05); color: white; }
 .feedback-toast { position: fixed; z-index: 140; left: 50%; bottom: 28px; min-height: 48px; display: flex; align-items: center; gap: 10px; max-width: min(460px,calc(100vw - 30px)); padding: 8px 15px 8px 9px; border: 1px solid #bcd9cf; border-radius: 13px; background: white; color: var(--ink-soft); box-shadow: var(--shadow-lg); font-size: 11px; opacity: 0; pointer-events: none; transform: translate(-50%,18px); transition: opacity .2s ease, transform .2s ease; }
 .feedback-toast.visible { opacity: 1; transform: translate(-50%,0); }
 .feedback-toast > span { width: 32px; height: 32px; display: grid; place-items: center; flex: 0 0 auto; border-radius: 9px; background: var(--green-soft); color: var(--green); }
+.feedback-toast > .feedback-message { width: auto; height: auto; display: block; flex: 1 1 auto; border-radius: 0; background: transparent; color: inherit; }
+.feedback-toast > button { width: 30px; height: 30px; display: grid; place-items: center; flex: 0 0 auto; border: 0; border-radius: 8px; background: transparent; color: var(--muted); cursor: pointer; }
+.feedback-toast > button:hover { background: var(--surface-soft); color: var(--ink); }
+.feedback-toast.feedback-error { border-color: #e8b7af; color: #7c2920; }
+.feedback-toast.feedback-error > span:first-child { background: #fff0ed; color: #ad3e31; }
 
 .trust-chain { padding: 21px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow-sm); }
 .compact-heading { align-items: flex-start; }.compact-heading h2 { font-size: 17px; }

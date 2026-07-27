@@ -44,6 +44,13 @@ Each selected target is built and tested with its declared exact toolchain.
 One-click start is offered only after that target's startup probe passed and the
 generated workspace still matches its content digests. Runtime commands have
 fixed per-language shapes, fixed ports, and service-identity health checks.
+Before building, the Runner validates the rootless engine, the exact build
+network policy, every digest-pinned `FROM` image, and the local image cache.
+With the default `none` build network, an uncached image fails immediately as
+`TOOLCHAIN_IMAGES_NOT_AVAILABLE_OFFLINE`. With an approved build network, the
+diagnostic reports `APPROVED_BUILD_EGRESS_REQUIRED` before the immutable image
+is pulled. This keeps first-run setup, network approval, and runtime isolation
+as separate, actionable states.
 The production executor builds and starts only generated Dockerfiles with a
 rootless engine, a read-only runtime filesystem, dropped capabilities,
 `no-new-privileges`, PID/CPU/memory limits, and no runtime network. Build

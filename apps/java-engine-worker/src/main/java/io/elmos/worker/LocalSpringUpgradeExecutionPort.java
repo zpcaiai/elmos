@@ -22,6 +22,8 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermission;
 import java.security.MessageDigest;
 import java.time.Duration;
 import java.time.Instant;
@@ -53,19 +55,28 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
     private final Set<String> allowedGitHosts;
     private final boolean allowFileRepositories;
     private final boolean mavenOffline;
+    private final Path dependencySeedRepository;
     private final ObjectMapper json;
 
     LocalSpringUpgradeExecutionPort(Path workspaceRoot, Path sourceJavaHome, Path targetJavaHome,
                                     String mavenExecutable, Set<String> allowedGitHosts,
                                     boolean allowFileRepositories, ObjectMapper json) {
         this(workspaceRoot, sourceJavaHome, targetJavaHome, mavenExecutable, allowedGitHosts,
-                allowFileRepositories, false, json);
+                allowFileRepositories, false, null, json);
     }
 
     LocalSpringUpgradeExecutionPort(Path workspaceRoot, Path sourceJavaHome, Path targetJavaHome,
                                     String mavenExecutable, Set<String> allowedGitHosts,
                                     boolean allowFileRepositories, boolean mavenOffline,
                                     ObjectMapper json) {
+        this(workspaceRoot, sourceJavaHome, targetJavaHome, mavenExecutable, allowedGitHosts,
+                allowFileRepositories, mavenOffline, null, json);
+    }
+
+    LocalSpringUpgradeExecutionPort(Path workspaceRoot, Path sourceJavaHome, Path targetJavaHome,
+                                    String mavenExecutable, Set<String> allowedGitHosts,
+                                    boolean allowFileRepositories, boolean mavenOffline,
+                                    Path dependencySeedRepository, ObjectMapper json) {
         this.workspaceRoot = normalizeRoot(workspaceRoot);
         this.sourceJavaHome = requireJavaHome(sourceJavaHome, 17, "source");
         this.targetJavaHome = requireJavaHome(targetJavaHome, 21, "target");
@@ -73,6 +84,8 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         this.allowedGitHosts = Set.copyOf(allowedGitHosts);
         this.allowFileRepositories = allowFileRepositories;
         this.mavenOffline = mavenOffline;
+        this.dependencySeedRepository = normalizeDependencySeed(
+                dependencySeedRepository, this.workspaceRoot, mavenOffline);
         this.json = Objects.requireNonNull(json);
     }
 
@@ -114,6 +127,12 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         control.stage(Stage.SOURCE_BASELINE,
                 "Running the source repository's complete Maven verify lifecycle with Java 17");
         Path sourceBaseline = runRoot.resolve("source-baseline");
+        Path mavenHome = runRoot.resolve("maven-home");
+        createDirectory(mavenHome);
+        if (dependencySeedRepository != null) {
+            copyDependencySeed(dependencySeedRepository, mavenHome.resolve(".m2/repository"));
+            control.log("maven dependency seed copied into the isolated per-run repository");
+        }
         copyTree(source, sourceBaseline);
         TestSummary sourceTests;
         try {
@@ -128,7 +147,8 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
              * locked Snapshot remains read-only by construction even when a
              * repository commits target/ or a build plugin mutates its tree.
              */
-            runMaven(sourceBaseline, sourceJavaHome, control, List.of("verify"), Duration.ofMinutes(25));
+            runMaven(sourceBaseline, sourceJavaHome, mavenHome, control,
+                    List.of("verify"), Duration.ofMinutes(25));
             sourceTests = testSummary(sourceBaseline);
             requireSourceTests(sourceTests);
             writeJson(runRoot.resolve("evidence/source-test-summary.json"), sourceTests);
@@ -156,18 +176,19 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         Path migrated = runRoot.resolve("migrated");
         copyTree(source, migrated);
         control.stage(Stage.OPENREWRITE, "Applying pinned OpenRewrite Spring Boot 3.5 and Java 21 recipes");
-        runRewrite(migrated, control);
+        runRewrite(migrated, mavenHome, control);
         checkCancelled(control);
 
         control.stage(Stage.BUILD_AND_TEST,
                 "Running the target repository's complete Maven verify lifecycle with Java 21");
-        CommandOutcome firstBuild = runMavenOutcome(migrated, targetJavaHome, control,
+        CommandOutcome firstBuild = runMavenOutcome(migrated, targetJavaHome, mavenHome, control,
                 List.of("verify"), Duration.ofMinutes(30));
         if (firstBuild.exitCode() != 0) {
             control.stage(Stage.DETERMINISTIC_REPAIR,
                     "Target build failed; applying one bounded deterministic OpenRewrite repair cycle");
-            runRewrite(migrated, control);
-            runMaven(migrated, targetJavaHome, control, List.of("verify"), Duration.ofMinutes(30));
+            runRewrite(migrated, mavenHome, control);
+            runMaven(migrated, targetJavaHome, mavenHome, control,
+                    List.of("verify"), Duration.ofMinutes(30));
         }
         TestSummary targetTests = testSummary(migrated);
         requireTestParity(sourceTests, targetTests);
@@ -261,8 +282,14 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         try {
             process = builder.start();
             control.process(process);
-            String path = waitForHealth(process, port, List.of("/actuator/health", "/health"), control);
-            control.log("source baseline healthy on loopback path " + path);
+            HttpProbe probe = waitForStartup(
+                    process,
+                    port,
+                    List.of("/actuator/health", "/health", "/"),
+                    control
+            );
+            control.log("source baseline reached the loopback HTTP boundary on path "
+                    + probe.path() + " with status " + probe.statusCode());
         } catch (IOException error) {
             throw blocked("SOURCE_STARTUP_FAILED",
                     "Source baseline could not be started with the exact Java 17 toolchain.");
@@ -354,9 +381,9 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
                 "maven", modules, capabilities.stream().distinct().sorted().toList(), unknowns, traces);
     }
 
-    private void runRewrite(Path root, Control control) {
+    private void runRewrite(Path root, Path mavenHome, Control control) {
         Path recipeConfig = installExactRecipe(root);
-        runMaven(root, targetJavaHome, control, List.of(
+        runMaven(root, targetJavaHome, mavenHome, control, List.of(
                 "org.openrewrite.maven:rewrite-maven-plugin:" + REWRITE_MAVEN_PLUGIN + ":run",
                 "-Drewrite.configLocation=" + root.relativize(recipeConfig),
                 "-Drewrite.activeRecipes=io.elmos.openrewrite.SpringBoot2_7_18To3_5_3Java21",
@@ -392,9 +419,13 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         return target;
     }
 
-    private CommandOutcome runMavenOutcome(Path root, Path javaHome, Control control,
+    private CommandOutcome runMavenOutcome(Path root, Path javaHome, Path mavenHome, Control control,
                                            List<String> goals, Duration timeout) {
         checkCancelled(control);
+        Path confinedHome = confined(mavenHome);
+        createDirectory(confinedHome);
+        Path repository = confinedHome.resolve(".m2/repository");
+        createDirectory(repository);
         List<String> argv = new ArrayList<>();
         argv.add(mavenExecutable);
         argv.add("-B");
@@ -402,8 +433,14 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         if (mavenOffline) argv.add("--offline");
         argv.addAll(goals);
         ProcessBuilder builder = new ProcessBuilder(argv).directory(root.toFile()).redirectErrorStream(true);
+        Map<String, String> inherited = Map.copyOf(builder.environment());
+        builder.environment().clear();
         builder.environment().put("JAVA_HOME", javaHome.toString());
-        builder.environment().put("MAVEN_OPTS", mavenOptions(builder.environment()));
+        builder.environment().put("HOME", confinedHome.toString());
+        builder.environment().put("LANG", "C.UTF-8");
+        builder.environment().put("LC_ALL", "C.UTF-8");
+        builder.environment().put("MAVEN_OPTS",
+                mavenOptions(inherited, confinedHome, repository));
         Process process = null;
         Thread output = null;
         try {
@@ -444,8 +481,14 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         }
     }
 
-    private static String mavenOptions(Map<String, String> environment) {
-        String base = "-Djava.awt.headless=true -Duser.timezone=UTC";
+    private static String mavenOptions(
+            Map<String, String> environment,
+            Path home,
+            Path repository
+    ) {
+        String base = "-Djava.awt.headless=true -Duser.timezone=UTC"
+                + " -Duser.home=" + home
+                + " -Dmaven.repo.local=" + repository;
         String proxyValue = firstNonBlank(
                 environment.get("HTTPS_PROXY"),
                 environment.get("https_proxy")
@@ -486,8 +529,38 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         return null;
     }
 
-    private void runMaven(Path root, Path javaHome, Control control, List<String> goals, Duration timeout) {
-        CommandOutcome outcome = runMavenOutcome(root, javaHome, control, goals, timeout);
+    private static Path normalizeDependencySeed(
+            Path raw,
+            Path workspaceRoot,
+            boolean required
+    ) {
+        if (raw == null) {
+            if (required) {
+                throw new IllegalStateException(
+                        "offline Maven execution requires a pre-approved dependency seed repository");
+            }
+            return null;
+        }
+        Path value = raw.toAbsolutePath().normalize();
+        if (value.startsWith(workspaceRoot)
+                || !Files.isDirectory(value, LinkOption.NOFOLLOW_LINKS)
+                || Files.isSymbolicLink(value)) {
+            throw new IllegalStateException(
+                    "Maven dependency seed must be a real directory outside the writable workspace");
+        }
+        return value;
+    }
+
+    private void runMaven(
+            Path root,
+            Path javaHome,
+            Path mavenHome,
+            Control control,
+            List<String> goals,
+            Duration timeout
+    ) {
+        CommandOutcome outcome = runMavenOutcome(
+                root, javaHome, mavenHome, control, goals, timeout);
         if (outcome.exitCode() != 0)
             throw blocked("MAVEN_COMMAND_FAILED", "A required Maven/OpenRewrite command failed; inspect the redacted run log.");
     }
@@ -552,6 +625,59 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         process.destroyForcibly();
         throw blocked("APPLICATION_HEALTH_TIMEOUT", "The application did not become healthy within 60 seconds.");
     }
+
+    private HttpProbe waitForStartup(
+            Process process,
+            int port,
+            List<String> candidates,
+            Control control
+    ) {
+        HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(2)).build();
+        Instant deadline = Instant.now().plusSeconds(60);
+        while (Instant.now().isBefore(deadline)) {
+            checkCancelled(control);
+            if (!process.isAlive()) {
+                throw blocked("APPLICATION_EXITED_BEFORE_STARTUP",
+                        "The source application exited before reaching its HTTP boundary.");
+            }
+            for (String path : candidates) {
+                try {
+                    var response = client.send(
+                            HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + port + path))
+                                    .timeout(Duration.ofSeconds(2))
+                                    .GET()
+                                    .build(),
+                            HttpResponse.BodyHandlers.discarding()
+                    );
+                    if (isStartupStatus(response.statusCode())) {
+                        return new HttpProbe(path, response.statusCode());
+                    }
+                } catch (IOException ignored) {
+                    // Retry until the bounded deadline.
+                } catch (InterruptedException error) {
+                    Thread.currentThread().interrupt();
+                    throw blocked("STARTUP_CHECK_INTERRUPTED",
+                            "Source application startup checking was interrupted.");
+                }
+            }
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException error) {
+                Thread.currentThread().interrupt();
+                throw blocked("STARTUP_CHECK_INTERRUPTED",
+                        "Source application startup checking was interrupted.");
+            }
+        }
+        process.destroyForcibly();
+        throw blocked("APPLICATION_STARTUP_TIMEOUT",
+                "The source application did not reach its HTTP boundary within 60 seconds.");
+    }
+
+    static boolean isStartupStatus(int statusCode) {
+        return statusCode >= 200 && statusCode < 500;
+    }
+
+    private record HttpProbe(String path, int statusCode) {}
 
     private void capability(String pom, Path root, Map<String,List<String>> traces, List<String> capabilities,
                             String id, String... needles) {
@@ -876,6 +1002,43 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         } catch (IOException | SecurityException error) {
             deleteTree(target);
             throw blocked("SOURCE_MATERIALIZATION_FAILED", "Source snapshot could not be materialized safely.");
+        }
+    }
+
+    static void copyDependencySeed(Path source, Path target) {
+        copyTree(source, target);
+        try {
+            Files.walkFileTree(target, new SimpleFileVisitor<>() {
+                @Override public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
+                        throws IOException {
+                    makeOwnerWritable(dir, true);
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
+                        throws IOException {
+                    makeOwnerWritable(file, false);
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        } catch (IOException error) {
+            deleteTree(target);
+            throw blocked("MAVEN_DEPENDENCY_SEED_MATERIALIZATION_FAILED",
+                    "The approved Maven seed could not be copied into a writable per-run repository.");
+        }
+    }
+
+    private static void makeOwnerWritable(Path path, boolean directory) throws IOException {
+        try {
+            Set<PosixFilePermission> permissions =
+                    EnumSet.copyOf(Files.getPosixFilePermissions(path, LinkOption.NOFOLLOW_LINKS));
+            permissions.add(PosixFilePermission.OWNER_WRITE);
+            if (directory) permissions.add(PosixFilePermission.OWNER_EXECUTE);
+            Files.setPosixFilePermissions(path, permissions);
+        } catch (UnsupportedOperationException error) {
+            if (!path.toFile().setWritable(true, true)) {
+                throw new IOException("owner-writable permission could not be applied", error);
+            }
         }
     }
 

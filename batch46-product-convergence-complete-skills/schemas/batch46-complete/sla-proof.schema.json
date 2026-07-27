@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "observation_days",
+    "slo_passed",
+    "support_passed",
+    "incident_drill_passed",
+    "restore_passed",
+    "upgrade_passed",
+    "customer_value_realized",
+    "evidence"
+  ],
+  "properties": {
+    "observation_days": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "slo_passed": {
+      "type": "boolean"
+    },
+    "support_passed": {
+      "type": "boolean"
+    },
+    "incident_drill_passed": {
+      "type": "boolean"
+    },
+    "restore_passed": {
+      "type": "boolean"
+    },
+    "upgrade_passed": {
+      "type": "boolean"
+    },
+    "customer_value_realized": {
+      "type": "boolean"
+    },
+    "evidence": {
+      "type": "array",
+      "minItems": 0
+    }
+  },
+  "additionalProperties": false
+}

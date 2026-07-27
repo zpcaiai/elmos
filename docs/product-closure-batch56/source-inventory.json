@@ -1,0 +1,132 @@
+{
+  "file_count": 25,
+  "files": [
+    {
+      "bytes": 1108,
+      "path": "AGENTS.md",
+      "sha256": "sha256:c235d8bfc230bbbd6f3b393bd165611550a8c73162ebf810e1b24a40e6f16ae9"
+    },
+    {
+      "bytes": 648,
+      "path": "README.md",
+      "sha256": "sha256:647d7d8ce303696e0944ccc151684230a405611f3e499af4715b1466262939d5"
+    },
+    {
+      "bytes": 3200,
+      "path": "agent-skills/runtime/agent-plan-capability-context-replay-and-economics-governance/SKILL.md",
+      "sha256": "sha256:deb7f5074c5ecb5d11a5703f6d532d0fbd3e91ab1dcfd0a05e6148668e2d4c00"
+    },
+    {
+      "bytes": 3204,
+      "path": "agent-skills/runtime/canonical-domain-kernel-consolidation/SKILL.md",
+      "sha256": "sha256:b83178e6fce0fb0d3b99564f6dec0fbb8a3647a99510d21662bd64e1d0042179"
+    },
+    {
+      "bytes": 3234,
+      "path": "agent-skills/runtime/certification-lab-golden-corpus-holdout-chaos-and-runtime-evidence/SKILL.md",
+      "sha256": "sha256:deceaa367be3baac16b3918d63c87703d9847acf2b0ca0bc1cb3cbe549e61b09"
+    },
+    {
+      "bytes": 3174,
+      "path": "agent-skills/runtime/commercial-product-edition-metering-billing-support-and-sla-readiness/SKILL.md",
+      "sha256": "sha256:bf02e86bf37904373e77a86134d18d4b2aa54c379679ff3b77098f6352813206"
+    },
+    {
+      "bytes": 3182,
+      "path": "agent-skills/runtime/composite-application-data-infrastructure-cutover-journey/SKILL.md",
+      "sha256": "sha256:1ed349b7032c793c5c1ff0663213753f6f04195aa30d29e4a5c4a47ac807278f"
+    },
+    {
+      "bytes": 3196,
+      "path": "agent-skills/runtime/domain-pack-governance-and-industry-safety-certification/SKILL.md",
+      "sha256": "sha256:99983663c5714c02dbc77f0219fdf508943e7f62915c602f5dc5a22da2a036a6"
+    },
+    {
+      "bytes": 3250,
+      "path": "agent-skills/runtime/elmos-product-closure-orchestrator/SKILL.md",
+      "sha256": "sha256:8d0d1c2c1ff06b50ff8b2556624cca55dbea813a2ea06d36a4e2daadd89cd0ed"
+    },
+    {
+      "bytes": 3178,
+      "path": "agent-skills/runtime/execution-state-idempotency-reconciliation-compensation-and-replay/SKILL.md",
+      "sha256": "sha256:e414506aa33b374a4c258f74742466998f210d6619a18bd2a78e764f15b12795"
+    },
+    {
+      "bytes": 3198,
+      "path": "agent-skills/runtime/ga-readiness-customer-pilot-operational-trust-and-final-release-gate/SKILL.md",
+      "sha256": "sha256:b90582ce60ba89fc5f0d31eacac62e6b5b2cb87c1cddc4944e2e2c0978e7611e"
+    },
+    {
+      "bytes": 3208,
+      "path": "agent-skills/runtime/golden-journey-modernization-reference-implementation/SKILL.md",
+      "sha256": "sha256:75fc9589186705d200d636d61751de7e084dc13507708bb9ead269e9a5990ec4"
+    },
+    {
+      "bytes": 3232,
+      "path": "agent-skills/runtime/portfolio-consolidation-dependency-conflict-and-technical-debt-burn-down/SKILL.md",
+      "sha256": "sha256:3c58598e681dba9b138743ec97228b60c0f4a9b5f3817291835186fdf4cad304"
+    },
+    {
+      "bytes": 3122,
+      "path": "agent-skills/runtime/product-experience-role-workspaces-and-onboarding/SKILL.md",
+      "sha256": "sha256:0143002046980259fefe3cbbf68f488f78845481fc74ae87f6b93f73d336f731"
+    },
+    {
+      "bytes": 3186,
+      "path": "agent-skills/runtime/provider-certification-factory-and-support-matrix/SKILL.md",
+      "sha256": "sha256:c8ce85a5544bf1f7a4c4570a0715c2b82fd90f7923f76eb7ae8f9f8e5257c7e8"
+    },
+    {
+      "bytes": 3182,
+      "path": "agent-skills/runtime/skill-registry-capability-graph-and-activation-resolver/SKILL.md",
+      "sha256": "sha256:4b0f0454f40091e63272d3e0a04d50f5e8ca1b5a7022a2c13daf0e3bbc70522f"
+    },
+    {
+      "bytes": 3152,
+      "path": "agent-skills/runtime/system-of-record-authority-and-master-data-governance/SKILL.md",
+      "sha256": "sha256:3222fec776ce603ad8c31a35e3895d1ea7c8470d27d309660d8a5a040fbb54f9"
+    },
+    {
+      "bytes": 3186,
+      "path": "agent-skills/runtime/upgrade-schema-event-workflow-skill-and-provider-lifecycle/SKILL.md",
+      "sha256": "sha256:c05e9ff6fcd7e2ff5072f14c013585b3cfc8219798bbaab3446655f500fd2974"
+    },
+    {
+      "bytes": 726,
+      "path": "docs/batch-56-overview.md",
+      "sha256": "sha256:dcfeacefd17a0cf8a0b86bf74af9586c5594eed32cc215f7b1b01d5a72dfeefa"
+    },
+    {
+      "bytes": 417,
+      "path": "install.sh",
+      "sha256": "sha256:554ee5654e6f9c1cab9835d6ea4656bfb68f4090798cbcd488b4a0635fcf2d47"
+    },
+    {
+      "bytes": 4380,
+      "path": "manifest.json",
+      "sha256": "sha256:23b70b0fcf6e37982588450fcf60852778de7ce714a1e9b3ccd66dcc61d5fc04"
+    },
+    {
+      "bytes": 853,
+      "path": "references/source-basis.md",
+      "sha256": "sha256:6c3ae1a32099a82f6890a6a008630c2d51ee2d4258d3e7a943f5254efd61cbd4"
+    },
+    {
+      "bytes": 1061,
+      "path": "scripts/validate_package.py",
+      "sha256": "sha256:037ea1135ce22ec4a717c6e41352a29a9ee63b357304cca2f86388ce31c52bcd"
+    },
+    {
+      "bytes": 145,
+      "path": "templates/closure-program-status.json",
+      "sha256": "sha256:2e0eb92f5c1bfcbfa8b6226e3e6e9781e384885b04cd6ec0e4686a4f32d9f58d"
+    },
+    {
+      "bytes": 113,
+      "path": "validate.sh",
+      "sha256": "sha256:1d5fff6bf3b19e30469a3e4f496f956d8f64a8284a9093f882eab601c59f3c11"
+    }
+  ],
+  "schema_version": "1.0",
+  "source_package": "elmos-codex-skills-batch56-product-closure"
+}

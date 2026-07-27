@@ -15,7 +15,6 @@ from pathlib import Path
 from types import ModuleType
 from typing import Any
 
-
 ROOT = Path(__file__).resolve().parents[1]
 PACKAGE_NAME = "elmos-codex-skills-batch66-80-slightly-strict-tests"
 PACKAGE_ROOT = ROOT / PACKAGE_NAME
@@ -66,7 +65,15 @@ def safe_path(root: Path, relative: str) -> Path:
 
 def load_generator() -> ModuleType:
     if not SKILL_GENERATOR.is_file():
-        raise SystemExit(f"Skill interface generator is missing: {SKILL_GENERATOR}")
+        compatibility = ROOT / "tooling" / "skill_creator_tools.py"
+        spec = importlib.util.spec_from_file_location(
+            "batch66_80_repository_interface_generator", compatibility
+        )
+        if spec is None or spec.loader is None:
+            raise SystemExit(f"Cannot load repository Skill interface generator: {compatibility}")
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module
     spec = importlib.util.spec_from_file_location("batch66_80_test_interface_generator", SKILL_GENERATOR)
     if spec is None or spec.loader is None:
         raise SystemExit(f"Cannot load Skill interface generator: {SKILL_GENERATOR}")

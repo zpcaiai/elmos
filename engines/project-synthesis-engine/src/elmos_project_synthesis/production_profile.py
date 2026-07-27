@@ -256,7 +256,7 @@ def render_production_assets(request: SynthesisRequest) -> dict[str, str]:
     files = {
         "security/policy-contract.json": pretty_json(_policy_contract(request)),
         "security/secret-contract.json": pretty_json(_secret_contract(request)),
-        "operations/observability-contract.json": pretty_json(_observability(request)),
+        "observability/observability-contract.json": pretty_json(_observability(request)),
         "operations/slo-contract.json": pretty_json(_slo(request)),
         "operations/runbook.md": clean(
             f"""
@@ -301,7 +301,7 @@ def render_production_assets(request: SynthesisRequest) -> dict[str, str]:
             sha256sum "$ELMOS_BACKUP_OUTPUT" > "$ELMOS_BACKUP_OUTPUT.sha256"
             """
         ),
-        "operations/restore-into-new-database.sh": clean(
+        "operations/restore.sh": clean(
             """
             #!/bin/sh
             set -eu

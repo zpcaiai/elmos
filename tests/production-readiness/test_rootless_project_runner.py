@@ -120,6 +120,80 @@ class RootlessProjectRunnerTests(unittest.TestCase):
             with self.assertRaisesRegex(runner.RunnerError, "BUILD_NETWORK_NOT_APPROVED"):
                 runner._validate_build_network(Path("/usr/bin/docker"), "elmos-build-egress")
 
+    def test_toolchain_image_inventory_requires_digest_pins(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="elmos-rootless-images-") as temporary:
+            target = Path(temporary)
+            (target / "Dockerfile").write_text(
+                "FROM example.invalid/build@sha256:" + ("a" * 64) + " AS build\n"
+                "FROM scratch\n",
+                encoding="utf-8",
+            )
+            self.assertEqual(
+                runner._required_images(target),
+                ("example.invalid/build@sha256:" + ("a" * 64),),
+            )
+            (target / "Dockerfile").write_text("FROM example.invalid/build:latest\n", encoding="utf-8")
+            with self.assertRaisesRegex(runner.RunnerError, "TOOLCHAIN_IMAGE_NOT_IMMUTABLE"):
+                runner._required_images(target)
+
+    def test_offline_diagnosis_reports_missing_exact_toolchain_images(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="elmos-rootless-diagnose-") as temporary:
+            workspace = Path(temporary)
+            target = workspace / "python"
+            target.mkdir()
+            image = "example.invalid/python@sha256:" + ("b" * 64)
+            (target / "Dockerfile").write_text(f"FROM {image}\n", encoding="utf-8")
+            arguments = type(
+                "Arguments",
+                (),
+                {
+                    "engine": "/usr/bin/docker",
+                    "workspace": str(workspace),
+                    "language": "python",
+                    "build_network": "none",
+                },
+            )()
+            with (
+                patch.object(runner, "_preflight", return_value={"status": "READY"}),
+                patch.object(runner, "_validate_build_network"),
+                patch.object(runner, "_image_cache_status", return_value=(image,)),
+                self.assertRaisesRegex(
+                    runner.RunnerError,
+                    "TOOLCHAIN_IMAGES_NOT_AVAILABLE_OFFLINE",
+                ),
+            ):
+                runner._diagnose(arguments)
+
+    def test_diagnosis_distinguishes_approved_pull_from_cached_images(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="elmos-rootless-diagnose-") as temporary:
+            workspace = Path(temporary)
+            target = workspace / "go"
+            target.mkdir()
+            image = "example.invalid/go@sha256:" + ("c" * 64)
+            (target / "Dockerfile").write_text(f"FROM {image}\n", encoding="utf-8")
+            arguments = type(
+                "Arguments",
+                (),
+                {
+                    "engine": "/usr/bin/docker",
+                    "workspace": str(workspace),
+                    "language": "go",
+                    "build_network": "elmos-build-egress",
+                },
+            )()
+            with (
+                patch.object(
+                    runner,
+                    "_preflight",
+                    return_value={"status": "READY", "engine": "docker", "rootless": True},
+                ),
+                patch.object(runner, "_validate_build_network"),
+                patch.object(runner, "_image_cache_status", return_value=(image,)),
+            ):
+                result = runner._diagnose(arguments)
+            self.assertEqual(result["toolchain_cache"], "APPROVED_BUILD_EGRESS_REQUIRED")
+            self.assertEqual(result["missing_images"], [image])
+
 
 if __name__ == "__main__":
     unittest.main()

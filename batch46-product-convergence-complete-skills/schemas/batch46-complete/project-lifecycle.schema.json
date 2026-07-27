@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "states",
+    "transitions"
+  ],
+  "properties": {
+    "states": {
+      "type": "array",
+      "minItems": 10,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "entry_conditions",
+          "exit_conditions",
+          "owner"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "entry_conditions": {
+            "type": "array"
+          },
+          "exit_conditions": {
+            "type": "array"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "waiver_allowed": {
+            "type": "boolean"
+          },
+          "sla_clock": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "transitions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "from",
+          "to",
+          "evidence_required"
+        ],
+        "properties": {
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
+          "evidence_required": {
+            "type": "array"
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

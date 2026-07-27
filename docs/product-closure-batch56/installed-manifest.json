@@ -1,0 +1,264 @@
+{
+  "activation_default": "inactive",
+  "exact_runtime_name_collisions_before_aliasing": [
+    "canonical-domain-kernel-consolidation"
+  ],
+  "external_evidence": "NOT_RUN",
+  "ga_approved": false,
+  "maximum_local_decision": "READY_FOR_EXTERNAL_GATE",
+  "production_certified": false,
+  "readiness_authority": "scripts/product-closure-batch56a/run_product_closure_gate.py",
+  "schema_version": "1.0",
+  "skill_count": 16,
+  "skills": [
+    {
+      "activation_default": "inactive",
+      "installed_alias": "b56-elmos-product-closure-orchestrator",
+      "installed_path": "agent-skills/runtime/b56-elmos-product-closure-orchestrator/SKILL.md",
+      "installed_sha256": "sha256:b1c13ae0ab62c0f1f8d0e22e69f0a60a4713a72724bcabea9b74f9e5b7b71728",
+      "interface_sha256": "sha256:80551a6f2e81da2bc48e7d607b49e610ba1faf1ea5c6484d07085c5477c8bcf5",
+      "overlap_with_product_56a": [
+        "CLO56A001"
+      ],
+      "source_id": "C56-01",
+      "source_maturity": "reviewed-implementation-guidance",
+      "source_name": "elmos-product-closure-orchestrator",
+      "source_path": "elmos-codex-skills-batch56-product-closure/agent-skills/runtime/elmos-product-closure-orchestrator/SKILL.md",
+      "source_sha256": "sha256:8d0d1c2c1ff06b50ff8b2556624cca55dbea813a2ea06d36a4e2daadd89cd0ed"
+    },
+    {
+      "activation_default": "inactive",
+      "installed_alias": "b56-canonical-domain-kernel-consolidation",
+      "installed_path": "agent-skills/runtime/b56-canonical-domain-kernel-consolidation/SKILL.md",
+      "installed_sha256": "sha256:7e9fe5fa871475b1d6a29d56b76491bd78a0c8dad4359052e3efdc51d6ced51a",
+      "interface_sha256": "sha256:553cb80d6db11aed79f8c5022a5a755b904f375853b025db99910628887247fd",
+      "overlap_with_product_56a": [
+        "CLO56A002"
+      ],
+      "source_id": "C56-02",
+      "source_maturity": "reviewed-implementation-guidance",
+      "source_name": "canonical-domain-kernel-consolidation",
+      "source_path": "elmos-codex-skills-batch56-product-closure/agent-skills/runtime/canonical-domain-kernel-consolidation/SKILL.md",
+      "source_sha256": "sha256:b83178e6fce0fb0d3b99564f6dec0fbb8a3647a99510d21662bd64e1d0042179"
+    },
+    {
+      "activation_default": "inactive",
+      "installed_alias": "b56-skill-registry-capability-graph-and-activation-resolver",
+      "installed_path": "agent-skills/runtime/b56-skill-registry-capability-graph-and-activation-resolver/SKILL.md",
+      "installed_sha256": "sha256:1668458e6cade67956fdb0278008729bd90393a6f5f691ba0c7a76364f60d6e9",
+      "interface_sha256": "sha256:8c336baaaf6f9cae8d9d3a75c229cad991e1527ef8fc7c3fab975cc8f4e50284",
+      "overlap_with_product_56a": [
+        "CLO56A003"
+      ],
+      "source_id": "C56-03",
+      "source_maturity": "reviewed-implementation-guidance",
+      "source_name": "skill-registry-capability-graph-and-activation-resolver",
+      "source_path": "elmos-codex-skills-batch56-product-closure/agent-skills/runtime/skill-registry-capability-graph-and-activation-resolver/SKILL.md",
+      "source_sha256": "sha256:4b0f0454f40091e63272d3e0a04d50f5e8ca1b5a7022a2c13daf0e3bbc70522f"
+    },
+    {
+      "activation_default": "inactive",
+      "installed_alias": "b56-system-of-record-authority-and-master-data-governance",
+      "installed_path": "agent-skills/runtime/b56-system-of-record-authority-and-master-data-governance/SKILL.md",
+      "installed_sha256": "sha256:a38f0980b31bd30f167a45f0f5047c29d6922436e89922f04089146d51a9a485",
+      "interface_sha256": "sha256:a437bc8e3edb82801347693c72c98db41280560e1f22cf5b0a982b8595f556e9",
+      "overlap_with_product_56a": [
+        "CLO56A007"
+      ],
+      "source_id": "C56-04",
+      "source_maturity": "reviewed-implementation-guidance",
+      "source_name": "system-of-record-authority-and-master-data-governance",
+      "source_path": "elmos-codex-skills-batch56-product-closure/agent-skills/runtime/system-of-record-authority-and-master-data-governance/SKILL.md",
+      "source_sha256": "sha256:3222fec776ce603ad8c31a35e3895d1ea7c8470d27d309660d8a5a040fbb54f9"
+    },
+    {
+      "activation_default": "inactive",
+      "installed_alias": "b56-golden-journey-modernization-reference-implementation",
+      "installed_path": "agent-skills/runtime/b56-golden-journey-modernization-reference-implementation/SKILL.md",
+      "installed_sha256": "sha256:db2bf033722e1a69004c3dfe981f1b9eb586827fc636697aae8674bf0438e06c",
+      "interface_sha256": "sha256:ad37e4fd93c18b9d0f7f20cd97abd2ee7574ebfb7bf1be837ce728d65dce8ae1",
+      "overlap_with_product_56a": [
+        "CLO56A004"
+      ],
+      "source_id": "C56-05",
+      "source_maturity": "reviewed-implementation-guidance",
+      "source_name": "golden-journey-modernization-reference-implementation",
+      "source_path": "elmos-codex-skills-batch56-product-closure/agent-skills/runtime/golden-journey-modernization-reference-implementation/SKILL.md",
+      "source_sha256": "sha256:75fc9589186705d200d636d61751de7e084dc13507708bb9ead269e9a5990ec4"
+    },
+    {
+      "activation_default": "inactive",
+      "installed_alias": "b56-composite-application-data-infrastructure-cutover-journey",
+      "installed_path": "agent-skills/runtime/b56-composite-application-data-infrastructure-cutover-journey/SKILL.md",
+      "installed_sha256": "sha256:8ddec64fd8acd30519251c29b28e5e7149585d08e06d202cd88e564d58ec1928",
+      "interface_sha256": "sha256:69aa5130b111be0694b8b3203cd8b8cd5c18f992b927f6ad8caacd1198abd458",
+      "overlap_with_product_56a": [
+        "CLO56A004"
+      ],
+      "source_id": "C56-06",
+      "source_maturity": "reviewed-implementation-guidance",
+      "source_name": "composite-application-data-infrastructure-cutover-journey",
+      "source_path": "elmos-codex-skills-batch56-product-closure/agent-skills/runtime/composite-application-data-infrastructure-cutover-journey/SKILL.md",
+      "source_sha256": "sha256:1ed349b7032c793c5c1ff0663213753f6f04195aa30d29e4a5c4a47ac807278f"
+    },
+    {
+      "activation_default": "inactive",
+      "installed_alias": "b56-agent-plan-capability-context-replay-and-economics-2e0a3b58",
+      "installed_path": "agent-skills/runtime/b56-agent-plan-capability-context-replay-and-economics-2e0a3b58/SKILL.md",
+      "installed_sha256": "sha256:07e4ef7e98daa6929bdf2ab6284efef84d8160d9a2e920292b3fc9ad63179a5e",
+      "interface_sha256": "sha256:354201c6e3446403420ca5e90bac0dc814e292e75f3d7ee6e3a3f0ad0b421494",
+      "overlap_with_product_56a": [
+        "CLO56A008"
+      ],
+      "source_id": "C56-07",
+      "source_maturity": "reviewed-implementation-guidance",
+      "source_name": "agent-plan-capability-context-replay-and-economics-governance",
+      "source_path": "elmos-codex-skills-batch56-product-closure/agent-skills/runtime/agent-plan-capability-context-replay-and-economics-governance/SKILL.md",
+      "source_sha256": "sha256:deb7f5074c5ecb5d11a5703f6d532d0fbd3e91ab1dcfd0a05e6148668e2d4c00"
+    },
+    {
+      "activation_default": "inactive",
+      "installed_alias": "b56-provider-certification-factory-and-support-matrix",
+      "installed_path": "agent-skills/runtime/b56-provider-certification-factory-and-support-matrix/SKILL.md",
+      "installed_sha256": "sha256:70e78df3b661c1965b8ebc4678845bd1a17a02766070d0d40e095b546ef0ca83",
+      "interface_sha256": "sha256:bb554eff046a81a35d0af3a1a5617aa36fd848714e0945d003a6faa907c0a772",
+      "overlap_with_product_56a": [
+        "CLO56A005"
+      ],
+      "source_id": "C56-08",
+      "source_maturity": "reviewed-implementation-guidance",
+      "source_name": "provider-certification-factory-and-support-matrix",
+      "source_path": "elmos-codex-skills-batch56-product-closure/agent-skills/runtime/provider-certification-factory-and-support-matrix/SKILL.md",
+      "source_sha256": "sha256:c8ce85a5544bf1f7a4c4570a0715c2b82fd90f7923f76eb7ae8f9f8e5257c7e8"
+    },
+    {
+      "activation_default": "inactive",
+      "installed_alias": "b56-execution-state-idempotency-reconciliation-compensa-90e7d783",
+      "installed_path": "agent-skills/runtime/b56-execution-state-idempotency-reconciliation-compensa-90e7d783/SKILL.md",
+      "installed_sha256": "sha256:0255912c4dd2a24f941690d68f84db91caa83a4766743f6b9ba09af801c90e56",
+      "interface_sha256": "sha256:a2f63c120ef7964f538bfdc5e4ba7d3d366c496220e45348b77b2486736a3b6c",
+      "overlap_with_product_56a": [
+        "CLO56A006"
+      ],
+      "source_id": "C56-09",
+      "source_maturity": "reviewed-implementation-guidance",
+      "source_name": "execution-state-idempotency-reconciliation-compensation-and-replay",
+      "source_path": "elmos-codex-skills-batch56-product-closure/agent-skills/runtime/execution-state-idempotency-reconciliation-compensation-and-replay/SKILL.md",
+      "source_sha256": "sha256:e414506aa33b374a4c258f74742466998f210d6619a18bd2a78e764f15b12795"
+    },
+    {
+      "activation_default": "inactive",
+      "installed_alias": "b56-certification-lab-golden-corpus-holdout-chaos-and-r-83a57894",
+      "installed_path": "agent-skills/runtime/b56-certification-lab-golden-corpus-holdout-chaos-and-r-83a57894/SKILL.md",
+      "installed_sha256": "sha256:c892c20884acfb1aaecdcdb17e90f92260e1d67fd70de1f03e1712a2ec495850",
+      "interface_sha256": "sha256:515a911fe2b51c24e43d57bd98746cb4d12e4aa3c5ad9cd14f53febbede3dac0",
+      "overlap_with_product_56a": [
+        "CLO56A009"
+      ],
+      "source_id": "C56-10",
+      "source_maturity": "reviewed-implementation-guidance",
+      "source_name": "certification-lab-golden-corpus-holdout-chaos-and-runtime-evidence",
+      "source_path": "elmos-codex-skills-batch56-product-closure/agent-skills/runtime/certification-lab-golden-corpus-holdout-chaos-and-runtime-evidence/SKILL.md",
+      "source_sha256": "sha256:deceaa367be3baac16b3918d63c87703d9847acf2b0ca0bc1cb3cbe549e61b09"
+    },
+    {
+      "activation_default": "inactive",
+      "installed_alias": "b56-product-experience-role-workspaces-and-onboarding",
+      "installed_path": "agent-skills/runtime/b56-product-experience-role-workspaces-and-onboarding/SKILL.md",
+      "installed_sha256": "sha256:b9ebb46c7a7a60193487fdd70794917541e67b9a45642ed45491fcf2fc775f0b",
+      "interface_sha256": "sha256:534556f1c79ffc0890bedfc45a267116bb80f468cae0fe323ce9798e34f7a0c9",
+      "overlap_with_product_56a": [
+        "CLO56A010"
+      ],
+      "source_id": "C56-11",
+      "source_maturity": "reviewed-implementation-guidance",
+      "source_name": "product-experience-role-workspaces-and-onboarding",
+      "source_path": "elmos-codex-skills-batch56-product-closure/agent-skills/runtime/product-experience-role-workspaces-and-onboarding/SKILL.md",
+      "source_sha256": "sha256:0143002046980259fefe3cbbf68f488f78845481fc74ae87f6b93f73d336f731"
+    },
+    {
+      "activation_default": "inactive",
+      "installed_alias": "b56-upgrade-schema-event-workflow-skill-and-provider-lifecycle",
+      "installed_path": "agent-skills/runtime/b56-upgrade-schema-event-workflow-skill-and-provider-lifecycle/SKILL.md",
+      "installed_sha256": "sha256:edc2f1f5f3ee97f1f9833ace62b7b899e10bef05435ea228e45418027a7b2136",
+      "interface_sha256": "sha256:5c393009ea8bcbe5b6aab2af2b63588fad592fdf683207b88392a39ed5c82409",
+      "overlap_with_product_56a": [
+        "CLO56A012"
+      ],
+      "source_id": "C56-12",
+      "source_maturity": "reviewed-implementation-guidance",
+      "source_name": "upgrade-schema-event-workflow-skill-and-provider-lifecycle",
+      "source_path": "elmos-codex-skills-batch56-product-closure/agent-skills/runtime/upgrade-schema-event-workflow-skill-and-provider-lifecycle/SKILL.md",
+      "source_sha256": "sha256:c05e9ff6fcd7e2ff5072f14c013585b3cfc8219798bbaab3446655f500fd2974"
+    },
+    {
+      "activation_default": "inactive",
+      "installed_alias": "b56-commercial-product-edition-metering-billing-support-7d81f20f",
+      "installed_path": "agent-skills/runtime/b56-commercial-product-edition-metering-billing-support-7d81f20f/SKILL.md",
+      "installed_sha256": "sha256:252abd5ef5beeaa604a7ba46f201316f599eb297d66539d4f087c9d8afd9b448",
+      "interface_sha256": "sha256:50ee57debe4b34e7215c9f99c5d11eda9b62b8c170a4d387b9df22da766274b3",
+      "overlap_with_product_56a": [
+        "CLO56A013"
+      ],
+      "source_id": "C56-13",
+      "source_maturity": "reviewed-implementation-guidance",
+      "source_name": "commercial-product-edition-metering-billing-support-and-sla-readiness",
+      "source_path": "elmos-codex-skills-batch56-product-closure/agent-skills/runtime/commercial-product-edition-metering-billing-support-and-sla-readiness/SKILL.md",
+      "source_sha256": "sha256:bf02e86bf37904373e77a86134d18d4b2aa54c379679ff3b77098f6352813206"
+    },
+    {
+      "activation_default": "inactive",
+      "installed_alias": "b56-domain-pack-governance-and-industry-safety-certification",
+      "installed_path": "agent-skills/runtime/b56-domain-pack-governance-and-industry-safety-certification/SKILL.md",
+      "installed_sha256": "sha256:20a8990ce54f9191dced72467c3c7a1f1f3c4191f590c21a3e2578ec335afbf8",
+      "interface_sha256": "sha256:afc7b72e0015d07d4eb89a8b0e6c636646009775f5f0c406097ff2dd487dd5e3",
+      "overlap_with_product_56a": [
+        "CLO56A011"
+      ],
+      "source_id": "C56-14",
+      "source_maturity": "reviewed-implementation-guidance",
+      "source_name": "domain-pack-governance-and-industry-safety-certification",
+      "source_path": "elmos-codex-skills-batch56-product-closure/agent-skills/runtime/domain-pack-governance-and-industry-safety-certification/SKILL.md",
+      "source_sha256": "sha256:99983663c5714c02dbc77f0219fdf508943e7f62915c602f5dc5a22da2a036a6"
+    },
+    {
+      "activation_default": "inactive",
+      "installed_alias": "b56-portfolio-consolidation-dependency-conflict-and-tec-7c28347b",
+      "installed_path": "agent-skills/runtime/b56-portfolio-consolidation-dependency-conflict-and-tec-7c28347b/SKILL.md",
+      "installed_sha256": "sha256:be0b2e78153f47f932a0468e904d1ecf5decedbdd233992a236d24ee5cf05b91",
+      "interface_sha256": "sha256:7cc440e90933e93395fed3da6eccad058a471aa196cb87fa50069ec99e3c49a9",
+      "overlap_with_product_56a": [
+        "CLO56A014"
+      ],
+      "source_id": "C56-15",
+      "source_maturity": "reviewed-implementation-guidance",
+      "source_name": "portfolio-consolidation-dependency-conflict-and-technical-debt-burn-down",
+      "source_path": "elmos-codex-skills-batch56-product-closure/agent-skills/runtime/portfolio-consolidation-dependency-conflict-and-technical-debt-burn-down/SKILL.md",
+      "source_sha256": "sha256:3c58598e681dba9b138743ec97228b60c0f4a9b5f3817291835186fdf4cad304"
+    },
+    {
+      "activation_default": "inactive",
+      "installed_alias": "b56-ga-readiness-customer-pilot-operational-trust-and-f-e83fb298",
+      "installed_path": "agent-skills/runtime/b56-ga-readiness-customer-pilot-operational-trust-and-f-e83fb298/SKILL.md",
+      "installed_sha256": "sha256:d2c124310c58eee74a0a74827505136298c08d7216fdb7c920c57ca14ac9f66f",
+      "interface_sha256": "sha256:25829da4fe5963524f2e55c7a1dd1ba81b4e9ca1c53300d71d33ff96cda4a619",
+      "overlap_with_product_56a": [
+        "CLO56A015",
+        "CLO56A016"
+      ],
+      "source_id": "C56-16",
+      "source_maturity": "reviewed-implementation-guidance",
+      "source_name": "ga-readiness-customer-pilot-operational-trust-and-final-release-gate",
+      "source_path": "elmos-codex-skills-batch56-product-closure/agent-skills/runtime/ga-readiness-customer-pilot-operational-trust-and-final-release-gate/SKILL.md",
+      "source_sha256": "sha256:b90582ce60ba89fc5f0d31eacac62e6b5b2cb87c1cddc4944e2e2c0978e7611e"
+    }
+  ],
+  "source_namespace": "product-batch56-reviewed-guidance",
+  "source_skill_validation": {
+    "contract": "repository-pinned-skill-creator-compatible",
+    "invalid_name_length": 5,
+    "normalized_installed_valid": 16,
+    "valid": 11
+  },
+  "source_package": "elmos-codex-skills-batch56-product-closure"
+}

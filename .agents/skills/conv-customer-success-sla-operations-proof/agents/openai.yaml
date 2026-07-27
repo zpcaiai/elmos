@@ -1,0 +1,4 @@
+interface:
+  display_name: "Conv Customer Success Sla Operations Proof"
+  short_description: "Run this ELMOS product-convergence Skill with evidence"
+  default_prompt: "Use $conv-customer-success-sla-operations-proof to execute this ELMOS product-convergence Skill with fail-closed evidence."

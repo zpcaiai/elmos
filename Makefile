@@ -6,10 +6,10 @@ NODE_RUNTIME_BIN := $(dir $(NODE_EXECUTABLE))
 PNPM_VERSION ?= $(shell sed -n 's/.*"packageManager": "pnpm@\([^"]*\)".*/\1/p' apps/web-console/package.json)
 PNPM ?= pnpm dlx pnpm@$(PNPM_VERSION)
 
-.PHONY: verify backend database-data infrastructure security-compliance test-quality mainframe enterprise-integration enterprise-suite mature-product-skills mature-product-packages product-roadmap production-readiness-check batch1-55-skills batch66-80-skills batch66-80-test-skills language-packs-batch81-95 batch81-95-test-skills batch97-104-skills product-closure-convergence-skills product-closure-gate product-convergence-gate product-batch33-38-skills product-batch33-39-skills product-batch33-55-skills product-batch40-55-skills product-batch35-38 migration-pack-admission batch27-34-skills test-suite-validate test-suite-test test-suite-check test-suite-gate test-suite-1-55-check test-suite-1-55-gate test-suite-1-65-check test-suite-1-65-gate test-suite-66-80-check test-suite-66-80-gate test-suite-81-95-check test-suite-81-95-gate test-suite-b38-45-validate test-suite-b38-45-test test-suite-b38-45-check test-suite-b38-45-gate test-suite-local-qualification dotnet python project-synthesis frontend web up down
+.PHONY: verify backend database-data infrastructure security-compliance test-quality mainframe enterprise-integration enterprise-suite mature-product-skills mature-product-packages product-roadmap production-readiness-check batch1-55-skills batch66-80-skills batch66-80-test-skills language-packs-batch81-95 batch81-95-test-skills batch97-104-skills product-batch56-skills product-closure-convergence-skills product-closure-gate product-convergence-gate product-batch33-38-skills product-batch33-39-skills product-batch33-55-skills product-batch40-55-skills product-batch35-38 migration-pack-admission batch27-34-skills test-suite-validate test-suite-test test-suite-check test-suite-gate test-suite-1-55-check test-suite-1-55-gate test-suite-1-65-check test-suite-1-65-gate test-suite-66-80-check test-suite-66-80-gate test-suite-81-95-check test-suite-81-95-gate test-suite-b38-45-validate test-suite-b38-45-test test-suite-b38-45-check test-suite-b38-45-gate test-suite-local-qualification dotnet python project-synthesis frontend web up down
 
 verify: backend dotnet python frontend web
-production-readiness-check: batch45-check project-synthesis batch97-104-skills product-closure-convergence-skills web
+production-readiness-check: batch45-check project-synthesis batch97-104-skills product-batch56-skills product-closure-convergence-skills web
 	$(UV) run --quiet --with pyyaml python tooling/validate_runtime_operability.py
 	$(UV) run --quiet --with pyyaml python -m unittest discover -s tests/production-readiness -p 'test_*.py'
 backend:
@@ -56,12 +56,20 @@ batch97-104-skills:
 	python3 tooling/import_batch97_104_assets.py --check
 	cd elmos-codex-skills-batch97-104-complete && ./validate.sh
 	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p 'test_batch97_104_skills.py'
+product-batch56-skills:
+	cd elmos-codex-skills-batch56-product-closure && ./validate.sh
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml python tooling/import_product_batch56_closure.py
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml python -m unittest discover -s tests/product-closure-batch56 -p 'test_*.py'
 product-closure-convergence-skills:
 	cd elmos-codex-skills-batch56a-product-closure && ./validate.sh
 	cd elmos-product-convergence-reference-skills && PYTHONDONTWRITEBYTECODE=1 python3 scripts/product-convergence/validate_skill_bundle.py .
 	cd elmos-product-convergence-reference-skills && PYTHONDONTWRITEBYTECODE=1 python3 scripts/product-convergence/validate_convergence_bundle.py product-convergence
 	cd elmos-product-convergence-reference-skills && PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests/product-convergence/test_toolkit.py
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml python tooling/import_product_closure_convergence.py
+	cd batch46-product-convergence-complete-skills && PYTHONDONTWRITEBYTECODE=1 python3 scripts/batch46-complete/validate_skill_bundle.py .
+	cd batch46-product-convergence-complete-skills && PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with 'jsonschema>=4.23' python scripts/batch46-complete/validate_convergence_pack.py convergence-packs/reference-product
+	cd batch46-product-convergence-complete-skills && PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with 'jsonschema>=4.23' python -m unittest discover -s tests/batch46-complete -p 'test_toolkit.py'
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml python tooling/import_product_convergence_complete.py
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with 'jsonschema>=4.23' python scripts/product-convergence/validate_repository_convergence_bundle.py product-convergence
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml --with jsonschema python -m unittest discover -s tests/product-closure-convergence -p 'test_*.py'
 product-closure-gate:
@@ -142,11 +150,14 @@ python:
 	$(UV) --directory engines/python-engine run --locked mypy src
 project-synthesis:
 	python3 tooling/validate_project_synthesis_integration.py
+	$(UV) --directory engines/project-synthesis-engine run --locked python ../../scripts/operations/validate_generation_support_matrix.py
 	$(UV) run --quiet --with 'jsonschema>=4.23' python tooling/validate_project_synthesis_batch61_65_schemas.py
 	$(UV) --directory engines/project-synthesis-engine run --locked pytest
 	$(UV) --directory engines/project-synthesis-engine run --locked ruff check src tests scripts
 	$(UV) --directory engines/project-synthesis-engine run --locked mypy src
 	$(UV) --directory engines/project-synthesis-engine run --locked python scripts/run_acceptance.py
+	$(UV) --directory engines/project-synthesis-engine run --locked python scripts/run_production_acceptance.py --auth-mode jwt
+	$(UV) --directory engines/project-synthesis-engine run --locked python scripts/run_production_acceptance.py --auth-mode oidc
 frontend:
 	CI=true PATH="$(NODE_RUNTIME_BIN):$$PATH" $(PNPM) --dir engines/frontend-client-engine install --frozen-lockfile
 	PATH="$(NODE_RUNTIME_BIN):$$PATH" $(PNPM) --dir engines/frontend-client-engine check

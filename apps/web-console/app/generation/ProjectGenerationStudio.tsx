@@ -38,6 +38,13 @@ type RunnerIdentity = {
   actor: string;
 };
 
+type RunnerReadiness = {
+  status: "READY" | "DISABLED" | "BLOCKED";
+  isolation: "ROOTLESS_CONTAINER" | "HOST_DEVELOPMENT" | "NOT_CONFIGURED";
+  storage: "READ_WRITE" | "NOT_RUN" | "BLOCKED";
+  reason?: string;
+};
+
 const plannedAssets = [
   { icon: "workflow" as IconName, title: "需求与资产图", detail: "PSIR、Blueprint 与来源追踪" },
   { icon: "code" as IconName, title: "CRUD 与健康检查", detail: "多实体接口与 OpenAPI" },
@@ -68,6 +75,23 @@ function isStoredGenerationDraft(value: unknown): value is GenerationDraft {
 
 function shellQuote(value: string) {
   return `'${value.replaceAll("'", "'\\''")}'`;
+}
+
+function runnerReasonMessage(reason?: string) {
+  if (!reason) return "";
+  if (reason.includes("ROOTLESS_CONTAINER_ENGINE_REQUIRED")) {
+    return "当前容器引擎不是 rootless；生产一键运行保持关闭，请配置 rootless Podman/Docker。";
+  }
+  if (reason.includes("TOOLCHAIN_IMAGES_NOT_AVAILABLE_OFFLINE")) {
+    return "精确工具链镜像尚未缓存，且构建网络为 none；请预加载 digest 镜像或审批受限构建网络。";
+  }
+  if (reason.includes("BUILD_NETWORK_NOT_APPROVED") || reason.includes("APPROVED_BUILD_NETWORK_MISSING")) {
+    return "构建网络缺少 ELMOS 审批标签；运行器已拒绝未授权的网络出口。";
+  }
+  if (reason.includes("LOCAL_RUNNER_NOT_ENABLED")) {
+    return "本地 Runner 未启用；仍可审阅并导出 Intent，执行入口保持关闭。";
+  }
+  return reason;
 }
 
 function buildWorkflowCommands(draft: GenerationIntent): WorkflowCommand[] {
@@ -115,6 +139,7 @@ export function ProjectGenerationStudio() {
   const [draftsReady, setDraftsReady] = useState(false);
   const [capability, setCapability] = useState<GenerationCapabilityResponse | null>(null);
   const [capabilityError, setCapabilityError] = useState("");
+  const [runnerReadiness, setRunnerReadiness] = useState<RunnerReadiness | null>(null);
   const [tenantId, setTenantId] = useState("local-dev");
   const [runnerToken, setRunnerToken] = useState("");
   const [analysis, setAnalysis] = useState<GenerationAnalysis | null>(null);
@@ -145,6 +170,8 @@ export function ProjectGenerationStudio() {
   const previewProfiles = generationTargets.filter((profile) => preview.targets.includes(profile.id));
   const workflowCommands = buildWorkflowCommands(preview);
   const workflowScript = workflowCommands.map((item) => item.command).join("\n");
+  const runnerReady = capability?.localRunner.enabled === true
+    && runnerReadiness?.status === "READY";
   const artifactGroups = useMemo(() => {
     const groups = new Map<string, GenerationJob["artifacts"]>();
     for (const artifact of job?.artifacts ?? []) {
@@ -166,6 +193,28 @@ export function ProjectGenerationStudio() {
         if (!(error instanceof DOMException && error.name === "AbortError")) {
           setCapability(null);
           setCapabilityError("无法读取项目生成能力契约；执行入口保持关闭，请检查 Web Console 服务端日志。");
+        }
+      });
+    return () => controller.abort();
+  }, []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch("/api/health?probe=readiness", { cache: "no-store", signal: controller.signal })
+      .then(async (response) => {
+        const payload = await response.json() as { localRunner?: RunnerReadiness };
+        if (!payload.localRunner) throw new Error("runner readiness unavailable");
+        return payload.localRunner;
+      })
+      .then(setRunnerReadiness)
+      .catch((error: unknown) => {
+        if (!(error instanceof DOMException && error.name === "AbortError")) {
+          setRunnerReadiness({
+            status: "BLOCKED",
+            isolation: "NOT_CONFIGURED",
+            storage: "BLOCKED",
+            reason: "LOCAL_RUNNER_READINESS_UNAVAILABLE",
+          });
         }
       });
     return () => controller.abort();
@@ -561,13 +610,13 @@ export function ProjectGenerationStudio() {
         <article className="metric-card"><span>项目合成 Skills</span><strong>{capability?.projectSkillCount ?? 417}</strong><small>B46–B80 结构化能力</small></article>
         <article className="metric-card"><span>精确目标栈</span><strong>{capability?.targets.length ?? generationTargets.length}</strong><small>8 个独立 emitter / verifier</small></article>
         <article className="metric-card"><span>已选目标</span><strong>{selectedProfiles.length}</strong><small>一个意图，多份独立工程</small></article>
-        <article className="metric-card"><span>本地 Runner</span><strong className={`metric-word ${capability?.localRunner.enabled ? "" : "warning-text"}`}>{capability?.localRunner.enabled ? "READY" : "OFF"}</strong><small>{capability?.localRunner.isolation ?? "NOT_CONFIGURED"} · 持久恢复</small></article>
+        <article className="metric-card"><span>本地 Runner</span><strong className={`metric-word ${runnerReady ? "" : "warning-text"}`}>{runnerReady ? "READY" : runnerReadiness?.status ?? "CHECKING"}</strong><small>{runnerReadiness?.isolation ?? capability?.localRunner.isolation ?? "NOT_CONFIGURED"} · 持久恢复</small></article>
       </section>
 
       <section className="source-notice generation-notice" role={capabilityError ? "alert" : "status"}>
         <Icon name="lock" size={16} />
-        <span>{capabilityError || capability?.note || "正在读取仓库内 Project Synthesis 契约与本地 Runner 状态。"}</span>
-        <StatusChip status={capabilityError ? "BLOCKED" : capability?.source ?? "REPOSITORY_CONTRACT"} compact />
+        <span>{capabilityError || runnerReasonMessage(runnerReadiness?.reason) || capability?.note || "正在读取仓库内 Project Synthesis 契约与本地 Runner 状态。"}</span>
+        <StatusChip status={capabilityError || runnerReadiness?.status === "BLOCKED" ? "BLOCKED" : capability?.source ?? "REPOSITORY_CONTRACT"} compact />
       </section>
 
       <div className="generation-layout">
@@ -723,7 +772,7 @@ export function ProjectGenerationStudio() {
           <section className="generation-runner" aria-labelledby="generation-runner-title">
             <div className="generation-section-heading compact">
               <div><span className="overline">GOVERNED LOCAL RUNNER</span><h3 id="generation-runner-title">执行、验证与一键运行</h3></div>
-              <StatusChip status={job?.status ?? (capability?.localRunner.enabled ? "READY" : "NOT_CONFIGURED")} compact />
+              <StatusChip status={job?.status ?? (runnerReady ? "READY" : runnerReadiness?.status === "BLOCKED" ? "BLOCKED" : "NOT_CONFIGURED")} compact />
             </div>
             <div className="generation-job-recovery">
               <label>
@@ -737,7 +786,7 @@ export function ProjectGenerationStudio() {
                   maxLength={36}
                 />
               </label>
-              <button className="button button-secondary" type="button" disabled={runnerBusy} onClick={() => void recoverJob()}>
+              <button className="button button-secondary" type="button" disabled={runnerBusy || !runnerReady} onClick={() => void recoverJob()}>
                 <Icon name="refresh" size={15} />恢复任务
               </button>
               <small>使用当前租户、审批者与重新输入的短期令牌恢复服务端原子持久化任务；浏览器不保存令牌。</small>
@@ -757,7 +806,7 @@ export function ProjectGenerationStudio() {
                   {job.artifactSha256 && <div><span>归档摘要</span><strong>{job.artifactSha256.slice(0, 12)}</strong></div>}
                 </div>
                 <div className="generation-progress" role="progressbar" aria-valuenow={job.progress} aria-valuemin={0} aria-valuemax={100} aria-label="任务进度"><i style={{ width: `${job.progress}%` }} /></div>
-                {job.reason && <p className="generation-job-reason" role="alert">{job.reason}</p>}
+                {job.reason && <p className="generation-job-reason" role="alert">{runnerReasonMessage(job.reason)}</p>}
                 <pre className="generation-job-logs" tabIndex={0} aria-label="任务日志">{job.logs.slice(-60).map((entry) => `[${new Date(entry.at).toLocaleTimeString("zh-CN")}] ${entry.stream}: ${entry.message}`).join("\n") || "等待任务日志…"}</pre>
                 {job.artifacts.length > 0 && (
                   <div className="generation-artifact-tree" aria-label="生成文件树">
@@ -786,8 +835,8 @@ export function ProjectGenerationStudio() {
               {job && !["COMPLETED", "PARTIAL", "BLOCKED", "CANCELLED"].includes(job.status) && <button className="button button-secondary" type="button" disabled={runnerBusy} onClick={() => void postJobAction("cancel")}><Icon name="close" size={16} />取消任务</button>}
               <button className="button button-secondary" type="button" disabled={!draft} onClick={downloadIntent}><Icon name="external" size={16} />导出 Intent</button>
               <button className="button button-secondary" type="submit"><Icon name="spark" size={16} />锁定生成计划</button>
-              <button className="button button-secondary" type="button" disabled={!draft || !capability?.localRunner.enabled || runnerBusy} onClick={() => void analyzeDraft()}><Icon name="workflow" size={16} />分析并整理需求</button>
-              <button className="button button-primary" type="button" disabled={!draft || !analysis || analysis.request.open_questions.length > 0 || !approved || !capability?.localRunner.enabled || runnerBusy} onClick={() => void executeJob()}><Icon name="play" size={16} />执行并验证</button>
+              <button className="button button-secondary" type="button" disabled={!draft || !runnerReady || runnerBusy} onClick={() => void analyzeDraft()}><Icon name="workflow" size={16} />分析并整理需求</button>
+              <button className="button button-primary" type="button" disabled={!draft || !analysis || analysis.request.open_questions.length > 0 || !approved || !runnerReady || runnerBusy} onClick={() => void executeJob()}><Icon name="play" size={16} />执行并验证</button>
             </div>
           </div>
         </form>

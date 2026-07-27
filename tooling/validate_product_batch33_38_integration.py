@@ -14,6 +14,7 @@ import re
 from collections import Counter
 from pathlib import Path
 
+import skill_creator_tools
 
 ROOT = Path(__file__).resolve().parents[1]
 LEGACY_MANIFEST = ROOT / "docs" / "product-batches33-38" / "skill-source-manifest.json"
@@ -48,7 +49,7 @@ def fail(message: str) -> None:
 
 def load_official_validator():
     if not OFFICIAL_VALIDATOR.is_file():
-        fail(f"official Skill validator missing: {OFFICIAL_VALIDATOR}")
+        return skill_creator_tools.validate_skill
     spec = importlib.util.spec_from_file_location("elmos_official_skill_validator", OFFICIAL_VALIDATOR)
     if spec is None or spec.loader is None:
         fail("cannot load official Skill validator")
@@ -138,7 +139,7 @@ def main() -> None:
         skill_dir = RUNTIME / name
         valid, message = validate_skill(skill_dir)
         if not valid:
-            fail(f"official validation failed for {name}: {message}")
+            fail(f"skill-creator-compatible validation failed for {name}: {message}")
         skill = (skill_dir / "SKILL.md").read_text(encoding="utf-8")
         if hashlib.sha256(skill.encode()).hexdigest() != record["sha256"]:
             fail(f"Skill source digest mismatch: {name}")
@@ -197,6 +198,11 @@ def main() -> None:
 
     print(json.dumps({
         "official_skill_validation": {"valid": len(canonical_records), "failed": 0},
+        "validator_contract": (
+            "official-skill-creator"
+            if OFFICIAL_VALIDATOR.is_file()
+            else "repository-pinned-skill-creator-compatible"
+        ),
         "runtime_skill_total": runtime_total,
         "legacy_product_skill_counts": dict(legacy_counts),
         "complete_pack_skill_counts": dict(complete_counts),

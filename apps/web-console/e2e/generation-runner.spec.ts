@@ -121,42 +121,54 @@ test("需求分析、生成验证、文件树、归档与健康确认的一键�
   await expect(page.getByText("STOPPED", { exact: true })).toBeVisible();
 });
 
-test("Python PostgreSQL JWT 企业配置可生成、验证并一键运行", async ({
+test("Python PostgreSQL JWT/OIDC 企业配置均可生成、验证并一键运行", async ({
   page,
 }, testInfo) => {
   test.skip(testInfo.project.name !== "chromium", "企业配置的真实有副作用旅程只执行一次");
-  test.setTimeout(420_000);
+  test.setTimeout(1_200_000);
 
-  await page.goto("/generation");
-  await page.getByLabel("审批者标识").fill("user:e2e");
-  await page.getByLabel("租户标识").fill("local-e2e");
-  await page.getByLabel("本地 Runner 令牌").fill("elmos-e2e-local-token-32-characters");
-  await page.getByLabel("核心实体").fill("order");
-  await page.getByLabel("项目说明").fill(
-    "实体: customer, order; "
-    + "customer字段: name:string:required; "
-    + "order字段: customer_id:string:required, total:number:required; "
-    + "关系: order.customer_id -> customer.id; "
-    + "规则: order.total must be non-negative",
-  );
-  await page.getByLabel("数据配置").selectOption("postgresql");
-  await expect(page.getByLabel("认证配置")).toHaveValue("jwt");
+  for (const authMode of ["jwt", "oidc"] as const) {
+    await page.goto("/generation");
+    await page.evaluate(() => window.localStorage.clear());
+    await page.reload();
+    await page.getByLabel("审批者标识").fill("user:e2e");
+    await page.getByLabel("租户标识").fill("local-e2e");
+    await page.getByLabel("本地 Runner 令牌").fill("elmos-e2e-local-token-32-characters");
+    await page.getByLabel("核心实体").fill("order");
+    await page.getByLabel("项目说明").fill(
+      "实体: customer, order; "
+      + "customer字段: name:string:required; "
+      + "order字段: customer_id:string:required, total:number:required; "
+      + "关系: order.customer_id -> customer.id; "
+      + "规则: order.total must be non-negative",
+    );
+    await page.getByLabel("数据配置").selectOption("postgresql");
+    await page.getByLabel("认证配置").selectOption(authMode);
+    await expect(page.getByLabel("认证配置")).toHaveValue(authMode);
 
-  await page.getByRole("button", { name: "锁定生成计划" }).click();
-  await page.getByRole("button", { name: "分析并整理需求" }).click();
-  await expect(page.getByText("实体与字段 · 2")).toBeVisible({ timeout: 30_000 });
-  await expect(page.getByText("order.customer_id many-to-one customer.id")).toBeVisible();
-  await expect(page.getByText("开放问题 · 0")).toBeVisible();
+    await page.getByRole("button", { name: "锁定生成计划" }).click();
+    await page.getByRole("button", { name: "分析并整理需求" }).click();
+    await expect(page.getByText("实体与字段 · 2")).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByText("order.customer_id many-to-one customer.id")).toBeVisible();
+    await expect(page.getByText("开放问题 · 0")).toBeVisible();
 
-  await page.getByRole("checkbox", { name: /我已审阅结构化需求/ }).check();
-  await page.getByRole("button", { name: "执行并验证" }).click();
-  await expect(page.getByText("生成文件树")).toBeVisible({ timeout: 320_000 });
-  await expect(page.getByText("database/", { exact: true })).toBeVisible();
-  await expect(page.getByText("security/", { exact: true })).toBeVisible();
-  await expect(page.getByText("PASSED", { exact: true }).first()).toBeVisible();
+    await page.getByRole("checkbox", { name: /我已审阅结构化需求/ }).check();
+    await page.getByRole("button", { name: "执行并验证" }).click();
+    const generationOutcome = await Promise.race([
+      page.getByText("生成文件树").waitFor({ state: "visible", timeout: 600_000 })
+        .then(() => "READY"),
+      page.getByText("BLOCKED", { exact: true }).last()
+        .waitFor({ state: "visible", timeout: 600_000 })
+        .then(() => "BLOCKED"),
+    ]);
+    expect(generationOutcome).toBe("READY");
+    await expect(page.getByText("database/", { exact: true })).toBeVisible();
+    await expect(page.getByText("security/", { exact: true })).toBeVisible();
+    await expect(page.getByText("PASSED", { exact: true }).first()).toBeVisible();
 
-  await page.getByRole("button", { name: "一键运行" }).click();
-  await expect(page.getByText("RUNNING", { exact: true })).toBeVisible({ timeout: 60_000 });
-  await page.getByRole("button", { name: "停止" }).click();
-  await expect(page.getByText("STOPPED", { exact: true })).toBeVisible({ timeout: 20_000 });
+    await page.getByRole("button", { name: "一键运行" }).click();
+    await expect(page.getByText("RUNNING", { exact: true })).toBeVisible({ timeout: 60_000 });
+    await page.getByRole("button", { name: "停止" }).click();
+    await expect(page.getByText("STOPPED", { exact: true })).toBeVisible({ timeout: 20_000 });
+  }
 });

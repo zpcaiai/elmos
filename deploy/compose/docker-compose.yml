@@ -153,6 +153,7 @@ services:
       - "/tmp:rw,noexec,nosuid,size=64m"
     environment:
       CONTROL_PLANE_BASE_URL: http://control-plane:8080
+      ELMOS_CONTROL_PLANE_BASE_URL: http://control-plane:8080
       JAVA_ENGINE_BASE_URL: http://java-engine-worker:8081
       ELMOS_SPRING_PROXY_ENABLED: "false"
       ELMOS_LOCAL_RUNNER_ENABLED: "false"
