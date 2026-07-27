@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from importlib.resources import files
 from textwrap import indent
 
 from .container_images import ALPINE_IMAGE, RUST_IMAGE
@@ -17,6 +18,19 @@ from .rendering import (
     sample_payload,
     target_readme,
 )
+
+_LOCK_PROJECT_MARKER = "__ELMOS_PROJECT_NAME__"
+
+
+def _cargo_lock(project_name: str) -> str:
+    template = (
+        files("elmos_project_synthesis")
+        .joinpath("templates", "rust", "Cargo.lock")
+        .read_text(encoding="utf-8")
+    )
+    if template.count(_LOCK_PROJECT_MARKER) != 1:
+        raise ValueError("RUST_LOCK_TEMPLATE_INVALID")
+    return template.replace(_LOCK_PROJECT_MARKER, project_name)
 
 
 def _rust_type(field: FieldSpec) -> str:
@@ -46,17 +60,23 @@ def _rust_route(path: str, handler: str) -> str:
 
 
 def _rust_status_call(method: str, uri: str, payload: str | None) -> str:
-    arguments = f"&app, Method::{method}, {uri}, {f'Some({payload})' if payload else 'None'}"
+    payload_argument = f"Some({payload})" if payload else "None"
+    arguments = f"&app, Method::{method}, {uri}, {payload_argument}"
     single_line = f"call({arguments}).await.status(),"
     if 8 + len(single_line) <= 100:
         return single_line
+    payload_lines = (
+        ("    Some(", f"        {payload}", "    )")
+        if payload is not None and len(payload_argument) > 72
+        else (f"    {payload_argument}",)
+    )
     return "\n".join(
         (
             "call(",
             "    &app,",
             f"    Method::{method},",
             f"    {uri},",
-            f"    {f'Some({payload})' if payload else 'None'}",
+            *payload_lines,
             ")",
             ".await",
             ".status(),",
@@ -223,6 +243,41 @@ def render_rust(request: SynthesisRequest, port: int) -> dict[str, str]:
     indented_routes = indent(routes, "            ")
     indented_handlers = indent(handlers, "            ")
     indented_tests = indent(tests, "                ")
+    crate_name = request.project_name.replace("-", "_")
+    main_uses = "\n".join(
+        sorted(
+            (
+                f"use {crate_name}::application;",
+                "use std::env;",
+                "use tokio::net::TcpListener;",
+            )
+        )
+    )
+    test_uses = "\n".join(
+        value
+        for _, value in sorted(
+            (
+                (
+                    "axum",
+                    clean(
+                        """
+                        use axum::{
+                            Router,
+                            body::{Body, to_bytes},
+                            http::{Method, Request, StatusCode},
+                            response::Response,
+                        };
+                        """
+                    ),
+                ),
+                (crate_name, f"use {crate_name}::application;"),
+                ("serde_json", "use serde_json::Value;"),
+                ("tower", "use tower::ServiceExt;"),
+            )
+        )
+    )
+    indented_main_uses = indent(main_uses, "            ")
+    indented_test_uses = indent(test_uses, "            ")
     return {
         ".gitignore": gitignore(),
         ".dockerignore": dockerignore(),
@@ -252,6 +307,7 @@ def render_rust(request: SynthesisRequest, port: int) -> dict[str, str]:
             codegen-units = 1
             """
         ),
+        "Cargo.lock": _cargo_lock(request.project_name),
         "rust-toolchain.toml": clean(
             """
             [toolchain]
@@ -297,9 +353,7 @@ def render_rust(request: SynthesisRequest, port: int) -> dict[str, str]:
         ),
         "src/main.rs": clean(
             f"""
-            use {request.project_name.replace("-", "_")}::application;
-            use std::env;
-            use tokio::net::TcpListener;
+{indented_main_uses}
 
             #[tokio::main]
             async fn main() {{
@@ -316,15 +370,7 @@ def render_rust(request: SynthesisRequest, port: int) -> dict[str, str]:
         ),
         "tests/api.rs": clean(
             f"""
-            use axum::{{
-                Router,
-                body::{{Body, to_bytes}},
-                http::{{Method, Request, StatusCode}},
-                response::Response,
-            }};
-            use {request.project_name.replace("-", "_")}::application;
-            use serde_json::Value;
-            use tower::ServiceExt;
+{indented_test_uses}
 
             async fn call(app: &Router, method: Method, uri: &str, payload: Option<&str>) -> Response {{
                 let mut request = Request::builder().method(method).uri(uri);
@@ -353,11 +399,10 @@ def render_rust(request: SynthesisRequest, port: int) -> dict[str, str]:
         "Dockerfile": clean(
             f"""
             FROM {RUST_IMAGE} AS build
-            RUN apk add --no-cache musl-dev
+            RUN apk add --no-cache 'musl-dev=1.2.5-r12'
             WORKDIR /workspace
             COPY . .
-            RUN cargo generate-lockfile \
-                && cargo fmt --check \
+            RUN cargo fmt --check \
                 && cargo clippy --locked --all-targets --all-features -- -D warnings \
                 && cargo test --locked --all-features \
                 && cargo build --locked --release
@@ -386,7 +431,6 @@ def render_rust(request: SynthesisRequest, port: int) -> dict[str, str]:
                   - uses: dtolnay/rust-toolchain@451ce45ce31d200b52705aadd15ce75018b006de # 1.89.0
                     with:
                       components: clippy,rustfmt
-                  - run: cargo generate-lockfile
                   - run: cargo fmt --check
                   - run: cargo clippy --locked --all-targets --all-features -- -D warnings
                   - run: cargo test --locked --all-features
@@ -395,9 +439,7 @@ def render_rust(request: SynthesisRequest, port: int) -> dict[str, str]:
         ),
         "Makefile": clean(
             f"""
-            .PHONY: lock check test build run
-            lock:
-            \tcargo generate-lockfile
+            .PHONY: check test build run
             check:
             \tcargo fmt --check
             \tcargo clippy --locked --all-targets --all-features -- -D warnings
@@ -415,7 +457,7 @@ def render_rust(request: SynthesisRequest, port: int) -> dict[str, str]:
             framework="Axum 0.8.4",
             port=port,
             commands=(
-                f"cargo generate-lockfile\ncargo fmt --check\ncargo clippy --locked --all-targets --all-features -- -D warnings\n"
+                f"cargo fmt --check\ncargo clippy --locked --all-targets --all-features -- -D warnings\n"
                 f"cargo test --locked --all-features\nPORT={port} cargo run --locked"
             ),
         ),

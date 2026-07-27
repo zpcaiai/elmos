@@ -74,6 +74,51 @@ export type GenerationStage = {
   detail: string;
 };
 
+export type DeploymentHardware = {
+  cpu: number;
+  memoryGb: number;
+  diskGb: number;
+};
+
+export type LocalRuntimeProfile = {
+  id: GenerationTargetId | "spring-modernization";
+  label: string;
+  framework: string;
+  toolchain: string;
+  minimum: DeploymentHardware;
+  recommended: DeploymentHardware;
+  scope: string;
+  directory: string;
+  port: number;
+  healthPath: string;
+  verifyCommands: string[];
+  runCommands: string[];
+};
+
+export type CloudDeploymentOption = {
+  id: "google-cloud-run" | "azure-container-apps" | "aws-ecs-fargate" | "kubernetes";
+  name: string;
+  status: "RECOMMENDED" | "OPTIONAL" | "CONDITIONAL";
+  fit: string;
+  tradeoff: string;
+};
+
+export type DeploymentGuidance = {
+  status: "CONFIGURATION_REQUIRED";
+  externalEvidence: "NOT_RUN";
+  localProfiles: LocalRuntimeProfile[];
+  cloudOptions: CloudDeploymentOption[];
+  recommendation: {
+    platform: "Google Cloud Run";
+    reason: string;
+    requiredInputs: string[];
+    steps: Array<{ title: string; detail: string; commands?: string[] }>;
+    rollback: string[];
+    cleanup: string[];
+    officialDocs: Array<{ label: string; url: string }>;
+  };
+};
+
 export type GenerationCapabilityResponse = {
   source: "REPOSITORY_CONTRACT";
   fetchedAt: string;
@@ -92,6 +137,7 @@ export type GenerationCapabilityResponse = {
     isolation: "ROOTLESS_CONTAINER" | "HOST_DEVELOPMENT" | "NOT_CONFIGURED";
     recovery: "PERSISTENT_RECONCILIATION";
   };
+  deploymentGuidance: DeploymentGuidance;
   note: string;
 };
 
@@ -273,6 +319,7 @@ export type SpringModernizationCapabilityResponse = {
     status: "EXPERIMENTAL";
     externalEvidence: "NOT_RUN";
   };
+  deploymentGuidance: DeploymentGuidance;
   stages: SpringModernizationStage[];
   note: string;
 };

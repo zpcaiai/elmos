@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import ast
 import json
+import os
 import re
 import subprocess
 import tempfile
@@ -243,9 +244,11 @@ def test_renders_complete_language_projects_with_fail_closed_claims() -> None:
         "go/go.mod",
         "go/Dockerfile",
         "kotlin/build.gradle.kts",
+        "kotlin/gradle.lockfile",
         "kotlin/Dockerfile",
         "php/composer.json",
         "php/Dockerfile",
+        "rust/Cargo.lock",
         "rust/Cargo.toml",
         "rust/Dockerfile",
         "docker-compose.yml",
@@ -318,11 +321,41 @@ def test_all_direct_emitters_render_full_crud_and_safe_configuration() -> None:
     ElementTree.fromstring(files["java/pom.xml"])  # noqa: S314 - bounded generated fixture
     tomllib.loads(files["python/pyproject.toml"])
     tomllib.loads(files["rust/Cargo.toml"])
+    assert 'name = "commerce-service"' in files["rust/Cargo.lock"]
+    assert "__ELMOS_PROJECT_NAME__" not in files["rust/Cargo.lock"]
+    assert 'checksum = "' in files["rust/Cargo.lock"]
+    assert "cargo generate-lockfile" not in files["rust/Dockerfile"]
+    assert "musl-dev=1.2.5-r12" in files["rust/Dockerfile"]
+    assert "cargo generate-lockfile" not in files["rust/.github/workflows/ci.yml"]
+    assert "io.ktor:ktor-server-core:3.2.3=" in files["kotlin/gradle.lockfile"]
+    assert "--write-locks" not in files["kotlin/Dockerfile"]
+    assert "--write-locks" not in files["kotlin/.github/workflows/ci.yml"]
+    task_program = files["dotnet/src/CommerceService.Api/Program.cs"]
+    assert "using Generated.Api;" not in task_program
+    assert "global::Generated.Api.Customer" in task_program
     json.loads(files["typescript/package.json"])
     json.loads(files["php/composer.json"])
     assert '"""' in json.loads(files["requirements/psir.json"])["project"]["description"]
     assert "&quot;&quot;&quot;" in files["java/pom.xml"]
     assert "__doc__ = " in files["python/src/commerce_service/__init__.py"]
+
+
+def test_dotnet_model_names_cannot_collide_with_implicit_bcl_types() -> None:
+    draft = create_draft(
+        name="task-service",
+        description="Task CRUD service.",
+        entity="task",
+        languages=("csharp",),
+    )
+    files = render_workspace(SynthesisRequest.from_mapping(approve_request(draft, actor="user:test")))
+    program = files["dotnet/src/TaskService.Api/Program.cs"]
+    api_tests = files["dotnet/tests/TaskService.Api.Tests/ApiTests.cs"]
+    assert "using Generated.Api;" not in program
+    assert "ConcurrentDictionary<string, global::Generated.Api.Task>" in program
+    assert "new global::Generated.Api.Task(" in program
+    assert "public async global::System.Threading.Tasks.Task HealthJourney()" in api_tests
+    assert "public async global::System.Threading.Tasks.Task TaskFullCrudJourney()" in api_tests
+    assert "public async Task " not in api_tests
 
 
 def test_generated_ci_actions_are_pinned_to_immutable_commits() -> None:
@@ -788,6 +821,71 @@ def test_runtime_plan_uses_the_same_exact_toolchain_selection(
     )
 
     assert verification._runtime_tool("test-runtime", "runtime") == str(exact_runtime)
+
+
+def test_native_build_uses_the_same_exact_toolchain_selection(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    path_runtime = tmp_path / "path-runtime"
+    exact_runtime = tmp_path / "exact-runtime"
+    path_runtime.write_text("#!/bin/sh\nprintf 'runtime 99.0\\n'\n", encoding="utf-8")
+    exact_runtime.write_text("#!/bin/sh\nprintf 'runtime 1.2.3\\n'\n", encoding="utf-8")
+    path_runtime.chmod(0o700)
+    exact_runtime.chmod(0o700)
+    monkeypatch.setattr(verification.shutil, "which", lambda _: str(path_runtime))
+    monkeypatch.setitem(
+        verification.EXACT_TOOLCHAIN_REQUIREMENTS,
+        "test-runtime",
+        [
+            {
+                "tool": "runtime",
+                "arguments": ["--version"],
+                "expected": "runtime 1.2.3",
+                "pattern": r"^runtime 1\.2\.3$",
+                "fallback": str(exact_runtime),
+            }
+        ],
+    )
+    results: list[dict[str, object]] = []
+
+    assert verification._run_if_available(
+        results,
+        language="test-runtime",
+        tool_name="runtime",
+        commands=[["check"]],
+        cwd=tmp_path,
+    )
+    assert results[0]["command"][0] == str(exact_runtime)
+
+
+def test_kotlin_build_and_runtime_bind_the_matched_java_home(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    java = tmp_path / "jdk-21" / "bin" / "java"
+    java.parent.mkdir(parents=True)
+    java.write_text("#!/bin/sh\nprintf 'openjdk version \"21.0.11\"\\n'\n", encoding="utf-8")
+    java.chmod(0o700)
+    monkeypatch.setattr(verification.shutil, "which", lambda _: None)
+    monkeypatch.setitem(
+        verification.EXACT_TOOLCHAIN_REQUIREMENTS,
+        "kotlin",
+        [
+            {
+                "tool": "java",
+                "arguments": ["-version"],
+                "expected": "Java 21",
+                "pattern": r'version "21(?:[.\-"]|$)',
+                "fallback": str(java),
+            }
+        ],
+    )
+
+    environment = verification._toolchain_environment("kotlin")
+
+    assert environment["JAVA_HOME"] == str(java.parent.parent)
+    assert environment["PATH"].split(os.pathsep)[0] == str(java.parent)
 
 
 def test_health_probe_rejects_a_different_service_on_the_same_port() -> None:

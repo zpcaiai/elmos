@@ -8,6 +8,7 @@ import tempfile
 from pathlib import Path, PurePosixPath
 from typing import Any, cast
 
+from .deployment_guidance import render_deployment_guidance
 from .dotnet_target import render_dotnet
 from .go_target import render_go
 from .java_target import render_java
@@ -346,6 +347,9 @@ def _root_readme(request: SynthesisRequest) -> str:
         - `requirements/project-blueprint.json`: selected language/runtime/build profiles.
         - `requirements/asset-graph.json`: generated assets and missing evidence links.
         - `requirements/build-graph.json`: per-target generate/build/test/startup dependencies.
+        - `docs/LOCAL_RUN.md`: exact local hardware, toolchain, verification and startup steps.
+        - `docs/CLOUD_DEPLOYMENT.md`: cloud options and the recommended Cloud Run configuration.
+        - `deploy/deployment-options.json`: fail-closed, machine-readable deployment handoff.
         - `.elmos/generation-manifest.json`: ownership, hashes, trace links, and claim boundary.
 
         ## Current boundary
@@ -417,6 +421,10 @@ def render_workspace(request: SynthesisRequest) -> dict[str, str]:
                     )
                 files[root_workflow] = monorepo_content
     for path, content in render_production_assets(request).items():
+        if path in files:
+            raise WorkspaceConflictError(f"DUPLICATE_GENERATED_PATH:{path}")
+        files[path] = content
+    for path, content in render_deployment_guidance(request).items():
         if path in files:
             raise WorkspaceConflictError(f"DUPLICATE_GENERATED_PATH:{path}")
         files[path] = content

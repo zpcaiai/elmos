@@ -13,6 +13,19 @@ generate code; generation requires a reviewed approval artifact.
   Python 3.12, .NET SDK 10.0.301, Node 26.0.0 with pnpm 10.12.4, Go 1.25.0,
   Kotlin 2.2.20 on JVM 21 with Gradle 8.14.3, PHP 8.4.12, or Rust 1.89.0
 
+On Darwin arm64, the four non-default exact toolchains can be installed from
+checksum-verified upstream distributions and immediately accepted with:
+
+```bash
+make project-synthesis-toolchains
+```
+
+The installer uses
+`~/.local/share/elmos/toolchains` by default, never replaces a different
+existing toolchain, and keeps Gradle 8.14.3 isolated from any newer Homebrew
+Gradle. Override the absolute installation root with
+`ELMOS_PROJECT_SYNTHESIS_TOOLCHAIN_ROOT` when required.
+
 ```bash
 cd engines/project-synthesis-engine
 uv sync --locked

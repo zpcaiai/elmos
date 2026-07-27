@@ -2,7 +2,9 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { Icon } from "../components/Icon";
+import { RuntimeDeploymentGuide } from "../components/RuntimeDeploymentGuide";
 import { StatusChip } from "../components/StatusChip";
+import { springDeploymentGuidance } from "../lib/deploymentGuidance";
 
 type SourceMode = "PUBLIC_GIT" | "GITHUB_APP" | "MATERIALIZED_SNAPSHOT";
 type RunStatus = "QUEUED" | "RUNNING" | "SUCCEEDED" | "FAILED" | "BLOCKED" | "CANCELLED";
@@ -589,6 +591,11 @@ export function SpringModernizationStudio() {
           </div>
         </aside>
       </div>
+
+      <RuntimeDeploymentGuide
+        id="spring-runtime-deployment"
+        guidance={springDeploymentGuidance}
+      />
 
       <section className="surface-card journey-card" aria-labelledby="real-spring-journey">
         <div className="business-section-heading">

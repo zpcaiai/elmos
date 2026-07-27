@@ -1,0 +1,162 @@
+{
+  "schema_version": "2.0",
+  "evidence_class": "LOCAL_PUBLIC_REPOSITORY_ENGINEERING",
+  "certification_eligible": false,
+  "executed_at": "2026-07-27T00:56:35Z",
+  "completed_at": "2026-07-27T03:17:00Z",
+  "route": {
+    "pack_key": "spring-boot-2-7-18-to-3-5-3",
+    "source_spring_boot": "2.7.18",
+    "source_java": "17",
+    "source_build": "maven-3.9.11",
+    "target_spring_boot": "3.5.3",
+    "target_java": "21",
+    "target_build": "maven-3.9.11",
+    "rewrite_spring": "6.35.0",
+    "rewrite_maven_plugin": "6.44.0"
+  },
+  "representative_public_repository": {
+    "customer_repository": false,
+    "repository_url": "https://github.com/cbot59/spring-boot-resilience-resttemplate-sample.git",
+    "requested_ref": "main",
+    "expected_commit_sha": "14fd067a8cf304ad092e338b4c86a8728c603b42",
+    "resolved_commit_sha": "14fd067a8cf304ad092e338b4c86a8728c603b42",
+    "run_id": "770eb3b5-95b9-48f9-9703-848a894cd6d1",
+    "source_mode": "PUBLIC_GIT",
+    "single_run_import_to_independent_verification": true,
+    "snapshot_id": "snapshot-d07849c54cdcb3c42045e6fe",
+    "snapshot_sha256": "d07849c54cdcb3c42045e6fe2479ded7f0866e543a16278f8c7b5afefa934ba6",
+    "openrewrite_actual_execution": true,
+    "source_tests": {
+      "executed": 88,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "target_tests": {
+      "executed": 88,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "artifact_sha256": "64cbd493810c69f34a0a926490a98b0e33550f56cb69a8ef123e10b8e3986b09",
+    "artifact_bytes": 45044,
+    "download_digest_and_size_match": true,
+    "independent_verifier": {
+      "status": "PASS",
+      "verifier_id": "external-closure-independent-verifier",
+      "physically_separate_process": true,
+      "organizationally_independent": false,
+      "fresh_artifact_workspace": true,
+      "transform_capability": false,
+      "decision_sha256": "2bc14b27dec1109eba3d7e3eb3ecedaeb8ce49a914bbcbfa7efc6cc2fb6e3ac8",
+      "log_sha256": "55fcef8e02db3a08ffeb330a1a8425f4cb3dbd942bfe29046156dce0917514a6",
+      "verified_runtime_jar_sha256": "a639b9c0cff11d6378b19bf8357eaeaa3ff984a6eb553f767670363aa352f22f"
+    }
+  },
+  "holdout_public_repository": {
+    "customer_repository": false,
+    "recipe_tuning_access": false,
+    "repository_url": "https://github.com/gvogi/grade-submission.git",
+    "requested_ref": "main",
+    "expected_commit_sha": "a4c48b1dddb8a320c11ee05bdadefc53df74b3a4",
+    "resolved_commit_sha": "a4c48b1dddb8a320c11ee05bdadefc53df74b3a4",
+    "public_capture_run_id": "e9703cd3-2511-4017-a569-aa554845ed0e",
+    "migration_run_id": "8377ccbc-3fb9-4ca6-b574-020abe5fa47a",
+    "source_mode": "MATERIALIZED_SNAPSHOT",
+    "snapshot_id": "holdout-grade-submission-616fcc5000da1fb38abf778a9",
+    "snapshot_sha256": "616fcc5000da1fb38abf778a9f4ceb532d9df88c17c838cd9f062b7702ad12fd",
+    "public_capture_and_migration_snapshot_digest_match": true,
+    "openrewrite_actual_execution": true,
+    "source_startup": {
+      "status": "PASSED_LOCAL",
+      "probe_path": "/actuator/health",
+      "http_status": 403,
+      "interpretation": "secured HTTP boundary reached; this is startup evidence, not a health PASS"
+    },
+    "source_tests": {
+      "executed": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "target_tests": {
+      "executed": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "artifact_sha256": "5dc0572061350a1df2d5b7bb434d41abd4a01bb9df83f86c73aa3b8318b15427",
+    "artifact_bytes": 35140,
+    "download_digest_and_size_match": true,
+    "independent_verifier": {
+      "status": "PASS",
+      "verifier_id": "external-closure-independent-verifier",
+      "physically_separate_process": true,
+      "organizationally_independent": false,
+      "fresh_artifact_workspace": true,
+      "transform_capability": false,
+      "maven_offline": true,
+      "immutable_seed_copied_to_private_writable_cache": true,
+      "decision_sha256": "c034eeb9446c9e342cdd22b9cf38f9ff34a175661bd93f4765daab6eda7cd6ed",
+      "decision_bytes": 998,
+      "log_sha256": "74795208754111bfa6161494a9dcdfd22bc2b1539a55c2d6d1881124277e9d8a",
+      "log_bytes": 8935,
+      "verified_runtime_jar_sha256": "bf20337de3d007c876440494c817e6f60fdc50545be503ccbcfd47a4a7afd0e2",
+      "verified_runtime_jar_bytes": 61747093
+    }
+  },
+  "dependency_isolation": {
+    "inherited_process_environment_cleared": true,
+    "per_run_maven_repository": true,
+    "immutable_seed_sha256_manifest": "b514fd9b6ccce3f73eadf4d8bd5564068ac47898372f67edb2844446a8def4a3",
+    "immutable_seed_files": 3846,
+    "immutable_seed_bytes": 392323072,
+    "seed_transient_files": 0,
+    "production_seed_authority": "digest-bound image build",
+    "local_seed_is_certification_evidence": false
+  },
+  "product_runtime": {
+    "start_request_http_status": 409,
+    "error_code": "ISOLATED_APPLICATION_RUNNER_NOT_CONFIGURED",
+    "runtime_started": false,
+    "host_context": "orbstack",
+    "host_daemon_security_options": [
+      "name=seccomp,profile=builtin",
+      "name=cgroupns"
+    ],
+    "rootless_security_option_present": false,
+    "attested_rootless_socket_present": false,
+    "status": "BLOCKED"
+  },
+  "ui_engineering_evidence": {
+    "next_production_build": "PASSED_LOCAL",
+    "playwright_tests": 10,
+    "playwright_failures": 0,
+    "browser_profiles": [
+      "chromium",
+      "mobile-chromium"
+    ],
+    "accessibility_axe_violations": 0,
+    "download_sha256_recomputed_in_browser": true,
+    "refresh_resume_by_run_id": true,
+    "runtime_block_reason_visible": true
+  },
+  "not_run": {
+    "github_app_private_repository_execution": "NOT_RUN",
+    "authorized_customer_repository": "NOT_RUN",
+    "customer_holdout_workload": "NOT_RUN",
+    "rootless_transformer": "NOT_RUN",
+    "rootless_verifier": "NOT_RUN",
+    "rootless_runtime": "NOT_RUN",
+    "external_independent_review": "NOT_RUN",
+    "customer_acceptance": "NOT_RUN"
+  },
+  "limitations": [
+    "The two repositories are public engineering corpora, not customer repositories.",
+    "The holdout import and migration are linked by the exact immutable Snapshot digest but occurred in separate runs after dependency-cache repair.",
+    "The separate verifier was operated by the same local operator and is not an external independent review.",
+    "The host daemon is reachable through OrbStack but does not advertise an attested rootless security mode; product startup therefore remains blocked.",
+    "Temporary raw run workspaces are not promoted to immutable certification evidence by this summary."
+  ]
+}

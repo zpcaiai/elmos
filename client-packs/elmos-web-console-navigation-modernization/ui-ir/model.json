@@ -141,6 +141,6 @@
   "unknowns": [
     {"id":"unknown.browser-evidence","severity":"critical","status":"PARTIAL","detail":"Google Chrome 150.0.7871.129 桌面、平板和移动视口交互已运行；独立辅助技术、跨浏览器和 holdout 仍为 NOT_RUN"},
     {"id":"unknown.control-plane-runtime","severity":"noncritical","status":"CONDITIONAL","detail":"页面通过安全回退支持未启动的控制面"},
-    {"id":"unknown.spring-rootless-browser-evidence","severity":"critical","status":"NOT_RUN","detail":"完整 Spring 真实旅程的 Rootless Runner、独立 holdout、代表仓库和浏览器 E2E 尚未运行"}
+    {"id":"unknown.spring-rootless-browser-evidence","severity":"critical","status":"PARTIAL","detail":"两个公共仓库（代表样本与独立 holdout）的真实转换和桌面/移动 Chromium 浏览器 E2E 已通过；GitHub App 私有仓库、客户仓库/holdout、Rootless Runner、辅助技术和外部独立评审仍为 NOT_RUN"}
   ]
 }

@@ -205,6 +205,7 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
                         .filter(value -> !sourceTests.testIdentities().contains(value))
                         .toList()
         ));
+        SpringDeploymentGuidance.writeTo(migrated);
 
         control.stage(Stage.PACKAGE_ARTIFACT, "Packaging migrated repository as a content-addressed ZIP");
         Path artifact = runRoot.resolve("artifacts/migrated-spring-boot-3.5.3.zip");

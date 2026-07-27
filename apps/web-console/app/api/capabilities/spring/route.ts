@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { springModernizationStages } from "../../../lib/businessLines";
 import type { SpringModernizationCapabilityResponse } from "../../../lib/contracts";
+import { springDeploymentGuidance } from "../../../lib/deploymentGuidance";
 
 export const dynamic = "force-dynamic";
 
@@ -19,6 +20,7 @@ export async function GET() {
       status: "EXPERIMENTAL",
       externalEvidence: "NOT_RUN",
     },
+    deploymentGuidance: springDeploymentGuidance,
     stages: springModernizationStages,
     note: "仓库已能区分经典 Spring Framework 与 Spring Boot；精确实验 Pack 及本地结构 Gate 已通过，但真实客户源/目标运行、holdout 与独立认证仍为 NOT_RUN。",
   });

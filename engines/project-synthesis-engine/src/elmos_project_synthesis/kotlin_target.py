@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from importlib.resources import files
 
 from .container_images import GRADLE_IMAGE, TEMURIN_JRE_IMAGE
 from .models import FieldSpec, SynthesisRequest, pascal
@@ -15,6 +16,17 @@ from .rendering import (
     sample_payload,
     target_readme,
 )
+
+
+def _gradle_lock() -> str:
+    lock = (
+        files("elmos_project_synthesis")
+        .joinpath("templates", "kotlin", "gradle.lockfile")
+        .read_text(encoding="utf-8")
+    )
+    if "io.ktor:ktor-server-core:3.2.3=" not in lock or "empty=" not in lock:
+        raise ValueError("KOTLIN_LOCK_TEMPLATE_INVALID")
+    return lock
 
 
 def _kotlin_type(field: FieldSpec) -> str:
@@ -174,6 +186,7 @@ def render_kotlin(request: SynthesisRequest, port: int) -> dict[str, str]:
             }}
             """
         ),
+        "gradle.lockfile": _gradle_lock(),
         "gradle.properties": clean(
             """
             org.gradle.caching=true
@@ -270,7 +283,7 @@ def render_kotlin(request: SynthesisRequest, port: int) -> dict[str, str]:
             FROM {GRADLE_IMAGE} AS build
             WORKDIR /workspace
             COPY . .
-            RUN gradle --no-daemon --write-locks test installDist
+            RUN gradle --no-daemon test installDist
 
             FROM {TEMURIN_JRE_IMAGE}
             ENV HOST=0.0.0.0
@@ -301,13 +314,13 @@ def render_kotlin(request: SynthesisRequest, port: int) -> dict[str, str]:
                   - uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4
                     with:
                       gradle-version: 8.14.3
-                  - run: gradle --no-daemon --write-locks test build
+                  - run: gradle --no-daemon test build
             """
         ),
         "Makefile": clean(
             f"""
-            .PHONY: lock test build run
-            lock:
+            .PHONY: update-lock test build run
+            update-lock:
             \tgradle --no-daemon dependencies --write-locks
             test:
             \tgradle --no-daemon test
@@ -322,6 +335,6 @@ def render_kotlin(request: SynthesisRequest, port: int) -> dict[str, str]:
             language="Kotlin 2.2.20 / JVM 21",
             framework="Ktor 3.2.3",
             port=port,
-            commands=f"gradle --no-daemon --write-locks test build\nPORT={port} gradle --no-daemon run",
+            commands=f"gradle --no-daemon test build\nPORT={port} gradle --no-daemon run",
         ),
     }

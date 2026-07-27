@@ -1,13 +1,21 @@
 {
   "evidence_refs": [
-    "certification/local-reference-evidence.json"
+    "certification/local-reference-evidence.json",
+    "certification/local-product-journey-evidence.json",
+    "certification/public-reference-route-evidence.json"
   ],
   "gate_results": {
     "authorized_customer_repository": "NOT_RUN",
+    "customer_holdout": "NOT_RUN",
     "development_fixture": "PASSED_LOCAL",
+    "github_app_private_repository": "NOT_RUN",
     "independent_review": "NOT_RUN",
     "rootless_runner": "NOT_RUN",
+    "rootless_transformer": "NOT_RUN",
+    "rootless_verifier": "NOT_RUN",
     "structural_validation": "PASSED",
+    "public_holdout": "PASSED_LOCAL_ENGINEERING",
+    "public_representative": "PASSED_LOCAL_ENGINEERING",
     "synthetic_holdout": "PASSED_LOCAL",
     "synthetic_representative": "PASSED_LOCAL"
   },
@@ -24,9 +32,9 @@
   "pack_key": "spring-boot-2-7-18-to-3-5-3",
   "pack_version": "0.2.0",
   "residual_risks": [
-    "Only web JSON and health lifecycle are locally exercised.",
-    "Security, persistence, messaging and transaction providers remain conditional.",
-    "Customer repository, rootless Runner and independent review remain NOT_RUN."
+    "The public representative exercises resilience/web behavior; the public holdout exercises security, persistence and validation startup/build behavior.",
+    "Messaging, production databases and production transaction providers remain conditional.",
+    "GitHub App private execution, customer repository, customer holdout, rootless Runner and external independent review remain NOT_RUN."
   ],
   "schema_version": 1,
   "status": "experimental"

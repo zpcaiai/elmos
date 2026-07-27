@@ -16,6 +16,13 @@ import urllib.request
 from pathlib import Path
 from typing import Any
 
+LOCAL_TOOLCHAIN_ROOT = Path(
+    os.getenv(
+        "ELMOS_PROJECT_SYNTHESIS_TOOLCHAIN_ROOT",
+        str(Path.home() / ".local" / "share" / "elmos" / "toolchains"),
+    )
+).expanduser()
+
 EXACT_TOOLCHAIN_REQUIREMENTS: dict[str, list[dict[str, Any]]] = {
     "python": [
         {
@@ -62,7 +69,15 @@ EXACT_TOOLCHAIN_REQUIREMENTS: dict[str, list[dict[str, Any]]] = {
         {"tool": "node", "arguments": ["--version"], "expected": "Node 26.0.0", "pattern": r"^v26\.0\.0$"},
         {"tool": "pnpm", "arguments": ["--version"], "expected": "pnpm 10.12.4", "pattern": r"^10\.12\.4$"},
     ],
-    "go": [{"tool": "go", "arguments": ["version"], "expected": "Go 1.25.0", "pattern": r"\bgo1\.25\.0\b"}],
+    "go": [
+        {
+            "tool": "go",
+            "arguments": ["version"],
+            "expected": "Go 1.25.0",
+            "pattern": r"\bgo1\.25\.0\b",
+            "fallback": str(LOCAL_TOOLCHAIN_ROOT / "go" / "1.25.0" / "bin" / "go"),
+        }
+    ],
     "kotlin": [
         {
             "tool": "java",
@@ -71,12 +86,38 @@ EXACT_TOOLCHAIN_REQUIREMENTS: dict[str, list[dict[str, Any]]] = {
             "pattern": r'version "21(?:[.\-"]|$)',
             "fallback": "/opt/homebrew/opt/openjdk@21/bin/java",
         },
-        {"tool": "gradle", "arguments": ["--version"], "expected": "Gradle 8.14.3", "pattern": r"\bGradle 8\.14\.3\b"},
+        {
+            "tool": "gradle",
+            "arguments": ["--version"],
+            "expected": "Gradle 8.14.3",
+            "pattern": r"\bGradle 8\.14\.3\b",
+            "fallback": str(LOCAL_TOOLCHAIN_ROOT / "gradle" / "8.14.3" / "bin" / "gradle"),
+        },
     ],
-    "php": [{"tool": "php", "arguments": ["--version"], "expected": "PHP 8.4.12", "pattern": r"^PHP 8\.4\.12\b"}],
+    "php": [
+        {
+            "tool": "php",
+            "arguments": ["--version"],
+            "expected": "PHP 8.4.12",
+            "pattern": r"^PHP 8\.4\.12\b",
+            "fallback": str(LOCAL_TOOLCHAIN_ROOT / "php" / "8.4.12" / "bin" / "php"),
+        }
+    ],
     "rust": [
-        {"tool": "rustc", "arguments": ["--version"], "expected": "rustc 1.89.0", "pattern": r"^rustc 1\.89\.0\b"},
-        {"tool": "cargo", "arguments": ["--version"], "expected": "cargo 1.89.0", "pattern": r"^cargo 1\.89\.0\b"},
+        {
+            "tool": "rustc",
+            "arguments": ["--version"],
+            "expected": "rustc 1.89.0",
+            "pattern": r"^rustc 1\.89\.0\b",
+            "fallback": str(LOCAL_TOOLCHAIN_ROOT / "rust" / "1.89.0" / "bin" / "rustc"),
+        },
+        {
+            "tool": "cargo",
+            "arguments": ["--version"],
+            "expected": "cargo 1.89.0",
+            "pattern": r"^cargo 1\.89\.0\b",
+            "fallback": str(LOCAL_TOOLCHAIN_ROOT / "rust" / "1.89.0" / "bin" / "cargo"),
+        },
     ],
     "postgresql": [
         {
@@ -125,13 +166,17 @@ def _run(
     language: str,
     kind: str = "build-analysis",
     timeout_seconds: int = 300,
+    environment: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     if not 30 <= timeout_seconds <= 900:
         raise ValueError("COMMAND_TIMEOUT_OUT_OF_RANGE")
     try:
+        process_environment = os.environ.copy()
+        process_environment.update(environment or {})
         completed = subprocess.run(  # noqa: S603
             command,
             cwd=cwd,
+            env=process_environment,
             text=True,
             capture_output=True,
             check=False,
@@ -319,6 +364,19 @@ def _planned_runtime_tool(
     return tool_name, {
         "execution_status": "NOT_RUN",
         "blocking_reason": f"EXACT_TOOLCHAIN_NOT_AVAILABLE:{language}:{tool_name}",
+    }
+
+
+def _toolchain_environment(language: str) -> dict[str, str]:
+    if language != "kotlin":
+        return {}
+    java = _runtime_tool(language, "java")
+    if java is None:
+        return {}
+    java_binary = Path(java).resolve()
+    return {
+        "JAVA_HOME": str(java_binary.parent.parent),
+        "PATH": f"{java_binary.parent}{os.pathsep}{os.environ.get('PATH', '')}",
     }
 
 
@@ -582,7 +640,11 @@ def runtime_commands(workspace: Path) -> list[dict[str, Any]]:
                     "language": language,
                     "cwd": str(root / "kotlin"),
                     "command": [tool, "--no-daemon", "run"],
-                    "environment": {"PORT": str(port), "HOST": "127.0.0.1"},
+                    "environment": {
+                        "PORT": str(port),
+                        "HOST": "127.0.0.1",
+                        **_toolchain_environment("kotlin"),
+                    },
                     "port": port,
                     "startup_timeout_seconds": 120,
                     **execution,
@@ -628,13 +690,18 @@ def _run_if_available(
     commands: list[list[str]],
     cwd: Path,
 ) -> bool:
-    tool = _resolve_tool(tool_name)
+    tool = _runtime_tool(language, tool_name)
     if tool is None:
         results.append(_missing(language, tool_name))
         return False
     for arguments in commands:
         command = [tool, *arguments]
-        result = _run(command, cwd, language=language)
+        result = _run(
+            command,
+            cwd,
+            language=language,
+            environment=_toolchain_environment(language),
+        )
         results.append(result)
         if result["status"] != "PASSED":
             return False
@@ -731,12 +798,11 @@ def verify_workspace(workspace: Path) -> dict[str, Any]:
             ],
         ),
         "go": ("go", [["vet", "./..."], ["test", "-race", "./..."], ["build", "./..."]]),
-        "kotlin": ("gradle", [["--no-daemon", "--write-locks", "test", "build"]]),
+        "kotlin": ("gradle", [["--no-daemon", "test", "build"]]),
         "php": ("php", [["-l", "src/Store.php"], ["-l", "public/index.php"], ["tests/run.php"]]),
         "rust": (
             "cargo",
             [
-                ["generate-lockfile"],
                 ["fmt", "--check"],
                 ["clippy", "--locked", "--all-targets", "--all-features", "--", "-D", "warnings"],
                 ["test", "--locked", "--all-features"],

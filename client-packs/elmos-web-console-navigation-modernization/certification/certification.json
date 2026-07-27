@@ -73,7 +73,8 @@
     "certification/local-ui-polish-evidence.json",
     "certification/local-ui-workflow-polish-evidence.json",
     "certification/local-project-generation-evidence.json",
-    "certification/local-cross-browser-generation-evidence.json"
+    "certification/local-cross-browser-generation-evidence.json",
+    "certification/local-spring-reference-route-evidence.json"
   ],
   "recertification_triggers": []
 }

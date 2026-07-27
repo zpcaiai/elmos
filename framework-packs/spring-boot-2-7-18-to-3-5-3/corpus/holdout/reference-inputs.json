@@ -1,9 +1,14 @@
 {
   "corpus": "holdout",
   "customer_repository": false,
+  "execution_status": "PASSED_LOCAL_PUBLIC_ENGINEERING",
   "external_execution": "NOT_RUN",
-  "inputs": [
-    7
-  ],
+  "inputs": [{
+    "repository_url": "https://github.com/gvogi/grade-submission.git",
+    "commit_sha": "a4c48b1dddb8a320c11ee05bdadefc53df74b3a4",
+    "snapshot_sha256": "616fcc5000da1fb38abf778a9f4ceb532d9df88c17c838cd9f062b7702ad12fd",
+    "run_id": "8377ccbc-3fb9-4ca6-b574-020abe5fa47a",
+    "recipe_tuning_access": false
+  }],
   "schema_version": 1
 }

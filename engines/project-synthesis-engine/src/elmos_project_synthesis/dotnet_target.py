@@ -57,6 +57,8 @@ def render_dotnet(request: SynthesisRequest, port: int) -> dict[str, str]:
 
     for entity in request.entities:
         entity_class = pascal(entity.singular)
+        entity_type = f"global::Generated.Api.{entity_class}"
+        upsert_type = f"global::Generated.Api.{entity_class}Upsert"
         field_declarations = ",\n    ".join(
             f"{_csharp_type(field)} {pascal_identifier(field.name)}" for field in entity.fields
         )
@@ -95,7 +97,7 @@ def render_dotnet(request: SynthesisRequest, port: int) -> dict[str, str]:
                 """
             ).rstrip()
         )
-        store_blocks.append(f"var {store_name} = new ConcurrentDictionary<string, {entity_class}>();")
+        store_blocks.append(f"var {store_name} = new ConcurrentDictionary<string, {entity_type}>();")
         route_blocks.append(
             clean(
                 f"""
@@ -103,21 +105,21 @@ def render_dotnet(request: SynthesisRequest, port: int) -> dict[str, str]:
                     Results.Ok({store_name}.Values.OrderBy(value => value.Id)));
                 app.MapGet("/api/v1/{entity.plural}/{{id}}", (string id) =>
                     {store_name}.TryGetValue(id, out var value) ? Results.Ok(value) : Results.NotFound());
-                app.MapPost("/api/v1/{entity.plural}", ({entity_class}Upsert request) =>
+                app.MapPost("/api/v1/{entity.plural}", ({upsert_type} request) =>
                 {{
                     {guard_clause}
-                    var value = new {entity_class}(Guid.NewGuid().ToString(), {request_args});
+                    var value = new {entity_type}(Guid.NewGuid().ToString(), {request_args});
                     {store_name}[value.Id] = value;
                     return Results.Created($"/api/v1/{entity.plural}/{{value.Id}}", value);
                 }});
-                app.MapPut("/api/v1/{entity.plural}/{{id}}", (string id, {entity_class}Upsert request) =>
+                app.MapPut("/api/v1/{entity.plural}/{{id}}", (string id, {upsert_type} request) =>
                 {{
                     if (!{store_name}.ContainsKey(id))
                     {{
                         return Results.NotFound();
                     }}
                     {guard_clause}
-                    var value = new {entity_class}(id, {request_args});
+                    var value = new {entity_type}(id, {request_args});
                     {store_name}[id] = value;
                     return Results.Ok(value);
                 }});
@@ -131,7 +133,7 @@ def render_dotnet(request: SynthesisRequest, port: int) -> dict[str, str]:
             clean(
                 f"""
                 [Fact]
-                public async Task {entity_class}FullCrudJourney()
+                public async global::System.Threading.Tasks.Task {entity_class}FullCrudJourney()
                 {{
                     using var payload = JsonContent.Create({sample});
                     var created = await _client.PostAsync("/api/v1/{entity.plural}", payload);
@@ -229,7 +231,6 @@ def render_dotnet(request: SynthesisRequest, port: int) -> dict[str, str]:
         f"src/{api_project}/Program.cs": clean(
             f"""
             using System.Collections.Concurrent;
-            using Generated.Api;
 
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddProblemDetails();
@@ -321,7 +322,7 @@ def render_dotnet(request: SynthesisRequest, port: int) -> dict[str, str]:
                 }}
 
                 [Fact]
-                public async Task HealthJourney()
+                public async global::System.Threading.Tasks.Task HealthJourney()
                 {{
                     var health = await _client.GetAsync("/health");
                     Assert.Equal(HttpStatusCode.OK, health.StatusCode);

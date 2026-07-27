@@ -134,7 +134,6 @@
     ]
   },
   "not_run": {
-    "public_git_import": "NOT_RUN",
     "github_app_private_repository": "NOT_RUN",
     "ephemeral_rootless_transformer": "NOT_RUN",
     "rootless_transformer_execution_bind_isolation": "NOT_RUN",
@@ -145,8 +144,8 @@
     "holdout_customer_workload": "NOT_RUN"
   },
   "limitations": [
-    "This execution used the checked-in development fixture through a materialized Snapshot, not a public or private customer Git repository.",
-    "The Git clone, exact-ref and Commit-lock path was executed against a controlled local Git repository; public HTTPS Git and GitHub App private-repository imports remain NOT_RUN.",
+    "This file records the checked-in development fixture journey; separate public-repository evidence is recorded in public-reference-route-evidence.json.",
+    "Public HTTPS Git import has now passed as local engineering evidence; GitHub App private-repository execution remains NOT_RUN.",
     "The verifier ran as a separate local service but was executed by the same operator and is not independent external review.",
     "The local verifier used an offline host Maven cache that was not mounted read-only; the product image uses a digest-bound immutable cache, but that rootless path remains NOT_RUN.",
     "The local execution adapter proves logical execution/authority path separation and deterministic promotion checks; only the product rootless bind can enforce that filesystem boundary against hostile repository code, and it remains NOT_RUN on this host.",

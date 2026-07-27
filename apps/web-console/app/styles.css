@@ -229,7 +229,9 @@ a.secondary-link:hover { background: rgba(255,255,255,.05); color: white; }
 .status-compact { padding: 4px 8px; font-size: 8px; }
 .status-ready, .status-enforced, .status-live-api { background: var(--green-soft); color: var(--green); }
 .status-blocked { background: var(--red-soft); color: var(--red); }
-.status-not-run, .status-not-configured { background: var(--amber-soft); color: var(--amber); }
+.status-not-run, .status-not-configured, .status-configuration-required,
+.status-optional, .status-conditional { background: var(--amber-soft); color: var(--amber); }
+.status-recommended { background: var(--green-soft); color: var(--green); }
 .status-not-certified { background: var(--red-soft); color: var(--red); }
 .status-experimental, .status-review { background: var(--violet-soft); color: var(--violet); }
 .status-draft, .status-repository-contract { background: var(--blue-soft); color: var(--blue); }
@@ -662,6 +664,71 @@ kbd { min-width: 22px; display: inline-grid; place-items: center; padding: 3px 6
 .journey-grid strong { font-size: 10px; }.journey-grid span { color: var(--ink-soft); font-size: 9px; line-height: 1.4; }.journey-grid small { color: var(--muted); font-size: 8px; line-height: 1.45; }
 .journey-grid .status-chip { grid-column: 2; justify-self: start; }
 
+/* Local runtime and cloud deployment handoff */
+.runtime-deployment-guide { padding: 25px; overflow: hidden; }
+.runtime-guide-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 22px; }
+.runtime-guide-heading h2 { margin: 5px 0 6px; font-size: 21px; letter-spacing: -.035em; }
+.runtime-guide-heading p { max-width: 720px; margin: 0; color: var(--muted); font-size: 12px; line-height: 1.6; }
+.runtime-guide-status { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 7px; }
+.runtime-guide-summary { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 10px; margin-top: 20px; }
+.runtime-guide-summary article { min-width: 0; display: flex; align-items: flex-start; gap: 11px; padding: 15px; border: 1px solid var(--line); border-radius: 11px; background: var(--surface-soft); }
+.runtime-guide-summary article.runtime-guide-recommended { border-color: #a9d5d0; background: #f0f8f7; }
+.runtime-guide-icon { width: 34px; height: 34px; display: grid; place-items: center; flex: 0 0 auto; border-radius: 9px; background: white; color: var(--cyan-dark); box-shadow: inset 0 0 0 1px var(--line); }
+.runtime-guide-summary article > div { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.runtime-guide-summary small { color: var(--muted); font-size: 10px; font-weight: 750; }
+.runtime-guide-summary strong { color: var(--ink); font-size: 13px; overflow-wrap: anywhere; }
+.runtime-guide-summary article > div > span { color: var(--muted); font-size: 10px; line-height: 1.45; }
+.runtime-profile-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; margin-top: 14px; }
+.runtime-profile { min-width: 0; border: 1px solid var(--line); border-radius: 11px; background: white; }
+.runtime-profile[open] { border-color: #b6d4d1; box-shadow: 0 8px 22px rgba(27,67,70,.06); }
+.runtime-profile > summary, .cloud-run-details > summary { list-style: none; cursor: pointer; }
+.runtime-profile > summary::-webkit-details-marker, .cloud-run-details > summary::-webkit-details-marker { display: none; }
+.runtime-profile > summary { min-height: 60px; display: grid; grid-template-columns: minmax(0,1fr) auto auto; align-items: center; gap: 10px; padding: 11px 13px; }
+.runtime-profile > summary > span:first-child { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.runtime-profile > summary strong { font-size: 12px; }
+.runtime-profile > summary small { color: var(--muted); font-size: 10px; overflow-wrap: anywhere; }
+.runtime-profile > summary > svg, .cloud-run-details > summary > svg { color: var(--muted); transition: transform .18s ease; }
+.runtime-profile[open] > summary > svg, .cloud-run-details[open] > summary > svg { transform: rotate(90deg); }
+.runtime-profile-port { padding: 4px 7px; border-radius: 6px; background: var(--surface-soft); color: var(--cyan-dark); font: 750 10px ui-monospace,monospace; }
+.runtime-profile-body { padding: 0 13px 13px; border-top: 1px solid var(--line); }
+.runtime-profile-body dl { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; margin: 13px 0; }
+.runtime-profile-body dl > div { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.runtime-profile-body dt { color: var(--muted); font-size: 9px; font-weight: 800; text-transform: uppercase; }
+.runtime-profile-body dd { margin: 0; color: var(--ink-soft); font-size: 11px; line-height: 1.45; overflow-wrap: anywhere; }
+.runtime-command-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
+.runtime-command-grid > div { min-width: 0; }
+.runtime-command-grid strong { display: block; margin-bottom: 5px; color: var(--ink-soft); font-size: 10px; }
+.runtime-command-grid pre, .cloud-run-steps pre { max-width: 100%; overflow-x: auto; margin: 0; padding: 10px; border-radius: 8px; background: #152a2d; color: #b5d9d5; font: 10px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace; white-space: pre; }
+.cloud-option-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 9px; margin-top: 14px; }
+.cloud-option-grid article { min-width: 0; padding: 14px; border: 1px solid var(--line); border-radius: 11px; background: var(--surface-soft); }
+.cloud-option-grid article.cloud-option-recommended { border-color: #91c9c3; background: #edf8f6; }
+.cloud-option-grid article > div { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.cloud-option-grid strong { font-size: 12px; }
+.cloud-option-grid p { margin: 10px 0 6px; color: var(--ink-soft); font-size: 11px; line-height: 1.5; }
+.cloud-option-grid small { color: var(--muted); font-size: 10px; line-height: 1.45; }
+.cloud-run-details { margin-top: 14px; border: 1px solid #b8d5d2; border-radius: 11px; background: #f5faf9; }
+.cloud-run-details > summary { min-height: 55px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 15px; }
+.cloud-run-details > summary > span { display: flex; align-items: center; gap: 9px; color: var(--cyan-dark); }
+.cloud-run-details > summary strong { font-size: 12px; }
+.cloud-run-detail-body { padding: 0 15px 15px; border-top: 1px solid #d6e7e5; }
+.cloud-run-detail-body > p { margin: 14px 0; color: var(--ink-soft); font-size: 12px; line-height: 1.6; }
+.cloud-run-detail-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+.cloud-run-detail-grid > div { padding: 13px; border: 1px solid var(--line); border-radius: 9px; background: white; }
+.cloud-run-detail-grid h3 { margin: 0; font-size: 11px; }
+.cloud-run-detail-grid ul { margin: 9px 0 0; padding-left: 18px; color: var(--ink-soft); font-size: 10px; line-height: 1.65; }
+.cloud-run-steps { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; margin: 12px 0 0; padding: 0; list-style: none; counter-reset: none; }
+.cloud-run-steps li { min-width: 0; padding: 13px; border: 1px solid var(--line); border-radius: 9px; background: white; }
+.cloud-run-steps strong { font-size: 11px; }
+.cloud-run-steps p { margin: 6px 0 0; color: var(--muted); font-size: 10px; line-height: 1.55; }
+.cloud-run-steps pre { margin-top: 9px; }
+.runtime-guide-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 13px; }
+.runtime-guide-links a { display: inline-flex; align-items: center; gap: 5px; min-height: 34px; padding: 7px 10px; border: 1px solid var(--line-strong); border-radius: 8px; background: white; color: var(--cyan-dark); font-size: 10px; font-weight: 750; text-decoration: none; }
+.runtime-guide-links a:hover { border-color: var(--cyan); }
+.runtime-guide-boundary { display: flex; align-items: flex-start; gap: 9px; margin-top: 13px; padding: 12px; border: 1px solid #ead9c5; border-radius: 9px; background: #fff9f0; color: var(--amber); }
+.runtime-guide-boundary > span { display: flex; flex-direction: column; gap: 3px; }
+.runtime-guide-boundary strong { color: var(--ink-soft); font-size: 11px; }
+.runtime-guide-boundary small { color: var(--muted); font-size: 10px; line-height: 1.5; }
+
 /* Evidence-bound Spring migration journey */
 .runner-warning { border-color: #ead9c5; background: #fff9f0; }
 .runner-warning > svg { color: var(--amber); }
@@ -761,6 +828,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .target-card { min-height: 90px; display: grid; grid-template-columns: auto minmax(0,1fr); align-items: center; }
   .target-check { top: 50%; transform: translateY(-50%); }
   .skills-grid { grid-template-columns: minmax(0,1fr) 300px; }
+  .cloud-option-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .trust-step { grid-template-columns: 1fr; }.trust-step-icon { display: none; }
   .queue-head, .queue-row { grid-template-columns: 1.2fr 1fr .4fr .7fr .55fr; gap: 8px; }
 }
@@ -778,6 +846,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .studio-layout, .control-grid, .marketplace-layout, .generation-layout { grid-template-columns: 1fr; }.detail-panel { position: static; }.market-side { display: grid; grid-template-columns: repeat(2,1fr); }
   .business-layout, .translation-layout { grid-template-columns: 1fr; }
   .business-summary, .route-detail, .spring-run-summary { position: static; }
+  .runtime-guide-summary { grid-template-columns: 1fr; }
   .journey-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .spring-real-journey { grid-template-columns: repeat(3,minmax(0,1fr)); }
   .generation-preview { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); }
@@ -806,6 +875,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .market-hero { grid-template-columns: 1fr; padding: 25px; }.market-symbol { display: none; }.market-hero h2 { font-size: 23px; }
   .form-grid { grid-template-columns: 1fr; }.modal-card { padding: 21px; }.modal-actions .button { min-height: 44px; }
   .generation-header-status { width: 100%; }
+  .runtime-deployment-guide { padding: 20px; }
+  .runtime-guide-heading { flex-direction: column; }
+  .runtime-guide-status { justify-content: flex-start; }
+  .runtime-profile-grid, .cloud-option-grid, .cloud-run-detail-grid, .cloud-run-steps,
+  .runtime-command-grid, .runtime-profile-body dl { grid-template-columns: 1fr; }
   .business-form-grid, .concern-fieldset > div, .language-pickers, .route-handoff-grid { grid-template-columns: 1fr; }
   .spring-field-wide { grid-column: auto; }
   .spring-delivery-actions { grid-template-columns: 1fr; }

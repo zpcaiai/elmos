@@ -1,9 +1,13 @@
 {
-  "corpus": "representative-local-synthetic",
+  "corpus": "representative-public-engineering",
   "customer_repository": false,
+  "execution_status": "PASSED_LOCAL_PUBLIC_ENGINEERING",
   "external_execution": "NOT_RUN",
-  "inputs": [
-    1001
-  ],
+  "inputs": [{
+    "repository_url": "https://github.com/cbot59/spring-boot-resilience-resttemplate-sample.git",
+    "commit_sha": "14fd067a8cf304ad092e338b4c86a8728c603b42",
+    "snapshot_sha256": "d07849c54cdcb3c42045e6fe2479ded7f0866e543a16278f8c7b5afefa934ba6",
+    "run_id": "770eb3b5-95b9-48f9-9703-848a894cd6d1"
+  }],
   "schema_version": 1
 }

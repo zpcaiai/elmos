@@ -8,7 +8,9 @@ import type {
   GenerationJob,
   GenerationTargetId,
 } from "../lib/contracts";
+import { generationDeploymentGuidance } from "../lib/deploymentGuidance";
 import { Icon, type IconName } from "../components/Icon";
+import { RuntimeDeploymentGuide } from "../components/RuntimeDeploymentGuide";
 import { StatusChip } from "../components/StatusChip";
 
 type GenerationIntent = {
@@ -168,6 +170,7 @@ export function ProjectGenerationStudio() {
     authMode,
   };
   const previewProfiles = generationTargets.filter((profile) => preview.targets.includes(profile.id));
+  const deploymentGuidance = capability?.deploymentGuidance ?? generationDeploymentGuidance();
   const workflowCommands = buildWorkflowCommands(preview);
   const workflowScript = workflowCommands.map((item) => item.command).join("\n");
   const runnerReady = capability?.localRunner.enabled === true
@@ -885,6 +888,12 @@ export function ProjectGenerationStudio() {
           </div>
         </aside>
       </div>
+
+      <RuntimeDeploymentGuide
+        id="generation-runtime-deployment"
+        guidance={deploymentGuidance}
+        selectedTargets={preview.targets}
+      />
 
       <div className={`feedback-toast ${feedback ? "visible" : ""}`} role="status" aria-live="polite" aria-atomic="true"><span><Icon name="check" size={17} /></span>{feedback}</div>
     </div>
