@@ -173,10 +173,11 @@ public final class GitHubAppOnboardingClient {
         String authorization = "Bearer " + new String(userToken);
         try {
             for (int page = 1; page <= MAX_PAGES; page++) {
+                int requestedPage = page;
                 UserInstallations response = api.get()
                         .uri(uri -> uri.path("/user/installations")
                                 .queryParam("per_page", PAGE_SIZE)
-                                .queryParam("page", page)
+                                .queryParam("page", requestedPage)
                                 .build())
                         .accept(GITHUB_JSON)
                         .header("Authorization", authorization)
@@ -217,10 +218,11 @@ public final class GitHubAppOnboardingClient {
             Set<Repository> output = new LinkedHashSet<>();
             int declaredTotal = -1;
             for (int page = 1; page <= MAX_PAGES; page++) {
+                int requestedPage = page;
                 RepositoryPage response = api.get()
                         .uri(uri -> uri.path("/installation/repositories")
                                 .queryParam("per_page", PAGE_SIZE)
-                                .queryParam("page", page)
+                                .queryParam("page", requestedPage)
                                 .build())
                         .accept(GITHUB_JSON)
                         .header("Authorization", authorization)
