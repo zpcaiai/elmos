@@ -5,13 +5,22 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.FileVisitResult;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardOpenOption;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.PosixFilePermission;
 import java.net.URI;
 import java.time.Duration;
+import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -19,6 +28,8 @@ import static io.elmos.verifier.VerificationModels.Rejected;
 
 final class ProcessMavenVerification implements MavenVerification {
     private static final long MAX_LOG_BYTES = 16L * 1024 * 1024;
+    private static final long MAX_DEPENDENCY_CACHE_BYTES = 512L * 1024 * 1024;
+    private static final int MAX_DEPENDENCY_CACHE_FILES = 100_000;
     private final Path javaHome;
     private final String mavenExecutable;
     private final Duration timeout;
@@ -60,6 +71,12 @@ final class ProcessMavenVerification implements MavenVerification {
         try {
             Files.createDirectories(home);
             Files.createDirectories(logFile.getParent());
+            Path localRepository = immutableDependencyCache == null
+                    ? null
+                    : home.resolve(".m2/repository");
+            if (localRepository != null) {
+                copyDependencyCache(immutableDependencyCache, localRepository);
+            }
             ProcessBuilder builder = new ProcessBuilder(command)
                     .directory(projectRoot.toFile())
                     .redirectErrorStream(true);
@@ -70,7 +87,7 @@ final class ProcessMavenVerification implements MavenVerification {
             builder.environment().put("LANG", "C.UTF-8");
             builder.environment().put("LC_ALL", "C.UTF-8");
             builder.environment().put("MAVEN_OPTS",
-                    mavenOptions(inherited, home, immutableDependencyCache));
+                    mavenOptions(inherited, home, localRepository));
             copyProxy(inherited, builder.environment(), "HTTPS_PROXY");
             copyProxy(inherited, builder.environment(), "https_proxy");
             copyProxy(inherited, builder.environment(), "NO_PROXY");
@@ -127,11 +144,11 @@ final class ProcessMavenVerification implements MavenVerification {
     private static String mavenOptions(
             Map<String, String> environment,
             Path home,
-            Path immutableDependencyCache
+            Path localRepository
     ) {
         String base = "-Djava.awt.headless=true -Duser.timezone=UTC -Duser.home=" + home;
-        if (immutableDependencyCache != null) {
-            return base + " -Dmaven.repo.local=" + immutableDependencyCache;
+        if (localRepository != null) {
+            return base + " -Dmaven.repo.local=" + localRepository;
         }
         String proxyValue = firstNonBlank(
                 environment.get("HTTPS_PROXY"),
@@ -184,6 +201,69 @@ final class ProcessMavenVerification implements MavenVerification {
                     "approved immutable verifier Maven dependency cache is unavailable");
         }
         return path;
+    }
+
+    static void copyDependencyCache(Path source, Path target) throws IOException {
+        deleteTree(target);
+        long[] bytes = {0};
+        int[] files = {0};
+        try {
+            Files.walkFileTree(source, new SimpleFileVisitor<>() {
+                @Override public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
+                        throws IOException {
+                    Path destination = target.resolve(source.relativize(dir));
+                    Files.createDirectories(destination);
+                    makeOwnerWritable(destination, true);
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
+                        throws IOException {
+                    if (!attrs.isRegularFile() || attrs.isSymbolicLink()) {
+                        throw new IOException("dependency cache contains unsupported file type");
+                    }
+                    files[0]++;
+                    bytes[0] = Math.addExact(bytes[0], attrs.size());
+                    if (files[0] > MAX_DEPENDENCY_CACHE_FILES
+                            || bytes[0] > MAX_DEPENDENCY_CACHE_BYTES) {
+                        throw new IOException("dependency cache exceeds policy limits");
+                    }
+                    Path destination = target.resolve(source.relativize(file));
+                    Files.copy(file, destination, StandardCopyOption.COPY_ATTRIBUTES);
+                    makeOwnerWritable(destination, false);
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        } catch (IOException | RuntimeException error) {
+            deleteTree(target);
+            if (error instanceof IOException ioError) throw ioError;
+            throw new IOException("dependency cache could not be materialized", error);
+        }
+    }
+
+    private static void makeOwnerWritable(Path path, boolean directory) throws IOException {
+        try {
+            Set<PosixFilePermission> permissions =
+                    EnumSet.copyOf(Files.getPosixFilePermissions(path, LinkOption.NOFOLLOW_LINKS));
+            permissions.add(PosixFilePermission.OWNER_WRITE);
+            if (directory) permissions.add(PosixFilePermission.OWNER_EXECUTE);
+            Files.setPosixFilePermissions(path, permissions);
+        } catch (UnsupportedOperationException error) {
+            if (!path.toFile().setWritable(true, true)) {
+                throw new IOException("owner-writable permission could not be applied", error);
+            }
+        }
+    }
+
+    private static void deleteTree(Path root) {
+        if (!Files.exists(root, LinkOption.NOFOLLOW_LINKS)) return;
+        try (var paths = Files.walk(root)) {
+            for (Path path : paths.sorted(Comparator.reverseOrder()).toList()) {
+                Files.deleteIfExists(path);
+            }
+        } catch (IOException error) {
+            throw new IllegalStateException("verifier workspace cleanup failed", error);
+        }
     }
 
     private static String requireMaven(String command, Path javaHome) {
