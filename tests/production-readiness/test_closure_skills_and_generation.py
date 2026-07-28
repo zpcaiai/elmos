@@ -53,14 +53,29 @@ class ClosureSkillsAndGenerationTests(unittest.TestCase):
         self.assertIn('"node-version": "26.0.0"', polyglot_job)
         self.assertIn('export ELMOS_JAVA21_HOME="$JAVA_HOME"', polyglot_verify)
         self.assertIn("python scripts/operations/validate_translation_route_matrix.py", rendered)
-        self.assertIn("python scripts/run_acceptance.py", synthesis_evidence_job)
-        self.assertNotIn("--require-all-toolchains", synthesis_evidence_job)
-        self.assertNotIn("run_production_matrix.py", synthesis_evidence_job)
+        self.assertIn('"java-version": "21.0.11"', synthesis_evidence_job)
+        self.assertIn('"dotnet-version": "10.0.301"', synthesis_evidence_job)
+        self.assertIn('"node-version": "26.0.0"', synthesis_evidence_job)
+        self.assertIn("install_project_synthesis_ci_toolchains.sh", synthesis_evidence_job)
+        self.assertIn("python scripts/run_acceptance.py --require-all-toolchains", synthesis_evidence_job)
+        self.assertIn("python scripts/run_production_matrix.py", synthesis_evidence_job)
         self.assertIn("playwright install --with-deps chromium", rendered)
         self.assertIn("--project=mobile-chromium", rendered)
         self.assertIn("e2e/generation-runner.spec.ts", rendered)
         self.assertIn("e2e/spring-real-journey-ui.spec.ts", rendered)
         self.assertIn("make product-closure-convergence-skills", rendered)
+        installer_path = ROOT / "scripts/toolchains/install_project_synthesis_ci_toolchains.sh"
+        installer = installer_path.read_text(encoding="utf-8")
+        self.assertNotEqual(installer_path.stat().st_mode & 0o111, 0)
+        for exact_contract in (
+            'MAVEN_VERSION="3.9.10"',
+            'PHP_VERSION="8.4.12"',
+            'POSTGRES_VERSION="17.5"',
+            "MAVEN_SHA512=",
+            "PHP_SHA256=",
+            "POSTGRES_SHA256=",
+        ):
+            self.assertIn(exact_contract, installer)
 
     def test_production_readiness_covers_all_current_skill_distributions_portably(self) -> None:
         makefile = (ROOT / "Makefile").read_text(encoding="utf-8")

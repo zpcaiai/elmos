@@ -236,7 +236,7 @@ jobs:
         run: make product-closure-convergence-skills
 
   project-synthesis-acceptance:
-    name: Synthesis toolchain engineering evidence
+    name: Eight-language synthesis acceptance
     runs-on: ubuntu-24.04
     timeout-minutes: 180
     steps:
@@ -246,27 +246,23 @@ jobs:
         uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
         with:
           python-version: "3.12.12"
-      - name: Set up Java 21
+      - name: Set up Java 21.0.11
         uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
         with:
           distribution: temurin
-          java-version: "21"
+          java-version: "21.0.11"
       - name: Set up .NET 10.0.301
         uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5.4.0
         with:
           dotnet-version: "10.0.301"
-      - name: Set up Node.js 26
+      - name: Set up Node.js 26.0.0
         uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
-          node-version: "26"
+          node-version: "26.0.0"
       - name: Set up Go 1.25
         uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # v5
         with:
           go-version: "1.25.0"
-      - name: Set up PHP 8.4.12
-        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
-        with:
-          php-version: "8.4.12"
       - name: Set up Rust 1.89.0
         uses: dtolnay/rust-toolchain@451ce45ce31d200b52705aadd15ce75018b006de # 1.89.0
         with:
@@ -276,15 +272,25 @@ jobs:
         uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4
         with:
           gradle-version: "8.14.3"
+      - name: Install exact Maven, PHP, and PostgreSQL toolchains
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends --yes \
+            build-essential libpq-dev libssl-dev pkg-config
+          scripts/toolchains/install_project_synthesis_ci_toolchains.sh
       - name: Install locked synthesis tools
         run: |
           python -m pip install --disable-pip-version-check uv==0.11.16
           npm install --global pnpm@10.12.4
           uv --directory engines/project-synthesis-engine sync --locked
-      - name: Run available exact starter-profile toolchains
+      - name: Run exact starter-profile acceptance
         run: >-
           uv --directory engines/project-synthesis-engine run --locked
-          python scripts/run_acceptance.py
+          python scripts/run_acceptance.py --require-all-toolchains
+      - name: Run PostgreSQL JWT and OIDC production matrix
+        run: >-
+          uv --directory engines/project-synthesis-engine run --locked
+          python scripts/run_production_matrix.py
 
   web-console:
     name: Web Console
