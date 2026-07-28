@@ -1,4 +1,4 @@
-package io.elmos.commercialapi;
+package io.elmos.commercialadapter;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;

@@ -1,5 +1,7 @@
 package io.elmos.commercialapi;
 
+import io.elmos.commercial.SelfServiceBillingPort.BillingStateException;
+import io.elmos.commercialadapter.BillingDatabaseErrorAdvice;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.UncategorizedSQLException;
@@ -10,9 +12,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class BillingApiErrorAdviceTest {
-    private final BillingApiErrorAdvice advice = new BillingApiErrorAdvice(
-            new BillingMetrics(new SimpleMeterRegistry())
-    );
+    private final BillingMetrics metrics = new BillingMetrics(new SimpleMeterRegistry());
+    private final BillingApiErrorAdvice advice = new BillingApiErrorAdvice(metrics);
+    private final BillingDatabaseErrorAdvice databaseAdvice = new BillingDatabaseErrorAdvice(metrics);
 
     @Test
     void mapsAllowlistedPostgresStateRuleWithoutLeakingSql() {
@@ -22,7 +24,7 @@ class BillingApiErrorAdviceTest {
                 new SQLException("ERROR: USAGE_RESERVATION_EXPIRED\n  Where: private details", "P0001")
         );
 
-        var response = advice.database(error);
+        var response = databaseAdvice.database(error);
 
         assertEquals(409, response.getStatusCode().value());
         assertEquals("USAGE_RESERVATION_EXPIRED", response.getBody().get("code"));
@@ -40,7 +42,7 @@ class BillingApiErrorAdviceTest {
                 new SQLException("connection dropped with private details", "08006")
         );
 
-        var response = advice.database(error);
+        var response = databaseAdvice.database(error);
 
         assertEquals(503, response.getStatusCode().value());
         assertEquals("BILLING_DATABASE_UNAVAILABLE", response.getBody().get("code"));
@@ -55,7 +57,7 @@ class BillingApiErrorAdviceTest {
                 "private provider response and tenant details",
                 false
         ));
-        var state = advice.state(new io.elmos.persistence.JdbcSelfServiceBillingStore.BillingStateException(
+        var state = advice.state(new BillingStateException(
                 "SUBSCRIPTION_NOT_CANCELLABLE",
                 "private subscription state and internal identifier"
         ));

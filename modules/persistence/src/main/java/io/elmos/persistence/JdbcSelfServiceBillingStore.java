@@ -2,6 +2,7 @@ package io.elmos.persistence;
 
 import io.elmos.commercial.PricingPlanCatalog;
 import io.elmos.commercial.SelfServiceBillingPort;
+import io.elmos.commercial.SelfServiceBillingPort.BillingStateException;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -876,16 +877,4 @@ public final class JdbcSelfServiceBillingStore implements SelfServiceBillingPort
         return value != null && !value.isBlank();
     }
 
-    public static final class BillingStateException extends RuntimeException {
-        private final String code;
-
-        public BillingStateException(String code, String message) {
-            super(message);
-            this.code = code;
-        }
-
-        public String code() {
-            return code;
-        }
-    }
 }

@@ -12,6 +12,19 @@ import java.util.List;
  * tenant query. Client-supplied organization identifiers are not accepted.</p>
  */
 public interface SelfServiceBillingPort {
+    final class BillingStateException extends RuntimeException {
+        private final String code;
+
+        public BillingStateException(String code, String message) {
+            super(message);
+            this.code = code;
+        }
+
+        public String code() {
+            return code;
+        }
+    }
+
     record QuotaMeasure(
             BigDecimal consumed,
             BigDecimal reserved,

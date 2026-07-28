@@ -115,7 +115,7 @@ class JdbcSelfServiceBillingLiveTest {
                        ends_at = current_timestamp - interval '1 second'
                  where trial_grant_id = :grant
                 """).param("grant", trial.trialGrantId()).update();
-        assertThrows(JdbcSelfServiceBillingStore.BillingStateException.class,
+        assertThrows(io.elmos.commercial.SelfServiceBillingPort.BillingStateException.class,
                 () -> billing.currentUsage(organization, actor));
         assertEquals("EXPIRED", jdbc.sql("""
                 select status from trial_grants where trial_grant_id = :grant

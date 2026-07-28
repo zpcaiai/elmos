@@ -50,7 +50,7 @@ class BatchOneToThirteenAssuranceTest {
                     .map(path -> path.getFileName().toString().replaceFirst("__.*", ""))
                     .collect(Collectors.toSet());
         }
-        Set<String> expected = IntStream.rangeClosed(1, 48).mapToObj(value -> "V" + value)
+        Set<String> expected = IntStream.rangeClosed(1, 50).mapToObj(value -> "V" + value)
                 .collect(Collectors.toSet());
         assertEquals(expected, actual);
     }
@@ -91,7 +91,7 @@ class BatchOneToThirteenAssuranceTest {
         assertTrue(Files.isRegularFile(root.resolve("docs/test-suite/IMPORT_AUDIT.md")));
         assertTrue(Files.isRegularFile(root.resolve("docs/test-suite/VALIDATION.md")));
         int[] matureSkillCounts = {20, 20, 22, 20, 20, 22, 22, 18, 36, 22, 22, 24, 20, 22, 20, 20, 22};
-        int[] matureSchemaCounts = {3, 4, 8, 8, 8, 10, 13, 12, 25, 4, 4, 4, 4, 4, 4, 4, 4};
+        int[] matureSchemaCounts = {3, 4, 9, 8, 8, 10, 13, 12, 25, 4, 4, 4, 4, 4, 4, 4, 4};
         for (int offset = 0; offset < matureSkillCounts.length; offset++) {
             int batch = 29 + offset;
             assertEquals(matureSkillCounts[offset], countSkillsWithPrefix(

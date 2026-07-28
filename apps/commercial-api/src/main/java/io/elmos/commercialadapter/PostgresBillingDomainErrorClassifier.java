@@ -1,4 +1,4 @@
-package io.elmos.commercialapi;
+package io.elmos.commercialadapter;
 
 import java.sql.SQLException;
 import java.util.Set;
