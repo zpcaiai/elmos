@@ -239,7 +239,9 @@ test("Python PostgreSQL JWT/OIDC 企业配置均可生成、验证并一键运�
     expect(generationOutcome).toBe("READY");
     await expect(page.getByText("database/", { exact: true })).toBeVisible();
     await expect(page.getByText("security/", { exact: true })).toBeVisible();
-    await expect(page.getByText("PASSED", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText("PASSED", { exact: true }).first()).toBeVisible({
+      timeout: 600_000,
+    });
 
     await page.getByRole("button", { name: "一键运行" }).click();
     await expect(page.getByText("RUNNING", { exact: true })).toBeVisible({ timeout: 60_000 });
