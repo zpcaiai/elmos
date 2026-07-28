@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/usage/usage-ledger-event-v1.schema.json",
+  "title": "ELMOS Local Immutable Usage Ledger Event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "eventId",
+    "idempotencyKey",
+    "tenantId",
+    "actorId",
+    "planId",
+    "meterId",
+    "quantity",
+    "occurredAt",
+    "recordedAt",
+    "reconciliationStatus"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "eventId": { "$ref": "#/$defs/eventIdentity" },
+    "idempotencyKey": { "$ref": "#/$defs/eventIdentity" },
+    "tenantId": { "$ref": "#/$defs/subjectIdentity" },
+    "actorId": { "$ref": "#/$defs/subjectIdentity" },
+    "planId": { "$ref": "#/$defs/eventIdentity" },
+    "meterId": { "enum": ["model-token-v1", "platform-credit-v1"] },
+    "quantity": { "type": "integer", "minimum": 1 },
+    "occurredAt": { "type": "string", "format": "date-time" },
+    "recordedAt": { "type": "string", "format": "date-time" },
+    "reconciliationStatus": { "enum": ["RECONCILED", "PENDING", "REJECTED"] }
+  },
+  "$defs": {
+    "eventIdentity": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}$"
+    },
+    "subjectIdentity": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+    }
+  }
+}

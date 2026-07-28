@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Icon } from "../components/Icon";
 import { formatCny, formatQuota, pricingCatalog } from "../lib/pricingCatalog";
 import styles from "./PricingPage.module.css";
+import { UsageDashboard } from "./UsageDashboard";
 
 export const metadata: Metadata = {
   title: "套餐与用量",
@@ -39,6 +40,8 @@ export default function PricingPage() {
         </div>
         <Link href="/commercialization">查看控制面 <Icon name="arrow" size={14} /></Link>
       </section>
+
+      <UsageDashboard />
 
       <section aria-labelledby="pricing-plans-title">
         <div className="section-heading">

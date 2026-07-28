@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/usage/current-usage-snapshot-v1.schema.json",
+  "title": "ELMOS Current Account Usage Snapshot",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "snapshotVersion",
+    "status",
+    "subject",
+    "plan",
+    "period",
+    "tokens",
+    "credits",
+    "reconciledEventCount",
+    "unreconciledEventCount",
+    "duplicateEventCount",
+    "eventWatermark",
+    "generatedAt",
+    "refreshAfterSeconds"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "snapshotVersion": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "status": { "enum": ["CURRENT", "PARTIAL"] },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tenantId", "actorId"],
+      "properties": {
+        "tenantId": { "$ref": "#/$defs/identity" },
+        "actorId": { "$ref": "#/$defs/identity" }
+      }
+    },
+    "plan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["planId", "displayName", "allowanceWindow"],
+      "properties": {
+        "planId": { "type": "string", "minLength": 1 },
+        "displayName": { "type": "string", "minLength": 1 },
+        "allowanceWindow": { "enum": ["TRIAL_TERM", "MONTHLY"] }
+      }
+    },
+    "period": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["startsAt", "endsAt", "resetsAt"],
+      "properties": {
+        "startsAt": { "type": "string", "format": "date-time" },
+        "endsAt": { "type": "string", "format": "date-time" },
+        "resetsAt": {
+          "oneOf": [
+            { "type": "string", "format": "date-time" },
+            { "type": "null" }
+          ]
+        }
+      }
+    },
+    "tokens": { "$ref": "#/$defs/measure" },
+    "credits": { "$ref": "#/$defs/measure" },
+    "reconciledEventCount": { "$ref": "#/$defs/nonNegativeInteger" },
+    "unreconciledEventCount": { "$ref": "#/$defs/nonNegativeInteger" },
+    "duplicateEventCount": { "$ref": "#/$defs/nonNegativeInteger" },
+    "eventWatermark": {
+      "oneOf": [
+        { "type": "string", "format": "date-time" },
+        { "type": "null" }
+      ]
+    },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "refreshAfterSeconds": { "type": "integer", "minimum": 2, "maximum": 60 }
+  },
+  "$defs": {
+    "identity": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+    },
+    "nonNegativeInteger": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "measure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["consumed", "limit", "remaining", "usageBps", "hardStop"],
+      "properties": {
+        "consumed": { "$ref": "#/$defs/nonNegativeInteger" },
+        "limit": { "type": "integer", "minimum": 1 },
+        "remaining": { "$ref": "#/$defs/nonNegativeInteger" },
+        "usageBps": { "type": "integer", "minimum": 0, "maximum": 10000 },
+        "hardStop": { "type": "boolean" }
+      }
+    }
+  }
+}

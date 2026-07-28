@@ -16,7 +16,7 @@ if (!["development", "production"].includes(webServerMode)) {
 }
 const configuredRunnerRoot = process.env.ELMOS_E2E_RUNNER_ROOT;
 const runnerRoot = configuredRunnerRoot
-  ?? path.join(tmpdir(), `elmos-web-console-e2e-${process.pid}`);
+  ?? path.join(tmpdir(), `elmos-web-console-e2e-${webPort}`);
 const outputDir = process.env.ELMOS_E2E_OUTPUT_DIR ?? "./test-results/playwright";
 const reportDir = process.env.ELMOS_E2E_REPORT_DIR ?? "./test-results/playwright-report";
 const nextDistDir = `.next-e2e-${webPort}`;
