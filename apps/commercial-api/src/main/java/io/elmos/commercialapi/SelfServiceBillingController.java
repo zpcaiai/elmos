@@ -12,7 +12,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -43,7 +43,7 @@ import java.util.UUID;
 @RestController
 @Validated
 @RequestMapping("/commercial/v1/billing")
-@ConditionalOnBean(SelfServiceBillingPort.class)
+@ConditionalOnExpression("'${ELMOS_COMMERCIAL_DATABASE_URL:}' != ''")
 public class SelfServiceBillingController {
     private static final String IDEMPOTENCY = "Idempotency-Key";
     private final SelfServiceBillingPort billing;
