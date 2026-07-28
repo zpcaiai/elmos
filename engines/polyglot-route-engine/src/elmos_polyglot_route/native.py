@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
 import subprocess
 from pathlib import Path
 from typing import Any
@@ -61,8 +62,11 @@ def analyze(source: Path, language: Language, function_name: str) -> SemanticIR:
         frontend = REPOSITORY_ROOT / "engines" / "frontend-client-engine"
         cli = frontend / "dist" / "src" / "polyglot-cli.js"
         if not cli.is_file():
+            pnpm = shutil.which("pnpm")
+            if pnpm is None:
+                raise RouteError("EXACT_TOOLCHAIN_UNAVAILABLE:pnpm")
             completed = subprocess.run(
-                ["/opt/homebrew/bin/pnpm", "run", "build"],
+                [pnpm, "run", "build"],
                 cwd=frontend,
                 check=False,
                 capture_output=True,
