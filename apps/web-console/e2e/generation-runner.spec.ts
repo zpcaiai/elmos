@@ -236,6 +236,13 @@ test("Python PostgreSQL JWT/OIDC 企业配置均可生成、验证并一键运�
         .waitFor({ state: "visible", timeout: 600_000 })
         .then(() => "BLOCKED"),
     ]);
+    if (generationOutcome === "BLOCKED") {
+      const reason = await page.getByRole("alert").last().textContent();
+      const logs = await page.getByLabel("任务日志").textContent();
+      throw new Error(
+        `GENERATION_BLOCKED:${reason ?? "UNKNOWN"}\n${logs ?? "NO_JOB_LOGS"}`,
+      );
+    }
     expect(generationOutcome).toBe("READY");
     await expect(page.getByText("database/", { exact: true })).toBeVisible();
     await expect(page.getByText("security/", { exact: true })).toBeVisible();
