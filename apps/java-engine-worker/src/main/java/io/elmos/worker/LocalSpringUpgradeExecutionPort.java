@@ -49,14 +49,30 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
             ".env", "id_rsa", "id_ed25519"
     );
     private final Path workspaceRoot;
-    private final Path sourceJavaHome;
+    /**
+     * Source JDKs keyed by Java release. A multi-version catalog needs more than
+     * one source JDK: a Spring Boot 1.5 baseline has to build on Java 8 while a
+     * Boot 3.4 baseline needs 17 or 21. Only the releases an operator actually
+     * provisioned are present, and a route that needs a missing one is blocked
+     * with the release named instead of silently compiling on the wrong JDK.
+     */
+    private final Map<String, Path> javaHomes;
     private final Path targetJavaHome;
     private final String mavenExecutable;
     private final Set<String> allowedGitHosts;
     private final boolean allowFileRepositories;
     private final boolean mavenOffline;
     private final Path dependencySeedRepository;
+    private final boolean experimentalRoutesEnabled;
     private final ObjectMapper json;
+    /**
+     * Defaults to {@link DisabledSpringUpgradeCodingAgentPort} in every constructor
+     * that does not accept one explicitly, so every existing call site keeps its
+     * exact current behavior: {@link #recordCodingAgentCandidates} is a no-op
+     * whenever this field stays disabled, and the post-repair failure path throws
+     * the identical {@code MAVEN_COMMAND_FAILED} it always has. See ADR-0059.
+     */
+    private final SpringUpgradeCodingAgentPort codingAgentPort;
 
     LocalSpringUpgradeExecutionPort(Path workspaceRoot, Path sourceJavaHome, Path targetJavaHome,
                                     String mavenExecutable, Set<String> allowedGitHosts,
@@ -77,16 +93,78 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
                                     String mavenExecutable, Set<String> allowedGitHosts,
                                     boolean allowFileRepositories, boolean mavenOffline,
                                     Path dependencySeedRepository, ObjectMapper json) {
+        this(workspaceRoot, Map.of("17", sourceJavaHome, SpringRouteCatalog.TARGET_JAVA, targetJavaHome),
+                mavenExecutable, allowedGitHosts, allowFileRepositories, mavenOffline,
+                dependencySeedRepository, false, json);
+    }
+
+    LocalSpringUpgradeExecutionPort(Path workspaceRoot, Map<String, Path> configuredJavaHomes,
+                                    String mavenExecutable, Set<String> allowedGitHosts,
+                                    boolean allowFileRepositories, boolean mavenOffline,
+                                    Path dependencySeedRepository, boolean experimentalRoutesEnabled,
+                                    ObjectMapper json) {
+        this(workspaceRoot, configuredJavaHomes, mavenExecutable, allowedGitHosts, allowFileRepositories,
+                mavenOffline, dependencySeedRepository, experimentalRoutesEnabled, json,
+                new DisabledSpringUpgradeCodingAgentPort(
+                        "Spring upgrade long-tail Coding Agent model selection was not wired into this "
+                                + "execution port instance; see docs/adr/ADR-0059-coding-agent-model-catalog.md."));
+    }
+
+    LocalSpringUpgradeExecutionPort(Path workspaceRoot, Map<String, Path> configuredJavaHomes,
+                                    String mavenExecutable, Set<String> allowedGitHosts,
+                                    boolean allowFileRepositories, boolean mavenOffline,
+                                    Path dependencySeedRepository, boolean experimentalRoutesEnabled,
+                                    ObjectMapper json, SpringUpgradeCodingAgentPort codingAgentPort) {
         this.workspaceRoot = normalizeRoot(workspaceRoot);
-        this.sourceJavaHome = requireJavaHome(sourceJavaHome, 17, "source");
-        this.targetJavaHome = requireJavaHome(targetJavaHome, 21, "target");
+        this.javaHomes = verifiedJavaHomes(configuredJavaHomes);
+        Path target = this.javaHomes.get(SpringRouteCatalog.TARGET_JAVA);
+        if (target == null) {
+            throw new IllegalStateException(
+                    "target JAVA_HOME for Java " + SpringRouteCatalog.TARGET_JAVA + " is required");
+        }
+        this.targetJavaHome = target;
         this.mavenExecutable = requireMaven(mavenExecutable, this.targetJavaHome);
         this.allowedGitHosts = Set.copyOf(allowedGitHosts);
         this.allowFileRepositories = allowFileRepositories;
         this.mavenOffline = mavenOffline;
         this.dependencySeedRepository = normalizeDependencySeed(
                 dependencySeedRepository, this.workspaceRoot, mavenOffline);
+        this.experimentalRoutesEnabled = experimentalRoutesEnabled;
         this.json = Objects.requireNonNull(json);
+        this.codingAgentPort = Objects.requireNonNull(codingAgentPort, "codingAgentPort");
+    }
+
+    /** Java releases this Runner can build a source baseline with. */
+    Set<String> provisionedJavaReleases() {
+        return javaHomes.keySet();
+    }
+
+    private static Map<String, Path> verifiedJavaHomes(Map<String, Path> configured) {
+        Objects.requireNonNull(configured, "java homes");
+        if (configured.isEmpty()) throw new IllegalStateException("at least one JAVA_HOME is required");
+        Map<String, Path> verified = new TreeMap<>();
+        for (Map.Entry<String, Path> entry : configured.entrySet()) {
+            String release = SpringRouteCatalog.normalizeJava(entry.getKey());
+            int major;
+            try {
+                major = Integer.parseInt(release);
+            } catch (NumberFormatException error) {
+                throw new IllegalArgumentException("JAVA_HOME key must be a Java release: " + entry.getKey());
+            }
+            verified.put(release, requireJavaHome(entry.getValue(), major, "java-" + release));
+        }
+        return Map.copyOf(verified);
+    }
+
+    private Path sourceJavaHome(String release) {
+        Path home = javaHomes.get(SpringRouteCatalog.normalizeJava(release));
+        if (home == null) {
+            throw blocked("SOURCE_JDK_NOT_PROVISIONED",
+                    "The repository declares Java " + release + " but this Runner only provides "
+                            + String.join(", ", javaHomes.keySet())
+                            + ". Provision the matching JDK before running this route.");
+        }
+        return home;
     }
 
     @Override public ExecutionResult execute(StartRequest request, Path rawRunRoot, Control control) {
@@ -120,12 +198,31 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
 
         control.stage(Stage.FINGERPRINT, "Detecting exact Java, Spring Boot, build and active capability tuple");
         Fingerprint fingerprint = fingerprint(source);
-        requireExactSupportedTuple(fingerprint);
+        SpringRouteCatalog.Selection selection = selectRoute(fingerprint);
+        SpringRouteCatalog.SpringRoute route = selection.route();
+        String sourceJava = SpringRouteCatalog.normalizeJava(fingerprint.javaVersion());
+        Path sourceJavaHome = sourceJavaHome(sourceJava);
         control.log("fingerprint spring-boot=" + fingerprint.springBootVersion()
-                + " java=" + fingerprint.javaVersion() + " build=" + fingerprint.buildTool());
+                + " java=" + sourceJava + " build=" + fingerprint.buildTool()
+                + " route=" + route.routeId() + " evidence=" + selection.evidence());
+        Map<String, Object> routeSelection = new LinkedHashMap<>();
+        routeSelection.put("schema_version", "1.0");
+        routeSelection.put("route_id", route.routeId());
+        routeSelection.put("pack_key", route.packKey());
+        routeSelection.put("detected_spring_boot", fingerprint.springBootVersion());
+        routeSelection.put("detected_java", sourceJava);
+        routeSelection.put("detected_build_tool", fingerprint.buildTool());
+        routeSelection.put("accepted_source_range",
+                "[" + route.sourceBootMinInclusive() + ", " + route.sourceBootMaxExclusive() + ")");
+        routeSelection.put("route_evidence", selection.evidence().name());
+        routeSelection.put("experimental_opt_in_required", selection.requiresExperimentalOptIn());
+        routeSelection.put("recipe_id", route.recipeId());
+        routeSelection.put("target_spring_boot", route.targetBoot());
+        routeSelection.put("target_java", route.targetJava());
+        writeJson(runRoot.resolve("evidence/route-selection.json"), routeSelection);
 
         control.stage(Stage.SOURCE_BASELINE,
-                "Running the source repository's complete Maven verify lifecycle with Java 17");
+                "Running the source repository's complete Maven verify lifecycle with Java " + sourceJava);
         Path sourceBaseline = runRoot.resolve("source-baseline");
         Path mavenHome = runRoot.resolve("maven-home");
         createDirectory(mavenHome);
@@ -152,7 +249,7 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
             sourceTests = testSummary(sourceBaseline);
             requireSourceTests(sourceTests);
             writeJson(runRoot.resolve("evidence/source-test-summary.json"), sourceTests);
-            validateSourceStartup(sourceBaseline, runRoot, control);
+            validateSourceStartup(sourceBaseline, runRoot, control, sourceJavaHome);
         } finally {
             deleteTree(sourceBaseline);
         }
@@ -171,24 +268,30 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
 
         control.stage(Stage.EXTRACT_FCM, "Extracting versioned Framework Contract Model before transformation");
         Path fcm = runRoot.resolve("evidence/framework-contract-model.json");
-        writeJson(fcm, fcm(identity, archive.archiveSha256(), fingerprint));
+        writeJson(fcm, fcm(identity, archive.archiveSha256(), fingerprint, route, selection));
 
         Path migrated = runRoot.resolve("migrated");
         copyTree(source, migrated);
-        control.stage(Stage.OPENREWRITE, "Applying pinned OpenRewrite Spring Boot 3.5 and Java 21 recipes");
-        runRewrite(migrated, mavenHome, control);
+        control.stage(Stage.OPENREWRITE,
+                "Applying pinned OpenRewrite recipe " + route.recipeId() + " for route " + route.routeId());
+        runRewrite(migrated, mavenHome, control, route);
         checkCancelled(control);
 
         control.stage(Stage.BUILD_AND_TEST,
-                "Running the target repository's complete Maven verify lifecycle with Java 21");
+                "Running the target repository's complete Maven verify lifecycle with Java " + route.targetJava());
         CommandOutcome firstBuild = runMavenOutcome(migrated, targetJavaHome, mavenHome, control,
                 List.of("verify"), Duration.ofMinutes(30));
         if (firstBuild.exitCode() != 0) {
             control.stage(Stage.DETERMINISTIC_REPAIR,
                     "Target build failed; applying one bounded deterministic OpenRewrite repair cycle");
-            runRewrite(migrated, mavenHome, control);
-            runMaven(migrated, targetJavaHome, mavenHome, control,
+            runRewrite(migrated, mavenHome, control, route);
+            CommandOutcome secondBuild = runMavenOutcome(migrated, targetJavaHome, mavenHome, control,
                     List.of("verify"), Duration.ofMinutes(30));
+            if (secondBuild.exitCode() != 0) {
+                recordCodingAgentCandidates(runRoot, request.organizationId(), identity.commitSha());
+                throw blocked("MAVEN_COMMAND_FAILED",
+                        "A required Maven/OpenRewrite command failed; inspect the redacted run log.");
+            }
         }
         TestSummary targetTests = testSummary(migrated);
         requireTestParity(sourceTests, targetTests);
@@ -208,7 +311,7 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         SpringDeploymentGuidance.writeTo(migrated);
 
         control.stage(Stage.PACKAGE_ARTIFACT, "Packaging migrated repository as a content-addressed ZIP");
-        Path artifact = runRoot.resolve("artifacts/migrated-spring-boot-3.5.3.zip");
+        Path artifact = runRoot.resolve("artifacts/" + route.artifactFileName());
         createDirectory(artifact.getParent());
         zip(migrated, artifact);
         String artifactSha = sha256(artifact);
@@ -263,7 +366,7 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         control.log("application stopped");
     }
 
-    private void validateSourceStartup(Path source, Path runRoot, Control control) {
+    private void validateSourceStartup(Path source, Path runRoot, Control control, Path sourceJavaHome) {
         Path jar = bootJar(source);
         int port = reservePort();
         Path log = runRoot.resolve("evidence/source-startup.log");
@@ -354,8 +457,19 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
 
     Fingerprint fingerprint(Path root) {
         Path pom = root.resolve("pom.xml");
-        if (!Files.isRegularFile(pom, LinkOption.NOFOLLOW_LINKS))
-            throw blocked("MAVEN_POM_REQUIRED", "This exact route currently supports Maven projects with a root pom.xml.");
+        if (!Files.isRegularFile(pom, LinkOption.NOFOLLOW_LINKS)) {
+            // Report the build tool that was actually found so route selection
+            // can produce a specific reason instead of "Maven only".
+            if (hasGradleBuild(root)) {
+                throw blocked("SPRING_ROUTE_NOT_IMPLEMENTED",
+                        "A Gradle build was detected. The Gradle route is declared in the catalog but "
+                                + "has no execution driver: it needs its own wrapper verification and "
+                                + "rewrite plugin invocation.");
+            }
+            throw blocked("BUILD_MODEL_UNRECOGNIZED",
+                    "No root pom.xml and no Gradle build script were found; the source build model "
+                            + "could not be identified.");
+        }
         Document document = parsePom(pom);
         String boot = springBootVersion(document);
         String java = property(document, "java.version");
@@ -382,19 +496,56 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
                 "maven", modules, capabilities.stream().distinct().sorted().toList(), unknowns, traces);
     }
 
-    private void runRewrite(Path root, Path mavenHome, Control control) {
-        Path recipeConfig = installExactRecipe(root);
+    private static boolean hasGradleBuild(Path root) {
+        for (String candidate : List.of("build.gradle", "build.gradle.kts",
+                "settings.gradle", "settings.gradle.kts")) {
+            if (Files.isRegularFile(root.resolve(candidate), LinkOption.NOFOLLOW_LINKS)) return true;
+        }
+        return false;
+    }
+
+    /**
+     * Pick the catalog route for the detected fingerprint and refuse to run a
+     * tuple that has no recorded execution evidence unless the operator has
+     * explicitly opted in. Widening the catalog must not widen what the engine
+     * is willing to claim by default.
+     */
+    SpringRouteCatalog.Selection selectRoute(Fingerprint fingerprint) {
+        SpringRouteCatalog.Selection selection = SpringRouteCatalog.select(
+                fingerprint.springBootVersion(), fingerprint.javaVersion(), fingerprint.buildTool());
+        if (!fingerprint.activeCapabilities().contains("spring-boot-parent")) {
+            throw blocked("UNSUPPORTED_BOOT_VERSION_AUTHORITY",
+                    "Route " + selection.route().routeId() + " requires spring-boot-starter-parent as "
+                            + "the source version authority.");
+        }
+        if (selection.requiresExperimentalOptIn() && !experimentalRoutesEnabled) {
+            throw blocked("SPRING_ROUTE_EVIDENCE_NOT_RUN",
+                    "Route " + selection.route().routeId() + " accepts Spring Boot "
+                            + fingerprint.springBootVersion() + " on Java "
+                            + SpringRouteCatalog.normalizeJava(fingerprint.javaVersion())
+                            + ", but this tuple has no recorded local execution evidence ("
+                            + selection.evidence() + "). Enable "
+                            + "elmos.worker.spring-upgrade.experimental-routes-enabled to run it as an "
+                            + "explicitly experimental migration.");
+        }
+        return selection;
+    }
+
+    private void runRewrite(Path root, Path mavenHome, Control control,
+                            SpringRouteCatalog.SpringRoute route) {
+        Path recipeConfig = installExactRecipe(root, route);
         runMaven(root, targetJavaHome, mavenHome, control, List.of(
-                "org.openrewrite.maven:rewrite-maven-plugin:" + REWRITE_MAVEN_PLUGIN + ":run",
+                "org.openrewrite.maven:rewrite-maven-plugin:" + route.rewriteMavenPlugin() + ":run",
                 "-Drewrite.configLocation=" + root.relativize(recipeConfig),
-                "-Drewrite.activeRecipes=io.elmos.openrewrite.SpringBoot2_7_18To3_5_3Java21",
-                "-Drewrite.recipeArtifactCoordinates=org.openrewrite.recipe:rewrite-spring:" + REWRITE_SPRING,
+                "-Drewrite.activeRecipes=" + route.recipeId(),
+                "-Drewrite.recipeArtifactCoordinates=org.openrewrite.recipe:rewrite-spring:"
+                        + route.rewriteSpring(),
                 "-Drewrite.exportDatatables=true"
         ), Duration.ofMinutes(30));
     }
 
-    private static Path installExactRecipe(Path root) {
-        String resource = "/rewrite/spring-boot-2.7.18-to-3.5.3.yml";
+    private static Path installExactRecipe(Path root, SpringRouteCatalog.SpringRoute route) {
+        String resource = route.recipeResource();
         byte[] expected;
         try (var input = LocalSpringUpgradeExecutionPort.class.getResourceAsStream(resource)) {
             if (input == null) throw new IOException("exact recipe resource is missing");
@@ -566,14 +717,85 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
             throw blocked("MAVEN_COMMAND_FAILED", "A required Maven/OpenRewrite command failed; inspect the redacted run log.");
     }
 
-    private Map<String,Object> fcm(SourceIdentity identity, String snapshotDigest, Fingerprint fingerprint) {
+    /**
+     * Best-effort evidence attachment only, called once the bounded
+     * {@code Stage.DETERMINISTIC_REPAIR} cycle has already failed a second time.
+     * This never changes the failure code or message the caller sees: the caller
+     * always throws the identical {@code MAVEN_COMMAND_FAILED} immediately after
+     * calling this method, whether or not it writes anything. The actual decision
+     * logic lives in the pure, unit-testable {@link #codingAgentEvidencePayload}
+     * below; this method only adds the file I/O.
+     */
+    private void recordCodingAgentCandidates(Path runRoot, String organizationId, String runId) {
+        codingAgentEvidencePayload(codingAgentPort, organizationId, runId)
+                .ifPresent(payload -> writeJson(runRoot.resolve("evidence/coding-agent-candidates.json"), payload));
+    }
+
+    /**
+     * Pure decision logic with no file I/O and no dependency on this class's
+     * constructor (which requires a real, exact-version JAVA_HOME and Maven
+     * executable on disk and therefore cannot be constructed in an ordinary unit
+     * test). Kept package-visible specifically so
+     * {@code LocalSpringUpgradeExecutionPortCodingAgentEvidenceTest} can exercise
+     * every branch without that environment.
+     *
+     * <p>When {@code port} is the default {@link DisabledSpringUpgradeCodingAgentPort}
+     * (today's only wired configuration; see {@code SpringUpgradeConfiguration}'s
+     * {@code elmos.worker.spring-upgrade.coding-agent-enabled} flag, default
+     * {@code false}), {@link SpringUpgradeCodingAgentPort#configured()} is false
+     * and this returns {@link Optional#empty()}, so this change has zero effect on
+     * the one pipeline with real {@code PASSED_LOCAL} end-to-end execution evidence.
+     *
+     * <p>When a real port is enabled, this records which {@code LONG_TAIL_CODE_FIX}
+     * candidate models were actually provisionable (real credential present, real
+     * health probe passed) at the moment of failure. It is deliberately just
+     * evidence, not an applied fix: no capability exists anywhere in this codebase
+     * today that has a model generate a patch and apply it, so claiming otherwise
+     * here would fabricate a capability instead of describing one. See ADR-0059.
+     */
+    static Optional<Map<String, Object>> codingAgentEvidencePayload(
+            SpringUpgradeCodingAgentPort port, String organizationId, String runId) {
+        if (!port.configured()) return Optional.empty();
+        List<SpringUpgradeCodingAgentPort.CandidateModel> candidates;
+        try {
+            candidates = port.provisionCandidates(organizationId, runId);
+        } catch (RuntimeException error) {
+            return Optional.of(Map.of(
+                    "schema_version", "1.0",
+                    "status", "PROVISIONING_FAILED",
+                    "error", error.getClass().getSimpleName()
+            ));
+        }
+        List<Map<String, Object>> rendered = new ArrayList<>();
+        for (SpringUpgradeCodingAgentPort.CandidateModel candidate : candidates) {
+            Map<String, Object> entry = new LinkedHashMap<>();
+            entry.put("model_id", candidate.modelId());
+            entry.put("approved", candidate.approved());
+            entry.put("reason_codes", candidate.reasonCodes());
+            rendered.add(entry);
+        }
+        return Optional.of(Map.of(
+                "schema_version", "1.0",
+                "status", "CANDIDATES_PROVISIONED",
+                "note", "These are provisionable LONG_TAIL_CODE_FIX candidate models at failure time, "
+                        + "not an applied fix; no automatic patch-generation capability exists yet.",
+                "candidates", rendered
+        ));
+    }
+
+    private Map<String,Object> fcm(SourceIdentity identity, String snapshotDigest, Fingerprint fingerprint,
+                                   SpringRouteCatalog.SpringRoute route,
+                                   SpringRouteCatalog.Selection selection) {
         Map<String,Object> model = new LinkedHashMap<>();
         model.put("schema_version", "1.0");
-        model.put("pack_key", PACK_KEY);
+        model.put("pack_key", route.packKey());
+        model.put("route_id", route.routeId());
+        model.put("route_evidence", selection.evidence().name());
         model.put("source_commit", identity.commitSha());
         model.put("source_snapshot_sha256", snapshotDigest);
         model.put("extraction_status", "STATIC_AND_SOURCE_BASELINE");
-        model.put("exact_tuple", ExactTuple.supported("maven-3.9.11", "maven-3.9.11"));
+        model.put("exact_tuple", route.tuple(
+                fingerprint.springBootVersion(), SpringRouteCatalog.normalizeJava(fingerprint.javaVersion())));
         model.put("capabilities", fingerprint.activeCapabilities().stream().map(capability -> Map.of(
                 "id", capability,
                 "status", "observed",
@@ -586,16 +808,6 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
                 "configuration_precedence", "preserve-and-verify",
                 "transaction_defaults", "preserve-and-verify"));
         return model;
-    }
-
-    private void requireExactSupportedTuple(Fingerprint fingerprint) {
-        if (!SOURCE_BOOT.equals(fingerprint.springBootVersion()) || !SOURCE_JAVA.equals(fingerprint.javaVersion()))
-            throw blocked("UNSUPPORTED_SOURCE_TUPLE", "Supported source tuple is exactly Spring Boot 2.7.18 with Java 17.");
-        if (!"maven".equals(fingerprint.buildTool()))
-            throw blocked("UNSUPPORTED_BUILD_TOOL", "This exact route currently supports Maven only.");
-        if (!fingerprint.activeCapabilities().contains("spring-boot-parent"))
-            throw blocked("UNSUPPORTED_BOOT_VERSION_AUTHORITY",
-                    "This exact route currently requires spring-boot-starter-parent as the source version authority.");
     }
 
     private String waitForHealth(Process process, int port, List<String> candidates, Control control) {
@@ -933,14 +1145,33 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
             Process process = new ProcessBuilder(java.toString(), "-version").redirectErrorStream(true).start();
             String output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
             if (!process.waitFor(10, TimeUnit.SECONDS) || process.exitValue() != 0
-                    || !(output.contains("version \"" + expectedMajor + ".")
-                    || output.contains("version \"" + expectedMajor + "\"")))
+                    || !reportsJavaRelease(output, expectedMajor))
                 throw new IllegalStateException(label + " JAVA_HOME does not provide Java " + expectedMajor);
             return normalized;
         } catch (IOException | InterruptedException error) {
             if (error instanceof InterruptedException) Thread.currentThread().interrupt();
             throw new IllegalStateException(label + " JAVA_HOME could not be verified", error);
         }
+    }
+
+    /**
+     * Match the release a JDK reports, across both version schemes.
+     *
+     * <p>Java 9 introduced the current numbering, so a Java 21 JDK prints
+     * {@code version "21.0.11"}. Java 8 and earlier still print the legacy form
+     * {@code version "1.8.0_432"}. A legacy estate needs those older JDKs to
+     * build its source baseline, so accepting only the modern form would reject
+     * a correctly provisioned Java 8 home.
+     */
+    static boolean reportsJavaRelease(String versionOutput, int expectedMajor) {
+        if (versionOutput == null) return false;
+        if (versionOutput.contains("version \"" + expectedMajor + ".")
+                || versionOutput.contains("version \"" + expectedMajor + "\"")) {
+            return true;
+        }
+        return expectedMajor <= 8
+                && (versionOutput.contains("version \"1." + expectedMajor + ".")
+                || versionOutput.contains("version \"1." + expectedMajor + "\""));
     }
 
     private static String requireMaven(String command, Path javaHome) {

@@ -1,0 +1,280 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.io/batch32/ui-project-generation.v1.schema.json",
+  "title": "Batch 32 UI project generation request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "projectName",
+    "applicationId",
+    "title",
+    "source",
+    "targetFramework",
+    "packageName",
+    "bundleId",
+    "uiIr"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0"
+    },
+    "projectName": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{1,47}$"
+    },
+    "applicationId": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9._-]{1,127}$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "framework",
+        "version",
+        "platform"
+      ],
+      "properties": {
+        "framework": {
+          "$ref": "#/$defs/framework"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^(?:[0-9]+\\.)+[0-9]+(?:\\([0-9]+\\))?$"
+        },
+        "platform": {
+          "enum": [
+            "WEB",
+            "ANDROID",
+            "IOS",
+            "HARMONYOS"
+          ]
+        }
+      }
+    },
+    "targetFramework": {
+      "$ref": "#/$defs/framework"
+    },
+    "packageName": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]{1,63}$"
+    },
+    "bundleId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:\\.[a-z][a-z0-9]*){2,7}$"
+    },
+    "uiIr": {
+      "$ref": "#/$defs/uiIr"
+    }
+  },
+  "$defs": {
+    "framework": {
+      "enum": [
+        "vue2",
+        "vue3",
+        "react",
+        "react-native",
+        "jquery",
+        "flutter",
+        "harmony-arkui",
+        "angular",
+        "svelte"
+      ]
+    },
+    "stringSet": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "kind",
+        "references",
+        "sourceRefs"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "type": "string",
+          "minLength": 1
+        },
+        "references": {
+          "$ref": "#/$defs/stringSet"
+        },
+        "sourceRefs": {
+          "$ref": "#/$defs/stringSet"
+        }
+      }
+    },
+    "component": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/node"
+        },
+        {
+          "type": "object",
+          "required": [
+            "text",
+            "accessibilityRole"
+          ],
+          "properties": {
+            "text": {
+              "type": "string"
+            },
+            "accessibilityRole": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "route": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/node"
+        },
+        {
+          "type": "object",
+          "required": [
+            "path",
+            "componentId",
+            "requiresAuth",
+            "deepLink"
+          ],
+          "properties": {
+            "path": {
+              "type": "string",
+              "pattern": "^/[A-Za-z0-9_./:*-]*$"
+            },
+            "componentId": {
+              "type": "string",
+              "minLength": 1
+            },
+            "requiresAuth": {
+              "type": "boolean"
+            },
+            "deepLink": {
+              "type": "boolean"
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "nodeList": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/node"
+      }
+    },
+    "uiIr": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "sourceSnapshotDigest",
+        "routes",
+        "views",
+        "components",
+        "states",
+        "actions",
+        "effects",
+        "forms",
+        "bindings",
+        "permissions",
+        "resources",
+        "designTokens",
+        "accessibility",
+        "nativeBoundaries",
+        "unknowns"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "sourceSnapshotDigest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "routes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/route"
+          }
+        },
+        "components": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/component"
+          }
+        },
+        "views": {
+          "$ref": "#/$defs/nodeList"
+        },
+        "states": {
+          "$ref": "#/$defs/nodeList"
+        },
+        "actions": {
+          "$ref": "#/$defs/nodeList"
+        },
+        "effects": {
+          "$ref": "#/$defs/nodeList"
+        },
+        "forms": {
+          "$ref": "#/$defs/nodeList"
+        },
+        "bindings": {
+          "$ref": "#/$defs/nodeList"
+        },
+        "permissions": {
+          "$ref": "#/$defs/nodeList"
+        },
+        "resources": {
+          "$ref": "#/$defs/nodeList"
+        },
+        "designTokens": {
+          "$ref": "#/$defs/nodeList"
+        },
+        "accessibility": {
+          "$ref": "#/$defs/nodeList"
+        },
+        "nativeBoundaries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/node"
+          }
+        },
+        "unknowns": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/node"
+          }
+        }
+      }
+    }
+  }
+}

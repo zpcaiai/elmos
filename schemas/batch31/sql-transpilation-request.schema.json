@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/batch31/sql-transpilation-request.schema.json",
+  "title": "ELMOS SQL transpilation request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "queryId",
+    "sourceProfile",
+    "targetProfile",
+    "sql",
+    "parameters"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0"
+    },
+    "queryId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "sourceProfile": {
+      "$ref": "#/$defs/profile"
+    },
+    "targetProfile": {
+      "$ref": "#/$defs/profile"
+    },
+    "sql": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1048576
+    },
+    "parameters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "logicalType",
+          "nullable"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "logicalType": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "nullable": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "profile": {
+      "enum": [
+        "postgresql-17.5",
+        "postgresql-18.4",
+        "mysql-8.4.10-lts",
+        "sqlserver-2022-cu26",
+        "oracle-26ai-ee",
+        "sqlite-3.53.3",
+        "duckdb-1.5.4"
+      ]
+    }
+  }
+}

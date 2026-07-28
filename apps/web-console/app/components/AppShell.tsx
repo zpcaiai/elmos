@@ -11,6 +11,7 @@ const navigation: Array<{ href: string; label: string; hint: string; icon: IconN
   { href: "/translation", label: "全库跨语言转换", hint: "Directed routes", icon: "code" },
   { href: "/generation", label: "多语言项目生成", hint: "Project synthesis", icon: "spark" },
   { href: "/migration", label: "迁移工坊", hint: "Migration", icon: "route" },
+  { href: "/pricing", label: "套餐与用量", hint: "Plans & usage", icon: "layers" },
   { href: "/commercialization", label: "商业化控制面", hint: "Control plane", icon: "shield" },
   { href: "/skills", label: "Skills 与验证", hint: "Qualification", icon: "test" },
 ];
@@ -26,6 +27,7 @@ const commands = [
   { href: "/migration", label: "查看 M36 开发者工作流", hint: "IDE / CLI / PR Bot", icon: "spark" as IconName, group: "能力", keywords: "M36 开发者 IDE CLI PR Bot" },
   { href: "/migration", label: "查看 M37 扩展 Marketplace", hint: "SDK / Signing / Revocation", icon: "box" as IconName, group: "能力", keywords: "M37 Marketplace SDK 签名 撤销" },
   { href: "/commercialization", label: "查看 B34–B38 可信链", hint: "Tenant / Runner / Evidence / Policy", icon: "shield" as IconName, group: "能力", keywords: "B34 B35 B36 B37 B38 租户 runner 证据 授权" },
+  { href: "/pricing", label: "比较人民币套餐", hint: "免费体验 / 月付 / 年付", icon: "layers" as IconName, group: "商业", keywords: "套餐 价格 人民币 token credit 免费 月付 年付" },
   { href: "/generation", label: "创建多语言项目草稿", hint: "Java / Python / C#", icon: "spark" as IconName, group: "能力", keywords: "生成 项目 synthesis Java Spring Python FastAPI C# ASP.NET" },
   { href: "/skills", label: "查看 Batch 1–55 双命名空间", hint: "1,824 Skills / 408 cases", icon: "test" as IconName, group: "验证", keywords: "Batch 1 55 1824 408 strict cases" },
 ];

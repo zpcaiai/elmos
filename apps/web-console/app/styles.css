@@ -810,6 +810,48 @@ kbd { min-width: 22px; display: inline-grid; place-items: center; padding: 3px 6
 .repository-plan-import dt { color: var(--muted); font-size: 8px; }
 .repository-plan-import dd { overflow: hidden; margin: 3px 0 0; color: var(--ink); font: 700 9px ui-monospace,monospace; text-overflow: ellipsis; white-space: nowrap; }
 .repository-plan-import > small { grid-column: 1 / -1; color: var(--muted); font-size: 8px; line-height: 1.5; }
+.repository-plan-import label.button-disabled { cursor: not-allowed; opacity: .55; }
+.route-matrix-row button.route-not-run { color: var(--muted); }
+.route-matrix-row button:disabled { cursor: not-allowed; color: #a8b1b4; }
+.route-matrix-row button:disabled:hover { background: white; transform: none; }
+.route-empty-detail { margin: 17px 0 0; color: var(--muted); font-size: 9px; line-height: 1.6; }
+
+.work-unit-card { padding: 25px; }
+.work-unit-summary { margin: 17px 0 0; color: var(--muted); font-size: 9px; line-height: 1.6; }
+.work-unit-toolbar { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 10px; margin-top: 15px; }
+.work-unit-toolbar label { display: flex; flex: 1 1 260px; flex-direction: column; gap: 7px; }
+.work-unit-toolbar label > span { color: var(--ink-soft); font-size: 10px; font-weight: 750; }
+.work-unit-toolbar input { width: 100%; min-height: 43px; padding: 0 12px; border: 1px solid var(--line-strong); border-radius: 9px; outline: 0; background: white; color: var(--ink); font-size: 11px; }
+.work-unit-toolbar input:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(22,123,123,.1); }
+.work-unit-table { margin-top: 15px; border: 1px solid var(--line); border-radius: 10px; overflow-x: auto; }
+.work-unit-row { display: grid; grid-template-columns: minmax(180px,2.2fr) 84px 64px minmax(150px,1fr) minmax(160px,1.4fr); min-width: 700px; }
+.work-unit-row + .work-unit-row { border-top: 1px solid var(--line); }
+.work-unit-row > span { min-width: 0; overflow: hidden; padding: 9px 11px; color: var(--ink-soft); font-size: 8px; line-height: 1.5; text-overflow: ellipsis; white-space: nowrap; }
+.work-unit-head > span { background: #eef3f4; color: var(--muted); font-weight: 800; }
+.work-unit-pager { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 12px; }
+.work-unit-pager small { color: var(--muted); font-size: 8px; }
+
+.discovery-import { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; gap: 10px; margin-top: 15px; padding: 13px; border: 1px solid var(--line); border-radius: 10px; background: #f7fbfb; }
+.discovery-import > div { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.discovery-import > div > span { color: var(--ink-soft); font-size: 10px; font-weight: 750; }
+.discovery-import label { position: relative; display: inline-flex; align-items: center; cursor: pointer; }
+.discovery-import label.button-disabled { cursor: not-allowed; opacity: .55; }
+.discovery-import label input { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
+.discovery-import dl { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fit,minmax(110px,1fr)); gap: 8px; margin: 0; }
+.discovery-import dl div { min-width: 0; padding: 8px; border-radius: 7px; background: white; }
+.discovery-import dt { overflow: hidden; color: var(--muted); font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+.discovery-import dd { margin: 3px 0 0; color: var(--ink); font: 700 11px ui-monospace,monospace; }
+.discovery-import > small { grid-column: 1 / -1; color: var(--muted); font-size: 8px; line-height: 1.5; }
+
+.spring-route-catalog { padding: 25px; }
+.spring-route-intro { margin: 17px 0 0; color: var(--muted); font-size: 9px; line-height: 1.6; }
+.spring-route-table { margin-top: 15px; border: 1px solid var(--line); border-radius: 10px; overflow-x: auto; }
+.spring-route-row { display: grid; grid-template-columns: minmax(150px,1.5fr) minmax(80px,.8fr) minmax(72px,.7fr) minmax(140px,1.3fr) minmax(150px,1.5fr); min-width: 640px; }
+.spring-route-row + .spring-route-row { border-top: 1px solid var(--line); }
+.spring-route-row > span { min-width: 0; overflow: hidden; padding: 9px 11px; color: var(--ink-soft); font-size: 8px; line-height: 1.5; text-overflow: ellipsis; white-space: nowrap; }
+.spring-route-head > span { background: #eef3f4; color: var(--muted); font-weight: 800; }
+.spring-route-verified > span { background: var(--cyan-soft); color: var(--cyan-dark); font-weight: 700; }
+.spring-route-table:focus-visible, .work-unit-table:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
 
 .spinning { animation: spin .8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }

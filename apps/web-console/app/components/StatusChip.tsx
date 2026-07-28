@@ -12,6 +12,10 @@ const statusLabels: Record<string, string> = {
   CONDITIONAL: "条件选择",
   REVIEW: "待审阅",
   DRAFT: "草稿",
+  SUPPORTED: "已支持",
+  CERTIFIED: "已认证",
+  PASSED: "已通过",
+  FAILED: "已失败",
   LIVE_API: "实时 API",
   REPOSITORY_CONTRACT: "仓库契约",
 };

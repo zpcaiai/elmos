@@ -7,13 +7,19 @@ import java.util.Map;
 final class SpringUpgradeModels {
     private SpringUpgradeModels() {}
 
+    /*
+     * These constants describe the one route that carries recorded end-to-end
+     * local execution evidence. Every other supported source line lives in
+     * SpringRouteCatalog; nothing in the pipeline may assume the source tuple
+     * equals the constants below.
+     */
     static final String PACK_KEY = "spring-boot-2-7-18-to-3-5-3";
     static final String SOURCE_BOOT = "2.7.18";
     static final String SOURCE_JAVA = "17";
-    static final String TARGET_BOOT = "3.5.3";
-    static final String TARGET_JAVA = "21";
-    static final String REWRITE_SPRING = "6.35.0";
-    static final String REWRITE_MAVEN_PLUGIN = "6.44.0";
+    static final String TARGET_BOOT = SpringRouteCatalog.TARGET_BOOT;
+    static final String TARGET_JAVA = SpringRouteCatalog.TARGET_JAVA;
+    static final String REWRITE_SPRING = SpringRouteCatalog.REWRITE_SPRING;
+    static final String REWRITE_MAVEN_PLUGIN = SpringRouteCatalog.REWRITE_MAVEN_PLUGIN;
 
     enum SourceMode { PUBLIC_GIT, MATERIALIZED_SNAPSHOT }
     enum RunStatus { QUEUED, RUNNING, SUCCEEDED, FAILED, BLOCKED, CANCELLED }

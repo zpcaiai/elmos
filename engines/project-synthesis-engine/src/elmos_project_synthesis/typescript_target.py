@@ -47,6 +47,10 @@ def _dto(entity: EntitySpec) -> str:
 
 
 def render_typescript(request: SynthesisRequest, port: int) -> dict[str, str]:
+    if request.requires_database or request.requires_authentication:
+        from .typescript_production_target import render_typescript_production
+
+        return render_typescript_production(request, port)
     dto_blocks = "\n\n".join(_dto(entity) for entity in request.entities)
     imports = ", ".join(
         name for entity in request.entities for name in (pascal(entity.singular), f"{pascal(entity.singular)}Upsert")

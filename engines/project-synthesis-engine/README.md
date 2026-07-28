@@ -5,6 +5,24 @@ hash-bound requirement baseline and then generates independent Java, Python,
 C#, TypeScript, Go, Kotlin, PHP, and Rust starter projects. Drafting does not
 generate code; generation requires a reviewed approval artifact.
 
+## Coding Agent model catalog
+
+Unlike the Spring `rewrite-spring` long-tail repair step and cross-language
+lowering (Batch 5) — both of which now have a real, in-process
+`ModelEndpointProvisioning` call behind a disabled-by-default port (see
+[ADR-0059](../../docs/adr/ADR-0059-coding-agent-model-catalog.md)) — this
+engine has no runtime call to any model at all, by design: "Drafting does
+not generate code; generation requires a reviewed approval artifact," and
+every emitter under `src/elmos_project_synthesis/` is a deterministic
+template, not an agent call. The "Coding Agent" for this business line is
+the external drafting session (a human, or an agent such as the
+`$elmos-project-synthesis` Skill) that turns natural language into the
+approved, hash-bound `SynthesisRequest` *before* this engine ever runs —
+that session can read `engines/ai-platform-engine/policies/model-catalog-v1.json`
+directly like any other file; there is nothing for this Python package to
+provision at generation time, and adding an in-process provisioning class
+here would misrepresent this engine's architecture rather than describe it.
+
 ## Prerequisites
 
 - Python 3.12–3.14
@@ -142,15 +160,17 @@ is not written to browser storage, and a tenant/actor mismatch fails closed.
 
 ## Evidence boundary
 
-All eight emitters accept the exact `api` + `in-memory` + `auth=none` starter.
-Java, Python and C# are `limited`; TypeScript, Go, Kotlin, PHP and Rust are
-`experimental`. Python also accepts the exact PostgreSQL 17.5 + JWT/OIDC
-production profile. That profile emits executable default-deny authorization,
+All eight emitters accept the exact `api` + `in-memory` + `auth=none` starter
+and the exact PostgreSQL 17.5 + JWT/OIDC production profile. The production
+profile emits executable default-deny authorization,
 tenant-bound queries plus forced PostgreSQL RLS, forward migrations, file-based
 Secret references, Prometheus metrics, structured request logs, Kubernetes
 security/network policy, SLO definitions, and backup/restore runbooks.
-Uncompiled rules, ambiguous production relations and every unsupported
-profile/target tuple fail closed.
+Java and Python accept multi-entity production requests; Go, TypeScript, C#,
+Kotlin, PHP, and Rust currently enforce an explicit single-entity production
+boundary. Uncompiled rules, ambiguous production relations, multi-entity
+requests outside that exact boundary, and every unsupported profile/target
+tuple fail closed.
 
 The portable starter acceptance executes every exact toolchain available on the
 current host and preserves unavailable targets as `NOT_RUN`:
@@ -173,11 +193,13 @@ failures; the first unseen `pyproject.toml` still requires a pre-warmed cache or
 authorized package-index access, so this is not a claim of arbitrary offline
 execution.
 
-The two local production-profile paths are replayable separately:
+Every local production-profile path is replayable separately, or as the full
+16-case matrix:
 
 ```bash
-uv run python scripts/run_production_acceptance.py --auth-mode jwt
-uv run python scripts/run_production_acceptance.py --auth-mode oidc
+uv run python scripts/run_production_acceptance.py --language java --auth-mode jwt
+uv run python scripts/run_production_acceptance.py --language rust --auth-mode oidc
+uv run python scripts/run_production_matrix.py
 ```
 
 Each command generates a fresh managed workspace and requires the exact local

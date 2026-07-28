@@ -85,6 +85,10 @@ def _rust_status_call(method: str, uri: str, payload: str | None) -> str:
 
 
 def render_rust(request: SynthesisRequest, port: int) -> dict[str, str]:
+    if request.requires_database or request.requires_authentication:
+        from .rust_production_target import render_rust_production
+
+        return render_rust_production(request, port)
     model_blocks: list[str] = []
     state_fields: list[str] = []
     route_lines: list[str] = []

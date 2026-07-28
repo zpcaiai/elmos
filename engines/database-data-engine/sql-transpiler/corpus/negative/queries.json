@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "negative",
+  "authority": "ELMOS synthetic negative corpus",
+  "cases": [
+    {
+      "id": "NEG-PG17-001",
+      "sourceProfile": "postgresql-17.5",
+      "sql": "SELECT * FROM",
+      "expected": "BLOCKED"
+    },
+    {
+      "id": "NEG-PG-001",
+      "sourceProfile": "postgresql-18.4",
+      "sql": "SELECT * FROM",
+      "expected": "BLOCKED"
+    },
+    {
+      "id": "NEG-MY-001",
+      "sourceProfile": "mysql-8.4.10-lts",
+      "sql": "SELECT * FROM",
+      "expected": "BLOCKED"
+    },
+    {
+      "id": "NEG-MS-001",
+      "sourceProfile": "sqlserver-2022-cu26",
+      "sql": "SELECT * FROM",
+      "expected": "BLOCKED"
+    },
+    {
+      "id": "NEG-OR-001",
+      "sourceProfile": "oracle-26ai-ee",
+      "sql": "SELECT * FROM",
+      "expected": "BLOCKED"
+    },
+    {
+      "id": "NEG-SQ-001",
+      "sourceProfile": "sqlite-3.53.3",
+      "sql": "SELECT * FROM",
+      "expected": "BLOCKED"
+    },
+    {
+      "id": "NEG-DU-001",
+      "sourceProfile": "duckdb-1.5.4",
+      "sql": "SELECT * FROM",
+      "expected": "BLOCKED"
+    },
+    {
+      "id": "NEG-MY-SQ-GROUP-CONCAT",
+      "sourceProfile": "mysql-8.4.10-lts",
+      "targets": [
+        "sqlite-3.53.3"
+      ],
+      "sql": "SELECT GROUP_CONCAT(name ORDER BY name SEPARATOR ',') FROM customers",
+      "expected": "BLOCKED"
+    },
+    {
+      "id": "NEG-OR-MY-DATE-TRUNC",
+      "sourceProfile": "oracle-26ai-ee",
+      "targets": [
+        "mysql-8.4.10-lts"
+      ],
+      "sql": "SELECT TRUNC(created_at, 'MM') FROM orders",
+      "expected": "BLOCKED"
+    }
+  ]
+}

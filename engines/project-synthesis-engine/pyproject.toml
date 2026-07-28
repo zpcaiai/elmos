@@ -1,9 +1,9 @@
 [project]
 name = "elmos-project-synthesis"
-version = "1.2.0"
+version = "1.3.0"
 description = "Evidence-bounded ELMOS project synthesis engine"
 requires-python = ">=3.12,<3.15"
-dependencies = ["cryptography==46.0.3"]
+dependencies = []
 
 [project.scripts]
 elmos-project-synthesis = "elmos_project_synthesis.cli:main"
@@ -34,6 +34,14 @@ line-length = 120
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "S"]
 ignore = ["S101"]
+
+[tool.ruff.lint.per-file-ignores]
+# production_runtime.py emits one large f-string containing the provisioning
+# script. Its GRANT and CREATE ROLE statements name only the fixed schema,
+# database and role identifiers declared in production_contract.py, and no
+# request text reaches them. The rule fires on the enclosing multiline literal,
+# which cannot carry an inline noqa.
+"src/elmos_project_synthesis/production_runtime.py" = ["S608"]
 
 [tool.mypy]
 python_version = "3.12"

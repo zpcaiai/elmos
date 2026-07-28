@@ -1,0 +1,276 @@
+.page {
+  --pricing-navy: #132b2f;
+  --pricing-teal: #137c7b;
+  --pricing-mint: #e6f6f3;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(330px, .6fr);
+  align-items: center;
+  gap: 36px;
+  min-height: 260px;
+  padding: 44px 48px;
+  overflow: hidden;
+  border-radius: 20px;
+  color: white;
+  background:
+    radial-gradient(circle at 84% 18%, rgba(109, 211, 197, .22), transparent 30%),
+    linear-gradient(135deg, #10272b 0%, #17383b 100%);
+}
+
+.hero h1 {
+  max-width: 720px;
+  margin: 8px 0 14px;
+  font-size: clamp(32px, 4vw, 50px);
+  line-height: 1.08;
+  letter-spacing: -.05em;
+}
+
+.hero p {
+  max-width: 730px;
+  margin: 0;
+  color: #c1d2d2;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.heroFacts {
+  display: grid;
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, .11);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .08);
+}
+
+.heroFacts div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px 20px;
+  background: rgba(6, 25, 28, .42);
+}
+
+.heroFacts strong { color: #d8f4ef; font-size: 21px; }
+.heroFacts span { color: #9db3b4; font-size: 11px; }
+
+.statusNotice {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 13px;
+  padding: 14px 17px;
+  border: 1px solid #ead7a7;
+  border-radius: 12px;
+  color: #72581d;
+  background: #fff9e9;
+}
+
+.statusNotice div { display: flex; flex-direction: column; gap: 3px; }
+.statusNotice strong { font-size: 11px; }
+.statusNotice span { color: #8d7440; font-size: 10px; line-height: 1.5; }
+.statusNotice a { display: inline-flex; align-items: center; gap: 6px; color: #755913; font-size: 10px; font-weight: 750; white-space: nowrap; }
+
+.planGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 15px;
+}
+
+.planCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 27px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: white;
+  box-shadow: var(--shadow-sm);
+}
+
+.planCard.featured {
+  border-color: #67aaa4;
+  box-shadow: 0 16px 38px rgba(17, 82, 82, .12), inset 0 3px 0 #4eaaa1;
+}
+
+.recommended {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  padding: 5px 9px;
+  border-radius: 999px;
+  color: #0b5e5c;
+  background: var(--pricing-mint);
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.planCard h3 {
+  margin: 9px 0 7px;
+  font-size: 23px;
+  letter-spacing: -.035em;
+}
+
+.planDescription {
+  min-height: 63px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.priceLine {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  margin-top: 17px;
+}
+
+.priceLine strong { color: var(--pricing-navy); font-size: 34px; letter-spacing: -.045em; }
+.priceLine span { color: var(--muted); font-size: 10px; }
+
+.savings {
+  min-height: 18px;
+  margin: 6px 0 15px;
+  color: #277c75;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.quotaPanel {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid #d7e8e5;
+  border-radius: 11px;
+  background: #d7e8e5;
+}
+
+.quotaPanel div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px;
+  background: #f3faf8;
+}
+
+.quotaPanel span { color: #5e7475; font-size: 9px; font-weight: 700; }
+.quotaPanel strong { color: #125f5d; font-size: 17px; }
+.quotaPanel small { color: #829596; font-size: 8px; }
+
+.annualCeiling {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 8px;
+  text-align: center;
+}
+
+.featureList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 20px 0 24px;
+  padding: 0;
+  list-style: none;
+}
+
+.featureList li {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--ink-soft);
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.featureList svg { flex: 0 0 auto; color: #22857e; }
+.planAction { width: 100%; margin-top: auto; }
+
+.meterSection {
+  display: grid;
+  grid-template-columns: minmax(0, .8fr) minmax(440px, 1.2fr);
+  gap: 30px;
+  padding: 28px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: white;
+  box-shadow: var(--shadow-sm);
+}
+
+.meterIntro h2, .rules h2 { margin: 7px 0 10px; font-size: 22px; letter-spacing: -.03em; }
+.meterIntro p { margin: 0; color: var(--muted); font-size: 11px; line-height: 1.75; }
+
+.rateTable {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+}
+
+.rateHead, .rateRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 180px;
+  align-items: center;
+  gap: 16px;
+  padding: 11px 14px;
+}
+
+.rateHead { color: var(--muted); background: var(--surface-soft); font-size: 8px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.rateRow { border-top: 1px solid var(--line); color: var(--ink-soft); font-size: 10px; }
+.rateRow strong { color: #176e69; font-size: 10px; text-align: right; }
+
+.rules {
+  display: grid;
+  grid-template-columns: minmax(190px, .35fr) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 28px;
+  padding: 25px 28px;
+  border: 1px solid #cee2df;
+  border-radius: 16px;
+  background: #f4faf9;
+}
+
+.rules ul {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rules li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  color: #526a6b;
+  font-size: 9px;
+  line-height: 1.55;
+}
+
+.rules li svg { flex: 0 0 auto; color: #438c86; }
+
+@media (max-width: 1120px) {
+  .hero { grid-template-columns: 1fr; }
+  .heroFacts { grid-template-columns: repeat(3, 1fr); }
+  .heroFacts div { align-items: flex-start; flex-direction: column; }
+  .planGrid { grid-template-columns: 1fr; }
+  .planDescription { min-height: 0; }
+  .meterSection { grid-template-columns: 1fr; }
+  .rules { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 700px) {
+  .hero { min-height: 0; padding: 30px 24px; }
+  .heroFacts { grid-template-columns: 1fr; }
+  .statusNotice { grid-template-columns: auto 1fr; }
+  .statusNotice a { grid-column: 2; }
+  .planCard { padding: 23px; }
+  .meterSection { padding: 22px; }
+  .rateHead, .rateRow { grid-template-columns: minmax(0, 1fr) 135px; }
+  .rules ul { grid-template-columns: 1fr; }
+}

@@ -31,6 +31,10 @@ def _csharp_type(field: FieldSpec) -> str:
 
 
 def render_dotnet(request: SynthesisRequest, port: int) -> dict[str, str]:
+    if request.requires_database or request.requires_authentication:
+        from .dotnet_production_target import render_dotnet_production
+
+        return render_dotnet_production(request, port)
     project_class = request.project_class
     api_project = f"{project_class}.Api"
     test_project = f"{project_class}.Api.Tests"

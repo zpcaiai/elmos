@@ -3,6 +3,9 @@
   "engine": "elmos.project-synthesis",
   "engine_contract_version": "1.2.0",
   "scope": "bundled-api-emitter",
+  "local_execution_status": "PASSED_LOCAL",
+  "local_evidence": "docs/project-synthesis/local-production-profile-matrix.json",
+  "independent_verification_status": "NOT_RUN",
   "claim_ceiling": "limited",
   "profiles": [
     {
@@ -12,7 +15,13 @@
       "toolchain": "Java 21 / Maven 3.9.10",
       "source_skill": "PG077-PG088",
       "maturity": "limited",
-      "required_evidence": ["exact-toolchain", "build", "unit-test", "startup-probe"]
+      "required_evidence": [
+        "exact-toolchain",
+        "build",
+        "unit-test",
+        "startup-probe",
+        "postgresql-integration"
+      ]
     },
     {
       "language": "python",
@@ -21,7 +30,15 @@
       "toolchain": "Python 3.12 / uv 0.11.16",
       "source_skill": "PG089-PG100",
       "maturity": "limited",
-      "required_evidence": ["exact-toolchain", "lock-sync", "lint", "type-check", "unit-test", "startup-probe"]
+      "required_evidence": [
+        "exact-toolchain",
+        "lock-sync",
+        "lint",
+        "type-check",
+        "unit-test",
+        "startup-probe",
+        "postgresql-integration"
+      ]
     },
     {
       "language": "csharp",
@@ -30,7 +47,14 @@
       "toolchain": ".NET SDK 10.0.301",
       "source_skill": "PG101-PG112",
       "maturity": "limited",
-      "required_evidence": ["exact-toolchain", "restore", "build", "unit-test", "startup-probe"]
+      "required_evidence": [
+        "exact-toolchain",
+        "restore",
+        "build",
+        "unit-test",
+        "startup-probe",
+        "postgresql-integration"
+      ]
     },
     {
       "language": "typescript",
@@ -38,8 +62,16 @@
       "runtime": "26.0.0",
       "toolchain": "Node 26.0.0 / pnpm 10.12.4",
       "source_skill": "PG226",
-      "maturity": "experimental",
-      "required_evidence": ["exact-toolchain", "locked-install", "type-check", "unit-test", "build", "startup-probe"]
+      "maturity": "limited",
+      "required_evidence": [
+        "exact-toolchain",
+        "locked-install",
+        "type-check",
+        "unit-test",
+        "build",
+        "startup-probe",
+        "postgresql-integration"
+      ]
     },
     {
       "language": "go",
@@ -47,8 +79,16 @@
       "runtime": "1.25.0",
       "toolchain": "Go 1.25.0",
       "source_skill": "PG237",
-      "maturity": "experimental",
-      "required_evidence": ["exact-toolchain", "format", "vet", "race-test", "build", "startup-probe"]
+      "maturity": "limited",
+      "required_evidence": [
+        "exact-toolchain",
+        "format",
+        "vet",
+        "race-test",
+        "build",
+        "startup-probe",
+        "postgresql-integration"
+      ]
     },
     {
       "language": "kotlin",
@@ -56,8 +96,15 @@
       "runtime": "2.2.20",
       "toolchain": "Kotlin 2.2.20 / Java 21 / Gradle 8.14.3",
       "source_skill": "PG250",
-      "maturity": "experimental",
-      "required_evidence": ["exact-toolchain", "locked-dependency-resolution", "unit-test", "build", "startup-probe"]
+      "maturity": "limited",
+      "required_evidence": [
+        "exact-toolchain",
+        "locked-dependency-resolution",
+        "unit-test",
+        "build",
+        "startup-probe",
+        "postgresql-integration"
+      ]
     },
     {
       "language": "php",
@@ -65,8 +112,14 @@
       "runtime": "8.4.12",
       "toolchain": "PHP 8.4.12",
       "source_skill": "PG263",
-      "maturity": "experimental",
-      "required_evidence": ["exact-toolchain", "syntax", "unit-test", "startup-probe"]
+      "maturity": "limited",
+      "required_evidence": [
+        "exact-toolchain",
+        "syntax",
+        "unit-test",
+        "startup-probe",
+        "postgresql-integration"
+      ]
     },
     {
       "language": "rust",
@@ -74,8 +127,16 @@
       "runtime": "1.89.0",
       "toolchain": "Rust 1.89.0 / Cargo 1.89.0",
       "source_skill": "PG287",
-      "maturity": "experimental",
-      "required_evidence": ["exact-toolchain", "format", "clippy", "unit-test", "release-build", "startup-probe"]
+      "maturity": "limited",
+      "required_evidence": [
+        "exact-toolchain",
+        "format",
+        "clippy",
+        "unit-test",
+        "release-build",
+        "startup-probe",
+        "postgresql-integration"
+      ]
     }
   ],
   "external_evidence_status": "NOT_RUN",

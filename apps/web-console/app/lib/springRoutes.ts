@@ -1,0 +1,86 @@
+import type { SpringRouteDescriptor } from "./contracts";
+
+/**
+ * Mirror of the Java engine's SpringRouteCatalog, used only when the engine
+ * proxy is not configured so the console can still show which legacy Spring
+ * lines the platform declares. Every entry keeps its declared evidence status;
+ * `scripts/operations/validate_spring_route_contract.py` fails the build if
+ * this mirror drifts from the engine catalog.
+ */
+export const springRouteCatalogFallback: SpringRouteDescriptor[] = [
+  {
+    routeId: "boot-1.5-java-8-maven-to-boot-3.5.3-java-21",
+    packKey: "spring-boot-1-5-to-3-5-3",
+    label: "Spring Boot 1.5.x / Java 8 / Maven",
+    buildTool: "maven",
+    sourceBootMinInclusive: "1.5.0",
+    sourceBootMaxExclusive: "2.0.0",
+    sourceJavaVersions: ["8"],
+    targetSpringBoot: "3.5.3",
+    targetJava: "21",
+    recipeId: "io.elmos.openrewrite.SpringBoot1_5ToBoot3_5_3Java21",
+    evidenceStatus: "NOT_RUN",
+    verifiedSourceSpringBoot: "",
+    verifiedSourceJava: "",
+  },
+  {
+    routeId: "boot-2.0-2.6-maven-to-boot-3.5.3-java-21",
+    packKey: "spring-boot-2-0-2-6-to-3-5-3",
+    label: "Spring Boot 2.0–2.6 / Java 8, 11, 17 / Maven",
+    buildTool: "maven",
+    sourceBootMinInclusive: "2.0.0",
+    sourceBootMaxExclusive: "2.7.0",
+    sourceJavaVersions: ["11", "17", "8"],
+    targetSpringBoot: "3.5.3",
+    targetJava: "21",
+    recipeId: "io.elmos.openrewrite.SpringBoot2_0To2_6ToBoot3_5_3Java21",
+    evidenceStatus: "NOT_RUN",
+    verifiedSourceSpringBoot: "",
+    verifiedSourceJava: "",
+  },
+  {
+    routeId: "boot-2.7-maven-to-boot-3.5.3-java-21",
+    packKey: "spring-boot-2-7-18-to-3-5-3",
+    label: "Spring Boot 2.7.x / Java 8, 11, 17 / Maven",
+    buildTool: "maven",
+    sourceBootMinInclusive: "2.7.0",
+    sourceBootMaxExclusive: "2.8.0",
+    sourceJavaVersions: ["11", "17", "8"],
+    targetSpringBoot: "3.5.3",
+    targetJava: "21",
+    recipeId: "io.elmos.openrewrite.SpringBoot2_7_18To3_5_3Java21",
+    evidenceStatus: "PASSED_LOCAL",
+    verifiedSourceSpringBoot: "2.7.18",
+    verifiedSourceJava: "17",
+  },
+  {
+    routeId: "boot-3.0-3.4-maven-to-boot-3.5.3-java-21",
+    packKey: "spring-boot-3-0-3-4-to-3-5-3",
+    label: "Spring Boot 3.0–3.4 / Java 17, 21 / Maven",
+    buildTool: "maven",
+    sourceBootMinInclusive: "3.0.0",
+    sourceBootMaxExclusive: "3.5.0",
+    sourceJavaVersions: ["17", "21"],
+    targetSpringBoot: "3.5.3",
+    targetJava: "21",
+    recipeId: "io.elmos.openrewrite.SpringBoot3_0To3_4ToBoot3_5_3Java21",
+    evidenceStatus: "NOT_RUN",
+    verifiedSourceSpringBoot: "",
+    verifiedSourceJava: "",
+  },
+  {
+    routeId: "boot-2.x-gradle-to-boot-3.5.3-java-21",
+    packKey: "spring-boot-2-x-gradle-to-3-5-3",
+    label: "Spring Boot 2.x / Gradle",
+    buildTool: "gradle",
+    sourceBootMinInclusive: "1.5.0",
+    sourceBootMaxExclusive: "3.5.0",
+    sourceJavaVersions: ["11", "17", "8"],
+    targetSpringBoot: "3.5.3",
+    targetJava: "21",
+    recipeId: "",
+    evidenceStatus: "NOT_IMPLEMENTED",
+    verifiedSourceSpringBoot: "",
+    verifiedSourceJava: "",
+  },
+];

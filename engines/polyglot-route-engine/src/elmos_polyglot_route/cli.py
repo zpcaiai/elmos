@@ -2,11 +2,19 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
+from typing import Any
 
+from .assembly import assemble_project, verify_assembled_project
+from .batch import run_batch
+from .discovery import discover_repository, write_report
 from .engine import migrate
 from .models import SUPPORTED_LANGUAGES, RouteError
 from .repository import plan_repository
+from .single_unit import check_only, emit_only
+
+SUBCOMMANDS = ("inventory", "discover", "batch", "assemble", "emit", "check")
 
 
 def _migration_parser() -> argparse.ArgumentParser:
@@ -30,38 +38,155 @@ def _inventory_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main(argv: list[str] | None = None) -> int:
-    arguments = list(argv) if argv is not None else None
-    inventory_mode = bool(arguments and arguments[0] == "inventory")
-    if arguments is None:
-        import sys
+def _discover_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(prog="elmos-polyglot-route discover")
+    parser.add_argument("--repository", type=Path, required=True)
+    parser.add_argument("--plan", type=Path, required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument(
+        "--limit",
+        type=int,
+        default=None,
+        help="Classify only the first N work units; the remainder stays undiscovered.",
+    )
+    return parser
 
-        arguments = sys.argv[1:]
-        inventory_mode = bool(arguments and arguments[0] == "inventory")
-    if inventory_mode:
-        args = _inventory_parser().parse_args(arguments[1:])
-        try:
-            if args.output.exists():
+
+def _batch_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(prog="elmos-polyglot-route batch")
+    parser.add_argument("--repository", type=Path, required=True)
+    parser.add_argument("--discovery", type=Path, required=True)
+    parser.add_argument("--cases-directory", type=Path, required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument(
+        "--limit",
+        type=int,
+        default=None,
+        help="Attempt only the first N discovered units; the batch stays PARTIAL.",
+    )
+    return parser
+
+
+def _assemble_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(prog="elmos-polyglot-route assemble")
+    parser.add_argument("--batch-report", type=Path, required=True)
+    parser.add_argument("--batch-output", type=Path, required=True)
+    parser.add_argument("--destination", type=Path, required=True)
+    parser.add_argument(
+        "--verify",
+        action="store_true",
+        help="Also run a real whole-project build/compile check after assembling.",
+    )
+    return parser
+
+
+def _emit_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(prog="elmos-polyglot-route emit")
+    parser.add_argument("--source", type=Path, required=True)
+    parser.add_argument("--source-language", choices=SUPPORTED_LANGUAGES, required=True)
+    parser.add_argument("--target-language", choices=SUPPORTED_LANGUAGES, required=True)
+    parser.add_argument("--function", required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    return parser
+
+
+def _check_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(prog="elmos-polyglot-route check")
+    parser.add_argument("--target-language", choices=SUPPORTED_LANGUAGES, required=True)
+    parser.add_argument("--file", type=Path, required=True, help="Path to the already-emitted file to check.")
+    parser.add_argument("--output", type=Path, required=True)
+    return parser
+
+
+def _load_json(path: Path) -> dict[str, Any]:
+    value = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(value, dict):
+        raise RouteError("JSON_OBJECT_REQUIRED")
+    return value
+
+
+def _emit(result: dict[str, Any]) -> int:
+    print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
+    return 0
+
+
+def main(argv: list[str] | None = None) -> int:
+    arguments = list(argv) if argv is not None else sys.argv[1:]
+    subcommand = arguments[0] if arguments and arguments[0] in SUBCOMMANDS else None
+    remainder = arguments[1:] if subcommand else arguments
+
+    try:
+        if subcommand == "inventory":
+            inventory_args = _inventory_parser().parse_args(remainder)
+            if inventory_args.output.exists():
                 raise RouteError("INVENTORY_OUTPUT_ALREADY_EXISTS")
             result = plan_repository(
-                args.repository,
-                args.repository_ref,
-                args.source_language,
-                args.target_language,
+                inventory_args.repository,
+                inventory_args.repository_ref,
+                inventory_args.source_language,
+                inventory_args.target_language,
             )
-            args.output.parent.mkdir(parents=True, exist_ok=True)
-            args.output.write_text(
+            inventory_args.output.parent.mkdir(parents=True, exist_ok=True)
+            inventory_args.output.write_text(
                 json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
                 encoding="utf-8",
             )
-        except (OSError, ValueError, RouteError, RuntimeError, json.JSONDecodeError) as error:
-            print(json.dumps({"status": "BLOCKED", "reason": str(error)}, ensure_ascii=False))
-            return 2
-        print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
-        return 0
+            return _emit(result)
 
-    args = _migration_parser().parse_args(arguments)
-    try:
+        if subcommand == "discover":
+            discover_args = _discover_parser().parse_args(remainder)
+            if discover_args.limit is not None and discover_args.limit < 1:
+                raise RouteError("DISCOVERY_LIMIT_INVALID")
+            report = discover_repository(
+                _load_json(discover_args.plan),
+                discover_args.repository,
+                limit=discover_args.limit,
+            )
+            write_report(report, discover_args.output)
+            return _emit(report)
+
+        if subcommand == "batch":
+            batch_args = _batch_parser().parse_args(remainder)
+            if batch_args.limit is not None and batch_args.limit < 1:
+                raise RouteError("BATCH_LIMIT_INVALID")
+            report = run_batch(
+                _load_json(batch_args.discovery),
+                batch_args.repository,
+                batch_args.cases_directory,
+                batch_args.output,
+                limit=batch_args.limit,
+            )
+            return _emit(report)
+
+        if subcommand == "assemble":
+            assemble_args = _assemble_parser().parse_args(remainder)
+            manifest = assemble_project(
+                _load_json(assemble_args.batch_report),
+                assemble_args.batch_output,
+                assemble_args.destination,
+            )
+            if assemble_args.verify:
+                manifest = verify_assembled_project(manifest["target_language"], assemble_args.destination)
+            return _emit(manifest)
+
+        if subcommand == "emit":
+            emit_args = _emit_parser().parse_args(remainder)
+            report = emit_only(
+                emit_args.source,
+                emit_args.source_language,
+                emit_args.target_language,
+                emit_args.function,
+                emit_args.output,
+            )
+            return _emit(report)
+
+        if subcommand == "check":
+            check_args = _check_parser().parse_args(remainder)
+            content = check_args.file.read_text(encoding="utf-8")
+            report = check_only(check_args.target_language, content, check_args.output)
+            return _emit(report)
+
+        args = _migration_parser().parse_args(remainder)
         result = migrate(
             args.source,
             args.source_language,
@@ -70,11 +195,10 @@ def main(argv: list[str] | None = None) -> int:
             args.cases,
             args.output,
         )
+        return _emit(result)
     except (OSError, ValueError, RouteError, RuntimeError, json.JSONDecodeError) as error:
         print(json.dumps({"status": "BLOCKED", "reason": str(error)}, ensure_ascii=False))
         return 2
-    print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
-    return 0
 
 
 if __name__ == "__main__":

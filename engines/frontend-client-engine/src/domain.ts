@@ -1,6 +1,26 @@
-export type Framework = "ANGULARJS" | "ANGULAR" | "VUE2" | "VUE3" | "REACT" | "JQUERY" | "UNKNOWN";
-export type PackageManager = "NPM" | "YARN_CLASSIC" | "YARN_MODERN" | "PNPM" | "BOWER" | "MIXED" | "UNKNOWN";
-export type ClientPlatform = "WEB" | "DESKTOP" | "ANDROID" | "IOS";
+export type Framework =
+  | "ANGULARJS"
+  | "ANGULAR"
+  | "VUE2"
+  | "VUE3"
+  | "REACT"
+  | "REACT_NATIVE"
+  | "JQUERY"
+  | "FLUTTER"
+  | "HARMONY_ARKUI"
+  | "SVELTE"
+  | "UNKNOWN";
+export type PackageManager =
+  | "NPM"
+  | "YARN_CLASSIC"
+  | "YARN_MODERN"
+  | "PNPM"
+  | "BOWER"
+  | "PUB"
+  | "OHPM"
+  | "MIXED"
+  | "UNKNOWN";
+export type ClientPlatform = "WEB" | "DESKTOP" | "ANDROID" | "IOS" | "HARMONYOS";
 
 export type FrontendState =
   | "DISCOVERY"

@@ -3,4 +3,7 @@ export * from "./contracts.js";
 export * from "./domain.js";
 export * from "./engine.js";
 export * from "./planner.js";
+export * from "./project-generation.js";
+export * from "./project-profiles.js";
+export * from "./project-types.js";
 export * from "./quality.js";

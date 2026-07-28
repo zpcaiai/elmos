@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } fro
 import { Icon } from "../components/Icon";
 import { RuntimeDeploymentGuide } from "../components/RuntimeDeploymentGuide";
 import { StatusChip } from "../components/StatusChip";
+import type { SpringRouteDescriptor } from "../lib/contracts";
 import { springDeploymentGuidance } from "../lib/deploymentGuidance";
 
 type SourceMode = "PUBLIC_GIT" | "GITHUB_APP" | "MATERIALIZED_SNAPSHOT";
@@ -20,6 +21,8 @@ type Capability = {
   sourceTuple: { springBoot: string; java: string; build: string };
   targetTuple: { springBoot: string; java: string; build: string };
   openRewrite: { rewriteSpring: string; mavenPlugin: string };
+  routes?: SpringRouteDescriptor[];
+  experimentalRoutesRequireOptIn?: boolean;
   transformerConfigured: boolean;
   transformerReason: string;
   runtimeRunnerConfigured: boolean;
@@ -109,20 +112,36 @@ type GithubInstallationBegin = {
 type FeedbackKind = "success" | "error";
 
 const latestRunStorageKey = "elmos.spring.latest-run-id";
-const stageCards: Array<{ stages: Stage[]; title: string; detail: string }> = [
-  { stages: ["IMPORT_GIT"], title: "导入 Git 仓库", detail: "仅允许批准的 HTTPS Git host，拒绝 URL 凭证。" },
-  { stages: ["LOCK_SNAPSHOT"], title: "锁定 Commit / Snapshot", detail: "解析 40 位 Commit，并生成确定性内容摘要。" },
-  { stages: ["FINGERPRINT"], title: "精确版本识别", detail: "只接受 Boot 2.7.18、Java 17、Maven 精确路线。" },
-  { stages: ["SOURCE_BASELINE"], title: "源工程基线", detail: "在一次性副本中使用 Java 17 执行完整 Maven verify。" },
-  { stages: ["EXTRACT_FCM"], title: "提取 FCM", detail: "在转换前固化能力、来源映射、默认值与未知项。" },
-  { stages: ["OPENREWRITE"], title: "OpenRewrite 实际转换", detail: "固定 Rewrite Spring 6.35.0 与插件 6.44.0。" },
-  { stages: ["BUILD_AND_TEST", "DETERMINISTIC_REPAIR"], title: "编译 / 测试 / 修复", detail: "Java 21 真实测试；失败时最多一次确定性修复。" },
-  { stages: ["PACKAGE_ARTIFACT"], title: "候选项目打包", detail: "生成内容寻址 ZIP，尚不自动开放下载。" },
-  { stages: ["INDEPENDENT_VALIDATION"], title: "独立验证", detail: "另一验证器从 ZIP 新目录解包并执行 mvn verify。" },
-  { stages: ["READY"], title: "下载新项目", detail: "只有独立 PASS 后才开放下载。" },
-  { stages: ["START_APPLICATION", "HEALTH_CHECK"], title: "一键隔离启动", detail: "Java 21 启动、回环健康检查，未配置 Rootless 时拒绝。" },
-  { stages: ["STOP_APPLICATION"], title: "日志 / 停止 / 重试", detail: "实时脱敏日志、优雅停止与新的可追溯尝试。" },
-];
+
+/**
+ * Stage copy quotes the exact tuple the Java engine reports. When the
+ * capability contract has not been read, the copy says so rather than naming a
+ * version pair the console cannot confirm.
+ */
+function buildStageCards(capability: Capability | null): Array<{ stages: Stage[]; title: string; detail: string }> {
+  const source = capability
+    ? `Boot ${capability.sourceTuple.springBoot}、Java ${capability.sourceTuple.java}、${capability.sourceTuple.build}`
+    : "契约未读取的精确源元组";
+  const sourceJava = capability ? `Java ${capability.sourceTuple.java}` : "源 Java";
+  const targetJava = capability ? `Java ${capability.targetTuple.java}` : "目标 Java";
+  const rewrite = capability
+    ? `固定 Rewrite Spring ${capability.openRewrite.rewriteSpring} 与插件 ${capability.openRewrite.mavenPlugin}。`
+    : "固定 OpenRewrite 版本由 Engine 能力契约声明；契约未读取时不展示版本号。";
+  return [
+    { stages: ["IMPORT_GIT"], title: "导入 Git 仓库", detail: "仅允许批准的 HTTPS Git host，拒绝 URL 凭证。" },
+    { stages: ["LOCK_SNAPSHOT"], title: "锁定 Commit / Snapshot", detail: "解析 40 位 Commit，并生成确定性内容摘要。" },
+    { stages: ["FINGERPRINT"], title: "精确版本识别", detail: `只接受 ${source} 精确路线。` },
+    { stages: ["SOURCE_BASELINE"], title: "源工程基线", detail: `在一次性副本中使用 ${sourceJava} 执行完整 Maven verify。` },
+    { stages: ["EXTRACT_FCM"], title: "提取 FCM", detail: "在转换前固化能力、来源映射、默认值与未知项。" },
+    { stages: ["OPENREWRITE"], title: "OpenRewrite 实际转换", detail: rewrite },
+    { stages: ["BUILD_AND_TEST", "DETERMINISTIC_REPAIR"], title: "编译 / 测试 / 修复", detail: `${targetJava} 真实测试；失败时最多一次确定性修复。` },
+    { stages: ["PACKAGE_ARTIFACT"], title: "候选项目打包", detail: "生成内容寻址 ZIP，尚不自动开放下载。" },
+    { stages: ["INDEPENDENT_VALIDATION"], title: "独立验证", detail: "另一验证器从 ZIP 新目录解包并执行 mvn verify。" },
+    { stages: ["READY"], title: "下载新项目", detail: "只有独立 PASS 后才开放下载。" },
+    { stages: ["START_APPLICATION", "HEALTH_CHECK"], title: "一键隔离启动", detail: `${targetJava} 启动、回环健康检查，未配置 Rootless 时拒绝。` },
+    { stages: ["STOP_APPLICATION"], title: "日志 / 停止 / 重试", detail: "实时脱敏日志、优雅停止与新的可追溯尝试。" },
+  ];
+}
 
 const orderedStages: Stage[] = [
   "IMPORT_GIT", "LOCK_SNAPSHOT", "FINGERPRINT", "SOURCE_BASELINE", "EXTRACT_FCM",
@@ -259,6 +278,17 @@ export function SpringModernizationStudio() {
   );
   const runtimeReady = Boolean(capability?.runtimeRunnerConfigured);
   const lastStageIndex = run ? orderedStages.indexOf(run.stage) : -1;
+  // The exact tuple is owned by the Java engine capability contract. Until it
+  // has been read, the page shows that it is unknown instead of printing a
+  // version pair the console has not observed.
+  const lockedRouteLabel = capability
+    ? `Spring Boot ${capability.sourceTuple.springBoot} / Java ${capability.sourceTuple.java}`
+      + ` → Spring Boot ${capability.targetTuple.springBoot} / Java ${capability.targetTuple.java}`
+    : "精确转换路线未读取（UNKNOWN）";
+  const stageCards = useMemo(() => buildStageCards(capability), [capability]);
+  const artifactFileName = capability
+    ? `migrated-spring-boot-${capability.targetTuple.springBoot}.zip`
+    : "migrated-spring-boot.zip";
 
   const stageStatus = useCallback((stages: Stage[]) => {
     if (!run) return "NOT_RUN";
@@ -399,7 +429,7 @@ export function SpringModernizationStudio() {
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement("a");
       anchor.href = url;
-      anchor.download = "migrated-spring-boot-3.5.3.zip";
+      anchor.download = artifactFileName;
       anchor.click();
       URL.revokeObjectURL(url);
       notify("ZIP 的长度和 SHA-256 已在浏览器复算并与独立验证证据一致。");
@@ -431,9 +461,21 @@ export function SpringModernizationStudio() {
       </section>
 
       <section className="metric-grid metric-grid-four" aria-label="精确迁移路线">
-        <article className="metric-card"><span>源版本</span><strong className="metric-word">Boot 2.7.18</strong><small>Java 17 · Maven 3.9.11</small></article>
-        <article className="metric-card"><span>目标版本</span><strong className="metric-word">Boot 3.5.3</strong><small>Java 21 · Maven 3.9.11</small></article>
-        <article className="metric-card"><span>OpenRewrite</span><strong className="metric-word">6.35.0</strong><small>Plugin 6.44.0 · 固定 Recipes</small></article>
+        <article className="metric-card">
+          <span>源版本</span>
+          <strong className={`metric-word ${capability ? "" : "warning-text"}`}>{capability ? `Boot ${capability.sourceTuple.springBoot}` : "UNKNOWN"}</strong>
+          <small>{capability ? `Java ${capability.sourceTuple.java} · ${capability.sourceTuple.build}` : "能力契约未读取"}</small>
+        </article>
+        <article className="metric-card">
+          <span>目标版本</span>
+          <strong className={`metric-word ${capability ? "" : "warning-text"}`}>{capability ? `Boot ${capability.targetTuple.springBoot}` : "UNKNOWN"}</strong>
+          <small>{capability ? `Java ${capability.targetTuple.java} · ${capability.targetTuple.build}` : "能力契约未读取"}</small>
+        </article>
+        <article className="metric-card">
+          <span>OpenRewrite</span>
+          <strong className={`metric-word ${capability ? "" : "warning-text"}`}>{capability?.openRewrite.rewriteSpring ?? "UNKNOWN"}</strong>
+          <small>{capability ? `Plugin ${capability.openRewrite.mavenPlugin} · 固定 Recipes` : "能力契约未读取"}</small>
+        </article>
         <article className="metric-card"><span>独立裁判</span><strong className={`metric-word ${run?.independentValidation?.status === "PASS" ? "" : "warning-text"}`}>{run?.independentValidation?.status ?? "NOT_RUN"}</strong><small>从下载 ZIP 重新验证</small></article>
       </section>
 
@@ -535,8 +577,13 @@ export function SpringModernizationStudio() {
             )}
             <div className="locked-target spring-field-wide">
               <span>锁定转换路线</span>
-              <strong>Spring Boot 2.7.18 / Java 17 → Spring Boot 3.5.3 / Java 21</strong>
-              <small>版本不精确匹配会在 FINGERPRINT 阶段 fail closed，不做模糊升级。</small>
+              <strong>{lockedRouteLabel}</strong>
+              <small>
+                {capability
+                  ? `路线来自 Engine 能力契约 ${capability.packKey}；构建工具限定 ${capability.sourceTuple.build}，`
+                    + "版本不精确匹配会在 FINGERPRINT 阶段 fail closed，不做模糊升级。"
+                  : "Engine 能力契约尚未读取；在读取到精确版本元组之前，页面不展示任何具体版本号。"}
+              </small>
             </div>
           </div>
           <label className="spring-start-toggle">
@@ -591,6 +638,57 @@ export function SpringModernizationStudio() {
           </div>
         </aside>
       </div>
+
+      <section className="surface-card spring-route-catalog" aria-labelledby="spring-route-catalog-title">
+        <div className="business-section-heading">
+          <div>
+            <span className="overline">LEGACY SOURCE LINES</span>
+            <h2 id="spring-route-catalog-title">支持的遗留版本路线</h2>
+          </div>
+          <StatusChip status={capability?.routes?.length ? "READY" : "NOT_RUN"} compact />
+        </div>
+        <p className="spring-route-intro">
+          指纹阶段按下表选择路线，而不是断言单一版本。只有带 PASSED_LOCAL 的元组有已记录的端到端本地执行证据；
+          其余元组即使在受支持区间内，也保持 NOT_RUN，需要 Runner 显式开启实验路线才会执行。
+        </p>
+        {capability?.routes?.length
+          ? (
+            <div
+              className="spring-route-table"
+              role="table"
+              aria-label="Spring 遗留版本路线目录"
+              tabIndex={0}
+            >
+              <div className="spring-route-row spring-route-head" role="row">
+                <span role="columnheader">源版本区间</span>
+                <span role="columnheader">源 JDK</span>
+                <span role="columnheader">构建工具</span>
+                <span role="columnheader">目标</span>
+                <span role="columnheader">证据</span>
+              </div>
+              {capability.routes.map((route) => (
+                <div
+                  className={`spring-route-row ${route.evidenceStatus === "PASSED_LOCAL" ? "spring-route-verified" : ""}`}
+                  role="row"
+                  key={route.routeId}
+                >
+                  <span role="cell" title={route.routeId}>
+                    Boot [{route.sourceBootMinInclusive}, {route.sourceBootMaxExclusive})
+                  </span>
+                  <span role="cell">{route.sourceJavaVersions.join(" / ")}</span>
+                  <span role="cell">{route.buildTool}</span>
+                  <span role="cell">Boot {route.targetSpringBoot} · Java {route.targetJava}</span>
+                  <span role="cell">
+                    {route.evidenceStatus === "PASSED_LOCAL"
+                      ? `PASSED_LOCAL @ ${route.verifiedSourceSpringBoot} / Java ${route.verifiedSourceJava}`
+                      : route.evidenceStatus}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )
+          : <p className="route-empty-detail">Engine 能力契约尚未返回路线目录；页面不会推断支持范围。</p>}
+      </section>
 
       <RuntimeDeploymentGuide
         id="spring-runtime-deployment"

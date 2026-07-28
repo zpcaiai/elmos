@@ -215,6 +215,26 @@ final class SpringUpgradeRunService {
                 Map.entry("sourceTuple", Map.of("springBoot", SOURCE_BOOT, "java", SOURCE_JAVA, "build", "Maven 3.9.11")),
                 Map.entry("targetTuple", Map.of("springBoot", TARGET_BOOT, "java", TARGET_JAVA, "build", "Maven 3.9.11")),
                 Map.entry("openRewrite", Map.of("rewriteSpring", REWRITE_SPRING, "mavenPlugin", REWRITE_MAVEN_PLUGIN)),
+                // The full catalog of legacy source lines the engine can attempt.
+                // sourceTuple above remains the single tuple with recorded evidence.
+                Map.entry("routes", SpringRouteCatalog.routes().stream().map(route -> Map.ofEntries(
+                        Map.entry("routeId", route.routeId()),
+                        Map.entry("packKey", route.packKey()),
+                        Map.entry("label", route.label()),
+                        Map.entry("buildTool", route.buildTool()),
+                        Map.entry("sourceBootMinInclusive", route.sourceBootMinInclusive()),
+                        Map.entry("sourceBootMaxExclusive", route.sourceBootMaxExclusive()),
+                        Map.entry("sourceJavaVersions",
+                                route.sourceJavaVersions().stream().sorted().toList()),
+                        Map.entry("targetSpringBoot", route.targetBoot()),
+                        Map.entry("targetJava", route.targetJava()),
+                        Map.entry("recipeId", route.recipeId()),
+                        Map.entry("evidenceStatus", route.routeEvidence().name()),
+                        Map.entry("verifiedSourceSpringBoot", route.verifiedSourceBoot()),
+                        Map.entry("verifiedSourceJava", route.verifiedSourceJava()),
+                        Map.entry("notes", route.notes())
+                )).toList()),
+                Map.entry("experimentalRoutesRequireOptIn", true),
                 Map.entry("transformerConfigured", transformer.configured()),
                 Map.entry("transformerReason", transformer.configurationReason()),
                 Map.entry("runtimeRunnerConfigured", transformer.runtimeConfigured()),
@@ -327,19 +347,41 @@ final class SpringUpgradeRunService {
             }
             JsonNode fcm = json.readTree(fcmBytes);
             requireFcmText(fcm, "schema_version", "1.0");
-            requireFcmText(fcm, "pack_key", PACK_KEY);
             requireFcmText(fcm, "source_commit", candidate.resolvedCommitSha());
             requireFcmText(fcm, "source_snapshot_sha256", candidate.snapshotDigest());
             requireFcmText(fcm, "extraction_status", "STATIC_AND_SOURCE_BASELINE");
+            /*
+             * The Transformer selects the route, so the Worker must resolve the
+             * declared route id against its own catalog and validate the tuple
+             * against that route. Accepting the Transformer's version claims
+             * without re-resolving them would let a compromised Transformer
+             * declare any tuple it wanted.
+             */
+            String declaredRouteId = fcm.path("route_id").asText("");
+            SpringRouteCatalog.SpringRoute route = SpringRouteCatalog.byId(declaredRouteId)
+                    .filter(SpringRouteCatalog.SpringRoute::implemented)
+                    .orElseThrow(() -> new BlockedException(
+                            "FCM_ROUTE_UNKNOWN",
+                            "Framework Contract Model declared a route the Worker catalog does not implement."));
+            requireFcmText(fcm, "pack_key", route.packKey());
             JsonNode tuple = fcm.path("exact_tuple");
-            requireFcmText(tuple, "sourceSpringBoot", SOURCE_BOOT);
-            requireFcmText(tuple, "sourceJava", SOURCE_JAVA);
+            String declaredSourceBoot = tuple.path("sourceSpringBoot").asText("");
+            String declaredSourceJava = tuple.path("sourceJava").asText("");
+            if (!SpringRouteCatalog.withinRange(declaredSourceBoot,
+                    route.sourceBootMinInclusive(), route.sourceBootMaxExclusive())) {
+                throw new BlockedException("FCM_SOURCE_BOOT_OUTSIDE_ROUTE",
+                        "Framework Contract Model source Spring Boot version is outside the declared route range.");
+            }
+            if (!route.sourceJavaVersions().contains(SpringRouteCatalog.normalizeJava(declaredSourceJava))) {
+                throw new BlockedException("FCM_SOURCE_JAVA_OUTSIDE_ROUTE",
+                        "Framework Contract Model source Java release is outside the declared route set.");
+            }
             requireFcmText(tuple, "sourceBuildTool", "maven-3.9.11");
-            requireFcmText(tuple, "targetSpringBoot", TARGET_BOOT);
-            requireFcmText(tuple, "targetJava", TARGET_JAVA);
+            requireFcmText(tuple, "targetSpringBoot", route.targetBoot());
+            requireFcmText(tuple, "targetJava", route.targetJava());
             requireFcmText(tuple, "targetBuildTool", "maven-3.9.11");
-            requireFcmText(tuple, "rewriteSpring", REWRITE_SPRING);
-            requireFcmText(tuple, "rewriteMavenPlugin", REWRITE_MAVEN_PLUGIN);
+            requireFcmText(tuple, "rewriteSpring", route.rewriteSpring());
+            requireFcmText(tuple, "rewriteMavenPlugin", route.rewriteMavenPlugin());
 
             Path authorityFcm = state.runRoot.resolve("evidence/framework-contract-model.json");
             atomicBytes(authorityFcm, fcmBytes);

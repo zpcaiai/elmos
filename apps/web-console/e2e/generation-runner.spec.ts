@@ -8,6 +8,8 @@ const runnerHeaders = {
   "X-ELMOS-Actor": "user:e2e",
 };
 
+test.describe.configure({ mode: "serial" });
+
 test("凭证不能切换租户，审阅摘要不能批准被修改的 Intent", async ({
   request,
 }, testInfo) => {
@@ -39,11 +41,26 @@ test("凭证不能切换租户，审阅摘要不能批准被修改的 Intent", a
     persistence: "in-memory",
     authMode: "none",
   };
-  const analyzed = await request.post("/api/generation/analyze", {
-    headers: runnerHeaders,
-    data: intent,
-  });
-  expect(analyzed.ok()).toBeTruthy();
+  const [analyzed, concurrentAnalysis] = await Promise.all([
+    request.post("/api/generation/analyze", {
+      headers: runnerHeaders,
+      data: intent,
+    }),
+    request.post("/api/generation/analyze", {
+      headers: runnerHeaders,
+      data: {
+        ...intent,
+        name: "concurrent-service",
+        namespace: "io.elmos.concurrent",
+      },
+    }),
+  ]);
+  if (!analyzed.ok()) {
+    throw new Error(`primary analysis failed: ${await analyzed.text()}`);
+  }
+  if (!concurrentAnalysis.ok()) {
+    throw new Error(`concurrent analysis failed: ${await concurrentAnalysis.text()}`);
+  }
   const analysis = await analyzed.json() as { requestDigest: string };
 
   const modifiedIntent = await request.post("/api/generation/jobs", {

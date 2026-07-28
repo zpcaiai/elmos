@@ -16,8 +16,8 @@ GA、生产就绪和外部认证仍为 `EXTERNAL_GATE_REQUIRED`。** 后一类�
 | 业务线 | 用户入口与核心实现 | 仓库内闭环与验证 | 当前状态 | 尚需外部证据 |
 | --- | --- | --- | --- | --- |
 | Spring 老项目翻新 M30 | `/spring`、Spring 指纹探测器、受控代理、Java Worker、`spring-boot-2-7-18-to-3-5-3` Pack | 区分经典 Spring 与 Boot，识别 XML/注解、Jakarta 和 MVC/WebFlux 阻断；真实任务、取消/重试、日志、独立摘要验证、产物与运行态形成闭环；下载响应绑定长度、ETag 与 SHA-256，浏览器复算字节摘要后才交付；代理默认关闭并绑定可信单租户 | `REPOSITORY_CLOSED` | 客户源仓真实基线、目标启动/数据/安全等价、独立 holdout 与外部认证保持 `NOT_RUN` |
-| 全库跨语言转换 M29 | `/translation`、12 个方向 Route Pack、polyglot-route engine、精确工具链清单 | 四种语言形成 12 条方向独立路线；`typed-pure-function-v1` 已完成开发、holdout、代表性编译与行为回放；整库执行确定性只读扫描、稳定读取、内容摘要和逐源文件工作单元拆分，UI 只接受与仓库/路线完全匹配的清单；不把工作单元发现扩张为整库成功 | `REPOSITORY_CLOSED` | 对象图、异常、异步、I/O、框架、数据库、并发、真实客户整库逐单元执行与独立验证保持 `NOT_RUN` |
-| 多语言项目生成 B46-B95 | `/generation`、生成 API、本地 Runner、project-synthesis engine、Batch 66-95 Skills | 8 个精确目标；草稿、结构化分析、开放问题、一次性审阅摘要、显式批准、生成/验证、文件摘要复算、归档下载、启动健康探针与停止形成闭环；刷新后可用完整 UUID、租户、Actor 和重新输入的短期令牌恢复原子持久化任务；生成 CI Action 与基础镜像均固定到不可变摘要；当前 Darwin arm64 验收主机上的 Go 1.25.0、Kotlin 2.2.20/JVM 21/Gradle 8.14.3、PHP 8.4.12 与 Rust/Cargo 1.89.0 已完成真实生成、构建、测试、启动探针和清理验收；Python 的 PostgreSQL 17.5 + JWT/OIDC 精确配置已完成真实本地迁移、启动、鉴权、RLS 租户隔离和集成测试；其他主机缺失或版本不匹配的工具链仍逐目标保持 `NOT_RUN` | `REPOSITORY_CLOSED` | 其他语言的生产持久化/身份配置、外部托管 PostgreSQL 与真实 IdP、完整传递依赖 SBOM/签名、设备/集群/云部署、独立验证及生产交付保持 `NOT_RUN` |
+| 全库跨语言转换 M29 | `/translation`、12 个方向 Route Pack、polyglot-route engine、精确工具链清单 | 四种语言形成 12 条方向独立路线；`typed-pure-function-v1` 已完成开发、holdout、代表性编译与行为回放；整库执行确定性只读扫描、稳定读取、内容摘要和逐源文件工作单元拆分，UI 只接受与仓库/路线完全匹配的清单；一次 batch 运行后可用 `elmos-polyglot-route assemble` 把已认证工作单元按命名空间隔离组装为一个真实可构建整项目，构建通过后才生成本地运行配置与云端发布指引（推荐 AWS CodeArtifact，因其唯一原生同时支持 Maven/npm/NuGet/PyPI 四种格式）；不把工作单元发现扩张为整库成功 | `REPOSITORY_CLOSED` | 对象图、异常、异步、I/O、框架、数据库、并发、真实客户整库逐单元执行与独立验证保持 `NOT_RUN` |
+| 多语言项目生成 B46-B95 | `/generation`、生成 API、本地 Runner、project-synthesis engine、Batch 66-95 Skills | 8 个精确目标；草稿、结构化分析、开放问题、一次性审阅摘要、显式批准、生成/验证、文件摘要复算、归档下载、启动健康探针与停止形成闭环；刷新后可用完整 UUID、租户、Actor 和重新输入的短期令牌恢复原子持久化任务；生成 CI Action 与基础镜像均固定到不可变摘要；全部八种语言已完成真实生成、精确工具链构建、测试、启动探针和清理；`run_production_matrix.py` 对 8 × JWT/OIDC 共 16 个 PostgreSQL 17.5 Profile 执行迁移、鉴权负向路径、CRUD 与 RLS 跨租户隔离；Java/Python 支持多实体生产请求，其余六种语言在单实体边界外失败关闭 | `REPOSITORY_CLOSED` | 外部托管 PostgreSQL、真实 IdP、完整传递依赖 SBOM/签名、真实 rootless 生产 Runner、设备/集群/云部署、恢复/DR、独立用户验收、外部验证及生产交付保持 `NOT_RUN` |
 | 工作区与 Private Runner | workspace-service、workspace manager、egress proxy、Compose 服务拓扑 | 工作区和秘密租约请求在提供者访问前完成身份、类型与 TTL 校验；策略/依赖故障返回稳定响应；默认拒绝出口 | `REPOSITORY_CLOSED` | 真实 rootless Runner 隔离、工作负载身份、远端证明、秘密租约与撤销演练保持 `NOT_RUN` |
 | 验证、证据与认证 | java-engine-worker validation API、Batch 1-45 严格套件、补充套件、evidence contracts | 嵌套请求在执行前校验；同语义映射规范化后参与幂等指纹；终态不可改写；权威门禁按缺失证据失败关闭 | `REPOSITORY_CLOSED` | 逐用例执行者/独立验证者、原始证据、签名请求和信任库保持 `NOT_RUN` |
 | Skills 与能力目录 | `.agents/skills`、`agent-skills/runtime`、`/skills` | UI 展示实际可调用 Skill 数量，并由生产就绪门禁逐目录核对，库存漂移会失败关闭；新增业务线审计、生成旅程、跨服务运维闭环 Skills；各批次不可变清单与接口校验通过 | `REPOSITORY_CLOSED` | Skill 静态通过不等于客户、生产、行业或监管认证；相关证据保持 `NOT_RUN` |
@@ -67,6 +67,15 @@ Web liveness 与 readiness 分别由 `/api/health?probe=liveness` 和
 ## CI 业务线映射
 
 CI 分别验证 Java reactor、.NET engine、Python engine、frontend-client engine、project-synthesis engine 和 Web console。Project Synthesis 作业额外验证 Batch 97-104 与 Product Closure/Convergence 分发。所有依赖安装均使用锁文件；任一验证失败都会阻止 CI 成功。
+
+## 备注：`modules/lowering` 链与本矩阵的关系
+
+`modules/intake` → `modules/semantic` → `modules/uir` → `modules/skeleton` →
+`modules/lowering`（另见 `docs/adr/ADR-0023-faithful-first-core-language-lowering.md`）
+是一条独立、真实、有测试覆盖，但**未被 `apps/` 下任何控制器、CLI 或 Worker 调用**的历史架构；
+"全库跨语言转换 M29" 一行描述的能力完全建立在 `engines/polyglot-route-engine` 之上，与该链无关。
+这不是本矩阵的遗漏——该链本就不在任何已发布业务线的请求路径上。五个模块各自的 `README.md`
+和 ADR-0023 的第二条追记（2026-07-28）记录了这一事实，避免未来重复调研得出同一结论。
 
 ## 失败关闭规则
 

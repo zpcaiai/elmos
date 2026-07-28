@@ -41,6 +41,10 @@ def _kotlin_type(field: FieldSpec) -> str:
 
 
 def render_kotlin(request: SynthesisRequest, port: int) -> dict[str, str]:
+    if request.requires_database or request.requires_authentication:
+        from .kotlin_production_target import render_kotlin_production
+
+        return render_kotlin_production(request, port)
     model_blocks: list[str] = []
     store_blocks: list[str] = []
     route_blocks: list[str] = []

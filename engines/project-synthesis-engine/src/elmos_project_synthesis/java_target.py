@@ -4,6 +4,7 @@ import json
 from html import escape
 
 from .container_images import MAVEN_IMAGE, TEMURIN_JRE_IMAGE
+from .java_production_target import render_java_production
 from .models import FieldSpec, SynthesisRequest, pascal
 from .rendering import (
     camel,
@@ -41,6 +42,8 @@ def _field_declaration(field: FieldSpec) -> str:
 
 
 def render_java(request: SynthesisRequest, port: int) -> dict[str, str]:
+    if request.requires_database or request.requires_authentication:
+        return render_java_production(request, port)
     package_path = request.namespace.replace(".", "/")
     app_class = f"{request.project_class}Application"
     app_slug = request.project_name

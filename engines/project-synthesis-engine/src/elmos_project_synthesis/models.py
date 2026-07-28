@@ -80,13 +80,19 @@ SUPPORTED_FIELD_TYPES = ("string", "integer", "number", "boolean", "datetime")
 SUPPORTED_PROJECT_KINDS = ("api",)
 SUPPORTED_PERSISTENCE = ("in-memory", "postgresql")
 SUPPORTED_AUTH_MODES = ("none", "jwt", "oidc")
-# The broad starter profile remains portable across all eight emitters.  The
-# first durable, identity-aware vertical slice is intentionally exact and
-# Python-only until every other target has equivalent native runtime evidence.
+# The broad starter profile remains portable across all eight emitters. The
+# durable, identity-aware vertical slice opens per target only after that
+# target has produced its own PostgreSQL-backed integration evidence through
+# the shared runtime harness; a target with an emitter but no evidence stays
+# closed here.
 SUPPORTED_PROFILE_TARGETS: dict[tuple[str, str], frozenset[str]] = {
     ("in-memory", "none"): frozenset(SUPPORTED_LANGUAGES),
-    ("postgresql", "jwt"): frozenset({"python"}),
-    ("postgresql", "oidc"): frozenset({"python"}),
+    ("postgresql", "jwt"): frozenset(
+        {"python", "java", "go", "typescript", "csharp", "kotlin", "rust", "php"}
+    ),
+    ("postgresql", "oidc"): frozenset(
+        {"python", "java", "go", "typescript", "csharp", "kotlin", "rust", "php"}
+    ),
 }
 PLANNED_PROJECT_KINDS = ("fullstack", "worker", "cli", "modular-monolith")
 PLANNED_PERSISTENCE: tuple[str, ...] = ()

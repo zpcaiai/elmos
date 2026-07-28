@@ -126,13 +126,79 @@ install_gradle() {
   link_if_available "gradle-${GRADLE_VERSION}" "${target}/bin/gradle"
 }
 
+resolve_libpq_prefix() {
+  local candidate
+  for candidate in \
+    "$(brew --prefix libpq 2>/dev/null || true)" \
+    "$(brew --prefix postgresql@17 2>/dev/null || true)" \
+    "/usr/local" \
+    "/usr"; do
+    [[ -n "${candidate}" ]] || continue
+    if [[ -x "${candidate}/bin/pg_config" ]]; then
+      printf '%s\n' "${candidate}"
+      return 0
+    fi
+  done
+  printf 'Cannot build PHP with pdo_pgsql: no libpq prefix containing bin/pg_config was found.\n' >&2
+  printf 'Install it first, e.g. `brew install libpq`.\n' >&2
+  return 1
+}
+
+resolve_openssl_prefix() {
+  # The production profile verifies RS256 bearer tokens. `--disable-all` drops
+  # ext/openssl, and this build has neither gmp nor bcmath, so without the
+  # extension there is no workable way to check an RSA signature in PHP.
+  local candidate
+  for candidate in \
+    "$(brew --prefix openssl@3 2>/dev/null || true)" \
+    "$(brew --prefix openssl 2>/dev/null || true)" \
+    "/usr/local" \
+    "/usr"; do
+    [[ -n "${candidate}" ]] || continue
+    if [[ -f "${candidate}/lib/pkgconfig/openssl.pc" ]]; then
+      printf '%s\n' "${candidate}"
+      return 0
+    fi
+  done
+  printf 'Cannot build PHP with openssl: no prefix containing lib/pkgconfig/openssl.pc was found.\n' >&2
+  printf 'Install it first, e.g. `brew install openssl@3`.\n' >&2
+  return 1
+}
+
+# Extensions the generated production profile actually calls into. The guard
+# below checks every one of them, so a build that silently drops any is
+# rejected instead of failing later inside a generated workspace.
+readonly PHP_REQUIRED_EXTENSIONS=(pdo_pgsql openssl hash json)
+
+php_missing_extensions() {
+  local binary="$1" extension missing=()
+  for extension in "${PHP_REQUIRED_EXTENSIONS[@]}"; do
+    "${binary}" -m | grep -qix "${extension}" || missing+=("${extension}")
+  done
+  printf '%s' "${missing[*]}"
+}
+
 install_php() {
   local target="${TOOLCHAIN_ROOT}/php/${PHP_VERSION}"
   if [[ -x "${target}/bin/php" ]] \
     && "${target}/bin/php" --version | grep -q "^PHP ${PHP_VERSION}"; then
+    local missing
+    missing="$(php_missing_extensions "${target}/bin/php")"
+    if [[ -n "${missing}" ]]; then
+      printf 'PHP %s is installed at %s but is missing required extensions: %s\n' \
+        "${PHP_VERSION}" "${target}" "${missing}" >&2
+      printf 'Remove it and re-run this script to rebuild with them:\n' >&2
+      printf '  rm -rf %s\n' "${target}" >&2
+      exit 3
+    fi
     printf 'PHP %s already installed\n' "${PHP_VERSION}"
   else
     require_new_target "${target}"
+    local LIBPQ_PREFIX OPENSSL_PREFIX
+    LIBPQ_PREFIX="$(resolve_libpq_prefix)"
+    OPENSSL_PREFIX="$(resolve_openssl_prefix)"
+    printf 'Building PHP %s against libpq at %s and openssl at %s\n' \
+      "${PHP_VERSION}" "${LIBPQ_PREFIX}" "${OPENSSL_PREFIX}"
     local archive="${temporary_root}/php.tar.xz"
     local source_root="${temporary_root}/php-${PHP_VERSION}"
     local stage="${temporary_root}/php-stage"
@@ -143,13 +209,19 @@ install_php() {
     tar -xJf "${archive}" -C "${temporary_root}"
     (
       cd "${source_root}"
+      # ext/openssl is located through pkg-config, so the prefix has to be on
+      # PKG_CONFIG_PATH rather than passed as a --with argument value.
+      PKG_CONFIG_PATH="${OPENSSL_PREFIX}/lib/pkgconfig:${PKG_CONFIG_PATH:-}" \
       ./configure \
         --prefix="${stage}" \
         --disable-all \
         --enable-cli \
         --disable-cgi \
         --disable-phpdbg \
-        --without-pear
+        --without-pear \
+        --enable-pdo \
+        --with-pdo-pgsql="${LIBPQ_PREFIX}" \
+        --with-openssl
       make -j"${BUILD_JOBS}"
       make install
     )

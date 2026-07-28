@@ -170,6 +170,10 @@ export function ProjectGenerationStudio() {
     authMode,
   };
   const previewProfiles = generationTargets.filter((profile) => preview.targets.includes(profile.id));
+  const productionProfileLabels = generationTargets
+    .filter((profile) => profile.productionProfiles.length > 0)
+    .map((profile) => `${profile.language} ${profile.runtime}`)
+    .join("、");
   const deploymentGuidance = capability?.deploymentGuidance ?? generationDeploymentGuidance();
   const workflowCommands = buildWorkflowCommands(preview);
   const workflowScript = workflowCommands.map((item) => item.command).join("\n");
@@ -287,9 +291,23 @@ export function ProjectGenerationStudio() {
     setApproved(false);
   }
 
+  function productionCapable(id: GenerationTargetId): boolean {
+    // productionProfiles mirrors the engine's SUPPORTED_PROFILE_TARGETS: only
+    // targets with PostgreSQL-backed integration evidence declare profiles.
+    return (generationTargets.find((profile) => profile.id === id)?.productionProfiles.length ?? 0) > 0;
+  }
+
   function toggleTarget(id: GenerationTargetId) {
-    if (persistence === "postgresql" && id !== "python") {
-      setTargetError("PostgreSQL + JWT/OIDC 企业配置当前只对 Python 精确目标开放。");
+    if (persistence === "postgresql") {
+      if (!productionCapable(id)) {
+        setTargetError("该目标尚未产出 PostgreSQL + JWT/OIDC 集成证据，生产配置保持阻断。");
+        return;
+      }
+      // The production profile is generated and verified one target at a
+      // time, so selection replaces rather than accumulates.
+      setTargets([id]);
+      setTargetError("");
+      invalidateDraft();
       return;
     }
     setTargets((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id]);
@@ -305,9 +323,9 @@ export function ProjectGenerationStudio() {
     }
     if (
       persistence === "postgresql"
-      && (targets.length !== 1 || targets[0] !== "python" || authMode === "none")
+      && (targets.length !== 1 || !productionCapable(targets[0]) || authMode === "none")
     ) {
-      setTargetError("当前生产配置是精确的 Python + PostgreSQL + JWT/OIDC Profile；其他组合保持阻断。");
+      setTargetError("生产配置要求单个已验证目标加 JWT 或 OIDC；其他组合保持阻断。");
       return;
     }
     if (persistence === "in-memory" && authMode !== "none") {
@@ -650,7 +668,7 @@ export function ProjectGenerationStudio() {
                 <option value="in-memory">内存 Starter</option>
                 <option value="postgresql">PostgreSQL 17.5 生产配置</option>
               </select>
-              <small>生产配置生成前向迁移、RLS、恢复与真实集成测试；目前精确支持 Python。</small>
+              <small>生产配置生成前向迁移、RLS、恢复与真实集成测试；仅对具备仓库可复现验收证据的单语言目标开放：{productionProfileLabels}。</small>
             </label>
             <label className="generation-field" htmlFor="generation-auth-mode">
               <span>认证配置</span>
@@ -679,7 +697,7 @@ export function ProjectGenerationStudio() {
                     <input
                       type="checkbox"
                       checked={checked}
-                      disabled={persistence === "postgresql" && profile.id !== "python"}
+                      disabled={persistence === "postgresql" && profile.productionProfiles.length === 0}
                       onChange={() => toggleTarget(profile.id)}
                     />
                     <span className="target-check"><Icon name="check" size={13} /></span>

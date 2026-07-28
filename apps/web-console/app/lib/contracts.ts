@@ -324,6 +324,25 @@ export type SpringModernizationCapabilityResponse = {
   note: string;
 };
 
+export type SpringRouteEvidenceStatus = "PASSED_LOCAL" | "NOT_RUN" | "NOT_IMPLEMENTED";
+
+export type SpringRouteDescriptor = {
+  routeId: string;
+  packKey: string;
+  label: string;
+  buildTool: string;
+  sourceBootMinInclusive: string;
+  sourceBootMaxExclusive: string;
+  sourceJavaVersions: string[];
+  targetSpringBoot: string;
+  targetJava: string;
+  recipeId: string;
+  evidenceStatus: SpringRouteEvidenceStatus;
+  verifiedSourceSpringBoot: string;
+  verifiedSourceJava: string;
+  notes?: string;
+};
+
 export type TranslationLanguageId = "java" | "csharp" | "python" | "typescript";
 
 export type TranslationLanguage = {
@@ -334,15 +353,20 @@ export type TranslationLanguage = {
   enginePath: string;
 };
 
+export type RouteEvidenceStatus = "PASSED" | "NOT_RUN" | "FAILED";
+
 export type DirectedLanguageRoute = {
   id: string;
   source: TranslationLanguageId;
   target: TranslationLanguageId;
   skill: string;
-  status: "EXPERIMENTAL";
-  readiness: "LOCAL_PROFILE_PASSED";
-  localExecution: "PASSED";
-  externalVerification: "NOT_RUN";
+  status: "EXPERIMENTAL" | "SUPPORTED" | "CERTIFIED" | "BLOCKED";
+  readiness: "LOCAL_PROFILE_PASSED" | "NOT_RUN";
+  localExecution: RouteEvidenceStatus;
+  independentVerification: RouteEvidenceStatus;
+  externalVerification: RouteEvidenceStatus;
+  sourceVersion: string;
+  targetVersion: string;
   hazards: string[];
   blockers: string[];
 };
@@ -351,14 +375,26 @@ export type TranslationCapabilityResponse = {
   source: "REPOSITORY_CONTRACT";
   fetchedAt: string;
   schemaVersion: "1.1.0";
+  contractPath: string;
+  semanticProfile: string;
   languages: TranslationLanguage[];
   routes: DirectedLanguageRoute[];
-  routePackageCount: 12;
+  routePackageCount: number;
+  certifiedRouteCount: number;
   repositoryPlanning: "LOCAL_MANIFEST_SUPPORTED";
-  localExecutionEvidence: "PASSED_LOCAL";
-  externalExecutionEvidence: "NOT_RUN";
-  certificationStatus: "NOT_CERTIFIED";
+  localExecutionEvidence: "PASSED_LOCAL" | "NOT_RUN" | "FAILED";
+  independentVerificationEvidence: RouteEvidenceStatus;
+  externalExecutionEvidence: RouteEvidenceStatus;
+  certificationStatus: "NOT_CERTIFIED" | "CERTIFIED";
   note: string;
+};
+
+export type TranslationCapabilityBlocked = {
+  source: "REPOSITORY_CONTRACT";
+  fetchedAt: string;
+  status: "BLOCKED";
+  errorCode: string;
+  message: string;
 };
 
 export type TranslationRepositoryWorkUnit = {
@@ -372,6 +408,48 @@ export type TranslationRepositoryWorkUnit = {
   required_inputs: ["function_name", "behavior_cases_json"];
   declared_profile: "typed-pure-function-v1";
   unsupported_until_discovered: string[];
+};
+
+export type TranslationDiscoveryVerdict =
+  | "READY"
+  | "UNSUPPORTED"
+  | "NO_CANDIDATE_DECLARATION"
+  | "UNREADABLE";
+
+export type TranslationDiscoveryResult = {
+  id: string;
+  source_path: string;
+  declared_sha256: string;
+  verdict: TranslationDiscoveryVerdict;
+  profile: "typed-pure-function-v1";
+  execution_status: "NOT_RUN";
+  route_id: string;
+  function_name?: string;
+  parameter_count?: number;
+  return_type?: string;
+  analyzer?: string;
+  reason?: string;
+  rejected_candidates: Array<{ candidate: string; reason: string }>;
+};
+
+export type TranslationDiscoveryReport = {
+  schema_version: "1.0.0";
+  kind: "elmos.repository-discovery-report";
+  status: "DISCOVERED";
+  repository_ref: string;
+  snapshot_sha256: string;
+  route_id: string;
+  source_language: TranslationLanguageId;
+  target_language: TranslationLanguageId;
+  profile: "typed-pure-function-v1";
+  work_unit_count: number;
+  discovered_count: number;
+  ready_count: number;
+  verdict_counts: Record<string, number>;
+  results: TranslationDiscoveryResult[];
+  execution_status: "NOT_RUN";
+  external_verification_status: "NOT_RUN";
+  certification_status: "NOT_CERTIFIED";
 };
 
 export type TranslationRepositoryPlan = {

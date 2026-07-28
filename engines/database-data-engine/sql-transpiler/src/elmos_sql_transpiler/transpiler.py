@@ -1,0 +1,369 @@
+from __future__ import annotations
+
+from hashlib import sha256
+from importlib.metadata import version
+
+import sqlglot
+from sqlglot import exp
+from sqlglot.errors import ErrorLevel, ParseError, UnsupportedError
+
+from .models import (
+    Diagnostic,
+    EvidenceState,
+    StatementIr,
+    TranspileRequest,
+    TranspileResult,
+)
+from .profiles import directed_route, profile_by_id
+
+_MAX_SQL_BYTES = 1_048_576
+_SQLGLOT_VERSION = version("sqlglot")
+_PARAMETER_NODE_KEYS = frozenset({"placeholder", "parameter"})
+_OBLIGATION_BY_NODE = {
+    "aggregate": "AGGREGATION_SEMANTICS",
+    "array": "ARRAY_SEMANTICS",
+    "between": "BOUNDARY_COMPARISON_SEMANTICS",
+    "cast": "TYPE_CAST_SEMANTICS",
+    "collate": "COLLATION_SEMANTICS",
+    "except": "SET_DIFFERENCE_SEMANTICS",
+    "group": "GROUPING_SEMANTICS",
+    "intersect": "SET_INTERSECTION_SEMANTICS",
+    "is": "NULL_AND_BOOLEAN_SEMANTICS",
+    "join": "JOIN_CARDINALITY_SEMANTICS",
+    "json_extract": "JSON_PATH_SEMANTICS",
+    "limit": "PAGINATION_SEMANTICS",
+    "lock": "LOCKING_SEMANTICS",
+    "merge": "MERGE_CONCURRENCY_SEMANTICS",
+    "offset": "PAGINATION_SEMANTICS",
+    "order": "ORDERING_SEMANTICS",
+    "regexp_like": "REGULAR_EXPRESSION_SEMANTICS",
+    "transaction": "TRANSACTION_SEMANTICS",
+    "trycast": "TYPE_CAST_ERROR_SEMANTICS",
+    "union": "SET_UNION_AND_DUPLICATE_SEMANTICS",
+    "window": "WINDOW_FRAME_SEMANTICS",
+}
+
+
+def _digest(value: str) -> str:
+    return f"sha256:{sha256(value.encode('utf-8')).hexdigest()}"
+
+
+def _validate_request(request: TranspileRequest) -> None:
+    if not request.query_id or len(request.query_id) > 160:
+        raise ValueError("query id is required and must be at most 160 characters")
+    if not request.sql.strip():
+        raise ValueError("SQL input is required")
+    if len(request.sql.encode("utf-8")) > _MAX_SQL_BYTES:
+        raise ValueError("SQL input exceeds the one MiB local safety limit")
+    if "\x00" in request.sql:
+        raise ValueError("SQL input contains a prohibited NUL byte")
+    if request.source_profile == request.target_profile:
+        raise ValueError("source and target SQL profiles must differ")
+    profile_by_id(request.source_profile)
+    profile_by_id(request.target_profile)
+    names = [parameter.name for parameter in request.parameters]
+    if len(names) != len(set(names)):
+        raise ValueError("parameter contract names must be unique")
+
+
+def _parameter_nodes(expression: exp.Expression, dialect: str) -> tuple[str, ...]:
+    nodes = []
+    for node in expression.walk():
+        if node.key in _PARAMETER_NODE_KEYS:
+            nodes.append(node.sql(dialect=dialect))
+    return tuple(nodes)
+
+
+def _obligations(expression: exp.Expression) -> tuple[str, ...]:
+    found = {
+        obligation
+        for node in expression.walk()
+        if (obligation := _OBLIGATION_BY_NODE.get(node.key)) is not None
+    }
+    if isinstance(expression, (exp.Insert, exp.Update, exp.Delete, exp.Merge)):
+        found.add("DML_ROW_COUNT_AND_ERROR_CONTRACT")
+    if isinstance(expression, (exp.Create, exp.Alter, exp.Drop)):
+        found.add("DDL_OBJECT_AND_TRANSACTION_CONTRACT")
+    if not any(node.key == "order" for node in expression.walk()) and isinstance(
+        expression, exp.Query
+    ):
+        found.add("RESULT_ORDER_UNDEFINED")
+    return tuple(sorted(found))
+
+
+def _projection_reference(
+    projections: list[exp.Expression],
+    literal: exp.Expression,
+    *,
+    prefer_alias: bool,
+) -> exp.Expression:
+    if not isinstance(literal, exp.Literal) or not literal.is_int:
+        return literal
+    position = int(literal.this)
+    if position < 1 or position > len(projections):
+        return literal
+    projection = projections[position - 1]
+    if prefer_alias and projection.alias:
+        return exp.column(projection.alias)
+    if isinstance(projection, exp.Alias):
+        underlying = projection.this
+        if isinstance(underlying, exp.Expression):
+            return underlying.copy()
+    return projection.copy()
+
+
+def _normalize_positional_references(
+    expression: exp.Expression,
+) -> tuple[exp.Expression, bool]:
+    normalized = expression.copy()
+    changed = False
+    for select in normalized.find_all(exp.Select):
+        projections = list(select.expressions)
+        group = select.args.get("group")
+        if isinstance(group, exp.Group):
+            replacements = [
+                _projection_reference(projections, item, prefer_alias=False)
+                for item in group.expressions
+            ]
+            if any(
+                before is not after
+                for before, after in zip(group.expressions, replacements, strict=True)
+            ):
+                group.set("expressions", replacements)
+                changed = True
+        order = select.args.get("order")
+        if isinstance(order, exp.Order):
+            for ordered in order.expressions:
+                replacement = _projection_reference(
+                    projections,
+                    ordered.this,
+                    prefer_alias=True,
+                )
+                if replacement is not ordered.this:
+                    ordered.set("this", replacement)
+                    changed = True
+    return normalized, changed
+
+
+def _blocked_result(
+    request: TranspileRequest,
+    *,
+    diagnostic: Diagnostic,
+    syntax_parse: EvidenceState,
+    target_emit: EvidenceState,
+    target_reparse: EvidenceState,
+) -> TranspileResult:
+    source = profile_by_id(request.source_profile)
+    target = profile_by_id(request.target_profile)
+    return TranspileResult(
+        schema_version="1.0",
+        query_id=request.query_id,
+        source_profile=source,
+        target_profile=target,
+        route=directed_route(source.id, target.id),
+        state="BLOCKED",
+        source_digest=_digest(request.sql),
+        target_digest=None,
+        target_sql=None,
+        statements=(),
+        diagnostics=(diagnostic,),
+        syntax_parse=syntax_parse,
+        target_emit=target_emit,
+        target_reparse=target_reparse,
+        parameter_contract="FAILED",
+        metadata={
+            "parser": "sqlglot",
+            "parserVersion": _SQLGLOT_VERSION,
+            "rawSourceSqlPersisted": False,
+            "sourceAstPersisted": False,
+            "silentFallbackUsed": False,
+        },
+    )
+
+
+def transpile(request: TranspileRequest) -> TranspileResult:
+    _validate_request(request)
+    source = profile_by_id(request.source_profile)
+    target = profile_by_id(request.target_profile)
+    route = directed_route(source.id, target.id)
+    source_digest = _digest(request.sql)
+
+    try:
+        parsed_source_statements = sqlglot.parse(
+            request.sql,
+            read=source.dialect,
+            error_level=ErrorLevel.RAISE,
+        )
+    except ParseError:
+        return _blocked_result(
+            request,
+            diagnostic=Diagnostic(
+                code="SOURCE_PARSE_FAILED",
+                severity="ERROR",
+                statement_index=None,
+                message="The exact source dialect parser rejected the SQL.",
+            ),
+            syntax_parse="FAILED",
+            target_emit="NOT_RUN",
+            target_reparse="NOT_RUN",
+        )
+
+    if not parsed_source_statements or any(
+        statement is None for statement in parsed_source_statements
+    ):
+        return _blocked_result(
+            request,
+            diagnostic=Diagnostic(
+                code="SOURCE_EMPTY_AST",
+                severity="ERROR",
+                statement_index=None,
+                message="The parser produced no typed statements.",
+            ),
+            syntax_parse="FAILED",
+            target_emit="NOT_RUN",
+            target_reparse="NOT_RUN",
+        )
+    source_statements = [
+        statement for statement in parsed_source_statements if isinstance(statement, exp.Expression)
+    ]
+
+    target_sql_parts: list[str] = []
+    statement_irs: list[StatementIr] = []
+    diagnostics: list[Diagnostic] = []
+    try:
+        for index, source_statement in enumerate(source_statements):
+            if isinstance(source_statement, exp.Command):
+                raise UnsupportedError("opaque command nodes are prohibited")
+            parameter_nodes_before = _parameter_nodes(source_statement, source.dialect)
+            canonical_statement, positional_rewrite = _normalize_positional_references(
+                source_statement
+            )
+            generated = canonical_statement.sql(
+                dialect=target.dialect,
+                pretty=True,
+                unsupported_level=ErrorLevel.RAISE,
+            )
+            parsed_target_statements = sqlglot.parse(
+                generated,
+                read=target.dialect,
+                error_level=ErrorLevel.RAISE,
+            )
+            target_statements = [
+                statement
+                for statement in parsed_target_statements
+                if isinstance(statement, exp.Expression)
+            ]
+            if (
+                len(target_statements) != 1
+                or len(target_statements) != len(parsed_target_statements)
+                or isinstance(target_statements[0], exp.Command)
+            ):
+                raise UnsupportedError("target did not reparse to exactly one typed statement")
+            target_statement = target_statements[0]
+            parameter_nodes_after = _parameter_nodes(target_statement, target.dialect)
+            if len(parameter_nodes_before) != len(parameter_nodes_after):
+                raise UnsupportedError("parameter node cardinality changed")
+            obligations = set(_obligations(source_statement))
+            if positional_rewrite:
+                obligations.add("POSITIONAL_REFERENCE_NORMALIZED")
+            statement_irs.append(
+                StatementIr(
+                    index=index,
+                    kind=source_statement.key.upper(),
+                    source_ast=source_statement.dump(),
+                    target_ast=target_statement.dump(),
+                    obligations=tuple(sorted(obligations)),
+                    parameter_nodes_before=parameter_nodes_before,
+                    parameter_nodes_after=parameter_nodes_after,
+                )
+            )
+            target_sql_parts.append(generated.rstrip(";"))
+    except (ParseError, UnsupportedError) as error:
+        code = "TARGET_REPARSE_FAILED" if isinstance(error, ParseError) else "UNSUPPORTED_SEMANTICS"
+        return _blocked_result(
+            request,
+            diagnostic=Diagnostic(
+                code=code,
+                severity="ERROR",
+                statement_index=len(statement_irs),
+                message=(
+                    "Target SQL failed exact-dialect reparsing."
+                    if code == "TARGET_REPARSE_FAILED"
+                    else "The parser reported unsupported or opaque semantics."
+                ),
+            ),
+            syntax_parse="PASSED",
+            target_emit="FAILED",
+            target_reparse="FAILED" if code == "TARGET_REPARSE_FAILED" else "NOT_RUN",
+        )
+
+    target_sql = ";\n\n".join(target_sql_parts) + ";\n"
+    all_obligations = sorted(
+        {item for statement in statement_irs for item in statement.obligations}
+    )
+    if request.parameters:
+        observed_count = sum(len(item.parameter_nodes_before) for item in statement_irs)
+        if observed_count == 0:
+            return _blocked_result(
+                request,
+                diagnostic=Diagnostic(
+                    code="PARAMETER_CONTRACT_NOT_OBSERVED",
+                    severity="ERROR",
+                    statement_index=None,
+                    message=(
+                        "A parameter contract was supplied but no typed parameter node was parsed."
+                    ),
+                ),
+                syntax_parse="PASSED",
+                target_emit="PASSED",
+                target_reparse="PASSED",
+            )
+    if "RESULT_ORDER_UNDEFINED" in all_obligations:
+        diagnostics.append(
+            Diagnostic(
+                code="RESULT_ORDER_UNDEFINED",
+                severity="WARNING",
+                statement_index=None,
+                message=(
+                    "At least one query has no explicit ordering; "
+                    "sequence equivalence cannot be claimed."
+                ),
+            )
+        )
+    diagnostics.append(
+        Diagnostic(
+            code="RUNTIME_EQUIVALENCE_NOT_RUN",
+            severity="INFO",
+            statement_index=None,
+            message=(
+                "Syntax transpilation passed; source/target execution "
+                "and result equivalence remain NOT_RUN."
+            ),
+        )
+    )
+    return TranspileResult(
+        schema_version="1.0",
+        query_id=request.query_id,
+        source_profile=source,
+        target_profile=target,
+        route=route,
+        state="SYNTAX_READY",
+        source_digest=source_digest,
+        target_digest=_digest(target_sql),
+        target_sql=target_sql,
+        statements=tuple(statement_irs),
+        diagnostics=tuple(diagnostics),
+        syntax_parse="PASSED",
+        target_emit="PASSED",
+        target_reparse="PASSED",
+        parameter_contract="PASSED",
+        metadata={
+            "parser": "sqlglot",
+            "parserVersion": _SQLGLOT_VERSION,
+            "statementCount": len(statement_irs),
+            "semanticObligations": all_obligations,
+            "rawSourceSqlPersisted": False,
+            "sourceAstPersisted": True,
+            "silentFallbackUsed": False,
+        },
+    )

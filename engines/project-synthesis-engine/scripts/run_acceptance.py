@@ -48,7 +48,7 @@ def main() -> int:
     try:
         workspace = temporary / "workspace"
         manifest = generate_workspace(request, workspace)
-        evidence = verify_workspace(workspace)
+        evidence = verify_workspace(workspace, use_ephemeral_runtime_ports=True)
     finally:
         cleanup_error = cleanup_acceptance_directory(
             temporary,

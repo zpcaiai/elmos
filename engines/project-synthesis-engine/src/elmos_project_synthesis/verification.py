@@ -7,6 +7,7 @@ import platform
 import re
 import shutil
 import signal
+import socket
 import subprocess
 import sys
 import tempfile
@@ -15,6 +16,19 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 from typing import Any
+
+from .models import SUPPORTED_PROFILE_TARGETS
+from .production_contract import (
+    ENV_AUTH_AUDIENCE,
+    ENV_AUTH_ISSUER,
+    ENV_DATABASE_URL_FILE,
+    ENV_JWT_SECRET_FILE,
+    ENV_OIDC_JWKS_FILE,
+    ENV_OIDC_PRIVATE_KEY_FILE,
+    ENV_RUNTIME_STATE_DIR,
+    LOCAL_AUDIENCE,
+    LOCAL_ISSUER,
+)
 
 LOCAL_TOOLCHAIN_ROOT = Path(
     os.getenv(
@@ -404,7 +418,10 @@ def _probe(
     environment: dict[str, str] | None = None,
     integration_command: list[str] | None = None,
     integration_environment: dict[str, str] | None = None,
+    requires_integration: bool = False,
+    blocking_reason: str | None = None,
     startup_timeout_seconds: int = 30,
+    integration_timeout_seconds: int = 120,
 ) -> dict[str, Any]:
     env = os.environ.copy()
     env.update(environment or {})
@@ -454,7 +471,7 @@ def _probe(
                     text=True,
                     capture_output=True,
                     check=False,
-                    timeout=120,
+                    timeout=integration_timeout_seconds,
                 )
             except subprocess.TimeoutExpired as error:
                 timeout_stdout = (
@@ -474,6 +491,21 @@ def _probe(
                 integration_status = "PASSED" if completed.returncode == 0 else "FAILED"
             if integration_status == "FAILED":
                 status = "FAILED"
+        if requires_integration and integration_status == "NOT_RUN" and status == "PASSED":
+            # Answering /health is not the evidence a production profile owes.
+            # Without this the probe reports PASSED for a target whose tenant
+            # isolation scenario never executed, which is how an unregistered
+            # target silently earns a green light.
+            if blocking_reason is not None:
+                status = "NOT_RUN"
+                integration_output = f"INTEGRATION_SCENARIO_NOT_RUN:{blocking_reason}"
+            else:
+                status = "FAILED"
+                integration_output = (
+                    "INTEGRATION_SCENARIO_REQUIRED_BUT_NOT_EXECUTED:"
+                    f"{language}\nNo integration command was declared for this "
+                    "target, so the production scenario never ran."
+                )
     finally:
         if process.poll() is None:
             if hasattr(os, "killpg"):
@@ -518,14 +550,253 @@ def _blueprint(workspace: Path) -> dict[str, Any]:
     return loaded
 
 
-def runtime_commands(workspace: Path) -> list[dict[str, Any]]:
+_HARNESS_DIRECTORIES = {
+    "java": "java",
+    "csharp": "dotnet",
+    "typescript": "typescript",
+    "go": "go",
+    "kotlin": "kotlin",
+    "php": "php",
+    "rust": "rust",
+}
+
+# The integration scenario runs against the database the harness already
+# provisioned and left running, so each entry is the target's own test runner,
+# never a second harness invocation. Re-running the harness here would try to
+# start a second PostgreSQL on the same data directory.
+_HARNESS_INTEGRATION_COMMANDS: dict[str, tuple[str, list[str]]] = {
+    "java": ("mvn", ["-B", "test", "-Pintegration"]),
+    "go": ("go", ["test", "-tags", "integration", "-count=1", "./..."]),
+    "typescript": ("pnpm", ["exec", "node", "--test", "dist/integration.test.js"]),
+    # The command-line filter overrides the VSTestTestCaseFilter property the
+    # test project sets, which is what keeps a plain `dotnet test` offline.
+    "csharp": ("dotnet", ["test", "-c", "Release", "--filter", "Category=Integration"]),
+    # A dedicated task rather than `test`, whose JUnit platform config excludes
+    # the integration tag so a plain `gradle test` stays database free.
+    "kotlin": ("gradle", ["--no-daemon", "--offline", "integrationTest"]),
+    # A separate entrypoint from tests/run.php, which stays offline and
+    # database free so the standard verification pass needs no server.
+    "php": ("php", ["tests/integration.php"]),
+    # Rust has no test tags, so the scenario is `#[ignore]`d to keep a plain
+    # `cargo test` offline and the harness opts into it explicitly. `--release`
+    # matches the profile the workspace runner starts the server with, so the
+    # integration run reuses those artifacts instead of rebuilding in debug.
+    "rust": (
+        "cargo",
+        [
+            "test",
+            "--locked",
+            "--release",
+            "--test",
+            "production_integration",
+            "--",
+            "--ignored",
+        ],
+    ),
+}
+
+
+_INTEGRATION_TIMEOUT_SECONDS: dict[str, int] = {
+    "rust": 300,
+    "kotlin": 300,
+    "csharp": 240,
+    "java": 240,
+}
+
+# Python declares its integration command inline in ``runtime_commands``
+# because it also owns the in-memory runtime shape; every other target is
+# declared in the table above.
+_INLINE_INTEGRATION_LANGUAGES = frozenset({"python"})
+
+
+def undeclared_integration_targets() -> frozenset[str]:
+    """Profile-open targets with no way to run the production scenario.
+
+    A target opened in ``SUPPORTED_PROFILE_TARGETS`` but missing here would
+    start the server, answer ``/health`` and never execute the tenant isolation
+    scenario. The probe now refuses to call that a pass, and this function
+    lets the test suite catch the omission before a run does.
+    """
+    declared = set(_HARNESS_INTEGRATION_COMMANDS) | _INLINE_INTEGRATION_LANGUAGES
+    opened: set[str] = set()
+    for (persistence, _auth_mode), languages in SUPPORTED_PROFILE_TARGETS.items():
+        if persistence != "in-memory":
+            opened |= set(languages)
+    return frozenset(opened - declared)
+
+
+def _language_tool_paths(language: str) -> list[str] | None:
+    """Resolve every tool a language declares, or None when one is missing."""
+    resolved: list[str] = []
+    for requirement in EXACT_TOOLCHAIN_REQUIREMENTS.get(language, []):
+        matched, _ = _matching_tool(requirement)
+        if matched is None:
+            return None
+        resolved.append(matched)
+    return resolved
+
+
+def _harness_environment(language: str, tools: list[str]) -> dict[str, str]:
+    """PATH and JAVA_HOME the harness needs to launch the target.
+
+    The harness is a plain Python script, so the toolchain it shells out to has
+    to be reachable from PATH. Prepending the exact resolved binaries keeps the
+    child process on the same versions the toolchain gate matched, instead of
+    whatever happens to be first on the ambient PATH.
+    """
+    directories = [str(Path(tool).resolve().parent) for tool in tools]
+    postgres = _resolve_tool("postgres", "/opt/homebrew/opt/postgresql@17/bin/postgres")
+    if postgres is not None:
+        directories.append(str(Path(postgres).resolve().parent))
+    environment = {
+        "PATH": os.pathsep.join([*dict.fromkeys(directories), os.environ.get("PATH", "")]),
+    }
+    java = next((tool for tool in tools if Path(tool).name == "java"), None)
+    if java is not None:
+        environment["JAVA_HOME"] = str(Path(java).resolve().parent.parent)
+    if language == "typescript":
+        # pnpm writes its store under HOME; keep it on the ambient one rather
+        # than letting a sandboxed HOME break `pnpm install`.
+        environment.setdefault("HOME", os.environ.get("HOME", ""))
+    return environment
+
+
+def _harness_runtime_plan(
+    root: Path,
+    language: str,
+    port: int,
+    auth_mode: str | None,
+) -> dict[str, Any] | None:
+    """Drive a PostgreSQL-backed target through its shared runtime harness.
+
+    Python is deliberately excluded: it already has a verified `uv run` launch
+    path, and routing it here would change a fixture that is currently green.
+
+    python3 is resolved directly rather than through `_runtime_tool`, because
+    that helper is keyed by language and returns None for any language whose
+    own toolchain gate has not matched -- which would silently downgrade the
+    plan to NOT_RUN for a reason that has nothing to do with the harness.
+    """
+    directory = _HARNESS_DIRECTORIES.get(language)
+    if directory is None:
+        return None
+    workspace = root / directory
+    if not (workspace / "scripts" / "local_runtime.py").is_file():
+        return None
+
+    interpreter = _resolve_tool("python3", "/usr/bin/python3")
+    tools = _language_tool_paths(language)
+    integration = _HARNESS_INTEGRATION_COMMANDS.get(language)
+    postgres_ready = _resolve_tool("postgres", "/opt/homebrew/opt/postgresql@17/bin/postgres") is not None
+
+    blocking: str | None = None
+    if interpreter is None:
+        blocking = "EXACT_TOOLCHAIN_NOT_AVAILABLE:harness:python3"
+    elif tools is None:
+        blocking = f"EXACT_TOOLCHAIN_NOT_AVAILABLE:{language}"
+    elif integration is None:
+        blocking = f"HARNESS_INTEGRATION_COMMAND_UNDECLARED:{language}"
+    elif not postgres_ready:
+        blocking = "EXACT_TOOLCHAIN_NOT_AVAILABLE:postgresql:postgres"
+
+    state = workspace / ".elmos-runtime"
+    # The harness writes exactly these paths; the integration runner reads the
+    # same ones so it joins the running database instead of provisioning a new
+    # one on the same data directory.
+    integration_environment = {
+        ENV_DATABASE_URL_FILE: str(state / "database-url"),
+        ENV_AUTH_ISSUER: LOCAL_ISSUER,
+        ENV_AUTH_AUDIENCE: LOCAL_AUDIENCE,
+    }
+    if auth_mode == "jwt":
+        integration_environment[ENV_JWT_SECRET_FILE] = str(state / "jwt-hmac")
+    elif auth_mode == "oidc":
+        integration_environment[ENV_OIDC_JWKS_FILE] = str(state / "oidc-jwks.json")
+        integration_environment[ENV_OIDC_PRIVATE_KEY_FILE] = str(state / "oidc-private-key.pem")
+
+    if blocking is not None:
+        return {
+            "language": language,
+            "cwd": str(workspace),
+            "command": [interpreter or "python3", "scripts/local_runtime.py"],
+            "environment": {"PORT": str(port), ENV_RUNTIME_STATE_DIR: str(state)},
+            "providers": ["postgresql"],
+            "port": port,
+            # A production profile owes integration evidence. Recording that
+            # obligation here -- even on the blocked plan -- stops a probe that
+            # merely answered /health from being reported as a pass.
+            "requires_integration": True,
+            "execution_status": "NOT_RUN",
+            "blocking_reason": blocking,
+        }
+
+    assert interpreter is not None and tools is not None and integration is not None
+    runner_name, runner_arguments = integration
+    runner = next((tool for tool in tools if Path(tool).name == runner_name), None) or runner_name
+    return {
+        "language": language,
+        "cwd": str(workspace),
+        "command": [interpreter, "scripts/local_runtime.py"],
+        "environment": {
+            "PORT": str(port),
+            "HOST": "127.0.0.1",
+            "SERVER_ADDRESS": "127.0.0.1",
+            ENV_RUNTIME_STATE_DIR: str(state),
+            **_harness_environment(language, tools),
+        },
+        "providers": ["postgresql"],
+        "port": port,
+        "startup_timeout_seconds": 180,
+        "requires_integration": True,
+        "integration_command": [runner, *runner_arguments],
+        "integration_environment": integration_environment,
+        # Compiled targets build their integration binary as part of this step.
+        # On a cold cache that is comfortably slower than an interpreted test
+        # run, and a timeout here would look like a scenario failure rather
+        # than the build it actually is.
+        "integration_timeout_seconds": _INTEGRATION_TIMEOUT_SECONDS.get(language, 120),
+        "execution_status": "READY",
+    }
+
+
+def runtime_commands(
+    workspace: Path,
+    *,
+    port_overrides: dict[str, int] | None = None,
+) -> list[dict[str, Any]]:
     root = workspace.resolve(strict=True)
+    applications = _blueprint(root).get("applications", [])
+    application_languages = {
+        str(application["language"])
+        for application in applications
+        if isinstance(application, dict) and isinstance(application.get("language"), str)
+    }
+    overrides = dict(port_overrides or {})
+    unknown_languages = set(overrides) - application_languages
+    if unknown_languages:
+        raise ValueError(
+            f"RUNTIME_PORT_OVERRIDE_LANGUAGE_UNKNOWN:{','.join(sorted(unknown_languages))}"
+        )
+    for language, override in overrides.items():
+        if isinstance(override, bool) or not isinstance(override, int) or not 1024 <= override <= 65535:
+            raise ValueError(f"RUNTIME_PORT_OVERRIDE_INVALID:{language}:{override}")
     commands: list[dict[str, Any]] = []
-    for application in _blueprint(root).get("applications", []):
+    for application in applications:
         language = application.get("language")
         port = application.get("port")
         if not isinstance(language, str) or not isinstance(port, int):
             continue
+        port = overrides.get(language, port)
+        if application.get("storage") == "postgresql" and language != "python":
+            harness_plan = _harness_runtime_plan(
+                root,
+                language,
+                port,
+                application.get("auth_mode") if isinstance(application.get("auth_mode"), str) else None,
+            )
+            if harness_plan is not None:
+                commands.append(harness_plan)
+                continue
         if language == "java":
             jars = [
                 path for path in sorted((root / "java" / "target").glob("*.jar")) if not path.name.endswith(".original")
@@ -578,6 +849,7 @@ def runtime_commands(workspace: Path) -> list[dict[str, Any]]:
                     elif auth_mode == "oidc":
                         integration_environment["ELMOS_OIDC_JWKS_FILE"] = str(state / "oidc-jwks.json")
                         integration_environment["ELMOS_OIDC_PRIVATE_KEY_FILE"] = str(state / "oidc-private-key.pem")
+                    plan["requires_integration"] = True
                     plan["integration_command"] = [
                         tool,
                         "run",
@@ -708,7 +980,11 @@ def _run_if_available(
     return True
 
 
-def verify_workspace(workspace: Path) -> dict[str, Any]:
+def verify_workspace(
+    workspace: Path,
+    *,
+    use_ephemeral_runtime_ports: bool = False,
+) -> dict[str, Any]:
     root = workspace.resolve(strict=True)
     applications = _blueprint(root).get("applications", [])
     selected: set[str] = set()
@@ -786,6 +1062,13 @@ def verify_workspace(workspace: Path) -> dict[str, Any]:
             else:
                 build_passed.add("csharp")
 
+    rust_production_profile = any(
+        isinstance(item, dict)
+        and item.get("language") == "rust"
+        and item.get("storage") == "postgresql"
+        for item in applications
+    )
+    rust_release_arguments = ["--release"] if rust_production_profile else []
     target_commands = {
         "typescript": (
             "pnpm",
@@ -799,13 +1082,28 @@ def verify_workspace(workspace: Path) -> dict[str, Any]:
         ),
         "go": ("go", [["vet", "./..."], ["test", "-race", "./..."], ["build", "./..."]]),
         "kotlin": ("gradle", [["--no-daemon", "test", "build"]]),
-        "php": ("php", [["-l", "src/Store.php"], ["-l", "public/index.php"], ["tests/run.php"]]),
+        # Deliberately shape-agnostic: the starter profile names its class
+        # src/Store.php while the production profile names it after the
+        # entity, so linting a hardcoded path would fail on one of them.
+        # tests/run.php requires every class it needs, which makes running it
+        # a parse check over the whole workspace -- `php -l` does not follow
+        # requires.
+        "php": ("php", [["-l", "public/index.php"], ["tests/run.php"]]),
         "rust": (
             "cargo",
             [
                 ["fmt", "--check"],
-                ["clippy", "--locked", "--all-targets", "--all-features", "--", "-D", "warnings"],
-                ["test", "--locked", "--all-features"],
+                [
+                    "clippy",
+                    "--locked",
+                    *rust_release_arguments,
+                    "--all-targets",
+                    "--all-features",
+                    "--",
+                    "-D",
+                    "warnings",
+                ],
+                ["test", "--locked", *rust_release_arguments, "--all-features"],
                 ["build", "--locked", "--release"],
             ],
         ),
@@ -830,7 +1128,14 @@ def verify_workspace(workspace: Path) -> dict[str, Any]:
     if not isinstance(project, dict) or not isinstance(project.get("name"), str):
         raise RuntimeError("PROJECT_BLUEPRINT_NAME_REQUIRED")
     expected_service = str(project["name"])
-    for plan in runtime_commands(root):
+    runtime_port_overrides: dict[str, int] | None = None
+    if use_ephemeral_runtime_ports:
+        runtime_port_overrides = {}
+        for language in sorted(selected):
+            with socket.socket() as port_probe:
+                port_probe.bind(("127.0.0.1", 0))
+                runtime_port_overrides[language] = int(port_probe.getsockname()[1])
+    for plan in runtime_commands(root, port_overrides=runtime_port_overrides):
         language = str(plan["language"])
         if language not in build_passed:
             continue
@@ -876,7 +1181,16 @@ def verify_workspace(workspace: Path) -> dict[str, Any]:
                     if isinstance(plan.get("integration_environment"), dict)
                     else None
                 ),
+                requires_integration=bool(plan.get("requires_integration", False)),
+                blocking_reason=(
+                    str(plan["blocking_reason"])
+                    if isinstance(plan.get("blocking_reason"), str)
+                    else None
+                ),
                 startup_timeout_seconds=int(plan.get("startup_timeout_seconds", 30)),
+                integration_timeout_seconds=int(
+                    plan.get("integration_timeout_seconds", 120)
+                ),
             )
         )
 

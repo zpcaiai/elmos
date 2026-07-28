@@ -6,10 +6,15 @@ NODE_RUNTIME_BIN := $(dir $(NODE_EXECUTABLE))
 PNPM_VERSION ?= $(shell sed -n 's/.*"packageManager": "pnpm@\([^"]*\)".*/\1/p' apps/web-console/package.json)
 PNPM ?= pnpm dlx pnpm@$(PNPM_VERSION)
 
-.PHONY: verify backend database-data infrastructure security-compliance test-quality mainframe enterprise-integration enterprise-suite mature-product-skills mature-product-packages product-roadmap production-readiness-check batch1-55-skills batch66-80-skills batch66-80-test-skills language-packs-batch81-95 batch81-95-test-skills batch97-104-skills product-batch56-skills product-closure-convergence-skills product-closure-gate product-convergence-gate product-batch33-38-skills product-batch33-39-skills product-batch33-55-skills product-batch40-55-skills product-batch35-38 migration-pack-admission batch27-34-skills test-suite-validate test-suite-test test-suite-check test-suite-gate test-suite-1-55-check test-suite-1-55-gate test-suite-1-65-check test-suite-1-65-gate test-suite-66-80-check test-suite-66-80-gate test-suite-81-95-check test-suite-81-95-gate test-suite-b38-45-validate test-suite-b38-45-test test-suite-b38-45-check test-suite-b38-45-gate test-suite-local-qualification dotnet python project-synthesis project-synthesis-toolchains frontend web up down
+.PHONY: verify business-line-contracts model-catalog-check backend database-data infrastructure security-compliance test-quality mainframe enterprise-integration enterprise-suite mature-product-skills mature-product-packages product-roadmap production-readiness-check batch1-55-skills batch66-80-skills batch66-80-test-skills language-packs-batch81-95 batch81-95-test-skills batch97-104-skills product-batch56-skills product-closure-convergence-skills product-closure-gate product-convergence-gate product-batch33-38-skills product-batch33-39-skills product-batch33-55-skills product-batch40-55-skills product-batch35-38 migration-pack-admission batch27-34-skills test-suite-validate test-suite-test test-suite-check test-suite-gate test-suite-1-55-check test-suite-1-55-gate test-suite-1-65-check test-suite-1-65-gate test-suite-66-80-check test-suite-66-80-gate test-suite-81-95-check test-suite-81-95-gate test-suite-b38-45-validate test-suite-b38-45-test test-suite-b38-45-check test-suite-b38-45-gate test-suite-local-qualification dotnet python project-synthesis project-synthesis-toolchains frontend web up down
 
-verify: backend dotnet python frontend web
-production-readiness-check: batch45-check project-synthesis batch97-104-skills product-batch56-skills product-closure-convergence-skills web
+verify: business-line-contracts backend dotnet python frontend web
+business-line-contracts: model-catalog-check
+	python3 scripts/operations/validate_spring_route_contract.py
+	python3 scripts/operations/validate_translation_route_matrix.py
+model-catalog-check:
+	python3 scripts/operations/validate_model_catalog.py
+production-readiness-check: business-line-contracts batch45-check project-synthesis batch97-104-skills product-batch56-skills product-closure-convergence-skills web
 	$(UV) run --quiet --with pyyaml python tooling/validate_runtime_operability.py
 	$(UV) run --quiet --with pyyaml python -m unittest discover -s tests/production-readiness -p 'test_*.py'
 backend:
@@ -156,8 +161,7 @@ project-synthesis:
 	$(UV) --directory engines/project-synthesis-engine run --locked ruff check src tests scripts
 	$(UV) --directory engines/project-synthesis-engine run --locked mypy src
 	$(UV) --directory engines/project-synthesis-engine run --locked python scripts/run_acceptance.py
-	$(UV) --directory engines/project-synthesis-engine run --locked python scripts/run_production_acceptance.py --auth-mode jwt
-	$(UV) --directory engines/project-synthesis-engine run --locked python scripts/run_production_acceptance.py --auth-mode oidc
+	$(UV) --directory engines/project-synthesis-engine run --locked python scripts/run_production_matrix.py
 project-synthesis-toolchains:
 	scripts/toolchains/install_project_synthesis_toolchains.sh
 	$(UV) --directory engines/project-synthesis-engine run --locked python scripts/run_acceptance.py --language go --language kotlin --language php --language rust --require-all-toolchains

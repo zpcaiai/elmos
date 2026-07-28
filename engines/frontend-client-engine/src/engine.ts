@@ -3,6 +3,8 @@ import { buildUiSemanticGraph, discoverWorkspace } from "./analyzer.js";
 import type { Capabilities, EngineJobRequest, ExecuteStepRequest, FrontendErrorCode, JobResponse } from "./contracts.js";
 import type { TargetProfile, WorkspaceInventory } from "./domain.js";
 import { planFrontendMigration } from "./planner.js";
+import { generateUiProject } from "./project-generation.js";
+import type { UiProjectGenerationRequest } from "./project-types.js";
 
 function requireText(value: string, name: string): void {
   if (!value?.trim()) throw new Error(`${name} is required`);
@@ -44,15 +46,17 @@ export class FrontendClientEngine {
 
   capabilities(): Capabilities {
     return {
-      schemaVersion: "1.0", engine: "ELMOS_FRONTEND_CLIENT", engineVersion: "1.0.0",
-      languages: ["JAVASCRIPT", "TYPESCRIPT", "HTML", "CSS"],
-      webFrameworks: ["ANGULARJS", "ANGULAR", "VUE2", "VUE3", "REACT", "JQUERY"],
+      schemaVersion: "1.0", engine: "ELMOS_FRONTEND_CLIENT", engineVersion: "1.1.0",
+      languages: ["JAVASCRIPT", "TYPESCRIPT", "HTML", "CSS", "DART", "ARKTS"],
+      webFrameworks: ["ANGULARJS", "ANGULAR", "VUE2", "VUE3", "REACT", "JQUERY", "SVELTE"],
       desktopFrameworks: ["ELECTRON", "WPF", "WINFORMS", "WEBVIEW", "JAVA_DESKTOP_INVENTORY", "QT_INVENTORY"],
-      mobileFrameworks: ["ANDROID_VIEWS", "ANDROID_COMPOSE", "UIKIT", "SWIFTUI", "REACT_NATIVE", "FLUTTER", "CORDOVA", "IONIC"],
-      runnerProfiles: { WEB_LEGACY: "NOT_CONFIGURED", MODERN_WEB: "NOT_CONFIGURED", BROWSER_MATRIX: "NOT_CONFIGURED", DESKTOP_WINDOWS: "NOT_CONFIGURED", DESKTOP_MACOS: "NOT_CONFIGURED", ANDROID: "NOT_CONFIGURED", IOS: "NOT_CONFIGURED" },
+      mobileFrameworks: ["ANDROID_VIEWS", "ANDROID_COMPOSE", "UIKIT", "SWIFTUI", "REACT_NATIVE", "FLUTTER", "HARMONY_ARKUI", "CORDOVA", "IONIC"],
+      runnerProfiles: { WEB_LEGACY: "NOT_CONFIGURED", MODERN_WEB: "NOT_CONFIGURED", BROWSER_MATRIX: "NOT_CONFIGURED", DESKTOP_WINDOWS: "NOT_CONFIGURED", DESKTOP_MACOS: "NOT_CONFIGURED", ANDROID: "NOT_CONFIGURED", IOS: "NOT_CONFIGURED", HARMONYOS: "NOT_CONFIGURED", MOBILE_CROSS_PLATFORM: "NOT_CONFIGURED" },
       staticAnalysis: "READY", customerCodeExecution: "RUNNER_REQUIRED_FAIL_CLOSED",
       jobStatePersistence: "EPHEMERAL_PROCESS_LOCAL", durableStateAuthority: "ELMOS_CONTROL_PLANE",
-      restartRecovery: "NOT_SUPPORTED_BY_WORKER"
+      restartRecovery: "NOT_SUPPORTED_BY_WORKER",
+      uiProjectGeneration: "STATIC_PROJECT_AND_CONFIGURATION_READY",
+      directedUiRouteCount: 72
     };
   }
 
@@ -87,6 +91,34 @@ export class FrontendClientEngine {
           ...(plan.blockers.length ? { error: { errorCode: "FRONTEND_PLAN_BLOCKED" as const, message: plan.blockers.join(","), retryable: false } } : {}) };
       } catch {
         return problem(jobId, "FRONTEND_ROUTE_DISCOVERY_FAILED", "Frontend migration planning rejected incomplete or invalid inputs.");
+      }
+    });
+  }
+
+  generateProject(request: EngineJobRequest): JobResponse {
+    return this.once("generate-project", request, jobId => {
+      try {
+        const projectRequest = request.input?.project as UiProjectGenerationRequest | undefined;
+        if (!projectRequest) throw new Error("project request is required");
+        const project = generateUiProject(projectRequest);
+        return {
+          schemaVersion: "1.0",
+          jobId,
+          status: "SUCCEEDED",
+          evidenceRefs: [`artifact://frontend-project/${project.contentDigest.replace("sha256:", "")}`],
+          result: {
+            configured: true,
+            executed: true,
+            customerCodeExecuted: false,
+            project,
+          },
+        };
+      } catch {
+        return problem(
+          jobId,
+          "FRONTEND_PROJECT_GENERATION_REJECTED",
+          "UI project generation rejected incomplete, unsafe, or unsupported inputs.",
+        );
       }
     });
   }

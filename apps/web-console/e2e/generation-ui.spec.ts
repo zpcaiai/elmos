@@ -45,27 +45,42 @@ test.describe("多语言项目生成 UI", () => {
     await expect(page.getByRole("button", { name: "执行并验证" })).toBeDisabled();
   });
 
-  test("企业配置只开放精确 Python PostgreSQL JWT/OIDC 组合", async ({ page }) => {
+  test("企业配置只开放携带集成证据的单目标 PostgreSQL JWT/OIDC 组合", async ({ page }) => {
     await page.goto("/generation");
     await expect(page.getByLabel("数据配置").locator('option[value="postgresql"]')).toHaveText(
       "PostgreSQL 17.5 生产配置",
     );
     await page.getByLabel("数据配置").selectOption("postgresql");
 
-    const pythonTarget = page.locator("label.target-card").filter({ hasText: "Python 3.12" })
-      .locator('input[type="checkbox"]');
-    const javaTarget = page.locator("label.target-card").filter({ hasText: "Java 21" })
-      .locator('input[type="checkbox"]');
-    await expect(pythonTarget).toBeChecked();
-    await expect(javaTarget).toBeDisabled();
+    const target = (label: string) =>
+      page.locator("label.target-card").filter({ hasText: label }).locator('input[type="checkbox"]');
+    // Only targets whose production evidence the repository can reproduce are
+    // selectable; every other target stays disabled.
+    await expect(target("Python 3.12")).toBeChecked();
+    for (const label of [
+      "Java 21",
+      "Go 1.25.0",
+      "TypeScript Node 26.0.0",
+      "C# .NET 10.0.301",
+      "Kotlin 2.2.20 / JVM 21",
+      "Rust 1.89.0",
+      "PHP 8.4.12",
+    ]) {
+      await expect(target(label)).toBeEnabled();
+    }
     await expect(page.getByLabel("认证配置")).toHaveValue("jwt");
+
+    // The production profile is verified one target at a time, so selection
+    // replaces rather than accumulates.
+    await target("Go 1.25.0").click();
+    await expect(target("Go 1.25.0")).toBeChecked();
+    await expect(target("Python 3.12")).not.toBeChecked();
 
     await page.getByLabel("认证配置").selectOption("oidc");
     await expect(page.getByLabel("认证配置")).toHaveValue("oidc");
     await page.getByRole("button", { name: "锁定生成计划" }).click();
-    await expect(page.getByText("目前精确支持 Python", { exact: false })).toBeVisible();
-    await expect(page.locator(".preview-target-list").getByText("Python 3.12", { exact: true })).toBeVisible();
-    await expect(page.locator(".preview-target-list").getByText("Java 21", { exact: true })).toHaveCount(0);
+    await expect(page.locator(".preview-target-list").getByText("Go 1.25.0", { exact: true })).toBeVisible();
+    await expect(page.locator(".preview-target-list").getByText("Python 3.12", { exact: true })).toHaveCount(0);
   });
 
   test("刷新后可用精确身份与任务 UUID 恢复持久化任务", async ({ page }, testInfo) => {

@@ -43,6 +43,10 @@ def _go_type(field: FieldSpec) -> str:
 
 
 def render_go(request: SynthesisRequest, port: int) -> dict[str, str]:
+    if request.requires_database or request.requires_authentication:
+        from .go_production_target import render_go_production
+
+        return render_go_production(request, port)
     model_blocks: list[str] = []
     store_blocks: list[str] = []
     route_blocks: list[str] = []

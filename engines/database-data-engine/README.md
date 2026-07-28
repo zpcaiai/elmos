@@ -13,3 +13,18 @@ The worker exposes the shared capability, scan, plan, execute-step, validate, te
 The static core never opens JDBC connections, launches host processes, loads vendor libraries, changes logging, starts CDC, writes customer data, or switches a production writer. Those actions require a short-lived job credential, a capability-matched approved Runner, explicit production authority, immutable provider evidence, and independent validation.
 
 Five JSON Schema fixtures, the OpenAPI contract, and the 24 required Batch 15 incidents are checked by the module tests. These artifacts do not claim that a customer database, lakehouse, pipeline, report, or metric was migrated.
+
+## Typed SQL transpilation
+
+`sql-transpiler/` adds a pinned SQLGlot 30.13.0 typed-AST pipeline for PostgreSQL 17.5 and 18.4, MySQL 8.4.10 LTS, SQL Server 2022 CU26, Oracle 26ai, SQLite 3.53.3, and DuckDB 1.5.4. It exposes 42 directional syntax routes, exact profiles, a create-only CLI, target SQL and configuration generation, typed query IR, source/target AST evidence, fail-closed unsupported handling, and separated development/negative/holdout/representative corpora.
+
+Run it independently:
+
+```bash
+cd engines/database-data-engine/sql-transpiler
+uv sync --frozen
+uv run pytest
+uv run elmos-sql-transpiler transpile examples/postgresql-to-mysql.json /tmp/elmos-orders-mysql
+```
+
+The local syntax gate requires at least 99.5% success and currently passes its checked-in eligible corpus. That is not database execution or semantic equivalence: source/target execution, results, errors, locks, performance, security, and certification remain `NOT_RUN` / `NOT_CERTIFIED` until exact database Runners and independent evidence exist.

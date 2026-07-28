@@ -19,6 +19,10 @@ from .rendering import (
 
 
 def render_php(request: SynthesisRequest, port: int) -> dict[str, str]:
+    if request.requires_database or request.requires_authentication:
+        from .php_production_target import render_php_production
+
+        return render_php_production(request, port)
     schemas = {
         entity.plural: {
             "singular": entity.singular,

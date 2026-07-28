@@ -13,6 +13,39 @@ const capabilities = {
   sourceTuple: { springBoot: "2.7.18", java: "17", build: "Maven 3.9.11" },
   targetTuple: { springBoot: "3.5.3", java: "21", build: "Maven 3.9.11" },
   openRewrite: { rewriteSpring: "6.35.0", mavenPlugin: "6.44.0" },
+  routes: [
+    {
+      routeId: "boot-2.0-2.6-maven-to-boot-3.5.3-java-21",
+      packKey: "spring-boot-2-0-2-6-to-3-5-3",
+      label: "Spring Boot 2.0–2.6 / Java 8, 11, 17 / Maven",
+      buildTool: "maven",
+      sourceBootMinInclusive: "2.0.0",
+      sourceBootMaxExclusive: "2.7.0",
+      sourceJavaVersions: ["11", "17", "8"],
+      targetSpringBoot: "3.5.3",
+      targetJava: "21",
+      recipeId: "io.elmos.openrewrite.SpringBoot2_0To2_6ToBoot3_5_3Java21",
+      evidenceStatus: "NOT_RUN",
+      verifiedSourceSpringBoot: "",
+      verifiedSourceJava: "",
+    },
+    {
+      routeId: "boot-2.7-maven-to-boot-3.5.3-java-21",
+      packKey: "spring-boot-2-7-18-to-3-5-3",
+      label: "Spring Boot 2.7.x / Java 8, 11, 17 / Maven",
+      buildTool: "maven",
+      sourceBootMinInclusive: "2.7.0",
+      sourceBootMaxExclusive: "2.8.0",
+      sourceJavaVersions: ["11", "17", "8"],
+      targetSpringBoot: "3.5.3",
+      targetJava: "21",
+      recipeId: "io.elmos.openrewrite.SpringBoot2_7_18To3_5_3Java21",
+      evidenceStatus: "PASSED_LOCAL",
+      verifiedSourceSpringBoot: "2.7.18",
+      verifiedSourceJava: "17",
+    },
+  ],
+  experimentalRoutesRequireOptIn: true,
   transformerConfigured: true,
   transformerReason: "Rootless private Runner is configured.",
   runtimeRunnerConfigured: true,
@@ -204,6 +237,17 @@ test("Spring 真实旅程 UI 可完成导入、证据查看、下载、启动、
 
   await page.goto("/spring");
   await expect(page.getByText("Runner 与独立验证器已配置，可以提交精确路线。")).toBeVisible();
+
+  // The catalog is rendered from the engine contract, and only the tuple that
+  // carries recorded evidence may display PASSED_LOCAL.
+  const catalog = page.getByRole("table", { name: "Spring 遗留版本路线目录" });
+  await expect(catalog.getByRole("cell", { name: "Boot [2.0.0, 2.7.0)" })).toBeVisible();
+  await expect(catalog.getByRole("cell", { name: "Boot [2.7.0, 2.8.0)" })).toBeVisible();
+  await expect(catalog.getByRole("cell", { name: "NOT_RUN", exact: true })).toBeVisible();
+  await expect(
+    catalog.getByRole("cell", { name: "PASSED_LOCAL @ 2.7.18 / Java 17" }),
+  ).toBeVisible();
+
   await page.getByLabel("Git 仓库 URL").fill("https://github.com/example/legacy-orders.git");
   await page.getByLabel("Branch / Tag").fill("main");
   await page.getByLabel("预期 Commit（可选）").fill(commit);

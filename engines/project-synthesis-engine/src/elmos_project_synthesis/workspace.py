@@ -16,10 +16,18 @@ from .kotlin_target import render_kotlin
 from .models import TARGET_PROFILES, SynthesisRequest, request_payload, sha256_json
 from .php_target import render_php
 from .production_profile import render_production_assets
+from .project_documentation import (
+    DOCUMENT_SOURCE_REFS,
+    DOCUMENTATION_STATUS,
+    render_project_documentation,
+)
 from .python_target import render_python
 from .rendering import clean, pretty_json
 from .rust_target import render_rust
 from .typescript_target import render_typescript
+
+ENGINE_VERSION = "1.3.0"
+COMPATIBLE_MANIFEST_VERSIONS = frozenset({"1.2.0", ENGINE_VERSION})
 
 
 class WorkspaceConflictError(RuntimeError):
@@ -169,10 +177,38 @@ def _render_asset_graph(request: SynthesisRequest) -> dict[str, Any]:
             "path": "requirements/project-blueprint.json",
             "status": "GENERATED",
         },
+        {
+            "id": "architecture-document",
+            "kind": "architecture-document",
+            "path": "docs/ARCHITECTURE.md",
+            "status": DOCUMENTATION_STATUS,
+        },
+        {
+            "id": "database-design-document",
+            "kind": "database-design-document",
+            "path": "docs/DATABASE_DESIGN.md",
+            "status": DOCUMENTATION_STATUS,
+        },
+        {
+            "id": "migration-guide",
+            "kind": "migration-document",
+            "path": "docs/MIGRATION_GUIDE.md",
+            "status": DOCUMENTATION_STATUS,
+        },
+        {
+            "id": "change-history",
+            "kind": "change-impact-document",
+            "path": "docs/CHANGE_HISTORY.md",
+            "status": DOCUMENTATION_STATUS,
+        },
     ]
     edges: list[dict[str, str]] = [
         {"from": "approved-request", "to": "psir", "relation": "normalizes-to"},
         {"from": "psir", "to": "project-blueprint", "relation": "plans"},
+        {"from": "project-blueprint", "to": "architecture-document", "relation": "documents"},
+        {"from": "project-blueprint", "to": "database-design-document", "relation": "documents-data"},
+        {"from": "database-design-document", "to": "migration-guide", "relation": "governs-migration"},
+        {"from": "approved-request", "to": "change-history", "relation": "records-impact"},
     ]
     for target in request.targets:
         source_id = f"{target.language}-source"
@@ -347,6 +383,10 @@ def _root_readme(request: SynthesisRequest) -> str:
         - `requirements/project-blueprint.json`: selected language/runtime/build profiles.
         - `requirements/asset-graph.json`: generated assets and missing evidence links.
         - `requirements/build-graph.json`: per-target generate/build/test/startup dependencies.
+        - `docs/ARCHITECTURE.md`: architecture baseline, boundaries, targets, decisions, and review status.
+        - `docs/DATABASE_DESIGN.md`: logical/physical data model, relations, constraints, indexes, and RLS.
+        - `docs/MIGRATION_GUIDE.md`: upgrade, data migration, verification, rollback, and evidence plan.
+        - `docs/CHANGE_HISTORY.md`: baseline history and behavior/API/data/security/operations impact.
         - `docs/LOCAL_RUN.md`: exact local hardware, toolchain, verification and startup steps.
         - `docs/CLOUD_DEPLOYMENT.md`: cloud options and the recommended Cloud Run configuration.
         - `deploy/deployment-options.json`: fail-closed, machine-readable deployment handoff.
@@ -386,6 +426,10 @@ def render_workspace(request: SynthesisRequest) -> dict[str, str]:
             """
         ),
     }
+    for path, content in render_project_documentation(request).items():
+        if path in files:
+            raise WorkspaceConflictError(f"DUPLICATE_GENERATED_PATH:{path}")
+        files[path] = content
     for target in request.targets:
         rendered = {
             "java": render_java,
@@ -433,20 +477,25 @@ def render_workspace(request: SynthesisRequest) -> dict[str, str]:
             "path": path,
             "sha256": _sha256_text(content),
             "ownership": "managed",
-            "source_refs": ["approved-request", "PG001-PG417"],
+            "source_refs": list(DOCUMENT_SOURCE_REFS.get(path, ("approved-request", "PG001-PG417"))),
         }
         for path, content in sorted(files.items())
     ]
     manifest = {
         "schema_version": "1.1.0",
         "engine": "elmos.project-synthesis",
-        "engine_version": "1.2.0",
+        "engine_version": ENGINE_VERSION,
         "request_sha256": request.request_hash,
         "approved_payload_sha256": request.raw["approval"]["approved_payload_sha256"],
         "status": "GENERATED",
         "production_delivery_status": "NOT_RUN",
         "certification_status": "NOT_CERTIFIED",
         "external_evidence_status": "NOT_RUN",
+        "documentation": {
+            "status": DOCUMENTATION_STATUS,
+            "external_review_status": "NOT_RUN",
+            "paths": sorted(DOCUMENT_SOURCE_REFS),
+        },
         "files": manifest_entries,
     }
     files[".elmos/generation-manifest.json"] = pretty_json(manifest)
@@ -469,7 +518,7 @@ def _load_existing_manifest(root: Path) -> dict[str, Any] | None:
 def _assert_existing_files_unmodified(root: Path, manifest: dict[str, Any]) -> None:
     if (
         manifest.get("engine") != "elmos.project-synthesis"
-        or manifest.get("engine_version") != "1.2.0"
+        or manifest.get("engine_version") not in COMPATIBLE_MANIFEST_VERSIONS
         or manifest.get("status") != "GENERATED"
     ):
         raise WorkspaceConflictError("EXISTING_MANIFEST_IDENTITY_INVALID")

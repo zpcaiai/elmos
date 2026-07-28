@@ -18,9 +18,23 @@ Java/Spring 专用现代化链路已覆盖 Batch 1–10；Batch 11/12 在同一�
 
 ## Project Synthesis and Language Packs Batch 46–95
 
-ELMOS 也支持绿色项目合成：仓库级 `$elmos-project-synthesis` Skill 将自然语言请求整理为带来源、假设、问题、验收标准和审批哈希的规格，再由 `engines/project-synthesis-engine` 生成可运行的 Java 21 / Spring Boot、Python 3.12 / FastAPI 和 C# / .NET 10 / ASP.NET Core 项目。生成器只接受已批准且未被篡改的规格，保护用户修改，并输出配置、测试、OpenAPI、CI、非 root 容器、Kubernetes、追踪关系和内容寻址清单。
+ELMOS 也支持绿色项目合成：仓库级 `$elmos-project-synthesis` Skill 将自然语言请求整理为带来源、假设、问题、验收标准和审批哈希的规格，再由 `engines/project-synthesis-engine` 生成可运行项目。内置 Emitter 覆盖八个精确目标：Java 21 / Spring Boot、Python 3.12 / FastAPI、C# / .NET 10 / ASP.NET Core、TypeScript / NestJS-Fastify、Go / net-http、Kotlin / Ktor、PHP 原生 HTTP 与 Rust / Axum。权威成熟度矩阵是 [`docs/project-synthesis/bundled-emitter-support.json`](docs/project-synthesis/bundled-emitter-support.json)，由 `scripts/operations/validate_generation_support_matrix.py` 对引擎、请求 Schema、Rootless Runner、Web Console 与 Skill 做失败关闭的一致性校验。生成器只接受已批准且未被篡改的规格，保护用户修改，并输出配置、测试、OpenAPI、CI、非 root 容器、Kubernetes、追踪关系和内容寻址清单。
 
-运行 `make project-synthesis` 会验证 417 个全局 PG001–PG417 规范、180 个 Batch 81–95 Language Pack 规范和 42 个 Schema，执行引擎单元/静态检查，并在临时目录真实生成、构建、测试和启动 Java、Python、C# 三种目标。Batch 66–80 提供 195 个主流语言与工程资产 Runtime Skills；Batch 81–95 再提供 COBOL/Mainframe、SAP ABAP、数据库过程语言、IEC 61131-3 PLC、MATLAB/Simulink、Modelica/FMI、VB/Office、IBM i RPG、R、SAS、Salesforce、Objective-C、Delphi、BEAM 与 Lua/OpenResty 共 180 个 Skills。后者的源 PG223–PG402 与全局 PG 编号重叠，因此保留独立 package-local 命名空间，并以 `$b81-*`–`$b95-*` 安全别名调用，绝不重编号冒充全局连续性。当前内置生成器仍仅直接发射单聚合 Java/Python/C# Starter；其他能力必须使用对应 Skill 和真实原生/厂商工具链、代表性环境及安全审批。详见 [`docs/project-synthesis-batch46-95-verification.md`](docs/project-synthesis-batch46-95-verification.md)。
+运行 `make project-synthesis` 会验证 417 个全局 PG001–PG417 规范、180 个 Batch 81–95 Language Pack 规范和 42 个 Schema，执行引擎单元/静态检查，并在临时目录真实生成、构建、测试和启动全部八种目标。Batch 66–80 提供 195 个主流语言与工程资产 Runtime Skills；Batch 81–95 再提供 COBOL/Mainframe、SAP ABAP、数据库过程语言、IEC 61131-3 PLC、MATLAB/Simulink、Modelica/FMI、VB/Office、IBM i RPG、R、SAS、Salesforce、Objective-C、Delphi、BEAM 与 Lua/OpenResty 共 180 个 Skills。后者的源 PG223–PG402 与全局 PG 编号重叠，因此保留独立 package-local 命名空间，并以 `$b81-*`–`$b95-*` 安全别名调用，绝不重编号冒充全局连续性。生产 Profile（`postgresql` + `jwt`/`oidc`）的共享底座位于 `production_contract.py`（统一路由表、四条 SQL、环境变量名与 10 步集成场景）和 `production_runtime.py`（语言无关的 PostgreSQL 供给：loopback TCP + scram-sha-256、forward-only 迁移、最小权限角色、openssl 生成 RSA 并派生 JWKS）。`SUPPORTED_PROFILE_TARGETS` 已对全部 **八个目标（Python、Java、Go、TypeScript、C#、Kotlin、Rust、PHP）** 开放；`scripts/run_production_matrix.py` 是 8 × JWT/OIDC 共 16 个本地生产 Profile 的权威重放入口：真实 PostgreSQL 17.5 起库、应用启动探针通过、10 步场景全绿（含错签名/错 audience/错 issuer/缺租户声明被拒，以及跨租户读被 RLS 阻断）。
+
+`verification.runtime_commands` 对 `storage=postgresql` 的非 Python 目标走独立的 harness 分支：python3 直接解析而不经语言工具链注册表（该表按语言键控，任一语言工具未匹配就会把 harness 误判为 NOT_RUN），并把该语言实际匹配到的工具目录与 postgres 目录前置注入 PATH。集成命令是各目标自己的测试运行器而非二次调用 harness——探针在应用仍运行时执行集成命令，再跑一次 harness 会在同一 data 目录上启动第二个 PostgreSQL。Python 保留原有 `uv run` 启动路径不变。
+
+Kotlin 的依赖锁必须由**发出的那份构建本身**生成，而不是一个近似的探针工程：`kotlin("test")` 解析到 JUnit 4 还是 JUnit 5 变体取决于 `useJUnitPlatform` 配置，锁不匹配会在 `gradle test build` 阶段直接失败。生成的工程因此自带 `resolveAndLockAll` 任务，更新依赖后执行 `gradle --no-daemon --write-locks resolveAndLockAll` 并把 `gradle.lockfile` 提交回 `templates/kotlin/gradle.production.lockfile`。
+
+Rust 的生成物受 `cargo fmt --check` 门禁约束，而 rustfmt 的换行取决于行宽，也就取决于调用方给实体和字段起的名字有多长——按一种 schema 手工对齐的模板，换一种 schema 就会失败。因此发出的工程通过构造消除长度依赖：签名一律走 `Record`/`RecordUpsert`/`RecordStore` 类型别名，SQL 与路由路径提升为常量，工程自带 `rustfmt.toml` 把规则收敛为单一 `max_width`，Emitter 对少数确实随字段数变化的构造（upsert 参数数组、`Ok(Self { .. })` 字面量、长字符串常量）直接复现 rustfmt 的换行判定。`scripts/check_rust_emitter_formatting.py` 用四种极端 schema 守住这一点。
+
+PHP 工具链以 `--disable-all` 编译，因此生产 Emitter 只能使用脚本显式编译进去的扩展：`json`、`hash`、`PDO`、`pdo_pgsql`、`openssl`。两处后果是硬约束：没有 `ext-filter`，UUID 与载荷校验改用 `ext-pcre` 的 `preg_match`；RS256 验签依赖 `openssl_verify`，而该构建既无 `gmp` 也无 `bcmath`，纯 PHP 实现 RSA 不可行——所以 `openssl` 被列为必需扩展，缺失即拒绝构建。JWKS 无法直接喂给 `openssl_pkey_get_public`，Emitter 因此把模数与指数按 DER 编成 `RSAPublicKey` 再包成 PEM。
+
+安装脚本修复了四处缺陷：`--without-pear` 缺行尾续行符，使 `./configure` 提前结束、`--with-pdo-pgsql` 从未进入命令行；libpq 与 openssl 前缀不再写死，改为分别按 `bin/pg_config` 和 `lib/pkgconfig/openssl.pc` 依次探测；ext/openssl 经 pkg-config 定位，故前缀通过 `PKG_CONFIG_PATH` 传入而非 `--with` 参数值；短路守卫原本只比对版本，导致缺扩展的旧安装被当成"已装好"而静默跳过重建，现在逐一校验 `PHP_REQUIRED_EXTENSIONS`，不满足即以退出码 3 列出缺失项并给出重建指引。
+
+Go、TypeScript、C#、Kotlin、Rust、PHP 的生产 Emitter 另有单实体边界，多实体请求显式失败关闭而非静默丢弃实体。
+
+Java/Python 的生产 Emitter 支持多实体与关系；Go、TypeScript、C#、Kotlin、Rust、PHP 当前生产 Emitter 采用单实体精确边界，多实体请求会失败关闭而不会静默丢弃。八语言本地矩阵仍只是工程证据；真实托管 PostgreSQL、真实 IdP、rootless 生产 Runner、云部署、恢复/DR、独立用户验收和外部认证继续保持 `NOT_RUN`。详见 [`docs/project-synthesis-batch46-95-verification.md`](docs/project-synthesis-batch46-95-verification.md)。
 
 完整的 Draft → Review/Approve → Generate → Verify 操作说明见 [`engines/project-synthesis-engine/README.md`](engines/project-synthesis-engine/README.md)。Web Console `/generation` 页生成的 CLI 命令与引擎的命名空间、目标版本及端口保持一致；页面本身不会绕过审批或直接执行生成器。
 
@@ -34,13 +48,21 @@ ELMOS 也支持绿色项目合成：仓库级 `$elmos-project-synthesis` Skill �
 
 ELMOS 通过锁定的 `org.openrewrite.recipe:rewrite-spring:6.35.0` 复用同目录 `rewrite-spring` 的 Recipe 能力，不复制其 198 个 Java 源文件，也不形成私有分叉。审计时的上游快照为 `ae11461b732e13c27bc7b8ed9b1b2943b8e4944f`，详见 `docs/adr/0001-rewrite-spring-foundation.md`。
 
+遗留源版本由 `SpringRouteCatalog` 统一声明，不再断言单一元组：Maven 侧覆盖 Boot `[1.5.0, 2.0.0)` / Java 8、`[2.0.0, 2.7.0)` / Java 8·11·17、`[2.7.0, 2.8.0)` / Java 8·11·17 和 `[3.0.0, 3.5.0)` / Java 17·21 四条路线，各自绑定独立的 OpenRewrite Recipe 与按 Java 版本注册的源 JDK（`elmos.worker.spring-upgrade.java-homes=8=/opt/java/openjdk-8,11=...`）；Gradle 作为第五条路线在目录中声明为 `NOT_IMPLEMENTED`，指纹阶段会明确告知缺少构建驱动而不是笼统地说"仅支持 Maven"。**扩大目录不等于扩大证据**：只有 Boot 2.7.18 / Java 17 这一个元组有已记录的端到端本地执行证据（`PASSED_LOCAL`），区间内其余元组保持 `NOT_RUN`，必须显式开启 `elmos.worker.spring-upgrade.experimental-routes-enabled` 才会执行，否则以 `SPRING_ROUTE_EVIDENCE_NOT_RUN` 失败关闭。每次运行都会写出 `evidence/route-selection.json` 记录所选路线、接受区间与证据等级。
+
 Web Console `/spring` 与 Java Engine `/engine/v1/spring-upgrades` 提供一条精确的真实迁移旅程：导入公开 Git 或已物化 Snapshot、锁定 Commit 和确定性 Snapshot、识别 Boot 2.7.18 / Java 17 / Maven、先提取 FCM，再执行固定的 OpenRewrite Recipe，使用 Java 21 编译测试、从内容寻址 ZIP 做新目录验证，验证通过后才开放下载与一键启动、健康检查、日志、停止和重试。默认配置全部关闭；只有已经证明 rootless、只读根、能力移除、默认拒绝网络且绑定独立验证器的 Private Runner 才能启用。可重复的本地开发语料命令为 `ELMOS_MAVEN_EXECUTABLE=/path/to/apache-maven-3.9.11/bin/mvn python3 scripts/batch30/run_spring_boot_reference.py --repo-root .`；执行器拒绝其他 Maven 版本和仓库自带的 `mvnw`，其本地结果不替代客户仓库、Rootless Runner 或独立外部评审证据。
+
+## Coding Agent 模型目录
+
+一键生成项目（`engines/project-synthesis-engine`）、Spring 老项目现代化（`rewrite-spring` 底座的长尾修复步骤）与多语言/跨语言项目生成（Batch 5 `core-language-lowering` 的惯用化步骤）共用同一份候选模型登记表 `engines/ai-platform-engine/policies/model-catalog-v1.json`，不再各自维护模型名单，详见 [`docs/adr/ADR-0059-coding-agent-model-catalog.md`](docs/adr/ADR-0059-coding-agent-model-catalog.md)。目录只是声明层：每条模型都锁定为 `status: NOT_CONFIGURED`，由 `schemas/ai-platform/model-catalog-v1.schema.json` 与 `scripts/operations/validate_model_catalog.py`（`make model-catalog-check`，已并入 `make business-line-contracts`）失败关闭校验，禁止任何门禁把它折算为可用。真正调用仍必须先在 `EnterpriseModels.ModelPolicy` 放行、产生已批准且健康的 `ModelEndpoint`，再经 `engines/ai-platform-engine/policies/adapters-v1.json` 中同样 `NOT_CONFIGURED` 的 `INFERENCE_GATEWAY`/`CLOUD_AI` Adapter 转发。
 
 ## 验证
 
 ```bash
 make verify
 ```
+
+`make business-line-contracts` 是三条核心业务线的失败关闭一致性门禁：`validate_spring_route_contract.py` 校验 `SpringUpgradeModels` 的精确元组与 OpenRewrite Recipe 资源、Recipe ID、归档名、引擎与控制台部署指引、Console 代理回退完全一致，并禁止 Spring 页面把版本号硬编码进 JSX；`validate_translation_route_matrix.py` 校验 `routes/inventory.json`、12 个 Route Pack、Polyglot 引擎语言集与 Web Console 一致，禁止证据倒挂（独立验证不得先于本地通过、外部认证不得先于独立验证），并禁止路线矩阵硬编码 `LOCAL PASS`。生成线的等价门禁是 `scripts/operations/validate_generation_support_matrix.py`，由 `make project-synthesis` 执行。
 
 `make backend` 使用 Java 21 执行单元测试、契约测试和 ArchUnit 边界测试；`make dotnet` 使用锁定的 .NET 10 SDK；`make python` 使用 Python 3.14 与 uv 锁执行 pytest、Ruff 和 mypy；`make frontend` 验证独立的 TypeScript/Node 客户端引擎；`make web` 执行 Next.js/TypeScript 静态检查。
 
@@ -75,6 +97,8 @@ Batch 81–95 Language Pack 补充资格套件位于 `test-suites/batch81-95-lan
 该结果不等于全部批次已生产完成：M1–M28 的 448 个契约仍是来源不完整的规范化版本，Product B40B–B55C 的 752 个契约仍是规划版，全部客户/Provider/生产/认证现场证据保持 `NOT_RUN`。详细边界见 `docs/batch1-55-skills/verification.md`。
 
 ## 跨语言迁移 Batch 交付范围
+
+整库跨语言转换是三段式管线，不再止步于清单：`inventory` 生成内容寻址的只读工作单元；`discover` 用与迁移同一套编译器支撑的分析器逐单元判定 `READY` / `UNSUPPORTED` / `NO_CANDIDATE_DECLARATION` / `UNREADABLE`，候选声明只由廉价扫描"提议"、绝不由它"裁决"，因此漏提议只会降级为 `NO_CANDIDATE_DECLARATION` 而不会产生假 `READY`；`batch` 只执行 `READY` 且具备独立行为语料的单元，逐单元写入 append-only checkpoint 支持断点续跑，任一跳过、失败或部分选择都让批次保持 `PARTIAL`，绝不把子集成功四舍五入成整库成功。工作单元内容摘要变化会直接使整份拆分失效（`WORK_UNIT_CONTENT_CHANGED`）。Web Console `/translation` 的清单与发现报告导入均由服务端按同一 Snapshot 摘要和路线契约重新校验，`READY` 判定必须携带函数名、签名与分析器来源，否则拒收。
 
 - Batch 1（Repository Intake）：不可变 Snapshot、四语言项目/构建发现、Inventory、依赖图、Sandbox Policy、Baseline 与冻结 Manifest。
 - Batch 2（Semantic adapters）：PSP v1、四语言权威适配器边界、无损降级、符号/类型/调用/继承/数据流/诊断、模块门禁、Zstandard 流与 SQLite 索引。

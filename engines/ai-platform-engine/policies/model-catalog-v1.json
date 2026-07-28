@@ -1,0 +1,129 @@
+{
+  "schemaVersion": "1.0",
+  "catalogId": "elmos.coding-agent-model-catalog",
+  "purpose": "候选 Coding Agent / 生成式模型登记表，供 project-synthesis-engine、Spring 现代化 rewrite-spring 底座的长尾修复步骤、以及跨语言迁移 Batch 5 (core-language-lowering) 的惯用化步骤共用同一份声明，避免三条业务线各自硬编码模型名单。",
+  "governedBy": "io.elmos.enterprise.EnterpriseModels (ModelPolicy / ModelEndpoint / ModelRoutingDecision)",
+  "routesThroughAdapter": ["INFERENCE_GATEWAY", "CLOUD_AI"],
+  "note": "本目录只声明允许被引用的 modelVersion 候选值，不代表已配置凭据、已开通出网、或已产生任何调用证据。所有条目在获得真实 ModelEndpoint（approved=true, healthy=true）之前必须保持 NOT_CONFIGURED，禁止被任何门禁或渲染层折算为可用。",
+  "consumers": [
+    "project-synthesis-engine",
+    "spring-upgrade-coding-agent",
+    "cross-language-lowering-coding-agent"
+  ],
+  "models": [
+    {
+      "modelId": "gpt-5.6-sol",
+      "displayName": "GPT-5.6 Sol",
+      "vendor": "openai",
+      "modelFamily": "gpt-5.6",
+      "suggestedRole": "LONG_TAIL_CODE_FIX",
+      "status": "NOT_CONFIGURED"
+    },
+    {
+      "modelId": "gpt-5.6-terra",
+      "displayName": "GPT-5.6 Terra",
+      "vendor": "openai",
+      "modelFamily": "gpt-5.6",
+      "suggestedRole": "SPEC_CLARIFICATION",
+      "status": "NOT_CONFIGURED"
+    },
+    {
+      "modelId": "claude-fable-5",
+      "displayName": "Claude Fable 5",
+      "vendor": "anthropic",
+      "modelFamily": "claude-5",
+      "suggestedRole": "SPEC_CLARIFICATION",
+      "status": "NOT_CONFIGURED"
+    },
+    {
+      "modelId": "claude-opus-5",
+      "displayName": "Claude Opus 5",
+      "vendor": "anthropic",
+      "modelFamily": "claude-5",
+      "suggestedRole": "LONG_TAIL_CODE_FIX",
+      "status": "NOT_CONFIGURED"
+    },
+    {
+      "modelId": "gemini-3.6-flash",
+      "displayName": "Gemini 3.6 Flash",
+      "vendor": "google",
+      "modelFamily": "gemini-3",
+      "suggestedRole": "FAST_ITERATION",
+      "status": "NOT_CONFIGURED"
+    },
+    {
+      "modelId": "gemini-3.5-flash",
+      "displayName": "Gemini 3.5 Flash",
+      "vendor": "google",
+      "modelFamily": "gemini-3",
+      "suggestedRole": "FAST_ITERATION",
+      "status": "NOT_CONFIGURED"
+    },
+    {
+      "modelId": "grok-4.5",
+      "displayName": "Grok 4.5",
+      "vendor": "xai",
+      "modelFamily": "grok-4",
+      "suggestedRole": "LONG_TAIL_CODE_FIX",
+      "status": "NOT_CONFIGURED"
+    },
+    {
+      "modelId": "grok-build-0.1",
+      "displayName": "Grok Build 0.1",
+      "vendor": "xai",
+      "modelFamily": "grok-build",
+      "suggestedRole": "IDIOMATIZATION_REVIEW",
+      "status": "NOT_CONFIGURED"
+    },
+    {
+      "modelId": "qwen3.8-max-preview",
+      "displayName": "Qwen3.8-Max-Preview",
+      "vendor": "alibaba",
+      "modelFamily": "qwen3.8",
+      "suggestedRole": "LONG_TAIL_CODE_FIX",
+      "status": "NOT_CONFIGURED"
+    },
+    {
+      "modelId": "glm-5.2",
+      "displayName": "GLM-5.2",
+      "vendor": "zhipu",
+      "modelFamily": "glm-5",
+      "suggestedRole": "IDIOMATIZATION_REVIEW",
+      "status": "NOT_CONFIGURED"
+    },
+    {
+      "modelId": "deepseek-v4-pro",
+      "displayName": "DeepSeek V4-Pro",
+      "vendor": "deepseek",
+      "modelFamily": "deepseek-v4",
+      "suggestedRole": "LONG_TAIL_CODE_FIX",
+      "status": "NOT_CONFIGURED"
+    },
+    {
+      "modelId": "deepseek-v4-flash",
+      "displayName": "DeepSeek V4-Flash",
+      "vendor": "deepseek",
+      "modelFamily": "deepseek-v4",
+      "suggestedRole": "FAST_ITERATION",
+      "status": "NOT_CONFIGURED"
+    },
+    {
+      "modelId": "doubao-seed-2.1",
+      "displayName": "豆包 Seed2.1",
+      "vendor": "bytedance",
+      "modelFamily": "doubao-seed",
+      "suggestedRole": "SPEC_CLARIFICATION",
+      "status": "NOT_CONFIGURED"
+    },
+    {
+      "modelId": "doubao-seed-code",
+      "displayName": "豆包 Seed Code",
+      "vendor": "bytedance",
+      "modelFamily": "doubao-seed",
+      "suggestedRole": "LONG_TAIL_CODE_FIX",
+      "status": "NOT_CONFIGURED"
+    }
+  ],
+  "externalEvidenceStatus": "NOT_RUN",
+  "certificationStatus": "NOT_CERTIFIED"
+}

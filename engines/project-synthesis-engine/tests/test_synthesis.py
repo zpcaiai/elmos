@@ -4,7 +4,9 @@ import ast
 import json
 import os
 import re
+import socket
 import subprocess
+import sys
 import tempfile
 import tomllib
 import zipfile
@@ -15,6 +17,8 @@ import pytest
 import yaml
 
 import elmos_project_synthesis.cleanup as cleanup
+import elmos_project_synthesis.intake as intake_module
+import elmos_project_synthesis.models as models
 import elmos_project_synthesis.verification as verification
 from elmos_project_synthesis.cli import _archive_workspace, main
 from elmos_project_synthesis.intake import approve_request, create_draft
@@ -556,16 +560,52 @@ def test_python_enterprise_profile_renders_durable_auth_enforcement(auth_mode: s
             ast.parse(content, filename=path)
 
 
-def test_enterprise_profile_rejects_unimplemented_target_combinations() -> None:
+def test_enterprise_profile_rejects_unevidenced_target_combinations(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # Every shipped target now has PostgreSQL-backed integration evidence, so
+    # this exercises the gate itself against a withheld target rather than
+    # naming a language that happens to be unfinished today. Written the other
+    # way, the test would quietly stop testing anything the moment the last
+    # target was implemented.
+    withheld = "python"
+    closed = {
+        key: (value - {withheld}) if persistence != "in-memory" else value
+        for key, value in models.SUPPORTED_PROFILE_TARGETS.items()
+        for persistence in (key[0],)
+    }
+    monkeypatch.setattr(models, "SUPPORTED_PROFILE_TARGETS", closed)
+    monkeypatch.setattr(intake_module, "SUPPORTED_PROFILE_TARGETS", closed)
+
+    # Closed on its own...
     with pytest.raises(ValueError, match="PROFILE_TARGET_COMBINATION_UNSUPPORTED"):
         create_draft(
             name="items",
             description="Item API",
             entity="item",
-            languages=("java", "python"),
+            languages=(withheld,),
+            persistence="postgresql",
+            auth_mode="oidc",
+        )
+    # ...and still closed when paired with an evidenced target.
+    with pytest.raises(ValueError, match="PROFILE_TARGET_COMBINATION_UNSUPPORTED"):
+        create_draft(
+            name="items",
+            description="Item API",
+            entity="item",
+            languages=(withheld, "go"),
             persistence="postgresql",
             auth_mode="jwt",
         )
+
+
+def test_every_shipped_target_has_a_production_profile() -> None:
+    # The corollary of the test above: nothing is silently left behind. If a
+    # new language is added to SUPPORTED_LANGUAGES without an evidenced
+    # production profile, this fails and names it.
+    for auth_mode in ("jwt", "oidc"):
+        opened = models.SUPPORTED_PROFILE_TARGETS[("postgresql", auth_mode)]
+        assert set(SUPPORTED_LANGUAGES) - set(opened) == set()
     with pytest.raises(ValueError, match="PROFILE_COMBINATION_UNSUPPORTED"):
         create_draft(
             name="items",
@@ -933,3 +973,142 @@ def test_runtime_plan_is_allowlisted_and_workspace_confined(tmp_path: Path) -> N
         assert Path(plan["command"][0]).name in {"uv", "pnpm"}
         assert all("\n" not in argument and "\x00" not in argument for argument in plan["command"])
         assert plan["environment"]["HOST"] == "127.0.0.1"
+
+
+def test_every_profile_open_target_declares_an_integration_command() -> None:
+    # A target opened in SUPPORTED_PROFILE_TARGETS but absent from the harness
+    # tables would boot, answer /health and never run the tenant isolation
+    # scenario -- which is exactly how an unverified target used to collect a
+    # green acceptance.
+    assert verification.undeclared_integration_targets() == frozenset()
+
+
+_HEALTH_SERVER = """
+import json, sys
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
+
+class Handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        body = json.dumps({"status": "UP", "service": sys.argv[2]}).encode()
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def log_message(self, *args):
+        pass
+
+
+HTTPServer(("127.0.0.1", int(sys.argv[1])), Handler).serve_forever()
+"""
+
+
+def _free_port() -> int:
+    with socket.socket() as probe:
+        probe.bind(("127.0.0.1", 0))
+        return int(probe.getsockname()[1])
+
+
+def test_probe_refuses_to_pass_when_a_required_scenario_did_not_run(tmp_path: Path) -> None:
+    # A server that answers /health correctly but owes a production scenario
+    # that never runs. Health alone must not be reported as a pass -- this is
+    # the exact shape that let an unregistered target collect a green result.
+    server = tmp_path / "health_server.py"
+    server.write_text(_HEALTH_SERVER, encoding="utf-8")
+    port = _free_port()
+    probe = verification._probe(
+        [sys.executable, str(server), str(port), "demo-service"],
+        tmp_path,
+        port,
+        language="rust",
+        expected_service="demo-service",
+        requires_integration=True,
+        startup_timeout_seconds=15,
+    )
+    assert probe["integration_status"] == "NOT_RUN"
+    assert probe["status"] == "FAILED"
+    assert "INTEGRATION_SCENARIO_REQUIRED_BUT_NOT_EXECUTED" in probe["output"]
+
+
+def test_probe_degrades_to_not_run_when_the_toolchain_is_the_blocker(tmp_path: Path) -> None:
+    # Environmental blockers are not defects: they must not be reported as a
+    # pass either, but they degrade to NOT_RUN (overall PARTIAL) rather than
+    # claiming the target is broken.
+    server = tmp_path / "health_server.py"
+    server.write_text(_HEALTH_SERVER, encoding="utf-8")
+    port = _free_port()
+    probe = verification._probe(
+        [sys.executable, str(server), str(port), "demo-service"],
+        tmp_path,
+        port,
+        language="rust",
+        expected_service="demo-service",
+        requires_integration=True,
+        blocking_reason="EXACT_TOOLCHAIN_NOT_AVAILABLE:rust:cargo",
+        startup_timeout_seconds=15,
+    )
+    assert probe["status"] == "NOT_RUN"
+    assert "INTEGRATION_SCENARIO_NOT_RUN" in probe["output"]
+
+
+def test_production_plans_record_the_integration_obligation() -> None:
+    # The obligation has to be carried on the plan, including the blocked one,
+    # or the probe cannot tell "no scenario applies" from "scenario skipped".
+    request = approve_request(
+        create_draft(
+            name="obligation-service",
+            description="Durable authenticated and tenant-isolated order API.",
+            entities=(
+                {
+                    "singular": "order",
+                    "plural": "orders",
+                    "fields": [{"name": "reference", "type": "string", "required": True}],
+                },
+            ),
+            relations=(),
+            languages=("python",),
+            persistence="postgresql",
+            auth_mode="jwt",
+        ),
+        actor="user:test",
+        approved_at="2026-07-26T00:00:00+00:00",
+    )
+    with tempfile.TemporaryDirectory() as directory:
+        workspace = Path(directory) / "workspace"
+        generate_workspace(request, workspace)
+        plans = [plan for plan in runtime_commands(workspace) if plan["language"] == "python"]
+    assert plans
+    assert all(plan.get("requires_integration") is True for plan in plans)
+
+
+def test_php_production_runtime_honors_the_verified_port_override(tmp_path: Path) -> None:
+    request = approve_request(
+        create_draft(
+            name="php-port-service",
+            description="Durable authenticated and tenant-isolated order API.",
+            entities=(
+                {
+                    "singular": "order",
+                    "plural": "orders",
+                    "fields": [{"name": "reference", "type": "string", "required": True}],
+                },
+            ),
+            relations=(),
+            languages=("php",),
+            persistence="postgresql",
+            auth_mode="jwt",
+        ),
+        actor="user:test",
+        approved_at="2026-07-26T00:00:00+00:00",
+    )
+    workspace = tmp_path / "workspace"
+
+    generate_workspace(request, workspace)
+
+    runtime = (workspace / "php" / "scripts" / "local_runtime.py").read_text(
+        encoding="utf-8"
+    )
+    assert "APP_PORT_ARGUMENT_INDEX = 2" in runtime
+    assert 'command[APP_PORT_ARGUMENT_INDEX] = f"127.0.0.1:{port}"' in runtime

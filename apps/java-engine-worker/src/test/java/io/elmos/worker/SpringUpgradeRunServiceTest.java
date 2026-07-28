@@ -253,6 +253,8 @@ class SpringUpgradeRunServiceTest {
                         {
                           "schema_version": "1.0",
                           "pack_key": "spring-boot-2-7-18-to-3-5-3",
+                          "route_id": "boot-2.7-maven-to-boot-3.5.3-java-21",
+                          "route_evidence": "PASSED_LOCAL",
                           "source_commit": "%s",
                           "source_snapshot_sha256": "%s",
                           "extraction_status": "STATIC_AND_SOURCE_BASELINE",

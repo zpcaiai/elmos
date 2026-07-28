@@ -1,0 +1,192 @@
+{
+  "schemaVersion": "1.0",
+  "parser": {
+    "name": "sqlglot",
+    "version": "30.13.0",
+    "unsupportedLevel": "RAISE"
+  },
+  "profiles": [
+    {
+      "id": "postgresql-17.5",
+      "label": "PostgreSQL 17.5 Community",
+      "engine": "postgresql",
+      "engineVersion": "17.5",
+      "edition": "community",
+      "dialect": "postgres",
+      "driver": "psycopg-binary-3.3.4",
+      "charset": "UTF8",
+      "collation": "C",
+      "timezone": "UTC",
+      "compatibilityMode": "native",
+      "supportState": "LOCAL_RUNNER_READY",
+      "runtimeEvidence": "NOT_RUN"
+    },
+    {
+      "id": "postgresql-18.4",
+      "label": "PostgreSQL 18.4 Community",
+      "engine": "postgresql",
+      "engineVersion": "18.4",
+      "edition": "community",
+      "dialect": "postgres",
+      "driver": "psycopg-3.2.9",
+      "charset": "UTF8",
+      "collation": "C",
+      "timezone": "UTC",
+      "compatibilityMode": "native",
+      "supportState": "SYNTAX_EXPERIMENTAL",
+      "runtimeEvidence": "NOT_RUN"
+    },
+    {
+      "id": "mysql-8.4.10-lts",
+      "label": "MySQL 8.4.10 LTS Community",
+      "engine": "mysql",
+      "engineVersion": "8.4.10",
+      "edition": "community-lts",
+      "dialect": "mysql",
+      "driver": "connector-python-9.4.0",
+      "charset": "utf8mb4",
+      "collation": "utf8mb4_0900_ai_ci",
+      "timezone": "+00:00",
+      "compatibilityMode": "STRICT_TRANS_TABLES,NO_ZERO_DATE,ONLY_FULL_GROUP_BY",
+      "supportState": "SYNTAX_EXPERIMENTAL",
+      "runtimeEvidence": "NOT_RUN"
+    },
+    {
+      "id": "sqlserver-2022-cu26",
+      "label": "SQL Server 2022 Enterprise CU26",
+      "engine": "sqlserver",
+      "engineVersion": "16.0.4265.3",
+      "edition": "enterprise",
+      "dialect": "tsql",
+      "driver": "mssql-jdbc-12.10.0.jre11",
+      "charset": "UTF-16-NVARCHAR",
+      "collation": "Latin1_General_100_BIN2_UTF8",
+      "timezone": "UTC",
+      "compatibilityMode": "160",
+      "supportState": "LICENSED_RUNTIME_REQUIRED",
+      "runtimeEvidence": "NOT_RUN"
+    },
+    {
+      "id": "oracle-26ai-ee",
+      "label": "Oracle AI Database 26ai Enterprise",
+      "engine": "oracle",
+      "engineVersion": "26ai",
+      "edition": "enterprise",
+      "dialect": "oracle",
+      "driver": "ojdbc11-23.8.0.25.04",
+      "charset": "AL32UTF8",
+      "collation": "BINARY",
+      "timezone": "UTC",
+      "compatibilityMode": "26.0.0",
+      "supportState": "LICENSED_RUNTIME_REQUIRED",
+      "runtimeEvidence": "NOT_RUN"
+    },
+    {
+      "id": "sqlite-3.53.3",
+      "label": "SQLite 3.53.3",
+      "engine": "sqlite",
+      "engineVersion": "3.53.3",
+      "edition": "public-domain",
+      "dialect": "sqlite",
+      "driver": "python-stdlib-3.14.6",
+      "charset": "UTF-8",
+      "collation": "BINARY",
+      "timezone": "UTC-text-ISO8601",
+      "compatibilityMode": "native",
+      "supportState": "SYNTAX_EXPERIMENTAL",
+      "runtimeEvidence": "NOT_RUN"
+    },
+    {
+      "id": "duckdb-1.5.4",
+      "label": "DuckDB 1.5.4",
+      "engine": "duckdb",
+      "engineVersion": "1.5.4",
+      "edition": "community",
+      "dialect": "duckdb",
+      "driver": "duckdb-python-1.5.4",
+      "charset": "UTF-8",
+      "collation": "binary",
+      "timezone": "UTC",
+      "compatibilityMode": "native",
+      "supportState": "SYNTAX_EXPERIMENTAL",
+      "runtimeEvidence": "NOT_RUN"
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "typed-query-ast",
+      "scope": "SELECT, CTE, joins, set operations, aggregates, windows, ordering and pagination",
+      "state": "SYNTAX_EXPERIMENTAL"
+    },
+    {
+      "id": "typed-dml-ast",
+      "scope": "INSERT, UPDATE, DELETE and MERGE when the source and target emitters report no unsupported semantics",
+      "state": "SYNTAX_EXPERIMENTAL"
+    },
+    {
+      "id": "typed-ddl-ast",
+      "scope": "CREATE, ALTER and DROP syntax only; schema, type, constraint and transaction equivalence require a route pack",
+      "state": "CONDITIONAL"
+    },
+    {
+      "id": "stored-procedure-and-trigger",
+      "scope": "PL/SQL, T-SQL, PL/pgSQL, MySQL routines and triggers",
+      "state": "BLOCKED",
+      "reason": "Procedural control flow and transaction semantics require the Batch 31 routine migration pipeline."
+    },
+    {
+      "id": "optimizer-hints-and-plan-shape",
+      "scope": "Vendor hints, plan guides, optimizer directives and physical access paths",
+      "state": "BLOCKED",
+      "reason": "Syntax emission cannot prove equivalent optimizer behavior."
+    },
+    {
+      "id": "runtime-result-equivalence",
+      "scope": "Row values, types, cardinality, duplicate behavior, ordering, errors and locks",
+      "state": "NOT_RUN"
+    }
+  ],
+  "knownConditionalPairs": [
+    {
+      "sourceProfile": "mysql-8.4.10-lts",
+      "targetProfile": "sqlite-3.53.3",
+      "feature": "GROUP_CONCAT_ORDER_BY",
+      "state": "BLOCKED",
+      "reason": "SQLite GROUP_CONCAT has no equivalent aggregate-local ORDER BY syntax."
+    },
+    {
+      "sourceProfile": "oracle-26ai-ee",
+      "targetProfile": "mysql-8.4.10-lts",
+      "feature": "ORACLE_TRUNC_DATETIME_FORMAT",
+      "state": "BLOCKED",
+      "reason": "The exact target emitter reports unsupported Oracle datetime TRUNC format semantics."
+    }
+  ],
+  "extensions": [
+    {
+      "id": "mariadb-11.8.8",
+      "state": "COMPATIBILITY_ADAPTER_REQUIRED",
+      "reason": "The current parser backend aliases MariaDB to MySQL and cannot prove MariaDB-specific semantics."
+    },
+    {
+      "id": "ibm-db2-11.5.9",
+      "state": "DETECTED_ONLY",
+      "reason": "No exact DB2 grammar/emitter is configured."
+    },
+    {
+      "id": "bigquery-managed-2026-07-28",
+      "state": "PLANNED",
+      "reason": "Managed service feature snapshots and execution evidence require a separate provider profile."
+    },
+    {
+      "id": "snowflake-managed-2026-07-28",
+      "state": "PLANNED",
+      "reason": "Managed service feature snapshots and execution evidence require a separate provider profile."
+    },
+    {
+      "id": "clickhouse-26.6",
+      "state": "PLANNED",
+      "reason": "OLAP execution, type, aggregate-state, and engine-clause semantics need an independent route pack."
+    }
+  ]
+}

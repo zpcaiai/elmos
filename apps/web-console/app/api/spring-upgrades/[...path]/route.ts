@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import { springRouteCatalogFallback } from "../../../lib/springRoutes";
 import { proxyNotConfiguredResponse, springProxyConfiguration } from "../proxyPolicy";
 
 export const dynamic = "force-dynamic";
@@ -30,6 +31,8 @@ async function proxy(method: "GET" | "POST", context: Context, request?: NextReq
           sourceTuple: { springBoot: "2.7.18", java: "17", build: "Maven 3.9.11" },
           targetTuple: { springBoot: "3.5.3", java: "21", build: "Maven 3.9.11" },
           openRewrite: { rewriteSpring: "6.35.0", mavenPlugin: "6.44.0" },
+          routes: springRouteCatalogFallback,
+          experimentalRoutesRequireOptIn: true,
           transformerConfigured: false,
           transformerReason: "SPRING_UPGRADE_PROXY_NOT_CONFIGURED",
           runtimeRunnerConfigured: false,

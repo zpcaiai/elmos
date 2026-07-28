@@ -1,6 +1,7 @@
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { FrontendClientEngine } from "./engine.js";
 import type { EngineJobRequest, ExecuteStepRequest, JobResponse } from "./contracts.js";
+import { uiProjectGenerationCapabilities } from "./project-generation.js";
 
 const engine = new FrontendClientEngine();
 const maximumBodyBytes = 1_048_576;
@@ -37,6 +38,9 @@ export const server = createServer(async (request, response) => {
   try {
     const url = new URL(request.url ?? "/", "http://localhost");
     if (request.method === "GET" && url.pathname === "/engine/v1/capabilities") return send(response, 200, engine.capabilities());
+    if (request.method === "GET" && url.pathname === "/engine/v1/ui-projects/capabilities") {
+      return send(response, 200, uiProjectGenerationCapabilities());
+    }
     if (request.method === "GET" && url.pathname === "/health") return send(response, 200, { status: "UP", engine: "ELMOS_FRONTEND_CLIENT" });
     const match = url.pathname.match(/^\/engine\/v1\/jobs\/([^/]+)$/);
     if (request.method === "GET" && match) {
@@ -53,6 +57,7 @@ export const server = createServer(async (request, response) => {
       const result = url.pathname === "/engine/v1/scan" ? engine.scan(value)
         : url.pathname === "/engine/v1/plan" ? engine.plan(value)
         : url.pathname === "/engine/v1/validate" ? engine.validate(value)
+        : url.pathname === "/engine/v1/generate-project" ? engine.generateProject(value)
         : url.pathname === "/engine/v1/execute-step" ? engine.executeStep(value as ExecuteStepRequest)
         : undefined;
       if (result) return sendJob(response, result, 202);

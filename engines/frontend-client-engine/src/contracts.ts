@@ -13,6 +13,7 @@ export type FrontendErrorCode =
   | "VISUAL_ENVIRONMENT_UNSTABLE"
   | "ACCESSIBILITY_PROFILE_MISSING"
   | "FRONTEND_PLAN_BLOCKED"
+  | "FRONTEND_PROJECT_GENERATION_REJECTED"
   | "RUNNER_NOT_CONFIGURED"
   | "IDEMPOTENCY_CONFLICT"
   | "JOB_NOT_FOUND"
@@ -50,8 +51,8 @@ export interface JobResponse {
 export interface Capabilities {
   readonly schemaVersion: "1.0";
   readonly engine: "ELMOS_FRONTEND_CLIENT";
-  readonly engineVersion: "1.0.0";
-  readonly languages: readonly ["JAVASCRIPT", "TYPESCRIPT", "HTML", "CSS"];
+  readonly engineVersion: "1.1.0";
+  readonly languages: readonly string[];
   readonly webFrameworks: readonly string[];
   readonly desktopFrameworks: readonly string[];
   readonly mobileFrameworks: readonly string[];
@@ -61,4 +62,6 @@ export interface Capabilities {
   readonly jobStatePersistence: "EPHEMERAL_PROCESS_LOCAL";
   readonly durableStateAuthority: "ELMOS_CONTROL_PLANE";
   readonly restartRecovery: "NOT_SUPPORTED_BY_WORKER";
+  readonly uiProjectGeneration: "STATIC_PROJECT_AND_CONFIGURATION_READY";
+  readonly directedUiRouteCount: 72;
 }

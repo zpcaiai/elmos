@@ -78,8 +78,172 @@ test("跨语言整库范围只保存发现与拆分交接，不伪造执行结�
       limitations: ["Repository-wide success is not inferred."],
     })),
   });
-  await expect(page.getByText("已验证只读清单：1 个源文件拆为 1 个待发现工作单元。")).toBeVisible();
+  await expect(page.getByText("服务端已校验只读清单：1 个源文件拆为 1 个待发现工作单元", { exact: false })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "整库工作单元" })).toBeVisible();
+  await expect(page.getByRole("cell", { name: "src/main/java/example/Order.java" })).toBeVisible();
+  await expect(page.getByRole("cell", { name: "DISCOVERY_REQUIRED · NOT_RUN" })).toBeVisible();
   await page.getByRole("button", { name: "保存路线交接" }).click();
   await expect(page.getByText("整库路线交接已绑定 1 个工作单元；转换执行仍为 NOT_RUN。")).toBeVisible();
   await expect(page.getByText("清单只读取受支持源文件", { exact: false })).toBeVisible();
+});
+
+test("发现报告的接受判定发生在服务端，READY 判定必须带分析器事实", async ({ request }) => {
+  const digest = "c".repeat(64);
+  const snapshot = "d".repeat(64);
+  const baseReport = {
+    schema_version: "1.0.0",
+    kind: "elmos.repository-discovery-report",
+    status: "DISCOVERED",
+    repository_ref: "local:e2e-customer-repository",
+    snapshot_sha256: snapshot,
+    route_id: "java-to-python",
+    source_language: "java",
+    target_language: "python",
+    profile: "typed-pure-function-v1",
+    work_unit_count: 2,
+    discovered_count: 2,
+    ready_count: 1,
+    execution_status: "NOT_RUN",
+    external_verification_status: "NOT_RUN",
+    certification_status: "NOT_CERTIFIED",
+    results: [
+      {
+        id: "WU-00001",
+        source_path: "src/main/java/example/Pricing.java",
+        declared_sha256: digest,
+        verdict: "READY",
+        profile: "typed-pure-function-v1",
+        execution_status: "NOT_RUN",
+        function_name: "calculate",
+        parameter_count: 2,
+        return_type: "number",
+        analyzer: "JDK Compiler Tree API",
+        rejected_candidates: [],
+      },
+      {
+        id: "WU-00002",
+        source_path: "src/main/java/example/Storage.java",
+        declared_sha256: digest,
+        verdict: "UNSUPPORTED",
+        profile: "typed-pure-function-v1",
+        execution_status: "NOT_RUN",
+        reason: "No candidate declaration stayed inside the bounded profile.",
+        rejected_candidates: [{ candidate: "read", reason: "JAVA_UNSUPPORTED_STATEMENT:Try" }],
+      },
+    ],
+  };
+  const post = (report: unknown, snapshotSha256 = snapshot) =>
+    request.post("/api/translation/discovery-report", {
+      data: {
+        repositoryRef: "local:e2e-customer-repository",
+        routeId: "java-to-python",
+        snapshotSha256,
+        sourceLanguage: "java",
+        targetLanguage: "python",
+        report,
+      },
+    });
+
+  const accepted = await post(baseReport);
+  expect(accepted.ok()).toBe(true);
+  const acceptedBody = await accepted.json();
+  expect(acceptedBody.status).toBe("ACCEPTED");
+  expect(acceptedBody.report.ready_count).toBe(1);
+  expect(acceptedBody.report.verdict_counts).toEqual({ READY: 1, UNSUPPORTED: 1 });
+
+  for (const [mutation, expectedCode] of [
+    [{ execution_status: "PASSED" }, "DISCOVERY_EXECUTION_CLAIMED"],
+    [{ certification_status: "CERTIFIED" }, "DISCOVERY_CERTIFICATION_CLAIMED"],
+    [{ ready_count: 2 }, "DISCOVERY_READY_COUNT_DRIFT"],
+    [{ route_id: "java-to-rust" }, "DISCOVERY_ROUTE_UNKNOWN"],
+    [
+      { results: [{ ...baseReport.results[0], analyzer: undefined }, baseReport.results[1]] },
+      "DISCOVERY_READY_WITHOUT_ANALYZER",
+    ],
+    [
+      { results: [{ ...baseReport.results[0], function_name: "" }, baseReport.results[1]] },
+      "DISCOVERY_READY_WITHOUT_FUNCTION",
+    ],
+    [
+      { results: [{ ...baseReport.results[0], source_path: "../../etc/passwd" }, baseReport.results[1]] },
+      "DISCOVERY_PATH_ESCAPES_REPOSITORY",
+    ],
+  ] as const) {
+    const rejected = await post({ ...baseReport, ...mutation });
+    expect(rejected.ok()).toBe(false);
+    const body = await rejected.json();
+    expect(body.status).toBe("BLOCKED");
+    expect(body.errorCode).toBe(expectedCode);
+  }
+
+  // A report produced from a different tree must not bind to this plan.
+  const wrongSnapshot = await post(baseReport, "e".repeat(64));
+  expect((await wrongSnapshot.json()).errorCode).toBe("DISCOVERY_SNAPSHOT_MISMATCH");
+});
+
+test("整库清单的接受判定发生在服务端，被篡改的客户端请求同样失败关闭", async ({ request }) => {
+  const digest = "b".repeat(64);
+  const basePlan = {
+    schema_version: "1.0.0",
+    kind: "elmos.repository-route-plan",
+    status: "PLANNED",
+    repository_ref: "local:e2e-customer-repository",
+    snapshot_sha256: digest,
+    snapshot_consistency: "STABLE_READ_ONLY_SCAN",
+    route_id: "java-to-python",
+    source_language: "java",
+    target_language: "python",
+    file_count: 1,
+    source_file_count: 1,
+    source_bytes: 128,
+    language_counts: { java: 1, csharp: 0, python: 0, typescript: 0 },
+    ignored_symlink_count: 0,
+    work_units: [{
+      id: "WU-00001",
+      route_id: "java-to-python",
+      source_path: "src/main/java/example/Order.java",
+      source_sha256: digest,
+      source_bytes: 128,
+      status: "DISCOVERY_REQUIRED",
+      execution_status: "NOT_RUN",
+      required_inputs: ["function_name", "behavior_cases_json"],
+      declared_profile: "typed-pure-function-v1",
+      unsupported_until_discovered: ["object_graph"],
+    }],
+    execution_status: "NOT_RUN",
+    external_verification_status: "NOT_RUN",
+    certification_status: "NOT_CERTIFIED",
+    limitations: ["Repository-wide success is not inferred."],
+  };
+  const post = (plan: unknown) => request.post("/api/translation/repository-plan", {
+    data: {
+      repositoryRef: "local:e2e-customer-repository",
+      routeId: "java-to-python",
+      sourceLanguage: "java",
+      targetLanguage: "python",
+      plan,
+    },
+  });
+
+  const accepted = await post(basePlan);
+  expect(accepted.ok()).toBe(true);
+  expect((await accepted.json()).status).toBe("ACCEPTED");
+
+  for (const [mutation, expectedCode] of [
+    [{ execution_status: "PASSED" }, "PLAN_EXECUTION_CLAIMED"],
+    [{ certification_status: "CERTIFIED" }, "PLAN_CERTIFICATION_CLAIMED"],
+    [{ route_id: "java-to-rust" }, "PLAN_ROUTE_UNKNOWN"],
+    [{ source_file_count: 2 }, "PLAN_SOURCE_FILE_COUNT_INVALID"],
+    [{ limitations: [] }, "PLAN_LIMITATIONS_INVALID"],
+    [
+      { work_units: [{ ...basePlan.work_units[0], source_path: "../../etc/passwd" }] },
+      "WORK_UNIT_PATH_ESCAPES_REPOSITORY",
+    ],
+  ] as const) {
+    const rejected = await post({ ...basePlan, ...mutation });
+    expect(rejected.ok()).toBe(false);
+    const body = await rejected.json();
+    expect(body.status).toBe("BLOCKED");
+    expect(body.errorCode).toBe(expectedCode);
+  }
 });

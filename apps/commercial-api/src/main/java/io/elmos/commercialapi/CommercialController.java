@@ -14,6 +14,7 @@ import java.util.Map;
 @RequestMapping("/commercial/v1")
 public final class CommercialController {
     private final EntitlementAndFulfillmentService entitlement = new EntitlementAndFulfillmentService();
+    private final PricingPlanCatalog.Catalog pricingCatalog = PricingPlanCatalog.chinaSelfServeDraft();
     private final OnboardingAndProjectService project = new OnboardingAndProjectService();
     private final SlaAndSupportService support = new SlaAndSupportService();
     private final AssetAndKnowledgeGovernance assets = new AssetAndKnowledgeGovernance();
@@ -36,6 +37,8 @@ public final class CommercialController {
                                  boolean testsPassed, boolean canaryPassed, boolean maintainerAssigned) {}
     public record KnowledgeRequest(KnowledgeArticle article, String requestingOrganizationId,
                                    boolean versionCompatible, boolean sourceStillApproved) {}
+    public record UsagePreviewRequest(String planId, BigDecimal consumedTokens, BigDecimal consumedCredits,
+                                      BigDecimal requestedTokens, BigDecimal requestedCredits) {}
 
     @PostMapping("/entitlements/decide") EntitlementDecision entitlement(@RequestBody EntitlementRequest request) {
         return entitlement.decide(request.organizationId(), request.featureKey(), request.entitlements(), request.requested(),
@@ -71,12 +74,23 @@ public final class CommercialController {
     @PostMapping("/customer-success/health") CustomerHealth health(@RequestBody CustomerSignals signals) {
         return success.health(signals);
     }
+    @GetMapping("/pricing/catalog") PricingPlanCatalog.Catalog pricingCatalog() {
+        return pricingCatalog;
+    }
+    @PostMapping("/pricing/usage-preview") PricingPlanCatalog.UsageDecision usagePreview(
+            @RequestBody UsagePreviewRequest request) {
+        return PricingPlanCatalog.previewUsage(request.planId(), request.consumedTokens(),
+                request.consumedCredits(), request.requestedTokens(), request.requestedCredits());
+    }
     @GetMapping("/capabilities") Map<String,Object> capabilities() {
         return Map.ofEntries(Map.entry("schemaVersion", "1.0"), Map.entry("entitlement", "AVAILABLE"),
                 Map.entry("orderFulfillment", "AVAILABLE"), Map.entry("onboarding", "AVAILABLE"),
                 Map.entry("projectCockpit", "AVAILABLE"), Map.entry("sla", "AVAILABLE"),
                 Map.entry("support", "AVAILABLE"), Map.entry("marketplacePolicy", "AVAILABLE"),
                 Map.entry("knowledgePolicy", "AVAILABLE"), Map.entry("externalCrm", "NOT_CONFIGURED"),
+                Map.entry("pricingCatalog", pricingCatalog.status().name()),
+                Map.entry("pricingCurrency", pricingCatalog.currency()),
+                Map.entry("usageMeters", "DRAFT"),
                 Map.entry("paymentStatus", "NOT_CONFIGURED"), Map.entry("formalAccounting", "OUT_OF_SCOPE"));
     }
     @ExceptionHandler({IllegalArgumentException.class, IllegalStateException.class, SecurityException.class})

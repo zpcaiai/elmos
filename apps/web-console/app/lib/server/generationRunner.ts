@@ -608,11 +608,25 @@ function validateAnalyze(request: GenerationAnalyzeRequest): GenerationAnalyzeRe
     throw new GenerationRunnerError(400, "PROJECT_INTENT_INVALID");
   }
   const defaultProfile = request.persistence === "in-memory" && request.authMode === "none";
-  const enterprisePythonProfile = request.persistence === "postgresql"
+  // Mirrors SUPPORTED_PROFILE_TARGETS in the engine's models.py. Every target
+  // named here carries PostgreSQL-backed integration evidence produced through
+  // the shared runtime harness; a target without that evidence must not be
+  // accepted even if its starter emitter exists.
+  const productionEvidencedTargets = new Set([
+    "python",
+    "java",
+    "go",
+    "typescript",
+    "csharp",
+    "kotlin",
+    "rust",
+    "php",
+  ]);
+  const enterpriseProfile = request.persistence === "postgresql"
     && ["jwt", "oidc"].includes(request.authMode)
     && request.targets.length === 1
-    && request.targets[0] === "python";
-  if (!defaultProfile && !enterprisePythonProfile) {
+    && productionEvidencedTargets.has(request.targets[0]);
+  if (!defaultProfile && !enterpriseProfile) {
     throw new GenerationRunnerError(400, "UNIMPLEMENTED_PRODUCTION_PROFILE");
   }
   return request;
@@ -648,6 +662,36 @@ function commandEnvironment(runner: RunnerConfig): NodeJS.ProcessEnv {
   };
 }
 
+function engineCommandEnvironment(runner: RunnerConfig): NodeJS.ProcessEnv {
+  return {
+    ...commandEnvironment(runner),
+    // Load the audited source tree directly. The synthesis CLI intentionally
+    // has no third-party runtime dependencies; generated projects own their
+    // language-specific dependencies and lockfiles.
+    PYTHONPATH: path.join(runner.engineRoot, "src"),
+  };
+}
+
+function isolatedPythonArguments(command: string[]): string[] {
+  return [
+    "run",
+    "--offline",
+    "--no-project",
+    "--python",
+    ">=3.12,<3.15",
+    "python",
+    ...command,
+  ];
+}
+
+function engineCliArguments(command: string[]): string[] {
+  return isolatedPythonArguments([
+    "-m",
+    "elmos_project_synthesis.cli",
+    ...command,
+  ]);
+}
+
 async function executePreviewCommand(
   runner: RunnerConfig,
   args: string[],
@@ -656,7 +700,7 @@ async function executePreviewCommand(
   return new Promise((resolve, reject) => {
     const child = spawn(runner.uv, args, {
       cwd: runner.engineRoot,
-      env: commandEnvironment(runner),
+      env: engineCommandEnvironment(runner),
       detached: true,
       stdio: ["ignore", "pipe", "pipe"],
     });
@@ -701,18 +745,13 @@ async function rootlessCommand(
   return new Promise((resolve, reject) => {
     const child = spawn(
       runner.uv,
-      [
-        "run",
-        "--offline",
-        "--project",
-        runner.engineRoot,
-        "python",
+      isolatedPythonArguments([
         runner.rootlessTool,
         ...args,
-      ],
+      ]),
       {
         cwd: runner.repositoryRoot,
-        env: commandEnvironment(runner),
+        env: engineCommandEnvironment(runner),
         detached: true,
         stdio: ["ignore", "pipe", "pipe"],
       },
@@ -788,16 +827,13 @@ export async function analyzeIntent(
       business_rules: [],
       permissions: [],
     });
-    const result = await executePreviewCommand(runner, [
-      "run",
-      "--offline",
-      "elmos-project-synthesis",
+    const result = await executePreviewCommand(runner, engineCliArguments([
       "analyze",
       "--intent",
       intentPath,
       "--output",
       outputPath,
-    ]);
+    ]));
     if (result.exitCode !== 0) {
       throw new GenerationRunnerError(
         422,
@@ -891,7 +927,7 @@ async function executeCommand(
   return new Promise((resolve, reject) => {
     const child = spawn(runner.uv, args, {
       cwd: runner.engineRoot,
-      env: commandEnvironment(runner),
+      env: engineCommandEnvironment(runner),
       detached: true,
       stdio: ["ignore", "pipe", "pipe"],
     });
@@ -991,10 +1027,7 @@ async function runJob(
       context,
       job,
       "pipeline",
-      [
-        "run",
-        "--offline",
-        "elmos-project-synthesis",
+      engineCliArguments([
         "pipeline",
         "--request",
         confined(root, "synthesis-request.json"),
@@ -1006,7 +1039,7 @@ async function runJob(
         confined(root, "verification.json"),
         "--archive",
         confined(root, "generated-project.zip"),
-      ],
+      ]),
     );
     if (pipeline.exitCode !== 0) {
       throw new Error(`PIPELINE_FAILED:${pipeline.stderr || pipeline.stdout}`);

@@ -35,6 +35,19 @@ const targetHazards: Record<TranslationLanguageId, string[]> = {
   typescript: ["目标必须区分 null、undefined 与缺失属性", "Promise、原型、I/O 与框架不属于当前纯函数 profile"],
 };
 
+export function translationHazards(
+  source: TranslationLanguageId,
+  target: TranslationLanguageId,
+): string[] {
+  return [...sourceHazards[source], ...targetHazards[target]].slice(0, 4);
+}
+
+/**
+ * Editorial shape only. Route readiness is owned by `routes/inventory.json` and
+ * is served by `/api/capabilities/translation`; until that contract has been
+ * read, every status here stays NOT_RUN so an offline console can never render
+ * a local pass it has not observed.
+ */
 export const directedLanguageRoutes: DirectedLanguageRoute[] = translationLanguages.flatMap((source) =>
   translationLanguages
     .filter((target) => target.id !== source.id)
@@ -43,15 +56,18 @@ export const directedLanguageRoutes: DirectedLanguageRoute[] = translationLangua
       source: source.id,
       target: target.id,
       skill: `b29-certify-${source.id}-to-${target.id}`,
-      status: "EXPERIMENTAL" as const,
-      readiness: "LOCAL_PROFILE_PASSED" as const,
-      localExecution: "PASSED" as const,
+      status: "BLOCKED" as const,
+      readiness: "NOT_RUN" as const,
+      localExecution: "NOT_RUN" as const,
+      independentVerification: "NOT_RUN" as const,
       externalVerification: "NOT_RUN" as const,
-      hazards: [...sourceHazards[source.id], ...targetHazards[target.id]].slice(0, 4),
+      sourceVersion: "UNKNOWN",
+      targetVersion: "UNKNOWN",
+      hazards: translationHazards(source.id, target.id),
       blockers: [
+        "路线能力契约尚未读取；本地执行状态在读取 routes/inventory.json 之前保持 NOT_RUN",
         "仅支持 typed-pure-function-v1：显式基本类型、if、return 与受限二元运算",
         "对象图、异常、async、I/O、反射、框架、数据库与并发必须拆到精确 Pack",
-        "独立验证者、真实客户仓库与外部认证仍为 NOT_RUN",
       ],
     })),
 );

@@ -27,6 +27,22 @@ test("HTTP capabilities disclose every unconfigured Runner profile", async () =>
   assert.equal(body.durableStateAuthority, "ELMOS_CONTROL_PLANE");
 });
 
+test("HTTP UI project capabilities expose exact profiles and fail-closed routes", async () => {
+  const response = await fetch(`${baseUrl}/engine/v1/ui-projects/capabilities`);
+  const body = await response.json() as {
+    directedRouteCount: number;
+    exactTargetProfiles: Array<{ id: string; frameworkVersion: string }>;
+    directedRoutes: Array<{ semanticConversionEvidence: string; certification: string }>;
+    runtimeEvidence: string;
+  };
+  assert.equal(response.status, 200);
+  assert.equal(body.exactTargetProfiles.length, 9);
+  assert.equal(body.directedRouteCount, 72);
+  assert.ok(body.directedRoutes.every(route => route.semanticConversionEvidence === "NOT_RUN"));
+  assert.ok(body.directedRoutes.every(route => route.certification === "NOT_CERTIFIED"));
+  assert.equal(body.runtimeEvidence, "NOT_RUN");
+});
+
 test("HTTP execute-step accepts the job transport but returns terminal fail-closed state", async () => {
   const response = await fetch(`${baseUrl}/engine/v1/execute-step`, {
     method: "POST", headers: { "content-type": "application/json" },
