@@ -40,6 +40,11 @@ class ClosureSkillsAndGenerationTests(unittest.TestCase):
             for step in jobs["polyglot-routes"]["steps"]
             if step.get("name") == "Verify compiler-backed route engine"
         )
+        synthesis_evidence_job = json.dumps(
+            jobs["project-synthesis-acceptance"],
+            ensure_ascii=False,
+            sort_keys=True,
+        )
         self.assertIn("dotnet restore engines/dotnet-engine/Elmos.Dotnet.slnx --locked-mode", rendered)
         self.assertIn("uv --directory engines/python-engine run --locked pytest", rendered)
         self.assertIn("pnpm --dir engines/frontend-client-engine install --frozen-lockfile", rendered)
@@ -48,8 +53,9 @@ class ClosureSkillsAndGenerationTests(unittest.TestCase):
         self.assertIn('"node-version": "26.0.0"', polyglot_job)
         self.assertIn('export ELMOS_JAVA21_HOME="$JAVA_HOME"', polyglot_verify)
         self.assertIn("python scripts/operations/validate_translation_route_matrix.py", rendered)
-        self.assertIn("python scripts/run_acceptance.py --require-all-toolchains", rendered)
-        self.assertIn("python scripts/run_production_matrix.py", rendered)
+        self.assertIn("python scripts/run_acceptance.py", synthesis_evidence_job)
+        self.assertNotIn("--require-all-toolchains", synthesis_evidence_job)
+        self.assertNotIn("run_production_matrix.py", synthesis_evidence_job)
         self.assertIn("playwright install --with-deps chromium", rendered)
         self.assertIn("--project=mobile-chromium", rendered)
         self.assertIn("e2e/generation-runner.spec.ts", rendered)
