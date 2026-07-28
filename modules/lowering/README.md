@@ -1,5 +1,8 @@
 # elmos-lowering
 
+> Superseded for product execution. Retained only as reference architecture and
+> isolated regression coverage; see ADR-0023's closure decision.
+
 Batch 5/6 of the faithful-first core-language lowering chain
 (`modules/intake` → `modules/semantic` → `modules/uir` → `modules/skeleton` →
 `lowering`; see `docs/adr/ADR-0023-faithful-first-core-language-lowering.md`).

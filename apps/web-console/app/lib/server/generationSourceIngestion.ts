@@ -13,6 +13,7 @@ import type {
 } from "../contracts";
 
 const MAX_FILES = 8;
+const MAX_SOURCES = 26;
 const MAX_FILE_BYTES = 8 * 1024 * 1024;
 const MAX_FETCH_BYTES = 2 * 1024 * 1024;
 const MAX_SOURCE_CHARACTERS = 80_000;
@@ -21,6 +22,14 @@ const MAX_PDF_PAGES = 200;
 const FETCH_TIMEOUT_MS = 10_000;
 const MAX_REDIRECTS = 3;
 const sourceNamePattern = /^[a-z0-9][a-z0-9-]{1,63}$/;
+
+export type RepositoryRequirementSource = {
+  path: string;
+  mediaType: string;
+  origin: string;
+  raw: Buffer;
+  warnings: string[];
+};
 
 type UploadedSource = {
   name: string;
@@ -438,6 +447,7 @@ export async function buildGenerationSourceBundle(input: {
   url?: string;
   skillNames?: string[];
   files?: UploadedSource[];
+  repositorySources?: RepositoryRequirementSource[];
   repositoryRoot: string;
 }): Promise<GenerationSourceBundle> {
   const extracted: ExtractedSource[] = [];
@@ -464,6 +474,32 @@ export async function buildGenerationSourceBundle(input: {
   }
   for (const skillName of skillNames) {
     extracted.push(await extractSkillSource(input.repositoryRoot, skillName));
+  }
+  for (const source of input.repositorySources ?? []) {
+    if (
+      source.raw.byteLength < 1
+      || source.raw.byteLength > MAX_FILE_BYTES
+      || source.origin.length < 1
+      || source.origin.length > 2_000
+    ) {
+      throw new SourceIngestionError(413, "SOURCE_REPOSITORY_FILE_INVALID");
+    }
+    const text = normalizeText(decodeUtf8(source.raw));
+    if (text.length < 3) {
+      throw new SourceIngestionError(422, "SOURCE_REPOSITORY_TEXT_EMPTY");
+    }
+    extracted.push({
+      kind: "repository-file",
+      label: safeLabel(source.path),
+      mediaType: source.mediaType,
+      origin: source.origin,
+      raw: source.raw,
+      text,
+      warnings: source.warnings,
+    });
+  }
+  if (extracted.length > MAX_SOURCES) {
+    throw new SourceIngestionError(413, "GENERATION_SOURCE_COUNT_EXCEEDED");
   }
   if (extracted.length === 0) {
     throw new SourceIngestionError(400, "GENERATION_SOURCE_REQUIRED");

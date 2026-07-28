@@ -114,6 +114,7 @@ REQUIREMENT_SOURCE_KINDS = {
     "html-file",
     "pdf-file",
     "online-html",
+    "repository-file",
     "skill",
 }
 

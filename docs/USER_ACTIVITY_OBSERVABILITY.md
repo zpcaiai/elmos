@@ -39,11 +39,18 @@ URL 查询参数、错误原文、堆栈、原始 IP、原始 User-Agent 或可�
 Web console 与 control-plane 共享：
 
 - `ELMOS_OPERATIONS_API_KEY`：至少 24 字符的内部服务凭证；
+- `ELMOS_OPERATIONS_API_KEY_EXPIRES_AT`：带时区、未来且不超过 24 小时的内部凭证到期时间；
 - `ELMOS_OPERATIONS_TENANT_ID`：日志所属可信组织；
 - `ELMOS_OPERATIONS_ACTOR_ID`：当前尚无统一 Web 登录时使用的服务端 Actor，
   默认仅限本地 `web-console-user`；
 - `ELMOS_CONTROL_PLANE_BASE_URL`：control-plane 内部地址；
 - `ELMOS_ADMIN_OBSERVABILITY_TOKEN`：至少 24 字符的短期管理员读取令牌。
+- `ELMOS_ADMIN_OBSERVABILITY_TOKEN_EXPIRES_AT`：带时区、未来且不超过 24 小时的到期时间。
+- `ELMOS_ADMIN_OBSERVABILITY_TENANT_ID`：令牌唯一绑定的租户；必须与 `ELMOS_OPERATIONS_TENANT_ID` 一致。
+- `ELMOS_ADMIN_OBSERVABILITY_ACTOR_ID`：令牌唯一绑定的 Actor；必须与 `ELMOS_OPERATIONS_ACTOR_ID` 一致。
+
+内部服务凭证和管理员令牌任一缺失、过期、租期超过 24 小时，或租户/Actor
+绑定不一致时均返回失败关闭结果。令牌不会写入浏览器存储、URL、操作事件或服务日志。
 
 control-plane 使用既有 `ELMOS_DATABASE_URL`、`ELMOS_DATABASE_USER` 和
 `ELMOS_DATABASE_PASSWORD` 连接 PostgreSQL。生产环境不得把上述凭证打包进

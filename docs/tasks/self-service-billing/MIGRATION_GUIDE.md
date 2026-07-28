@@ -35,6 +35,13 @@ Flyway validate → Flyway migrate → Flyway validate
 缺 Secret、缺 Environment Variable、目标不匹配、非 Neon、无 TLS、checksum drift、
 乱序或任一 SQL 失败都会阻断。工作流不会输出连接串或密码。
 
+托管执行环境若仅允许 `psql` 建立 Neon TLS 连接，可对**确认完全为空**的数据库执行一次
+`scripts/commercial/bootstrap_empty_neon_via_psql.py`。该脚本要求显式设置
+`ELMOS_COMMERCIAL_DATABASE_EMPTY_BOOTSTRAP_CONFIRMED=true`，并在写入前验证目标是
+Neon、业务表数量为零且不存在 Flyway 历史；每个 V1–V50 迁移及对应的 Flyway CRC32
+记录在同一个事务中提交，最后逐项核对版本、文件名和 checksum。该通道拒绝非空库，
+不能用于常规升级；后续升级仍必须走上述 Flyway 工作流。
+
 ## 本地一次性验证
 
 只在可销毁 PostgreSQL 17 数据库执行：

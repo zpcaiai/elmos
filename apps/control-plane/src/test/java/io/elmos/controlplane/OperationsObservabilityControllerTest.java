@@ -25,7 +25,9 @@ class OperationsObservabilityControllerTest {
     private static final Instant NOW = Instant.parse("2026-07-28T10:00:00Z");
     private final JdbcUserActivityStore store = mock(JdbcUserActivityStore.class);
     private final OperationsObservabilityController controller =
-            new OperationsObservabilityController(store, Clock.fixed(NOW, ZoneOffset.UTC), KEY);
+            new OperationsObservabilityController(
+                    store, Clock.fixed(NOW, ZoneOffset.UTC), KEY,
+                    NOW.plusSeconds(60 * 60).toString(), "org-1", "actor-1");
 
     @Test void appendsIdentityBoundBatchWithoutAcceptingIdentityFromThePayload() {
         var event = new ActivityEvent(
@@ -50,7 +52,7 @@ class OperationsObservabilityControllerTest {
         when(store.summary(anyString(), any(), any(), anyString(), anyString(), anyInt()))
                 .thenReturn(expected);
 
-        var result = controller.summary(KEY, "org-1", 24, "ALL", "ALL", 50);
+        var result = controller.summary(KEY, "org-1", "actor-1", 24, "ALL", "ALL", 50);
 
         assertEquals(expected, result);
         verify(store).summary(
@@ -59,8 +61,26 @@ class OperationsObservabilityControllerTest {
 
     @Test void rejectsMissingOrIncorrectInternalCredentialAndOversizedWindows() {
         assertThrows(SecurityException.class,
-                () -> controller.summary("incorrect-key", "org-1", 24, "ALL", "ALL", 50));
+                () -> controller.summary("incorrect-key", "org-1", "actor-1", 24, "ALL", "ALL", 50));
+        assertThrows(SecurityException.class,
+                () -> controller.summary(KEY, "other-org", "actor-1", 24, "ALL", "ALL", 50));
+        assertThrows(SecurityException.class,
+                () -> controller.summary(KEY, "org-1", "other-actor", 24, "ALL", "ALL", 50));
         assertThrows(IllegalArgumentException.class,
-                () -> controller.summary(KEY, "org-1", 745, "ALL", "ALL", 50));
+                () -> controller.summary(KEY, "org-1", "actor-1", 745, "ALL", "ALL", 50));
+    }
+
+    @Test void rejectsExpiredOrExcessivelyLongInternalCredentialLeases() {
+        var expired = new OperationsObservabilityController(
+                store, Clock.fixed(NOW, ZoneOffset.UTC), KEY,
+                NOW.minusSeconds(1).toString(), "org-1", "actor-1");
+        var excessive = new OperationsObservabilityController(
+                store, Clock.fixed(NOW, ZoneOffset.UTC), KEY,
+                NOW.plusSeconds(24 * 60 * 60 + 1).toString(), "org-1", "actor-1");
+
+        assertThrows(RuntimeException.class,
+                () -> expired.summary(KEY, "org-1", "actor-1", 24, "ALL", "ALL", 50));
+        assertThrows(RuntimeException.class,
+                () -> excessive.summary(KEY, "org-1", "actor-1", 24, "ALL", "ALL", 50));
     }
 }

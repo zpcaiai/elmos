@@ -359,6 +359,9 @@ public final class GitRepositoryWorkspaceService {
         Manifest manifest = readManifest(organizationId, workspaceId);
         requireActor(manifest, actorId);
         String safePath = normalizeRelativePath(relativePath);
+        if (protectedPath(safePath)) {
+            throw new SecurityException("GIT_WORKSPACE_PROTECTED_FILE_NOT_READABLE");
+        }
         Path file = resolveFile(workspaceId, safePath);
         if (!Files.isRegularFile(file, LinkOption.NOFOLLOW_LINKS) || Files.isSymbolicLink(file)) {
             throw new IllegalArgumentException("GIT_WORKSPACE_FILE_NOT_READABLE");

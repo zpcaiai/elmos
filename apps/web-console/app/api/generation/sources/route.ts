@@ -9,6 +9,7 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 const MAX_MULTIPART_BYTES = 12 * 1024 * 1024;
+const workspaceIdPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function optionalText(form: FormData, key: string, maximum: number): string | undefined {
   const value = form.get(key);
@@ -24,6 +25,33 @@ function skillNames(form: FormData): string[] {
   const value = optionalText(form, "skills", 2_000);
   if (!value) return [];
   return [...new Set(value.split(/[\s,，;；]+/).map((item) => item.trim()).filter(Boolean))];
+}
+
+function repositoryWorkspaceId(form: FormData): string | undefined {
+  const value = optionalText(form, "repositoryWorkspaceId", 36);
+  if (value && !workspaceIdPattern.test(value)) {
+    throw new GenerationRunnerError(400, "SOURCE_REPOSITORY_WORKSPACE_ID_INVALID");
+  }
+  return value;
+}
+
+function repositoryPaths(form: FormData): string[] {
+  const value = optionalText(form, "repositoryPaths", 6_000);
+  if (!value) return [];
+  const paths = [...new Set(value.split(/\r?\n/).map((item) => item.trim()).filter(Boolean))];
+  if (
+    paths.length > 8
+    || paths.some((path) => (
+      path.length > 512
+      || path.startsWith("/")
+      || path.includes("\\")
+      || path.split("/").includes("..")
+      || /[\0\r\n]/.test(path)
+    ))
+  ) {
+    throw new GenerationRunnerError(400, "SOURCE_REPOSITORY_PATHS_INVALID");
+  }
+  return paths;
 }
 
 export async function POST(request: NextRequest) {
@@ -61,6 +89,8 @@ export async function POST(request: NextRequest) {
       url: optionalText(form, "url", 2_000),
       skillNames: skillNames(form),
       files,
+      repositoryWorkspaceId: repositoryWorkspaceId(form),
+      repositoryPaths: repositoryPaths(form),
     });
     return NextResponse.json(bundle);
   } catch (error) {

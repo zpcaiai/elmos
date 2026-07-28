@@ -94,6 +94,40 @@ def test_discovery_refuses_a_plan_whose_content_changed(tmp_path: Path) -> None:
         discover_repository(plan, repository)
 
 
+def test_discovery_never_silently_selects_the_first_of_multiple_functions(
+    tmp_path: Path,
+) -> None:
+    repository = tmp_path / "multi-function-repository"
+    repository.mkdir()
+    (repository / "pricing.py").write_text(
+        "def add(value: int, increment: int) -> int:\n"
+        "    return value + increment\n\n"
+        "def subtract(value: int, decrement: int) -> int:\n"
+        "    return value - decrement\n",
+        encoding="utf-8",
+    )
+    plan = plan_repository(
+        repository,
+        "local:multi-function-repository",
+        "python",
+        "typescript",
+    )
+
+    report = discover_repository(plan, repository)
+    result = report["results"][0]
+
+    assert result["verdict"] == Verdict.UNSUPPORTED
+    assert result["reason"] == "MULTIPLE_ELIGIBLE_FUNCTIONS_REQUIRE_EXPLICIT_PARTITION"
+    assert [item["function_name"] for item in result["eligible_candidates"]] == [
+        "add",
+        "subtract",
+    ]
+    assert result["required_inputs"] == [
+        "function_partition_manifest",
+        "behavior_cases_json_per_function",
+    ]
+
+
 def test_discovery_refuses_a_plan_that_already_claims_execution(tmp_path: Path) -> None:
     repository = _repository(tmp_path)
     plan = _plan(repository)

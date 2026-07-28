@@ -3,6 +3,7 @@ import type { UserActivityEvent } from "../operationsContracts";
 
 const MAX_BODY_BYTES = 64 * 1024;
 const MAX_BATCH_SIZE = 50;
+const MAX_ADMIN_TOKEN_LIFETIME_MS = 24 * 60 * 60 * 1_000;
 const TOKEN_PATTERN = /^[A-Z0-9][A-Z0-9._:-]*$/;
 const IDENTIFIER_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._:-]*$/;
 
@@ -188,6 +189,34 @@ export async function appendUserActivity(events: UserActivityEvent[]): Promise<R
 
 export function authorizeAdmin(authorization: string | null): void {
   const configured = requiredEnvironment("ELMOS_ADMIN_OBSERVABILITY_TOKEN", 24);
+  const expiresAt = requiredEnvironment("ELMOS_ADMIN_OBSERVABILITY_TOKEN_EXPIRES_AT");
+  const boundTenant = requiredEnvironment("ELMOS_ADMIN_OBSERVABILITY_TENANT_ID");
+  const boundActor = requiredEnvironment("ELMOS_ADMIN_OBSERVABILITY_ACTOR_ID");
+  const operationsTenant = requiredEnvironment("ELMOS_OPERATIONS_TENANT_ID");
+  const operationsActor = process.env.ELMOS_OPERATIONS_ACTOR_ID?.trim()
+    || (process.env.NODE_ENV === "production"
+      ? requiredEnvironment("ELMOS_OPERATIONS_ACTOR_ID")
+      : "web-console-user");
+  const expiry = Date.parse(expiresAt);
+  const remainingLifetime = expiry - Date.now();
+  if (
+    !Number.isFinite(expiry)
+    || remainingLifetime <= 0
+    || remainingLifetime > MAX_ADMIN_TOKEN_LIFETIME_MS
+  ) {
+    throw new OperationsProxyError(
+      403,
+      "ADMIN_OBSERVABILITY_TOKEN_EXPIRED_OR_INVALID",
+      "管理端令牌已过期或租约无效。",
+    );
+  }
+  if (boundTenant !== operationsTenant || boundActor !== operationsActor) {
+    throw new OperationsProxyError(
+      403,
+      "ADMIN_OBSERVABILITY_IDENTITY_MISMATCH",
+      "管理端令牌身份绑定无效。",
+    );
+  }
   const presented = authorization?.startsWith("Bearer ") ? authorization.slice(7) : "";
   const left = createHash("sha256").update(configured).digest();
   const right = createHash("sha256").update(presented).digest();

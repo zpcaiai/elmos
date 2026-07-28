@@ -1,5 +1,8 @@
 # elmos-intake
 
+> Superseded for product execution. Retained only as reference architecture and
+> isolated regression coverage; see ADR-0023's closure decision.
+
 Batch 1 of the faithful-first core-language lowering chain
 (`intake` → `modules/semantic` → `modules/uir` → `modules/skeleton` →
 `modules/lowering`; see `docs/adr/ADR-0023-faithful-first-core-language-lowering.md`).

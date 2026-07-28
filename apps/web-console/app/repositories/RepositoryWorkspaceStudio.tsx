@@ -313,13 +313,19 @@ export function RepositoryWorkspaceStudio() {
     }
   }
 
+  function continueToProjectGeneration() {
+    if (!workspace || workspace.completeness !== "COMPLETE") return;
+    const search = new URLSearchParams({ repositoryWorkspaceId: workspace.workspaceId });
+    window.location.assign(`/generation?${search}`);
+  }
+
   return (
     <div className={styles.page}>
       <section className={styles.hero}>
         <div>
           <span className={styles.eyebrow}>Repository workspace</span>
           <h1>代码仓库工作区</h1>
-          <p>从 GitHub、Gitee 或其他 HTTPS Git 服务拉取精确提交，读取并修改代码、说明、配置以及本地/云端部署文件。</p>
+          <p>从 GitHub、Gitee 或其他 HTTPS Git 服务拉取精确提交，读取并修改代码、说明、配置以及本地/云端部署文件，并交接到完整项目生成流程。</p>
         </div>
         <div className={styles.boundary}>
           <Icon name="lock" size={18} />
@@ -385,6 +391,10 @@ export function RepositoryWorkspaceStudio() {
           </label>
           <button className={styles.secondary} type="button" onClick={beginNewFile}
             disabled={busy || workspace.completeness !== "COMPLETE"}>新建文件</button>
+          <button className={styles.primary} type="button" onClick={continueToProjectGeneration}
+            disabled={busy || workspace.completeness !== "COMPLETE"}>
+            用此仓库生成完整项目
+          </button>
           <label>文件分类
             <select value={filter} onChange={(event) => setFilter(event.target.value as FileCategory | "ALL")}>
               <option value="ALL">全部</option>

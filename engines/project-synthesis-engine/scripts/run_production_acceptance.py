@@ -94,6 +94,16 @@ def main() -> int:
             languages=(arguments.language,),
             persistence="postgresql",
             auth_mode=arguments.auth_mode,
+            permissions=tuple(
+                {
+                    "actor": "api_user",
+                    "action": action,
+                    "resource": str(entity["singular"]),
+                    "effect": "allow",
+                }
+                for entity in shape["entities"]
+                for action in ("create", "read", "update", "delete")
+            ),
         ),
         actor="acceptance:production-profile",
         approved_at="2026-07-26T00:00:00+00:00",

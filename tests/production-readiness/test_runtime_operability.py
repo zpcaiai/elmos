@@ -42,6 +42,45 @@ class RuntimeOperabilityTests(unittest.TestCase):
         safe = unsafe.replace('error.getMessage()', '"The request was rejected."')
         self.assertEqual([], validate_exception_handler_source("SafeController.java", safe))
 
+    def test_operations_admin_credential_is_expiring_and_identity_bound(self) -> None:
+        source = (
+            ROOT / "apps/web-console/app/lib/server/operationsProxy.ts"
+        ).read_text(encoding="utf-8")
+        for token in (
+            "ELMOS_ADMIN_OBSERVABILITY_TOKEN_EXPIRES_AT",
+            "ELMOS_ADMIN_OBSERVABILITY_TENANT_ID",
+            "ELMOS_ADMIN_OBSERVABILITY_ACTOR_ID",
+            "MAX_ADMIN_TOKEN_LIFETIME_MS",
+            "ADMIN_OBSERVABILITY_TOKEN_EXPIRED_OR_INVALID",
+            "ADMIN_OBSERVABILITY_IDENTITY_MISMATCH",
+        ):
+            self.assertIn(token, source)
+
+        control_plane = (
+            ROOT
+            / "apps/control-plane/src/main/java/io/elmos/controlplane/OperationsObservabilityController.java"
+        ).read_text(encoding="utf-8")
+        for token in (
+            "api-key-expires-at",
+            "organization-id",
+            "actor-id",
+            "expiry.isAfter(now)",
+            "boundOrganizationId.equals(organizationId)",
+            "boundActorId.equals(actorId)",
+        ):
+            self.assertIn(token, control_plane)
+
+    def test_spring_capability_response_never_outpaces_exact_route_evidence(self) -> None:
+        source = (
+            ROOT / "apps/web-console/app/api/capabilities/spring/route.ts"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn('build: "Maven 3.9.11"', source)
+        self.assertIn("仅 Boot 2.7.18 / Java 17 / Maven 3.9.11 有 PASSED_LOCAL", source)
+        self.assertIn("Gradle 为 NOT_IMPLEMENTED", source)
+        self.assertNotIn("Maven 3.9+ / Gradle exact wrapper", source)
+        self.assertNotIn('spring-framework-xml", label: "Spring Framework XML", detail: "web.xml', source)
+
     def test_polyglot_public_errors_cannot_echo_internal_exception_messages(self) -> None:
         self.assertTrue(validate_public_error_boundary_source("DotnetEngine.cs", "return exception.Message;"))
         self.assertTrue(validate_public_error_boundary_source("server.ts", "message: String(error)"))

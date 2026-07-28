@@ -135,4 +135,9 @@ test("pulls, reads and locally modifies a Gitee repository without external effe
 
   const accessibility = await new AxeBuilder({ page }).analyze();
   expect(accessibility.violations).toEqual([]);
+
+  await page.getByRole("button", { name: "用此仓库生成完整项目" }).click();
+  await expect(page).toHaveURL(new RegExp(
+    `/generation\\?repositoryWorkspaceId=${workspaceId}$`,
+  ));
 });

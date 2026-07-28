@@ -88,16 +88,21 @@ Web liveness 与 readiness 分别由 `/api/health?probe=liveness` 和
 
 ## CI 业务线映射
 
-CI 分别验证 Java reactor、.NET engine、Python engine、frontend-client engine、project-synthesis engine 和 Web console。Project Synthesis 作业额外验证 Batch 97-104 与 Product Closure/Convergence 分发。所有依赖安装均使用锁文件；任一验证失败都会阻止 CI 成功。
+CI 分别验证 Java reactor、商业计费 PostgreSQL 17/Flyway/RLS、.NET engine、Python engine、
+frontend-client engine、12 条有向语言路线、project-synthesis engine、八语言精确工具链及
+16 个 PostgreSQL JWT/OIDC 生产 Profile，并在 Chromium 桌面/移动视口运行关键 Web
+旅程。Project Synthesis 作业额外验证 Batch 97-104 与 Product Closure/Convergence
+分发。所有依赖安装均使用锁文件或不可变 Action 摘要；任一验证失败都会阻止 CI 成功。
 
 ## 备注：`modules/lowering` 链与本矩阵的关系
 
 `modules/intake` → `modules/semantic` → `modules/uir` → `modules/skeleton` →
 `modules/lowering`（另见 `docs/adr/ADR-0023-faithful-first-core-language-lowering.md`）
-是一条独立、真实、有测试覆盖，但**未被 `apps/` 下任何控制器、CLI 或 Worker 调用**的历史架构；
+是一条独立、真实、有测试覆盖，但**已明确被产品执行路径取代，且未被 `apps/` 下任何控制器、CLI 或 Worker 调用**的历史参考架构；
 "全库跨语言转换 M29" 一行描述的能力完全建立在 `engines/polyglot-route-engine` 之上，与该链无关。
-这不是本矩阵的遗漏——该链本就不在任何已发布业务线的请求路径上。五个模块各自的 `README.md`
-和 ADR-0023 的第二条追记（2026-07-28）记录了这一事实，避免未来重复调研得出同一结论。
+这不是本矩阵的遗漏——该链本就不在任何已发布业务线的请求路径上，也不得作为产品回退。
+五个模块各自的 `README.md` 和 ADR-0023 的闭环决定（2026-07-28）记录了这一事实；
+重新启用必须先通过新 ADR 消除双重权威，并重新取得 Batch 29 证据。
 
 ## 失败关闭规则
 

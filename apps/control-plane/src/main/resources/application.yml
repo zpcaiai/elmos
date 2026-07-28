@@ -22,6 +22,9 @@ spring:
 elmos:
   operations:
     api-key: ${ELMOS_OPERATIONS_API_KEY:}
+    api-key-expires-at: ${ELMOS_OPERATIONS_API_KEY_EXPIRES_AT:}
+    organization-id: ${ELMOS_OPERATIONS_TENANT_ID:}
+    actor-id: ${ELMOS_OPERATIONS_ACTOR_ID:}
   repository-workspace:
     enabled: ${ELMOS_REPOSITORY_WORKSPACE_ENABLED:false}
     api-key: ${ELMOS_REPOSITORY_WORKSPACE_API_KEY:}

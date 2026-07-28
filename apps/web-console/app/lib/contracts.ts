@@ -150,6 +150,7 @@ export type GenerationSourceKind =
   | "html-file"
   | "pdf-file"
   | "online-html"
+  | "repository-file"
   | "skill";
 
 export type GenerationSourceReference = {
@@ -346,7 +347,7 @@ export type SpringModernizationCapabilityResponse = {
   target: {
     java: "21";
     framework: "Spring Boot 3.5.3";
-    build: "Maven 3.9+ / Gradle exact wrapper";
+    build: "Maven 3.9.11";
   };
   recognizedSources: Array<{
     id: "spring-framework-xml" | "spring-framework-annotation" | "spring-boot-legacy";

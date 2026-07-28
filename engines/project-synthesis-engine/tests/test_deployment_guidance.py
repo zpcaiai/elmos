@@ -67,6 +67,15 @@ def test_cloud_guidance_keeps_stateful_and_identity_work_fail_closed() -> None:
         languages=("python",),
         persistence="postgresql",
         auth_mode="jwt",
+        permissions=tuple(
+            {
+                "actor": "api_user",
+                "action": action,
+                "resource": "order",
+                "effect": "allow",
+            }
+            for action in ("create", "read", "update", "delete")
+        ),
     )
     request = SynthesisRequest.from_mapping(approve_request(draft, actor="user:security-reviewer"))
     rendered = render_workspace(request)

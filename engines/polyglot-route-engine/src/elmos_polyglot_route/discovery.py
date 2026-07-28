@@ -142,6 +142,7 @@ def discover_unit(
         return result
 
     rejections: list[dict[str, str]] = []
+    eligible: list[dict[str, Any]] = []
     for name in candidates:
         try:
             ir = analyze(path, source_language, name)
@@ -152,16 +153,36 @@ def discover_unit(
             rejections.append({"candidate": name, "reason": "EXACTLY_ONE_FUNCTION_REQUIRED"})
             continue
         function = ir.functions[0]
+        eligible.append(
+            {
+                "function_name": function.name,
+                "parameters": [parameter.to_mapping() for parameter in function.parameters],
+                "return_type": function.return_type,
+                "parameter_count": len(function.parameters),
+                "analyzer": ir.analyzer,
+                "analyzer_version": ir.analyzer_version,
+            }
+        )
+
+    if len(eligible) == 1:
+        eligible_function = eligible[0]
         result.update(
             verdict=Verdict.READY,
-            function_name=function.name,
-            parameters=[parameter.to_mapping() for parameter in function.parameters],
-            return_type=function.return_type,
-            parameter_count=len(function.parameters),
-            analyzer=ir.analyzer,
-            analyzer_version=ir.analyzer_version,
+            **eligible_function,
             rejected_candidates=rejections,
             required_inputs=["behavior_cases_json"],
+        )
+        return result
+    if len(eligible) > 1:
+        result.update(
+            verdict=Verdict.UNSUPPORTED,
+            reason="MULTIPLE_ELIGIBLE_FUNCTIONS_REQUIRE_EXPLICIT_PARTITION",
+            eligible_candidates=eligible,
+            rejected_candidates=rejections,
+            required_inputs=[
+                "function_partition_manifest",
+                "behavior_cases_json_per_function",
+            ],
         )
         return result
 

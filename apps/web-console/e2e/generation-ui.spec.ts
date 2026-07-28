@@ -2,6 +2,11 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 import { strToU8, zipSync } from "fflate";
 
+test.beforeEach(async ({ page }) => {
+  await page.route("**/api/telemetry/events", (route) =>
+    route.fulfill({ status: 204, body: "" }));
+});
+
 function wordFixture(text: string): Buffer {
   const document = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
@@ -129,6 +134,60 @@ test.describe("多语言项目生成 UI", () => {
     await expect(page.getByText("实体与字段 · 1")).toBeVisible({ timeout: 30_000 });
     await expect(page.getByText("来源证明 · 7")).toBeVisible();
     await expect(page.getByText("开放问题 · 0")).toBeVisible();
+  });
+
+  test("仓库工作区可一键交接为哈希绑定的项目生成来源", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== "chromium", "仓库到生成的代表旅程只执行一次");
+    const workspaceId = "d12ac53a-30b8-4d87-8202-9c9a4b181cf8";
+    let submittedBody = "";
+    await page.route("**/api/generation/sources", async (route) => {
+      submittedBody = route.request().postData() ?? "";
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          status: "READY_FOR_REVIEW",
+          schemaVersion: "1.0.0",
+          bundleSha256: "b".repeat(64),
+          combinedText: "[来源 SRC-001 · repository-file · README.md]\n实体: order",
+          sources: [{
+            id: "SRC-001",
+            kind: "repository-file",
+            label: "README.md",
+            mediaType: "text/markdown",
+            origin: `workspace=${workspaceId};provider=GITEE;commit=${"1".repeat(40)};path=README.md`,
+            sha256: "a".repeat(64),
+            byteCount: 64,
+            extractedCharacters: 64,
+            includedCharacters: 64,
+            truncated: false,
+            warnings: [
+              "REPOSITORY_WORKSPACE_CONTENT_IMPORTED_NOT_EXECUTED",
+              "REMOTE_PUSH_PR_MERGE_AND_DEPLOYMENT_NOT_RUN",
+            ],
+          }],
+          warnings: [
+            "REMOTE_PUSH_PR_MERGE_AND_DEPLOYMENT_NOT_RUN",
+            "REPOSITORY_WORKSPACE_CONTENT_IMPORTED_NOT_EXECUTED",
+          ],
+          extractedAt: "2026-07-28T00:00:00Z",
+        }),
+      });
+    });
+
+    await page.goto(`/generation?repositoryWorkspaceId=${workspaceId}`);
+    await expect(page.getByLabel("代码仓库工作区 ID")).toHaveValue(workspaceId);
+    await page.getByLabel("审批者标识").fill("user:e2e");
+    await page.getByLabel("租户标识").fill("local-e2e");
+    await page.getByLabel("本地 Runner 令牌").fill("elmos-e2e-local-token-32-characters");
+    await page.getByLabel("仓库来源文件（可选）").fill("README.md\ndocs/requirements.md");
+    await page.getByRole("button", { name: "解析并合并来源" }).click();
+
+    await expect(page.locator(".generation-source-results").getByText(/1 个来源/)).toBeVisible();
+    await expect(page.locator(".generation-source-results").getByText(/repository-file · README.md/)).toBeVisible();
+    expect(submittedBody).toContain(workspaceId);
+    expect(submittedBody).toContain("README.md");
+    expect(submittedBody).toContain("docs/requirements.md");
   });
 
   test("企业配置只开放携带集成证据的单目标 PostgreSQL JWT/OIDC 组合", async ({ page }) => {

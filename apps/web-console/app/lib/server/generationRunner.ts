@@ -26,6 +26,10 @@ import {
   buildGenerationSourceBundle,
   sourceIngestionError,
 } from "./generationSourceIngestion";
+import {
+  RepositoryWorkspaceProxyError,
+  repositoryGenerationSources,
+} from "./repositoryWorkspaceProxy";
 import type { NextRequest } from "next/server";
 import type {
   GenerationAnalysis,
@@ -904,17 +908,34 @@ export async function ingestGenerationSources(
     url?: string;
     skillNames?: string[];
     files?: File[];
+    repositoryWorkspaceId?: string;
+    repositoryPaths?: string[];
   },
 ): Promise<GenerationSourceBundle> {
   const runner = config();
   ensureMutationsAllowed(runner);
   let bundle: GenerationSourceBundle;
   try {
+    const repositorySources = input.repositoryWorkspaceId
+      ? await repositoryGenerationSources({
+        tenantId: context.tenantId,
+        actor: context.actor,
+        workspaceId: input.repositoryWorkspaceId,
+        paths: input.repositoryPaths,
+      })
+      : [];
     bundle = await buildGenerationSourceBundle({
-      ...input,
+      description: input.description,
+      url: input.url,
+      skillNames: input.skillNames,
+      files: input.files,
+      repositorySources,
       repositoryRoot: runner.repositoryRoot,
     });
   } catch (error) {
+    if (error instanceof RepositoryWorkspaceProxyError) {
+      throw new GenerationRunnerError(error.status, error.errorCode);
+    }
     const blocked = sourceIngestionError(error);
     throw new GenerationRunnerError(blocked.status, blocked.reason);
   }

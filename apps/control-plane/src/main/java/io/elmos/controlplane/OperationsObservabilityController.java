@@ -19,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.time.Clock;
 import java.time.Instant;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
@@ -31,15 +32,24 @@ public final class OperationsObservabilityController {
     private final JdbcUserActivityStore store;
     private final Clock clock;
     private final String apiKey;
+    private final String apiKeyExpiresAt;
+    private final String boundOrganizationId;
+    private final String boundActorId;
 
     public OperationsObservabilityController(
             JdbcUserActivityStore store,
             Clock clock,
-            @Value("${elmos.operations.api-key:}") String apiKey
+            @Value("${elmos.operations.api-key:}") String apiKey,
+            @Value("${elmos.operations.api-key-expires-at:}") String apiKeyExpiresAt,
+            @Value("${elmos.operations.organization-id:}") String boundOrganizationId,
+            @Value("${elmos.operations.actor-id:}") String boundActorId
     ) {
         this.store = Objects.requireNonNull(store, "store");
         this.clock = Objects.requireNonNull(clock, "clock");
         this.apiKey = apiKey == null ? "" : apiKey.trim();
+        this.apiKeyExpiresAt = apiKeyExpiresAt == null ? "" : apiKeyExpiresAt.trim();
+        this.boundOrganizationId = boundOrganizationId == null ? "" : boundOrganizationId.trim();
+        this.boundActorId = boundActorId == null ? "" : boundActorId.trim();
     }
 
     public record EventBatch(List<ActivityEvent> events) {}
@@ -54,7 +64,7 @@ public final class OperationsObservabilityController {
             @RequestHeader(value = "X-Request-ID", required = false) String requestId,
             @RequestBody EventBatch batch
     ) {
-        authorize(presentedKey);
+        authorize(presentedKey, organizationId, actorId);
         String resolvedRequestId = requestId == null || requestId.isBlank()
                 ? UUID.randomUUID().toString() : requestId;
         int accepted = store.append(organizationId, actorId, resolvedRequestId, batch.events());
@@ -65,12 +75,13 @@ public final class OperationsObservabilityController {
     public ActivitySummary summary(
             @RequestHeader("X-ELMOS-Operations-Key") String presentedKey,
             @RequestHeader("X-ELMOS-Organization-ID") String organizationId,
+            @RequestHeader("X-ELMOS-Actor-ID") String actorId,
             @RequestParam(defaultValue = "24") int hours,
             @RequestParam(defaultValue = "ALL") String businessLine,
             @RequestParam(defaultValue = "ALL") String result,
             @RequestParam(defaultValue = "50") int limit
     ) {
-        authorize(presentedKey);
+        authorize(presentedKey, organizationId, actorId);
         if (hours < 1 || hours > 24 * 31) {
             throw new IllegalArgumentException("hours must be between 1 and 744");
         }
@@ -80,8 +91,24 @@ public final class OperationsObservabilityController {
                 businessLine, result, limit);
     }
 
-    private void authorize(String presentedKey) {
-        if (apiKey.length() < 24) throw new ObservabilityUnavailableException();
+    private void authorize(String presentedKey, String organizationId, String actorId) {
+        Instant expiry;
+        try {
+            expiry = Instant.parse(apiKeyExpiresAt);
+        } catch (DateTimeParseException error) {
+            throw new ObservabilityUnavailableException();
+        }
+        Instant now = clock.instant();
+        if (apiKey.length() < 24
+                || boundOrganizationId.isBlank()
+                || boundActorId.isBlank()
+                || !expiry.isAfter(now)
+                || expiry.isAfter(now.plus(24, ChronoUnit.HOURS))) {
+            throw new ObservabilityUnavailableException();
+        }
+        if (!boundOrganizationId.equals(organizationId) || !boundActorId.equals(actorId)) {
+            throw new SecurityException("operations observability identity binding failed");
+        }
         byte[] expected = apiKey.getBytes(StandardCharsets.UTF_8);
         byte[] presented = (presentedKey == null ? "" : presentedKey).getBytes(StandardCharsets.UTF_8);
         if (expected.length != presented.length || !MessageDigest.isEqual(expected, presented)) {

@@ -1,6 +1,11 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
+test.beforeEach(async ({ page }) => {
+  await page.route("**/api/telemetry/events", (route) =>
+    route.fulfill({ status: 204, body: "" }));
+});
+
 for (const businessLine of [
   {
     path: "/spring",

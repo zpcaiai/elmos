@@ -57,6 +57,16 @@ def _approved_postgresql_request() -> dict[str, object]:
         languages=("python",),
         persistence="postgresql",
         auth_mode="jwt",
+        permissions=tuple(
+            {
+                "actor": "api_user",
+                "action": action,
+                "resource": resource,
+                "effect": "allow",
+            }
+            for resource in ("customer", "order")
+            for action in ("create", "read", "update", "delete")
+        ),
     )
     return approve_request(
         draft,

@@ -33,6 +33,19 @@ from elmos_project_synthesis.verification import _check_exact_toolchain, runtime
 from elmos_project_synthesis.workspace import WorkspaceConflictError, generate_workspace, render_workspace
 
 
+def allow_crud(*resources: str) -> tuple[dict[str, str], ...]:
+    return tuple(
+        {
+            "actor": "api_user",
+            "action": action,
+            "resource": resource,
+            "effect": "allow",
+        }
+        for resource in resources
+        for action in ("create", "read", "update", "delete")
+    )
+
+
 def approved_request() -> dict[str, object]:
     draft = create_draft(
         name="work-order-service",
@@ -78,18 +91,59 @@ def multi_entity_request(*, languages: tuple[str, ...] = SUPPORTED_LANGUAGES) ->
     return approve_request(draft, actor="user:test")
 
 
+def test_missing_permission_declarations_default_to_explicit_deny() -> None:
+    draft = create_draft(
+        name="deny-by-default-service",
+        description="管理订单",
+        entity="order",
+        languages=("python",),
+    )
+
+    assert draft["permissions"]
+    assert {item["effect"] for item in draft["permissions"]} == {"deny"}
+    assert {item["action"] for item in draft["permissions"]} == {
+        "create",
+        "read",
+        "update",
+        "delete",
+    }
+
+
+def test_authenticated_production_profile_requires_explicit_permission_approval() -> None:
+    draft = create_draft(
+        name="permission-review-service",
+        description="Durable authenticated order API",
+        entity="order",
+        languages=("python",),
+        persistence="postgresql",
+        auth_mode="jwt",
+    )
+
+    assert {item["effect"] for item in draft["permissions"]} == {"deny"}
+    assert [item["id"] for item in draft["open_questions"]] == [
+        "Q-PERMISSION-PRODUCTION-001"
+    ]
+    with pytest.raises(ValueError, match="OPEN_QUESTIONS_BLOCK_APPROVAL"):
+        approve_request(draft, actor="user:reviewer")
+
+
 def test_imported_requirement_sources_are_hash_bound_and_generated() -> None:
     description = (
-        "[来源 SRC-001 · markdown-file · requirements.md]\n"
+        "[来源 SRC-001 · repository-file · README.md]\n"
         "实体: order; order字段: reference:string:required; 规则: order.reference != 0"
     )
     raw = description.encode("utf-8")
     sources = [
         {
             "id": "SRC-001",
-            "kind": "markdown-file",
-            "label": "requirements.md",
+            "kind": "repository-file",
+            "label": "README.md",
             "mediaType": "text/markdown",
+            "origin": (
+                "workspace=d12ac53a-30b8-4d87-8202-9c9a4b181cf8;"
+                "provider=GITEE;instance=gitee.com;repository=owner%2Frepository;"
+                f"commit={'1' * 40};path=README.md"
+            ),
             "sha256": hashlib.sha256(raw).hexdigest(),
             "byteCount": len(raw),
             "extractedCharacters": len(description),
@@ -577,6 +631,7 @@ def test_python_enterprise_profile_renders_durable_auth_enforcement(auth_mode: s
         languages=("python",),
         persistence="postgresql",
         auth_mode=auth_mode,
+        permissions=allow_crud("customer", "order"),
     )
     files = render_workspace(SynthesisRequest.from_mapping(approve_request(draft, actor="user:enterprise-reviewer")))
 
@@ -704,6 +759,7 @@ def test_production_profile_compiles_business_rules_and_blocks_ambiguous_relatio
         languages=("python",),
         persistence="postgresql",
         auth_mode="jwt",
+        permissions=allow_crud("inventory"),
     )
     files = render_workspace(SynthesisRequest.from_mapping(approve_request(draft, actor="user:reviewer")))
     assert 'CHECK ("quantity" >= 0)' in files["database/migrations/001_initial.sql"]
@@ -735,6 +791,7 @@ def test_production_profile_compiles_business_rules_and_blocks_ambiguous_relatio
         languages=("python",),
         persistence="postgresql",
         auth_mode="jwt",
+        permissions=allow_crud("parent", "child"),
     )
     assert [item["id"] for item in ambiguous["open_questions"]] == ["Q-RELATION-PRODUCTION-001"]
     with pytest.raises(ValueError, match="OPEN_QUESTIONS_BLOCK_APPROVAL"):
@@ -750,6 +807,7 @@ def test_production_profile_blocks_uncompiled_manual_rule() -> None:
         languages=("python",),
         persistence="postgresql",
         auth_mode="jwt",
+        permissions=allow_crud("record"),
     )
     assert [item["id"] for item in draft["open_questions"]] == ["Q-RULE-001"]
     with pytest.raises(ValueError, match="OPEN_QUESTIONS_BLOCK_APPROVAL"):
@@ -1260,6 +1318,7 @@ def test_production_plans_record_the_integration_obligation() -> None:
             languages=("python",),
             persistence="postgresql",
             auth_mode="jwt",
+            permissions=allow_crud("order"),
         ),
         actor="user:test",
         approved_at="2026-07-26T00:00:00+00:00",
@@ -1288,6 +1347,7 @@ def test_php_production_runtime_honors_the_verified_port_override(tmp_path: Path
             languages=("php",),
             persistence="postgresql",
             auth_mode="jwt",
+            permissions=allow_crud("order"),
         ),
         actor="user:test",
         approved_at="2026-07-26T00:00:00+00:00",

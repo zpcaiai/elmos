@@ -117,6 +117,8 @@ class GitRepositoryWorkspaceServiceTest {
                 () -> service.inspect("tenant-a", "actor-other", workspace.workspaceId()));
         assertThrows(SecurityException.class,
                 () -> service.readFile("tenant-a", "actor-a", workspace.workspaceId(), "../outside"));
+        assertThrows(SecurityException.class,
+                () -> service.readFile("tenant-a", "actor-a", workspace.workspaceId(), ".env"));
 
         GitRepositoryWorkspaceService.FileContent read =
                 service.readFile("tenant-a", "actor-a", workspace.workspaceId(), "README.md");
@@ -227,6 +229,7 @@ class GitRepositoryWorkspaceServiceTest {
         Files.createDirectories(directory.resolve("config"));
         Files.createDirectories(directory.resolve(".github/workflows"));
         Files.writeString(directory.resolve("README.md"), "# Before\n");
+        Files.writeString(directory.resolve(".env"), "DATABASE_URL=must-not-be-exposed\n");
         Files.writeString(directory.resolve("src/App.java"), "final class App {}\n");
         Files.writeString(directory.resolve("config/application.yml"), "enabled: true\n");
         Files.writeString(directory.resolve("Dockerfile"), "FROM scratch\n");

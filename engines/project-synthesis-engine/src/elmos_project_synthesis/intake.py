@@ -510,17 +510,29 @@ def create_draft(
                     "impact": "high",
                 }
             )
+    permission_policy_declared = bool(normalized_permissions)
     if not normalized_permissions:
         normalized_permissions = [
             {
                 "actor": "api_user",
                 "action": action,
                 "resource": entity_name,
-                "effect": "allow",
+                "effect": "deny",
             }
             for entity_name in sorted(entity_names)
             for action in ("create", "read", "update", "delete")
         ]
+    if auth_mode in {"jwt", "oidc"} and not permission_policy_declared:
+        questions.append(
+            {
+                "id": "Q-PERMISSION-PRODUCTION-001",
+                "question": (
+                    "JWT/OIDC 生产配置必须显式声明 Actor、资源、动作与 allow/deny；"
+                    "当前已按默认拒绝生成，但在批准前必须确认授权矩阵。"
+                ),
+                "impact": "high",
+            }
+        )
 
     requirements: list[dict[str, Any]] = []
     criteria: list[dict[str, Any]] = []

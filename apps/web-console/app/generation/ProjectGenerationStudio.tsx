@@ -62,6 +62,7 @@ const plannedAssets = [
 
 const DRAFT_STORAGE_KEY = "elmos.project-generation-drafts.v1";
 const generationTargetIds = new Set<GenerationTargetId>(generationTargets.map((target) => target.id));
+const repositoryWorkspaceIdPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function isStoredSourceReference(value: unknown): value is GenerationSourceReference {
   if (!value || typeof value !== "object") return false;
@@ -168,6 +169,8 @@ export function ProjectGenerationStudio() {
   const [authMode, setAuthMode] = useState<"none" | "jwt" | "oidc">("none");
   const [sourceUrl, setSourceUrl] = useState("");
   const [sourceSkills, setSourceSkills] = useState("");
+  const [repositoryWorkspaceId, setRepositoryWorkspaceId] = useState("");
+  const [repositoryPaths, setRepositoryPaths] = useState("");
   const [sourceFiles, setSourceFiles] = useState<File[]>([]);
   const [sourceBundle, setSourceBundle] = useState<GenerationSourceBundle | null>(null);
   const [sourceBusy, setSourceBusy] = useState(false);
@@ -247,6 +250,16 @@ export function ProjectGenerationStudio() {
         }
       });
     return () => controller.abort();
+  }, []);
+
+  useEffect(() => {
+    const fromRepository = new URLSearchParams(window.location.search)
+      .get("repositoryWorkspaceId")?.trim() ?? "";
+    if (repositoryWorkspaceIdPattern.test(fromRepository)) {
+      setRepositoryWorkspaceId(fromRepository);
+      setDescription("");
+      setFeedback("已接收代码仓库工作区；输入同一身份绑定的 Runner 令牌后即可导入快照。");
+    }
   }, []);
 
   useEffect(() => {
@@ -348,14 +361,31 @@ export function ProjectGenerationStudio() {
       announce("解析文件、Skill 或在线 HTML 前，请先输入本地 Runner 短期令牌。");
       return;
     }
-    if (!description.trim() && sourceFiles.length === 0 && !sourceUrl.trim() && !sourceSkills.trim()) {
-      announce("请至少填写简述、选择文件、填写在线 HTML 地址或指定 Skill。");
+    if (
+      !description.trim()
+      && sourceFiles.length === 0
+      && !sourceUrl.trim()
+      && !sourceSkills.trim()
+      && !repositoryWorkspaceId.trim()
+    ) {
+      announce("请至少填写简述、选择文件、填写在线 HTML 地址、仓库工作区或指定 Skill。");
+      return;
+    }
+    if (
+      repositoryWorkspaceId.trim()
+      && !repositoryWorkspaceIdPattern.test(repositoryWorkspaceId.trim())
+    ) {
+      announce("仓库工作区 ID 必须是有效 UUID。");
       return;
     }
     const form = new FormData();
     if (description.trim()) form.set("description", description.trim());
     if (sourceUrl.trim()) form.set("url", sourceUrl.trim());
     if (sourceSkills.trim()) form.set("skills", sourceSkills.trim());
+    if (repositoryWorkspaceId.trim()) {
+      form.set("repositoryWorkspaceId", repositoryWorkspaceId.trim());
+      if (repositoryPaths.trim()) form.set("repositoryPaths", repositoryPaths.trim());
+    }
     sourceFiles.forEach((file) => form.append("files", file, file.name));
     setSourceBusy(true);
     try {
@@ -846,6 +876,36 @@ export function ProjectGenerationStudio() {
                   />
                   <small id="source-skills-hint">填写精确 Skill 名称，逗号分隔，最多 8 个；导入内容不会被执行。</small>
                 </label>
+                <label className="generation-field">
+                  <span>代码仓库工作区 ID</span>
+                  <input
+                    value={repositoryWorkspaceId}
+                    onChange={(event) => {
+                      setRepositoryWorkspaceId(event.target.value);
+                      setSourceBundle(null);
+                      invalidateDraft();
+                    }}
+                    placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                    autoComplete="off"
+                    aria-describedby="source-repository-hint"
+                  />
+                  <small id="source-repository-hint">从“代码仓库工作区”一键带入；服务端重新校验租户、Actor、完整性和文件摘要。</small>
+                </label>
+                <label className="generation-field">
+                  <span>仓库来源文件（可选）</span>
+                  <textarea
+                    value={repositoryPaths}
+                    onChange={(event) => {
+                      setRepositoryPaths(event.target.value);
+                      setSourceBundle(null);
+                      invalidateDraft();
+                    }}
+                    placeholder={"README.md\ndocs/requirements.md"}
+                    rows={3}
+                    aria-describedby="source-repository-paths-hint"
+                  />
+                  <small id="source-repository-paths-hint">每行一个安全相对路径，最多 8 个；留空时按 README、docs、部署、配置、测试、源码顺序选取。</small>
+                </label>
                 <label className="generation-field generation-field-wide">
                   <span>上传需求文件</span>
                   <input
@@ -879,7 +939,7 @@ export function ProjectGenerationStudio() {
                   <Icon name={sourceBusy ? "refresh" : "spark"} size={14} className={sourceBusy ? "spinning" : ""} />
                   {sourceBusy ? "正在提取与绑定" : "解析并合并来源"}
                 </button>
-                <small>来源包与当前租户、审批者和摘要绑定 60 分钟；合并文本仍需人工审阅。</small>
+                <small>来源包与当前租户、审批者和摘要绑定 60 分钟；仓库内容只读取、不执行，合并文本仍需人工审阅。</small>
               </div>
               {sourceBundle && (
                 <div className="generation-source-results" aria-label="已绑定来源">

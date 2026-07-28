@@ -98,3 +98,19 @@ should use), or (b) formally mark it superseded/archived. Each of `modules/intak
 `modules/semantic`, `modules/uir`, `modules/skeleton` and `modules/lowering` now carries a
 `README.md` pointing back to this addendum so this does not need to be rediscovered by
 grep again.
+
+## Addendum (2026-07-28, closure decision): superseded for product execution
+
+The open architectural choice above is now resolved. For all product requests,
+`engines/polyglot-route-engine` is the sole canonical execution authority for the
+`typed-pure-function-v1` translation profile. The five-module Java chain is retained as
+read-only reference/research architecture and for its isolated regression tests, but it
+is **superseded for product execution**: no controller, CLI, worker, support matrix or
+readiness response may route product traffic to it or use its tests as evidence for the
+shipped translation business line.
+
+Reactivation is not an incremental wiring change. It requires a new ADR that identifies
+one canonical architecture, removes the duplicate authority, supplies a real sandboxed
+baseline runner and source-text provenance, migrates product contracts and evidence, and
+passes the applicable Batch 29 gate. Until then, missing backends in this chain remain
+reference limitations rather than hidden product fallbacks.
