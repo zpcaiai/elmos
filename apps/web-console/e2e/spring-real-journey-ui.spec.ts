@@ -8,6 +8,11 @@ const artifactBody = Buffer.from("PK\u0003\u0004ELMOS-E2E");
 const artifactSha = createHash("sha256").update(artifactBody).digest("hex");
 const snapshotSha = "c".repeat(64);
 
+test.beforeEach(async ({ page }) => {
+  await page.route("**/api/telemetry/events", (route) =>
+    route.fulfill({ status: 204, body: "" }));
+});
+
 const capabilities = {
   packKey: "spring-boot-2-7-18-to-3-5-3",
   sourceTuple: { springBoot: "2.7.18", java: "17", build: "Maven 3.9.11" },

@@ -106,7 +106,9 @@ test("服务端在消费审阅摘要前阻断单实体目标的多实体生产�
   const intent = {
     name: "inventory-service",
     namespace: "io.elmos.inventory",
-    description: "实体: product, inventory; product字段: name:string:required; inventory字段: quantity:integer:required",
+    description: "实体: product, inventory; product字段: name:string:required; "
+      + "inventory字段: quantity:integer:required; "
+      + "权限: admin:create/read/update/delete:product",
     entity: "product",
     targets: ["go"],
     persistence: "postgresql",
@@ -211,7 +213,9 @@ test("Python PostgreSQL JWT/OIDC 企业配置均可生成、验证并一键运�
       + "customer字段: name:string:required; "
       + "order字段: customer_id:string:required, total:number:required; "
       + "关系: order.customer_id -> customer.id; "
-      + "规则: order.total must be non-negative",
+      + "规则: order.total must be non-negative; "
+      + "权限: admin:create/read/update/delete:customer; "
+      + "权限: admin:create/read/update/delete:order",
     );
     await page.getByLabel("数据配置").selectOption("postgresql");
     await page.getByLabel("认证配置").selectOption(authMode);

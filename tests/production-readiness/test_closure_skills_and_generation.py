@@ -34,9 +34,19 @@ class ClosureSkillsAndGenerationTests(unittest.TestCase):
             }.issubset(jobs)
         )
         rendered = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+        polyglot_job = json.dumps(jobs["polyglot-routes"], ensure_ascii=False, sort_keys=True)
+        polyglot_verify = next(
+            step["run"]
+            for step in jobs["polyglot-routes"]["steps"]
+            if step.get("name") == "Verify compiler-backed route engine"
+        )
         self.assertIn("dotnet restore engines/dotnet-engine/Elmos.Dotnet.slnx --locked-mode", rendered)
         self.assertIn("uv --directory engines/python-engine run --locked pytest", rendered)
         self.assertIn("pnpm --dir engines/frontend-client-engine install --frozen-lockfile", rendered)
+        self.assertIn('"java-version": "21.0.11"', polyglot_job)
+        self.assertIn('"dotnet-version": "10.0.301"', polyglot_job)
+        self.assertIn('"node-version": "26.0.0"', polyglot_job)
+        self.assertIn('export ELMOS_JAVA21_HOME="$JAVA_HOME"', polyglot_verify)
         self.assertIn("python scripts/operations/validate_translation_route_matrix.py", rendered)
         self.assertIn("python scripts/run_acceptance.py --require-all-toolchains", rendered)
         self.assertIn("python scripts/run_production_matrix.py", rendered)
