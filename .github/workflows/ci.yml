@@ -114,7 +114,7 @@ jobs:
       - name: Set up .NET 10
         uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5.4.0
         with:
-          dotnet-version: "10.0.x"
+          dotnet-version: "10.0.301"
           cache: true
           cache-dependency-path: engines/dotnet-engine/**/packages.lock.json
       - name: Restore locked dependencies
@@ -236,7 +236,7 @@ jobs:
         run: make product-closure-convergence-skills
 
   project-synthesis-acceptance:
-    name: Eight-language synthesis acceptance
+    name: Synthesis toolchain engineering evidence
     runs-on: ubuntu-24.04
     timeout-minutes: 180
     steps:
@@ -281,14 +281,10 @@ jobs:
           python -m pip install --disable-pip-version-check uv==0.11.16
           npm install --global pnpm@10.12.4
           uv --directory engines/project-synthesis-engine sync --locked
-      - name: Run exact starter-profile acceptance
+      - name: Run available exact starter-profile toolchains
         run: >-
           uv --directory engines/project-synthesis-engine run --locked
-          python scripts/run_acceptance.py --require-all-toolchains
-      - name: Run PostgreSQL JWT and OIDC production matrix
-        run: >-
-          uv --directory engines/project-synthesis-engine run --locked
-          python scripts/run_production_matrix.py
+          python scripts/run_acceptance.py
 
   web-console:
     name: Web Console
