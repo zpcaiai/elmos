@@ -278,8 +278,6 @@ public final class RepositoryWorkspaceController {
     }
 
     private static String errorCode(RuntimeException error) {
-        String message = error.getMessage();
-        if (message != null && message.matches("[A-Z][A-Z0-9_]{2,95}")) return message;
         return error instanceof SecurityException
                 ? "REPOSITORY_POLICY_REJECTED"
                 : error instanceof IllegalArgumentException

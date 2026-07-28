@@ -76,10 +76,10 @@ public final class BillingApiErrorAdvice {
     }
 
     private static String domainCode(SQLException sql) {
-        if (sql == null || sql.getMessage() == null) return null;
-        return POSTGRES_DOMAIN_ERRORS.keySet().stream()
-                .filter(code -> sql.getMessage().contains(code))
-                .findFirst().orElse(null);
+        return PostgresBillingDomainErrorClassifier.classify(
+                sql,
+                POSTGRES_DOMAIN_ERRORS.keySet()
+        );
     }
 
     private static Map<String, Integer> postgresDomainErrors() {
