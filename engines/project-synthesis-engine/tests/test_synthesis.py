@@ -631,7 +631,10 @@ def test_python_enterprise_profile_renders_durable_auth_enforcement(auth_mode: s
         languages=("python",),
         persistence="postgresql",
         auth_mode=auth_mode,
-        permissions=allow_crud("customer", "order"),
+        permissions=tuple(
+            {**permission, "actor": "admin"}
+            for permission in allow_crud("customer", "order")
+        ),
     )
     files = render_workspace(SynthesisRequest.from_mapping(approve_request(draft, actor="user:enterprise-reviewer")))
 
@@ -651,6 +654,10 @@ def test_python_enterprise_profile_renders_durable_auth_enforcement(auth_mode: s
     assert '"allow" not in decisions' in security
     assert ("ELMOS_JWT_HMAC_SECRET_FILE" if auth_mode == "jwt" else "ELMOS_OIDC_JWKS_FILE") in security
     assert 'authorize("order", "create")' in files["python/src/enterprise_orders/app.py"]
+    integration = files["python/tests/test_postgresql_integration.py"]
+    assert '"roles": ["admin"]' in integration
+    assert "client.put(" in integration
+    assert "client.delete(" in integration
     assert "set_config('app.tenant_id', %s, true)" in files["python/src/enterprise_orders/repository.py"]
     assert "ELMOS_DATABASE_URL_FILE_UNSAFE" in files["python/src/enterprise_orders/repository.py"]
     assert "PASSWORD=" not in files["python/.env.example"]
@@ -685,6 +692,31 @@ def test_python_enterprise_profile_renders_durable_auth_enforcement(auth_mode: s
     for path, content in files.items():
         if path.startswith("python/") and path.endswith(".py"):
             ast.parse(content, filename=path)
+
+
+def test_python_enterprise_profile_rejects_unexercisable_permission_matrix() -> None:
+    draft = create_draft(
+        name="partial-orders",
+        description="Durable authenticated order API",
+        entity="order",
+        languages=("python",),
+        persistence="postgresql",
+        auth_mode="jwt",
+        permissions=(
+            {
+                "actor": "reader",
+                "action": "read",
+                "resource": "order",
+                "effect": "allow",
+            },
+        ),
+    )
+    approved = approve_request(draft, actor="user:enterprise-reviewer")
+    with pytest.raises(
+        ValueError,
+        match="PRODUCTION_INTEGRATION_IDENTITY_UNSATISFIABLE",
+    ):
+        render_workspace(SynthesisRequest.from_mapping(approved))
 
 
 def test_enterprise_profile_rejects_unevidenced_target_combinations(

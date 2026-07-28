@@ -115,6 +115,50 @@ def _integration_fixture_lines(request: SynthesisRequest, entity: EntitySpec) ->
     return lines
 
 
+def _integration_roles(request: SynthesisRequest) -> list[str]:
+    """Bind the integration identity to the approved permission matrix."""
+
+    operations = {
+        (entity.singular, action)
+        for entity in request.entities
+        for action in ("create", "read", "update", "delete")
+    }
+    permissions = request.raw["permissions"]
+    actors = sorted({str(permission["actor"]) for permission in permissions})
+
+    def covers(permission: dict[str, object], resource: str, action: str) -> bool:
+        return permission["resource"] in {resource, "*"} and permission["action"] in {
+            action,
+            "manage",
+        }
+
+    eligible = [
+        actor
+        for actor in actors
+        if not any(
+            permission["actor"] == actor
+            and permission["effect"] == "deny"
+            and any(covers(permission, resource, action) for resource, action in operations)
+            for permission in permissions
+        )
+    ]
+    covered = {
+        (resource, action)
+        for resource, action in operations
+        if any(
+            permission["actor"] in eligible
+            and permission["effect"] == "allow"
+            and covers(permission, resource, action)
+            for permission in permissions
+        )
+    }
+    missing = sorted(operations - covered)
+    if missing:
+        detail = ",".join(f"{resource}:{action}" for resource, action in missing)
+        raise ValueError(f"PRODUCTION_INTEGRATION_IDENTITY_UNSATISFIABLE:{detail}")
+    return eligible
+
+
 def _security_source(request: SynthesisRequest) -> str:
     permissions = json.dumps(request.raw["permissions"], ensure_ascii=False, indent=4, sort_keys=True)
     permissions = permissions.replace("\n", "\n        ")
@@ -664,6 +708,11 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
     repository_blocks: list[str] = []
     route_blocks: list[str] = []
     integration_tests: list[str] = []
+    integration_roles = json.dumps(
+        _integration_roles(request),
+        ensure_ascii=False,
+        separators=(",", ":"),
+    )
     model_imports: list[str] = []
     uses_pydantic_field = False
     if request.auth_mode == "jwt":
@@ -841,6 +890,34 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
                     assert client.get(
                         f"/api/v1/{entity.plural}/{{record_id}}",
                         headers={{"Authorization": f"Bearer {{token_b}}"}},
+                    ).status_code == 404
+                    listed = client.get(
+                        "/api/v1/{entity.plural}",
+                        headers={{"Authorization": f"Bearer {{token_a}}"}},
+                    )
+                    assert listed.status_code == 200
+                    assert record_id in {{item["id"] for item in listed.json()}}
+                    assert client.put(
+                        f"/api/v1/{entity.plural}/{{record_id}}",
+                        json=payload,
+                        headers={{"Authorization": f"Bearer {{token_b}}"}},
+                    ).status_code == 404
+                    assert client.put(
+                        f"/api/v1/{entity.plural}/{{record_id}}",
+                        json=payload,
+                        headers={{"Authorization": f"Bearer {{token_a}}"}},
+                    ).status_code == 200
+                    assert client.delete(
+                        f"/api/v1/{entity.plural}/{{record_id}}",
+                        headers={{"Authorization": f"Bearer {{token_b}}"}},
+                    ).status_code == 404
+                    assert client.delete(
+                        f"/api/v1/{entity.plural}/{{record_id}}",
+                        headers={{"Authorization": f"Bearer {{token_a}}"}},
+                    ).status_code == 204
+                    assert client.get(
+                        f"/api/v1/{entity.plural}/{{record_id}}",
+                        headers={{"Authorization": f"Bearer {{token_a}}"}},
                     ).status_code == 404
                 """
             ).rstrip()
@@ -1168,7 +1245,7 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
                         "aud": os.environ["ELMOS_AUTH_AUDIENCE"],
                         "sub": "integration-user",
                         "tenant_id": tenant_id,
-                        "roles": ["api_user"],
+                        "roles": {integration_roles},
                         "iat": now,
                         "exp": now + 300,
                     }},
