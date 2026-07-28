@@ -44,12 +44,57 @@ existing toolchain, and keeps Gradle 8.14.3 isolated from any newer Homebrew
 Gradle. Override the absolute installation root with
 `ELMOS_PROJECT_SYNTHESIS_TOOLCHAIN_ROOT` when required.
 
+If the approved build environment requires an HTTP CONNECT proxy for Maven or
+Gradle repositories, set `ELMOS_PROJECT_SYNTHESIS_GRADLE_PROXY` to an explicit
+`http://host:port` or `https://host:port` URL before invoking `uv`. The verifier
+converts that value to Gradle JVM properties. URLs containing credentials,
+paths, queries, fragments, invalid hosts, or invalid ports fail closed; use a
+local credential-free egress proxy instead of embedding secrets.
+
+Kotlin verification also sets `GRADLE_USER_HOME` to the owner-only
+`~/.cache/elmos/project-synthesis/gradle-user-home`, so ambient
+`~/.gradle/init.d` scripts and repository rewrites cannot change the generated
+build. Override it only with the absolute, non-symlink, owner-only
+`ELMOS_PROJECT_SYNTHESIS_GRADLE_USER_HOME` directory.
+
 ```bash
 cd engines/project-synthesis-engine
 uv sync --locked
 ```
 
 ## 1. Create a reviewable draft
+
+The Web Console `/generation` workspace also accepts a simple description,
+UTF-8 TXT/Markdown, Word `.docx`, HTML, text-bearing PDF, exact repository
+Skill names, and public HTTPS HTML. It extracts only reviewable text: imported
+Skills are never executed, Word external-file access stays disabled, HTML
+scripts/styles are discarded, scanned PDFs fail with an OCR-required status,
+and URL fetching rejects credentials, private/loopback addresses, non-HTTPS
+schemes, unsafe redirects, oversized responses, and non-HTML content.
+
+Every imported source records its original byte digest, label, media type,
+included/extracted character counts, truncation state, and warnings. The source
+bundle is bound to the tenant, actor, combined description, and a canonical
+SHA-256 digest before analysis. The approved request and generated
+`requirements/source-provenance.json` preserve that binding; editing the
+combined description invalidates the bundle and requires a new review.
+
+The browser flow is:
+
+1. Enter the project identity, tenant/actor-bound short-lived Runner token, and
+   any simple description.
+2. Add files, an optional public HTTPS page, and/or exact Skill names, then
+   select **解析并合并来源**.
+3. Review the merged description and every source/truncation warning; never
+   treat extraction as requirements approval.
+4. Select the exact language, persistence, and authentication tuple, then lock
+   the generation plan.
+5. Analyze the PSIR, resolve every open question, explicitly approve it, and
+   select **一键生成、验证并归档**.
+6. Download the digest-checked archive. Read `docs/LOCAL_RUN.md` for exact
+   local software/hardware and startup steps, and `docs/CLOUD_DEPLOYMENT.md`
+   plus `deploy/deployment-options.json` for cloud sizing, Cloud Run commands,
+   rollback, cleanup, and still-`NOT_RUN` external gates.
 
 ```bash
 uv run elmos-project-synthesis draft \

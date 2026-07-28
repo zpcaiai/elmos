@@ -25,6 +25,7 @@ cd engines/database-data-engine/sql-transpiler
 uv sync --frozen
 uv run pytest
 uv run elmos-sql-transpiler transpile examples/postgresql-to-mysql.json /tmp/elmos-orders-mysql
+uv run elmos-sql-transpiler verify-local-matrix /tmp/elmos-local-sql-matrix
 ```
 
-The local syntax gate requires at least 99.5% success and currently passes its checked-in eligible corpus. That is not database execution or semantic equivalence: source/target execution, results, errors, locks, performance, security, and certification remain `NOT_RUN` / `NOT_CERTIFIED` until exact database Runners and independent evidence exist.
+The local syntax gate requires at least 99.5% success and currently passes its checked-in eligible corpus. The disposable runtime Runner additionally executes all six directed routes among exact PostgreSQL 17.5, SQLite 3.53.3, and DuckDB 1.5.4 profiles against the same deterministic data. It compares rows, logical types, cardinality, duplicates, order, errors, rollback/atomicity, lock conflicts, plans, and local p95 performance. Each execution emits content-addressed evidence. Profiles without an exact local runtime stay `BLOCKED` / `NOT_RUN`; independent holdout, production-like, security, and certification evidence remain `NOT_RUN` / `NOT_CERTIFIED`.

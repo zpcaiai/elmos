@@ -247,3 +247,37 @@ test("整库清单的接受判定发生在服务端，被篡改的客户端请�
     expect(body.errorCode).toBe(expectedCode);
   }
 });
+
+test("跨语言整库受控任务完成真实回放、构建、恢复和摘要校验下载", async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== "chromium", "有副作用的代表整库旅程只执行一次");
+  test.setTimeout(180_000);
+
+  await page.goto("/translation");
+  await page.getByLabel("跨语言租户标识").fill("local-e2e");
+  await page.getByLabel("跨语言执行者标识").fill("user:e2e");
+  await page.getByLabel("跨语言 Runner 令牌").fill("elmos-e2e-local-token-32-characters");
+  await page.getByLabel("受控源码工作区 ID").fill("pure-python");
+  await page.getByLabel("独立行为用例包 ID").fill("pure-python-holdout");
+  await page.getByRole("button", { name: /python 到 typescript/i }).click();
+  await page.getByRole("button", { name: "启动整库转换" }).click();
+
+  await expect(page.getByText("COMPLETE", { exact: true }).last()).toBeVisible({ timeout: 120_000 });
+  await expect(page.getByText("PASSED", { exact: true }).last()).toBeVisible();
+  const jobId = await page.getByText(/[0-9a-f]{8}-[0-9a-f-]{27}/).last().textContent();
+  expect(jobId).toMatch(/^[0-9a-f-]{36}$/);
+
+  await page.reload();
+  await page.getByLabel("跨语言租户标识").fill("local-e2e");
+  await page.getByLabel("跨语言执行者标识").fill("user:e2e");
+  await page.getByLabel("跨语言 Runner 令牌").fill("elmos-e2e-local-token-32-characters");
+  await expect(page.getByLabel("恢复任务 UUID")).toHaveValue(jobId ?? "");
+  await page.getByRole("button", { name: "恢复任务" }).click();
+  await expect(page.getByText("COMPLETE", { exact: true }).last()).toBeVisible();
+
+  const downloadPromise = page.waitForEvent("download");
+  await page.getByRole("button", { name: "下载摘要校验归档" }).click();
+  const download = await downloadPromise;
+  expect(download.suggestedFilename()).toBe("python-to-typescript-complete.zip");
+});

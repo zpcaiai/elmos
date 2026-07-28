@@ -21,7 +21,7 @@ locked Snapshot after the Java 17 baseline, and excludes local secret files from
 `certification/public-reference-route-evidence.json`. The Rootless deployment path uses a one-shot
 offline Transformer, one-shot Verifier and per-Run `network=none` Runtime, but those containers were
 not executed on this host because no attested rootless daemon was available.
-The pack is `experimental`, not certified. GitHub App private-repository execution, Rootless
+The exact web, configuration and lifecycle scope is `limited`, not certified. GitHub App private-repository execution, Rootless
 Transformer/Verifier/Runner execution, an authorized customer repository, customer holdout and
 external independent review are separate evidence roles and remain `NOT_RUN`.
 

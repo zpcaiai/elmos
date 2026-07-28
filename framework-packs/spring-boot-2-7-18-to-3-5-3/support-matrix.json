@@ -5,8 +5,8 @@
         "certification/local-reference-evidence.json"
       ],
       "id": "web",
-      "reason": "Real local source and target builds, startup, and behavior parity passed.",
-      "status": "experimental",
+      "reason": "Exact local source/target builds and startup plus separate public holdout and representative repository behavior passed; customer and external certification remain NOT_RUN.",
+      "status": "supported",
       "strategy": "framework-contract-and-real-runtime"
     },
     {
@@ -21,8 +21,8 @@
         "certification/local-reference-evidence.json"
       ],
       "id": "configuration",
-      "reason": "Real local source and target builds, startup, and behavior parity passed.",
-      "status": "experimental",
+      "reason": "Exact local source/target builds and startup plus separate public holdout and representative repository behavior passed; customer and external certification remain NOT_RUN.",
+      "status": "supported",
       "strategy": "framework-contract-and-real-runtime"
     },
     {
@@ -86,8 +86,8 @@
         "certification/local-reference-evidence.json"
       ],
       "id": "lifecycle",
-      "reason": "Real local source and target builds, startup, and behavior parity passed.",
-      "status": "experimental",
+      "reason": "Exact local source/target builds and startup plus separate public holdout and representative repository behavior passed; customer and external certification remain NOT_RUN.",
+      "status": "supported",
       "strategy": "framework-contract-and-real-runtime"
     }
   ],

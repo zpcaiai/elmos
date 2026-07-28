@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./styles.css";
 import { AppShell } from "./components/AppShell";
+import { UserActivityCollector } from "./components/UserActivityCollector";
 
 export const metadata: Metadata = {
   title: { default: "ELMOS 控制中心", template: "%s · ELMOS" },
@@ -12,6 +13,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="zh-CN">
       <body>
         <a className="skip-link" href="#main-content">跳到主要内容</a>
+        <UserActivityCollector />
         <AppShell>{children}</AppShell>
       </body>
     </html>

@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import {
+  authenticateSpringProxy,
   githubAppProxyConfiguration,
   proxyNotConfiguredResponse,
   springProxyConfiguration,
@@ -13,6 +14,9 @@ const maximumRequestBytes = 32_768;
 export async function POST(request: NextRequest) {
   const configuration = springProxyConfiguration();
   if (!configuration.configured) return proxyNotConfiguredResponse();
+  const authenticationFailure = authenticateSpringProxy(request);
+  if (authenticationFailure) return authenticationFailure;
+  const actorId = request.headers.get("x-elmos-actor") ?? "";
   let input: Record<string, unknown>;
   try {
     const body = await request.text();
@@ -32,13 +36,14 @@ export async function POST(request: NextRequest) {
   }
 
   if (input.sourceMode === "GITHUB_APP") {
-    return startFromGitHubApp(input);
+    return startFromGitHubApp(input, actorId);
   }
   return forward(`${configuration.engineBase}/engine/v1/spring-upgrades`, {
     method: "POST",
     headers: {
       "content-type": "application/json",
       "X-ELMOS-Organization-ID": configuration.organizationId,
+      "X-ELMOS-Actor-ID": actorId,
     },
     body: JSON.stringify({ ...input, organizationId: configuration.organizationId }),
     cache: "no-store",
@@ -46,7 +51,7 @@ export async function POST(request: NextRequest) {
   });
 }
 
-async function startFromGitHubApp(input: Record<string, unknown>) {
+async function startFromGitHubApp(input: Record<string, unknown>, actorId: string) {
   const configuration = githubAppProxyConfiguration();
   if (!configuration) {
     return Response.json(
@@ -105,6 +110,7 @@ async function startFromGitHubApp(input: Record<string, unknown>) {
         headers: {
           "content-type": "application/json",
           "X-ELMOS-Organization-ID": configuration.organizationId,
+          "X-ELMOS-Actor-ID": actorId,
         },
         body: JSON.stringify({
           repositoryId,
@@ -164,6 +170,7 @@ async function startFromGitHubApp(input: Record<string, unknown>) {
     headers: {
       "content-type": "application/json",
       "X-ELMOS-Organization-ID": configuration.organizationId,
+      "X-ELMOS-Actor-ID": actorId,
     },
     body: JSON.stringify({
       organizationId: configuration.organizationId,

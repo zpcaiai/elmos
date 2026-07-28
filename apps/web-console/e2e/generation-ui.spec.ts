@@ -1,5 +1,51 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
+import { strToU8, zipSync } from "fflate";
+
+function wordFixture(text: string): Buffer {
+  const document = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:body><w:p><w:r><w:t>${text}</w:t></w:r></w:p><w:sectPr /></w:body>
+</w:document>`;
+  return Buffer.from(zipSync({
+    "[Content_Types].xml": strToU8(`<?xml version="1.0" encoding="UTF-8"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>
+  <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
+</Types>`),
+    "_rels/.rels": strToU8(`<?xml version="1.0" encoding="UTF-8"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
+</Relationships>`),
+    "word/document.xml": strToU8(document),
+    "word/_rels/document.xml.rels": strToU8(`<?xml version="1.0" encoding="UTF-8"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"/>`),
+  }));
+}
+
+function pdfFixture(text: string): Buffer {
+  const escaped = text.replaceAll("\\", "\\\\").replaceAll("(", "\\(").replaceAll(")", "\\)");
+  const stream = `BT /F1 12 Tf 72 720 Td (${escaped}) Tj ET`;
+  const objects = [
+    "<< /Type /Catalog /Pages 2 0 R >>",
+    "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+    "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>",
+    "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+    `<< /Length ${Buffer.byteLength(stream, "latin1")} >>\nstream\n${stream}\nendstream`,
+  ];
+  let result = "%PDF-1.4\n";
+  const offsets = [0];
+  for (const [index, object] of objects.entries()) {
+    offsets.push(Buffer.byteLength(result, "latin1"));
+    result += `${index + 1} 0 obj\n${object}\nendobj\n`;
+  }
+  const xref = Buffer.byteLength(result, "latin1");
+  result += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`;
+  result += offsets.slice(1).map((offset) => `${String(offset).padStart(10, "0")} 00000 n \n`).join("");
+  result += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`;
+  return Buffer.from(result, "latin1");
+}
 
 test.describe("多语言项目生成 UI", () => {
   test("跨浏览器呈现、键盘焦点与自动可访问性检查", async ({ page }) => {
@@ -42,7 +88,46 @@ test.describe("多语言项目生成 UI", () => {
     await expect(
       page.getByRole("checkbox", { name: /我已审阅结构化需求/ }),
     ).toBeDisabled();
-    await expect(page.getByRole("button", { name: "执行并验证" })).toBeDisabled();
+    await expect(page.getByRole("button", { name: "一键生成、验证并归档" })).toBeDisabled();
+  });
+
+  test("简述、TXT、Markdown、Word、HTML、PDF 与 Skill 可合并为哈希绑定来源包", async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== "chromium", "多格式解析的代表旅程只执行一次");
+    await page.goto("/generation");
+    await page.getByLabel("审批者标识").fill("user:e2e");
+    await page.getByLabel("租户标识").fill("local-e2e");
+    await page.getByLabel("本地 Runner 令牌").fill("elmos-e2e-local-token-32-characters");
+    await page.getByLabel("项目说明").fill(
+      "实体: order; order字段: reference:string:required; 权限: admin:create/read/update/delete:order",
+    );
+    await page.getByLabel("仓库 Skills").fill("elmos-project-synthesis");
+    await page.getByLabel("上传需求文件").setInputFiles([
+      { name: "requirements.txt", mimeType: "text/plain", buffer: Buffer.from("Order query requirement") },
+      { name: "rules.md", mimeType: "text/markdown", buffer: Buffer.from("# Rules\nOrder status is reviewable.") },
+      { name: "journey.html", mimeType: "text/html", buffer: Buffer.from("<main><h1>Journey</h1><p>Create an order.</p><script>ignored()</script></main>") },
+      {
+        name: "architecture.docx",
+        mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        buffer: wordFixture("Word architecture requirement"),
+      },
+      { name: "acceptance.pdf", mimeType: "application/pdf", buffer: pdfFixture("PDF acceptance requirement") },
+    ]);
+
+    await page.getByRole("button", { name: "解析并合并来源" }).click();
+
+    const importedSources = page.locator(".generation-source-results");
+    await expect(importedSources.getByText(/7 个来源/)).toBeVisible({ timeout: 30_000 });
+    await expect(importedSources.getByText(/word-file · architecture.docx/)).toBeVisible();
+    await expect(importedSources.getByText(/pdf-file · acceptance.pdf/)).toBeVisible();
+    await expect(importedSources.getByText(/skill · elmos-project-synthesis/)).toBeVisible();
+    await expect(page.getByLabel("项目说明")).toHaveValue(/Word architecture requirement/);
+    await expect(page.getByLabel("项目说明")).toHaveValue(/PDF acceptance requirement/);
+    await page.getByRole("button", { name: "锁定生成计划" }).click();
+    await page.getByRole("button", { name: "分析并整理需求" }).click();
+    await expect(page.getByText("实体与字段 · 1")).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByText("开放问题 · 0")).toBeVisible();
   });
 
   test("企业配置只开放携带集成证据的单目标 PostgreSQL JWT/OIDC 组合", async ({ page }) => {
@@ -81,6 +166,54 @@ test.describe("多语言项目生成 UI", () => {
     await page.getByRole("button", { name: "锁定生成计划" }).click();
     await expect(page.locator(".preview-target-list").getByText("Go 1.25.0", { exact: true })).toBeVisible();
     await expect(page.locator(".preview-target-list").getByText("Python 3.12", { exact: true })).toHaveCount(0);
+  });
+
+  test("多实体生产需求会在批准前显示单实体目标边界", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== "chromium", "能力边界代表旅程只执行一次");
+    await page.route("**/api/generation/analyze", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        status: "REVIEW_REQUIRED",
+        analyzedAt: "2026-07-28T00:00:00Z",
+        requestDigest: "a".repeat(64),
+        request: {
+          schema_version: "1.1.0",
+          project: {
+            name: "inventory-service",
+            namespace: "io.elmos.inventory",
+            description: "multi entity",
+            kind: "api",
+            persistence: "postgresql",
+            auth_mode: "jwt",
+          },
+          entities: [
+            { singular: "product", plural: "products", fields: [] },
+            { singular: "inventory", plural: "inventories", fields: [] },
+          ],
+          relations: [],
+          business_rules: [],
+          permissions: [],
+          requirements: [],
+          acceptance_criteria: [],
+          open_questions: [],
+          targets: [{ language: "go", framework: "net/http", runtime: "1.25.0", port: 8085 }],
+        },
+      }),
+    }));
+
+    await page.goto("/generation");
+    await page.getByLabel("审批者标识").fill("user:e2e");
+    await page.getByLabel("租户标识").fill("local-e2e");
+    await page.getByLabel("本地 Runner 令牌").fill("elmos-e2e-local-token-32-characters");
+    await page.getByLabel("数据配置").selectOption("postgresql");
+    await page.locator("label.target-card").filter({ hasText: "Go 1.25.0" })
+      .locator('input[type="checkbox"]').check();
+    await page.getByRole("button", { name: "锁定生成计划" }).click();
+    await page.getByRole("button", { name: "分析并整理需求" }).click();
+
+    await expect(page.getByText(/Go\s*的 PostgreSQL Profile 只接受单实体/)).toBeVisible();
+    await expect(page.getByRole("checkbox", { name: /我已审阅结构化需求/ })).toBeDisabled();
   });
 
   test("刷新后可用精确身份与任务 UUID 恢复持久化任务", async ({ page }, testInfo) => {

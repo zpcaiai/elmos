@@ -1,0 +1,50 @@
+name: Commercial billing Neon migration
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "modules/persistence/src/main/resources/db/migration/**"
+      - "modules/persistence/pom.xml"
+      - "scripts/commercial/migrate_neon.sh"
+      - "scripts/commercial/configure_billing_runtime_role.sh"
+      - ".github/workflows/commercial-billing-neon.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: commercial-billing-neon-production
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    name: Validate and migrate approved Neon database
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    environment: commercial-production
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - name: Set up Java 21
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install --yes postgresql-client
+
+      - name: Apply strict Flyway migration
+        env:
+          ELMOS_COMMERCIAL_DATABASE_URL: ${{ secrets.ELMOS_COMMERCIAL_DATABASE_URL }}
+          ELMOS_COMMERCIAL_DATABASE_MIGRATION_USERNAME: ${{ secrets.ELMOS_COMMERCIAL_DATABASE_MIGRATION_USERNAME }}
+          ELMOS_COMMERCIAL_DATABASE_MIGRATION_PASSWORD: ${{ secrets.ELMOS_COMMERCIAL_DATABASE_MIGRATION_PASSWORD }}
+          ELMOS_COMMERCIAL_DATABASE_RUNTIME_USERNAME: ${{ vars.ELMOS_COMMERCIAL_DATABASE_RUNTIME_USERNAME }}
+          ELMOS_COMMERCIAL_DATABASE_EXPECTED_HOST: ${{ vars.ELMOS_COMMERCIAL_DATABASE_EXPECTED_HOST }}
+          ELMOS_COMMERCIAL_DATABASE_EXPECTED_DATABASE: ${{ vars.ELMOS_COMMERCIAL_DATABASE_EXPECTED_DATABASE }}
+          ELMOS_COMMERCIAL_DATABASE_MIGRATION_CONFIRMED: "true"
+        run: bash scripts/commercial/migrate_neon.sh

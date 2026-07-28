@@ -30,6 +30,80 @@ jobs:
       - name: Verify Maven reactor
         run: mvn -B -ntp verify
 
+  commercial-billing-integration:
+    name: Commercial billing PostgreSQL 17
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:17.5-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: elmos_billing
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d elmos_billing"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      ELMOS_BILLING_TEST_JDBC_URL: jdbc:postgresql://127.0.0.1:5432/elmos_billing
+      ELMOS_BILLING_TEST_DATABASE_USERNAME: postgres
+      ELMOS_BILLING_TEST_DATABASE_PASSWORD: postgres
+      ELMOS_BILLING_TEST_RUNTIME_USERNAME: elmos_billing_runtime
+      ELMOS_BILLING_TEST_RUNTIME_PASSWORD: runtime-test-password
+      ELMOS_BILLING_TEST_DISPOSABLE_CONFIRMED: "true"
+      ELMOS_COMMERCIAL_DATABASE_URL: jdbc:postgresql://127.0.0.1:5432/elmos_billing
+      ELMOS_COMMERCIAL_DATABASE_USERNAME: elmos_billing_runtime
+      ELMOS_COMMERCIAL_DATABASE_PASSWORD: runtime-test-password
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - name: Set up Java 21
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install --yes postgresql-client
+
+      - name: Compile persistence dependencies
+        run: mvn -B -ntp -q -DskipTests -pl modules/persistence -am install
+
+      - name: Replay and validate all Flyway migrations
+        run: >-
+          mvn -B -ntp -f modules/persistence/pom.xml
+          -Dflyway.url="$ELMOS_COMMERCIAL_DATABASE_URL"
+          -Dflyway.user=postgres
+          -Dflyway.password=postgres
+          flyway:migrate flyway:validate
+
+      - name: Provision least-privileged runtime role
+        env:
+          PGPASSWORD: postgres
+          ELMOS_COMMERCIAL_DATABASE_MIGRATION_USERNAME: postgres
+          ELMOS_COMMERCIAL_DATABASE_MIGRATION_PASSWORD: postgres
+          ELMOS_COMMERCIAL_DATABASE_RUNTIME_USERNAME: elmos_billing_runtime
+        run: |
+          psql "${ELMOS_COMMERCIAL_DATABASE_URL#jdbc:}" --username postgres \
+            --no-psqlrc --set ON_ERROR_STOP=1 \
+            --command "create role elmos_billing_runtime login nosuperuser nobypassrls password 'runtime-test-password'"
+          bash scripts/commercial/configure_billing_runtime_role.sh
+
+      - name: Verify billing persistence and API journeys
+        run: |
+          mvn -B -ntp -q -pl modules/persistence -am \
+            -Dtest=JdbcSelfServiceBillingLiveTest \
+            -Dsurefire.failIfNoSpecifiedTests=false test
+          mvn -B -ntp -q -pl apps/commercial-api -am \
+            -Dtest=SelfServiceBillingApiLiveTest \
+            -Dsurefire.failIfNoSpecifiedTests=false test
+
   dotnet-engine:
     name: .NET Engine
     runs-on: ubuntu-24.04

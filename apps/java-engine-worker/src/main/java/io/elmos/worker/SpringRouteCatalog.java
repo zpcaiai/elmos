@@ -149,7 +149,7 @@ final class SpringRouteCatalog {
                     "boot-2.x-gradle-to-boot-3.5.3-java-21",
                     "spring-boot-2-x-gradle-to-3-5-3",
                     "Spring Boot 2.x / Gradle",
-                    "1.5.0", "3.5.0", Set.of("8", "11", "17"), GRADLE_BUILD_TOOL,
+                    "2.0.0", "3.0.0", Set.of("8", "11", "17"), GRADLE_BUILD_TOOL,
                     TARGET_BOOT, TARGET_JAVA,
                     "", "",
                     REWRITE_SPRING, REWRITE_MAVEN_PLUGIN,

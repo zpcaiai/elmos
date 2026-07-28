@@ -14,7 +14,10 @@ subset.
 """
 from __future__ import annotations
 
+import hashlib
 import json
+import re
+import shutil
 from pathlib import Path
 from typing import Any
 
@@ -24,6 +27,7 @@ from .models import SUPPORTED_LANGUAGES, RouteError
 SCHEMA_VERSION = "1.0.0"
 CHECKPOINT_NAME = "batch-checkpoint.jsonl"
 REPORT_NAME = "batch-report.json"
+_UNIT_ID_PATTERN = re.compile(r"^WU-[0-9]{5}$")
 
 
 class UnitStatus:
@@ -66,6 +70,81 @@ def _case_file(cases_directory: Path, unit_id: str) -> Path | None:
     return candidate if candidate.is_file() else None
 
 
+def _stable_sha256(path: Path, error_code: str) -> str:
+    if path.is_symlink() or not path.is_file():
+        raise RouteError(f"{error_code}_MISSING_OR_UNSAFE")
+    before = path.stat(follow_symlinks=False)
+    content = path.read_bytes()
+    after = path.stat(follow_symlinks=False)
+    if (
+        before.st_size != after.st_size
+        or before.st_mtime_ns != after.st_mtime_ns
+        or len(content) != before.st_size
+    ):
+        raise RouteError(f"{error_code}_CHANGED_DURING_READ")
+    return hashlib.sha256(content).hexdigest()
+
+
+def _checkpoint_identity(
+    discovery: dict[str, Any],
+    result: dict[str, Any],
+    case_path: Path | None,
+) -> dict[str, Any]:
+    return {
+        "snapshot_sha256": discovery.get("snapshot_sha256"),
+        "route_id": discovery.get("route_id"),
+        "profile": discovery.get("profile"),
+        "source_path": result.get("source_path"),
+        "source_sha256": result.get("observed_sha256") or result.get("declared_sha256"),
+        "function_name": result.get("function_name"),
+        "verdict": result.get("verdict"),
+        "cases_sha256": (
+            _stable_sha256(case_path, "BEHAVIOR_CASES")
+            if case_path is not None
+            else None
+        ),
+    }
+
+
+def _recorded_artifact_intact(output: Path, recorded: dict[str, Any]) -> bool:
+    if recorded.get("status") != UnitStatus.PASSED:
+        return True
+    unit_id = str(recorded.get("id", ""))
+    target_path = str(recorded.get("target_path", ""))
+    expected = str(recorded.get("target_sha256", ""))
+    if (
+        not _UNIT_ID_PATTERN.fullmatch(unit_id)
+        or not target_path
+        or "/" in target_path
+        or "\\" in target_path
+        or not expected.startswith("sha256:")
+    ):
+        return False
+    unit_directory = (output / "units" / unit_id).resolve()
+    target = (unit_directory / target_path).resolve()
+    if (
+        unit_directory.is_symlink()
+        or target.is_symlink()
+        or target.parent != unit_directory
+        or not target.is_file()
+    ):
+        return False
+    return f"sha256:{_stable_sha256(target, 'CHECKPOINT_TARGET')}" == expected
+
+
+def _reset_unit_output(output: Path, unit_id: str) -> None:
+    if not _UNIT_ID_PATTERN.fullmatch(unit_id):
+        raise RouteError(f"WORK_UNIT_ID_UNSAFE:{unit_id}")
+    units = (output / "units").resolve()
+    candidate = (units / unit_id).resolve()
+    if candidate.parent != units:
+        raise RouteError(f"WORK_UNIT_OUTPUT_ESCAPES_BATCH:{unit_id}")
+    if candidate.exists():
+        if candidate.is_symlink() or not candidate.is_dir():
+            raise RouteError(f"WORK_UNIT_OUTPUT_UNSAFE:{unit_id}")
+        shutil.rmtree(candidate)
+
+
 def run_batch(
     discovery: dict[str, Any],
     repository_root: Path,
@@ -103,10 +182,23 @@ def run_batch(
         unit_id = str(result.get("id", ""))
         if not unit_id:
             raise RouteError("DISCOVERY_RESULT_ID_REQUIRED")
-        if unit_id in recorded:
-            outcomes.append({**recorded[unit_id], "resumed_from_checkpoint": True})
+        case_path = (
+            _case_file(cases_directory, unit_id)
+            if result.get("verdict") == "READY"
+            else None
+        )
+        identity = _checkpoint_identity(discovery, result, case_path)
+        prior = recorded.get(unit_id)
+        if (
+            prior is not None
+            and prior.get("checkpoint_identity") == identity
+            and _recorded_artifact_intact(output, prior)
+        ):
+            outcomes.append({**prior, "resumed_from_checkpoint": True})
             resumed += 1
             continue
+        if prior is not None:
+            _reset_unit_output(output, unit_id)
 
         entry: dict[str, Any]
         if result.get("verdict") != "READY":
@@ -115,20 +207,24 @@ def run_batch(
                 "source_path": result.get("source_path"),
                 "status": UnitStatus.SKIPPED_NOT_READY,
                 "reason": str(result.get("verdict", "UNKNOWN")),
+                "checkpoint_identity": identity,
             }
         else:
-            cases = _case_file(cases_directory, unit_id)
-            if cases is None:
+            source = (root / str(result["source_path"])).resolve()
+            if source.parent != root and not str(source).startswith(f"{root}/"):
+                raise RouteError(f"WORK_UNIT_PATH_ESCAPES_REPOSITORY:{result['source_path']}")
+            observed_source_sha256 = _stable_sha256(source, "WORK_UNIT_SOURCE")
+            if observed_source_sha256 != identity["source_sha256"]:
+                raise RouteError(f"WORK_UNIT_CONTENT_CHANGED:{result['source_path']}")
+            if case_path is None:
                 entry = {
                     "id": unit_id,
                     "source_path": result.get("source_path"),
                     "status": UnitStatus.SKIPPED_NO_CASES,
                     "reason": "No independent behavior-case corpus was supplied for this unit.",
+                    "checkpoint_identity": identity,
                 }
             else:
-                source = (root / str(result["source_path"])).resolve()
-                if not str(source).startswith(str(root)):
-                    raise RouteError(f"WORK_UNIT_PATH_ESCAPES_REPOSITORY:{result['source_path']}")
                 unit_output = output / "units" / unit_id
                 try:
                     report = migrate(
@@ -136,9 +232,13 @@ def run_batch(
                         source_language,
                         target_language,
                         str(result["function_name"]),
-                        cases,
+                        case_path,
                         unit_output,
                     )
+                    if _stable_sha256(source, "WORK_UNIT_SOURCE") != identity["source_sha256"]:
+                        raise RouteError(f"WORK_UNIT_CONTENT_CHANGED:{result['source_path']}")
+                    if _stable_sha256(case_path, "BEHAVIOR_CASES") != identity["cases_sha256"]:
+                        raise RouteError(f"BEHAVIOR_CASES_CHANGED:{unit_id}")
                     entry = {
                         "id": unit_id,
                         "source_path": result.get("source_path"),
@@ -148,6 +248,7 @@ def run_batch(
                         "target_path": report.get("target", {}).get("path"),
                         "target_sha256": report.get("target", {}).get("sha256"),
                         "evidence_path": f"units/{unit_id}/route-evidence.json",
+                        "checkpoint_identity": identity,
                     }
                 except (RouteError, OSError, ValueError) as error:
                     # A unit failure is recorded, never swallowed, and never
@@ -158,6 +259,7 @@ def run_batch(
                         "status": UnitStatus.FAILED,
                         "function_name": result.get("function_name"),
                         "reason": str(error)[:300] or type(error).__name__,
+                        "checkpoint_identity": identity,
                     }
         _append_checkpoint(checkpoint, entry)
         outcomes.append(entry)

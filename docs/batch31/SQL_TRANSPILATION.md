@@ -11,7 +11,7 @@ ELMOS provides a project-usable, typed SQL transpilation pipeline for seven exac
 | MySQL 8.4.10 LTS Community | `mysql` | syntax experimental | `NOT_RUN` |
 | SQL Server 2022 Enterprise CU26 | `tsql` | licensed runtime required | `NOT_RUN` |
 | Oracle AI Database 26ai Enterprise | `oracle` | licensed runtime required | `NOT_RUN` |
-| SQLite 3.53.3 | `sqlite` | syntax experimental | `NOT_RUN` |
+| SQLite 3.53.3 | `sqlite` | local Runner ready | generated per execution |
 | DuckDB 1.5.4 | `duckdb` | local Runner ready | generated per execution |
 
 The parser/emitter dependency is pinned to SQLGlot 30.13.0. The implementation never uses regular-expression replacement as the transformation core.
@@ -81,6 +81,54 @@ The request and result contracts are:
 
 - `schemas/batch31/sql-transpilation-request.schema.json`
 - `schemas/batch31/sql-transpilation-result.schema.json`
+- `schemas/batch31/sql-runtime-gate-result.schema.json`
+
+## Exact local runtime matrix
+
+The checked-in Runner configuration is
+`engines/database-data-engine/sql-transpiler/src/elmos_sql_transpiler/data/local-runners-v1.json`.
+It allows disposable execution only for the exact profiles available on the
+declared `darwin-arm64` host:
+
+| Profile | Runtime tuple | Isolation |
+|---|---|---|
+| PostgreSQL 17.5 | server 17.5 + `psycopg-binary` 3.3.4 | temporary `initdb`, loopback ephemeral port |
+| SQLite 3.53.3 | Python 3.14.6 stdlib | temporary database file, no network |
+| DuckDB 1.5.4 | `duckdb-python` 1.5.4 | temporary database file, no network |
+
+The matrix contains six directional routes. Each route independently provisions
+source and target databases, loads the same 2,000-row deterministic synthetic
+fixture and runs:
+
+- ordered row/value/type/cardinality reconciliation;
+- timestamp, null, aggregate, window, pagination and duplicate semantics;
+- duplicate-primary-key error normalization;
+- explicit rollback and statement-failure atomicity;
+- a bounded two-connection same-row write-conflict schedule;
+- real engine `EXPLAIN` output;
+- three warmups plus 15 timed samples per query with a 75 ms local p95 SLO.
+
+Run one route or the complete local matrix:
+
+```bash
+uv run elmos-sql-transpiler runner-capabilities
+
+uv run elmos-sql-transpiler verify-route \
+  postgresql-17.5 \
+  sqlite-3.53.3 \
+  /tmp/elmos-postgresql-to-sqlite
+
+uv run elmos-sql-transpiler verify-local-matrix \
+  /tmp/elmos-local-sql-matrix
+```
+
+On 2026-07-28, the local matrix executed all 6/6 routes successfully with
+`resultEquivalence=PASSED` and `localDecision=READY_FOR_EXTERNAL_GATE`.
+This is content-addressed local engineering evidence only. PostgreSQL 18.4,
+MySQL 8.4.10 LTS, SQL Server 2022 CU26 and Oracle 26ai remain blocked locally
+and their runtime evidence remains `NOT_RUN`. Independent holdout execution,
+representative production-like execution, independent verification and Batch
+31 certification also remain `NOT_RUN` / `NOT_CERTIFIED`.
 
 ## Next exact profiles
 

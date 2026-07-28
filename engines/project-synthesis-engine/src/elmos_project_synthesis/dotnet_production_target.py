@@ -730,7 +730,15 @@ def render_dotnet_production(request: SynthesisRequest, port: int) -> dict[str, 
         ),
         "scripts/local_runtime.py": render_local_runtime(
             auth_mode=request.auth_mode,
-            app_command=["dotnet", "run", "-c", "Release", "--project", f"src/{api_project}/{api_project}.csproj"],
+            app_command=[
+                "dotnet",
+                "run",
+                "-c",
+                "Release",
+                "--no-launch-profile",
+                "--project",
+                f"src/{api_project}/{api_project}.csproj",
+            ],
             verify_command=[
                 "dotnet",
                 "test",

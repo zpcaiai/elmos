@@ -9,23 +9,45 @@
     "catalogVersion",
     "status",
     "currency",
+    "effectiveFrom",
+    "effectiveUntil",
+    "authoritativeSource",
     "sellerLegalEntityStatus",
     "taxStatus",
+    "taxPresentation",
     "paymentStatus",
+    "paymentProvider",
+    "costValidationStatus",
     "overagePolicy",
+    "allowanceScope",
     "plans",
+    "tokenClasses",
     "creditRates",
     "limitations"
   ],
   "properties": {
-    "schemaVersion": { "const": "1.0.0" },
+    "schemaVersion": { "const": "1.1.0" },
     "catalogVersion": { "type": "string", "minLength": 1 },
     "status": { "enum": ["DRAFT", "PUBLISHED", "SUPERSEDED"] },
     "currency": { "const": "CNY" },
+    "effectiveFrom": { "type": "string", "format": "date-time" },
+    "effectiveUntil": {
+      "oneOf": [
+        { "type": "string", "format": "date-time" },
+        { "type": "null" }
+      ]
+    },
+    "authoritativeSource": { "type": "string", "minLength": 1 },
     "sellerLegalEntityStatus": { "enum": ["NOT_CONFIGURED", "CONFIGURED"] },
     "taxStatus": { "enum": ["NOT_CONFIGURED", "CONFIGURED"] },
+    "taxPresentation": {
+      "enum": ["UNSPECIFIED", "TAX_INCLUSIVE", "TAX_EXCLUSIVE"]
+    },
     "paymentStatus": { "enum": ["NOT_CONFIGURED", "CONFIGURED"] },
+    "paymentProvider": { "const": "STRIPE_CHECKOUT" },
+    "costValidationStatus": { "enum": ["NOT_RUN", "VALIDATED"] },
     "overagePolicy": { "const": "HARD_STOP_NO_AUTOMATIC_CHARGE" },
+    "allowanceScope": { "enum": ["ORGANIZATION", "ACTOR"] },
     "plans": {
       "type": "array",
       "minItems": 3,
@@ -36,6 +58,13 @@
       "type": "array",
       "minItems": 1,
       "items": { "$ref": "#/$defs/creditRate" }
+    },
+    "tokenClasses": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": { "$ref": "#/$defs/tokenClass" },
+      "uniqueItems": true
     },
     "limitations": {
       "type": "array",
@@ -58,6 +87,7 @@
         "description",
         "priceFen",
         "billingLabel",
+        "billingPeriod",
         "effectiveMonthlyFen",
         "termDays",
         "allowanceWindow",
@@ -69,6 +99,7 @@
         "concurrentJobs",
         "artifactRetentionDays",
         "featured",
+        "trialEligibilityPolicy",
         "features"
       ],
       "properties": {
@@ -80,6 +111,7 @@
         "description": { "type": "string", "minLength": 1 },
         "priceFen": { "$ref": "#/$defs/integerQuantity" },
         "billingLabel": { "type": "string", "minLength": 1 },
+        "billingPeriod": { "enum": ["TRIAL", "MONTH", "YEAR"] },
         "effectiveMonthlyFen": { "$ref": "#/$defs/integerQuantity" },
         "termDays": { "type": "integer", "minimum": 1 },
         "allowanceWindow": { "enum": ["TRIAL_TERM", "MONTHLY"] },
@@ -91,6 +123,9 @@
         "concurrentJobs": { "type": "integer", "minimum": 1 },
         "artifactRetentionDays": { "type": "integer", "minimum": 1 },
         "featured": { "type": "boolean" },
+        "trialEligibilityPolicy": {
+          "enum": ["ONE_PER_VERIFIED_ORGANIZATION", "NOT_APPLICABLE"]
+        },
         "features": {
           "type": "array",
           "minItems": 1,
@@ -101,12 +136,25 @@
     "creditRate": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["operationKey", "label", "credits", "unit"],
+      "required": ["operationKey", "label", "credits", "unit", "meterVersion"],
       "properties": {
         "operationKey": { "type": "string", "minLength": 1 },
         "label": { "type": "string", "minLength": 1 },
         "credits": { "type": "integer", "minimum": 1 },
-        "unit": { "type": "string", "minLength": 1 }
+        "unit": { "type": "string", "minLength": 1 },
+        "meterVersion": { "const": "platform-credit-v1" }
+      }
+    },
+    "tokenClass": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tokenClass", "unit", "providerReceiptRequired"],
+      "properties": {
+        "tokenClass": {
+          "enum": ["INPUT", "OUTPUT", "CACHE_READ", "CACHE_WRITE"]
+        },
+        "unit": { "const": "token" },
+        "providerReceiptRequired": { "const": true }
       }
     }
   }

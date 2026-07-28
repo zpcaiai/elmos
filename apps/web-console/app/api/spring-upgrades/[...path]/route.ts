@@ -1,6 +1,10 @@
 import { NextRequest } from "next/server";
 import { springRouteCatalogFallback } from "../../../lib/springRoutes";
-import { proxyNotConfiguredResponse, springProxyConfiguration } from "../proxyPolicy";
+import {
+  authenticateSpringProxy,
+  proxyNotConfiguredResponse,
+  springProxyConfiguration,
+} from "../proxyPolicy";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -12,8 +16,8 @@ const allowedPath = new RegExp(
 
 type Context = { params: Promise<{ path: string[] }> };
 
-export async function GET(_request: NextRequest, context: Context) {
-  return proxy("GET", context);
+export async function GET(request: NextRequest, context: Context) {
+  return proxy("GET", context, request);
 }
 
 export async function POST(request: NextRequest, context: Context) {
@@ -53,7 +57,13 @@ async function proxy(method: "GET" | "POST", context: Context, request?: NextReq
       { status: 404 },
     );
   }
+  if (path !== "capabilities") {
+    const authenticationFailure = authenticateSpringProxy(request!);
+    if (authenticationFailure) return authenticationFailure;
+  }
   const headers = new Headers({ "X-ELMOS-Organization-ID": configuration.organizationId });
+  const actor = request?.headers.get("x-elmos-actor");
+  if (actor) headers.set("X-ELMOS-Actor-ID", actor);
   let body: string | undefined;
   if (method === "POST") {
     headers.set("content-type", "application/json");

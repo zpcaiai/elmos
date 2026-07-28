@@ -17,8 +17,8 @@ sys.path.insert(
     str(DEFAULT_REPOSITORY_ROOT / "engines" / "polyglot-route-engine" / "src"),
 )
 
-from elmos_polyglot_route.engine import migrate
-from elmos_polyglot_route.models import SUPPORTED_LANGUAGES, Language
+from elmos_polyglot_route.engine import migrate  # noqa: E402
+from elmos_polyglot_route.models import SUPPORTED_LANGUAGES, Language  # noqa: E402
 
 VERSIONS = {
     "java": ["Java 21.0.11", "JDK Compiler Tree API"],
@@ -74,7 +74,7 @@ def configure_route(repo: Path, source: Language, target: Language) -> Path:
         "schema_version": 1,
         "route_key": route_key,
         "version": "1.0.0",
-        "status": "experimental",
+        "status": "limited",
         "owner": "ELMOS Migration Platform",
         "maintenance_owner": "ELMOS Polyglot Route Maintainers",
         "review_date": "2026-10-26",
@@ -113,10 +113,11 @@ def configure_route(repo: Path, source: Language, target: Language) -> Path:
         "capabilities": [
             {
                 "id": "typed-pure-function-v1",
-                "status": "experimental",
+                "status": "supported",
                 "strategy": "compiler-backed-semantic-ir",
-                "reason": "Real native analysis, target compilation, and behavior replay pass locally; "
-                "independent certification is NOT_RUN.",
+                "reason": "Supported only inside typed-pure-function-v1 after native analysis, "
+                "target compilation, separate holdout, and representative behavior replay. "
+                "Independent and external certification remain NOT_RUN.",
                 "evidence_refs": [
                     "certification/local-development-evidence.json",
                     "certification/local-holdout-evidence.json",
@@ -125,14 +126,14 @@ def configure_route(repo: Path, source: Language, target: Language) -> Path:
             },
             {
                 "id": "primitive-types",
-                "status": "experimental",
+                "status": "supported",
                 "strategy": "exact-type-mapping",
                 "reason": "Integer, number, boolean, and string are mapped explicitly in the bounded profile.",
                 "evidence_refs": ["mappings/types.json"],
             },
             {
                 "id": "if-return-control-flow",
-                "status": "experimental",
+                "status": "supported",
                 "strategy": "typed-structured-lowering",
                 "reason": "If and return statements are lowered from compiler-backed syntax trees.",
                 "evidence_refs": ["lowering/profile.json"],
@@ -209,6 +210,14 @@ def populate_corpus(route: Path, fixtures: Path, source: Language) -> None:
                 "cases_file": "cases.json",
                 "rule_authoring_input": corpus == "development",
                 "independent": corpus != "development",
+                "evidence_class": (
+                    "development-fixture"
+                    if corpus == "development"
+                    else "independent-holdout"
+                    if corpus == "holdout"
+                    else "representative-bounded-fixture"
+                ),
+                "customer_repository": False,
             },
         )
 
@@ -226,6 +235,8 @@ def execute_route(repo: Path, fixtures: Path, source: Language, target: Language
             report["executor"] = "local-toolchain"
             report["independent_verifier"] = "NOT_RUN"
             report["authorization"] = "local-engineering-validation"
+            report["route_maturity"] = "LIMITED"
+            report["certification_status"] = "NOT_CERTIFIED"
             reports[corpus] = report
             evidence_name = {
                 "development": "local-development-evidence.json",
@@ -237,6 +248,7 @@ def execute_route(repo: Path, fixtures: Path, source: Language, target: Language
         "schema_version": 1,
         "route_key": f"{source}-to-{target}",
         "route_version": "1.0.0",
+        "route_maturity": "LIMITED",
         "execution_status": "PASSED_LOCAL",
         "metrics": {
             "build_green_rate": 1.0,
@@ -257,6 +269,7 @@ def execute_route(repo: Path, fixtures: Path, source: Language, target: Language
         "notes": [
             "The exact typed-pure-function-v1 profile passed native source analysis, "
             "native target compilation, and behavior replay.",
+            "The physically separate holdout and representative bounded fixture were not used to author route rules.",
             "Independent verifier, customer repository, framework, database, production, "
             "and external certification evidence remain NOT_RUN.",
         ],
@@ -268,7 +281,9 @@ def execute_route(repo: Path, fixtures: Path, source: Language, target: Language
             "schema_version": 1,
             "route_key": f"{source}-to-{target}",
             "route_version": "1.0.0",
-            "status": "EXPERIMENTAL",
+            "status": "limited",
+            "certification_decision": "NOT_CERTIFIED",
+            "declared_scope": "typed-pure-function-v1",
             "issued_at": datetime.now(UTC).isoformat(),
             "next_review_at": "2026-10-26T00:00:00+00:00",
             "metrics": evidence["metrics"],
@@ -283,20 +298,24 @@ def execute_route(repo: Path, fixtures: Path, source: Language, target: Language
     (route / "certification" / "gate-report.md").write_text(
         f"# {source}-to-{target} route gate\n\n"
         "- Local bounded profile: `PASSED`\n"
-        "- Route status: `experimental`\n"
+        "- Route status: `limited`\n"
         "- Native source analyzer: `PASSED`\n"
         "- Native target compiler/runtime: `PASSED`\n"
         "- Development, holdout, and representative behavior: `PASSED`\n"
         "- Independent verifier: `NOT_RUN`\n"
         "- External/customer certification: `NOT_RUN`\n\n"
-        "The route is usable only for `typed-pure-function-v1`. Unsupported semantics fail closed.\n",
+        "The route is supported only for `typed-pure-function-v1`. Repository orchestration "
+        "may process many eligible work units, but unsupported units keep the repository result "
+        "`PARTIAL`; unsupported semantics fail closed.\n",
         encoding="utf-8",
     )
     (route / "README.md").write_text(
         f"# {source} to {target}\n\n"
         "Compiler-backed directed route for the exact `typed-pure-function-v1` profile. "
         "The reverse direction is a separate route. Native parsing, target compilation, "
-        "and three local behavior corpora pass; independent external certification remains `NOT_RUN`.\n",
+        "and three local behavior corpora pass, so the bounded route is `limited`. "
+        "Whole-repository orchestration never broadens the semantic profile; independent "
+        "and external certification remain `NOT_RUN`.\n",
         encoding="utf-8",
     )
 
@@ -309,7 +328,7 @@ def write_inventory(repo: Path) -> None:
             "source_version": SHORT_VERSIONS[source],
             "target": target,
             "target_version": SHORT_VERSIONS[target],
-            "status": "experimental",
+            "status": "limited",
             "local_execution_status": "PASSED_LOCAL",
             "independent_verification_status": "NOT_RUN",
             "external_certification_status": "NOT_RUN",
@@ -321,10 +340,12 @@ def write_inventory(repo: Path) -> None:
     write_json(
         repo / "routes" / "inventory.json",
         {
-            "schema_version": "1.1.0",
+            "schema_version": "1.2.0",
             "route_count": len(routes),
-            "experimental_route_count": len(routes),
-            "supported_route_count": 0,
+            "research_route_count": 0,
+            "experimental_route_count": 0,
+            "limited_route_count": len(routes),
+            "blocked_route_count": 0,
             "certified_route_count": 0,
             "local_execution_evidence": "PASSED_LOCAL",
             "independent_verification_evidence": "NOT_RUN",
@@ -350,7 +371,7 @@ def main() -> int:
     repo = Path(args.repo_root).resolve()
     if args.inventory_only:
         write_inventory(repo)
-        print("PASS: exact experimental route inventory updated")
+        print("PASS: exact limited route inventory updated")
         return 0
     fixtures = repo / "engines" / "polyglot-route-engine" / "fixtures"
     for source in SUPPORTED_LANGUAGES:
@@ -368,7 +389,7 @@ def main() -> int:
                 if completed.returncode != 0:
                     return completed.returncode
     write_inventory(repo)
-    print("PASS: 12 directed polyglot routes completed with local experimental evidence")
+    print("PASS: 12 directed polyglot routes completed with limited local evidence")
     return 0
 
 

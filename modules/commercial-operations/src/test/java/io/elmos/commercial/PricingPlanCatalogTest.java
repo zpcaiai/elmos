@@ -15,6 +15,10 @@ class PricingPlanCatalogTest {
         assertThrows(UnsupportedOperationException.class, () -> catalog.plans().clear());
         assertThrows(UnsupportedOperationException.class, () -> catalog.meters().clear());
         assertThrows(UnsupportedOperationException.class, () -> catalog.plans().getFirst().features().clear());
+        assertEquals("contracts/pricing-catalog-schema/elmos-cny-self-serve-v1.json",
+                catalog.authoritativeSource());
+        assertEquals(PricingPlanCatalog.AllowanceScope.ORGANIZATION, catalog.allowanceScope());
+        assertEquals(4, catalog.tokenClasses().size());
     }
 
     @Test
@@ -38,6 +42,7 @@ class PricingPlanCatalogTest {
         assertEquals(new BigDecimal("9000"), annual.annualCreditCeiling());
         assertEquals("CNY", annual.price().currency());
         assertFalse(annual.allowance().rollover());
+        assertEquals(PricingPlanCatalog.BillingPeriod.YEAR, annual.billingPeriod());
     }
 
     @Test
@@ -46,6 +51,7 @@ class PricingPlanCatalogTest {
 
         assertEquals(PricingPlanCatalog.CatalogStatus.DRAFT, catalog.status());
         assertEquals("NOT_CONFIGURED", catalog.paymentStatus());
+        assertEquals("NOT_RUN", catalog.costValidationStatus());
         assertThrows(IllegalStateException.class, PricingPlanCatalog::requireOrderable);
     }
 
@@ -54,7 +60,7 @@ class PricingPlanCatalogTest {
         var catalog = PricingPlanCatalog.chinaSelfServeDraft();
 
         assertTrue(catalog.limitations().stream()
-                .anyMatch(value -> value.contains("not treated as zero")));
+                .anyMatch(value -> value.contains("未对账") && value.contains("零用量")));
         assertEquals("HARD_STOP_NO_AUTOMATIC_CHARGE", catalog.overagePolicy());
     }
 

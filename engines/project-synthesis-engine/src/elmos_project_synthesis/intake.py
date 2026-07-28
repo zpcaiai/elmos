@@ -352,10 +352,13 @@ def create_draft(
     project_kind: str = "api",
     persistence: str = "in-memory",
     auth_mode: str = "none",
+    requirement_sources: Iterable[Mapping[str, Any]] = (),
+    source_bundle_sha256: str | None = None,
 ) -> dict[str, Any]:
     project_name = slugify(name)
     normalized_description = project_description(description)
     normalized_namespace = project_namespace(namespace or f"com.example.{project_name.replace('-', '')}")
+    normalized_sources = [dict(source) for source in requirement_sources]
     if project_kind not in SUPPORTED_PROJECT_KINDS:
         raise ValueError(f"PROJECT_KIND_INVALID:{project_kind}")
     if persistence not in SUPPORTED_PERSISTENCE:
@@ -521,6 +524,11 @@ def create_draft(
 
     requirements: list[dict[str, Any]] = []
     criteria: list[dict[str, Any]] = []
+    imported_source_refs = (
+        [{"source_id": str(source["id"]), "location": "imported-requirements"} for source in normalized_sources]
+        if normalized_sources
+        else [{"source_id": "natural-language-request", "location": "description"}]
+    )
     for index, entity_spec in enumerate(normalized_entities, 1):
         singular = str(entity_spec["singular"])
         requirement_id = f"REQ-CRUD-{index:03d}"
@@ -534,7 +542,7 @@ def create_draft(
                 "status": "approved",
                 "priority": "must",
                 "risk": "medium",
-                "source_refs": [{"source_id": "natural-language-request", "location": "description"}],
+                "source_refs": imported_source_refs,
             }
         )
         criteria.append(
@@ -648,6 +656,9 @@ def create_draft(
         "open_questions": questions,
         "approval": {"status": "DRAFT"},
     }
+    if normalized_sources:
+        draft["requirement_sources"] = normalized_sources
+        draft["source_bundle_sha256"] = source_bundle_sha256
     SynthesisRequest.from_mapping(draft, require_approval=False)
     return draft
 

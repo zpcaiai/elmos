@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-web-console-account-usage",
+  "version": "1.0.0",
+  "mode": "modernization",
+  "status": "experimental",
+  "owner": "elmos-web-console",
+  "maintenance_owner": "elmos-web-console-maintainers",
+  "ux_owner": "elmos-product-design",
+  "accessibility_owner": "elmos-accessibility-review",
+  "source": {
+    "stack": "nextjs-app-router",
+    "versions": ["16.2.10"],
+    "language": "typescript",
+    "language_versions": ["5.9.2"],
+    "runtime": "nodejs",
+    "runtime_versions": ["22"],
+    "renderer": ["react-19.2.7-client-hydration"],
+    "identity": ["local-runner-explicit-bearer"],
+    "i18n": ["zh-CN"]
+  },
+  "target": {
+    "stack": "nextjs-app-router",
+    "versions": ["16.2.10"],
+    "language": "typescript",
+    "language_versions": ["5.9.2"],
+    "runtime": "nodejs",
+    "runtime_versions": ["22"],
+    "renderer": ["react-19.2.7-client-hydration"],
+    "identity": ["server-bound-oidc-session-bff"],
+    "i18n": ["zh-CN"]
+  },
+  "scope": {
+    "journeys": [
+      "current-usage",
+      "reserved-usage",
+      "usage-history",
+      "usage-forecast",
+      "alert-preferences",
+      "csv-export"
+    ],
+    "routes": ["/pricing", "/api/usage/current", "/api/usage/history", "/api/usage/alerts", "/api/usage/export"],
+    "component_roots": ["apps/web-console/app/pricing", "apps/web-console/app/api/usage"],
+    "excluded": ["production OIDC enrollment", "Stripe hosted checkout", "email delivery"]
+  },
+  "gates": {
+    "build": "required",
+    "identity_permission": "required",
+    "p0_journeys": "required",
+    "accessibility": "required",
+    "holdout": "required"
+  }
+}

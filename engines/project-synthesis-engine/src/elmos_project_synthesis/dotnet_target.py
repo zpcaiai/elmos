@@ -384,7 +384,8 @@ def render_dotnet(request: SynthesisRequest, port: int) -> dict[str, str]:
             test:
             \t$(DOTNET) test {project_class}.slnx
             run:
-            \tASPNETCORE_URLS=http://localhost:{port} $(DOTNET) run --project src/{api_project}/{api_project}.csproj
+            \tASPNETCORE_URLS=http://localhost:{port} $(DOTNET) run --no-launch-profile \\
+            \t\t--project src/{api_project}/{api_project}.csproj
             publish:
             \t$(DOTNET) publish src/{api_project}/{api_project}.csproj -c Release
             """
@@ -397,7 +398,8 @@ def render_dotnet(request: SynthesisRequest, port: int) -> dict[str, str]:
             commands=(
                 f"dotnet restore {project_class}.slnx --locked-mode\n"
                 f"dotnet test {project_class}.slnx\n"
-                f"ASPNETCORE_URLS=http://localhost:{port} dotnet run --project src/{api_project}/{api_project}.csproj"
+                f"ASPNETCORE_URLS=http://localhost:{port} dotnet run --no-launch-profile "
+                f"--project src/{api_project}/{api_project}.csproj"
             ),
         ),
     }

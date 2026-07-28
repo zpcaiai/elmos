@@ -13,6 +13,21 @@ spring:
   mvc:
     problemdetails:
       enabled: true
+elmos:
+  identity:
+    issuer-uri: ${ELMOS_OIDC_ISSUER_URI:}
+    jwk-set-uri: ${ELMOS_OIDC_JWK_SET_URI:}
+    audience: ${ELMOS_OIDC_AUDIENCE:}
+  billing:
+    live-enabled: ${ELMOS_BILLING_LIVE_ENABLED:false}
+    email-alerts-enabled: ${ELMOS_USAGE_EMAIL_ALERTS_ENABLED:false}
+    stripe:
+      secret-key: ${ELMOS_STRIPE_SECRET_KEY:}
+      webhook-secret: ${ELMOS_STRIPE_WEBHOOK_SECRET:}
+      monthly-price-id: ${ELMOS_STRIPE_MONTHLY_PRICE_ID:}
+      annual-price-id: ${ELMOS_STRIPE_ANNUAL_PRICE_ID:}
+      success-url: ${ELMOS_STRIPE_SUCCESS_URL:}
+      cancel-url: ${ELMOS_STRIPE_CANCEL_URL:}
 management:
   endpoint:
     health:

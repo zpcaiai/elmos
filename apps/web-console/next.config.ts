@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import path from "node:path";
 
 const configuredDistDir = process.env.ELMOS_NEXT_DIST_DIR;
 if (
@@ -11,6 +12,13 @@ if (
 
 const nextConfig: NextConfig = {
   distDir: configuredDistDir ?? ".next",
+  serverExternalPackages: ["html-to-text", "mammoth", "pdfjs-dist"],
+  experimental: {
+    externalDir: true,
+  },
+  turbopack: {
+    root: path.resolve(__dirname, "../.."),
+  },
 };
 
 export default nextConfig;

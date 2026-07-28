@@ -4,6 +4,12 @@
     "certification/local-product-journey-evidence.json",
     "certification/public-reference-route-evidence.json"
   ],
+  "certification_decision": "NOT_CERTIFIED",
+  "declared_scope": [
+    "web",
+    "configuration",
+    "lifecycle"
+  ],
   "gate_results": {
     "authorized_customer_repository": "NOT_RUN",
     "customer_holdout": "NOT_RUN",
@@ -30,12 +36,12 @@
     "startup_pass_rate": 1.0
   },
   "pack_key": "spring-boot-2-7-18-to-3-5-3",
-  "pack_version": "0.2.0",
+  "pack_version": "0.3.0",
   "residual_risks": [
     "The public representative exercises resilience/web behavior; the public holdout exercises security, persistence and validation startup/build behavior.",
     "Messaging, production databases and production transaction providers remain conditional.",
     "GitHub App private execution, customer repository, customer holdout, rootless Runner and external independent review remain NOT_RUN."
   ],
   "schema_version": 1,
-  "status": "experimental"
+  "status": "limited"
 }

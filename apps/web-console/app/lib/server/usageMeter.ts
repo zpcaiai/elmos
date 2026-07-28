@@ -279,6 +279,7 @@ function measure(consumed: number, limit: number) {
   const remaining = Math.max(0, limit - consumed);
   return {
     consumed,
+    reserved: 0,
     limit,
     remaining,
     usageBps: Math.min(10_000, Math.floor((consumed * 10_000) / limit)),

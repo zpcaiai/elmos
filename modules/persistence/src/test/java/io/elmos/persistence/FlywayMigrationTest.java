@@ -35,7 +35,7 @@ class FlywayMigrationTest {
     @Container static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:17.5-alpine");
     @Test void createsAllAuthoritativeSchemasThroughProductBatchThirtyEightAndMigrationPackAdmission() {
         var flyway=Flyway.configure().dataSource(POSTGRES.getJdbcUrl(),POSTGRES.getUsername(),POSTGRES.getPassword()).load();
-        assertEquals(48,flyway.migrate().migrationsExecuted);
+        assertEquals(49,flyway.migrate().migrationsExecuted);
         var jdbc=org.springframework.jdbc.core.simple.JdbcClient.create(new org.springframework.jdbc.datasource.DriverManagerDataSource(POSTGRES.getJdbcUrl(),POSTGRES.getUsername(),POSTGRES.getPassword()));
         assertTrue(jdbc.sql("select count(*) from information_schema.tables where table_schema='public'").query(Integer.class).single() >= 1240);
         assertEquals(1, jdbc.sql("select count(*) from information_schema.tables where table_schema='public' and table_name='github_app_onboarding_states'").query(Integer.class).single());

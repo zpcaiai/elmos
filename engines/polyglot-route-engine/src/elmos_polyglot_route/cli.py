@@ -11,10 +11,11 @@ from .batch import run_batch
 from .discovery import discover_repository, write_report
 from .engine import migrate
 from .models import SUPPORTED_LANGUAGES, RouteError
+from .pipeline import run_repository_pipeline
 from .repository import plan_repository
 from .single_unit import check_only, emit_only
 
-SUBCOMMANDS = ("inventory", "discover", "batch", "assemble", "emit", "check")
+SUBCOMMANDS = ("inventory", "discover", "batch", "assemble", "repository-pipeline", "emit", "check")
 
 
 def _migration_parser() -> argparse.ArgumentParser:
@@ -77,6 +78,17 @@ def _assemble_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Also run a real whole-project build/compile check after assembling.",
     )
+    return parser
+
+
+def _repository_pipeline_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(prog="elmos-polyglot-route repository-pipeline")
+    parser.add_argument("--repository", type=Path, required=True)
+    parser.add_argument("--repository-ref", required=True)
+    parser.add_argument("--source-language", choices=SUPPORTED_LANGUAGES, required=True)
+    parser.add_argument("--target-language", choices=SUPPORTED_LANGUAGES, required=True)
+    parser.add_argument("--cases-directory", type=Path, required=True)
+    parser.add_argument("--output", type=Path, required=True)
     return parser
 
 
@@ -168,6 +180,18 @@ def main(argv: list[str] | None = None) -> int:
             if assemble_args.verify:
                 manifest = verify_assembled_project(manifest["target_language"], assemble_args.destination)
             return _emit(manifest)
+
+        if subcommand == "repository-pipeline":
+            pipeline_args = _repository_pipeline_parser().parse_args(remainder)
+            report = run_repository_pipeline(
+                pipeline_args.repository,
+                pipeline_args.repository_ref,
+                pipeline_args.source_language,
+                pipeline_args.target_language,
+                pipeline_args.cases_directory,
+                pipeline_args.output,
+            )
+            return _emit(report)
 
         if subcommand == "emit":
             emit_args = _emit_parser().parse_args(remainder)

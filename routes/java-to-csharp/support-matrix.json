@@ -7,8 +7,8 @@
         "certification/local-representative-evidence.json"
       ],
       "id": "typed-pure-function-v1",
-      "reason": "Real native analysis, target compilation, and behavior replay pass locally; independent certification is NOT_RUN.",
-      "status": "experimental",
+      "reason": "Supported only inside typed-pure-function-v1 after native analysis, target compilation, separate holdout, and representative behavior replay. Independent and external certification remain NOT_RUN.",
+      "status": "supported",
       "strategy": "compiler-backed-semantic-ir"
     },
     {
@@ -17,7 +17,7 @@
       ],
       "id": "primitive-types",
       "reason": "Integer, number, boolean, and string are mapped explicitly in the bounded profile.",
-      "status": "experimental",
+      "status": "supported",
       "strategy": "exact-type-mapping"
     },
     {
@@ -26,7 +26,7 @@
       ],
       "id": "if-return-control-flow",
       "reason": "If and return statements are lowered from compiler-backed syntax trees.",
-      "status": "experimental",
+      "status": "supported",
       "strategy": "typed-structured-lowering"
     },
     {

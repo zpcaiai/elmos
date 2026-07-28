@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import ast
+import hashlib
 import json
 import os
 import re
@@ -75,6 +76,77 @@ def multi_entity_request(*, languages: tuple[str, ...] = SUPPORTED_LANGUAGES) ->
         languages=languages,
     )
     return approve_request(draft, actor="user:test")
+
+
+def test_imported_requirement_sources_are_hash_bound_and_generated() -> None:
+    description = (
+        "[来源 SRC-001 · markdown-file · requirements.md]\n"
+        "实体: order; order字段: reference:string:required; 规则: order.reference != 0"
+    )
+    raw = description.encode("utf-8")
+    sources = [
+        {
+            "id": "SRC-001",
+            "kind": "markdown-file",
+            "label": "requirements.md",
+            "mediaType": "text/markdown",
+            "sha256": hashlib.sha256(raw).hexdigest(),
+            "byteCount": len(raw),
+            "extractedCharacters": len(description),
+            "includedCharacters": len(description),
+            "truncated": False,
+            "warnings": [],
+        }
+    ]
+    bundle_digest = models.sha256_json({"description": description, "sources": sources})
+    draft = create_draft(
+        name="source-bound-service",
+        description=description,
+        entity="order",
+        languages=("python",),
+        requirement_sources=sources,
+        source_bundle_sha256=bundle_digest,
+    )
+    approved = approve_request(draft, actor="user:source-reviewer")
+    rendered = render_workspace(SynthesisRequest.from_mapping(approved))
+    provenance = json.loads(rendered["requirements/source-provenance.json"])
+
+    assert approved["source_bundle_sha256"] == bundle_digest
+    assert approved["requirements"][0]["source_refs"] == [
+        {"source_id": "SRC-001", "location": "imported-requirements"}
+    ]
+    assert provenance["status"] == "HASH_BOUND"
+    assert provenance["sources"] == sources
+    assert "not executed" in provenance["execution_boundary"]
+
+
+def test_imported_requirement_source_tampering_fails_closed() -> None:
+    description = "[来源 SRC-001]\n实体: order"
+    source = {
+        "id": "SRC-001",
+        "kind": "description",
+        "label": "页面简述",
+        "mediaType": "text/plain",
+        "sha256": hashlib.sha256(description.encode("utf-8")).hexdigest(),
+        "byteCount": len(description.encode("utf-8")),
+        "extractedCharacters": len(description),
+        "includedCharacters": len(description),
+        "truncated": False,
+        "warnings": [],
+    }
+    digest = models.sha256_json({"description": description, "sources": [source]})
+    draft = create_draft(
+        name="tamper-source-service",
+        description=description,
+        entity="order",
+        languages=("python",),
+        requirement_sources=(source,),
+        source_bundle_sha256=digest,
+    )
+    draft["requirement_sources"][0]["label"] = "changed.md"
+
+    with pytest.raises(RequestValidationError, match="SOURCE_BUNDLE_HASH_MISMATCH"):
+        SynthesisRequest.from_mapping(draft, require_approval=False)
 
 
 def test_natural_language_draft_keeps_questions_explicit() -> None:
@@ -921,11 +993,128 @@ def test_kotlin_build_and_runtime_bind_the_matched_java_home(
             }
         ],
     )
+    monkeypatch.setenv(
+        "ELMOS_PROJECT_SYNTHESIS_GRADLE_USER_HOME",
+        str(tmp_path / "gradle-home"),
+    )
 
     environment = verification._toolchain_environment("kotlin")
 
     assert environment["JAVA_HOME"] == str(java.parent.parent)
     assert environment["PATH"].split(os.pathsep)[0] == str(java.parent)
+    assert environment["GRADLE_USER_HOME"] == str((tmp_path / "gradle-home").resolve())
+
+
+def test_kotlin_toolchain_translates_safe_lowercase_proxy_for_gradle(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    java = tmp_path / "jdk-21" / "bin" / "java"
+    java.parent.mkdir(parents=True)
+    java.write_text("#!/bin/sh\nprintf 'openjdk version \"21.0.11\"\\n'\n", encoding="utf-8")
+    java.chmod(0o700)
+    monkeypatch.setattr(verification.shutil, "which", lambda _: None)
+    monkeypatch.setitem(
+        verification.EXACT_TOOLCHAIN_REQUIREMENTS,
+        "kotlin",
+        [{
+            "tool": "java",
+            "arguments": ["-version"],
+            "expected": "Java 21",
+            "pattern": r'version "21(?:[.\-"]|$)',
+            "fallback": str(java),
+        }],
+    )
+    monkeypatch.delenv("HTTP_PROXY", raising=False)
+    monkeypatch.delenv("HTTPS_PROXY", raising=False)
+    monkeypatch.setenv("http_proxy", "http://127.0.0.1:7890")
+    monkeypatch.setenv("https_proxy", "http://127.0.0.1:7890")
+
+    options = " ".join(verification._gradle_proxy_system_properties())
+
+    assert "-Dhttp.proxyHost=127.0.0.1" in options
+    assert "-Dhttp.proxyPort=7890" in options
+    assert "-Dhttps.proxyHost=127.0.0.1" in options
+    assert "-Dhttps.proxyPort=7890" in options
+
+
+def test_kotlin_toolchain_rejects_proxy_credentials(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    java = tmp_path / "jdk-21" / "bin" / "java"
+    java.parent.mkdir(parents=True)
+    java.write_text("#!/bin/sh\nprintf 'openjdk version \"21.0.11\"\\n'\n", encoding="utf-8")
+    java.chmod(0o700)
+    monkeypatch.setattr(verification.shutil, "which", lambda _: None)
+    monkeypatch.setitem(
+        verification.EXACT_TOOLCHAIN_REQUIREMENTS,
+        "kotlin",
+        [{
+            "tool": "java",
+            "arguments": ["-version"],
+            "expected": "Java 21",
+            "pattern": r'version "21(?:[.\-"]|$)',
+            "fallback": str(java),
+        }],
+    )
+    monkeypatch.delenv("HTTP_PROXY", raising=False)
+    monkeypatch.setenv("http_proxy", "http://user:secret@127.0.0.1:7890")
+
+    with pytest.raises(ValueError, match="KOTLIN_HTTP_PROXY_INVALID"):
+        verification._gradle_proxy_system_properties()
+
+
+def test_kotlin_toolchain_accepts_explicit_controlled_gradle_proxy(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    java = tmp_path / "jdk-21" / "bin" / "java"
+    java.parent.mkdir(parents=True)
+    java.write_text("#!/bin/sh\nprintf 'openjdk version \"21.0.11\"\\n'\n", encoding="utf-8")
+    java.chmod(0o700)
+    monkeypatch.setattr(verification.shutil, "which", lambda _: None)
+    monkeypatch.setitem(
+        verification.EXACT_TOOLCHAIN_REQUIREMENTS,
+        "kotlin",
+        [{
+            "tool": "java",
+            "arguments": ["-version"],
+            "expected": "Java 21",
+            "pattern": r'version "21(?:[.\-"]|$)',
+            "fallback": str(java),
+        }],
+    )
+    monkeypatch.delenv("HTTP_PROXY", raising=False)
+    monkeypatch.delenv("HTTPS_PROXY", raising=False)
+    monkeypatch.delenv("http_proxy", raising=False)
+    monkeypatch.delenv("https_proxy", raising=False)
+    monkeypatch.setenv(
+        "ELMOS_PROJECT_SYNTHESIS_GRADLE_PROXY",
+        "http://127.0.0.1:7890",
+    )
+
+    options = " ".join(verification._gradle_proxy_system_properties())
+
+    assert "-Dhttp.proxyHost=127.0.0.1" in options
+    assert "-Dhttps.proxyHost=127.0.0.1" in options
+
+
+def test_kotlin_toolchain_rejects_ambient_gradle_home_symlink(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    target = tmp_path / "target"
+    target.mkdir()
+    configured = tmp_path / "gradle-home"
+    configured.symlink_to(target, target_is_directory=True)
+    monkeypatch.setenv(
+        "ELMOS_PROJECT_SYNTHESIS_GRADLE_USER_HOME",
+        str(configured),
+    )
+
+    with pytest.raises(ValueError, match="GRADLE_USER_HOME_UNSAFE"):
+        verification._gradle_user_home()
 
 
 def test_health_probe_rejects_a_different_service_on_the_same_port() -> None:

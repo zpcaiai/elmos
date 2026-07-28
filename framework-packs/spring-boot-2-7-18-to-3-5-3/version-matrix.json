@@ -14,7 +14,7 @@
       "spring_boot": "3.5.3",
       "java": "21",
       "build": "maven-3.9.11",
-      "status": "experimental-output"
+      "status": "limited-output"
     }
   ],
   "upgrade_edges": [

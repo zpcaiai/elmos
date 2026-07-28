@@ -69,3 +69,27 @@ def test_runtime_plan_acceptance_port_override_is_explicit_and_validated(
         verification.runtime_commands(workspace, port_overrides={"typescript": 80})
     with pytest.raises(ValueError, match="RUNTIME_PORT_OVERRIDE_LANGUAGE_UNKNOWN"):
         verification.runtime_commands(workspace, port_overrides={"rust": 43124})
+
+
+def test_dotnet_runtime_plan_disables_development_launch_profile(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    workspace = tmp_path / "workspace"
+    project = workspace / "dotnet" / "src" / "Example.Api" / "Example.Api.csproj"
+    project.parent.mkdir(parents=True)
+    project.write_text("<Project />\n", encoding="utf-8")
+    (workspace / "requirements").mkdir()
+    (workspace / "requirements" / "project-blueprint.json").write_text(
+        json.dumps({"applications": [{"language": "csharp", "port": 8083}]}),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(verification, "_runtime_tool", lambda *_args, **_kwargs: "dotnet")
+
+    plan = verification.runtime_commands(
+        workspace,
+        port_overrides={"csharp": 43125},
+    )[0]
+
+    assert "--no-launch-profile" in plan["command"]
+    assert plan["environment"]["ASPNETCORE_URLS"] == "http://127.0.0.1:43125"

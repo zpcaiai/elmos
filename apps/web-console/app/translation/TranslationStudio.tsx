@@ -9,6 +9,7 @@ import type {
   TranslationCapabilityResponse,
   TranslationDiscoveryReport,
   TranslationDiscoveryResult,
+  TranslationJob,
   TranslationLanguageId,
   TranslationRepositoryPlan,
 } from "../lib/contracts";
@@ -27,7 +28,16 @@ type Handoff = {
   createdAt: string;
 };
 
+type TranslationRunnerHealth = {
+  status: "READY" | "DISABLED" | "BLOCKED";
+  isolation: "ROOTLESS_CONTAINER" | "HOST_DEVELOPMENT" | "NOT_CONFIGURED";
+  sourceStorage: "READ_ONLY" | "NOT_RUN" | "BLOCKED";
+  activeJobs: number;
+  reason?: string;
+};
+
 const STORAGE_KEY = "elmos.translation-handoff.v3";
+const JOB_STORAGE_KEY = "elmos.translation.latest-job-id";
 const WORK_UNIT_PAGE_SIZE = 25;
 const routeIds = new Set(directedLanguageRoutes.map((route) => route.id));
 
@@ -114,6 +124,15 @@ export function TranslationStudio() {
   const [capabilityError, setCapabilityError] = useState("");
   const [importing, setImporting] = useState(false);
   const [feedback, setFeedback] = useState("");
+  const [tenantId, setTenantId] = useState("");
+  const [actorId, setActorId] = useState("");
+  const [runnerToken, setRunnerToken] = useState("");
+  const [workspaceId, setWorkspaceId] = useState("");
+  const [casesBundleId, setCasesBundleId] = useState("");
+  const [recoveryJobId, setRecoveryJobId] = useState("");
+  const [runnerHealth, setRunnerHealth] = useState<TranslationRunnerHealth | null>(null);
+  const [job, setJob] = useState<TranslationJob | null>(null);
+  const [jobBusy, setJobBusy] = useState(false);
 
   const languages = capability?.languages ?? translationLanguages;
   const routes = capability?.routes ?? directedLanguageRoutes;
@@ -158,6 +177,33 @@ export function TranslationStudio() {
     }
     return () => controller.abort();
   }, []);
+
+  useEffect(() => {
+    fetch("/api/translation/health", { cache: "no-store" })
+      .then(async (response) => {
+        const payload = await response.json() as TranslationRunnerHealth;
+        setRunnerHealth(payload);
+      })
+      .catch(() => setRunnerHealth({
+        status: "BLOCKED",
+        isolation: "NOT_CONFIGURED",
+        sourceStorage: "BLOCKED",
+        activeJobs: 0,
+        reason: "TRANSLATION_RUNNER_HEALTH_UNAVAILABLE",
+      }));
+    const latest = window.sessionStorage.getItem(JOB_STORAGE_KEY);
+    if (latest && /^[0-9a-f-]{36}$/.test(latest)) setRecoveryJobId(latest);
+  }, []);
+
+  useEffect(() => {
+    if (!job || !["QUEUED", "RUNNING"].includes(job.status)) return;
+    const timer = window.setInterval(() => {
+      void runnerRequest<TranslationJob>(`/api/translation/jobs/${job.id}`)
+        .then(setJob)
+        .catch((error: Error) => setFeedback(`任务刷新失败：${error.message}`));
+    }, 1_500);
+    return () => window.clearInterval(timer);
+  }, [job, tenantId, actorId, runnerToken]);
 
   useEffect(() => {
     if (!feedback) return;
@@ -383,6 +429,133 @@ export function TranslationStudio() {
     }
   }
 
+  async function runnerRequest<T>(url: string, init?: RequestInit): Promise<T> {
+    const response = await fetch(url, {
+      cache: "no-store",
+      ...init,
+      headers: {
+        ...(init?.body ? { "content-type": "application/json" } : {}),
+        authorization: `Bearer ${runnerToken}`,
+        "x-elmos-tenant": tenantId,
+        "x-elmos-actor": actorId,
+        ...init?.headers,
+      },
+    });
+    const payload = await response.json().catch(() => null) as
+      | T
+      | { reason?: string; errorCode?: string }
+      | null;
+    if (!response.ok) {
+      const reason = payload && typeof payload === "object" && "reason" in payload
+        ? payload.reason
+        : payload && typeof payload === "object" && "errorCode" in payload
+          ? payload.errorCode
+          : `HTTP_${response.status}`;
+      throw new Error(reason || `HTTP_${response.status}`);
+    }
+    return payload as T;
+  }
+
+  async function startRepositoryPipeline() {
+    if (!selectedRouteExecutable) {
+      setFeedback("当前路线没有本地 Profile 通过证据，受控执行保持关闭。");
+      return;
+    }
+    setJobBusy(true);
+    try {
+      const next = await runnerRequest<TranslationJob>("/api/translation/jobs", {
+        method: "POST",
+        body: JSON.stringify({
+          workspaceId: workspaceId.trim(),
+          casesBundleId: casesBundleId.trim(),
+          sourceLanguage,
+          targetLanguage,
+        }),
+      });
+      setJob(next);
+      setRecoveryJobId(next.id);
+      window.sessionStorage.setItem(JOB_STORAGE_KEY, next.id);
+      setFeedback("整库任务已进入持久队列；页面将显示真实编译、回放、装配与构建状态。");
+    } catch (error) {
+      setFeedback(`整库执行被阻断：${error instanceof Error ? error.message : "TRANSLATION_RUNNER_ERROR"}`);
+    } finally {
+      setJobBusy(false);
+    }
+  }
+
+  async function recoverRepositoryPipeline() {
+    setJobBusy(true);
+    try {
+      const next = await runnerRequest<TranslationJob>(
+        `/api/translation/jobs/${recoveryJobId.trim()}`,
+      );
+      setJob(next);
+      window.sessionStorage.setItem(JOB_STORAGE_KEY, next.id);
+      setFeedback("已按任务 UUID 与当前租户身份恢复持久任务。");
+    } catch (error) {
+      setFeedback(`任务恢复失败：${error instanceof Error ? error.message : "TRANSLATION_JOB_NOT_FOUND"}`);
+    } finally {
+      setJobBusy(false);
+    }
+  }
+
+  async function cancelRepositoryPipeline() {
+    if (!job) return;
+    setJobBusy(true);
+    try {
+      setJob(await runnerRequest<TranslationJob>(`/api/translation/jobs/${job.id}/cancel`, {
+        method: "POST",
+      }));
+      setFeedback("任务已取消；已经写入的检查点保留为审计事实。");
+    } catch (error) {
+      setFeedback(`取消失败：${error instanceof Error ? error.message : "TRANSLATION_CANCEL_FAILED"}`);
+    } finally {
+      setJobBusy(false);
+    }
+  }
+
+  async function downloadRepositoryArtifact() {
+    if (!job?.artifactReady || !job.artifactSha256 || !job.artifactSize) return;
+    setJobBusy(true);
+    try {
+      const response = await fetch(`/api/translation/jobs/${job.id}/artifact`, {
+        cache: "no-store",
+        headers: {
+          authorization: `Bearer ${runnerToken}`,
+          "x-elmos-tenant": tenantId,
+          "x-elmos-actor": actorId,
+        },
+      });
+      if (!response.ok) {
+        const payload = await response.json().catch(() => null) as { reason?: string } | null;
+        throw new Error(payload?.reason ?? `HTTP_${response.status}`);
+      }
+      const blob = await response.blob();
+      const digest = [...new Uint8Array(await crypto.subtle.digest(
+        "SHA-256",
+        await blob.arrayBuffer(),
+      ))].map((value) => value.toString(16).padStart(2, "0")).join("");
+      if (
+        response.headers.get("x-content-sha256") !== job.artifactSha256
+        || digest !== job.artifactSha256
+        || blob.size !== job.artifactSize
+      ) {
+        throw new Error("TRANSLATION_ARTIFACT_INTEGRITY_MISMATCH");
+      }
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = `${job.sourceLanguage}-to-${job.targetLanguage}-${job.status.toLowerCase()}.zip`;
+      anchor.click();
+      URL.revokeObjectURL(url);
+      setFeedback(`已复算 ZIP 摘要并下载；结果状态 ${job.status}，外部验证仍为 NOT_RUN。`);
+    } catch (error) {
+      setFeedback(`归档下载失败：${error instanceof Error ? error.message : "TRANSLATION_DOWNLOAD_FAILED"}`);
+    } finally {
+      setJobBusy(false);
+    }
+  }
+
   function exportHandoff() {
     if (!handoff || !selectedRoute) {
       setFeedback("请先保存当前路线交接。");
@@ -440,7 +613,13 @@ export function TranslationStudio() {
           <p>Java、C#、Python 与 TypeScript 形成 12 条方向独立的转换路线；每条路线分别绑定语义风险、精确工具链、语料和认证证据。</p>
         </div>
         <div className="header-actions">
-          <StatusChip status={capability ? "EXPERIMENTAL" : "BLOCKED"} />
+          <StatusChip
+            status={capability
+              ? routes.some((route) => route.status === "LIMITED")
+                ? "LIMITED"
+                : "EXPERIMENTAL"
+              : "BLOCKED"}
+          />
           <StatusChip status={capability?.certificationStatus === "CERTIFIED" ? "READY" : "NOT_CERTIFIED"} />
         </div>
       </section>
@@ -448,7 +627,7 @@ export function TranslationStudio() {
       <section className="metric-grid metric-grid-four" aria-label="跨语言路线摘要">
         <article className="metric-card"><span>语言引擎</span><strong>{languages.length}</strong><small>精确版本、相互独立</small></article>
         <article className="metric-card"><span>有向路线</span><strong>{capability?.routePackageCount ?? routeCounts.total}</strong><small>反向路线不复用结论</small></article>
-        <article className="metric-card"><span>本地实验 Profile</span><strong className={routeCounts.locallyPassed > 0 ? "" : "warning-text"}>{routeCounts.locallyPassed}</strong><small>{capability?.semanticProfile ?? "契约未读取"}</small></article>
+        <article className="metric-card"><span>本地受限 Profile</span><strong className={routeCounts.locallyPassed > 0 ? "" : "warning-text"}>{routeCounts.locallyPassed}</strong><small>{capability?.semanticProfile ?? "契约未读取"}</small></article>
         <article className="metric-card"><span>独立验证待办</span><strong className="warning-text">{routeCounts.externallyPending}</strong><small>外部证据 {capability?.externalExecutionEvidence ?? "UNREAD"}</small></article>
       </section>
 
@@ -558,6 +737,105 @@ export function TranslationStudio() {
           <div className="route-command-stack"><span>{scope === "repository" ? "整库三段式命令：清单 → 发现 → 批量执行" : "精确 Profile 执行模板"}</span><code>{scope === "repository" ? repositoryCommands.join("\n\n") : routeCommand}</code><small>{scope === "single-module" ? "命令只接受 typed-pure-function-v1；任何越界语义都会失败关闭。" : scope === "repository" ? "清单只读取受支持源文件；discover 用真实编译器分析器逐单元判定；batch 只执行 READY 且有独立行为语料的单元，可断点续跑，任何跳过或失败都让批次保持 PARTIAL。" : "多仓组合必须先逐仓生成清单并形成显式依赖图；当前不会把单函数证据扩张成组合成功。"}</small></div>
           <div className="route-handoff-actions"><button type="button" className="button button-primary" onClick={saveHandoff} disabled={!selectedRouteExecutable}><Icon name="file" size={15} />保存路线交接</button><button type="button" className="button button-secondary" onClick={exportHandoff}><Icon name="external" size={15} />导出 JSON</button><button type="button" className="button button-secondary" onClick={() => copyText([...(scope === "repository" ? repositoryCommands : [routeCommand]), ...validationCommands].join("\n"), "精确执行模板与保守门禁命令已复制。")}><Icon name="copy" size={15} />复制命令</button></div>
         </div>
+      </section>
+
+      <section className="surface-card route-handoff translation-runner-card" aria-labelledby="translation-runner-title">
+        <div className="business-section-heading">
+          <div>
+            <span className="overline">PERSISTENT CONTROLLED RUNNER</span>
+            <h2 id="translation-runner-title">一键执行整库受限转换</h2>
+          </div>
+          <StatusChip status={job?.status ?? runnerHealth?.status ?? "NOT_RUN"} compact />
+        </div>
+        <p>
+          Runner 从管理员预先材料化的只读源码与独立行为用例目录读取输入，自动完成清单、编译器发现、
+          断点批处理、无冲突装配、真实构建和内容寻址归档。它只覆盖 typed-pure-function-v1；
+          `PARTIAL` 会完整保留跳过与失败，绝不等同于整库完成。
+        </p>
+        <div className="business-form-grid">
+          <label>
+            <span>租户标识</span>
+            <input aria-label="跨语言租户标识" value={tenantId} onChange={(event) => setTenantId(event.target.value)} autoComplete="off" />
+          </label>
+          <label>
+            <span>执行者标识</span>
+            <input aria-label="跨语言执行者标识" value={actorId} onChange={(event) => setActorId(event.target.value)} autoComplete="off" />
+          </label>
+          <label className="spring-field-wide">
+            <span>本地 Runner 短期令牌</span>
+            <input aria-label="跨语言 Runner 令牌" type="password" value={runnerToken} onChange={(event) => setRunnerToken(event.target.value)} autoComplete="off" />
+          </label>
+          <label>
+            <span>受控源码工作区 ID</span>
+            <input value={workspaceId} onChange={(event) => setWorkspaceId(event.target.value)} pattern="[a-z0-9][a-z0-9._-]{2,80}" placeholder="customer-repository" />
+          </label>
+          <label>
+            <span>独立行为用例包 ID</span>
+            <input value={casesBundleId} onChange={(event) => setCasesBundleId(event.target.value)} pattern="[a-z0-9][a-z0-9._-]{2,80}" placeholder="customer-repository-holdout" />
+          </label>
+          <div className="locked-target spring-field-wide">
+            <span>执行边界</span>
+            <strong>
+              {runnerHealth?.status ?? "CHECKING"} · {runnerHealth?.isolation ?? "NOT_CONFIGURED"}
+            </strong>
+            <small>
+              源存储 {runnerHealth?.sourceStorage ?? "NOT_RUN"} · 活跃任务 {runnerHealth?.activeJobs ?? 0}。
+              {runnerHealth?.reason ? ` ${runnerHealth.reason}` : " 生产模式只允许不可变镜像的 Rootless Container。"}
+            </small>
+          </div>
+          <label className="spring-field-wide">
+            <span>恢复任务 UUID</span>
+            <input value={recoveryJobId} onChange={(event) => setRecoveryJobId(event.target.value.toLowerCase())} pattern="[0-9a-f-]{36}" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
+          </label>
+        </div>
+        <div className="business-actions">
+          <button
+            type="button"
+            className="button button-primary"
+            disabled={jobBusy || runnerHealth?.status !== "READY" || !selectedRouteExecutable}
+            onClick={() => void startRepositoryPipeline()}
+          >
+            <Icon name="workflow" size={15} />启动整库转换
+          </button>
+          <button
+            type="button"
+            className="button button-secondary"
+            disabled={jobBusy || !/^[0-9a-f-]{36}$/.test(recoveryJobId)}
+            onClick={() => void recoverRepositoryPipeline()}
+          >
+            <Icon name="refresh" size={15} />恢复任务
+          </button>
+          <button
+            type="button"
+            className="button button-secondary"
+            disabled={jobBusy || !job || !["QUEUED", "RUNNING"].includes(job.status)}
+            onClick={() => void cancelRepositoryPipeline()}
+          >
+            取消
+          </button>
+          <button
+            type="button"
+            className="button button-secondary"
+            disabled={jobBusy || !job?.artifactReady}
+            onClick={() => void downloadRepositoryArtifact()}
+          >
+            <Icon name="file" size={15} />下载摘要校验归档
+          </button>
+        </div>
+        {job && (
+          <div className="spring-run-summary">
+            <dl className="spring-run-facts">
+              <div><dt>任务</dt><dd>{job.id}</dd></div>
+              <div><dt>阶段 / 进度</dt><dd>{job.stage} · {job.progress}%</dd></div>
+              <div><dt>路线</dt><dd>{job.sourceLanguage} → {job.targetLanguage}</dd></div>
+              <div><dt>工作单元</dt><dd>{job.includedUnitCount ?? 0} / {job.workUnitCount ?? "NOT_RUN"}</dd></div>
+              <div><dt>真实构建</dt><dd>{job.buildVerification?.status ?? "NOT_RUN"}</dd></div>
+              <div><dt>外部证据</dt><dd>{job.externalVerificationStatus} · {job.certificationStatus}</dd></div>
+            </dl>
+            {job.reason && <p className="warning-text">{job.reason}</p>}
+            <pre aria-label="跨语言任务日志">{job.logs.map((entry) => `[${entry.stream}] ${entry.message}`).join("\n") || "日志尚未产生。"}</pre>
+          </div>
+        )}
       </section>
 
       {repositoryPlan && (

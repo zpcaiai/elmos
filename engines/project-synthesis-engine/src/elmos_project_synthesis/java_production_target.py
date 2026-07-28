@@ -338,13 +338,178 @@ def _datasource_source(request: SynthesisRequest) -> str:
     )
 
 
+def _uuid_relation_fields(request: SynthesisRequest) -> set[tuple[str, str]]:
+    """(entity, field) pairs the migration declares as ``uuid``.
+
+    Mirrors the rule in production_profile.py: any relation pointing at a
+    parent's ``id`` makes the source column a uuid, regardless of whether the
+    relation is required.
+    """
+    return {
+        (relation.source, relation.source_field)
+        for relation in request.relations
+        if relation.source_field is not None and relation.target_field == "id"
+    }
+
+
+def _bind_argument(
+    entity: object, field: FieldSpec, uuid_fields: set[tuple[str, str]]
+) -> str:
+    accessor = f"request.{camel(field.name)}()"
+    if (entity.singular, field.name) in uuid_fields:  # type: ignore[attr-defined]
+        return f"java.util.UUID.fromString({accessor})"
+    return accessor
+
+
+def _relation_parents(request: SynthesisRequest, entity_name: str) -> list[tuple[str, str]]:
+    """(source_field, target entity) relations for one entity.
+
+    Not filtered by ``required``: an optional relation column is still typed
+    uuid and still carries the composite foreign key, so it needs a real
+    parent id either way.
+    """
+    return [
+        (relation.source_field, relation.target)
+        for relation in request.relations
+        if relation.source == entity_name
+        and relation.source_field is not None
+        and relation.target_field == "id"
+    ]
+
+
+def _fixture_chain(request: SynthesisRequest, entity_name: str) -> list[str]:
+    """Entities that must exist before ``entity_name`` can be inserted.
+
+    Relation columns carry a composite foreign key onto the parent's
+    (tenant_id, id), so a child row cannot be written until its parents exist
+    in the same tenant. Returned parents-first, each appearing once.
+    """
+    ordered: list[str] = []
+    visiting: set[str] = set()
+
+    def walk(name: str) -> None:
+        if name in visiting:
+            raise ValueError(f"JAVA_RELATION_CYCLE:{name}")
+        visiting.add(name)
+        for _field, parent in _relation_parents(request, name):
+            if parent not in ordered:
+                walk(parent)
+                ordered.append(parent)
+        visiting.discard(name)
+
+    walk(entity_name)
+    return ordered
+
+
+def _java_body_expression(
+    request: SynthesisRequest, entity: object, parent_variables: dict[str, str]
+) -> str:
+    """A Java expression producing the request body for one entity.
+
+    Two details are load-bearing and were both wrong when this only ever ran
+    against a single entity with a one-word field:
+
+    * The DTO binds Jackson properties by their camelCase Java names, so the
+      JSON keys are ``camel(field.name)`` -- sending ``customer_id`` leaves
+      ``customerId`` null and the request fails validation with 400.
+    * A relation field must carry a real parent id, so it is concatenated in
+      from the fixture variable rather than emitted as a sample literal.
+    """
+    parents = dict(_relation_parents(request, entity.singular))  # type: ignore[attr-defined]
+    pieces: list[str] = []
+    for field in entity.fields:  # type: ignore[attr-defined]
+        key = camel(field.name)
+        if field.name in parents:
+            variable = parent_variables[parents[field.name]]
+            pieces.append(f'"\\"{key}\\": \\"" + {variable} + "\\""')
+        else:
+            literal = json.dumps(_sample_json(field))
+            escaped = literal.replace("\\", "\\\\").replace('"', '\\"')
+            pieces.append(f'"\\"{key}\\": {escaped}"')
+    joined = ' + ", " + '.join(pieces) if pieces else '""'
+    return '"{" + ' + joined + ' + "}"'
+
+
+def _entity_scenario_methods(request: SynthesisRequest) -> str:
+    """One tenant-isolation test per entity.
+
+    The Java profile emits a store, a controller and an RLS policy for *every*
+    entity, so a scenario that only exercises the first one leaves the rest
+    unproven: a policy missing on entity two would still produce a green
+    acceptance. Each entity therefore gets its own test rather than sharing a
+    single method against ``entities[0]``.
+    """
+    by_name = {entity.singular: entity for entity in request.entities}
+    blocks: list[str] = []
+    for entity in request.entities:
+        parent_variables: dict[str, str] = {}
+        fixture_lines: list[str] = []
+        for parent in _fixture_chain(request, entity.singular):
+            variable = f"{camel(parent)}Id"
+            parent_variables[parent] = variable
+            parent_body = _java_body_expression(request, by_name[parent], parent_variables)
+            fixture_lines.extend(
+                (
+                    f"var {variable} = UUID.randomUUID().toString();",
+                    f'assertEquals(200, send("PUT", "/{by_name[parent].plural}/" + {variable},',
+                    f"        tenantA, {parent_body}).statusCode());",
+                )
+            )
+        java_body = _java_body_expression(request, entity, parent_variables)
+        # Indented to the inner template's own body level so textwrap.dedent
+        # inside clean() treats these lines like their siblings instead of
+        # lowering the whole block's common prefix.
+        fixtures = (
+            ("\n".join(fixture_lines) + "\n").replace("\n", "\n" + " " * 20)
+            if fixture_lines
+            else ""
+        )
+        blocks.append(
+            clean(
+                f"""
+                @Test
+                void isolatesTenantsFor{pascal(entity.singular)}() throws Exception {{
+                    var tenantA = validToken("tenant-a");
+                    {fixtures}// upsert-and-read
+                    var recordId = UUID.randomUUID().toString();
+                    var created = send("PUT", "/{entity.plural}/" + recordId, tenantA, {java_body});
+                    assertEquals(200, created.statusCode(), created.body());
+                    var read = send("GET", "/{entity.plural}/" + recordId, tenantA, null);
+                    assertEquals(200, read.statusCode());
+                    assertTrue(read.body().contains(recordId));
+
+                    // list-scoped-to-tenant
+                    var listed = send("GET", "/{entity.plural}", tenantA, null);
+                    assertEquals(200, listed.statusCode());
+                    assertTrue(listed.body().contains(recordId));
+
+                    // cross-tenant-read-blocked
+                    // A second tenant may not see the row even though it was
+                    // written through the same code path moments earlier.
+                    var tenantB = validToken("tenant-b");
+                    assertEquals(404, send("GET", "/{entity.plural}/" + recordId, tenantB, null).statusCode());
+                    assertTrue(!send("GET", "/{entity.plural}", tenantB, null).body().contains(recordId));
+
+                    // delete-removes-record
+                    assertEquals(204, send("DELETE", "/{entity.plural}/" + recordId, tenantA, null).statusCode());
+                    assertEquals(404, send("GET", "/{entity.plural}/" + recordId, tenantA, null).statusCode());
+                }}
+                """
+            ).rstrip()
+        )
+    return "\n\n".join(blocks)
+
+
 def _integration_test_source(request: SynthesisRequest) -> str:
+    # The bearer-rejection steps are entity independent -- they never reach a
+    # store -- so they run once against the first collection path.
     entity = request.entities[0]
-    body_fields = ", ".join(
-        f'"{field.name}": {json.dumps(_sample_json(field))}' for field in entity.fields
-    )
-    body_json = "{" + body_fields + "}"
-    java_body = body_json.replace("\\", "\\\\").replace('"', '\\"')
+    # Re-indented to the column the template substitutes it at. This has to
+    # land at or above the template's own base indent: clean() runs
+    # textwrap.dedent, which strips the *minimum* indent across every line, so
+    # a block injected below that baseline would drag the whole file's
+    # indentation down with it.
+    entity_scenarios = _entity_scenario_methods(request).replace("\n", "\n" + " " * 12)
 
     if request.auth_mode == "jwt":
         signer = clean(
@@ -459,7 +624,7 @@ def _integration_test_source(request: SynthesisRequest) -> str:
             }}
 
             @Test
-            void runsTheSharedProductionScenario() throws Exception {{
+            void refusesUnauthorizedRequests() throws Exception {{
                 var issuer = required("{ENV_AUTH_ISSUER}");
                 var audience = required("{ENV_AUTH_AUDIENCE}");
 
@@ -484,30 +649,9 @@ def _integration_test_source(request: SynthesisRequest) -> str:
                 // missing-tenant-claim-rejected
                 assertEquals(401, send("GET", "/{entity.plural}",
                         token(null, issuer, audience, true), null).statusCode());
-
-                // upsert-and-read
-                var recordId = UUID.randomUUID().toString();
-                var tenantA = validToken("tenant-a");
-                var created = send("PUT", "/{entity.plural}/" + recordId, tenantA, "{java_body}");
-                assertEquals(200, created.statusCode(), created.body());
-                var read = send("GET", "/{entity.plural}/" + recordId, tenantA, null);
-                assertEquals(200, read.statusCode());
-                assertTrue(read.body().contains(recordId));
-
-                // list-scoped-to-tenant
-                var listed = send("GET", "/{entity.plural}", tenantA, null);
-                assertEquals(200, listed.statusCode());
-                assertTrue(listed.body().contains(recordId));
-
-                // cross-tenant-read-blocked
-                var tenantB = validToken("tenant-b");
-                assertEquals(404, send("GET", "/{entity.plural}/" + recordId, tenantB, null).statusCode());
-                assertTrue(!send("GET", "/{entity.plural}", tenantB, null).body().contains(recordId));
-
-                // delete-removes-record
-                assertEquals(204, send("DELETE", "/{entity.plural}/" + recordId, tenantA, null).statusCode());
-                assertEquals(404, send("GET", "/{entity.plural}/" + recordId, tenantA, null).statusCode());
             }}
+
+            {entity_scenarios}
         }}
         """
     )
@@ -828,8 +972,13 @@ def render_java_production(request: SynthesisRequest, port: int) -> dict[str, st
         row_reads = ",\n                            ".join(
             ["row.getString(1)", *(_result_getter(field, index + 2) for index, field in enumerate(entity.fields))]
         )
+        # A relation column is declared `uuid` by the migration, but the DTO
+        # carries it as a String. Binding it raw makes PostgreSQL reject the
+        # parameter and the request fails with 500 -- invisible for as long as
+        # the integration scenario only exercised an entity without relations.
+        uuid_fields = _uuid_relation_fields(request)
         bind_upsert = "\n                    ".join(
-            f"statement.setObject({index + 3}, request.{camel(field.name)}());"
+            f"statement.setObject({index + 3}, {_bind_argument(entity, field, uuid_fields)});"
             for index, field in enumerate(entity.fields)
         )
         files.update(

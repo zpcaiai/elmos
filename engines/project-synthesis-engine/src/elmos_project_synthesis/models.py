@@ -101,10 +101,21 @@ SUPPORTED_RELATION_KINDS = ("one-to-one", "one-to-many", "many-to-one", "many-to
 SLUG_PATTERN = re.compile(r"^[a-z][a-z0-9-]{1,62}[a-z0-9]$")
 IDENTIFIER_PATTERN = re.compile(r"^[a-z][a-z0-9_]{0,62}$")
 NAMESPACE_PATTERN = re.compile(r"^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$")
-MAX_DESCRIPTION_LENGTH = 4_000
+MAX_DESCRIPTION_LENGTH = 32_000
 MAX_NAMESPACE_LENGTH = 255
 MAX_ENTITIES = 20
 MAX_FIELDS_PER_ENTITY = 50
+MAX_REQUIREMENT_SOURCES = 17
+REQUIREMENT_SOURCE_KINDS = {
+    "description",
+    "text-file",
+    "markdown-file",
+    "word-file",
+    "html-file",
+    "pdf-file",
+    "online-html",
+    "skill",
+}
 
 
 class RequestValidationError(ValueError):
@@ -166,6 +177,69 @@ def strict_identifier(value: Any, *, reason: str) -> str:
     if not IDENTIFIER_PATTERN.fullmatch(result):
         raise RequestValidationError(reason)
     return result
+
+
+def _validate_requirement_sources(
+    mapping: dict[str, Any],
+    *,
+    description: str,
+) -> tuple[tuple[dict[str, Any], ...], str | None]:
+    raw_sources = mapping.get("requirement_sources")
+    bundle_digest = mapping.get("source_bundle_sha256")
+    if raw_sources is None and bundle_digest is None:
+        return (), None
+    if not isinstance(raw_sources, list) or not raw_sources or not isinstance(bundle_digest, str):
+        raise RequestValidationError("SOURCE_BUNDLE_BINDING_INCOMPLETE")
+    if len(raw_sources) > MAX_REQUIREMENT_SOURCES or re.fullmatch(r"[0-9a-f]{64}", bundle_digest) is None:
+        raise RequestValidationError("SOURCE_BUNDLE_BINDING_INVALID")
+    sources: list[dict[str, Any]] = []
+    for index, raw in enumerate(raw_sources, 1):
+        if not isinstance(raw, dict):
+            raise RequestValidationError("REQUIREMENT_SOURCE_MUST_BE_OBJECT")
+        source = dict(raw)
+        if source.get("id") != f"SRC-{index:03d}":
+            raise RequestValidationError("REQUIREMENT_SOURCE_ID_INVALID")
+        if source.get("kind") not in REQUIREMENT_SOURCE_KINDS:
+            raise RequestValidationError("REQUIREMENT_SOURCE_KIND_INVALID")
+        for field, maximum in (("label", 180), ("mediaType", 160)):
+            value = source.get(field)
+            if not isinstance(value, str) or not value or len(value) > maximum:
+                raise RequestValidationError(f"REQUIREMENT_SOURCE_{field.upper()}_INVALID")
+        origin = source.get("origin")
+        if origin is not None and (not isinstance(origin, str) or not origin or len(origin) > 2_000):
+            raise RequestValidationError("REQUIREMENT_SOURCE_ORIGIN_INVALID")
+        if not isinstance(source.get("sha256"), str) or re.fullmatch(r"[0-9a-f]{64}", source["sha256"]) is None:
+            raise RequestValidationError("REQUIREMENT_SOURCE_DIGEST_INVALID")
+        byte_count = source.get("byteCount")
+        extracted = source.get("extractedCharacters")
+        included = source.get("includedCharacters")
+        if (
+            not isinstance(byte_count, int)
+            or isinstance(byte_count, bool)
+            or not 0 < byte_count <= 8 * 1024 * 1024
+            or not isinstance(extracted, int)
+            or isinstance(extracted, bool)
+            or extracted < 3
+            or not isinstance(included, int)
+            or isinstance(included, bool)
+            or not 3 <= included <= extracted
+            or not isinstance(source.get("truncated"), bool)
+        ):
+            raise RequestValidationError("REQUIREMENT_SOURCE_SIZE_INVALID")
+        warnings = source.get("warnings")
+        if (
+            not isinstance(warnings, list)
+            or len(warnings) > 20
+            or any(
+                not isinstance(warning, str) or re.fullmatch(r"[A-Z0-9_:.-]{1,160}", warning) is None
+                for warning in warnings
+            )
+        ):
+            raise RequestValidationError("REQUIREMENT_SOURCE_WARNINGS_INVALID")
+        sources.append(source)
+    if sha256_json({"description": description, "sources": sources}) != bundle_digest:
+        raise RequestValidationError("SOURCE_BUNDLE_HASH_MISMATCH")
+    return tuple(sources), bundle_digest
 
 
 def pascal(value: str) -> str:
@@ -433,6 +507,8 @@ class SynthesisRequest:
     entities: tuple[EntitySpec, ...]
     relations: tuple[RelationSpec, ...]
     targets: tuple[TargetSpec, ...]
+    requirement_sources: tuple[dict[str, Any], ...]
+    source_bundle_sha256: str | None
 
     @classmethod
     def from_mapping(cls, mapping: dict[str, Any], *, require_approval: bool = True) -> SynthesisRequest:
@@ -455,6 +531,10 @@ class SynthesisRequest:
             raise RequestValidationError(f"PERSISTENCE_INVALID:{persistence}")
         if auth_mode not in SUPPORTED_AUTH_MODES:
             raise RequestValidationError(f"AUTH_MODE_INVALID:{auth_mode}")
+        requirement_sources, source_bundle_sha256 = _validate_requirement_sources(
+            mapping,
+            description=description,
+        )
 
         entities_raw = mapping.get("entities")
         if not isinstance(entities_raw, list) or not entities_raw:
@@ -547,6 +627,8 @@ class SynthesisRequest:
             entities=entities,
             relations=relations,
             targets=targets,
+            requirement_sources=requirement_sources,
+            source_bundle_sha256=source_bundle_sha256,
         )
 
     @property

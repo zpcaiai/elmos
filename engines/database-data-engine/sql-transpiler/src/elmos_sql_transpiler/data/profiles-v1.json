@@ -93,7 +93,7 @@
       "collation": "BINARY",
       "timezone": "UTC-text-ISO8601",
       "compatibilityMode": "native",
-      "supportState": "SYNTAX_EXPERIMENTAL",
+      "supportState": "LOCAL_RUNNER_READY",
       "runtimeEvidence": "NOT_RUN"
     },
     {
@@ -108,7 +108,7 @@
       "collation": "binary",
       "timezone": "UTC",
       "compatibilityMode": "native",
-      "supportState": "SYNTAX_EXPERIMENTAL",
+      "supportState": "LOCAL_RUNNER_READY",
       "runtimeEvidence": "NOT_RUN"
     }
   ],

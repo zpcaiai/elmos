@@ -6,6 +6,8 @@ import type {
   GenerationAnalysis,
   GenerationCapabilityResponse,
   GenerationJob,
+  GenerationSourceBundle,
+  GenerationSourceReference,
   GenerationTargetId,
 } from "../lib/contracts";
 import { generationDeploymentGuidance } from "../lib/deploymentGuidance";
@@ -22,6 +24,8 @@ type GenerationIntent = {
   targets: GenerationTargetId[];
   persistence: "in-memory" | "postgresql";
   authMode: "none" | "jwt" | "oidc";
+  sources?: GenerationSourceReference[];
+  sourceBundleSha256?: string;
 };
 
 type GenerationDraft = GenerationIntent & {
@@ -59,6 +63,22 @@ const plannedAssets = [
 const DRAFT_STORAGE_KEY = "elmos.project-generation-drafts.v1";
 const generationTargetIds = new Set<GenerationTargetId>(generationTargets.map((target) => target.id));
 
+function isStoredSourceReference(value: unknown): value is GenerationSourceReference {
+  if (!value || typeof value !== "object") return false;
+  const source = value as Partial<GenerationSourceReference>;
+  return typeof source.id === "string"
+    && /^SRC-\d{3}$/.test(source.id)
+    && typeof source.label === "string"
+    && source.label.length <= 180
+    && typeof source.sha256 === "string"
+    && /^[a-f0-9]{64}$/.test(source.sha256)
+    && typeof source.byteCount === "number"
+    && typeof source.extractedCharacters === "number"
+    && typeof source.includedCharacters === "number"
+    && typeof source.truncated === "boolean"
+    && Array.isArray(source.warnings);
+}
+
 function isStoredGenerationDraft(value: unknown): value is GenerationDraft {
   if (!value || typeof value !== "object") return false;
   const draft = value as Partial<GenerationDraft>;
@@ -66,13 +86,23 @@ function isStoredGenerationDraft(value: unknown): value is GenerationDraft {
     && typeof draft.createdAt === "string" && !Number.isNaN(Date.parse(draft.createdAt))
     && typeof draft.name === "string" && draft.name.length <= 64
     && typeof draft.namespace === "string" && draft.namespace.length <= 200
-    && typeof draft.description === "string" && draft.description.length <= 4_000
+    && typeof draft.description === "string" && draft.description.length <= 32_000
     && typeof draft.entity === "string" && draft.entity.length <= 64
     && typeof draft.reviewer === "string" && draft.reviewer.length <= 200
     && ["in-memory", "postgresql"].includes(draft.persistence ?? "in-memory")
     && ["none", "jwt", "oidc"].includes(draft.authMode ?? "none")
     && Array.isArray(draft.targets) && draft.targets.length > 0
-    && draft.targets.every((target): target is GenerationTargetId => typeof target === "string" && generationTargetIds.has(target as GenerationTargetId));
+    && draft.targets.every((target): target is GenerationTargetId => typeof target === "string" && generationTargetIds.has(target as GenerationTargetId))
+    && (
+      draft.sources === undefined
+      || (
+        Array.isArray(draft.sources)
+        && draft.sources.length > 0
+        && draft.sources.every(isStoredSourceReference)
+        && typeof draft.sourceBundleSha256 === "string"
+        && /^[a-f0-9]{64}$/.test(draft.sourceBundleSha256)
+      )
+    );
 }
 
 function shellQuote(value: string) {
@@ -136,6 +166,11 @@ export function ProjectGenerationStudio() {
   const [targets, setTargets] = useState<GenerationTargetId[]>(["java", "python"]);
   const [persistence, setPersistence] = useState<"in-memory" | "postgresql">("in-memory");
   const [authMode, setAuthMode] = useState<"none" | "jwt" | "oidc">("none");
+  const [sourceUrl, setSourceUrl] = useState("");
+  const [sourceSkills, setSourceSkills] = useState("");
+  const [sourceFiles, setSourceFiles] = useState<File[]>([]);
+  const [sourceBundle, setSourceBundle] = useState<GenerationSourceBundle | null>(null);
+  const [sourceBusy, setSourceBusy] = useState(false);
   const [draft, setDraft] = useState<GenerationDraft | null>(null);
   const [savedDrafts, setSavedDrafts] = useState<GenerationDraft[]>([]);
   const [draftsReady, setDraftsReady] = useState(false);
@@ -153,6 +188,7 @@ export function ProjectGenerationStudio() {
   const [feedback, setFeedback] = useState("");
   const [targetError, setTargetError] = useState("");
   const feedbackTimer = useRef<number | null>(null);
+  const sourceFileInput = useRef<HTMLInputElement | null>(null);
 
   const selectedProfiles = useMemo(
     () => generationTargets.filter((profile) => targets.includes(profile.id)),
@@ -168,6 +204,10 @@ export function ProjectGenerationStudio() {
     targets,
     persistence,
     authMode,
+    ...(sourceBundle ? {
+      sources: sourceBundle.sources,
+      sourceBundleSha256: sourceBundle.bundleSha256,
+    } : {}),
   };
   const previewProfiles = generationTargets.filter((profile) => preview.targets.includes(profile.id));
   const productionProfileLabels = generationTargets
@@ -179,6 +219,10 @@ export function ProjectGenerationStudio() {
   const workflowScript = workflowCommands.map((item) => item.command).join("\n");
   const runnerReady = capability?.localRunner.enabled === true
     && runnerReadiness?.status === "READY";
+  const incompatibleProductionTargets = analysis && persistence === "postgresql"
+    && analysis.request.entities.length > 1
+    ? selectedProfiles.filter((profile) => profile.productionEntityScope === "single-entity")
+    : [];
   const artifactGroups = useMemo(() => {
     const groups = new Map<string, GenerationJob["artifacts"]>();
     for (const artifact of job?.artifacts ?? []) {
@@ -291,6 +335,56 @@ export function ProjectGenerationStudio() {
     setApproved(false);
   }
 
+  function updateDescription(value: string) {
+    setDescription(value);
+    if (sourceBundle && value !== sourceBundle.combinedText) {
+      setSourceBundle(null);
+    }
+    invalidateDraft();
+  }
+
+  async function ingestSources() {
+    if (!runnerToken) {
+      announce("解析文件、Skill 或在线 HTML 前，请先输入本地 Runner 短期令牌。");
+      return;
+    }
+    if (!description.trim() && sourceFiles.length === 0 && !sourceUrl.trim() && !sourceSkills.trim()) {
+      announce("请至少填写简述、选择文件、填写在线 HTML 地址或指定 Skill。");
+      return;
+    }
+    const form = new FormData();
+    if (description.trim()) form.set("description", description.trim());
+    if (sourceUrl.trim()) form.set("url", sourceUrl.trim());
+    if (sourceSkills.trim()) form.set("skills", sourceSkills.trim());
+    sourceFiles.forEach((file) => form.append("files", file, file.name));
+    setSourceBusy(true);
+    try {
+      const response = await fetch("/api/generation/sources", {
+        method: "POST",
+        cache: "no-store",
+        headers: {
+          "Authorization": `Bearer ${runnerToken}`,
+          "X-ELMOS-Tenant": tenantId.trim(),
+          "X-ELMOS-Actor": reviewer.trim(),
+        },
+        body: form,
+      });
+      const payload = await response.json() as GenerationSourceBundle & { reason?: string };
+      if (!response.ok) throw new Error(payload.reason ?? `HTTP_${response.status}`);
+      setSourceBundle(payload);
+      setDescription(payload.combinedText);
+      invalidateDraft();
+      announce(
+        `已提取并绑定 ${payload.sources.length} 个来源；请审阅合并后的项目说明再锁定计划。`,
+      );
+    } catch (error) {
+      setSourceBundle(null);
+      announce(`来源解析被阻断：${error instanceof Error ? error.message : "UNKNOWN_ERROR"}`);
+    } finally {
+      setSourceBusy(false);
+    }
+  }
+
   function productionCapable(id: GenerationTargetId): boolean {
     // productionProfiles mirrors the engine's SUPPORTED_PROFILE_TARGETS: only
     // targets with PostgreSQL-backed integration evidence declare profiles.
@@ -343,6 +437,10 @@ export function ProjectGenerationStudio() {
       targets,
       persistence,
       authMode,
+      ...(sourceBundle ? {
+        sources: sourceBundle.sources,
+        sourceBundleSha256: sourceBundle.bundleSha256,
+      } : {}),
     };
     setDraft(nextDraft);
     setAnalysis(null);
@@ -360,6 +458,18 @@ export function ProjectGenerationStudio() {
     setTargets(saved.targets);
     setPersistence(saved.persistence ?? "in-memory");
     setAuthMode(saved.authMode ?? "none");
+    setSourceBundle(saved.sources && saved.sourceBundleSha256 ? {
+      status: "READY_FOR_REVIEW",
+      schemaVersion: "1.0.0",
+      bundleSha256: saved.sourceBundleSha256,
+      combinedText: saved.description,
+      sources: saved.sources,
+      warnings: [...new Set(saved.sources.flatMap((source) => source.warnings))],
+      extractedAt: saved.createdAt,
+    } : null);
+    setSourceFiles([]);
+    setSourceUrl("");
+    setSourceSkills("");
     setTargetError("");
     setDraft(saved);
     setAnalysis(null);
@@ -467,6 +577,10 @@ export function ProjectGenerationStudio() {
           targets: draft.targets,
           persistence: draft.persistence,
           authMode: draft.authMode,
+          ...(draft.sources ? { sources: draft.sources } : {}),
+          ...(draft.sourceBundleSha256
+            ? { sourceBundleSha256: draft.sourceBundleSha256 }
+            : {}),
         }),
       });
       setAnalysis(result);
@@ -488,6 +602,13 @@ export function ProjectGenerationStudio() {
       announce("请先完成需求分析、处理开放问题并批准当前锁定计划。");
       return;
     }
+    if (incompatibleProductionTargets.length > 0) {
+      announce(
+        `当前生产请求有 ${analysis.request.entities.length} 个实体；`
+        + `${incompatibleProductionTargets.map((target) => target.language).join("、")} 仅支持单实体生产 Profile。`,
+      );
+      return;
+    }
     if (!runnerToken) {
       announce("请输入本地 Runner 的短期访问令牌；令牌只保存在当前页面内存中。");
       return;
@@ -507,6 +628,10 @@ export function ProjectGenerationStudio() {
           authMode: draft.authMode,
           approved: true,
           analysisDigest: analysis.requestDigest,
+          ...(draft.sources ? { sources: draft.sources } : {}),
+          ...(draft.sourceBundleSha256
+            ? { sourceBundleSha256: draft.sourceBundleSha256 }
+            : {}),
         }),
       });
       setJob(next);
@@ -600,6 +725,10 @@ export function ProjectGenerationStudio() {
       auth_mode: draft.authMode,
       business_rules: [],
       permissions: [],
+      ...(draft.sources ? { requirement_sources: draft.sources } : {}),
+      ...(draft.sourceBundleSha256
+        ? { source_bundle_sha256: draft.sourceBundleSha256 }
+        : {}),
       ui_handoff: {
         created_at: draft.createdAt,
         reviewer: draft.reviewer,
@@ -622,7 +751,7 @@ export function ProjectGenerationStudio() {
         <div>
           <span className="overline">PROJECT SYNTHESIS · B46–B80</span>
           <h1>多语言项目生成</h1>
-          <p>用同一份受审项目意图生成 Java、Python、C#、TypeScript、Go、Kotlin、PHP 与 Rust 工程；逐目标构建、探针和证据互不替代。</p>
+          <p>输入简述，或导入 TXT、Markdown、Word、HTML、PDF、Skill 与在线 HTML，一键生成可运行工程、验证证据、本地部署和云端部署手册。</p>
         </div>
         <div className="generation-header-status"><StatusChip status={draft ? "REVIEW" : "DRAFT"} /><StatusChip status={job?.status ?? "NOT_RUN"} /></div>
       </section>
@@ -650,7 +779,7 @@ export function ProjectGenerationStudio() {
           <div className="generation-fields">
             <label className="generation-field"><span>项目名称</span><input value={name} onChange={(event) => { setName(event.target.value); invalidateDraft(); }} required pattern={"[a-z][a-z0-9\\-]{1,62}[a-z0-9]"} autoComplete="off" aria-describedby="project-name-hint" /><small id="project-name-hint">小写字母、数字与连字符，例如 order-service</small></label>
             <label className="generation-field"><span>命名空间</span><input value={namespace} onChange={(event) => { setNamespace(event.target.value); invalidateDraft(); }} required pattern={"[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+"} autoComplete="off" aria-describedby="namespace-hint" /><small id="namespace-hint">稳定的点分命名空间，例如 io.elmos.orders</small></label>
-            <label className="generation-field generation-field-wide"><span>项目说明</span><textarea value={description} onChange={(event) => { setDescription(event.target.value); invalidateDraft(); }} required rows={7} maxLength={4_000} aria-describedby="description-hint" /><small id="description-hint">最多 4,000 字；可写“实体 / 字段 / 关系 / 规则 / 权限”标记，不要粘贴凭证、生产数据或客户代码。</small></label>
+            <label className="generation-field generation-field-wide"><span>项目说明</span><textarea value={description} onChange={(event) => updateDescription(event.target.value)} required rows={9} maxLength={32_000} aria-describedby="description-hint" /><small id="description-hint">最多 32,000 字；可直接写简述，也可在下方导入多种来源。建议保留“实体 / 字段 / 关系 / 规则 / 权限”标记；不要上传凭证、生产数据或无授权客户代码。</small></label>
             <label className="generation-field"><span>核心实体</span><input value={entity} onChange={(event) => { setEntity(event.target.value); invalidateDraft(); }} required pattern={"[a-z][a-z0-9_]{1,62}[a-z0-9]"} autoComplete="off" aria-describedby="entity-hint" /><small id="entity-hint">可在描述中继续写“实体: order, customer”和字段定义；默认生成内存 API starter。</small></label>
             <label className="generation-field"><span>审批者标识</span><input value={reviewer} onChange={(event) => { setReviewer(event.target.value); invalidateDraft(); }} required pattern={"[A-Za-z0-9](?:[A-Za-z0-9._:@]|/|-){2,199}"} autoComplete="off" aria-describedby="reviewer-hint" /><small id="reviewer-hint">必须与短期 Runner 凭证绑定的 Actor 完全一致；不填写密钥或邮箱凭证。</small></label>
             <label className="generation-field" htmlFor="generation-persistence">
@@ -684,6 +813,87 @@ export function ProjectGenerationStudio() {
             </label>
             <label className="generation-field"><span>租户标识</span><input value={tenantId} onChange={(event) => setTenantId(event.target.value)} required pattern={"[a-z][a-z0-9\\-]{2,62}"} autoComplete="off" aria-describedby="tenant-hint" /><small id="tenant-hint">必须与短期 Runner 凭证绑定的租户完全一致；请求头不能自行切换租户。</small></label>
             <label className="generation-field"><span>本地 Runner 令牌</span><input type="password" value={runnerToken} onChange={(event) => setRunnerToken(event.target.value)} minLength={24} autoComplete="off" aria-describedby="runner-token-hint" /><small id="runner-token-hint">仅保存在当前页面内存，不写入草稿、日志或生成项目。</small></label>
+            <section className="generation-source-studio generation-field-wide" aria-labelledby="generation-source-title">
+              <div className="generation-source-heading">
+                <div>
+                  <span className="overline">MULTI-SOURCE INTAKE</span>
+                  <h3 id="generation-source-title">导入需求来源</h3>
+                </div>
+                <StatusChip status={sourceBundle ? "READY" : "NOT_RUN"} compact />
+              </div>
+              <p>文件和 Skill 只作为不可信需求文本读取，不执行其中脚本或指令。在线内容仅允许公网 HTTPS，私网、回环、重定向越界和超限响应会被阻断。</p>
+              <div className="generation-source-grid">
+                <label className="generation-field">
+                  <span>在线 HTML 地址</span>
+                  <input
+                    type="url"
+                    value={sourceUrl}
+                    onChange={(event) => setSourceUrl(event.target.value)}
+                    placeholder="https://example.com/requirements"
+                    autoComplete="off"
+                    aria-describedby="source-url-hint"
+                  />
+                  <small id="source-url-hint">只读取 HTML 正文；不发送 Cookie、凭证或页面内脚本。</small>
+                </label>
+                <label className="generation-field">
+                  <span>仓库 Skills</span>
+                  <input
+                    value={sourceSkills}
+                    onChange={(event) => setSourceSkills(event.target.value)}
+                    placeholder="elmos-project-synthesis, b77-container-..."
+                    autoComplete="off"
+                    aria-describedby="source-skills-hint"
+                  />
+                  <small id="source-skills-hint">填写精确 Skill 名称，逗号分隔，最多 8 个；导入内容不会被执行。</small>
+                </label>
+                <label className="generation-field generation-field-wide">
+                  <span>上传需求文件</span>
+                  <input
+                    ref={sourceFileInput}
+                    type="file"
+                    multiple
+                    accept=".txt,.md,.markdown,.docx,.html,.htm,.pdf,text/plain,text/markdown,text/html,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    onChange={(event) => setSourceFiles(Array.from(event.target.files ?? []))}
+                    aria-describedby="source-files-hint"
+                  />
+                  <small id="source-files-hint">支持 TXT / Markdown / Word (.docx) / HTML / PDF；单文件 8 MB、最多 8 个。扫描 PDF 需先 OCR；旧 .doc 请转换为 .docx。</small>
+                </label>
+              </div>
+              {sourceFiles.length > 0 && (
+                <div className="generation-source-pending" aria-label="待解析文件">
+                  {sourceFiles.map((file) => <span key={`${file.name}-${file.size}`}>{file.name} · {Math.ceil(file.size / 1024)} KB</span>)}
+                  <button
+                    type="button"
+                    className="button button-ghost compact-button"
+                    onClick={() => {
+                      setSourceFiles([]);
+                      if (sourceFileInput.current) sourceFileInput.current.value = "";
+                    }}
+                  >
+                    清空文件
+                  </button>
+                </div>
+              )}
+              <div className="generation-source-actions">
+                <button type="button" className="button button-secondary" onClick={() => void ingestSources()} disabled={sourceBusy || runnerBusy}>
+                  <Icon name={sourceBusy ? "refresh" : "spark"} size={14} className={sourceBusy ? "spinning" : ""} />
+                  {sourceBusy ? "正在提取与绑定" : "解析并合并来源"}
+                </button>
+                <small>来源包与当前租户、审批者和摘要绑定 60 分钟；合并文本仍需人工审阅。</small>
+              </div>
+              {sourceBundle && (
+                <div className="generation-source-results" aria-label="已绑定来源">
+                  <strong>{sourceBundle.sources.length} 个来源 · {sourceBundle.bundleSha256.slice(0, 12)}</strong>
+                  {sourceBundle.sources.map((source) => (
+                    <span key={source.id}>
+                      {source.id} · {source.kind} · {source.label} · {source.includedCharacters}/{source.extractedCharacters} 字
+                      {source.truncated ? " · 已截取" : ""}
+                    </span>
+                  ))}
+                  {sourceBundle.warnings.map((warning) => <em key={warning}>{warning}</em>)}
+                </div>
+              )}
+            </section>
           </div>
 
           <fieldset className="target-fieldset" aria-describedby="target-hint target-error">
@@ -702,7 +912,7 @@ export function ProjectGenerationStudio() {
                     />
                     <span className="target-check"><Icon name="check" size={13} /></span>
                     <span className="target-icon"><Icon name={profile.icon} size={21} /></span>
-                    <span className="target-copy"><strong>{profile.language} {profile.runtime}</strong><small>{profile.framework} · {profile.maturity}</small><em>{profile.sourceSkill} · :{profile.port}</em></span>
+                    <span className="target-copy"><strong>{profile.language} {profile.runtime}</strong><small>{profile.framework} · {profile.maturity}</small><em>{profile.sourceSkill} · :{profile.port} · 生产{profile.productionEntityScope === "multi-entity" ? "多实体" : "单实体"}</em></span>
                   </label>
                 );
               })}
@@ -785,6 +995,12 @@ export function ProjectGenerationStudio() {
                   <strong>开放问题 · {analysis.request.open_questions.length}</strong>
                   {analysis.request.open_questions.map((question) => <span key={question.id}>{question.id} · {question.question}</span>)}
                   {analysis.request.open_questions.length === 0 && <span>无阻断性开放问题，可以进入显式批准。</span>}
+                  {incompatibleProductionTargets.length > 0 && (
+                    <span className="warning-text">
+                      目标边界阻断：{incompatibleProductionTargets.map((target) => target.language).join("、")}
+                      的 PostgreSQL Profile 只接受单实体；请改选 Java/Python 或将需求拆分。
+                    </span>
+                  )}
                 </div>
               </div>
             )}
@@ -813,7 +1029,7 @@ export function ProjectGenerationStudio() {
               <small>使用当前租户、审批者与重新输入的短期令牌恢复服务端原子持久化任务；浏览器不保存令牌。</small>
             </div>
             <label className="generation-approval">
-              <input type="checkbox" checked={approved} onChange={(event) => setApproved(event.target.checked)} disabled={!draft || !analysis || analysis.request.open_questions.length > 0 || runnerBusy} />
+              <input type="checkbox" checked={approved} onChange={(event) => setApproved(event.target.checked)} disabled={!draft || !analysis || analysis.request.open_questions.length > 0 || incompatibleProductionTargets.length > 0 || runnerBusy} />
               <span><strong>我已审阅结构化需求，并批准当前 Intent 在本机受控 Runner 中执行</strong><small>只允许固定的 Project Synthesis 子命令；任务失败、重启或工具链缺失时保持 BLOCKED / PARTIAL。</small></span>
             </label>
             {job && (
@@ -857,7 +1073,7 @@ export function ProjectGenerationStudio() {
               <button className="button button-secondary" type="button" disabled={!draft} onClick={downloadIntent}><Icon name="external" size={16} />导出 Intent</button>
               <button className="button button-secondary" type="submit"><Icon name="spark" size={16} />锁定生成计划</button>
               <button className="button button-secondary" type="button" disabled={!draft || !runnerReady || runnerBusy} onClick={() => void analyzeDraft()}><Icon name="workflow" size={16} />分析并整理需求</button>
-              <button className="button button-primary" type="button" disabled={!draft || !analysis || analysis.request.open_questions.length > 0 || !approved || !runnerReady || runnerBusy} onClick={() => void executeJob()}><Icon name="play" size={16} />执行并验证</button>
+              <button className="button button-primary" type="button" disabled={!draft || !analysis || analysis.request.open_questions.length > 0 || !approved || !runnerReady || runnerBusy} onClick={() => void executeJob()}><Icon name="play" size={16} />一键生成、验证并归档</button>
             </div>
           </div>
         </form>

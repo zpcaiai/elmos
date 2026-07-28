@@ -17,11 +17,11 @@ export async function GET() {
     ],
     researchPack: {
       key: "spring-boot-2-7-18-to-3-5-3",
-      status: "EXPERIMENTAL",
+      status: "LIMITED",
       externalEvidence: "NOT_RUN",
     },
     deploymentGuidance: springDeploymentGuidance,
     stages: springModernizationStages,
-    note: "仓库已能区分经典 Spring Framework 与 Spring Boot；精确实验 Pack 及本地结构 Gate 已通过，但真实客户源/目标运行、holdout 与独立认证仍为 NOT_RUN。",
+    note: "Spring Boot 2.7.18→3.5.3 的 Web、配置和生命周期子集已通过真实公共仓库、源/目标构建与启动验证，状态提升为受限支持；客户私库、Rootless Runner 和外部独立认证仍为 NOT_RUN。",
   });
 }

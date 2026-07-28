@@ -7,12 +7,18 @@ process.env.no_proxy = "127.0.0.1,localhost";
 delete process.env.NO_COLOR;
 
 const repositoryRoot = path.resolve(__dirname, "../..");
+const translationSourceRoot = path.resolve(__dirname, "e2e/fixtures/translation-sources");
+const translationCasesRoot = path.resolve(__dirname, "e2e/fixtures/translation-cases");
 const runnerToken = "elmos-e2e-local-token-32-characters";
 const uvPath = process.env.ELMOS_UV_PATH ?? "/opt/homebrew/bin/uv";
 const webPort = Number.parseInt(process.env.ELMOS_E2E_PORT ?? "3200", 10);
 const webServerMode = process.env.ELMOS_E2E_WEB_SERVER_MODE ?? "development";
+const webServerBundler = process.env.ELMOS_E2E_WEB_BUNDLER ?? "turbopack";
 if (!["development", "production"].includes(webServerMode)) {
   throw new Error("ELMOS_E2E_WEB_SERVER_MODE_INVALID");
+}
+if (!["turbopack", "webpack"].includes(webServerBundler)) {
+  throw new Error("ELMOS_E2E_WEB_BUNDLER_INVALID");
 }
 const configuredRunnerRoot = process.env.ELMOS_E2E_RUNNER_ROOT;
 const runnerRoot = configuredRunnerRoot
@@ -50,7 +56,7 @@ export default defineConfig({
   webServer: {
     command: webServerMode === "production"
       ? `pnpm build && pnpm start --hostname 127.0.0.1 --port ${webPort}`
-      : `pnpm dev --hostname 127.0.0.1 --port ${webPort}`,
+      : `pnpm dev --hostname 127.0.0.1 --port ${webPort}${webServerBundler === "webpack" ? " --webpack" : ""}`,
     url: `${baseURL}/api/capabilities/generation`,
     reuseExistingServer: false,
     timeout: 120_000,
@@ -59,6 +65,8 @@ export default defineConfig({
       ELMOS_LOCAL_RUNNER_ENABLED: "true",
       ELMOS_LOCAL_RUNNER_ROOT: runnerRoot,
       ELMOS_REPOSITORY_ROOT: repositoryRoot,
+      ELMOS_TRANSLATION_SOURCE_ROOT: translationSourceRoot,
+      ELMOS_TRANSLATION_CASES_ROOT: translationCasesRoot,
       ELMOS_UV_PATH: uvPath,
       ELMOS_LOCAL_RUNNER_EXECUTOR: "HOST_DEVELOPMENT",
       ELMOS_LOCAL_RUNNER_AUTH_TOKEN: runnerToken,

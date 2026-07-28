@@ -20,6 +20,19 @@ spring:
     problemdetails:
       enabled: true
 elmos:
+  operations:
+    api-key: ${ELMOS_OPERATIONS_API_KEY:}
+  repository-workspace:
+    enabled: ${ELMOS_REPOSITORY_WORKSPACE_ENABLED:false}
+    api-key: ${ELMOS_REPOSITORY_WORKSPACE_API_KEY:}
+    root: ${ELMOS_REPOSITORY_WORKSPACE_ROOT:}
+    credential-root: ${ELMOS_REPOSITORY_CREDENTIAL_ROOT:}
+    max-files: ${ELMOS_REPOSITORY_WORKSPACE_MAX_FILES:100000}
+    max-bytes: ${ELMOS_REPOSITORY_WORKSPACE_MAX_BYTES:2147483648}
+    allow-file-repositories: ${ELMOS_REPOSITORY_ALLOW_FILE_REPOSITORIES:false}
+    allowed-generic-hosts: ${ELMOS_REPOSITORY_ALLOWED_GENERIC_HOSTS:}
+    max-workspaces: ${ELMOS_REPOSITORY_WORKSPACE_MAX_COUNT:1000}
+    ttl-hours: ${ELMOS_REPOSITORY_WORKSPACE_TTL_HOURS:168}
   github:
     app:
       enabled: ${ELMOS_GITHUB_APP_ENABLED:false}

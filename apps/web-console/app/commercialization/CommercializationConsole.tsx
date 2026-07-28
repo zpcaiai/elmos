@@ -90,7 +90,7 @@ export function CommercializationConsole() {
       </section>
 
       <section className="control-grid">
-        <article className="surface-card stage-detail" id="trust-stage-panel" role="tabpanel" aria-labelledby={`trust-tab-${selectedStage.batch}`} tabIndex={0}>
+        <div className="surface-card stage-detail" id="trust-stage-panel" role="tabpanel" aria-labelledby={`trust-tab-${selectedStage.batch}`} tabIndex={0}>
           <div className="stage-detail-heading">
             <span className="large-stage-icon"><Icon name={selectedStage.icon} size={23} /></span>
             <div><span className="overline">{selectedStage.batch} · {selectedStage.subtitle}</span><h2>{selectedStage.title}</h2></div>
@@ -104,7 +104,7 @@ export function CommercializationConsole() {
             </div>)}
           </div>
           <div className="restriction-block"><span className="overline">NON-NEGOTIABLE</span>{selectedStage.restrictions.map((restriction) => <p key={restriction}><Icon name="shield" size={15} />{restriction}</p>)}</div>
-        </article>
+        </div>
 
         <aside className="surface-card decision-card">
           <div className="decision-card-top"><span className="decision-symbol"><Icon name="lock" size={20} /></span><StatusChip status="BLOCKED" compact /></div>

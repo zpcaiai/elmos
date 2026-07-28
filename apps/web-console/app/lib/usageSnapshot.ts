@@ -4,6 +4,7 @@ export type UsageSnapshotStatus = "CURRENT" | "PARTIAL";
 
 export type UsageMeasureSnapshot = {
   consumed: number;
+  reserved: number;
   limit: number;
   remaining: number;
   usageBps: number;
@@ -83,19 +84,22 @@ function measure(value: unknown, field: string): UsageMeasureSnapshot {
     throw new Error(`USAGE_SNAPSHOT_${field.toUpperCase()}_INVALID`);
   }
   const consumed = integer(value.consumed, `${field}_consumed`);
+  const reserved = value.reserved === undefined
+    ? 0
+    : integer(value.reserved, `${field}_reserved`);
   const limit = integer(value.limit, `${field}_limit`);
   const remaining = integer(value.remaining, `${field}_remaining`);
   const usageBps = integer(value.usageBps, `${field}_usage_bps`);
   const hardStop = boolean(value.hardStop, `${field}_hard_stop`);
   if (
     limit === 0
-    || remaining !== Math.max(0, limit - consumed)
+    || remaining !== Math.max(0, limit - consumed - reserved)
     || usageBps > 10_000
     || hardStop !== (remaining === 0)
   ) {
     throw new Error(`USAGE_SNAPSHOT_${field.toUpperCase()}_INCONSISTENT`);
   }
-  return { consumed, limit, remaining, usageBps, hardStop };
+  return { consumed, reserved, limit, remaining, usageBps, hardStop };
 }
 
 export function parseCurrentUsageSnapshot(value: unknown): CurrentUsageSnapshot {

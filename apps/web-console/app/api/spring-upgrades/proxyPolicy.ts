@@ -1,4 +1,10 @@
+import { createHash, timingSafeEqual } from "node:crypto";
+import { lstatSync, readFileSync } from "node:fs";
+import path from "node:path";
+import type { NextRequest } from "next/server";
+
 const organizationPattern = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/;
+const actorPattern = /^[A-Za-z0-9][A-Za-z0-9._:@/-]{2,199}$/;
 
 export type SpringProxyConfiguration =
   | {
@@ -53,6 +59,91 @@ export function githubAppProxyConfiguration() {
     return null;
   }
   return configuration;
+}
+
+function safeEqual(left: string, right: string) {
+  return timingSafeEqual(
+    createHash("sha256").update(left).digest(),
+    createHash("sha256").update(right).digest(),
+  );
+}
+
+function configuredToken(): string | null {
+  const direct = process.env.ELMOS_SPRING_PROXY_AUTH_TOKEN;
+  const tokenFile = process.env.ELMOS_SPRING_PROXY_AUTH_TOKEN_FILE;
+  if (Boolean(direct) === Boolean(tokenFile)) return null;
+  if (direct) return direct.length >= 24 && direct.length <= 4_096 ? direct : null;
+  if (!tokenFile || !path.isAbsolute(tokenFile)) return null;
+  try {
+    const details = lstatSync(tokenFile);
+    if (
+      details.isSymbolicLink()
+      || !details.isFile()
+      || details.size > 4_096
+      || (details.mode & 0o077) !== 0
+    ) return null;
+    const token = readFileSync(tokenFile, "utf-8").trim();
+    return token.length >= 24 && token.length <= 4_096 ? token : null;
+  } catch {
+    return null;
+  }
+}
+
+export function authenticateSpringProxy(request: NextRequest): Response | null {
+  const configuration = springProxyConfiguration();
+  const token = configuredToken();
+  const actor = process.env.ELMOS_SPRING_PROXY_ACTOR_ID?.trim() ?? "";
+  const expiresAt = process.env.ELMOS_SPRING_PROXY_AUTH_TOKEN_EXPIRES_AT?.trim() ?? "";
+  const expiry = Date.parse(expiresAt);
+  if (
+    !configuration.configured
+    || !token
+    || !actorPattern.test(actor)
+    || Number.isNaN(expiry)
+    || !/(Z|[+-]\d{2}:\d{2})$/.test(expiresAt)
+    || expiry <= Date.now()
+    || expiry > Date.now() + 24 * 60 * 60_000
+  ) {
+    return Response.json(
+      {
+        errorCode: "SPRING_PROXY_AUTH_NOT_CONFIGURED",
+        message: "Spring 迁移代理未配置有效的短期租户身份租约。",
+        retryable: false,
+      },
+      { status: 503, headers: { "cache-control": "no-store" } },
+    );
+  }
+  const authorization = request.headers.get("authorization") ?? "";
+  const presentedToken = authorization.startsWith("Bearer ") ? authorization.slice(7) : "";
+  if (!safeEqual(presentedToken, token)) {
+    return Response.json(
+      { errorCode: "AUTHENTICATION_REQUIRED", message: "需要有效的 Spring 迁移短期令牌。", retryable: false },
+      { status: 401, headers: { "cache-control": "no-store" } },
+    );
+  }
+  const tenant = request.headers.get("x-elmos-tenant") ?? "";
+  if (!safeEqual(tenant, configuration.organizationId)) {
+    return Response.json(
+      {
+        errorCode: "TENANT_ID_NOT_BOUND_TO_CREDENTIAL",
+        message: "请求租户与 Spring 迁移凭证绑定不一致。",
+        retryable: false,
+      },
+      { status: 403, headers: { "cache-control": "no-store" } },
+    );
+  }
+  const presentedActor = request.headers.get("x-elmos-actor") ?? "";
+  if (!actorPattern.test(presentedActor) || !safeEqual(presentedActor, actor)) {
+    return Response.json(
+      {
+        errorCode: "ACTOR_ID_NOT_BOUND_TO_CREDENTIAL",
+        message: "请求执行者与 Spring 迁移凭证绑定不一致。",
+        retryable: false,
+      },
+      { status: 403, headers: { "cache-control": "no-store" } },
+    );
+  }
+  return null;
 }
 
 export function proxyNotConfiguredResponse() {

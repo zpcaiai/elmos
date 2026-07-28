@@ -72,6 +72,16 @@ def _draft_from_intent(intent: dict[str, Any]) -> dict[str, Any]:
         project_kind=str(intent.get("project_kind", "api")),
         persistence=str(intent.get("persistence", "in-memory")),
         auth_mode=str(intent.get("auth_mode", "none")),
+        requirement_sources=(
+            intent.get("requirement_sources", [])
+            if isinstance(intent.get("requirement_sources", []), list)
+            else []
+        ),
+        source_bundle_sha256=(
+            str(intent["source_bundle_sha256"])
+            if intent.get("source_bundle_sha256")
+            else None
+        ),
     )
 
 

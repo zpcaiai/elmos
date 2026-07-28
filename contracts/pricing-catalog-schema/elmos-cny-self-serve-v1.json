@@ -1,0 +1,170 @@
+{
+  "schemaVersion": "1.1.0",
+  "catalogVersion": "2026-07-28.2",
+  "status": "DRAFT",
+  "currency": "CNY",
+  "effectiveFrom": "2026-07-28T00:00:00Z",
+  "effectiveUntil": null,
+  "authoritativeSource": "contracts/pricing-catalog-schema/elmos-cny-self-serve-v1.json",
+  "sellerLegalEntityStatus": "NOT_CONFIGURED",
+  "taxStatus": "NOT_CONFIGURED",
+  "taxPresentation": "UNSPECIFIED",
+  "paymentStatus": "NOT_CONFIGURED",
+  "paymentProvider": "STRIPE_CHECKOUT",
+  "costValidationStatus": "NOT_RUN",
+  "overagePolicy": "HARD_STOP_NO_AUTOMATIC_CHARGE",
+  "allowanceScope": "ORGANIZATION",
+  "plans": [
+    {
+      "planId": "elmos-free-trial",
+      "name": "免费体验",
+      "eyebrow": "先完成一次真实体验",
+      "description": "适合评估一个小型仓库，从发现、规划到查看验证结果。",
+      "priceFen": 0,
+      "billingLabel": "14 天",
+      "billingPeriod": "TRIAL",
+      "effectiveMonthlyFen": 0,
+      "termDays": 14,
+      "allowanceWindow": "TRIAL_TERM",
+      "tokens": 2000000,
+      "credits": 60,
+      "annualTokens": 2000000,
+      "annualCredits": 60,
+      "activeProjects": 1,
+      "concurrentJobs": 1,
+      "artifactRetentionDays": 7,
+      "featured": false,
+      "trialEligibilityPolicy": "ONE_PER_VERIFIED_ORGANIZATION",
+      "features": [
+        "无需绑定银行卡",
+        "标准模型与核心工作流",
+        "1 个活动项目",
+        "1 个并发作业",
+        "证据保留 7 天"
+      ]
+    },
+    {
+      "planId": "elmos-pro-monthly",
+      "name": "专业月付",
+      "eyebrow": "灵活按月使用",
+      "description": "适合个人开发者和正在推进单个现代化项目的小团队负责人。",
+      "priceFen": 12900,
+      "billingLabel": "每月",
+      "billingPeriod": "MONTH",
+      "effectiveMonthlyFen": 12900,
+      "termDays": 31,
+      "allowanceWindow": "MONTHLY",
+      "tokens": 20000000,
+      "credits": 600,
+      "annualTokens": 240000000,
+      "annualCredits": 7200,
+      "activeProjects": 10,
+      "concurrentJobs": 3,
+      "artifactRetentionDays": 30,
+      "featured": false,
+      "trialEligibilityPolicy": "NOT_APPLICABLE",
+      "features": [
+        "完整模型目录",
+        "迁移、转换与项目生成",
+        "10 个活动项目",
+        "3 个并发作业",
+        "邮件支持"
+      ]
+    },
+    {
+      "planId": "elmos-pro-annual",
+      "name": "专业年付",
+      "eyebrow": "长期项目首选",
+      "description": "适合持续迁移多个系统的客户，价格更低且每月额度提高 25%。",
+      "priceFen": 129000,
+      "billingLabel": "每年",
+      "billingPeriod": "YEAR",
+      "effectiveMonthlyFen": 10750,
+      "termDays": 365,
+      "allowanceWindow": "MONTHLY",
+      "tokens": 25000000,
+      "credits": 750,
+      "annualTokens": 300000000,
+      "annualCredits": 9000,
+      "activeProjects": 25,
+      "concurrentJobs": 5,
+      "artifactRetentionDays": 90,
+      "featured": true,
+      "trialEligibilityPolicy": "NOT_APPLICABLE",
+      "features": [
+        "月付档全部能力",
+        "每月额度提高 25%",
+        "25 个活动项目",
+        "5 个并发作业",
+        "优先支持与 90 天证据保留"
+      ]
+    }
+  ],
+  "tokenClasses": [
+    {
+      "tokenClass": "INPUT",
+      "unit": "token",
+      "providerReceiptRequired": true
+    },
+    {
+      "tokenClass": "OUTPUT",
+      "unit": "token",
+      "providerReceiptRequired": true
+    },
+    {
+      "tokenClass": "CACHE_READ",
+      "unit": "token",
+      "providerReceiptRequired": true
+    },
+    {
+      "tokenClass": "CACHE_WRITE",
+      "unit": "token",
+      "providerReceiptRequired": true
+    }
+  ],
+  "creditRates": [
+    {
+      "operationKey": "repository-discovery",
+      "label": "仓库发现与分析",
+      "credits": 5,
+      "unit": "次",
+      "meterVersion": "platform-credit-v1"
+    },
+    {
+      "operationKey": "migration-or-translation-plan",
+      "label": "迁移或转换规划",
+      "credits": 15,
+      "unit": "次",
+      "meterVersion": "platform-credit-v1"
+    },
+    {
+      "operationKey": "verified-generation-or-migration",
+      "label": "受控生成或迁移执行",
+      "credits": 40,
+      "unit": "次",
+      "meterVersion": "platform-credit-v1"
+    },
+    {
+      "operationKey": "isolated-runner-minute",
+      "label": "隔离 Runner",
+      "credits": 1,
+      "unit": "分钟",
+      "meterVersion": "platform-credit-v1"
+    },
+    {
+      "operationKey": "evidence-pack-verification",
+      "label": "证据包验证",
+      "credits": 10,
+      "unit": "次",
+      "meterVersion": "platform-credit-v1"
+    }
+  ],
+  "limitations": [
+    "Token 按提供方确认的输入、输出、缓存读取和缓存写入分类记录，当前套餐额度按确认 token 总量扣减。",
+    "缺失、迟到或未对账的提供方用量不得显示为可信的零用量。",
+    "Credits 按不可变的已接受操作用量事件扣减；组合任务会累计各项费用。",
+    "免费体验额度在 14 天结束时失效；付费额度按权威订阅账期重置，均不结转。",
+    "额度用尽后硬停止，不自动产生超额费用；支付、税务与开票当前仍为 NOT_CONFIGURED。",
+    "模型、Runner、存储、网络与支持成本尚未完成代表性工作负载验证，因此目录不得发布。"
+  ]
+}

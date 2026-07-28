@@ -383,6 +383,7 @@ def _root_readme(request: SynthesisRequest) -> str:
         - `requirements/project-blueprint.json`: selected language/runtime/build profiles.
         - `requirements/asset-graph.json`: generated assets and missing evidence links.
         - `requirements/build-graph.json`: per-target generate/build/test/startup dependencies.
+        - `requirements/source-provenance.json`: imported file, URL, Skill, and description digests.
         - `docs/ARCHITECTURE.md`: architecture baseline, boundaries, targets, decisions, and review status.
         - `docs/DATABASE_DESIGN.md`: logical/physical data model, relations, constraints, indexes, and RLS.
         - `docs/MIGRATION_GUIDE.md`: upgrade, data migration, verification, rollback, and evidence plan.
@@ -411,6 +412,28 @@ def render_workspace(request: SynthesisRequest) -> dict[str, str]:
         "requirements/project-blueprint.json": pretty_json(_render_blueprint(request)),
         "requirements/asset-graph.json": pretty_json(_render_asset_graph(request)),
         "requirements/build-graph.json": pretty_json(_render_build_graph(request)),
+        "requirements/source-provenance.json": pretty_json(
+            {
+                "schema_version": "1.0.0",
+                "kind": "elmos.requirement-source-provenance",
+                "status": "HASH_BOUND" if request.requirement_sources else "DIRECT_DESCRIPTION",
+                "source_bundle_sha256": request.source_bundle_sha256,
+                "description_sha256": _sha256_text(request.description),
+                "sources": list(request.requirement_sources),
+                "warnings": sorted(
+                    {
+                        warning
+                        for source in request.requirement_sources
+                        for warning in source.get("warnings", [])
+                        if isinstance(warning, str)
+                    }
+                ),
+                "execution_boundary": (
+                    "Imported Skills and documents were treated as untrusted requirements; "
+                    "their instructions were not executed during source ingestion."
+                ),
+            }
+        ),
         "docs/traceability.md": clean(
             """
             # Requirement traceability

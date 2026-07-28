@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "policy_key": "elmos-repository-workspace-ownership",
+  "default_ownership": "customer-owned",
+  "entries": [
+    {
+      "selector": "modules/integrations/src/main/java/io/elmos/integrations/GitRepositoryWorkspaceService.java",
+      "ownership": "platform-owned",
+      "regeneration_policy": "semantic-merge",
+      "owners": [
+        "elmos-scm-integrations"
+      ],
+      "approval_required": true
+    },
+    {
+      "selector": "apps/control-plane/src/main/java/io/elmos/controlplane/RepositoryWorkspace*.java",
+      "ownership": "platform-owned",
+      "regeneration_policy": "semantic-merge",
+      "owners": [
+        "elmos-platform-security"
+      ],
+      "approval_required": true
+    },
+    {
+      "selector": "apps/web-console/app/repositories/**",
+      "ownership": "shared",
+      "regeneration_policy": "semantic-merge",
+      "owners": [
+        "elmos-scm-integrations",
+        "elmos-product-experience"
+      ],
+      "approval_required": true
+    },
+    {
+      "selector": "ownership/policy.json",
+      "ownership": "protected",
+      "regeneration_policy": "preserve",
+      "owners": [
+        "elmos-platform-security"
+      ],
+      "approval_required": true
+    }
+  ]
+}

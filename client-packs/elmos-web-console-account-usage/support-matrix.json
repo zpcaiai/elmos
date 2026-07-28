@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-web-console-account-usage",
+  "capabilities": [
+    {
+      "id": "live-quota-progress",
+      "domain": "state",
+      "status": "experimental",
+      "owner": "elmos-web-console",
+      "evidence_refs": ["apps/web-console/app/pricing/UsageDashboard.tsx"],
+      "reason": "Type checked locally; production browser journey is NOT_RUN."
+    },
+    {
+      "id": "cookie-session-bff",
+      "domain": "security",
+      "status": "experimental",
+      "owner": "elmos-control-plane-security",
+      "evidence_refs": ["apps/web-console/app/lib/server/commercialBillingProxy.ts"],
+      "reason": "Bearer forwarding, HTTPS and cookie mutation origin checks are implemented; external IdP is NOT_RUN."
+    },
+    {
+      "id": "history-alert-export",
+      "domain": "component",
+      "status": "experimental",
+      "owner": "elmos-web-console",
+      "evidence_refs": ["apps/web-console/app/api/usage"],
+      "reason": "Local contracts are implemented; independent accessibility and customer acceptance remain NOT_RUN."
+    }
+  ]
+}

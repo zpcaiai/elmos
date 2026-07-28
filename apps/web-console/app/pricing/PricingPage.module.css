@@ -70,7 +70,7 @@
 
 .statusNotice div { display: flex; flex-direction: column; gap: 3px; }
 .statusNotice strong { font-size: 11px; }
-.statusNotice span { color: #8d7440; font-size: 10px; line-height: 1.5; }
+.statusNotice span { color: #72581d; font-size: 10px; line-height: 1.5; }
 .statusNotice a { display: inline-flex; align-items: center; gap: 6px; color: #755913; font-size: 10px; font-weight: 750; white-space: nowrap; }
 
 .planGrid {
@@ -161,7 +161,7 @@
 
 .quotaPanel span { color: #5e7475; font-size: 9px; font-weight: 700; }
 .quotaPanel strong { color: #125f5d; font-size: 17px; }
-.quotaPanel small { color: #829596; font-size: 8px; }
+.quotaPanel small { color: #536a6c; font-size: 8px; }
 
 .annualCeiling {
   margin-top: 8px;

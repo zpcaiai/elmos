@@ -4,6 +4,8 @@ version = "0.1.0"
 description = "Fail-closed, typed, cross-dialect SQL transpilation for the ELMOS database engine"
 requires-python = ">=3.12"
 dependencies = [
+  "duckdb==1.5.4",
+  "psycopg[binary]==3.3.4",
   "sqlglot==30.13.0",
 ]
 

@@ -2,7 +2,7 @@
   "authorization": "local-engineering-validation",
   "behavior_case_count": 3,
   "behavior_pass_rate": 1.0,
-  "certification_status": "EXPERIMENTAL",
+  "certification_status": "NOT_CERTIFIED",
   "corpus": "real-repository",
   "critical_unknown_semantics": 0,
   "executor": "local-toolchain",
@@ -13,6 +13,7 @@
     "Object graphs, exceptions, async, reflection, I/O, framework, database, and concurrency semantics remain outside this route profile."
   ],
   "route": "typescript-to-csharp",
+  "route_maturity": "LIMITED",
   "schema_version": "1.0.0",
   "scope": "typed-pure-function-v1",
   "semantic_ir_sha256": "sha256:a817dcb34991bf2cbe6914e4028519a66e73e5ffecda420fafe2da682c206878",
@@ -42,7 +43,7 @@
           "Release"
         ],
         "stderr": "",
-        "stdout": "  Determining projects to restore...\n  Restored /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-typescript-to-csharp-uoe_15oi/real-repository/RouteHarness.csproj (in 113 ms).\n  RouteHarness -> /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-typescript-to-csharp-uoe_15oi/real-repository/bin/Release/net10.0/RouteHarness.dll\n\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:01.47\n"
+        "stdout": "  Determining projects to restore...\n  Restored /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-typescript-to-csharp-y20rawt9/real-repository/RouteHarness.csproj (in 109 ms).\n  RouteHarness -> /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-typescript-to-csharp-y20rawt9/real-repository/bin/Release/net10.0/RouteHarness.dll\n\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:01.37\n"
       },
       {
         "command": [

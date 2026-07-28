@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Icon } from "../components/Icon";
 import { formatCny, formatQuota, pricingCatalog } from "../lib/pricingCatalog";
 import styles from "./PricingPage.module.css";
+import { PlanBillingAction, SubscriptionManager } from "./BillingActions";
 import { UsageDashboard } from "./UsageDashboard";
 
 export const metadata: Metadata = {
@@ -11,6 +12,12 @@ export const metadata: Metadata = {
 };
 
 export default function PricingPage() {
+  const catalogOrderable = pricingCatalog.status === "PUBLISHED"
+    && pricingCatalog.sellerLegalEntityStatus === "CONFIGURED"
+    && pricingCatalog.taxStatus === "CONFIGURED"
+    && pricingCatalog.paymentStatus === "CONFIGURED"
+    && pricingCatalog.costValidationStatus === "VALIDATED";
+
   return (
     <div className={`page-stack ${styles.page}`}>
       <section className={styles.hero}>
@@ -41,7 +48,12 @@ export default function PricingPage() {
         <Link href="/commercialization">查看控制面 <Icon name="arrow" size={14} /></Link>
       </section>
 
-      <UsageDashboard />
+      <SubscriptionManager />
+
+      <UsageDashboard
+        allowLocalCredentials={process.env.ELMOS_LOCAL_RUNNER_ENABLED === "true"}
+        emailAlertsEnabled={process.env.ELMOS_USAGE_EMAIL_ALERTS_ENABLED === "true"}
+      />
 
       <section aria-labelledby="pricing-plans-title">
         <div className="section-heading">
@@ -102,13 +114,9 @@ export default function PricingPage() {
                   <li key={feature}><Icon name="check" size={15} />{feature}</li>
                 ))}
               </ul>
-              <Link
-                className={`button ${plan.featured ? "button-primary" : "button-secondary"} ${styles.planAction}`}
-                href={plan.planId === "elmos-free-trial" ? "/generation" : "/commercialization"}
-              >
-                {plan.planId === "elmos-free-trial" ? "开始体验" : "查看开通状态"}
-                <Icon name="arrow" size={15} />
-              </Link>
+              <div className={styles.planAction}>
+                <PlanBillingAction plan={plan} orderable={catalogOrderable} />
+              </div>
             </article>
           ))}
         </div>

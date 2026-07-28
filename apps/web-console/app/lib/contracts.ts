@@ -1,4 +1,4 @@
-export type CapabilityStatus = "READY" | "ENFORCED" | "BLOCKED" | "NOT_RUN" | "NOT_CONFIGURED" | "EXPERIMENTAL" | "REVIEW" | "DRAFT";
+export type CapabilityStatus = "READY" | "ENFORCED" | "BLOCKED" | "NOT_RUN" | "NOT_CONFIGURED" | "EXPERIMENTAL" | "LIMITED" | "REVIEW" | "DRAFT";
 
 export type MigrationCapability = {
   id: string;
@@ -64,6 +64,7 @@ export type GenerationTarget = {
   verificationStatus: "NOT_RUN";
   maturity: "limited" | "experimental";
   productionProfiles: Array<"postgresql+jwt" | "postgresql+oidc">;
+  productionEntityScope: "multi-entity" | "single-entity";
   accent: "amber" | "blue" | "violet" | "cyan" | "green";
   icon: "code" | "spark" | "layers";
 };
@@ -141,6 +142,40 @@ export type GenerationCapabilityResponse = {
   note: string;
 };
 
+export type GenerationSourceKind =
+  | "description"
+  | "text-file"
+  | "markdown-file"
+  | "word-file"
+  | "html-file"
+  | "pdf-file"
+  | "online-html"
+  | "skill";
+
+export type GenerationSourceReference = {
+  id: string;
+  kind: GenerationSourceKind;
+  label: string;
+  mediaType: string;
+  origin?: string;
+  sha256: string;
+  byteCount: number;
+  extractedCharacters: number;
+  includedCharacters: number;
+  truncated: boolean;
+  warnings: string[];
+};
+
+export type GenerationSourceBundle = {
+  status: "READY_FOR_REVIEW";
+  schemaVersion: "1.0.0";
+  bundleSha256: string;
+  combinedText: string;
+  sources: GenerationSourceReference[];
+  warnings: string[];
+  extractedAt: string;
+};
+
 export type GenerationJobCreateRequest = {
   name: string;
   namespace: string;
@@ -152,6 +187,8 @@ export type GenerationJobCreateRequest = {
   authMode: "none" | "jwt" | "oidc";
   approved: boolean;
   analysisDigest: string;
+  sources?: GenerationSourceReference[];
+  sourceBundleSha256?: string;
 };
 
 export type GenerationAnalyzeRequest = Omit<
@@ -276,6 +313,7 @@ export type GenerationJob = {
     | "pipeline"
     | "verify"
     | "archive"
+    | "metering"
     | "complete"
     | "blocked"
     | "cancelled"
@@ -316,7 +354,7 @@ export type SpringModernizationCapabilityResponse = {
   }>;
   researchPack: {
     key: "spring-boot-2-7-18-to-3-5-3";
-    status: "EXPERIMENTAL";
+    status: "LIMITED";
     externalEvidence: "NOT_RUN";
   };
   deploymentGuidance: DeploymentGuidance;
@@ -360,7 +398,7 @@ export type DirectedLanguageRoute = {
   source: TranslationLanguageId;
   target: TranslationLanguageId;
   skill: string;
-  status: "EXPERIMENTAL" | "SUPPORTED" | "CERTIFIED" | "BLOCKED";
+  status: "EXPERIMENTAL" | "LIMITED" | "SUPPORTED" | "CERTIFIED" | "BLOCKED";
   readiness: "LOCAL_PROFILE_PASSED" | "NOT_RUN";
   localExecution: RouteEvidenceStatus;
   independentVerification: RouteEvidenceStatus;
@@ -386,7 +424,52 @@ export type TranslationCapabilityResponse = {
   independentVerificationEvidence: RouteEvidenceStatus;
   externalExecutionEvidence: RouteEvidenceStatus;
   certificationStatus: "NOT_CERTIFIED" | "CERTIFIED";
+  localRunner?: {
+    enabled: boolean;
+    persistence: "FILESYSTEM_ATOMIC";
+    auth: "BEARER_TENANT_BOUND";
+    isolation: "ROOTLESS_CONTAINER" | "HOST_DEVELOPMENT" | "NOT_CONFIGURED";
+    recovery: "PERSISTENT_RECONCILIATION";
+  };
   note: string;
+};
+
+export type TranslationJobLog = {
+  at: string;
+  stream: "system" | "stdout" | "stderr";
+  message: string;
+};
+
+export type TranslationJob = {
+  id: string;
+  tenantId: string;
+  actor: string;
+  createdAt: string;
+  updatedAt: string;
+  repositoryRef: string;
+  workspaceId: string;
+  casesBundleId: string;
+  sourceLanguage: TranslationLanguageId;
+  targetLanguage: TranslationLanguageId;
+  status: "QUEUED" | "RUNNING" | "COMPLETE" | "PARTIAL" | "BLOCKED" | "CANCELLED";
+  stage: "queued" | "pipeline" | "metering" | "complete" | "blocked" | "cancelled" | "restart-recovery";
+  progress: number;
+  executor: "ROOTLESS_CONTAINER" | "HOST_DEVELOPMENT";
+  recoveryAttempts: number;
+  artifactReady: boolean;
+  artifactSha256?: string;
+  artifactSize?: number;
+  snapshotSha256?: string;
+  readyCount?: number;
+  workUnitCount?: number;
+  includedUnitCount?: number;
+  statusCounts?: Record<string, number>;
+  buildVerification?: { status: string; command?: string[]; toolchain?: string };
+  independentVerificationStatus: "NOT_RUN";
+  externalVerificationStatus: "NOT_RUN";
+  certificationStatus: "NOT_CERTIFIED";
+  reason?: string;
+  logs: TranslationJobLog[];
 };
 
 export type TranslationCapabilityBlocked = {

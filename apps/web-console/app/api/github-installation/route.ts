@@ -1,9 +1,12 @@
-import { githubAppProxyConfiguration } from "../spring-upgrades/proxyPolicy";
+import {
+  authenticateSpringProxy,
+  githubAppProxyConfiguration,
+} from "../spring-upgrades/proxyPolicy";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-export async function POST() {
+export async function POST(request: import("next/server").NextRequest) {
   const configuration = githubAppProxyConfiguration();
   if (!configuration) {
     return Response.json(
@@ -15,6 +18,8 @@ export async function POST() {
       { status: 503, headers: { "cache-control": "no-store" } },
     );
   }
+  const authenticationFailure = authenticateSpringProxy(request);
+  if (authenticationFailure) return authenticationFailure;
   try {
     const upstream = await fetch(
       `${configuration.controlPlaneBase}/api/v1/github/installations/connect`,
@@ -23,6 +28,7 @@ export async function POST() {
         headers: {
           "content-type": "application/json",
           "X-ELMOS-Organization-ID": configuration.organizationId,
+          "X-ELMOS-Actor-ID": request.headers.get("x-elmos-actor") ?? "",
         },
         body: "{}",
         cache: "no-store",

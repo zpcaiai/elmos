@@ -18,7 +18,7 @@ import type {
 const ROUTE_INVENTORY_RELATIVE_PATH = "routes/inventory.json";
 const LOCAL_EXECUTION_STATUSES = ["PASSED_LOCAL", "NOT_RUN", "FAILED"] as const;
 const VERIFICATION_STATUSES = ["PASSED", "NOT_RUN", "FAILED"] as const;
-const ROUTE_STATUSES = ["experimental", "supported", "certified", "blocked"] as const;
+const ROUTE_STATUSES = ["research", "experimental", "limited", "certified", "blocked"] as const;
 const MAX_ROOT_WALK_DEPTH = 8;
 
 type LocalExecutionStatus = (typeof LOCAL_EXECUTION_STATUSES)[number];
@@ -43,7 +43,9 @@ type RouteInventory = {
   schema_version: string;
   semantic_profile: string;
   route_count: number;
-  supported_route_count: number;
+  research_route_count: number;
+  limited_route_count: number;
+  blocked_route_count: number;
   certified_route_count: number;
   experimental_route_count: number;
   local_execution_evidence: LocalExecutionStatus;
@@ -211,10 +213,20 @@ function parseInventory(raw: string): RouteInventory {
       "semantic_profile",
     ),
     route_count: requireCount(value.route_count, "TRANSLATION_ROUTE_COUNT_INVALID", "route_count"),
-    supported_route_count: requireCount(
-      value.supported_route_count,
-      "TRANSLATION_SUPPORTED_COUNT_INVALID",
-      "supported_route_count",
+    research_route_count: requireCount(
+      value.research_route_count,
+      "TRANSLATION_RESEARCH_COUNT_INVALID",
+      "research_route_count",
+    ),
+    limited_route_count: requireCount(
+      value.limited_route_count,
+      "TRANSLATION_LIMITED_COUNT_INVALID",
+      "limited_route_count",
+    ),
+    blocked_route_count: requireCount(
+      value.blocked_route_count,
+      "TRANSLATION_BLOCKED_COUNT_INVALID",
+      "blocked_route_count",
     ),
     certified_route_count: requireCount(
       value.certified_route_count,
@@ -319,14 +331,20 @@ function assertCountsAreConsistent(inventory: RouteInventory): void {
   }
   const byStatus = (status: RouteStatus) =>
     inventory.routes.filter((route) => route.status === status).length;
+  if (byStatus("research") !== inventory.research_route_count) {
+    fail("TRANSLATION_RESEARCH_COUNT_DRIFT", "research_route_count 与实际路线状态不一致。");
+  }
   if (byStatus("experimental") !== inventory.experimental_route_count) {
     fail("TRANSLATION_EXPERIMENTAL_COUNT_DRIFT", "experimental_route_count 与实际路线状态不一致。");
   }
-  if (byStatus("supported") !== inventory.supported_route_count) {
-    fail("TRANSLATION_SUPPORTED_COUNT_DRIFT", "supported_route_count 与实际路线状态不一致。");
+  if (byStatus("limited") !== inventory.limited_route_count) {
+    fail("TRANSLATION_LIMITED_COUNT_DRIFT", "limited_route_count 与实际路线状态不一致。");
   }
   if (byStatus("certified") !== inventory.certified_route_count) {
     fail("TRANSLATION_CERTIFIED_COUNT_DRIFT", "certified_route_count 与实际路线状态不一致。");
+  }
+  if (byStatus("blocked") !== inventory.blocked_route_count) {
+    fail("TRANSLATION_BLOCKED_COUNT_DRIFT", "blocked_route_count 与实际路线状态不一致。");
   }
   const seen = new Set<string>();
   for (const route of inventory.routes) {
@@ -395,8 +413,8 @@ function toConsoleRoute(route: InventoryRoute): DirectedLanguageRoute {
     skill: `b29-certify-${source}-to-${target}`,
     status: route.status === "certified"
       ? "CERTIFIED"
-      : route.status === "supported"
-        ? "SUPPORTED"
+      : route.status === "limited"
+        ? "LIMITED"
         : route.status === "blocked"
           ? "BLOCKED"
           : "EXPERIMENTAL",
@@ -455,6 +473,7 @@ export function readTranslationCapability(): TranslationCapabilityResponse {
     note: `${inventory.route_count} 条有向路线的状态直接来自 ${ROUTE_INVENTORY_RELATIVE_PATH} 与同级 Route Pack：`
       + `${locallyPassed} 条已在精确本地工具链上完成 ${inventory.semantic_profile} 的编译与行为回放，`
       + `独立验证 ${inventory.independent_verification_evidence}，外部认证 ${inventory.external_certification_evidence}。`
-      + "整库仍只生成内容寻址的只读清单与工作单元，转换执行必须逐单元完成。",
+      + "整库受控 Runner 以只读源码和独立行为用例逐单元执行；任何跳过或失败保持 PARTIAL，"
+      + "本地归档不会改变独立验证与外部认证状态。",
   };
 }

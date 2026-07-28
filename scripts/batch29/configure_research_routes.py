@@ -81,9 +81,7 @@ def configure(route: Path) -> dict[str, Any]:
     evidence_path = route / "certification" / "evidence.json"
     evidence = load(evidence_path)
     evidence["execution_status"] = "NOT_RUN"
-    evidence["critical_unknown_semantics"] = max(
-        1, int(evidence.get("critical_unknown_semantics", 0))
-    )
+    evidence["critical_unknown_semantics"] = max(1, int(evidence.get("critical_unknown_semantics", 0)))
     evidence["notes"] = [
         "Research inventory only; no development, negative, holdout, or representative workload executed.",
         "All target build, behavior equivalence, economics, and independent verification evidence is NOT_RUN.",
@@ -92,8 +90,13 @@ def configure(route: Path) -> dict[str, Any]:
 
     certification_path = route / "certification" / "certification.json"
     certification = load(certification_path)
-    certification["status"] = "NOT_CERTIFIED"
-    certification["gate_results"] = {"external_execution": "NOT_RUN"}
+    certification["status"] = "research"
+    certification["certification_decision"] = "NOT_CERTIFIED"
+    certification["gate_results"] = {
+        "local_execution": "NOT_RUN",
+        "independent_verification": "NOT_RUN",
+        "external_execution": "NOT_RUN",
+    }
     certification["evidence_refs"] = []
     write(certification_path, certification)
 
@@ -118,8 +121,9 @@ def configure(route: Path) -> dict[str, Any]:
         "target": target,
         "target_version": PROFILES[target]["version"],
         "status": "research",
-        "execution_status": "NOT_RUN",
-        "certification_status": "NOT_CERTIFIED",
+        "local_execution_status": "NOT_RUN",
+        "independent_verification_status": "NOT_RUN",
+        "external_certification_status": "NOT_RUN",
     }
 
 
@@ -129,14 +133,13 @@ def main() -> int:
     args = parser.parse_args()
     root = args.routes_root.resolve()
     configured = [
-        configure(path)
-        for path in sorted(root.iterdir())
-        if path.is_dir() and (path / "route.json").is_file()
+        configure(path) for path in sorted(root.iterdir()) if path.is_dir() and (path / "route.json").is_file()
     ]
     if len(configured) != 12:
         raise ValueError(f"EXPECTED_12_DIRECTED_ROUTES_FOUND:{len(configured)}")
     inventory = {
-        "schema_version": "1.0.0",
+        "schema_version": "1.2.0",
+        "semantic_profile": "psp-1.0-uir-1.0",
         "languages": {
             language: {
                 "version": profile["version"],
@@ -145,9 +148,14 @@ def main() -> int:
             for language, profile in sorted(PROFILES.items())
         },
         "route_count": len(configured),
-        "supported_route_count": 0,
+        "research_route_count": len(configured),
+        "experimental_route_count": 0,
+        "limited_route_count": 0,
+        "blocked_route_count": 0,
         "certified_route_count": 0,
-        "external_execution_evidence": "NOT_RUN",
+        "local_execution_evidence": "NOT_RUN",
+        "independent_verification_evidence": "NOT_RUN",
+        "external_certification_evidence": "NOT_RUN",
         "routes": configured,
     }
     write(root / "inventory.json", inventory)

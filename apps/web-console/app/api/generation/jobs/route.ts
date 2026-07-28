@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
       );
     }
     const rawBody = await request.text();
-    if (Buffer.byteLength(rawBody, "utf-8") > 32 * 1024) {
+    if (Buffer.byteLength(rawBody, "utf-8") > 96 * 1024) {
       return NextResponse.json(
         { status: "BLOCKED", reason: "REQUEST_TOO_LARGE" },
         { status: 413 },

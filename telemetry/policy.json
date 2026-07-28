@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "1.0.0",
+  "rawEventRetentionDaysTarget": 30,
+  "automaticPruneEnabled": false,
+  "productionRetentionEvidence": "NOT_RUN",
+  "eventNames": ["page_view", "interaction", "form_submit", "api_request", "js_error", "performance"],
+  "metrics": ["event_count", "failure_rate", "p95_duration_ms", "active_sessions"],
+  "forbiddenFields": [
+    "input_value",
+    "token",
+    "authorization",
+    "cookie",
+    "query_string",
+    "request_body",
+    "response_body",
+    "error_message",
+    "stack",
+    "raw_ip",
+    "raw_user_agent"
+  ]
+}

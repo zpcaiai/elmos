@@ -2,7 +2,7 @@
   "authorization": "local-engineering-validation",
   "behavior_case_count": 3,
   "behavior_pass_rate": 1.0,
-  "certification_status": "EXPERIMENTAL",
+  "certification_status": "NOT_CERTIFIED",
   "corpus": "real-repository",
   "critical_unknown_semantics": 0,
   "executor": "local-toolchain",
@@ -13,6 +13,7 @@
     "Object graphs, exceptions, async, reflection, I/O, framework, database, and concurrency semantics remain outside this route profile."
   ],
   "route": "csharp-to-typescript",
+  "route_maturity": "LIMITED",
   "schema_version": "1.0.0",
   "scope": "typed-pure-function-v1",
   "semantic_ir_sha256": "sha256:d6905538d3c540dec2b49167a130c0caac9691316c819a9b1e39cc65088a37e2",

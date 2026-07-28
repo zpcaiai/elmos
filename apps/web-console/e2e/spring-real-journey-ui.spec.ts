@@ -139,6 +139,12 @@ async function fulfillJson(route: Route, value: unknown, status = 200) {
   });
 }
 
+async function fillSpringCredentials(page: Page) {
+  await page.getByLabel("Spring 租户标识").fill("spring-e2e");
+  await page.getByLabel("Spring 执行者标识").fill("user:spring-e2e");
+  await page.getByLabel("Spring 代理短期令牌").fill("spring-e2e-short-lived-token-32-characters");
+}
+
 async function configureJourneyApi(page: Page) {
   let state = completedRun();
   let postedBody: Record<string, unknown> | undefined;
@@ -237,6 +243,7 @@ test("Spring 真实旅程 UI 可完成导入、证据查看、下载、启动、
 
   await page.goto("/spring");
   await expect(page.getByText("Runner 与独立验证器已配置，可以提交精确路线。")).toBeVisible();
+  await fillSpringCredentials(page);
 
   // The catalog is rendered from the engine contract, and only the tuple that
   // carries recorded evidence may display PASSED_LOCAL.
@@ -297,6 +304,7 @@ test("Spring 迁移失败保持可见且不伪造 Run、Artifact 或验证通过
     }, 422));
 
   await page.goto("/spring");
+  await fillSpringCredentials(page);
   await page.getByLabel("Git 仓库 URL").fill("https://github.com/example/not-supported.git");
   await page.getByLabel("Branch / Tag").fill("main");
   await page.getByRole("button", { name: "开始真实迁移" }).click();
@@ -356,7 +364,7 @@ test("GitHub App 私有仓库入口只跳转经过校验的 GitHub HTTPS 安装�
   );
 });
 
-test("页面刷新后仅凭会话内 Run ID 恢复最近运行", async ({ page }) => {
+test("页面刷新后使用会话内 Run ID 与显式租户身份恢复最近运行", async ({ page }) => {
   await page.addInitScript(({ key, value }) => {
     window.sessionStorage.setItem(key, value);
   }, { key: "elmos.spring.latest-run-id", value: runId });
@@ -369,8 +377,10 @@ test("页面刷新后仅凭会话内 Run ID 恢复最近运行", async ({ page }
     fulfillJson(route, { status: "NOT_CONFIGURED", repositories: [] }));
 
   await page.goto("/spring");
-
-  await expect(page.getByText("已恢复本浏览器会话中的最近一次迁移运行。")).toBeVisible();
+  await fillSpringCredentials(page);
+  await expect(page.getByLabel("恢复 Run UUID")).toHaveValue(runId);
+  await page.getByRole("button", { name: "恢复运行" }).click();
+  await expect(page.getByText("已按 Run UUID 与当前租户身份恢复持久迁移运行。")).toBeVisible();
   await expect(page.getByText(`${runId.slice(0, 8)} · #1`)).toBeVisible();
   await expect(page.getByRole("button", { name: "下载新项目 ZIP" })).toBeVisible();
 });

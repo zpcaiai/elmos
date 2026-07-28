@@ -16,6 +16,7 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
 
 from .models import SUPPORTED_PROFILE_TARGETS
 from .production_contract import (
@@ -173,6 +174,61 @@ def _result(
     }
 
 
+def _gradle_proxy_system_properties() -> list[str]:
+    options: list[str] = []
+    controlled_proxy = os.environ.get("ELMOS_PROJECT_SYNTHESIS_GRADLE_PROXY")
+    for protocol in ("http", "https"):
+        configured = controlled_proxy or os.environ.get(
+            f"{protocol.upper()}_PROXY"
+        ) or os.environ.get(f"{protocol}_proxy")
+        if not configured:
+            continue
+        error_code = f"KOTLIN_{protocol.upper()}_PROXY_INVALID"
+        try:
+            parsed = urlsplit(configured)
+            hostname = parsed.hostname
+            port = parsed.port or (443 if parsed.scheme == "https" else 80)
+        except ValueError as error:
+            raise ValueError(error_code) from error
+        if (
+            parsed.scheme not in {"http", "https"}
+            or not hostname
+            or not re.fullmatch(r"[A-Za-z0-9._:-]+", hostname)
+            or parsed.username is not None
+            or parsed.password is not None
+            or parsed.path not in {"", "/"}
+            or parsed.query
+            or parsed.fragment
+        ):
+            raise ValueError(error_code)
+        options.extend(
+            [
+                f"-D{protocol}.proxyHost={hostname}",
+                f"-D{protocol}.proxyPort={port}",
+            ]
+        )
+    return options
+
+
+def _gradle_user_home() -> Path:
+    configured = os.environ.get("ELMOS_PROJECT_SYNTHESIS_GRADLE_USER_HOME", "").strip()
+    root = (
+        Path(configured).expanduser()
+        if configured
+        else Path.home() / ".cache" / "elmos" / "project-synthesis" / "gradle-user-home"
+    )
+    if configured and not root.is_absolute():
+        raise ValueError("GRADLE_USER_HOME_MUST_BE_ABSOLUTE")
+    if root.exists():
+        if root.is_symlink() or not root.is_dir():
+            raise ValueError("GRADLE_USER_HOME_UNSAFE")
+    else:
+        root.mkdir(parents=True, mode=0o700)
+    if root.stat().st_mode & 0o077:
+        raise ValueError("GRADLE_USER_HOME_PERMISSIONS_UNSAFE")
+    return root.resolve(strict=True)
+
+
 def _run(
     command: list[str],
     cwd: Path,
@@ -184,11 +240,18 @@ def _run(
 ) -> dict[str, Any]:
     if not 30 <= timeout_seconds <= 900:
         raise ValueError("COMMAND_TIMEOUT_OUT_OF_RANGE")
+    effective_command = list(command)
+    if (
+        language == "kotlin"
+        and effective_command
+        and Path(effective_command[0]).name == "gradle"
+    ):
+        effective_command[1:1] = _gradle_proxy_system_properties()
     try:
         process_environment = os.environ.copy()
         process_environment.update(environment or {})
         completed = subprocess.run(  # noqa: S603
-            command,
+            effective_command,
             cwd=cwd,
             env=process_environment,
             text=True,
@@ -210,7 +273,7 @@ def _run(
         return _result(
             language=language,
             kind=kind,
-            command=command,
+            command=effective_command,
             status="FAILED",
             exit_code=None,
             output=f"COMMAND_TIMEOUT:{timeout_seconds}s\n{stdout}{stderr}",
@@ -219,7 +282,7 @@ def _run(
     return _result(
         language=language,
         kind=kind,
-        command=command,
+        command=effective_command,
         status="PASSED" if completed.returncode == 0 else "FAILED",
         exit_code=completed.returncode,
         output=output,
@@ -388,10 +451,12 @@ def _toolchain_environment(language: str) -> dict[str, str]:
     if java is None:
         return {}
     java_binary = Path(java).resolve()
-    return {
+    environment = {
         "JAVA_HOME": str(java_binary.parent.parent),
         "PATH": f"{java_binary.parent}{os.pathsep}{os.environ.get('PATH', '')}",
+        "GRADLE_USER_HOME": str(_gradle_user_home()),
     }
+    return environment
 
 
 def _health_response_matches(
@@ -654,6 +719,8 @@ def _harness_environment(language: str, tools: list[str]) -> dict[str, str]:
     java = next((tool for tool in tools if Path(tool).name == "java"), None)
     if java is not None:
         environment["JAVA_HOME"] = str(Path(java).resolve().parent.parent)
+    if language == "kotlin":
+        environment["GRADLE_USER_HOME"] = str(_gradle_user_home())
     if language == "typescript":
         # pnpm writes its store under HOME; keep it on the ambient one rather
         # than letting a sandboxed HOME break `pnpm install`.
@@ -810,6 +877,13 @@ def runtime_commands(
                         "command": [tool, "-jar", str(jars[0])],
                         "environment": {"PORT": str(port), "SERVER_ADDRESS": "127.0.0.1"},
                         "port": port,
+                        # A Spring Boot fat jar cold start costs far more than
+                        # the 30s default, especially while the other seven
+                        # targets are still building. Kotlin already carries a
+                        # raised budget for the same JVM startup; java was left
+                        # on the default and fails intermittently as a result --
+                        # a timeout that looks exactly like a broken target.
+                        "startup_timeout_seconds": 120,
                         **execution,
                     }
                 )
@@ -873,6 +947,7 @@ def runtime_commands(
                             "--no-build",
                             "-c",
                             "Release",
+                            "--no-launch-profile",
                             "--project",
                             str(projects[0]),
                         ],
@@ -911,7 +986,12 @@ def runtime_commands(
                 {
                     "language": language,
                     "cwd": str(root / "kotlin"),
-                    "command": [tool, "--no-daemon", "run"],
+                    "command": [
+                        tool,
+                        *_gradle_proxy_system_properties(),
+                        "--no-daemon",
+                        "run",
+                    ],
                     "environment": {
                         "PORT": str(port),
                         "HOST": "127.0.0.1",

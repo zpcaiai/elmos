@@ -13,27 +13,24 @@ The generation business line already has
 exists so a route can never advertise a local pass, an independent
 verification, or a certification that the packs and the engine do not carry.
 """
+
 from __future__ import annotations
 
 import json
-from pathlib import Path
 import re
-import sys
-
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 INVENTORY = ROOT / "routes" / "inventory.json"
 ENGINE_SOURCE = ROOT / "engines" / "polyglot-route-engine" / "src" / "elmos_polyglot_route"
 ENGINE_MODELS = ENGINE_SOURCE / "models.py"
 BUSINESS_LINES = ROOT / "apps" / "web-console" / "app" / "lib" / "businessLines.ts"
-TRANSLATION_READER = (
-    ROOT / "apps" / "web-console" / "app" / "lib" / "server" / "translationRoutes.ts"
-)
+TRANSLATION_READER = ROOT / "apps" / "web-console" / "app" / "lib" / "server" / "translationRoutes.ts"
 TRANSLATION_STUDIO = ROOT / "apps" / "web-console" / "app" / "translation" / "TranslationStudio.tsx"
 
 LOCAL_STATUSES = {"PASSED_LOCAL", "NOT_RUN", "FAILED"}
 VERIFICATION_STATUSES = {"PASSED", "NOT_RUN", "FAILED"}
-ROUTE_STATUSES = {"experimental", "supported", "certified", "blocked"}
+ROUTE_STATUSES = {"research", "experimental", "limited", "certified", "blocked"}
 
 
 class MatrixError(RuntimeError):
@@ -155,9 +152,11 @@ def check_inventory_shape(inventory: dict[str, object]) -> list[dict[str, str]]:
             )
 
     for status, field in (
+        ("research", "research_route_count"),
         ("experimental", "experimental_route_count"),
-        ("supported", "supported_route_count"),
+        ("limited", "limited_route_count"),
         ("certified", "certified_route_count"),
+        ("blocked", "blocked_route_count"),
     ):
         declared = inventory.get(field)
         actual = sum(1 for entry in routes if entry.get("status") == status)
@@ -167,9 +166,7 @@ def check_inventory_shape(inventory: dict[str, object]) -> list[dict[str, str]]:
 
 
 def check_route_packs(routes: list[dict[str, str]], semantic_profile: str) -> None:
-    directories = {
-        path.name for path in (ROOT / "routes").iterdir() if path.is_dir()
-    }
+    directories = {path.name for path in (ROOT / "routes").iterdir() if path.is_dir()}
     declared = {str(entry["route_key"]) for entry in routes}
     require(directories == declared, "ROUTE_PACK_DIRECTORY_DRIFT")
 
@@ -197,13 +194,18 @@ def check_route_packs(routes: list[dict[str, str]], semantic_profile: str) -> No
         support = json.loads(support_json.read_text(encoding="utf-8"))
         capabilities = support.get("capabilities")
         require(isinstance(capabilities, list) and capabilities, f"ROUTE_SUPPORT_EMPTY:{key}")
-        profile_entry = next(
-            (item for item in capabilities if item.get("id") == semantic_profile), None
-        )
+        profile_entry = next((item for item in capabilities if item.get("id") == semantic_profile), None)
         require(profile_entry is not None, f"ROUTE_SUPPORT_PROFILE_MISSING:{key}")
         assert profile_entry is not None
+        expected_capability_status = {
+            "research": "detected-only",
+            "experimental": "experimental",
+            "limited": "supported",
+            "certified": "certified",
+            "blocked": "blocked",
+        }[str(entry.get("status"))]
         require(
-            profile_entry.get("status") == entry.get("status"),
+            profile_entry.get("status") == expected_capability_status,
             f"ROUTE_SUPPORT_STATUS_DRIFT:{key}",
         )
 
@@ -235,9 +237,7 @@ def check_console(inventory: dict[str, object], routes: list[dict[str, str]]) ->
     # The static console fallback must never assert readiness. Only the server
     # reader, which parses routes/inventory.json, may report a pass.
     fallback = BUSINESS_LINES.read_text(encoding="utf-8")
-    block = re.search(
-        r"export const directedLanguageRoutes.*?\n\);", fallback, re.DOTALL
-    )
+    block = re.search(r"export const directedLanguageRoutes.*?\n\);", fallback, re.DOTALL)
     require(block is not None, "CONSOLE_FALLBACK_BLOCK_NOT_FOUND")
     assert block is not None
     for field in ("localExecution", "independentVerification", "externalVerification"):
@@ -334,9 +334,7 @@ def main() -> int:
                 "status": "PASSED",
                 "route_count": len(routes),
                 "semantic_profile": semantic_profile,
-                "locally_passed": sum(
-                    1 for entry in routes if entry.get("local_execution_status") == "PASSED_LOCAL"
-                ),
+                "locally_passed": sum(1 for entry in routes if entry.get("local_execution_status") == "PASSED_LOCAL"),
                 "repository_pipeline": "inventory -> discover -> resumable batch",
                 "certified_route_count": inventory["certified_route_count"],
                 "independent_verification_evidence": inventory["independent_verification_evidence"],

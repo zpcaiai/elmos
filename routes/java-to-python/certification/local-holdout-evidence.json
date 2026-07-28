@@ -2,7 +2,7 @@
   "authorization": "local-engineering-validation",
   "behavior_case_count": 3,
   "behavior_pass_rate": 1.0,
-  "certification_status": "EXPERIMENTAL",
+  "certification_status": "NOT_CERTIFIED",
   "corpus": "holdout",
   "critical_unknown_semantics": 0,
   "executor": "local-toolchain",
@@ -13,6 +13,7 @@
     "Object graphs, exceptions, async, reflection, I/O, framework, database, and concurrency semantics remain outside this route profile."
   ],
   "route": "java-to-python",
+  "route_maturity": "LIMITED",
   "schema_version": "1.0.0",
   "scope": "typed-pure-function-v1",
   "semantic_ir_sha256": "sha256:363f0c0308dd067b687535b5fab3127e0bdf727e36424e732bda3bfebb75d5c6",
@@ -35,7 +36,7 @@
     "commands": [
       {
         "command": [
-          "/Users/stephen/DevProjects/AIProjects/elmos/engines/polyglot-route-engine/.venv/bin/python",
+          "/Users/stephen/DevProjects/AIProjects/elmos/engines/polyglot-route-engine/.venv/bin/python3",
           "-m",
           "py_compile",
           "migrated.py",
@@ -46,7 +47,7 @@
       },
       {
         "command": [
-          "/Users/stephen/DevProjects/AIProjects/elmos/engines/polyglot-route-engine/.venv/bin/python",
+          "/Users/stephen/DevProjects/AIProjects/elmos/engines/polyglot-route-engine/.venv/bin/python3",
           "route_harness.py"
         ],
         "stderr": "",

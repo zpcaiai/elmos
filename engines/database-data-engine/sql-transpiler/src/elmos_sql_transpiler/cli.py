@@ -10,6 +10,12 @@ from .materialize import materialize
 from .models import ParameterContract, TranspileRequest
 from .profiles import capabilities
 from .qualification import run_qualification
+from .runner import (
+    RunnerBlockedError,
+    runner_capabilities,
+    verify_local_matrix,
+    verify_route,
+)
 from .transpiler import transpile
 
 
@@ -45,6 +51,9 @@ def _parser() -> argparse.ArgumentParser:
     capability_parser = subparsers.add_parser("capabilities")
     capability_parser.add_argument("--output", type=Path)
 
+    runner_capability_parser = subparsers.add_parser("runner-capabilities")
+    runner_capability_parser.add_argument("--output", type=Path)
+
     transpile_parser = subparsers.add_parser("transpile")
     transpile_parser.add_argument("request", type=Path)
     transpile_parser.add_argument("output", type=Path)
@@ -55,6 +64,14 @@ def _parser() -> argparse.ArgumentParser:
     qualification_parser = subparsers.add_parser("qualify")
     qualification_parser.add_argument("corpora", nargs="+", type=Path)
     qualification_parser.add_argument("--output", type=Path)
+
+    verify_parser = subparsers.add_parser("verify-route")
+    verify_parser.add_argument("source")
+    verify_parser.add_argument("target")
+    verify_parser.add_argument("output", type=Path)
+
+    matrix_parser = subparsers.add_parser("verify-local-matrix")
+    matrix_parser.add_argument("output", type=Path)
     return parser
 
 
@@ -72,13 +89,24 @@ def main(argv: list[str] | None = None) -> int:
             else:
                 sys.stdout.write(rendered)
             return 0
+        if args.command == "runner-capabilities":
+            value = runner_capabilities()
+            rendered = _json(value) + "\n"
+            if args.output:
+                if args.output.exists():
+                    raise FileExistsError("Runner capability output already exists")
+                args.output.parent.mkdir(parents=True, exist_ok=True)
+                args.output.write_text(rendered, encoding="utf-8")
+            else:
+                sys.stdout.write(rendered)
+            return 0
         if args.command == "transpile":
             request = _request(args.request, args.source, args.target, args.query_id)
-            result = transpile(request)
-            if result.state != "SYNTAX_READY":
-                sys.stderr.write(_json(result.to_dict(include_sql=False)) + "\n")
+            transpilation = transpile(request)
+            if transpilation.state != "SYNTAX_READY":
+                sys.stderr.write(_json(transpilation.to_dict(include_sql=False)) + "\n")
                 return 2
-            sys.stdout.write(_json(materialize(result, args.output)) + "\n")
+            sys.stdout.write(_json(materialize(transpilation, args.output)) + "\n")
             return 0
         if args.command == "qualify":
             report = run_qualification(args.corpora)
@@ -91,7 +119,22 @@ def main(argv: list[str] | None = None) -> int:
             else:
                 sys.stdout.write(rendered)
             return 0 if report["localDecision"] == "READY_FOR_ENGINE_EXECUTION" else 3
-    except (FileExistsError, KeyError, TypeError, ValueError) as error:
+        if args.command == "verify-route":
+            gate_result = verify_route(args.source, args.target, args.output)
+            sys.stdout.write(_json(gate_result) + "\n")
+            return 0 if gate_result["localDecision"] == "READY_FOR_EXTERNAL_GATE" else 4
+        if args.command == "verify-local-matrix":
+            matrix_result = verify_local_matrix(args.output)
+            sys.stdout.write(_json(matrix_result) + "\n")
+            return 0 if matrix_result["localDecision"] == "READY_FOR_EXTERNAL_GATE" else 4
+    except (
+        FileExistsError,
+        KeyError,
+        RunnerBlockedError,
+        RuntimeError,
+        TypeError,
+        ValueError,
+    ) as error:
         sys.stderr.write(
             _json(
                 {

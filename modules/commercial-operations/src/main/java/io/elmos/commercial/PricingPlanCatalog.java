@@ -1,24 +1,36 @@
 package io.elmos.commercial;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.StreamSupport;
 
 /**
- * Draft, self-serve CNY catalog for the ELMOS customer experience.
+ * Versioned, fail-closed CNY self-service catalog.
  *
- * <p>The catalog is intentionally separate from payment, invoicing and revenue
- * records. It can be inspected by product surfaces, but cannot fulfill an order
- * while the seller legal entity, tax treatment and payment provider remain
- * unconfigured.</p>
+ * <p>The canonical artifact is
+ * {@code contracts/pricing-catalog-schema/elmos-cny-self-serve-v1.json}. Maven
+ * packages that exact file as a classpath resource so the Java and web
+ * runtimes cannot silently maintain different prices or allowances.</p>
  */
 public final class PricingPlanCatalog {
-    public static final String CATALOG_VERSION = "2026-07-28.1";
+    public static final String CATALOG_VERSION = "2026-07-28.2";
+    private static final String RESOURCE = "/pricing/elmos-cny-self-serve-v1.json";
+    private static final ObjectMapper JSON = new ObjectMapper();
 
     public enum CatalogStatus { DRAFT, PUBLISHED, SUPERSEDED }
     public enum BillingPeriod { TRIAL, MONTH, YEAR }
     public enum AllowanceWindow { TRIAL_TERM, MONTHLY }
+    public enum AllowanceScope { ORGANIZATION, ACTOR }
     public enum MeterKind { MODEL_TOKEN, PLATFORM_CREDIT }
+    public enum TokenClass { INPUT, OUTPUT, CACHE_READ, CACHE_WRITE }
     public enum UsageDecisionType { ALLOW, DENY_TOKEN_LIMIT, DENY_CREDIT_LIMIT }
 
     public record Money(String currency, BigDecimal amount) {
@@ -33,36 +45,47 @@ public final class PricingPlanCatalog {
     public record Allowance(BigDecimal modelTokens, BigDecimal platformCredits,
                             AllowanceWindow window, boolean rollover) {
         public Allowance {
-            if (modelTokens == null || platformCredits == null
-                    || modelTokens.scale() > 0 || platformCredits.scale() > 0
-                    || modelTokens.signum() < 0 || platformCredits.signum() < 0
-                    || window == null) {
-                throw new IllegalArgumentException("allowance quantities must be non-negative integers");
-            }
+            modelTokens = quantity(modelTokens, "modelTokens");
+            platformCredits = quantity(platformCredits, "platformCredits");
+            Objects.requireNonNull(window, "window");
         }
     }
 
-    public record Plan(String planId, String displayName, BillingPeriod billingPeriod,
-                       Money price, int termDays, Allowance allowance,
+    public record Plan(String planId, String displayName, String eyebrow, String description,
+                       BillingPeriod billingPeriod, Money price, String billingLabel,
+                       Money effectiveMonthlyPrice, int termDays, Allowance allowance,
                        BigDecimal annualTokenCeiling, BigDecimal annualCreditCeiling,
                        int activeProjects, int concurrentJobs, int artifactRetentionDays,
-                       List<String> features) {
+                       boolean featured, String trialEligibilityPolicy, List<String> features) {
         public Plan {
             require(planId, "planId");
             require(displayName, "displayName");
+            require(eyebrow, "eyebrow");
+            require(description, "description");
+            require(billingLabel, "billingLabel");
+            require(trialEligibilityPolicy, "trialEligibilityPolicy");
             Objects.requireNonNull(billingPeriod, "billingPeriod");
             Objects.requireNonNull(price, "price");
+            Objects.requireNonNull(effectiveMonthlyPrice, "effectiveMonthlyPrice");
             Objects.requireNonNull(allowance, "allowance");
+            annualTokenCeiling = quantity(annualTokenCeiling, "annualTokenCeiling");
+            annualCreditCeiling = quantity(annualCreditCeiling, "annualCreditCeiling");
             if (termDays <= 0 || activeProjects <= 0 || concurrentJobs <= 0
                     || artifactRetentionDays <= 0) {
                 throw new IllegalArgumentException("plan limits must be positive");
             }
-            if (annualTokenCeiling == null || annualCreditCeiling == null
-                    || annualTokenCeiling.scale() > 0 || annualCreditCeiling.scale() > 0
-                    || annualTokenCeiling.signum() < 0 || annualCreditCeiling.signum() < 0) {
-                throw new IllegalArgumentException("annual ceilings must be non-negative integers");
-            }
             features = List.copyOf(features);
+        }
+    }
+
+    public record TokenClassDefinition(TokenClass tokenClass, String unit,
+                                       boolean providerReceiptRequired) {
+        public TokenClassDefinition {
+            Objects.requireNonNull(tokenClass, "tokenClass");
+            require(unit, "unit");
+            if (!providerReceiptRequired) {
+                throw new IllegalArgumentException("provider receipts are mandatory");
+            }
         }
     }
 
@@ -79,13 +102,14 @@ public final class PricingPlanCatalog {
         }
     }
 
-    public record CreditRate(String operationKey, BigDecimal credits, String unit) {
+    public record CreditRate(String operationKey, String label, BigDecimal credits,
+                             String unit, String meterVersion) {
         public CreditRate {
             require(operationKey, "operationKey");
+            require(label, "label");
             require(unit, "unit");
-            if (credits == null || credits.scale() > 0 || credits.signum() <= 0) {
-                throw new IllegalArgumentException("credit rates must be positive integers");
-            }
+            require(meterVersion, "meterVersion");
+            credits = positiveQuantity(credits, "credits");
         }
     }
 
@@ -105,108 +129,38 @@ public final class PricingPlanCatalog {
     }
 
     public record Catalog(String schemaVersion, String catalogVersion, CatalogStatus status,
-                          String currency, String sellerLegalEntityStatus, String taxStatus,
-                          String paymentStatus, String overagePolicy, List<Plan> plans,
-                          List<MeterDefinition> meters, List<String> limitations) {
+                          String currency, Instant effectiveFrom, Instant effectiveUntil,
+                          String authoritativeSource, String sellerLegalEntityStatus,
+                          String taxStatus, String taxPresentation, String paymentStatus,
+                          String paymentProvider, String costValidationStatus,
+                          String overagePolicy, AllowanceScope allowanceScope,
+                          List<Plan> plans, List<TokenClassDefinition> tokenClasses,
+                          List<CreditRate> creditRates, List<MeterDefinition> meters,
+                          List<String> limitations) {
         public Catalog {
             require(schemaVersion, "schemaVersion");
             require(catalogVersion, "catalogVersion");
             require(currency, "currency");
+            require(authoritativeSource, "authoritativeSource");
             require(sellerLegalEntityStatus, "sellerLegalEntityStatus");
             require(taxStatus, "taxStatus");
+            require(taxPresentation, "taxPresentation");
             require(paymentStatus, "paymentStatus");
+            require(paymentProvider, "paymentProvider");
+            require(costValidationStatus, "costValidationStatus");
             require(overagePolicy, "overagePolicy");
             Objects.requireNonNull(status, "status");
+            Objects.requireNonNull(effectiveFrom, "effectiveFrom");
+            Objects.requireNonNull(allowanceScope, "allowanceScope");
             plans = List.copyOf(plans);
+            tokenClasses = List.copyOf(tokenClasses);
+            creditRates = List.copyOf(creditRates);
             meters = List.copyOf(meters);
             limitations = List.copyOf(limitations);
         }
     }
 
-    private static final Catalog CHINA_SELF_SERVE_DRAFT = new Catalog(
-            "1.0.0",
-            CATALOG_VERSION,
-            CatalogStatus.DRAFT,
-            "CNY",
-            "NOT_CONFIGURED",
-            "NOT_CONFIGURED",
-            "NOT_CONFIGURED",
-            "HARD_STOP_NO_AUTOMATIC_CHARGE",
-            List.of(
-                    new Plan(
-                            "elmos-free-trial",
-                            "免费体验",
-                            BillingPeriod.TRIAL,
-                            cny("0.00"),
-                            14,
-                            allowance("2000000", "60", AllowanceWindow.TRIAL_TERM),
-                            integer("2000000"),
-                            integer("60"),
-                            1,
-                            1,
-                            7,
-                            List.of("无需绑定银行卡", "标准模型与核心工作流", "一次完整的小型项目体验")
-                    ),
-                    new Plan(
-                            "elmos-pro-monthly",
-                            "专业月付",
-                            BillingPeriod.MONTH,
-                            cny("129.00"),
-                            31,
-                            allowance("20000000", "600", AllowanceWindow.MONTHLY),
-                            integer("240000000"),
-                            integer("7200"),
-                            10,
-                            3,
-                            30,
-                            List.of("完整模型目录", "迁移、转换与项目生成", "邮件支持")
-                    ),
-                    new Plan(
-                            "elmos-pro-annual",
-                            "专业年付",
-                            BillingPeriod.YEAR,
-                            cny("1290.00"),
-                            365,
-                            allowance("25000000", "750", AllowanceWindow.MONTHLY),
-                            integer("300000000"),
-                            integer("9000"),
-                            25,
-                            5,
-                            90,
-                            List.of("月付档全部能力", "每月额度提高 25%", "优先支持与更长证据保留")
-                    )
-            ),
-            List.of(
-                    new MeterDefinition(
-                            "model-token-v1",
-                            MeterKind.MODEL_TOKEN,
-                            "token",
-                            "SUM",
-                            "accepted_input_tokens + accepted_output_tokens",
-                            List.of()
-                    ),
-                    new MeterDefinition(
-                            "platform-credit-v1",
-                            MeterKind.PLATFORM_CREDIT,
-                            "credit",
-                            "SUM",
-                            "sum of accepted immutable operation usage events",
-                            List.of(
-                                    rate("repository-discovery", "5", "次"),
-                                    rate("migration-or-translation-plan", "15", "次"),
-                                    rate("verified-generation-or-migration", "40", "次"),
-                                    rate("isolated-runner-minute", "1", "分钟"),
-                                    rate("evidence-pack-verification", "10", "次")
-                            )
-                    )
-            ),
-            List.of(
-                    "Tokens and credits do not roll over.",
-                    "Annual allowances refill monthly; annual ceilings are display and contract bounds.",
-                    "Missing, late or unreconciled provider usage is not treated as zero.",
-                    "Checkout, tax, invoicing and payment execution are NOT_CONFIGURED."
-            )
-    );
+    private static final Catalog CHINA_SELF_SERVE_DRAFT = loadCatalog();
 
     private PricingPlanCatalog() {}
 
@@ -225,17 +179,15 @@ public final class PricingPlanCatalog {
         if (CHINA_SELF_SERVE_DRAFT.status() != CatalogStatus.PUBLISHED
                 || !"CONFIGURED".equals(CHINA_SELF_SERVE_DRAFT.sellerLegalEntityStatus())
                 || !"CONFIGURED".equals(CHINA_SELF_SERVE_DRAFT.taxStatus())
-                || !"CONFIGURED".equals(CHINA_SELF_SERVE_DRAFT.paymentStatus())) {
+                || !"CONFIGURED".equals(CHINA_SELF_SERVE_DRAFT.paymentStatus())
+                || !"VALIDATED".equals(CHINA_SELF_SERVE_DRAFT.costValidationStatus())) {
             throw new IllegalStateException("pricing catalog is not orderable");
         }
     }
 
     /**
-     * Deterministic allowance preview for one trial or monthly allowance window.
-     *
-     * <p>This method does not create a usage fact or charge. The caller must
-     * persist accepted usage events and reconcile provider receipts before an
-     * authoritative debit can be claimed.</p>
+     * Deterministic preview only. Authoritative admission uses a database
+     * reservation transaction and never trusts caller-provided consumption.
      */
     public static UsageDecision previewUsage(String planId, BigDecimal consumedTokens,
                                              BigDecimal consumedCredits, BigDecimal requestedTokens,
@@ -260,31 +212,155 @@ public final class PricingPlanCatalog {
                 remainingTokens.subtract(tokenRequest), remainingCredits.subtract(creditRequest), List.of());
     }
 
-    public static BigDecimal priceCredits(String operationKey, BigDecimal quantity) {
+    public static BigDecimal priceCredits(String operationKey, BigDecimal requestedQuantity) {
         require(operationKey, "operationKey");
-        var exactQuantity = quantity(quantity, "quantity");
-        var rate = CHINA_SELF_SERVE_DRAFT.meters().stream()
-                .flatMap(meter -> meter.creditRates().stream())
+        var exactQuantity = quantity(requestedQuantity, "quantity");
+        var rate = CHINA_SELF_SERVE_DRAFT.creditRates().stream()
                 .filter(candidate -> candidate.operationKey().equals(operationKey))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("unknown credit operation"));
         return rate.credits().multiply(exactQuantity);
     }
 
-    private static Money cny(String amount) {
-        return new Money("CNY", new BigDecimal(amount));
+    private static Catalog loadCatalog() {
+        try (InputStream stream = PricingPlanCatalog.class.getResourceAsStream(RESOURCE)) {
+            if (stream == null) throw new IllegalStateException("pricing catalog resource is missing");
+            JsonNode root = JSON.readTree(stream);
+            String version = text(root, "catalogVersion");
+            if (!CATALOG_VERSION.equals(version)) {
+                throw new IllegalStateException("pricing catalog version does not match compiled contract");
+            }
+            String currency = text(root, "currency");
+            List<Plan> plans = stream(root.path("plans")).map(node -> plan(node, currency)).toList();
+            List<TokenClassDefinition> tokenClasses = stream(root.path("tokenClasses"))
+                    .map(node -> new TokenClassDefinition(
+                            TokenClass.valueOf(text(node, "tokenClass")),
+                            text(node, "unit"),
+                            node.path("providerReceiptRequired").asBoolean(false)))
+                    .toList();
+            List<CreditRate> creditRates = stream(root.path("creditRates"))
+                    .map(PricingPlanCatalog::creditRate)
+                    .toList();
+            List<MeterDefinition> meters = List.of(
+                    new MeterDefinition(
+                            "model-token-v1",
+                            MeterKind.MODEL_TOKEN,
+                            "token",
+                            "SUM",
+                            "provider-confirmed token classes",
+                            List.of()),
+                    new MeterDefinition(
+                            "platform-credit-v1",
+                            MeterKind.PLATFORM_CREDIT,
+                            "credit",
+                            "SUM",
+                            "accepted immutable operation usage events",
+                            creditRates)
+            );
+            return new Catalog(
+                    text(root, "schemaVersion"),
+                    version,
+                    CatalogStatus.valueOf(text(root, "status")),
+                    currency,
+                    Instant.parse(text(root, "effectiveFrom")),
+                    nullableInstant(root.get("effectiveUntil")),
+                    text(root, "authoritativeSource"),
+                    text(root, "sellerLegalEntityStatus"),
+                    text(root, "taxStatus"),
+                    text(root, "taxPresentation"),
+                    text(root, "paymentStatus"),
+                    text(root, "paymentProvider"),
+                    text(root, "costValidationStatus"),
+                    text(root, "overagePolicy"),
+                    AllowanceScope.valueOf(text(root, "allowanceScope")),
+                    plans,
+                    tokenClasses,
+                    creditRates,
+                    meters,
+                    stream(root.path("limitations")).map(JsonNode::asText).toList()
+            );
+        } catch (IOException error) {
+            throw new IllegalStateException("pricing catalog cannot be loaded", error);
+        }
     }
 
-    private static Allowance allowance(String tokens, String credits, AllowanceWindow window) {
-        return new Allowance(integer(tokens), integer(credits), window, false);
+    private static Plan plan(JsonNode node, String currency) {
+        return new Plan(
+                text(node, "planId"),
+                text(node, "name"),
+                text(node, "eyebrow"),
+                text(node, "description"),
+                BillingPeriod.valueOf(text(node, "billingPeriod")),
+                money(currency, node.path("priceFen").longValue()),
+                text(node, "billingLabel"),
+                money(currency, node.path("effectiveMonthlyFen").longValue()),
+                positiveInt(node, "termDays"),
+                new Allowance(
+                        integer(node, "tokens"),
+                        integer(node, "credits"),
+                        AllowanceWindow.valueOf(text(node, "allowanceWindow")),
+                        false),
+                integer(node, "annualTokens"),
+                integer(node, "annualCredits"),
+                positiveInt(node, "activeProjects"),
+                positiveInt(node, "concurrentJobs"),
+                positiveInt(node, "artifactRetentionDays"),
+                node.path("featured").asBoolean(false),
+                text(node, "trialEligibilityPolicy"),
+                stream(node.path("features")).map(JsonNode::asText).toList()
+        );
     }
 
-    private static CreditRate rate(String operationKey, String credits, String unit) {
-        return new CreditRate(operationKey, integer(credits), unit);
+    private static CreditRate creditRate(JsonNode node) {
+        return new CreditRate(
+                text(node, "operationKey"),
+                text(node, "label"),
+                integer(node, "credits"),
+                text(node, "unit"),
+                text(node, "meterVersion")
+        );
     }
 
-    private static BigDecimal integer(String value) {
-        return new BigDecimal(value);
+    private static java.util.stream.Stream<JsonNode> stream(JsonNode array) {
+        if (!array.isArray()) throw new IllegalStateException("catalog array is missing");
+        return StreamSupport.stream(array.spliterator(), false);
+    }
+
+    private static Instant nullableInstant(JsonNode node) {
+        return node == null || node.isNull() ? null : Instant.parse(node.asText());
+    }
+
+    private static String text(JsonNode node, String field) {
+        JsonNode value = node.path(field);
+        if (!value.isTextual() || value.asText().isBlank()) {
+            throw new IllegalStateException("catalog field is missing: " + field);
+        }
+        return value.asText();
+    }
+
+    private static int positiveInt(JsonNode node, String field) {
+        int value = node.path(field).asInt(0);
+        if (value <= 0) throw new IllegalStateException("catalog field must be positive: " + field);
+        return value;
+    }
+
+    private static Money money(String currency, long fen) {
+        if (fen < 0) throw new IllegalStateException("catalog money cannot be negative");
+        return new Money(currency, BigDecimal.valueOf(fen, 2).setScale(2, RoundingMode.UNNECESSARY));
+    }
+
+    private static BigDecimal integer(JsonNode node, String field) {
+        JsonNode value = node.path(field);
+        if (!value.canConvertToLong() || value.longValue() < 0) {
+            throw new IllegalStateException("catalog quantity is invalid: " + field);
+        }
+        return BigDecimal.valueOf(value.longValue());
+    }
+
+    private static BigDecimal positiveQuantity(BigDecimal value, String field) {
+        BigDecimal exact = quantity(value, field);
+        if (exact.signum() <= 0) throw new IllegalArgumentException(field + " must be positive");
+        return exact;
     }
 
     private static BigDecimal quantity(BigDecimal value, String field) {

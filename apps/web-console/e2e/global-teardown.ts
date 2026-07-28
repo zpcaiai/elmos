@@ -42,7 +42,12 @@ export default async function globalTeardown(): Promise<void> {
     && path.dirname(path.resolve(runnerRoot)) === path.resolve(tmpdir())
     && path.basename(runnerRoot).startsWith("elmos-web-console-e2e-")
   ) {
-    await rm(runnerRoot, { recursive: true, force: true });
+    await rm(runnerRoot, {
+      recursive: true,
+      force: true,
+      maxRetries: 5,
+      retryDelay: 100,
+    });
   }
 
   const distDir = process.env.ELMOS_E2E_EFFECTIVE_DIST_DIR;
@@ -52,7 +57,12 @@ export default async function globalTeardown(): Promise<void> {
     && path.dirname(path.resolve(distDir)) === applicationRoot
     && /^\.next-e2e-\d{4,5}$/.test(path.basename(distDir))
   ) {
-    await rm(distDir, { recursive: true, force: true });
+    await rm(distDir, {
+      recursive: true,
+      force: true,
+      maxRetries: 5,
+      retryDelay: 100,
+    });
   }
   await removeTemporaryNextTypeReferences(applicationRoot);
 }

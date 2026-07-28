@@ -21,6 +21,11 @@ import {
   writeFile,
 } from "node:fs/promises";
 import path from "node:path";
+import { beginMeteredExecution, type MeteredExecution } from "./commercialUsageProducer";
+import {
+  buildGenerationSourceBundle,
+  sourceIngestionError,
+} from "./generationSourceIngestion";
 import type { NextRequest } from "next/server";
 import type {
   GenerationAnalysis,
@@ -30,6 +35,8 @@ import type {
   GenerationJobCreateRequest,
   GenerationJobLog,
   GenerationRuntime,
+  GenerationSourceBundle,
+  GenerationSourceReference,
   GenerationTargetId,
 } from "../contracts";
 
@@ -178,6 +185,14 @@ type StoredAnalysisReview = {
   intent: GenerationAnalyzeRequest;
   requestDigest: string;
   request: GenerationAnalysis["request"];
+};
+
+type StoredSourceBundle = {
+  tenantId: string;
+  actor: string;
+  createdAt: string;
+  expiresAt: string;
+  bundle: GenerationSourceBundle;
 };
 
 export class GenerationRunnerError extends Error {
@@ -343,6 +358,8 @@ function intentContract(request: GenerationAnalyzeRequest): GenerationAnalyzeReq
     targets: [...request.targets],
     persistence: request.persistence,
     authMode: request.authMode,
+    ...(request.sources ? { sources: request.sources.map((source) => ({ ...source })) } : {}),
+    ...(request.sourceBundleSha256 ? { sourceBundleSha256: request.sourceBundleSha256 } : {}),
   };
 }
 
@@ -401,6 +418,23 @@ function analysisReviewFile(
     context.tenantId,
     "analysis-reviews",
     `${requestDigest}.json`,
+  );
+}
+
+function sourceBundleFile(
+  runner: RunnerConfig,
+  context: AuthorizedContext,
+  bundleDigest: string,
+): string {
+  if (!digestPattern.test(bundleDigest)) {
+    throw new GenerationRunnerError(400, "SOURCE_BUNDLE_DIGEST_INVALID");
+  }
+  return confined(
+    runner.root,
+    "tenants",
+    context.tenantId,
+    "source-bundles",
+    `${bundleDigest}.json`,
   );
 }
 
@@ -580,6 +614,73 @@ async function load(
   return parsed;
 }
 
+function sourceReferenceValid(source: unknown): source is GenerationSourceReference {
+  if (!source || typeof source !== "object") return false;
+  const value = source as Partial<GenerationSourceReference>;
+  return typeof value.id === "string"
+    && /^SRC-\d{3}$/.test(value.id)
+    && [
+      "description",
+      "text-file",
+      "markdown-file",
+      "word-file",
+      "html-file",
+      "pdf-file",
+      "online-html",
+      "skill",
+    ].includes(value.kind ?? "")
+    && typeof value.label === "string"
+    && value.label.length > 0
+    && value.label.length <= 180
+    && typeof value.mediaType === "string"
+    && value.mediaType.length > 0
+    && value.mediaType.length <= 160
+    && (value.origin === undefined || (
+      typeof value.origin === "string" && value.origin.length > 0 && value.origin.length <= 2_000
+    ))
+    && typeof value.sha256 === "string"
+    && digestPattern.test(value.sha256)
+    && Number.isInteger(value.byteCount)
+    && (value.byteCount ?? 0) > 0
+    && (value.byteCount ?? 0) <= 8 * 1024 * 1024
+    && Number.isInteger(value.extractedCharacters)
+    && (value.extractedCharacters ?? 0) >= 3
+    && Number.isInteger(value.includedCharacters)
+    && (value.includedCharacters ?? 0) >= 3
+    && (value.includedCharacters ?? 0) <= (value.extractedCharacters ?? 0)
+    && typeof value.truncated === "boolean"
+    && Array.isArray(value.warnings)
+    && value.warnings.length <= 20
+    && value.warnings.every((warning) => (
+      typeof warning === "string" && /^[A-Z0-9_:.-]{1,160}$/.test(warning)
+    ));
+}
+
+function validateSourceBinding(request: GenerationAnalyzeRequest): void {
+  const sourcesPresent = request.sources !== undefined;
+  const digestPresent = request.sourceBundleSha256 !== undefined;
+  if (sourcesPresent !== digestPresent) {
+    throw new GenerationRunnerError(400, "SOURCE_BUNDLE_BINDING_INCOMPLETE");
+  }
+  if (!sourcesPresent || !digestPresent) return;
+  if (
+    !Array.isArray(request.sources)
+    || request.sources.length === 0
+    || request.sources.length > 17
+    || !request.sources.every(sourceReferenceValid)
+    || new Set(request.sources.map((source) => source.id)).size !== request.sources.length
+    || request.sources.some((source, index) => source.id !== `SRC-${String(index + 1).padStart(3, "0")}`)
+    || typeof request.sourceBundleSha256 !== "string"
+    || !digestPattern.test(request.sourceBundleSha256)
+    || !safeEqual(
+      request.sourceBundleSha256,
+      sha256Json({ description: request.description, sources: request.sources }),
+    )
+  ) {
+    throw new GenerationRunnerError(400, "SOURCE_BUNDLE_BINDING_INVALID");
+  }
+}
+
 function validateAnalyze(request: GenerationAnalyzeRequest): GenerationAnalyzeRequest {
   if (
     !request
@@ -599,7 +700,7 @@ function validateAnalyze(request: GenerationAnalyzeRequest): GenerationAnalyzeRe
   }
   if (
     request.description.length < 3
-    || request.description.length > 4_000
+    || request.description.length > 32_000
     || request.targets.length === 0
     || request.targets.length > targetIds.size
     || new Set(request.targets).size !== request.targets.length
@@ -629,6 +730,7 @@ function validateAnalyze(request: GenerationAnalyzeRequest): GenerationAnalyzeRe
   if (!defaultProfile && !enterpriseProfile) {
     throw new GenerationRunnerError(400, "UNIMPLEMENTED_PRODUCTION_PROFILE");
   }
+  validateSourceBinding(request);
   return request;
 }
 
@@ -795,6 +897,80 @@ async function rootlessCommand(
   });
 }
 
+export async function ingestGenerationSources(
+  context: AuthorizedContext,
+  input: {
+    description?: string;
+    url?: string;
+    skillNames?: string[];
+    files?: File[];
+  },
+): Promise<GenerationSourceBundle> {
+  const runner = config();
+  ensureMutationsAllowed(runner);
+  let bundle: GenerationSourceBundle;
+  try {
+    bundle = await buildGenerationSourceBundle({
+      ...input,
+      repositoryRoot: runner.repositoryRoot,
+    });
+  } catch (error) {
+    const blocked = sourceIngestionError(error);
+    throw new GenerationRunnerError(blocked.status, blocked.reason);
+  }
+  const sourceRoot = confined(runner.root, "tenants", context.tenantId, "source-bundles");
+  await mkdir(sourceRoot, { recursive: true, mode: 0o700 });
+  const existing = (await readdir(sourceRoot)).filter((entry) => entry.endsWith(".json"));
+  if (existing.length >= 100 && !existing.includes(`${bundle.bundleSha256}.json`)) {
+    throw new GenerationRunnerError(429, "SOURCE_BUNDLE_TENANT_LIMIT");
+  }
+  const now = new Date();
+  const stored: StoredSourceBundle = {
+    tenantId: context.tenantId,
+    actor: context.actor,
+    createdAt: now.toISOString(),
+    expiresAt: new Date(now.getTime() + 60 * 60_000).toISOString(),
+    bundle,
+  };
+  await atomicJson(sourceBundleFile(runner, context, bundle.bundleSha256), stored);
+  return bundle;
+}
+
+async function assertPersistedSourceBundle(
+  runner: RunnerConfig,
+  context: AuthorizedContext,
+  request: GenerationAnalyzeRequest,
+): Promise<void> {
+  const digest = request.sourceBundleSha256;
+  if (!digest || !request.sources) {
+    throw new GenerationRunnerError(409, "SOURCE_BUNDLE_BINDING_INCOMPLETE");
+  }
+  let stored: StoredSourceBundle;
+  try {
+    stored = JSON.parse(
+      await readFile(sourceBundleFile(runner, context, digest), "utf-8"),
+    ) as StoredSourceBundle;
+  } catch {
+    throw new GenerationRunnerError(409, "SOURCE_BUNDLE_NOT_FOUND");
+  }
+  if (
+    stored.tenantId !== context.tenantId
+    || stored.actor !== context.actor
+    || Number.isNaN(Date.parse(stored.expiresAt))
+    || Date.parse(stored.expiresAt) <= Date.now()
+    || stored.bundle.status !== "READY_FOR_REVIEW"
+    || !safeEqual(stored.bundle.bundleSha256 ?? "", digest)
+    || !safeEqual(stored.bundle.combinedText ?? "", request.description)
+    || !safeEqual(sha256Json(stored.bundle.sources), sha256Json(request.sources))
+    || !safeEqual(
+      digest,
+      sha256Json({ description: stored.bundle.combinedText, sources: stored.bundle.sources }),
+    )
+  ) {
+    throw new GenerationRunnerError(409, "SOURCE_BUNDLE_MISMATCH");
+  }
+}
+
 export async function analyzeIntent(
   context: AuthorizedContext,
   request: GenerationAnalyzeRequest,
@@ -802,6 +978,9 @@ export async function analyzeIntent(
   const runner = config();
   ensureMutationsAllowed(runner);
   const validated = validateAnalyze(request);
+  if (validated.sourceBundleSha256) {
+    await assertPersistedSourceBundle(runner, context, validated);
+  }
   const active = activeAnalyses.get(context.tenantId) ?? 0;
   if (active >= 2) {
     throw new GenerationRunnerError(429, "ANALYSIS_CONCURRENCY_LIMIT");
@@ -826,6 +1005,10 @@ export async function analyzeIntent(
       auth_mode: validated.authMode,
       business_rules: [],
       permissions: [],
+      ...(validated.sources ? { requirement_sources: validated.sources } : {}),
+      ...(validated.sourceBundleSha256
+        ? { source_bundle_sha256: validated.sourceBundleSha256 }
+        : {}),
     });
     const result = await executePreviewCommand(runner, engineCliArguments([
       "analyze",
@@ -1019,8 +1202,10 @@ async function runJob(
 ): Promise<void> {
   const root = jobRoot(runner, context, job.id);
   const key = jobKey(context, job.id);
+  let metering: MeteredExecution | null = null;
   try {
     if (cancelledJobs.has(key)) return;
+    metering = await beginMeteredExecution(`generation-${job.id}`);
     job.status = "VERIFYING";
     const pipeline = await executeCommand(
       runner,
@@ -1065,6 +1250,12 @@ async function runJob(
     }
     job.artifactSha256 = await sha256File(archive);
     job.artifactSize = archiveInfo.size;
+    job.stage = "metering";
+    job.progress = 99;
+    job.artifactReady = false;
+    job.updatedAt = new Date().toISOString();
+    await metering?.finish(true);
+    metering = null;
     job.status = result.status === "PASSED" ? "COMPLETED" : "PARTIAL";
     job.stage = "complete";
     job.progress = 100;
@@ -1072,13 +1263,32 @@ async function runJob(
     job.updatedAt = new Date().toISOString();
     log(job, "system", `Job completed with result ${job.resultStatus}.`);
   } catch (error) {
+    if (metering) {
+      try {
+        await metering.finish(false);
+      } catch (meteringError) {
+        error = meteringError;
+      }
+      metering = null;
+    }
     if (!cancelledJobs.has(key)) {
       job.status = "BLOCKED";
       job.stage = "blocked";
+      job.artifactReady = false;
       job.reason = redact(error instanceof Error ? error.message : "UNKNOWN_RUNNER_ERROR");
       log(job, "system", job.reason);
     }
   } finally {
+    if (metering) {
+      try {
+        await metering.finish(false);
+      } catch (error) {
+        job.status = "BLOCKED";
+        job.stage = "blocked";
+        job.artifactReady = false;
+        job.reason = redact(error instanceof Error ? error.message : "USAGE_SETTLEMENT_FAILED");
+      }
+    }
     if (cancelledJobs.has(key)) {
       job.status = "CANCELLED";
       job.stage = "cancelled";
@@ -1101,6 +1311,14 @@ export async function createJob(
   ensureMutationsAllowed(runner);
   const validated = validateCreate(request, context);
   const analysisReview = await loadApprovedAnalysis(runner, context, validated);
+  const multiEntityProductionTargets = new Set<GenerationTargetId>(["java", "python"]);
+  if (
+    validated.persistence === "postgresql"
+    && analysisReview.request.entities.length > 1
+    && validated.targets.some((target) => !multiEntityProductionTargets.has(target))
+  ) {
+    throw new GenerationRunnerError(409, "PRODUCTION_PROFILE_SINGLE_ENTITY_ONLY");
+  }
   const tenantPrefix = `${context.tenantId}:`;
   if ([...scheduledJobs].filter((key) => key.startsWith(tenantPrefix)).length >= 2) {
     throw new GenerationRunnerError(429, "JOB_CONCURRENCY_LIMIT");
@@ -1142,6 +1360,10 @@ export async function createJob(
     auth_mode: validated.authMode,
     business_rules: [],
     permissions: [],
+    ...(validated.sources ? { requirement_sources: validated.sources } : {}),
+    ...(validated.sourceBundleSha256
+      ? { source_bundle_sha256: validated.sourceBundleSha256 }
+      : {}),
     approval_context: {
       actor: context.actor,
       tenant_id: context.tenantId,

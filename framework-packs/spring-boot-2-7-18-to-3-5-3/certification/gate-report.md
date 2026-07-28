@@ -1,5 +1,7 @@
 # Spring Boot reference gate
 
+- Pack status: `limited`
+- Declared supported scope: `web`, `configuration`, `lifecycle`
 - Spring Boot 2.7.18 / Java 17 build and startup: `PASSED_LOCAL`
 - Spring Boot 3.5.3 / Java 21 build and startup: `PASSED_LOCAL`
 - Development, synthetic holdout and representative API parity: `PASSED_LOCAL`
@@ -12,3 +14,4 @@
 - Customer holdout workload: `NOT_RUN`
 - Rootless Transformer, Verifier and Runner: `NOT_RUN`
 - External independent review: `NOT_RUN`
+- Certification decision: `NOT_CERTIFIED`

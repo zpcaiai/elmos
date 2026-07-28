@@ -10,8 +10,11 @@ Roslyn, and TypeScript uses the TypeScript Compiler API. Every emitted target is
 compiled by its native toolchain and executed against the same behavior cases.
 
 Unsupported statements, expressions, types, async behavior, side effects,
-frameworks, databases, concurrency, reflection, and I/O fail closed. This local
-profile is `EXPERIMENTAL`; independent certification remains `NOT_RUN`.
+frameworks, databases, concurrency, reflection, and I/O fail closed. This exact
+profile is `LIMITED`: all 12 directions pass native analysis, target compilation,
+separate holdout, and representative behavior replay. Independent and external
+certification remain `NOT_RUN`; repository orchestration never broadens this
+semantic boundary.
 
 Execution is exact-toolchain bound: Java 21.0.11, Python 3.12.12, .NET SDK
 10.0.301 / Roslyn 5.6.0, and TypeScript 5.9.2 on Node 26.0.0. A missing or
@@ -100,6 +103,31 @@ behavior, and assembly does not attempt to resolve that at the semantic level.
 Callers must import each unit by its own id/module, not assume a combined API.
 Independent verification and external certification remain `NOT_RUN` /
 `NOT_CERTIFIED` regardless of local build success.
+
+## Resumable repository pipeline
+
+`repository-pipeline` composes inventory, compiler-backed discovery, resumable
+per-unit execution, collision-safe assembly, and a real whole-project build into
+one operator command:
+
+```bash
+uv run elmos-polyglot-route repository-pipeline \
+  --repository /approved/read-only/workspace \
+  --repository-ref local:customer-repository \
+  --source-language java \
+  --target-language python \
+  --cases-directory /approved/independent-cases \
+  --output /durable/tenant-job/pipeline
+```
+
+The output directory is a durable checkpoint boundary. Re-running the command
+recomputes inventory and discovery from the read-only source, detects source
+drift, resumes the per-unit batch checkpoint, rebuilds assembly from verified
+bytes, and emits `repository-migration-artifact.zip` with an exact file/digest
+manifest. `COMPLETE` requires every work unit to pass; missing behavior cases,
+unsupported units or failures produce `PARTIAL` and remain visible in the
+pipeline report. Local execution never changes independent or external evidence
+from `NOT_RUN`.
 
 ## Single-declaration bridging (`emit` / `check`)
 

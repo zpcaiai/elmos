@@ -1,6 +1,7 @@
 {
+  "blocked_route_count": 0,
   "certified_route_count": 0,
-  "experimental_route_count": 12,
+  "experimental_route_count": 0,
   "external_certification_evidence": "NOT_RUN",
   "independent_verification_evidence": "NOT_RUN",
   "languages": {
@@ -21,7 +22,9 @@
       "version": "5.9.2 / Node 26.0.0"
     }
   },
+  "limited_route_count": 12,
   "local_execution_evidence": "PASSED_LOCAL",
+  "research_route_count": 0,
   "route_count": 12,
   "routes": [
     {
@@ -31,7 +34,7 @@
       "route_key": "java-to-python",
       "source": "java",
       "source_version": "21.0.11",
-      "status": "experimental",
+      "status": "limited",
       "target": "python",
       "target_version": "3.12.12"
     },
@@ -42,7 +45,7 @@
       "route_key": "java-to-csharp",
       "source": "java",
       "source_version": "21.0.11",
-      "status": "experimental",
+      "status": "limited",
       "target": "csharp",
       "target_version": "10.0.301"
     },
@@ -53,7 +56,7 @@
       "route_key": "java-to-typescript",
       "source": "java",
       "source_version": "21.0.11",
-      "status": "experimental",
+      "status": "limited",
       "target": "typescript",
       "target_version": "5.9.2 / Node 26.0.0"
     },
@@ -64,7 +67,7 @@
       "route_key": "python-to-java",
       "source": "python",
       "source_version": "3.12.12",
-      "status": "experimental",
+      "status": "limited",
       "target": "java",
       "target_version": "21.0.11"
     },
@@ -75,7 +78,7 @@
       "route_key": "python-to-csharp",
       "source": "python",
       "source_version": "3.12.12",
-      "status": "experimental",
+      "status": "limited",
       "target": "csharp",
       "target_version": "10.0.301"
     },
@@ -86,7 +89,7 @@
       "route_key": "python-to-typescript",
       "source": "python",
       "source_version": "3.12.12",
-      "status": "experimental",
+      "status": "limited",
       "target": "typescript",
       "target_version": "5.9.2 / Node 26.0.0"
     },
@@ -97,7 +100,7 @@
       "route_key": "csharp-to-java",
       "source": "csharp",
       "source_version": "10.0.301",
-      "status": "experimental",
+      "status": "limited",
       "target": "java",
       "target_version": "21.0.11"
     },
@@ -108,7 +111,7 @@
       "route_key": "csharp-to-python",
       "source": "csharp",
       "source_version": "10.0.301",
-      "status": "experimental",
+      "status": "limited",
       "target": "python",
       "target_version": "3.12.12"
     },
@@ -119,7 +122,7 @@
       "route_key": "csharp-to-typescript",
       "source": "csharp",
       "source_version": "10.0.301",
-      "status": "experimental",
+      "status": "limited",
       "target": "typescript",
       "target_version": "5.9.2 / Node 26.0.0"
     },
@@ -130,7 +133,7 @@
       "route_key": "typescript-to-java",
       "source": "typescript",
       "source_version": "5.9.2 / Node 26.0.0",
-      "status": "experimental",
+      "status": "limited",
       "target": "java",
       "target_version": "21.0.11"
     },
@@ -141,7 +144,7 @@
       "route_key": "typescript-to-python",
       "source": "typescript",
       "source_version": "5.9.2 / Node 26.0.0",
-      "status": "experimental",
+      "status": "limited",
       "target": "python",
       "target_version": "3.12.12"
     },
@@ -152,12 +155,11 @@
       "route_key": "typescript-to-csharp",
       "source": "typescript",
       "source_version": "5.9.2 / Node 26.0.0",
-      "status": "experimental",
+      "status": "limited",
       "target": "csharp",
       "target_version": "10.0.301"
     }
   ],
-  "schema_version": "1.1.0",
-  "semantic_profile": "typed-pure-function-v1",
-  "supported_route_count": 0
+  "schema_version": "1.2.0",
+  "semantic_profile": "typed-pure-function-v1"
 }

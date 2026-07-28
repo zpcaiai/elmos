@@ -19,12 +19,16 @@ test("人民币套餐页展示精确 token 与 credit 额度", async ({ page }) 
 test("套餐 API 与页面共享同一目录版本并保持支付关闭", async ({ request }) => {
   const response = await request.get("/api/pricing");
   expect(response.ok()).toBe(true);
-  expect(response.headers()["x-elmos-catalog-version"]).toBe("2026-07-28.1");
+  expect(response.headers()["x-elmos-catalog-version"]).toBe("2026-07-28.2");
 
   const catalog = await response.json();
   expect(catalog.currency).toBe("CNY");
   expect(catalog.status).toBe("DRAFT");
   expect(catalog.paymentStatus).toBe("NOT_CONFIGURED");
+  expect(catalog.costValidationStatus).toBe("NOT_RUN");
+  expect(catalog.authoritativeSource).toBe(
+    "contracts/pricing-catalog-schema/elmos-cny-self-serve-v1.json",
+  );
   expect(catalog.overagePolicy).toBe("HARD_STOP_NO_AUTOMATIC_CHARGE");
   expect(catalog.plans).toHaveLength(3);
   expect(catalog.plans[1]).toMatchObject({

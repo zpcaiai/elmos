@@ -109,14 +109,64 @@ test.describe.serial("实时账户用量", () => {
     }
   });
 
+  test("Cookie 会话写请求拒绝跨站来源", async ({ request }) => {
+    const response = await request.put("/api/usage/alerts", {
+      headers: {
+        "Cookie": "__Host-elmos_access_token=elmos-e2e-cookie-token-32-characters",
+        "Origin": "https://attacker.example",
+        "Content-Type": "application/json",
+      },
+      data: {
+        scope: "ACTOR",
+        thresholdBps: [5000, 8000, 9500, 10000],
+        emailEnabled: false,
+        inAppEnabled: true,
+        expectedVersion: 0,
+      },
+    });
+
+    expect(response.status()).toBe(403);
+    await expect(response.json()).resolves.toMatchObject({
+      code: "ACCOUNT_SESSION_ORIGIN_INVALID",
+      retryable: false,
+    });
+  });
+
+  test("套餐操作在代理层拒绝无效请求", async ({ request }) => {
+    const missingKey = await request.post("/api/billing/trial");
+    expect(missingKey.status()).toBe(400);
+    await expect(missingKey.json()).resolves.toMatchObject({
+      code: "IDEMPOTENCY_KEY_INVALID",
+      retryable: false,
+    });
+
+    const invalidPlan = await request.post("/api/billing/checkout", {
+      headers: {
+        "Idempotency-Key": "checkout-invalid-plan-0001",
+        "Content-Type": "application/json",
+      },
+      data: { planId: "elmos-unlimited" },
+    });
+    expect(invalidPlan.status()).toBe(400);
+    await expect(invalidPlan.json()).resolves.toMatchObject({
+      code: "CHECKOUT_PLAN_INVALID",
+      retryable: false,
+    });
+  });
+
   test("套餐页实时更新 token 消耗量与进度", async ({ page }) => {
     await page.goto("/pricing");
+    await expect(page.getByRole("button", { name: "开始免费体验" })).toBeEnabled();
+    await expect(page.getByRole("button", { name: "等待开放" })).toHaveCount(2);
+    for (const button of await page.getByRole("button", { name: "等待开放" }).all()) {
+      await expect(button).toBeDisabled();
+    }
     await page.getByLabel("用量租户标识").fill(tenantId);
     await page.getByLabel("用量用户标识").fill(actorId);
     await page.getByLabel("用量短期访问令牌").fill(token);
-    await page.getByRole("button", { name: "连接实时用量" }).click();
+    await page.getByRole("button", { name: "连接本地用量" }).click();
 
-    await expect(page.getByText("已连接实时用量")).toBeVisible();
+    await expect(page.getByText("账户计量已连接")).toBeVisible();
     await expect(page.getByText("当前有 1 条未对账事件")).toBeVisible();
     await expect(
       page.getByRole("progressbar", { name: "模型 Token消耗进度" }),

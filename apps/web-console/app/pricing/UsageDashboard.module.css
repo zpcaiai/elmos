@@ -291,6 +291,162 @@
   gap: 5px;
 }
 
+.insights {
+  display: grid;
+  gap: 14px;
+  padding-top: 18px;
+  border-top: 1px solid #d5e2de;
+}
+
+.insightsHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.insightsHead h3 {
+  margin: 5px 0 0;
+  color: var(--ink);
+  font-size: 18px;
+}
+
+.insightStatus,
+.insightError {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgb(255 255 255 / 72%);
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.insightError {
+  border: 1px solid #e8cfac;
+  background: #fff8e9;
+  color: #875c12;
+}
+
+.forecast {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: baseline;
+  gap: 3px 12px;
+  padding: 14px 16px;
+  border: 1px solid #d4e2de;
+  border-radius: 14px;
+  background: rgb(255 255 255 / 80%);
+}
+
+.forecast span {
+  grid-row: 1 / span 2;
+  color: #607777;
+  font-size: 9px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.forecast strong {
+  color: #175d59;
+  font-size: 13px;
+}
+
+.forecast small {
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.historyTable {
+  overflow: hidden;
+  border: 1px solid #d4e2de;
+  border-radius: 14px;
+  background: rgb(255 255 255 / 84%);
+}
+
+.historyHead,
+.historyRow {
+  display: grid;
+  grid-template-columns: 1.1fr .8fr 1fr 1fr .7fr;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 13px;
+}
+
+.historyHead {
+  background: #eaf3f0;
+  color: #587070;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .035em;
+  text-transform: uppercase;
+}
+
+.historyRow {
+  border-top: 1px solid #e3ece9;
+  color: #526969;
+  font-size: 9px;
+}
+
+.historyRow strong {
+  color: #175d59;
+  text-align: right;
+}
+
+.emptyHistory {
+  margin: 0;
+  padding: 18px;
+  color: var(--muted);
+  font-size: 10px;
+  text-align: center;
+}
+
+.alertPanel {
+  display: grid;
+  grid-template-columns: minmax(180px, 1.4fr) minmax(220px, 1fr) auto auto auto;
+  gap: 12px;
+  align-items: center;
+  padding: 15px;
+  border: 1px solid #d4e2de;
+  border-radius: 14px;
+  background: rgb(255 255 255 / 82%);
+}
+
+.alertPanel > div:first-child {
+  display: grid;
+  gap: 3px;
+}
+
+.alertPanel strong {
+  color: #174f4d;
+  font-size: 11px;
+}
+
+.alertPanel span {
+  color: var(--muted);
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.thresholds {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.thresholds label,
+.channel {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #526969;
+  font-size: 9px;
+  white-space: nowrap;
+}
+
+.alertPanel input {
+  accent-color: #197e79;
+}
+
 @media (max-width: 940px) {
   .connection {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -303,6 +459,10 @@
   .connection button {
     justify-self: start;
   }
+
+  .alertPanel {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 @media (max-width: 680px) {
@@ -313,8 +473,23 @@
 
   .connection,
   .snapshotHead,
-  .meterGrid {
+  .meterGrid,
+  .alertPanel {
     grid-template-columns: 1fr;
+  }
+
+  .insightsHead {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .historyTable {
+    overflow-x: auto;
+  }
+
+  .historyHead,
+  .historyRow {
+    min-width: 560px;
   }
 
   .tokenField {

@@ -10,6 +10,26 @@ const runnerHeaders = {
 
 test.describe.configure({ mode: "serial" });
 
+test("在线 HTML 读取拒绝回环与私网目标", async ({ request }, testInfo) => {
+  test.skip(testInfo.project.name !== "chromium", "SSRF 负例只执行一次");
+  const response = await request.post("/api/generation/sources", {
+    headers: {
+      "Authorization": runnerHeaders.Authorization,
+      "X-ELMOS-Tenant": runnerHeaders["X-ELMOS-Tenant"],
+      "X-ELMOS-Actor": runnerHeaders["X-ELMOS-Actor"],
+    },
+    multipart: {
+      url: "https://127.0.0.1/internal-requirements",
+    },
+  });
+
+  expect(response.status()).toBe(400);
+  expect(await response.json()).toMatchObject({
+    status: "BLOCKED",
+    reason: "SOURCE_URL_PRIVATE_ADDRESS_BLOCKED",
+  });
+});
+
 test("凭证不能切换租户，审阅摘要不能批准被修改的 Intent", async ({
   request,
 }, testInfo) => {
@@ -79,6 +99,40 @@ test("凭证不能切换租户，审阅摘要不能批准被修改的 Intent", a
   });
 });
 
+test("服务端在消费审阅摘要前阻断单实体目标的多实体生产请求", async ({
+  request,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== "chromium", "生产能力边界的代表请求只执行一次");
+  const intent = {
+    name: "inventory-service",
+    namespace: "io.elmos.inventory",
+    description: "实体: product, inventory; product字段: name:string:required; inventory字段: quantity:integer:required",
+    entity: "product",
+    targets: ["go"],
+    persistence: "postgresql",
+    authMode: "jwt",
+  };
+  const analyzed = await request.post("/api/generation/analyze", {
+    headers: runnerHeaders,
+    data: intent,
+  });
+  expect(analyzed.ok()).toBe(true);
+  const analysis = await analyzed.json() as { requestDigest: string };
+  const execution = await request.post("/api/generation/jobs", {
+    headers: runnerHeaders,
+    data: {
+      ...intent,
+      reviewer: "user:e2e",
+      approved: true,
+      analysisDigest: analysis.requestDigest,
+    },
+  });
+  expect(execution.status()).toBe(409);
+  expect(await execution.json()).toMatchObject({
+    reason: "PRODUCTION_PROFILE_SINGLE_ENTITY_ONLY",
+  });
+});
+
 test("需求分析、生成验证、文件树、归档与健康确认的一键运行闭环", async ({
   page,
 }, testInfo) => {
@@ -114,7 +168,7 @@ test("需求分析、生成验证、文件树、归档与健康确认的一键�
   await expect(page.getByText("开放问题 · 0")).toBeVisible();
 
   await page.getByRole("checkbox", { name: /我已审阅结构化需求/ }).check();
-  await page.getByRole("button", { name: "执行并验证" }).click();
+  await page.getByRole("button", { name: "一键生成、验证并归档" }).click();
   const generationOutcome = await Promise.race([
     page.getByText("生成文件树").waitFor({ state: "visible", timeout: 260_000 })
       .then(() => "READY"),
@@ -170,7 +224,7 @@ test("Python PostgreSQL JWT/OIDC 企业配置均可生成、验证并一键运�
     await expect(page.getByText("开放问题 · 0")).toBeVisible();
 
     await page.getByRole("checkbox", { name: /我已审阅结构化需求/ }).check();
-    await page.getByRole("button", { name: "执行并验证" }).click();
+    await page.getByRole("button", { name: "一键生成、验证并归档" }).click();
     const generationOutcome = await Promise.race([
       page.getByText("生成文件树").waitFor({ state: "visible", timeout: 600_000 })
         .then(() => "READY"),

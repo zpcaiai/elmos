@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 import { Icon } from "../components/Icon";
 import { RuntimeDeploymentGuide } from "../components/RuntimeDeploymentGuide";
 import { StatusChip } from "../components/StatusChip";
@@ -120,9 +120,9 @@ const latestRunStorageKey = "elmos.spring.latest-run-id";
  */
 function buildStageCards(capability: Capability | null): Array<{ stages: Stage[]; title: string; detail: string }> {
   const source = capability
-    ? `Boot ${capability.sourceTuple.springBoot}、Java ${capability.sourceTuple.java}、${capability.sourceTuple.build}`
-    : "契约未读取的精确源元组";
-  const sourceJava = capability ? `Java ${capability.sourceTuple.java}` : "源 Java";
+    ? `${capability.routes?.length ?? 1} 条声明路线；已验证点为 Boot ${capability.sourceTuple.springBoot}、`
+      + `Java ${capability.sourceTuple.java}、${capability.sourceTuple.build}`
+    : "契约未读取的路线目录";
   const targetJava = capability ? `Java ${capability.targetTuple.java}` : "目标 Java";
   const rewrite = capability
     ? `固定 Rewrite Spring ${capability.openRewrite.rewriteSpring} 与插件 ${capability.openRewrite.mavenPlugin}。`
@@ -130,8 +130,8 @@ function buildStageCards(capability: Capability | null): Array<{ stages: Stage[]
   return [
     { stages: ["IMPORT_GIT"], title: "导入 Git 仓库", detail: "仅允许批准的 HTTPS Git host，拒绝 URL 凭证。" },
     { stages: ["LOCK_SNAPSHOT"], title: "锁定 Commit / Snapshot", detail: "解析 40 位 Commit，并生成确定性内容摘要。" },
-    { stages: ["FINGERPRINT"], title: "精确版本识别", detail: `只接受 ${source} 精确路线。` },
-    { stages: ["SOURCE_BASELINE"], title: "源工程基线", detail: `在一次性副本中使用 ${sourceJava} 执行完整 Maven verify。` },
+    { stages: ["FINGERPRINT"], title: "精确版本识别", detail: `按 Boot、JDK 与构建工具从 ${source} 中选择，不做模糊匹配。` },
+    { stages: ["SOURCE_BASELINE"], title: "源工程基线", detail: "在一次性副本中使用检测到且已配置的精确源 JDK 执行完整构建与测试。" },
     { stages: ["EXTRACT_FCM"], title: "提取 FCM", detail: "在转换前固化能力、来源映射、默认值与未知项。" },
     { stages: ["OPENREWRITE"], title: "OpenRewrite 实际转换", detail: rewrite },
     { stages: ["BUILD_AND_TEST", "DETERMINISTIC_REPAIR"], title: "编译 / 测试 / 修复", detail: `${targetJava} 真实测试；失败时最多一次确定性修复。` },
@@ -162,8 +162,21 @@ function formatBytes(value?: number | null) {
   return value < 1024 * 1024 ? `${Math.ceil(value / 1024)} KB` : `${(value / 1024 / 1024).toFixed(1)} MB`;
 }
 
-async function api<T>(url: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(url, { cache: "no-store", ...init });
+type SpringCredentials = { tenantId: string; actorId: string; token: string };
+
+async function api<T>(url: string, init?: RequestInit, credentials?: SpringCredentials): Promise<T> {
+  const response = await fetch(url, {
+    cache: "no-store",
+    ...init,
+    headers: {
+      ...init?.headers,
+      ...(credentials ? {
+        authorization: `Bearer ${credentials.token}`,
+        "x-elmos-tenant": credentials.tenantId,
+        "x-elmos-actor": credentials.actorId,
+      } : {}),
+    },
+  });
   if (!response.ok) {
     const error = await response.json().catch(() => ({})) as ApiError;
     throw new Error(`${error.errorCode ?? `HTTP_${response.status}`}: ${error.message ?? "请求失败"}`);
@@ -191,7 +204,15 @@ export function SpringModernizationStudio() {
   const [busy, setBusy] = useState(false);
   const [feedback, setFeedback] = useState("");
   const [feedbackKind, setFeedbackKind] = useState<FeedbackKind>("success");
-  const restoredRun = useRef(false);
+  const [tenantId, setTenantId] = useState("");
+  const [actorId, setActorId] = useState("");
+  const [proxyToken, setProxyToken] = useState("");
+  const [recoveryRunId, setRecoveryRunId] = useState("");
+
+  const credentials = useMemo(
+    () => ({ tenantId: tenantId.trim(), actorId: actorId.trim(), token: proxyToken }),
+    [actorId, proxyToken, tenantId],
+  );
 
   const notify = useCallback((message: string, kind: FeedbackKind = "success") => {
     setFeedback(message);
@@ -199,7 +220,7 @@ export function SpringModernizationStudio() {
   }, []);
 
   const refreshGithubCatalog = useCallback(async () => {
-    const catalog = await api<RepositoryCatalog>("/api/github-repositories");
+    const catalog = await api<RepositoryCatalog>("/api/github-repositories", undefined, credentials);
     setGithubCatalogStatus(catalog.status);
     setGithubRepositories(catalog.repositories);
     const first = catalog.repositories[0];
@@ -208,15 +229,17 @@ export function SpringModernizationStudio() {
       setRequestedRef((value) => value || first.defaultBranch);
     }
     return catalog;
-  }, []);
+  }, [credentials]);
 
   const refresh = useCallback(async (runId: string, includeLogs = showLogs) => {
-    const next = await api<Run>(`/api/spring-upgrades/${runId}`);
+    const next = await api<Run>(`/api/spring-upgrades/${runId}`, undefined, credentials);
     setRun(next);
     window.sessionStorage.setItem(latestRunStorageKey, next.runId);
-    if (includeLogs) setLogs(await api<LogResponse>(`/api/spring-upgrades/${runId}/logs`));
+    if (includeLogs) {
+      setLogs(await api<LogResponse>(`/api/spring-upgrades/${runId}/logs`, undefined, credentials));
+    }
     return next;
-  }, [showLogs]);
+  }, [credentials, showLogs]);
 
   useEffect(() => {
     api<Capability>("/api/spring-upgrades/capabilities")
@@ -240,20 +263,9 @@ export function SpringModernizationStudio() {
   }, [refreshGithubCatalog]);
 
   useEffect(() => {
-    if (restoredRun.current) return;
-    restoredRun.current = true;
     const runId = window.sessionStorage.getItem(latestRunStorageKey);
-    if (!runId || !/^[0-9a-f-]{36}$/i.test(runId)) {
-      window.sessionStorage.removeItem(latestRunStorageKey);
-      return;
-    }
-    refresh(runId)
-      .then(() => notify("已恢复本浏览器会话中的最近一次迁移运行。"))
-      .catch(() => {
-        window.sessionStorage.removeItem(latestRunStorageKey);
-        notify("最近一次迁移运行无法恢复；请重新提交或确认租户与 Runner。", "error");
-      });
-  }, [notify, refresh]);
+    if (runId && /^[0-9a-f-]{36}$/i.test(runId)) setRecoveryRunId(runId);
+  }, []);
 
   useEffect(() => {
     if (!run || !["QUEUED", "RUNNING"].includes(run.status) && run.runtimeStatus !== "STARTING") return;
@@ -276,14 +288,18 @@ export function SpringModernizationStudio() {
     && capability?.independentVerifierConfigured
     && githubSourceReady,
   );
+  const credentialsReady = tenantId.trim().length >= 3
+    && actorId.trim().length >= 3
+    && proxyToken.length >= 24;
   const runtimeReady = Boolean(capability?.runtimeRunnerConfigured);
   const lastStageIndex = run ? orderedStages.indexOf(run.stage) : -1;
   // The exact tuple is owned by the Java engine capability contract. Until it
   // has been read, the page shows that it is unknown instead of printing a
   // version pair the console has not observed.
   const lockedRouteLabel = capability
-    ? `Spring Boot ${capability.sourceTuple.springBoot} / Java ${capability.sourceTuple.java}`
-      + ` → Spring Boot ${capability.targetTuple.springBoot} / Java ${capability.targetTuple.java}`
+    ? `${capability.routes?.length ?? 1} 条精确源路线 → Spring Boot ${capability.targetTuple.springBoot}`
+      + ` / Java ${capability.targetTuple.java}；已验证点 Boot ${capability.sourceTuple.springBoot}`
+      + ` / Java ${capability.sourceTuple.java}`
     : "精确转换路线未读取（UNKNOWN）";
   const stageCards = useMemo(() => buildStageCards(capability), [capability]);
   const artifactFileName = capability
@@ -337,7 +353,7 @@ export function SpringModernizationStudio() {
           startAfterVerification,
           idempotencyKey: randomKey("spring-upgrade"),
         }),
-      });
+      }, credentials);
       setRun(next);
       window.sessionStorage.setItem(latestRunStorageKey, next.runId);
       setLogs(null);
@@ -355,7 +371,7 @@ export function SpringModernizationStudio() {
     try {
       const result = await api<GithubInstallationBegin>("/api/github-installation", {
         method: "POST",
-      });
+      }, credentials);
       const target = new URL(result.installationUrl);
       if (target.protocol !== "https:" || target.hostname !== "github.com") {
         throw new Error("GITHUB_APP_INSTALL_URL_INVALID: 安装地址未通过安全校验");
@@ -375,7 +391,7 @@ export function SpringModernizationStudio() {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify(body ?? {}),
-      });
+      }, credentials);
       setRun(next);
       window.sessionStorage.setItem(latestRunStorageKey, next.runId);
       notify("操作已受理，状态将自动刷新。");
@@ -392,7 +408,7 @@ export function SpringModernizationStudio() {
     setShowLogs(next);
     if (next) {
       try {
-        setLogs(await api<LogResponse>(`/api/spring-upgrades/${run.runId}/logs`));
+        setLogs(await api<LogResponse>(`/api/spring-upgrades/${run.runId}/logs`, undefined, credentials));
       } catch (error) {
         notify(error instanceof Error ? error.message : "日志不可用", "error");
       }
@@ -405,6 +421,11 @@ export function SpringModernizationStudio() {
     try {
       const response = await fetch(`/api/spring-upgrades/${run.runId}/artifact`, {
         cache: "no-store",
+        headers: {
+          authorization: `Bearer ${proxyToken}`,
+          "x-elmos-tenant": tenantId.trim(),
+          "x-elmos-actor": actorId.trim(),
+        },
       });
       if (!response.ok) {
         const error = await response.json().catch(() => ({})) as ApiError;
@@ -440,6 +461,19 @@ export function SpringModernizationStudio() {
     }
   }
 
+  async function recoverRun() {
+    if (!/^[0-9a-f-]{36}$/i.test(recoveryRunId) || !credentialsReady) return;
+    setBusy(true);
+    try {
+      await refresh(recoveryRunId.toLowerCase(), false);
+      notify("已按 Run UUID 与当前租户身份恢复持久迁移运行。");
+    } catch (error) {
+      notify(error instanceof Error ? error.message : "SPRING_UPGRADE_RUN_NOT_FOUND", "error");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <div className="page-stack business-page">
       <section className="page-header business-hero">
@@ -462,9 +496,9 @@ export function SpringModernizationStudio() {
 
       <section className="metric-grid metric-grid-four" aria-label="精确迁移路线">
         <article className="metric-card">
-          <span>源版本</span>
-          <strong className={`metric-word ${capability ? "" : "warning-text"}`}>{capability ? `Boot ${capability.sourceTuple.springBoot}` : "UNKNOWN"}</strong>
-          <small>{capability ? `Java ${capability.sourceTuple.java} · ${capability.sourceTuple.build}` : "能力契约未读取"}</small>
+          <span>精确源路线</span>
+          <strong className={`metric-word ${capability ? "" : "warning-text"}`}>{capability ? `${capability.routes?.length ?? 1} 条` : "UNKNOWN"}</strong>
+          <small>{capability ? `1 个已验证点：Boot ${capability.sourceTuple.springBoot} · Java ${capability.sourceTuple.java}` : "能力契约未读取"}</small>
         </article>
         <article className="metric-card">
           <span>目标版本</span>
@@ -486,6 +520,19 @@ export function SpringModernizationStudio() {
             <StatusChip status={run ? run.status : "DRAFT"} compact />
           </div>
           <div className="business-form-grid">
+            <label>
+              <span>租户标识</span>
+              <input aria-label="Spring 租户标识" value={tenantId} onChange={(event) => setTenantId(event.target.value)} autoComplete="off" />
+            </label>
+            <label>
+              <span>执行者标识</span>
+              <input aria-label="Spring 执行者标识" value={actorId} onChange={(event) => setActorId(event.target.value)} autoComplete="off" />
+            </label>
+            <label className="spring-field-wide">
+              <span>Spring 代理短期令牌</span>
+              <input aria-label="Spring 代理短期令牌" type="password" value={proxyToken} onChange={(event) => setProxyToken(event.target.value)} autoComplete="off" />
+              <small>令牌最多 24 小时，并与唯一租户和 Actor 绑定；不会进入迁移请求体或日志。</small>
+            </label>
             <label>
               <span>输入方式</span>
               <select value={sourceMode} onChange={(event) => setSourceMode(event.target.value as SourceMode)}>
@@ -591,9 +638,9 @@ export function SpringModernizationStudio() {
             <span><strong>验证通过后自动一键启动</strong><small>{runtimeReady ? "独立验证 PASS 后，在每次运行专属的 Rootless 容器中执行。" : capability?.runtimeRunnerReason ?? "独立 Runtime Runner 尚未配置。"}</small></span>
           </label>
           <div className="business-actions">
-            <button className="button button-primary" type="submit" disabled={busy || !runnerReady}>
+            <button className="button button-primary" type="submit" disabled={busy || !runnerReady || !credentialsReady}>
               <Icon name={busy ? "refresh" : "workflow"} size={16} className={busy ? "spinning" : undefined} />
-              {runnerReady ? "开始真实迁移" : "隔离 Runner 未配置"}
+              {!runnerReady ? "隔离 Runner 未配置" : credentialsReady ? "开始真实迁移" : "填写短期身份后迁移"}
             </button>
             {run && ["QUEUED", "RUNNING"].includes(run.status) && <button className="button button-secondary" type="button" onClick={() => lifecycle("cancel")} disabled={busy}>取消迁移</button>}
           </div>
@@ -609,6 +656,17 @@ export function SpringModernizationStudio() {
             <div><dt>Artifact</dt><dd>{formatBytes(run?.artifactSize)} · {shortDigest(run?.artifactSha256)}</dd></div>
             <div><dt>Health</dt><dd>{run?.runtimeStatus === "HEALTHY" ? `127.0.0.1:${run.runtimePort}${run.healthPath}` : run?.runtimeStatus ?? "NOT_RUN"}</dd></div>
           </dl>
+          <div className="business-form-grid">
+            <label className="spring-field-wide">
+              <span>恢复 Run UUID</span>
+              <input value={recoveryRunId} onChange={(event) => setRecoveryRunId(event.target.value.toLowerCase())} pattern="[0-9a-f-]{36}" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
+            </label>
+          </div>
+          <div className="business-actions">
+            <button className="button button-secondary" type="button" disabled={busy || !credentialsReady || !/^[0-9a-f-]{36}$/i.test(recoveryRunId)} onClick={() => void recoverRun()}>
+              <Icon name="refresh" size={15} />恢复运行
+            </button>
+          </div>
           <div className="locked-target">
             <span>隔离 Runtime Runner</span>
             <strong>{runtimeReady ? "READY · 可一键启动" : "BLOCKED · 不降级执行"}</strong>
@@ -672,7 +730,7 @@ export function SpringModernizationStudio() {
                   role="row"
                   key={route.routeId}
                 >
-                  <span role="cell" title={route.routeId}>
+                  <span role="cell" title={`${route.routeId}${route.notes ? ` · ${route.notes}` : ""}`}>
                     Boot [{route.sourceBootMinInclusive}, {route.sourceBootMaxExclusive})
                   </span>
                   <span role="cell">{route.sourceJavaVersions.join(" / ")}</span>

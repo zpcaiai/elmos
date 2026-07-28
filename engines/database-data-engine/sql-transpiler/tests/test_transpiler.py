@@ -120,6 +120,11 @@ def test_materialization_is_complete_create_only_and_does_not_copy_raw_source(
     assert verification["targetExecution"] == "NOT_RUN"
     assert verification["resultEquivalence"] == "NOT_RUN"
     assert verification["certification"] == "NOT_CERTIFIED"
+    runner_config = json.loads((output / "runner-config.json").read_text())
+    assert runner_config["sourceRunner"]["status"] == "LOCAL_RUNNER_READY"
+    assert runner_config["sourceRunner"]["runtimeEvidence"] == "NOT_RUN"
+    assert runner_config["targetRunner"]["status"] == "BLOCKED"
+    assert runner_config["targetRunner"]["runtimeEvidence"] == "NOT_RUN"
 
     with pytest.raises(FileExistsError, match="absent or empty"):
         materialize(result, output)

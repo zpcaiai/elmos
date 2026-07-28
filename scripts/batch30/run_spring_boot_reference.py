@@ -234,11 +234,7 @@ def start_and_probe(
     ids: list[int],
     log_path: Path,
 ) -> dict[str, Any]:
-    jar = next(
-        path
-        for path in sorted((project / "target").glob("*.jar"))
-        if not path.name.endswith(".original")
-    )
+    jar = next(path for path in sorted((project / "target").glob("*.jar")) if not path.name.endswith(".original"))
     port = free_port()
     environment = os.environ.copy()
     environment["JAVA_HOME"] = str(java_home)
@@ -333,6 +329,52 @@ def configure_contract(pack: Path) -> None:
             "evidence_refs": ["certification/local-reference-evidence.json"],
         },
     )
+
+
+def has_public_engineering_evidence(pack: Path) -> bool:
+    certification = pack / "certification" / "public-reference-route-evidence.json"
+    if not certification.is_file():
+        return False
+    public = json.loads(certification.read_text(encoding="utf-8"))
+    if (
+        public.get("evidence_class") != "LOCAL_PUBLIC_REPOSITORY_ENGINEERING"
+        or public.get("certification_eligible") is not False
+    ):
+        return False
+    for corpus, field in (
+        ("holdout", "holdout_public_repository"),
+        ("real-repository", "representative_public_repository"),
+    ):
+        reference = pack / "corpus" / corpus / "reference-inputs.json"
+        if not reference.is_file():
+            return False
+        manifest = json.loads(reference.read_text(encoding="utf-8"))
+        if (
+            manifest.get("execution_status") != "PASSED_LOCAL_PUBLIC_ENGINEERING"
+            or manifest.get("external_execution") != "NOT_RUN"
+            or not manifest.get("inputs")
+        ):
+            return False
+        observed = public.get(field)
+        if not isinstance(observed, dict):
+            return False
+        if (
+            observed.get("openrewrite_actual_execution") is not True
+            or observed.get("download_digest_and_size_match") is not True
+            or observed.get("source_tests", {}).get("failures") != 0
+            or observed.get("source_tests", {}).get("errors") != 0
+            or observed.get("target_tests", {}).get("failures") != 0
+            or observed.get("target_tests", {}).get("errors") != 0
+        ):
+            return False
+        verifier = observed.get("independent_verifier", {})
+        if (
+            verifier.get("status") != "PASS"
+            or verifier.get("physically_separate_process") is not True
+            or verifier.get("organizationally_independent") is not False
+        ):
+            return False
+    return True
 
 
 def transform_with_openrewrite(
@@ -497,13 +539,25 @@ def execute(repo: Path) -> Path:
         "manual_hours": 0,
         "cost_per_verified_workload": 0,
     }
+    public_evidence = has_public_engineering_evidence(pack)
+    status = "limited" if public_evidence else "experimental"
+    pack_version = "0.3.0" if public_evidence else "0.2.0"
+    runs = ["local-reference-evidence.json"]
+    evidence_refs = ["certification/local-reference-evidence.json"]
+    for name in (
+        "local-product-journey-evidence.json",
+        "public-reference-route-evidence.json",
+    ):
+        if public_evidence and (local_evidence / name).is_file():
+            runs.append(name)
+            evidence_refs.append(f"certification/{name}")
     write_json(
         local_evidence / "evidence.json",
         {
             "schema_version": 1,
             "pack_key": PACK_KEY,
-            "pack_version": "0.2.0",
-            "runs": ["local-reference-evidence.json"],
+            "pack_version": pack_version,
+            "runs": runs,
             "metrics": metrics,
             "critical_unknowns": 0,
             "silent_framework_drops": 0,
@@ -515,28 +569,37 @@ def execute(repo: Path) -> Path:
             "external_execution_status": "NOT_RUN",
         },
     )
+    gate_results = {
+        "structural_validation": "PASSED",
+        "development_fixture": "PASSED_LOCAL",
+        "synthetic_holdout": "PASSED_LOCAL",
+        "synthetic_representative": "PASSED_LOCAL",
+        "public_holdout": ("PASSED_LOCAL_ENGINEERING" if public_evidence else "NOT_RUN"),
+        "public_representative": ("PASSED_LOCAL_ENGINEERING" if public_evidence else "NOT_RUN"),
+        "github_app_private_repository": "NOT_RUN",
+        "authorized_customer_repository": "NOT_RUN",
+        "customer_holdout": "NOT_RUN",
+        "rootless_transformer": "NOT_RUN",
+        "rootless_verifier": "NOT_RUN",
+        "rootless_runner": "NOT_RUN",
+        "independent_review": "NOT_RUN",
+    }
     write_json(
         local_evidence / "certification.json",
         {
             "schema_version": 1,
             "pack_key": PACK_KEY,
-            "pack_version": "0.2.0",
-            "status": "experimental",
-            "gate_results": {
-                "structural_validation": "PASSED",
-                "development_fixture": "PASSED_LOCAL",
-                "synthetic_holdout": "PASSED_LOCAL",
-                "synthetic_representative": "PASSED_LOCAL",
-                "authorized_customer_repository": "NOT_RUN",
-                "rootless_runner": "NOT_RUN",
-                "independent_review": "NOT_RUN",
-            },
+            "pack_version": pack_version,
+            "status": status,
+            "certification_decision": "NOT_CERTIFIED",
+            "declared_scope": ["web", "configuration", "lifecycle"],
+            "gate_results": gate_results,
             "metrics": metrics,
-            "evidence_refs": ["certification/local-reference-evidence.json"],
+            "evidence_refs": evidence_refs,
             "residual_risks": [
-                "Only web JSON and health lifecycle are locally exercised.",
+                "The supported scope is limited to web, configuration and lifecycle behavior.",
                 "Security, persistence, messaging and transaction providers remain conditional.",
-                "Customer repository, rootless Runner and independent review remain NOT_RUN.",
+                "Customer repository, rootless execution and external independent review remain NOT_RUN.",
             ],
         },
     )
@@ -545,7 +608,7 @@ def execute(repo: Path) -> Path:
         if capability["id"] in {"web", "configuration", "lifecycle"}:
             capability.update(
                 {
-                    "status": "experimental",
+                    "status": "supported" if public_evidence else "experimental",
                     "strategy": "framework-contract-and-real-runtime",
                     "reason": "Real local source and target builds, startup, and behavior parity passed.",
                     "evidence_refs": ["certification/local-reference-evidence.json"],
@@ -553,16 +616,26 @@ def execute(repo: Path) -> Path:
             )
     write_json(pack / "support-matrix.json", support)
     manifest = json.loads((pack / "pack.json").read_text(encoding="utf-8"))
-    manifest["version"] = "0.2.0"
-    manifest["status"] = "experimental"
+    manifest["version"] = pack_version
+    manifest["status"] = status
     write_json(pack / "pack.json", manifest)
+    version_matrix = json.loads((pack / "version-matrix.json").read_text(encoding="utf-8"))
+    for item in version_matrix.get("tuples", []):
+        if item.get("id") == "target":
+            item["status"] = "limited-output" if public_evidence else "experimental-output"
+    write_json(pack / "version-matrix.json", version_matrix)
     (local_evidence / "gate-report.md").write_text(
         "# Spring Boot reference gate\n\n"
+        f"- Pack status: `{status}`\n"
         "- Spring Boot 2.7.18 / Java 17 build and startup: `PASSED_LOCAL`\n"
         "- Spring Boot 3.5.3 / Java 21 build and startup: `PASSED_LOCAL`\n"
         "- Development, synthetic holdout and representative API parity: `PASSED_LOCAL`\n"
+        f"- Public holdout and representative repositories: "
+        f"`{'PASSED_LOCAL_ENGINEERING' if public_evidence else 'NOT_RUN'}`\n"
         "- Authorized customer repository: `NOT_RUN`\n"
-        "- Rootless Runner and independent review: `NOT_RUN`\n",
+        "- Rootless Transformer, Verifier and Runner: `NOT_RUN`\n"
+        "- External independent review: `NOT_RUN`\n"
+        "- Certification decision: `NOT_CERTIFIED`\n",
         encoding="utf-8",
     )
     return pack

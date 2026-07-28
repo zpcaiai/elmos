@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any
 
 from .models import TranspileResult
+from .runner import runner_capabilities
 
 
 def _write_json(path: Path, value: Any) -> None:
@@ -23,6 +24,26 @@ def _safe_output_directory(output: Path) -> Path:
         raise FileExistsError("output directory must be absent or empty")
     resolved.mkdir(parents=True, exist_ok=True)
     return resolved
+
+
+def _runner_config(profile_id: str, permissions: list[str]) -> dict[str, Any]:
+    capabilities = runner_capabilities()
+    matches = [
+        item
+        for item in capabilities["ready"] + capabilities["blocked"]
+        if item["profileId"] == profile_id
+    ]
+    if len(matches) != 1:
+        raise RuntimeError(f"missing exact Runner configuration for {profile_id}")
+    exact = dict(matches[0])
+    state = str(exact.pop("state"))
+    return {
+        "profile": profile_id,
+        "status": state,
+        "runtimeEvidence": "NOT_RUN",
+        "exactRuntime": exact,
+        "permissions": permissions,
+    }
 
 
 def materialize(result: TranspileResult, output: Path) -> dict[str, Any]:
@@ -64,16 +85,14 @@ def materialize(result: TranspileResult, output: Path) -> dict[str, Any]:
         target / "runner-config.json",
         {
             "schemaVersion": "1.0",
-            "sourceRunner": {
-                "profile": result.source_profile.id,
-                "status": "NOT_CONFIGURED",
-                "permissions": ["READ_QUERY", "READ_METADATA"],
-            },
-            "targetRunner": {
-                "profile": result.target_profile.id,
-                "status": "NOT_CONFIGURED",
-                "permissions": ["DISPOSABLE_SCHEMA_DDL", "DISPOSABLE_FIXTURE_DML"],
-            },
+            "sourceRunner": _runner_config(
+                result.source_profile.id,
+                ["READ_QUERY", "READ_METADATA"],
+            ),
+            "targetRunner": _runner_config(
+                result.target_profile.id,
+                ["DISPOSABLE_SCHEMA_DDL", "DISPOSABLE_FIXTURE_DML"],
+            ),
             "productionWrites": "PROHIBITED_WITHOUT_SEPARATE_APPROVAL",
             "credentialMode": "SHORT_LIVED_LEASE_REQUIRED",
         },

@@ -66,7 +66,7 @@ export function SkillsWorkspace() {
 
       <aside className="surface-card strict-gate-card">
         <span className="strict-icon"><Icon name="test" size={23} /></span><span className="overline">STRICT QUALIFICATION</span><h2>408 个用例，0 个被伪造通过</h2><p>目录、Schema 和工具链可以本地验证；认证结果必须绑定独立执行者、原始证据、授权和签名请求。</p>
-        <div className="strict-meter" aria-label="严格用例执行进度 0 / 408"><span style={{width:"0%"}} /></div>
+        <div className="strict-meter" role="progressbar" aria-label="严格用例执行进度" aria-valuemin={0} aria-valuemax={408} aria-valuenow={0} aria-valuetext="0 / 408，全部尚未运行"><span style={{width:"0%"}} /></div>
         <div className="strict-stats"><span><small>目录就绪</small><strong>408 / 408</strong></span><span><small>已执行</small><strong className="warning-text">0 / 408</strong></span></div>
         <div className="gate-command"><span>唯一严格认证门禁</span><code>scripts/test-suite/run_strict_test_gate.py</code></div>
         <div className="strict-boundary"><Icon name="lock" size={16} /><span><strong>当前结论：BLOCKED</strong><small>未运行、合成或未独立签署的证据永不通过。</small></span></div>

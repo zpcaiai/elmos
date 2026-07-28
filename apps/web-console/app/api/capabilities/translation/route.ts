@@ -1,12 +1,16 @@
 import { NextResponse } from "next/server";
 import type { TranslationCapabilityBlocked } from "../../../lib/contracts";
 import { TranslationContractError, readTranslationCapability } from "../../../lib/server/translationRoutes";
+import { translationRunnerCapability } from "../../../lib/server/translationRunner";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    return NextResponse.json(readTranslationCapability(), {
+    return NextResponse.json({
+      ...readTranslationCapability(),
+      localRunner: translationRunnerCapability(),
+    }, {
       headers: { "cache-control": "no-store" },
     });
   } catch (error) {

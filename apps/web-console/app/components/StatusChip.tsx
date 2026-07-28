@@ -7,6 +7,7 @@ const statusLabels: Record<string, string> = {
   NOT_CONFIGURED: "未配置",
   CONFIGURATION_REQUIRED: "待配置",
   EXPERIMENTAL: "实验性",
+  LIMITED: "受限支持",
   RECOMMENDED: "推荐",
   OPTIONAL: "可选",
   CONDITIONAL: "条件选择",
