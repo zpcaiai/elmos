@@ -150,22 +150,25 @@ async function extractUploadedSource(file: UploadedSource): Promise<ExtractedSou
   const label = safeLabel(file.name);
   const extension = path.extname(label).toLowerCase();
   const raw = Buffer.from(await file.arrayBuffer());
+  if (raw.byteLength !== file.size || raw.byteLength > MAX_FILE_BYTES) {
+    throw new SourceIngestionError(413, "SOURCE_FILE_SIZE_MISMATCH");
+  }
   let text: string;
   let kind: GenerationSourceKind;
-  let mediaType = file.type || "application/octet-stream";
+  let mediaType: string;
   const warnings: string[] = [];
 
   if (extension === ".txt") {
     kind = "text-file";
-    mediaType = file.type || "text/plain";
+    mediaType = "text/plain";
     text = decodeUtf8(raw);
   } else if (extension === ".md" || extension === ".markdown") {
     kind = "markdown-file";
-    mediaType = file.type || "text/markdown";
+    mediaType = "text/markdown";
     text = decodeUtf8(raw);
   } else if (extension === ".html" || extension === ".htm") {
     kind = "html-file";
-    mediaType = file.type || "text/html";
+    mediaType = "text/html";
     text = htmlToText(decodeUtf8(raw));
   } else if (extension === ".docx") {
     kind = "word-file";

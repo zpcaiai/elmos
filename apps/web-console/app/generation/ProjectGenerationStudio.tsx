@@ -971,6 +971,15 @@ export function ProjectGenerationStudio() {
                   <span>审阅摘要 · {analysis.requestDigest.slice(0, 16)}</span>
                   {analysis.request.business_rules.map((rule) => <span key={rule.id}>{rule.id} · {rule.statement}</span>)}
                 </div>
+                {analysis.request.requirement_sources && analysis.request.source_bundle_sha256 && (
+                  <div className="generation-analysis-card">
+                    <strong>来源证明 · {analysis.request.requirement_sources.length}</strong>
+                    <small>来源包 {analysis.request.source_bundle_sha256.slice(0, 16)} · 已绑定当前审批摘要</small>
+                    {analysis.request.requirement_sources.map((source) => (
+                      <span key={source.id}>{source.id} · {source.kind} · {source.label} · {source.sha256.slice(0, 12)}</span>
+                    ))}
+                  </div>
+                )}
                 <div className="generation-analysis-card">
                   <strong>关系与权限</strong>
                   <small>

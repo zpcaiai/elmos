@@ -127,6 +127,7 @@ test.describe("多语言项目生成 UI", () => {
     await page.getByRole("button", { name: "锁定生成计划" }).click();
     await page.getByRole("button", { name: "分析并整理需求" }).click();
     await expect(page.getByText("实体与字段 · 1")).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByText("来源证明 · 7")).toBeVisible();
     await expect(page.getByText("开放问题 · 0")).toBeVisible();
   });
 

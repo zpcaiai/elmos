@@ -244,6 +244,8 @@ export type GenerationRequirementReview = {
   requirements: Array<{ id: string; statement: string; priority: string }>;
   acceptance_criteria: Array<{ id: string; statement: string }>;
   open_questions: Array<{ id: string; question: string; impact: string }>;
+  requirement_sources?: GenerationSourceReference[];
+  source_bundle_sha256?: string;
   targets: Array<{
     language: GenerationTargetId;
     framework: string;
