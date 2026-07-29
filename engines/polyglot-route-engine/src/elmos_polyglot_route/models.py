@@ -14,20 +14,13 @@ SUPPORTED_LANGUAGES: tuple[Language, ...] = (
     "swift",
 )
 
-#: Languages this engine can lift *from*. Swift is currently a target only:
-#: its analyzer needs a SwiftSyntax-backed helper built against a pinned Swift
-#: toolchain, the same shape as the Roslyn and TypeScript Compiler API helpers
-#: this engine already shells out to. Until that exists, a Swift source fails
-#: closed (`SWIFT_SOURCE_ANALYZER_NOT_AVAILABLE`) rather than being parsed at
-#: the text level.
-ANALYZABLE_LANGUAGES: tuple[Language, ...] = (
-    "java",
-    "python",
-    "csharp",
-    "typescript",
-    "cpp",
-    "objc",
-)
+#: Languages this engine can lift *from*. Every supported language is also a
+#: source: Swift is analyzed by the SwiftSyntax helper under
+#: `native/swift`, which `native.analyze` builds on demand the same way the
+#: TypeScript CLI is built. The distinction is kept as its own name because a
+#: newly added target is a smaller change than a newly added source, and
+#: callers that enumerate sources should say so explicitly.
+ANALYZABLE_LANGUAGES: tuple[Language, ...] = SUPPORTED_LANGUAGES
 
 
 class RouteError(ValueError):

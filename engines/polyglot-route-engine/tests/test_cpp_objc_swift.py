@@ -360,3 +360,69 @@ def test_emitted_cpp_truncates_like_java(
     )
     assert compiled.returncode == 0, compiled.stderr
     assert subprocess.run([str(binary)], check=False, timeout=60).returncode == 0
+
+
+# --------------------------------------------------------------------------
+# Swift source analysis. The helper under `native/swift` is a SwiftSyntax
+# package built on demand, so these run only where a Swift toolchain and its
+# declared pin exist -- everywhere else the route fails closed rather than
+# falling back on a text-level parse.
+# --------------------------------------------------------------------------
+
+
+SWIFTC = shutil.which("swiftc")
+
+
+@pytest.mark.skipif(SWIFTC is None, reason="swiftc is not installed")
+def test_swift_source_lifts_through_the_swiftsyntax_helper(tmp_path: Path) -> None:
+    from elmos_polyglot_route.native import analyze
+
+    source = tmp_path / "pricing.swift"
+    source.write_text(
+        "func calculate(_ subtotal: Int, _ tax: Int) -> Int {\n"
+        "    if subtotal < 0 {\n"
+        "        return 0\n"
+        "    }\n"
+        "    return subtotal + tax\n"
+        "}\n",
+        encoding="utf-8",
+    )
+    semantic = analyze(source, "swift", "calculate")
+    function = semantic.functions[0]
+    assert [(p.name, p.type) for p in function.parameters] == [
+        ("subtotal", "integer"),
+        ("tax", "integer"),
+    ]
+    assert function.return_type == "integer"
+    assert [statement.kind for statement in function.body] == ["if", "return"]
+    assert semantic.diagnostics == ()
+    assert "public static long calculate(long subtotal, long tax)" in emit(semantic, "java").content
+
+
+@pytest.mark.skipif(SWIFTC is None, reason="swiftc is not installed")
+@pytest.mark.parametrize(
+    ("declaration", "reason"),
+    [
+        ("func f(_ v: Float) -> Float { return v }", "FLOAT_PRECISION"),
+        ("func f(_ v: UInt64) -> UInt64 { return v }", "UNSIGNED_TYPE"),
+        ("func f(_ v: Int?) -> Int { return 0 }", "OPTIONAL_TYPE"),
+    ],
+)
+def test_swift_types_outside_the_subset_fail_closed(
+    tmp_path: Path, declaration: str, reason: str
+) -> None:
+    from elmos_polyglot_route.native import analyze
+
+    source = tmp_path / "unsupported.swift"
+    source.write_text(declaration + "\n", encoding="utf-8")
+    with pytest.raises(RouteError, match=reason):
+        analyze(source, "swift", "f")
+
+
+def test_swift_is_both_a_source_and_a_target() -> None:
+    from elmos_polyglot_route.models import ANALYZABLE_LANGUAGES, SUPPORTED_LANGUAGES
+
+    assert "swift" in SUPPORTED_LANGUAGES
+    assert "swift" in ANALYZABLE_LANGUAGES
+    routes = [(s, t) for s in ANALYZABLE_LANGUAGES for t in SUPPORTED_LANGUAGES if s != t]
+    assert len(routes) == 42

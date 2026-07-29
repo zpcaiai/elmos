@@ -4,13 +4,20 @@ This engine implements a compiler-backed, fail-closed vertical slice across Java
 Python, C#, TypeScript, C++, Objective-C and Swift. Every directed pair is
 independent.
 
-Six of the seven are both source and target; **Swift is a target only** so far.
-Its analyzer needs a SwiftSyntax-backed helper built against a pinned Swift
-toolchain -- the same shape as the Roslyn and TypeScript Compiler API helpers
-this engine already shells out to -- and until that exists a Swift *source*
-fails closed with `SWIFT_SOURCE_ANALYZER_NOT_AVAILABLE` rather than being
-parsed at the text level. That makes 36 directed routes today (6 sources x 7
-targets, minus the identity pairs), rising to 42 when the Swift analyzer lands.
+All seven are both source and target, so the profile carries 42 directed
+routes. Swift source analysis goes through a SwiftSyntax helper under
+`native/swift`, built on demand by `swift build -c release` the first time a
+Swift route runs -- the same on-demand build the TypeScript CLI already uses.
+
+> **Unverified as shipped.** The Swift helper has never been compiled: no
+> environment available to its author had a Swift toolchain. Its first
+> `swift build` on a machine with Xcode is also its first compile, and the
+> `exact:` swift-syntax pin in `native/swift/Package.swift` (currently
+> `600.0.1`) very likely needs to be moved to the major matching that host's
+> `swiftc --version` -- swift-syntax tracks the Swift release (5.10 -> 510.x,
+> 6.0 -> 600.x). Every other analyzer in this engine was executed against its
+> real toolchain before being committed; this one was not, and until it has
+> been, treat Swift-as-source as unproven rather than as a passing route.
 
 C++ and Objective-C are lifted from clang's own AST
 (`clang -Xclang -ast-dump=json -fsyntax-only`), so the IR carries the types

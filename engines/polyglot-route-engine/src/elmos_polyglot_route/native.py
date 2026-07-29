@@ -50,12 +50,25 @@ def analyze(source: Path, language: Language, function_name: str) -> SemanticIR:
     if language in ("cpp", "objc"):
         return analyze_clang(source, language, function_name, toolchain.executable, toolchain.version)
     if language == "swift":
-        # Swift source analysis needs a SwiftSyntax-backed helper, the same
-        # shape as the Roslyn and TypeScript Compiler API helpers this engine
-        # already shells out to. Until that helper exists and has been run
-        # against a pinned toolchain, Swift is a *target* only: this fails
-        # closed rather than falling back on a text-level parse.
-        raise RouteError("SWIFT_SOURCE_ANALYZER_NOT_AVAILABLE")
+        # The SwiftSyntax helper, built on demand exactly like the TypeScript
+        # CLI: a real compiler frontend, never a text-level parse.
+        package = ENGINE_ROOT / "native" / "swift"
+        binary = package / ".build" / "release" / "ElmosSwiftAnalyzer"
+        if not binary.is_file():
+            built = subprocess.run(
+                [toolchain.executable.replace("swiftc", "swift"), "build", "-c", "release"],
+                cwd=package,
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=900,
+            )
+            if built.returncode != 0 or not binary.is_file():
+                raise RouteError(
+                    "SWIFT_ANALYZER_BUILD_FAILED:" + (built.stderr or built.stdout)[-2_000:]
+                )
+        value = _run([str(binary), str(source), function_name], cwd=package)
+        return SemanticIR.from_mapping(value)
     if language == "java":
         helper = ENGINE_ROOT / "native" / "java" / "Analyzer.java"
         value = _run(
