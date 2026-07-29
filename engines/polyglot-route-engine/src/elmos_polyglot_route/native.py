@@ -7,6 +7,7 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
+from .clang_analyzer import analyze_clang
 from .models import Language, RouteError, SemanticIR
 from .python_analyzer import analyze_python
 from .toolchains import exact_toolchain
@@ -46,6 +47,15 @@ def analyze(source: Path, language: Language, function_name: str) -> SemanticIR:
     toolchain = exact_toolchain(language)
     if language == "python":
         return analyze_python(source, function_name)
+    if language in ("cpp", "objc"):
+        return analyze_clang(source, language, function_name, toolchain.executable, toolchain.version)
+    if language == "swift":
+        # Swift source analysis needs a SwiftSyntax-backed helper, the same
+        # shape as the Roslyn and TypeScript Compiler API helpers this engine
+        # already shells out to. Until that helper exists and has been run
+        # against a pinned toolchain, Swift is a *target* only: this fails
+        # closed rather than falling back on a text-level parse.
+        raise RouteError("SWIFT_SOURCE_ANALYZER_NOT_AVAILABLE")
     if language == "java":
         helper = ENGINE_ROOT / "native" / "java" / "Analyzer.java"
         value = _run(

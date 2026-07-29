@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import math
+import re
 from dataclasses import dataclass, field
 
 from . import types
@@ -24,12 +25,47 @@ class EmittedFile:
 #:                          Literals beyond that are rejected outright (see
 #:                          `_literal`); values beyond it are a documented
 #:                          boundary of the profile, recorded in README.md.
+#: The three added targets:
+#:
+#:   cpp    std::int64_t / double / bool / std::string
+#:          `/` and `%` truncate toward zero (C++11 onward) and `==` on
+#:          std::string is value equality, so the canonical operators map
+#:          one-to-one.
+#:   objc   long long / double / BOOL / NSString *
+#:          the scalars behave like C, but NSString is a *pointer*: `==`
+#:          compares addresses and there is no `+`, so both are rewritten
+#:          (see `_binary`).
+#:   swift  Int / Double / Bool / String
+#:          Int is 64-bit on every supported platform, `/` and `%` truncate,
+#:          and String comparison and concatenation are by value.
 _TYPE_SPELLING: dict[Language, dict[str, str]] = {
     "java": {"integer": "long", "number": "double", "boolean": "boolean", "string": "String"},
     "python": {"integer": "int", "number": "float", "boolean": "bool", "string": "str"},
     "csharp": {"integer": "long", "number": "double", "boolean": "bool", "string": "string"},
     "typescript": {"integer": "number", "number": "number", "boolean": "boolean", "string": "string"},
+    "cpp": {
+        "integer": "std::int64_t",
+        "number": "double",
+        "boolean": "bool",
+        "string": "std::string",
+    },
+    "objc": {
+        "integer": "long long",
+        "number": "double",
+        "boolean": "BOOL",
+        "string": "NSString *",
+    },
+    "swift": {"integer": "Int", "number": "Double", "boolean": "Bool", "string": "String"},
 }
+
+#: Languages whose emitted source is brace-delimited and statement-terminated
+#: with `;`. Swift is brace-delimited but takes no terminator.
+_BRACE_LANGUAGES = frozenset({"java", "csharp", "typescript", "cpp", "objc", "swift"})
+_SEMICOLON_LANGUAGES = frozenset({"java", "csharp", "typescript", "cpp", "objc"})
+
+#: Targets that place the function body inside a type declaration, so the
+#: body is indented one extra level.
+_WRAPPED_IN_TYPE = frozenset({"java", "csharp"})
 
 #: Python's `//` floors and its `%` follows the sign of the divisor; Java, C#
 #: and TypeScript truncate toward zero. The canonical `/` and `%` on two
@@ -100,16 +136,37 @@ def _integer_literal(language: Language, value: int) -> str:
         # `long big() { return 9007199254740993; }` does not compile
         # ("integer number too large").
         return f"{value}L"
+    if language in {"cpp", "objc"} and not -(2**31) <= value <= 2**31 - 1:
+        # C and C++ widen an out-of-range decimal literal implicitly, but the
+        # suffix makes the 64-bit intent explicit and keeps the literal's type
+        # identical on every platform's `int`/`long` sizes.
+        return f"{value}LL"
     return str(value)
+
+
+def _string_literal(language: Language, value: str) -> str:
+    encoded = json.dumps(value, ensure_ascii=False)
+    if language == "objc":
+        # NSString literals carry the @ prefix; the escape set inside is the
+        # same C set json.dumps produces.
+        return f"@{encoded}"
+    if language == "swift":
+        # Swift spells a unicode escape `\u{XXXX}`, not JSON's `\uXXXX`.
+        # ensure_ascii=False leaves printable non-ASCII raw, so this only
+        # rewrites the control characters json.dumps still escapes.
+        return re.sub(r"\\u([0-9a-fA-F]{4})", lambda match: f"\\u{{{match.group(1)}}}", encoded)
+    return encoded
 
 
 def _literal(language: Language, value: str | int | float | bool | None) -> str:
     if isinstance(value, bool):
         if language == "python":
             return "True" if value else "False"
+        if language == "objc":
+            return "YES" if value else "NO"
         return "true" if value else "false"
     if isinstance(value, str):
-        return json.dumps(value, ensure_ascii=False)
+        return _string_literal(language, value)
     if isinstance(value, int):
         return _integer_literal(language, value)
     if isinstance(value, float):
@@ -162,6 +219,15 @@ def _binary(context: _Context, expression: Expression, environment: dict[str, st
         equality = f"{left}.equals({right})"
         return f"({equality})" if operator == "==" else f"(!{equality})"
 
+    if left_type == "string" and language == "objc":
+        # NSString * is a pointer: `==` compares addresses, and there is no
+        # `+` operator at all. Both have to become message sends.
+        if operator in types.EQUALITY_OPERATORS:
+            equality = f"[{left} isEqualToString:{right}]"
+            return f"({equality})" if operator == "==" else f"(!{equality})"
+        if operator == "+":
+            return f"[{left} stringByAppendingString:{right}]"
+
     rendered = operator
     if language == "python":
         rendered = {"&&": "and", "||": "or"}.get(operator, operator)
@@ -197,7 +263,7 @@ def _statements(
     lines: list[str] = []
     for statement in statements:
         if statement.kind == "return" and statement.expression is not None:
-            suffix = "" if language == "python" else ";"
+            suffix = ";" if language in _SEMICOLON_LANGUAGES else ""
             value = _expression(context, statement.expression, environment)
             if language == "typescript" and return_type == "integer":
                 context.helpers.add("typescript_safe_integer")
@@ -225,38 +291,52 @@ def _statements(
     return lines
 
 
+def _signature(language: Language, function: Function) -> str:
+    """The target's declaration line for one certified pure function."""
+    return_type = _type(language, function.return_type)
+    if language == "python":
+        parameters = ", ".join(
+            f"{item.name}: {_type(language, item.type)}" for item in function.parameters
+        )
+        return f"def {function.name}({parameters}) -> {return_type}:"
+    if language == "typescript":
+        parameters = ", ".join(
+            f"{item.name}: {_type(language, item.type)}" for item in function.parameters
+        )
+        return f"export function {function.name}({parameters}): {return_type} {{"
+    if language == "swift":
+        # `_` on every parameter keeps call sites positional, which is what
+        # every other target and the behaviour harness emit.
+        parameters = ", ".join(
+            f"_ {item.name}: {_type(language, item.type)}" for item in function.parameters
+        )
+        return f"func {function.name}({parameters}) -> {return_type} {{"
+    parameters = ", ".join(
+        # `NSString *name`, not `NSString * name`.
+        f"{_type(language, item.type)}{'' if _type(language, item.type).endswith('*') else ' '}{item.name}"
+        for item in function.parameters
+    )
+    if language in _WRAPPED_IN_TYPE:
+        return f"    public static {return_type} {function.name}({parameters}) {{"
+    return f"{return_type} {function.name}({parameters}) {{"
+
+
 def _function(context: _Context, function: Function) -> str:
     language = context.language
     environment = types.check_function(function)
-    parameters = ", ".join(f"{_type(language, item.type)} {item.name}" for item in function.parameters)
-    if language == "python":
-        parameters = ", ".join(f"{item.name}: {_type(language, item.type)}" for item in function.parameters)
-        lines = [f"def {function.name}({parameters}) -> {_type(language, function.return_type)}:"]
-        lines.extend(_statements(context, function.body, environment, 1, function.return_type))
-        return "\n".join(lines)
-    if language == "typescript":
-        parameters = ", ".join(f"{item.name}: {_type(language, item.type)}" for item in function.parameters)
-    if language == "java":
-        lines = [f"    public static {_type(language, function.return_type)} {function.name}({parameters}) {{"]
-    elif language == "csharp":
-        lines = [f"    public static {_type(language, function.return_type)} {function.name}({parameters}) {{"]
-    else:
-        lines = [f"export function {function.name}({parameters}): {_type(language, function.return_type)} {{"]
+    lines = [_signature(language, function)]
     if language == "typescript":
         for parameter in function.parameters:
             if parameter.type == "integer":
                 context.helpers.add("typescript_safe_integer")
                 lines.append(f"    _elmosRequireSafeInteger({parameter.name});")
+    body_indent = 2 if language in _WRAPPED_IN_TYPE else 1
     lines.extend(
-        _statements(
-            context,
-            function.body,
-            environment,
-            2 if language in {"java", "csharp"} else 1,
-            function.return_type,
-        )
+        _statements(context, function.body, environment, body_indent, function.return_type)
     )
-    lines.append("    }" if language in {"java", "csharp"} else "}")
+    if language == "python":
+        return "\n".join(lines)
+    lines.append("    }" if language in _WRAPPED_IN_TYPE else "}")
     return "\n".join(lines)
 
 
@@ -277,6 +357,22 @@ def emit(ir: SemanticIR, target: Language) -> EmittedFile:
         for name in sorted(context.helpers):
             preamble += "\n\n" + _PYTHON_HELPERS[name]
         return EmittedFile("migrated.py", f"{preamble}\n\n{functions}\n")
+    if target == "cpp":
+        # <cstdint> for std::int64_t and <string> for std::string: both are
+        # required by the canonical type spellings, so both are always
+        # included rather than guessed at per function.
+        return EmittedFile(
+            "migrated.cpp",
+            "#include <cstdint>\n#include <string>\n\n" + functions + "\n",
+        )
+    if target == "objc":
+        # Foundation carries NSString and the BOOL/YES/NO spellings.
+        return EmittedFile(
+            "migrated.m",
+            "#import <Foundation/Foundation.h>\n\n" + functions + "\n",
+        )
+    if target == "swift":
+        return EmittedFile("migrated.swift", functions + "\n")
     if "typescript_safe_integer" in context.helpers:
         return EmittedFile("migrated.ts", f"{_TYPESCRIPT_SAFE_INTEGER_HELPER}\n\n{functions}\n")
     return EmittedFile("migrated.ts", f"{functions}\n")

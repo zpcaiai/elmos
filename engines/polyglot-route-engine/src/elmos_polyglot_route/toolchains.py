@@ -103,10 +103,75 @@ def _typescript() -> ExactToolchain:
     return ExactToolchain("typescript", "5.9.2 / Node 26.0.0", node, str(tsc))
 
 
+#: The clang and Swift builds ship with Xcode / the Linux toolchain rather
+#: than being downloadable at a fixed URL the way the JDK and .NET SDK are, so
+#: the exact build differs per machine. These stay pinned -- the engine still
+#: refuses to run against an unverified toolchain -- but the pin is read from
+#: the environment so a host can declare its own build without editing code.
+#: Set them once per machine, e.g.
+#:
+#:   export ELMOS_CLANG_VERSION="$(clang --version | head -1)"
+#:   export ELMOS_SWIFT_VERSION="$(swiftc --version | head -1)"
+#:
+#: An unset pin is a hard block, exactly like a version mismatch: this engine
+#: never treats "whatever is installed" as evidence.
+_CLANG_VERSION_VARIABLE = "ELMOS_CLANG_VERSION"
+_SWIFT_VERSION_VARIABLE = "ELMOS_SWIFT_VERSION"
+
+
+def _pinned(variable: str, language: Language) -> str:
+    declared = os.environ.get(variable, "").strip()
+    if not declared:
+        raise RouteError(f"EXACT_TOOLCHAIN_PIN_MISSING:{language}:{variable}")
+    return declared
+
+
+def _clang(language: Language, executable_name: str) -> ExactToolchain:
+    configured = os.environ.get("ELMOS_CLANG_HOME", "").strip()
+    executable = (
+        str(Path(configured) / "bin" / executable_name) if configured else shutil.which(executable_name)
+    )
+    if not executable or not Path(executable).is_file():
+        raise RouteError(f"EXACT_TOOLCHAIN_UNAVAILABLE:{executable_name}")
+    expected = _pinned(_CLANG_VERSION_VARIABLE, language)
+    observed = _output([executable, "--version"]).splitlines()[0].strip()
+    if observed != expected:
+        raise RouteError(
+            f"EXACT_TOOLCHAIN_MISMATCH:{language}:expected={expected}:observed={observed}"
+        )
+    return ExactToolchain(language, observed, executable)
+
+
+def _cpp() -> ExactToolchain:
+    return _clang("cpp", "clang++")
+
+
+def _objc() -> ExactToolchain:
+    # The same clang drives Objective-C; `-x objective-c` selects the mode
+    # (see clang_analyzer.py), so the C driver is the right executable.
+    return _clang("objc", "clang")
+
+
+def _swift() -> ExactToolchain:
+    executable = shutil.which("swiftc")
+    if not executable:
+        raise RouteError("EXACT_TOOLCHAIN_UNAVAILABLE:swiftc")
+    expected = _pinned(_SWIFT_VERSION_VARIABLE, "swift")
+    observed = _output([executable, "--version"]).splitlines()[0].strip()
+    if observed != expected:
+        raise RouteError(
+            f"EXACT_TOOLCHAIN_MISMATCH:swift:expected={expected}:observed={observed}"
+        )
+    return ExactToolchain("swift", observed, executable)
+
+
 def exact_toolchain(language: Language) -> ExactToolchain:
     return {
         "java": _java,
         "python": _python,
         "csharp": _csharp,
         "typescript": _typescript,
+        "cpp": _cpp,
+        "objc": _objc,
+        "swift": _swift,
     }[language]()

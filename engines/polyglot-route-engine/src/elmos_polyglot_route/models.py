@@ -3,8 +3,31 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Literal
 
-Language = Literal["java", "python", "csharp", "typescript"]
-SUPPORTED_LANGUAGES: tuple[Language, ...] = ("java", "python", "csharp", "typescript")
+Language = Literal["java", "python", "csharp", "typescript", "cpp", "objc", "swift"]
+SUPPORTED_LANGUAGES: tuple[Language, ...] = (
+    "java",
+    "python",
+    "csharp",
+    "typescript",
+    "cpp",
+    "objc",
+    "swift",
+)
+
+#: Languages this engine can lift *from*. Swift is currently a target only:
+#: its analyzer needs a SwiftSyntax-backed helper built against a pinned Swift
+#: toolchain, the same shape as the Roslyn and TypeScript Compiler API helpers
+#: this engine already shells out to. Until that exists, a Swift source fails
+#: closed (`SWIFT_SOURCE_ANALYZER_NOT_AVAILABLE`) rather than being parsed at
+#: the text level.
+ANALYZABLE_LANGUAGES: tuple[Language, ...] = (
+    "java",
+    "python",
+    "csharp",
+    "typescript",
+    "cpp",
+    "objc",
+)
 
 
 class RouteError(ValueError):

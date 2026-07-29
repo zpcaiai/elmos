@@ -36,8 +36,13 @@ def _argument(value: object, language: Language) -> str:
     if isinstance(value, bool):
         if language == "python":
             return "True" if value else "False"
+        if language == "objc":
+            return "YES" if value else "NO"
         return "true" if value else "false"
-    return json.dumps(value, ensure_ascii=False) if isinstance(value, str) else str(value)
+    if isinstance(value, str):
+        encoded = json.dumps(value, ensure_ascii=False)
+        return f"@{encoded}" if language == "objc" else encoded
+    return str(value)
 
 
 def _expected(value: object, language: Language) -> str:
@@ -99,6 +104,48 @@ def _typescript_harness(function: Function, cases: list[dict[str, Any]]) -> str:
     return "import { " + function.name + ' } from "./migrated.js";\n' + "\n".join(checks) + "\n"
 
 
+def _cpp_harness(function: Function, cases: list[dict[str, Any]]) -> str:
+    checks = []
+    for index, case in enumerate(cases):
+        args = ", ".join(_argument(value, "cpp") for value in case["args"])
+        expected = _expected(case["expected"], "cpp")
+        checks.append(
+            f"    if ({function.name}({args}) != {expected}) return {index + 1};"
+        )
+    return (
+        '#include "migrated.cpp"\n\n'
+        "int main() {\n" + "\n".join(checks) + "\n    return 0;\n}\n"
+    )
+
+
+def _objc_harness(function: Function, cases: list[dict[str, Any]]) -> str:
+    checks = []
+    for index, case in enumerate(cases):
+        args = ", ".join(_argument(value, "objc") for value in case["args"])
+        expected = _expected(case["expected"], "objc")
+        # NSString is a pointer, so the harness compares by value too --
+        # the same reason the emitter rewrites `==` on NSString.
+        condition = (
+            f"![{function.name}({args}) isEqualToString:{expected}]"
+            if function.return_type == "string"
+            else f"{function.name}({args}) != {expected}"
+        )
+        checks.append(f"    if ({condition}) return {index + 1};")
+    return (
+        '#import <Foundation/Foundation.h>\n#import "migrated.m"\n\n'
+        "int main() {\n" + "\n".join(checks) + "\n    return 0;\n}\n"
+    )
+
+
+def _swift_harness(function: Function, cases: list[dict[str, Any]]) -> str:
+    checks = []
+    for index, case in enumerate(cases):
+        args = ", ".join(_argument(value, "swift") for value in case["args"])
+        expected = _expected(case["expected"], "swift")
+        checks.append(f"if {function.name}({args}) != {expected} {{ exit({index + 1}) }}")
+    return "import Foundation\n\n" + "\n".join(checks) + "\n"
+
+
 def validate(
     emitted: EmittedFile,
     language: Language,
@@ -145,6 +192,52 @@ def validate(
                 "Release",
                 "--no-build",
             ],
+        ]
+    elif language == "cpp":
+        (output / "route_harness.cpp").write_text(_cpp_harness(function, cases), encoding="utf-8")
+        commands = [
+            [
+                toolchain.executable,
+                "-std=c++17",
+                "-Wall",
+                "-Wextra",
+                "-Werror",
+                "-o",
+                "route_harness",
+                "route_harness.cpp",
+            ],
+            ["./route_harness"],
+        ]
+    elif language == "objc":
+        (output / "route_harness.m").write_text(_objc_harness(function, cases), encoding="utf-8")
+        commands = [
+            [
+                toolchain.executable,
+                "-x",
+                "objective-c",
+                "-fobjc-arc",
+                "-Wall",
+                "-Werror",
+                "-framework",
+                "Foundation",
+                "-o",
+                "route_harness",
+                "route_harness.m",
+            ],
+            ["./route_harness"],
+        ]
+    elif language == "swift":
+        (output / "route_harness.swift").write_text(_swift_harness(function, cases), encoding="utf-8")
+        commands = [
+            [
+                toolchain.executable,
+                "-warnings-as-errors",
+                "-o",
+                "route_harness",
+                "migrated.swift",
+                "route_harness.swift",
+            ],
+            ["./route_harness"],
         ]
     else:
         (output / "route_harness.ts").write_text(_typescript_harness(function, cases), encoding="utf-8")

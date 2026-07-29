@@ -5,16 +5,32 @@ from pathlib import Path
 import pytest
 
 from elmos_polyglot_route.engine import migrate
-from elmos_polyglot_route.models import SUPPORTED_LANGUAGES, Language, RouteError
+from elmos_polyglot_route.models import ANALYZABLE_LANGUAGES, SUPPORTED_LANGUAGES, Language, RouteError
 from elmos_polyglot_route.native import analyze
 from elmos_polyglot_route.repository import plan_repository
 
 ROOT = Path(__file__).resolve().parents[1]
-EXTENSIONS = {"java": "java", "python": "py", "csharp": "cs", "typescript": "ts"}
-FILES = {"java": "Pricing", "python": "pricing", "csharp": "Pricing", "typescript": "pricing"}
+EXTENSIONS = {
+    "java": "java",
+    "python": "py",
+    "csharp": "cs",
+    "typescript": "ts",
+    "cpp": "cpp",
+    "objc": "m",
+    "swift": "swift",
+}
+FILES = {
+    "java": "Pricing",
+    "python": "pricing",
+    "csharp": "Pricing",
+    "typescript": "pricing",
+    "cpp": "pricing",
+    "objc": "pricing",
+    "swift": "pricing",
+}
 
 
-@pytest.mark.parametrize("language", SUPPORTED_LANGUAGES)
+@pytest.mark.parametrize("language", ANALYZABLE_LANGUAGES)
 def test_native_analyzers_emit_the_same_typed_semantic_slice(language: Language) -> None:
     source = ROOT / "fixtures" / language / f"{FILES[language]}.{EXTENSIONS[language]}"
     semantic = analyze(source, language, "calculate")
@@ -27,9 +43,14 @@ def test_native_analyzers_emit_the_same_typed_semantic_slice(language: Language)
 
 @pytest.mark.parametrize(
     ("source_language", "target_language"),
-    [(source, target) for source in SUPPORTED_LANGUAGES for target in SUPPORTED_LANGUAGES if source != target],
+    [
+        (source, target)
+        for source in ANALYZABLE_LANGUAGES
+        for target in SUPPORTED_LANGUAGES
+        if source != target
+    ],
 )
-def test_all_twelve_directed_routes_compile_and_match_behavior(
+def test_every_directed_route_compiles_and_matches_behavior(
     tmp_path: Path,
     source_language: Language,
     target_language: Language,
@@ -56,7 +77,12 @@ def test_all_twelve_directed_routes_compile_and_match_behavior(
 )
 @pytest.mark.parametrize(
     ("source_language", "target_language"),
-    [(source, target) for source in SUPPORTED_LANGUAGES for target in SUPPORTED_LANGUAGES if source != target],
+    [
+        (source, target)
+        for source in ANALYZABLE_LANGUAGES
+        for target in SUPPORTED_LANGUAGES
+        if source != target
+    ],
 )
 def test_independent_corpora_compile_and_match_behavior(
     tmp_path: Path,

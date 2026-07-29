@@ -1,7 +1,23 @@
 # ELMOS Polyglot Route Engine
 
 This engine implements a compiler-backed, fail-closed vertical slice across Java,
-Python, C#, and TypeScript. Every directed pair is independent.
+Python, C#, TypeScript, C++, Objective-C and Swift. Every directed pair is
+independent.
+
+Six of the seven are both source and target; **Swift is a target only** so far.
+Its analyzer needs a SwiftSyntax-backed helper built against a pinned Swift
+toolchain -- the same shape as the Roslyn and TypeScript Compiler API helpers
+this engine already shells out to -- and until that exists a Swift *source*
+fails closed with `SWIFT_SOURCE_ANALYZER_NOT_AVAILABLE` rather than being
+parsed at the text level. That makes 36 directed routes today (6 sources x 7
+targets, minus the identity pairs), rising to 42 when the Swift analyzer lands.
+
+C++ and Objective-C are lifted from clang's own AST
+(`clang -Xclang -ast-dump=json -fsyntax-only`), so the IR carries the types
+clang resolved rather than a guess at them. Both share one analyzer because for
+this profile they differ in exactly three places: the boolean spelling
+(`bool` / `BOOL`), the string type (`std::string` / `NSString *`), and how a
+string operation appears in the tree (`CXXOperatorCallExpr` / `ObjCMessageExpr`).
 
 The `typed-pure-function-v1` profile supports explicit primitive parameter and
 return types, literals, identifiers, selected binary operators, `if`, and
@@ -11,7 +27,7 @@ compiled by its native toolchain and executed against the same behavior cases.
 
 Unsupported statements, expressions, types, async behavior, side effects,
 frameworks, databases, concurrency, reflection, and I/O fail closed. This exact
-profile is `LIMITED`: all 12 directions pass native analysis, target compilation,
+profile is `LIMITED`: the directed routes pass native analysis, target compilation,
 separate holdout, and representative behavior replay. Independent and external
 certification remain `NOT_RUN`; repository orchestration never broadens this
 semantic boundary.
@@ -22,12 +38,12 @@ The IR has four canonical types. `integer` is a **64-bit signed integer** and
 `number` is **IEEE-754 binary64**; those two definitions are what every route
 is checked against.
 
-| Canonical | java | python | csharp | typescript |
-| --- | --- | --- | --- | --- |
-| `integer` | `long` | `int` | `long` | `number` |
-| `number` | `double` | `float` | `double` | `number` |
-| `boolean` | `boolean` | `bool` | `bool` | `boolean` |
-| `string` | `String` | `str` | `string` | `string` |
+| Canonical | java | python | csharp | typescript | cpp | objc | swift |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `integer` | `long` | `int` | `long` | `number` | `std::int64_t` | `long long` | `Int` |
+| `number` | `double` | `float` | `double` | `number` | `double` | `double` | `Double` |
+| `boolean` | `boolean` | `bool` | `bool` | `boolean` | `bool` | `BOOL` | `Bool` |
+| `string` | `String` | `str` | `string` | `string` | `std::string` | `NSString *` | `String` |
 
 Lifting *into* those types is deliberately narrower than each language's own
 type system, because the difference is not observable in the emitted code:
@@ -44,6 +60,11 @@ type system, because the difference is not observable in the emitted code:
   **refused**: they are nullable and the certified subset has no null.
 * TypeScript's `number` lifts to canonical `number`, never `integer` -- the
   language has no integer type.
+* C++'s `const std::string &` lifts to canonical `string`: for a pure function
+  the reference qualifier is not observable, and const-reference is the
+  idiomatic way to pass a string.
+* `float` is refused in C++ and Objective-C for the same reason as in Java and
+  C#; `unsigned` types are outside the canonical set entirely.
 
 Operators are typed, not textual. The canonical `/` and `%` on two `integer`s
 are the **truncating** pair (Java/C#/TypeScript semantics), so:
@@ -59,10 +80,24 @@ are the **truncating** pair (Java/C#/TypeScript semantics), so:
   `PYTHON_FLOORED_MODULO_OUTSIDE_CERTIFIED_SUBSET`) -- those spellings mean
   something the canonical operator does not.
 
-Equality and ordering are typed the same way: `==`/`!=` on `string` emits
-`.equals(...)` in Java (`==` there compares references) and `===`/`!==` in
-TypeScript, while `<`/`<=`/`>`/`>=` on `string` fails closed, because Java
-orders by UTF-16 code unit and Python by code point.
+Equality and ordering are typed the same way. `==`/`!=` on `string` emits
+`.equals(...)` in Java (`==` there compares references), `===`/`!==` in
+TypeScript, and `[a isEqualToString:b]` in Objective-C (`NSString *` is a
+pointer, so `==` compares addresses); `+` on `string` becomes
+`[a stringByAppendingString:b]` there, because NSString has no `+` at all.
+C++ and Swift need neither rewrite -- `std::string` and `String` compare and
+concatenate by value. `<`/`<=`/`>`/`>=` on `string` fails closed everywhere,
+because Java orders by UTF-16 code unit and Python by code point.
+
+In the other direction, an Objective-C **source** writing `a == b` on two
+`NSString *` is refused
+(`OBJC_STRING_POINTER_COMPARISON_OUTSIDE_CERTIFIED_SUBSET`): that expression
+means pointer identity, which no other target can express, and lifting it as
+value equality would change the program.
+
+C++, Objective-C and Swift all truncate `/` and `%` toward zero, so the
+canonical operators map straight through -- only Python needs the emitted
+helpers.
 
 Literals are range-checked per target: an `integer` literal outside int32 gets
 the `L` suffix in Java/C# (without it `javac` reports "integer number too
@@ -89,6 +124,18 @@ Execution is exact-toolchain bound: Java 21.0.11, Python 3.12.12, .NET SDK
 10.0.301 / Roslyn 5.6.0, and TypeScript 5.9.2 on Node 26.0.0. A missing or
 different source or target toolchain blocks the route instead of accepting
 language-level compatibility flags as equivalent evidence.
+
+clang and Swift ship with Xcode (or a platform toolchain) rather than from a
+fixed URL, so their exact build differs per machine and the pin is read from
+the environment instead of being hard-coded. Declare it once per host:
+
+```bash
+export ELMOS_CLANG_VERSION="$(clang --version | head -1)"
+export ELMOS_SWIFT_VERSION="$(swiftc --version | head -1)"
+```
+
+An unset pin is a hard block (`EXACT_TOOLCHAIN_PIN_MISSING`), exactly like a
+mismatch: "whatever is installed" is never accepted as evidence.
 
 ```bash
 uv sync --locked
