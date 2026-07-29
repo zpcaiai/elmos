@@ -32,7 +32,14 @@ from .models import (
     Dialect,
     DefaultKind,
     DialectError,
+    AddColumn,
+    AddConstraint,
+    AlterAction,
+    AlterTable,
+    DropColumn,
+    DropConstraint,
     ForeignKey,
+    RenameColumn,
     Index,
     ReferentialAction,
     Table,
@@ -385,3 +392,140 @@ def parse_create_index(sql: str, source_dialect: Dialect) -> Index:
     _require(params is not None, "CERTIFIED_DDL_UNSUPPORTED_STATEMENT", "CREATE INDEX requires a column list")
     columns = tuple(_plain_identifier(c, "index column") for c in params.args.get("columns") or [])
     return Index(name=index_name, table=table_name, columns=columns, unique=bool(statement.args.get("unique")))
+
+
+def _alter_table_name(statement: exp.Alter) -> str:
+    table_ref = statement.this
+    _require(isinstance(table_ref, exp.Table), "CERTIFIED_ALTER_UNSUPPORTED_STATEMENT", "malformed ALTER TABLE")
+    _require(
+        table_ref.args.get("db") is None and table_ref.args.get("catalog") is None,
+        "CERTIFIED_DDL_QUALIFIED_TABLE_NAME",
+        "certified-alter-v1 requires an unqualified table name (no schema/catalog prefix)",
+    )
+    return _plain_identifier(table_ref.this, "table name")
+
+
+def _parse_add_column(col_def: exp.ColumnDef) -> AddColumn:
+    column_name = _plain_identifier(col_def.this, "column name")
+    _require(
+        col_def.kind is not None,
+        "CERTIFIED_ALTER_MISSING_TYPE",
+        f"added column {column_name!r} is missing a type",
+    )
+    assert col_def.kind is not None  # narrows for mypy; _require enforced it at runtime
+    type_ref = _parse_type(col_def.kind)
+    (
+        nullable, default, auto_increment, pk_shorthand, unique_shorthand, inline_fk, inline_checks
+    ) = _column_constraints(col_def, type_ref, column_name)
+    # A PRIMARY KEY or UNIQUE shorthand on an added column is a table-level
+    # constraint change wearing a column's clothes, and the four dialects
+    # differ on whether it may be combined with ADD COLUMN at all. Adding
+    # the column and the constraint as separate actions is the portable
+    # form, so this refuses the shorthand rather than silently splitting it.
+    _require(
+        not pk_shorthand,
+        "CERTIFIED_ALTER_UNSUPPORTED_COLUMN_CONSTRAINT",
+        f"inline PRIMARY KEY on added column {column_name!r} is outside certified-alter-v1; "
+        "add the column and the constraint as separate actions",
+    )
+    _require(
+        not unique_shorthand,
+        "CERTIFIED_ALTER_UNSUPPORTED_COLUMN_CONSTRAINT",
+        f"inline UNIQUE on added column {column_name!r} is outside certified-alter-v1; "
+        "add the column and the constraint as separate actions",
+    )
+    _require(
+        len(inline_checks) <= 1,
+        "CERTIFIED_ALTER_UNSUPPORTED_COLUMN_CONSTRAINT",
+        f"added column {column_name!r} declares more than one inline CHECK",
+    )
+    column = Column(
+        name=column_name, type_ref=type_ref, nullable=nullable,
+        default=default, auto_increment=auto_increment,
+    )
+    return AddColumn(column=column, foreign_key=inline_fk, check=inline_checks[0] if inline_checks else None)
+
+
+def _parse_alter_constraint(inner: exp.Expression, name: str | None) -> AddConstraint:
+    if isinstance(inner, exp.PrimaryKey):
+        return AddConstraint(name=name, primary_key=tuple(
+            _plain_identifier(e, "PRIMARY KEY column") for e in inner.expressions))
+    if isinstance(inner, exp.UniqueColumnConstraint):
+        target = inner.this
+        _require(isinstance(target, exp.Schema), "CERTIFIED_ALTER_UNSUPPORTED_CONSTRAINT",
+                  "ADD UNIQUE must list explicit columns")
+        return AddConstraint(name=name, unique=tuple(
+            _plain_identifier(e, "UNIQUE column") for e in target.expressions))
+    if isinstance(inner, exp.ForeignKey):
+        columns = tuple(_plain_identifier(e, "FOREIGN KEY column") for e in inner.expressions)
+        reference = inner.args.get("reference")
+        _require(reference is not None, "CERTIFIED_ALTER_UNSUPPORTED_CONSTRAINT",
+                  "ADD FOREIGN KEY requires REFERENCES")
+        assert reference is not None  # narrows for mypy; _require enforced it at runtime
+        return AddConstraint(name=name, foreign_key=_parse_reference(reference, columns, name))
+    if isinstance(inner, exp.CheckColumnConstraint):
+        comparisons, connector = _parse_check(inner.this)
+        return AddConstraint(name=name, check=CheckConstraint(
+            comparisons=comparisons, connector=connector, name=name))
+    raise DialectError("CERTIFIED_ALTER_UNSUPPORTED_CONSTRAINT",
+                        f"ADD CONSTRAINT clause {type(inner).__name__} is outside certified-alter-v1")
+
+
+def parse_alter_table(sql: str, source_dialect: Dialect) -> AlterTable:
+    """Parse one ALTER TABLE into the canonical certified-alter-v1 model."""
+    statement = _require_single_statement(sql, source_dialect)
+    _require(isinstance(statement, exp.Alter), "CERTIFIED_ALTER_UNSUPPORTED_STATEMENT",
+              "certified-alter-v1 only accepts a single ALTER TABLE statement")
+    assert isinstance(statement, exp.Alter)  # narrows for mypy
+    _require(str(statement.args.get("kind", "TABLE")).upper() == "TABLE",
+              "CERTIFIED_ALTER_UNSUPPORTED_STATEMENT",
+              f"ALTER {statement.args.get('kind')} is outside certified-alter-v1")
+    _require(not statement.args.get("exists"), "CERTIFIED_ALTER_UNSUPPORTED_STATEMENT_MODIFIER",
+              "ALTER TABLE IF EXISTS is outside certified-alter-v1")
+
+    table = _alter_table_name(statement)
+    actions: list[AlterAction] = []
+    for action in statement.args.get("actions") or []:
+        if isinstance(action, exp.ColumnDef):
+            actions.append(_parse_add_column(action))
+        elif isinstance(action, exp.AlterRename):
+            raise DialectError("CERTIFIED_ALTER_UNSUPPORTED_ACTION",
+                                "RENAME TABLE is outside certified-alter-v1")
+        elif isinstance(action, exp.RenameColumn):
+            _require(not action.args.get("exists"), "CERTIFIED_ALTER_UNSUPPORTED_STATEMENT_MODIFIER",
+                      "RENAME COLUMN IF EXISTS is outside certified-alter-v1")
+            actions.append(RenameColumn(
+                column=_plain_identifier(action.this, "renamed column"),
+                new_name=_plain_identifier(action.args.get("to"), "new column name"),
+            ))
+        elif isinstance(action, exp.AddConstraint):
+            for inner in action.expressions:
+                if isinstance(inner, exp.Constraint):
+                    constraint_name = (_plain_identifier(inner.this, "constraint name")
+                                        if inner.this is not None else None)
+                    _require(len(inner.expressions) == 1, "CERTIFIED_ALTER_UNSUPPORTED_CONSTRAINT",
+                              "a named constraint must contain exactly one constraint clause")
+                    actions.append(_parse_alter_constraint(inner.expressions[0], constraint_name))
+                else:
+                    actions.append(_parse_alter_constraint(inner, None))
+        elif isinstance(action, exp.Drop):
+            drop_kind = str(action.args.get("kind", "")).upper()
+            if drop_kind == "COLUMN":
+                actions.append(DropColumn(column=_plain_identifier(action.this.this
+                    if isinstance(action.this, exp.Column) else action.this, "dropped column")))
+            elif drop_kind == "CONSTRAINT":
+                # sqlglot wraps the constraint name in a Table node here,
+                # so the identifier has to be unwrapped one level.
+                target = action.this
+                if isinstance(target, (exp.Table, exp.Column)):
+                    target = target.this
+                actions.append(DropConstraint(name=_plain_identifier(target, "dropped constraint")))
+            else:
+                raise DialectError("CERTIFIED_ALTER_UNSUPPORTED_ACTION",
+                                    f"ALTER TABLE DROP {drop_kind or '?'} is outside certified-alter-v1")
+        else:
+            raise DialectError("CERTIFIED_ALTER_UNSUPPORTED_ACTION",
+                                f"ALTER TABLE action {type(action).__name__} is outside certified-alter-v1 "
+                                "(column type/nullability/default changes need the column's full type, "
+                                "which a single ALTER statement does not carry)")
+    return AlterTable(table=table, actions=tuple(actions))

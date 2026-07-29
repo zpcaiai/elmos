@@ -34,7 +34,16 @@ class FlywayMigrationTest {
 
     @Container static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:17.5-alpine");
     @Test void createsAllAuthoritativeSchemasThroughProductBatchThirtyEightAndMigrationPackAdmission() {
-        var flyway=Flyway.configure().dataSource(POSTGRES.getJdbcUrl(),POSTGRES.getUsername(),POSTGRES.getPassword()).load();
+        // defaultSchema is pinned because this database moves out from under an
+        // unpinned Flyway mid-run. PostgreSQL's default search_path is
+        // "$user", public; the container's user is named "test"; and V45 creates
+        // a product schema that is also named "test". Before the migration that
+        // schema does not exist, so Flyway resolves its history table to public
+        // -- but every later resolution picks the now-existing "test" schema,
+        // finds no history there, and reports all 53 migrations still pending.
+        // The migrate() call was never the problem; the second reading was
+        // looking at a different table than the first wrote to.
+        var flyway=Flyway.configure().dataSource(POSTGRES.getJdbcUrl(),POSTGRES.getUsername(),POSTGRES.getPassword()).defaultSchema("public").load();
         // Asserting a literal migration count would fail on every new migration and
         // invite whoever sees the red to bump the number, which teaches nothing.
         // What actually matters is that the set on disk and the set applied agree:

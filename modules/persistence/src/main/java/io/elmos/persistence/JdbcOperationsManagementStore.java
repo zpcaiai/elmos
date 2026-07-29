@@ -1,5 +1,7 @@
 package io.elmos.persistence;
 
+import static io.elmos.persistence.SqlTimestamps.offset;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -368,7 +370,7 @@ public final class JdbcOperationsManagementStore {
                      where organization_id = :organization and incident_id = :id
                        and version = :version
                     """)
-                    .param("now", now).param("resolution", resolutionCode)
+                    .param("now", offset(now)).param("resolution", resolutionCode)
                     .param("organization", organizationId).param("id", incidentId)
                     .param("version", expectedVersion).update();
             if (updated != 1) throw new IllegalStateException("incident changed concurrently");
@@ -407,7 +409,7 @@ public final class JdbcOperationsManagementStore {
                      where organization_id = :organization and proposal_id = :id
                        and version = :version and status = 'PROPOSED'
                     """)
-                    .param("status", targetStatus).param("now", now).param("actor", actorId)
+                    .param("status", targetStatus).param("now", offset(now)).param("actor", actorId)
                     .param("organization", organizationId).param("id", proposalId)
                     .param("version", expectedVersion).update();
             if (updated != 1) throw new IllegalStateException("remediation changed concurrently");
@@ -479,7 +481,7 @@ public final class JdbcOperationsManagementStore {
                      where organization_id = :organization and occurred_at < :cutoff
                      group by business_line order by business_line
                     """)
-                    .param("organization", organizationId).param("cutoff", cutoff)
+                    .param("organization", organizationId).param("cutoff", offset(cutoff))
                     .query((rs, row) -> Map.<String, Object>of(
                             "businessLine", rs.getString("business_line"),
                             "eventCount", rs.getLong("event_count"),
@@ -490,7 +492,7 @@ public final class JdbcOperationsManagementStore {
                     delete from product_telemetry_events
                      where organization_id = :organization and occurred_at < :cutoff
                     """)
-                    .param("organization", organizationId).param("cutoff", cutoff).update();
+                    .param("organization", organizationId).param("cutoff", offset(cutoff)).update();
             String evidence = toJson(Map.of(
                     "schemaVersion", "1.0.0",
                     "classification", "PSEUDONYMOUS_TECHNICAL",
@@ -510,8 +512,8 @@ public final class JdbcOperationsManagementStore {
                     """)
                     .param("id", runId).param("organization", organizationId)
                     .param("actor", actorId).param("request", requestId)
-                    .param("days", retentionDays).param("cutoff", cutoff)
-                    .param("deleted", deleted).param("evidence", evidence).param("now", now)
+                    .param("days", retentionDays).param("cutoff", offset(cutoff))
+                    .param("deleted", deleted).param("evidence", evidence).param("now", offset(now))
                     .update();
             workflowEvent(organizationId, actorId, requestId, "RETENTION", runId,
                     "TELEMETRY_RETENTION_ENFORCED", null, "COMPLETED", now,
@@ -547,7 +549,7 @@ public final class JdbcOperationsManagementStore {
                      limit :limit
                     """)
                     .param("organization", organizationId)
-                    .param("now", now)
+                    .param("now", offset(now))
                     .param("limit", limit)
                     .query((rs, row) -> new PendingNotification(
                             rs.getString("notification_id"),
@@ -566,7 +568,7 @@ public final class JdbcOperationsManagementStore {
                          where organization_id = :organization
                            and notification_id = :id
                         """)
-                        .param("leaseUntil", now.plus(5, ChronoUnit.MINUTES))
+                        .param("leaseUntil", offset(now.plus(5, ChronoUnit.MINUTES)))
                         .param("organization", organizationId)
                         .param("id", notification.notificationId())
                         .update();
@@ -606,7 +608,7 @@ public final class JdbcOperationsManagementStore {
                     """)
                     .param("status", status)
                     .param("delivered", delivered)
-                    .param("now", now)
+                    .param("now", offset(now))
                     .param("availableAt", delivered || terminal
                             ? now : now.plusSeconds(retrySeconds))
                     .param("error", delivered ? null : errorCode)
@@ -666,7 +668,7 @@ public final class JdbcOperationsManagementStore {
                      or (source = 'TELEMETRY' and event_kind = 'API_REQUEST'))
                 """)
                 .param("organization", organizationId).param("line", businessLine)
-                .param("from", from).param("to", to)
+                .param("from", offset(from)).param("to", offset(to))
                 .query((rs, row) -> new SignalWindow(
                         rs.getLong("event_count"),
                         rs.getLong("failure_rate_bps"),
@@ -709,7 +711,7 @@ public final class JdbcOperationsManagementStore {
                 .param("signal", breach.signal()).param("severity", breach.severity())
                 .param("observed", breach.observed()).param("threshold", breach.threshold())
                 .param("owner", breach.policy().ownerActorId())
-                .param("runbook", breach.policy().runbookUrl()).param("now", now).update();
+                .param("runbook", breach.policy().runbookUrl()).param("now", offset(now)).update();
 
         String incidentId = stableId("incident", alertId);
         int insertedIncident = jdbc.sql("""
@@ -725,7 +727,7 @@ public final class JdbcOperationsManagementStore {
                 .param("alert", alertId).param("line", breach.policy().businessLine())
                 .param("severity", breach.severity())
                 .param("summary", breach.signal() + "_BUDGET_BREACH")
-                .param("owner", breach.policy().ownerActorId()).param("now", now).update();
+                .param("owner", breach.policy().ownerActorId()).param("now", offset(now)).update();
 
         String kind = "FAILURE_RATE_BPS".equals(breach.signal()) ? "BUG_FIX" : "PERFORMANCE";
         String recipe = "BUG_FIX".equals(kind)
@@ -775,7 +777,7 @@ public final class JdbcOperationsManagementStore {
                         "trigger", "REGRESSION_OR_POLICY_FAILURE",
                         "automaticDeployment", false
                 )))
-                .param("now", now).update();
+                .param("now", offset(now)).update();
 
         if (insertedIncident == 1) {
             workflowEvent(organizationId, actorId, requestId, "INCIDENT", incidentId,
@@ -804,7 +806,7 @@ public final class JdbcOperationsManagementStore {
                         "signal", breach.signal(),
                         "businessLine", breach.policy().businessLine()
                 )))
-                .param("now", now).update();
+                .param("now", offset(now)).update();
         return new WorkflowCounts(insertedAlert, insertedIncident, insertedProposal);
     }
 
@@ -833,7 +835,7 @@ public final class JdbcOperationsManagementStore {
                     + ", version = version + 1 where organization_id = :organization and "
                     + idColumn + " = :id and version = :version";
             int updated = jdbc.sql(sql)
-                    .param("now", now).param("organization", organizationId)
+                    .param("now", offset(now)).param("organization", organizationId)
                     .param("id", aggregateId).param("version", expectedVersion).update();
             if (updated != 1) throw new IllegalStateException("workflow changed concurrently");
             workflowEvent(organizationId, actorId, requestId, aggregateType, aggregateId,
@@ -919,7 +921,7 @@ public final class JdbcOperationsManagementStore {
                 .param("id", UUID.randomUUID().toString()).param("organization", organizationId)
                 .param("type", aggregateType).param("aggregate", aggregateId)
                 .param("action", action).param("actor", actorId).param("request", requestId)
-                .param("before", before).param("after", after).param("now", now)
+                .param("before", before).param("after", after).param("now", offset(now))
                 .param("evidence", toJson(evidence)).update();
     }
 

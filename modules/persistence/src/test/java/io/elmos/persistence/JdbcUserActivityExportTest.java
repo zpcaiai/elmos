@@ -50,12 +50,29 @@ class JdbcUserActivityExportTest {
     static void migrateAndSeed() {
         Flyway.configure()
                 .dataSource(POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword())
+                // See FlywayMigrationTest: V45 creates a schema named "test",
+                // which is also this container's username, so an unpinned
+                // Flyway relocates its history table the moment that schema
+                // appears. Harmless for a single migrate(), pinned anyway so
+                // the trap is not re-armed for whoever adds a second call.
+                .defaultSchema("public")
                 .load()
                 .migrate();
         var dataSource = new DriverManagerDataSource(
                 POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword());
+        var jdbc = JdbcClient.create(dataSource);
+
+        // product_telemetry_events carries a foreign key to organizations;
+        // audit_events does not, because its organization_id was retrofitted by
+        // a later tenant migration without one. Seeding the tenant is what the
+        // schema actually requires -- and the asymmetry is why the six audit
+        // rows below land before the single telemetry row is rejected.
+        jdbc.sql("insert into organizations(organization_id) values (?) on conflict do nothing")
+                .param(ORGANIZATION)
+                .update();
+
         store = new JdbcUserActivityStore(
-                JdbcClient.create(dataSource),
+                jdbc,
                 new TransactionTemplate(new DataSourceTransactionManager(dataSource)),
                 new ObjectMapper(),
                 CLOCK);

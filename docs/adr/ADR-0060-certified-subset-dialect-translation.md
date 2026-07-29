@@ -311,6 +311,49 @@ and `certified-ddl-v1` addresses none of it. Widening within `CREATE TABLE`
 cannot fix that; only an `ALTER TABLE` profile would, and that is a
 different piece of work with its own per-dialect semantics.
 
+## Addendum: certified-alter-v1
+
+The previous addendum concluded that `certified-ddl-v1`'s gap was
+structural -- 128 of the blocked statements were `ALTER TABLE`, which the
+profile did not address at all. This is that profile.
+
+Scope came from the corpus, not intuition. Of 635 real ALTER actions: 603
+`ADD COLUMN`, 29 `ADD CONSTRAINT`, 2 `RENAME COLUMN`, 1 `DROP CONSTRAINT`.
+Those five are the profile.
+
+**The refusal is the interesting part.** `ALTER COLUMN TYPE`,
+`SET NOT NULL`, `SET DEFAULT` and `DROP DEFAULT` are excluded because MySQL
+(`MODIFY c <TYPE> NOT NULL`) and SQL Server (`ALTER COLUMN c <TYPE> NOT
+NULL`) both require the column's **full type restated**, and a single ALTER
+statement does not carry it. This engine reads one statement with no
+catalog, so emitting those targets would mean inventing a type -- the exact
+silent corruption the profile exists to prevent. They occur 0 times in the
+corpus, so the refusal costs nothing measurable. This is the cleanest
+example yet of the rule that a subset boundary should follow what can be
+*proven*, not what can be *parsed*.
+
+**Two per-dialect rules are not enforceable by the validation leg**, and
+that is worth recording because it changes what the evidence means:
+
+- Oracle has no `ADD COLUMN` keyword (`ALTER TABLE t ADD (c ...)`).
+- SQL Server has no `ALTER TABLE ... RENAME COLUMN`; it needs
+  `EXEC sp_rename 't.c', 'new', 'COLUMN'`, a different statement kind.
+
+`sqlglot` parses the *wrong* form for both without complaint. So the
+syntax-validation leg -- normally the thing that turns an emission into
+evidence -- proves nothing here. The rules live in the emitter and are
+pinned by direct assertions instead, the same posture already taken for
+sqlglot's AUTO_INCREMENT/IDENTITY generation defect. A permissive parser
+being mistaken for a validator is a general hazard in this design, and
+these two cases are the concrete instances of it.
+
+Measured effect on the same corpus: **10.3% -> 17.1%**. Coverage across
+this whole line of work has moved 8.0% -> 10.3% -> 17.1%, each step chosen
+by reading the blocker table rather than by guessing. What remains is
+honest: triggers and stored procedures are programs rather than schema, and
+the largest remaining blocker is a regex `CHECK` idiom SQL Server cannot
+express at all.
+
 ## External gates
 
 Independent verification and external certification of both profiles remain

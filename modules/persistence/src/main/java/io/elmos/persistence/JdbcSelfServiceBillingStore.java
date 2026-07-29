@@ -1,5 +1,7 @@
 package io.elmos.persistence;
 
+import static io.elmos.persistence.SqlTimestamps.offset;
+
 import io.elmos.commercial.PricingPlanCatalog;
 import io.elmos.commercial.SelfServiceBillingPort;
 import io.elmos.commercial.SelfServiceBillingPort.BillingStateException;
@@ -1065,9 +1067,6 @@ public final class JdbcSelfServiceBillingStore implements SelfServiceBillingPort
         return value == null ? null : instant(value);
     }
 
-    private static OffsetDateTime offset(Instant value) {
-        return value == null ? null : OffsetDateTime.ofInstant(value, ZoneOffset.UTC);
-    }
 
     private static String nullable(String value) {
         return value == null || value.isBlank() ? null : value;

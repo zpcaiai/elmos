@@ -88,12 +88,23 @@ test("admin renders tenant-scoped performance and error signals", async ({ page 
   await page.getByLabel("短期管理令牌").fill("admin-observability-token-32");
   await page.getByRole("button", { name: "读取数据" }).click();
 
+  await expect(page.getByRole("navigation", { name: "管理端功能" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "用户与租户" })).toHaveAttribute(
+    "aria-current", "page",
+  );
+  await expect(page.getByText(/外部 IdP 全量用户目录同步尚未执行/)).toBeVisible();
+
+  await page.getByRole("button", { name: "用量与性能" }).click();
   await expect(page.getByText("128", { exact: true })).toBeVisible();
   await expect(page.getByText("3.13%", { exact: true })).toBeVisible();
   await expect(page.getByText("480 ms", { exact: true })).toBeVisible();
   await expect(page.getByText("HTTP_409", { exact: true })).toBeVisible();
+
+  await page.getByRole("button", { name: "审计" }).click();
   await expect(page.getByText("POSTGRES_DUAL_STORE", { exact: false })).toBeVisible();
   await expect(page.locator("small").filter({ hasText: "外部生产证据 NOT_RUN" })).toBeVisible();
+
+  await page.getByRole("button", { name: "配置与门禁" }).click();
   await expect(page.getByRole("button", { name: "立即评估全部 SLO" })).toBeEnabled();
   await expect(page.getByRole("button", { name: "执行 30 天保留" })).toBeEnabled();
 });

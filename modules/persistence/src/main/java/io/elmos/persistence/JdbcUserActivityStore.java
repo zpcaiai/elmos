@@ -1,5 +1,7 @@
 package io.elmos.persistence;
 
+import static io.elmos.persistence.SqlTimestamps.offset;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -9,7 +11,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Instant;
-import java.time.ZoneOffset;
 import java.time.OffsetDateTime;
 import java.time.Clock;
 import java.util.List;
@@ -132,7 +133,7 @@ public final class JdbcUserActivityStore {
                         .param("actor", actorId)
                         .param("action", event.action())
                         .param("target", event.target())
-                        .param("occurred", bindable(event.occurredAt()))
+                        .param("occurred", offset(event.occurredAt()))
                         .param("request", requestId)
                         .param("result", event.result())
                         .param("eventKind", event.eventKind())
@@ -187,7 +188,7 @@ public final class JdbcUserActivityStore {
                         .param("businessLine", event.businessLine())
                         .param("route", event.route())
                         .param("target", event.target())
-                        .param("occurred", bindable(event.occurredAt()))
+                        .param("occurred", offset(event.occurredAt()))
                         .param("duration", event.durationMs())
                         .param("result", event.result())
                         .param("errorCode", blankToNull(event.errorCode()))
@@ -254,7 +255,7 @@ public final class JdbcUserActivityStore {
                        and (:line is null or business_line = :line)
                        and (:result is null or result = :result)
                     """)
-                    .param("organization", organizationId).param("from", bindable(from)).param("to", bindable(to))
+                    .param("organization", organizationId).param("from", offset(from)).param("to", offset(to))
                     .param("line", line).param("result", outcome)
                     .query((rs, row) -> new Totals(
                             rs.getLong("event_count"), rs.getLong("session_count"),
@@ -299,7 +300,7 @@ public final class JdbcUserActivityStore {
                      group by business_line
                      order by event_count desc, business_line
                     """)
-                    .param("organization", organizationId).param("from", bindable(from)).param("to", bindable(to))
+                    .param("organization", organizationId).param("from", offset(from)).param("to", offset(to))
                     .param("line", line).param("result", outcome)
                     .query((rs, row) -> {
                         long count = rs.getLong("event_count");
@@ -329,7 +330,7 @@ public final class JdbcUserActivityStore {
                      order by error_count desc, error_code
                      limit 10
                     """)
-                    .param("organization", organizationId).param("from", bindable(from)).param("to", bindable(to))
+                    .param("organization", organizationId).param("from", offset(from)).param("to", offset(to))
                     .param("line", line)
                     .query((rs, row) -> new ErrorSummary(
                             rs.getString("error_code"), rs.getLong("error_count"),
@@ -359,7 +360,7 @@ public final class JdbcUserActivityStore {
                      order by occurred_at desc, event_id desc
                      limit :limit
                     """)
-                    .param("organization", organizationId).param("from", bindable(from)).param("to", bindable(to))
+                    .param("organization", organizationId).param("from", offset(from)).param("to", offset(to))
                     .param("line", line).param("result", outcome).param("limit", limit)
                     .query(JdbcUserActivityStore::mapRecent)
                     .list();
@@ -462,9 +463,9 @@ public final class JdbcUserActivityStore {
                      order by occurred_at, event_id
                      limit :limit
                     """)
-                    .param("organization", organizationId).param("from", bindable(from)).param("to", bindable(to))
+                    .param("organization", organizationId).param("from", offset(from)).param("to", offset(to))
                     .param("line", line).param("result", outcome)
-                    .param("afterOccurredAt", bindable(afterOccurredAt)).param("afterEventId", afterEventId)
+                    .param("afterOccurredAt", offset(afterOccurredAt)).param("afterEventId", afterEventId)
                     .param("limit", limit + 1)
                     .query(JdbcUserActivityStore::mapExport)
                     .list();
@@ -606,24 +607,6 @@ public final class JdbcUserActivityStore {
         return value.toInstant();
     }
 
-    /**
-     * Converts an {@link Instant} into a type the PostgreSQL driver can bind.
-     *
-     * <p>The driver refuses {@code Instant} outright -- "Can't infer the SQL type
-     * to use for an instance of java.time.Instant" -- because an instant carries
-     * no offset and the driver will not guess one. {@link OffsetDateTime} at UTC
-     * states the offset explicitly, and {@code timestamptz} stores the instant
-     * it denotes, so the round trip is lossless regardless of server timezone.
-     *
-     * <p>Every timestamp bound by this store goes through here. Binding an
-     * {@code Instant} directly compiles and passes any test backed by a mock or
-     * an unreachable datasource -- the failure only appears once a statement
-     * actually reaches PostgreSQL, which is why it survived until the container
-     * tests started running.
-     */
-    private static OffsetDateTime bindable(Instant value) {
-        return value == null ? null : value.atOffset(ZoneOffset.UTC);
-    }
 
     private static String blankToNull(String value) {
         return value == null || value.isBlank() ? null : value;

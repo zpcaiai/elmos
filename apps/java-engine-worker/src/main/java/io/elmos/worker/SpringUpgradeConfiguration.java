@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Configuration;
 import java.net.URI;
 import java.nio.file.Path;
 import java.time.Clock;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -170,10 +171,17 @@ class SpringUpgradeConfiguration {
             SpringUpgradeExecutionPort transformer,
             SpringUpgradeIndependentValidationPort verifier,
             @Value("${elmos.worker.spring-upgrade.workspace-root:/tmp/elmos-private-runner}") String workspaceRoot,
+            @Value("${elmos.worker.spring-upgrade.queue.global-capacity:2}") int globalCapacity,
+            @Value("${elmos.worker.spring-upgrade.queue.tenant-capacity:1}") int tenantCapacity,
+            @Value("${elmos.worker.spring-upgrade.queue.ttl-seconds:3600}") long queueTtlSeconds,
+            @Value("${elmos.worker.spring-upgrade.queue.lease-seconds:120}") long leaseTtlSeconds,
             ObjectMapper json,
             Clock clock
     ) {
-        return new SpringUpgradeRunService(transformer, verifier, Path.of(workspaceRoot), json, clock);
+        return new SpringUpgradeRunService(
+                transformer, verifier, Path.of(workspaceRoot), json, clock,
+                globalCapacity, tenantCapacity, Duration.ofSeconds(queueTtlSeconds),
+                Duration.ofSeconds(leaseTtlSeconds));
     }
 
     private static Set<String> hosts(String value) {

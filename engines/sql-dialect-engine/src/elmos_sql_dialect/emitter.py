@@ -11,7 +11,21 @@ from .dialects import (
     render_default,
     render_type,
 )
-from .models import CheckComparison, Column, Dialect, Index, Table
+from .models import (
+    AddColumn,
+    AddConstraint,
+    AlterTable,
+    CheckComparison,
+    CheckConstraint,
+    Column,
+    Dialect,
+    DropColumn,
+    DropConstraint,
+    ForeignKey,
+    Index,
+    RenameColumn,
+    Table,
+)
 
 
 def _render_check_comparison(comparison: CheckComparison) -> str:
@@ -59,3 +73,91 @@ def emit_create_table(table: Table, dialect: Dialect) -> str:
 def emit_create_index(index: Index, dialect: Dialect) -> str:
     keyword = "CREATE UNIQUE INDEX" if index.unique else "CREATE INDEX"
     return f"{keyword} {index.name} ON {index.table} ({', '.join(index.columns)})"
+
+
+def _render_foreign_key_clause(fk: ForeignKey) -> str:
+    return (
+        f"FOREIGN KEY ({', '.join(fk.columns)}) REFERENCES {fk.ref_table} ({', '.join(fk.ref_columns)})"
+        f" ON DELETE {referential_action_sql(fk.on_delete)} ON UPDATE {referential_action_sql(fk.on_update)}"
+    )
+
+
+def _render_check_clause(check: CheckConstraint) -> str:
+    joiner = " OR " if check.connector is not None and check.connector.value == "OR" else " AND "
+    return f"CHECK ({joiner.join(_render_check_comparison(c) for c in check.comparisons)})"
+
+
+def _named(name: str | None, clause: str) -> str:
+    return f"CONSTRAINT {name} {clause}" if name else clause
+
+
+def emit_alter_table(alter: AlterTable, dialect: Dialect) -> str:
+    """Render one certified-alter-v1 model in the target dialect.
+
+    Two rules here are NOT enforceable by the syntax-validation leg, because
+    `sqlglot` happily parses both spellings even though the real databases
+    reject them. They were verified against each vendor's documented grammar
+    and are locked down by tests instead -- the same posture already taken
+    for sqlglot's AUTO_INCREMENT/IDENTITY generation defect:
+
+      1. **Oracle has no `ADD COLUMN`.** The keyword `COLUMN` is a syntax
+         error there; Oracle spells it `ALTER TABLE t ADD (c NUMBER)`.
+         Emitting `ADD COLUMN` would produce a statement sqlglot accepts and
+         Oracle refuses.
+      2. **SQL Server has no `ALTER TABLE ... RENAME COLUMN`.** It requires
+         the `sp_rename` stored procedure, which is a different statement
+         kind entirely.
+    """
+    statements: list[str] = []
+    for action in alter.actions:
+        if isinstance(action, AddColumn):
+            column_sql = _render_column(action.column, dialect)
+            if action.foreign_key is not None:
+                column_sql += (
+                    f" REFERENCES {action.foreign_key.ref_table}"
+                    f" ({', '.join(action.foreign_key.ref_columns)})"
+                    f" ON DELETE {referential_action_sql(action.foreign_key.on_delete)}"
+                    f" ON UPDATE {referential_action_sql(action.foreign_key.on_update)}"
+                )
+            if action.check is not None:
+                column_sql += " " + _render_check_clause(action.check)
+            if dialect is Dialect.ORACLE:
+                # Oracle: no COLUMN keyword; parenthesised column list.
+                statements.append(f"ALTER TABLE {alter.table} ADD ({column_sql})")
+            elif dialect is Dialect.TSQL:
+                # SQL Server: ADD, without the COLUMN keyword.
+                statements.append(f"ALTER TABLE {alter.table} ADD {column_sql}")
+            else:
+                statements.append(f"ALTER TABLE {alter.table} ADD COLUMN {column_sql}")
+
+        elif isinstance(action, DropColumn):
+            statements.append(f"ALTER TABLE {alter.table} DROP COLUMN {action.column}")
+
+        elif isinstance(action, RenameColumn):
+            if dialect is Dialect.TSQL:
+                # T-SQL's only column rename. Quoting follows sp_rename's
+                # documented 'table.column' form.
+                statements.append(
+                    f"EXEC sp_rename '{alter.table}.{action.column}', '{action.new_name}', 'COLUMN'"
+                )
+            else:
+                statements.append(
+                    f"ALTER TABLE {alter.table} RENAME COLUMN {action.column} TO {action.new_name}"
+                )
+
+        elif isinstance(action, AddConstraint):
+            if action.primary_key:
+                clause = f"PRIMARY KEY ({', '.join(action.primary_key)})"
+            elif action.unique:
+                clause = f"UNIQUE ({', '.join(action.unique)})"
+            elif action.foreign_key is not None:
+                clause = _render_foreign_key_clause(action.foreign_key)
+            else:
+                assert action.check is not None  # AddConstraint.__post_init__ guarantees one is set
+                clause = _render_check_clause(action.check)
+            statements.append(f"ALTER TABLE {alter.table} ADD {_named(action.name, clause)}")
+
+        elif isinstance(action, DropConstraint):
+            statements.append(f"ALTER TABLE {alter.table} DROP CONSTRAINT {action.name}")
+
+    return ";\n".join(statements)

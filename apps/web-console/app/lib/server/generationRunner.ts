@@ -31,6 +31,11 @@ import {
   repositoryGenerationSources,
 } from "./repositoryWorkspaceProxy";
 import {
+  DurableJobLease,
+  DurableLeaseError,
+  durableQueueConfiguration,
+} from "./durableJobLease";
+import {
   accountCookieNames,
   AccountSessionError,
   accountSessionFromRequest,
@@ -1252,9 +1257,44 @@ async function runJob(
 ): Promise<void> {
   const root = jobRoot(runner, context, job.id);
   const key = jobKey(context, job.id);
+  let requeued = false;
+  let queueLease: DurableJobLease | null = null;
+  let leaseHeartbeat: NodeJS.Timeout | null = null;
   let metering: MeteredExecution | null = null;
   try {
     if (cancelledJobs.has(key)) return;
+    try {
+      queueLease = await DurableJobLease.acquire({
+        configuration: durableQueueConfiguration(runner.root, "generation"),
+        tenantId: context.tenantId,
+        jobId: job.id,
+        createdAt: job.createdAt,
+        inputDigest: await sha256File(confined(root, "synthesis-request.json")),
+      });
+      leaseHeartbeat = setInterval(() => {
+        void queueLease?.heartbeat().catch(() => {
+          const child = activeJobs.get(key);
+          if (child) terminate(child);
+        });
+      }, queueLease.heartbeatIntervalMs);
+      leaseHeartbeat.unref();
+    } catch (error) {
+      if (error instanceof DurableLeaseError && error.retryable) {
+        job.status = "QUEUED";
+        job.stage = "queued";
+        job.reason = error.code;
+        log(job, "system", `Queue admission delayed: ${error.code}.`);
+        await persist(runner, context, job);
+        scheduledJobs.add(key);
+        requeued = true;
+        setTimeout(
+          () => void runJob(runner, context, job),
+          1_000 + Math.floor(Math.random() * 2_000),
+        ).unref();
+        return;
+      }
+      throw error;
+    }
     metering = await beginMeteredExecution(`generation-${job.id}`);
     job.status = "VERIFYING";
     const pipeline = await executeCommand(
@@ -1347,9 +1387,28 @@ async function runJob(
       job.runtime.plans = [];
       log(job, "system", `Cancelled by ${context.actor}.`);
     }
+    if (leaseHeartbeat) clearInterval(leaseHeartbeat);
+    if (queueLease) {
+      const outcome = job.status === "COMPLETED" || job.status === "PARTIAL"
+        ? "SUCCEEDED"
+        : job.status === "CANCELLED"
+          ? "CANCELLED"
+          : job.status === "BLOCKED"
+            ? "BLOCKED"
+            : "FAILED";
+      try {
+        await queueLease.release(outcome);
+      } catch {
+        job.status = "BLOCKED";
+        job.stage = "blocked";
+        job.reason = "QUEUE_LEASE_RELEASE_FAILED";
+      }
+    }
     await persist(runner, context, job);
-    scheduledJobs.delete(key);
-    cancelledJobs.delete(key);
+    if (!requeued) {
+      scheduledJobs.delete(key);
+      cancelledJobs.delete(key);
+    }
   }
 }
 
@@ -1368,10 +1427,6 @@ export async function createJob(
     && validated.targets.some((target) => !multiEntityProductionTargets.has(target))
   ) {
     throw new GenerationRunnerError(409, "PRODUCTION_PROFILE_SINGLE_ENTITY_ONLY");
-  }
-  const tenantPrefix = `${context.tenantId}:`;
-  if ([...scheduledJobs].filter((key) => key.startsWith(tenantPrefix)).length >= 2) {
-    throw new GenerationRunnerError(429, "JOB_CONCURRENCY_LIMIT");
   }
   const id = randomUUID();
   const now = new Date().toISOString();

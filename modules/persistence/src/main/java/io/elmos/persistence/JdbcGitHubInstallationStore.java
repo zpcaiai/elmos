@@ -1,5 +1,7 @@
 package io.elmos.persistence;
 
+import static io.elmos.persistence.SqlTimestamps.offset;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,9 +30,9 @@ public final class JdbcGitHubInstallationStore implements GitHubInstallationLife
                 on conflict (github_installation_id) do nothing
                 """).param("id", installation.installationId()).param("external", installation.githubInstallationId())
                 .param("accountId", installation.accountExternalId()).param("login", installation.accountLogin())
-                .param("targetType", installation.targetType()).param("installed", installation.installedAt())
+                .param("targetType", installation.targetType()).param("installed", offset(installation.installedAt()))
                 .param("permissions", json(installation.permissions())).param("selection", installation.repositorySelection())
-                .param("synced", installation.synchronizedAt()).param("connection", installation.connectionId())
+                .param("synced", offset(installation.synchronizedAt())).param("connection", installation.connectionId())
                 .param("organization", installation.organizationId()).update();
         return rows == 1;
     }
@@ -55,7 +57,7 @@ public final class JdbcGitHubInstallationStore implements GitHubInstallationLife
                     suspended_at = case when :status = 'SUSPENDED' then :changed else null end,
                     deleted_at = case when :status = 'DELETED' then :changed else deleted_at end,
                     last_synced_at = :changed where github_installation_id = :id
-                """).param("status", status.name()).param("changed", changedAt).param("id", githubInstallationId).update();
+                """).param("status", status.name()).param("changed", offset(changedAt)).param("id", githubInstallationId).update();
         if (rows != 1) throw new SecurityException("unknown GitHub App installation");
     }
 
@@ -65,7 +67,7 @@ public final class JdbcGitHubInstallationStore implements GitHubInstallationLife
         if (installation == null || installation.status() != GitHubInstallationLifecycleService.Status.ACTIVE)
             throw new SecurityException("cannot synchronize an inactive installation");
         jdbc.sql("update scm_repositories set authorization_status = 'REVOKED', synced_at = :at where installation_id = :installation")
-                .param("at", synchronizedAt).param("installation", installation.installationId()).update();
+                .param("at", offset(synchronizedAt)).param("installation", installation.installationId()).update();
         for (var repository : repositories) {
             jdbc.sql("""
                     insert into repositories(repository_id, organization_id, scm_provider, external_id, default_branch)
@@ -93,10 +95,10 @@ public final class JdbcGitHubInstallationStore implements GitHubInstallationLife
                     .param("owner", repository.owner()).param("name", repository.name()).param("fullName", repository.fullName())
                     .param("cloneUrl", repository.cloneUrl()).param("htmlUrl", repository.htmlUrl()).param("defaultBranch", repository.defaultBranch())
                     .param("visibility", repository.visibility()).param("archived", repository.archived()).param("disabled", repository.disabled())
-                    .param("fork", repository.fork()).param("parent", repository.parentRepositoryId()).param("synced", synchronizedAt).update();
+                    .param("fork", repository.fork()).param("parent", repository.parentRepositoryId()).param("synced", offset(synchronizedAt)).update();
         }
         jdbc.sql("update github_app_installations set last_synced_at = :at where installation_id = :id")
-                .param("at", synchronizedAt).param("id", installation.installationId()).update();
+                .param("at", offset(synchronizedAt)).param("id", installation.installationId()).update();
     }
 
     private String json(Map<String,String> value) { try { return mapper.writeValueAsString(value); } catch (JsonProcessingException e) { throw new IllegalArgumentException(e); } }

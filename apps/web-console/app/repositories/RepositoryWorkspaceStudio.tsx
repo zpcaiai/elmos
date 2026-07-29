@@ -516,7 +516,8 @@ export function RepositoryWorkspaceStudio() {
           <button className={styles.secondary} type="button" onClick={beginNewFile}
             disabled={busy || workspace.completeness !== "COMPLETE"}>新建文件</button>
           <button className={styles.primary} type="button" onClick={continueToProjectGeneration}
-            disabled={busy || workspace.completeness !== "COMPLETE"}>
+            disabled={busy || workspace.completeness !== "COMPLETE"
+              || workspace.pendingPaths.length > 0}>
             项目生成
           </button>
           <button className={styles.secondary} type="button" onClick={continueToTranslation}

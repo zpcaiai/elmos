@@ -36,6 +36,11 @@ elmos:
       independent-verifier-base-url: ${ELMOS_SPRING_UPGRADE_VERIFIER_BASE_URL:http://java-engine-verifier:8082}
       independent-verifier-secret-file: ${ELMOS_SPRING_UPGRADE_VERIFIER_SECRET_FILE:/run/secrets/elmos_verifier_hmac}
       workspace-root: ${ELMOS_SPRING_UPGRADE_WORKSPACE_ROOT:/tmp/elmos-private-runner}
+      queue:
+        global-capacity: ${ELMOS_SPRING_UPGRADE_GLOBAL_CAPACITY:2}
+        tenant-capacity: ${ELMOS_SPRING_UPGRADE_TENANT_CAPACITY:1}
+        ttl-seconds: ${ELMOS_SPRING_UPGRADE_QUEUE_TTL_SECONDS:3600}
+        lease-seconds: ${ELMOS_SPRING_UPGRADE_LEASE_TTL_SECONDS:120}
       source-java-home: ${ELMOS_SOURCE_JAVA_HOME:/opt/java/openjdk-17}
       target-java-home: ${ELMOS_TARGET_JAVA_HOME:/opt/java/openjdk}
       maven-executable: ${ELMOS_MAVEN_EXECUTABLE:mvn}

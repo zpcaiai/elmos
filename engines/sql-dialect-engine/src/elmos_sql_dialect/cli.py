@@ -18,7 +18,7 @@ def _translate_parser(subparsers: argparse._SubParsersAction) -> None:
     p.add_argument("--source-file", required=True, type=Path)
     p.add_argument("--source-dialect", required=True, choices=[d.value for d in Dialect])
     p.add_argument("--target-dialect", required=True, choices=[d.value for d in Dialect])
-    p.add_argument("--statement-kind", default="TABLE", choices=["TABLE", "INDEX"])
+    p.add_argument("--statement-kind", default="TABLE", choices=["TABLE", "INDEX", "ALTER"])
     p.add_argument("--dsn", default=None, help="optional real-database DSN/connection params for execution validation")
     p.add_argument("--output", required=True, type=Path)
 

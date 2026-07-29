@@ -74,6 +74,16 @@ function downloadCsv(rows: AuditExportRow[], days: string) {
 }
 
 type LoadState = "LOCKED" | "LOADING" | "READY" | "ERROR";
+type AdminSection = "USERS" | "TASKS" | "REPOSITORIES" | "AUDIT" | "ALERTS" | "USAGE" | "CONFIG";
+const adminSections: Array<[AdminSection, string]> = [
+  ["USERS", "用户与租户"],
+  ["TASKS", "任务队列"],
+  ["REPOSITORIES", "仓库"],
+  ["AUDIT", "审计"],
+  ["ALERTS", "告警与事件"],
+  ["USAGE", "用量与性能"],
+  ["CONFIG", "配置与门禁"],
+];
 type AdminAction =
   | "EVALUATE"
   | "ACKNOWLEDGE_ALERT"
@@ -114,12 +124,26 @@ export function OperationsAdmin() {
   const [exportBusy, setExportBusy] = useState(false);
   const [exportError, setExportError] = useState("");
   const [exportNotice, setExportNotice] = useState("");
+  const [adminSection, setAdminSection] = useState<AdminSection>("USERS");
 
   const summary = view?.activity ?? null;
   const periodLabel = useMemo(() => {
     if (!summary) return "尚未读取";
     return `${formatTime(summary.from)} — ${formatTime(summary.to)}`;
   }, [summary]);
+  const taskEvents = useMemo(
+    () => (summary?.recentEvents ?? []).filter((event) =>
+      ["SPRING_MODERNIZATION", "LANGUAGE_TRANSLATION", "PROJECT_SYNTHESIS"]
+        .includes(event.businessLine)
+      || /(JOB|RUN|PIPELINE|UPGRADE|TRANSLATION|GENERATION)/.test(event.action)),
+    [summary],
+  );
+  const repositoryEvents = useMemo(
+    () => (summary?.recentEvents ?? []).filter((event) =>
+      event.businessLine === "REPOSITORY_WORKSPACE"
+      || event.action.startsWith("REPOSITORY_")),
+    [summary],
+  );
 
   /**
    * Walk the export cursor to the end and hand back a CSV file.
@@ -320,7 +344,7 @@ export function OperationsAdmin() {
         {state === "READY" && <button className="secondary-button" type="button" onClick={lock}>锁定</button>}
       </form>
 
-      {state === "READY" && (
+      {state === "READY" && adminSection === "AUDIT" && (
         <section className={styles.panel} aria-label="审计导出">
           <h2><Icon name="file" size={18} /> 审计导出</h2>
           <p>
@@ -373,9 +397,76 @@ export function OperationsAdmin() {
       )}
       {notice && <section className={styles.notice} role="status">{notice}</section>}
 
+      {state === "READY" && (
+        <nav className={styles.sectionNav} aria-label="管理端功能">
+          {adminSections.map(([value, label]) => (
+            <button key={value} type="button"
+              aria-current={adminSection === value ? "page" : undefined}
+              className={adminSection === value ? styles.activeSection : ""}
+              onClick={() => setAdminSection(value)}>
+              {label}
+            </button>
+          ))}
+        </nav>
+      )}
+
       {summary && view && (
         <>
-          <section className={styles.actionStrip}>
+          {adminSection === "USERS" && (
+            <section className={styles.panel}>
+              <header>
+                <div><span className="overline">IDENTITY & TENANCY</span><h2>用户、角色与租户成员资格</h2></div>
+                <small>来源：当前已验证 OIDC 会话</small>
+              </header>
+              <div className={styles.identityGrid}>
+                <article>
+                  <span>当前用户</span>
+                  <strong>{account.principal?.displayName ?? view.actorId}</strong>
+                  <small>{account.principal?.email ?? view.actorId}</small>
+                </article>
+                <article>
+                  <span>当前租户</span>
+                  <strong>{account.principal?.organizationId ?? "受控本地租户"}</strong>
+                  <small>管理角色 {view.role}</small>
+                </article>
+                <article>
+                  <span>权限</span>
+                  <strong>{account.principal?.permissions.length ?? 0}</strong>
+                  <small>{account.principal?.permissions.join(" · ") || "由短期管理凭据决定"}</small>
+                </article>
+              </div>
+              <div className={styles.membershipList}>
+                {(account.principal?.memberships ?? []).map((membership) => (
+                  <article key={membership.organizationId}>
+                    <div><strong>{membership.organizationId}</strong><small>{membership.roles.join(" · ")}</small></div>
+                    <span>{membership.permissions.length} 项权限</span>
+                  </article>
+                ))}
+                {(account.principal?.memberships.length ?? 0) === 0
+                  && <Empty label="外部 IdP 全量用户目录同步尚未执行；不会据当前会话推断其他用户。" />}
+              </div>
+            </section>
+          )}
+
+          {adminSection === "TASKS" && (
+            <section className={styles.panel}>
+              <header><div><span className="overline">DURABLE JOB CONTROL</span><h2>三条业务线任务</h2></div><small>持久状态、租约、TTL 与结果信号</small></header>
+              <EventTable events={taskEvents} empty="所选窗口内没有任务事件" />
+              <p className={styles.boundaryNote}>队列容量与租约由 Runner 持久层执行；此页不会通过前端按钮跳过租约、重试门禁或独立验证。</p>
+            </section>
+          )}
+
+          {adminSection === "REPOSITORIES" && (
+            <section className={styles.panel}>
+              <header><div><span className="overline">REPOSITORY GOVERNANCE</span><h2>仓库工作区与交付操作</h2></div><small>拉取、变更、Commit、Push、PR</small></header>
+              <EventTable events={repositoryEvents} empty="所选窗口内没有仓库操作" />
+              <div className={styles.inlineActions}>
+                <a className="secondary-button" href="/repositories">打开仓库工作区</a>
+              </div>
+            </section>
+          )}
+
+          {(adminSection === "ALERTS" || adminSection === "CONFIG") && <section className={styles.actionStrip}>
             <div>
               <strong>自动化控制</strong>
               <small>{view.control.automationMode} · 源码修改 {view.control.sourceMutationMode}</small>
@@ -386,6 +477,7 @@ export function OperationsAdmin() {
               type="button"
               disabled={!can("OPERATOR") || Boolean(busyAction)}
               onClick={() => mutate("EVALUATE")}
+              data-operation-id="admin.slo.evaluate"
             >
               立即评估全部 SLO
             </button>
@@ -394,19 +486,20 @@ export function OperationsAdmin() {
               type="button"
               disabled={!can("APPROVER") || Boolean(busyAction)}
               onClick={() => mutate("ENFORCE_RETENTION", { retentionDays: 30 })}
+              data-operation-id="admin.retention.enforce"
             >
               执行 30 天保留
             </button>
-          </section>
+          </section>}
 
-          <section className={styles.metrics} aria-label="运营指标">
+          {adminSection === "USAGE" && <section className={styles.metrics} aria-label="运营指标">
             <article><span>操作事件</span><strong>{summary.totalEvents.toLocaleString("zh-CN")}</strong><small>审计 + 可删除性能遥测</small></article>
             <article><span>活跃会话</span><strong>{summary.activeSessions.toLocaleString("zh-CN")}</strong><small>服务端 HMAC 会话</small></article>
             <article><span>失败率</span><strong>{summary.failureRate.toFixed(2)}%</strong><small>{summary.failedEvents} 次失败</small></article>
             <article><span>P95 耗时</span><strong>{summary.p95DurationMs === null ? "—" : `${summary.p95DurationMs} ms`}</strong><small>API 与页面性能</small></article>
-          </section>
+          </section>}
 
-          <div className={styles.dashboardGrid}>
+          {adminSection === "USAGE" && <div className={styles.dashboardGrid}>
             <section className={styles.panel}>
               <header><div><span className="overline">BUSINESS LINES</span><h2>所有业务线表现</h2></div><small>失败率与 P95 耗时</small></header>
               {summary.businessLines.length === 0 ? <Empty label="所选范围内暂无事件" /> : (
@@ -435,9 +528,9 @@ export function OperationsAdmin() {
                 </div>
               )}
             </section>
-          </div>
+          </div>}
 
-          <section className={styles.panel}>
+          {adminSection === "ALERTS" && <section className={styles.panel}>
             <header><div><span className="overline">SLO & ALERTS</span><h2>SLO 与告警</h2></div><small>{view.control.policies.length} 条业务线策略</small></header>
             <div className={styles.cardGrid}>
               {view.control.alerts.length === 0 ? <Empty label="当前没有告警" /> : view.control.alerts.map((alert) => (
@@ -461,9 +554,9 @@ export function OperationsAdmin() {
                 </article>
               ))}
             </div>
-          </section>
+          </section>}
 
-          <section className={styles.panel}>
+          {adminSection === "ALERTS" && <section className={styles.panel}>
             <header><div><span className="overline">INCIDENTS</span><h2>生产事件</h2></div><small>负责人、状态和并发版本均受控</small></header>
             <div className={styles.cardGrid}>
               {view.control.incidents.length === 0 ? <Empty label="当前没有生产事件" /> : view.control.incidents.map((incident) => (
@@ -476,9 +569,9 @@ export function OperationsAdmin() {
                 />
               ))}
             </div>
-          </section>
+          </section>}
 
-          <section className={styles.panel}>
+          {adminSection === "ALERTS" && <section className={styles.panel}>
             <header><div><span className="overline">QUICK FIX GOVERNANCE</span><h2>性能优化与 Bug 修复提案</h2></div><small>预览、审批、SCM 准备、验证、回滚</small></header>
             <div className={styles.cardGrid}>
               {view.control.remediations.length === 0 ? <Empty label="尚无修复提案；先运行 SLO 评估" /> : view.control.remediations.map((proposal) => (
@@ -490,9 +583,9 @@ export function OperationsAdmin() {
                 />
               ))}
             </div>
-          </section>
+          </section>}
 
-          <section className={styles.panel}>
+          {adminSection === "AUDIT" && <section className={styles.panel}>
             <header><div><span className="overline">RECENT ACTIVITY</span><h2>最近操作</h2></div><small>{summary.persistence} · 外部生产证据 {summary.externalEvidence}</small></header>
             {summary.recentEvents.length === 0 ? <Empty label="所选范围内暂无事件" /> : (
               <div className={styles.tableWrap}>
@@ -513,14 +606,28 @@ export function OperationsAdmin() {
                 </table>
               </div>
             )}
-          </section>
+          </section>}
 
-          <section className={styles.evidence}>
+          {adminSection === "CONFIG" && <section className={styles.panel}>
+            <header><div><span className="overline">POLICY & READINESS</span><h2>配置、SLO 与外部门禁</h2></div><small>敏感配置值永不回传</small></header>
+            <div className={styles.cardGrid}>
+              {view.control.policies.map((policy) => (
+                <article className={styles.controlCard} key={policy.policyId}>
+                  <div><span className={styles.kind}>{policy.enabled ? "ENABLED" : "DISABLED"}</span><strong>{lineLabels[policy.businessLine] ?? policy.businessLine}</strong></div>
+                  <code>{policy.policyId}</code>
+                  <p>失败率 {(policy.failureRateBudgetBps / 100).toFixed(2)}% · P95 {policy.latencyP95BudgetMs} ms</p>
+                  <small>窗口 {policy.evaluationWindowMinutes} 分钟 · 最小样本 {policy.minimumEventCount}</small>
+                </article>
+              ))}
+            </div>
+          </section>}
+
+          {adminSection === "CONFIG" && <section className={styles.evidence}>
             <strong>外部门禁</strong>
             <span>通知投递：{view.control.notificationDeliveryEvidence}</span>
             <span>生产部署：{view.control.productionDeploymentEvidence}</span>
             <span>保留执行：{view.control.retentionRuns.length ? "有本地/当前环境证据" : "NOT_RUN"}</span>
-          </section>
+          </section>}
         </>
       )}
     </div>
@@ -636,4 +743,33 @@ function RemediationCard({
 
 function Empty({ label }: { label: string }) {
   return <div className={styles.empty}><Icon name="database" size={22} /><span>{label}</span></div>;
+}
+
+function EventTable({
+  events,
+  empty,
+}: {
+  events: OperationsConsoleView["activity"]["recentEvents"];
+  empty: string;
+}) {
+  if (events.length === 0) return <Empty label={empty} />;
+  return (
+    <div className={styles.tableWrap}>
+      <table>
+        <thead><tr><th>时间</th><th>业务线</th><th>动作</th><th>目标</th><th>结果</th><th>耗时</th></tr></thead>
+        <tbody>
+          {events.map((item) => (
+            <tr key={item.eventId}>
+              <td>{formatTime(item.occurredAt)}</td>
+              <td>{lineLabels[item.businessLine] ?? item.businessLine}</td>
+              <td><code>{item.action}</code></td>
+              <td title={item.target}>{displayTarget(item.target)}</td>
+              <td><span className={item.result === "FAILURE" ? styles.resultBad : styles.resultGood}>{item.result}</span>{item.errorCode && <small>{item.errorCode}</small>}</td>
+              <td>{item.durationMs === null ? "—" : `${item.durationMs} ms`}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 }

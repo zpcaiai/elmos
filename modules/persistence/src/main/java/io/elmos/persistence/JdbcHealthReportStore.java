@@ -1,5 +1,7 @@
 package io.elmos.persistence;
 
+import static io.elmos.persistence.SqlTimestamps.offset;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.elmos.health.HealthModels;
@@ -25,7 +27,7 @@ public final class JdbcHealthReportStore implements HealthReportStore {
         String runId = id("health-run", report.reportId());
         jdbc.sql("insert into health_check_runs(health_check_run_id,organization_id,snapshot_id,scanner_version,policy_hash,status,started_at,finished_at,correlation_id) values(:id,:org,:snapshot,:scanner,:policy,:status,:at,:at,:correlation)")
                 .param("id",runId).param("org",context.organizationId()).param("snapshot",report.snapshotId()).param("scanner",context.scannerVersion())
-                .param("policy",context.policyHash()).param("status",report.status().name()).param("at",report.generatedAt()).param("correlation",context.correlationId()).update();
+                .param("policy",context.policyHash()).param("status",report.status().name()).param("at",offset(report.generatedAt())).param("correlation",context.correlationId()).update();
         int index = 0;
         for (HealthModels.Module module : report.modules()) jdbc.sql("insert into health_project_modules(health_module_id,health_check_run_id,module_path,coordinates,build_system,descriptor_hash) values(:id,:run,:path,:coordinates,:build,:hash)")
                 .param("id",id("module",runId+":"+(index++))).param("run",runId).param("path",module.path()).param("coordinates",module.coordinate())
@@ -53,7 +55,7 @@ public final class JdbcHealthReportStore implements HealthReportStore {
                 .param("integration",test.integrationTestsDetected()).param("coverage",test.coveragePluginDetected()).param("ratio",test.testToProductionRatio()).param("status",test.status().name()).update();
         jdbc.sql("insert into health_reports(health_report_id,health_check_run_id,snapshot_id,health_score,overall_risk,evidence_status,report_artifact_ref,report_sha256,generated_at) values(:id,:run,:snapshot,:score,:risk,:status,:artifact,:sha,:at)")
                 .param("id",report.reportId()).param("run",runId).param("snapshot",report.snapshotId()).param("score",report.healthScore()).param("risk",report.overallRisk().name())
-                .param("status",report.status().name()).param("artifact",context.reportArtifactRef()).param("sha",context.reportSha256()).param("at",report.generatedAt()).update();
+                .param("status",report.status().name()).param("artifact",context.reportArtifactRef()).param("sha",context.reportSha256()).param("at",offset(report.generatedAt())).update();
     }
     private static void validate(SaveContext context) { if (context == null || blank(context.organizationId()) || blank(context.correlationId()) || blank(context.scannerVersion())
             || context.policyHash() == null || !context.policyHash().matches("[0-9a-f]{64,80}") || blank(context.reportArtifactRef())

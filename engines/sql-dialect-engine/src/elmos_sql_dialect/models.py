@@ -198,3 +198,100 @@ class Index:
     def __post_init__(self) -> None:
         if not self.columns:
             raise DialectError("CERTIFIED_DDL_EMPTY_INDEX", f"index {self.name!r} has no columns")
+
+
+# ---------------------------------------------------------------------------
+# certified-alter-v1
+#
+# Scope chosen by measurement, not intuition: a scan of 64 real migration
+# files found 635 ALTER TABLE actions, of which 603 were ADD COLUMN, 29 ADD
+# CONSTRAINT, 2 RENAME COLUMN and 1 DROP CONSTRAINT. Those five operations
+# are the profile; everything else fails closed.
+#
+# Deliberately OUT, and this is the interesting boundary:
+#
+#   ALTER COLUMN TYPE / SET NOT NULL / SET DEFAULT / DROP DEFAULT.
+#
+# MySQL spells a column change `MODIFY c <TYPE> NOT NULL` and SQL Server
+# `ALTER COLUMN c <TYPE> NOT NULL` -- BOTH require the column's full type to
+# be restated. An `ALTER TABLE t ALTER COLUMN c SET NOT NULL` statement does
+# not carry that type, and this engine reads one statement at a time with no
+# catalog to look it up in. Emitting those targets would mean inventing a
+# type, which is precisely the class of silent corruption the profile exists
+# to prevent. They appeared 0 times in the corpus, so refusing them costs
+# nothing measurable.
+# ---------------------------------------------------------------------------
+
+
+class AlterActionKind(str, Enum):
+    ADD_COLUMN = "ADD_COLUMN"
+    DROP_COLUMN = "DROP_COLUMN"
+    RENAME_COLUMN = "RENAME_COLUMN"
+    ADD_CONSTRAINT = "ADD_CONSTRAINT"
+    DROP_CONSTRAINT = "DROP_CONSTRAINT"
+
+
+@dataclass(frozen=True)
+class AddColumn:
+    column: Column
+    #: An inline `REFERENCES` on the added column, lifted to the same
+    #: canonical shape a table-level FOREIGN KEY produces.
+    foreign_key: ForeignKey | None = None
+    check: CheckConstraint | None = None
+    kind: AlterActionKind = AlterActionKind.ADD_COLUMN
+
+
+@dataclass(frozen=True)
+class DropColumn:
+    column: str
+    kind: AlterActionKind = AlterActionKind.DROP_COLUMN
+
+
+@dataclass(frozen=True)
+class RenameColumn:
+    column: str
+    new_name: str
+    kind: AlterActionKind = AlterActionKind.RENAME_COLUMN
+
+
+@dataclass(frozen=True)
+class AddConstraint:
+    """Exactly one of the four constraint shapes is populated."""
+
+    name: str | None = None
+    primary_key: tuple[str, ...] = ()
+    unique: tuple[str, ...] = ()
+    foreign_key: ForeignKey | None = None
+    check: CheckConstraint | None = None
+    kind: AlterActionKind = AlterActionKind.ADD_CONSTRAINT
+
+    def __post_init__(self) -> None:
+        populated = sum(
+            1 for v in (self.primary_key, self.unique, self.foreign_key, self.check) if v
+        )
+        if populated != 1:
+            raise DialectError(
+                "CERTIFIED_ALTER_UNSUPPORTED_CONSTRAINT",
+                "ADD CONSTRAINT must carry exactly one of PRIMARY KEY / UNIQUE / FOREIGN KEY / CHECK",
+            )
+
+
+@dataclass(frozen=True)
+class DropConstraint:
+    name: str
+    kind: AlterActionKind = AlterActionKind.DROP_CONSTRAINT
+
+
+AlterAction = AddColumn | DropColumn | RenameColumn | AddConstraint | DropConstraint
+
+
+@dataclass(frozen=True)
+class AlterTable:
+    table: str
+    actions: tuple[AlterAction, ...]
+
+    def __post_init__(self) -> None:
+        if not self.actions:
+            raise DialectError(
+                "CERTIFIED_ALTER_EMPTY", f"ALTER TABLE {self.table!r} carries no action"
+            )

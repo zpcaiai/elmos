@@ -46,7 +46,7 @@ import sqlglot
 from sqlglot import exp
 
 from .models import Dialect, DialectError
-from .parser import parse_create_index, parse_create_table
+from .parser import parse_alter_table, parse_create_index, parse_create_table
 
 FindingStatus = Literal["IN_SUBSET", "OUT_OF_SUBSET", "SCAN_ERROR"]
 
@@ -77,9 +77,34 @@ BlockerFamily = Literal[
 BLOCKER_CATALOG: dict[str, tuple[BlockerFamily, str]] = {
     "CERTIFIED_DDL_UNSUPPORTED_STATEMENT": (
         "statement-kind",
-        "a statement other than a single CREATE TABLE / CREATE INDEX -- ALTER TABLE, "
-        "CREATE VIEW, stored procedures, triggers and DML all land here",
+        "a statement no certified profile covers -- CREATE VIEW, stored procedures, "
+        "triggers, GRANT/REVOKE and DML all land here",
     ),
+    "CERTIFIED_ALTER_UNSUPPORTED_STATEMENT": (
+        "statement-kind",
+        "not a single ALTER TABLE statement",
+    ),
+    "CERTIFIED_ALTER_UNSUPPORTED_ACTION": (
+        "statement-kind",
+        "an ALTER TABLE action outside ADD/DROP/RENAME COLUMN and ADD/DROP CONSTRAINT -- "
+        "column type, nullability and default changes need the column's full type, which a "
+        "single ALTER statement does not carry",
+    ),
+    "CERTIFIED_ALTER_UNSUPPORTED_STATEMENT_MODIFIER": (
+        "statement-kind",
+        "an ALTER TABLE modifier outside the certified set (IF EXISTS and similar)",
+    ),
+    "CERTIFIED_ALTER_UNSUPPORTED_CONSTRAINT": (
+        "constraints",
+        "an ADD CONSTRAINT clause outside PRIMARY KEY / UNIQUE / FOREIGN KEY / CHECK",
+    ),
+    "CERTIFIED_ALTER_UNSUPPORTED_COLUMN_CONSTRAINT": (
+        "constraints",
+        "an inline PRIMARY KEY or UNIQUE on an added column -- the dialects differ on whether "
+        "that may be combined with ADD COLUMN, so add the column and the constraint separately",
+    ),
+    "CERTIFIED_ALTER_MISSING_TYPE": ("types", "an added column with no type"),
+    "CERTIFIED_ALTER_EMPTY": ("structure", "an ALTER TABLE carrying no action"),
     "CERTIFIED_DDL_MULTIPLE_STATEMENTS": (
         "statement-kind",
         "more than one statement handed to a single translate call",
@@ -259,6 +284,10 @@ def _classify(statement: exp.Expr, dialect: Dialect) -> tuple[FindingStatus, str
             parse_create_table(sql, dialect)
         elif isinstance(statement, exp.Create) and str(statement.args.get("kind", "")).upper() == "INDEX":
             parse_create_index(sql, dialect)
+        elif isinstance(statement, exp.Alter):
+            # certified-alter-v1. Routed here so the coverage number tracks
+            # what the engine can really do rather than one profile of it.
+            parse_alter_table(sql, dialect)
         else:
             # Not a CREATE TABLE / CREATE INDEX at all. This is the single
             # most important number in the report, so it is produced by the
@@ -413,7 +442,7 @@ def _build_report(
     return FeasibilityReport(
         schema_version="1.0",
         kind="elmos.sql-dialect-feasibility-scan",
-        profile="certified-ddl-v1",
+        profile="certified-ddl-v1 + certified-alter-v1",
         repository=str(root.resolve()),
         source_dialect=source_dialect.value,
         scanned_at=datetime.now(timezone.utc).isoformat(),

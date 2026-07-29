@@ -1,5 +1,7 @@
 package io.elmos.persistence;
 
+import static io.elmos.persistence.SqlTimestamps.offset;
+
 import io.elmos.secret.SecretInjectionService;
 import io.elmos.secret.SecretLease;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -17,7 +19,7 @@ public final class JdbcSecretLeaseStore implements SecretInjectionService.Secret
                 values (:id, :provider, :type, :workspace, :issued, :expires, :status)
                 on conflict (lease_id) do update set status = excluded.status
                 """).param("id", lease.leaseId()).param("provider", lease.providerLeaseId()).param("type", lease.secretType().name())
-                .param("workspace", lease.workspaceId()).param("issued", lease.issuedAt()).param("expires", lease.expiresAt())
+                .param("workspace", lease.workspaceId()).param("issued", offset(lease.issuedAt())).param("expires", offset(lease.expiresAt()))
                 .param("status", lease.status().name()).update();
     }
     @Override public SecretLease find(String leaseId) {

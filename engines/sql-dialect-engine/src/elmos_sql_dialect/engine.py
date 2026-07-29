@@ -30,21 +30,31 @@ def translate_ddl(
     statement_kind: str = "TABLE",
     dsn: str | None = None,
 ) -> dict[str, Any]:
-    """Translate one CREATE TABLE (or, with `statement_kind="INDEX"`, one
-    CREATE INDEX) statement from `source_dialect` to `target_dialect` within
-    certified-ddl-v1. Returns a structured report; never raises for
-    out-of-profile input -- that is reported as `status: "BLOCKED"`.
+    """Translate one statement from `source_dialect` to `target_dialect`.
+
+    `statement_kind` selects the profile:
+
+      TABLE / INDEX -- certified-ddl-v1
+      ALTER         -- certified-alter-v1
+
+    Returns a structured report; never raises for out-of-profile input --
+    that is reported as `status: "BLOCKED"`.
     """
     source = _resolve_dialect(source_dialect)
     target = _resolve_dialect(target_dialect)
     if source == target:
         raise RouteError("SOURCE_AND_TARGET_MUST_DIFFER: translating a dialect to itself is not a supported route")
-    if statement_kind not in ("TABLE", "INDEX"):
-        raise RouteError(f"UNSUPPORTED_STATEMENT_KIND: {statement_kind!r} must be TABLE or INDEX")
+    if statement_kind not in ("TABLE", "INDEX", "ALTER"):
+        raise RouteError(
+            f"UNSUPPORTED_STATEMENT_KIND: {statement_kind!r} must be TABLE, INDEX or ALTER"
+        )
+    profile = "certified-alter-v1" if statement_kind == "ALTER" else "certified-ddl-v1"
 
     try:
         if statement_kind == "TABLE":
             emitted = emitter.emit_create_table(parser.parse_create_table(sql, source), target)
+        elif statement_kind == "ALTER":
+            emitted = emitter.emit_alter_table(parser.parse_alter_table(sql, source), target)
         else:
             emitted = emitter.emit_create_index(parser.parse_create_index(sql, source), target)
     except DialectError as exc:
@@ -52,7 +62,7 @@ def translate_ddl(
             "schemaVersion": "1.0",
             "kind": "elmos.sql-dialect-translation",
             "status": "BLOCKED",
-            "profile": "certified-ddl-v1",
+            "profile": profile,
             "sourceDialect": source.value,
             "targetDialect": target.value,
             "reasonCode": exc.code,
@@ -67,10 +77,13 @@ def translate_ddl(
         "schemaVersion": "1.0",
         "kind": "elmos.sql-dialect-translation",
         "status": status,
-        "profile": "certified-ddl-v1",
+        "profile": profile,
         "sourceDialect": source.value,
         "targetDialect": target.value,
-        "reasonCode": None if status == "PASSED" else "CERTIFIED_DDL_TARGET_VALIDATION_FAILED",
+        "reasonCode": None if status == "PASSED" else (
+            "CERTIFIED_ALTER_TARGET_VALIDATION_FAILED" if statement_kind == "ALTER"
+            else "CERTIFIED_DDL_TARGET_VALIDATION_FAILED"
+        ),
         "reason": None if status == "PASSED" else "; ".join(report.syntax_diagnostics),
         "emitted": emitted,
         "validation": {

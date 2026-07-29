@@ -92,6 +92,58 @@ dialect mode). Emission goes through a hand-written, per-vendor renderer
 one of the 31 tests in `tests/test_certified_ddl_v1.py` asserts the correct
 target-dialect keyword appears and the wrong one does not.
 
+## certified-alter-v1 (ALTER TABLE)
+
+A second profile, added because the first coverage scan showed the gap was
+structural: 128 of the repository's statements were `ALTER TABLE`, which
+`certified-ddl-v1` did not address at all.
+
+Scope was chosen by measurement, not intuition. Of 635 real ALTER actions:
+603 `ADD COLUMN`, 29 `ADD CONSTRAINT`, 2 `RENAME COLUMN`, 1
+`DROP CONSTRAINT`. Those five operations are the profile:
+
+- `ADD COLUMN`, with the same certified column model as `CREATE TABLE`
+  (type, nullability, literal default, inline `REFERENCES`, inline `CHECK`)
+- `DROP COLUMN`
+- `RENAME COLUMN`
+- `ADD CONSTRAINT` — `PRIMARY KEY` / `UNIQUE` / `FOREIGN KEY` / `CHECK`
+- `DROP CONSTRAINT`
+
+```bash
+uv run elmos-sql-dialect translate \
+  --source-file alter.sql --source-dialect postgres \
+  --target-dialect oracle --statement-kind ALTER --output out/
+```
+
+### The boundary that matters
+
+`ALTER COLUMN TYPE`, `SET NOT NULL`, `SET DEFAULT` and `DROP DEFAULT` are
+**refused**. MySQL spells a column change `MODIFY c <TYPE> NOT NULL` and
+SQL Server `ALTER COLUMN c <TYPE> NOT NULL` — **both require the column's
+full type to be restated**, and an `ALTER TABLE t ALTER COLUMN c SET NOT
+NULL` statement does not carry it. This engine reads one statement at a
+time with no catalog to look the type up in, so emitting those targets
+would mean inventing a type. That is exactly the silent corruption the
+profile exists to prevent. They appeared 0 times in the corpus, so
+refusing them costs nothing measurable.
+
+### Two rules the validator cannot enforce
+
+`sqlglot` accepts both of these without complaint, and the real databases
+reject them. A permissive parser means the syntax-validation leg proves
+nothing here, so the rules live in the emitter and are pinned by tests —
+the same posture already taken for sqlglot's AUTO_INCREMENT/IDENTITY
+generation defect:
+
+| Rule | Why |
+|---|---|
+| **Oracle never gets `ADD COLUMN`** | Oracle has no such keyword; it is `ALTER TABLE t ADD (c ...)`. |
+| **SQL Server never gets `RENAME COLUMN`** | T-SQL has no such clause; it requires `EXEC sp_rename 't.c', 'new', 'COLUMN'` — a different statement kind entirely. |
+
+Multi-action statements are emitted as separate statements rather than a
+comma list, because Oracle's parenthesised `ADD` cannot be mixed with
+other action kinds.
+
 ## Find out the coverage BEFORE migrating
 
 A certified subset is only honest if its boundary is visible in advance.
@@ -124,16 +176,17 @@ hiding exactly what this engine cannot do.
 ### What it says about real code
 
 Run against this monorepo's own 64 migration files -- real schema nobody
-wrote for this subset -- the scan reports **105 of 1015 statements in
-subset (10.3%)**.
+wrote for this subset -- the scan reports **174 of 1015 statements in
+subset (17.1%)**, counting both profiles.
 
 That number is low and it is the honest one. The blocker ranking says
 why, and it is not what intuition suggested:
 
 | Blocker | Occurrences | Distinct | What it really is |
 |---|---|---|---|
-| `UNSUPPORTED_STATEMENT` | 470 | 1 | not a `CREATE TABLE`/`CREATE INDEX` at all -- 228 triggers, 128 `ALTER TABLE`, 18 schemas, 17 functions |
-| `UNSUPPORTED_CHECK` | 384 | 6 | 340 of them are a single copy-pasted idiom using Postgres' `~` regex operator, which SQL Server has no equivalent for at all |
+| `UNSUPPORTED_CHECK` | 413 | 6 | 340 of them are a single copy-pasted idiom using Postgres' `~` regex operator, which SQL Server has no equivalent for at all |
+| `UNSUPPORTED_STATEMENT` | 342 | 1 | no profile covers it -- 228 triggers, 18 schemas, 17 functions, plus GRANT/REVOKE and DML |
+| `UNSUPPORTED_TYPE` | 42 | 2 | column types outside the certified cross-dialect set |
 | `UNSUPPORTED_STATEMENT_MODIFIER` | 17 | 1 | `IF NOT EXISTS` and similar |
 | `UNSUPPORTED_IDENTIFIER_SHAPE` | 15 | 2 | quoted / non-plain identifiers |
 | `PARSE_FAILED` | 12 | 12 | genuinely 12 different problems |
@@ -147,13 +200,16 @@ canonical models for them was simply wrong. Fixing it -- and lifting
 inline `CHECK` the same way -- moved 8.0% to 10.3% and is locked down by
 tests asserting the two spellings produce an identical model.
 
-**The honest headline: `certified-ddl-v1` covers a small fraction of a
-real schema, and the gap is structural.** Half the work in a real
-migration is `ALTER TABLE`, triggers and functions, none of which this
-profile addresses at all. The `Distinct` column shows that widening
-`CHECK` support would buy far less than its 384 occurrences imply. Anyone
-planning a migration on this engine should run `scan` first and read that
-table.
+Coverage has moved 8.0% -> 10.3% -> **17.1%**, each step driven by a
+reading of this table rather than by intuition. What is left is honest:
+triggers and stored procedures (which are programs, not schema), and a
+regex CHECK idiom SQL Server genuinely cannot express.
+
+**The honest headline: the two profiles together still cover well under a
+fifth of a real schema.** The `Distinct` column shows why the biggest
+remaining blocker is smaller than it looks -- 413 occurrences, 6 distinct
+reasons. Anyone planning a migration on this engine should run `scan`
+first and read that table.
 
 ## Local run
 

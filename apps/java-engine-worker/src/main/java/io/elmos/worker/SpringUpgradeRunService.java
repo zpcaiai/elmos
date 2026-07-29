@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.security.MessageDigest;
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.*;
@@ -30,6 +31,8 @@ final class SpringUpgradeRunService {
     private final ObjectMapper json;
     private final Clock clock;
     private final ExecutorService tasks;
+    private final ScheduledExecutorService scheduler;
+    private final DurableRunLeaseStore leaseStore;
     private final ConcurrentMap<String, RunState> runs = new ConcurrentHashMap<>();
     private final ConcurrentMap<String, IdempotencyEntry> idempotency = new ConcurrentHashMap<>();
 
@@ -40,6 +43,21 @@ final class SpringUpgradeRunService {
             ObjectMapper json,
             Clock clock
     ) {
+        this(transformer, verifier, workspaceRoot, json, clock,
+                2, 1, Duration.ofHours(1), Duration.ofMinutes(2));
+    }
+
+    SpringUpgradeRunService(
+            SpringUpgradeExecutionPort transformer,
+            SpringUpgradeIndependentValidationPort verifier,
+            Path workspaceRoot,
+            ObjectMapper json,
+            Clock clock,
+            int globalCapacity,
+            int tenantCapacity,
+            Duration queueTtl,
+            Duration leaseTtl
+    ) {
         this.transformer = Objects.requireNonNull(transformer);
         this.verifier = Objects.requireNonNull(verifier);
         this.workspaceRoot = Objects.requireNonNull(workspaceRoot).toAbsolutePath().normalize();
@@ -47,7 +65,12 @@ final class SpringUpgradeRunService {
         this.clock = Objects.requireNonNull(clock);
         this.tasks = Executors.newThreadPerTaskExecutor(
                 Thread.ofVirtual().name("spring-upgrade-", 0).factory());
+        this.scheduler = Executors.newSingleThreadScheduledExecutor(
+                Thread.ofPlatform().daemon(true).name("spring-upgrade-queue-", 0).factory());
         createDirectory(this.workspaceRoot);
+        this.leaseStore = new DurableRunLeaseStore(
+                this.workspaceRoot, "spring-upgrade", globalCapacity, tenantCapacity,
+                queueTtl, leaseTtl, clock);
         restoreDurableRuns();
     }
 
@@ -249,9 +272,57 @@ final class SpringUpgradeRunService {
     }
 
     private void execute(RunState state) {
+        DurableRunLeaseStore.Lease lease;
+        try {
+            lease = leaseStore.acquire(
+                    state.request.organizationId(), state.runId, state.createdAt,
+                    fingerprint(state.request));
+        } catch (DurableRunLeaseStore.LeaseException error) {
+            synchronized (state) {
+                if (state.cancelled.get()) return;
+                if (error.failure().retryable()) {
+                    state.status = RunStatus.QUEUED;
+                    if (!error.failure().name().equals(state.failureCode)) {
+                        appendEvent(state, Stage.IMPORT_GIT, "QUEUED",
+                                "Durable queue admission delayed: " + error.failure().name());
+                    }
+                    state.failureCode = error.failure().name();
+                    state.failureMessage = "Waiting for tenant-bound durable execution capacity.";
+                    touch(state);
+                    long delay = 1 + ThreadLocalRandom.current().nextLong(3);
+                    state.future = scheduler.schedule(
+                            () -> state.future = tasks.submit(() -> execute(state)),
+                            delay,
+                            TimeUnit.SECONDS);
+                } else {
+                    state.status = RunStatus.BLOCKED;
+                    state.failureCode = error.failure().name();
+                    state.failureMessage = "Durable queue policy blocked this run.";
+                    appendEvent(state, Stage.IMPORT_GIT, "BLOCKED", state.failureMessage);
+                    touch(state);
+                }
+            }
+            return;
+        }
+        ScheduledFuture<?> heartbeat = scheduler.scheduleAtFixedRate(() -> {
+            try {
+                lease.heartbeat();
+            } catch (RuntimeException error) {
+                state.cancelled.set(true);
+                Process process = state.activeProcess.getAndSet(null);
+                if (process != null) process.destroyForcibly();
+            }
+        }, lease.heartbeatInterval().toSeconds(), lease.heartbeatInterval().toSeconds(),
+                TimeUnit.SECONDS);
         synchronized (state) {
-            if (state.cancelled.get()) return;
+            if (state.cancelled.get()) {
+                heartbeat.cancel(false);
+                lease.release("CANCELLED");
+                return;
+            }
             state.status = RunStatus.RUNNING;
+            state.failureCode = null;
+            state.failureMessage = null;
             touch(state);
         }
         try {
@@ -314,6 +385,25 @@ final class SpringUpgradeRunService {
                 state.failureMessage = "The migration worker failed safely; inspect the redacted logs.";
                 appendEvent(state, state.stage, "FAILED", state.failureMessage);
                 touch(state);
+            }
+        } finally {
+            heartbeat.cancel(false);
+            String outcome = switch (state.status) {
+                case SUCCEEDED -> "SUCCEEDED";
+                case CANCELLED -> "CANCELLED";
+                case BLOCKED -> "BLOCKED";
+                default -> "FAILED";
+            };
+            try {
+                lease.release(outcome);
+            } catch (RuntimeException error) {
+                synchronized (state) {
+                    state.status = RunStatus.BLOCKED;
+                    state.failureCode = "QUEUE_LEASE_RELEASE_FAILED";
+                    state.failureMessage = "Durable execution lease could not be reconciled.";
+                    appendEvent(state, state.stage, "BLOCKED", state.failureMessage);
+                    touch(state);
+                }
             }
         }
     }
@@ -993,9 +1083,17 @@ final class SpringUpgradeRunService {
             if (process != null) process.destroyForcibly();
         }
         tasks.shutdownNow();
+        scheduler.shutdownNow();
         try {
             if (!tasks.awaitTermination(10, TimeUnit.SECONDS)) {
                 throw new IllegalStateException("Spring upgrade tasks did not terminate during shutdown");
+            }
+        } catch (InterruptedException error) {
+            Thread.currentThread().interrupt();
+        }
+        try {
+            if (!scheduler.awaitTermination(10, TimeUnit.SECONDS)) {
+                throw new IllegalStateException("Spring queue scheduler did not terminate during shutdown");
             }
         } catch (InterruptedException error) {
             Thread.currentThread().interrupt();

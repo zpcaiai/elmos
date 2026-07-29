@@ -31,6 +31,19 @@
 .locked p, .error p { max-width: 620px; margin: 0; color: var(--muted); font-size: 10px; line-height: 1.6; }
 .error { justify-content: flex-start; min-height: auto; border-style: solid; border-color: #efc5bd; background: #fff7f4; color: #9a4032; }
 .notice { padding: 12px 16px; border: 1px solid #b9ddd2; border-radius: 11px; background: #f0faf6; color: #256a5d; font-size: 10px; font-weight: 750; }
+.sectionNav { display: grid; grid-template-columns: repeat(7,minmax(0,1fr)); gap: 7px; padding: 8px; border: 1px solid var(--line); border-radius: 13px; background: var(--surface); box-shadow: var(--shadow-sm); }
+.sectionNav button { min-height: 39px; padding: 0 9px; border: 0; border-radius: 8px; background: transparent; color: var(--muted); font-size: 9px; font-weight: 800; cursor: pointer; }
+.sectionNav button:hover,.sectionNav .activeSection { background: var(--cyan-soft); color: var(--cyan-dark); }
+.identityGrid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 11px; }
+.identityGrid article { min-width: 0; display: flex; flex-direction: column; gap: 5px; padding: 15px; border: 1px solid var(--line); border-radius: 11px; background: var(--surface-soft); }
+.identityGrid span,.identityGrid small { overflow-wrap: anywhere; color: var(--muted); font-size: 8px; line-height: 1.5; }
+.identityGrid strong { overflow: hidden; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.membershipList { display: flex; flex-direction: column; margin-top: 12px; }
+.membershipList article { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 3px; border-top: 1px solid var(--line); }
+.membershipList article > div { display: flex; flex-direction: column; gap: 3px; }
+.membershipList strong { font-size: 10px; }
+.membershipList small,.membershipList span,.boundaryNote { color: var(--muted); font-size: 8px; }
+.boundaryNote { margin: 13px 0 0; padding: 10px 12px; border-radius: 9px; background: var(--cyan-soft); line-height: 1.6; }
 
 .actionStrip { display: flex; align-items: center; gap: 10px; padding: 15px 18px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); box-shadow: var(--shadow-sm); }
 .actionStrip > div { min-width: 0; display: flex; flex: 1 1 auto; flex-direction: column; gap: 3px; }
@@ -100,6 +113,7 @@
   .accessBar { grid-template-columns: repeat(3,minmax(0,1fr)); }
   .tokenField { grid-column: span 2; }
   .cardGrid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .sectionNav { grid-template-columns: repeat(4,minmax(0,1fr)); }
 }
 
 @media (max-width: 820px) {
@@ -109,6 +123,7 @@
   .dashboardGrid { grid-template-columns: 1fr; }
   .actionStrip { align-items: stretch; flex-direction: column; }
   .actionStrip > span { align-self: flex-start; }
+  .identityGrid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 620px) {
@@ -120,4 +135,5 @@
   .metrics strong { font-size: 21px; }
   .lineList article { grid-template-columns: minmax(0,1fr) 54px 58px; }
   .cardGrid { grid-template-columns: 1fr; }
+  .sectionNav { grid-template-columns: repeat(2,minmax(0,1fr)); }
 }

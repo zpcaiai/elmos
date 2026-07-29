@@ -1,5 +1,7 @@
 package io.elmos.persistence;
 
+import static io.elmos.persistence.SqlTimestamps.offset;
+
 import io.elmos.scm.WebhookIngestionService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,7 +40,7 @@ public final class JdbcWebhookDeliveryStore implements WebhookIngestionService.D
             jdbc.sql("insert into outbox_events(event_id, aggregate_type, aggregate_id, event_type, occurred_at, attributes) values (:id, 'GITHUB_WEBHOOK', :aggregate, :event, :occurred, :attributes)")
                     .param("id", UUID.randomUUID().toString()).param("aggregate", delivery.deliveryId())
                     .param("event", delivery.normalizedEventType())
-                    .param("occurred", delivery.receivedAt()).param("attributes", attributes).update();
+                    .param("occurred", offset(delivery.receivedAt())).param("attributes", attributes).update();
             return true;
         } catch (JsonProcessingException exception) { throw new IllegalStateException("unable to normalize webhook outbox event", exception); }
     }

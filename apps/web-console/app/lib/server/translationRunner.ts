@@ -27,6 +27,11 @@ import {
 import { readTranslationCapability, resolveRepositoryRoot } from "./translationRoutes";
 import { repositoryTranslationWorkspace } from "./repositoryWorkspaceProxy";
 import { beginMeteredExecution, type MeteredExecution } from "./commercialUsageProducer";
+import {
+  DurableJobLease,
+  DurableLeaseError,
+  durableQueueConfiguration,
+} from "./durableJobLease";
 
 type AuthorizedContext = ReturnType<typeof authorizeLocalRunner>;
 type TranslationRunnerConfig = {
@@ -330,8 +335,47 @@ async function execute(
   const processKey = key(context, job.id);
   state.scheduled.delete(processKey);
   if (state.cancelled.has(processKey)) return;
+  let requeued = false;
+  let queueLease: DurableJobLease | null = null;
+  let leaseHeartbeat: NodeJS.Timeout | null = null;
   let metering: MeteredExecution | null = null;
   try {
+    try {
+      queueLease = await DurableJobLease.acquire({
+        configuration: durableQueueConfiguration(runner.root, "translation"),
+        tenantId: context.tenantId,
+        jobId: job.id,
+        createdAt: job.createdAt,
+        inputDigest: createHash("sha256").update(JSON.stringify({
+          repositoryRef: job.repositoryRef,
+          casesBundleId: job.casesBundleId,
+          sourceLanguage: job.sourceLanguage,
+          targetLanguage: job.targetLanguage,
+        })).digest("hex"),
+      });
+      leaseHeartbeat = setInterval(() => {
+        void queueLease?.heartbeat().catch(() => {
+          state.active.get(processKey)?.kill("SIGTERM");
+        });
+      }, queueLease.heartbeatIntervalMs);
+      leaseHeartbeat.unref();
+    } catch (error) {
+      if (error instanceof DurableLeaseError && error.retryable) {
+        job.status = "QUEUED";
+        job.stage = "queued";
+        job.reason = error.code;
+        appendLog(job, "system", `Queue admission delayed: ${error.code}.`);
+        await persist(runner, context, job);
+        state.scheduled.add(processKey);
+        requeued = true;
+        setTimeout(
+          () => void execute(runner, context, job),
+          1_000 + Math.floor(Math.random() * 2_000),
+        ).unref();
+        return;
+      }
+      throw error;
+    }
     metering = await beginMeteredExecution(`translation-${job.id}`);
     const source = await materializedDirectory(
       runner.sourceRoot,
@@ -430,8 +474,28 @@ async function execute(
       }
     }
     state.active.delete(processKey);
-    state.scheduled.delete(processKey);
-    state.cancelled.delete(processKey);
+    if (leaseHeartbeat) clearInterval(leaseHeartbeat);
+    if (queueLease) {
+      const outcome = job.status === "COMPLETE" || job.status === "PARTIAL"
+        ? "SUCCEEDED"
+        : job.status === "CANCELLED"
+          ? "CANCELLED"
+          : job.status === "BLOCKED"
+            ? "BLOCKED"
+            : "FAILED";
+      try {
+        await queueLease.release(outcome);
+      } catch {
+        job.status = "BLOCKED";
+        job.stage = "blocked";
+        job.reason = "QUEUE_LEASE_RELEASE_FAILED";
+        await persist(runner, context, job);
+      }
+    }
+    if (!requeued) {
+      state.scheduled.delete(processKey);
+      state.cancelled.delete(processKey);
+    }
   }
 }
 
@@ -442,7 +506,6 @@ function schedule(
 ): void {
   const processKey = key(context, job.id);
   if (state.active.has(processKey) || state.scheduled.has(processKey)) return;
-  if (state.active.size + state.scheduled.size >= 2) fail(429, "TRANSLATION_RUNNER_CAPACITY_REACHED");
   state.scheduled.add(processKey);
   setImmediate(() => void execute(runner, context, job));
 }

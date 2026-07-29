@@ -22,7 +22,12 @@ from elmos_sql_dialect.parser import parse_create_table
 from elmos_sql_dialect.scan import render_markdown, scan_repository
 
 IN_SUBSET = "CREATE TABLE person (id INTEGER PRIMARY KEY, name VARCHAR(80) NOT NULL);"
-ALTER = "ALTER TABLE person ADD COLUMN age INTEGER;"
+# In certified-alter-v1 since the ALTER profile landed -- kept as the
+# in-subset ALTER fixture.
+ALTER_ADD = "ALTER TABLE person ADD COLUMN age INTEGER;"
+# Still out of profile: MySQL and SQL Server need the column's full type
+# restated, which this statement does not carry.
+ALTER = "ALTER TABLE person ALTER COLUMN age SET NOT NULL;"
 VIEW = "CREATE VIEW adults AS SELECT id FROM person WHERE age > 18;"
 
 
@@ -113,9 +118,9 @@ def test_statements_are_split_by_the_real_parser_not_by_semicolons(tmp_path: Pat
 
 def test_migration_units_stay_in_the_denominator(tmp_path: Path) -> None:
     # Unlike the component scanner -- where a function returning no JSX is a
-    # helper rather than a migration unit -- an ALTER TABLE IS work the
-    # customer needs done. Excluding it would flatter the ratio by hiding
-    # exactly what this engine cannot do.
+    # helper rather than a migration unit -- a view or an uncertified ALTER
+    # IS work the customer needs done. Excluding it would flatter the ratio
+    # by hiding exactly what this engine cannot do.
     root = _repo(tmp_path, {"V1.sql": f"{ALTER}\n{VIEW}\n"})
     report = scan_repository(root, Dialect.POSTGRES)
     assert report.totals["discovered"] == 2
@@ -137,8 +142,8 @@ def test_empty_schema_reports_zero_rather_than_dividing_by_zero(tmp_path: Path) 
 def test_ranks_blockers_by_frequency_with_plain_language(tmp_path: Path) -> None:
     root = _repo(tmp_path, {"V1.sql": f"{ALTER}\n{ALTER}\n{VIEW}\n"})
     report = scan_repository(root, Dialect.POSTGRES)
-    assert report.blockers[0].reason_code == "CERTIFIED_DDL_UNSUPPORTED_STATEMENT"
-    assert report.blockers[0].count == 3
+    assert report.blockers[0].reason_code == "CERTIFIED_ALTER_UNSUPPORTED_ACTION"
+    assert report.blockers[0].count == 2
     for blocker in report.blockers:
         assert not blocker.what.startswith("CERTIFIED_DDL_")
         assert len(blocker.what) > 20
@@ -159,7 +164,7 @@ def test_distinguishes_occurrences_from_distinct_reasons(tmp_path: Path) -> None
 
 
 def test_examples_are_deduplicated(tmp_path: Path) -> None:
-    body = "\n".join(f"ALTER TABLE t{i} ADD COLUMN c INTEGER;" for i in range(5))
+    body = "\n".join(f"ALTER TABLE t{i} ALTER COLUMN c SET NOT NULL;" for i in range(5))
     report = scan_repository(_repo(tmp_path, {"V1.sql": body}), Dialect.POSTGRES)
     # All five share one reason, so quoting the same problem five times
     # would be noise rather than evidence.
