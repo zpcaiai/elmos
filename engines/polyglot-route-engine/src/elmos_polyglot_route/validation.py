@@ -49,9 +49,18 @@ def _java_harness(function: Function, cases: list[dict[str, Any]]) -> str:
     for index, case in enumerate(cases):
         args = ", ".join(_argument(value, "java") for value in case["args"])
         expected = _expected(case["expected"], "java")
-        checks.append(
-            f'        if (Migrated.{function.name}({args}) != {expected}) throw new AssertionError("case {index}");'
+        call = f"Migrated.{function.name}({args})"
+        # `!=` on String is a reference comparison in Java, so a correct
+        # string-returning route could still be reported as a behaviour
+        # failure (or, with interned literals, a wrong one reported as a
+        # pass). Objects.equals is the value comparison the other three
+        # harnesses already perform.
+        condition = (
+            f"!java.util.Objects.equals({call}, {expected})"
+            if function.return_type == "string"
+            else f"{call} != {expected}"
         )
+        checks.append(f'        if ({condition}) throw new AssertionError("case {index}");')
     return (
         "public final class RouteHarness {\n"
         "    public static void main(String[] args) {\n" + "\n".join(checks) + "\n    }\n}\n"

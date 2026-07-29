@@ -6,9 +6,9 @@ from __future__ import annotations
 
 from .dialects import (
     check_operator_sql,
+    referential_action_sql,
     render_auto_increment_suffix,
     render_default,
-    render_reference_actions,
     render_type,
 )
 from .models import (
@@ -19,6 +19,7 @@ from .models import (
     CheckConstraint,
     Column,
     Dialect,
+    DialectError,
     DropColumn,
     DropConstraint,
     ForeignKey,
@@ -44,15 +45,33 @@ def _render_column(column: Column, dialect: Dialect) -> str:
     return " ".join(parts)
 
 
-def _render_foreign_key_clause(fk: ForeignKey, dialect: Dialect) -> str:
-    base = (
-        f"FOREIGN KEY ({', '.join(fk.columns)}) REFERENCES {fk.ref_table}"
-        f" ({', '.join(fk.ref_columns)})"
-    )
-    actions = render_reference_actions(fk.on_delete, fk.on_update, dialect)
-    return f"{base} {actions}" if actions else base
+def _require_mysql_auto_increment_key(table: Table) -> None:
+    """MySQL requires every AUTO_INCREMENT column to be a key.
+
+    `CREATE TABLE t (id BIGINT AUTO_INCREMENT)` parses in every SQL grammar
+    -- including sqlglot's, so the syntax-validation leg passes it -- and is
+    then rejected by the server itself with errno 1075, "Incorrect table
+    definition; there can be only one auto column and it must be defined as a
+    key". PostgreSQL, Oracle and SQL Server all accept an identity column
+    that is not a key, so a table translated *from* one of them is exactly
+    where this appears.
+    """
+    keyed = set(table.primary_key)
+    for unique in table.unique_constraints:
+        keyed.update(unique)
+    for column in table.columns:
+        if column.auto_increment and column.name not in keyed:
+            raise DialectError(
+                "CERTIFIED_DDL_MYSQL_AUTO_INCREMENT_NOT_KEY",
+                f"MySQL requires the AUTO_INCREMENT column {column.name!r} to be a key "
+                "(PRIMARY KEY or UNIQUE); the source dialect's identity column carries no "
+                "such requirement, so the translation cannot supply one",
+            )
+
 
 def emit_create_table(table: Table, dialect: Dialect) -> str:
+    if dialect is Dialect.MYSQL:
+        _require_mysql_auto_increment_key(table)
     lines: list[str] = [_render_column(c, dialect) for c in table.columns]
 
     if table.primary_key:
@@ -62,7 +81,10 @@ def emit_create_table(table: Table, dialect: Dialect) -> str:
         lines.append(f"UNIQUE ({', '.join(unique)})")
 
     for fk in table.foreign_keys:
-        clause = _render_foreign_key_clause(fk, dialect)
+        clause = (
+            f"FOREIGN KEY ({', '.join(fk.columns)}) REFERENCES {fk.ref_table} ({', '.join(fk.ref_columns)})"
+            f" ON DELETE {referential_action_sql(fk.on_delete)} ON UPDATE {referential_action_sql(fk.on_update)}"
+        )
         lines.append(f"CONSTRAINT {fk.name} {clause}" if fk.name else clause)
 
     for check in table.check_constraints:
@@ -80,6 +102,11 @@ def emit_create_index(index: Index, dialect: Dialect) -> str:
     return f"{keyword} {index.name} ON {index.table} ({', '.join(index.columns)})"
 
 
+def _render_foreign_key_clause(fk: ForeignKey) -> str:
+    return (
+        f"FOREIGN KEY ({', '.join(fk.columns)}) REFERENCES {fk.ref_table} ({', '.join(fk.ref_columns)})"
+        f" ON DELETE {referential_action_sql(fk.on_delete)} ON UPDATE {referential_action_sql(fk.on_update)}"
+    )
 
 
 def _render_check_clause(check: CheckConstraint) -> str:
@@ -111,17 +138,25 @@ def emit_alter_table(alter: AlterTable, dialect: Dialect) -> str:
     statements: list[str] = []
     for action in alter.actions:
         if isinstance(action, AddColumn):
+            if dialect is Dialect.MYSQL and action.column.auto_increment:
+                # Same errno 1075 rule as CREATE TABLE, and certified-alter-v1
+                # deliberately refuses the inline PRIMARY KEY / UNIQUE
+                # shorthand on an added column, so this statement can never
+                # make the new column a key.
+                raise DialectError(
+                    "CERTIFIED_DDL_MYSQL_AUTO_INCREMENT_NOT_KEY",
+                    f"MySQL requires the AUTO_INCREMENT column {action.column.name!r} to be a "
+                    "key, which a single ADD COLUMN cannot establish; add the column and the "
+                    "key as separate statements",
+                )
             column_sql = _render_column(action.column, dialect)
             if action.foreign_key is not None:
                 column_sql += (
                     f" REFERENCES {action.foreign_key.ref_table}"
                     f" ({', '.join(action.foreign_key.ref_columns)})"
+                    f" ON DELETE {referential_action_sql(action.foreign_key.on_delete)}"
+                    f" ON UPDATE {referential_action_sql(action.foreign_key.on_update)}"
                 )
-                actions_sql = render_reference_actions(
-                    action.foreign_key.on_delete, action.foreign_key.on_update, dialect
-                )
-                if actions_sql:
-                    column_sql += f" {actions_sql}"
             if action.check is not None:
                 column_sql += " " + _render_check_clause(action.check)
             if dialect is Dialect.ORACLE:
@@ -154,7 +189,7 @@ def emit_alter_table(alter: AlterTable, dialect: Dialect) -> str:
             elif action.unique:
                 clause = f"UNIQUE ({', '.join(action.unique)})"
             elif action.foreign_key is not None:
-                clause = _render_foreign_key_clause(action.foreign_key, dialect)
+                clause = _render_foreign_key_clause(action.foreign_key)
             else:
                 assert action.check is not None  # AddConstraint.__post_init__ guarantees one is set
                 clause = _render_check_clause(action.check)

@@ -29,7 +29,7 @@ REALISTIC_DDL_BY_SOURCE = {
             created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
             org_id INT NOT NULL,
             active BOOLEAN NOT NULL DEFAULT TRUE,
-            CONSTRAINT fk_org FOREIGN KEY (org_id) REFERENCES organizations (id) ON DELETE CASCADE ON UPDATE NO ACTION,
+            CONSTRAINT fk_org FOREIGN KEY (org_id) REFERENCES organizations (id) ON DELETE CASCADE ON UPDATE RESTRICT,
             CONSTRAINT chk_balance CHECK (balance >= 0)
         )
     """,
@@ -41,7 +41,7 @@ REALISTIC_DDL_BY_SOURCE = {
             created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
             org_id INTEGER NOT NULL,
             active BOOLEAN NOT NULL DEFAULT TRUE,
-            CONSTRAINT fk_org FOREIGN KEY (org_id) REFERENCES organizations (id) ON DELETE CASCADE ON UPDATE NO ACTION,
+            CONSTRAINT fk_org FOREIGN KEY (org_id) REFERENCES organizations (id) ON DELETE CASCADE ON UPDATE RESTRICT,
             CONSTRAINT chk_balance CHECK (balance >= 0)
         )
     """,
@@ -72,16 +72,6 @@ REALISTIC_DDL_BY_SOURCE = {
 }
 
 
-# NOTE: this fixture used ON UPDATE RESTRICT until the referential-action
-# rules landed. Every postgres->oracle and postgres->tsql run of this
-# "realistic" case was emitting a clause those databases reject -- and
-# reporting PASSED, because sqlglot parses RESTRICT for every dialect.
-#
-# `ON DELETE CASCADE ON UPDATE NO ACTION` is the strongest combination all
-# four dialects can express: Oracle has no ON UPDATE clause at all, and
-# neither Oracle nor SQL Server has RESTRICT. Those refusals are asserted
-# directly in test_certified_alter_v1.py rather than hidden in this
-# fixture.
 @pytest.mark.parametrize("source,target", ALL_DIRECTION_PAIRS)
 def test_realistic_table_translates_and_round_trips_for_every_direction_pair(source: str, target: str) -> None:
     report = translate_ddl(REALISTIC_DDL_BY_SOURCE[source], source, target)
@@ -178,7 +168,10 @@ def test_varchar_max_maps_to_canonical_text_and_back_to_varchar_max() -> None:
 
     back = translate_ddl(report["emitted"], "postgres", "tsql")
     assert back["status"] == "PASSED", back
-    assert "VARCHAR(MAX)" in back["emitted"]
+    # NVARCHAR(MAX), not VARCHAR(MAX): SQL Server's non-N character types are
+    # single-byte code-page types and would silently mangle any non-Latin-1
+    # content the PostgreSQL TEXT column can hold (see dialects.render_type).
+    assert "NVARCHAR(MAX)" in back["emitted"]
 
 
 def test_execution_validation_reports_not_attempted_without_dsn() -> None:

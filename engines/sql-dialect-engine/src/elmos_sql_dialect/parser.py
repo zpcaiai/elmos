@@ -52,11 +52,36 @@ _TYPE_MAP: dict[DataType.Type, CanonicalType] = {  # type: ignore[valid-type]
     DataType.Type.SMALLINT: CanonicalType.INT16,
     DataType.Type.INT: CanonicalType.INT32,
     DataType.Type.BIGINT: CanonicalType.INT64,
+    # Narrower or unsigned vendor integers widen to the smallest canonical
+    # integer that holds their entire documented range, so no value is ever
+    # narrowed: TINYINT is -128..127 and TINYINT UNSIGNED 0..255 (both inside
+    # INT16); MEDIUMINT is +-8388607 and its unsigned form 0..16777215 (inside
+    # INT32); SMALLINT UNSIGNED is 0..65535 (INT32); INT UNSIGNED is
+    # 0..4294967295 (INT64). BIGINT UNSIGNED reaches 18446744073709551615,
+    # which no canonical integer holds -- handled explicitly in _parse_type.
+    DataType.Type.TINYINT: CanonicalType.INT16,
+    DataType.Type.UTINYINT: CanonicalType.INT16,
+    DataType.Type.USMALLINT: CanonicalType.INT32,
+    DataType.Type.MEDIUMINT: CanonicalType.INT32,
+    DataType.Type.UMEDIUMINT: CanonicalType.INT32,
+    DataType.Type.UINT: CanonicalType.INT64,
     DataType.Type.DECIMAL: CanonicalType.DECIMAL,
     DataType.Type.CHAR: CanonicalType.CHAR,
+    # SQL Server's NCHAR is its Unicode fixed-length type; the canonical CHAR
+    # is Unicode-capable by definition (see dialects.render_type, which emits
+    # NCHAR/NVARCHAR on SQL Server precisely so Unicode survives the route).
+    DataType.Type.NCHAR: CanonicalType.CHAR,
     DataType.Type.VARCHAR: CanonicalType.VARCHAR,
     DataType.Type.NVARCHAR: CanonicalType.VARCHAR,
     DataType.Type.TEXT: CanonicalType.TEXT,
+    # MySQL's four TEXT sizes are all "unbounded character data" as far as
+    # certified-ddl-v1 models it. The canonical TEXT renders as the *largest*
+    # of each vendor's forms (LONGTEXT on MySQL, NVARCHAR(MAX) on SQL Server,
+    # CLOB on Oracle) so a translation is always a widening, never a silent
+    # size reduction.
+    DataType.Type.LONGTEXT: CanonicalType.TEXT,
+    DataType.Type.MEDIUMTEXT: CanonicalType.TEXT,
+    DataType.Type.TINYTEXT: CanonicalType.TEXT,
     DataType.Type.DATE: CanonicalType.DATE,
     DataType.Type.TIMESTAMP: CanonicalType.TIMESTAMP,
     # MySQL's plain TIMESTAMP, SQL Server's DATETIME/DATETIME2, and any
@@ -121,14 +146,39 @@ def _require_single_statement(sql: str, source_dialect: Dialect) -> exp.Expressi
     return statements[0]  # type: ignore[return-value]  # sqlglot's stub uses an internal "Expr" alias here
 
 
-def _parse_type(data_type: exp.DataType) -> CanonicalTypeRef:
+def _parse_type(data_type: exp.DataType, source_dialect: Dialect) -> CanonicalTypeRef:
     sqlglot_type = data_type.this
     params = list(data_type.expressions or [])
 
-    if sqlglot_type == DataType.Type.VARCHAR and params:
+    if sqlglot_type in (DataType.Type.VARCHAR, DataType.Type.NVARCHAR) and params:
         first = params[0].this
         if isinstance(first, exp.Var) and str(first.this).upper() == "MAX":
             return CanonicalTypeRef(canonical_type=CanonicalType.TEXT)
+
+    if sqlglot_type == DataType.Type.UBIGINT:
+        # 0..18446744073709551615 does not fit INT64, and PostgreSQL, Oracle
+        # and SQL Server have no unsigned integer type at all. DECIMAL(20, 0)
+        # is the exact substitute, but it is a different type class (no
+        # integer arithmetic or index semantics), so this asks rather than
+        # decides.
+        raise DialectError(
+            "CERTIFIED_DDL_UNSIGNED_BIGINT_UNREPRESENTABLE",
+            "BIGINT UNSIGNED reaches 18446744073709551615, which no canonical integer type "
+            "holds and which PostgreSQL, Oracle and SQL Server cannot express; declare the "
+            "column as DECIMAL(20, 0) in the source if that substitution is acceptable",
+        )
+
+    if sqlglot_type == DataType.Type.TINYINT and params:
+        # MySQL has no distinct boolean storage: `BOOLEAN` *is* TINYINT(1),
+        # and that is what SHOW CREATE TABLE / mysqldump emit for a column
+        # declared BOOLEAN. Reading TINYINT(1) back as a canonical BOOLEAN is
+        # what makes a real MySQL schema dump round-trip. A TINYINT(1) used as
+        # a small integer instead (MySQL allows -128..127 in it regardless of
+        # the display width) is outside this reading; declare it TINYINT(4) or
+        # SMALLINT to get the integer mapping.
+        width = params[0].this
+        if isinstance(width, exp.Literal) and not width.is_string and int(width.this) == 1:
+            return CanonicalTypeRef(canonical_type=CanonicalType.BOOLEAN)
 
     canonical = _TYPE_MAP.get(sqlglot_type)
     _require(canonical is not None, "CERTIFIED_DDL_UNSUPPORTED_TYPE",
@@ -144,11 +194,34 @@ def _parse_type(data_type: exp.DataType) -> CanonicalTypeRef:
         return int(literal.this)
 
     if canonical == CanonicalType.DECIMAL:
-        return CanonicalTypeRef(canonical_type=canonical, precision=_param_int(0), scale=_param_int(1))
-    if canonical == CanonicalType.CHAR:
-        return CanonicalTypeRef(canonical_type=canonical, length=_param_int(0))
-    if canonical == CanonicalType.VARCHAR:
-        return CanonicalTypeRef(canonical_type=canonical, length=_param_int(0))
+        precision = _param_int(0)
+        # An unparameterised DECIMAL/NUMBER is *arbitrary* precision and scale
+        # in PostgreSQL and Oracle. There is no such type in MySQL or SQL
+        # Server, and substituting a default (the pre-fix behaviour used
+        # DECIMAL(18, 0)) silently rounds every fractional value in the table
+        # to an integer. certified-ddl-v1 fails closed instead.
+        _require(precision is not None, "CERTIFIED_DDL_UNBOUNDED_DECIMAL",
+                  f"{sqlglot_type} without an explicit precision is arbitrary-precision in "
+                  f"{source_dialect.value}; no fixed-precision target type preserves it, so "
+                  "certified-ddl-v1 requires DECIMAL(p) or DECIMAL(p, s)")
+        return CanonicalTypeRef(canonical_type=canonical, precision=precision, scale=_param_int(1))
+    if canonical in (CanonicalType.CHAR, CanonicalType.VARCHAR):
+        length = _param_int(0)
+        if canonical == CanonicalType.VARCHAR and length is None:
+            # PostgreSQL's bare `VARCHAR` is explicitly unlimited (equivalent
+            # to TEXT). SQL Server's bare `VARCHAR` means VARCHAR(1); MySQL
+            # and Oracle reject the bare form outright. Only the PostgreSQL
+            # reading is safe to carry across dialects.
+            _require(source_dialect == Dialect.POSTGRES, "CERTIFIED_DDL_UNBOUNDED_VARCHAR",
+                      f"VARCHAR without a length is not portable from {source_dialect.value} "
+                      "(SQL Server reads it as VARCHAR(1); MySQL and Oracle reject it); "
+                      "declare an explicit length")
+            return CanonicalTypeRef(canonical_type=CanonicalType.TEXT)
+        # Oracle spells its length semantics inline -- VARCHAR2(50 CHAR) /
+        # VARCHAR2(50 BYTE). Either qualifier is accepted here: BYTE lengths
+        # are the narrower reading, so treating the number as a character
+        # count when re-emitting is always a widening, never a truncation.
+        return CanonicalTypeRef(canonical_type=canonical, length=length)
     return CanonicalTypeRef(canonical_type=canonical)
 
 
@@ -280,7 +353,7 @@ def parse_create_table(sql: str, source_dialect: Dialect) -> Table:
             _require(item.kind is not None, "CERTIFIED_DDL_UNSUPPORTED_TABLE_ITEM",
                       f"column {column_name!r} is missing a type")
             assert item.kind is not None  # narrows for mypy; _require already enforced this at runtime
-            type_ref = _parse_type(item.kind)
+            type_ref = _parse_type(item.kind, source_dialect)
             (nullable, default, auto_increment, pk_shorthand, unique_shorthand,
              inline_fk, inline_checks) = _column_constraints(item, type_ref, column_name)
             columns.append(Column(name=column_name, type_ref=type_ref, nullable=nullable,
@@ -405,7 +478,7 @@ def _alter_table_name(statement: exp.Alter) -> str:
     return _plain_identifier(table_ref.this, "table name")
 
 
-def _parse_add_column(col_def: exp.ColumnDef) -> AddColumn:
+def _parse_add_column(col_def: exp.ColumnDef, source_dialect: Dialect) -> AddColumn:
     column_name = _plain_identifier(col_def.this, "column name")
     _require(
         col_def.kind is not None,
@@ -413,7 +486,7 @@ def _parse_add_column(col_def: exp.ColumnDef) -> AddColumn:
         f"added column {column_name!r} is missing a type",
     )
     assert col_def.kind is not None  # narrows for mypy; _require enforced it at runtime
-    type_ref = _parse_type(col_def.kind)
+    type_ref = _parse_type(col_def.kind, source_dialect)
     (
         nullable, default, auto_increment, pk_shorthand, unique_shorthand, inline_fk, inline_checks
     ) = _column_constraints(col_def, type_ref, column_name)
@@ -487,7 +560,7 @@ def parse_alter_table(sql: str, source_dialect: Dialect) -> AlterTable:
     actions: list[AlterAction] = []
     for action in statement.args.get("actions") or []:
         if isinstance(action, exp.ColumnDef):
-            actions.append(_parse_add_column(action))
+            actions.append(_parse_add_column(action, source_dialect))
         elif isinstance(action, exp.AlterRename):
             raise DialectError("CERTIFIED_ALTER_UNSUPPORTED_ACTION",
                                 "RENAME TABLE is outside certified-alter-v1")

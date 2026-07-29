@@ -51,74 +51,56 @@ def referential_action_sql(action: ReferentialAction) -> str:
     return _REFERENTIAL_ACTION_SQL[action]
 
 
-#: Which referential actions each vendor's `references_clause` actually
-#: accepts, per their documented grammar -- NOT per what sqlglot will parse.
+#: Hard, documented per-vendor ceilings for a *character* column length.
+#: Exceeding one of these is a statement the target server rejects outright,
+#: so certified-ddl-v1 fails closed on it rather than emitting DDL that only
+#: sqlglot's grammar accepts.
 #:
-#: This table exists because sqlglot accepts `ON DELETE NO ACTION ON UPDATE
-#: NO ACTION` for every dialect, so the syntax-validation leg cannot catch a
-#: clause the real database rejects. Oracle in particular:
-#:
-#:   - has NO `ON UPDATE` clause at all;
-#:   - accepts only `ON DELETE CASCADE` and `ON DELETE SET NULL`, with the
-#:     omitted form carrying NO ACTION semantics;
-#:   - has no RESTRICT.
-#:
-#: SQL Server has no RESTRICT either. MySQL (InnoDB) and PostgreSQL accept
-#: all four of the canonical actions.
-_ON_DELETE_SUPPORT: dict[Dialect, frozenset[ReferentialAction]] = {
-    Dialect.POSTGRES: frozenset(ReferentialAction),
-    Dialect.MYSQL: frozenset(ReferentialAction),
-    Dialect.TSQL: frozenset({ReferentialAction.NO_ACTION, ReferentialAction.CASCADE, ReferentialAction.SET_NULL}),
-    Dialect.ORACLE: frozenset({ReferentialAction.NO_ACTION, ReferentialAction.CASCADE, ReferentialAction.SET_NULL}),
+#:   postgres  varchar(n)   n <= 10485760
+#:   mysql     VARCHAR(n)   n <= 65535 (further limited by the 65535-byte row
+#:                          size; that one depends on the table's charset and
+#:                          other columns, so it stays an execution-leg check)
+#:   oracle    VARCHAR2(n CHAR)  n <= 4000 with the default MAX_STRING_SIZE
+#:   tsql      NVARCHAR(n)  n <= 4000 (NVARCHAR is 2 bytes/char, so its limit
+#:                          is half of VARCHAR's 8000; Unicode fidelity is
+#:                          worth more than the extra range -- see below)
+_MAX_VARCHAR_LENGTH: dict[Dialect, int] = {
+    Dialect.POSTGRES: 10_485_760,
+    Dialect.MYSQL: 65_535,
+    Dialect.ORACLE: 4_000,
+    Dialect.TSQL: 4_000,
 }
 
-_ON_UPDATE_SUPPORT: dict[Dialect, frozenset[ReferentialAction]] = {
-    Dialect.POSTGRES: frozenset(ReferentialAction),
-    Dialect.MYSQL: frozenset(ReferentialAction),
-    Dialect.TSQL: frozenset({ReferentialAction.NO_ACTION, ReferentialAction.CASCADE, ReferentialAction.SET_NULL}),
-    # Oracle has no ON UPDATE clause. Only the implicit default is reachable.
-    Dialect.ORACLE: frozenset({ReferentialAction.NO_ACTION}),
+#: Same, for fixed-length CHAR columns.
+#:   postgres char(n) n <= 10485760 | mysql CHAR(n) n <= 255
+#:   oracle CHAR(n CHAR) n <= 2000  | tsql NCHAR(n) n <= 4000
+_MAX_CHAR_LENGTH: dict[Dialect, int] = {
+    Dialect.POSTGRES: 10_485_760,
+    Dialect.MYSQL: 255,
+    Dialect.ORACLE: 2_000,
+    Dialect.TSQL: 4_000,
 }
 
-#: Dialects where NO ACTION must be expressed by OMITTING the clause rather
-#: than by spelling it out.
-_OMIT_NO_ACTION = frozenset({Dialect.ORACLE})
+#: Documented maximum DECIMAL/NUMERIC/NUMBER precision per vendor.
+_MAX_DECIMAL_PRECISION: dict[Dialect, int] = {
+    Dialect.POSTGRES: 1_000,
+    Dialect.MYSQL: 65,
+    Dialect.ORACLE: 38,
+    Dialect.TSQL: 38,
+}
+
+#: Documented maximum DECIMAL scale per vendor (MySQL caps scale at 30
+#: independently of precision; the others only require scale <= precision).
+_MAX_DECIMAL_SCALE: dict[Dialect, int] = {Dialect.MYSQL: 30}
 
 
-def render_reference_actions(
-    on_delete: ReferentialAction, on_update: ReferentialAction, dialect: Dialect
-) -> str:
-    """Render the ON DELETE / ON UPDATE tail of a REFERENCES clause.
-
-    Returns the empty string when the target expresses both actions by
-    omission. Raises `DialectError` -- fail closed -- when the target has no
-    way to express the requested action, because the alternatives are all
-    worse: emitting a clause the database rejects breaks the migration
-    loudly, and silently downgrading (say RESTRICT to NO ACTION) changes
-    when the constraint is checked without telling anyone.
-    """
-    for action, supported, clause in (
-        (on_delete, _ON_DELETE_SUPPORT[dialect], "ON DELETE"),
-        (on_update, _ON_UPDATE_SUPPORT[dialect], "ON UPDATE"),
-    ):
-        if action not in supported:
-            detail = (
-                f"{dialect.value} has no {clause} clause"
-                if not supported - {ReferentialAction.NO_ACTION}
-                else f"{dialect.value} does not accept {clause} {referential_action_sql(action)}"
-            )
-            raise DialectError(
-                "CERTIFIED_DDL_UNREACHABLE_REFERENTIAL_ACTION",
-                f"{detail}; certified-ddl-v1 refuses to downgrade it silently",
-            )
-
-    parts: list[str] = []
-    omit_default = dialect in _OMIT_NO_ACTION
-    if not (omit_default and on_delete is ReferentialAction.NO_ACTION):
-        parts.append(f"ON DELETE {referential_action_sql(on_delete)}")
-    if not (omit_default and on_update is ReferentialAction.NO_ACTION):
-        parts.append(f"ON UPDATE {referential_action_sql(on_update)}")
-    return " ".join(parts)
+def _require_length(length: int, limit: int, dialect: Dialect, rendered: str) -> None:
+    if length > limit:
+        raise DialectError(
+            "CERTIFIED_DDL_LENGTH_EXCEEDS_TARGET",
+            f"length {length} exceeds the maximum {limit} that {dialect.value} accepts for "
+            f"{rendered}; certified-ddl-v1 will not emit DDL the target server rejects",
+        )
 
 
 def render_type(type_ref: CanonicalTypeRef, dialect: Dialect) -> str:
@@ -152,22 +134,68 @@ def render_type(type_ref: CanonicalTypeRef, dialect: Dialect) -> str:
             Dialect.ORACLE: "NUMBER(19)",
         }[dialect]
     if t == CanonicalType.DECIMAL:
-        precision = type_ref.precision if type_ref.precision is not None else 18
+        # precision is mandatory in the canonical model: an unparameterised
+        # DECIMAL is arbitrary-precision and is rejected at parse time rather
+        # than defaulted here (defaulting scale to 0 silently rounded every
+        # fractional value away).
+        assert type_ref.precision is not None  # parser enforces this
+        precision = type_ref.precision
         scale = type_ref.scale if type_ref.scale is not None else 0
+        limit = _MAX_DECIMAL_PRECISION[dialect]
+        if precision > limit:
+            raise DialectError(
+                "CERTIFIED_DDL_PRECISION_EXCEEDS_TARGET",
+                f"DECIMAL precision {precision} exceeds the maximum {limit} that "
+                f"{dialect.value} accepts",
+            )
+        scale_limit = _MAX_DECIMAL_SCALE.get(dialect)
+        if scale_limit is not None and scale > scale_limit:
+            raise DialectError(
+                "CERTIFIED_DDL_PRECISION_EXCEEDS_TARGET",
+                f"DECIMAL scale {scale} exceeds the maximum {scale_limit} that "
+                f"{dialect.value} accepts",
+            )
         name = "NUMBER" if dialect == Dialect.ORACLE else ("NUMERIC" if dialect == Dialect.POSTGRES else "DECIMAL")
         return f"{name}({precision}, {scale})"
     if t == CanonicalType.CHAR:
         length = type_ref.length if type_ref.length is not None else 1
+        _require_length(length, _MAX_CHAR_LENGTH[dialect], dialect, "CHAR")
+        if dialect == Dialect.TSQL:
+            # NCHAR, not CHAR: SQL Server's CHAR/VARCHAR are single-byte
+            # code-page types, so routing a UTF-8 PostgreSQL/MySQL column into
+            # CHAR silently replaces every character the server's collation
+            # code page cannot represent with '?'.
+            return f"NCHAR({length})"
+        if dialect == Dialect.ORACLE:
+            # Oracle's default length semantics is BYTE (NLS_LENGTH_SEMANTICS),
+            # so a bare CHAR(50) holds 50 *bytes* -- as few as 12 characters in
+            # AL32UTF8. Every other dialect in this profile counts characters,
+            # so the CHAR qualifier is mandatory to keep the column the same
+            # size after translation.
+            return f"CHAR({length} CHAR)"
         return f"CHAR({length})"
     if t == CanonicalType.VARCHAR:
-        length = type_ref.length if type_ref.length is not None else 255
-        name = "VARCHAR2" if dialect == Dialect.ORACLE else "VARCHAR"
-        return f"{name}({length})"
+        # length is mandatory in the canonical model: an unbounded VARCHAR is
+        # parsed as TEXT (PostgreSQL) or rejected (everything else) rather
+        # than defaulted to 255, which truncated every longer value.
+        assert type_ref.length is not None  # parser enforces this
+        length = type_ref.length
+        _require_length(length, _MAX_VARCHAR_LENGTH[dialect], dialect, "VARCHAR")
+        if dialect == Dialect.TSQL:
+            return f"NVARCHAR({length})"  # see the CHAR branch for why not VARCHAR
+        if dialect == Dialect.ORACLE:
+            return f"VARCHAR2({length} CHAR)"  # see the CHAR branch for why not a bare length
+        return f"VARCHAR({length})"
     if t == CanonicalType.TEXT:
         return {
             Dialect.POSTGRES: "TEXT",
-            Dialect.MYSQL: "TEXT",
-            Dialect.TSQL: "VARCHAR(MAX)",
+            # NOT plain TEXT: MySQL's TEXT holds 65,535 *bytes*, versus ~1 GB
+            # for PostgreSQL's TEXT, 2 GB for NVARCHAR(MAX) and 4 GB for CLOB.
+            # LONGTEXT is the only MySQL form that is not a silent truncation
+            # of the other three.
+            Dialect.MYSQL: "LONGTEXT",
+            # NVARCHAR(MAX), not VARCHAR(MAX) -- same code-page reason as CHAR.
+            Dialect.TSQL: "NVARCHAR(MAX)",
             Dialect.ORACLE: "CLOB",
         }[dialect]
     if t == CanonicalType.DATE:
@@ -175,7 +203,15 @@ def render_type(type_ref: CanonicalTypeRef, dialect: Dialect) -> str:
     if t == CanonicalType.TIMESTAMP:
         return {
             Dialect.POSTGRES: "TIMESTAMP",
-            Dialect.MYSQL: "TIMESTAMP",
+            # NOT MySQL's TIMESTAMP: that type is stored as UTC and converted
+            # to the session time zone on every read, is limited to
+            # 1970-01-01..2038-01-19, and (with the default
+            # explicit_defaults_for_timestamp=OFF) silently acquires NOT NULL
+            # DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP on the
+            # first such column. DATETIME is the faithful equivalent of
+            # PostgreSQL's `timestamp without time zone`, Oracle's TIMESTAMP
+            # and SQL Server's DATETIME2.
+            Dialect.MYSQL: "DATETIME",
             Dialect.TSQL: "DATETIME2",
             Dialect.ORACLE: "TIMESTAMP",
         }[dialect]
@@ -197,7 +233,12 @@ def render_auto_increment_suffix(dialect: Dialect) -> str:
 
 def render_default(default: ColumnDefault, type_ref: CanonicalTypeRef, dialect: Dialect) -> str:
     if default.kind == DefaultKind.CURRENT_TIMESTAMP:
-        return "GETDATE()" if dialect == Dialect.TSQL else "CURRENT_TIMESTAMP"
+        # SYSDATETIME(), not GETDATE(): GETDATE() returns the legacy `datetime`
+        # type -- 3.33 ms granularity, range 1753-9999 -- so it silently
+        # truncates the sub-millisecond precision of the DATETIME2 column this
+        # profile renders. SYSDATETIME() returns datetime2(7) and matches
+        # CURRENT_TIMESTAMP on the other three dialects.
+        return "SYSDATETIME()" if dialect == Dialect.TSQL else "CURRENT_TIMESTAMP"
     if default.kind == DefaultKind.NUMBER:
         assert default.literal is not None
         return default.literal

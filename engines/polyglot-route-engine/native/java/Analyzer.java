@@ -101,13 +101,45 @@ public final class Analyzer {
         }
     }
 
+    /**
+     * Lifts a Java source type to a canonical type. Case is significant here:
+     * the boxed types differ from the primitives in exactly the way that
+     * matters, so this must not lowercase first (an earlier revision did, and
+     * silently lifted a nullable {@code Integer} to the primitive canonical
+     * {@code integer}).
+     *
+     * <p>Three families are refused rather than approximated:
+     * <ul>
+     *   <li>{@code float} -- 24-bit significand. The canonical {@code number}
+     *       is binary64, and {@code 0.1f + 0.2f} does not equal
+     *       {@code 0.1 + 0.2}, so widening changes results for in-range
+     *       values.</li>
+     *   <li>{@code BigDecimal} -- exact base-10 arithmetic with no binary
+     *       floating-point equivalent in any target of this profile.</li>
+     *   <li>the boxed wrappers -- they are nullable, and the certified subset
+     *       has no null (see {@code NULL_LITERAL_OUTSIDE_CERTIFIED_SUBSET});
+     *       lifting {@code Integer} to a primitive silently drops that
+     *       state.</li>
+     * </ul>
+     *
+     * <p>{@code byte}/{@code short}/{@code int} widen to the canonical 64-bit
+     * {@code integer}. That is exact for every value; only 32-bit overflow
+     * wraparound differs, which is documented in the engine README.
+     */
     private static String type(String sourceType) {
-        String normalized = sourceType.replace("java.lang.", "").toLowerCase(Locale.ROOT);
+        String normalized = sourceType.replace("java.lang.", "").replace("java.math.", "").trim();
         return switch (normalized) {
-            case "byte", "short", "int", "long", "integer" -> "integer";
-            case "float", "double", "bigdecimal" -> "number";
+            case "byte", "short", "int", "long" -> "integer";
+            case "double" -> "number";
             case "boolean" -> "boolean";
-            case "string", "charsequence" -> "string";
+            case "String", "CharSequence" -> "string";
+            case "float" -> throw new IllegalArgumentException(
+                    "JAVA_FLOAT_PRECISION_OUTSIDE_CERTIFIED_SUBSET:" + sourceType);
+            case "BigDecimal", "BigInteger" -> throw new IllegalArgumentException(
+                    "JAVA_EXACT_ARITHMETIC_TYPE_OUTSIDE_CERTIFIED_SUBSET:" + sourceType);
+            case "Byte", "Short", "Integer", "Long", "Float", "Double", "Boolean", "Character" ->
+                    throw new IllegalArgumentException(
+                            "JAVA_BOXED_NULLABLE_TYPE_OUTSIDE_CERTIFIED_SUBSET:" + sourceType);
             default -> throw new IllegalArgumentException("JAVA_UNSUPPORTED_TYPE:" + sourceType);
         };
     }
