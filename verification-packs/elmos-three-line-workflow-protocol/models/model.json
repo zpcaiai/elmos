@@ -1,46 +1,122 @@
 {
   "schema_version": 1,
-  "model_key": "model.sample",
-  "owner": "TODO",
+  "model_key": "three-line-workflow-protocol-v1",
+  "owner": "elmos-workflow-engineering",
   "states": [
-    "created",
-    "completed",
-    "failed"
+    "workspace_clean",
+    "workspace_changed",
+    "workspace_committed",
+    "workspace_pushed",
+    "pull_request_created",
+    "queued",
+    "leased",
+    "running",
+    "succeeded",
+    "partial",
+    "blocked",
+    "cancelled"
   ],
-  "initial_state": "created",
+  "initial_state": "workspace_clean",
   "commands": [
     {
-      "command": "complete",
-      "from": [
-        "created"
-      ],
-      "to": "completed",
-      "guard": "valid",
-      "effects": [
-        "persist-result"
-      ]
+      "command": "edit",
+      "from": ["workspace_clean", "workspace_committed", "workspace_pushed"],
+      "to": "workspace_changed",
+      "effects": ["persist-local-diff"]
     },
     {
-      "command": "fail",
-      "from": [
-        "created"
-      ],
-      "to": "failed",
-      "guard": "error",
-      "effects": [
-        "rollback"
-      ]
+      "command": "commit-approved-paths",
+      "from": ["workspace_changed"],
+      "to": "workspace_committed",
+      "effects": ["create-local-commit"]
+    },
+    {
+      "command": "push-exact-head",
+      "from": ["workspace_committed"],
+      "to": "workspace_pushed",
+      "effects": ["publish-non-force-branch", "verify-remote-sha"]
+    },
+    {
+      "command": "create-idempotent-pr",
+      "from": ["workspace_pushed"],
+      "to": "pull_request_created",
+      "effects": ["publish-pr", "persist-idempotency-receipt"]
+    },
+    {
+      "command": "handoff",
+      "from": ["workspace_clean", "workspace_committed", "workspace_pushed", "pull_request_created"],
+      "to": "queued",
+      "effects": ["bind-exact-head", "persist-job"]
+    },
+    {
+      "command": "acquire-lease",
+      "from": ["queued"],
+      "to": "leased",
+      "effects": ["enforce-capacity", "persist-lease"]
+    },
+    {
+      "command": "start",
+      "from": ["leased"],
+      "to": "running",
+      "effects": ["heartbeat-lease"]
+    },
+    {
+      "command": "complete",
+      "from": ["running"],
+      "to": "succeeded",
+      "effects": ["persist-artifact", "release-lease"]
+    },
+    {
+      "command": "partial",
+      "from": ["running"],
+      "to": "partial",
+      "effects": ["persist-gaps", "release-lease"]
+    },
+    {
+      "command": "block",
+      "from": ["queued", "leased", "running"],
+      "to": "blocked",
+      "effects": ["persist-reason", "release-lease-if-owned"]
+    },
+    {
+      "command": "cancel",
+      "from": ["queued", "leased", "running"],
+      "to": "cancelled",
+      "effects": ["terminate-owned-process", "release-lease-if-owned"]
     }
   ],
   "invariants": [
-    "completed-has-result",
-    "failed-has-no-partial-side-effect"
+    "push-requires-approved-clean-commit",
+    "pr-requires-verified-remote-sha",
+    "merge-and-deploy-are-not-protocol-effects",
+    "one-active-lease-per-job",
+    "terminal-execution-releases-owned-lease",
+    "expired-or-lost-lease-cannot-publish-artifact",
+    "queue-ttl-expiry-is-blocked-not-success"
   ],
   "forbidden_transitions": [
-    {
-      "from": "completed",
-      "event": "complete"
-    }
+    {"from": "workspace_changed", "event": "push-exact-head"},
+    {"from": "workspace_committed", "event": "create-idempotent-pr"},
+    {"from": "queued", "event": "start"},
+    {"from": "running", "event": "acquire-lease"},
+    {"from": "blocked", "event": "complete"},
+    {"from": "cancelled", "event": "complete"}
   ],
-  "timeouts": []
+  "timeouts": [
+    {
+      "state": "queued",
+      "timer": "queue-ttl",
+      "transition": "blocked"
+    },
+    {
+      "state": "leased",
+      "timer": "lease-ttl",
+      "transition": "blocked"
+    },
+    {
+      "state": "running",
+      "timer": "lease-heartbeat-missed",
+      "transition": "blocked"
+    }
+  ]
 }

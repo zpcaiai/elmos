@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "profile_key": "elmos-project-generation-source-ingestion-profile-v1",
+  "version": 1,
+  "risk_tier": "P0",
+  "claims": [
+    {
+      "claim_id": "claim.source-boundaries",
+      "description": "Untrusted descriptions, supported files, Skills, and URLs are normalized, bounded, provenance-bound, and fail closed on unsafe inputs.",
+      "criticality": "P0",
+      "required_oracles": [
+        "oracle.source-policy",
+        "oracle.playwright-regression"
+      ],
+      "required_techniques": [
+        "property",
+        "metamorphic",
+        "mutation",
+        "structured-fuzz",
+        "security",
+        "holdout"
+      ]
+    }
+  ],
+  "techniques": [
+    "property",
+    "metamorphic",
+    "mutation",
+    "structured-fuzz",
+    "model",
+    "contract",
+    "security",
+    "counterexample-replay",
+    "assurance-case"
+  ],
+  "budgets": {
+    "max_property_cases": 512,
+    "max_fuzz_cases": 256,
+    "max_wall_time_minutes": 10,
+    "max_mutants": 2
+  },
+  "stop_conditions": [
+    "critical-oracle-conflict",
+    "budget-exhausted",
+    "unknown-p0-property",
+    "security-violation"
+  ],
+  "approvals": []
+}

@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "seed": 1592594996,
+  "case_budget": 256,
+  "alphabet": ["a", "space", "tab", "cr", "lf", "nul", "bell", "cjk", "emoji"]
+}

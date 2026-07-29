@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-project-generation-cloud-run-handoff",
+  "status": "experimental",
+  "owner": "elmos-cloud-platform-engineering",
+  "exact_tuple": {
+    "source": {
+      "platform": "generated-local-container",
+      "provider": "docker-desktop",
+      "regions": [
+        "localhost"
+      ],
+      "account_model": "local-developer",
+      "iac_tool": {
+        "name": "kubernetes-manifest",
+        "version": "v1"
+      },
+      "runtime": {
+        "name": "docker-engine",
+        "version": "29.4.0"
+      },
+      "orchestrator": {
+        "name": "none",
+        "version": "n/a"
+      },
+      "ci_cd": {
+        "name": "github-actions",
+        "version": "workflow-v1"
+      },
+      "state_backend": {
+        "type": "local-generated-artifact",
+        "locking": "single-runner-exclusive-workspace",
+        "encryption": "host-filesystem-policy"
+      },
+      "services": ["generated-python-fastapi-container"]
+    },
+    "target": {
+      "platform": "google-cloud-run-v2",
+      "provider": "google-cloud",
+      "regions": [
+        "asia-east1"
+      ],
+      "account_model": "approved-isolated-project-required",
+      "iac_tool": {
+        "name": "gcloud-cli",
+        "version": "NOT_INSTALLED_2026-07-29"
+      },
+      "runtime": {
+        "name": "cloud-run",
+        "version": "v2"
+      },
+      "orchestrator": {
+        "name": "none",
+        "version": "n/a"
+      },
+      "ci_cd": {
+        "name": "github-actions",
+        "version": "workflow-v1"
+      },
+      "state_backend": {
+        "type": "cloud-run-service-revision",
+        "locking": "immutable-revision-and-image-digest",
+        "encryption": "google-managed-at-rest-and-tls-in-transit"
+      },
+      "services": ["cloud-run-service", "artifact-registry", "service-account", "secret-manager"]
+    }
+  },
+  "metrics": {
+    "local_container_build_pass_rate": 1.0,
+    "local_health_pass_rate": 1.0,
+    "local_cleanup_pass_rate": 1.0,
+    "target_plan_pass_rate": 0,
+    "target_apply_pass_rate": 0
+  },
+  "evidence_refs": [
+    "certification/local-container-evidence.json",
+    "certification/external-tooling-status.json"
+  ],
+  "blockers": [
+    "NOT_RUN: gcloud is not installed",
+    "NOT_RUN: no approved isolated Google Cloud project, billing owner, or short-lived credential",
+    "NOT_RUN: provider plan/apply, authenticated runtime, rollback, cleanup, drift, and cost checks",
+    "NOT_CERTIFIED: local container evidence cannot certify Cloud Run"
+  ],
+  "conditions": [
+    "Use exact asia-east1 project tuple and immutable image digest",
+    "Require least-privilege service account and immutable Secret versions",
+    "Capture independent provider, rollback, cleanup, drift, cost, and representative workload evidence"
+  ]
+}

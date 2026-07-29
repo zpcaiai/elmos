@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "checked_at": "2026-07-29T04:49:55Z",
+  "google_cloud": {
+    "gcloud_cli": "NOT_INSTALLED",
+    "approved_project": "NOT_PROVIDED",
+    "credentials": "NOT_PROVIDED",
+    "plan": "NOT_RUN",
+    "apply": "NOT_RUN",
+    "runtime_probe": "NOT_RUN",
+    "rollback": "NOT_RUN",
+    "cleanup": "NOT_RUN"
+  },
+  "alternate_providers": {
+    "azure_cli": "INSTALLED_NOT_LOGGED_IN",
+    "aws_cli": "INSTALLED_PARTIAL_CREDENTIALS_MISSING_SECRET_KEY"
+  },
+  "decision": "BLOCK_EXTERNAL_APPLY",
+  "required_to_continue": [
+    "explicitly approved isolated Google Cloud project and region",
+    "billing and data-residency owner",
+    "short-lived least-privilege operator credential",
+    "dedicated runtime service account and immutable secret versions",
+    "approved cost, ingress, rollback, and cleanup parameters"
+  ]
+}

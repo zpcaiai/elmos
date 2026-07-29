@@ -4,6 +4,7 @@ import io.elmos.persistence.JdbcUserActivityStore;
 import io.elmos.persistence.JdbcUserActivityStore.ActivityEvent;
 import io.elmos.persistence.JdbcUserActivityStore.ActivitySummary;
 import io.elmos.persistence.JdbcOperationsManagementStore;
+import io.elmos.persistence.JdbcRunHistoryStore;
 import io.elmos.persistence.JdbcOperationsManagementStore.EvaluationResult;
 import io.elmos.persistence.JdbcOperationsManagementStore.OperationsConsole;
 import io.elmos.persistence.JdbcOperationsManagementStore.RetentionRun;
@@ -21,8 +22,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
@@ -37,32 +36,26 @@ import java.util.UUID;
 public final class OperationsObservabilityController {
     private final JdbcUserActivityStore store;
     private final JdbcOperationsManagementStore management;
+    private final JdbcRunHistoryStore runHistory;
     private final Clock clock;
-    private final String apiKey;
-    private final String apiKeyExpiresAt;
-    private final String boundOrganizationId;
-    private final String boundActorId;
+    private final OperationsAuthorization authorization;
     private final boolean automationEnabled;
     private final boolean notificationEnabled;
 
     public OperationsObservabilityController(
             JdbcUserActivityStore store,
             JdbcOperationsManagementStore management,
+            JdbcRunHistoryStore runHistory,
             Clock clock,
-            @Value("${elmos.operations.api-key:}") String apiKey,
-            @Value("${elmos.operations.api-key-expires-at:}") String apiKeyExpiresAt,
-            @Value("${elmos.operations.organization-id:}") String boundOrganizationId,
-            @Value("${elmos.operations.actor-id:}") String boundActorId,
+            OperationsAuthorization authorization,
             @Value("${elmos.operations.automation-enabled:false}") boolean automationEnabled,
             @Value("${elmos.operations.notification-enabled:false}") boolean notificationEnabled
     ) {
         this.store = Objects.requireNonNull(store, "store");
         this.management = Objects.requireNonNull(management, "management");
+        this.runHistory = Objects.requireNonNull(runHistory, "runHistory");
         this.clock = Objects.requireNonNull(clock, "clock");
-        this.apiKey = apiKey == null ? "" : apiKey.trim();
-        this.apiKeyExpiresAt = apiKeyExpiresAt == null ? "" : apiKeyExpiresAt.trim();
-        this.boundOrganizationId = boundOrganizationId == null ? "" : boundOrganizationId.trim();
-        this.boundActorId = boundActorId == null ? "" : boundActorId.trim();
+        this.authorization = Objects.requireNonNull(authorization, "authorization");
         this.automationEnabled = automationEnabled;
         this.notificationEnabled = notificationEnabled;
     }
@@ -84,7 +77,7 @@ public final class OperationsObservabilityController {
     @PostMapping("/events")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public AppendResult append(
-            @RequestHeader("X-ELMOS-Operations-Key") String presentedKey,
+            @RequestHeader(value = "X-ELMOS-Operations-Key", required = false) String presentedKey,
             @RequestHeader("X-ELMOS-Organization-ID") String organizationId,
             @RequestHeader("X-ELMOS-Actor-ID") String actorId,
             @RequestHeader(value = "X-Request-ID", required = false) String requestId,
@@ -101,7 +94,7 @@ public final class OperationsObservabilityController {
     @PostMapping("/audit-events")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public AppendResult appendAudit(
-            @RequestHeader("X-ELMOS-Operations-Key") String presentedKey,
+            @RequestHeader(value = "X-ELMOS-Operations-Key", required = false) String presentedKey,
             @RequestHeader("X-ELMOS-Organization-ID") String organizationId,
             @RequestHeader("X-ELMOS-Actor-ID") String actorId,
             @RequestHeader(value = "X-Request-ID", required = false) String requestId,
@@ -116,7 +109,7 @@ public final class OperationsObservabilityController {
 
     @GetMapping("/summary")
     public ActivitySummary summary(
-            @RequestHeader("X-ELMOS-Operations-Key") String presentedKey,
+            @RequestHeader(value = "X-ELMOS-Operations-Key", required = false) String presentedKey,
             @RequestHeader("X-ELMOS-Organization-ID") String organizationId,
             @RequestHeader("X-ELMOS-Actor-ID") String actorId,
             @RequestHeader("X-ELMOS-Admin-Role") String role,
@@ -148,7 +141,7 @@ public final class OperationsObservabilityController {
      */
     @GetMapping("/audit-export")
     public JdbcUserActivityStore.ExportPage auditExport(
-            @RequestHeader("X-ELMOS-Operations-Key") String presentedKey,
+            @RequestHeader(value = "X-ELMOS-Operations-Key", required = false) String presentedKey,
             @RequestHeader("X-ELMOS-Organization-ID") String organizationId,
             @RequestHeader("X-ELMOS-Actor-ID") String actorId,
             @RequestHeader("X-ELMOS-Admin-Role") String role,
@@ -175,6 +168,39 @@ public final class OperationsObservabilityController {
                 limit);
     }
 
+    /**
+     * The full history of one migration run, reconstructed.
+     *
+     * <p>The other half of the audit loop. {@code /audit-export} answers what
+     * happened across the tenant; this answers what happened to one run, with
+     * its attempts, its evidence and the audit rows that name it.
+     *
+     * <p>GET, and backed by a store that runs in a read-only transaction: an
+     * endpoint that reconstructs a past decision must not be able to alter the
+     * record it is reconstructing. Same reason {@code /audit-export} is GET.
+     *
+     * <p>VIEWER, matching the export. A replay reveals nothing the export does
+     * not already reveal to the same reader; requiring more here would only
+     * push auditors toward the coarser tool.
+     *
+     * <p>A run that does not exist and a run belonging to another tenant are
+     * both 404. The store returns empty for both so this layer cannot tell them
+     * apart even if it wanted to -- which is the point, since a 403 here would
+     * confirm that the id exists somewhere.
+     */
+    @GetMapping("/runs/{migrationRunId}/replay")
+    public JdbcRunHistoryStore.RunTimeline replay(
+            @RequestHeader(value = "X-ELMOS-Operations-Key", required = false) String presentedKey,
+            @RequestHeader("X-ELMOS-Organization-ID") String organizationId,
+            @RequestHeader("X-ELMOS-Actor-ID") String actorId,
+            @RequestHeader("X-ELMOS-Admin-Role") String role,
+            @PathVariable String migrationRunId
+    ) {
+        authorizeManagement(presentedKey, organizationId, actorId, role, "VIEWER");
+        return runHistory.replay(organizationId, migrationRunId)
+                .orElseThrow(RunHistoryNotFoundException::new);
+    }
+
     private static Instant parseCursorInstant(String value) {
         if (value == null || value.isBlank()) return null;
         try {
@@ -190,7 +216,7 @@ public final class OperationsObservabilityController {
 
     @GetMapping("/console")
     public ConsoleView console(
-            @RequestHeader("X-ELMOS-Operations-Key") String presentedKey,
+            @RequestHeader(value = "X-ELMOS-Operations-Key", required = false) String presentedKey,
             @RequestHeader("X-ELMOS-Organization-ID") String organizationId,
             @RequestHeader("X-ELMOS-Actor-ID") String actorId,
             @RequestHeader("X-ELMOS-Admin-Role") String role,
@@ -219,7 +245,7 @@ public final class OperationsObservabilityController {
 
     @PostMapping("/evaluate")
     public EvaluationResult evaluate(
-            @RequestHeader("X-ELMOS-Operations-Key") String presentedKey,
+            @RequestHeader(value = "X-ELMOS-Operations-Key", required = false) String presentedKey,
             @RequestHeader("X-ELMOS-Organization-ID") String organizationId,
             @RequestHeader("X-ELMOS-Actor-ID") String actorId,
             @RequestHeader("X-ELMOS-Admin-Role") String role,
@@ -232,7 +258,7 @@ public final class OperationsObservabilityController {
 
     @PostMapping("/alerts/{alertId}/acknowledge")
     public WorkflowResult acknowledgeAlert(
-            @RequestHeader("X-ELMOS-Operations-Key") String presentedKey,
+            @RequestHeader(value = "X-ELMOS-Operations-Key", required = false) String presentedKey,
             @RequestHeader("X-ELMOS-Organization-ID") String organizationId,
             @RequestHeader("X-ELMOS-Actor-ID") String actorId,
             @RequestHeader("X-ELMOS-Admin-Role") String role,
@@ -248,7 +274,7 @@ public final class OperationsObservabilityController {
 
     @PostMapping("/incidents/{incidentId}/assign")
     public WorkflowResult assignIncident(
-            @RequestHeader("X-ELMOS-Operations-Key") String presentedKey,
+            @RequestHeader(value = "X-ELMOS-Operations-Key", required = false) String presentedKey,
             @RequestHeader("X-ELMOS-Organization-ID") String organizationId,
             @RequestHeader("X-ELMOS-Actor-ID") String actorId,
             @RequestHeader("X-ELMOS-Admin-Role") String role,
@@ -264,7 +290,7 @@ public final class OperationsObservabilityController {
 
     @PostMapping("/incidents/{incidentId}/resolve")
     public WorkflowResult resolveIncident(
-            @RequestHeader("X-ELMOS-Operations-Key") String presentedKey,
+            @RequestHeader(value = "X-ELMOS-Operations-Key", required = false) String presentedKey,
             @RequestHeader("X-ELMOS-Organization-ID") String organizationId,
             @RequestHeader("X-ELMOS-Actor-ID") String actorId,
             @RequestHeader("X-ELMOS-Admin-Role") String role,
@@ -280,7 +306,7 @@ public final class OperationsObservabilityController {
 
     @PostMapping("/remediations/{proposalId}/decision")
     public WorkflowResult decideRemediation(
-            @RequestHeader("X-ELMOS-Operations-Key") String presentedKey,
+            @RequestHeader(value = "X-ELMOS-Operations-Key", required = false) String presentedKey,
             @RequestHeader("X-ELMOS-Organization-ID") String organizationId,
             @RequestHeader("X-ELMOS-Actor-ID") String actorId,
             @RequestHeader("X-ELMOS-Admin-Role") String role,
@@ -296,7 +322,7 @@ public final class OperationsObservabilityController {
 
     @PostMapping("/remediations/{proposalId}/prepare-scm")
     public WorkflowResult prepareRemediationForScm(
-            @RequestHeader("X-ELMOS-Operations-Key") String presentedKey,
+            @RequestHeader(value = "X-ELMOS-Operations-Key", required = false) String presentedKey,
             @RequestHeader("X-ELMOS-Organization-ID") String organizationId,
             @RequestHeader("X-ELMOS-Actor-ID") String actorId,
             @RequestHeader("X-ELMOS-Admin-Role") String role,
@@ -312,7 +338,7 @@ public final class OperationsObservabilityController {
 
     @PostMapping("/retention/enforce")
     public RetentionRun enforceRetention(
-            @RequestHeader("X-ELMOS-Operations-Key") String presentedKey,
+            @RequestHeader(value = "X-ELMOS-Operations-Key", required = false) String presentedKey,
             @RequestHeader("X-ELMOS-Organization-ID") String organizationId,
             @RequestHeader("X-ELMOS-Actor-ID") String actorId,
             @RequestHeader("X-ELMOS-Admin-Role") String role,
@@ -326,19 +352,7 @@ public final class OperationsObservabilityController {
     }
 
     private void authorize(String presentedKey, String organizationId, String actorId) {
-        var principal = ControlPlanePrincipal.current();
-        if (principal.isPresent()) {
-            try {
-                principal.get().require(organizationId, actorId, "workspace:view");
-                return;
-            } catch (RuntimeException error) {
-                throw new SecurityException("OIDC audit authorization failed", error);
-            }
-        }
-        authorizeCredential(presentedKey, organizationId);
-        if (!boundActorId.equals(actorId)) {
-            throw new SecurityException("operations observability identity binding failed");
-        }
+        authorization.requireView(presentedKey, organizationId, actorId);
     }
 
     private void authorizeManagement(
@@ -348,66 +362,7 @@ public final class OperationsObservabilityController {
             String role,
             String requiredRole
     ) {
-        var principal = ControlPlanePrincipal.current();
-        if (principal.isPresent()) {
-            try {
-                principal.get().require(organizationId, actorId, "admin:read");
-            } catch (RuntimeException error) {
-                throw new SecurityException("OIDC operations authorization failed", error);
-            }
-            if (roleRank(principal.get().adminRole(organizationId)) < roleRank(requiredRole)) {
-                throw new SecurityException("OIDC operations role is insufficient");
-            }
-            return;
-        }
-        authorizeCredential(presentedKey, organizationId);
-        if (actorId == null
-                || !actorId.matches("[A-Za-z0-9][A-Za-z0-9._:@/-]{0,199}")) {
-            throw new SecurityException("operations administrator identity is invalid");
-        }
-        requireRole(role, requiredRole);
-    }
-
-    private void authorizeCredential(String presentedKey, String organizationId) {
-        Instant expiry;
-        try {
-            expiry = Instant.parse(apiKeyExpiresAt);
-        } catch (DateTimeParseException error) {
-            throw new ObservabilityUnavailableException();
-        }
-        Instant now = clock.instant();
-        if (apiKey.length() < 24
-                || boundOrganizationId.isBlank()
-                || boundActorId.isBlank()
-                || !expiry.isAfter(now)
-                || expiry.isAfter(now.plus(24, ChronoUnit.HOURS))) {
-            throw new ObservabilityUnavailableException();
-        }
-        if (!boundOrganizationId.equals(organizationId)) {
-            throw new SecurityException("operations observability identity binding failed");
-        }
-        byte[] expected = apiKey.getBytes(StandardCharsets.UTF_8);
-        byte[] presented = (presentedKey == null ? "" : presentedKey).getBytes(StandardCharsets.UTF_8);
-        if (expected.length != presented.length || !MessageDigest.isEqual(expected, presented)) {
-            throw new SecurityException("operations observability authorization failed");
-        }
-    }
-
-    private static void requireRole(String role, String requiredRole) {
-        int presented = roleRank(normalizeRole(role));
-        int required = roleRank(requiredRole);
-        if (presented < required) {
-            throw new SecurityException("operations role is insufficient");
-        }
-    }
-
-    private static int roleRank(String role) {
-        return switch (role) {
-            case "VIEWER" -> 1;
-            case "OPERATOR" -> 2;
-            case "APPROVER" -> 3;
-            default -> 0;
-        };
+        authorization.requireManagement(presentedKey, organizationId, actorId, role, requiredRole);
     }
 
     private static String normalizeRole(String role) {
@@ -448,6 +403,16 @@ public final class OperationsObservabilityController {
                 "message", "The observability request was rejected by its contract.", "retryable", false);
     }
 
+    @ExceptionHandler(RunHistoryNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    Map<String, Object> runNotFound() {
+        return Map.of("errorCode", "OPERATIONS_RUN_NOT_FOUND",
+                "message", "No such run for this tenant.", "retryable", false);
+    }
+
+    /** Deliberately carries no detail: the absence of a run and the absence of permission to see it must look identical. */
+    static final class RunHistoryNotFoundException extends RuntimeException {}
+
     @ExceptionHandler(IllegalStateException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     Map<String, Object> conflict() {
@@ -456,5 +421,4 @@ public final class OperationsObservabilityController {
                 "retryable", false);
     }
 
-    private static final class ObservabilityUnavailableException extends RuntimeException {}
 }

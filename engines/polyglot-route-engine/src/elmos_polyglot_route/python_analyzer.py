@@ -5,7 +5,8 @@ import platform
 from pathlib import Path
 from typing import Any
 
-from .models import RouteError, SemanticIR
+from . import types
+from .models import Expression, Function, RouteError, SemanticIR, Statement
 
 
 def _type(annotation: ast.expr | None) -> str:
@@ -79,6 +80,51 @@ def _statements(nodes: list[ast.stmt]) -> list[dict[str, Any]]:
     return result
 
 
+def _reject_python_only_arithmetic(expression: Expression, environment: dict[str, str]) -> None:
+    """Refuse the two Python operators whose meaning does not survive lifting.
+
+    The canonical IR defines `/` and `%` on two integers as the *truncating*
+    pair Java, C# and TypeScript implement. Python's spellings differ:
+
+      * `/` on two ints is true division -- `7 / 2` is 3.5, not 3, and the
+        result is a float, so lifting it as canonical `/` would emit
+        `7 / 2 == 3` in every other target.
+      * `%` follows the sign of the divisor -- `-7 % 2` is 1 where Java,
+        C# and TypeScript all answer -1. This applies to floats too, so the
+        rejection is not restricted to integer operands.
+
+    Both fail closed here rather than being lifted into an operator that
+    means something else. Python's `//` is already outside the subset (it is
+    not in the lifted operator table) for the same reason: it floors.
+    """
+    if expression.kind != "binary" or expression.left is None or expression.right is None:
+        return
+    if expression.operator == "%":
+        raise RouteError("PYTHON_FLOORED_MODULO_OUTSIDE_CERTIFIED_SUBSET")
+    if expression.operator == "/":
+        left = types.infer(expression.left, environment)
+        right = types.infer(expression.right, environment)
+        if left == "integer" and right == "integer":
+            raise RouteError("PYTHON_TRUE_DIVISION_ON_INTEGERS_OUTSIDE_CERTIFIED_SUBSET")
+    _reject_python_only_arithmetic(expression.left, environment)
+    _reject_python_only_arithmetic(expression.right, environment)
+
+
+def _check_statements(statements: tuple[Statement, ...], environment: dict[str, str]) -> None:
+    for statement in statements:
+        if statement.expression is not None:
+            _reject_python_only_arithmetic(statement.expression, environment)
+        if statement.condition is not None:
+            _reject_python_only_arithmetic(statement.condition, environment)
+        _check_statements(statement.then_body, environment)
+        _check_statements(statement.else_body, environment)
+
+
+def _check_function(function: Function) -> None:
+    environment = types.check_function(function)
+    _check_statements(function.body, environment)
+
+
 def analyze_python(path: Path, function_name: str) -> SemanticIR:
     source = path.read_text(encoding="utf-8")
     tree = ast.parse(source, filename=path.name, feature_version=(3, 12))
@@ -103,7 +149,7 @@ def analyze_python(path: Path, function_name: str) -> SemanticIR:
     return_type = _type(candidate.returns)
     if not return_type:
         raise RouteError("PYTHON_RETURN_TYPE_REQUIRED")
-    return SemanticIR.from_mapping(
+    semantic = SemanticIR.from_mapping(
         {
             "schema_version": "1.0.0",
             "source_language": "python",
@@ -121,3 +167,6 @@ def analyze_python(path: Path, function_name: str) -> SemanticIR:
             "diagnostics": [],
         }
     )
+    for function in semantic.functions:
+        _check_function(function)
+    return semantic

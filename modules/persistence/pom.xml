@@ -6,6 +6,8 @@
   <dependencies>
     <dependency><groupId>io.elmos</groupId><artifactId>elmos-commercial-operations</artifactId><version>${project.version}</version></dependency>
     <dependency><groupId>io.elmos</groupId><artifactId>elmos-application</artifactId><version>${project.version}</version></dependency>
+    <dependency><groupId>io.elmos</groupId><artifactId>elmos-workflow</artifactId><version>${project.version}</version></dependency>
+    <dependency><groupId>io.elmos</groupId><artifactId>elmos-object-storage</artifactId><version>${project.version}</version></dependency>
     <dependency><groupId>io.elmos</groupId><artifactId>elmos-scm</artifactId><version>${project.version}</version></dependency>
     <dependency><groupId>io.elmos</groupId><artifactId>elmos-snapshot</artifactId><version>${project.version}</version></dependency>
     <dependency><groupId>io.elmos</groupId><artifactId>elmos-secret</artifactId><version>${project.version}</version></dependency>

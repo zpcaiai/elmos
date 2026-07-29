@@ -5,18 +5,25 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useAccountSession } from "./AccountSessionProvider";
 import { Icon, type IconName } from "./Icon";
+import { useUiPreferences } from "./UiPreferencesProvider";
 
-const navigation: Array<{ href: string; label: string; hint: string; icon: IconName }> = [
-  { href: "/", label: "总览", hint: "Overview", icon: "home" },
-  { href: "/spring", label: "Spring 老项目翻新", hint: "Legacy modernization", icon: "workflow" },
-  { href: "/translation", label: "全库跨语言转换", hint: "Directed routes", icon: "code" },
-  { href: "/generation", label: "多语言项目生成", hint: "Project synthesis", icon: "spark" },
-  { href: "/repositories", label: "代码仓库工作区", hint: "GitHub / Gitee / Git", icon: "box" },
-  { href: "/migration", label: "迁移工坊", hint: "Migration", icon: "route" },
-  { href: "/pricing", label: "套餐与用量", hint: "Plans & usage", icon: "layers" },
-  { href: "/commercialization", label: "商业化控制面", hint: "Control plane", icon: "shield" },
-  { href: "/skills", label: "Skills 与验证", hint: "Qualification", icon: "test" },
-  { href: "/admin", label: "运营管理端", hint: "Operations", icon: "settings" },
+const navigation: Array<{
+  href: string;
+  label: string;
+  enLabel: string;
+  hint: string;
+  icon: IconName;
+}> = [
+  { href: "/", label: "总览", enLabel: "Overview", hint: "Overview", icon: "home" },
+  { href: "/spring", label: "Spring 老项目翻新", enLabel: "Spring modernization", hint: "Legacy modernization", icon: "workflow" },
+  { href: "/translation", label: "全库跨语言转换", enLabel: "Language translation", hint: "Directed routes", icon: "code" },
+  { href: "/generation", label: "多语言项目生成", enLabel: "Project generation", hint: "Project synthesis", icon: "spark" },
+  { href: "/repositories", label: "代码仓库工作区", enLabel: "Repository workspace", hint: "GitHub / Gitee / Git", icon: "box" },
+  { href: "/migration", label: "迁移工坊", enLabel: "Migration studio", hint: "Migration", icon: "route" },
+  { href: "/pricing", label: "套餐与用量", enLabel: "Plans and usage", hint: "Plans & usage", icon: "layers" },
+  { href: "/commercialization", label: "商业化控制面", enLabel: "Commercial control plane", hint: "Control plane", icon: "shield" },
+  { href: "/skills", label: "Skills 与验证", enLabel: "Skills and qualification", hint: "Qualification", icon: "test" },
+  { href: "/admin", label: "运营管理端", enLabel: "Operations admin", hint: "Operations", icon: "settings" },
 ];
 
 const mobileNavigation = navigation.filter((item) =>
@@ -41,6 +48,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const account = useAccountSession();
+  const preferences = useUiPreferences();
+  const english = preferences.locale === "en";
   const [mobileOpen, setMobileOpen] = useState(false);
   const [commandOpen, setCommandOpen] = useState(false);
   const [commandQuery, setCommandQuery] = useState("");
@@ -58,6 +67,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     || accountPermissions.has("admin:read"),
   );
   const current = navigation.find((item) => item.href === "/" ? pathname === "/" : pathname.startsWith(item.href)) ?? navigation[0];
+  const navLabel = (item: (typeof navigation)[number]) =>
+    english ? item.enLabel : item.label;
+  const currentLabel = pathname.startsWith("/help")
+    ? (english ? "Help and readiness" : "帮助与就绪状态")
+    : pathname.startsWith("/account")
+      ? (english ? "Account and organizations" : "账户与组织")
+    : navLabel(current);
   const visibleCommands = useMemo(() => {
     const needle = commandQuery.trim().toLocaleLowerCase("zh-CN");
     return commands.filter((item) => !needle || `${item.label} ${item.hint} ${item.keywords}`.toLocaleLowerCase("zh-CN").includes(needle));
@@ -170,20 +186,20 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="app-shell">
-      <aside className={`sidebar ${mobileOpen ? "sidebar-open" : ""}`} aria-label="主导航">
+      <aside className={`sidebar ${mobileOpen ? "sidebar-open" : ""}`} aria-label={english ? "Primary navigation" : "主导航"}>
         <div className="brand-row">
           <Link className="brand-mark" href="/" onClick={() => setMobileOpen(false)}>E</Link>
-          <div><strong>ELMOS</strong><span>控制中心</span></div>
-          <button className="icon-button sidebar-close" aria-label="关闭导航" onClick={() => setMobileOpen(false)}><Icon name="close" /></button>
+          <div><strong>ELMOS</strong><span>{english ? "Control center" : "控制中心"}</span></div>
+          <button className="icon-button sidebar-close" aria-label={english ? "Close navigation" : "关闭导航"} onClick={() => setMobileOpen(false)}><Icon name="close" /></button>
         </div>
         <nav className="primary-nav">
-          <span className="nav-label">工作空间</span>
+          <span className="nav-label">{english ? "Workspaces" : "工作空间"}</span>
           {visibleNavigation.map((item) => {
             const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
             return (
               <Link className={`nav-item ${active ? "active" : ""}`} href={item.href} key={item.href} onClick={() => setMobileOpen(false)} aria-current={active ? "page" : undefined}>
                 <Icon name={item.icon} size={19} />
-                <span><strong>{item.label}</strong><small>{item.hint}</small></span>
+                <span><strong>{navLabel(item)}</strong><small>{item.hint}</small></span>
               </Link>
             );
           })}
@@ -191,14 +207,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="sidebar-spacer" />
         <div className="guardrail-card">
           <span className="guardrail-icon"><Icon name="lock" size={17} /></span>
-          <div><strong>Fail closed</strong><small>未运行不等于通过</small></div>
+          <div><strong>Fail closed</strong><small>{english ? "Not run is not passed" : "未运行不等于通过"}</small></div>
         </div>
-        <nav className="secondary-nav" aria-label="辅助导航">
-          <a className="secondary-link" href="/api/capabilities/migration" target="_blank" rel="noreferrer"><Icon name="box" size={18} />能力 API</a>
+        <nav className="secondary-nav" aria-label={english ? "Utility navigation" : "辅助导航"}>
+          <a className="secondary-link" href="/api/capabilities/migration" target="_blank" rel="noreferrer"><Icon name="box" size={18} />{english ? "Capability API" : "能力 API"}</a>
           <button className="secondary-link" type="button" onClick={toggleTelemetry} data-telemetry-ignore="true">
-            <Icon name={telemetryEnabled ? "check" : "close"} size={18} />匿名性能日志：{telemetryEnabled ? "开" : "关"}
+            <Icon name={telemetryEnabled ? "check" : "close"} size={18} />
+            {english
+              ? `Anonymous performance log: ${telemetryEnabled ? "on" : "off"}`
+              : `匿名性能日志：${telemetryEnabled ? "开" : "关"}`}
           </button>
-          <span className="secondary-link muted"><Icon name="help" size={18} />帮助与文档（规划中）</span>
+          <Link className="secondary-link" href="/help"><Icon name="help" size={18} />{english ? "Help and readiness" : "帮助与就绪状态"}</Link>
         </nav>
         <div className="profile-area">
           <button
@@ -210,8 +229,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           >
             <span className="avatar">{account.principal?.displayName.slice(0, 1) ?? "访"}</span>
             <div>
-              <strong>{account.principal?.displayName ?? (account.status === "not-configured" ? "本地开发模式" : "未登录")}</strong>
-              <small>{account.principal?.organizationId ?? "无企业会话"}</small>
+              <strong>{account.principal?.displayName ?? (account.status === "not-configured" ? (english ? "Local development" : "本地开发模式") : (english ? "Signed out" : "未登录"))}</strong>
+              <small>{account.principal?.organizationId ?? (english ? "No enterprise session" : "无企业会话")}</small>
             </div>
             <Icon name="chevron" size={16} />
           </button>
@@ -223,9 +242,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     <strong>{account.principal.displayName}</strong>
                     <small>{account.principal.roles.join(" · ") || "无业务角色"}</small>
                   </div>
+                  <Link href="/account" onClick={() => setProfileOpen(false)}>
+                    {english ? "Account and organizations" : "账户与组织"}
+                  </Link>
                   {account.principal.memberships.length > 1 && (
                     <label>
-                      <span>当前租户</span>
+                      <span>{english ? "Current tenant" : "当前租户"}</span>
                       <select
                         value={account.principal.organizationId}
                         onChange={(event) => void account.switchTenant(event.target.value)}
@@ -238,26 +260,42 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                       </select>
                     </label>
                   )}
-                  <button type="button" onClick={() => void account.logout()}>安全退出</button>
+                  <button type="button" onClick={() => void account.logout()}>{english ? "Sign out securely" : "安全退出"}</button>
                 </>
               ) : (
-                <Link href={`/login?${new URLSearchParams({ returnTo: pathname })}`}>使用企业账户登录</Link>
+                <Link href={`/login?${new URLSearchParams({ returnTo: pathname })}`}>{english ? "Sign in with enterprise account" : "使用企业账户登录"}</Link>
               )}
             </div>
           )}
         </div>
       </aside>
-      {mobileOpen && <button className="sidebar-scrim" aria-label="关闭导航遮罩" onClick={() => setMobileOpen(false)} />}
+      {mobileOpen && <button className="sidebar-scrim" aria-label={english ? "Close navigation overlay" : "关闭导航遮罩"} onClick={() => setMobileOpen(false)} />}
       <div className="content-shell">
         <header className="topbar">
-          <button className="icon-button mobile-menu" aria-label="打开导航" onClick={() => setMobileOpen(true)}><Icon name="menu" /></button>
-          <div className="breadcrumb"><span>ELMOS</span><Icon name="chevron" size={13} /><strong>{current.label}</strong></div>
-          <button className="command-trigger" onClick={(event) => openCommand(event.currentTarget)} aria-label="打开全局搜索">
-            <Icon name="search" size={16} /><span>搜索页面、能力或批次</span><kbd>⌘ K</kbd>
+          <button className="icon-button mobile-menu" aria-label={english ? "Open navigation" : "打开导航"} onClick={() => setMobileOpen(true)}><Icon name="menu" /></button>
+          <div className="breadcrumb"><span>ELMOS</span><Icon name="chevron" size={13} /><strong>{currentLabel}</strong></div>
+          <button className="command-trigger" onClick={(event) => openCommand(event.currentTarget)} aria-label={english ? "Open global search" : "打开全局搜索"}>
+            <Icon name="search" size={16} /><span>{english ? "Search pages and capabilities" : "搜索页面、能力或批次"}</span><kbd>⌘ K</kbd>
           </button>
           <div className="topbar-actions">
-            <span className="environment-pill"><i /> 本地契约环境</span>
+            <span className="environment-pill"><i /> {english ? "Local contract environment" : "本地契约环境"}</span>
             <span className="topbar-divider" />
+            <button
+              className="preference-button"
+              type="button"
+              aria-label={english ? "Switch navigation and help to Chinese" : "将导航和帮助切换为英文"}
+              onClick={() => preferences.setLocale(english ? "zh-CN" : "en")}
+            >
+              {english ? "中" : "EN"}
+            </button>
+            <button
+              className="preference-button"
+              type="button"
+              aria-label={preferences.theme === "light" ? (english ? "Use dark theme" : "使用深色主题") : (english ? "Use light theme" : "使用浅色主题")}
+              onClick={() => preferences.setTheme(preferences.theme === "light" ? "dark" : "light")}
+            >
+              {preferences.theme === "light" ? "☾" : "☀"}
+            </button>
             <button className="icon-button" aria-label="重新载入当前页面（会清除未保存输入）" onClick={reloadPage}><Icon name="refresh" size={18} /></button>
             {account.status === "authenticated" ? (
               <button
@@ -269,16 +307,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 {account.principal?.displayName.slice(0, 1) ?? "企"}
               </button>
             ) : (
-              <Link className="top-login-link" href={`/login?${new URLSearchParams({ returnTo: pathname })}`}>登录</Link>
+              <Link className="top-login-link" href={`/login?${new URLSearchParams({ returnTo: pathname })}`}>{english ? "Sign in" : "登录"}</Link>
             )}
           </div>
         </header>
         <main id="main-content" className="main-content" tabIndex={-1}>{children}</main>
       </div>
-      <nav className="mobile-bottom-nav" aria-label="移动端主导航">
+      <nav className="mobile-bottom-nav" aria-label={english ? "Mobile primary navigation" : "移动端主导航"}>
         {mobileNavigation.map((item) => {
           const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
-          return <Link href={item.href} className={active ? "active" : ""} aria-current={active ? "page" : undefined} key={item.href}><Icon name={item.icon} size={19} /><span>{item.label.replace("Spring 老项目翻新", "Spring").replace("全库跨语言转换", "转换").replace("多语言项目生成", "生成").replace("Skills 与验证", "验证")}</span></Link>;
+          const label = navLabel(item);
+          return <Link href={item.href} className={active ? "active" : ""} aria-current={active ? "page" : undefined} key={item.href}><Icon name={item.icon} size={19} /><span>{english ? label : label.replace("Spring 老项目翻新", "Spring").replace("全库跨语言转换", "转换").replace("多语言项目生成", "生成").replace("Skills 与验证", "验证")}</span></Link>;
         })}
       </nav>
       {showBackToTop && <button className="back-to-top" type="button" onClick={scrollToTop} aria-label="返回页面顶部">

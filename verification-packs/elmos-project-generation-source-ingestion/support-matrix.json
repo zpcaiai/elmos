@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-project-generation-source-ingestion",
+  "capabilities": [
+    {
+      "key": "property-based-testing",
+      "status": "experimental",
+      "owner": "elmos-project-synthesis-engineering",
+      "evidence_refs": ["certification/local-test-result.json"],
+      "limitations": [
+        "Deterministic local execution only; no independent external verifier."
+      ]
+    },
+    {
+      "key": "security-negative-testing",
+      "status": "experimental",
+      "owner": "elmos-project-synthesis-engineering",
+      "evidence_refs": ["certification/local-test-result.json"],
+      "limitations": ["DNS rebinding against an independently controlled public host is NOT_RUN."]
+    },
+    {
+      "key": "mutation-negative-controls",
+      "status": "experimental",
+      "owner": "elmos-project-synthesis-engineering",
+      "evidence_refs": ["certification/local-test-result.json", "counterexamples/sample.json"],
+      "limitations": ["Two targeted policy mutants; this is not whole-program mutation coverage."]
+    },
+    {
+      "key": "external-security-assessment",
+      "status": "blocked",
+      "owner": "elmos-security-engineering",
+      "evidence_refs": [],
+      "limitations": ["NOT_RUN: no independent authorized assessment evidence."]
+    }
+  ]
+}

@@ -4,6 +4,10 @@ import {
   cancelJob,
   GenerationRunnerError,
 } from "../../../../../lib/server/generationRunner";
+import {
+  cancelHostedGenerationJob,
+  hostedExecutionEnabled,
+} from "../../../../../lib/server/hostedExecutionClient";
 import { withBusinessAudit } from "../../../../../lib/server/operationsProxy";
 
 export async function POST(
@@ -36,7 +40,9 @@ async function cancel(
   try {
     const authorized = authorize(request);
     const { jobId } = await context.params;
-    return NextResponse.json(await cancelJob(authorized, jobId));
+    return NextResponse.json(hostedExecutionEnabled()
+      ? await cancelHostedGenerationJob(authorized, jobId)
+      : await cancelJob(authorized, jobId));
   } catch (error) {
     const status = error instanceof GenerationRunnerError ? error.status : 500;
     const reason = error instanceof Error ? error.message : "RUNNER_ERROR";

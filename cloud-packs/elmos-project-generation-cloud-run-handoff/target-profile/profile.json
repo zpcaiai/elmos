@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "profile_key": "elmos-project-generation-cloud-run-handoff-target",
+  "owner": "elmos-cloud-platform-engineering",
+  "provider": "google-cloud",
+  "regions": [
+    "asia-east1"
+  ],
+  "account_model": "approved-isolated-project-required",
+  "iac_tool": {
+    "name": "gcloud-cli",
+    "version": "NOT_INSTALLED_2026-07-29"
+  },
+  "state_backend": {
+    "type": "cloud-run-service-revision",
+    "locking": "immutable-revision-and-image-digest",
+    "encryption": "google-managed-at-rest-and-tls-in-transit"
+  },
+  "container": {
+    "builder": "cloud-build-or-approved-oci-builder",
+    "base_image_policy": "signed-digest-only"
+  },
+  "orchestrator": {
+    "name": "none",
+    "version": "n/a"
+  },
+  "identity": {
+    "workload_identity": "dedicated-runtime-service-account-no-owner-editor",
+    "human_identity": "approved-operator-with-short-lived-federated-session"
+  },
+  "network": {
+    "topology": "cloud-run-ingress-authenticated-default-deny-egress",
+    "default_egress": "deny"
+  },
+  "dns": {
+    "provider": "google-cloud-dns-optional",
+    "strategy": "managed-url-until-approved-custom-domain"
+  },
+  "service_mesh": {
+    "enabled": false,
+    "provider": "none"
+  },
+  "serverless": {
+    "enabled": true,
+    "provider": "google-cloud-run-v2"
+  },
+  "managed_services": [
+    {"name": "artifact-registry", "region": "asia-east1"},
+    {"name": "secret-manager", "version_policy": "immutable-version-required"}
+  ],
+  "api_gateway": {
+    "provider": "cloud-run-iam",
+    "strategy": "authenticated-invoker-only"
+  },
+  "observability": {
+    "telemetry": "cloud-logging-metrics-and-revision-labels",
+    "retention": "owner-approved-policy-required-before-apply"
+  },
+  "security": {
+    "policy_bundle": "no-public-unauthenticated-no-broad-iam-immutable-image-and-secrets",
+    "encryption": "google-managed-at-rest-and-tls-in-transit"
+  },
+  "cost": {
+    "budget_currency": "USD",
+    "monthly_limit": 50
+  },
+  "provision": {
+    "commands": [
+      "gcloud services enable run.googleapis.com artifactregistry.googleapis.com cloudbuild.googleapis.com secretmanager.googleapis.com",
+      "gcloud run deploy SERVICE_NAME --region=asia-east1 --image=IMAGE_AT_SHA256 --service-account=RUNTIME_SERVICE_ACCOUNT --no-allow-unauthenticated"
+    ],
+    "status": "NOT_RUN"
+  },
+  "validate": {
+    "commands": [
+      "gcloud run services describe SERVICE_NAME --region=asia-east1",
+      "authorized caller: GET /health and negative unauthenticated probe"
+    ],
+    "status": "NOT_RUN"
+  },
+  "destroy": {
+    "commands": [
+      "gcloud run services update-traffic SERVICE_NAME --region=asia-east1 --to-revisions=PREVIOUS_REVISION=100",
+      "gcloud run services delete SERVICE_NAME --region=asia-east1 after explicit approval"
+    ],
+    "status": "NOT_RUN"
+  },
+  "lifecycle": {
+    "support_until": "2027-07-29",
+    "upgrade_policy": "revalidate exact gcloud, Cloud Run API, region, image, IAM, rollback, and cleanup tuple"
+  }
+}

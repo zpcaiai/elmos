@@ -74,6 +74,7 @@ public final class RepositoryWorkspaceController {
     private final RepositoryWorkspaceCredentialStore credentials;
     private final JdbcUserActivityStore activity;
     private final Clock clock;
+    private final boolean legacyApiKeyEnabled;
     private final String apiKey;
     private final Path materializedRoot;
 
@@ -82,13 +83,47 @@ public final class RepositoryWorkspaceController {
             RepositoryWorkspaceCredentialStore credentials,
             JdbcUserActivityStore activity,
             Clock clock,
-            @Value("${elmos.repository-workspace.api-key:}") String apiKey,
+            @Value("${elmos.repository-workspace.legacy-api-key-enabled:false}")
+            boolean legacyApiKeyEnabled,
+            @Value("${elmos.repository-workspace.legacy-api-key-file:}")
+            String legacyApiKeyFile,
             @Value("${elmos.snapshot.materialized-root:}") String materializedRoot
+    ) {
+        this(workspaces, credentials, activity, clock,
+                legacyApiKeyEnabled
+                        ? OwnerOnlySecretFile.readRequired(
+                                legacyApiKeyFile, 24, 512,
+                                "ELMOS_REPOSITORY_LEGACY_API_KEY_FILE_INVALID")
+                        : "",
+                materializedRoot,
+                legacyApiKeyEnabled);
+    }
+
+    RepositoryWorkspaceController(
+            GitRepositoryWorkspaceService workspaces,
+            RepositoryWorkspaceCredentialStore credentials,
+            JdbcUserActivityStore activity,
+            Clock clock,
+            String apiKey,
+            String materializedRoot
+    ) {
+        this(workspaces, credentials, activity, clock, apiKey, materializedRoot, true);
+    }
+
+    private RepositoryWorkspaceController(
+            GitRepositoryWorkspaceService workspaces,
+            RepositoryWorkspaceCredentialStore credentials,
+            JdbcUserActivityStore activity,
+            Clock clock,
+            String apiKey,
+            String materializedRoot,
+            boolean legacyApiKeyEnabled
     ) {
         this.workspaces = Objects.requireNonNull(workspaces, "workspaces");
         this.credentials = Objects.requireNonNull(credentials, "credentials");
         this.activity = Objects.requireNonNull(activity, "activity");
         this.clock = Objects.requireNonNull(clock, "clock");
+        this.legacyApiKeyEnabled = legacyApiKeyEnabled;
         this.apiKey = apiKey == null ? "" : apiKey.trim();
         this.materializedRoot = materializedRoot == null || materializedRoot.isBlank()
                 ? null : Path.of(materializedRoot).toAbsolutePath().normalize();
@@ -96,7 +131,7 @@ public final class RepositoryWorkspaceController {
 
     @GetMapping("/capabilities")
     GitRepositoryWorkspaceService.Capability capabilities(
-            @RequestHeader("X-ELMOS-Repository-Key") String presentedKey,
+            @RequestHeader(value = "X-ELMOS-Repository-Key", required = false) String presentedKey,
             @RequestHeader("X-ELMOS-Organization-ID") String organizationId,
             @RequestHeader("X-ELMOS-Actor-ID") String actorId,
             @RequestHeader(value = "X-Request-ID", required = false) String requestId
@@ -109,7 +144,7 @@ public final class RepositoryWorkspaceController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     GitRepositoryWorkspaceService.Workspace create(
-            @RequestHeader("X-ELMOS-Repository-Key") String presentedKey,
+            @RequestHeader(value = "X-ELMOS-Repository-Key", required = false) String presentedKey,
             @RequestHeader("X-ELMOS-Organization-ID") String organizationId,
             @RequestHeader("X-ELMOS-Actor-ID") String actorId,
             @RequestHeader(value = "X-Request-ID", required = false) String requestId,
@@ -140,7 +175,7 @@ public final class RepositoryWorkspaceController {
 
     @GetMapping("/{workspaceId}")
     GitRepositoryWorkspaceService.Workspace inspect(
-            @RequestHeader("X-ELMOS-Repository-Key") String presentedKey,
+            @RequestHeader(value = "X-ELMOS-Repository-Key", required = false) String presentedKey,
             @RequestHeader("X-ELMOS-Organization-ID") String organizationId,
             @RequestHeader("X-ELMOS-Actor-ID") String actorId,
             @RequestHeader(value = "X-Request-ID", required = false) String requestId,
@@ -155,7 +190,7 @@ public final class RepositoryWorkspaceController {
 
     @GetMapping("/{workspaceId}/files")
     GitRepositoryWorkspaceService.FileContent read(
-            @RequestHeader("X-ELMOS-Repository-Key") String presentedKey,
+            @RequestHeader(value = "X-ELMOS-Repository-Key", required = false) String presentedKey,
             @RequestHeader("X-ELMOS-Organization-ID") String organizationId,
             @RequestHeader("X-ELMOS-Actor-ID") String actorId,
             @RequestHeader(value = "X-Request-ID", required = false) String requestId,
@@ -171,7 +206,7 @@ public final class RepositoryWorkspaceController {
 
     @PostMapping("/{workspaceId}/changes")
     GitRepositoryWorkspaceService.ChangeResult apply(
-            @RequestHeader("X-ELMOS-Repository-Key") String presentedKey,
+            @RequestHeader(value = "X-ELMOS-Repository-Key", required = false) String presentedKey,
             @RequestHeader("X-ELMOS-Organization-ID") String organizationId,
             @RequestHeader("X-ELMOS-Actor-ID") String actorId,
             @RequestHeader(value = "X-Request-ID", required = false) String requestId,
@@ -197,7 +232,7 @@ public final class RepositoryWorkspaceController {
 
     @DeleteMapping("/{workspaceId}")
     DeleteResult delete(
-            @RequestHeader("X-ELMOS-Repository-Key") String presentedKey,
+            @RequestHeader(value = "X-ELMOS-Repository-Key", required = false) String presentedKey,
             @RequestHeader("X-ELMOS-Organization-ID") String organizationId,
             @RequestHeader("X-ELMOS-Actor-ID") String actorId,
             @RequestHeader(value = "X-Request-ID", required = false) String requestId,
@@ -213,7 +248,7 @@ public final class RepositoryWorkspaceController {
 
     @PostMapping("/{workspaceId}/commit")
     GitRepositoryWorkspaceService.CommitResult commit(
-            @RequestHeader("X-ELMOS-Repository-Key") String presentedKey,
+            @RequestHeader(value = "X-ELMOS-Repository-Key", required = false) String presentedKey,
             @RequestHeader("X-ELMOS-Organization-ID") String organizationId,
             @RequestHeader("X-ELMOS-Actor-ID") String actorId,
             @RequestHeader(value = "X-Request-ID", required = false) String requestId,
@@ -232,7 +267,7 @@ public final class RepositoryWorkspaceController {
 
     @PostMapping("/{workspaceId}/push")
     GitRepositoryWorkspaceService.PushResult push(
-            @RequestHeader("X-ELMOS-Repository-Key") String presentedKey,
+            @RequestHeader(value = "X-ELMOS-Repository-Key", required = false) String presentedKey,
             @RequestHeader("X-ELMOS-Organization-ID") String organizationId,
             @RequestHeader("X-ELMOS-Actor-ID") String actorId,
             @RequestHeader(value = "X-Request-ID", required = false) String requestId,
@@ -255,7 +290,7 @@ public final class RepositoryWorkspaceController {
 
     @PostMapping("/{workspaceId}/pull-request")
     GitRepositoryWorkspaceService.PullRequestResult pullRequest(
-            @RequestHeader("X-ELMOS-Repository-Key") String presentedKey,
+            @RequestHeader(value = "X-ELMOS-Repository-Key", required = false) String presentedKey,
             @RequestHeader("X-ELMOS-Organization-ID") String organizationId,
             @RequestHeader("X-ELMOS-Actor-ID") String actorId,
             @RequestHeader(value = "X-Request-ID", required = false) String requestId,
@@ -280,7 +315,7 @@ public final class RepositoryWorkspaceController {
 
     @PostMapping("/{workspaceId}/materializations/spring")
     GitRepositoryWorkspaceService.WorkspaceMaterialization materializeForSpring(
-            @RequestHeader("X-ELMOS-Repository-Key") String presentedKey,
+            @RequestHeader(value = "X-ELMOS-Repository-Key", required = false) String presentedKey,
             @RequestHeader("X-ELMOS-Organization-ID") String organizationId,
             @RequestHeader("X-ELMOS-Actor-ID") String actorId,
             @RequestHeader(value = "X-Request-ID", required = false) String requestId,
@@ -402,6 +437,9 @@ public final class RepositoryWorkspaceController {
             } catch (RuntimeException error) {
                 throw new SecurityException("OIDC repository authorization failed", error);
             }
+        }
+        if (!legacyApiKeyEnabled) {
+            throw new SecurityException("GIT_WORKSPACE_OIDC_REQUIRED");
         }
         if (apiKey.length() < 24) throw new WorkspaceUnavailableException();
         byte[] expected = apiKey.getBytes(StandardCharsets.UTF_8);

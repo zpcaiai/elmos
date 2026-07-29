@@ -11,6 +11,11 @@ final class OperationsBusinessLineRegistry {
 
     static {
         ROUTES.put("/api/v1/operations-observability", "ADMIN_OPERATIONS");
+        ROUTES.put("/api/v1/auth", "IDENTITY_ACCESS");
+        ROUTES.put("/api/v1/account", "IDENTITY_ACCESS");
+        ROUTES.put("/api/v1/execution/jobs", "RUNNER_EXECUTION");
+        ROUTES.put("/api/v1/runner/nodes", "RUNNER_EXECUTION");
+        ROUTES.put("/runner/v1", "RUNNER_EXECUTION");
         ROUTES.put("/api/v1/repository-workspaces", "REPOSITORY_WORKSPACE");
         ROUTES.put("/api/v1/repository-snapshots", "REPOSITORY_WORKSPACE");
         ROUTES.put("/api/v1/github", "REPOSITORY_WORKSPACE");

@@ -1,11 +1,11 @@
--- ELMOS V52: durable execution job queue and typed runner fleet.
+-- ELMOS V57: durable execution job queue and typed runner fleet.
 --
 -- Why this migration exists
 -- -------------------------
--- Before V52 the generation and translation business lines executed inside the
+-- Before V57 the generation and translation business lines executed inside the
 -- Next.js BFF process. Concurrency was an in-memory Set, tenancy came from
 -- ELMOS_LOCAL_RUNNER_TENANT_ID, and a process restart lost every running job.
--- V52 makes the job the authoritative durable record and turns the V9 runner
+-- V57 makes the job the authoritative durable record and turns the V9 runner
 -- placeholder tables into a typed fleet.
 --
 -- Boundary preserved from V9/B36: the control plane schedules, it does not
@@ -21,22 +21,9 @@
 -- content (identifiers, capability, priority, lease timing only). They are
 -- deliberately NOT tenant isolated because cross-tenant fair scheduling is
 -- impossible under a per-transaction app.organization_id. Access is restricted
--- to the elmos_scheduler role and the SECURITY DEFINER functions below.
-
--- ---------------------------------------------------------------------------
--- 1. Scheduler role
--- ---------------------------------------------------------------------------
-
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'elmos_scheduler') THEN
-        CREATE ROLE elmos_scheduler NOLOGIN;
-    END IF;
-END;
-$$;
-
-COMMENT ON ROLE elmos_scheduler IS
-    'Non-login role owning cross-tenant dispatch. Granted to the control-plane application role only. It can never read execution_jobs payloads directly; it reaches them through SECURITY DEFINER functions that bind an explicit organization.';
+-- to SECURITY DEFINER functions below. Managed PostgreSQL services do not
+-- necessarily allow Flyway to create roles, so role provisioning stays in the
+-- deployment layer and this migration remains portable.
 
 -- ---------------------------------------------------------------------------
 -- 2. Typed runner fleet (ALTER of the V9 placeholder tables)
@@ -122,6 +109,47 @@ CREATE INDEX idx_runner_job_leases_expiry
 
 COMMENT ON COLUMN runner_job_leases.token_sha256 IS
     'SHA-256 of the one-time execution credential. The credential itself is returned once at claim time and is never stored, logged or recoverable.';
+
+-- Enrollment credentials are short-lived, revocable, pool-bound and stored only
+-- as SHA-256. The node authentication projection carries no customer payload; it
+-- exists so a runner can be authenticated before any tenant RLS context exists.
+CREATE TABLE runner_enrollment_credentials (
+    enrollment_credential_id varchar(96) PRIMARY KEY,
+    organization_id varchar(96) NOT NULL REFERENCES organizations(organization_id),
+    runner_pool_id varchar(96) NOT NULL,
+    token_sha256 varchar(64) NOT NULL UNIQUE
+        CHECK (token_sha256 ~ '^[0-9a-f]{64}$'),
+    credential_state varchar(16) NOT NULL DEFAULT 'ACTIVE'
+        CHECK (credential_state IN ('ACTIVE', 'REVOKED', 'EXPIRED')),
+    not_before timestamptz NOT NULL DEFAULT now(),
+    expires_at timestamptz NOT NULL,
+    issued_by_actor_id varchar(128) NOT NULL,
+    revoked_at timestamptz,
+    revoked_by_actor_id varchar(128),
+    created_at timestamptz NOT NULL DEFAULT now(),
+    CHECK (expires_at > not_before),
+    CHECK (
+        credential_state <> 'REVOKED'
+        OR (revoked_at IS NOT NULL AND revoked_by_actor_id IS NOT NULL)
+    )
+);
+
+CREATE INDEX runner_enrollment_credentials_pool_active
+    ON runner_enrollment_credentials (runner_pool_id, expires_at)
+    WHERE credential_state = 'ACTIVE';
+
+CREATE TABLE runner_node_authentication (
+    runner_node_id varchar(96) PRIMARY KEY,
+    organization_id varchar(96) NOT NULL REFERENCES organizations(organization_id),
+    runner_pool_id varchar(96) NOT NULL,
+    enrollment_credential_id varchar(96) NOT NULL
+        REFERENCES runner_enrollment_credentials(enrollment_credential_id),
+    bound_at timestamptz NOT NULL DEFAULT now(),
+    revoked_at timestamptz
+);
+
+REVOKE ALL ON runner_enrollment_credentials FROM PUBLIC;
+REVOKE ALL ON runner_node_authentication FROM PUBLIC;
 
 -- ---------------------------------------------------------------------------
 -- 3. Authoritative job record (tenant isolated)
@@ -297,7 +325,7 @@ CREATE INDEX idx_execution_job_dispatch_lease_expiry
 CREATE INDEX idx_execution_job_dispatch_org ON execution_job_dispatch (organization_id, dispatch_state);
 
 COMMENT ON TABLE execution_job_dispatch IS
-    'Cross-tenant scheduling projection. Intentionally NOT row-level-security isolated: fair scheduling must see every tenant at once, which a per-transaction app.organization_id forbids. It therefore carries no customer content - only identifiers, capability, priority and lease timing. Direct access is revoked from PUBLIC and granted to elmos_scheduler.';
+    'Cross-tenant scheduling projection. Intentionally NOT row-level-security isolated: fair scheduling must see every tenant at once, which a per-transaction app.organization_id forbids. It therefore carries no customer content - only identifiers, capability, priority and lease timing. Direct access is revoked from PUBLIC.';
 
 CREATE TABLE execution_dispatch_org_counters (
     organization_id varchar(96) PRIMARY KEY REFERENCES organizations(organization_id),
@@ -318,11 +346,13 @@ COMMENT ON TABLE execution_dispatch_org_counters IS
 
 CREATE OR REPLACE FUNCTION elmos_execution_concurrency_limit(p_organization_id varchar)
 RETURNS integer
-LANGUAGE sql
-STABLE
+LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
 AS $$
+BEGIN
+    PERFORM set_config('app.organization_id', p_organization_id, true);
+    RETURN (
     SELECT coalesce(
         (SELECT p.concurrent_job_limit
            FROM subscriptions s
@@ -334,7 +364,8 @@ AS $$
             AND s.current_period_end > now()
           ORDER BY p.concurrent_job_limit DESC
           LIMIT 1),
-        0);
+        0));
+END;
 $$;
 
 COMMENT ON FUNCTION elmos_execution_concurrency_limit(varchar) IS
@@ -368,6 +399,7 @@ DECLARE
     v_queued integer;
     v_limit integer;
 BEGIN
+    PERFORM set_config('app.organization_id', p_organization_id, true);
     SELECT * INTO v_existing FROM execution_jobs
      WHERE organization_id = p_organization_id AND idempotency_key = p_idempotency_key;
     IF FOUND THEN
@@ -455,6 +487,7 @@ SET search_path = public
 AS $$
 DECLARE
     v_node runner_nodes%ROWTYPE;
+    v_runner_organization_id varchar(96);
     v_candidate record;
     v_job execution_jobs%ROWTYPE;
     v_active integer;
@@ -475,6 +508,15 @@ BEGIN
        OR coalesce(array_length(p_token_hashes, 1), 0) <> p_limit THEN
         RAISE EXCEPTION 'ELMOS_CLAIM_CREDENTIAL_COUNT_MISMATCH';
     END IF;
+
+    SELECT organization_id INTO v_runner_organization_id
+      FROM runner_node_authentication
+     WHERE runner_node_id = p_runner_node_id AND revoked_at IS NULL;
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'ELMOS_RUNNER_UNKNOWN';
+    END IF;
+    PERFORM set_config(
+        'app.organization_id', v_runner_organization_id, true);
 
     SELECT * INTO v_node FROM runner_nodes
      WHERE runner_node_id = p_runner_node_id FOR UPDATE;
@@ -515,7 +557,10 @@ BEGIN
          WHERE c.organization_id = v_candidate.d_org;
         CONTINUE WHEN coalesce(v_org_active, 0) >= v_org_limit;
 
-        SELECT * INTO v_job FROM execution_jobs WHERE execution_jobs.job_id = v_candidate.d_job_id FOR UPDATE;
+        PERFORM set_config(
+            'app.organization_id', v_candidate.d_org, true);
+        SELECT * INTO v_job FROM execution_jobs
+         WHERE execution_jobs.job_id = v_candidate.d_job_id FOR UPDATE;
 
         -- A cancel that arrived while the job was still queued never reaches a runner.
         IF v_job.cancel_requested_at IS NOT NULL THEN
@@ -614,9 +659,15 @@ SET search_path = public
 AS $$
 DECLARE
     v_lease runner_job_leases%ROWTYPE;
+    v_organization_id varchar(96);
     v_expires timestamptz;
     v_cancelled boolean;
 BEGIN
+    SELECT organization_id INTO v_organization_id
+      FROM execution_job_dispatch WHERE lease_ref = p_lease_id;
+    IF NOT FOUND THEN RAISE EXCEPTION 'ELMOS_LEASE_UNKNOWN'; END IF;
+    PERFORM set_config('app.organization_id', v_organization_id, true);
+
     SELECT * INTO v_lease FROM runner_job_leases
      WHERE runner_job_lease_id = p_lease_id FOR UPDATE;
     IF NOT FOUND THEN RAISE EXCEPTION 'ELMOS_LEASE_UNKNOWN'; END IF;
@@ -671,6 +722,7 @@ SET search_path = public
 AS $$
 DECLARE
     v_lease runner_job_leases%ROWTYPE;
+    v_organization_id varchar(96);
     v_job execution_jobs%ROWTYPE;
     v_seq integer;
     v_requeue boolean := false;
@@ -678,6 +730,11 @@ BEGIN
     IF p_status NOT IN ('SUCCEEDED', 'PARTIAL', 'FAILED', 'CANCELLED') THEN
         RAISE EXCEPTION 'ELMOS_COMPLETION_STATUS_INVALID';
     END IF;
+
+    SELECT organization_id INTO v_organization_id
+      FROM execution_job_dispatch WHERE lease_ref = p_lease_id;
+    IF NOT FOUND THEN RAISE EXCEPTION 'ELMOS_LEASE_UNKNOWN'; END IF;
+    PERFORM set_config('app.organization_id', v_organization_id, true);
 
     SELECT * INTO v_lease FROM runner_job_leases
      WHERE runner_job_lease_id = p_lease_id FOR UPDATE;
@@ -768,6 +825,7 @@ DECLARE
     v_job execution_jobs%ROWTYPE;
     v_seq integer;
 BEGIN
+    PERFORM set_config('app.organization_id', p_organization_id, true);
     SELECT * INTO v_job FROM execution_jobs
      WHERE job_id = p_job_id AND organization_id = p_organization_id FOR UPDATE;
     IF NOT FOUND THEN RAISE EXCEPTION 'ELMOS_EXECUTION_JOB_UNKNOWN'; END IF;
@@ -801,6 +859,7 @@ SET search_path = public
 AS $$
 DECLARE
     v_row record;
+    v_node record;
     v_job execution_jobs%ROWTYPE;
     v_seq integer;
     v_count integer := 0;
@@ -811,6 +870,7 @@ BEGIN
          WHERE d.dispatch_state = 'LEASED' AND d.lease_expires_at < now()
          FOR UPDATE SKIP LOCKED
     LOOP
+        PERFORM set_config('app.organization_id', v_row.organization_id, true);
         UPDATE runner_job_leases
            SET lease_state = 'EXPIRED', released_at = now(), revocation_code = 'LEASE_EXPIRED'
          WHERE runner_job_lease_id = v_row.lease_ref;
@@ -852,10 +912,19 @@ BEGIN
         v_count := v_count + 1;
     END LOOP;
 
-    UPDATE runner_nodes
-       SET fleet_status = 'LOST'
-     WHERE fleet_status IN ('READY', 'DRAINING')
-       AND (last_heartbeat_at IS NULL OR last_heartbeat_at < now() - interval '120 seconds');
+    FOR v_node IN
+        SELECT runner_node_id, organization_id
+          FROM runner_node_authentication
+         WHERE revoked_at IS NULL
+    LOOP
+        PERFORM set_config('app.organization_id', v_node.organization_id, true);
+        UPDATE runner_nodes
+           SET fleet_status = 'LOST'
+         WHERE runner_node_id = v_node.runner_node_id
+           AND fleet_status IN ('READY', 'DRAINING')
+           AND (last_heartbeat_at IS NULL
+                OR last_heartbeat_at < now() - interval '120 seconds');
+    END LOOP;
 
     PERFORM elmos_reconcile_dispatch_counters();
     RETURN v_count;
@@ -914,8 +983,6 @@ $$;
 
 REVOKE ALL ON execution_job_dispatch FROM PUBLIC;
 REVOKE ALL ON execution_dispatch_org_counters FROM PUBLIC;
-GRANT SELECT, INSERT, UPDATE ON execution_job_dispatch TO elmos_scheduler;
-GRANT SELECT, INSERT, UPDATE ON execution_dispatch_org_counters TO elmos_scheduler;
 
 DO $$
 DECLARE v_function record;

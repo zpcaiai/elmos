@@ -630,6 +630,8 @@ function activeMembership(
     actorId: string;
     organizationId: string;
     expiresAt: number;
+    roles?: AccountRole[];
+    permissions?: AccountPermission[];
   }>(sealedTenant, "TENANT_SELECTION_INVALID");
   if (
     selection.version !== 1
@@ -641,10 +643,27 @@ function activeMembership(
   const selected = principal.memberships.find(
     (candidate) => candidate.organizationId === selection.organizationId,
   );
-  if (!selected) {
+  if (selected) return selected;
+  const roles = (selection.roles ?? []).filter(
+    (role): role is AccountRole => roleNames.includes(role),
+  );
+  const permissions = (selection.permissions ?? []).filter(
+    (permission): permission is AccountPermission => knownPermissions.has(permission),
+  );
+  if (
+    !organizationPattern.test(selection.organizationId)
+    || roles.length === 0
+    || permissions.length === 0
+    || roles.length !== (selection.roles?.length ?? 0)
+    || permissions.length !== (selection.permissions?.length ?? 0)
+  ) {
     throw new AccountSessionError(403, "CROSS_TENANT_ACCESS_DENIED", "当前身份无权访问所选租户。");
   }
-  return selected;
+  return {
+    organizationId: selection.organizationId,
+    roles,
+    permissions,
+  };
 }
 
 export function selectTenantCookie(
@@ -659,6 +678,65 @@ export function selectTenantCookie(
     version: 1,
     actorId: principal.actorId,
     organizationId,
+    expiresAt,
+  });
+}
+
+export function databaseTenantMembership(
+  organizationId: string,
+  memberRole: string,
+): TenantMembership {
+  if (!organizationPattern.test(organizationId)) {
+    throw new AccountSessionError(400, "TENANT_SELECTION_INVALID", "租户选择无效。");
+  }
+  switch (memberRole.toUpperCase()) {
+    case "OWNER":
+    case "ADMIN":
+      return {
+        organizationId,
+        roles: ["TENANT_ADMIN"],
+        permissions: [...rolePermissions.TENANT_ADMIN],
+      };
+    case "MAINTAINER":
+      return {
+        organizationId,
+        roles: ["MAINTAINER"],
+        permissions: [...rolePermissions.MAINTAINER],
+      };
+    case "MEMBER":
+      return {
+        organizationId,
+        roles: ["DEVELOPER"],
+        permissions: [...rolePermissions.DEVELOPER],
+      };
+    case "BILLING":
+      return {
+        organizationId,
+        roles: ["VIEWER"],
+        permissions: ["workspace:view", "repository:read", "usage:read", "billing:write"],
+      };
+    case "VIEWER":
+      return {
+        organizationId,
+        roles: ["VIEWER"],
+        permissions: [...rolePermissions.VIEWER],
+      };
+    default:
+      throw new AccountSessionError(403, "CROSS_TENANT_ACCESS_DENIED", "成员角色无效。");
+  }
+}
+
+export function selectDatabaseTenantCookie(
+  principal: AccountPrincipal,
+  membership: TenantMembership,
+  expiresAt: number,
+): string {
+  return seal({
+    version: 1,
+    actorId: principal.actorId,
+    organizationId: membership.organizationId,
+    roles: membership.roles,
+    permissions: membership.permissions,
     expiresAt,
   });
 }

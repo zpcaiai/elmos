@@ -60,12 +60,21 @@ internal static class SemanticMapper
         };
     }
 
+    // The canonical `number` is IEEE-754 binary64. `float`/`Single` has a
+    // 24-bit significand and `decimal`/`Decimal` is exact base-10 with a
+    // 96-bit integer scale: neither survives a round trip through binary64
+    // (0.1f + 0.2f != 0.1 + 0.2, and decimal arithmetic is exact where
+    // binary64 is not), so both are refused instead of silently widened.
     private static string Type(string sourceType) => sourceType.Replace("System.", "", StringComparison.Ordinal) switch
     {
         "byte" or "short" or "int" or "long" or "Byte" or "Int16" or "Int32" or "Int64" => "integer",
-        "float" or "double" or "decimal" or "Single" or "Double" or "Decimal" => "number",
+        "double" or "Double" => "number",
         "bool" or "Boolean" => "boolean",
         "string" or "String" => "string",
+        "float" or "Single" => throw new InvalidOperationException(
+            $"CSHARP_FLOAT_PRECISION_OUTSIDE_CERTIFIED_SUBSET:{sourceType}"),
+        "decimal" or "Decimal" => throw new InvalidOperationException(
+            $"CSHARP_EXACT_ARITHMETIC_TYPE_OUTSIDE_CERTIFIED_SUBSET:{sourceType}"),
         _ => throw new InvalidOperationException($"CSHARP_UNSUPPORTED_TYPE:{sourceType}"),
     };
 

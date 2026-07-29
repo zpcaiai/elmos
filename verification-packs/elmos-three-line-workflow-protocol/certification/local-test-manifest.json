@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "status": "LOCAL_ENGINEERING_EVIDENCE",
+  "commands": [
+    "python -m unittest discover -s tests/production-readiness -p 'test_workflow_protocol.py'",
+    "mvn -pl modules/integrations,apps/control-plane -am test -Dtest=GitRepositoryWorkspaceServiceTest,RepositoryWorkspaceCredentialStoreTest,RepositoryWorkspaceControllerTest",
+    "mvn -pl apps/java-engine-worker -am test -Dtest=DurableRunLeaseStoreTest,SpringUpgradeRunServiceTest",
+    "pnpm --dir apps/web-console exec playwright test --project=chromium e2e/repository-workspace-ui.spec.ts e2e/operations-admin-ui.spec.ts"
+  ],
+  "external_provider_execution": "NOT_RUN",
+  "worker_kill_multi_replica": "NOT_RUN",
+  "independent_verifier": "NOT_RUN",
+  "certification": "NOT_CERTIFIED"
+}

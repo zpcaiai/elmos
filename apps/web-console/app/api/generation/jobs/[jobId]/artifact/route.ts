@@ -7,6 +7,10 @@ import {
   authorize,
   GenerationRunnerError,
 } from "../../../../../lib/server/generationRunner";
+import {
+  hostedArtifactTicket,
+  hostedExecutionEnabled,
+} from "../../../../../lib/server/hostedExecutionClient";
 
 export const dynamic = "force-dynamic";
 
@@ -17,6 +21,11 @@ export async function GET(
   try {
     const authorized = authorize(request);
     const { jobId } = await context.params;
+    if (hostedExecutionEnabled()) {
+      return NextResponse.json(await hostedArtifactTicket(authorized, jobId), {
+        headers: { "Cache-Control": "private, no-store" },
+      });
+    }
     const archive = await artifact(authorized, jobId);
     const stream = Readable.toWeb(createReadStream(archive.path)) as ReadableStream;
     return new NextResponse(stream, {

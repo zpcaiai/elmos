@@ -1,6 +1,6 @@
 {
   "profile_key": "elmos-web-console-navigation-modernization-acceptance",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "owner": "elmos-accessibility-review",
   "browser_matrix": [
     "chromium-revision-1228-local",
@@ -13,10 +13,12 @@
     "mobile-webkit-393x852"
   ],
   "locales": [
-    "zh-CN"
+    "zh-CN",
+    "en-shell-and-help"
   ],
   "themes": [
-    "default-light"
+    "light",
+    "dark"
   ],
   "rendering": {
     "modes": [
@@ -54,7 +56,8 @@
     "mobile-bottom-navigation",
     "migration-marketplace-switch",
     "trust-chain-review",
-    "project-generation-draft"
+    "project-generation-draft",
+    "help-readiness-and-preferences"
   ],
   "thresholds": {
     "source_fingerprint_coverage": 0.95,

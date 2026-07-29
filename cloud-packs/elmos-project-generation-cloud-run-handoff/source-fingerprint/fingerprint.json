@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-project-generation-cloud-run-handoff",
+  "snapshot_digest": "sha256:86222b17a63eea6b810c7a2a8d3b82cb90ab3599c43a355da675f0d9963eb6ba",
+  "coverage": 1.0,
+  "source_tuple": {
+    "platform": "generated-local-container",
+    "provider": "docker-desktop",
+    "regions": [
+      "localhost"
+    ],
+    "account_model": "local-developer",
+    "iac_tool": {
+      "name": "kubernetes-manifest",
+      "version": "v1"
+    },
+    "runtime": {
+      "name": "docker-engine",
+      "version": "29.4.0"
+    },
+    "orchestrator": {
+      "name": "none",
+      "version": "n/a"
+    },
+    "ci_cd": {
+      "name": "github-actions",
+      "version": "workflow-v1"
+    },
+    "state_backend": {
+        "type": "local-generated-artifact",
+        "locking": "single-runner-exclusive-workspace",
+        "encryption": "host-filesystem-policy"
+      },
+      "services": ["generated-python-fastapi-container"]
+    },
+  "resources": [
+    {
+      "key": "generated-python-container",
+      "type": "container-image",
+      "source_ref": "engines/project-synthesis-engine/src/elmos_project_synthesis/python_target.py",
+      "digest": "sha256:136439b1161e0f1b3f0f5c524c12cc4550c2867c2528a2b11079cd89f1497b32"
+    }
+  ],
+  "identities": [{"key": "container-user", "value": "10001:10001"}],
+  "networks": [{"key": "local-health", "value": "127.0.0.1:18082->8082"}],
+  "pipelines": [{"key": "generation-runner", "digest": "sha256:d678b578ace42c163fd6f572dcae252258beddcf3d00ac9b3446dfd97f061b41"}],
+  "runtime_evidence": [
+    {
+      "kind": "local-container-build-start-health-cleanup",
+      "status": "passed",
+      "ref": "certification/local-container-evidence.json"
+    }
+  ],
+  "evidence_refs": [
+    "certification/local-container-evidence.json",
+    "certification/external-tooling-status.json"
+  ]
+}

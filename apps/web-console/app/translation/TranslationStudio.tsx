@@ -791,7 +791,13 @@ export function TranslationStudio() {
           )}
           <label>
             <span>预物化源码 ID（与仓库工作区二选一）</span>
-            <input value={workspaceId} onChange={(event) => setWorkspaceId(event.target.value)} pattern="[a-z0-9][a-z0-9._-]{2,80}" placeholder="customer-repository" />
+            <input
+              aria-label="受控源码工作区 ID"
+              value={workspaceId}
+              onChange={(event) => setWorkspaceId(event.target.value)}
+              pattern="[a-z0-9][a-z0-9._-]{2,80}"
+              placeholder="customer-repository"
+            />
           </label>
           <label>
             <span>仓库工作区 UUID</span>

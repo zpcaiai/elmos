@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "source_digest": "sha256:d9b2dae38cd583a3521729f05cc3be022338c4dd07c3d9e51a2d71904263c5b1",
+  "dataset_digest": "sha256:81009c17143fdf3fcdc173940cef24dc3adbf89e201fb063f9748802c80da966",
+  "evidence_refs": [
+    "certification/local-test-result.json",
+    "counterexamples/sample.json"
+  ],
+  "limitations": ["Two targeted policy mutants; not a whole-program mutation campaign."]
+}

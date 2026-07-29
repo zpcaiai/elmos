@@ -33,7 +33,6 @@ export async function GET(request: NextRequest) {
         expiresAt: null,
       },
       {
-        status: 401,
         headers: {
           "Cache-Control": "no-store, private",
           "Vary": "Cookie",

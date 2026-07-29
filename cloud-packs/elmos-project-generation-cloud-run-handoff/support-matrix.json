@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-project-generation-cloud-run-handoff",
+  "capabilities": [
+    {
+      "key": "runtime-architecture-discovery",
+      "status": "experimental",
+      "scope": "Generated Python container build, hardened local start, health probe, stop, and cleanup",
+      "owner": "elmos-project-synthesis-engineering",
+      "evidence_refs": ["certification/local-container-evidence.json"],
+      "limitations": [
+        "Docker Desktop 29.4.0 on Darwin arm64 only"
+      ]
+    },
+    {
+      "key": "google-cloud-run-deployment",
+      "status": "blocked",
+      "scope": "Google Cloud Run v2 in asia-east1",
+      "owner": "elmos-cloud-platform-engineering",
+      "evidence_refs": ["certification/external-tooling-status.json"],
+      "limitations": [
+        "NOT_RUN: gcloud is not installed and no approved Google Cloud project, billing owner, or credential is available."
+      ]
+    }
+  ]
+}

@@ -458,7 +458,13 @@ public final class JdbcUserActivityStore {
                        and occurred_at >= :from and occurred_at < :to
                        -- Every optional filter is cast explicitly. A bare
                        -- parameter in `? is null` gives PostgreSQL nothing to
-                       -- infer a type from when the binding is null.
+                       -- infer a type from -- the column is not in the
+                       -- expression, and a null binding carries no type of its
+                       -- own -- so the statement fails to parse with "could not
+                       -- determine data type of parameter". The comparison arms
+                       -- (`business_line = :line`) infer from the column and
+                       -- would be fine alone; it is the null test that has no
+                       -- other source of type.
                        and (cast(:line as text) is null or business_line = :line)
                        and (cast(:result as text) is null or result = :result)
                        and (cast(:afterOccurredAt as timestamptz) is null

@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-project-generation-cloud-run-handoff",
+  "source_snapshot_digest": "sha256:86222b17a63eea6b810c7a2a8d3b82cb90ab3599c43a355da675f0d9963eb6ba",
+  "resources": [
+    {
+      "id": "iac.registry",
+      "kind": "artifact-registry",
+      "logical_name": "generated-project-images",
+      "provider_neutral_type": "regional-container-registry",
+      "source_refs": [{"path": "docs/CLOUD_DEPLOYMENT.md"}],
+      "depends_on": [],
+      "properties": {"region": "asia-east1", "immutable_digest": true},
+      "lifecycle": {"cleanup_required": true},
+      "security": {"public_read": false}
+    },
+    {
+      "id": "iac.identity",
+      "kind": "workload-identity",
+      "logical_name": "generated-project-runtime",
+      "provider_neutral_type": "least-privilege-service-identity",
+      "source_refs": [{"path": "docs/CLOUD_DEPLOYMENT.md"}],
+      "depends_on": [],
+      "properties": {"broad_roles_forbidden": true},
+      "lifecycle": {"revoke_on_cleanup": true},
+      "security": {"short_lived_credentials": true}
+    },
+    {
+      "id": "iac.service",
+      "kind": "serverless-container-service",
+      "logical_name": "generated-project-service",
+      "provider_neutral_type": "managed-container-revision",
+      "source_refs": [{"path": "deploy/deployment-options.json"}],
+      "depends_on": ["iac.registry", "iac.identity"],
+      "properties": {
+        "region": "asia-east1",
+        "port": 8082,
+        "image_digest_required": true,
+        "allow_unauthenticated": false
+      },
+      "lifecycle": {"immutable_revisions": true, "rollback_required": true},
+      "security": {"ingress": "review-required", "egress": "deny-until-declared"}
+    },
+    {
+      "id": "iac.secrets",
+      "kind": "secret-store",
+      "logical_name": "generated-project-secrets",
+      "provider_neutral_type": "versioned-secret-manager",
+      "source_refs": [{"path": "docs/CLOUD_DEPLOYMENT.md"}],
+      "depends_on": ["iac.identity"],
+      "properties": {"latest_alias_forbidden": true},
+      "lifecycle": {"cleanup_required": true},
+      "security": {"values_in_iac_forbidden": true}
+    }
+  ],
+  "modules": [],
+  "variables": [
+    {"name": "cloud_project_id", "required": true, "secret": false},
+    {"name": "service_name", "required": true, "secret": false},
+    {"name": "image_digest", "required": true, "secret": false}
+  ],
+  "outputs": [{"name": "immutable_revision", "status": "NOT_RUN"}],
+  "policies": [
+    {"id": "policy.no-public-unauthenticated", "effect": "deny"},
+    {"id": "policy.no-broad-iam", "effect": "deny"},
+    {"id": "policy.no-secret-values-in-plan", "effect": "deny"}
+  ],
+  "obligations": [
+    {"id": "obligation.provider-plan", "status": "NOT_RUN"},
+    {"id": "obligation.provider-apply", "status": "NOT_RUN"}
+  ],
+  "source_map": [
+    {
+      "node_id": "iac.registry",
+      "source_refs": [{"path": "docs/CLOUD_DEPLOYMENT.md"}]
+    },
+    {
+      "node_id": "iac.identity",
+      "source_refs": [{"path": "docs/CLOUD_DEPLOYMENT.md"}]
+    },
+    {
+      "node_id": "iac.service",
+      "source_refs": [
+        {
+          "path": "engines/project-synthesis-engine/src/elmos_project_synthesis/deployment_guidance.py",
+          "digest": "sha256:86222b17a63eea6b810c7a2a8d3b82cb90ab3599c43a355da675f0d9963eb6ba"
+        }
+      ]
+    },
+    {
+      "node_id": "iac.secrets",
+      "source_refs": [{"path": "docs/CLOUD_DEPLOYMENT.md"}]
+    }
+  ]
+}

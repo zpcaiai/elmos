@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "campaign_key": "mutation.source-address-boundaries-v1",
+  "owner": "elmos-project-synthesis-engineering",
+  "target_scope": [
+    "apps/web-console/app/lib/server/generationSourceIngestion.ts:isPublicAddress"
+  ],
+  "operators": [
+    {
+      "key": "allow-all-ipv4",
+      "risk": "P0"
+    },
+    {
+      "key": "allow-loopback-ipv6",
+      "risk": "P0"
+    }
+  ],
+  "budgets": {
+    "max_mutants": 2,
+    "max_minutes": 2
+  },
+  "required_tests": [
+    "e2e/generation-source-ingestion.spec.ts:independent negative controls kill seeded boundary mutants"
+  ],
+  "equivalent_mutant_policy": "every seeded mutant must be killed by a separately stored negative corpus"
+}

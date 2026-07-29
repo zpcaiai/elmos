@@ -526,3 +526,31 @@ export function sourceIngestionError(error: unknown): { status: number; reason: 
     reason: error instanceof Error ? error.message : "SOURCE_INGESTION_FAILED",
   };
 }
+
+/**
+ * Narrow, read-only hooks for deterministic security and parser qualification.
+ * They expose no network or filesystem capability that the production API does
+ * not already own, and keep policy tests bound to the exact production logic.
+ */
+export const generationSourceIngestionTestHooks = Object.freeze({
+  limits: Object.freeze({
+    maxFiles: MAX_FILES,
+    maxSources: MAX_SOURCES,
+    maxFileBytes: MAX_FILE_BYTES,
+    maxFetchBytes: MAX_FETCH_BYTES,
+    maxSourceCharacters: MAX_SOURCE_CHARACTERS,
+    maxCombinedCharacters: MAX_COMBINED_CHARACTERS,
+    maxPdfPages: MAX_PDF_PAGES,
+    fetchTimeoutMs: FETCH_TIMEOUT_MS,
+    maxRedirects: MAX_REDIRECTS,
+  }),
+  normalizeText,
+  decodeUtf8,
+  safeLabel,
+  htmlToText,
+  extractUploadedSource,
+  extractSkillSource,
+  buildReferences,
+  isPublicAddress,
+  publicOrigin,
+});

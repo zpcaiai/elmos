@@ -126,6 +126,34 @@ BLOCKER_CATALOG: dict[str, tuple[BlockerFamily, str]] = {
         "types",
         "a type this engine cannot render on every target dialect",
     ),
+    "CERTIFIED_DDL_UNBOUNDED_VARCHAR": (
+        "types",
+        "a VARCHAR with no length -- unlimited in PostgreSQL, VARCHAR(1) in SQL Server, "
+        "rejected outright by MySQL and Oracle; declare an explicit length",
+    ),
+    "CERTIFIED_DDL_UNBOUNDED_DECIMAL": (
+        "types",
+        "a DECIMAL/NUMBER with no precision -- arbitrary precision in PostgreSQL and Oracle, "
+        "with no fixed-precision equivalent on MySQL or SQL Server",
+    ),
+    "CERTIFIED_DDL_UNSIGNED_BIGINT_UNREPRESENTABLE": (
+        "types",
+        "a BIGINT UNSIGNED column -- its range reaches 18446744073709551615, which no "
+        "canonical integer holds and which PostgreSQL, Oracle and SQL Server cannot express",
+    ),
+    "CERTIFIED_DDL_MYSQL_AUTO_INCREMENT_NOT_KEY": (
+        "structure",
+        "an identity/auto-increment column that is not a key -- legal in PostgreSQL, Oracle "
+        "and SQL Server, rejected by MySQL with errno 1075",
+    ),
+    "CERTIFIED_DDL_LENGTH_EXCEEDS_TARGET": (
+        "types",
+        "a CHAR/VARCHAR length the target dialect's documented maximum does not allow",
+    ),
+    "CERTIFIED_DDL_PRECISION_EXCEEDS_TARGET": (
+        "types",
+        "a DECIMAL precision or scale the target dialect's documented maximum does not allow",
+    ),
     "CERTIFIED_DDL_UNSUPPORTED_COLUMN_CONSTRAINT": (
         "constraints",
         "a column constraint outside NOT NULL / PRIMARY KEY / UNIQUE / DEFAULT / CHECK / REFERENCES",

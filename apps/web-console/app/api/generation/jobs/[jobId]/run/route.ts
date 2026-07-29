@@ -6,6 +6,7 @@ import {
   startRuntime,
 } from "../../../../../lib/server/generationRunner";
 import { withBusinessAudit } from "../../../../../lib/server/operationsProxy";
+import { hostedExecutionEnabled } from "../../../../../lib/server/hostedExecutionClient";
 
 export async function POST(
   request: NextRequest,
@@ -35,6 +36,9 @@ async function run(
   context: { params: Promise<{ jobId: string }> },
 ) {
   try {
+    if (hostedExecutionEnabled()) {
+      throw new GenerationRunnerError(409, "HOSTED_RUNTIME_PREVIEW_NOT_AVAILABLE");
+    }
     if (!request.headers.get("content-type")?.startsWith("application/json")) {
       return NextResponse.json(
         { status: "BLOCKED", reason: "JSON_CONTENT_TYPE_REQUIRED" },

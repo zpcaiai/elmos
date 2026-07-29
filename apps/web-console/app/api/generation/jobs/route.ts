@@ -5,6 +5,10 @@ import {
   createJob,
   GenerationRunnerError,
 } from "../../../lib/server/generationRunner";
+import {
+  createHostedGenerationJob,
+  hostedExecutionEnabled,
+} from "../../../lib/server/hostedExecutionClient";
 import { withBusinessAudit } from "../../../lib/server/operationsProxy";
 
 export const dynamic = "force-dynamic";
@@ -46,7 +50,9 @@ async function create(request: NextRequest) {
     }
     const context = authorize(request);
     const body = JSON.parse(rawBody) as GenerationJobCreateRequest;
-    const job = await createJob(context, body);
+    const job = hostedExecutionEnabled()
+      ? await createHostedGenerationJob(context, body)
+      : await createJob(context, body);
     return NextResponse.json(job, { status: 202 });
   } catch (error) {
     const status = error instanceof GenerationRunnerError ? error.status : 400;

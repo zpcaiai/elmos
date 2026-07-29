@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-project-generation-cloud-run-handoff",
+  "source_snapshot_digest": "sha256:86222b17a63eea6b810c7a2a8d3b82cb90ab3599c43a355da675f0d9963eb6ba",
+  "components": [
+    {
+      "id": "component.generated-service",
+      "kind": "http-container",
+      "name": "Generated Python FastAPI service",
+      "source_refs": [{"path": "python/Dockerfile"}],
+      "references": ["identity.runtime"],
+      "properties": {"container_port": 8082, "health_path": "/health"},
+      "criticality": "P0"
+    }
+  ],
+  "connections": [
+    {
+      "id": "connection.https-ingress",
+      "kind": "https",
+      "name": "Authenticated Cloud Run ingress",
+      "source_refs": [{"path": "docs/CLOUD_DEPLOYMENT.md"}],
+      "references": ["component.generated-service"],
+      "properties": {"unauthenticated": false},
+      "criticality": "P0"
+    }
+  ],
+  "identities": [
+    {
+      "id": "identity.runtime",
+      "kind": "google-service-account",
+      "name": "Dedicated least-privilege runtime identity",
+      "source_refs": [{"path": "docs/CLOUD_DEPLOYMENT.md"}],
+      "references": ["component.generated-service"],
+      "properties": {"owner_or_editor_roles": false},
+      "criticality": "P0"
+    }
+  ],
+  "data_flows": [
+    {
+      "id": "flow.health",
+      "kind": "request-response",
+      "name": "HTTPS health probe",
+      "source_refs": [{"path": "deploy/deployment-options.json"}],
+      "references": ["connection.https-ingress", "component.generated-service"],
+      "properties": {"path": "/health"},
+      "criticality": "P1"
+    }
+  ],
+  "policies": [
+    {
+      "id": "policy.container-runtime",
+      "kind": "security-guardrail",
+      "name": "Immutable non-root container runtime",
+      "source_refs": [{"path": "python/Dockerfile"}],
+      "references": ["component.generated-service"],
+      "properties": {
+        "user": "10001:10001",
+        "image_digest_required": true,
+        "public_unauthenticated": false
+      },
+      "criticality": "P0"
+    }
+  ],
+  "source_map": [
+    {
+      "node_id": "component.generated-service",
+      "source_refs": [
+        {
+          "path": "engines/project-synthesis-engine/src/elmos_project_synthesis/python_target.py",
+          "digest": "sha256:136439b1161e0f1b3f0f5c524c12cc4550c2867c2528a2b11079cd89f1497b32"
+        }
+      ]
+    },
+    {
+      "node_id": "connection.https-ingress",
+      "source_refs": [{"path": "docs/CLOUD_DEPLOYMENT.md"}]
+    },
+    {
+      "node_id": "identity.runtime",
+      "source_refs": [{"path": "docs/CLOUD_DEPLOYMENT.md"}]
+    },
+    {
+      "node_id": "flow.health",
+      "source_refs": [{"path": "deploy/deployment-options.json"}]
+    },
+    {
+      "node_id": "policy.container-runtime",
+      "source_refs": [{"path": "python/Dockerfile"}]
+    }
+  ],
+  "obligations": [
+    {"id": "obligation.approved-project", "status": "NOT_RUN"},
+    {"id": "obligation.immutable-secret-versions", "status": "NOT_RUN"},
+    {"id": "obligation.rollback-and-cleanup", "status": "NOT_RUN"}
+  ]
+}

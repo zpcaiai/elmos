@@ -24,6 +24,22 @@ elmos:
     issuer-uri: ${ELMOS_OIDC_ISSUER_URI:}
     jwk-set-uri: ${ELMOS_OIDC_JWKS_URI:}
     audience: ${ELMOS_OIDC_AUDIENCE:}
+    local:
+      enabled: ${ELMOS_LOCAL_IDENTITY_ENABLED:false}
+      pepper-file: ${ELMOS_IDENTITY_PEPPER_FILE:}
+  execution:
+    images:
+      generation: ${ELMOS_RUNNER_IMAGE_GENERATION:}
+      translation: ${ELMOS_RUNNER_IMAGE_TRANSLATION:}
+      spring-upgrade: ${ELMOS_RUNNER_IMAGE_SPRING_UPGRADE:}
+      repository-workspace: ${ELMOS_RUNNER_IMAGE_REPOSITORY_WORKSPACE:}
+    reaper-interval-ms: ${ELMOS_EXECUTION_REAPER_INTERVAL_MS:15000}
+  object-storage:
+    credential-reference: ${ELMOS_OBJECT_STORAGE_CREDENTIAL_REFERENCE:}
+    access-key-id-file: ${ELMOS_OBJECT_STORAGE_ACCESS_KEY_ID_FILE:}
+    secret-access-key-file: ${ELMOS_OBJECT_STORAGE_SECRET_ACCESS_KEY_FILE:}
+    session-token-file: ${ELMOS_OBJECT_STORAGE_SESSION_TOKEN_FILE:}
+    gc-interval-ms: ${ELMOS_OBJECT_STORAGE_GC_INTERVAL_MS:3600000}
   operations:
     api-key: ${ELMOS_OPERATIONS_API_KEY:}
     api-key-expires-at: ${ELMOS_OPERATIONS_API_KEY_EXPIRES_AT:}
@@ -40,7 +56,8 @@ elmos:
     notification-interval-ms: ${ELMOS_OPERATIONS_NOTIFICATION_INTERVAL_MS:15000}
   repository-workspace:
     enabled: ${ELMOS_REPOSITORY_WORKSPACE_ENABLED:false}
-    api-key: ${ELMOS_REPOSITORY_WORKSPACE_API_KEY:}
+    legacy-api-key-enabled: ${ELMOS_REPOSITORY_LEGACY_API_KEY_ENABLED:false}
+    legacy-api-key-file: ${ELMOS_REPOSITORY_LEGACY_API_KEY_FILE:}
     root: ${ELMOS_REPOSITORY_WORKSPACE_ROOT:}
     credential-root: ${ELMOS_REPOSITORY_CREDENTIAL_ROOT:}
     max-files: ${ELMOS_REPOSITORY_WORKSPACE_MAX_FILES:100000}
@@ -68,6 +85,8 @@ elmos:
     webhook:
       secret: ${ELMOS_GITHUB_WEBHOOK_SECRET:}
       previous-secret: ${ELMOS_GITHUB_WEBHOOK_PREVIOUS_SECRET:}
+      secret-file: ${ELMOS_GITHUB_WEBHOOK_SECRET_FILE:}
+      previous-secret-file: ${ELMOS_GITHUB_WEBHOOK_PREVIOUS_SECRET_FILE:}
       max-body-bytes: ${ELMOS_GITHUB_WEBHOOK_MAX_BODY_BYTES:1048576}
   snapshot:
     staging-root: ${ELMOS_SNAPSHOT_STAGING_ROOT:}

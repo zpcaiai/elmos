@@ -16,6 +16,75 @@ separate holdout, and representative behavior replay. Independent and external
 certification remain `NOT_RUN`; repository orchestration never broadens this
 semantic boundary.
 
+## Canonical types and operator semantics
+
+The IR has four canonical types. `integer` is a **64-bit signed integer** and
+`number` is **IEEE-754 binary64**; those two definitions are what every route
+is checked against.
+
+| Canonical | java | python | csharp | typescript |
+| --- | --- | --- | --- | --- |
+| `integer` | `long` | `int` | `long` | `number` |
+| `number` | `double` | `float` | `double` | `number` |
+| `boolean` | `boolean` | `bool` | `bool` | `boolean` |
+| `string` | `String` | `str` | `string` | `string` |
+
+Lifting *into* those types is deliberately narrower than each language's own
+type system, because the difference is not observable in the emitted code:
+
+* `byte`/`short`/`int` (Java, C#) widen to the 64-bit `integer`. Exact for
+  every value; only 32-bit overflow wraparound differs, and that difference is
+  unobservable in the pure-function profile unless the source relies on it.
+* `float`/`Single` is **refused** (`JAVA_FLOAT_PRECISION_OUTSIDE_CERTIFIED_SUBSET`,
+  `CSHARP_FLOAT_PRECISION_OUTSIDE_CERTIFIED_SUBSET`): a 24-bit significand does
+  not round-trip through binary64 -- `0.1f + 0.2f != 0.1 + 0.2`.
+* `BigDecimal`/`BigInteger`/`decimal` is **refused**: exact base-10 arithmetic
+  has no binary floating-point equivalent in any target here.
+* Java's boxed wrappers (`Integer`, `Long`, `Double`, `Boolean`, ...) are
+  **refused**: they are nullable and the certified subset has no null.
+* TypeScript's `number` lifts to canonical `number`, never `integer` -- the
+  language has no integer type.
+
+Operators are typed, not textual. The canonical `/` and `%` on two `integer`s
+are the **truncating** pair (Java/C#/TypeScript semantics), so:
+
+* a Python **target** gets `_elmos_truncating_div` / `_elmos_truncating_mod`
+  helpers instead of `/` and `%` (Python's `//` floors and its `%` follows the
+  sign of the divisor: `-7 // 2` is `-4` and `-7 % 2` is `1`, where Java
+  answers `-3` and `-1`), and `math.fmod` for float remainder;
+* a TypeScript **target** gets `Math.trunc(a / b)`, since `/` there is float
+  division;
+* a Python **source** using `/` on two ints, or `%` at all, fails closed
+  (`PYTHON_TRUE_DIVISION_ON_INTEGERS_OUTSIDE_CERTIFIED_SUBSET`,
+  `PYTHON_FLOORED_MODULO_OUTSIDE_CERTIFIED_SUBSET`) -- those spellings mean
+  something the canonical operator does not.
+
+Equality and ordering are typed the same way: `==`/`!=` on `string` emits
+`.equals(...)` in Java (`==` there compares references) and `===`/`!==` in
+TypeScript, while `<`/`<=`/`>`/`>=` on `string` fails closed, because Java
+orders by UTF-16 code unit and Python by code point.
+
+Literals are range-checked per target: an `integer` literal outside int32 gets
+the `L` suffix in Java/C# (without it `javac` reports "integer number too
+large"), a literal beyond 2^53-1 is refused for a TypeScript target
+(`number` cannot hold it exactly), a literal outside int64 is refused
+everywhere, and NaN/Infinity have no shared spelling and are refused.
+
+Runtime values are guarded too: an emitted TypeScript function that carries
+`integer` parameters or returns one checks each of them with
+`Number.isSafeInteger` and throws `RangeError: ELMOS_INTEGER_NOT_SAFE:<value>`
+instead of continuing with a silently rounded value. The helper is emitted
+only when a function actually carries an `integer`; `number`-only functions
+are untouched, and the other three targets need no guard because `long`/`int`
+hold the whole canonical range exactly.
+
+The one boundary that stays documented rather than enforced: Java's and C#'s
+`byte`/`short`/`int` widen to the 64-bit canonical `integer`, so a source that
+*relies on* 32-bit overflow wraparound translates into code that does not wrap
+at the same point. Rejecting `int` outright would exclude most real Java and
+C# for a behaviour the pure-function profile has no way to observe, so this is
+a stated limit of `typed-pure-function-v1`, not a silent one.
+
 Execution is exact-toolchain bound: Java 21.0.11, Python 3.12.12, .NET SDK
 10.0.301 / Roslyn 5.6.0, and TypeScript 5.9.2 on Node 26.0.0. A missing or
 different source or target toolchain blocks the route instead of accepting
