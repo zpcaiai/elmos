@@ -29,7 +29,7 @@ REALISTIC_DDL_BY_SOURCE = {
             created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
             org_id INT NOT NULL,
             active BOOLEAN NOT NULL DEFAULT TRUE,
-            CONSTRAINT fk_org FOREIGN KEY (org_id) REFERENCES organizations (id) ON DELETE CASCADE ON UPDATE RESTRICT,
+            CONSTRAINT fk_org FOREIGN KEY (org_id) REFERENCES organizations (id) ON DELETE CASCADE ON UPDATE NO ACTION,
             CONSTRAINT chk_balance CHECK (balance >= 0)
         )
     """,
@@ -41,7 +41,7 @@ REALISTIC_DDL_BY_SOURCE = {
             created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
             org_id INTEGER NOT NULL,
             active BOOLEAN NOT NULL DEFAULT TRUE,
-            CONSTRAINT fk_org FOREIGN KEY (org_id) REFERENCES organizations (id) ON DELETE CASCADE ON UPDATE RESTRICT,
+            CONSTRAINT fk_org FOREIGN KEY (org_id) REFERENCES organizations (id) ON DELETE CASCADE ON UPDATE NO ACTION,
             CONSTRAINT chk_balance CHECK (balance >= 0)
         )
     """,
@@ -72,6 +72,10 @@ REALISTIC_DDL_BY_SOURCE = {
 }
 
 
+# This cross-dialect fixture uses the strongest action combination every
+# target can represent. Unsupported actions such as RESTRICT remain covered
+# by explicit fail-closed negative tests instead of making a nominal
+# all-direction success case impossible for Oracle and SQL Server.
 @pytest.mark.parametrize("source,target", ALL_DIRECTION_PAIRS)
 def test_realistic_table_translates_and_round_trips_for_every_direction_pair(source: str, target: str) -> None:
     report = translate_ddl(REALISTIC_DDL_BY_SOURCE[source], source, target)

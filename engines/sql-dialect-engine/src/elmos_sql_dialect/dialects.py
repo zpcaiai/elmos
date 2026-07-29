@@ -51,6 +51,65 @@ def referential_action_sql(action: ReferentialAction) -> str:
     return _REFERENTIAL_ACTION_SQL[action]
 
 
+#: Which referential actions each vendor's `references_clause` actually
+#: accepts, per their documented grammar -- NOT per what sqlglot will parse.
+#:
+#: Oracle has no `ON UPDATE` clause, accepts only CASCADE and SET NULL for
+#: `ON DELETE`, and expresses NO ACTION by omitting the clause. SQL Server
+#: does not accept RESTRICT. MySQL (InnoDB) and PostgreSQL accept all four
+#: canonical actions.
+_ON_DELETE_SUPPORT: dict[Dialect, frozenset[ReferentialAction]] = {
+    Dialect.POSTGRES: frozenset(ReferentialAction),
+    Dialect.MYSQL: frozenset(ReferentialAction),
+    Dialect.TSQL: frozenset(
+        {ReferentialAction.NO_ACTION, ReferentialAction.CASCADE, ReferentialAction.SET_NULL}
+    ),
+    Dialect.ORACLE: frozenset(
+        {ReferentialAction.NO_ACTION, ReferentialAction.CASCADE, ReferentialAction.SET_NULL}
+    ),
+}
+
+_ON_UPDATE_SUPPORT: dict[Dialect, frozenset[ReferentialAction]] = {
+    Dialect.POSTGRES: frozenset(ReferentialAction),
+    Dialect.MYSQL: frozenset(ReferentialAction),
+    Dialect.TSQL: frozenset(
+        {ReferentialAction.NO_ACTION, ReferentialAction.CASCADE, ReferentialAction.SET_NULL}
+    ),
+    Dialect.ORACLE: frozenset({ReferentialAction.NO_ACTION}),
+}
+
+_OMIT_NO_ACTION = frozenset({Dialect.ORACLE})
+
+
+def render_reference_actions(
+    on_delete: ReferentialAction, on_update: ReferentialAction, dialect: Dialect
+) -> str:
+    """Render a target-valid REFERENCES action tail, failing closed when the
+    requested semantics cannot be represented by that database."""
+    for action, supported, clause in (
+        (on_delete, _ON_DELETE_SUPPORT[dialect], "ON DELETE"),
+        (on_update, _ON_UPDATE_SUPPORT[dialect], "ON UPDATE"),
+    ):
+        if action not in supported:
+            detail = (
+                f"{dialect.value} has no {clause} clause"
+                if not supported - {ReferentialAction.NO_ACTION}
+                else f"{dialect.value} does not accept {clause} {referential_action_sql(action)}"
+            )
+            raise DialectError(
+                "CERTIFIED_DDL_UNREACHABLE_REFERENTIAL_ACTION",
+                f"{detail}; certified-ddl-v1 refuses to downgrade it silently",
+            )
+
+    parts: list[str] = []
+    omit_default = dialect in _OMIT_NO_ACTION
+    if not (omit_default and on_delete is ReferentialAction.NO_ACTION):
+        parts.append(f"ON DELETE {referential_action_sql(on_delete)}")
+    if not (omit_default and on_update is ReferentialAction.NO_ACTION):
+        parts.append(f"ON UPDATE {referential_action_sql(on_update)}")
+    return " ".join(parts)
+
+
 #: Hard, documented per-vendor ceilings for a *character* column length.
 #: Exceeding one of these is a statement the target server rejects outright,
 #: so certified-ddl-v1 fails closed on it rather than emitting DDL that only
