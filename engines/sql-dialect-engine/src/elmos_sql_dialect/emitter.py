@@ -38,10 +38,28 @@ def _render_column(column: Column, dialect: Dialect) -> str:
     parts = [column.name, render_type(column.type_ref, dialect)]
     if column.auto_increment:
         parts[-1] = parts[-1] + render_auto_increment_suffix(dialect)
+    default = (
+        None
+        if column.default is None
+        else f"DEFAULT {render_default(column.default, column.type_ref, dialect)}"
+    )
+    # Oracle's column_definition grammar is
+    #   column datatype [DEFAULT expr] [inline_constraint]
+    # so DEFAULT must precede NOT NULL there; `c NUMBER(1) NOT NULL DEFAULT 1`
+    # is a syntax error on a real Oracle server (sqlglot parses it, so the
+    # syntax-validation leg cannot catch this). MySQL, PostgreSQL and SQL
+    # Server accept either order, and `NOT NULL DEFAULT ...` is the
+    # conventional spelling there.
+    if dialect is Dialect.ORACLE:
+        if default is not None:
+            parts.append(default)
+        if not column.nullable:
+            parts.append("NOT NULL")
+        return " ".join(parts)
     if not column.nullable:
         parts.append("NOT NULL")
-    if column.default is not None:
-        parts.append(f"DEFAULT {render_default(column.default, column.type_ref, dialect)}")
+    if default is not None:
+        parts.append(default)
     return " ".join(parts)
 
 

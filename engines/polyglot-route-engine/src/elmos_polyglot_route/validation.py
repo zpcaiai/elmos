@@ -89,10 +89,12 @@ def _typescript_harness(function: Function, cases: list[dict[str, Any]]) -> str:
     for index, case in enumerate(cases):
         args = ", ".join(_argument(value, "typescript") for value in case["args"])
         expected = _expected(case["expected"], "typescript")
+        # Built from the function name directly. An earlier revision templated
+        # the literal name `calculate` and then string-replaced it, which also
+        # rewrote any occurrence of "calculate" inside a string argument or
+        # expected value -- silently changing what the behaviour case asserts.
         checks.append(
-            f'if (calculate({args}) !== {expected}) throw new Error("case {index}");'.replace(
-                "calculate", function.name
-            )
+            f'if ({function.name}({args}) !== {expected}) throw new Error("case {index}");'
         )
     return "import { " + function.name + ' } from "./migrated.js";\n' + "\n".join(checks) + "\n"
 

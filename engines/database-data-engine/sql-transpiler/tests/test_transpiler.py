@@ -32,7 +32,12 @@ def test_typed_transpilation_parses_emits_and_reparses_without_runtime_claims() 
 
     assert result.state == "SYNTAX_READY"
     assert result.target_sql is not None
-    assert ":tenant_id" in result.target_sql
+    # The placeholder is rewritten into MySQL's own bind syntax. Carrying
+    # `:tenant_id` through verbatim (what this test asserted before the
+    # placeholder fix) produces SQL MySQL does not read as a bind parameter at
+    # all -- see tests/test_placeholders.py and placeholders.py.
+    assert ":tenant_id" not in result.target_sql
+    assert "tenant_id = ?" in result.target_sql
     assert result.syntax_parse == "PASSED"
     assert result.target_emit == "PASSED"
     assert result.target_reparse == "PASSED"

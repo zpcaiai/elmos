@@ -7,6 +7,7 @@ import sqlglot
 from sqlglot import exp
 from sqlglot.errors import ErrorLevel, ParseError, UnsupportedError
 
+from . import placeholders
 from .models import (
     Diagnostic,
     EvidenceState,
@@ -14,10 +15,32 @@ from .models import (
     TranspileRequest,
     TranspileResult,
 )
-from .profiles import directed_route, profile_by_id
+from .profiles import directed_route, parser_pin, profile_by_id
 
 _MAX_SQL_BYTES = 1_048_576
 _SQLGLOT_VERSION = version("sqlglot")
+
+#: Engines whose `/` truncates when both operands are integers. The other
+#: engines in this profile set return a fractional result for the same
+#: expression, so `SELECT total / count` is not the same query on both sides
+#: of those routes -- and it is a value difference, not a syntax error, so
+#: neither the emit nor the re-parse leg can see it.
+#:
+#:   postgres  7 / 2 = 3        mysql   7 / 2 = 3.5000
+#:   tsql      7 / 2 = 3        oracle  7 / 2 = 3.5
+#:   sqlite    7 / 2 = 3        duckdb  7 / 2 = 3.5
+_INTEGER_DIVISION_TRUNCATES = frozenset({"postgres", "tsql", "sqlite"})
+
+#: How each engine folds an *unquoted* identifier. Crossing a boundary here
+#: means `SELECT Foo FROM Bar` resolves to different objects on the two sides.
+_IDENTIFIER_FOLDING = {
+    "postgres": "lower",
+    "duckdb": "lower",
+    "oracle": "upper",
+    "mysql": "preserve",
+    "sqlite": "preserve",
+    "tsql": "preserve",
+}
 _PARAMETER_NODE_KEYS = frozenset({"placeholder", "parameter"})
 _OBLIGATION_BY_NODE = {
     "aggregate": "AGGREGATION_SEMANTICS",
@@ -25,6 +48,7 @@ _OBLIGATION_BY_NODE = {
     "between": "BOUNDARY_COMPARISON_SEMANTICS",
     "cast": "TYPE_CAST_SEMANTICS",
     "collate": "COLLATION_SEMANTICS",
+    "div": "INTEGER_DIVISION_SEMANTICS",
     "except": "SET_DIFFERENCE_SEMANTICS",
     "group": "GROUPING_SEMANTICS",
     "intersect": "SET_INTERSECTION_SEMANTICS",
@@ -46,6 +70,91 @@ _OBLIGATION_BY_NODE = {
 
 def _digest(value: str) -> str:
     return f"sha256:{sha256(value.encode('utf-8')).hexdigest()}"
+
+
+def _require_pinned_parser() -> None:
+    """The profile catalog names an exact parser build; refuse to translate
+    with a different one.
+
+    `runner.py` already refuses to run against an unpinned duckdb/psycopg, and
+    `engines/polyglot-route-engine` refuses an unpinned JDK/CPython/Node. The
+    parser is the component that decides what every statement *means* here, so
+    it gets the same treatment instead of being recorded after the fact in
+    result metadata.
+    """
+    pinned = parser_pin()["version"]
+    if pinned != _SQLGLOT_VERSION:
+        raise RuntimeError(
+            f"EXACT_PARSER_MISMATCH: profile catalog pins sqlglot {pinned}, "
+            f"found {_SQLGLOT_VERSION}"
+        )
+
+
+def _route_semantic_warnings(
+    source_dialect: str,
+    target_dialect: str,
+    statements: list[exp.Expression],
+) -> list[Diagnostic]:
+    """Value-level divergences that are legal SQL on both sides.
+
+    Neither the emit leg nor the re-parse leg can see these: the statement is
+    valid in both dialects and simply computes something different.
+    """
+    warnings: list[Diagnostic] = []
+    truncates_source = source_dialect in _INTEGER_DIVISION_TRUNCATES
+    truncates_target = target_dialect in _INTEGER_DIVISION_TRUNCATES
+    if truncates_source != truncates_target and any(
+        statement.find(exp.Div) is not None for statement in statements
+    ):
+        truncating, fractional = (
+            (source_dialect, target_dialect)
+            if truncates_source
+            else (target_dialect, source_dialect)
+        )
+        warnings.append(
+            Diagnostic(
+                code="INTEGER_DIVISION_SEMANTICS_DIFFER",
+                severity="WARNING",
+                statement_index=None,
+                message=(
+                    f"`/` on two integers truncates in {truncating} and returns a fractional "
+                    f"result in {fractional} (7 / 2 is 3 versus 3.5), and division by zero "
+                    "raises in one and yields NULL in the other. Verify every division site "
+                    "against the column types before relying on this translation."
+                ),
+            )
+        )
+
+    source_folding = _IDENTIFIER_FOLDING.get(source_dialect)
+    target_folding = _IDENTIFIER_FOLDING.get(target_dialect)
+    if source_folding != target_folding:
+        unfolded = [
+            identifier.this
+            for statement in statements
+            for identifier in statement.find_all(exp.Identifier)
+            if not identifier.args.get("quoted")
+            and (
+                (source_folding == "lower" and identifier.this != identifier.this.lower())
+                or (source_folding == "upper" and identifier.this != identifier.this.upper())
+                or (source_folding == "preserve" and identifier.this != identifier.this.lower())
+            )
+        ]
+        if unfolded:
+            warnings.append(
+                Diagnostic(
+                    code="IDENTIFIER_CASE_FOLDING_DIFFERS",
+                    severity="WARNING",
+                    statement_index=None,
+                    message=(
+                        f"{source_dialect} folds unquoted identifiers to {source_folding} and "
+                        f"{target_dialect} to {target_folding}; "
+                        f"{sorted(set(unfolded))[:5]} resolve to different object names on the "
+                        "two sides. Quote them, or confirm the target schema was created with "
+                        "the same folding."
+                    ),
+                )
+            )
+    return warnings
 
 
 def _validate_request(request: TranspileRequest) -> None:
@@ -91,6 +200,17 @@ def _obligations(expression: exp.Expression) -> tuple[str, ...]:
     return tuple(sorted(found))
 
 
+def _is_wildcard(projection: exp.Expression) -> bool:
+    """`*` or `t.*` as a whole projection.
+
+    Deliberately not `projection.find(exp.Star)`: `COUNT(*)` contains a Star
+    node but occupies exactly one, well-determined projection position.
+    """
+    if isinstance(projection, exp.Star):
+        return True
+    return isinstance(projection, exp.Column) and isinstance(projection.this, exp.Star)
+
+
 def _projection_reference(
     projections: list[exp.Expression],
     literal: exp.Expression,
@@ -99,6 +219,17 @@ def _projection_reference(
 ) -> exp.Expression:
     if not isinstance(literal, exp.Literal) or not literal.is_int:
         return literal
+    if any(_is_wildcard(projection) for projection in projections):
+        # `SELECT * ... ORDER BY 1` cannot be resolved without the table's
+        # column list: position 1 is whatever `*` expands to first, and any
+        # position after a `*` shifts by the table's width. The pre-fix code
+        # substituted the projection node itself and emitted `ORDER BY *` /
+        # `GROUP BY *`, which sqlglot re-parses happily and every real server
+        # rejects.
+        raise UnsupportedError(
+            "a positional GROUP BY/ORDER BY reference cannot be resolved against a "
+            "wildcard projection without the table's column list"
+        )
     position = int(literal.this)
     if position < 1 or position > len(projections):
         return literal
@@ -182,6 +313,7 @@ def _blocked_result(
 
 
 def transpile(request: TranspileRequest) -> TranspileResult:
+    _require_pinned_parser()
     _validate_request(request)
     source = profile_by_id(request.source_profile)
     target = profile_by_id(request.target_profile)
@@ -238,6 +370,9 @@ def transpile(request: TranspileRequest) -> TranspileResult:
             canonical_statement, positional_rewrite = _normalize_positional_references(
                 source_statement
             )
+            canonical_statement, placeholder_mapping = placeholders.rewrite(
+                canonical_statement, source.dialect, target.dialect
+            )
             generated = canonical_statement.sql(
                 dialect=target.dialect,
                 pretty=True,
@@ -260,12 +395,15 @@ def transpile(request: TranspileRequest) -> TranspileResult:
             ):
                 raise UnsupportedError("target did not reparse to exactly one typed statement")
             target_statement = target_statements[0]
+            placeholders.verify_tokens(target_statement, target.dialect)
             parameter_nodes_after = _parameter_nodes(target_statement, target.dialect)
             if len(parameter_nodes_before) != len(parameter_nodes_after):
                 raise UnsupportedError("parameter node cardinality changed")
             obligations = set(_obligations(source_statement))
             if positional_rewrite:
                 obligations.add("POSITIONAL_REFERENCE_NORMALIZED")
+            if placeholder_mapping:
+                obligations.add("PARAMETER_BINDING_REWRITTEN")
             statement_irs.append(
                 StatementIr(
                     index=index,
@@ -318,6 +456,9 @@ def transpile(request: TranspileRequest) -> TranspileResult:
                 target_emit="PASSED",
                 target_reparse="PASSED",
             )
+    diagnostics.extend(
+        _route_semantic_warnings(source.dialect, target.dialect, source_statements)
+    )
     if "RESULT_ORDER_UNDEFINED" in all_obligations:
         diagnostics.append(
             Diagnostic(

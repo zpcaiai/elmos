@@ -322,3 +322,42 @@ def test_python_addition_still_lifts_and_emits(tmp_path: Path) -> None:
     )
     semantic = analyze_python(source, "calculate")
     assert "public static long calculate(long subtotal, long tax)" in emit(semantic, "java").content
+
+
+# --------------------------------------------------------------------------
+# The behaviour harnesses themselves must not corrupt the case they assert.
+# --------------------------------------------------------------------------
+
+
+def test_typescript_harness_does_not_rewrite_string_arguments() -> None:
+    from elmos_polyglot_route.models import Function as _Function
+    from elmos_polyglot_route.models import Parameter as _Parameter
+    from elmos_polyglot_route.validation import _typescript_harness
+
+    function = _Function(
+        name="echo",
+        parameters=(_Parameter(name="value", type="string"),),
+        return_type="string",
+        body=(),
+    )
+    # An earlier revision templated the literal name `calculate` and then
+    # string-replaced it, so any occurrence of "calculate" inside a case's own
+    # data was rewritten too.
+    harness = _typescript_harness(function, [{"args": ["calculate"], "expected": "calculate"}])
+    assert 'echo("calculate")' in harness
+    assert '"echo"' not in harness
+
+
+def test_java_harness_compares_strings_by_value() -> None:
+    from elmos_polyglot_route.models import Function as _Function
+    from elmos_polyglot_route.models import Parameter as _Parameter
+    from elmos_polyglot_route.validation import _java_harness
+
+    function = _Function(
+        name="echo",
+        parameters=(_Parameter(name="value", type="string"),),
+        return_type="string",
+        body=(),
+    )
+    harness = _java_harness(function, [{"args": ["a"], "expected": "a"}])
+    assert "java.util.Objects.equals" in harness

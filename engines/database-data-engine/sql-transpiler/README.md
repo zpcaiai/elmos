@@ -44,14 +44,56 @@ The output directory is create-only. A successful materialization contains targe
 
 `SYNTAX_READY` means:
 
-1. the exact source dialect parsed without recovery;
-2. no opaque command node was accepted;
-3. typed canonical normalization completed;
-4. the target emitter reported no unsupported semantics;
-5. the generated target SQL reparsed in the exact target dialect;
-6. parameter-node cardinality was preserved.
+1. the installed parser is the exact build the profile catalog pins
+   (a different `sqlglot` raises `EXACT_PARSER_MISMATCH` rather than
+   translating with an unverified frontend);
+2. the exact source dialect parsed without recovery;
+3. no opaque command node was accepted;
+4. typed canonical normalization completed;
+5. every bind parameter was rewritten into the target dialect's own
+   placeholder syntax, one source parameter to one target parameter;
+6. the target emitter reported no unsupported semantics;
+7. the generated target SQL reparsed in the exact target dialect;
+8. parameter-node cardinality was preserved and every emitted placeholder is
+   a real placeholder in the target engine.
 
 It does not mean the target database executed the SQL or returned equivalent rows, types, ordering, errors, locks, plans, or performance. Those remain `NOT_RUN`; certification remains `NOT_CERTIFIED`.
+
+### Bind parameters
+
+`sqlglot` does not translate placeholders between dialects: it renders each
+parameter node with whatever syntax the *target generator* uses for that node
+type. For every cross-engine pair here that is not a placeholder at all --
+PostgreSQL `$1` becomes MySQL `@1` (a session variable), Oracle `:one` becomes
+PostgreSQL `%(one)s` (psycopg client syntax), SQL Server `@p1` becomes
+PostgreSQL `$p1` (invalid). None of those are syntax errors, so the re-parse
+leg cannot catch them; a query translated that way binds nothing and matches
+the wrong rows. `placeholders.py` owns this: it rewrites each parameter into
+the target's real syntax (`$n` / `?` / `@name` / `:name`), keeps one source
+parameter mapped to one target parameter, refuses a repeated parameter when
+the target's placeholders are positional and anonymous, and verifies every
+emitted token against the target's placeholder grammar.
+
+### Divergences that are legal SQL on both sides
+
+Two differences cannot be fixed by translation, because the statement is valid
+in both dialects and simply computes something different. They are reported as
+`WARNING` diagnostics, with the matching semantic obligation on the statement:
+
+* `INTEGER_DIVISION_SEMANTICS_DIFFER` -- `/` on two integers truncates in
+  PostgreSQL, SQL Server and SQLite (`7 / 2` is 3) and returns a fractional
+  result in MySQL, Oracle and DuckDB (`3.5`); division by zero raises in the
+  first group and yields NULL in MySQL. Which behaviour applies depends on the
+  column types, which this profile has no catalog for.
+* `IDENTIFIER_CASE_FOLDING_DIFFERS` -- PostgreSQL and DuckDB fold unquoted
+  identifiers to lower case, Oracle to upper case, MySQL/SQLite/SQL Server
+  preserve them, so `SELECT Foo FROM Bar` names different objects on the two
+  sides of such a route.
+
+A positional `GROUP BY` / `ORDER BY` against a wildcard projection
+(`SELECT * FROM t ORDER BY 1`) is refused outright: resolving position 1
+requires the table's column list, and substituting the projection node emits
+`ORDER BY *`, which sqlglot re-parses and every real server rejects.
 
 ## Exact local runtime Runner
 

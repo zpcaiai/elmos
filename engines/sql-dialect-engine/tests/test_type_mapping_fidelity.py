@@ -279,3 +279,42 @@ def test_current_timestamp_default_uses_sysdatetime_on_sql_server() -> None:
     )
     assert "DATETIME2 NOT NULL DEFAULT SYSDATETIME()" in emitted
     assert "GETDATE()" not in emitted
+
+
+# --------------------------------------------------------------------------
+# 11. Clause order inside a column definition. Oracle's grammar is
+#     `column datatype [DEFAULT expr] [inline_constraint]`, so DEFAULT must
+#     come before NOT NULL; the other three accept either order. sqlglot
+#     parses both, so the syntax leg cannot catch the wrong one.
+# --------------------------------------------------------------------------
+
+
+def test_oracle_puts_default_before_not_null() -> None:
+    emitted = _emit(
+        "CREATE TABLE t (id INT PRIMARY KEY, active BOOLEAN NOT NULL DEFAULT TRUE)",
+        "postgres",
+        "oracle",
+    )
+    assert "active NUMBER(1) DEFAULT 1 NOT NULL" in emitted
+    assert "NOT NULL DEFAULT" not in emitted
+
+
+@pytest.mark.parametrize("target", ["mysql", "tsql"])
+def test_the_other_dialects_keep_not_null_first(target: str) -> None:
+    emitted = _emit(
+        "CREATE TABLE t (id INT PRIMARY KEY, n VARCHAR(10) NOT NULL DEFAULT 'x')",
+        "postgres",
+        target,
+    )
+    assert "NOT NULL DEFAULT 'x'" in emitted
+
+
+def test_oracle_added_column_also_orders_default_first() -> None:
+    report = translate_ddl(
+        "ALTER TABLE t ADD COLUMN active BOOLEAN NOT NULL DEFAULT TRUE",
+        "postgres",
+        "oracle",
+        statement_kind="ALTER",
+    )
+    assert report["status"] == "PASSED", report
+    assert "DEFAULT 1 NOT NULL" in report["emitted"]

@@ -43,6 +43,15 @@ def _profile(raw: dict[str, Any]) -> DialectProfile:
     return profile
 
 
+def parser_pin() -> dict[str, Any]:
+    """The exact parser build the checked-in profile catalog was verified
+    against."""
+    parser = _catalog()["parser"]
+    if not isinstance(parser, dict) or "version" not in parser:
+        raise RuntimeError("SQL profile catalog must pin an exact parser version")
+    return parser
+
+
 def exact_profiles() -> tuple[DialectProfile, ...]:
     profiles = tuple(_profile(raw) for raw in _catalog()["profiles"])
     ids = {profile.id for profile in profiles}
