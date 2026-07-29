@@ -226,6 +226,16 @@ jobs:
         run: |
           uv run --with pyyaml python tooling/validate_runtime_operability.py
           uv run --with pyyaml python -m unittest discover -s tests/production-readiness -p 'test_*.py'
+      - name: Verify three-line workflow protocol pack
+        run: |
+          uv run --with 'jsonschema>=4.23' --with pyyaml \
+            python scripts/batch35/validate_verification_pack.py \
+            verification-packs/elmos-three-line-workflow-protocol
+          uv run --with 'jsonschema>=4.23' --with pyyaml \
+            python scripts/batch35/run_verification_gate.py \
+            verification-packs/elmos-three-line-workflow-protocol |
+            tee /tmp/elmos-workflow-gate.txt
+          grep -F "decision=NOT_CERTIFIED" /tmp/elmos-workflow-gate.txt
       - name: Verify project generation source and cloud evidence packs
         run: |
           uv run --with 'jsonschema>=4.23' --with pyyaml \
@@ -335,11 +345,14 @@ jobs:
           --project=chromium
           --project=mobile-chromium
           e2e/console-usability.spec.ts
+          e2e/core-business-lines-ui.spec.ts
+          e2e/experience-quality.spec.ts
           e2e/maturity-status-ui.spec.ts
           e2e/operations-admin-ui.spec.ts
           e2e/pricing-ui.spec.ts
           e2e/repository-workspace-ui.spec.ts
           e2e/runtime-deployment-guide.spec.ts
+          e2e/usage-meter-ui.spec.ts
 
   web-console-generation:
     name: Project generation browser qualification

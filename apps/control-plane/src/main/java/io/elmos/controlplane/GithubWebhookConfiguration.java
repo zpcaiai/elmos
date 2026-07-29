@@ -26,12 +26,39 @@ class GithubWebhookConfiguration {
         var registration = new FilterRegistrationBean<>(new GithubWebhookBodyLimitFilter(maxBodyBytes));
         registration.addUrlPatterns("/api/webhooks/github"); registration.setOrder(Integer.MIN_VALUE + 100); return registration;
     }
-    @Bean GithubWebhookSecrets githubWebhookSecrets(@Value("${elmos.github.webhook.secret:}") String current,
-                                                     @Value("${elmos.github.webhook.previous-secret:}") String previous) {
+    @Bean GithubWebhookSecrets githubWebhookSecrets(
+            @Value("${elmos.github.webhook.secret:}") String current,
+            @Value("${elmos.github.webhook.previous-secret:}") String previous,
+            @Value("${elmos.github.webhook.secret-file:}") String currentFile,
+            @Value("${elmos.github.webhook.previous-secret-file:}") String previousFile,
+            @Value("${ELMOS_ENVIRONMENT:development}") String environment) {
+        boolean production = environment.equalsIgnoreCase("production")
+                || environment.equalsIgnoreCase("prod");
+        if (production && (!current.isBlank() || !previous.isBlank())) {
+            throw new IllegalStateException(
+                    "GitHub webhook secrets must be file-backed in production");
+        }
         return () -> {
-            if (current.isBlank()) throw new IllegalStateException("GitHub webhook secret is not configured");
-            List<char[]> values = new ArrayList<>(); values.add(current.toCharArray());
-            if (!previous.isBlank()) values.add(previous.toCharArray()); return values;
+            String active = currentFile.isBlank()
+                    ? current
+                    : OwnerOnlySecretFile.readRequired(
+                            currentFile, 32, 4096,
+                            "GITHUB_WEBHOOK_SECRET_FILE_INVALID");
+            String retiring = previousFile.isBlank()
+                    ? previous
+                    : OwnerOnlySecretFile.readOptional(
+                            previousFile, 32, 4096,
+                            "GITHUB_WEBHOOK_PREVIOUS_SECRET_FILE_INVALID");
+            if (active.isBlank()) {
+                throw new IllegalStateException(
+                        "GitHub webhook secret is not configured");
+            }
+            List<char[]> values = new ArrayList<>();
+            values.add(active.toCharArray());
+            if (!retiring.isBlank()) {
+                values.add(retiring.toCharArray());
+            }
+            return values;
         };
     }
 }

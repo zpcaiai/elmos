@@ -77,6 +77,16 @@ record ControlPlanePrincipal(
     }
 
     static Optional<ControlPlanePrincipal> current() {
+        var requestAttributes =
+                org.springframework.web.context.request.RequestContextHolder.getRequestAttributes();
+        if (requestAttributes != null) {
+            Object databaseBound = requestAttributes.getAttribute(
+                    OidcTenantMembershipFilter.PRINCIPAL_ATTRIBUTE,
+                    org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST);
+            if (databaseBound instanceof ControlPlanePrincipal principal) {
+                return Optional.of(principal);
+            }
+        }
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!(authentication instanceof JwtAuthenticationToken jwt)
                 || !authentication.isAuthenticated()) {
@@ -84,7 +94,9 @@ record ControlPlanePrincipal(
         }
         Object organization = jwt.getToken().getClaims().get("organization_id");
         String organizationId = organization instanceof String value ? value : "";
-        String actorId = jwt.getToken().getSubject();
+        Object boundActor = jwt.getToken().getClaims().get("elmos_actor_id");
+        String actorId = boundActor instanceof String value
+                ? value : jwt.getToken().getSubject();
         Set<String> roles = roles(jwt.getToken().getClaims());
         Set<String> permissions = effectivePermissions(
                 roles, explicitPermissions(jwt.getToken().getClaims()));
@@ -108,6 +120,33 @@ record ControlPlanePrincipal(
         }
         return Optional.of(new ControlPlanePrincipal(
                 organizationId, actorId, roles, permissions, memberships));
+    }
+
+    static ControlPlanePrincipal databaseBound(
+            String selectedOrganizationId,
+            String oidcActorId,
+            List<io.elmos.persistence.JdbcOrganizationSelfServiceStore.OrganizationGrant> grants
+    ) {
+        Map<String, TenantGrant> memberships = new java.util.LinkedHashMap<>();
+        for (var grant : grants) {
+            Set<String> tenantRoles = databaseRoles(grant.role());
+            Set<String> tenantPermissions = databasePermissions(
+                    grant.role(), tenantRoles);
+            memberships.put(grant.organizationId(),
+                    new TenantGrant(tenantRoles, tenantPermissions));
+        }
+        var selected = grants.stream()
+                .filter(grant -> grant.organizationId().equals(selectedOrganizationId))
+                .findFirst()
+                .orElseThrow(() -> new AccessDeniedException(
+                        "CONTROL_PLANE_TENANT_MEMBERSHIP_REQUIRED"));
+        TenantGrant primary = memberships.get(selectedOrganizationId);
+        return new ControlPlanePrincipal(
+                selectedOrganizationId,
+                oidcActorId,
+                primary.roles(),
+                primary.permissions(),
+                memberships);
     }
 
     void require(String requestedOrganizationId, String requestedActorId, String permission) {
@@ -196,5 +235,27 @@ record ControlPlanePrincipal(
         result.retainAll(KNOWN_PERMISSIONS);
         result.add("workspace:view");
         return result;
+    }
+
+    private static Set<String> databaseRoles(String memberRole) {
+        return switch (memberRole == null ? "" : memberRole.toUpperCase(Locale.ROOT)) {
+            case "OWNER", "ADMIN" -> Set.of("TENANT_ADMIN");
+            case "MAINTAINER" -> Set.of("MAINTAINER");
+            case "MEMBER" -> Set.of("DEVELOPER");
+            case "VIEWER", "BILLING" -> Set.of("VIEWER");
+            default -> Set.of();
+        };
+    }
+
+    private static Set<String> databasePermissions(
+            String memberRole,
+            Set<String> roles
+    ) {
+        Set<String> result = new LinkedHashSet<>(effectivePermissions(roles, Set.of()));
+        if ("BILLING".equalsIgnoreCase(memberRole)) {
+            result.add("billing:write");
+            result.add("usage:read");
+        }
+        return Set.copyOf(result);
     }
 }

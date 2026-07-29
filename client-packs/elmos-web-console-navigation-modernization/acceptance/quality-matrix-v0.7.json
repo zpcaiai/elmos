@@ -1,0 +1,53 @@
+{
+  "schema_version": "1.0",
+  "status": "LOCAL_ENGINEERING_PROFILE",
+  "runtime": {
+    "node": "26.0.0-local",
+    "next": "16.2.12",
+    "react": "19.2.7",
+    "typescript": "5.9.2",
+    "pnpm": "10.12.4",
+    "playwright": "1.61.1"
+  },
+  "routes": [
+    "/",
+    "/generation",
+    "/translation",
+    "/spring",
+    "/repositories",
+    "/admin",
+    "/help"
+  ],
+  "browsers": [
+    "chromium-playwright-1.61.1-local",
+    "mobile-chromium-playwright-1.61.1-local"
+  ],
+  "locales": [
+    {
+      "id": "zh-CN",
+      "scope": "all-current-product-copy"
+    },
+    {
+      "id": "en",
+      "scope": "shell-navigation-and-help-only"
+    }
+  ],
+  "themes": [
+    "light",
+    "dark"
+  ],
+  "accessibility": [
+    "semantic-landmarks",
+    "axe-core-4.12.1",
+    "keyboard-skip-link",
+    "focus-visible",
+    "200-percent-zoom",
+    "reduced-motion-css",
+    "forced-colors-css"
+  ],
+  "visual_baseline_approval": "NOT_RUN",
+  "independent_assistive_technology": "NOT_RUN",
+  "firefox_webkit_current_run": "NOT_RUN",
+  "representative_customer_journey": "NOT_RUN",
+  "certification": "NOT_CERTIFIED"
+}

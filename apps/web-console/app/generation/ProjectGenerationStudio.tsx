@@ -722,8 +722,22 @@ export function ProjectGenerationStudio() {
         const payload = await response.json() as { reason?: string };
         throw new Error(payload.reason ?? `HTTP_${response.status}`);
       }
-      const expectedDigest = response.headers.get("x-content-sha256");
-      const blob = await response.blob();
+      let expectedDigest = response.headers.get("x-content-sha256");
+      let blob: Blob;
+      if (response.headers.get("content-type")?.startsWith("application/json")) {
+        const ticket = await response.json() as {
+          downloadUrl: string;
+          contentSha256: string;
+          byteSize: number;
+        };
+        const objectResponse = await fetch(ticket.downloadUrl, { cache: "no-store" });
+        if (!objectResponse.ok) throw new Error(`OBJECT_STORAGE_HTTP_${objectResponse.status}`);
+        blob = await objectResponse.blob();
+        if (blob.size !== ticket.byteSize) throw new Error("ARTIFACT_LENGTH_MISMATCH");
+        expectedDigest = ticket.contentSha256;
+      } else {
+        blob = await response.blob();
+      }
       const actualDigest = [...new Uint8Array(await crypto.subtle.digest(
         "SHA-256",
         await blob.arrayBuffer(),

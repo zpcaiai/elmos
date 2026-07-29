@@ -16,6 +16,8 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
+import org.springframework.http.HttpMethod;
 
 import java.util.List;
 
@@ -44,14 +46,37 @@ public class ControlPlaneSecurityConfiguration {
     }
 
     @Bean
-    SecurityFilterChain controlPlaneSecurity(HttpSecurity http) throws Exception {
+    SecurityFilterChain controlPlaneSecurity(
+            HttpSecurity http,
+            OidcTenantMembershipFilter tenantMembershipFilter
+    ) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll())
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(
+                                "/actuator/health/**",
+                                "/livez",
+                                "/readyz",
+                                "/api/webhooks/github",
+                                "/api/v1/auth/**",
+                                "/runner/v1/**")
+                        .permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .anyRequest().authenticated())
                 .oauth2ResourceServer(resourceServer ->
                         resourceServer.jwt(Customizer.withDefaults()))
+                .addFilterAfter(
+                        tenantMembershipFilter,
+                        BearerTokenAuthenticationFilter.class)
                 .build();
+    }
+
+    @Bean
+    OidcTenantMembershipFilter oidcTenantMembershipFilter(
+            io.elmos.persistence.JdbcOrganizationSelfServiceStore organizations
+    ) {
+        return new OidcTenantMembershipFilter(organizations);
     }
 }

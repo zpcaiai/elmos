@@ -5,6 +5,7 @@ import {
   stopRuntime,
 } from "../../../../../lib/server/generationRunner";
 import { withBusinessAudit } from "../../../../../lib/server/operationsProxy";
+import { hostedExecutionEnabled } from "../../../../../lib/server/hostedExecutionClient";
 
 export async function POST(
   request: NextRequest,
@@ -34,6 +35,9 @@ async function stop(
   context: { params: Promise<{ jobId: string }> },
 ) {
   try {
+    if (hostedExecutionEnabled()) {
+      throw new GenerationRunnerError(409, "HOSTED_RUNTIME_PREVIEW_NOT_AVAILABLE");
+    }
     const authorized = authorize(request);
     const { jobId } = await context.params;
     return NextResponse.json(await stopRuntime(authorized, jobId));

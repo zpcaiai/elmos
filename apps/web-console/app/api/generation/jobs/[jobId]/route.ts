@@ -4,6 +4,10 @@ import {
   GenerationRunnerError,
   getJob,
 } from "../../../../lib/server/generationRunner";
+import {
+  getHostedGenerationJob,
+  hostedExecutionEnabled,
+} from "../../../../lib/server/hostedExecutionClient";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +18,9 @@ export async function GET(
   try {
     const authorized = authorize(request);
     const { jobId } = await context.params;
-    return NextResponse.json(await getJob(authorized, jobId));
+    return NextResponse.json(hostedExecutionEnabled()
+      ? await getHostedGenerationJob(authorized, jobId)
+      : await getJob(authorized, jobId));
   } catch (error) {
     const status = error instanceof GenerationRunnerError ? error.status : 500;
     const reason = error instanceof Error ? error.message : "RUNNER_ERROR";

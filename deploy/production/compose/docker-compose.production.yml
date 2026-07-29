@@ -28,7 +28,7 @@ x-hardening: &hardening
 
 x-java-service: &java-service
   <<: *hardening
-  env_file: [../elmos-commercial.env]
+  env_file: ["${ELMOS_ENV_FILE:-../elmos-commercial.env}"]
   # VERIFY-REQUIRED: Java 镜像的可写路径未经确认，暂不设 read_only / user
   deploy:
     resources:
@@ -66,19 +66,18 @@ services:
     read_only: true
     tmpfs:
       - "/tmp:rw,noexec,nosuid,size=64m"
-    env_file: [../elmos-commercial.env]
+    env_file: ["${ELMOS_ENV_FILE:-../elmos-commercial.env}"]
     environment:
       NODE_ENV: production
-      CONTROL_PLANE_BASE_URL: http://control-plane:8080
-      ELMOS_CONTROL_PLANE_BASE_URL: http://control-plane:8080
+      # 由 env_file 提供受信任的 HTTPS 控制面地址。生产 BFF 主动拒绝
+      # 非 loopback HTTP，避免在共享容器网络上传递租户 Bearer Token。
       ELMOS_COMMERCIAL_API_URL: http://commercial-api:8085
       ELMOS_REPOSITORY_WORKSPACE_BASE_URL: http://workspace-service:8082
       # /generation 首发不开放 Spring 代理与整库转换
       ELMOS_SPRING_PROXY_ENABLED: "false"
-      # ⚠ 执行面：见 ../runner/RUNNER_PRODUCTION_BASELINE.md
-      #   当前令牌模型为单租户绑定，多租户上线前必须改造
-      ELMOS_LOCAL_RUNNER_ENABLED: "true"
-      ELMOS_LOCAL_RUNNER_EXECUTOR: "ROOTLESS_CONTAINER"
+      # 生产业务请求只入持久队列；Web 容器绝不直接启动客户进程。
+      ELMOS_HOSTED_EXECUTION_ENABLED: "true"
+      ELMOS_LOCAL_RUNNER_ENABLED: "false"
     networks: [edge, backend]
     expose: ["3000"]
     depends_on:
@@ -104,6 +103,9 @@ services:
     environment:
       # 来自 env_file：ELMOS_DATABASE_URL / _USER / _PASSWORD（托管 PostgreSQL）
       ELMOS_SHUTDOWN_TIMEOUT: "30s"
+    volumes:
+      # owner-only 对象存储凭据与可选本地身份 pepper；只读挂载。
+      - "${ELMOS_SECRET_ROOT:-/srv/elmos/secrets}:/run/secrets/elmos:ro"
     networks: [backend]
     expose: ["8080"]
 
@@ -139,9 +141,11 @@ services:
   # ---------------------------------------------------------------------------
   minio:
     <<: *hardening
+    # 仅供隔离 staging。正式环境使用已验证的外部 S3/OSS 服务。
+    profiles: ["minio"]
     image: minio/minio:RELEASE.2025-07-23T15-54-02Z
     command: server /data --console-address :9001
-    env_file: [../elmos-commercial.env]   # MINIO_ROOT_USER / MINIO_ROOT_PASSWORD
+    env_file: ["${ELMOS_ENV_FILE:-../elmos-commercial.env}"]
     volumes: ["artifact-data:/data"]
     networks: [backend]
     expose: ["9000"]

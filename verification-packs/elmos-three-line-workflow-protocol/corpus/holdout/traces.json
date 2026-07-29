@@ -1,0 +1,13 @@
+{
+  "corpus": "holdout",
+  "immutable": true,
+  "execution_status": "NOT_RUN",
+  "traces": [
+    {
+      "id": "holdout-worker-loss-after-start",
+      "initial": "workspace_clean",
+      "events": ["handoff", "acquire-lease", "start", "lease-heartbeat-missed"],
+      "expected": "blocked"
+    }
+  ]
+}

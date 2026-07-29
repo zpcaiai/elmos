@@ -251,6 +251,7 @@ test("hands a clean exact-head workspace to translation and Spring", async ({ pa
   });
   await page.goto("/repositories");
   await page.getByLabel("开发访问令牌").fill("repository-browser-token-32");
+  await page.getByLabel("托管平台").selectOption("GITEE");
   await page.getByLabel("HTTPS Clone URL").fill("https://gitee.com/owner/repository.git");
   await page.getByLabel("仓库原生标识").fill("owner/repository");
   await page.getByRole("button", { name: "拉取并建立工作区" }).click();
@@ -262,6 +263,7 @@ test("hands a clean exact-head workspace to translation and Spring", async ({ pa
 
   await page.goto("/repositories");
   await page.getByLabel("开发访问令牌").fill("repository-browser-token-32");
+  await page.getByLabel("托管平台").selectOption("GITEE");
   await page.getByLabel("HTTPS Clone URL").fill("https://gitee.com/owner/repository.git");
   await page.getByLabel("仓库原生标识").fill("owner/repository");
   await page.getByRole("button", { name: "拉取并建立工作区" }).click();

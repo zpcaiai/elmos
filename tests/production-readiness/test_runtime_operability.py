@@ -56,9 +56,9 @@ class RuntimeOperabilityTests(unittest.TestCase):
         ):
             self.assertIn(token, source)
 
-        control_plane = (
+        authorization = (
             ROOT
-            / "apps/control-plane/src/main/java/io/elmos/controlplane/OperationsObservabilityController.java"
+            / "apps/control-plane/src/main/java/io/elmos/controlplane/OperationsAuthorization.java"
         ).read_text(encoding="utf-8")
         for token in (
             "api-key-expires-at",
@@ -68,7 +68,7 @@ class RuntimeOperabilityTests(unittest.TestCase):
             "boundOrganizationId.equals(organizationId)",
             "boundActorId.equals(actorId)",
         ):
-            self.assertIn(token, control_plane)
+            self.assertIn(token, authorization)
 
     def test_spring_capability_response_never_outpaces_exact_route_evidence(self) -> None:
         source = (

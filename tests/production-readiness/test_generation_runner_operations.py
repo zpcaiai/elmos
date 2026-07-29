@@ -159,7 +159,7 @@ class GenerationRunnerOperationsTests(unittest.TestCase):
         self.assertIn("healthcheck", web)
         self.assertIn("ELMOS_LOCAL_RUNNER_AUTH_TOKEN_FILE", runner_source)
         self.assertIn("LOCAL_RUNNER_AUTH_FILE_UNSAFE", runner_source)
-        self.assertIn("LOCAL_RUNNER_TOKEN_LEASE_INVALID", runner_source)
+        self.assertIn("LOCAL_RUNNER_IDENTITY_LEASE_INVALID", runner_source)
         self.assertIn("LOCAL_RUNNER_QUIESCED", runner_source)
         self.assertIn("ROOTLESS_CONTAINER_ENGINE_NOT_CONFIGURED", runner_source)
         self.assertIn("HOST_EXECUTOR_FORBIDDEN_IN_PRODUCTION", runner_source)

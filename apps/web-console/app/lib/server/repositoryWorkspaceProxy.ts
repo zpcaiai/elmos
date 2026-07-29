@@ -224,14 +224,18 @@ function validatePath(parts: string[], search: URLSearchParams): string {
 function trustedHeaders(context: RepositoryActorContext): Headers {
   const headers = new Headers({
     "Accept": "application/json",
-    "X-ELMOS-Repository-Key": context.accessToken
-      ? "OIDC"
-      : requiredEnvironment("ELMOS_REPOSITORY_WORKSPACE_API_KEY", 24),
     "X-ELMOS-Organization-ID": context.organizationId,
     "X-ELMOS-Actor-ID": context.actorId,
     "X-Request-ID": randomUUID(),
   });
-  if (context.accessToken) headers.set("Authorization", `Bearer ${context.accessToken}`);
+  if (context.accessToken) {
+    headers.set("Authorization", `Bearer ${context.accessToken}`);
+  } else {
+    headers.set(
+      "X-ELMOS-Repository-Key",
+      requiredEnvironment("ELMOS_REPOSITORY_WORKSPACE_API_KEY", 24),
+    );
+  }
   return headers;
 }
 

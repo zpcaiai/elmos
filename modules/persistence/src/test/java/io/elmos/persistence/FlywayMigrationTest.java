@@ -9,6 +9,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Testcontainers(disabledWithoutDocker = true)
@@ -58,7 +59,9 @@ class FlywayMigrationTest {
                 "every migration resolved on an empty database must be applied");
         assertEquals(0, flyway.info().pending().length,
                 "no migration may remain pending after a full migrate");
-        var jdbc=org.springframework.jdbc.core.simple.JdbcClient.create(new org.springframework.jdbc.datasource.DriverManagerDataSource(POSTGRES.getJdbcUrl(),POSTGRES.getUsername(),POSTGRES.getPassword()));
+        var dataSource = new org.springframework.jdbc.datasource.DriverManagerDataSource(
+                POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword());
+        var jdbc=org.springframework.jdbc.core.simple.JdbcClient.create(dataSource);
         assertTrue(jdbc.sql("select count(*) from information_schema.tables where table_schema='public'").query(Integer.class).single() >= 1240);
         assertEquals(1, jdbc.sql("select count(*) from information_schema.tables where table_schema='public' and table_name='github_app_onboarding_states'").query(Integer.class).single());
         assertEquals(1, jdbc.sql("select count(*) from pg_policies where schemaname='public' and tablename='github_app_onboarding_states' and policyname='github_app_onboarding_tenant_isolation'").query(Integer.class).single());
@@ -94,5 +97,142 @@ class FlywayMigrationTest {
         String productSchemas = "'scm','catalog','delivery','workspace','execution','sandbox','artifact','evidence','attestation','signing','provenance','sbom','oci','verification','retention','privacy','analytics','assurance','risk','control','audit','portfolio','cockpit','forecast','performance','security','test','policy','authorization','deployment','runtime','admission','remediation','policy_decision','policy_rollout','cache','transfer','operations'";
         assertEquals(1416, jdbc.sql("select count(*) from information_schema.tables where table_schema in (" + productSchemas + ")").query(Integer.class).single());
         assertEquals(1417, jdbc.sql("select count(*) from pg_policies where policyname like 'product_b%_tenant_isolation'").query(Integer.class).single());
+
+        // V55-V60 are a product loop, not only schema presence. Exercise the
+        // security-definer API through the same JDBC shapes used at runtime.
+        String ownerAccount = "acc-test-owner";
+        String memberAccount = "acc-test-member";
+        String organization = "org-test-hosted-loop";
+        String ownerActor = "actor-test-owner";
+        String memberActor = "actor-test-member";
+        String ownerSubjectHash = "1".repeat(64);
+        assertEquals(ownerAccount, jdbc.sql("""
+                SELECT elmos_resolve_oidc_account(
+                    :account, 'https://issuer.test', 'owner-subject',
+                    'owner@example.test', true, 'Owner')
+                """).param("account", ownerAccount).query(String.class).single());
+        assertEquals(organization, jdbc.sql("""
+                SELECT elmos_create_self_service_organization(
+                    :account, :organization, 'Hosted Loop', :actor,
+                    'cn-north', :subjectHash)
+                """)
+                .param("account", ownerAccount)
+                .param("organization", organization)
+                .param("actor", ownerActor)
+                .param("subjectHash", ownerSubjectHash)
+                .query(String.class).single());
+        assertEquals("OWNER", jdbc.sql("""
+                SELECT member_role FROM identity_membership_directory
+                 WHERE account_id = :account AND organization_id = :organization
+                """)
+                .param("account", ownerAccount)
+                .param("organization", organization)
+                .query(String.class).single());
+
+        String firstRefresh = "a".repeat(64);
+        String secondRefresh = "b".repeat(64);
+        assertEquals("session-test-owner", jdbc.sql("""
+                SELECT elmos_open_session(
+                    'session-test-owner', :account, :organization, :token,
+                    86400, 3600, ARRAY['OIDC'], 'browser', 'test', '127.0.0.0/24')
+                """)
+                .param("account", ownerAccount)
+                .param("organization", organization)
+                .param("token", firstRefresh)
+                .query(String.class).single());
+        assertEquals("ROTATED", jdbc.sql("""
+                SELECT outcome FROM elmos_rotate_session_token(:current, :next, 3600)
+                """)
+                .param("current", firstRefresh)
+                .param("next", secondRefresh)
+                .query(String.class).single());
+        assertEquals(organization, jdbc.sql("""
+                SELECT organization_id FROM elmos_switch_session_organization(
+                    'session-test-owner', :account, :organization)
+                """)
+                .param("account", ownerAccount)
+                .param("organization", organization)
+                .query(String.class).single());
+
+        assertEquals(memberAccount, jdbc.sql("""
+                SELECT elmos_resolve_oidc_account(
+                    :account, 'https://issuer.test', 'member-subject',
+                    'member@example.test', true, 'Member')
+                """).param("account", memberAccount).query(String.class).single());
+        String invitationTokenHash = "c".repeat(64);
+        String destinationHmac = "d".repeat(64);
+        assertEquals("invite-test-member", jdbc.sql("""
+                SELECT elmos_create_organization_invitation(
+                    'invite-test-member', :organization, :owner, :ownerActor,
+                    :destination, 'm***@example.test', 'MEMBER', :token, 3600)
+                """)
+                .param("organization", organization)
+                .param("owner", ownerAccount)
+                .param("ownerActor", ownerActor)
+                .param("destination", destinationHmac)
+                .param("token", invitationTokenHash)
+                .query(String.class).single());
+        assertEquals(organization, jdbc.sql("""
+                SELECT elmos_accept_organization_invitation(
+                    :token, :destination, :account, :actor)
+                """)
+                .param("token", invitationTokenHash)
+                .param("destination", destinationHmac)
+                .param("account", memberAccount)
+                .param("actor", memberActor)
+                .query(String.class).single());
+        assertEquals(2, jdbc.sql("""
+                SELECT count(*) FROM elmos_list_organization_members(
+                    :organization, :owner)
+                """)
+                .param("organization", organization)
+                .param("owner", ownerAccount)
+                .query(Integer.class).single());
+        assertThrows(RuntimeException.class, () -> jdbc.sql("""
+                SELECT elmos_update_organization_member(
+                    :organization, :owner, :owner, 'VIEWER', false)
+                """)
+                .param("organization", organization)
+                .param("owner", ownerAccount)
+                .query(String.class).single(),
+                "the database must protect the last active owner");
+
+        var transactions = new org.springframework.transaction.support.TransactionTemplate(
+                new org.springframework.jdbc.datasource.DataSourceTransactionManager(dataSource));
+        var runnerStore = new JdbcRunnerRegistrationStore(jdbc, transactions);
+        var enrollment = runnerStore.issueEnrollment(
+                organization, "pool-test", ownerActor, 900);
+        String firstNodeToken = "node-token-" + "e".repeat(40);
+        String nextNodeToken = "node-token-" + "f".repeat(40);
+        String firstNodeHash = sha256(firstNodeToken);
+        String nextNodeHash = sha256(nextNodeToken);
+        var nodeCredential = runnerStore.register(
+                "runner-test-1", "pool-test", "0.1.0",
+                java.util.List.of("generation:multi"), 2,
+                enrollment.token(), firstNodeHash,
+                true, true, true, true, "allow-test");
+        assertEquals("runner-test-1", nodeCredential.runnerNodeId());
+        runnerStore.authorizeNode("runner-test-1", firstNodeToken);
+        runnerStore.rotateNodeCredential(
+                "runner-test-1", firstNodeToken, nextNodeHash,
+                "rotate-test-request-1");
+        // Same request is replay-safe after an unknown response.
+        runnerStore.rotateNodeCredential(
+                "runner-test-1", firstNodeToken, nextNodeHash,
+                "rotate-test-request-1");
+        runnerStore.authorizeNode("runner-test-1", nextNodeToken);
+        assertThrows(
+                io.elmos.workflow.RunnerRegistrationPort.RunnerAuthenticationException.class,
+                () -> runnerStore.authorizeNode("runner-test-1", firstNodeToken));
+    }
+
+    private static String sha256(String value) {
+        try {
+            return java.util.HexFormat.of().formatHex(
+                    java.security.MessageDigest.getInstance("SHA-256")
+                            .digest(value.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+        } catch (Exception error) {
+            throw new IllegalStateException(error);
+        }
     }
 }
