@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "profile_key": "elmos-three-line-workflow-protocol-profile-v1",
+  "version": 1,
+  "risk_tier": "P1",
+  "claims": [
+    {
+      "claim_id": "claim.protocol-local",
+      "description": "Local repository delivery and durable queue implementations reject the specified forbidden transitions.",
+      "criticality": "P1",
+      "required_oracles": [
+        "oracle.protocol-spec",
+        "oracle.runtime-tests"
+      ],
+      "required_techniques": [
+        "model",
+        "negative-traces",
+        "restart-recovery",
+        "browser-journey"
+      ]
+    }
+  ],
+  "techniques": [
+    "model",
+    "contract",
+    "security",
+    "concurrency",
+    "counterexample-replay"
+  ],
+  "budgets": {
+    "max_wall_time_minutes": 20,
+    "max_solver_seconds": 0,
+    "max_fuzz_seconds": 0,
+    "max_schedules": 100,
+    "max_mutants": 0
+  },
+  "stop_conditions": [
+    "critical-oracle-conflict",
+    "budget-exhausted",
+    "unknown-p0-property",
+    "security-violation"
+  ],
+  "approvals": []
+}

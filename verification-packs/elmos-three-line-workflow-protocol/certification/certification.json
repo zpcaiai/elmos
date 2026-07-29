@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-three-line-workflow-protocol",
+  "status": "experimental",
+  "owner": "elmos-verification-engineering",
+  "exact_scope": {
+    "migration_route": "repository-to-three-business-lines",
+    "source_artifact_digest": "sha256:b892635a93907c13da127a123fe44f0fd1049b3df9c5ac3da5351ded154c6912",
+    "target_artifact_digest": "sha256:d248f416ce03eaafdedbf8e04b23d077e15aff45b48cfb822c95b07e58029a71",
+    "workload_key": "durable-queue-and-controlled-delivery-v1",
+    "risk_tier": "P1",
+    "environment_digest": "sha256:49adf62a2fda40e9606ca7cc7898c08c007fb9514ca603f330b93c0db657d755"
+  },
+  "metrics": {},
+  "evidence_refs": [],
+  "limitations": [
+    "Local engineering evidence only.",
+    "Live provider, worker-kill, independent holdout, representative workload, and certification evidence are NOT_RUN."
+  ],
+  "approved_at": null
+}

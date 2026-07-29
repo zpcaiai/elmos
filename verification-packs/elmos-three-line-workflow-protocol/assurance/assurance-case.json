@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "case_key": "elmos-three-line-workflow-protocol-assurance-v1",
+  "version": 1,
+  "owner": "elmos-verification-engineering",
+  "top_claim": "The exact local workflow tuple has bounded state-transition engineering evidence.",
+  "claims": [
+    {
+      "claim_id": "claim.protocol-local",
+      "statement": "Specified forbidden repository-delivery and durable-queue transitions are rejected locally.",
+      "status": "supported",
+      "evidence_refs": [
+        "state-machines/workflow-protocol.json",
+        "certification/local-test-manifest.json"
+      ],
+      "assumptions": [],
+      "limitations": [
+        "No live GitHub/Gitee API, multi-replica worker kill, independent holdout, or representative production workload evidence."
+      ]
+    }
+  ],
+  "evidence": [],
+  "residual_risks": [
+    {
+      "risk_id": "risk.external-provider",
+      "severity": "P1",
+      "status": "open",
+      "statement": "Provider-specific retry and outage behavior remains unverified against live GitHub and Gitee."
+    },
+    {
+      "risk_id": "risk.multi-replica",
+      "severity": "P1",
+      "status": "open",
+      "statement": "Shared-volume multi-replica recovery remains NOT_RUN."
+    }
+  ],
+  "monitoring_obligations": [
+    "Alert on QUEUE_LEASE_LOST, corrupt leases, expired leases, and conflicting PR idempotency receipts."
+  ],
+  "approvals": []
+}
