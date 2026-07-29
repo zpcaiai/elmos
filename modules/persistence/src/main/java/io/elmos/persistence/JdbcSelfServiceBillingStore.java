@@ -681,6 +681,206 @@ public final class JdbcSelfServiceBillingStore implements SelfServiceBillingPort
                         "ACTIVE_SUBSCRIPTION_NOT_FOUND", "No active subscription was found.")));
     }
 
+    /**
+     * The largest allowance an operator may set: 1e27, or 28 digits.
+     *
+     * <p>{@code token_limit} and {@code credit_limit} are {@code numeric(30,0)},
+     * so anything at or above 1e30 fails at the column. Stopping three orders of
+     * magnitude short means an out-of-range request is refused by name instead
+     * of surfacing as a numeric overflow from the driver, and leaves headroom
+     * for the {@code consumed + reserved} sums to stay inside the type even
+     * after a tenant has run against the ceiling for a full period.
+     */
+    private static final BigDecimal MAXIMUM_LIMIT = new BigDecimal("1000000000000000000000000000");
+
+    /**
+     * An operator reason is a code, not prose.
+     *
+     * <p>These values land in the append-only event log and flow out through the
+     * audit export, so free text would put operator-authored strings into a CSV
+     * that other systems parse. A constrained token keeps the log groupable and
+     * the export inert.
+     */
+    private static final java.util.regex.Pattern REASON_CODE =
+            java.util.regex.Pattern.compile("^[A-Z][A-Z0-9_]{2,63}$");
+
+    @Override
+    public QuotaAdministrationView quotaForAdministration(String organizationId) {
+        return inTenant(organizationId, () -> readQuota(organizationId));
+    }
+
+    @Override
+    public QuotaAdministrationView adjustQuota(
+            String organizationId,
+            String actorId,
+            String quotaAllocationId,
+            BigDecimal tokenLimit,
+            BigDecimal creditLimit,
+            long expectedVersion,
+            String reasonCode
+    ) {
+        // Every check that does not need the database runs first, so a malformed
+        // request never opens a transaction and never binds a tenant.
+        requireIdentifier(organizationId, "organizationId");
+        requireIdentifier(actorId, "actorId");
+        requireIdentifier(quotaAllocationId, "quotaAllocationId");
+        requireLimit(tokenLimit, "tokenLimit");
+        requireLimit(creditLimit, "creditLimit");
+        if (expectedVersion < 0) {
+            throw new IllegalArgumentException("expectedVersion must not be negative");
+        }
+        if (reasonCode == null || !REASON_CODE.matcher(reasonCode).matches()) {
+            throw new IllegalArgumentException(
+                    "reasonCode must match " + REASON_CODE.pattern());
+        }
+
+        return inTenant(organizationId, () -> {
+            QuotaAdministrationView current = readQuota(organizationId);
+            if (!current.quotaAllocationId().equals(quotaAllocationId)) {
+                // The operator is holding a view of an allocation that is no
+                // longer the active one -- most often because the billing period
+                // rolled over between reading and submitting.
+                throw new BillingStateException("QUOTA_ALLOCATION_NOT_ACTIVE",
+                        "The allocation being adjusted is not the organization's active allowance.");
+            }
+            if (current.allocationVersion() != expectedVersion) {
+                throw new BillingStateException("QUOTA_ALLOCATION_VERSION_CONFLICT",
+                        "The allowance changed since it was read; re-read it before adjusting.");
+            }
+            if (tokenLimit.compareTo(current.minimumTokenLimit()) < 0) {
+                throw new BillingStateException("QUOTA_BELOW_OUTSTANDING_TOKENS",
+                        "tokenLimit " + tokenLimit.toPlainString() + " is below the "
+                                + current.minimumTokenLimit().toPlainString()
+                                + " tokens already consumed or reserved.");
+            }
+            if (creditLimit.compareTo(current.minimumCreditLimit()) < 0) {
+                throw new BillingStateException("QUOTA_BELOW_OUTSTANDING_CREDITS",
+                        "creditLimit " + creditLimit.toPlainString() + " is below the "
+                                + current.minimumCreditLimit().toPlainString()
+                                + " credits already consumed or reserved.");
+            }
+            if (tokenLimit.compareTo(current.tokenLimit()) == 0
+                    && creditLimit.compareTo(current.creditLimit()) == 0) {
+                // A no-op write would still bump the version and append an audit
+                // event that records no change, which corrupts the log's meaning.
+                throw new BillingStateException("QUOTA_ADJUSTMENT_IS_A_NO_OP",
+                        "The requested limits are identical to the current allowance.");
+            }
+
+            int changed = jdbc.sql("""
+                    update quota_allocations
+                       set token_limit = :tokenLimit, credit_limit = :creditLimit,
+                           allocation_version = allocation_version + 1,
+                           updated_at = current_timestamp
+                     where organization_id = :organization
+                       and quota_allocation_id = :allocation
+                       and allocation_version = :expectedVersion
+                    """).param("organization", organizationId)
+                    .param("allocation", quotaAllocationId)
+                    .param("tokenLimit", tokenLimit)
+                    .param("creditLimit", creditLimit)
+                    .param("expectedVersion", expectedVersion)
+                    .update();
+            if (changed != 1) {
+                // The version was re-read inside this transaction, so losing the
+                // race here means a concurrent writer committed between the read
+                // and the update. Refusing is correct; retrying silently is not.
+                throw new BillingStateException("QUOTA_ALLOCATION_VERSION_CONFLICT",
+                        "The allowance changed while the adjustment was being applied.");
+            }
+
+            jdbc.sql("""
+                    insert into subscription_events(
+                        subscription_event_id, organization_id, schema_version, status,
+                        idempotency_key, payload, subscription_id, actor_id, event_type,
+                        effective_at, event_version)
+                    values (:event, :organization, '2.0', 'APPLIED', :event,
+                            jsonb_build_object(
+                                'quotaAllocationId', :allocation::text,
+                                'reasonCode', :reason::text,
+                                'previousTokenLimit', :previousTokenLimit::text,
+                                'previousCreditLimit', :previousCreditLimit::text,
+                                'tokenLimit', :tokenLimit::text,
+                                'creditLimit', :creditLimit::text),
+                            :subscription, :actor, 'QUOTA_ADJUSTED', current_timestamp,
+                            :eventVersion)
+                    """).param("event", "quota-adjust-" + UUID.randomUUID())
+                    .param("organization", organizationId)
+                    .param("allocation", quotaAllocationId)
+                    .param("reason", reasonCode)
+                    .param("previousTokenLimit", current.tokenLimit().toPlainString())
+                    .param("previousCreditLimit", current.creditLimit().toPlainString())
+                    .param("tokenLimit", tokenLimit.toPlainString())
+                    .param("creditLimit", creditLimit.toPlainString())
+                    .param("subscription", current.subscriptionId())
+                    .param("actor", actorId)
+                    .param("eventVersion", expectedVersion + 1)
+                    .update();
+
+            return readQuota(organizationId);
+        });
+    }
+
+    /** Caller must already be inside {@link #inTenant}. */
+    private QuotaAdministrationView readQuota(String organizationId) {
+        return jdbc.sql("""
+                select q.quota_allocation_id, q.subscription_id, q.plan_id,
+                       q.period_start, q.period_end,
+                       q.token_limit, q.credit_limit,
+                       q.consumed_tokens, q.consumed_credits,
+                       q.reserved_tokens, q.reserved_credits,
+                       q.allocation_version
+                  from quota_allocations q
+                  join subscriptions s on s.subscription_id = q.subscription_id
+                 where q.organization_id = :organization
+                   and q.status = 'ACTIVE'
+                   and s.status in ('ACTIVE', 'TRIALING', 'PAST_DUE')
+                   and q.period_start <= current_timestamp and q.period_end > current_timestamp
+                 order by q.period_start desc
+                 limit 1
+                """).param("organization", organizationId)
+                .query((rs, row) -> {
+                    var plan = PricingPlanCatalog.requirePlan(rs.getString("plan_id"));
+                    BigDecimal consumedTokens = rs.getBigDecimal("consumed_tokens");
+                    BigDecimal consumedCredits = rs.getBigDecimal("consumed_credits");
+                    BigDecimal reservedTokens = rs.getBigDecimal("reserved_tokens");
+                    BigDecimal reservedCredits = rs.getBigDecimal("reserved_credits");
+                    return new QuotaAdministrationView(
+                            organizationId,
+                            rs.getString("quota_allocation_id"),
+                            rs.getString("subscription_id"),
+                            plan.planId(),
+                            plan.displayName(),
+                            instant(rs.getObject("period_start", OffsetDateTime.class)),
+                            instant(rs.getObject("period_end", OffsetDateTime.class)),
+                            rs.getBigDecimal("token_limit"),
+                            rs.getBigDecimal("credit_limit"),
+                            consumedTokens, consumedCredits,
+                            reservedTokens, reservedCredits,
+                            consumedTokens.add(reservedTokens),
+                            consumedCredits.add(reservedCredits),
+                            rs.getLong("allocation_version"));
+                }).optional().orElseThrow(() -> new BillingStateException(
+                        "ACTIVE_ALLOWANCE_NOT_FOUND", "No current allowance is bound to this organization."));
+    }
+
+    private static void requireLimit(BigDecimal value, String field) {
+        if (value == null) {
+            throw new IllegalArgumentException(field + " is required");
+        }
+        if (value.signum() < 0) {
+            throw new IllegalArgumentException(field + " must not be negative");
+        }
+        if (value.stripTrailingZeros().scale() > 0) {
+            // numeric(30,0) would round a fractional limit silently.
+            throw new IllegalArgumentException(field + " must be a whole number");
+        }
+        if (value.compareTo(MAXIMUM_LIMIT) > 0) {
+            throw new IllegalArgumentException(
+                    field + " must not exceed " + MAXIMUM_LIMIT.toPlainString());
+        }
+    }
+
     @Override
     public void scheduleCancellation(String organizationId, String actorId, String subscriptionId) {
         inTenant(organizationId, () -> {

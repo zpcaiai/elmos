@@ -23,6 +23,16 @@
     <dependency><groupId>org.testcontainers</groupId><artifactId>postgresql</artifactId><scope>test</scope></dependency>
     <dependency><groupId>org.testcontainers</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency>
     <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency>
+    <!--
+      Without an SLF4J binding the tests print "No SLF4J providers were found" and
+      every log line is discarded. That matters here specifically: Testcontainers'
+      disabledWithoutDocker swallows whatever exception made Docker look
+      unavailable and reports the class as skipped, so the only record of the real
+      cause is a log statement. With no binding the container tests can silently
+      stop running while the build still reports SUCCESS, which is the failure
+      mode this repo exists to prevent. Test scope only; nothing ships with this.
+    -->
+    <dependency><groupId>org.slf4j</groupId><artifactId>slf4j-simple</artifactId><scope>test</scope></dependency>
   </dependencies>
   <build>
     <plugins>

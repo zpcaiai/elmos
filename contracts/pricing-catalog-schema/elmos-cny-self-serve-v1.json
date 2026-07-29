@@ -10,7 +10,7 @@
   "taxStatus": "NOT_CONFIGURED",
   "taxPresentation": "UNSPECIFIED",
   "paymentStatus": "NOT_CONFIGURED",
-  "paymentProvider": "STRIPE_CHECKOUT",
+  "paymentProvider": "ALIPAY_CHECKOUT",
   "costValidationStatus": "NOT_RUN",
   "overagePolicy": "HARD_STOP_NO_AUTOMATIC_CHARGE",
   "allowanceScope": "ORGANIZATION",

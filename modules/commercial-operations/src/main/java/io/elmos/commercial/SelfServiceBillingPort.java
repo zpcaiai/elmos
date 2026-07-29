@@ -152,6 +152,41 @@ public interface SelfServiceBillingPort {
             String idempotencyKey
     ) {}
 
+    /**
+     * The administrative view of a tenant's active allowance.
+     *
+     * <p>Distinct from {@link UsageSnapshot}, which is what the tenant sees.
+     * This one exposes the allocation identifier and the optimistic-concurrency
+     * version an operator needs in order to change the allowance, plus the two
+     * floors below which a decrease must be refused.
+     *
+     * <p>{@code minimumTokenLimit} and {@code minimumCreditLimit} are
+     * {@code consumed + reserved}. They are returned rather than left for the
+     * caller to compute because a reservation is a promise already made to the
+     * tenant: lowering a limit underneath outstanding reservations would either
+     * be rejected by the database CHECK as an opaque constraint violation, or --
+     * if the constraint were ever relaxed -- retroactively invalidate work the
+     * tenant has already been told it may perform.
+     */
+    record QuotaAdministrationView(
+            String organizationId,
+            String quotaAllocationId,
+            String subscriptionId,
+            String planId,
+            String planDisplayName,
+            Instant periodStartsAt,
+            Instant periodEndsAt,
+            BigDecimal tokenLimit,
+            BigDecimal creditLimit,
+            BigDecimal consumedTokens,
+            BigDecimal consumedCredits,
+            BigDecimal reservedTokens,
+            BigDecimal reservedCredits,
+            BigDecimal minimumTokenLimit,
+            BigDecimal minimumCreditLimit,
+            long allocationVersion
+    ) {}
+
     record ReconciliationCase(
             String reconciliationCaseId,
             String provider,
@@ -294,6 +329,30 @@ public interface SelfServiceBillingPort {
             String resolutionStatus,
             String resolutionRef,
             String idempotencyKey
+    );
+
+    /** The active allowance of {@code organizationId}, for operator review. */
+    QuotaAdministrationView quotaForAdministration(String organizationId);
+
+    /**
+     * Change a tenant's allowance.
+     *
+     * <p>{@code expectedVersion} must equal the allocation's current version;
+     * a mismatch means another operator changed the allowance in between and
+     * the caller's view of the before-state is stale, so the write is refused
+     * rather than applied on top of an unseen change.
+     *
+     * <p>{@code reasonCode} is recorded on the append-only subscription event
+     * log alongside both the previous and the new limits.
+     */
+    QuotaAdministrationView adjustQuota(
+            String organizationId,
+            String actorId,
+            String quotaAllocationId,
+            BigDecimal tokenLimit,
+            BigDecimal creditLimit,
+            long expectedVersion,
+            String reasonCode
     );
 
     SubscriptionBinding currentSubscription(String organizationId, String actorId);
