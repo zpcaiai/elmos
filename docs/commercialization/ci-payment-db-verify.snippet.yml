@@ -1,0 +1,19 @@
+# 追加到 .github/workflows/ci.yml 的 commercial-billing-integration job 里
+# （该 job 已经起了 postgres:17.5-alpine 服务，正好用来在目标版本上复跑）
+#
+# 位置：加在该 job 现有 steps 的末尾即可，不需要新增 service。
+# 目的：本地验证是在 PostgreSQL 16.13 上做的，仓库目标是 17.5。
+#       用到的语法（ALTER TABLE DROP/ADD CONSTRAINT、ON CONFLICT、部分索引、
+#       bigserial）在两版语义一致，但"应该一致"不是证据 —— 让 CI 每次真跑一遍。
+
+      - name: Verify V54 payment callback migration on PostgreSQL 17.5
+        env:
+          ELMOS_PAYMENT_VERIFY_DSN: "-h 127.0.0.1 -p 5432 -U postgres"
+          PGPASSWORD: postgres
+          ELMOS_PAYMENT_VERIFY_DISPOSABLE_CONFIRMED: "true"
+        run: bash tooling/payment-db-verify/verify_payment_callbacks.sh
+
+# 说明：脚本会自建一个 elmos_payment_verify_<pid> 库并在退出时删掉，
+# 不触碰 job 里既有的 elmos_billing 库。
+# 它要求显式设置 ELMOS_PAYMENT_VERIFY_DISPOSABLE_CONFIRMED=true，
+# 避免有人不小心把 DSN 指向真实库。

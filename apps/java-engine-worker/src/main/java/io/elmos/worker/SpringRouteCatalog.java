@@ -106,10 +106,14 @@ final class SpringRouteCatalog {
                     "/rewrite/spring-boot-1.5-to-3.5.3.yml",
                     "io.elmos.openrewrite.SpringBoot1_5ToBoot3_5_3Java21",
                     REWRITE_SPRING, REWRITE_MAVEN_PLUGIN,
-                    EvidenceStatus.NOT_RUN, "", "",
+                    EvidenceStatus.PASSED_LOCAL, "1.5.22.RELEASE", "8",
                     "Chains the 2.0, 2.7 and 3.5 Boot migrations with the Java 8 to 21 migration. "
                             + "javax to jakarta, removed 1.5 auto-configuration and Actuator endpoint "
-                            + "renames frequently need manual review after the deterministic pass."),
+                            + "renames frequently need manual review after the deterministic pass. "
+                            + "Recorded on Boot 1.5.22.RELEASE / Java 8 with health served at /health, "
+                            + "which is where the pre-2.0 Actuator publishes it. Nothing here exercises "
+                            + "org.hibernate.validator.constraints.* -- those constraints were removed in "
+                            + "Hibernate Validator 7 and their migration is unproven."),
             new SpringRoute(
                     "boot-2.0-2.6-maven-to-boot-3.5.3-java-21",
                     "spring-boot-2-0-2-6-to-3-5-3",
@@ -119,9 +123,10 @@ final class SpringRouteCatalog {
                     "/rewrite/spring-boot-2.0-2.6-to-3.5.3.yml",
                     "io.elmos.openrewrite.SpringBoot2_0To2_6ToBoot3_5_3Java21",
                     REWRITE_SPRING, REWRITE_MAVEN_PLUGIN,
-                    EvidenceStatus.NOT_RUN, "", "",
+                    EvidenceStatus.PASSED_LOCAL, "2.3.12.RELEASE", "11",
                     "Steps through Boot 2.7 before 3.5 so the intermediate deprecations are applied "
-                            + "in order. Sources below Java 17 additionally cross the Boot 3 baseline."),
+                            + "in order. Sources below Java 17 additionally cross the Boot 3 baseline. "
+                            + "Recorded on Boot 2.3.12.RELEASE / Java 11."),
             new SpringRoute(
                     "boot-2.7-maven-to-boot-3.5.3-java-21",
                     "spring-boot-2-7-18-to-3-5-3",
@@ -132,7 +137,8 @@ final class SpringRouteCatalog {
                     "io.elmos.openrewrite.SpringBoot2_7_18To3_5_3Java21",
                     REWRITE_SPRING, REWRITE_MAVEN_PLUGIN,
                     EvidenceStatus.PASSED_LOCAL, "2.7.18", "17",
-                    "The only tuple with recorded end-to-end local execution is Boot 2.7.18 on Java 17."),
+                    "Recorded on Boot 2.7.18 / Java 17, the first tuple this engine executed "
+                            + "end to end."),
             new SpringRoute(
                     "boot-3.0-3.4-maven-to-boot-3.5.3-java-21",
                     "spring-boot-3-0-3-4-to-3-5-3",
@@ -142,9 +148,9 @@ final class SpringRouteCatalog {
                     "/rewrite/spring-boot-3.0-3.4-to-3.5.3.yml",
                     "io.elmos.openrewrite.SpringBoot3_0To3_4ToBoot3_5_3Java21",
                     REWRITE_SPRING, REWRITE_MAVEN_PLUGIN,
-                    EvidenceStatus.NOT_RUN, "", "",
+                    EvidenceStatus.PASSED_LOCAL, "3.4.1", "17",
                     "Already on the jakarta baseline; the pass is limited to the 3.5 migration and "
-                            + "the Java 21 language and API migration."),
+                            + "the Java 21 language and API migration. Recorded on Boot 3.4.1 / Java 17."),
             new SpringRoute(
                     "boot-2.x-gradle-to-boot-3.5.3-java-21",
                     "spring-boot-2-x-gradle-to-3-5-3",
@@ -166,12 +172,20 @@ final class SpringRouteCatalog {
         return ROUTES.stream().filter(route -> route.routeId().equals(routeId)).findFirst();
     }
 
-    /** The tuple that carries recorded local execution evidence. */
-    static SpringRoute verifiedRoute() {
+    /**
+     * Every route that carries recorded local execution evidence.
+     *
+     * <p>This replaced a singular {@code verifiedRoute()} that returned
+     * {@code findFirst()}. While exactly one route was recorded that was
+     * harmless; with four it would have silently returned whichever route
+     * happened to sit earliest in the list, so a caller asking "the verified
+     * route" would have got an arbitrary answer that still looked authoritative.
+     * Returning the set forces the caller to say which one it means.
+     */
+    static List<SpringRoute> verifiedRoutes() {
         return ROUTES.stream()
                 .filter(route -> route.routeEvidence() == EvidenceStatus.PASSED_LOCAL)
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("catalog has no verified route"));
+                .toList();
     }
 
     record Selection(SpringRoute route, EvidenceStatus evidence) {

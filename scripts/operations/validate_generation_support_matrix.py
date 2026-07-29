@@ -7,6 +7,19 @@ import re
 import sys
 from pathlib import Path
 
+# 引擎源码使用 datetime.UTC（Python 3.11+）。在更老的解释器上，
+# 失败会以 "cannot import name 'UTC'" 的形式出现在被导入模块内部，
+# 指向完全错误的方向。这里提前给出明确判定。
+if sys.version_info < (3, 11):
+    print(
+        "DECISION=UNSUPPORTED_PYTHON\n"
+        f"  当前解释器 {sys.version.split()[0]}，本校验需要 Python 3.11 或更高\n"
+        "  （engines/project-synthesis-engine 使用 datetime.UTC）。\n"
+        "  仓库 CI 使用 Python 3.14；本地请用 uv 或 pyenv 切换后重试。",
+        file=sys.stderr,
+    )
+    raise SystemExit(2)
+
 ROOT = Path(__file__).resolve().parents[2]
 ENGINE_SOURCE = ROOT / "engines" / "project-synthesis-engine" / "src"
 sys.path.insert(0, str(ENGINE_SOURCE))

@@ -108,16 +108,84 @@ class SpringRouteCatalogTest {
         }
     }
 
-    @Test void exactlyOneRouteCarriesRecordedEvidence() {
-        List<SpringRoute> verified = SpringRouteCatalog.routes().stream()
-                .filter(route -> route.routeEvidence() == EvidenceStatus.PASSED_LOCAL)
-                .toList();
-        assertEquals(1, verified.size());
-        SpringRoute route = verified.get(0);
-        assertEquals("2.7.18", route.verifiedSourceBoot());
-        assertEquals("17", route.verifiedSourceJava());
+    /**
+     * Recorded evidence must be internally consistent.
+     *
+     * <p>This replaced an assertion that exactly one route carried evidence.
+     * That version was a count, and a count is the wrong invariant: it fails the
+     * moment a second route is legitimately recorded, so the only way past it is
+     * to raise the number -- which is exactly the edit someone makes without
+     * thinking. What actually needs protecting is that a route claiming
+     * PASSED_LOCAL names the tuple it was proven on, and that the tuple is one
+     * the route would even accept. Those properties stay true no matter how many
+     * routes are recorded, and they fail loudly if a status is flipped without a
+     * corresponding run.
+     */
+    @Test void everyRecordedRouteNamesATupleItWouldAccept() {
+        List<SpringRoute> verified = SpringRouteCatalog.verifiedRoutes();
+        assertFalse(verified.isEmpty(), "the catalog must carry at least one recorded route");
+
+        for (SpringRoute route : verified) {
+            String boot = route.verifiedSourceBoot();
+            String java = route.verifiedSourceJava();
+            assertFalse(boot.isBlank(),
+                    route.routeId() + " claims PASSED_LOCAL without naming a source Boot version");
+            assertFalse(java.isBlank(),
+                    route.routeId() + " claims PASSED_LOCAL without naming a source Java release");
+
+            assertTrue(SpringRouteCatalog.withinRange(
+                            boot, route.sourceBootMinInclusive(), route.sourceBootMaxExclusive()),
+                    route.routeId() + " recorded Boot " + boot + " which is outside its own declared "
+                            + "range [" + route.sourceBootMinInclusive() + ", "
+                            + route.sourceBootMaxExclusive() + ")");
+            assertTrue(route.sourceJavaVersions().contains(java),
+                    route.routeId() + " recorded Java " + java + " which the route does not accept");
+
+            // The recorded tuple must be the one point that reports PASSED_LOCAL.
+            assertEquals(EvidenceStatus.PASSED_LOCAL, route.evidenceFor(boot, java),
+                    route.routeId() + " does not report its own recorded tuple as executed");
+        }
+    }
+
+    /**
+     * The converse: a route without recorded execution must not carry a tuple.
+     * A leftover tuple on a NOT_RUN route is how a future edit accidentally
+     * promotes something -- flip the status and the claim is already sitting
+     * there, looking like it was verified.
+     */
+    @Test void unrecordedRoutesCarryNoTuple() {
+        for (SpringRoute route : SpringRouteCatalog.routes()) {
+            if (route.routeEvidence() == EvidenceStatus.PASSED_LOCAL) continue;
+            assertTrue(route.verifiedSourceBoot().isBlank(),
+                    route.routeId() + " is " + route.routeEvidence()
+                            + " but names a verified Boot version");
+            assertTrue(route.verifiedSourceJava().isBlank(),
+                    route.routeId() + " is " + route.routeEvidence()
+                            + " but names a verified Java release");
+        }
+    }
+
+    /**
+     * Version matching is exact string equality, so {@code 1.5.22} and
+     * {@code 1.5.22.RELEASE} are different tuples even though they are the same
+     * release. That is deliberate: the conservative direction is to report
+     * NOT_RUN for a string nobody executed. Loosening it would mean claiming
+     * execution evidence for a version spelling that was never built.
+     */
+    @Test void aDifferentSpellingOfTheSameReleaseIsNotTheRecordedTuple() {
+        var recorded = SpringRouteCatalog.select("1.5.22.RELEASE", "8", "maven");
+        assertEquals(EvidenceStatus.PASSED_LOCAL, recorded.evidence());
+
+        var respelled = SpringRouteCatalog.select("1.5.22", "8", "maven");
+        assertEquals(recorded.route(), respelled.route());
+        assertEquals(EvidenceStatus.NOT_RUN, respelled.evidence());
+    }
+
+    /** The pack the run service reports is bound to the 2.7 route specifically. */
+    @Test void theTwoSevenRouteOwnsTheDeclaredPackKey() {
+        SpringRoute route = SpringRouteCatalog
+                .byId("boot-2.7-maven-to-boot-3.5.3-java-21").orElseThrow();
         assertEquals(SpringUpgradeModels.PACK_KEY, route.packKey());
-        assertEquals(route, SpringRouteCatalog.verifiedRoute());
     }
 
     @Test void javaReleaseDetectionSpansBothVersionSchemes() {

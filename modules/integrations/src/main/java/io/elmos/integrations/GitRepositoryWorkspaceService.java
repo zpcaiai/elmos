@@ -7,6 +7,7 @@ import org.eclipse.jgit.api.LsRemoteCommand;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.transport.RefSpec;
+import org.eclipse.jgit.transport.RemoteRefUpdate;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 
 import java.io.IOException;
@@ -46,9 +47,10 @@ import java.util.UUID;
 /**
  * Provider-neutral, exact-commit Git workspaces for governed local modification.
  *
- * <p>The service never pushes, opens a pull request, merges, or deploys. Credentials
- * are used only by JGit and are never written into Git configuration or workspace
- * metadata.</p>
+ * <p>Push and pull-request publication are explicit, separately authorized
+ * operations. The service never merges or deploys. Credentials are used only
+ * by JGit/provider adapters and are never written into Git configuration or
+ * workspace metadata.</p>
  */
 public final class GitRepositoryWorkspaceService {
     public enum Provider { GITHUB, GITEE, GENERIC_GIT }
@@ -86,11 +88,16 @@ public final class GitRepositoryWorkspaceService {
             String cloneUrl,
             String requestedRef,
             String sourceCommit,
+            String currentHeadCommit,
             String branch,
             Completeness completeness,
             boolean codeOwnersPresent,
             List<String> blockers,
             List<FileEntry> files,
+            List<String> pendingPaths,
+            String pushedCommit,
+            String pullRequestId,
+            String pullRequestUrl,
             Instant createdAt,
             String status,
             boolean externalOperationExecuted
@@ -135,6 +142,91 @@ public final class GitRepositoryWorkspaceService {
             boolean deployed
     ) {}
 
+    public record CommitRequest(
+            String organizationId,
+            String actorId,
+            String expectedHeadCommit,
+            String message,
+            boolean codeOwnerApproval,
+            List<String> approvedPaths
+    ) {}
+
+    public record CommitResult(
+            String workspaceId,
+            String sourceCommit,
+            String commitSha,
+            String branch,
+            List<String> committedPaths,
+            boolean signed,
+            String status
+    ) {}
+
+    public record PushRequest(
+            String organizationId,
+            String actorId,
+            String expectedCommit
+    ) {}
+
+    public record PushResult(
+            String workspaceId,
+            String commitSha,
+            String remoteRef,
+            String status,
+            boolean externalOperationExecuted
+    ) {}
+
+    public record PullRequestRequest(
+            String organizationId,
+            String actorId,
+            String expectedCommit,
+            String baseBranch,
+            String title,
+            String body,
+            String idempotencyKey
+    ) {}
+
+    public record PullRequestResult(
+            String workspaceId,
+            String providerPullRequestId,
+            String url,
+            String sourceCommit,
+            String sourceBranch,
+            String baseBranch,
+            String status,
+            boolean externalOperationExecuted
+    ) {}
+
+    public record WorkspaceMaterialization(
+            String workspaceId,
+            String sourceCommit,
+            String resolvedCommitSha,
+            String relativePath,
+            String manifestSha256,
+            List<String> excludedProtectedPaths,
+            String status
+    ) {}
+
+    public record PullRequestContext(
+            Provider provider,
+            String providerInstanceId,
+            String nativeRepositoryId,
+            String sourceBranch,
+            String sourceCommit,
+            String baseBranch,
+            String title,
+            String body,
+            String idempotencyKey
+    ) {}
+
+    @FunctionalInterface
+    public interface PullRequestPublisher {
+        PullRequestResult publish(
+                String workspaceId,
+                PullRequestContext context,
+                EphemeralCredential credential
+        );
+    }
+
     public record Capability(
             List<Provider> providers,
             List<FileCategory> fileCategories,
@@ -145,6 +237,7 @@ public final class GitRepositoryWorkspaceService {
     ) {}
 
     private static final String MANIFEST = "workspace.properties";
+    private static final String DELIVERY = "delivery.properties";
     private static final String REPOSITORY = "repository";
     private static final int MAX_CHANGE_COUNT = 100;
     private static final long MAX_CHANGE_BYTES = 2L * 1024 * 1024;
@@ -160,6 +253,7 @@ public final class GitRepositoryWorkspaceService {
     private final Set<String> allowedGenericHosts;
     private final int maximumWorkspaces;
     private final Duration workspaceTtl;
+    private final PullRequestPublisher pullRequests;
 
     public GitRepositoryWorkspaceService(
             Path root,
@@ -168,7 +262,7 @@ public final class GitRepositoryWorkspaceService {
             boolean allowControlledFileRepositories
     ) {
         this(root, maximumFiles, maximumRepositoryBytes, allowControlledFileRepositories,
-                Set.of(), 1_000, Duration.ofDays(7));
+                Set.of(), 1_000, Duration.ofDays(7), unsupportedPullRequests());
     }
 
     public GitRepositoryWorkspaceService(
@@ -179,7 +273,7 @@ public final class GitRepositoryWorkspaceService {
             Set<String> allowedGenericHosts
     ) {
         this(root, maximumFiles, maximumRepositoryBytes, allowControlledFileRepositories,
-                allowedGenericHosts, 1_000, Duration.ofDays(7));
+                allowedGenericHosts, 1_000, Duration.ofDays(7), unsupportedPullRequests());
     }
 
     public GitRepositoryWorkspaceService(
@@ -190,6 +284,21 @@ public final class GitRepositoryWorkspaceService {
             Set<String> allowedGenericHosts,
             int maximumWorkspaces,
             Duration workspaceTtl
+    ) {
+        this(root, maximumFiles, maximumRepositoryBytes,
+                allowControlledFileRepositories, allowedGenericHosts,
+                maximumWorkspaces, workspaceTtl, unsupportedPullRequests());
+    }
+
+    public GitRepositoryWorkspaceService(
+            Path root,
+            int maximumFiles,
+            long maximumRepositoryBytes,
+            boolean allowControlledFileRepositories,
+            Set<String> allowedGenericHosts,
+            int maximumWorkspaces,
+            Duration workspaceTtl,
+            PullRequestPublisher pullRequests
     ) {
         this.root = Objects.requireNonNull(root, "root").toAbsolutePath().normalize();
         if (this.root.getParent() == null) throw new IllegalArgumentException("workspace root must not be a filesystem root");
@@ -209,6 +318,7 @@ public final class GitRepositoryWorkspaceService {
         this.allowControlledFileRepositories = allowControlledFileRepositories;
         this.maximumWorkspaces = maximumWorkspaces;
         this.workspaceTtl = workspaceTtl;
+        this.pullRequests = Objects.requireNonNull(pullRequests, "pullRequests");
         this.allowedGenericHosts = Objects.requireNonNull(
                 allowedGenericHosts, "allowedGenericHosts").stream()
                 .map(String::trim)
@@ -329,6 +439,17 @@ public final class GitRepositoryWorkspaceService {
                         writable && !protectedPath(file.path())
                 ))
                 .toList();
+        RepositoryState state = repositoryState(repository);
+        Delivery delivery = readDelivery(workspaceId);
+        String status = !state.pendingPaths().isEmpty()
+                ? "LOCAL_CHANGES_PENDING"
+                : delivery.pullRequestId() != null
+                    ? "PULL_REQUEST_CREATED"
+                    : state.headCommit().equals(delivery.pushedCommit())
+                        ? "PUSHED_VERIFIED"
+                        : !state.headCommit().equals(manifest.sourceCommit())
+                            ? "COMMITTED_LOCAL"
+                            : blockers.isEmpty() ? "READY_FOR_LOCAL_CHANGE" : "READ_ONLY_INCOMPLETE";
         return new Workspace(
                 manifest.workspaceId(),
                 manifest.organizationId(),
@@ -339,14 +460,19 @@ public final class GitRepositoryWorkspaceService {
                 manifest.cloneUrl(),
                 manifest.requestedRef(),
                 manifest.sourceCommit(),
+                state.headCommit(),
                 manifest.branch(),
                 completeness,
                 scan.codeOwners(),
                 List.copyOf(blockers),
                 files,
+                state.pendingPaths(),
+                delivery.pushedCommit(),
+                delivery.pullRequestId(),
+                delivery.pullRequestUrl(),
                 manifest.createdAt(),
-                blockers.isEmpty() ? "READY_FOR_LOCAL_CHANGE" : "READ_ONLY_INCOMPLETE",
-                false
+                status,
+                delivery.pushedCommit() != null || delivery.pullRequestId() != null
         );
     }
 
@@ -504,11 +630,435 @@ public final class GitRepositoryWorkspaceService {
         safeDelete(workspaceDirectory(workspaceId));
     }
 
+    public synchronized CommitResult commit(String workspaceId, CommitRequest request) {
+        Objects.requireNonNull(request, "request");
+        Manifest manifest = readManifest(request.organizationId(), workspaceId);
+        requireActor(manifest, request.actorId());
+        requireCommit(request.expectedHeadCommit(), "expectedHeadCommit");
+        requireNarrative(request.message(), "message", 4_000);
+        Workspace workspace = inspect(request.organizationId(), request.actorId(), workspaceId);
+        if (workspace.completeness() != Completeness.COMPLETE) {
+            throw new SecurityException("GIT_WORKSPACE_INCOMPLETE_READ_ONLY");
+        }
+        if (workspace.codeOwnersPresent() && !request.codeOwnerApproval()) {
+            throw new SecurityException("GIT_WORKSPACE_CODEOWNER_APPROVAL_REQUIRED");
+        }
+        Path repository = workspaceDirectory(workspaceId).resolve(REPOSITORY);
+        try (Git git = Git.open(repository.toFile())) {
+            ObjectId head = git.getRepository().resolve("HEAD^{commit}");
+            if (head == null || !head.name().equals(request.expectedHeadCommit())) {
+                throw new SecurityException("GIT_WORKSPACE_HEAD_COMMIT_MISMATCH");
+            }
+            var status = git.status().call();
+            Set<String> actual = new LinkedHashSet<>();
+            actual.addAll(status.getModified());
+            actual.addAll(status.getChanged());
+            actual.addAll(status.getAdded());
+            actual.addAll(status.getMissing());
+            actual.addAll(status.getRemoved());
+            actual.addAll(status.getUntracked());
+            if (actual.isEmpty()) throw new IllegalArgumentException("GIT_WORKSPACE_NOTHING_TO_COMMIT");
+            Set<String> approved = new LinkedHashSet<>(
+                    Objects.requireNonNullElse(request.approvedPaths(), List.<String>of())
+                            .stream().map(GitRepositoryWorkspaceService::normalizeRelativePath).toList());
+            if (!approved.equals(actual) || approved.stream().anyMatch(GitRepositoryWorkspaceService::protectedPath)) {
+                throw new SecurityException("GIT_WORKSPACE_COMMIT_PATH_SCOPE_MISMATCH");
+            }
+            for (String path : actual) {
+                if (status.getMissing().contains(path) || status.getRemoved().contains(path)) {
+                    git.rm().addFilepattern(path).call();
+                } else {
+                    git.add().addFilepattern(path).call();
+                }
+            }
+            var committed = git.commit()
+                    .setMessage(request.message())
+                    .setAuthor(request.actorId(), "noreply@elmos.invalid")
+                    .setCommitter(request.actorId(), "noreply@elmos.invalid")
+                    .call();
+            return new CommitResult(
+                    workspaceId, manifest.sourceCommit(), committed.name(), manifest.branch(),
+                    actual.stream().sorted().toList(), false, "COMMITTED_LOCAL");
+        } catch (RuntimeException error) {
+            throw error;
+        } catch (Exception error) {
+            throw new IllegalStateException("GIT_WORKSPACE_COMMIT_FAILED", error);
+        }
+    }
+
+    public synchronized PushResult push(
+            String workspaceId,
+            PushRequest request,
+            String credentialUsername,
+            Optional<EphemeralCredential> credential
+    ) {
+        Objects.requireNonNull(request, "request");
+        Manifest manifest = readManifest(request.organizationId(), workspaceId);
+        requireActor(manifest, request.actorId());
+        requireCommit(request.expectedCommit(), "expectedCommit");
+        URI remote = validateCloneUri(manifest.provider(), manifest.cloneUrl());
+        if (!"file".equalsIgnoreCase(remote.getScheme()) && credential.isEmpty()) {
+            throw new SecurityException("GIT_PUSH_CREDENTIAL_REQUIRED");
+        }
+        Path repository = workspaceDirectory(workspaceId).resolve(REPOSITORY);
+        try (Git git = Git.open(repository.toFile())) {
+            ObjectId head = git.getRepository().resolve("HEAD^{commit}");
+            if (head == null || !head.name().equals(request.expectedCommit())) {
+                throw new SecurityException("GIT_WORKSPACE_HEAD_COMMIT_MISMATCH");
+            }
+            if (!git.status().call().isClean()) throw new SecurityException("GIT_WORKSPACE_DIRTY_PUSH_FORBIDDEN");
+            String remoteRef = "refs/heads/" + manifest.branch();
+            var command = git.push()
+                    .setRemote(remote.toString())
+                    .setRefSpecs(new RefSpec(manifest.branch() + ":" + remoteRef))
+                    .setForce(false);
+            Iterable<org.eclipse.jgit.transport.PushResult> results =
+                    callPush(command, credentialUsername, credential);
+            boolean accepted = false;
+            for (var result : results) {
+                RemoteRefUpdate update = result.getRemoteUpdate(remoteRef);
+                if (update != null && (update.getStatus() == RemoteRefUpdate.Status.OK
+                        || update.getStatus() == RemoteRefUpdate.Status.UP_TO_DATE)) {
+                    accepted = true;
+                }
+            }
+            if (!accepted) throw new IllegalStateException("GIT_REMOTE_PUSH_REJECTED");
+            RemoteRef verified = resolveRemote(remote, remoteRef, credentialUsername, credential);
+            if (!request.expectedCommit().equals(verified.commit())) {
+                throw new SecurityException("GIT_REMOTE_PUSH_VERIFICATION_FAILED");
+            }
+            writeDelivery(workspaceId, new Delivery(
+                    request.expectedCommit(), null, null, null, null));
+            return new PushResult(
+                    workspaceId, request.expectedCommit(), remoteRef,
+                    "PUSHED_VERIFIED", true);
+        } catch (RuntimeException error) {
+            throw error;
+        } catch (Exception error) {
+            throw new IllegalStateException("GIT_WORKSPACE_PUSH_FAILED", error);
+        }
+    }
+
+    public synchronized PullRequestResult createPullRequest(
+            String workspaceId,
+            PullRequestRequest request,
+            String credentialUsername,
+            Optional<EphemeralCredential> credential
+    ) {
+        Objects.requireNonNull(request, "request");
+        Manifest manifest = readManifest(request.organizationId(), workspaceId);
+        requireActor(manifest, request.actorId());
+        requireCommit(request.expectedCommit(), "expectedCommit");
+        validateRef(request.baseBranch());
+        requireNarrative(request.title(), "title", 240);
+        requireNarrative(request.body(), "body", 8_000);
+        requireIdentifier(request.idempotencyKey(), "idempotencyKey");
+        if (manifest.provider() == Provider.GENERIC_GIT) {
+            throw new IllegalArgumentException("GENERIC_GIT_PULL_REQUEST_UNSUPPORTED");
+        }
+        if (credential.isEmpty()) throw new SecurityException("GIT_PULL_REQUEST_CREDENTIAL_REQUIRED");
+        URI remote = validateCloneUri(manifest.provider(), manifest.cloneUrl());
+        RemoteRef verified = resolveRemote(
+                remote, "refs/heads/" + manifest.branch(), credentialUsername, credential);
+        if (!request.expectedCommit().equals(verified.commit())) {
+            throw new SecurityException("GIT_PULL_REQUEST_SOURCE_NOT_PUSHED");
+        }
+        Delivery existing = readDelivery(workspaceId);
+        String requestDigest = pullRequestDigest(request, manifest.branch());
+        if (existing.pullRequestId() != null) {
+            if (!request.idempotencyKey().equals(existing.idempotencyKey())
+                    || !requestDigest.equals(existing.pullRequestRequestDigest())
+                    || existing.pullRequestUrl() == null) {
+                throw new SecurityException("GIT_PULL_REQUEST_ALREADY_CREATED_WITH_DIFFERENT_REQUEST");
+            }
+            return new PullRequestResult(
+                    workspaceId, existing.pullRequestId(), existing.pullRequestUrl(),
+                    request.expectedCommit(), manifest.branch(), request.baseBranch(),
+                    "PULL_REQUEST_ALREADY_CREATED", true);
+        }
+        PullRequestResult result = pullRequests.publish(
+                workspaceId,
+                new PullRequestContext(
+                        manifest.provider(), manifest.providerInstanceId(),
+                        manifest.nativeRepositoryId(), manifest.branch(),
+                        request.expectedCommit(), request.baseBranch(),
+                        request.title(), request.body(), request.idempotencyKey()),
+                credential.orElseThrow());
+        writeDelivery(workspaceId, new Delivery(
+                request.expectedCommit(), result.providerPullRequestId(), result.url(),
+                request.idempotencyKey(), requestDigest));
+        return result;
+    }
+
+    public synchronized WorkspaceMaterialization materialize(
+            String organizationId,
+            String actorId,
+            String workspaceId,
+            String expectedHeadCommit,
+            Path materializedRoot
+    ) {
+        Manifest manifest = readManifest(organizationId, workspaceId);
+        requireActor(manifest, actorId);
+        requireCommit(expectedHeadCommit, "expectedHeadCommit");
+        Path targetRoot = Objects.requireNonNull(materializedRoot, "materializedRoot")
+                .toAbsolutePath().normalize();
+        if (targetRoot.getParent() == null) {
+            throw new IllegalArgumentException("materializedRoot must not be a filesystem root");
+        }
+        Workspace workspace = inspect(organizationId, actorId, workspaceId);
+        if (workspace.completeness() != Completeness.COMPLETE
+                || !workspace.pendingPaths().isEmpty()
+                || !expectedHeadCommit.equals(workspace.currentHeadCommit())) {
+            throw new SecurityException("GIT_WORKSPACE_MATERIALIZATION_SOURCE_NOT_IMMUTABLE");
+        }
+        Path repository = workspaceDirectory(workspaceId).resolve(REPOSITORY);
+        Scan scan = scan(repository);
+        List<RawFile> included = scan.files().stream()
+                .filter(file -> !protectedPath(file.path()))
+                .toList();
+        List<String> excluded = scan.files().stream()
+                .map(RawFile::path)
+                .filter(GitRepositoryWorkspaceService::protectedPath)
+                .sorted()
+                .toList();
+        String manifestDigest = sha256(included.stream()
+                .map(file -> file.path() + "\0" + file.bytes() + "\0" + file.sha256() + "\n")
+                .collect(java.util.stream.Collectors.joining())
+                .getBytes(StandardCharsets.UTF_8));
+        String tenantSegment = sha256(organizationId.getBytes(StandardCharsets.UTF_8)).substring(0, 16);
+        Path relative = Path.of("repository-workspaces", tenantSegment, workspaceId, expectedHeadCommit);
+        Path target = targetRoot.resolve(relative).normalize();
+        if (!target.startsWith(targetRoot) || target.equals(targetRoot)) {
+            throw new SecurityException("GIT_WORKSPACE_MATERIALIZATION_PATH_ESCAPE");
+        }
+        Path marker = target.resolve(".elmos-workspace-materialization.properties");
+        if (Files.exists(target, LinkOption.NOFOLLOW_LINKS)) {
+            verifyMaterialization(target, marker, workspaceId, expectedHeadCommit, manifestDigest, included);
+            return new WorkspaceMaterialization(
+                    workspaceId, manifest.sourceCommit(), expectedHeadCommit,
+                    relative.toString().replace('\\', '/'), manifestDigest, excluded,
+                    "MATERIALIZED_VERIFIED");
+        }
+        try {
+            Files.createDirectories(target.getParent());
+            Path temporary = Files.createTempDirectory(target.getParent(), ".elmos-materialize-");
+            try {
+                for (RawFile file : included) {
+                    Path source = repository.resolve(file.path()).normalize();
+                    Path output = temporary.resolve(file.path()).normalize();
+                    if (!source.startsWith(repository) || !output.startsWith(temporary)) {
+                        throw new SecurityException("GIT_WORKSPACE_MATERIALIZATION_FILE_ESCAPE");
+                    }
+                    Files.createDirectories(output.getParent());
+                    Files.copy(source, output);
+                    if (!file.sha256().equals(sha256(output))) {
+                        throw new SecurityException("GIT_WORKSPACE_MATERIALIZATION_DIGEST_MISMATCH");
+                    }
+                }
+                Properties properties = new Properties();
+                properties.setProperty("workspaceId", workspaceId);
+                properties.setProperty("organizationDigest",
+                        sha256(organizationId.getBytes(StandardCharsets.UTF_8)));
+                properties.setProperty("sourceCommit", manifest.sourceCommit());
+                properties.setProperty("resolvedCommitSha", expectedHeadCommit);
+                properties.setProperty("manifestSha256", manifestDigest);
+                properties.setProperty("excludedProtectedPaths", String.join(",", excluded));
+                try (var output = Files.newOutputStream(
+                        temporary.resolve(".elmos-workspace-materialization.properties"))) {
+                    properties.store(output, "ELMOS immutable repository handoff");
+                }
+                Files.move(temporary, target, StandardCopyOption.ATOMIC_MOVE);
+            } catch (RuntimeException | IOException error) {
+                deleteConfined(temporary, targetRoot);
+                throw error;
+            }
+        } catch (RuntimeException error) {
+            throw error;
+        } catch (IOException error) {
+            throw new IllegalStateException("GIT_WORKSPACE_MATERIALIZATION_FAILED", error);
+        }
+        return new WorkspaceMaterialization(
+                workspaceId, manifest.sourceCommit(), expectedHeadCommit,
+                relative.toString().replace('\\', '/'), manifestDigest, excluded,
+                "MATERIALIZED_VERIFIED");
+    }
+
+    private static void verifyMaterialization(
+            Path target,
+            Path marker,
+            String workspaceId,
+            String expectedHeadCommit,
+            String manifestDigest,
+            List<RawFile> included
+    ) {
+        if (Files.isSymbolicLink(target) || !Files.isDirectory(target, LinkOption.NOFOLLOW_LINKS)
+                || Files.isSymbolicLink(marker)
+                || !Files.isRegularFile(marker, LinkOption.NOFOLLOW_LINKS)) {
+            throw new SecurityException("GIT_WORKSPACE_MATERIALIZATION_INVALID");
+        }
+        Properties properties = new Properties();
+        try (var input = Files.newInputStream(marker)) {
+            properties.load(input);
+            if (!workspaceId.equals(properties.getProperty("workspaceId"))
+                    || !expectedHeadCommit.equals(properties.getProperty("resolvedCommitSha"))
+                    || !manifestDigest.equals(properties.getProperty("manifestSha256"))) {
+                throw new SecurityException("GIT_WORKSPACE_MATERIALIZATION_IDENTITY_MISMATCH");
+            }
+            for (RawFile file : included) {
+                Path materialized = target.resolve(file.path()).normalize();
+                if (!materialized.startsWith(target)
+                        || Files.isSymbolicLink(materialized)
+                        || !Files.isRegularFile(materialized, LinkOption.NOFOLLOW_LINKS)
+                        || Files.size(materialized) != file.bytes()
+                        || !file.sha256().equals(sha256(materialized))) {
+                    throw new SecurityException("GIT_WORKSPACE_MATERIALIZATION_TAMPERED");
+                }
+            }
+        } catch (RuntimeException error) {
+            throw error;
+        } catch (IOException error) {
+            throw new IllegalStateException("GIT_WORKSPACE_MATERIALIZATION_VERIFY_FAILED", error);
+        }
+    }
+
+    private static void deleteConfined(Path target, Path root) {
+        if (target == null || !target.normalize().startsWith(root) || target.normalize().equals(root)) return;
+        try {
+            Files.walkFileTree(target, new SimpleFileVisitor<>() {
+                @Override public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
+                        throws IOException {
+                    Files.deleteIfExists(file);
+                    return FileVisitResult.CONTINUE;
+                }
+                @Override public FileVisitResult postVisitDirectory(Path directory, IOException error)
+                        throws IOException {
+                    if (error != null) throw error;
+                    Files.deleteIfExists(directory);
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        } catch (IOException ignored) {
+            // Preserve the original materialization failure.
+        }
+    }
+
+    private RepositoryState repositoryState(Path repository) {
+        try (Git git = Git.open(repository.toFile())) {
+            ObjectId head = git.getRepository().resolve("HEAD^{commit}");
+            if (head == null) throw new SecurityException("GIT_WORKSPACE_HEAD_MISSING");
+            var status = git.status().call();
+            Set<String> pending = new LinkedHashSet<>();
+            pending.addAll(status.getModified());
+            pending.addAll(status.getChanged());
+            pending.addAll(status.getAdded());
+            pending.addAll(status.getMissing());
+            pending.addAll(status.getRemoved());
+            pending.addAll(status.getUntracked());
+            return new RepositoryState(head.name(), pending.stream().sorted().toList());
+        } catch (RuntimeException error) {
+            throw error;
+        } catch (Exception error) {
+            throw new IllegalStateException("GIT_WORKSPACE_STATE_READ_FAILED", error);
+        }
+    }
+
+    private Delivery readDelivery(String workspaceId) {
+        Path path = workspaceDirectory(workspaceId).resolve(DELIVERY);
+        if (!Files.exists(path, LinkOption.NOFOLLOW_LINKS)) {
+            return new Delivery(null, null, null, null, null);
+        }
+        if (Files.isSymbolicLink(path) || !Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS)) {
+            throw new SecurityException("GIT_WORKSPACE_DELIVERY_STATE_INVALID");
+        }
+        Properties properties = new Properties();
+        try (var input = Files.newInputStream(path)) {
+            properties.load(input);
+        } catch (IOException error) {
+            throw new IllegalStateException("GIT_WORKSPACE_DELIVERY_STATE_READ_FAILED", error);
+        }
+        String pushedCommit = optionalProperty(properties, "pushedCommit");
+        String pullRequestId = optionalProperty(properties, "pullRequestId");
+        String pullRequestUrl = optionalProperty(properties, "pullRequestUrl");
+        String idempotencyKey = optionalProperty(properties, "idempotencyKey");
+        String requestDigest = optionalProperty(properties, "pullRequestRequestDigest");
+        if (pushedCommit != null) requireCommit(pushedCommit, "pushedCommit");
+        if ((pullRequestId == null) != (pullRequestUrl == null)
+                || (pullRequestId == null) != (idempotencyKey == null)
+                || (pullRequestId == null) != (requestDigest == null)
+                || (requestDigest != null && !requestDigest.matches("[0-9a-f]{64}"))) {
+            throw new SecurityException("GIT_WORKSPACE_DELIVERY_STATE_INCOMPLETE");
+        }
+        return new Delivery(pushedCommit, pullRequestId, pullRequestUrl, idempotencyKey, requestDigest);
+    }
+
+    private void writeDelivery(String workspaceId, Delivery delivery) {
+        Path path = workspaceDirectory(workspaceId).resolve(DELIVERY);
+        Delivery current = readDelivery(workspaceId);
+        Properties properties = new Properties();
+        putOptional(properties, "pushedCommit",
+                delivery.pushedCommit() != null ? delivery.pushedCommit() : current.pushedCommit());
+        putOptional(properties, "pullRequestId",
+                delivery.pullRequestId() != null ? delivery.pullRequestId() : current.pullRequestId());
+        putOptional(properties, "pullRequestUrl",
+                delivery.pullRequestUrl() != null ? delivery.pullRequestUrl() : current.pullRequestUrl());
+        putOptional(properties, "idempotencyKey",
+                delivery.idempotencyKey() != null ? delivery.idempotencyKey() : current.idempotencyKey());
+        putOptional(properties, "pullRequestRequestDigest",
+                delivery.pullRequestRequestDigest() != null
+                        ? delivery.pullRequestRequestDigest()
+                        : current.pullRequestRequestDigest());
+        Path temporary = path.resolveSibling(DELIVERY + "." + UUID.randomUUID() + ".tmp");
+        try (var output = Files.newOutputStream(temporary)) {
+            properties.store(output, "ELMOS repository delivery state; contains no credential");
+            Files.move(temporary, path, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+            setOwnerOnly(path);
+        } catch (IOException error) {
+            try { Files.deleteIfExists(temporary); } catch (IOException ignored) { }
+            throw new IllegalStateException("GIT_WORKSPACE_DELIVERY_STATE_WRITE_FAILED", error);
+        }
+    }
+
+    private static String pullRequestDigest(PullRequestRequest request, String sourceBranch) {
+        return sha256((request.expectedCommit() + "\n" + sourceBranch + "\n"
+                + request.baseBranch() + "\n" + request.title() + "\n" + request.body())
+                .getBytes(StandardCharsets.UTF_8));
+    }
+
+    private static String optionalProperty(Properties properties, String key) {
+        String value = properties.getProperty(key);
+        return value == null || value.isBlank() ? null : value.trim();
+    }
+
+    private static void putOptional(Properties properties, String key, String value) {
+        if (value != null) properties.setProperty(key, value);
+    }
+
+    private record RepositoryState(String headCommit, List<String> pendingPaths) {}
+    private record Delivery(
+            String pushedCommit,
+            String pullRequestId,
+            String pullRequestUrl,
+            String idempotencyKey,
+            String pullRequestRequestDigest
+    ) {}
+
     private static void requireActor(Manifest manifest, String actorId) {
         requireIdentifier(actorId, "actorId");
         if (!manifest.actorId().equals(actorId)) {
             throw new SecurityException("GIT_WORKSPACE_ACTOR_MISMATCH");
         }
+    }
+
+    private static void requireCommit(String value, String field) {
+        if (value == null || !value.matches("[0-9a-f]{40}")) {
+            throw new IllegalArgumentException(field + " is invalid");
+        }
+    }
+
+    private static PullRequestPublisher unsupportedPullRequests() {
+        return (workspaceId, context, credential) -> {
+            throw new IllegalStateException("GIT_PULL_REQUEST_PUBLISHER_NOT_CONFIGURED");
+        };
     }
 
     private RemoteRef resolveRemote(
@@ -1025,6 +1575,23 @@ public final class GitRepositoryWorkspaceService {
                         .setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, value))
                         .call();
                 return null;
+            } catch (Exception error) {
+                throw new GitTransportFailure(error);
+            }
+        });
+    }
+
+    private static Iterable<org.eclipse.jgit.transport.PushResult> callPush(
+            org.eclipse.jgit.api.PushCommand command,
+            String username,
+            Optional<EphemeralCredential> credential
+    ) throws Exception {
+        if (credential.isEmpty()) return command.call();
+        return credential.get().use(value -> {
+            try {
+                return command
+                        .setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, value))
+                        .call();
             } catch (Exception error) {
                 throw new GitTransportFailure(error);
             }

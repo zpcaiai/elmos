@@ -183,6 +183,87 @@ class GitRepositoryWorkspaceServiceTest {
         assertEquals("GIT_WORKSPACE_CAPACITY_EXCEEDED", error.getMessage());
     }
 
+    @Test
+    void commitsExactApprovedPathsAndPushesVerifiedNonForceBranch() throws Exception {
+        RepositoryFixture source = repository(false, false, false);
+        GitRepositoryWorkspaceService service = service();
+        var workspace = service.create(request(source, source.branch()), "unused", Optional.empty());
+        var read = service.readFile("tenant-a", "actor-a", workspace.workspaceId(), "README.md");
+        service.apply(workspace.workspaceId(), change(
+                source, "README.md", read.sha256(), base64("# Delivered\n"), false));
+
+        assertThrows(SecurityException.class, () -> service.commit(
+                workspace.workspaceId(),
+                new GitRepositoryWorkspaceService.CommitRequest(
+                        "tenant-a", "actor-a", source.commit(), "wrong scope",
+                        false, List.of("src/App.java"))));
+
+        var committed = service.commit(
+                workspace.workspaceId(),
+                new GitRepositoryWorkspaceService.CommitRequest(
+                        "tenant-a", "actor-a", source.commit(), "Deliver requested change",
+                        false, List.of("README.md")));
+        assertEquals(List.of("README.md"), committed.committedPaths());
+        assertFalse(committed.signed());
+
+        var pushed = service.push(
+                workspace.workspaceId(),
+                new GitRepositoryWorkspaceService.PushRequest(
+                        "tenant-a", "actor-a", committed.commitSha()),
+                "unused",
+                Optional.empty());
+        assertEquals("PUSHED_VERIFIED", pushed.status());
+        assertTrue(pushed.externalOperationExecuted());
+
+        var recovered = service.inspect("tenant-a", "actor-a", workspace.workspaceId());
+        assertEquals(committed.commitSha(), recovered.currentHeadCommit());
+        assertEquals(committed.commitSha(), recovered.pushedCommit());
+        assertEquals(List.of(), recovered.pendingPaths());
+        assertEquals("PUSHED_VERIFIED", recovered.status());
+        try (Git remote = Git.open(Path.of(java.net.URI.create(source.uri())).toFile())) {
+            assertEquals(
+                    committed.commitSha(),
+                    remote.getRepository().resolve("refs/heads/" + workspace.branch()).name());
+        }
+    }
+
+    @Test
+    void genericGitCannotAssumePullRequestApi() throws Exception {
+        RepositoryFixture source = repository(false, false, false);
+        GitRepositoryWorkspaceService service = service();
+        var workspace = service.create(request(source, source.branch()), "unused", Optional.empty());
+        assertThrows(IllegalArgumentException.class, () -> service.createPullRequest(
+                workspace.workspaceId(),
+                new GitRepositoryWorkspaceService.PullRequestRequest(
+                        "tenant-a", "actor-a", source.commit(), "main",
+                        "Review", "Body", "request-1"),
+                "unused",
+                Optional.empty()));
+    }
+
+    @Test
+    void materializesImmutableSpringHandoffAndExcludesProtectedFiles() throws Exception {
+        RepositoryFixture source = repository(false, false, false);
+        GitRepositoryWorkspaceService service = service();
+        var workspace = service.create(request(source, source.branch()), "unused", Optional.empty());
+        Path handoffRoot = temporary.resolve("materialized");
+
+        var first = service.materialize(
+                "tenant-a", "actor-a", workspace.workspaceId(),
+                workspace.currentHeadCommit(), handoffRoot);
+        var second = service.materialize(
+                "tenant-a", "actor-a", workspace.workspaceId(),
+                workspace.currentHeadCommit(), handoffRoot);
+
+        assertEquals(first, second);
+        Path materialized = handoffRoot.resolve(first.relativePath());
+        assertTrue(Files.isRegularFile(materialized.resolve("src/App.java")));
+        assertTrue(Files.isRegularFile(materialized.resolve("Dockerfile")));
+        assertFalse(Files.exists(materialized.resolve(".env")));
+        assertEquals(List.of(".env"), first.excludedProtectedPaths());
+        assertEquals("MATERIALIZED_VERIFIED", first.status());
+    }
+
     private GitRepositoryWorkspaceService service() {
         return new GitRepositoryWorkspaceService(
                 temporary.resolve("workspaces"), 1_000, 64L * 1024 * 1024, true);

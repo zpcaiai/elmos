@@ -1,0 +1,200 @@
+# ELMOS Runner Agent - Kubernetes Deployment.
+#
+# Deliberately a Deployment, not a DaemonSet: capacity should follow queue depth,
+# not node count. Scale with the HPA below or manually; each replica is one
+# runner node with its own identity, its own lease set and its own work root.
+#
+# Two settings here are load-bearing and easy to get wrong:
+#
+#   terminationGracePeriodSeconds: 3900
+#       Must exceed the longest job budget (43200s ceiling in the schema; 3600s
+#       default). Anything shorter means `kubectl rollout` truncates in-flight
+#       customer builds - the exact failure the drain protocol exists to avoid.
+#
+#   podManagementPolicy / maxUnavailable: 1
+#       Roll one runner at a time so the fleet never loses all capacity at once.
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: elmos-runner-agent
+  namespace: elmos
+automountServiceAccountToken: false   # the agent talks to the control plane, not the API server
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elmos-runner-agent-metrics
+  namespace: elmos
+  labels: { app: elmos-runner-agent }
+spec:
+  clusterIP: None
+  selector: { app: elmos-runner-agent }
+  ports:
+    - name: metrics
+      port: 9464
+      targetPort: 9464
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elmos-runner-agent
+  namespace: elmos
+  labels: { app: elmos-runner-agent }
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels: { app: elmos-runner-agent }
+  template:
+    metadata:
+      labels: { app: elmos-runner-agent }
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9464"
+    spec:
+      serviceAccountName: elmos-runner-agent
+      terminationGracePeriodSeconds: 3900
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
+        seccompProfile: { type: RuntimeDefault }
+      containers:
+        - name: agent
+          image: registry.example.com/elmos/runner-agent@sha256:REPLACE_WITH_APPROVED_DIGEST
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true          # the attestation probe verifies this
+            capabilities: { drop: ["ALL"] }
+          env:
+            - name: ELMOS_CONTROL_PLANE_BASE_URL
+              value: https://control.elmos.internal
+            # Each pod is its own runner node; the pod name is a stable,
+            # unique identity that survives restarts of that replica.
+            - name: ELMOS_RUNNER_NODE_ID
+              valueFrom: { fieldRef: { fieldPath: metadata.name } }
+            - name: ELMOS_RUNNER_POOL_ID
+              value: pool-shared
+            - name: ELMOS_RUNNER_CAPABILITIES
+              value: "generation:multi"
+            - name: ELMOS_RUNNER_MAX_CONCURRENCY
+              value: "2"
+            - name: ELMOS_RUNNER_LEASE_SECONDS
+              value: "120"
+            - name: ELMOS_RUNNER_HEARTBEAT_SECONDS
+              value: "30"
+            - name: ELMOS_RUNNER_CONTAINER_ENGINE
+              value: /usr/bin/podman
+            - name: ELMOS_RUNNER_IMAGE_ALLOWLIST_VERSION
+              value: allow-2026-07-28
+            - name: ELMOS_ENVIRONMENT
+              value: production
+            # File-backed so the token never appears in the pod's environment.
+            - name: ELMOS_RUNNER_ENROLMENT_TOKEN_FILE
+              value: /var/run/secrets/elmos/enrolment-token
+          resources:
+            requests: { cpu: "500m", memory: "512Mi" }
+            # The agent itself is small; the workload containers carry their own
+            # cgroup budgets from the job record, so this limit bounds only the
+            # supervisor.
+            limits: { cpu: "1", memory: "1Gi" }
+          ports:
+            - name: metrics
+              containerPort: 9464
+          livenessProbe:
+            httpGet: { path: /healthz, port: 9464 }
+            initialDelaySeconds: 20
+            periodSeconds: 30
+            failureThreshold: 3
+          readinessProbe:
+            httpGet: { path: /healthz, port: 9464 }
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          volumeMounts:
+            - { name: work, mountPath: /var/lib/elmos-runner }
+            - { name: enrolment, mountPath: /var/run/secrets/elmos, readOnly: true }
+            - { name: podman-run, mountPath: /run/user/65532 }
+      volumes:
+        # Job workspaces are ephemeral by design: a lost lease means the job is
+        # rerun from its checkpoint elsewhere, never resumed from this disk.
+        - name: work
+          emptyDir: { sizeLimit: 50Gi }
+        - name: enrolment
+          secret:
+            secretName: elmos-runner-enrolment
+            defaultMode: 0400
+            items: [{ key: token, path: enrolment-token }]
+        - name: podman-run
+          emptyDir: {}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: elmos-runner-agent
+  namespace: elmos
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels: { app: elmos-runner-agent }
+---
+# Egress policy: the agent reaches the control plane and the object store.
+# Workload containers get --network=none from the agent itself, so they are not
+# covered here - they have no network at all.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: elmos-runner-agent-egress
+  namespace: elmos
+spec:
+  podSelector:
+    matchLabels: { app: elmos-runner-agent }
+  policyTypes: [Egress]
+  egress:
+    - to:
+        - podSelector: { matchLabels: { app: elmos-control-plane } }
+      ports: [{ protocol: TCP, port: 8080 }]
+    - to:
+        - namespaceSelector: {}
+      ports: [{ protocol: TCP, port: 443 }]   # object storage
+    - to:
+        - namespaceSelector: {}
+          podSelector: { matchLabels: { "k8s-app": "kube-dns" } }
+      ports: [{ protocol: UDP, port: 53 }, { protocol: TCP, port: 53 }]
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: elmos-runner-agent
+  namespace: elmos
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: elmos-runner-agent
+  minReplicas: 2
+  maxReplicas: 20
+  metrics:
+    # Scale on queue depth, not CPU. The agent is a supervisor; its own CPU says
+    # nothing about how much work is waiting.
+    - type: External
+      external:
+        metric:
+          name: elmos_execution_queue_depth
+        target:
+          type: AverageValue
+          averageValue: "3"
+  behavior:
+    scaleDown:
+      # Slow scale-down: a terminating pod may be holding an hour-long build.
+      stabilizationWindowSeconds: 900
+      policies: [{ type: Pods, value: 1, periodSeconds: 300 }]
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies: [{ type: Pods, value: 4, periodSeconds: 60 }]

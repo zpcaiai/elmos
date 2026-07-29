@@ -34,6 +34,26 @@ CONSOLE_STUDIO = CONSOLE / "spring" / "SpringModernizationStudio.tsx"
 
 EVIDENCE_STATUSES = {"PASSED_LOCAL", "NOT_RUN", "NOT_IMPLEMENTED"}
 
+# SpringUpgradeModels binds one route's tuple into PACK_KEY / SOURCE_BOOT /
+# SOURCE_JAVA, and the engine guidance document quotes that same pair. The
+# binding is to this specific route, not to "whichever route is verified".
+# While one route was recorded those were the same thing; with several recorded
+# they are not, and `next(...)` would silently pick whichever sits earliest in
+# the catalog -- validating a real pair, just not the one that is actually
+# bound, and passing while doing it.
+PACK_BOUND_ROUTE_ID = "boot-2.7-maven-to-boot-3.5.3-java-21"
+
+
+def pack_bound_route(routes: list[dict[str, object]]) -> dict[str, object]:
+    """The route whose tuple SpringUpgradeModels and the guidance doc quote."""
+    match = [route for route in routes if route["route_id"] == PACK_BOUND_ROUTE_ID]
+    require(len(match) == 1, f"PACK_BOUND_ROUTE_MISSING:{PACK_BOUND_ROUTE_ID}")
+    require(
+        match[0]["evidence"] == "PASSED_LOCAL",
+        f"PACK_BOUND_ROUTE_NOT_VERIFIED:{PACK_BOUND_ROUTE_ID}",
+    )
+    return match[0]
+
 
 class ContractError(RuntimeError):
     pass
@@ -193,20 +213,21 @@ def check_catalog_shape(routes: list[dict[str, object]], constants: dict[str, st
             )
 
     verified = [route for route in routes if route["evidence"] == "PASSED_LOCAL"]
-    require(len(verified) == 1, "EXACTLY_ONE_VERIFIED_ROUTE_REQUIRED")
+    # This used to require exactly one verified route. A count is the wrong
+    # invariant: it fails as soon as a second route is legitimately recorded, so
+    # the only way past it is to raise the number, which is the edit nobody
+    # thinks about. What matters is that at least one route is recorded and that
+    # no two routes claim the same tuple -- two routes reporting the same
+    # source Boot and Java would mean one execution was counted twice.
+    require(len(verified) >= 1, "NO_VERIFIED_ROUTE_RECORDED")
+    tuples = [(str(route["verified_boot"]), str(route["verified_java"])) for route in verified]
+    require(len(set(tuples)) == len(tuples), "VERIFIED_TUPLE_DUPLICATED_ACROSS_ROUTES")
+
+    bound = pack_bound_route(routes)
     models = MODELS.read_text(encoding="utf-8")
-    require(
-        f'PACK_KEY = "{verified[0]["pack_key"]}"' in models,
-        "MODELS_PACK_KEY_DRIFT",
-    )
-    require(
-        f'SOURCE_BOOT = "{verified[0]["verified_boot"]}"' in models,
-        "MODELS_SOURCE_BOOT_DRIFT",
-    )
-    require(
-        f'SOURCE_JAVA = "{verified[0]["verified_java"]}"' in models,
-        "MODELS_SOURCE_JAVA_DRIFT",
-    )
+    require(f'PACK_KEY = "{bound["pack_key"]}"' in models, "MODELS_PACK_KEY_DRIFT")
+    require(f'SOURCE_BOOT = "{bound["verified_boot"]}"' in models, "MODELS_SOURCE_BOOT_DRIFT")
+    require(f'SOURCE_JAVA = "{bound["verified_java"]}"' in models, "MODELS_SOURCE_JAVA_DRIFT")
 
 
 def check_engine(routes: list[dict[str, object]], constants: dict[str, str]) -> None:
@@ -227,10 +248,10 @@ def check_engine(routes: list[dict[str, object]], constants: dict[str, str]) -> 
         "ENGINE_STILL_ASSERTS_SINGLE_TUPLE",
     )
 
-    verified = next(route for route in routes if route["evidence"] == "PASSED_LOCAL")
+    bound = pack_bound_route(routes)
     guidance = ENGINE_GUIDANCE.read_text(encoding="utf-8")
     for needle in (
-        f"Spring Boot {verified['verified_boot']} / Java {verified['verified_java']}",
+        f"Spring Boot {bound['verified_boot']} / Java {bound['verified_java']}",
         f"Spring Boot {constants['TARGET_BOOT']} / Java {constants['TARGET_JAVA']}",
         f'"framework": "Spring Boot {constants["TARGET_BOOT"]}"',
     ):
@@ -238,7 +259,9 @@ def check_engine(routes: list[dict[str, object]], constants: dict[str, str]) -> 
 
 
 def check_console(routes: list[dict[str, object]], constants: dict[str, str]) -> None:
-    verified = next(route for route in routes if route["evidence"] == "PASSED_LOCAL")
+    # The proxy mirrors the pack-bound route's tuple specifically, so bind to it
+    # by id rather than to whichever route happens to be verified first.
+    verified = pack_bound_route(routes)
 
     # Parse the console mirror per route. A global substring check would let a
     # value drift onto the wrong route and still find a match elsewhere.
@@ -342,15 +365,22 @@ def main() -> int:
     check_catalog_shape(routes, constants)
     check_engine(routes, constants)
     check_console(routes, constants)
-    verified = next(route for route in routes if route["evidence"] == "PASSED_LOCAL")
+    recorded = [route for route in routes if route["evidence"] == "PASSED_LOCAL"]
     print(
         json.dumps(
             {
                 "status": "PASSED",
                 "declared_routes": len(routes),
                 "implemented_routes": sum(1 for route in routes if route["evidence"] != "NOT_IMPLEMENTED"),
-                "verified_route": verified["route_id"],
-                "verified_tuple": f"Spring Boot {verified['verified_boot']} / Java {verified['verified_java']}",
+                "recorded_routes": len(recorded),
+                # Report every recorded tuple. Printing one of several would
+                # under-report the evidence while looking complete.
+                "recorded_tuples": sorted(
+                    f"{route['route_id']}: Spring Boot {route['verified_boot']}"
+                    f" / Java {route['verified_java']}"
+                    for route in recorded
+                ),
+                "pack_bound_route": PACK_BOUND_ROUTE_ID,
                 "target": f"Spring Boot {constants['TARGET_BOOT']} / Java {constants['TARGET_JAVA']}",
                 "open_rewrite": constants["REWRITE_SPRING"],
                 "maven_plugin": constants["REWRITE_MAVEN_PLUGIN"],

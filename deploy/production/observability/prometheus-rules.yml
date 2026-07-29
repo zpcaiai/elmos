@@ -1,0 +1,224 @@
+# ELMOS 生产告警规则
+#
+# 状态：语法已通过 `promtool 3.5.0 check rules`（SUCCESS: 12 rules found）。
+# 但**尚未对接真实指标源**，没有任何一条告警被真实触发或恢复验证过，
+# 阈值也未用生产基线校准。RISK-SRE-001 保持 OPEN —— 语法正确不等于告警有效。
+#
+# 复验命令：
+#   promtool check rules deploy/production/observability/prometheus-rules.yml
+#
+# ⚠ 指标来源分两类，混淆会造成"告警配了但永远不响"：
+#
+#   【已埋点】commercial-api 的 Micrometer，见 OPERATIONS_RUNBOOK：
+#     elmos_billing_usage_reservations_total{outcome}
+#     elmos_billing_checkout_requests_total{outcome}
+#     elmos_billing_webhook_events_total{event_type,outcome}
+#     elmos_billing_api_errors_total{family}
+#     http_server_requests_seconds_count  （Spring Boot Actuator 标准指标）
+#     up                                   （Prometheus 自带）
+#
+#   【需先埋点，当前不存在】下列指标尚无产生方，规则会长期无数据：
+#     elmos_service_readiness
+#     elmos_runner_token_expires_at_seconds
+#     elmos_billing_reserved_lease_age_seconds_max
+#     elmos_backup_last_success_timestamp_seconds
+#     elmos_restore_drill_last_success_timestamp_seconds
+#
+#   **无数据的告警不会触发，也就等于没有告警。** 因此下方 elmos-meta 组用
+#   absent() 对这些指标本身做监控：指标缺失会先报出来，而不是静默假装一切正常。
+#
+# 指标来源：commercial-api 的 Micrometer（见 docs/tasks/self-service-billing/OPERATIONS_RUNBOOK.md）
+# 与各服务的 Spring Boot Actuator。Actuator 端点只能在内网暴露，不得对公网开放。
+#
+# 阈值全部是**起始值**，必须在拿到两周真实基线后重新校准；
+# 上线首月建议把 page 级告警先降为 ticket，避免用未校准的阈值把值班打爆。
+
+groups:
+
+  # ===========================================================================
+  # 计费：直接对应营收，任何异常都要在分钟级发现
+  # ===========================================================================
+  - name: elmos-billing
+    interval: 30s
+    rules:
+
+      - alert: BillingCheckoutProviderError
+        expr: increase(elmos_billing_checkout_requests_total{outcome="provider_error"}[10m]) > 0
+        for: 0m
+        labels: { severity: page, service: commercial-api }
+        annotations:
+          summary: "Checkout 出现支付提供方错误"
+          description: >-
+            10 分钟内出现 {{ $value }} 次 provider_error。客户可能正在付款失败。
+            禁止盲目重试：先查对账案件（GET /commercial/v1/billing/reconciliation?status=OPEN），
+            核对提供方 Dashboard 后再决定。
+          runbook: docs/tasks/self-service-billing/OPERATIONS_RUNBOOK.md#事故动作
+
+      - alert: BillingWebhookReconciliationBacklog
+        expr: increase(elmos_billing_webhook_events_total{outcome="reconciliation"}[1h]) > 3
+        for: 15m
+        labels: { severity: page, service: commercial-api }
+        annotations:
+          summary: "Webhook 进入待对账的事件持续增长"
+          description: >-
+            1 小时内有 {{ $value }} 个事件转入 RECONCILIATION_REQUIRED。
+            本地订阅状态可能与提供方不一致，客户可能已付款但未获得额度。
+
+      - alert: BillingWebhookSignatureInvalid
+        expr: increase(elmos_billing_webhook_events_total{outcome="signature_invalid"}[15m]) > 0
+        for: 0m
+        labels: { severity: page, service: commercial-api, security: "true" }
+        annotations:
+          summary: "Webhook 签名校验失败"
+          description: >-
+            可能是 secret 轮换未同步，也可能是伪造回调。
+            在核对 endpoint 与 secret 之前不要放宽校验。
+
+      - alert: BillingReservationDeniedSpike
+        expr: >-
+          sum(rate(elmos_billing_usage_reservations_total{outcome="denied"}[15m]))
+          /
+          clamp_min(sum(rate(elmos_billing_usage_reservations_total[15m])), 0.001)
+          > 0.30
+        for: 15m
+        labels: { severity: ticket, service: commercial-api }
+        annotations:
+          summary: "额度预留拒绝率超过 30%"
+          description: >-
+            可能是客户集中触顶（正常），也可能是额度计算或结算释放有缺陷（异常）。
+            先看是否集中在单个租户：集中=触顶，分散=系统问题。
+            处置原则：关闭任务入口，不要篡改额度。
+
+      - alert: BillingApiDatabaseErrors
+        expr: increase(elmos_billing_api_errors_total{family="database"}[10m]) > 5
+        for: 5m
+        labels: { severity: page, service: commercial-api }
+        annotations:
+          summary: "计费 API 数据库错误持续出现"
+          description: >-
+            数据库不可用时必须拒绝新预留和 Checkout，
+            **不得**退回客户端自报计量。
+
+  # ===========================================================================
+  # 服务可用性
+  # ===========================================================================
+  - name: elmos-availability
+    interval: 30s
+    rules:
+
+      - alert: ServiceDown
+        expr: up{job=~"elmos-.*"} == 0
+        for: 2m
+        labels: { severity: page }
+        annotations:
+          summary: "{{ $labels.job }} 探测不到"
+
+      - alert: ReadinessDown
+        expr: elmos_service_readiness == 0
+        for: 5m
+        labels: { severity: page }
+        annotations:
+          summary: "{{ $labels.job }} readiness 为 DOWN"
+          description: >-
+            commercial-api 的 readiness 会在目录版本与编译版本不一致、
+            或 V49 核心预留函数缺失时转 DOWN。先查这两项。
+
+      - alert: HighErrorRate
+        expr: >-
+          sum by (job) (rate(http_server_requests_seconds_count{status=~"5.."}[10m]))
+          /
+          clamp_min(sum by (job) (rate(http_server_requests_seconds_count[10m])), 0.001)
+          > 0.05
+        for: 10m
+        labels: { severity: page }
+        annotations:
+          summary: "{{ $labels.job }} 5xx 比例超过 5%"
+
+  # ===========================================================================
+  # 执行面
+  # ===========================================================================
+  - name: elmos-runner
+    interval: 60s
+    rules:
+
+      - alert: RunnerTokenExpiringSoon
+        expr: (elmos_runner_token_expires_at_seconds - time()) < 7200
+        for: 0m
+        labels: { severity: page, service: runner }
+        annotations:
+          summary: "Runner 令牌将在 2 小时内过期"
+          description: >-
+            令牌有效期上限 24 小时。过期后执行面直接停摆，
+            所有生成/构建任务会失败关闭。这是当前单租户令牌模型的已知运维负担，
+            根治方式见 deploy/production/runner/RUNNER_PRODUCTION_BASELINE.md 路线 A。
+
+      - alert: StaleReservedLeases
+        expr: elmos_billing_reserved_lease_age_seconds_max > 7200
+        for: 10m
+        labels: { severity: ticket }
+        annotations:
+          summary: "存在超过 2 小时未结算的 RESERVED 租约"
+          description: "额度被长期占用，客户会看到可用额度虚低。检查任务结算与释放路径。"
+
+  # ===========================================================================
+  # 数据保护
+  # ===========================================================================
+  - name: elmos-data
+    interval: 300s
+    rules:
+
+      - alert: BackupStale
+        expr: (time() - elmos_backup_last_success_timestamp_seconds) > 93600
+        for: 0m
+        labels: { severity: page }
+        annotations:
+          summary: "超过 26 小时没有成功备份"
+          description: >-
+            备份成功不等于可恢复。恢复演练见
+            deploy/production/backup/RESTORE_DRILL.md。
+
+      - alert: RestoreDrillOverdue
+        expr: (time() - elmos_restore_drill_last_success_timestamp_seconds) > 7862400
+        for: 0m
+        labels: { severity: ticket }
+        annotations:
+          summary: "超过 91 天没有做过恢复演练"
+          description: "RISK-DATA-001 只能由真实恢复演练关闭，备份指标不算。"
+
+  # ===========================================================================
+  # 元监控：确认告警赖以生效的指标真的存在
+  # 没有这一组，上面任何一条"需先埋点"的规则都会以"无数据 = 无告警"的形式静默失效
+  # ===========================================================================
+  - name: elmos-meta
+    interval: 300s
+    rules:
+
+      - alert: BillingMetricsAbsent
+        expr: absent(elmos_billing_usage_reservations_total)
+        for: 15m
+        labels: { severity: page, service: commercial-api }
+        annotations:
+          summary: "计费指标完全缺失"
+          description: >-
+            commercial-api 未上报计费指标。可能是服务未启动、Actuator 未暴露、
+            或抓取配置错误。此时全部计费告警都处于失效状态。
+
+      - alert: BackupMetricAbsent
+        expr: absent(elmos_backup_last_success_timestamp_seconds)
+        for: 1h
+        labels: { severity: ticket }
+        annotations:
+          summary: "备份指标不存在，BackupStale 告警无法生效"
+          description: >-
+            备份作业需要上报 elmos_backup_last_success_timestamp_seconds。
+            在它存在之前，"超过 26 小时没有备份"这条告警永远不会触发。
+
+      - alert: RunnerTokenMetricAbsent
+        expr: absent(elmos_runner_token_expires_at_seconds)
+        for: 1h
+        labels: { severity: ticket, service: runner }
+        annotations:
+          summary: "Runner 令牌过期指标不存在"
+          description: >-
+            在 Runner Agent（路线 A）落地前该指标不存在属预期；
+            落地后仍缺失说明埋点没做，令牌过期会毫无预警地让执行面停摆。

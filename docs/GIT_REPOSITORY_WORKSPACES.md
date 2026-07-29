@@ -11,10 +11,11 @@ before checkout and can inventory, read, and modify UTF-8 text files including:
 - GitHub Actions, GitLab CI, Kubernetes, Helm, and Terraform cloud deployment
   files.
 
-The current boundary ends at a local diff. Creating a workspace or saving a
-file does **not** push, open a pull request, merge, invoke a provider API, or
-deploy anything. Those effects require a separate, explicitly authorized
-delivery workflow.
+Creating a workspace or saving a file ends at a local diff. Commit, Push, and
+Pull Request are separate permission-checked actions with exact path, HEAD,
+remote-ref, short-lease, audit, and idempotency checks. ELMOS never force
+pushes, merges, deploys, changes DNS, or applies infrastructure from this
+workflow.
 
 ## Git repository to runnable project
 
@@ -28,9 +29,10 @@ The Web Console now provides a governed end-to-end path:
    blockers before enabling writes.
 3. Read or edit UTF-8 files in the isolated workspace. Every update is
    optimistic-concurrency protected by the previously read SHA-256 digest.
-4. Select **用此仓库生成完整项目**. The browser carries only the opaque
-   workspace UUID to `/generation`; no Git credential or repository content is
-   placed in the URL.
+4. Select **项目生成**, **跨语言转换**, or **Spring 现代化**. The browser
+   carries only the opaque workspace UUID (and exact HEAD for Spring) to the
+   chosen business line; no Git credential or repository content is placed in
+   the URL.
 5. In **导入需求来源**, optionally list up to eight repository-relative files,
    one per line. If the list is empty, ELMOS deterministically prefers README,
    `docs/**`, local/cloud deployment, configuration, tests, and then source
@@ -53,11 +55,16 @@ The Web Console now provides a governed end-to-end path:
    endpoints, Dockerfiles, CI, Kubernetes assets, traceability, source
    provenance, SBOM, and generation/verification manifests.
 
-Repository files are imported as untrusted requirements text. Scripts,
+Project Generation imports selected files as untrusted requirements text.
+Translation materializes only digest-verified source, documentation,
+configuration, and test text below the configured read-only source root.
+Spring materialization copies an immutable, exact-HEAD handoff into the shared
+Snapshot root while excluding protected secret-shaped paths and recording the
+exclusion list and manifest digest. Scripts,
 workflows, lifecycle hooks, binaries, Terraform, Kubernetes, Helm, Docker, and
 CI definitions from the source repository are not executed by ingestion.
-Remote push, pull request, merge, cloud apply, DNS, database migration, and
-production traffic remain separate authorized operations and stay `NOT_RUN`.
+Merge, cloud apply, DNS, database migration, and production traffic remain
+separate authorized operations and stay `NOT_RUN`.
 
 ## Safety contract
 
@@ -84,6 +91,11 @@ production traffic remain separate authorized operations and stay `NOT_RUN`.
 - Each API attempt and completion/failure is written to the tenant-isolated
   user activity log without repository content, clone URLs, file paths, or
   credentials.
+- Commit requires the current exact HEAD and the complete set of pending paths;
+  unapproved or protected paths fail closed. Push is non-force and succeeds
+  only after the provider advertises the expected commit on the exact ELMOS
+  branch. GitHub/Gitee PR publication stores a tenant-workspace-local
+  idempotency receipt; a conflicting retry is rejected.
 
 ## Control-plane configuration
 
@@ -99,6 +111,9 @@ ELMOS_REPOSITORY_WORKSPACE_MAX_BYTES=2147483648
 ELMOS_REPOSITORY_ALLOWED_GENERIC_HOSTS=git.example.com,git.internal.example
 ELMOS_REPOSITORY_WORKSPACE_MAX_COUNT=1000
 ELMOS_REPOSITORY_WORKSPACE_TTL_HOURS=168
+ELMOS_REPOSITORY_GITHUB_API_BASE=https://api.github.com
+ELMOS_REPOSITORY_GITEE_API_BASE=https://gitee.com
+ELMOS_SNAPSHOT_MATERIALIZED_ROOT=/absolute/shared/spring-materialized/path
 ```
 
 The Web Console additionally needs:
@@ -142,9 +157,9 @@ container engine with the repository mounted read-only and undeclared network
 access denied.
 
 The browser never receives the internal repository key or Git credential.
-Production should provide the user gate through the existing `__Host-` session
-cookie. The explicit bearer-token field in the current console is intended for
-controlled environments until the product identity provider is connected.
+Production uses the encrypted `__Host-` enterprise session and the verified
+OIDC access token. The explicit bearer-token field appears only in controlled
+non-production mode.
 
 ## Local hardware and software
 
@@ -241,13 +256,15 @@ A request may refer to a server-side credential by a safe identifier such as
 
 ```text
 git-username
+2026-07-28T12:00:00Z
 provider-token-or-password
 ```
 
 Never commit this file, put the token in a clone URL, or expose the reference
 directory through the Web Console. Credential files are read per operation,
 copied into an `EphemeralCredential`, cleared after JGit returns, and never
-persisted in the workspace.
+persisted in the workspace. The expiry must be in the future and no more than
+one hour from lease time.
 
 ## API surface
 
@@ -259,6 +276,10 @@ organization and actor headers.
 - `GET /api/v1/repository-workspaces/{workspaceId}`
 - `GET /api/v1/repository-workspaces/{workspaceId}/files?path=...`
 - `POST /api/v1/repository-workspaces/{workspaceId}/changes`
+- `POST /api/v1/repository-workspaces/{workspaceId}/commit`
+- `POST /api/v1/repository-workspaces/{workspaceId}/push`
+- `POST /api/v1/repository-workspaces/{workspaceId}/pull-request`
+- `POST /api/v1/repository-workspaces/{workspaceId}/materializations/spring`
 - `DELETE /api/v1/repository-workspaces/{workspaceId}`
 
 An apply request is explicit:
@@ -280,9 +301,11 @@ An apply request is explicit:
 }
 ```
 
-The result exposes `pushed=false`, `pullRequestCreated=false`, and
-`deployed=false` so downstream callers cannot confuse a local edit with remote
-delivery.
+The local-change result exposes `pushed=false`,
+`pullRequestCreated=false`, and `deployed=false`. Workspace inspection
+separately exposes `currentHeadCommit`, `pendingPaths`, `pushedCommit`,
+`pullRequestId`, and `pullRequestUrl`, so refresh/recovery cannot confuse local,
+remote-branch, PR, merge, or deployment state.
 
 The Web Console displays the opaque workspace UUID and provides an
 identity-bound recovery field. Refreshing the browser does not persist a Git
