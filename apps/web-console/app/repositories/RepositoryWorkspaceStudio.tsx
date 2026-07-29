@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useAccountSession } from "../components/AccountSessionProvider";
 import { Icon } from "../components/Icon";
 import styles from "./RepositoryWorkspaceStudio.module.css";
 
@@ -28,11 +29,16 @@ type Workspace = {
   nativeRepositoryId: string;
   requestedRef: string;
   sourceCommit: string;
+  currentHeadCommit: string;
   branch: string;
   completeness: "COMPLETE" | "INCOMPLETE_SUBMODULES" | "INCOMPLETE_LFS";
   codeOwnersPresent: boolean;
   blockers: string[];
   files: FileEntry[];
+  pendingPaths: string[];
+  pushedCommit?: string | null;
+  pullRequestId?: string | null;
+  pullRequestUrl?: string | null;
   status: string;
   externalOperationExecuted: boolean;
 };
@@ -67,6 +73,7 @@ function base64Utf8(value: string): string {
 }
 
 export function RepositoryWorkspaceStudio() {
+  const account = useAccountSession();
   const [accessToken, setAccessToken] = useState("");
   const [provider, setProvider] = useState<Provider>("GITHUB");
   const [cloneUrl, setCloneUrl] = useState("https://github.com/");
@@ -84,6 +91,14 @@ export function RepositoryWorkspaceStudio() {
   const [feedback, setFeedback] = useState("");
   const [filter, setFilter] = useState<FileCategory | "ALL">("ALL");
   const [newPath, setNewPath] = useState("");
+  const [commitMessage, setCommitMessage] = useState("Implement the approved ELMOS workspace changes");
+  const [deliveryCredentialRef, setDeliveryCredentialRef] = useState("");
+  const [baseBranch, setBaseBranch] = useState("main");
+  const [pullRequestTitle, setPullRequestTitle] = useState("ELMOS: implement approved changes");
+  const [pullRequestBody, setPullRequestBody] = useState(
+    "This pull request was prepared from a tenant-bound ELMOS workspace. Merge and deployment remain separate reviewed actions.",
+  );
+  const [pullRequestKey, setPullRequestKey] = useState(() => crypto.randomUUID());
 
   const files = useMemo(
     () => (workspace?.files ?? []).filter((file) => filter === "ALL" || file.category === filter),
@@ -100,7 +115,7 @@ export function RepositoryWorkspaceStudio() {
   }, []);
 
   function authorization(): HeadersInit {
-    return { Authorization: `Bearer ${accessToken}` };
+    return accessToken ? { Authorization: `Bearer ${accessToken}` } : {};
   }
 
   async function jsonRequest<T>(url: string, init: RequestInit = {}): Promise<T> {
@@ -160,6 +175,92 @@ export function RepositoryWorkspaceStudio() {
         : "仓库已拉取，但子模块或 LFS 对象尚未独立授权与校验，因此保持只读。");
     } catch (error) {
       setFeedback(error instanceof Error ? error.message : "仓库工作区创建失败。");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function refreshWorkspace(): Promise<Workspace> {
+    if (!workspace) throw new Error("请先建立工作区。");
+    const refreshed = await jsonRequest<Workspace>(
+      `/api/repository-workspaces/${workspace.workspaceId}`,
+    );
+    setWorkspace(refreshed);
+    return refreshed;
+  }
+
+  async function commitWorkspace() {
+    if (!workspace || workspace.pendingPaths.length === 0) return;
+    setBusy(true);
+    setFeedback("");
+    try {
+      const result = await jsonRequest<{ commitSha: string; committedPaths: string[] }>(
+        `/api/repository-workspaces/${workspace.workspaceId}/commit`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            expectedHeadCommit: workspace.currentHeadCommit,
+            message: commitMessage,
+            codeOwnerApproval: ownerApproved,
+            approvedPaths: workspace.pendingPaths,
+          }),
+        },
+      );
+      await refreshWorkspace();
+      setFeedback(`已在隔离分支提交 ${result.commitSha.slice(0, 12)}；尚未推送。`);
+    } catch (error) {
+      setFeedback(error instanceof Error ? error.message : "本地提交失败。");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function pushWorkspace() {
+    if (!workspace || workspace.pendingPaths.length > 0
+      || !window.confirm(`将 ${workspace.branch} 推送到远端仓库？不会强推、合并或部署。`)) return;
+    setBusy(true);
+    setFeedback("");
+    try {
+      await jsonRequest(`/api/repository-workspaces/${workspace.workspaceId}/push`, {
+        method: "POST",
+        body: JSON.stringify({
+          expectedCommit: workspace.currentHeadCommit,
+          credentialRef: deliveryCredentialRef || null,
+        }),
+      });
+      await refreshWorkspace();
+      setFeedback("远端分支已推送并按提交 SHA 回读校验；尚未创建 PR、合并或部署。");
+    } catch (error) {
+      setFeedback(error instanceof Error ? error.message : "远端推送失败。");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function createPullRequest() {
+    if (!workspace || workspace.pushedCommit !== workspace.currentHeadCommit
+      || !window.confirm(`将在 ${workspace.provider} 创建面向 ${baseBranch} 的 PR。继续？`)) return;
+    setBusy(true);
+    setFeedback("");
+    try {
+      const result = await jsonRequest<{ providerPullRequestId: string; url: string; status: string }>(
+        `/api/repository-workspaces/${workspace.workspaceId}/pull-request`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            expectedCommit: workspace.currentHeadCommit,
+            baseBranch,
+            title: pullRequestTitle,
+            body: pullRequestBody,
+            idempotencyKey: pullRequestKey,
+            credentialRef: deliveryCredentialRef || null,
+          }),
+        },
+      );
+      await refreshWorkspace();
+      setFeedback(`PR ${result.providerPullRequestId} 已创建；合并和部署仍需独立审批。`);
+    } catch (error) {
+      setFeedback(error instanceof Error ? error.message : "PR 创建失败。");
     } finally {
       setBusy(false);
     }
@@ -319,6 +420,24 @@ export function RepositoryWorkspaceStudio() {
     window.location.assign(`/generation?${search}`);
   }
 
+  function continueToTranslation() {
+    if (!workspace || workspace.completeness !== "COMPLETE"
+      || workspace.pendingPaths.length > 0) return;
+    const search = new URLSearchParams({ repositoryWorkspaceId: workspace.workspaceId });
+    window.location.assign(`/translation?${search}`);
+  }
+
+  function continueToSpring() {
+    if (!workspace || workspace.completeness !== "COMPLETE"
+      || workspace.pendingPaths.length > 0) return;
+    const search = new URLSearchParams({
+      repositoryWorkspaceId: workspace.workspaceId,
+      expectedCommitSha: workspace.currentHeadCommit,
+      requestedRef: workspace.requestedRef,
+    });
+    window.location.assign(`/spring?${search}`);
+  }
+
   return (
     <div className={styles.page}>
       <section className={styles.hero}>
@@ -329,16 +448,21 @@ export function RepositoryWorkspaceStudio() {
         </div>
         <div className={styles.boundary}>
           <Icon name="lock" size={18} />
-          <div><strong>本地修改边界</strong><small>推送、PR、合并与部署均未执行</small></div>
+          <div><strong>受控交付边界</strong><small>Commit、Push、PR 分权执行；不自动合并或部署</small></div>
         </div>
       </section>
 
       <form className={styles.connect} onSubmit={createWorkspace}>
-        <label className={styles.tokenField}>访问令牌
+        {account.status !== "authenticated" && <label className={styles.tokenField}>开发访问令牌
           <input type="password" autoComplete="off" value={accessToken}
             onChange={(event) => setAccessToken(event.target.value)}
             placeholder="仅保存在当前页面内存中" required minLength={24} />
-        </label>
+        </label>}
+        {account.status === "authenticated" && <div className={styles.accountIdentity}>
+          <span>当前企业身份</span>
+          <strong>{account.principal?.displayName}</strong>
+          <small>{account.principal?.organizationId}</small>
+        </div>}
         <label>托管平台
           <select value={provider} onChange={(event) => changeProvider(event.target.value as Provider)}>
             <option value="GITHUB">GitHub</option>
@@ -377,10 +501,10 @@ export function RepositoryWorkspaceStudio() {
 
       {workspace && <>
         <section className={styles.metrics} aria-label="工作区状态">
-          <article><span>来源提交</span><strong>{workspace.sourceCommit.slice(0, 12)}</strong><small>{workspace.requestedRef}</small></article>
+          <article><span>当前 HEAD</span><strong>{workspace.currentHeadCommit.slice(0, 12)}</strong><small>来源 {workspace.sourceCommit.slice(0, 12)} · {workspace.requestedRef}</small></article>
           <article><span>文件总数</span><strong>{workspace.files.length}</strong><small>最多受服务端限额约束</small></article>
           <article><span>完整性</span><strong>{workspace.completeness === "COMPLETE" ? "完整" : "只读"}</strong><small>{workspace.blockers.join(" · ") || "无阻断项"}</small></article>
-          <article><span>远端副作用</span><strong>0</strong><small>未推送 / 未部署</small></article>
+          <article><span>交付状态</span><strong>{workspace.status}</strong><small>{workspace.pullRequestId ? `PR ${workspace.pullRequestId}` : workspace.pushedCommit ? "远端分支已校验" : "远端未变更"}</small></article>
         </section>
 
         <div className={styles.toolbar}>
@@ -393,7 +517,17 @@ export function RepositoryWorkspaceStudio() {
             disabled={busy || workspace.completeness !== "COMPLETE"}>新建文件</button>
           <button className={styles.primary} type="button" onClick={continueToProjectGeneration}
             disabled={busy || workspace.completeness !== "COMPLETE"}>
-            用此仓库生成完整项目
+            项目生成
+          </button>
+          <button className={styles.secondary} type="button" onClick={continueToTranslation}
+            disabled={busy || workspace.completeness !== "COMPLETE"
+              || workspace.pendingPaths.length > 0}>
+            跨语言转换
+          </button>
+          <button className={styles.secondary} type="button" onClick={continueToSpring}
+            disabled={busy || workspace.completeness !== "COMPLETE"
+              || workspace.pendingPaths.length > 0}>
+            Spring 现代化
           </button>
           <label>文件分类
             <select value={filter} onChange={(event) => setFilter(event.target.value as FileCategory | "ALL")}>
@@ -452,6 +586,62 @@ export function RepositoryWorkspaceStudio() {
               </div>
             </> : <div className={styles.empty}><Icon name="file" size={26} /><strong>选择一个文本文件</strong><span>二进制、密钥与受保护路径不会开放编辑。</span></div>}
           </div>
+        </section>
+
+        <section className={styles.delivery} aria-label="受控代码交付">
+          <header>
+            <div><span className={styles.eyebrow}>Controlled delivery</span><h2>提交、推送与 Pull Request</h2></div>
+            <small>每一步都校验租户、权限、HEAD 和路径范围；不会自动合并或部署。</small>
+          </header>
+          <div className={styles.deliveryGrid}>
+            <article>
+              <strong>1. 本地 Commit</strong>
+              <label>提交说明<input value={commitMessage} maxLength={4000}
+                onChange={(event) => setCommitMessage(event.target.value)} /></label>
+              <small>{workspace.pendingPaths.length > 0
+                ? `${workspace.pendingPaths.length} 个待提交路径：${workspace.pendingPaths.join("、")}`
+                : "没有待提交文件。"}</small>
+              <button className={styles.primary} type="button" onClick={commitWorkspace}
+                data-operation-id="repository.commit"
+                disabled={busy || workspace.pendingPaths.length === 0 || commitMessage.trim().length === 0}>
+                提交已批准路径
+              </button>
+            </article>
+            <article>
+              <strong>2. 推送受控分支</strong>
+              <label>短期凭据引用<input value={deliveryCredentialRef}
+                onChange={(event) => setDeliveryCredentialRef(event.target.value)}
+                placeholder="最长 1 小时的服务端 Lease" /></label>
+              <small>仅推送 {workspace.branch}；禁止 force push，并回读远端 SHA。</small>
+              <button className={styles.primary} type="button" onClick={pushWorkspace}
+                data-operation-id="repository.push"
+                disabled={busy || workspace.pendingPaths.length > 0
+                  || workspace.currentHeadCommit === workspace.sourceCommit
+                  || workspace.pushedCommit === workspace.currentHeadCommit}>
+                推送并校验远端
+              </button>
+            </article>
+            <article>
+              <strong>3. 创建 Pull Request</strong>
+              <label>目标分支<input value={baseBranch}
+                onChange={(event) => setBaseBranch(event.target.value)} /></label>
+              <label>标题<input value={pullRequestTitle} maxLength={240}
+                onChange={(event) => setPullRequestTitle(event.target.value)} /></label>
+              <label>说明<textarea value={pullRequestBody} maxLength={8000}
+                onChange={(event) => setPullRequestBody(event.target.value)} /></label>
+              <button className={styles.primary} type="button" onClick={createPullRequest}
+                data-operation-id="repository.pull_request"
+                disabled={busy || provider === "GENERIC_GIT"
+                  || workspace.pushedCommit !== workspace.currentHeadCommit
+                  || Boolean(workspace.pullRequestId)}>
+                创建 PR
+              </button>
+              {workspace.pullRequestUrl && <a href={workspace.pullRequestUrl}
+                target="_blank" rel="noreferrer">打开 PR {workspace.pullRequestId}</a>}
+            </article>
+          </div>
+          <input type="hidden" value={pullRequestKey}
+            onChange={(event) => setPullRequestKey(event.target.value)} />
         </section>
       </>}
     </div>

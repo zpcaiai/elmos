@@ -478,6 +478,58 @@ export async function fetchOperationsConsole(
   });
 }
 
+/**
+ * One keyset page of the audit export.
+ *
+ * Read path, so it does not go through the `mutateOperations` allowlist. The
+ * page size is deliberately capped well below the control plane's own limit of
+ * 1000: this proxy refuses bodies over 64KB and gives up after a few seconds,
+ * so a caller wanting a full export walks the cursor rather than asking for one
+ * oversized response that would be truncated or time out.
+ */
+export async function fetchAuditExport(
+  search: URLSearchParams,
+  administrator: AdminPrincipal,
+): Promise<Response> {
+  const days = boundedInteger(search.get("days"), 7, 1, 366);
+  const limit = boundedInteger(search.get("limit"), 200, 1, 500);
+  const businessLine = filterToken(search.get("businessLine"));
+  const result = filterToken(search.get("result"));
+  const query = new URLSearchParams({
+    days: String(days),
+    limit: String(limit),
+    businessLine,
+    result,
+  });
+  // A cursor is a pair; forwarding half of one would restart the export from
+  // the top of the window and duplicate everything already downloaded.
+  const afterOccurredAt = search.get("afterOccurredAt");
+  const afterEventId = search.get("afterEventId");
+  if ((afterOccurredAt === null) !== (afterEventId === null)) {
+    throw new OperationsProxyError(
+      400,
+      "ADMIN_AUDIT_EXPORT_CURSOR_INCOMPLETE",
+      "审计导出游标必须同时提供时间与事件 ID。",
+    );
+  }
+  if (afterOccurredAt !== null && afterEventId !== null) {
+    if (Number.isNaN(Date.parse(afterOccurredAt))) {
+      throw new OperationsProxyError(
+        400,
+        "ADMIN_AUDIT_EXPORT_CURSOR_INVALID",
+        "审计导出游标时间无效。",
+      );
+    }
+    query.set("afterOccurredAt", afterOccurredAt);
+    query.set("afterEventId", identifier(afterEventId, "afterEventId"));
+  }
+  return fetch(`${controlPlaneBaseUrl()}/api/v1/operations-observability/audit-export?${query}`, {
+    headers: internalHeaders(randomUUID(), administrator),
+    cache: "no-store",
+    signal: AbortSignal.timeout(15_000),
+  });
+}
+
 export async function mutateOperations(
   path: string,
   body: Record<string, unknown>,

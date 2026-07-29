@@ -4,6 +4,8 @@ import { FormEvent, useMemo, useState } from "react";
 import { Icon } from "../components/Icon";
 import { useAccountSession } from "../components/AccountSessionProvider";
 import type {
+  AuditExportPage,
+  AuditExportRow,
   OperationsConsoleView,
   OperationsIncident,
   OperationsRemediation,
@@ -34,6 +36,42 @@ const lines = [
 
 const lineLabels = Object.fromEntries(lines);
 const roleRank = { VIEWER: 1, OPERATOR: 2, APPROVER: 3 } as const;
+
+// 200 rows per page, so this bounds one download at 200k rows. Without a
+// ceiling a mistyped window turns into an unbounded request loop.
+const MAX_EXPORT_PAGES = 1_000;
+
+const EXPORT_COLUMNS = [
+  "occurredAt", "source", "eventId", "sessionId", "eventKind", "action",
+  "businessLine", "route", "target", "durationMs", "result", "errorCode",
+] as const;
+
+/**
+ * RFC 4180 quoting. Every field is quoted rather than only the ones that need
+ * it: audit values are free-form, and a value that happens to contain a comma
+ * or newline would otherwise shift every later column in the row.
+ */
+function csvCell(value: unknown): string {
+  if (value === null || value === undefined) return '""';
+  return `"${String(value).replace(/"/g, '""')}"`;
+}
+
+function downloadCsv(rows: AuditExportRow[], days: string) {
+  const header = EXPORT_COLUMNS.join(",");
+  const body = rows
+    .map((row) => EXPORT_COLUMNS.map((column) => csvCell(row[column])).join(","))
+    .join("\r\n");
+  // The BOM keeps Excel from mangling non-ASCII targets on open.
+  const blob = new Blob([`﻿${header}\r\n${body}\r\n`], {
+    type: "text/csv;charset=utf-8",
+  });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = `elmos-audit-${days}d-${new Date().toISOString().slice(0, 10)}.csv`;
+  anchor.click();
+  URL.revokeObjectURL(url);
+}
 
 type LoadState = "LOCKED" | "LOADING" | "READY" | "ERROR";
 type AdminAction =
@@ -72,12 +110,83 @@ export function OperationsAdmin() {
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [busyAction, setBusyAction] = useState("");
+  const [exportDays, setExportDays] = useState("7");
+  const [exportBusy, setExportBusy] = useState(false);
+  const [exportError, setExportError] = useState("");
+  const [exportNotice, setExportNotice] = useState("");
 
   const summary = view?.activity ?? null;
   const periodLabel = useMemo(() => {
     if (!summary) return "尚未读取";
     return `${formatTime(summary.from)} — ${formatTime(summary.to)}`;
   }, [summary]);
+
+  /**
+   * Walk the export cursor to the end and hand back a CSV file.
+   *
+   * The proxy caps each response, so a full export is many requests. Two
+   * things are deliberate here: the page ceiling below stops a mistyped window
+   * from looping forever, and a partial download is never offered as a
+   * complete file -- if the walk stops early the operator is told how far it
+   * got, because an audit artifact that silently ends mid-window is worse than
+   * no artifact.
+   */
+  async function downloadAuditExport() {
+    if (account.status !== "authenticated" && token.trim().length < 24) {
+      setExportError("请输入至少 24 字符的短期管理令牌。");
+      return;
+    }
+    setExportBusy(true);
+    setExportError("");
+    setExportNotice("");
+    const rows: AuditExportRow[] = [];
+    let cursor: { at: string; id: string } | null = null;
+    let truncated = false;
+    try {
+      for (let page = 0; ; page++) {
+        if (page >= MAX_EXPORT_PAGES) {
+          truncated = true;
+          break;
+        }
+        const query = new URLSearchParams({
+          days: exportDays,
+          businessLine,
+          result,
+          limit: "200",
+        });
+        if (cursor) {
+          query.set("afterOccurredAt", cursor.at);
+          query.set("afterEventId", cursor.id);
+        }
+        const response = await fetch(`/api/admin/audit-export?${query}`, {
+          headers: token.trim() ? { Authorization: `Bearer ${token.trim()}` } : undefined,
+          credentials: "same-origin",
+          cache: "no-store",
+        });
+        const payload = await response.json() as AuditExportPage & { message?: string };
+        if (!response.ok) throw new Error(payload.message || "审计导出读取失败。");
+        rows.push(...payload.rows);
+        if (!payload.hasMore || !payload.nextOccurredAt || !payload.nextEventId) break;
+        cursor = { at: payload.nextOccurredAt, id: payload.nextEventId };
+      }
+      if (rows.length === 0) {
+        setExportNotice("所选窗口内没有审计记录。");
+        return;
+      }
+      downloadCsv(rows, exportDays);
+      setExportNotice(
+        truncated
+          ? `已导出前 ${rows.length} 行后停止：窗口过大，请缩短天数或收窄业务线后重新导出。`
+          : `已导出 ${rows.length} 行。`,
+      );
+    } catch (downloadError) {
+      setExportError(
+        downloadError instanceof Error ? downloadError.message : "审计导出读取失败。",
+      );
+    } finally {
+      setExportBusy(false);
+    }
+  }
 
   async function loadData() {
     if (account.status !== "authenticated" && token.trim().length < 24) {
@@ -210,6 +319,44 @@ export function OperationsAdmin() {
         </button>
         {state === "READY" && <button className="secondary-button" type="button" onClick={lock}>锁定</button>}
       </form>
+
+      {state === "READY" && (
+        <section className={styles.panel} aria-label="审计导出">
+          <h2><Icon name="file" size={18} /> 审计导出</h2>
+          <p>
+            导出所选窗口内的原始审计与遥测记录（CSV）。按游标逐页读取，
+            结果与上方筛选的业务线、结果保持一致；时间窗口在此单独选择。
+          </p>
+          <div className={styles.inlineActions}>
+            <label>
+              <span>窗口</span>
+              <select
+                value={exportDays}
+                onChange={(event) => setExportDays(event.target.value)}
+                aria-label="导出时间窗口"
+                disabled={exportBusy}
+              >
+                <option value="1">最近 1 天</option>
+                <option value="7">最近 7 天</option>
+                <option value="30">最近 30 天</option>
+                <option value="90">最近 90 天</option>
+                <option value="366">最近 366 天</option>
+              </select>
+            </label>
+            <button
+              className="secondary-button"
+              type="button"
+              onClick={downloadAuditExport}
+              disabled={exportBusy}
+            >
+              <Icon name={exportBusy ? "refresh" : "box"} size={17} />
+              {exportBusy ? "导出中…" : "导出 CSV"}
+            </button>
+          </div>
+          {exportError && <p className={styles.bad} role="alert">{exportError}</p>}
+          {exportNotice && <p className={styles.good} role="status">{exportNotice}</p>}
+        </section>
+      )}
 
       {state === "LOCKED" && (
         <section className={styles.locked}>

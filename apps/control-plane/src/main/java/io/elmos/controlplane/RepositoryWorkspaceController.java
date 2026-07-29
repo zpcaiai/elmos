@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.time.Clock;
 import java.util.List;
@@ -51,6 +52,22 @@ public final class RepositoryWorkspaceController {
     ) {}
 
     record DeleteResult(String workspaceId, String status, boolean externalOperationExecuted) {}
+    record CommitBody(
+            String expectedHeadCommit,
+            String message,
+            boolean codeOwnerApproval,
+            List<String> approvedPaths
+    ) {}
+    record PushBody(String expectedCommit, String credentialRef) {}
+    record PullRequestBody(
+            String expectedCommit,
+            String baseBranch,
+            String title,
+            String body,
+            String idempotencyKey,
+            String credentialRef
+    ) {}
+    record MaterializeBody(String expectedHeadCommit) {}
     record ErrorResponse(String errorCode, String message, boolean retryable) {}
 
     private final GitRepositoryWorkspaceService workspaces;
@@ -58,19 +75,23 @@ public final class RepositoryWorkspaceController {
     private final JdbcUserActivityStore activity;
     private final Clock clock;
     private final String apiKey;
+    private final Path materializedRoot;
 
     public RepositoryWorkspaceController(
             GitRepositoryWorkspaceService workspaces,
             RepositoryWorkspaceCredentialStore credentials,
             JdbcUserActivityStore activity,
             Clock clock,
-            @Value("${elmos.repository-workspace.api-key:}") String apiKey
+            @Value("${elmos.repository-workspace.api-key:}") String apiKey,
+            @Value("${elmos.snapshot.materialized-root:}") String materializedRoot
     ) {
         this.workspaces = Objects.requireNonNull(workspaces, "workspaces");
         this.credentials = Objects.requireNonNull(credentials, "credentials");
         this.activity = Objects.requireNonNull(activity, "activity");
         this.clock = Objects.requireNonNull(clock, "clock");
         this.apiKey = apiKey == null ? "" : apiKey.trim();
+        this.materializedRoot = materializedRoot == null || materializedRoot.isBlank()
+                ? null : Path.of(materializedRoot).toAbsolutePath().normalize();
     }
 
     @GetMapping("/capabilities")
@@ -190,6 +211,90 @@ public final class RepositoryWorkspaceController {
                 });
     }
 
+    @PostMapping("/{workspaceId}/commit")
+    GitRepositoryWorkspaceService.CommitResult commit(
+            @RequestHeader("X-ELMOS-Repository-Key") String presentedKey,
+            @RequestHeader("X-ELMOS-Organization-ID") String organizationId,
+            @RequestHeader("X-ELMOS-Actor-ID") String actorId,
+            @RequestHeader(value = "X-Request-ID", required = false) String requestId,
+            @PathVariable String workspaceId,
+            @RequestBody CommitBody body
+    ) {
+        authorize(presentedKey, organizationId, actorId, "repository:commit");
+        return audited(organizationId, actorId, requestId, "REPOSITORY_COMMIT",
+                safeTarget(workspaceId), () -> workspaces.commit(
+                        workspaceId,
+                        new GitRepositoryWorkspaceService.CommitRequest(
+                                organizationId, actorId, body.expectedHeadCommit(),
+                                body.message(), body.codeOwnerApproval(),
+                                body.approvedPaths())));
+    }
+
+    @PostMapping("/{workspaceId}/push")
+    GitRepositoryWorkspaceService.PushResult push(
+            @RequestHeader("X-ELMOS-Repository-Key") String presentedKey,
+            @RequestHeader("X-ELMOS-Organization-ID") String organizationId,
+            @RequestHeader("X-ELMOS-Actor-ID") String actorId,
+            @RequestHeader(value = "X-Request-ID", required = false) String requestId,
+            @PathVariable String workspaceId,
+            @RequestBody PushBody body
+    ) {
+        authorize(presentedKey, organizationId, actorId, "repository:push");
+        return auditedExternal(organizationId, actorId, requestId, "REPOSITORY_PUSH",
+                safeTarget(workspaceId), () -> {
+                    try (RepositoryWorkspaceCredentialStore.Lease lease =
+                                 credentials.lease(body.credentialRef())) {
+                        return workspaces.push(
+                                workspaceId,
+                                new GitRepositoryWorkspaceService.PushRequest(
+                                        organizationId, actorId, body.expectedCommit()),
+                                lease.username(), lease.credential());
+                    }
+                });
+    }
+
+    @PostMapping("/{workspaceId}/pull-request")
+    GitRepositoryWorkspaceService.PullRequestResult pullRequest(
+            @RequestHeader("X-ELMOS-Repository-Key") String presentedKey,
+            @RequestHeader("X-ELMOS-Organization-ID") String organizationId,
+            @RequestHeader("X-ELMOS-Actor-ID") String actorId,
+            @RequestHeader(value = "X-Request-ID", required = false) String requestId,
+            @PathVariable String workspaceId,
+            @RequestBody PullRequestBody body
+    ) {
+        authorize(presentedKey, organizationId, actorId, "repository:pr");
+        return auditedExternal(organizationId, actorId, requestId, "REPOSITORY_PULL_REQUEST",
+                safeTarget(workspaceId), () -> {
+                    try (RepositoryWorkspaceCredentialStore.Lease lease =
+                                 credentials.lease(body.credentialRef())) {
+                        return workspaces.createPullRequest(
+                                workspaceId,
+                                new GitRepositoryWorkspaceService.PullRequestRequest(
+                                        organizationId, actorId, body.expectedCommit(),
+                                        body.baseBranch(), body.title(), body.body(),
+                                        body.idempotencyKey()),
+                                lease.username(), lease.credential());
+                    }
+                });
+    }
+
+    @PostMapping("/{workspaceId}/materializations/spring")
+    GitRepositoryWorkspaceService.WorkspaceMaterialization materializeForSpring(
+            @RequestHeader("X-ELMOS-Repository-Key") String presentedKey,
+            @RequestHeader("X-ELMOS-Organization-ID") String organizationId,
+            @RequestHeader("X-ELMOS-Actor-ID") String actorId,
+            @RequestHeader(value = "X-Request-ID", required = false) String requestId,
+            @PathVariable String workspaceId,
+            @RequestBody MaterializeBody body
+    ) {
+        authorize(presentedKey, organizationId, actorId, "repository:read");
+        if (materializedRoot == null) throw new WorkspaceUnavailableException();
+        return audited(organizationId, actorId, requestId, "REPOSITORY_SPRING_MATERIALIZE",
+                safeTarget(workspaceId), () -> workspaces.materialize(
+                        organizationId, actorId, workspaceId,
+                        body.expectedHeadCommit(), materializedRoot));
+    }
+
     private <T> T audited(
             String organizationId,
             String actorId,
@@ -198,15 +303,40 @@ public final class RepositoryWorkspaceController {
             String target,
             Supplier<T> operation
     ) {
+        return audited(organizationId, actorId, requestId, action, target, false, operation);
+    }
+
+    private <T> T auditedExternal(
+            String organizationId,
+            String actorId,
+            String requestId,
+            String action,
+            String target,
+            Supplier<T> operation
+    ) {
+        return audited(organizationId, actorId, requestId, action, target, true, operation);
+    }
+
+    private <T> T audited(
+            String organizationId,
+            String actorId,
+            String requestId,
+            String action,
+            String target,
+            boolean externalSideEffect,
+            Supplier<T> operation
+    ) {
         String correlation = safeCorrelation(requestId);
-        append(organizationId, actorId, correlation, action + "_ATTEMPT", target, "SUCCESS", null);
+        append(organizationId, actorId, correlation, action + "_ATTEMPT", target,
+                "SUCCESS", null, false);
         try {
             T result = operation.get();
-            appendBestEffort(organizationId, actorId, correlation, action, target, "SUCCESS", null);
+            appendBestEffort(organizationId, actorId, correlation, action, target,
+                    "SUCCESS", null, externalSideEffect);
             return result;
         } catch (RuntimeException error) {
             appendBestEffort(organizationId, actorId, correlation, action, target,
-                    "FAILURE", errorCode(error));
+                    "FAILURE", errorCode(error), false);
             throw error;
         }
     }
@@ -218,7 +348,8 @@ public final class RepositoryWorkspaceController {
             String action,
             String target,
             String result,
-            String errorCode
+            String errorCode,
+            boolean externalSideEffect
     ) {
         activity.append(organizationId, actorId, requestId, List.of(new ActivityEvent(
                 UUID.randomUUID().toString(),
@@ -234,7 +365,7 @@ public final class RepositoryWorkspaceController {
                 errorCode,
                 null,
                 null,
-                Map.of("externalSideEffect", "false")
+                Map.of("externalSideEffect", String.valueOf(externalSideEffect))
         )));
     }
 
@@ -245,10 +376,12 @@ public final class RepositoryWorkspaceController {
             String action,
             String target,
             String result,
-            String errorCode
+            String errorCode,
+            boolean externalSideEffect
     ) {
         try {
-            append(organizationId, actorId, requestId, action, target, result, errorCode);
+            append(organizationId, actorId, requestId, action, target, result,
+                    errorCode, externalSideEffect);
         } catch (RuntimeException ignored) {
             // The durable attempt event remains the minimum audit record. Do not
             // repeat a completed filesystem mutation because completion logging failed.

@@ -1,4 +1,6 @@
 import { createHash, randomUUID, timingSafeEqual } from "node:crypto";
+import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
+import path from "node:path";
 import type { NextRequest } from "next/server";
 import {
   accountCookieNames,
@@ -11,6 +13,8 @@ import {
 const maximumBodyBytes = 3 * 1024 * 1024;
 const maximumControlPlaneResponseBytes = 16 * 1024 * 1024;
 const maximumGenerationRepositoryFiles = 8;
+const maximumTranslationRepositoryFiles = 1_000;
+const maximumTranslationRepositoryBytes = 64 * 1024 * 1024;
 const requestTimeoutMs = 30_000;
 const workspaceIdPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const sourceCommitPattern = /^[0-9a-f]{40}$/;
@@ -37,8 +41,12 @@ type RepositoryWorkspaceSnapshot = {
   providerInstanceId: string;
   nativeRepositoryId: string;
   sourceCommit: string;
+  currentHeadCommit: string;
   completeness: "COMPLETE" | "INCOMPLETE_SUBMODULES" | "INCOMPLETE_LFS";
   files: RepositoryFileEntry[];
+  pendingPaths: string[];
+  pushedCommit?: string | null;
+  pullRequestId?: string | null;
   externalOperationExecuted: boolean;
 };
 
@@ -51,12 +59,30 @@ type RepositoryFileContent = {
   content: string;
 };
 
+export type RepositorySpringMaterialization = {
+  workspaceId: string;
+  sourceCommit: string;
+  resolvedCommitSha: string;
+  relativePath: string;
+  manifestSha256: string;
+  excludedProtectedPaths: string[];
+  status: "MATERIALIZED_VERIFIED";
+};
+
 export type RepositoryGenerationSource = {
   path: string;
   mediaType: string;
   origin: string;
   raw: Buffer;
   warnings: string[];
+};
+
+export type RepositoryTranslationWorkspace = {
+  materializedId: string;
+  sourceCommit: string;
+  currentHeadCommit: string;
+  fileCount: number;
+  totalBytes: number;
 };
 
 export class RepositoryWorkspaceProxyError extends Error {
@@ -170,6 +196,12 @@ function validatePath(parts: string[], search: URLSearchParams): string {
   }
   if (parts.length === 1) return `/${parts[0]}`;
   if (parts.length === 2 && parts[1] === "changes") return `/${parts[0]}/changes`;
+  if (parts.length === 2 && ["commit", "push", "pull-request"].includes(parts[1])) {
+    return `/${parts[0]}/${parts[1]}`;
+  }
+  if (parts.length === 3 && parts[1] === "materializations" && parts[2] === "spring") {
+    return `/${parts[0]}/materializations/spring`;
+  }
   if (parts.length === 2 && parts[1] === "files") {
     const filePath = search.get("path") ?? "";
     if (!filePath || filePath.length > 512 || filePath.startsWith("/")
@@ -324,9 +356,11 @@ export async function repositoryGenerationSources(input: {
   if (
     snapshot.workspaceId !== input.workspaceId
     || snapshot.completeness !== "COMPLETE"
-    || snapshot.externalOperationExecuted !== false
     || !sourceCommitPattern.test(snapshot.sourceCommit)
+    || !sourceCommitPattern.test(snapshot.currentHeadCommit)
     || !Array.isArray(snapshot.files)
+    || !Array.isArray(snapshot.pendingPaths)
+    || snapshot.pendingPaths.length > 0
   ) {
     throw new RepositoryWorkspaceProxyError(
       409,
@@ -391,7 +425,8 @@ export async function repositoryGenerationSources(input: {
       `provider=${encodeURIComponent(snapshot.provider)}`,
       `instance=${encodeURIComponent(snapshot.providerInstanceId)}`,
       `repository=${encodeURIComponent(snapshot.nativeRepositoryId)}`,
-      `commit=${snapshot.sourceCommit}`,
+      `sourceCommit=${snapshot.sourceCommit}`,
+      `headCommit=${snapshot.currentHeadCommit}`,
       `path=${encodeURIComponent(filePath)}`,
     ].join(";");
     sources.push({
@@ -401,11 +436,231 @@ export async function repositoryGenerationSources(input: {
       raw,
       warnings: [
         "REPOSITORY_WORKSPACE_CONTENT_IMPORTED_NOT_EXECUTED",
-        "REMOTE_PUSH_PR_MERGE_AND_DEPLOYMENT_NOT_RUN",
+        snapshot.pullRequestId
+          ? "PULL_REQUEST_EXISTS_MERGE_AND_DEPLOYMENT_NOT_RUN"
+          : snapshot.pushedCommit
+            ? "REMOTE_BRANCH_EXISTS_MERGE_AND_DEPLOYMENT_NOT_RUN"
+            : "REMOTE_PUSH_PR_MERGE_AND_DEPLOYMENT_NOT_RUN",
       ],
     });
   }
   return sources;
+}
+
+export async function repositoryTranslationWorkspace(input: {
+  tenantId: string;
+  actor: string;
+  accessToken?: string;
+  workspaceId: string;
+  sourceRoot: string;
+}): Promise<RepositoryTranslationWorkspace> {
+  if (!workspaceIdPattern.test(input.workspaceId)) {
+    throw new RepositoryWorkspaceProxyError(
+      400, "REPOSITORY_WORKSPACE_ID_INVALID", "仓库工作区 ID 无效。",
+    );
+  }
+  const context = {
+    organizationId: input.tenantId,
+    actorId: input.actor,
+    accessToken: input.accessToken,
+  };
+  const snapshot = await controlPlaneJson<RepositoryWorkspaceSnapshot>(
+    `/${input.workspaceId}`,
+    context,
+  );
+  if (
+    snapshot.workspaceId !== input.workspaceId
+    || snapshot.completeness !== "COMPLETE"
+    || !sourceCommitPattern.test(snapshot.sourceCommit)
+    || !sourceCommitPattern.test(snapshot.currentHeadCommit)
+    || snapshot.pendingPaths.length > 0
+  ) {
+    throw new RepositoryWorkspaceProxyError(
+      409,
+      "REPOSITORY_TRANSLATION_SOURCE_NOT_IMMUTABLE",
+      "语言转换仅接受完整且无待提交变更的仓库工作区。",
+    );
+  }
+  const selected = snapshot.files.filter((file) =>
+    file.writable && ["SOURCE", "DOCUMENTATION", "CONFIGURATION", "TEST"].includes(file.category));
+  const declaredBytes = selected.reduce((total, file) => total + file.bytes, 0);
+  if (
+    selected.length === 0
+    || selected.length > maximumTranslationRepositoryFiles
+    || declaredBytes > maximumTranslationRepositoryBytes
+  ) {
+    throw new RepositoryWorkspaceProxyError(
+      413,
+      "REPOSITORY_TRANSLATION_SCOPE_EXCEEDED",
+      "仓库可转换文本范围超过 1000 个文件或 64 MB，需先拆分工作区。",
+    );
+  }
+  const materializedId = `repo-${input.workspaceId}`;
+  const destination = path.resolve(input.sourceRoot, materializedId);
+  const root = path.resolve(input.sourceRoot);
+  if (!destination.startsWith(`${root}${path.sep}`)) {
+    throw new RepositoryWorkspaceProxyError(
+      400, "REPOSITORY_TRANSLATION_PATH_INVALID", "仓库转换工作区路径无效。",
+    );
+  }
+  const marker = path.join(destination, ".elmos-repository-source.json");
+  try {
+    const existing = JSON.parse(await readFile(marker, "utf8")) as {
+      workspaceId?: string;
+      currentHeadCommit?: string;
+    };
+    if (
+      existing.workspaceId === input.workspaceId
+      && existing.currentHeadCommit === snapshot.currentHeadCommit
+    ) {
+      return {
+        materializedId,
+        sourceCommit: snapshot.sourceCommit,
+        currentHeadCommit: snapshot.currentHeadCommit,
+        fileCount: selected.length,
+        totalBytes: declaredBytes,
+      };
+    }
+    throw new RepositoryWorkspaceProxyError(
+      409,
+      "REPOSITORY_TRANSLATION_MATERIALIZATION_CONFLICT",
+      "同名转换来源与当前仓库提交不一致。",
+    );
+  } catch (error) {
+    if (error instanceof RepositoryWorkspaceProxyError) throw error;
+  }
+  const temporary = path.resolve(root, `.${materializedId}.${randomUUID()}.tmp`);
+  await mkdir(temporary, { recursive: false, mode: 0o700 });
+  let actualBytes = 0;
+  try {
+    for (const entry of selected) {
+      const filePath = safeRepositoryFilePath(entry.path);
+      const content = await controlPlaneJson<RepositoryFileContent>(
+        `/${input.workspaceId}/files?${new URLSearchParams({ path: filePath })}`,
+        context,
+      );
+      const raw = Buffer.from(content.content, "utf8");
+      const digest = createHash("sha256").update(raw).digest("hex");
+      if (
+        content.workspaceId !== input.workspaceId
+        || content.path !== filePath
+        || content.sha256 !== entry.sha256
+        || digest !== entry.sha256
+      ) {
+        throw new RepositoryWorkspaceProxyError(
+          409,
+          "REPOSITORY_TRANSLATION_DIGEST_MISMATCH",
+          "仓库文件在转换来源物化期间发生变化。",
+        );
+      }
+      actualBytes += raw.length;
+      if (actualBytes > maximumTranslationRepositoryBytes) {
+        throw new RepositoryWorkspaceProxyError(
+          413,
+          "REPOSITORY_TRANSLATION_SCOPE_EXCEEDED",
+          "仓库转换来源实际大小超过 64 MB。",
+        );
+      }
+      const target = path.resolve(temporary, filePath);
+      if (!target.startsWith(`${temporary}${path.sep}`)) {
+        throw new RepositoryWorkspaceProxyError(
+          400, "REPOSITORY_TRANSLATION_PATH_INVALID", "仓库文件路径逸出物化目录。",
+        );
+      }
+      await mkdir(path.dirname(target), { recursive: true, mode: 0o700 });
+      await writeFile(target, raw, { mode: 0o600, flag: "wx" });
+    }
+    await writeFile(
+      path.join(temporary, ".elmos-repository-source.json"),
+      `${JSON.stringify({
+        schemaVersion: "1.0",
+        workspaceId: input.workspaceId,
+        sourceCommit: snapshot.sourceCommit,
+        currentHeadCommit: snapshot.currentHeadCommit,
+        includedCategories: ["SOURCE", "DOCUMENTATION", "CONFIGURATION", "TEST"],
+        excludedProtectedAndBinaryDeploymentAssets: true,
+        fileCount: selected.length,
+        totalBytes: actualBytes,
+      }, null, 2)}\n`,
+      { mode: 0o600, flag: "wx" },
+    );
+    await rename(temporary, destination);
+  } catch (error) {
+    await rm(temporary, { recursive: true, force: true });
+    throw error;
+  }
+  return {
+    materializedId,
+    sourceCommit: snapshot.sourceCommit,
+    currentHeadCommit: snapshot.currentHeadCommit,
+    fileCount: selected.length,
+    totalBytes: actualBytes,
+  };
+}
+
+export async function repositorySpringMaterialization(
+  request: NextRequest,
+  workspaceId: string,
+  expectedHeadCommit: string,
+): Promise<RepositorySpringMaterialization> {
+  if (!workspaceIdPattern.test(workspaceId) || !sourceCommitPattern.test(expectedHeadCommit)) {
+    throw new RepositoryWorkspaceProxyError(
+      400, "REPOSITORY_SPRING_SOURCE_INVALID", "Spring 仓库工作区来源无效。",
+    );
+  }
+  const actor = authorizeBrowser(request, "spring:execute");
+  const headers = trustedHeaders(actor);
+  headers.set("Content-Type", "application/json");
+  let response: Response;
+  try {
+    response = await fetch(
+      `${controlPlaneBaseUrl()}/api/v1/repository-workspaces/${workspaceId}/materializations/spring`,
+      {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ expectedHeadCommit }),
+        cache: "no-store",
+        redirect: "error",
+        signal: AbortSignal.timeout(120_000),
+      },
+    );
+  } catch {
+    throw new RepositoryWorkspaceProxyError(
+      503,
+      "REPOSITORY_SPRING_MATERIALIZATION_UNAVAILABLE",
+      "Spring 仓库来源物化服务暂时不可用。",
+      true,
+    );
+  }
+  const payload = await response.json().catch(() => null) as
+    | RepositorySpringMaterialization
+    | { errorCode?: string; message?: string; retryable?: boolean }
+    | null;
+  if (!response.ok || !payload || !("resolvedCommitSha" in payload)) {
+    const error = payload && !("resolvedCommitSha" in payload) ? payload : {};
+    throw new RepositoryWorkspaceProxyError(
+      response.status,
+      error?.errorCode ?? "REPOSITORY_SPRING_MATERIALIZATION_FAILED",
+      error?.message ?? "Spring 仓库来源物化失败。",
+      error?.retryable === true,
+    );
+  }
+  if (
+    payload.workspaceId !== workspaceId
+    || payload.resolvedCommitSha !== expectedHeadCommit
+    || payload.status !== "MATERIALIZED_VERIFIED"
+    || !digestPattern.test(payload.manifestSha256)
+    || !payload.relativePath
+    || payload.relativePath.startsWith("/")
+    || payload.relativePath.split("/").includes("..")
+  ) {
+    throw new RepositoryWorkspaceProxyError(
+      502,
+      "REPOSITORY_SPRING_MATERIALIZATION_EVIDENCE_INVALID",
+      "Spring 仓库物化结果未通过身份、提交与摘要校验。",
+    );
+  }
+  return payload;
 }
 
 export async function repositoryWorkspaceRequest(
@@ -418,10 +673,21 @@ export async function repositoryWorkspaceRequest(
   }
   const actor = authorizeBrowser(
     request,
-    method === "GET" ? "repository:read" : "repository:write",
+    method === "GET"
+      ? "repository:read"
+      : parts[1] === "commit"
+        ? "repository:commit"
+        : parts[1] === "push"
+          ? "repository:push"
+          : parts[1] === "pull-request"
+            ? "repository:pr"
+            : "repository:write",
   );
   const targetPath = validatePath(parts, request.nextUrl.searchParams);
-  if (method === "POST" && targetPath !== "" && !targetPath.endsWith("/changes")) {
+  if (method === "POST" && targetPath !== ""
+      && !["/changes", "/commit", "/push", "/pull-request"].some(
+        (suffix) => targetPath.endsWith(suffix),
+      ) && !targetPath.endsWith("/materializations/spring")) {
     throw new RepositoryWorkspaceProxyError(405, "REPOSITORY_METHOD_NOT_ALLOWED", "请求方法不受支持。");
   }
   if (method === "DELETE" && (!workspaceIdPattern.test(parts[0] ?? "") || parts.length !== 1)) {

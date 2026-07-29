@@ -28,7 +28,8 @@ class RepositoryWorkspaceControllerTest {
             mock(RepositoryWorkspaceCredentialStore.class);
     private final JdbcUserActivityStore activity = mock(JdbcUserActivityStore.class);
     private final RepositoryWorkspaceController controller = new RepositoryWorkspaceController(
-            service, credentials, activity, Clock.fixed(NOW, ZoneOffset.UTC), KEY);
+            service, credentials, activity, Clock.fixed(NOW, ZoneOffset.UTC), KEY,
+            "/tmp/elmos-test-materialized");
 
     @Test
     void createsWorkspaceWithTrustedHeaderIdentityAndServerSideCredentialReference() {
@@ -42,7 +43,8 @@ class RepositoryWorkspaceControllerTest {
         );
         var expected = workspace("tenant-a", "actor-a");
         when(credentials.lease("tenant-gitee"))
-                .thenReturn(new RepositoryWorkspaceCredentialStore.Lease("git-user", Optional.empty()));
+                .thenReturn(new RepositoryWorkspaceCredentialStore.Lease(
+                        "git-user", Optional.empty(), NOW.plusSeconds(900)));
         when(service.create(any(), eq("git-user"), eq(Optional.empty()))).thenReturn(expected);
 
         var result = controller.create(KEY, "tenant-a", "actor-a", "request-1", body);
@@ -97,11 +99,16 @@ class RepositoryWorkspaceControllerTest {
                 "https://gitee.com/owner/repository.git",
                 "main",
                 "1".repeat(40),
+                "1".repeat(40),
                 "elmos/workspace-d12ac53a",
                 GitRepositoryWorkspaceService.Completeness.COMPLETE,
                 false,
                 List.of(),
                 List.of(),
+                List.of(),
+                null,
+                null,
+                null,
                 NOW,
                 "READY_FOR_LOCAL_CHANGE",
                 false

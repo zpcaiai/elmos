@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-web-console-enterprise-identity",
+  "profile_key": "elmos-web-console-enterprise-identity-acceptance",
+  "version": "1.0.0",
+  "owner": "elmos-accessibility-review",
+  "browser_matrix": ["chromium-playwright-1228-local"],
+  "device_matrix": ["desktop-1440x900"],
+  "locales": ["zh-CN"],
+  "themes": ["default-light"],
+  "rendering": {"modes": ["next-client-hydration"]},
+  "visual": {"baseline_policy": "approved-only", "max_unapproved_differences": 0},
+  "accessibility": {"standard": "WCAG-2.2-AA-local-subset", "critical_violations": 0},
+  "interaction": {"p0_pass_rate": 1.0},
+  "performance": {"budgets": {}},
+  "seo": {"required": false},
+  "i18n": {"missing_keys": 0},
+  "security": {"authorization_regressions": 0, "cross_tenant_regressions": 0},
+  "p0_journeys": [
+    "anonymous-login-entry",
+    "verified-session-rendering",
+    "tenant-scoped-permission-enforcement",
+    "logout-local-session-clear"
+  ],
+  "thresholds": {
+    "source_fingerprint_coverage": 0.95,
+    "ui_ir_source_map_coverage": 1.0,
+    "target_build_green_rate": 1.0,
+    "target_startup_or_launch_rate": 1.0,
+    "p0_journey_pass_rate": 1.0,
+    "critical_accessibility_violations": 0,
+    "authorization_regressions": 0
+  },
+  "exclusions": [
+    "external-idp-runtime",
+    "provider-revocation-runtime",
+    "independent-penetration-test"
+  ]
+}

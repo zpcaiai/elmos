@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-web-console-enterprise-identity",
+  "source_snapshot_digest": "0459721a4eb4a6cc8c1f49344a1b8d4181f466abf89e688d3501fa2102d08abf",
+  "routes": [
+    {"id":"route.login","kind":"route","name":"企业登录","source_refs":["apps/web-console/app/login/page.tsx"],"references":["view.login"]},
+    {"id":"route.auth-api","kind":"route","name":"OIDC 会话 API","source_refs":["apps/web-console/app/api/auth"],"references":["resource.auth-api"]}
+  ],
+  "views": [
+    {"id":"view.login","kind":"view","name":"企业登录入口","source_refs":["apps/web-console/app/login/page.tsx"],"references":["component.account-session"]}
+  ],
+  "components": [
+    {"id":"component.account-session","kind":"component","name":"账户会话提供器","source_refs":["apps/web-console/app/components/AccountSessionProvider.tsx"],"references":["state.account-session","action.tenant-switch","action.logout"]}
+  ],
+  "states": [
+    {"id":"state.account-session","kind":"remote-state","name":"验证后的账户会话","source_refs":["apps/web-console/app/components/AccountSessionProvider.tsx"],"references":["effect.session-refresh"]}
+  ],
+  "actions": [
+    {"id":"action.login","kind":"navigation","name":"开始 OIDC PKCE 登录","source_refs":["apps/web-console/app/api/auth/login/route.ts"],"references":["resource.auth-api"]},
+    {"id":"action.tenant-switch","kind":"network-action","name":"选择已验证成员租户","source_refs":["apps/web-console/app/api/auth/tenant/route.ts"],"references":["permission.tenant-membership","resource.auth-api"]},
+    {"id":"action.logout","kind":"network-action","name":"清除本地会话并请求令牌撤销","source_refs":["apps/web-console/app/api/auth/logout/route.ts"],"references":["resource.auth-api"]}
+  ],
+  "effects": [
+    {"id":"effect.session-refresh","kind":"network-effect","name":"短期会话刷新","source_refs":["apps/web-console/app/api/auth/refresh/route.ts"],"references":["resource.auth-api","state.account-session"]}
+  ],
+  "forms": [
+    {"id":"form.tenant-selection","kind":"form","name":"租户选择","source_refs":["apps/web-console/app/components/AppShell.tsx"],"references":["binding.tenant-selection"]}
+  ],
+  "bindings": [
+    {"id":"binding.tenant-selection","kind":"form-binding","name":"组织标识到受验证成员关系","source_refs":["apps/web-console/app/api/auth/tenant/route.ts"],"references":["permission.tenant-membership"]}
+  ],
+  "permissions": [
+    {"id":"permission.tenant-membership","kind":"permission","name":"租户成员与 RBAC","source_refs":["apps/control-plane/src/main/java/io/elmos/controlplane/ControlPlanePrincipal.java"],"references":[]}
+  ],
+  "resources": [
+    {"id":"resource.auth-api","kind":"api-resource","name":"企业身份 BFF","source_refs":["apps/web-console/app/api/auth"],"references":[]}
+  ],
+  "design_tokens": [
+    {"id":"token.account-status","kind":"design-token-set","name":"账户状态样式","source_refs":["apps/web-console/app/styles.css"],"references":[]}
+  ],
+  "accessibility": [
+    {"id":"a11y.account-controls","kind":"accessibility-contract","name":"带文本标签的原生账户控件","source_refs":["apps/web-console/app/components/AppShell.tsx"],"references":["component.account-session"]}
+  ],
+  "source_map": [
+    {"node_id":"route.login","owner":"elmos-web-console"},
+    {"node_id":"route.auth-api","owner":"elmos-identity"},
+    {"node_id":"view.login","owner":"elmos-product-design"},
+    {"node_id":"component.account-session","owner":"elmos-web-console"},
+    {"node_id":"state.account-session","owner":"elmos-identity"},
+    {"node_id":"action.login","owner":"elmos-identity"},
+    {"node_id":"action.tenant-switch","owner":"elmos-identity"},
+    {"node_id":"action.logout","owner":"elmos-identity"},
+    {"node_id":"effect.session-refresh","owner":"elmos-identity"},
+    {"node_id":"form.tenant-selection","owner":"elmos-web-console"},
+    {"node_id":"binding.tenant-selection","owner":"elmos-identity"},
+    {"node_id":"permission.tenant-membership","owner":"elmos-control-plane-security"},
+    {"node_id":"resource.auth-api","owner":"elmos-identity"},
+    {"node_id":"token.account-status","owner":"elmos-product-design"},
+    {"node_id":"a11y.account-controls","owner":"elmos-accessibility-review"}
+  ],
+  "unknowns": [
+    {
+      "id": "unknown.external-idp",
+      "severity": "critical",
+      "status": "NOT_RUN",
+      "detail": "External provider login, refresh, revocation and logout execution require authorized production-equivalent infrastructure."
+    }
+  ]
+}

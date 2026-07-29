@@ -6,6 +6,10 @@ import {
   springProxyConfiguration,
 } from "./proxyPolicy";
 import { withBusinessAudit } from "../../lib/server/operationsProxy";
+import {
+  RepositoryWorkspaceProxyError,
+  repositorySpringMaterialization,
+} from "../../lib/server/repositoryWorkspaceProxy";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -59,6 +63,9 @@ async function start(request: NextRequest) {
   if (input.sourceMode === "GITHUB_APP") {
     return startFromGitHubApp(input, organizationId, actorId);
   }
+  if (input.sourceMode === "REPOSITORY_WORKSPACE") {
+    return startFromRepositoryWorkspace(request, input, organizationId);
+  }
   return forward(`${configuration.engineBase}/engine/v1/spring-upgrades`, {
     method: "POST",
     headers: {
@@ -70,6 +77,77 @@ async function start(request: NextRequest) {
     cache: "no-store",
     signal: AbortSignal.timeout(30_000),
   });
+}
+
+async function startFromRepositoryWorkspace(
+  request: NextRequest,
+  input: Record<string, unknown>,
+  organizationId: string,
+) {
+  const configuration = springProxyConfiguration();
+  if (!configuration.configured) return proxyNotConfiguredResponse();
+  const repositoryWorkspaceId = typeof input.repositoryWorkspaceId === "string"
+    ? input.repositoryWorkspaceId.trim().toLowerCase()
+    : "";
+  const expectedHeadCommit = typeof input.expectedCommitSha === "string"
+    ? input.expectedCommitSha.trim().toLowerCase()
+    : "";
+  const requestedRef = typeof input.requestedRef === "string"
+    ? input.requestedRef.trim()
+    : "";
+  const idempotencyKey = typeof input.idempotencyKey === "string"
+    ? input.idempotencyKey.trim()
+    : "";
+  if (
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(repositoryWorkspaceId)
+    || !/^[0-9a-f]{40}$/.test(expectedHeadCommit)
+    || !requestedRef || requestedRef.length > 512
+    || !idempotencyKey || idempotencyKey.length > 128
+  ) {
+    return Response.json(
+      {
+        errorCode: "REPOSITORY_SPRING_SOURCE_INVALID",
+        message: "请选择完整仓库工作区，并提供精确 HEAD、分支或标签。",
+        retryable: false,
+      },
+      { status: 400, headers: { "cache-control": "no-store" } },
+    );
+  }
+  try {
+    const materialized = await repositorySpringMaterialization(
+      request, repositoryWorkspaceId, expectedHeadCommit,
+    );
+    return forward(`${configuration.engineBase}/engine/v1/spring-upgrades`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "X-ELMOS-Organization-ID": organizationId,
+      },
+      body: JSON.stringify({
+        organizationId,
+        sourceMode: "MATERIALIZED_SNAPSHOT",
+        repositoryUrl: null,
+        requestedRef,
+        expectedCommitSha: materialized.resolvedCommitSha,
+        snapshotId: `workspace-${repositoryWorkspaceId}`,
+        materializedRelativePath: materialized.relativePath,
+        startAfterVerification: input.startAfterVerification === true,
+        idempotencyKey,
+      }),
+      cache: "no-store",
+      signal: AbortSignal.timeout(30_000),
+    });
+  } catch (error) {
+    const failure = error instanceof RepositoryWorkspaceProxyError ? error : null;
+    return Response.json(
+      {
+        errorCode: failure?.errorCode ?? "REPOSITORY_SPRING_MATERIALIZATION_FAILED",
+        message: failure?.message ?? "仓库工作区无法交接到 Spring 迁移。",
+        retryable: failure?.retryable ?? true,
+      },
+      { status: failure?.status ?? 503, headers: { "cache-control": "no-store" } },
+    );
+  }
 }
 
 async function startFromGitHubApp(

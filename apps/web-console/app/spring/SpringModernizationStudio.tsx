@@ -8,7 +8,7 @@ import { useAccountSession } from "../components/AccountSessionProvider";
 import type { SpringRouteDescriptor } from "../lib/contracts";
 import { springDeploymentGuidance } from "../lib/deploymentGuidance";
 
-type SourceMode = "PUBLIC_GIT" | "GITHUB_APP" | "MATERIALIZED_SNAPSHOT";
+type SourceMode = "PUBLIC_GIT" | "GITHUB_APP" | "MATERIALIZED_SNAPSHOT" | "REPOSITORY_WORKSPACE";
 type RunStatus = "QUEUED" | "RUNNING" | "SUCCEEDED" | "FAILED" | "BLOCKED" | "CANCELLED";
 type RuntimeStatus = "NOT_STARTED" | "STARTING" | "HEALTHY" | "UNHEALTHY" | "STOPPED";
 type Stage =
@@ -193,6 +193,7 @@ export function SpringModernizationStudio() {
   const [expectedCommitSha, setExpectedCommitSha] = useState("");
   const [snapshotId, setSnapshotId] = useState("");
   const [materializedRelativePath, setMaterializedRelativePath] = useState("");
+  const [repositoryWorkspaceId, setRepositoryWorkspaceId] = useState("");
   const [githubRepositories, setGithubRepositories] = useState<ConnectedRepository[]>([]);
   const [githubRepositoryId, setGithubRepositoryId] = useState("");
   const [githubCatalogStatus, setGithubCatalogStatus] =
@@ -277,6 +278,16 @@ export function SpringModernizationStudio() {
   useEffect(() => {
     const runId = window.sessionStorage.getItem(latestRunStorageKey);
     if (runId && /^[0-9a-f-]{36}$/i.test(runId)) setRecoveryRunId(runId);
+    const parameters = new URLSearchParams(window.location.search);
+    const workspaceId = parameters.get("repositoryWorkspaceId")?.trim().toLowerCase() ?? "";
+    const commit = parameters.get("expectedCommitSha")?.trim().toLowerCase() ?? "";
+    const ref = parameters.get("requestedRef")?.trim() ?? "";
+    if (/^[0-9a-f-]{36}$/.test(workspaceId) && /^[0-9a-f]{40}$/.test(commit)) {
+      setRepositoryWorkspaceId(workspaceId);
+      setExpectedCommitSha(commit);
+      if (ref) setRequestedRef(ref);
+      setSourceMode("REPOSITORY_WORKSPACE");
+    }
   }, []);
 
   useEffect(() => {
@@ -352,6 +363,9 @@ export function SpringModernizationStudio() {
           sourceMode,
           repositoryUrl: sourceMode === "PUBLIC_GIT" ? repositoryUrl.trim() : null,
           repositoryId: sourceMode === "GITHUB_APP" ? githubRepositoryId : null,
+          repositoryWorkspaceId: sourceMode === "REPOSITORY_WORKSPACE"
+            ? repositoryWorkspaceId.trim()
+            : null,
           requestedRef: sourceMode === "MATERIALIZED_SNAPSHOT"
             ? "snapshot"
             : requestedRef.trim(),
@@ -554,6 +568,7 @@ export function SpringModernizationStudio() {
               <select value={sourceMode} onChange={(event) => setSourceMode(event.target.value as SourceMode)}>
                 <option value="PUBLIC_GIT">公开 HTTPS Git</option>
                 <option value="GITHUB_APP">GitHub App 私有仓库</option>
+                <option value="REPOSITORY_WORKSPACE">ELMOS 受控仓库工作区</option>
                 <option value="MATERIALIZED_SNAPSHOT">受控 Snapshot Workspace</option>
               </select>
             </label>
@@ -630,6 +645,27 @@ export function SpringModernizationStudio() {
                     刷新授权仓库
                   </button>
                 </div>
+              </>
+            ) : sourceMode === "REPOSITORY_WORKSPACE" ? (
+              <>
+                <label className="spring-field-wide">
+                  <span>仓库工作区 UUID</span>
+                  <input required value={repositoryWorkspaceId}
+                    onChange={(event) => setRepositoryWorkspaceId(event.target.value.toLowerCase())}
+                    pattern="[0-9a-f-]{36}" placeholder="从代码仓库工作区交接" />
+                </label>
+                <label>
+                  <span>Branch / Tag</span>
+                  <input required value={requestedRef}
+                    onChange={(event) => setRequestedRef(event.target.value)}
+                    placeholder="main" />
+                </label>
+                <label>
+                  <span>精确 HEAD Commit</span>
+                  <input required value={expectedCommitSha}
+                    onChange={(event) => setExpectedCommitSha(event.target.value.toLowerCase())}
+                    pattern="[0-9a-f]{40}" placeholder="必须与工作区当前 HEAD 完全一致" />
+                </label>
               </>
             ) : (
               <>

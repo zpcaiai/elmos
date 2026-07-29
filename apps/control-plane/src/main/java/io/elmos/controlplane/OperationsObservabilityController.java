@@ -135,6 +135,59 @@ public final class OperationsObservabilityController {
                 businessLine, result, limit);
     }
 
+    /**
+     * One keyset page of the raw audit trail.
+     *
+     * <p>Unlike {@code /summary}, which aggregates, this returns the rows an
+     * auditor has to be able to read and re-read. It is therefore paged rather
+     * than windowed by a row cap: a cap would silently truncate the artifact,
+     * and a truncated audit export is worse than a refused one.
+     *
+     * <p>{@code days} rather than {@code hours} because audit windows are
+     * asked for in months; the store enforces the 366-day ceiling.
+     */
+    @GetMapping("/audit-export")
+    public JdbcUserActivityStore.ExportPage auditExport(
+            @RequestHeader("X-ELMOS-Operations-Key") String presentedKey,
+            @RequestHeader("X-ELMOS-Organization-ID") String organizationId,
+            @RequestHeader("X-ELMOS-Actor-ID") String actorId,
+            @RequestHeader("X-ELMOS-Admin-Role") String role,
+            @RequestParam(defaultValue = "7") int days,
+            @RequestParam(defaultValue = "ALL") String businessLine,
+            @RequestParam(defaultValue = "ALL") String result,
+            @RequestParam(required = false) String afterOccurredAt,
+            @RequestParam(required = false) String afterEventId,
+            @RequestParam(defaultValue = "200") int limit
+    ) {
+        authorizeManagement(presentedKey, organizationId, actorId, role, "VIEWER");
+        if (days < 1 || days > 366) {
+            throw new IllegalArgumentException("days must be between 1 and 366");
+        }
+        Instant to = clock.instant();
+        return store.export(
+                organizationId,
+                to.minus(days, ChronoUnit.DAYS),
+                to,
+                businessLine,
+                result,
+                parseCursorInstant(afterOccurredAt),
+                blankToNull(afterEventId),
+                limit);
+    }
+
+    private static Instant parseCursorInstant(String value) {
+        if (value == null || value.isBlank()) return null;
+        try {
+            return Instant.parse(value);
+        } catch (DateTimeParseException error) {
+            throw new IllegalArgumentException("afterOccurredAt must be an ISO-8601 instant");
+        }
+    }
+
+    private static String blankToNull(String value) {
+        return value == null || value.isBlank() ? null : value;
+    }
+
     @GetMapping("/console")
     public ConsoleView console(
             @RequestHeader("X-ELMOS-Operations-Key") String presentedKey,

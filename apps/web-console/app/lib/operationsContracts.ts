@@ -152,3 +152,34 @@ export type OperationsConsoleView = {
   role: "VIEWER" | "OPERATOR" | "APPROVER";
   actorId: string;
 };
+
+/** One exported audit row. `source` names which store it came from. */
+export type AuditExportRow = {
+  eventId: string;
+  source: "AUDIT" | "TELEMETRY";
+  sessionId?: string;
+  eventKind: string;
+  action: string;
+  businessLine: string;
+  route: string;
+  target: string;
+  occurredAt: string;
+  durationMs?: number;
+  result: OperationResult;
+  errorCode?: string;
+};
+
+/**
+ * One keyset page of the audit export.
+ *
+ * `nextOccurredAt` and `nextEventId` are both present exactly when `hasMore`
+ * is true; they form a single cursor and must be sent together.
+ */
+export type AuditExportPage = {
+  from: string;
+  to: string;
+  rows: AuditExportRow[];
+  hasMore: boolean;
+  nextOccurredAt?: string;
+  nextEventId?: string;
+};

@@ -1,0 +1,41 @@
+{
+  "profile_key": "elmos-web-console-enterprise-identity-target",
+  "version": "1.0.0",
+  "owner": "elmos-web-console-maintainers",
+  "framework": "nextjs-app-router",
+  "versions": ["16.2.12"],
+  "language": "typescript",
+  "language_versions": ["5.9.2"],
+  "runtime": "nodejs",
+  "runtime_versions": ["26.0.0"],
+  "build_tool": "next-16.2.12",
+  "package_manager": "pnpm-10.12.4",
+  "router": ["next-app-router-16.2.12"],
+  "rendering_strategy": {"mode": "client-session-provider-with-server-bff"},
+  "state_strategy": {"provider": "react-context-19.2.7"},
+  "form_strategy": {"provider": "native-controls-server-validation"},
+  "styling_strategy": {"mode": "global-css-custom-properties"},
+  "design_system_strategy": {"mode": "repository-local-elmos-console"},
+  "api_client_strategy": {"provider": "same-origin-browser-fetch"},
+  "auth_strategy": {"mode": "oidc-authorization-code-pkce-http-only-cookie"},
+  "i18n_strategy": {"provider": "zh-CN-visible-copy"},
+  "accessibility_profile": {"standard": "WCAG-2.2-AA-local-subset"},
+  "browser_matrix": ["chromium-playwright-1228-local"],
+  "device_profiles": ["desktop-1440x900"],
+  "test_profiles": ["playwright-account-session-ui", "junit-control-plane-principal"],
+  "provision": {"commands": ["cd apps/web-console && pnpm install --frozen-lockfile"]},
+  "health_check": {
+    "commands": [
+      "cd apps/web-console && pnpm check",
+      "python3 scripts/batch32/validate_ui_ir.py client-packs/elmos-web-console-enterprise-identity/ui-ir/model.json"
+    ]
+  },
+  "security": {
+    "content_security_policy": "deployment-specific; external review NOT_RUN",
+    "csrf": "exact trusted public origin and Fetch Metadata"
+  },
+  "lifecycle": {
+    "support_until": "2027-07-28",
+    "upgrade_policy": "exact dependency and provider tuple recertification required"
+  }
+}

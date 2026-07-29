@@ -25,6 +25,7 @@ import {
   health as generationRunnerHealth,
 } from "./generationRunner";
 import { readTranslationCapability, resolveRepositoryRoot } from "./translationRoutes";
+import { repositoryTranslationWorkspace } from "./repositoryWorkspaceProxy";
 import { beginMeteredExecution, type MeteredExecution } from "./commercialUsageProducer";
 
 type AuthorizedContext = ReturnType<typeof authorizeLocalRunner>;
@@ -450,6 +451,7 @@ export async function createTranslationJob(
   context: AuthorizedContext,
   request: {
     workspaceId?: string;
+    repositoryWorkspaceId?: string;
     casesBundleId?: string;
     sourceLanguage?: TranslationLanguageId;
     targetLanguage?: TranslationLanguageId;
@@ -472,8 +474,22 @@ export async function createTranslationJob(
   if (!route || route.localExecution !== "PASSED") {
     fail(409, "TRANSLATION_ROUTE_NOT_LOCALLY_EXECUTABLE");
   }
-  const workspaceId = request.workspaceId ?? "";
+  let workspaceId = request.workspaceId ?? "";
   const casesBundleId = request.casesBundleId ?? "";
+  let repositoryWorkspaceId: string | undefined;
+  let repositoryCommit: string | undefined;
+  if (request.repositoryWorkspaceId) {
+    const materialized = await repositoryTranslationWorkspace({
+      tenantId: context.tenantId,
+      actor: context.actor,
+      accessToken: context.accessToken,
+      workspaceId: request.repositoryWorkspaceId,
+      sourceRoot: runner.sourceRoot,
+    });
+    workspaceId = materialized.materializedId;
+    repositoryWorkspaceId = request.repositoryWorkspaceId;
+    repositoryCommit = materialized.currentHeadCommit;
+  }
   await materializedDirectory(runner.sourceRoot, workspaceId, "TRANSLATION_SOURCE_WORKSPACE");
   await materializedDirectory(runner.casesRoot, casesBundleId, "TRANSLATION_CASES_BUNDLE");
   const now = new Date().toISOString();
@@ -483,8 +499,11 @@ export async function createTranslationJob(
     actor: context.actor,
     createdAt: now,
     updatedAt: now,
-    repositoryRef: `local:${workspaceId}`,
+    repositoryRef: repositoryCommit
+      ? `repository-workspace:${repositoryWorkspaceId}@${repositoryCommit}`
+      : `local:${workspaceId}`,
     workspaceId,
+    ...(repositoryWorkspaceId ? { repositoryWorkspaceId } : {}),
     casesBundleId,
     sourceLanguage,
     targetLanguage,

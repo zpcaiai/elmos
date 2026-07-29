@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-web-console-enterprise-identity",
+  "version": "1.0.0",
+  "mode": "modernization",
+  "status": "experimental",
+  "owner": "elmos-identity",
+  "maintenance_owner": "elmos-web-console-maintainers",
+  "ux_owner": "elmos-product-design",
+  "accessibility_owner": "elmos-accessibility-review",
+  "security_owner": "elmos-control-plane-security",
+  "source": {
+    "stack": "nextjs-app-router",
+    "versions": ["16.2.12"],
+    "language": "typescript",
+    "language_versions": ["5.9.2"],
+    "runtime": "nodejs",
+    "runtime_versions": ["26.0.0"],
+    "build_tool": "next-16.2.12",
+    "package_manager": "pnpm-10.12.4",
+    "router": ["next-app-router-16.2.12"],
+    "renderer": ["react-19.2.7-client-hydration"],
+    "state": ["react-context-and-component-state-19.2.7"],
+    "forms": ["native-formdata-memory-only"],
+    "styling": ["css-custom-properties"],
+    "design_system": ["elmos-console-repository-local"],
+    "api_client": ["browser-fetch"],
+    "identity": ["page-memory-shared-bearer"],
+    "i18n": ["zh-CN-visible-copy"],
+    "test_tools": ["playwright-1.61.1"],
+    "browsers": ["chromium-playwright-1228"],
+    "devices": ["desktop-1440x900"]
+  },
+  "target": {
+    "stack": "nextjs-app-router",
+    "versions": ["16.2.12"],
+    "language": "typescript",
+    "language_versions": ["5.9.2"],
+    "runtime": "nodejs",
+    "runtime_versions": ["26.0.0"],
+    "build_tool": "next-16.2.12",
+    "package_manager": "pnpm-10.12.4",
+    "router": ["next-app-router-16.2.12"],
+    "renderer": ["react-19.2.7-client-hydration"],
+    "state": ["react-context-account-session-19.2.7"],
+    "forms": ["native-formdata-server-validated"],
+    "styling": ["css-custom-properties"],
+    "design_system": ["elmos-console-repository-local"],
+    "api_client": ["http-only-cookie-bff-fetch"],
+    "identity": ["oidc-authorization-code-pkce", "spring-security-resource-server-3.5.3"],
+    "i18n": ["zh-CN-visible-copy"],
+    "test_tools": ["playwright-1.61.1", "junit-jupiter-5.12.2"],
+    "browsers": ["chromium-playwright-1228"],
+    "devices": ["desktop-1440x900"]
+  },
+  "scope": {
+    "journeys": [
+      "login",
+      "session-refresh",
+      "logout-and-revocation",
+      "tenant-switch",
+      "permission-rendering",
+      "spring-execution",
+      "translation-execution",
+      "generation-execution",
+      "repository-access",
+      "operations-administration"
+    ],
+    "routes": [
+      "/login",
+      "/api/auth/login",
+      "/api/auth/callback",
+      "/api/auth/session",
+      "/api/auth/refresh",
+      "/api/auth/tenant",
+      "/api/auth/logout"
+    ],
+    "component_roots": [
+      "apps/web-console/app",
+      "apps/control-plane/src/main/java/io/elmos/controlplane"
+    ],
+    "excluded": [
+      "external-identity-provider-enrollment",
+      "production-idp-execution",
+      "independent-penetration-test",
+      "customer-acceptance"
+    ]
+  },
+  "paths": {
+    "source_fingerprint": "source-fingerprint/fingerprint.json",
+    "ui_ir": "ui-ir/model.json",
+    "target_profile": "target-profile/profile.json",
+    "acceptance_profile": "acceptance/acceptance-profile.json",
+    "support_matrix": "support-matrix.json",
+    "evidence": "certification/evidence.json",
+    "certification": "certification/certification.json"
+  },
+  "gates": {
+    "build": "required",
+    "identity_permission": "required",
+    "negative_authorization": "required",
+    "cross_tenant": "required",
+    "browser": "required",
+    "external_idp": "not_run"
+  }
+}

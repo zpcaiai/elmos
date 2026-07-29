@@ -451,6 +451,7 @@ export type TranslationJob = {
   updatedAt: string;
   repositoryRef: string;
   workspaceId: string;
+  repositoryWorkspaceId?: string;
   casesBundleId: string;
   sourceLanguage: TranslationLanguageId;
   targetLanguage: TranslationLanguageId;

@@ -130,6 +130,7 @@ export function TranslationStudio() {
   const [actorId, setActorId] = useState("");
   const [runnerToken, setRunnerToken] = useState("");
   const [workspaceId, setWorkspaceId] = useState("");
+  const [repositoryWorkspaceId, setRepositoryWorkspaceId] = useState("");
   const [casesBundleId, setCasesBundleId] = useState("");
   const [recoveryJobId, setRecoveryJobId] = useState("");
   const [runnerHealth, setRunnerHealth] = useState<TranslationRunnerHealth | null>(null);
@@ -143,6 +144,12 @@ export function TranslationStudio() {
     setTenantId(account.principal.organizationId);
     setActorId(account.principal.actorId);
   }, [account.principal, accountRunner]);
+
+  useEffect(() => {
+    const value = new URLSearchParams(window.location.search)
+      .get("repositoryWorkspaceId")?.trim().toLowerCase() ?? "";
+    if (/^[0-9a-f-]{36}$/.test(value)) setRepositoryWorkspaceId(value);
+  }, []);
 
   const languages = capability?.languages ?? translationLanguages;
   const routes = capability?.routes ?? directedLanguageRoutes;
@@ -478,7 +485,8 @@ export function TranslationStudio() {
       const next = await runnerRequest<TranslationJob>("/api/translation/jobs", {
         method: "POST",
         body: JSON.stringify({
-          workspaceId: workspaceId.trim(),
+          workspaceId: repositoryWorkspaceId.trim() ? undefined : workspaceId.trim(),
+          repositoryWorkspaceId: repositoryWorkspaceId.trim() || undefined,
           casesBundleId: casesBundleId.trim(),
           sourceLanguage,
           targetLanguage,
@@ -782,8 +790,14 @@ export function TranslationStudio() {
             </label>
           )}
           <label>
-            <span>受控源码工作区 ID</span>
+            <span>预物化源码 ID（与仓库工作区二选一）</span>
             <input value={workspaceId} onChange={(event) => setWorkspaceId(event.target.value)} pattern="[a-z0-9][a-z0-9._-]{2,80}" placeholder="customer-repository" />
+          </label>
+          <label>
+            <span>仓库工作区 UUID</span>
+            <input value={repositoryWorkspaceId}
+              onChange={(event) => setRepositoryWorkspaceId(event.target.value.toLowerCase())}
+              pattern="[0-9a-f-]{36}" placeholder="从代码仓库工作区自动带入" />
           </label>
           <label>
             <span>独立行为用例包 ID</span>
@@ -808,7 +822,8 @@ export function TranslationStudio() {
           <button
             type="button"
             className="button button-primary"
-            disabled={jobBusy || runnerHealth?.status !== "READY" || !selectedRouteExecutable}
+            disabled={jobBusy || runnerHealth?.status !== "READY" || !selectedRouteExecutable
+              || (!workspaceId.trim() && !repositoryWorkspaceId.trim())}
             onClick={() => void startRepositoryPipeline()}
           >
             <Icon name="workflow" size={15} />启动整库转换

@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-web-console-enterprise-identity",
+  "status": "research",
+  "owner": "independent-client-gate",
+  "exact_tuple": {
+    "source": {"stack": "nextjs-app-router", "version": "16.2.12"},
+    "target": {"stack": "nextjs-app-router", "version": "16.2.12"}
+  },
+  "evidence_refs": [],
+  "recertification_triggers": [
+    "external-idp-runtime-evidence",
+    "independent-security-review",
+    "browser-matrix-evidence"
+  ]
+}

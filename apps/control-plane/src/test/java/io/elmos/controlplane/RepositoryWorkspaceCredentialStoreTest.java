@@ -6,6 +6,7 @@ import org.junit.jupiter.api.io.TempDir;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermission;
+import java.time.Instant;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -18,7 +19,8 @@ class RepositoryWorkspaceCredentialStoreTest {
     @Test
     void leasesOwnerOnlyCredentialWithoutReturningItAsText() throws Exception {
         Path file = temporary.resolve("private-git.credential");
-        Files.writeString(file, "git-user\nprovider-token-value\n");
+        Files.writeString(file, "git-user\n" + Instant.now().plusSeconds(900)
+                + "\nprovider-token-value\n");
         Files.setPosixFilePermissions(file, Set.of(
                 PosixFilePermission.OWNER_READ,
                 PosixFilePermission.OWNER_WRITE
@@ -40,12 +42,32 @@ class RepositoryWorkspaceCredentialStoreTest {
         assertThrows(SecurityException.class, () -> store.lease("../secret"));
 
         Path file = temporary.resolve("shared.credential");
-        Files.writeString(file, "git-user\nprovider-token-value\n");
+        Files.writeString(file, "git-user\n" + Instant.now().plusSeconds(900)
+                + "\nprovider-token-value\n");
         Files.setPosixFilePermissions(file, Set.of(
                 PosixFilePermission.OWNER_READ,
                 PosixFilePermission.OWNER_WRITE,
                 PosixFilePermission.GROUP_READ
         ));
         assertThrows(SecurityException.class, () -> store.lease("shared"));
+    }
+
+    @Test
+    void rejectsExpiredAndOverlongCredentialLeases() throws Exception {
+        RepositoryWorkspaceCredentialStore store =
+                new RepositoryWorkspaceCredentialStore(temporary);
+        for (var expiry : new Instant[] {
+                Instant.now().minusSeconds(1),
+                Instant.now().plusSeconds(3_601)
+        }) {
+            Path file = temporary.resolve("lease-" + Math.abs(expiry.getEpochSecond()) + ".credential");
+            Files.writeString(file, "git-user\n" + expiry + "\nprovider-token-value\n");
+            Files.setPosixFilePermissions(file, Set.of(
+                    PosixFilePermission.OWNER_READ,
+                    PosixFilePermission.OWNER_WRITE
+            ));
+            String reference = file.getFileName().toString().replace(".credential", "");
+            assertThrows(SecurityException.class, () -> store.lease(reference));
+        }
     }
 }

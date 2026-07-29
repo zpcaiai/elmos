@@ -14,13 +14,19 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;
+import java.time.Instant;
+import java.time.Duration;
 
 /**
  * Reads short-lived Git credentials from owner-only files without persisting
  * tokens in repository URLs, application properties, or workspace metadata.
  */
 final class RepositoryWorkspaceCredentialStore {
-    record Lease(String username, Optional<EphemeralCredential> credential) implements AutoCloseable {
+    record Lease(
+            String username,
+            Optional<EphemeralCredential> credential,
+            Instant expiresAt
+    ) implements AutoCloseable {
         @Override public void close() { credential.ifPresent(EphemeralCredential::close); }
     }
 
@@ -53,7 +59,7 @@ final class RepositoryWorkspaceCredentialStore {
 
     Lease lease(String credentialRef) {
         if (credentialRef == null || credentialRef.isBlank()) {
-            return new Lease("git", Optional.empty());
+            return new Lease("git", Optional.empty(), Instant.MAX);
         }
         if (!credentialRef.matches("[A-Za-z0-9][A-Za-z0-9._-]{0,127}")) {
             throw new SecurityException("GIT_CREDENTIAL_REFERENCE_INVALID");
@@ -67,15 +73,28 @@ final class RepositoryWorkspaceCredentialStore {
         try {
             validateOwnerOnlyFile(path);
             bytes = Files.readAllBytes(path);
-            int newline = firstNewline(bytes);
-            if (newline < 1 || newline >= bytes.length - 1) {
+            int newline = firstNewline(bytes, 0);
+            int secondNewline = newline < 0 ? -1 : firstNewline(bytes, newline + 1);
+            if (newline < 1 || secondNewline <= newline + 1 || secondNewline >= bytes.length - 1) {
                 throw new SecurityException("GIT_CREDENTIAL_FILE_FORMAT_INVALID");
             }
             String username = decode(bytes, 0, newline).trim();
             if (!username.matches("[A-Za-z0-9][A-Za-z0-9._@+-]{0,127}")) {
                 throw new SecurityException("GIT_CREDENTIAL_USERNAME_INVALID");
             }
-            int tokenStart = newline + 1;
+            Instant expiresAt;
+            try {
+                expiresAt = Instant.parse(
+                        decode(bytes, newline + 1, secondNewline - newline - 1).trim());
+            } catch (RuntimeException error) {
+                throw new SecurityException("GIT_CREDENTIAL_EXPIRY_INVALID", error);
+            }
+            Instant now = Instant.now();
+            if (!expiresAt.isAfter(now)
+                    || expiresAt.isAfter(now.plus(Duration.ofHours(1)))) {
+                throw new SecurityException("GIT_CREDENTIAL_LEASE_EXPIRED_OR_TOO_LONG");
+            }
+            int tokenStart = secondNewline + 1;
             int tokenEnd = bytes.length;
             while (tokenEnd > tokenStart && (bytes[tokenEnd - 1] == '\n' || bytes[tokenEnd - 1] == '\r')) {
                 tokenEnd--;
@@ -83,7 +102,7 @@ final class RepositoryWorkspaceCredentialStore {
             token = decodeChars(bytes, tokenStart, tokenEnd - tokenStart);
             if (token.length < 8) throw new SecurityException("GIT_CREDENTIAL_TOKEN_INVALID");
             EphemeralCredential credential = new EphemeralCredential(token);
-            return new Lease(username, Optional.of(credential));
+            return new Lease(username, Optional.of(credential), expiresAt);
         } catch (RuntimeException error) {
             throw error;
         } catch (Exception error) {
@@ -114,8 +133,8 @@ final class RepositoryWorkspaceCredentialStore {
         }
     }
 
-    private static int firstNewline(byte[] value) {
-        for (int index = 0; index < value.length; index++) {
+    private static int firstNewline(byte[] value, int start) {
+        for (int index = start; index < value.length; index++) {
             if (value[index] == '\n') return index;
         }
         return -1;
