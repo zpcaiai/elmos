@@ -213,6 +213,11 @@ class FlywayMigrationTest {
                 true, true, true, true, "allow-test");
         assertEquals("runner-test-1", nodeCredential.runnerNodeId());
         runnerStore.authorizeNode("runner-test-1", firstNodeToken);
+        assertEquals(
+                "runner-test-1",
+                runnerStore.resume(
+                        "runner-test-1",
+                        firstNodeToken).runnerNodeId());
         runnerStore.rotateNodeCredential(
                 "runner-test-1", firstNodeToken, nextNodeHash,
                 "rotate-test-request-1");
@@ -221,6 +226,11 @@ class FlywayMigrationTest {
                 "runner-test-1", firstNodeToken, nextNodeHash,
                 "rotate-test-request-1");
         runnerStore.authorizeNode("runner-test-1", nextNodeToken);
+        assertEquals(
+                "runner-test-1",
+                runnerStore.resume(
+                        "runner-test-1",
+                        nextNodeToken).runnerNodeId());
         assertThrows(
                 io.elmos.workflow.RunnerRegistrationPort.RunnerAuthenticationException.class,
                 () -> runnerStore.authorizeNode("runner-test-1", firstNodeToken));
