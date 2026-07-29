@@ -93,6 +93,7 @@ a.secondary-link:hover, button.secondary-link:hover { background: rgba(255,255,2
 .content-shell { min-height: 100vh; margin-left: 252px; }
 .topbar { position: sticky; z-index: 20; top: 0; height: 64px; display: flex; align-items: center; gap: 24px; padding: 0 30px; border-bottom: 1px solid var(--line); background: rgba(255,255,255,.91); backdrop-filter: blur(14px); }
 .breadcrumb { display: flex; align-items: center; gap: 7px; flex: 0 0 auto; color: var(--muted); font-size: 12px; }
+.breadcrumb > span { color: var(--ink-soft); }
 .breadcrumb strong { color: var(--ink); font-weight: 650; }
 .topbar-actions { display: flex; align-items: center; gap: 11px; margin-left: auto; }
 .top-login-link { min-height: 32px; display: inline-flex; align-items: center; padding: 0 11px; border: 1px solid var(--line-strong); border-radius: 8px; color: var(--cyan-dark); font-size: 10px; font-weight: 750; }

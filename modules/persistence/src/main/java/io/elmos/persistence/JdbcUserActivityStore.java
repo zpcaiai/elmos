@@ -456,10 +456,15 @@ public final class JdbcUserActivityStore {
                       from activity_events
                      where organization_id = :organization
                        and occurred_at >= :from and occurred_at < :to
-                       and (:line is null or business_line = :line)
-                       and (:result is null or result = :result)
-                       and (:afterOccurredAt is null
-                            or (occurred_at, event_id) > (:afterOccurredAt, :afterEventId))
+                       -- Every optional filter is cast explicitly. A bare
+                       -- parameter in `? is null` gives PostgreSQL nothing to
+                       -- infer a type from when the binding is null.
+                       and (cast(:line as text) is null or business_line = :line)
+                       and (cast(:result as text) is null or result = :result)
+                       and (cast(:afterOccurredAt as timestamptz) is null
+                            or (occurred_at, event_id)
+                                > (cast(:afterOccurredAt as timestamptz),
+                                   cast(:afterEventId as text)))
                      order by occurred_at, event_id
                      limit :limit
                     """)

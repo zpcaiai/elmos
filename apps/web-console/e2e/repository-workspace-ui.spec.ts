@@ -65,6 +65,29 @@ test.beforeEach(async ({ page }) => {
     route.fulfill({ status: 204, body: "" }));
 });
 
+test("normalizes repository responses from before controlled delivery", async ({ page }) => {
+  const legacyWorkspace: Partial<ReturnType<typeof workspace>> = { ...workspace() };
+  delete legacyWorkspace.currentHeadCommit;
+  delete legacyWorkspace.pendingPaths;
+  await page.route("**/api/repository-workspaces", async (route) => {
+    await route.fulfill({
+      status: 201,
+      contentType: "application/json",
+      body: JSON.stringify(legacyWorkspace),
+    });
+  });
+
+  await page.goto("/repositories");
+  await page.getByLabel("开发访问令牌").fill("repository-browser-token-32");
+  await page.getByLabel("HTTPS Clone URL").fill("https://gitee.com/owner/repository.git");
+  await page.getByLabel("仓库原生标识").fill("owner/repository");
+  await page.getByRole("button", { name: "拉取并建立工作区" }).click();
+
+  await expect(page.getByText(sourceCommit.slice(0, 12), { exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "项目生成" })).toBeEnabled();
+  await expect(page.getByText("没有待提交文件。")).toBeVisible();
+});
+
 test("pulls, reads and locally modifies a Gitee repository without external effects", async ({ page }) => {
   let changed = false;
   let committed = false;

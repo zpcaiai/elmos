@@ -19,10 +19,22 @@ class EmptyNeonBootstrapTests(unittest.TestCase):
     def test_repository_migrations_are_contiguous_and_checksums_match_flyway(self) -> None:
         migrations = MODULE.discover_migrations()
 
-        self.assertEqual(list(range(1, 52)), [item.version for item in migrations])
+        observed = [item.version for item in migrations]
+        self.assertEqual(list(range(1, observed[-1] + 1)), observed)
+        self.assertGreaterEqual(observed[-1], 54)
         self.assertEqual(-1305174584, migrations[0].checksum)
         self.assertEqual(410399635, migrations[1].checksum)
         self.assertEqual(1595351014, migrations[2].checksum)
+        self.assertEqual(
+            MODULE.flyway_checksum(
+                ROOT
+                / "docs"
+                / "p0-implementation"
+                / "sql"
+                / "V52__execution_job_queue_and_runner_fleet.sql"
+            ),
+            migrations[51].checksum,
+        )
 
     def test_bootstrap_contract_requires_explicit_empty_database_confirmation(self) -> None:
         source = SCRIPT.read_text(encoding="utf-8")

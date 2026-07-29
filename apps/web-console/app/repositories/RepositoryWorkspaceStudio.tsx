@@ -43,6 +43,11 @@ type Workspace = {
   externalOperationExecuted: boolean;
 };
 
+type WorkspaceResponse = Omit<Workspace, "currentHeadCommit" | "pendingPaths"> & {
+  currentHeadCommit?: string | null;
+  pendingPaths?: string[] | null;
+};
+
 type FileContent = {
   path: string;
   sha256: string;
@@ -70,6 +75,17 @@ function base64Utf8(value: string): string {
   let binary = "";
   for (const byte of bytes) binary += String.fromCharCode(byte);
   return btoa(binary);
+}
+
+function normalizeWorkspace(response: WorkspaceResponse): Workspace {
+  return {
+    ...response,
+    // Responses created before controlled delivery was introduced did not
+    // carry these fields. Such a workspace is still at its immutable source
+    // commit and has no server-reported local changes.
+    currentHeadCommit: response.currentHeadCommit || response.sourceCommit,
+    pendingPaths: Array.isArray(response.pendingPaths) ? response.pendingPaths : [],
+  };
 }
 
 export function RepositoryWorkspaceStudio() {
@@ -154,17 +170,19 @@ export function RepositoryWorkspaceStudio() {
     setBusy(true);
     setFeedback("");
     try {
-      const created = await jsonRequest<Workspace>("/api/repository-workspaces", {
-        method: "POST",
-        body: JSON.stringify({
-          provider,
-          providerInstanceId,
-          nativeRepositoryId,
-          cloneUrl,
-          requestedRef,
-          credentialRef: credentialRef || null,
+      const created = normalizeWorkspace(
+        await jsonRequest<WorkspaceResponse>("/api/repository-workspaces", {
+          method: "POST",
+          body: JSON.stringify({
+            provider,
+            providerInstanceId,
+            nativeRepositoryId,
+            cloneUrl,
+            requestedRef,
+            credentialRef: credentialRef || null,
+          }),
         }),
-      });
+      );
       setWorkspace(created);
       setRecoveryId(created.workspaceId);
       try { sessionStorage.setItem(workspaceStorageKey, created.workspaceId); } catch { /* optional */ }
@@ -182,8 +200,10 @@ export function RepositoryWorkspaceStudio() {
 
   async function refreshWorkspace(): Promise<Workspace> {
     if (!workspace) throw new Error("请先建立工作区。");
-    const refreshed = await jsonRequest<Workspace>(
-      `/api/repository-workspaces/${workspace.workspaceId}`,
+    const refreshed = normalizeWorkspace(
+      await jsonRequest<WorkspaceResponse>(
+        `/api/repository-workspaces/${workspace.workspaceId}`,
+      ),
     );
     setWorkspace(refreshed);
     return refreshed;
@@ -271,8 +291,10 @@ export function RepositoryWorkspaceStudio() {
     setBusy(true);
     setFeedback("");
     try {
-      const recovered = await jsonRequest<Workspace>(
-        `/api/repository-workspaces/${recoveryId}`,
+      const recovered = normalizeWorkspace(
+        await jsonRequest<WorkspaceResponse>(
+          `/api/repository-workspaces/${recoveryId}`,
+        ),
       );
       setWorkspace(recovered);
       try { sessionStorage.setItem(workspaceStorageKey, recovered.workspaceId); } catch { /* optional */ }
@@ -323,8 +345,10 @@ export function RepositoryWorkspaceStudio() {
           }],
         }),
       });
-      const refreshed = await jsonRequest<Workspace>(
-        `/api/repository-workspaces/${workspace.workspaceId}`,
+      const refreshed = normalizeWorkspace(
+        await jsonRequest<WorkspaceResponse>(
+          `/api/repository-workspaces/${workspace.workspaceId}`,
+        ),
       );
       const content = await jsonRequest<FileContent>(
         `/api/repository-workspaces/${workspace.workspaceId}/files?${new URLSearchParams({ path: selected.path })}`,
@@ -382,8 +406,10 @@ export function RepositoryWorkspaceStudio() {
           }],
         }),
       });
-      const refreshed = await jsonRequest<Workspace>(
-        `/api/repository-workspaces/${workspace.workspaceId}`,
+      const refreshed = normalizeWorkspace(
+        await jsonRequest<WorkspaceResponse>(
+          `/api/repository-workspaces/${workspace.workspaceId}`,
+        ),
       );
       setWorkspace(refreshed);
       setSelected(null);

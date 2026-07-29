@@ -395,12 +395,16 @@ export function authorize(
   if (
     !tenantPattern.test(runner.tenantId)
     || !actorPattern.test(runner.actor)
-    || !/(Z|[+-]\d{2}:\d{2})$/.test(tokenExpiresAt)
+  ) {
+    throw new GenerationRunnerError(503, "LOCAL_RUNNER_IDENTITY_LEASE_INVALID");
+  }
+  if (
+    !/(Z|[+-]\d{2}:\d{2})$/.test(tokenExpiresAt)
     || Number.isNaN(tokenExpiry)
     || tokenExpiry <= Date.now()
     || tokenExpiry > Date.now() + 24 * 60 * 60_000
   ) {
-    throw new GenerationRunnerError(503, "LOCAL_RUNNER_IDENTITY_LEASE_INVALID");
+    throw new GenerationRunnerError(503, "LOCAL_RUNNER_TOKEN_LEASE_INVALID");
   }
   const authorization = request.headers.get("authorization") ?? "";
   const token = authorization.startsWith("Bearer ") ? authorization.slice(7) : "";

@@ -42,17 +42,6 @@ class BatchOneToThirteenAssuranceTest {
         assertTrue(demo.contains("events.size(),true)"));
     }
 
-    /**
-     * 有意跳过、且不得被填补的迁移版本号。
-     *
-     * <p>V52：从未存在过。Flyway 默认禁止乱序执行，在 V53 已应用的库上
-     * 插入 V52 会直接失败，因此这个空缺号必须永久保留为空。
-     *
-     * <p>往这个集合里加号码必须同时写明理由。它不是"让测试变绿"的开关：
-     * 已声明的空缺号一旦被填上，下面的断言同样会失败。
-     */
-    private static final Set<Integer> PERMANENTLY_SKIPPED_MIGRATIONS = Set.of(52);
-
     @Test
     void batchMigrationsAreContinuousAndUnique() throws IOException {
         Path migrations = root.resolve("modules/persistence/src/main/resources/db/migration");
@@ -73,16 +62,11 @@ class BatchOneToThirteenAssuranceTest {
                 "重复的迁移版本号: " + fileNames);
 
         // 2. 上限自适应，避免每次新增迁移都要改测试；
-        //    1..max 中除已声明的空缺外必须全部存在。
-        //    3. 已声明的空缺号若被填上，expected 里没有它，同样断言失败——
-        //       声明不会变成陈旧的免死金牌。
+        //    1..max 必须连续存在，防止已应用高版本后再补低版本。
         int highest = unique.stream().mapToInt(Integer::intValue).max().orElseThrow();
         Set<Integer> expected = IntStream.rangeClosed(1, highest).boxed()
-                .filter(version -> !PERMANENTLY_SKIPPED_MIGRATIONS.contains(version))
                 .collect(Collectors.toSet());
-        assertEquals(expected, unique,
-                "迁移编号必须连续（已声明的空缺号除外）。已声明空缺: "
-                        + PERMANENTLY_SKIPPED_MIGRATIONS);
+        assertEquals(expected, unique, "迁移编号必须连续，不能保留或回填版本空缺");
     }
 
     @Test
