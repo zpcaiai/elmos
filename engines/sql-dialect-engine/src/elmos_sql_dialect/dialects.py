@@ -51,6 +51,76 @@ def referential_action_sql(action: ReferentialAction) -> str:
     return _REFERENTIAL_ACTION_SQL[action]
 
 
+#: Which referential actions each vendor's `references_clause` actually
+#: accepts, per their documented grammar -- NOT per what sqlglot will parse.
+#:
+#: This table exists because sqlglot accepts `ON DELETE NO ACTION ON UPDATE
+#: NO ACTION` for every dialect, so the syntax-validation leg cannot catch a
+#: clause the real database rejects. Oracle in particular:
+#:
+#:   - has NO `ON UPDATE` clause at all;
+#:   - accepts only `ON DELETE CASCADE` and `ON DELETE SET NULL`, with the
+#:     omitted form carrying NO ACTION semantics;
+#:   - has no RESTRICT.
+#:
+#: SQL Server has no RESTRICT either. MySQL (InnoDB) and PostgreSQL accept
+#: all four of the canonical actions.
+_ON_DELETE_SUPPORT: dict[Dialect, frozenset[ReferentialAction]] = {
+    Dialect.POSTGRES: frozenset(ReferentialAction),
+    Dialect.MYSQL: frozenset(ReferentialAction),
+    Dialect.TSQL: frozenset({ReferentialAction.NO_ACTION, ReferentialAction.CASCADE, ReferentialAction.SET_NULL}),
+    Dialect.ORACLE: frozenset({ReferentialAction.NO_ACTION, ReferentialAction.CASCADE, ReferentialAction.SET_NULL}),
+}
+
+_ON_UPDATE_SUPPORT: dict[Dialect, frozenset[ReferentialAction]] = {
+    Dialect.POSTGRES: frozenset(ReferentialAction),
+    Dialect.MYSQL: frozenset(ReferentialAction),
+    Dialect.TSQL: frozenset({ReferentialAction.NO_ACTION, ReferentialAction.CASCADE, ReferentialAction.SET_NULL}),
+    # Oracle has no ON UPDATE clause. Only the implicit default is reachable.
+    Dialect.ORACLE: frozenset({ReferentialAction.NO_ACTION}),
+}
+
+#: Dialects where NO ACTION must be expressed by OMITTING the clause rather
+#: than by spelling it out.
+_OMIT_NO_ACTION = frozenset({Dialect.ORACLE})
+
+
+def render_reference_actions(
+    on_delete: ReferentialAction, on_update: ReferentialAction, dialect: Dialect
+) -> str:
+    """Render the ON DELETE / ON UPDATE tail of a REFERENCES clause.
+
+    Returns the empty string when the target expresses both actions by
+    omission. Raises `DialectError` -- fail closed -- when the target has no
+    way to express the requested action, because the alternatives are all
+    worse: emitting a clause the database rejects breaks the migration
+    loudly, and silently downgrading (say RESTRICT to NO ACTION) changes
+    when the constraint is checked without telling anyone.
+    """
+    for action, supported, clause in (
+        (on_delete, _ON_DELETE_SUPPORT[dialect], "ON DELETE"),
+        (on_update, _ON_UPDATE_SUPPORT[dialect], "ON UPDATE"),
+    ):
+        if action not in supported:
+            detail = (
+                f"{dialect.value} has no {clause} clause"
+                if not supported - {ReferentialAction.NO_ACTION}
+                else f"{dialect.value} does not accept {clause} {referential_action_sql(action)}"
+            )
+            raise DialectError(
+                "CERTIFIED_DDL_UNREACHABLE_REFERENTIAL_ACTION",
+                f"{detail}; certified-ddl-v1 refuses to downgrade it silently",
+            )
+
+    parts: list[str] = []
+    omit_default = dialect in _OMIT_NO_ACTION
+    if not (omit_default and on_delete is ReferentialAction.NO_ACTION):
+        parts.append(f"ON DELETE {referential_action_sql(on_delete)}")
+    if not (omit_default and on_update is ReferentialAction.NO_ACTION):
+        parts.append(f"ON UPDATE {referential_action_sql(on_update)}")
+    return " ".join(parts)
+
+
 def render_type(type_ref: CanonicalTypeRef, dialect: Dialect) -> str:
     t = type_ref.canonical_type
     if t == CanonicalType.BOOLEAN:

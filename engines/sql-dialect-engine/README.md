@@ -127,7 +127,7 @@ would mean inventing a type. That is exactly the silent corruption the
 profile exists to prevent. They appeared 0 times in the corpus, so
 refusing them costs nothing measurable.
 
-### Two rules the validator cannot enforce
+### Three rules the validator cannot enforce
 
 `sqlglot` accepts both of these without complaint, and the real databases
 reject them. A permissive parser means the syntax-validation leg proves
@@ -139,6 +139,16 @@ generation defect:
 |---|---|
 | **Oracle never gets `ADD COLUMN`** | Oracle has no such keyword; it is `ALTER TABLE t ADD (c ...)`. |
 | **SQL Server never gets `RENAME COLUMN`** | T-SQL has no such clause; it requires `EXEC sp_rename 't.c', 'new', 'COLUMN'` — a different statement kind entirely. |
+| **Referential actions are per-dialect** | Oracle has **no `ON UPDATE` clause at all**, accepts only `CASCADE`/`SET NULL` for `ON DELETE`, and expresses NO ACTION by omission. Neither Oracle nor SQL Server has `RESTRICT`. Unreachable actions are `BLOCKED`, never downgraded. |
+
+The third one was a live defect in the `CREATE TABLE` path, not just an
+`ALTER` concern: every Oracle foreign key this engine emitted carried
+`ON DELETE ... ON UPDATE ...`, which Oracle rejects. Its own flagship
+12-direction round-trip fixture used `ON UPDATE RESTRICT` and reported
+`PASSED` for `postgres -> oracle` and `postgres -> tsql`, because sqlglot
+parses `RESTRICT` for every dialect. Downgrading `RESTRICT` to `NO ACTION`
+would have "fixed" it while silently changing *when* the constraint is
+checked, so it fails closed instead.
 
 Multi-action statements are emitted as separate statements rather than a
 comma list, because Oracle's parenthesised `ADD` cannot be mixed with

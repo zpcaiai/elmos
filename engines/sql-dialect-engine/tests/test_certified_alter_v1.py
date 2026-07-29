@@ -183,3 +183,98 @@ def test_add_column_round_trips_to_the_same_canonical_model(dialect: Dialect) ->
     original = parse_alter_table(ADD_COLUMN, Dialect.POSTGRES)
     emitted = emit_alter_table(original, dialect)
     assert parse_alter_table(emitted, dialect) == original
+
+
+# --------------------------------------------------------------------------
+# Referential actions, the third rule the validation leg cannot enforce
+#
+# sqlglot accepts `ON DELETE NO ACTION ON UPDATE NO ACTION` for every
+# dialect, so the syntax leg proved nothing here either. Oracle's documented
+# references_clause has NO `ON UPDATE` at all, accepts only CASCADE and
+# SET NULL for `ON DELETE`, and has no RESTRICT. SQL Server has no RESTRICT.
+# This was a pre-existing defect in the CREATE TABLE path -- every emitted
+# Oracle foreign key carried a clause Oracle rejects.
+# --------------------------------------------------------------------------
+
+FK_TABLE = (
+    "CREATE TABLE a (id INTEGER PRIMARY KEY, b_id INTEGER, "
+    "FOREIGN KEY (b_id) REFERENCES b (id){actions})"
+)
+
+
+def test_oracle_omits_the_default_referential_actions() -> None:
+    from elmos_sql_dialect.emitter import emit_create_table
+    from elmos_sql_dialect.parser import parse_create_table
+
+    emitted = emit_create_table(
+        parse_create_table(FK_TABLE.format(actions=""), Dialect.POSTGRES), Dialect.ORACLE
+    )
+    # Oracle expresses NO ACTION by omission; spelling it out is a syntax
+    # error there even though sqlglot parses it happily.
+    assert "ON UPDATE" not in emitted
+    assert "ON DELETE" not in emitted
+    assert "REFERENCES b (id)" in emitted
+
+
+@pytest.mark.parametrize("target", ["postgres", "mysql", "tsql"])
+def test_the_other_dialects_still_spell_the_actions_out(target: str) -> None:
+    report = translate_ddl(FK_TABLE.format(actions=""), "oracle", target)
+    assert report["status"] == "PASSED", report["reason"]
+    assert "ON DELETE NO ACTION" in report["emitted"]
+    assert "ON UPDATE NO ACTION" in report["emitted"]
+
+
+def test_oracle_keeps_the_delete_actions_it_does_support() -> None:
+    report = translate_ddl(
+        FK_TABLE.format(actions=" ON DELETE CASCADE"), "postgres", "oracle"
+    )
+    assert report["status"] == "PASSED", report["reason"]
+    assert "ON DELETE CASCADE" in report["emitted"]
+    assert "ON UPDATE" not in report["emitted"]
+
+
+@pytest.mark.parametrize(
+    ("actions", "target"),
+    [
+        # Oracle has no ON UPDATE clause whatsoever.
+        (" ON UPDATE CASCADE", "oracle"),
+        (" ON UPDATE SET NULL", "oracle"),
+        # Neither Oracle nor SQL Server has RESTRICT. Downgrading it to NO
+        # ACTION would change WHEN the constraint is checked without saying
+        # so, which is the silent-corruption case this engine exists for.
+        (" ON DELETE RESTRICT", "oracle"),
+        (" ON DELETE RESTRICT", "tsql"),
+        (" ON UPDATE RESTRICT", "tsql"),
+    ],
+)
+def test_an_unreachable_referential_action_fails_closed(actions: str, target: str) -> None:
+    report = translate_ddl(FK_TABLE.format(actions=actions), "postgres", target)
+    assert report["status"] == "BLOCKED"
+    assert report["reasonCode"] == "CERTIFIED_DDL_UNREACHABLE_REFERENTIAL_ACTION"
+    assert report["emitted"] is None
+    assert "downgrade it silently" in report["reason"]
+
+
+def test_the_same_rule_applies_to_alter_add_constraint() -> None:
+    # The ALTER path must not be able to smuggle in a clause the CREATE path
+    # refuses -- one canonical model, one set of per-dialect rules.
+    report = translate_ddl(
+        "ALTER TABLE a ADD CONSTRAINT a_fk FOREIGN KEY (b_id) "
+        "REFERENCES b (id) ON UPDATE CASCADE",
+        "postgres",
+        "oracle",
+        statement_kind="ALTER",
+    )
+    assert report["status"] == "BLOCKED"
+    assert report["reasonCode"] == "CERTIFIED_DDL_UNREACHABLE_REFERENTIAL_ACTION"
+
+
+def test_the_same_rule_applies_to_an_inline_reference_on_an_added_column() -> None:
+    report = translate_ddl(
+        "ALTER TABLE a ADD COLUMN b_id INTEGER REFERENCES b (id) ON UPDATE CASCADE",
+        "postgres",
+        "oracle",
+        statement_kind="ALTER",
+    )
+    assert report["status"] == "BLOCKED"
+    assert report["reasonCode"] == "CERTIFIED_DDL_UNREACHABLE_REFERENTIAL_ACTION"

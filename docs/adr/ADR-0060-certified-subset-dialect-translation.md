@@ -354,6 +354,47 @@ honest: triggers and stored procedures are programs rather than schema, and
 the largest remaining blocker is a regex `CHECK` idiom SQL Server cannot
 express at all.
 
+## Addendum: referential actions, and a defect the tests were hiding
+
+Writing `certified-alter-v1` surfaced a third case of the same hazard, and
+this one was a live defect in the **existing** `CREATE TABLE` path.
+
+Every foreign key this engine emitted carried
+`ON DELETE <action> ON UPDATE <action>`, for all four dialects. But per
+Oracle's documented `references_clause`, Oracle has **no `ON UPDATE`
+clause at all**, accepts only `CASCADE` and `SET NULL` for `ON DELETE`, and
+expresses NO ACTION by omitting the clause. Neither Oracle nor SQL Server
+has `RESTRICT`. So a large share of emitted Oracle foreign keys were
+statements Oracle would reject.
+
+**The engine's own flagship test was hiding it.** The 12-direction
+round-trip fixture used `ON DELETE CASCADE ON UPDATE RESTRICT` and reported
+`PASSED` for `postgres -> oracle` and `postgres -> tsql` — because sqlglot
+parses `RESTRICT` for every dialect, and no local Oracle or SQL Server
+instance exists to contradict it. A green test suite was actively
+reinforcing the wrong belief.
+
+Two decisions worth recording:
+
+- **Fail closed rather than downgrade.** Mapping `RESTRICT` to `NO ACTION`
+  would have made everything pass. They are not the same: `RESTRICT` checks
+  the constraint immediately, `NO ACTION` at end of statement. Silently
+  changing when a constraint fires is exactly the class of corruption this
+  engine exists to prevent, so unreachable actions are `BLOCKED` with
+  `CERTIFIED_DDL_UNREACHABLE_REFERENTIAL_ACTION`.
+- **The fixture was changed, not the rule.** It now uses
+  `ON DELETE CASCADE ON UPDATE NO ACTION`, the strongest combination all
+  four dialects can express, and RESTRICT's refusal is asserted directly
+  rather than left implicit in a round-trip case.
+
+The generalisable lesson is now three-for-three: **wherever sqlglot is more
+permissive than a real vendor, the syntax-validation leg produces no
+evidence at all.** It is not a weak signal there, it is a null one. Every
+such point needs a hand-verified rule plus a direct assertion, and the
+places where that is true should be enumerated rather than discovered one
+at a time. Known instances: AUTO_INCREMENT/IDENTITY generation, Oracle
+`ADD COLUMN`, T-SQL `RENAME COLUMN`, and referential actions.
+
 ## External gates
 
 Independent verification and external certification of both profiles remain

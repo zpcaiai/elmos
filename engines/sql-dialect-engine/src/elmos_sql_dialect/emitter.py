@@ -6,9 +6,9 @@ from __future__ import annotations
 
 from .dialects import (
     check_operator_sql,
-    referential_action_sql,
     render_auto_increment_suffix,
     render_default,
+    render_reference_actions,
     render_type,
 )
 from .models import (
@@ -44,6 +44,14 @@ def _render_column(column: Column, dialect: Dialect) -> str:
     return " ".join(parts)
 
 
+def _render_foreign_key_clause(fk: ForeignKey, dialect: Dialect) -> str:
+    base = (
+        f"FOREIGN KEY ({', '.join(fk.columns)}) REFERENCES {fk.ref_table}"
+        f" ({', '.join(fk.ref_columns)})"
+    )
+    actions = render_reference_actions(fk.on_delete, fk.on_update, dialect)
+    return f"{base} {actions}" if actions else base
+
 def emit_create_table(table: Table, dialect: Dialect) -> str:
     lines: list[str] = [_render_column(c, dialect) for c in table.columns]
 
@@ -54,10 +62,7 @@ def emit_create_table(table: Table, dialect: Dialect) -> str:
         lines.append(f"UNIQUE ({', '.join(unique)})")
 
     for fk in table.foreign_keys:
-        clause = (
-            f"FOREIGN KEY ({', '.join(fk.columns)}) REFERENCES {fk.ref_table} ({', '.join(fk.ref_columns)})"
-            f" ON DELETE {referential_action_sql(fk.on_delete)} ON UPDATE {referential_action_sql(fk.on_update)}"
-        )
+        clause = _render_foreign_key_clause(fk, dialect)
         lines.append(f"CONSTRAINT {fk.name} {clause}" if fk.name else clause)
 
     for check in table.check_constraints:
@@ -75,11 +80,6 @@ def emit_create_index(index: Index, dialect: Dialect) -> str:
     return f"{keyword} {index.name} ON {index.table} ({', '.join(index.columns)})"
 
 
-def _render_foreign_key_clause(fk: ForeignKey) -> str:
-    return (
-        f"FOREIGN KEY ({', '.join(fk.columns)}) REFERENCES {fk.ref_table} ({', '.join(fk.ref_columns)})"
-        f" ON DELETE {referential_action_sql(fk.on_delete)} ON UPDATE {referential_action_sql(fk.on_update)}"
-    )
 
 
 def _render_check_clause(check: CheckConstraint) -> str:
@@ -116,9 +116,12 @@ def emit_alter_table(alter: AlterTable, dialect: Dialect) -> str:
                 column_sql += (
                     f" REFERENCES {action.foreign_key.ref_table}"
                     f" ({', '.join(action.foreign_key.ref_columns)})"
-                    f" ON DELETE {referential_action_sql(action.foreign_key.on_delete)}"
-                    f" ON UPDATE {referential_action_sql(action.foreign_key.on_update)}"
                 )
+                actions_sql = render_reference_actions(
+                    action.foreign_key.on_delete, action.foreign_key.on_update, dialect
+                )
+                if actions_sql:
+                    column_sql += f" {actions_sql}"
             if action.check is not None:
                 column_sql += " " + _render_check_clause(action.check)
             if dialect is Dialect.ORACLE:
@@ -151,7 +154,7 @@ def emit_alter_table(alter: AlterTable, dialect: Dialect) -> str:
             elif action.unique:
                 clause = f"UNIQUE ({', '.join(action.unique)})"
             elif action.foreign_key is not None:
-                clause = _render_foreign_key_clause(action.foreign_key)
+                clause = _render_foreign_key_clause(action.foreign_key, dialect)
             else:
                 assert action.check is not None  # AddConstraint.__post_init__ guarantees one is set
                 clause = _render_check_clause(action.check)
