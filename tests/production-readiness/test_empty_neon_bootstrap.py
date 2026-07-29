@@ -8,6 +8,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts" / "commercial" / "bootstrap_empty_neon_via_psql.py"
+MIGRATE_SCRIPT = ROOT / "scripts" / "commercial" / "migrate_neon.sh"
 SPEC = importlib.util.spec_from_file_location("empty_neon_bootstrap", SCRIPT)
 assert SPEC is not None and SPEC.loader is not None
 MODULE = importlib.util.module_from_spec(SPEC)
@@ -48,6 +49,17 @@ class EmptyNeonBootstrapTests(unittest.TestCase):
         self.assertEqual("'owner''s migration'", MODULE.sql_literal("owner's migration"))
         source = SCRIPT.read_text(encoding="utf-8")
         self.assertNotIn(":'migration_version'", source)
+
+    def test_upgrade_prevalidation_ignores_only_pending_migrations(self) -> None:
+        source = MIGRATE_SCRIPT.read_text(encoding="utf-8")
+        pending_aware_validation = (
+            'mvn "${flyway_common[@]}" '
+            '"-Dflyway.ignoreMigrationPatterns=*:pending" flyway:validate'
+        )
+        strict_validation = 'mvn "${flyway_common[@]}" flyway:validate'
+
+        self.assertEqual(1, source.count(pending_aware_validation))
+        self.assertEqual(1, source.count(strict_validation))
 
 
 if __name__ == "__main__":

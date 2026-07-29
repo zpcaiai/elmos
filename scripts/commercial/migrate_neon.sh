@@ -67,7 +67,7 @@ flyway_common=(
 )
 
 printf '%s\n' "Validating applied migration checksums."
-mvn "${flyway_common[@]}" flyway:validate
+mvn "${flyway_common[@]}" "-Dflyway.ignoreMigrationPatterns=*:pending" flyway:validate
 printf '%s\n' "Applying pending migrations under Flyway schema-history control."
 mvn "${flyway_common[@]}" flyway:migrate
 printf '%s\n' "Re-validating the complete migration chain."
