@@ -96,6 +96,8 @@
         <commons-compress.version>1.27.1</commons-compress.version>
         <zstd-jni.version>1.5.7-3</zstd-jni.version>
         <docker-java.version>3.4.2</docker-java.version>
+        <!-- Overridable per environment: mvn test -Ddocker.api.version=1.51 -->
+        <docker.api.version>1.44</docker.api.version>
         <jgit.version>7.7.0.202606012155-r</jgit.version>
         <tomlj.version>1.1.1</tomlj.version>
         <sqlite-jdbc.version>3.50.3.0</sqlite-jdbc.version>
@@ -146,7 +148,26 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId><artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven.surefire.version}</version>
-                    <configuration><useModulePath>false</useModulePath></configuration>
+                    <configuration>
+                        <useModulePath>false</useModulePath>
+                        <systemPropertyVariables>
+                            <!--
+                              docker-java negotiates Docker API 1.32 by default. Docker Engine 26
+                              raised the minimum supported API version to 1.40, so on any modern
+                              engine every container-backed test fails its environment probe.
+
+                              That failure is invisible: Testcontainers' disabledWithoutDocker
+                              catches the exception and reports the class as Skipped, and the
+                              build still says SUCCESS. The whole suite can stop exercising
+                              PostgreSQL without one line of output saying so.
+
+                              1.44 is comfortably inside the window every supported engine
+                              serves (Docker 24 through 29 all accept it) while staying old
+                              enough not to require a very recent daemon.
+                            -->
+                            <api.version>${docker.api.version}</api.version>
+                        </systemPropertyVariables>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.springframework.boot</groupId><artifactId>spring-boot-maven-plugin</artifactId>

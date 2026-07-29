@@ -35,7 +35,20 @@ class FlywayMigrationTest {
     @Container static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:17.5-alpine");
     @Test void createsAllAuthoritativeSchemasThroughProductBatchThirtyEightAndMigrationPackAdmission() {
         var flyway=Flyway.configure().dataSource(POSTGRES.getJdbcUrl(),POSTGRES.getUsername(),POSTGRES.getPassword()).load();
-        assertEquals(51,flyway.migrate().migrationsExecuted);
+        // Asserting a literal migration count would fail on every new migration and
+        // invite whoever sees the red to bump the number, which teaches nothing.
+        // What actually matters is that the set on disk and the set applied agree:
+        // everything discovered runs, and nothing is left pending afterwards. That
+        // survives growth and still catches a migration that silently fails to
+        // resolve. The floor keeps a deletion from passing quietly.
+        int discovered = flyway.info().pending().length;
+        assertTrue(discovered >= 51,
+                () -> "expected at least the 51 migrations that existed when this "
+                        + "invariant was written, found " + discovered);
+        assertEquals(discovered, flyway.migrate().migrationsExecuted,
+                "every migration resolved on an empty database must be applied");
+        assertEquals(0, flyway.info().pending().length,
+                "no migration may remain pending after a full migrate");
         var jdbc=org.springframework.jdbc.core.simple.JdbcClient.create(new org.springframework.jdbc.datasource.DriverManagerDataSource(POSTGRES.getJdbcUrl(),POSTGRES.getUsername(),POSTGRES.getPassword()));
         assertTrue(jdbc.sql("select count(*) from information_schema.tables where table_schema='public'").query(Integer.class).single() >= 1240);
         assertEquals(1, jdbc.sql("select count(*) from information_schema.tables where table_schema='public' and table_name='github_app_onboarding_states'").query(Integer.class).single());

@@ -8,6 +8,14 @@
     <dependency><groupId>io.elmos</groupId><artifactId>elmos-workflow</artifactId><version>${project.version}</version></dependency>
     <dependency><groupId>io.elmos</groupId><artifactId>elmos-scm</artifactId><version>${project.version}</version></dependency>
     <dependency><groupId>io.elmos</groupId><artifactId>elmos-persistence</artifactId><version>${project.version}</version></dependency>
+    <!--
+      Declared directly because TenantQuotaConfiguration imports
+      io.elmos.commercial.SelfServiceBillingPort. It also arrives transitively
+      through elmos-persistence, but relying on that would make this module stop
+      compiling the day persistence drops the edge, for reasons visible nowhere
+      in this file.
+    -->
+    <dependency><groupId>io.elmos</groupId><artifactId>elmos-commercial-operations</artifactId><version>${project.version}</version></dependency>
     <dependency><groupId>io.elmos</groupId><artifactId>elmos-security</artifactId><version>${project.version}</version></dependency>
     <dependency><groupId>io.elmos</groupId><artifactId>elmos-integrations</artifactId><version>${project.version}</version></dependency>
     <dependency><groupId>io.elmos</groupId><artifactId>elmos-delivery</artifactId><version>${project.version}</version></dependency>
