@@ -95,11 +95,17 @@ target-dialect keyword appears and the wrong one does not.
 ## Local run
 
 ```bash
-uv sync --locked
-uv run pytest
-uv run ruff check src tests
-uv run mypy src
+uv run --locked --extra dev pytest
+uv run --locked --extra dev ruff check src tests
+uv run --locked --extra dev mypy --ignore-missing-imports src
 ```
+
+`--locked` rather than a free resolve: `uv.lock` is committed and pins
+`sqlglot` to 30.14.0 with a hash. This engine deliberately does not use
+sqlglot's own cross-dialect generator because of defects reproduced
+against that exact version, and its `_TYPE_MAP` is keyed on that version's
+`DataType.Type` members — so a silently different resolve could change
+translation results without any source change.
 
 Or with plain pip (no `uv` required):
 
