@@ -368,6 +368,7 @@ jobs:
           ELMOS_E2E_REPORT_DIR: test-results/ci-generation-browser-matrix-report
         run: >-
           pnpm --dir apps/web-console exec playwright test
+          --workers=1
           --project=chromium
           --project=firefox
           --project=webkit
