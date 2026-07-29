@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react
 import { Icon } from "../components/Icon";
 import { RuntimeDeploymentGuide } from "../components/RuntimeDeploymentGuide";
 import { StatusChip } from "../components/StatusChip";
+import { useAccountSession } from "../components/AccountSessionProvider";
 import type { SpringRouteDescriptor } from "../lib/contracts";
 import { springDeploymentGuidance } from "../lib/deploymentGuidance";
 
@@ -185,6 +186,7 @@ async function api<T>(url: string, init?: RequestInit, credentials?: SpringCrede
 }
 
 export function SpringModernizationStudio() {
+  const account = useAccountSession();
   const [sourceMode, setSourceMode] = useState<SourceMode>("PUBLIC_GIT");
   const [repositoryUrl, setRepositoryUrl] = useState("");
   const [requestedRef, setRequestedRef] = useState("main");
@@ -209,10 +211,20 @@ export function SpringModernizationStudio() {
   const [proxyToken, setProxyToken] = useState("");
   const [recoveryRunId, setRecoveryRunId] = useState("");
 
+  const accountRunner = account.status === "authenticated"
+    && account.principal?.permissions.includes("spring:execute") === true;
   const credentials = useMemo(
-    () => ({ tenantId: tenantId.trim(), actorId: actorId.trim(), token: proxyToken }),
-    [actorId, proxyToken, tenantId],
+    () => accountRunner
+      ? undefined
+      : { tenantId: tenantId.trim(), actorId: actorId.trim(), token: proxyToken },
+    [accountRunner, actorId, proxyToken, tenantId],
   );
+
+  useEffect(() => {
+    if (!accountRunner || !account.principal) return;
+    setTenantId(account.principal.organizationId);
+    setActorId(account.principal.actorId);
+  }, [account.principal, accountRunner]);
 
   const notify = useCallback((message: string, kind: FeedbackKind = "success") => {
     setFeedback(message);
@@ -288,7 +300,7 @@ export function SpringModernizationStudio() {
     && capability?.independentVerifierConfigured
     && githubSourceReady,
   );
-  const credentialsReady = tenantId.trim().length >= 3
+  const credentialsReady = accountRunner || tenantId.trim().length >= 3
     && actorId.trim().length >= 3
     && proxyToken.length >= 24;
   const runtimeReady = Boolean(capability?.runtimeRunnerConfigured);
@@ -421,7 +433,7 @@ export function SpringModernizationStudio() {
     try {
       const response = await fetch(`/api/spring-upgrades/${run.runId}/artifact`, {
         cache: "no-store",
-        headers: {
+        headers: accountRunner ? undefined : {
           authorization: `Bearer ${proxyToken}`,
           "x-elmos-tenant": tenantId.trim(),
           "x-elmos-actor": actorId.trim(),
@@ -522,17 +534,21 @@ export function SpringModernizationStudio() {
           <div className="business-form-grid">
             <label>
               <span>租户标识</span>
-              <input aria-label="Spring 租户标识" value={tenantId} onChange={(event) => setTenantId(event.target.value)} autoComplete="off" />
+              <input aria-label="Spring 租户标识" value={tenantId} onChange={(event) => setTenantId(event.target.value)} readOnly={accountRunner} autoComplete="off" />
             </label>
             <label>
               <span>执行者标识</span>
-              <input aria-label="Spring 执行者标识" value={actorId} onChange={(event) => setActorId(event.target.value)} autoComplete="off" />
+              <input aria-label="Spring 执行者标识" value={actorId} onChange={(event) => setActorId(event.target.value)} readOnly={accountRunner} autoComplete="off" />
             </label>
-            <label className="spring-field-wide">
-              <span>Spring 代理短期令牌</span>
-              <input aria-label="Spring 代理短期令牌" type="password" value={proxyToken} onChange={(event) => setProxyToken(event.target.value)} autoComplete="off" />
-              <small>令牌最多 24 小时，并与唯一租户和 Actor 绑定；不会进入迁移请求体或日志。</small>
-            </label>
+            {accountRunner ? (
+              <div className="locked-target spring-field-wide"><span>账户授权</span><strong>企业 OIDC · spring:execute</strong><small>租户和执行者来自已验证声明。</small></div>
+            ) : (
+              <label className="spring-field-wide">
+                <span>Spring 代理短期令牌</span>
+                <input aria-label="Spring 代理短期令牌" type="password" value={proxyToken} onChange={(event) => setProxyToken(event.target.value)} autoComplete="off" />
+                <small>仅限本地开发；令牌最多 24 小时，并与唯一租户和 Actor 绑定。</small>
+              </label>
+            )}
             <label>
               <span>输入方式</span>
               <select value={sourceMode} onChange={(event) => setSourceMode(event.target.value as SourceMode)}>
@@ -640,7 +656,7 @@ export function SpringModernizationStudio() {
           <div className="business-actions">
             <button className="button button-primary" type="submit" disabled={busy || !runnerReady || !credentialsReady}>
               <Icon name={busy ? "refresh" : "workflow"} size={16} className={busy ? "spinning" : undefined} />
-              {!runnerReady ? "隔离 Runner 未配置" : credentialsReady ? "开始真实迁移" : "填写短期身份后迁移"}
+              {!runnerReady ? "隔离 Runner 未配置" : credentialsReady ? "开始真实迁移" : "登录企业账户或填写本地短期身份"}
             </button>
             {run && ["QUEUED", "RUNNING"].includes(run.status) && <button className="button button-secondary" type="button" onClick={() => lifecycle("cancel")} disabled={busy}>取消迁移</button>}
           </div>

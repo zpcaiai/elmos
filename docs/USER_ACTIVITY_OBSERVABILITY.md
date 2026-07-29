@@ -1,70 +1,104 @@
-# 用户操作日志与运营管理端
+# 用户操作日志、自动诊断与生产运营管理端
 
-## 目标与闭环
+## 双层操作记录
 
-Web 控制台在根布局安装一次隐私安全采集器，记录页面访问、点击、表单提交、
-字段变更、同源 API 成败与耗时、浏览器运行错误以及页面加载/FCP 指标。事件以
-最多 20 条的批次发送到 `/api/telemetry/events`；失败批次保留在浏览器的
-200 条有界队列中重试，不阻塞用户业务操作。
+Web 根布局的隐私安全采集器记录页面访问、显式标注 `data-operation-id` 的语义
+操作、同源 API 成败/耗时、浏览器错误和页面加载/FCP。它不采集字段变更、输入值
+或通用点击。采集器使用 20 条批次、2 秒刷新和 200 条有界重试队列；用户可以关闭
+并清空尚未发送的匿名性能数据。
 
-Next.js 同源 API 执行大小、字段、时间窗和 allow-list 校验，去除 URL 查询参数，
-再使用只存在于服务端的内部凭证转发给 control-plane。control-plane 以可信配置
-绑定组织与 Actor，并在同一事务中设置 PostgreSQL RLS 租户上下文。V50 扩展既有
-`audit_events` 追加式审计表，事件重复提交按 `audit_id` 幂等忽略；V9 的禁止
-UPDATE/DELETE 触发器继续生效。
+浏览器开关不影响安全审计。Web BFF 的 `withBusinessAudit` 在项目生成、语言翻译
+和 Spring 迁移的有副作用入口执行前追加 `BUSINESS_ATTEMPT`，并在返回后追加
+`BUSINESS_OPERATION`；control-plane 拦截器对全部 `/api/v1/**` 与
+`/api/webhooks/**` 记录执行前事件和完成结果/耗时。它们只保存稳定路由模板，
+不保存资源 ID 或查询字符串。生产前置审计失败时业务失败关闭；若副作用已经完成
+但完成日志失败，响应明确返回 `operationMayHaveCompleted=true`，禁止盲目重试。
 
-`/admin` 管理端按 1 小时、24 小时、7 天或 30 天查询租户范围内的事件总量、
-活跃会话、失败率、P95 耗时、各业务线表现、高频错误码和最近操作。管理员令牌
-只保存在当前 React 页面内存，不进入 URL、localStorage 或操作日志。未配置管理
-令牌、内部凭证、control-plane 或数据库时返回明确错误，不以空数组伪装健康。
+## 数据生命周期与隐私
 
-## 数据最小化与禁止字段
+V51 将产品性能遥测写入强制 RLS 的 `product_telemetry_events`。V9/V50 的
+`audit_events` 继续作为不可 UPDATE/DELETE 的安全与业务审计链。两者在管理查询
+中形成统一只读视图，但生命周期严格分离：
 
-允许字段仅包括：
+- 产品遥测可由获批的 7–365 天保留任务清理；
+- 清理前按业务线记录数量和首末时间聚合；
+- 执行人、请求、cutoff、删除数和聚合证据写入追加式保留运行记录；
+- 保留任务永不删除 `audit_events`。
 
-- 随机事件 ID；浏览器会话 UUID 只用于同源传输，服务端写入前转换为 HMAC，
-  PostgreSQL 不保存原始会话 UUID；
-- 事件类型、稳定动作、业务线、无查询参数路由和稳定控件标识；
-- 发生时间、耗时、成功/失败/取消结果和稳定错误码；
-- 页面加载/FCP 等 allow-list 指标；
-- 最多 8 个、每值不超过 64 字符的技术维度。
+允许内容限于随机事件 ID、HMAC 会话、稳定动作/业务线/路由/控件类型、发生时间、
+耗时、结果、稳定错误码、allow-list 性能指标和最多 8 个短技术维度。严禁输入值、
+项目/仓库/提示词内容、请求/响应体、Bearer/API Token、Cookie、查询参数、
+错误原文/堆栈、原始 IP/User-Agent 和自由文本。
 
-严禁采集输入值、项目/仓库内容、请求体、响应体、Bearer/API Token、Cookie、
-URL 查询参数、错误原文、堆栈、原始 IP、原始 User-Agent 或可自由输入的文本。
-管理端展示的 `target` 来自路由、元素类型、CSS 契约类或显式
-`data-operation-id`，不读取按钮文字或输入内容。
+详细数据流、威胁与控制见 `telemetry/DATA_FLOW_AND_THREAT_MODEL.md`；版本化策略、
+Schema 和指标分别见 `telemetry/policy.json`、`events.schema.json` 与
+`metric-definitions.json`。
+
+## 管理端与 RBAC
+
+`/admin` 查询 1 小时、24 小时、7 天或 30 天的事件量、活跃会话、失败率、P95、
+所有业务线、高频错误和最近操作，并管理 18 条业务线 SLO、告警、事件、负责人、
+通知 outbox、快修提案、保留运行及外部证据状态。
+
+生产优先使用企业 OIDC 会话的 `admin:read`、`admin:operate`、`admin:approve`
+权限，并将所选租户和真实 Actor 传给 control-plane。浏览器不能选择或提升可信
+角色。短期令牌只作为显式启用的 break-glass/本地回退，只保存在当前页面内存，
+不进入 URL、localStorage 或日志。所有状态变更要求 `expectedVersion`；陈旧/
+并发写入返回 409。审批和执行者权限分离，未配置或过期凭证、身份绑定不一致、
+权限不足或 control-plane 不可用均明确失败，不以空数据伪装健康。
+
+## 自动性能优化与 Bug 快修边界
+
+周期或人工 SLO 评估按每条业务线 15 分钟窗口计算失败率基点和 P95。达到最小事件
+数且越界时，系统使用稳定指纹幂等创建/更新：
+
+1. 带负责人、runbook、严重级别和预算差异的告警；
+2. 与告警一一对应、可接手/解决的事件；
+3. 通知 outbox（目的地未配置时为 `CONFIGURATION_REQUIRED`）；
+4. `STABLE_ERROR_DIAGNOSTIC_V1` 或 `LATENCY_BUDGET_DIAGNOSTIC_V1` 提案。
+
+提案绑定前置条件 SHA-256、预期诊断变化、必跑测试、补丁预览和回滚计划。系统
+自动完成检测、诊断和提案，但不自行修改源码、测试、安全边界、事务、金额、Schema、
+公开 API 或部署。`APPROVER` 批准后只能生成摘要绑定的 `READY_FOR_SCM` 计划；
+真实补丁、测试、PR、部署、验证和回滚必须由相应授权系统执行并回填证据。
+计划状态不得解释为 Bug 已修复或生产已发布。
+
+快修版本化 Profile 与 recipe 清单见 `quick-fix/profile.json` 和
+`quick-fix/registry.json`。
 
 ## 运行配置
 
-Web console 与 control-plane 共享：
+Web 与 control-plane 共享：
 
-- `ELMOS_OPERATIONS_API_KEY`：至少 24 字符的内部服务凭证；
-- `ELMOS_OPERATIONS_API_KEY_EXPIRES_AT`：带时区、未来且不超过 24 小时的内部凭证到期时间；
-- `ELMOS_OPERATIONS_TENANT_ID`：日志所属可信组织；
-- `ELMOS_OPERATIONS_ACTOR_ID`：当前尚无统一 Web 登录时使用的服务端 Actor，
-  默认仅限本地 `web-console-user`；
-- `ELMOS_CONTROL_PLANE_BASE_URL`：control-plane 内部地址；
-- `ELMOS_ADMIN_OBSERVABILITY_TOKEN`：至少 24 字符的短期管理员读取令牌。
-- `ELMOS_ADMIN_OBSERVABILITY_TOKEN_EXPIRES_AT`：带时区、未来且不超过 24 小时的到期时间。
-- `ELMOS_ADMIN_OBSERVABILITY_TENANT_ID`：令牌唯一绑定的租户；必须与 `ELMOS_OPERATIONS_TENANT_ID` 一致。
-- `ELMOS_ADMIN_OBSERVABILITY_ACTOR_ID`：令牌唯一绑定的 Actor；必须与 `ELMOS_OPERATIONS_ACTOR_ID` 一致。
+- `ELMOS_OPERATIONS_API_KEY`：至少 24 字符的内部服务租约；
+- `ELMOS_OPERATIONS_API_KEY_EXPIRES_AT`：未来且不超过 24 小时；
+- `ELMOS_OPERATIONS_TENANT_ID`、`ELMOS_OPERATIONS_ACTOR_ID`：可信绑定；
+- `ELMOS_CONTROL_PLANE_BASE_URL`：内部 control-plane 地址；
+- `ELMOS_BUSINESS_AUDIT_REQUIRED`：本地/测试可显式设为 `true` 验证失败关闭；
+  生产无论该变量取值如何都强制要求业务审计。
 
-内部服务凭证和管理员令牌任一缺失、过期、租期超过 24 小时，或租户/Actor
-绑定不一致时均返回失败关闭结果。令牌不会写入浏览器存储、URL、操作事件或服务日志。
+管理端：
 
-control-plane 使用既有 `ELMOS_DATABASE_URL`、`ELMOS_DATABASE_USER` 和
-`ELMOS_DATABASE_PASSWORD` 连接 PostgreSQL。生产环境不得把上述凭证打包进
-浏览器、提交到仓库或写入日志。
+- 企业 OIDC 配置与会话密钥见账户登录文档/对应 `ELMOS_OIDC_*`、
+  `ELMOS_SESSION_SECRET` 环境；
+- `ELMOS_ADMIN_OBSERVABILITY_TOKEN`、`_EXPIRES_AT`；
+- `ELMOS_ADMIN_OBSERVABILITY_TENANT_ID`、`_ACTOR_ID`；
+- `ELMOS_ADMIN_OBSERVABILITY_ROLE`：`VIEWER`、`OPERATOR` 或 `APPROVER`。
+- `ELMOS_ADMIN_ALLOW_TOKEN_FALLBACK`：生产 break-glass 显式开关，默认关闭。
 
-## 保留、性能与运维边界
+自动化与保留：
 
-目标原始事件保留期为 30 天，但 V50 不创建自动删除任务，因为 `audit_events` 是追加式
-审计链，生产删除需要获批的保留策略、归档证明和独立运维任务。当前本地实现与
-测试不构成生产保留、告警路由、SLO、容量、成本或隐私审查证据；这些状态保持
-`NOT_RUN`。
+- `ELMOS_OPERATIONS_AUTOMATION_ENABLED`，默认 `false`；
+- `ELMOS_OPERATIONS_EVALUATION_INTERVAL_MS`，默认 300000；
+- `ELMOS_OPERATIONS_RETENTION_ENABLED`，默认 `false`；
+- `ELMOS_OPERATIONS_RETENTION_DAYS`，默认 30，范围 7–365；
+- `ELMOS_OPERATIONS_RETENTION_INTERVAL_MS`，默认 86400000。
 
-用户可在侧栏明确关闭匿名性能日志；关闭后会清空尚未发送的本地队列。采集采用
-委托事件监听、2 秒批处理和 200 条有界队列，避免逐次点击产生同步网络
-阻塞。管理查询最多 31 天、200 条明细，并使用组织/时间、业务线、结果和会话
-索引。真实生产量级下仍需运行容量与成本基准，设置告警负责人并验证告警触发、
-去重、恢复和 runbook。
+生产部署、轮换和验收步骤见 `docs/PRODUCTION_OPERATIONS_ADMIN.md`。
+
+## 证据边界
+
+仓库实现和本地测试能证明 Schema、RLS、状态机、版本冲突、隐私过滤、双存储、
+SLO 计算和界面契约；不能证明真实外部告警已收到、值班人员已响应、真实 SCM
+改动/测试/部署已完成、生产容量与成本达标、隐私评审通过或故障演练完成。这些项
+在真实授权环境产生证据前保持 `NOT_RUN`。

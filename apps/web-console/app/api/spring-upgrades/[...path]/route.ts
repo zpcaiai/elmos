@@ -5,6 +5,7 @@ import {
   proxyNotConfiguredResponse,
   springProxyConfiguration,
 } from "../proxyPolicy";
+import { withBusinessAudit } from "../../../lib/server/operationsProxy";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -21,7 +22,23 @@ export async function GET(request: NextRequest, context: Context) {
 }
 
 export async function POST(request: NextRequest, context: Context) {
-  return proxy("POST", context, request);
+  try {
+    return await withBusinessAudit(
+      request,
+      {
+        action: "SPRING_UPGRADE_ACTION",
+        businessLine: "SPRING_MODERNIZATION",
+        route: "/api/spring-upgrades/:id/:action",
+        target: "spring-upgrade",
+      },
+      () => proxy("POST", context, request),
+    );
+  } catch {
+    return Response.json(
+      { errorCode: "BUSINESS_AUDIT_UNAVAILABLE", message: "业务审计不可用，未执行迁移操作。", retryable: true },
+      { status: 503, headers: { "cache-control": "no-store" } },
+    );
+  }
 }
 
 async function proxy(method: "GET" | "POST", context: Context, request?: NextRequest) {
@@ -57,13 +74,17 @@ async function proxy(method: "GET" | "POST", context: Context, request?: NextReq
       { status: 404 },
     );
   }
+  let identity: { organizationId: string; actorId: string } | null = null;
   if (path !== "capabilities") {
-    const authenticationFailure = authenticateSpringProxy(request!);
-    if (authenticationFailure) return authenticationFailure;
+    const authentication = authenticateSpringProxy(request!);
+    if (authentication instanceof Response) return authentication;
+    identity = authentication;
   }
-  const headers = new Headers({ "X-ELMOS-Organization-ID": configuration.organizationId });
-  const actor = request?.headers.get("x-elmos-actor");
-  if (actor) headers.set("X-ELMOS-Actor-ID", actor);
+  const headers = new Headers();
+  if (identity) {
+    headers.set("X-ELMOS-Organization-ID", identity.organizationId);
+    headers.set("X-ELMOS-Actor-ID", identity.actorId);
+  }
   let body: string | undefined;
   if (method === "POST") {
     headers.set("content-type", "application/json");

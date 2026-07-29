@@ -165,7 +165,7 @@ function runnerConfig(): TranslationRunnerConfig {
 }
 
 export function authorizeTranslation(request: NextRequest): AuthorizedContext {
-  return authorizeLocalRunner(request);
+  return authorizeLocalRunner(request, "translation:execute");
 }
 
 function jobRoot(

@@ -21,15 +21,15 @@ export async function GET(request: import("next/server").NextRequest) {
       { status: 200, headers: { "cache-control": "no-store" } },
     );
   }
-  const authenticationFailure = authenticateSpringProxy(request);
-  if (authenticationFailure) return authenticationFailure;
+  const authentication = authenticateSpringProxy(request);
+  if (authentication instanceof Response) return authentication;
   try {
     const upstream = await fetch(
       `${configuration.controlPlaneBase}/api/v1/github/repositories`,
       {
         headers: {
-          "X-ELMOS-Organization-ID": configuration.organizationId,
-          "X-ELMOS-Actor-ID": request.headers.get("x-elmos-actor") ?? "",
+          "X-ELMOS-Organization-ID": authentication.organizationId,
+          "X-ELMOS-Actor-ID": authentication.actorId,
         },
         cache: "no-store",
         signal: AbortSignal.timeout(15_000),

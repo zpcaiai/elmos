@@ -14,6 +14,7 @@ import { generationDeploymentGuidance } from "../lib/deploymentGuidance";
 import { Icon, type IconName } from "../components/Icon";
 import { RuntimeDeploymentGuide } from "../components/RuntimeDeploymentGuide";
 import { StatusChip } from "../components/StatusChip";
+import { useAccountSession } from "../components/AccountSessionProvider";
 
 type GenerationIntent = {
   name: string;
@@ -159,6 +160,7 @@ function buildWorkflowCommands(draft: GenerationIntent): WorkflowCommand[] {
 }
 
 export function ProjectGenerationStudio() {
+  const account = useAccountSession();
   const [name, setName] = useState("order-service");
   const [namespace, setNamespace] = useState("io.elmos.orders");
   const [description, setDescription] = useState("提供订单创建、查询与状态管理的服务");
@@ -192,6 +194,15 @@ export function ProjectGenerationStudio() {
   const [targetError, setTargetError] = useState("");
   const feedbackTimer = useRef<number | null>(null);
   const sourceFileInput = useRef<HTMLInputElement | null>(null);
+  const accountRunner = account.status === "authenticated"
+    && account.principal?.permissions.includes("generation:execute") === true;
+  const runnerCredentialReady = accountRunner || runnerToken.length >= 24;
+
+  useEffect(() => {
+    if (!accountRunner || !account.principal) return;
+    setTenantId(account.principal.organizationId);
+    setReviewer(account.principal.actorId);
+  }, [account.principal, accountRunner]);
 
   const selectedProfiles = useMemo(
     () => generationTargets.filter((profile) => targets.includes(profile.id)),
@@ -321,7 +332,7 @@ export function ProjectGenerationStudio() {
   }, []);
 
   useEffect(() => {
-    if (!job || !runnerToken) return;
+    if (!job || !runnerCredentialReady) return;
     const active = !["COMPLETED", "PARTIAL", "BLOCKED", "CANCELLED"].includes(job.status)
       || ["STARTING", "RUNNING"].includes(job.runtime.status);
     if (!active) return;
@@ -331,7 +342,7 @@ export function ProjectGenerationStudio() {
         .catch(() => undefined);
     }, 1200);
     return () => window.clearInterval(timer);
-  }, [job?.id, job?.status, job?.runtime.status, runnerToken, tenantId]);
+  }, [job?.id, job?.status, job?.runtime.status, runnerCredentialReady, tenantId]);
 
   function announce(message: string) {
     if (feedbackTimer.current !== null) window.clearTimeout(feedbackTimer.current);
@@ -357,8 +368,8 @@ export function ProjectGenerationStudio() {
   }
 
   async function ingestSources() {
-    if (!runnerToken) {
-      announce("解析文件、Skill 或在线 HTML 前，请先输入本地 Runner 短期令牌。");
+    if (!runnerCredentialReady) {
+      announce("解析文件、Skill 或在线 HTML 前，请先登录具备生成权限的账户或输入本地短期令牌。");
       return;
     }
     if (
@@ -392,7 +403,7 @@ export function ProjectGenerationStudio() {
       const response = await fetch("/api/generation/sources", {
         method: "POST",
         cache: "no-store",
-        headers: {
+        headers: accountRunner ? undefined : {
           "Authorization": `Bearer ${runnerToken}`,
           "X-ELMOS-Tenant": tenantId.trim(),
           "X-ELMOS-Actor": reviewer.trim(),
@@ -546,9 +557,11 @@ export function ProjectGenerationStudio() {
       cache: "no-store",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${runnerToken}`,
-        "X-ELMOS-Tenant": requestTenantId,
-        "X-ELMOS-Actor": actor,
+        ...(!accountRunner ? {
+          "Authorization": `Bearer ${runnerToken}`,
+          "X-ELMOS-Tenant": requestTenantId,
+          "X-ELMOS-Actor": actor,
+        } : {}),
         ...init?.headers,
       },
     });
@@ -563,8 +576,8 @@ export function ProjectGenerationStudio() {
       announce("请输入完整、有效的任务 UUID。");
       return;
     }
-    if (!runnerToken) {
-      announce("恢复任务需要重新输入短期 Runner 令牌；令牌不会持久化。");
+    if (!runnerCredentialReady) {
+      announce("恢复任务需要企业账户会话或本地短期 Runner 令牌。");
       return;
     }
     setRunnerBusy(true);
@@ -590,8 +603,8 @@ export function ProjectGenerationStudio() {
       announce("请先锁定当前项目意图。");
       return;
     }
-    if (!runnerToken) {
-      announce("请输入本地 Runner 的短期访问令牌后再分析需求。");
+    if (!runnerCredentialReady) {
+      announce("请先登录具备生成权限的账户或输入本地短期 Runner 令牌。");
       return;
     }
     setRunnerBusy(true);
@@ -639,8 +652,8 @@ export function ProjectGenerationStudio() {
       );
       return;
     }
-    if (!runnerToken) {
-      announce("请输入本地 Runner 的短期访问令牌；令牌只保存在当前页面内存中。");
+    if (!runnerCredentialReady) {
+      announce("请先登录具备生成权限的账户或输入本地短期 Runner 令牌。");
       return;
     }
     setRunnerBusy(true);
@@ -699,7 +712,7 @@ export function ProjectGenerationStudio() {
     try {
       const response = await fetch(`/api/generation/jobs/${job.id}/artifact`, {
         cache: "no-store",
-        headers: {
+        headers: accountRunner ? undefined : {
           "Authorization": `Bearer ${runnerToken}`,
           "X-ELMOS-Tenant": job.tenantId,
           "X-ELMOS-Actor": job.actor,
@@ -811,7 +824,7 @@ export function ProjectGenerationStudio() {
             <label className="generation-field"><span>命名空间</span><input value={namespace} onChange={(event) => { setNamespace(event.target.value); invalidateDraft(); }} required pattern={"[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+"} autoComplete="off" aria-describedby="namespace-hint" /><small id="namespace-hint">稳定的点分命名空间，例如 io.elmos.orders</small></label>
             <label className="generation-field generation-field-wide"><span>项目说明</span><textarea value={description} onChange={(event) => updateDescription(event.target.value)} required rows={9} maxLength={32_000} aria-describedby="description-hint" /><small id="description-hint">最多 32,000 字；可直接写简述，也可在下方导入多种来源。建议保留“实体 / 字段 / 关系 / 规则 / 权限”标记；不要上传凭证、生产数据或无授权客户代码。</small></label>
             <label className="generation-field"><span>核心实体</span><input value={entity} onChange={(event) => { setEntity(event.target.value); invalidateDraft(); }} required pattern={"[a-z][a-z0-9_]{1,62}[a-z0-9]"} autoComplete="off" aria-describedby="entity-hint" /><small id="entity-hint">可在描述中继续写“实体: order, customer”和字段定义；默认生成内存 API starter。</small></label>
-            <label className="generation-field"><span>审批者标识</span><input value={reviewer} onChange={(event) => { setReviewer(event.target.value); invalidateDraft(); }} required pattern={"[A-Za-z0-9](?:[A-Za-z0-9._:@]|/|-){2,199}"} autoComplete="off" aria-describedby="reviewer-hint" /><small id="reviewer-hint">必须与短期 Runner 凭证绑定的 Actor 完全一致；不填写密钥或邮箱凭证。</small></label>
+            <label className="generation-field"><span>审批者标识</span><input value={reviewer} onChange={(event) => { setReviewer(event.target.value); invalidateDraft(); }} required readOnly={accountRunner} pattern={"[A-Za-z0-9](?:[A-Za-z0-9._:@]|/|-){2,199}"} autoComplete="off" aria-describedby="reviewer-hint" /><small id="reviewer-hint">{accountRunner ? "来自已验证企业账户，不能在请求中覆盖。" : "必须与短期 Runner 凭证绑定的 Actor 完全一致；不填写密钥或邮箱凭证。"}</small></label>
             <label className="generation-field" htmlFor="generation-persistence">
               <span>数据配置</span>
               <select id="generation-persistence" value={persistence} onChange={(event) => {
@@ -841,8 +854,12 @@ export function ProjectGenerationStudio() {
               </select>
               <small>身份必须包含 issuer、audience、subject、tenant_id 与 roles；权限默认拒绝。</small>
             </label>
-            <label className="generation-field"><span>租户标识</span><input value={tenantId} onChange={(event) => setTenantId(event.target.value)} required pattern={"[a-z][a-z0-9\\-]{2,62}"} autoComplete="off" aria-describedby="tenant-hint" /><small id="tenant-hint">必须与短期 Runner 凭证绑定的租户完全一致；请求头不能自行切换租户。</small></label>
-            <label className="generation-field"><span>本地 Runner 令牌</span><input type="password" value={runnerToken} onChange={(event) => setRunnerToken(event.target.value)} minLength={24} autoComplete="off" aria-describedby="runner-token-hint" /><small id="runner-token-hint">仅保存在当前页面内存，不写入草稿、日志或生成项目。</small></label>
+            <label className="generation-field"><span>租户标识</span><input value={tenantId} onChange={(event) => setTenantId(event.target.value)} required readOnly={accountRunner} pattern={accountRunner ? undefined : "[a-z][a-z0-9\\-]{2,62}"} autoComplete="off" aria-describedby="tenant-hint" /><small id="tenant-hint">{accountRunner ? "来自已验证 organization_id；切换租户请使用账户菜单。" : "必须与短期 Runner 凭证绑定的租户完全一致；请求头不能自行切换租户。"}</small></label>
+            {accountRunner ? (
+              <div className="generation-field locked-target"><span>账户授权</span><strong>企业 OIDC · generation:execute</strong><small>访问令牌保存在 HttpOnly Cookie，页面脚本不可读取。</small></div>
+            ) : (
+              <label className="generation-field"><span>本地 Runner 令牌</span><input type="password" value={runnerToken} onChange={(event) => setRunnerToken(event.target.value)} minLength={24} autoComplete="off" aria-describedby="runner-token-hint" /><small id="runner-token-hint">仅限本地开发；仅保存在当前页面内存，不写入草稿、日志或生成项目。</small></label>
+            )}
             <section className="generation-source-studio generation-field-wide" aria-labelledby="generation-source-title">
               <div className="generation-source-heading">
                 <div>

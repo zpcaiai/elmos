@@ -242,7 +242,7 @@ export function UserActivityCollector() {
 
     function handleClick(event: MouseEvent) {
       const target = event.target instanceof Element
-        ? event.target.closest("button, a, [role='button'], input, select, summary")
+        ? event.target.closest("button, a, [role='button'], summary, [data-operation-id]")
         : null;
       if (!target || target.closest("[data-telemetry-ignore='true']")) return;
       enqueue({
@@ -254,20 +254,13 @@ export function UserActivityCollector() {
     }
 
     function handleSubmit(event: SubmitEvent) {
-      enqueue({
-        eventKind: "USER_ACTION",
-        action: "FORM_SUBMIT",
-        target: stableTarget(event.target instanceof Element ? event.target : null),
-        result: "SUCCESS",
-      });
-    }
-
-    function handleChange(event: Event) {
-      const target = event.target instanceof Element ? event.target : null;
+      const target = event.target instanceof Element
+        ? event.target.closest("form, [data-operation-id]")
+        : null;
       if (!target || target.closest("[data-telemetry-ignore='true']")) return;
       enqueue({
         eventKind: "USER_ACTION",
-        action: "FIELD_CHANGE",
+        action: "FORM_SUBMIT",
         target: stableTarget(target),
         result: "SUCCESS",
       });
@@ -368,7 +361,6 @@ export function UserActivityCollector() {
 
     document.addEventListener("click", handleClick, true);
     document.addEventListener("submit", handleSubmit, true);
-    document.addEventListener("change", handleChange, true);
     window.addEventListener("error", handleError);
     window.addEventListener("unhandledrejection", handleRejection);
     window.addEventListener("elmos:route-change", handleRouteChange);
@@ -421,7 +413,6 @@ export function UserActivityCollector() {
       window.clearInterval(timer);
       document.removeEventListener("click", handleClick, true);
       document.removeEventListener("submit", handleSubmit, true);
-      document.removeEventListener("change", handleChange, true);
       document.removeEventListener("visibilitychange", onVisibility);
       window.removeEventListener("error", handleError);
       window.removeEventListener("unhandledrejection", handleRejection);

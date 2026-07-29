@@ -5,6 +5,7 @@ import {
   proxyNotConfiguredResponse,
   springProxyConfiguration,
 } from "./proxyPolicy";
+import { withBusinessAudit } from "../../lib/server/operationsProxy";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -12,11 +13,31 @@ export const runtime = "nodejs";
 const maximumRequestBytes = 32_768;
 
 export async function POST(request: NextRequest) {
+  try {
+    return await withBusinessAudit(
+      request,
+      {
+        action: "SPRING_UPGRADE_CREATE",
+        businessLine: "SPRING_MODERNIZATION",
+        route: "/api/spring-upgrades",
+        target: "spring-upgrade",
+      },
+      () => start(request),
+    );
+  } catch {
+    return Response.json(
+      { errorCode: "BUSINESS_AUDIT_UNAVAILABLE", message: "业务审计不可用，未启动迁移。", retryable: true },
+      { status: 503, headers: { "cache-control": "no-store" } },
+    );
+  }
+}
+
+async function start(request: NextRequest) {
   const configuration = springProxyConfiguration();
   if (!configuration.configured) return proxyNotConfiguredResponse();
-  const authenticationFailure = authenticateSpringProxy(request);
-  if (authenticationFailure) return authenticationFailure;
-  const actorId = request.headers.get("x-elmos-actor") ?? "";
+  const authentication = authenticateSpringProxy(request);
+  if (authentication instanceof Response) return authentication;
+  const { actorId, organizationId } = authentication;
   let input: Record<string, unknown>;
   try {
     const body = await request.text();
@@ -36,22 +57,26 @@ export async function POST(request: NextRequest) {
   }
 
   if (input.sourceMode === "GITHUB_APP") {
-    return startFromGitHubApp(input, actorId);
+    return startFromGitHubApp(input, organizationId, actorId);
   }
   return forward(`${configuration.engineBase}/engine/v1/spring-upgrades`, {
     method: "POST",
     headers: {
       "content-type": "application/json",
-      "X-ELMOS-Organization-ID": configuration.organizationId,
+      "X-ELMOS-Organization-ID": organizationId,
       "X-ELMOS-Actor-ID": actorId,
     },
-    body: JSON.stringify({ ...input, organizationId: configuration.organizationId }),
+    body: JSON.stringify({ ...input, organizationId }),
     cache: "no-store",
     signal: AbortSignal.timeout(30_000),
   });
 }
 
-async function startFromGitHubApp(input: Record<string, unknown>, actorId: string) {
+async function startFromGitHubApp(
+  input: Record<string, unknown>,
+  organizationId: string,
+  actorId: string,
+) {
   const configuration = githubAppProxyConfiguration();
   if (!configuration) {
     return Response.json(
@@ -109,7 +134,7 @@ async function startFromGitHubApp(input: Record<string, unknown>, actorId: strin
         method: "POST",
         headers: {
           "content-type": "application/json",
-          "X-ELMOS-Organization-ID": configuration.organizationId,
+          "X-ELMOS-Organization-ID": organizationId,
           "X-ELMOS-Actor-ID": actorId,
         },
         body: JSON.stringify({
@@ -169,11 +194,11 @@ async function startFromGitHubApp(input: Record<string, unknown>, actorId: strin
     method: "POST",
     headers: {
       "content-type": "application/json",
-      "X-ELMOS-Organization-ID": configuration.organizationId,
+      "X-ELMOS-Organization-ID": organizationId,
       "X-ELMOS-Actor-ID": actorId,
     },
     body: JSON.stringify({
-      organizationId: configuration.organizationId,
+      organizationId,
       sourceMode: "MATERIALIZED_SNAPSHOT",
       repositoryUrl: `https://github.com/${materialized.repositoryFullName}.git`,
       requestedRef: materialized.snapshot.requestedRef,

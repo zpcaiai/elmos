@@ -18,8 +18,8 @@ export async function POST(request: import("next/server").NextRequest) {
       { status: 503, headers: { "cache-control": "no-store" } },
     );
   }
-  const authenticationFailure = authenticateSpringProxy(request);
-  if (authenticationFailure) return authenticationFailure;
+  const authentication = authenticateSpringProxy(request);
+  if (authentication instanceof Response) return authentication;
   try {
     const upstream = await fetch(
       `${configuration.controlPlaneBase}/api/v1/github/installations/connect`,
@@ -27,8 +27,8 @@ export async function POST(request: import("next/server").NextRequest) {
         method: "POST",
         headers: {
           "content-type": "application/json",
-          "X-ELMOS-Organization-ID": configuration.organizationId,
-          "X-ELMOS-Actor-ID": request.headers.get("x-elmos-actor") ?? "",
+          "X-ELMOS-Organization-ID": authentication.organizationId,
+          "X-ELMOS-Actor-ID": authentication.actorId,
         },
         body: "{}",
         cache: "no-store",

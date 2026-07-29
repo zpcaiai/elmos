@@ -1,7 +1,13 @@
 import { createHash, randomUUID, timingSafeEqual } from "node:crypto";
 import type { NextRequest } from "next/server";
+import {
+  accountCookieNames,
+  AccountSessionError,
+  accountSessionFromRequest,
+  unsafeCookieValue,
+  type AccountPermission,
+} from "./accountSession";
 
-const sessionCookieName = "__Host-elmos_access_token";
 const maximumBodyBytes = 3 * 1024 * 1024;
 const maximumControlPlaneResponseBytes = 16 * 1024 * 1024;
 const maximumGenerationRepositoryFiles = 8;
@@ -102,13 +108,43 @@ function controlPlaneBaseUrl(): string {
   return parsed.toString().replace(/\/$/, "");
 }
 
-function authorizeBrowser(request: NextRequest): void {
+type RepositoryActorContext = {
+  organizationId: string;
+  actorId: string;
+  accessToken?: string;
+};
+
+function authorizeBrowser(
+  request: NextRequest,
+  permission: AccountPermission,
+): RepositoryActorContext {
+  if (unsafeCookieValue(request, accountCookieNames.session)) {
+    try {
+      const account = accountSessionFromRequest(request, permission);
+      return {
+        organizationId: account.principal.organizationId,
+        actorId: account.principal.actorId,
+        accessToken: account.accessToken,
+      };
+    } catch (error) {
+      if (error instanceof AccountSessionError) {
+        throw new RepositoryWorkspaceProxyError(error.status, error.code, error.message);
+      }
+      throw error;
+    }
+  }
+  if (process.env.NODE_ENV === "production") {
+    throw new RepositoryWorkspaceProxyError(
+      401,
+      "ACCOUNT_SESSION_REQUIRED",
+      "请先登录企业账户。",
+    );
+  }
   const configured = requiredEnvironment("ELMOS_REPOSITORY_WORKSPACE_USER_TOKEN", 24);
   const authorization = request.headers.get("authorization") ?? "";
   const headerToken = authorization.startsWith("Bearer ") ? authorization.slice(7) : "";
-  const presented = request.cookies.get(sessionCookieName)?.value || headerToken;
   const expectedHash = createHash("sha256").update(configured).digest();
-  const presentedHash = createHash("sha256").update(presented).digest();
+  const presentedHash = createHash("sha256").update(headerToken).digest();
   if (!timingSafeEqual(expectedHash, presentedHash)) {
     throw new RepositoryWorkspaceProxyError(
       401,
@@ -116,6 +152,10 @@ function authorizeBrowser(request: NextRequest): void {
       "需要有效会话才能访问仓库工作区。",
     );
   }
+  return {
+    organizationId: requiredEnvironment("ELMOS_REPOSITORY_WORKSPACE_TENANT_ID"),
+    actorId: requiredEnvironment("ELMOS_REPOSITORY_WORKSPACE_ACTOR_ID"),
+  };
 }
 
 function validatePath(parts: string[], search: URLSearchParams): string {
@@ -149,14 +189,18 @@ function validatePath(parts: string[], search: URLSearchParams): string {
   );
 }
 
-function trustedHeaders(): Headers {
-  return new Headers({
+function trustedHeaders(context: RepositoryActorContext): Headers {
+  const headers = new Headers({
     "Accept": "application/json",
-    "X-ELMOS-Repository-Key": requiredEnvironment("ELMOS_REPOSITORY_WORKSPACE_API_KEY", 24),
-    "X-ELMOS-Organization-ID": requiredEnvironment("ELMOS_REPOSITORY_WORKSPACE_TENANT_ID"),
-    "X-ELMOS-Actor-ID": requiredEnvironment("ELMOS_REPOSITORY_WORKSPACE_ACTOR_ID"),
+    "X-ELMOS-Repository-Key": context.accessToken
+      ? "OIDC"
+      : requiredEnvironment("ELMOS_REPOSITORY_WORKSPACE_API_KEY", 24),
+    "X-ELMOS-Organization-ID": context.organizationId,
+    "X-ELMOS-Actor-ID": context.actorId,
     "X-Request-ID": randomUUID(),
   });
+  if (context.accessToken) headers.set("Authorization", `Bearer ${context.accessToken}`);
+  return headers;
 }
 
 function safeRepositoryFilePath(value: string): string {
@@ -178,12 +222,15 @@ function safeRepositoryFilePath(value: string): string {
   return candidate;
 }
 
-async function controlPlaneJson<T>(targetPath: string): Promise<T> {
+async function controlPlaneJson<T>(
+  targetPath: string,
+  context: RepositoryActorContext,
+): Promise<T> {
   let response: Response;
   try {
     response = await fetch(`${controlPlaneBaseUrl()}/api/v1/repository-workspaces${targetPath}`, {
       method: "GET",
-      headers: trustedHeaders(),
+      headers: trustedHeaders(context),
       cache: "no-store",
       redirect: "error",
       signal: AbortSignal.timeout(requestTimeoutMs),
@@ -254,18 +301,15 @@ function repositoryMediaType(filePath: string): string {
 export async function repositoryGenerationSources(input: {
   tenantId: string;
   actor: string;
+  accessToken?: string;
   workspaceId: string;
   paths?: string[];
 }): Promise<RepositoryGenerationSource[]> {
-  const configuredTenant = requiredEnvironment("ELMOS_REPOSITORY_WORKSPACE_TENANT_ID");
-  const configuredActor = requiredEnvironment("ELMOS_REPOSITORY_WORKSPACE_ACTOR_ID");
-  if (input.tenantId !== configuredTenant || input.actor !== configuredActor) {
-    throw new RepositoryWorkspaceProxyError(
-      403,
-      "REPOSITORY_GENERATION_IDENTITY_MISMATCH",
-      "仓库工作区与项目生成器的租户或操作者身份不一致。",
-    );
-  }
+  const context = {
+    organizationId: input.tenantId,
+    actorId: input.actor,
+    accessToken: input.accessToken,
+  };
   if (!workspaceIdPattern.test(input.workspaceId)) {
     throw new RepositoryWorkspaceProxyError(
       400,
@@ -273,7 +317,10 @@ export async function repositoryGenerationSources(input: {
       "仓库工作区 ID 无效。",
     );
   }
-  const snapshot = await controlPlaneJson<RepositoryWorkspaceSnapshot>(`/${input.workspaceId}`);
+  const snapshot = await controlPlaneJson<RepositoryWorkspaceSnapshot>(
+    `/${input.workspaceId}`,
+    context,
+  );
   if (
     snapshot.workspaceId !== input.workspaceId
     || snapshot.completeness !== "COMPLETE"
@@ -322,6 +369,7 @@ export async function repositoryGenerationSources(input: {
     const filePath = safeRepositoryFilePath(entry.path);
     const content = await controlPlaneJson<RepositoryFileContent>(
       `/${input.workspaceId}/files?${new URLSearchParams({ path: filePath })}`,
+      context,
     );
     const raw = Buffer.from(content.content, "utf8");
     const digest = createHash("sha256").update(raw).digest("hex");
@@ -364,17 +412,14 @@ export async function repositoryWorkspaceRequest(
   request: NextRequest,
   parts: string[],
 ): Promise<Response> {
-  authorizeBrowser(request);
   const method = request.method;
   if (!["GET", "POST", "DELETE"].includes(method)) {
     throw new RepositoryWorkspaceProxyError(405, "REPOSITORY_METHOD_NOT_ALLOWED", "请求方法不受支持。");
   }
-  if (method !== "GET" && request.cookies.has(sessionCookieName)) {
-    const origin = request.headers.get("origin");
-    if (!origin || origin !== request.nextUrl.origin) {
-      throw new RepositoryWorkspaceProxyError(403, "REPOSITORY_ORIGIN_INVALID", "仓库写操作来源校验失败。");
-    }
-  }
+  const actor = authorizeBrowser(
+    request,
+    method === "GET" ? "repository:read" : "repository:write",
+  );
   const targetPath = validatePath(parts, request.nextUrl.searchParams);
   if (method === "POST" && targetPath !== "" && !targetPath.endsWith("/changes")) {
     throw new RepositoryWorkspaceProxyError(405, "REPOSITORY_METHOD_NOT_ALLOWED", "请求方法不受支持。");
@@ -394,7 +439,7 @@ export async function repositoryWorkspaceRequest(
       throw new RepositoryWorkspaceProxyError(400, "REPOSITORY_REQUEST_INVALID", "请求不是有效 JSON。");
     }
   }
-  const headers = trustedHeaders();
+  const headers = trustedHeaders(actor);
   if (body !== undefined) headers.set("Content-Type", "application/json");
   try {
     return await fetch(`${controlPlaneBaseUrl()}/api/v1/repository-workspaces${targetPath}`, {

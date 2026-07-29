@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "1.0.0",
+  "forbiddenPayloads": [
+    {"input_value": "sk-live-secret"},
+    {"token": "bearer-secret"},
+    {"authorization": "Bearer secret"},
+    {"cookie": "session=secret"},
+    {"query_string": "?email=user@example.com"},
+    {"request_body": "source code"},
+    {"response_body": "customer data"},
+    {"error_message": "path /Users/example/private"},
+    {"stack": "raw stack trace"},
+    {"raw_ip": "203.0.113.10"},
+    {"raw_user_agent": "browser fingerprint"}
+  ]
+}

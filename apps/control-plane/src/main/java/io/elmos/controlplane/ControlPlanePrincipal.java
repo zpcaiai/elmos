@@ -1,0 +1,200 @@
+package io.elmos.controlplane;
+
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.regex.Pattern;
+
+record ControlPlanePrincipal(
+        String organizationId,
+        String actorId,
+        Set<String> roles,
+        Set<String> permissions,
+        Map<String, TenantGrant> memberships
+) {
+    record TenantGrant(Set<String> roles, Set<String> permissions) {
+        TenantGrant {
+            roles = Set.copyOf(roles);
+            permissions = Set.copyOf(permissions);
+        }
+    }
+
+    private static final Pattern ORGANIZATION =
+            Pattern.compile("[A-Za-z0-9][A-Za-z0-9._:-]{0,127}");
+    private static final Pattern ACTOR =
+            Pattern.compile("[A-Za-z0-9][A-Za-z0-9._:@/-]{0,199}");
+    private static final Set<String> KNOWN_PERMISSIONS = Set.of(
+            "workspace:view", "spring:execute", "translation:execute",
+            "generation:execute", "repository:read", "repository:write",
+            "repository:commit", "repository:push", "repository:pr",
+            "usage:read", "billing:write", "admin:read", "admin:operate",
+            "admin:approve", "configuration:manage");
+    private static final Map<String, Set<String>> ROLE_PERMISSIONS = Map.of(
+            "VIEWER", Set.of("workspace:view", "repository:read", "usage:read"),
+            "DEVELOPER", Set.of(
+                    "workspace:view", "spring:execute", "translation:execute",
+                    "generation:execute", "repository:read", "repository:write",
+                    "repository:commit", "usage:read"),
+            "MAINTAINER", Set.of(
+                    "workspace:view", "spring:execute", "translation:execute",
+                    "generation:execute", "repository:read", "repository:write",
+                    "repository:commit", "repository:push", "repository:pr",
+                    "usage:read", "billing:write"),
+            "OPERATOR", Set.of(
+                    "workspace:view", "spring:execute", "translation:execute",
+                    "generation:execute", "repository:read", "repository:write",
+                    "repository:commit", "repository:push", "repository:pr",
+                    "usage:read", "billing:write", "admin:read", "admin:operate"),
+            "APPROVER", Set.of(
+                    "workspace:view", "spring:execute", "translation:execute",
+                    "generation:execute", "repository:read", "repository:write",
+                    "repository:commit", "repository:push", "repository:pr",
+                    "usage:read", "billing:write", "admin:read", "admin:operate",
+                    "admin:approve"),
+            "TENANT_ADMIN", KNOWN_PERMISSIONS);
+
+    ControlPlanePrincipal {
+        if (!ORGANIZATION.matcher(organizationId).matches()
+                || !ACTOR.matcher(actorId).matches()) {
+            throw new AccessDeniedException("CONTROL_PLANE_PRINCIPAL_INVALID");
+        }
+        roles = Set.copyOf(roles);
+        permissions = Set.copyOf(permissions);
+        memberships = Map.copyOf(memberships);
+        if (!memberships.containsKey(organizationId)) {
+            throw new AccessDeniedException("CONTROL_PLANE_PRIMARY_TENANT_MISSING");
+        }
+    }
+
+    static Optional<ControlPlanePrincipal> current() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!(authentication instanceof JwtAuthenticationToken jwt)
+                || !authentication.isAuthenticated()) {
+            return Optional.empty();
+        }
+        Object organization = jwt.getToken().getClaims().get("organization_id");
+        String organizationId = organization instanceof String value ? value : "";
+        String actorId = jwt.getToken().getSubject();
+        Set<String> roles = roles(jwt.getToken().getClaims());
+        Set<String> permissions = effectivePermissions(
+                roles, explicitPermissions(jwt.getToken().getClaims()));
+        Map<String, TenantGrant> memberships = new java.util.LinkedHashMap<>();
+        memberships.put(organizationId, new TenantGrant(roles, permissions));
+        Object rawMemberships = jwt.getToken().getClaims().get("elmos_tenants");
+        if (rawMemberships instanceof Iterable<?> values) {
+            for (Object rawMembership : values) {
+                if (!(rawMembership instanceof Map<?, ?> membership)) continue;
+                Object rawOrganizationId = membership.get("organization_id");
+                if (!(rawOrganizationId instanceof String tenantId)
+                        || !ORGANIZATION.matcher(tenantId).matches()) {
+                    continue;
+                }
+                Set<String> tenantRoles = rolesFrom(membership.get("roles"));
+                Set<String> tenantPermissions = effectivePermissions(
+                        tenantRoles, explicitPermissions(membership));
+                memberships.put(tenantId, new TenantGrant(
+                        tenantRoles, tenantPermissions));
+            }
+        }
+        return Optional.of(new ControlPlanePrincipal(
+                organizationId, actorId, roles, permissions, memberships));
+    }
+
+    void require(String requestedOrganizationId, String requestedActorId, String permission) {
+        if (!actorId.equals(requestedActorId)) {
+            throw new AccessDeniedException("CONTROL_PLANE_SUBJECT_MISMATCH");
+        }
+        TenantGrant grant = memberships.get(requestedOrganizationId);
+        if (grant == null) {
+            throw new AccessDeniedException("CONTROL_PLANE_TENANT_MEMBERSHIP_REQUIRED");
+        }
+        if (!grant.permissions().contains(permission)) {
+            throw new AccessDeniedException("CONTROL_PLANE_PERMISSION_REQUIRED");
+        }
+    }
+
+    String adminRole() {
+        return adminRole(organizationId);
+    }
+
+    String adminRole(String requestedOrganizationId) {
+        TenantGrant grant = memberships.get(requestedOrganizationId);
+        if (grant == null) return "";
+        if (grant.permissions().contains("admin:approve")) return "APPROVER";
+        if (grant.permissions().contains("admin:operate")) return "OPERATOR";
+        if (grant.permissions().contains("admin:read")) return "VIEWER";
+        return "";
+    }
+
+    String auditOrganizationId(String requestedOrganizationId) {
+        if (requestedOrganizationId != null
+                && memberships.containsKey(requestedOrganizationId)) {
+            return requestedOrganizationId;
+        }
+        return organizationId;
+    }
+
+    private static Set<String> roles(Map<String, Object> claims) {
+        Object raw = claims.get("roles");
+        if (!(raw instanceof Iterable<?>)) {
+            Object realm = claims.get("realm_access");
+            if (realm instanceof Map<?, ?> values) raw = values.get("roles");
+        }
+        return rolesFrom(raw);
+    }
+
+    private static Set<String> rolesFrom(Object raw) {
+        Set<String> result = new LinkedHashSet<>();
+        if (raw instanceof Iterable<?> values) {
+            values.forEach(value -> {
+                String normalized = String.valueOf(value).trim().toUpperCase(Locale.ROOT);
+                if (ROLE_PERMISSIONS.containsKey(normalized)) result.add(normalized);
+            });
+        }
+        return result;
+    }
+
+    private static Set<String> explicitPermissions(Map<?, ?> claims) {
+        List<String> raw = new ArrayList<>();
+        Object permissions = claims.get("permissions");
+        if (permissions instanceof Iterable<?> values) {
+            values.forEach(value -> raw.add(String.valueOf(value)));
+        }
+        Object scope = claims.get("scope");
+        if (scope instanceof String value) raw.addAll(Arrays.asList(value.split("\\s+")));
+        Object scp = claims.get("scp");
+        if (scp instanceof Iterable<?> values) {
+            values.forEach(value -> raw.add(String.valueOf(value)));
+        }
+        Set<String> result = new LinkedHashSet<>();
+        raw.stream()
+                .map(String::trim)
+                .map(value -> value.startsWith("elmos:") ? value.substring(6) : value)
+                .filter(KNOWN_PERMISSIONS::contains)
+                .forEach(result::add);
+        return result;
+    }
+
+    private static Set<String> effectivePermissions(
+            Set<String> roles,
+            Set<String> explicitPermissions
+    ) {
+        Set<String> result = new LinkedHashSet<>();
+        roles.forEach(role -> result.addAll(
+                ROLE_PERMISSIONS.getOrDefault(role, Set.of())));
+        result.addAll(explicitPermissions);
+        result.retainAll(KNOWN_PERMISSIONS);
+        result.add("workspace:view");
+        return result;
+    }
+}

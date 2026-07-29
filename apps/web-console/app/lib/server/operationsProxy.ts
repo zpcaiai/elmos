@@ -1,5 +1,12 @@
 import { createHash, createHmac, randomUUID, timingSafeEqual } from "node:crypto";
 import type { UserActivityEvent } from "../operationsContracts";
+import {
+  AccountSessionError,
+  accountSessionFromRequest,
+  accountCookieNames,
+  unsafeCookieValue,
+  type AccountPermission,
+} from "./accountSession";
 
 const MAX_BODY_BYTES = 64 * 1024;
 const MAX_BATCH_SIZE = 50;
@@ -49,20 +56,46 @@ function controlPlaneBaseUrl(): string {
   return parsed.toString().replace(/\/$/, "");
 }
 
-function internalHeaders(requestId = randomUUID()): Record<string, string> {
+function internalHeaders(
+  requestId: string = randomUUID(),
+  administrator?: AdminPrincipal,
+): Record<string, string> {
   const configuredActor = process.env.ELMOS_OPERATIONS_ACTOR_ID?.trim();
-  const actor = configuredActor || (
+  const serviceActor = configuredActor || (
     process.env.NODE_ENV === "production"
       ? requiredEnvironment("ELMOS_OPERATIONS_ACTOR_ID")
       : "web-console-user"
   );
-  return {
+  const configuredTenant = administrator
+    ? administrator.organizationId
+    : requiredEnvironment("ELMOS_OPERATIONS_TENANT_ID");
+  if (
+    administrator
+    && !administrator.accessToken
+    && administrator.organizationId !== configuredTenant
+  ) {
+    throw new OperationsProxyError(
+      403,
+      "ADMIN_OBSERVABILITY_IDENTITY_MISMATCH",
+      "企业账户所选租户与运营控制面绑定不一致。",
+    );
+  }
+  const headers: Record<string, string> = {
     "Content-Type": "application/json",
-    "X-ELMOS-Operations-Key": requiredEnvironment("ELMOS_OPERATIONS_API_KEY", 24),
-    "X-ELMOS-Organization-ID": requiredEnvironment("ELMOS_OPERATIONS_TENANT_ID"),
-    "X-ELMOS-Actor-ID": actor,
+    "X-ELMOS-Operations-Key": administrator?.accessToken
+      ? "OIDC"
+      : requiredEnvironment("ELMOS_OPERATIONS_API_KEY", 24),
+    "X-ELMOS-Organization-ID": administrator?.organizationId ?? configuredTenant,
+    "X-ELMOS-Actor-ID": administrator?.actorId ?? serviceActor,
     "X-Request-ID": requestId,
   };
+  if (administrator) {
+    headers["X-ELMOS-Admin-Role"] = administrator.role;
+    if (administrator.accessToken) {
+      headers.Authorization = `Bearer ${administrator.accessToken}`;
+    }
+  }
+  return headers;
 }
 
 function safeString(value: unknown, field: string, maxLength: number): string {
@@ -187,7 +220,191 @@ export async function appendUserActivity(events: UserActivityEvent[]): Promise<R
   return response;
 }
 
-export function authorizeAdmin(authorization: string | null): void {
+export type BusinessAuditDescriptor = {
+  action: string;
+  businessLine: string;
+  route: string;
+  target: string;
+};
+
+function safeRequestIdentifier(request: Request): string {
+  const presented = request.headers.get("x-request-id");
+  return presented && IDENTIFIER_PATTERN.test(presented) && presented.length <= 128
+    ? presented
+    : randomUUID();
+}
+
+async function appendBusinessAuditEvent(
+  request: Request,
+  requestId: string,
+  descriptor: BusinessAuditDescriptor,
+  phase: "ATTEMPT" | "COMPLETION",
+  result: UserActivityEvent["result"],
+  status: number | null,
+  startedAt: number,
+): Promise<void> {
+  let administrator: AdminPrincipal | undefined;
+  try {
+    const account = accountSessionFromRequest(request);
+    administrator = {
+      role: "VIEWER",
+      organizationId: account.principal.organizationId,
+      actorId: account.principal.actorId,
+      authentication: "OIDC_SESSION",
+      accessToken: account.accessToken,
+    };
+  } catch (error) {
+    if (process.env.NODE_ENV === "production") throw error;
+  }
+  const now = Date.now();
+  const event: UserActivityEvent = {
+    eventId: randomUUID(),
+    sessionId: requestId,
+    eventKind: phase === "ATTEMPT" ? "BUSINESS_ATTEMPT" : "BUSINESS_OPERATION",
+    action: token(descriptor.action, "action", 64),
+    businessLine: token(descriptor.businessLine, "businessLine", 64),
+    route: stripQuery(safeString(descriptor.route, "route", 160)),
+    target: safeString(descriptor.target, "target", 160),
+    occurredAt: new Date(now).toISOString(),
+    durationMs: phase === "COMPLETION" ? Math.min(3_600_000, now - startedAt) : undefined,
+    result,
+    errorCode: status !== null && status >= 400 ? `HTTP_${status}` : undefined,
+    metadata: {
+      PHASE: phase,
+      SERVER_SIDE: "true",
+    },
+  };
+  const response = await fetch(
+    `${controlPlaneBaseUrl()}/api/v1/operations-observability/audit-events`,
+    {
+      method: "POST",
+      headers: internalHeaders(requestId, administrator),
+      body: JSON.stringify({ events: [event] }),
+      cache: "no-store",
+      signal: AbortSignal.timeout(5_000),
+    },
+  );
+  if (!response.ok) {
+    throw new OperationsProxyError(
+      response.status >= 400 && response.status < 500 ? response.status : 503,
+      "BUSINESS_AUDIT_UNAVAILABLE",
+      "业务操作审计未能持久化。",
+    );
+  }
+}
+
+export async function withBusinessAudit(
+  request: Request,
+  descriptor: BusinessAuditDescriptor,
+  operation: () => Promise<Response>,
+): Promise<Response> {
+  const startedAt = Date.now();
+  const requestId = safeRequestIdentifier(request);
+  const required = process.env.NODE_ENV === "production"
+    || process.env.ELMOS_BUSINESS_AUDIT_REQUIRED === "true";
+  try {
+    await appendBusinessAuditEvent(
+      request, requestId, descriptor, "ATTEMPT", "SUCCESS", null, startedAt,
+    );
+  } catch (error) {
+    if (required) throw error;
+  }
+  let response: Response;
+  try {
+    response = await operation();
+  } catch (error) {
+    try {
+      await appendBusinessAuditEvent(
+        request, requestId, descriptor, "COMPLETION", "FAILURE", 500, startedAt,
+      );
+    } catch {
+      // Preserve the original operation failure; the attempt is durable when required.
+    }
+    throw error;
+  }
+  try {
+    await appendBusinessAuditEvent(
+      request,
+      requestId,
+      descriptor,
+      "COMPLETION",
+      response.ok ? "SUCCESS" : "FAILURE",
+      response.status,
+      startedAt,
+    );
+  } catch (error) {
+    if (required && response.ok) {
+      return Response.json(
+        {
+          status: "BLOCKED",
+          reason: "BUSINESS_AUDIT_COMPLETION_UNAVAILABLE",
+          operationMayHaveCompleted: true,
+        },
+        { status: 503, headers: { "Cache-Control": "no-store" } },
+      );
+    }
+  }
+  return response;
+}
+
+export type AdminRole = "VIEWER" | "OPERATOR" | "APPROVER";
+export type AdminPrincipal = {
+  role: AdminRole;
+  organizationId: string;
+  actorId: string;
+  authentication: "OIDC_SESSION" | "BREAK_GLASS_TOKEN";
+  accessToken?: string;
+};
+
+const adminRoleRank: Record<AdminRole, number> = {
+  VIEWER: 1,
+  OPERATOR: 2,
+  APPROVER: 3,
+};
+
+export function authorizeAdmin(
+  request: Request,
+  requiredRole: AdminRole = "VIEWER",
+): AdminPrincipal {
+  const permission: Record<AdminRole, AccountPermission> = {
+    VIEWER: "admin:read",
+    OPERATOR: "admin:operate",
+    APPROVER: "admin:approve",
+  };
+  const hasAccountSession = Boolean(
+    unsafeCookieValue(request, accountCookieNames.session),
+  );
+  if (hasAccountSession) {
+    try {
+      const session = accountSessionFromRequest(request, permission[requiredRole]);
+      const permissions = new Set(session.principal.permissions);
+      const role: AdminRole = permissions.has("admin:approve")
+        ? "APPROVER"
+        : permissions.has("admin:operate") ? "OPERATOR" : "VIEWER";
+      return {
+        role,
+        organizationId: session.principal.organizationId,
+        actorId: session.principal.actorId,
+        authentication: "OIDC_SESSION",
+        accessToken: session.accessToken,
+      };
+    } catch (error) {
+      if (error instanceof AccountSessionError) {
+        throw new OperationsProxyError(error.status, error.code, error.message);
+      }
+      throw error;
+    }
+  }
+  if (
+    process.env.NODE_ENV === "production"
+    && process.env.ELMOS_ADMIN_ALLOW_TOKEN_FALLBACK !== "true"
+  ) {
+    throw new OperationsProxyError(
+      401,
+      "ACCOUNT_SESSION_REQUIRED",
+      "生产管理端要求企业账户会话。",
+    );
+  }
   const configured = requiredEnvironment("ELMOS_ADMIN_OBSERVABILITY_TOKEN", 24);
   const expiresAt = requiredEnvironment("ELMOS_ADMIN_OBSERVABILITY_TOKEN_EXPIRES_AT");
   const boundTenant = requiredEnvironment("ELMOS_ADMIN_OBSERVABILITY_TENANT_ID");
@@ -217,15 +434,33 @@ export function authorizeAdmin(authorization: string | null): void {
       "管理端令牌身份绑定无效。",
     );
   }
+  const authorization = request.headers.get("authorization");
   const presented = authorization?.startsWith("Bearer ") ? authorization.slice(7) : "";
   const left = createHash("sha256").update(configured).digest();
   const right = createHash("sha256").update(presented).digest();
   if (!timingSafeEqual(left, right)) {
     throw new OperationsProxyError(403, "ADMIN_OBSERVABILITY_FORBIDDEN", "管理端令牌无效。");
   }
+  const configuredRole = requiredEnvironment("ELMOS_ADMIN_OBSERVABILITY_ROLE").toUpperCase();
+  if (!Object.hasOwn(adminRoleRank, configuredRole)) {
+    throw new OperationsProxyError(503, "ADMIN_OBSERVABILITY_ROLE_NOT_CONFIGURED", "管理端角色未正确配置。");
+  }
+  const role = configuredRole as AdminRole;
+  if (adminRoleRank[role] < adminRoleRank[requiredRole]) {
+    throw new OperationsProxyError(403, "ADMIN_OBSERVABILITY_ROLE_INSUFFICIENT", "当前管理端角色无权执行该操作。");
+  }
+  return {
+    role,
+    organizationId: boundTenant,
+    actorId: boundActor,
+    authentication: "BREAK_GLASS_TOKEN",
+  };
 }
 
-export async function fetchActivitySummary(search: URLSearchParams): Promise<Response> {
+export async function fetchOperationsConsole(
+  search: URLSearchParams,
+  administrator: AdminPrincipal,
+): Promise<Response> {
   const hours = boundedInteger(search.get("hours"), 24, 1, 744);
   const limit = boundedInteger(search.get("limit"), 50, 1, 200);
   const businessLine = filterToken(search.get("businessLine"));
@@ -236,10 +471,27 @@ export async function fetchActivitySummary(search: URLSearchParams): Promise<Res
     businessLine,
     result,
   });
-  return fetch(`${controlPlaneBaseUrl()}/api/v1/operations-observability/summary?${query}`, {
-    headers: internalHeaders(),
+  return fetch(`${controlPlaneBaseUrl()}/api/v1/operations-observability/console?${query}`, {
+    headers: internalHeaders(randomUUID(), administrator),
     cache: "no-store",
     signal: AbortSignal.timeout(5_000),
+  });
+}
+
+export async function mutateOperations(
+  path: string,
+  body: Record<string, unknown>,
+  administrator: AdminPrincipal,
+): Promise<Response> {
+  if (!/^\/(?:evaluate|alerts\/[A-Za-z0-9._:-]+\/acknowledge|incidents\/[A-Za-z0-9._:-]+\/(?:assign|resolve)|remediations\/[A-Za-z0-9._:-]+\/(?:decision|prepare-scm)|retention\/enforce)$/.test(path)) {
+    throw new OperationsProxyError(400, "ADMIN_OPERATION_INVALID", "管理操作不在允许清单中。");
+  }
+  return fetch(`${controlPlaneBaseUrl()}/api/v1/operations-observability${path}`, {
+    method: "POST",
+    headers: internalHeaders(randomUUID(), administrator),
+    body: JSON.stringify(body),
+    cache: "no-store",
+    signal: AbortSignal.timeout(10_000),
   });
 }
 

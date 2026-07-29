@@ -20,11 +20,24 @@ spring:
     problemdetails:
       enabled: true
 elmos:
+  identity:
+    issuer-uri: ${ELMOS_OIDC_ISSUER_URI:}
+    jwk-set-uri: ${ELMOS_OIDC_JWKS_URI:}
+    audience: ${ELMOS_OIDC_AUDIENCE:}
   operations:
     api-key: ${ELMOS_OPERATIONS_API_KEY:}
     api-key-expires-at: ${ELMOS_OPERATIONS_API_KEY_EXPIRES_AT:}
     organization-id: ${ELMOS_OPERATIONS_TENANT_ID:}
     actor-id: ${ELMOS_OPERATIONS_ACTOR_ID:}
+    automation-enabled: ${ELMOS_OPERATIONS_AUTOMATION_ENABLED:false}
+    evaluation-interval-ms: ${ELMOS_OPERATIONS_EVALUATION_INTERVAL_MS:300000}
+    retention-enabled: ${ELMOS_OPERATIONS_RETENTION_ENABLED:false}
+    retention-days: ${ELMOS_OPERATIONS_RETENTION_DAYS:30}
+    retention-interval-ms: ${ELMOS_OPERATIONS_RETENTION_INTERVAL_MS:86400000}
+    notification-enabled: ${ELMOS_OPERATIONS_NOTIFICATION_ENABLED:false}
+    notification-webhook-url: ${ELMOS_OPERATIONS_NOTIFICATION_WEBHOOK_URL:}
+    notification-hmac-secret-file: ${ELMOS_OPERATIONS_NOTIFICATION_HMAC_SECRET_FILE:}
+    notification-interval-ms: ${ELMOS_OPERATIONS_NOTIFICATION_INTERVAL_MS:15000}
   repository-workspace:
     enabled: ${ELMOS_REPOSITORY_WORKSPACE_ENABLED:false}
     api-key: ${ELMOS_REPOSITORY_WORKSPACE_API_KEY:}
@@ -36,6 +49,8 @@ elmos:
     allowed-generic-hosts: ${ELMOS_REPOSITORY_ALLOWED_GENERIC_HOSTS:}
     max-workspaces: ${ELMOS_REPOSITORY_WORKSPACE_MAX_COUNT:1000}
     ttl-hours: ${ELMOS_REPOSITORY_WORKSPACE_TTL_HOURS:168}
+    github-api-base: ${ELMOS_REPOSITORY_GITHUB_API_BASE:https://api.github.com}
+    gitee-api-base: ${ELMOS_REPOSITORY_GITEE_API_BASE:https://gitee.com}
   github:
     app:
       enabled: ${ELMOS_GITHUB_APP_ENABLED:false}

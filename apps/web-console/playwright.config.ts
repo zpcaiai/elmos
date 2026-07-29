@@ -14,6 +14,7 @@ const uvPath = process.env.ELMOS_UV_PATH ?? "/opt/homebrew/bin/uv";
 const webPort = Number.parseInt(process.env.ELMOS_E2E_PORT ?? "3200", 10);
 const webServerMode = process.env.ELMOS_E2E_WEB_SERVER_MODE ?? "development";
 const webServerBundler = process.env.ELMOS_E2E_WEB_BUNDLER ?? "turbopack";
+const chromiumChannel = process.env.ELMOS_E2E_CHROMIUM_CHANNEL?.trim();
 if (!["development", "production"].includes(webServerMode)) {
   throw new Error("ELMOS_E2E_WEB_SERVER_MODE_INVALID");
 }
@@ -81,7 +82,11 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
-      use: { ...devices["Desktop Chrome"], viewport: { width: 1440, height: 900 } },
+      use: {
+        ...devices["Desktop Chrome"],
+        ...(chromiumChannel ? { channel: chromiumChannel } : {}),
+        viewport: { width: 1440, height: 900 },
+      },
     },
     {
       name: "firefox",

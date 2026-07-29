@@ -30,6 +30,13 @@ import {
   RepositoryWorkspaceProxyError,
   repositoryGenerationSources,
 } from "./repositoryWorkspaceProxy";
+import {
+  accountCookieNames,
+  AccountSessionError,
+  accountSessionFromRequest,
+  unsafeCookieValue,
+  type AccountPermission,
+} from "./accountSession";
 import type { NextRequest } from "next/server";
 import type {
   GenerationAnalysis,
@@ -151,9 +158,6 @@ type RunnerConfig = {
   containerEngine?: string;
   buildNetwork: string;
   rootlessTool: string;
-  token: string;
-  tenantId: string;
-  actor: string;
 };
 
 export type GenerationRunnerHealth = {
@@ -173,6 +177,7 @@ export type GenerationRunnerHealth = {
 type AuthorizedContext = {
   tenantId: string;
   actor: string;
+  accessToken?: string;
 };
 
 type CommandResult = {
@@ -249,10 +254,6 @@ function config(): RunnerConfig {
   const executor = process.env.ELMOS_LOCAL_RUNNER_EXECUTOR;
   const containerEngine = process.env.ELMOS_LOCAL_RUNNER_CONTAINER_ENGINE;
   const buildNetwork = process.env.ELMOS_LOCAL_RUNNER_BUILD_NETWORK ?? "none";
-  const token = configuredToken();
-  const tenantId = process.env.ELMOS_LOCAL_RUNNER_TENANT_ID;
-  const actor = process.env.ELMOS_LOCAL_RUNNER_ACTOR_ID;
-  const tokenExpiresAt = process.env.ELMOS_LOCAL_RUNNER_AUTH_TOKEN_EXPIRES_AT;
   if (!root || !path.isAbsolute(root)) {
     throw new GenerationRunnerError(503, "LOCAL_RUNNER_ROOT_NOT_CONFIGURED");
   }
@@ -270,19 +271,6 @@ function config(): RunnerConfig {
   }
   if (!/^(none|slirp4netns|[a-z0-9][a-z0-9_.-]{2,62})$/.test(buildNetwork)) {
     throw new GenerationRunnerError(503, "LOCAL_RUNNER_BUILD_NETWORK_INVALID");
-  }
-  if (!tenantId || !tenantPattern.test(tenantId) || !actor || !actorPattern.test(actor)) {
-    throw new GenerationRunnerError(503, "LOCAL_RUNNER_IDENTITY_NOT_CONFIGURED");
-  }
-  const tokenExpiry = Date.parse(tokenExpiresAt ?? "");
-  if (
-    !tokenExpiresAt
-    || !/(Z|[+-]\d{2}:\d{2})$/.test(tokenExpiresAt)
-    || Number.isNaN(tokenExpiry)
-    || tokenExpiry <= Date.now()
-    || tokenExpiry > Date.now() + 24 * 60 * 60_000
-  ) {
-    throw new GenerationRunnerError(503, "LOCAL_RUNNER_TOKEN_LEASE_INVALID");
   }
   const resolvedRoot = path.resolve(root);
   const resolvedRepositoryRoot = path.resolve(repositoryRoot);
@@ -328,9 +316,6 @@ function config(): RunnerConfig {
     containerEngine,
     buildNetwork,
     rootlessTool,
-    token,
-    tenantId,
-    actor,
   };
 }
 
@@ -367,8 +352,51 @@ function intentContract(request: GenerationAnalyzeRequest): GenerationAnalyzeReq
   };
 }
 
-export function authorize(request: NextRequest): AuthorizedContext {
-  const runner = config();
+export function authorize(
+  request: NextRequest,
+  permission: AccountPermission = "generation:execute",
+): AuthorizedContext {
+  const hasAccountCookie = Boolean(
+    unsafeCookieValue(request, accountCookieNames.session),
+  );
+  if (hasAccountCookie) {
+    try {
+      const account = accountSessionFromRequest(request, permission);
+      return {
+        tenantId: account.principal.organizationId,
+        actor: account.principal.actorId,
+        accessToken: account.accessToken,
+      };
+    } catch (error) {
+      if (error instanceof AccountSessionError) {
+        throw new GenerationRunnerError(error.status, error.code);
+      }
+      throw error;
+    }
+  }
+  if (
+    process.env.NODE_ENV === "production"
+    || process.env.ELMOS_LOCAL_RUNNER_ENABLED !== "true"
+  ) {
+    throw new GenerationRunnerError(401, "ACCOUNT_SESSION_REQUIRED");
+  }
+  const runner = {
+    token: configuredToken(),
+    tenantId: process.env.ELMOS_LOCAL_RUNNER_TENANT_ID ?? "",
+    actor: process.env.ELMOS_LOCAL_RUNNER_ACTOR_ID ?? "",
+  };
+  const tokenExpiresAt = process.env.ELMOS_LOCAL_RUNNER_AUTH_TOKEN_EXPIRES_AT ?? "";
+  const tokenExpiry = Date.parse(tokenExpiresAt);
+  if (
+    !tenantPattern.test(runner.tenantId)
+    || !actorPattern.test(runner.actor)
+    || !/(Z|[+-]\d{2}:\d{2})$/.test(tokenExpiresAt)
+    || Number.isNaN(tokenExpiry)
+    || tokenExpiry <= Date.now()
+    || tokenExpiry > Date.now() + 24 * 60 * 60_000
+  ) {
+    throw new GenerationRunnerError(503, "LOCAL_RUNNER_IDENTITY_LEASE_INVALID");
+  }
   const authorization = request.headers.get("authorization") ?? "";
   const token = authorization.startsWith("Bearer ") ? authorization.slice(7) : "";
   const tenantId = request.headers.get("x-elmos-tenant") ?? "";
@@ -920,6 +948,7 @@ export async function ingestGenerationSources(
       ? await repositoryGenerationSources({
         tenantId: context.tenantId,
         actor: context.actor,
+        accessToken: context.accessToken,
         workspaceId: input.repositoryWorkspaceId,
         paths: input.repositoryPaths,
       })
@@ -1874,9 +1903,11 @@ export async function stopRuntime(
   return job;
 }
 
-async function reconcilePersistentQueue(runner: RunnerConfig): Promise<void> {
-  const context = { tenantId: runner.tenantId, actor: runner.actor };
-  const jobsRoot = confined(runner.root, "tenants", runner.tenantId, "jobs");
+async function reconcilePersistentQueue(
+  runner: RunnerConfig,
+  context: AuthorizedContext,
+): Promise<void> {
+  const jobsRoot = confined(runner.root, "tenants", context.tenantId, "jobs");
   let entries;
   try {
     entries = await readdir(jobsRoot, { withFileTypes: true });
@@ -1945,7 +1976,16 @@ export async function health(): Promise<GenerationRunnerHealth> {
     await mkdir(runner.root, { recursive: true, mode: 0o700 });
     ensureMutationsAllowed(runner);
     await access(runner.root, fsConstants.R_OK | fsConstants.W_OK | fsConstants.X_OK);
-    await reconcilePersistentQueue(runner);
+    const maintenanceContext = {
+      tenantId: process.env.ELMOS_LOCAL_RUNNER_TENANT_ID ?? "",
+      actor: process.env.ELMOS_LOCAL_RUNNER_ACTOR_ID ?? "",
+    };
+    if (
+      tenantPattern.test(maintenanceContext.tenantId)
+      && actorPattern.test(maintenanceContext.actor)
+    ) {
+      await reconcilePersistentQueue(runner, maintenanceContext);
+    }
     if (runner.executor === "ROOTLESS_CONTAINER") {
       await rootlessCommand(
         runner,

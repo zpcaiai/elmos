@@ -3,6 +3,7 @@ package io.elmos.controlplane;
 import io.elmos.persistence.JdbcUserActivityStore;
 import io.elmos.persistence.JdbcUserActivityStore.ActivityEvent;
 import io.elmos.persistence.JdbcUserActivityStore.ActivitySummary;
+import io.elmos.persistence.JdbcOperationsManagementStore;
 import org.junit.jupiter.api.Test;
 
 import java.time.Clock;
@@ -24,35 +25,38 @@ class OperationsObservabilityControllerTest {
     private static final String KEY = "operations-test-key-32-characters";
     private static final Instant NOW = Instant.parse("2026-07-28T10:00:00Z");
     private final JdbcUserActivityStore store = mock(JdbcUserActivityStore.class);
+    private final JdbcOperationsManagementStore management = mock(JdbcOperationsManagementStore.class);
     private final OperationsObservabilityController controller =
             new OperationsObservabilityController(
-                    store, Clock.fixed(NOW, ZoneOffset.UTC), KEY,
-                    NOW.plusSeconds(60 * 60).toString(), "org-1", "actor-1");
+                    store, management, Clock.fixed(NOW, ZoneOffset.UTC), KEY,
+                    NOW.plusSeconds(60 * 60).toString(), "org-1", "actor-1",
+                    false, false);
 
     @Test void appendsIdentityBoundBatchWithoutAcceptingIdentityFromThePayload() {
         var event = new ActivityEvent(
                 "event-1", "session-1", "USER_ACTION", "CLICK",
                 "PROJECT_SYNTHESIS", "/generation", "button:primary-button",
                 NOW.minusSeconds(5), 12, "SUCCESS", null, null, null, Map.of());
-        when(store.append("org-1", "actor-1", "request-1", List.of(event))).thenReturn(1);
+        when(store.appendTelemetry("org-1", "actor-1", "request-1", List.of(event))).thenReturn(1);
 
         var result = controller.append(
                 KEY, "org-1", "actor-1", "request-1",
                 new OperationsObservabilityController.EventBatch(List.of(event)));
 
         assertEquals(1, result.accepted());
-        assertEquals("POSTGRES_APPEND_ONLY", result.persistence());
-        verify(store).append("org-1", "actor-1", "request-1", List.of(event));
+        assertEquals("POSTGRES_RETENTION_MANAGED", result.persistence());
+        verify(store).appendTelemetry("org-1", "actor-1", "request-1", List.of(event));
     }
 
     @Test void summaryUsesBoundedServerTimeWindow() {
         var expected = new ActivitySummary(
                 NOW.minusSeconds(24 * 60 * 60), NOW, 12, 3, 1, 8.33, 240,
-                List.of(), List.of(), List.of(), "POSTGRES_APPEND_ONLY", "NOT_RUN");
+                List.of(), List.of(), List.of(), "POSTGRES_DUAL_STORE", "NOT_RUN");
         when(store.summary(anyString(), any(), any(), anyString(), anyString(), anyInt()))
                 .thenReturn(expected);
 
-        var result = controller.summary(KEY, "org-1", "actor-1", 24, "ALL", "ALL", 50);
+        var result = controller.summary(
+                KEY, "org-1", "actor-1", "VIEWER", 24, "ALL", "ALL", 50);
 
         assertEquals(expected, result);
         verify(store).summary(
@@ -61,26 +65,36 @@ class OperationsObservabilityControllerTest {
 
     @Test void rejectsMissingOrIncorrectInternalCredentialAndOversizedWindows() {
         assertThrows(SecurityException.class,
-                () -> controller.summary("incorrect-key", "org-1", "actor-1", 24, "ALL", "ALL", 50));
+                () -> controller.summary(
+                        "incorrect-key", "org-1", "actor-1", "VIEWER", 24, "ALL", "ALL", 50));
         assertThrows(SecurityException.class,
-                () -> controller.summary(KEY, "other-org", "actor-1", 24, "ALL", "ALL", 50));
+                () -> controller.summary(
+                        KEY, "other-org", "actor-1", "VIEWER", 24, "ALL", "ALL", 50));
         assertThrows(SecurityException.class,
-                () -> controller.summary(KEY, "org-1", "other-actor", 24, "ALL", "ALL", 50));
+                () -> controller.summary(
+                        KEY, "org-1", "invalid actor!", "VIEWER", 24, "ALL", "ALL", 50));
         assertThrows(IllegalArgumentException.class,
-                () -> controller.summary(KEY, "org-1", "actor-1", 745, "ALL", "ALL", 50));
+                () -> controller.summary(
+                        KEY, "org-1", "actor-1", "VIEWER", 745, "ALL", "ALL", 50));
+        assertThrows(SecurityException.class,
+                () -> controller.evaluate(KEY, "org-1", "actor-1", "VIEWER", "request-1"));
     }
 
     @Test void rejectsExpiredOrExcessivelyLongInternalCredentialLeases() {
         var expired = new OperationsObservabilityController(
-                store, Clock.fixed(NOW, ZoneOffset.UTC), KEY,
-                NOW.minusSeconds(1).toString(), "org-1", "actor-1");
+                store, management, Clock.fixed(NOW, ZoneOffset.UTC), KEY,
+                NOW.minusSeconds(1).toString(), "org-1", "actor-1",
+                false, false);
         var excessive = new OperationsObservabilityController(
-                store, Clock.fixed(NOW, ZoneOffset.UTC), KEY,
-                NOW.plusSeconds(24 * 60 * 60 + 1).toString(), "org-1", "actor-1");
+                store, management, Clock.fixed(NOW, ZoneOffset.UTC), KEY,
+                NOW.plusSeconds(24 * 60 * 60 + 1).toString(), "org-1", "actor-1",
+                false, false);
 
         assertThrows(RuntimeException.class,
-                () -> expired.summary(KEY, "org-1", "actor-1", 24, "ALL", "ALL", 50));
+                () -> expired.summary(
+                        KEY, "org-1", "actor-1", "VIEWER", 24, "ALL", "ALL", 50));
         assertThrows(RuntimeException.class,
-                () -> excessive.summary(KEY, "org-1", "actor-1", 24, "ALL", "ALL", 50));
+                () -> excessive.summary(
+                        KEY, "org-1", "actor-1", "VIEWER", 24, "ALL", "ALL", 50));
     }
 }

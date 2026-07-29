@@ -30,6 +30,13 @@
 .locked strong, .error strong { display: block; margin-bottom: 5px; font-size: 14px; }
 .locked p, .error p { max-width: 620px; margin: 0; color: var(--muted); font-size: 10px; line-height: 1.6; }
 .error { justify-content: flex-start; min-height: auto; border-style: solid; border-color: #efc5bd; background: #fff7f4; color: #9a4032; }
+.notice { padding: 12px 16px; border: 1px solid #b9ddd2; border-radius: 11px; background: #f0faf6; color: #256a5d; font-size: 10px; font-weight: 750; }
+
+.actionStrip { display: flex; align-items: center; gap: 10px; padding: 15px 18px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); box-shadow: var(--shadow-sm); }
+.actionStrip > div { min-width: 0; display: flex; flex: 1 1 auto; flex-direction: column; gap: 3px; }
+.actionStrip strong { font-size: 11px; }
+.actionStrip small, .actionStrip > span { color: var(--muted); font-size: 8px; }
+.actionStrip > span { padding: 6px 9px; border-radius: 8px; background: var(--surface-soft); white-space: nowrap; }
 
 .metrics { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 12px; }
 .metrics article { min-height: 116px; display: flex; flex-direction: column; justify-content: center; gap: 6px; padding: 19px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); box-shadow: var(--shadow-sm); }
@@ -61,6 +68,20 @@
 .errorList strong { overflow: hidden; font: 750 9px ui-monospace, monospace; text-overflow: ellipsis; white-space: nowrap; }
 .errorList small { color: var(--muted); font-size: 8px; }
 
+.cardGrid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 11px; }
+.controlCard { min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 9px; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-soft); }
+.controlCard > div:first-child { width: 100%; display: flex; align-items: center; gap: 8px; }
+.controlCard strong { overflow: hidden; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+.controlCard code { max-width: 100%; overflow: hidden; color: var(--cyan-dark); font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+.controlCard p, .controlCard small { margin: 0; color: var(--muted); font-size: 8px; line-height: 1.5; }
+.severity, .kind { flex: 0 0 auto; padding: 3px 6px; border-radius: 6px; background: #fff0ed; color: #a34435; font-size: 7px; font-weight: 850; }
+.kind { background: var(--cyan-soft); color: var(--cyan-dark); }
+.inlineActions { display: flex; flex-wrap: wrap; gap: 7px; }
+
+.evidence { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; padding: 15px 18px; border: 1px solid var(--line); border-radius: 13px; background: var(--surface); }
+.evidence strong { margin-right: auto; font-size: 10px; }
+.evidence span { color: var(--muted); font-size: 8px; }
+
 .tableWrap { overflow-x: auto; }
 .tableWrap table { width: 100%; border-collapse: collapse; font-size: 9px; }
 .tableWrap th { padding: 9px 10px; border-bottom: 1px solid var(--line-strong); color: var(--muted); font-size: 8px; text-align: left; white-space: nowrap; }
@@ -78,6 +99,7 @@
 @media (max-width: 1120px) {
   .accessBar { grid-template-columns: repeat(3,minmax(0,1fr)); }
   .tokenField { grid-column: span 2; }
+  .cardGrid { grid-template-columns: repeat(2,minmax(0,1fr)); }
 }
 
 @media (max-width: 820px) {
@@ -85,6 +107,8 @@
   .heroStatus { width: 100%; }
   .metrics { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .dashboardGrid { grid-template-columns: 1fr; }
+  .actionStrip { align-items: stretch; flex-direction: column; }
+  .actionStrip > span { align-self: flex-start; }
 }
 
 @media (max-width: 620px) {
@@ -95,4 +119,5 @@
   .metrics article { min-height: 100px; padding: 15px; }
   .metrics strong { font-size: 21px; }
   .lineList article { grid-template-columns: minmax(0,1fr) 54px 58px; }
+  .cardGrid { grid-template-columns: 1fr; }
 }

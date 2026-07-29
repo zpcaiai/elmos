@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { Icon } from "../components/Icon";
 import { StatusChip } from "../components/StatusChip";
+import { useAccountSession } from "../components/AccountSessionProvider";
 import { directedLanguageRoutes, translationLanguages } from "../lib/businessLines";
 import type {
   DirectedLanguageRoute,
@@ -111,6 +112,7 @@ function routeCellIcon(route: DirectedLanguageRoute | undefined) {
 }
 
 export function TranslationStudio() {
+  const account = useAccountSession();
   const [sourceLanguage, setSourceLanguage] = useState<TranslationLanguageId>("java");
   const [targetLanguage, setTargetLanguage] = useState<TranslationLanguageId>("python");
   const [repositoryRef, setRepositoryRef] = useState("local:customer-repository");
@@ -133,6 +135,14 @@ export function TranslationStudio() {
   const [runnerHealth, setRunnerHealth] = useState<TranslationRunnerHealth | null>(null);
   const [job, setJob] = useState<TranslationJob | null>(null);
   const [jobBusy, setJobBusy] = useState(false);
+  const accountRunner = account.status === "authenticated"
+    && account.principal?.permissions.includes("translation:execute") === true;
+
+  useEffect(() => {
+    if (!accountRunner || !account.principal) return;
+    setTenantId(account.principal.organizationId);
+    setActorId(account.principal.actorId);
+  }, [account.principal, accountRunner]);
 
   const languages = capability?.languages ?? translationLanguages;
   const routes = capability?.routes ?? directedLanguageRoutes;
@@ -203,7 +213,7 @@ export function TranslationStudio() {
         .catch((error: Error) => setFeedback(`任务刷新失败：${error.message}`));
     }, 1_500);
     return () => window.clearInterval(timer);
-  }, [job, tenantId, actorId, runnerToken]);
+  }, [job, tenantId, actorId, runnerToken, accountRunner]);
 
   useEffect(() => {
     if (!feedback) return;
@@ -435,9 +445,11 @@ export function TranslationStudio() {
       ...init,
       headers: {
         ...(init?.body ? { "content-type": "application/json" } : {}),
-        authorization: `Bearer ${runnerToken}`,
-        "x-elmos-tenant": tenantId,
-        "x-elmos-actor": actorId,
+        ...(!accountRunner ? {
+          authorization: `Bearer ${runnerToken}`,
+          "x-elmos-tenant": tenantId,
+          "x-elmos-actor": actorId,
+        } : {}),
         ...init?.headers,
       },
     });
@@ -520,7 +532,7 @@ export function TranslationStudio() {
     try {
       const response = await fetch(`/api/translation/jobs/${job.id}/artifact`, {
         cache: "no-store",
-        headers: {
+        headers: accountRunner ? undefined : {
           authorization: `Bearer ${runnerToken}`,
           "x-elmos-tenant": tenantId,
           "x-elmos-actor": actorId,
@@ -755,16 +767,20 @@ export function TranslationStudio() {
         <div className="business-form-grid">
           <label>
             <span>租户标识</span>
-            <input aria-label="跨语言租户标识" value={tenantId} onChange={(event) => setTenantId(event.target.value)} autoComplete="off" />
+            <input aria-label="跨语言租户标识" value={tenantId} onChange={(event) => setTenantId(event.target.value)} readOnly={accountRunner} autoComplete="off" />
           </label>
           <label>
             <span>执行者标识</span>
-            <input aria-label="跨语言执行者标识" value={actorId} onChange={(event) => setActorId(event.target.value)} autoComplete="off" />
+            <input aria-label="跨语言执行者标识" value={actorId} onChange={(event) => setActorId(event.target.value)} readOnly={accountRunner} autoComplete="off" />
           </label>
-          <label className="spring-field-wide">
-            <span>本地 Runner 短期令牌</span>
-            <input aria-label="跨语言 Runner 令牌" type="password" value={runnerToken} onChange={(event) => setRunnerToken(event.target.value)} autoComplete="off" />
-          </label>
+          {accountRunner ? (
+            <div className="locked-target spring-field-wide"><span>账户授权</span><strong>企业 OIDC · translation:execute</strong></div>
+          ) : (
+            <label className="spring-field-wide">
+              <span>本地 Runner 短期令牌</span>
+              <input aria-label="跨语言 Runner 令牌" type="password" value={runnerToken} onChange={(event) => setRunnerToken(event.target.value)} autoComplete="off" />
+            </label>
+          )}
           <label>
             <span>受控源码工作区 ID</span>
             <input value={workspaceId} onChange={(event) => setWorkspaceId(event.target.value)} pattern="[a-z0-9][a-z0-9._-]{2,80}" placeholder="customer-repository" />

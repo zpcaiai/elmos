@@ -2,6 +2,12 @@ import { createHash, timingSafeEqual } from "node:crypto";
 import { lstatSync, readFileSync } from "node:fs";
 import path from "node:path";
 import type { NextRequest } from "next/server";
+import {
+  accountCookieNames,
+  AccountSessionError,
+  accountSessionFromRequest,
+  unsafeCookieValue,
+} from "../../lib/server/accountSession";
 
 const organizationPattern = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/;
 const actorPattern = /^[A-Za-z0-9][A-Za-z0-9._:@/-]{2,199}$/;
@@ -10,7 +16,8 @@ export type SpringProxyConfiguration =
   | {
       configured: true;
       engineBase: string;
-      organizationId: string;
+      organizationId: string | null;
+      multiTenant: boolean;
       controlPlaneBase: string | null;
     }
   | { configured: false };
@@ -18,8 +25,13 @@ export type SpringProxyConfiguration =
 export function springProxyConfiguration(): SpringProxyConfiguration {
   if (process.env.ELMOS_SPRING_PROXY_ENABLED !== "true") return { configured: false };
   const organizationId = process.env.ELMOS_TRUSTED_SINGLE_TENANT_ORGANIZATION_ID?.trim();
+  const multiTenant = process.env.ELMOS_SPRING_PROXY_MULTI_TENANT === "true";
   const configuredBase = process.env.JAVA_ENGINE_BASE_URL?.trim();
-  if (!organizationId || !organizationPattern.test(organizationId) || !configuredBase) {
+  if (
+    (!multiTenant && (!organizationId || !organizationPattern.test(organizationId)))
+    || (multiTenant && organizationId)
+    || !configuredBase
+  ) {
     return { configured: false };
   }
   try {
@@ -30,7 +42,8 @@ export function springProxyConfiguration(): SpringProxyConfiguration {
     return {
       configured: true,
       engineBase: engine.toString().replace(/\/$/, ""),
-      organizationId,
+      organizationId: organizationId ?? null,
+      multiTenant,
       controlPlaneBase: safeBaseUrl(
         process.env.ELMOS_CONTROL_PLANE_BASE_URL?.trim(),
       ),
@@ -89,8 +102,49 @@ function configuredToken(): string | null {
   }
 }
 
-export function authenticateSpringProxy(request: NextRequest): Response | null {
+export type SpringActorContext = { organizationId: string; actorId: string };
+
+export function authenticateSpringProxy(
+  request: NextRequest,
+): SpringActorContext | Response {
   const configuration = springProxyConfiguration();
+  if (unsafeCookieValue(request, accountCookieNames.session)) {
+    try {
+      const account = accountSessionFromRequest(request, "spring:execute");
+      if (
+        configuration.configured
+        && !configuration.multiTenant
+        && account.principal.organizationId !== configuration.organizationId
+      ) {
+        return Response.json(
+          {
+            errorCode: "TENANT_ID_NOT_BOUND_TO_ENGINE",
+            message: "账户租户与单租户 Spring Engine 绑定不一致。",
+            retryable: false,
+          },
+          { status: 403, headers: { "cache-control": "no-store" } },
+        );
+      }
+      return {
+        organizationId: account.principal.organizationId,
+        actorId: account.principal.actorId,
+      };
+    } catch (error) {
+      if (error instanceof AccountSessionError) {
+        return Response.json(
+          { errorCode: error.code, message: error.message, retryable: false },
+          { status: error.status, headers: { "cache-control": "no-store" } },
+        );
+      }
+      throw error;
+    }
+  }
+  if (process.env.NODE_ENV === "production") {
+    return Response.json(
+      { errorCode: "ACCOUNT_SESSION_REQUIRED", message: "请先登录企业账户。", retryable: false },
+      { status: 401, headers: { "cache-control": "no-store" } },
+    );
+  }
   const token = configuredToken();
   const actor = process.env.ELMOS_SPRING_PROXY_ACTOR_ID?.trim() ?? "";
   const expiresAt = process.env.ELMOS_SPRING_PROXY_AUTH_TOKEN_EXPIRES_AT?.trim() ?? "";
@@ -122,7 +176,10 @@ export function authenticateSpringProxy(request: NextRequest): Response | null {
     );
   }
   const tenant = request.headers.get("x-elmos-tenant") ?? "";
-  if (!safeEqual(tenant, configuration.organizationId)) {
+  if (
+    !configuration.organizationId
+    || !safeEqual(tenant, configuration.organizationId)
+  ) {
     return Response.json(
       {
         errorCode: "TENANT_ID_NOT_BOUND_TO_CREDENTIAL",
@@ -143,7 +200,7 @@ export function authenticateSpringProxy(request: NextRequest): Response | null {
       { status: 403, headers: { "cache-control": "no-store" } },
     );
   }
-  return null;
+  return { organizationId: tenant, actorId: presentedActor };
 }
 
 export function proxyNotConfiguredResponse() {

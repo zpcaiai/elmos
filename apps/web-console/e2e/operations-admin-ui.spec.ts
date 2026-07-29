@@ -1,14 +1,17 @@
 import { expect, test } from "@playwright/test";
 
-const summary = {
-  from: "2026-07-27T10:00:00Z",
-  to: "2026-07-28T10:00:00Z",
-  totalEvents: 128,
-  activeSessions: 14,
-  failedEvents: 4,
-  failureRate: 3.13,
-  p95DurationMs: 480,
-  businessLines: [
+const consoleView = {
+  role: "APPROVER",
+  actorId: "operator-1",
+  activity: {
+    from: "2026-07-27T10:00:00Z",
+    to: "2026-07-28T10:00:00Z",
+    totalEvents: 128,
+    activeSessions: 14,
+    failedEvents: 4,
+    failureRate: 3.13,
+    p95DurationMs: 480,
+    businessLines: [
     {
       businessLine: "PROJECT_SYNTHESIS",
       eventCount: 72,
@@ -25,11 +28,11 @@ const summary = {
       failureRate: 3.57,
       p95DurationMs: 610,
     },
-  ],
-  topErrors: [
-    { errorCode: "HTTP_409", count: 3, lastSeenAt: "2026-07-28T09:58:00Z" },
-  ],
-  recentEvents: [
+    ],
+    topErrors: [
+      { errorCode: "HTTP_409", count: 3, lastSeenAt: "2026-07-28T09:58:00Z" },
+    ],
+    recentEvents: [
     {
       eventId: "event-1",
       sessionId: "session-1",
@@ -45,9 +48,22 @@ const summary = {
       metricName: null,
       metricValue: null,
     },
-  ],
-  persistence: "POSTGRES_APPEND_ONLY",
-  externalEvidence: "NOT_RUN",
+    ],
+    persistence: "POSTGRES_DUAL_STORE",
+    externalEvidence: "NOT_RUN",
+  },
+  control: {
+    policies: [],
+    alerts: [],
+    incidents: [],
+    remediations: [],
+    retentionRuns: [],
+    pendingNotifications: 0,
+    automationMode: "DETECT_DIAGNOSE_PROPOSE_AUTOMATIC",
+    sourceMutationMode: "APPROVAL_AND_EXTERNAL_SCM_REQUIRED",
+    notificationDeliveryEvidence: "NOT_RUN",
+    productionDeploymentEvidence: "NOT_RUN",
+  },
 };
 
 test.beforeEach(async ({ page }) => {
@@ -66,7 +82,7 @@ test("admin stays locked until an operator supplies a short-lived token", async 
 test("admin renders tenant-scoped performance and error signals", async ({ page }) => {
   await page.route("**/api/admin/operations?**", async (route) => {
     expect(route.request().headers().authorization).toBe("Bearer admin-observability-token-32");
-    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(summary) });
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(consoleView) });
   });
   await page.goto("/admin");
   await page.getByLabel("短期管理令牌").fill("admin-observability-token-32");
@@ -76,8 +92,10 @@ test("admin renders tenant-scoped performance and error signals", async ({ page 
   await expect(page.getByText("3.13%", { exact: true })).toBeVisible();
   await expect(page.getByText("480 ms", { exact: true })).toBeVisible();
   await expect(page.getByText("HTTP_409", { exact: true })).toBeVisible();
-  await expect(page.getByText("POSTGRES_APPEND_ONLY", { exact: false })).toBeVisible();
+  await expect(page.getByText("POSTGRES_DUAL_STORE", { exact: false })).toBeVisible();
   await expect(page.locator("small").filter({ hasText: "外部生产证据 NOT_RUN" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "立即评估全部 SLO" })).toBeEnabled();
+  await expect(page.getByRole("button", { name: "执行 30 天保留" })).toBeEnabled();
 });
 
 test("collector batches semantic actions without input values or URL queries", async ({ page }) => {

@@ -1,0 +1,28 @@
+{
+  "schemaVersion": "1.0.0",
+  "grain": "tenant_business_line_evaluation_window",
+  "definitions": {
+    "event_count": {
+      "unit": "events",
+      "numerator": "count(activity_events)",
+      "denominator": null
+    },
+    "failure_rate_bps": {
+      "unit": "basis_points",
+      "numerator": "count(workflow_outcome_events where result = FAILURE) * 10000",
+      "denominator": "greatest(count(workflow_outcome_events), 1)",
+      "population": "server operation completions and api_request telemetry only; raw clicks and page views excluded"
+    },
+    "p95_duration_ms": {
+      "unit": "milliseconds",
+      "population": "activity_events where duration_ms is not null",
+      "estimator": "PostgreSQL percentile_cont(0.95)"
+    },
+    "active_sessions": {
+      "unit": "hmac_sessions",
+      "population": "distinct non-null product_telemetry session_id; audit request identifiers excluded"
+    }
+  },
+  "unknownState": "NOT_RUN",
+  "aggregationMayNotHideCriticalFailures": true
+}

@@ -19,7 +19,7 @@ class EmptyNeonBootstrapTests(unittest.TestCase):
     def test_repository_migrations_are_contiguous_and_checksums_match_flyway(self) -> None:
         migrations = MODULE.discover_migrations()
 
-        self.assertEqual(list(range(1, 51)), [item.version for item in migrations])
+        self.assertEqual(list(range(1, 52)), [item.version for item in migrations])
         self.assertEqual(-1305174584, migrations[0].checksum)
         self.assertEqual(410399635, migrations[1].checksum)
         self.assertEqual(1595351014, migrations[2].checksum)

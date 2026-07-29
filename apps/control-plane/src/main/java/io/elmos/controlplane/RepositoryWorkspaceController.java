@@ -80,7 +80,7 @@ public final class RepositoryWorkspaceController {
             @RequestHeader("X-ELMOS-Actor-ID") String actorId,
             @RequestHeader(value = "X-Request-ID", required = false) String requestId
     ) {
-        authorize(presentedKey);
+        authorize(presentedKey, organizationId, actorId, "repository:read");
         return audited(organizationId, actorId, requestId, "REPOSITORY_CAPABILITIES", "capability",
                 workspaces::capability);
     }
@@ -94,7 +94,7 @@ public final class RepositoryWorkspaceController {
             @RequestHeader(value = "X-Request-ID", required = false) String requestId,
             @RequestBody CreateBody body
     ) {
-        authorize(presentedKey);
+        authorize(presentedKey, organizationId, actorId, "repository:write");
         Objects.requireNonNull(body, "body");
         return audited(organizationId, actorId, requestId, "REPOSITORY_WORKSPACE_CREATE",
                 body.provider() == null ? "unknown-provider" : body.provider().name(), () -> {
@@ -125,7 +125,7 @@ public final class RepositoryWorkspaceController {
             @RequestHeader(value = "X-Request-ID", required = false) String requestId,
             @PathVariable String workspaceId
     ) {
-        authorize(presentedKey);
+        authorize(presentedKey, organizationId, actorId, "repository:read");
         return audited(organizationId, actorId, requestId, "REPOSITORY_WORKSPACE_INSPECT",
                 safeTarget(workspaceId), () -> {
                     return workspaces.inspect(organizationId, actorId, workspaceId);
@@ -141,7 +141,7 @@ public final class RepositoryWorkspaceController {
             @PathVariable String workspaceId,
             @RequestParam("path") String path
     ) {
-        authorize(presentedKey);
+        authorize(presentedKey, organizationId, actorId, "repository:read");
         return audited(organizationId, actorId, requestId, "REPOSITORY_FILE_READ",
                 safeTarget(workspaceId), () -> {
                     return workspaces.readFile(organizationId, actorId, workspaceId, path);
@@ -157,7 +157,7 @@ public final class RepositoryWorkspaceController {
             @PathVariable String workspaceId,
             @RequestBody ChangeBody body
     ) {
-        authorize(presentedKey);
+        authorize(presentedKey, organizationId, actorId, "repository:write");
         Objects.requireNonNull(body, "body");
         return audited(organizationId, actorId, requestId, "REPOSITORY_LOCAL_CHANGE",
                 safeTarget(workspaceId), () -> workspaces.apply(
@@ -182,7 +182,7 @@ public final class RepositoryWorkspaceController {
             @RequestHeader(value = "X-Request-ID", required = false) String requestId,
             @PathVariable String workspaceId
     ) {
-        authorize(presentedKey);
+        authorize(presentedKey, organizationId, actorId, "repository:write");
         return audited(organizationId, actorId, requestId, "REPOSITORY_WORKSPACE_DELETE",
                 safeTarget(workspaceId), () -> {
                     workspaces.delete(organizationId, actorId, workspaceId);
@@ -255,7 +255,21 @@ public final class RepositoryWorkspaceController {
         }
     }
 
-    private void authorize(String presentedKey) {
+    private void authorize(
+            String presentedKey,
+            String organizationId,
+            String actorId,
+            String permission
+    ) {
+        var principal = ControlPlanePrincipal.current();
+        if (principal.isPresent()) {
+            try {
+                principal.get().require(organizationId, actorId, permission);
+                return;
+            } catch (RuntimeException error) {
+                throw new SecurityException("OIDC repository authorization failed", error);
+            }
+        }
         if (apiKey.length() < 24) throw new WorkspaceUnavailableException();
         byte[] expected = apiKey.getBytes(StandardCharsets.UTF_8);
         byte[] presented = (presentedKey == null ? "" : presentedKey).getBytes(StandardCharsets.UTF_8);

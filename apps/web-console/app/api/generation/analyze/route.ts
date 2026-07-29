@@ -5,10 +5,31 @@ import {
   authorize,
   GenerationRunnerError,
 } from "../../../lib/server/generationRunner";
+import { withBusinessAudit } from "../../../lib/server/operationsProxy";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
+  try {
+    return await withBusinessAudit(
+      request,
+      {
+        action: "GENERATION_INTENT_ANALYZE",
+        businessLine: "PROJECT_SYNTHESIS",
+        route: "/api/generation/analyze",
+        target: "generation-intent",
+      },
+      () => analyze(request),
+    );
+  } catch {
+    return NextResponse.json(
+      { status: "BLOCKED", reason: "BUSINESS_AUDIT_UNAVAILABLE" },
+      { status: 503 },
+    );
+  }
+}
+
+async function analyze(request: NextRequest) {
   try {
     if (!request.headers.get("content-type")?.startsWith("application/json")) {
       return NextResponse.json(

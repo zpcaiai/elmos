@@ -5,8 +5,32 @@ import {
   GenerationRunnerError,
   startRuntime,
 } from "../../../../../lib/server/generationRunner";
+import { withBusinessAudit } from "../../../../../lib/server/operationsProxy";
 
 export async function POST(
+  request: NextRequest,
+  context: { params: Promise<{ jobId: string }> },
+) {
+  try {
+    return await withBusinessAudit(
+      request,
+      {
+        action: "GENERATION_RUNTIME_START",
+        businessLine: "PROJECT_SYNTHESIS",
+        route: "/api/generation/jobs/:id/run",
+        target: "generation-runtime",
+      },
+      () => run(request, context),
+    );
+  } catch {
+    return NextResponse.json(
+      { status: "BLOCKED", reason: "BUSINESS_AUDIT_UNAVAILABLE" },
+      { status: 503 },
+    );
+  }
+}
+
+async function run(
   request: NextRequest,
   context: { params: Promise<{ jobId: string }> },
 ) {

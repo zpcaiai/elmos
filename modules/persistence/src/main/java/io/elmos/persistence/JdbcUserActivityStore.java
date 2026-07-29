@@ -17,7 +17,11 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
- * Tenant-isolated, append-only storage and read model for privacy-safe user activity.
+ * Tenant-isolated audit/telemetry storage and their unified privacy-safe read model.
+ *
+ * <p>Security and business audit events remain append-only. Product telemetry is
+ * deliberately stored separately so an authorized retention run can delete raw
+ * technical signals without weakening the immutable audit chain.</p>
  */
 @Repository
 public final class JdbcUserActivityStore {
@@ -145,6 +149,56 @@ public final class JdbcUserActivityStore {
         });
     }
 
+    public int appendTelemetry(
+            String organizationId,
+            String actorId,
+            String requestId,
+            List<ActivityEvent> events
+    ) {
+        requireIdentifier(actorId, "actorId");
+        requireIdentifier(requestId, "requestId");
+        if (events == null || events.isEmpty() || events.size() > 50) {
+            throw new IllegalArgumentException("events must contain between 1 and 50 items");
+        }
+        return inTenant(organizationId, () -> {
+            int inserted = 0;
+            for (ActivityEvent event : events) {
+                validate(event);
+                inserted += jdbc.sql("""
+                        insert into product_telemetry_events(
+                            event_id, organization_id, actor_id, request_id, session_id,
+                            event_kind, action, business_line, route, target, occurred_at,
+                            duration_ms, result, error_code, metric_name, metric_value, metadata)
+                        values (
+                            :eventId, :organization, :actor, :request, :session,
+                            :eventKind, :action, :businessLine, :route, :target, :occurred,
+                            :duration, :result, :errorCode, :metricName, :metricValue,
+                            cast(:metadata as jsonb))
+                        on conflict (event_id) do nothing
+                        """)
+                        .param("eventId", event.eventId())
+                        .param("organization", organizationId)
+                        .param("actor", actorId)
+                        .param("request", requestId)
+                        .param("session", event.sessionId())
+                        .param("eventKind", event.eventKind())
+                        .param("action", event.action())
+                        .param("businessLine", event.businessLine())
+                        .param("route", event.route())
+                        .param("target", event.target())
+                        .param("occurred", event.occurredAt())
+                        .param("duration", event.durationMs())
+                        .param("result", event.result())
+                        .param("errorCode", blankToNull(event.errorCode()))
+                        .param("metricName", blankToNull(event.metricName()))
+                        .param("metricValue", event.metricValue())
+                        .param("metadata", metadataJson(event.metadata()))
+                        .update();
+            }
+            return inserted;
+        });
+    }
+
     public ActivitySummary summary(
             String organizationId,
             Instant from,
@@ -163,12 +217,37 @@ public final class JdbcUserActivityStore {
         String outcome = normalizeFilter(result);
         return inTenant(organizationId, () -> {
             Totals totals = jdbc.sql("""
+                    with activity_events as (
+                        select audit_id event_id, organization_id, session_id, event_kind, action,
+                               business_line, route, target, occurred_at, duration_ms, result,
+                               error_code, metric_name, metric_value, 'AUDIT' source
+                          from audit_events
+                        union all
+                        select event_id, organization_id, session_id, event_kind, action,
+                               business_line, route, target, occurred_at, duration_ms, result,
+                               error_code, metric_name, metric_value, 'TELEMETRY' source
+                          from product_telemetry_events
+                    )
                     select count(*) event_count,
-                           count(distinct session_id) filter (where session_id is not null) session_count,
-                           count(*) filter (where result = 'FAILURE') failure_count,
+                           count(distinct session_id) filter (
+                               where source = 'TELEMETRY' and session_id is not null
+                           ) session_count,
+                           count(*) filter (
+                               where result = 'FAILURE'
+                                 and ((source = 'AUDIT' and event_kind = 'SERVER_OPERATION')
+                                   or (source = 'TELEMETRY' and event_kind = 'API_REQUEST'))
+                           ) failure_count,
+                           count(*) filter (
+                               where (source = 'AUDIT' and event_kind = 'SERVER_OPERATION')
+                                  or (source = 'TELEMETRY' and event_kind = 'API_REQUEST')
+                           ) outcome_count,
                            percentile_cont(0.95) within group (order by duration_ms)
-                               filter (where duration_ms is not null) p95_duration
-                      from audit_events
+                               filter (
+                                   where duration_ms is not null
+                                     and ((source = 'AUDIT' and event_kind = 'SERVER_OPERATION')
+                                       or (source = 'TELEMETRY' and event_kind = 'API_REQUEST'))
+                               ) p95_duration
+                      from activity_events
                      where organization_id = :organization
                        and occurred_at >= :from and occurred_at < :to
                        and (:line is null or business_line = :line)
@@ -178,16 +257,40 @@ public final class JdbcUserActivityStore {
                     .param("line", line).param("result", outcome)
                     .query((rs, row) -> new Totals(
                             rs.getLong("event_count"), rs.getLong("session_count"),
-                            rs.getLong("failure_count"), nullableInteger(rs, "p95_duration")))
+                            rs.getLong("failure_count"), rs.getLong("outcome_count"),
+                            nullableInteger(rs, "p95_duration")))
                     .single();
 
             List<BusinessLineSummary> lines = jdbc.sql("""
+                    with activity_events as (
+                        select organization_id, session_id, business_line, occurred_at,
+                               duration_ms, result, event_kind, 'AUDIT' source
+                          from audit_events
+                        union all
+                        select organization_id, session_id, business_line, occurred_at,
+                               duration_ms, result, event_kind, 'TELEMETRY' source
+                          from product_telemetry_events
+                    )
                     select business_line, count(*) event_count,
-                           count(distinct session_id) filter (where session_id is not null) session_count,
-                           count(*) filter (where result = 'FAILURE') failure_count,
+                           count(distinct session_id) filter (
+                               where source = 'TELEMETRY' and session_id is not null
+                           ) session_count,
+                           count(*) filter (
+                               where result = 'FAILURE'
+                                 and ((source = 'AUDIT' and event_kind = 'SERVER_OPERATION')
+                                   or (source = 'TELEMETRY' and event_kind = 'API_REQUEST'))
+                           ) failure_count,
+                           count(*) filter (
+                               where (source = 'AUDIT' and event_kind = 'SERVER_OPERATION')
+                                  or (source = 'TELEMETRY' and event_kind = 'API_REQUEST')
+                           ) outcome_count,
                            percentile_cont(0.95) within group (order by duration_ms)
-                               filter (where duration_ms is not null) p95_duration
-                      from audit_events
+                               filter (
+                                   where duration_ms is not null
+                                     and ((source = 'AUDIT' and event_kind = 'SERVER_OPERATION')
+                                       or (source = 'TELEMETRY' and event_kind = 'API_REQUEST'))
+                               ) p95_duration
+                      from activity_events
                      where organization_id = :organization
                        and occurred_at >= :from and occurred_at < :to
                        and (:line is null or business_line = :line)
@@ -200,15 +303,23 @@ public final class JdbcUserActivityStore {
                     .query((rs, row) -> {
                         long count = rs.getLong("event_count");
                         long failures = rs.getLong("failure_count");
+                        long outcomes = rs.getLong("outcome_count");
                         return new BusinessLineSummary(
                                 rs.getString("business_line"), count, rs.getLong("session_count"),
-                                failures, rate(failures, count), nullableInteger(rs, "p95_duration"));
+                                failures, rate(failures, outcomes), nullableInteger(rs, "p95_duration"));
                     }).list();
 
             List<ErrorSummary> errors = jdbc.sql("""
+                    with activity_events as (
+                        select organization_id, business_line, occurred_at, result, error_code
+                          from audit_events
+                        union all
+                        select organization_id, business_line, occurred_at, result, error_code
+                          from product_telemetry_events
+                    )
                     select coalesce(error_code, 'UNCLASSIFIED_FAILURE') error_code,
                            count(*) error_count, max(occurred_at) last_seen
-                      from audit_events
+                      from activity_events
                      where organization_id = :organization
                        and occurred_at >= :from and occurred_at < :to
                        and result = 'FAILURE'
@@ -225,15 +336,26 @@ public final class JdbcUserActivityStore {
                     .list();
 
             List<RecentEvent> recent = jdbc.sql("""
-                    select audit_id, session_id, event_kind, action, business_line, route,
+                    with activity_events as (
+                        select audit_id event_id, organization_id, session_id, event_kind, action,
+                               business_line, route, target, occurred_at, duration_ms, result,
+                               error_code, metric_name, metric_value
+                          from audit_events
+                        union all
+                        select event_id, organization_id, session_id, event_kind, action,
+                               business_line, route, target, occurred_at, duration_ms, result,
+                               error_code, metric_name, metric_value
+                          from product_telemetry_events
+                    )
+                    select event_id, session_id, event_kind, action, business_line, route,
                            target, occurred_at, duration_ms, result, error_code,
                            metric_name, metric_value
-                      from audit_events
+                      from activity_events
                      where organization_id = :organization
                        and occurred_at >= :from and occurred_at < :to
                        and (:line is null or business_line = :line)
                        and (:result is null or result = :result)
-                     order by occurred_at desc, audit_id desc
+                     order by occurred_at desc, event_id desc
                      limit :limit
                     """)
                     .param("organization", organizationId).param("from", from).param("to", to)
@@ -243,12 +365,144 @@ public final class JdbcUserActivityStore {
 
             return new ActivitySummary(
                     from, to, totals.eventCount(), totals.sessionCount(), totals.failureCount(),
-                    rate(totals.failureCount(), totals.eventCount()), totals.p95DurationMs(),
-                    lines, errors, recent, "POSTGRES_APPEND_ONLY", "NOT_RUN");
+                    rate(totals.failureCount(), totals.outcomeCount()), totals.p95DurationMs(),
+                    lines, errors, recent, "POSTGRES_DUAL_STORE", "NOT_RUN");
         });
     }
 
-    private record Totals(long eventCount, long sessionCount, long failureCount, Integer p95DurationMs) {}
+    /** One exported row. Carries `source` so an auditor can tell the two stores apart. */
+    public record ExportRow(
+            String eventId,
+            String source,
+            String sessionId,
+            String eventKind,
+            String action,
+            String businessLine,
+            String route,
+            String target,
+            Instant occurredAt,
+            Integer durationMs,
+            String result,
+            String errorCode
+    ) {}
+
+    /**
+     * One page of an export, with the cursor needed to fetch the next one.
+     *
+     * <p>{@code nextOccurredAt}/{@code nextEventId} are null exactly when
+     * {@code hasMore} is false.
+     */
+    public record ExportPage(
+            Instant from,
+            Instant to,
+            List<ExportRow> rows,
+            boolean hasMore,
+            Instant nextOccurredAt,
+            String nextEventId
+    ) {}
+
+    /**
+     * Read raw activity rows for an audit export, one keyset page at a time.
+     *
+     * <p>Paging is by {@code (occurred_at, event_id)} rather than an offset on
+     * purpose. Events keep arriving while an export runs, and an offset would
+     * silently skip or duplicate rows as the underlying set shifts -- for an
+     * audit artifact that is a correctness defect, not a cosmetic one. The
+     * keyset is stable because the pair is unique and the ordering matches it.
+     *
+     * <p>The window is capped at 366 days. Unbounded exports would let a single
+     * request pin an arbitrary amount of the table in memory.
+     */
+    public ExportPage export(
+            String organizationId,
+            Instant from,
+            Instant to,
+            String businessLine,
+            String result,
+            Instant afterOccurredAt,
+            String afterEventId,
+            int limit
+    ) {
+        Objects.requireNonNull(from, "from");
+        Objects.requireNonNull(to, "to");
+        if (!to.isAfter(from) || to.isAfter(from.plusSeconds(366L * 24 * 60 * 60))) {
+            throw new IllegalArgumentException("export window must be positive and no longer than 366 days");
+        }
+        if (limit < 1 || limit > 1000) throw new IllegalArgumentException("limit must be between 1 and 1000");
+        if ((afterOccurredAt == null) != (afterEventId == null)) {
+            throw new IllegalArgumentException("export cursor requires both occurredAt and eventId");
+        }
+        String line = normalizeFilter(businessLine);
+        String outcome = normalizeFilter(result);
+        return inTenant(organizationId, () -> {
+            // One extra row is read so the caller learns whether another page
+            // exists without paying for a second count query.
+            List<ExportRow> rows = jdbc.sql("""
+                    with activity_events as (
+                        select audit_id event_id, organization_id, session_id, event_kind, action,
+                               business_line, route, target, occurred_at, duration_ms, result,
+                               error_code, 'AUDIT' source
+                          from audit_events
+                        union all
+                        select event_id, organization_id, session_id, event_kind, action,
+                               business_line, route, target, occurred_at, duration_ms, result,
+                               error_code, 'TELEMETRY' source
+                          from product_telemetry_events
+                    )
+                    select event_id, source, session_id, event_kind, action, business_line,
+                           route, target, occurred_at, duration_ms, result, error_code
+                      from activity_events
+                     where organization_id = :organization
+                       and occurred_at >= :from and occurred_at < :to
+                       and (:line is null or business_line = :line)
+                       and (:result is null or result = :result)
+                       and (:afterOccurredAt is null
+                            or (occurred_at, event_id) > (:afterOccurredAt, :afterEventId))
+                     order by occurred_at, event_id
+                     limit :limit
+                    """)
+                    .param("organization", organizationId).param("from", from).param("to", to)
+                    .param("line", line).param("result", outcome)
+                    .param("afterOccurredAt", afterOccurredAt).param("afterEventId", afterEventId)
+                    .param("limit", limit + 1)
+                    .query(JdbcUserActivityStore::mapExport)
+                    .list();
+            boolean hasMore = rows.size() > limit;
+            List<ExportRow> page = hasMore ? List.copyOf(rows.subList(0, limit)) : rows;
+            ExportRow last = page.isEmpty() ? null : page.get(page.size() - 1);
+            return new ExportPage(
+                    from,
+                    to,
+                    page,
+                    hasMore,
+                    hasMore && last != null ? last.occurredAt() : null,
+                    hasMore && last != null ? last.eventId() : null);
+        });
+    }
+
+    private static ExportRow mapExport(ResultSet rs, int row) throws SQLException {
+        return new ExportRow(
+                rs.getString("event_id"),
+                rs.getString("source"),
+                rs.getString("session_id"),
+                rs.getString("event_kind"),
+                rs.getString("action"),
+                rs.getString("business_line"),
+                rs.getString("route"),
+                rs.getString("target"),
+                instant(rs.getObject("occurred_at", OffsetDateTime.class)),
+                nullableInteger(rs, "duration_ms"),
+                rs.getString("result"),
+                rs.getString("error_code"));
+    }
+
+    private record Totals(
+            long eventCount,
+            long sessionCount,
+            long failureCount,
+            long outcomeCount,
+            Integer p95DurationMs
+    ) {}
 
     private <T> T inTenant(String organizationId, Supplier<T> work) {
         requireIdentifier(organizationId, "organizationId");
@@ -262,7 +516,7 @@ public final class JdbcUserActivityStore {
     private static RecentEvent mapRecent(ResultSet rs, int row) throws SQLException {
         Number metric = (Number) rs.getObject("metric_value");
         return new RecentEvent(
-                rs.getString("audit_id"), rs.getString("session_id"), rs.getString("event_kind"),
+                rs.getString("event_id"), rs.getString("session_id"), rs.getString("event_kind"),
                 rs.getString("action"), rs.getString("business_line"), rs.getString("route"),
                 rs.getString("target"), instant(rs.getObject("occurred_at", OffsetDateTime.class)),
                 (Integer) rs.getObject("duration_ms"), rs.getString("result"), rs.getString("error_code"),

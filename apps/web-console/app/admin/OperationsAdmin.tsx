@@ -2,7 +2,12 @@
 
 import { FormEvent, useMemo, useState } from "react";
 import { Icon } from "../components/Icon";
-import type { UserActivitySummary } from "../lib/operationsContracts";
+import { useAccountSession } from "../components/AccountSessionProvider";
+import type {
+  OperationsConsoleView,
+  OperationsIncident,
+  OperationsRemediation,
+} from "../lib/operationsContracts";
 import styles from "./OperationsAdmin.module.css";
 
 const lines = [
@@ -12,16 +17,34 @@ const lines = [
   ["PROJECT_SYNTHESIS", "多语言项目生成"],
   ["REPOSITORY_WORKSPACE", "代码仓库工作区"],
   ["MIGRATION_GOVERNANCE", "迁移能力与验证"],
+  ["DATABASE_DATA", "数据库与数据平台"],
+  ["CLIENT_MODERNIZATION", "客户端现代化"],
+  ["CLOUD_INFRASTRUCTURE", "云与基础设施"],
+  ["SECURITY_COMPLIANCE", "安全与合规"],
+  ["DELIVERY_GOVERNANCE", "交付治理"],
   ["COMMERCIALIZATION", "商业化控制面"],
   ["PRICING_USAGE", "套餐与用量"],
   ["SKILLS_QUALIFICATION", "Skills 与验证"],
+  ["ENTERPRISE_MODERNIZATION", "企业现代化"],
+  ["MAINFRAME_MODERNIZATION", "主机现代化"],
+  ["SYSTEM_INTEGRATION", "系统集成"],
   ["PRODUCT_OVERVIEW", "产品总览"],
   ["ADMIN_OPERATIONS", "管理端"],
 ] as const;
 
 const lineLabels = Object.fromEntries(lines);
+const roleRank = { VIEWER: 1, OPERATOR: 2, APPROVER: 3 } as const;
 
 type LoadState = "LOCKED" | "LOADING" | "READY" | "ERROR";
+type AdminAction =
+  | "EVALUATE"
+  | "ACKNOWLEDGE_ALERT"
+  | "ASSIGN_INCIDENT"
+  | "RESOLVE_INCIDENT"
+  | "APPROVE_REMEDIATION"
+  | "REJECT_REMEDIATION"
+  | "PREPARE_SCM"
+  | "ENFORCE_RETENTION";
 
 function formatTime(value: string): string {
   return new Intl.DateTimeFormat("zh-CN", {
@@ -39,22 +62,25 @@ function displayTarget(value: string): string {
 }
 
 export function OperationsAdmin() {
+  const account = useAccountSession();
   const [token, setToken] = useState("");
   const [hours, setHours] = useState("24");
   const [businessLine, setBusinessLine] = useState("ALL");
   const [result, setResult] = useState("ALL");
   const [state, setState] = useState<LoadState>("LOCKED");
-  const [summary, setSummary] = useState<UserActivitySummary | null>(null);
+  const [view, setView] = useState<OperationsConsoleView | null>(null);
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
+  const [busyAction, setBusyAction] = useState("");
 
+  const summary = view?.activity ?? null;
   const periodLabel = useMemo(() => {
     if (!summary) return "尚未读取";
     return `${formatTime(summary.from)} — ${formatTime(summary.to)}`;
   }, [summary]);
 
-  async function load(event?: FormEvent) {
-    event?.preventDefault();
-    if (token.trim().length < 24) {
+  async function loadData() {
+    if (account.status !== "authenticated" && token.trim().length < 24) {
       setState("ERROR");
       setError("请输入至少 24 字符的短期管理令牌。");
       return;
@@ -64,38 +90,80 @@ export function OperationsAdmin() {
     try {
       const query = new URLSearchParams({ hours, businessLine, result, limit: "60" });
       const response = await fetch(`/api/admin/operations?${query}`, {
-        headers: { Authorization: `Bearer ${token.trim()}` },
+        headers: token.trim()
+          ? { Authorization: `Bearer ${token.trim()}` }
+          : undefined,
+        credentials: "same-origin",
         cache: "no-store",
       });
-      const payload = await response.json() as UserActivitySummary & { message?: string };
+      const payload = await response.json() as OperationsConsoleView & { message?: string };
       if (!response.ok) throw new Error(payload.message || "管理端数据读取失败。");
-      setSummary(payload);
+      setView(payload);
       setState("READY");
     } catch (loadError) {
-      setSummary(null);
+      setView(null);
       setState("ERROR");
       setError(loadError instanceof Error ? loadError.message : "管理端数据读取失败。");
     }
   }
 
+  async function load(event?: FormEvent) {
+    event?.preventDefault();
+    await loadData();
+  }
+
+  async function mutate(action: AdminAction, body: Record<string, unknown> = {}) {
+    setBusyAction(action);
+    setError("");
+    setNotice("");
+    try {
+      const response = await fetch("/api/admin/operations", {
+        method: "POST",
+        headers: {
+          ...(token.trim() ? { Authorization: `Bearer ${token.trim()}` } : {}),
+          "Content-Type": "application/json",
+        },
+        credentials: "same-origin",
+        body: JSON.stringify({ action, ...body }),
+      });
+      const payload = await response.json() as { message?: string; status?: string; decision?: string };
+      if (!response.ok) throw new Error(payload.message || "管理操作执行失败。");
+      setNotice(`操作已完成：${payload.status ?? payload.decision ?? action}`);
+      await loadData();
+    } catch (actionError) {
+      setState("READY");
+      setError(actionError instanceof Error ? actionError.message : "管理操作执行失败。");
+    } finally {
+      setBusyAction("");
+    }
+  }
+
   function lock() {
     setToken("");
-    setSummary(null);
+    setView(null);
     setError("");
+    setNotice("");
     setState("LOCKED");
+  }
+
+  function can(required: keyof typeof roleRank): boolean {
+    return Boolean(view && roleRank[view.role] >= roleRank[required]);
   }
 
   return (
     <div className="page-stack">
       <section className={styles.hero}>
         <div>
-          <span className="overline">OPERATIONS · PRIVACY SAFE</span>
-          <h1>运营管理端</h1>
-          <p>用追加式操作日志定位性能退化与失败路径。日志只保存动作契约和技术指标，不保存输入内容、Token、请求体或错误原文。</p>
+          <span className="overline">OPERATIONS · GOVERNED AUTOMATION</span>
+          <h1>生产运营管理端</h1>
+          <p>统一查看业务操作、SLO、告警、事件和修复提案。自动化负责检测、诊断与生成摘要绑定的修复计划；审批、源码变更、测试、SCM 与部署保持权限分离。</p>
         </div>
         <div className={styles.heroStatus}>
           <span className={styles.statusDot} />
-          <div><strong>{state === "READY" ? "数据链路已连接" : "数据链路已锁定"}</strong><small>{periodLabel}</small></div>
+          <div>
+            <strong>{state === "READY" ? `已连接 · ${view?.role}` : "数据链路已锁定"}</strong>
+            <small>{periodLabel}</small>
+          </div>
         </div>
       </section>
 
@@ -107,8 +175,9 @@ export function OperationsAdmin() {
             autoComplete="off"
             value={token}
             onChange={(event) => setToken(event.target.value)}
-            placeholder="仅保存在当前页面内存"
+            placeholder={account.status === "authenticated" ? "已使用企业账户，无需填写" : "仅保存在当前页面内存"}
             aria-label="短期管理令牌"
+            disabled={account.status === "authenticated"}
           />
         </label>
         <label>
@@ -145,29 +214,54 @@ export function OperationsAdmin() {
       {state === "LOCKED" && (
         <section className={styles.locked}>
           <span><Icon name="lock" size={24} /></span>
-          <div><strong>管理数据默认锁定</strong><p>输入由运维人员签发的短期令牌后读取。令牌不会写入操作日志、localStorage 或页面 URL。</p></div>
+          <div><strong>管理数据默认锁定</strong><p>生产优先使用企业账户的 admin 权限；本地或获批 break-glass 才使用短期令牌。角色均由服务端决定，页面不能自行提升。</p></div>
         </section>
       )}
 
-      {state === "ERROR" && (
+      {error && (
         <section className={styles.error} role="alert">
           <Icon name="shield" size={21} />
-          <div><strong>未能读取管理数据</strong><p>{error}</p></div>
+          <div><strong>管理操作未完成</strong><p>{error}</p></div>
         </section>
       )}
+      {notice && <section className={styles.notice} role="status">{notice}</section>}
 
-      {summary && (
+      {summary && view && (
         <>
+          <section className={styles.actionStrip}>
+            <div>
+              <strong>自动化控制</strong>
+              <small>{view.control.automationMode} · 源码修改 {view.control.sourceMutationMode}</small>
+            </div>
+            <span>待发送通知 {view.control.pendingNotifications}</span>
+            <button
+              className="primary-button"
+              type="button"
+              disabled={!can("OPERATOR") || Boolean(busyAction)}
+              onClick={() => mutate("EVALUATE")}
+            >
+              立即评估全部 SLO
+            </button>
+            <button
+              className="secondary-button"
+              type="button"
+              disabled={!can("APPROVER") || Boolean(busyAction)}
+              onClick={() => mutate("ENFORCE_RETENTION", { retentionDays: 30 })}
+            >
+              执行 30 天保留
+            </button>
+          </section>
+
           <section className={styles.metrics} aria-label="运营指标">
-            <article><span>操作事件</span><strong>{summary.totalEvents.toLocaleString("zh-CN")}</strong><small>追加式记录</small></article>
-            <article><span>活跃会话</span><strong>{summary.activeSessions.toLocaleString("zh-CN")}</strong><small>匿名会话标识</small></article>
+            <article><span>操作事件</span><strong>{summary.totalEvents.toLocaleString("zh-CN")}</strong><small>审计 + 可删除性能遥测</small></article>
+            <article><span>活跃会话</span><strong>{summary.activeSessions.toLocaleString("zh-CN")}</strong><small>服务端 HMAC 会话</small></article>
             <article><span>失败率</span><strong>{summary.failureRate.toFixed(2)}%</strong><small>{summary.failedEvents} 次失败</small></article>
-            <article><span>P95 耗时</span><strong>{summary.p95DurationMs === null ? "—" : `${summary.p95DurationMs} ms`}</strong><small>含 API 与页面性能</small></article>
+            <article><span>P95 耗时</span><strong>{summary.p95DurationMs === null ? "—" : `${summary.p95DurationMs} ms`}</strong><small>API 与页面性能</small></article>
           </section>
 
           <div className={styles.dashboardGrid}>
             <section className={styles.panel}>
-              <header><div><span className="overline">BUSINESS LINES</span><h2>业务线表现</h2></div><small>失败率与 P95 耗时</small></header>
+              <header><div><span className="overline">BUSINESS LINES</span><h2>所有业务线表现</h2></div><small>失败率与 P95 耗时</small></header>
               {summary.businessLines.length === 0 ? <Empty label="所选范围内暂无事件" /> : (
                 <div className={styles.lineList}>
                   {summary.businessLines.map((line) => (
@@ -197,6 +291,61 @@ export function OperationsAdmin() {
           </div>
 
           <section className={styles.panel}>
+            <header><div><span className="overline">SLO & ALERTS</span><h2>SLO 与告警</h2></div><small>{view.control.policies.length} 条业务线策略</small></header>
+            <div className={styles.cardGrid}>
+              {view.control.alerts.length === 0 ? <Empty label="当前没有告警" /> : view.control.alerts.map((alert) => (
+                <article className={styles.controlCard} key={alert.alertId}>
+                  <div><span className={styles.severity}>{alert.severity}</span><strong>{lineLabels[alert.businessLine] ?? alert.businessLine}</strong></div>
+                  <code>{alert.signal}</code>
+                  <p>{alert.observedValue} / 预算 {alert.thresholdValue} · {alert.status}</p>
+                  {alert.status !== "RESOLVED" && alert.status !== "ACKNOWLEDGED" && (
+                    <button
+                      className="secondary-button"
+                      type="button"
+                      disabled={!can("OPERATOR") || Boolean(busyAction)}
+                      onClick={() => mutate("ACKNOWLEDGE_ALERT", {
+                        alertId: alert.alertId,
+                        expectedVersion: alert.version,
+                      })}
+                    >
+                      确认告警
+                    </button>
+                  )}
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className={styles.panel}>
+            <header><div><span className="overline">INCIDENTS</span><h2>生产事件</h2></div><small>负责人、状态和并发版本均受控</small></header>
+            <div className={styles.cardGrid}>
+              {view.control.incidents.length === 0 ? <Empty label="当前没有生产事件" /> : view.control.incidents.map((incident) => (
+                <IncidentCard
+                  key={incident.incidentId}
+                  incident={incident}
+                  actorId={view.actorId}
+                  disabled={!can("OPERATOR") || Boolean(busyAction)}
+                  mutate={mutate}
+                />
+              ))}
+            </div>
+          </section>
+
+          <section className={styles.panel}>
+            <header><div><span className="overline">QUICK FIX GOVERNANCE</span><h2>性能优化与 Bug 修复提案</h2></div><small>预览、审批、SCM 准备、验证、回滚</small></header>
+            <div className={styles.cardGrid}>
+              {view.control.remediations.length === 0 ? <Empty label="尚无修复提案；先运行 SLO 评估" /> : view.control.remediations.map((proposal) => (
+                <RemediationCard
+                  key={proposal.proposalId}
+                  proposal={proposal}
+                  disabled={!can("APPROVER") || Boolean(busyAction)}
+                  mutate={mutate}
+                />
+              ))}
+            </div>
+          </section>
+
+          <section className={styles.panel}>
             <header><div><span className="overline">RECENT ACTIVITY</span><h2>最近操作</h2></div><small>{summary.persistence} · 外部生产证据 {summary.externalEvidence}</small></header>
             {summary.recentEvents.length === 0 ? <Empty label="所选范围内暂无事件" /> : (
               <div className={styles.tableWrap}>
@@ -218,9 +367,123 @@ export function OperationsAdmin() {
               </div>
             )}
           </section>
+
+          <section className={styles.evidence}>
+            <strong>外部门禁</strong>
+            <span>通知投递：{view.control.notificationDeliveryEvidence}</span>
+            <span>生产部署：{view.control.productionDeploymentEvidence}</span>
+            <span>保留执行：{view.control.retentionRuns.length ? "有本地/当前环境证据" : "NOT_RUN"}</span>
+          </section>
         </>
       )}
     </div>
+  );
+}
+
+function IncidentCard({
+  incident,
+  actorId,
+  disabled,
+  mutate,
+}: {
+  incident: OperationsIncident;
+  actorId: string;
+  disabled: boolean;
+  mutate: (action: AdminAction, body?: Record<string, unknown>) => Promise<void>;
+}) {
+  return (
+    <article className={styles.controlCard}>
+      <div><span className={styles.severity}>{incident.severity}</span><strong>{incident.summaryCode}</strong></div>
+      <p>{lineLabels[incident.businessLine] ?? incident.businessLine} · {incident.status}</p>
+      <small>负责人：{incident.ownerActorId}</small>
+      {incident.status !== "RESOLVED" && (
+        <div className={styles.inlineActions}>
+          <button
+            className="secondary-button"
+            type="button"
+            disabled={disabled}
+            onClick={() => mutate("ASSIGN_INCIDENT", {
+              incidentId: incident.incidentId,
+              ownerActorId: actorId,
+              expectedVersion: incident.version,
+            })}
+          >
+            接手
+          </button>
+          <button
+            className="secondary-button"
+            type="button"
+            disabled={disabled}
+            onClick={() => mutate("RESOLVE_INCIDENT", {
+              incidentId: incident.incidentId,
+              resolutionCode: "OPERATOR_VERIFIED_RESOLUTION",
+              expectedVersion: incident.version,
+            })}
+          >
+            标记已解决
+          </button>
+        </div>
+      )}
+    </article>
+  );
+}
+
+function RemediationCard({
+  proposal,
+  disabled,
+  mutate,
+}: {
+  proposal: OperationsRemediation;
+  disabled: boolean;
+  mutate: (action: AdminAction, body?: Record<string, unknown>) => Promise<void>;
+}) {
+  return (
+    <article className={styles.controlCard}>
+      <div><span className={styles.kind}>{proposal.remediationKind}</span><strong>{proposal.titleCode}</strong></div>
+      <code>{proposal.recipeId}</code>
+      <p>{proposal.status} · 风险 {proposal.riskLevel}</p>
+      <small title={proposal.preconditionDigest}>前置摘要：{proposal.preconditionDigest.slice(0, 24)}…</small>
+      {proposal.status === "PROPOSED" && (
+        <div className={styles.inlineActions}>
+          <button
+            className="primary-button"
+            type="button"
+            disabled={disabled}
+            onClick={() => mutate("APPROVE_REMEDIATION", {
+              proposalId: proposal.proposalId,
+              expectedVersion: proposal.version,
+            })}
+          >
+            批准
+          </button>
+          <button
+            className="secondary-button"
+            type="button"
+            disabled={disabled}
+            onClick={() => mutate("REJECT_REMEDIATION", {
+              proposalId: proposal.proposalId,
+              expectedVersion: proposal.version,
+            })}
+          >
+            拒绝
+          </button>
+        </div>
+      )}
+      {proposal.status === "APPROVED" && (
+        <button
+          className="primary-button"
+          type="button"
+          disabled={disabled}
+          onClick={() => mutate("PREPARE_SCM", {
+            proposalId: proposal.proposalId,
+            expectedVersion: proposal.version,
+          })}
+        >
+          生成摘要绑定 SCM 计划
+        </button>
+      )}
+      {proposal.artifactDigest && <small title={proposal.artifactDigest}>产物摘要：{proposal.artifactDigest.slice(0, 24)}…</small>}
+    </article>
   );
 }
 

@@ -37,3 +37,8 @@ test-results/
 .env
 .env.*
 !.env.example
+
+# Generated Spring route reference build (175M of regenerable output).
+build/
+# Scratch snapshot kept only for a single debugging session.
+_to_delete/

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useAccountSession } from "./AccountSessionProvider";
 import { Icon, type IconName } from "./Icon";
 
 const navigation: Array<{ href: string; label: string; hint: string; icon: IconName }> = [
@@ -39,15 +40,23 @@ const commands = [
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
+  const account = useAccountSession();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [commandOpen, setCommandOpen] = useState(false);
   const [commandQuery, setCommandQuery] = useState("");
   const [commandActive, setCommandActive] = useState(0);
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [telemetryEnabled, setTelemetryEnabled] = useState(true);
+  const [profileOpen, setProfileOpen] = useState(false);
   const commandPanel = useRef<HTMLElement>(null);
   const commandInput = useRef<HTMLInputElement>(null);
   const returnFocus = useRef<HTMLElement | null>(null);
+  const accountPermissions = new Set(account.principal?.permissions ?? []);
+  const visibleNavigation = navigation.filter((item) =>
+    item.href !== "/admin"
+    || account.status !== "authenticated"
+    || accountPermissions.has("admin:read"),
+  );
   const current = navigation.find((item) => item.href === "/" ? pathname === "/" : pathname.startsWith(item.href)) ?? navigation[0];
   const visibleCommands = useMemo(() => {
     const needle = commandQuery.trim().toLocaleLowerCase("zh-CN");
@@ -169,7 +178,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
         <nav className="primary-nav">
           <span className="nav-label">工作空间</span>
-          {navigation.map((item) => {
+          {visibleNavigation.map((item) => {
             const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
             return (
               <Link className={`nav-item ${active ? "active" : ""}`} href={item.href} key={item.href} onClick={() => setMobileOpen(false)} aria-current={active ? "page" : undefined}>
@@ -191,10 +200,51 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </button>
           <span className="secondary-link muted"><Icon name="help" size={18} />帮助与文档（规划中）</span>
         </nav>
-        <div className="profile-row">
-          <span className="avatar">迁</span>
-          <div><strong>迁移负责人</strong><small>本地工作区</small></div>
-          <Icon name="chevron" size={16} />
+        <div className="profile-area">
+          <button
+            className="profile-row"
+            type="button"
+            aria-expanded={profileOpen}
+            aria-controls="account-profile-menu"
+            onClick={() => setProfileOpen((open) => !open)}
+          >
+            <span className="avatar">{account.principal?.displayName.slice(0, 1) ?? "访"}</span>
+            <div>
+              <strong>{account.principal?.displayName ?? (account.status === "not-configured" ? "本地开发模式" : "未登录")}</strong>
+              <small>{account.principal?.organizationId ?? "无企业会话"}</small>
+            </div>
+            <Icon name="chevron" size={16} />
+          </button>
+          {profileOpen && (
+            <div className="profile-menu" id="account-profile-menu">
+              {account.status === "authenticated" && account.principal ? (
+                <>
+                  <div className="profile-menu-summary">
+                    <strong>{account.principal.displayName}</strong>
+                    <small>{account.principal.roles.join(" · ") || "无业务角色"}</small>
+                  </div>
+                  {account.principal.memberships.length > 1 && (
+                    <label>
+                      <span>当前租户</span>
+                      <select
+                        value={account.principal.organizationId}
+                        onChange={(event) => void account.switchTenant(event.target.value)}
+                      >
+                        {account.principal.memberships.map((membership) => (
+                          <option value={membership.organizationId} key={membership.organizationId}>
+                            {membership.organizationId}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  )}
+                  <button type="button" onClick={() => void account.logout()}>安全退出</button>
+                </>
+              ) : (
+                <Link href={`/login?${new URLSearchParams({ returnTo: pathname })}`}>使用企业账户登录</Link>
+              )}
+            </div>
+          )}
         </div>
       </aside>
       {mobileOpen && <button className="sidebar-scrim" aria-label="关闭导航遮罩" onClick={() => setMobileOpen(false)} />}
@@ -209,7 +259,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <span className="environment-pill"><i /> 本地契约环境</span>
             <span className="topbar-divider" />
             <button className="icon-button" aria-label="重新载入当前页面（会清除未保存输入）" onClick={reloadPage}><Icon name="refresh" size={18} /></button>
-            <span className="top-avatar">迁</span>
+            {account.status === "authenticated" ? (
+              <button
+                className="top-avatar"
+                type="button"
+                aria-label="打开账户菜单"
+                onClick={() => setProfileOpen((open) => !open)}
+              >
+                {account.principal?.displayName.slice(0, 1) ?? "企"}
+              </button>
+            ) : (
+              <Link className="top-login-link" href={`/login?${new URLSearchParams({ returnTo: pathname })}`}>登录</Link>
+            )}
           </div>
         </header>
         <main id="main-content" className="main-content" tabIndex={-1}>{children}</main>

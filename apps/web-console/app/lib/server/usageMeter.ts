@@ -2,6 +2,12 @@ import { createHash, timingSafeEqual } from "node:crypto";
 import { readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import type { NextRequest } from "next/server";
+import {
+  accountCookieNames,
+  AccountSessionError,
+  accountSessionFromRequest,
+  unsafeCookieValue,
+} from "./accountSession";
 import { pricingCatalog } from "../pricingCatalog";
 import {
   type CurrentUsageSnapshot,
@@ -184,6 +190,37 @@ function safeEqual(left: string, right: string): boolean {
 }
 
 function authorize(request: NextRequest, configured: UsageSettings, now: Date): void {
+  if (unsafeCookieValue(request, accountCookieNames.session)) {
+    try {
+      const account = accountSessionFromRequest(request, "usage:read");
+      if (
+        account.principal.organizationId !== configured.tenantId
+        || account.principal.actorId !== configured.actorId
+      ) {
+        throw new UsageMeterError(
+          403,
+          "USAGE_SUBJECT_MISMATCH",
+          "账户会话与当前用量账本绑定不一致。",
+          false,
+        );
+      }
+      return;
+    } catch (error) {
+      if (error instanceof UsageMeterError) throw error;
+      if (error instanceof AccountSessionError) {
+        throw new UsageMeterError(error.status, error.code, error.message, false);
+      }
+      throw error;
+    }
+  }
+  if (process.env.NODE_ENV === "production") {
+    throw new UsageMeterError(
+      401,
+      "ACCOUNT_SESSION_REQUIRED",
+      "请先登录企业账户。",
+      false,
+    );
+  }
   const authorization = request.headers.get("authorization") ?? "";
   const token = authorization.startsWith("Bearer ") ? authorization.slice(7) : "";
   const tenantId = request.headers.get("x-elmos-tenant") ?? "";

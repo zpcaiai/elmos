@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "1.0.0",
+  "recipes": [
+    {
+      "recipeId": "STABLE_ERROR_DIAGNOSTIC_V1",
+      "kind": "BUG_FIX",
+      "trigger": "FAILURE_RATE_BPS_BUDGET_BREACH",
+      "risk": "MEDIUM",
+      "automaticSteps": ["detect", "diagnose", "create_incident", "create_patch_plan"],
+      "approvalRequired": true,
+      "requiredTests": [
+        "REPRODUCE_DIAGNOSTIC",
+        "TARGETED_REGRESSION",
+        "NEGATIVE_POLICY_TEST",
+        "OWNER_SELECTED_BUILD",
+        "POST_CHANGE_SLO_REPLAY"
+      ]
+    },
+    {
+      "recipeId": "LATENCY_BUDGET_DIAGNOSTIC_V1",
+      "kind": "PERFORMANCE",
+      "trigger": "LATENCY_P95_MS_BUDGET_BREACH",
+      "risk": "MEDIUM",
+      "automaticSteps": ["detect", "diagnose", "create_incident", "create_patch_plan"],
+      "approvalRequired": true,
+      "requiredTests": [
+        "REPRODUCE_DIAGNOSTIC",
+        "TARGETED_REGRESSION",
+        "NEGATIVE_POLICY_TEST",
+        "OWNER_SELECTED_BUILD",
+        "POST_CHANGE_SLO_REPLAY"
+      ]
+    }
+  ]
+}

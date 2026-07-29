@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./styles.css";
 import { AppShell } from "./components/AppShell";
+import { AccountSessionProvider } from "./components/AccountSessionProvider";
 import { UserActivityCollector } from "./components/UserActivityCollector";
 
 export const metadata: Metadata = {
@@ -13,8 +14,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="zh-CN">
       <body>
         <a className="skip-link" href="#main-content">跳到主要内容</a>
-        <UserActivityCollector />
-        <AppShell>{children}</AppShell>
+        <AccountSessionProvider>
+          <UserActivityCollector />
+          <AppShell>{children}</AppShell>
+        </AccountSessionProvider>
       </body>
     </html>
   );
