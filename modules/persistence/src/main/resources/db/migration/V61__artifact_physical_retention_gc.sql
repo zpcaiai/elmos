@@ -13,6 +13,11 @@ ALTER TABLE content_objects
         )
     );
 
+ALTER TABLE object_gc_runs
+    ADD COLUMN purge_failed_count integer NOT NULL DEFAULT 0,
+    ADD CONSTRAINT object_gc_runs_purge_failed_nonnegative
+        CHECK (purge_failed_count >= 0);
+
 CREATE OR REPLACE FUNCTION elmos_expire_artifacts(
     p_gc_run_id varchar, p_batch_limit integer
 ) RETURNS integer
@@ -59,10 +64,44 @@ BEGIN
        );
 
     UPDATE object_gc_runs
-       SET finished_at = now(), run_state = 'COMPLETED',
-           expired_count = v_expired, held_count = v_held
+       SET expired_count = v_expired, held_count = v_held
      WHERE gc_run_id = p_gc_run_id;
     RETURN v_expired;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION elmos_finish_object_gc(
+    p_gc_run_id varchar,
+    p_purged_count integer,
+    p_purge_failed_count integer
+) RETURNS boolean
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+    IF p_purged_count < 0 OR p_purge_failed_count < 0 THEN
+        RAISE EXCEPTION 'ELMOS_OBJECT_GC_COUNT_INVALID';
+    END IF;
+    UPDATE object_gc_runs
+       SET finished_at = now(),
+           purged_count = p_purged_count,
+           purge_failed_count = p_purge_failed_count,
+           failure_code = CASE
+               WHEN p_purge_failed_count > 0
+                   THEN 'OBJECT_PROVIDER_RESULT_UNKNOWN'
+               ELSE NULL
+           END,
+           run_state = CASE
+               WHEN p_purge_failed_count > 0 THEN 'FAILED'
+               ELSE 'COMPLETED'
+           END
+     WHERE gc_run_id = p_gc_run_id
+       AND run_state = 'RUNNING';
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'ELMOS_OBJECT_GC_RUN_NOT_ACTIVE';
+    END IF;
+    RETURN true;
 END;
 $$;
 
@@ -111,3 +150,4 @@ $$;
 REVOKE EXECUTE ON FUNCTION elmos_expire_artifacts(varchar, integer) FROM PUBLIC;
 REVOKE EXECUTE ON FUNCTION elmos_pending_object_purges(integer) FROM PUBLIC;
 REVOKE EXECUTE ON FUNCTION elmos_confirm_object_purged(varchar, varchar) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION elmos_finish_object_gc(varchar, integer, integer) FROM PUBLIC;

@@ -106,7 +106,8 @@ BEGIN
          'elmos_issue_download_grant',
          'elmos_expire_artifacts',
          'elmos_pending_object_purges',
-         'elmos_confirm_object_purged'
+         'elmos_confirm_object_purged',
+         'elmos_finish_object_gc'
        )
   LOOP
     EXECUTE format(

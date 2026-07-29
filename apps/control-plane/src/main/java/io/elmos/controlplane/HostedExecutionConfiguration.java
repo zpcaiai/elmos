@@ -144,19 +144,36 @@ class ObjectRetentionScheduler {
 
     @Scheduled(fixedDelayString = "${elmos.object-storage.gc-interval-ms:3600000}")
     void collect() {
-        metadata.expireArtifacts(
-                "gc-" + java.util.UUID.randomUUID(), 500);
-        S3ObjectStore store = stores.current();
-        for (JdbcObjectStorageStore.PendingPurge purge : metadata.pendingPurges(250)) {
+        String runId = "gc-" + java.util.UUID.randomUUID();
+        metadata.expireArtifacts(runId, 500);
+        var pending = metadata.pendingPurges(250);
+        int purged = 0;
+        int failed = 0;
+        S3ObjectStore store;
+        try {
+            store = stores.current();
+        } catch (S3ObjectStore.ObjectStorageException unavailable) {
+            metadata.finishGcRun(
+                    runId, 0, Math.max(1, pending.size()));
+            return;
+        }
+        for (JdbcObjectStorageStore.PendingPurge purge : pending) {
             try {
                 store.deleteObject(
                         purge.organizationId(), purge.contentSha256());
-                metadata.confirmPurged(
-                        purge.organizationId(), purge.contentObjectId());
+                if (metadata.confirmPurged(
+                        purge.organizationId(),
+                        purge.contentObjectId())) {
+                    purged++;
+                } else {
+                    failed++;
+                }
             } catch (S3ObjectStore.ObjectStorageException ignored) {
                 // Unknown provider state remains PURGE_PENDING. The next run
                 // retries DELETE idempotently; it never publishes a false purge.
+                failed++;
             }
         }
+        metadata.finishGcRun(runId, purged, failed);
     }
 }

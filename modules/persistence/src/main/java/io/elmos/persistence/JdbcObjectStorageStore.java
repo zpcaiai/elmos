@@ -248,6 +248,26 @@ public final class JdbcObjectStorageStore implements S3ObjectStore.ObjectStorage
         return Boolean.TRUE.equals(confirmed);
     }
 
+    public void finishGcRun(
+            String gcRunId,
+            int purgedCount,
+            int purgeFailedCount
+    ) {
+        Boolean finished = jdbc.sql("""
+                SELECT elmos_finish_object_gc(
+                    :runId, :purged, :failed)
+                """)
+                .param("runId", gcRunId)
+                .param("purged", purgedCount)
+                .param("failed", purgeFailedCount)
+                .query(Boolean.class)
+                .single();
+        if (!Boolean.TRUE.equals(finished)) {
+            throw new IllegalStateException(
+                    "OBJECT_GC_RUN_NOT_FINISHED");
+        }
+    }
+
     /**
      * Records the grant and returns what the caller needs to presign. The URL is
      * built outside the database and never stored - only who asked, for what, and
