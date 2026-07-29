@@ -11,6 +11,20 @@ const snapshotSha = "c".repeat(64);
 test.beforeEach(async ({ page }) => {
   await page.route("**/api/telemetry/events", (route) =>
     route.fulfill({ status: 204, body: "" }));
+  // This suite exercises the explicit short-lived Spring Runner lease. Keep
+  // the account-session probe deterministic and cover its fail-closed 401
+  // contract separately in account-session-ui.spec.ts.
+  await page.route("**/api/auth/session", (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        authenticated: false,
+        configured: false,
+        principal: null,
+        expiresAt: null,
+      }),
+    }));
 });
 
 const capabilities = {
