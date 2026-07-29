@@ -9,15 +9,24 @@ routes. Swift source analysis goes through a SwiftSyntax helper under
 `native/swift`, built on demand by `swift build -c release` the first time a
 Swift route runs -- the same on-demand build the TypeScript CLI already uses.
 
-> **Unverified as shipped.** The Swift helper has never been compiled: no
-> environment available to its author had a Swift toolchain. Its first
-> `swift build` on a machine with Xcode is also its first compile, and the
-> `exact:` swift-syntax pin in `native/swift/Package.swift` (currently
-> `600.0.1`) very likely needs to be moved to the major matching that host's
-> `swiftc --version` -- swift-syntax tracks the Swift release (5.10 -> 510.x,
-> 6.0 -> 600.x). Every other analyzer in this engine was executed against its
-> real toolchain before being committed; this one was not, and until it has
-> been, treat Swift-as-source as unproven rather than as a passing route.
+The helper is built against the `exact:` swift-syntax pin in
+`native/swift/Package.swift` (currently `600.0.1`). swift-syntax's major tracks
+the Swift release it ships with (5.10 -> 510.x, 6.0 -> 600.x), so on a host
+whose `swiftc --version` reports a different release, move that one line to the
+matching major and record the pairing here. A mismatched pin fails the build
+loudly rather than resolving to whatever is newest, the same posture as
+`ELMOS_SWIFT_VERSION` in `toolchains.py`.
+
+One detail of the Swift frontend is easy to get wrong and worth stating.
+SwiftSyntax deliberately does *not* apply operator precedence while parsing:
+`a + b * c` arrives as a single flat `SequenceExprSyntax`, and
+`InfixOperatorExprSyntax` only exists after a separate folding pass. The
+analyzer therefore folds with `OperatorTable.standardOperators` from
+`SwiftOperators` -- the compiler's own precedence table -- rather than a
+hand-rolled precedence ladder, so `a - b - c` and `a + b * c` associate exactly
+as `swiftc` associates them. A fold the table cannot resolve fails closed with
+`SWIFT_OPERATOR_FOLDING_FAILED` instead of leaving an unfolded sequence to be
+misread downstream.
 
 C++ and Objective-C are lifted from clang's own AST
 (`clang -Xclang -ast-dump=json -fsyntax-only`), so the IR carries the types

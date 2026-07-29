@@ -29,6 +29,7 @@
 // no operator is rewritten on the way in or out; see the engine README.
 
 import Foundation
+import SwiftOperators
 import SwiftParser
 import SwiftParserDiagnostics
 import SwiftSyntax
@@ -330,17 +331,51 @@ let functionName = arguments[2]
 
 do {
     let source = try String(contentsOf: sourcePath, encoding: .utf8)
-    let tree = Parser.parse(source: source)
+    let parsed = Parser.parse(source: source)
+
+    // SwiftSyntax deliberately does NOT apply operator precedence while
+    // parsing: `a + b * c` arrives as one flat `SequenceExprSyntax`, and
+    // `InfixOperatorExprSyntax` only exists after a separate folding pass.
+    // The fold uses the compiler's own standard operator table rather than a
+    // hand-rolled precedence ladder, so `a - b - c` and `a + b * c` associate
+    // exactly as swiftc associates them. A fold that cannot resolve an
+    // operator fails closed instead of leaving an unfolded sequence behind.
+    var foldingFailures: [String] = []
+    let folded = OperatorTable.standardOperators.foldAll(parsed) { error in
+        let text = "\(error)"
+            .replacingOccurrences(of: ":", with: "-")
+            .split(whereSeparator: { $0.isWhitespace })
+            .joined(separator: "_")
+        foldingFailures.append("SWIFT_OPERATOR_FOLDING_FAILED:\(text)")
+    }
+    if let failure = foldingFailures.first {
+        FileHandle.standardError.write(Data((failure + "\n").utf8))
+        exit(1)
+    }
+    guard let tree = folded.as(SourceFileSyntax.self) else {
+        FileHandle.standardError.write(
+            Data("SWIFT_OPERATOR_FOLDING_FAILED:not_a_source_file\n".utf8))
+        exit(1)
+    }
 
     // Parser diagnostics are carried, not swallowed: a source that does not
     // parse cleanly blocks emission downstream, exactly as in Analyzer.java.
     let converter = SourceLocationConverter(
-        fileName: sourcePath.lastPathComponent, tree: tree)
-    let diagnostics = ParseDiagnosticsGenerator.diagnostics(for: tree)
+        fileName: sourcePath.lastPathComponent, tree: parsed)
+    let diagnostics = ParseDiagnosticsGenerator.diagnostics(for: parsed)
         .filter { $0.diagMessage.severity == .error }
         .map { diagnostic -> String in
             let line = converter.location(for: diagnostic.position).line
-            return "\(diagnostic.diagMessage.diagnosticID.id):\(line)"
+            // `MessageID.id` is private in SwiftDiagnostics, so the
+            // human-readable message is the only public identifier available.
+            // It is flattened to a single `CODE:line`-shaped token so the
+            // diagnostics list keeps the same shape the JDK and Roslyn
+            // analyzers emit.
+            let text = diagnostic.diagMessage.message
+                .replacingOccurrences(of: ":", with: "-")
+                .split(whereSeparator: { $0.isWhitespace })
+                .joined(separator: "_")
+            return "\(text):\(line)"
         }
         .sorted()
 

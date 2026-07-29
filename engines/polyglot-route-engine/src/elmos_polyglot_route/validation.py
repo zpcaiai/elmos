@@ -227,7 +227,10 @@ def validate(
             ["./route_harness"],
         ]
     elif language == "swift":
-        (output / "route_harness.swift").write_text(_swift_harness(function, cases), encoding="utf-8")
+        # The file *must* be called main.swift: Swift only allows top-level
+        # statements there, and rejects them ("statements are not allowed at
+        # the top level") in any other file name.
+        (output / "main.swift").write_text(_swift_harness(function, cases), encoding="utf-8")
         commands = [
             [
                 toolchain.executable,
@@ -235,7 +238,7 @@ def validate(
                 "-o",
                 "route_harness",
                 "migrated.swift",
-                "route_harness.swift",
+                "main.swift",
             ],
             ["./route_harness"],
         ]
