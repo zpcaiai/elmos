@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-project-generation-source-ingestion",
+  "metrics": {
+    "property_pass_rate": 1.0,
+    "metamorphic_pass_rate": 1.0,
+    "mutation_score": 1.0,
+    "fuzz_campaign_pass_rate": 1.0,
+    "security_property_pass_rate": 1.0,
+    "counterexample_replay_pass_rate": 1.0,
+    "local_test_pass_rate": 1.0,
+    "local_tests": 9,
+    "fuzz_cases": 256,
+    "seeded_mutants_killed": 2
+  },
+  "zero_tolerance": {
+    "surviving_critical_mutants": 0,
+    "critical_fuzz_crashes": 0,
+    "security_property_violations": 0,
+    "unreplayed_counterexamples": 0
+  },
+  "evidence_refs": [
+    "certification/local-test-result.json",
+    "corpus/negative/cases.json",
+    "corpus/holdout/cases.json",
+    "corpus/representative-workloads/cases.json",
+    "counterexamples/sample.json"
+  ],
+  "notes": [
+    "Local engineering evidence only; independent certification was not requested or performed."
+  ]
+}

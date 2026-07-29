@@ -226,6 +226,19 @@ jobs:
         run: |
           uv run --with pyyaml python tooling/validate_runtime_operability.py
           uv run --with pyyaml python -m unittest discover -s tests/production-readiness -p 'test_*.py'
+      - name: Verify project generation source and cloud evidence packs
+        run: |
+          uv run --with 'jsonschema>=4.23' --with pyyaml \
+            python scripts/batch35/validate_verification_pack.py \
+            verification-packs/elmos-project-generation-source-ingestion
+          uv run --with 'jsonschema>=4.23' --with pyyaml \
+            python scripts/batch35/run_verification_gate.py \
+            verification-packs/elmos-project-generation-source-ingestion |
+            tee /tmp/elmos-generation-source-gate.txt
+          grep -F "decision=NOT_CERTIFIED" /tmp/elmos-generation-source-gate.txt
+          uv run --with 'jsonschema>=4.23' --with pyyaml \
+            python scripts/batch33/run_cloud_gate.py \
+            cloud-packs/elmos-project-generation-cloud-run-handoff
       - name: Verify Batch 45 fail-closed toolkit
         run: |
           uv run --with 'jsonschema>=4.23' --with pyyaml python scripts/mature_product_toolkit.py validate --batch 45
@@ -309,8 +322,8 @@ jobs:
         run: pnpm --dir apps/web-console install --frozen-lockfile
       - name: Type-check and build
         run: pnpm --dir apps/web-console check
-      - name: Install Chromium for browser journeys
-        run: pnpm --dir apps/web-console exec playwright install --with-deps chromium
+      - name: Install exact browser engines for generation journeys
+        run: pnpm --dir apps/web-console exec playwright install --with-deps chromium firefox webkit
       - name: Verify desktop and mobile browser journeys
         env:
           ELMOS_E2E_PORT: "3210"
@@ -321,12 +334,27 @@ jobs:
           pnpm --dir apps/web-console exec playwright test
           --project=chromium
           --project=mobile-chromium
+          e2e/account-session-ui.spec.ts
           e2e/console-usability.spec.ts
+          e2e/generation-source-ingestion.spec.ts
+          e2e/generation-ui.spec.ts
           e2e/maturity-status-ui.spec.ts
           e2e/operations-admin-ui.spec.ts
           e2e/pricing-ui.spec.ts
           e2e/repository-workspace-ui.spec.ts
           e2e/runtime-deployment-guide.spec.ts
+      - name: Verify generation across Firefox, WebKit, and mobile Safari
+        env:
+          ELMOS_E2E_PORT: "3212"
+          ELMOS_E2E_WEB_SERVER_MODE: development
+          ELMOS_E2E_OUTPUT_DIR: test-results/ci-generation-browser-matrix
+          ELMOS_E2E_REPORT_DIR: test-results/ci-generation-browser-matrix-report
+        run: >-
+          pnpm --dir apps/web-console exec playwright test
+          --project=firefox
+          --project=webkit
+          --project=mobile-webkit
+          e2e/generation-ui.spec.ts
 
   web-console-runner-e2e:
     name: Isolated browser Runner journeys

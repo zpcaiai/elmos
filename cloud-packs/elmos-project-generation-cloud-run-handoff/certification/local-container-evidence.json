@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "executed_at": "2026-07-29T04:49:55Z",
+  "executor": "local-codex-session",
+  "environment": {
+    "os": "darwin-arm64",
+    "docker_server": "29.4.0",
+    "base_image": "python:3.12.12-slim@sha256:f3fa41d74a768c2fce8016b98c191ae8c1bacd8f1152870a3f9f87d350920b7c"
+  },
+  "generated_project": {
+    "name": "cloud-handoff-service",
+    "target": "python-3.12-fastapi",
+    "container_port": 8082,
+    "external_cloud_status": "NOT_RUN"
+  },
+  "results": {
+    "image_build": "passed",
+    "image_id": "sha256:895fa57f4bf667e9d150ca2a2c44b4ade41c61ea92b2baea96526acbad0a5e70",
+    "container_start": "passed",
+    "health_probe": {"status": "passed", "body": {"status": "UP", "service": "cloud-handoff-service"}},
+    "runtime_user": "10001:10001",
+    "read_only_root_filesystem": true,
+    "capabilities_dropped": ["ALL"],
+    "security_options": ["no-new-privileges"],
+    "loopback_only_publication": "127.0.0.1:18082->8082",
+    "container_stop": "passed",
+    "container_removal": "passed",
+    "image_removal": "passed",
+    "temporary_workspace": "moved-to-trash"
+  },
+  "notes": [
+    "The first curl inherited an ambient proxy and returned 502; replay with --noproxy '*' reached the loopback container and returned HTTP 200.",
+    "This is local container evidence, not Google Cloud execution evidence."
+  ]
+}

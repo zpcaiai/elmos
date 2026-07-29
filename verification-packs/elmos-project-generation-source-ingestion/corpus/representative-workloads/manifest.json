@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "source_digest": "sha256:d9b2dae38cd583a3521729f05cc3be022338c4dd07c3d9e51a2d71904263c5b1",
+  "dataset_digest": "sha256:af9094d8e8f686023104d1b1c5b648d9894ce057cc01f6b2c7b61f4e55c0af64",
+  "evidence_refs": ["certification/local-test-result.json"],
+  "limitations": [
+    "Repository-owned engineering workloads only; representative production traffic is NOT_RUN."
+  ]
+}

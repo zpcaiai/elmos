@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "executed_at": "2026-07-29T04:43:54Z",
+  "executor": "local-codex-session",
+  "environment": {
+    "node": "v26.0.0",
+    "pnpm": "10.12.4",
+    "playwright": "1.61.1",
+    "browser_project": "chromium"
+  },
+  "command": "ELMOS_E2E_PORT=3221 pnpm exec playwright test --project=chromium e2e/generation-source-ingestion.spec.ts",
+  "tests": 9,
+  "passed": 9,
+  "failed": 0,
+  "duration_seconds": 10.2,
+  "source_digest": "sha256:d9b2dae38cd583a3521729f05cc3be022338c4dd07c3d9e51a2d71904263c5b1",
+  "test_digest": "sha256:7887bdd510865dc97487078945640c2c4cdbf7f4eaea8f614e65de0b0daf36e3",
+  "environment_digest": "sha256:e148832efecfee927b24f4176624699a9b9845416169dfc74e417fa1ae51086a",
+  "coverage": {
+    "supported_text_formats": true,
+    "file_limits_and_malformed_inputs": true,
+    "ssrf_address_policy": true,
+    "origin_redaction": true,
+    "source_count_and_truncation": true,
+    "skill_traversal_and_symlinks": true,
+    "seeded_fuzz_cases": 256,
+    "seeded_mutants_killed": 2,
+    "holdout_and_representative_corpora": true
+  },
+  "limitations": [
+    "Local execution only",
+    "No independent verifier",
+    "No controlled public DNS rebinding host"
+  ]
+}

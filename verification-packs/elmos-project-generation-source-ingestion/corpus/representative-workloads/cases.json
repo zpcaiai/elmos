@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "source": "repository-owned representative engineering workloads; not production traffic",
+  "workloads": [
+    {
+      "id": "chinese-order-service",
+      "description": "实体: order; order字段: reference:string:required; 权限: admin:create/read/update/delete:order",
+      "expected_source_count": 1
+    },
+    {
+      "id": "multilingual-inventory-service",
+      "description": "Build an inventory API. 实体: inventory; inventory字段: sku:string:required, quantity:integer:required",
+      "expected_source_count": 1
+    }
+  ]
+}

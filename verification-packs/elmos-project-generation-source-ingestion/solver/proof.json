@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "proof_id": "proof.external-symbolic-source-ingestion-not-run",
+  "property_id": "property.normalization-idempotent-and-bounded",
+  "solver": {
+    "name": "external-smt",
+    "version": "NOT_CONFIGURED",
+    "options": {},
+    "timeout_ms": 0
+  },
+  "status": "unsupported",
+  "assumptions": [
+    "The bounded seeded campaign is engineering evidence and is not a universal proof."
+  ],
+  "input_digest": "sha256:d9b2dae38cd583a3521729f05cc3be022338c4dd07c3d9e51a2d71904263c5b1",
+  "evidence_refs": ["certification/local-test-result.json"]
+}

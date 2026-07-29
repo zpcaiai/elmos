@@ -1,8 +1,11 @@
 import { expect, test } from "@playwright/test";
 
-test("account session fails closed when OIDC is not configured", async ({ request, page }) => {
+test("account session discovery represents anonymous state without a console-level 401", async ({
+  request,
+  page,
+}) => {
   const session = await request.get("/api/auth/session");
-  expect(session.status()).toBe(401);
+  expect(session.status()).toBe(200);
   await expect(session.json()).resolves.toMatchObject({
     authenticated: false,
     configured: false,

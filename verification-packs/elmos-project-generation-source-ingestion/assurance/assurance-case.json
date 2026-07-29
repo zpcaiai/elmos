@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "case_key": "elmos-project-generation-source-ingestion-assurance-v1",
+  "version": 1,
+  "owner": "elmos-project-synthesis-engineering",
+  "top_claim": "The source-ingestion boundary has reproducible local engineering evidence and remains fail closed outside that evidence.",
+  "claims": [
+    {
+      "claim_id": "claim.source-boundaries",
+      "statement": "Untrusted descriptions, files, Skills, and URLs are bounded, normalized, provenance-bound, and rejected on known unsafe paths.",
+      "status": "partially-supported",
+      "evidence_refs": [
+        "certification/local-test-result.json",
+        "corpus/negative/cases.json",
+        "corpus/holdout/cases.json",
+        "counterexamples/sample.json"
+      ],
+      "assumptions": [
+        "Node, pnpm, Playwright, DNS resolver, and filesystem behavior match the recorded local environment."
+      ],
+      "limitations": [
+        "No independent verifier",
+        "Controlled public DNS rebinding exercise NOT_RUN",
+        "Production workload evidence NOT_RUN"
+      ]
+    }
+  ],
+  "evidence": [
+    "certification/local-test-result.json",
+    "counterexamples/sample.json",
+    "corpus/negative/cases.json",
+    "corpus/holdout/cases.json",
+    "corpus/representative-workloads/cases.json"
+  ],
+  "residual_risks": [
+    {
+      "risk": "DNS rebinding and malicious public TLS endpoint exercise is NOT_RUN.",
+      "owner": "elmos-security-engineering",
+      "status": "open"
+    },
+    {
+      "risk": "Independent holdout review and production workload evidence are NOT_RUN.",
+      "owner": "elmos-verification-engineering",
+      "status": "open"
+    }
+  ],
+  "monitoring_obligations": [
+    "Re-run on every generationSourceIngestion or parser dependency change.",
+    "Reject certification until independent verification and external security evidence exist."
+  ],
+  "approvals": []
+}

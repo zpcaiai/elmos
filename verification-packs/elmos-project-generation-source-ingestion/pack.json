@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-project-generation-source-ingestion",
+  "version": "0.1.0",
+  "status": "experimental",
+  "owner": "elmos-project-synthesis-engineering",
+  "maintenance_owner": "elmos-project-synthesis-engineering",
+  "scope": {
+    "migration_route": "project-intent-to-approved-source-bundle",
+    "source_artifact_digest": "sha256:d9b2dae38cd583a3521729f05cc3be022338c4dd07c3d9e51a2d71904263c5b1",
+    "target_artifact_digest": "sha256:7887bdd510865dc97487078945640c2c4cdbf7f4eaea8f614e65de0b0daf36e3",
+    "workload_key": "multi-format-source-ingestion-security",
+    "risk_tier": "P0",
+    "environment_digest": "sha256:e148832efecfee927b24f4176624699a9b9845416169dfc74e417fa1ae51086a",
+    "validation_kind": "local-deterministic-parser-security-qualification",
+    "source_target_migration_equivalence": "NOT_APPLICABLE",
+    "external_solver_or_symbolic_execution": "NOT_RUN",
+    "independent_holdout": "LOCAL_EXECUTED_NOT_INDEPENDENTLY_VERIFIED",
+    "representative_production_workload": "NOT_RUN"
+  },
+  "contracts": {
+    "validation_profile": "validation-profile.json",
+    "oracle_registry": "oracle-registry.json",
+    "assurance_case": "assurance/assurance-case.json"
+  },
+  "corpus": {
+    "development": "corpus/development",
+    "negative": "corpus/negative",
+    "holdout": "corpus/holdout",
+    "representative_workloads": "corpus/representative-workloads"
+  },
+  "certification": {
+    "evidence_path": "certification/evidence.json",
+    "result_path": "certification/gate-result.json"
+  },
+  "tags": [
+    "advanced-verification",
+    "project-generation",
+    "source-ingestion",
+    "not-certified"
+  ]
+}

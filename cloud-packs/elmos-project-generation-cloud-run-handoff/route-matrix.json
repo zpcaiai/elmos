@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-project-generation-cloud-run-handoff",
+  "tuples": [
+    {
+      "source": {
+        "platform": "generated-local-container",
+        "provider": "docker-desktop",
+        "regions": [
+          "localhost"
+        ],
+        "account_model": "local-developer",
+        "iac_tool": {
+          "name": "kubernetes-manifest",
+          "version": "v1"
+        },
+        "runtime": {
+          "name": "docker-engine",
+          "version": "29.4.0"
+        },
+        "orchestrator": {
+          "name": "none",
+          "version": "n/a"
+        },
+        "ci_cd": {
+          "name": "github-actions",
+          "version": "workflow-v1"
+        },
+        "state_backend": {
+          "type": "local-generated-artifact",
+          "locking": "single-runner-exclusive-workspace",
+          "encryption": "host-filesystem-policy"
+        },
+        "services": ["generated-python-fastapi-container"]
+      },
+      "target": {
+        "platform": "google-cloud-run-v2",
+        "provider": "google-cloud",
+        "regions": [
+          "asia-east1"
+        ],
+        "account_model": "approved-isolated-project-required",
+        "iac_tool": {
+          "name": "gcloud-cli",
+          "version": "NOT_INSTALLED_2026-07-29"
+        },
+        "runtime": {
+          "name": "cloud-run",
+          "version": "v2"
+        },
+        "orchestrator": {
+          "name": "none",
+          "version": "n/a"
+        },
+        "ci_cd": {
+          "name": "github-actions",
+          "version": "workflow-v1"
+        },
+        "state_backend": {
+          "type": "cloud-run-service-revision",
+          "locking": "immutable-revision-and-image-digest",
+          "encryption": "google-managed-at-rest-and-tls-in-transit"
+        },
+        "services": ["cloud-run-service", "artifact-registry", "service-account", "secret-manager"]
+      },
+      "status": "blocked",
+      "evidence_refs": [
+        "certification/local-container-evidence.json",
+        "certification/external-tooling-status.json"
+      ]
+    }
+  ],
+  "recertification_triggers": [
+    "generated Dockerfile or deployment guidance digest changes",
+    "Docker, gcloud, Cloud Run API, region, account, IAM, ingress, Secret, capacity, or cost tuple changes"
+  ]
+}
