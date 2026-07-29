@@ -89,7 +89,7 @@ test.describe("多语言项目生成 UI", () => {
     await page.route("**/api/generation/analyze", async (route) => {
       observedAuthorization = route.request().headers().authorization ?? "";
       await route.fulfill({
-        status: 401,
+        status: 403,
         contentType: "application/json",
         body: JSON.stringify({ reason: "AUTHENTICATION_REQUIRED" }),
       });
