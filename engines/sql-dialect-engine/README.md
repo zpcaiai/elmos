@@ -92,6 +92,69 @@ dialect mode). Emission goes through a hand-written, per-vendor renderer
 one of the 31 tests in `tests/test_certified_ddl_v1.py` asserts the correct
 target-dialect keyword appears and the wrong one does not.
 
+## Find out the coverage BEFORE migrating
+
+A certified subset is only honest if its boundary is visible in advance.
+`scan` answers "how much of this schema can actually be translated?"
+without writing anything or even picking a target dialect:
+
+```bash
+uv run elmos-sql-dialect scan \
+  --repository ./my-service/src/main/resources/db/migration \
+  --source-dialect postgres \
+  --output ./feasibility
+```
+
+Statements are split by **sqlglot itself**, not by splitting on
+semicolons -- a semicolon inside a string literal, a `$$`-quoted function
+body or a `BEGIN ... END` block would otherwise miscount silently. Both
+`feasibility-report.json` and `feasibility-report.md` are written.
+
+Read the **`Distinct`** column, not just the count. A blocker with 342
+occurrences but 3 distinct reasons is one idiom copy-pasted across a
+schema; widening the subset for it buys far less than the raw count
+suggests. That column exists because the first real scan got this wrong.
+
+Everything executable stays in the denominator. Unlike the component
+engine's scanner -- where a function returning no JSX is a helper rather
+than a migration unit -- an `ALTER TABLE`, view or stored procedure IS
+work the customer needs done, so excluding it would flatter the ratio by
+hiding exactly what this engine cannot do.
+
+### What it says about real code
+
+Run against this monorepo's own 64 migration files -- real schema nobody
+wrote for this subset -- the scan reports **105 of 1015 statements in
+subset (10.3%)**.
+
+That number is low and it is the honest one. The blocker ranking says
+why, and it is not what intuition suggested:
+
+| Blocker | Occurrences | Distinct | What it really is |
+|---|---|---|---|
+| `UNSUPPORTED_STATEMENT` | 470 | 1 | not a `CREATE TABLE`/`CREATE INDEX` at all -- 228 triggers, 128 `ALTER TABLE`, 18 schemas, 17 functions |
+| `UNSUPPORTED_CHECK` | 384 | 6 | 340 of them are a single copy-pasted idiom using Postgres' `~` regex operator, which SQL Server has no equivalent for at all |
+| `UNSUPPORTED_STATEMENT_MODIFIER` | 17 | 1 | `IF NOT EXISTS` and similar |
+| `UNSUPPORTED_IDENTIFIER_SHAPE` | 15 | 2 | quoted / non-plain identifiers |
+| `PARSE_FAILED` | 12 | 12 | genuinely 12 different problems |
+
+The first run of this scan reported **8.0%**, and reading it found a real
+defect rather than a subset limit: inline `b_id INTEGER REFERENCES b(id)`
+was rejected while the semantically identical table-level
+`FOREIGN KEY (b_id) REFERENCES b(id)` was accepted. Every one of the four
+dialects treats those two spellings identically, so producing different
+canonical models for them was simply wrong. Fixing it -- and lifting
+inline `CHECK` the same way -- moved 8.0% to 10.3% and is locked down by
+tests asserting the two spellings produce an identical model.
+
+**The honest headline: `certified-ddl-v1` covers a small fraction of a
+real schema, and the gap is structural.** Half the work in a real
+migration is `ALTER TABLE`, triggers and functions, none of which this
+profile addresses at all. The `Distinct` column shows that widening
+`CHECK` support would buy far less than its 384 occurrences imply. Anyone
+planning a migration on this engine should run `scan` first and read that
+table.
+
 ## Local run
 
 ```bash

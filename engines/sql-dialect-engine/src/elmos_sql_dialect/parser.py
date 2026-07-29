@@ -196,14 +196,24 @@ def _parse_check(node: exp.Expression) -> tuple[tuple[CheckComparison, ...], Che
 
 
 def _column_constraints(
-    col_def: exp.ColumnDef, type_ref: CanonicalTypeRef
-) -> tuple[bool, ColumnDefault | None, bool, bool, bool]:
-    """Returns (nullable, default, auto_increment, primary_key_shorthand, unique_shorthand)."""
+    col_def: exp.ColumnDef, type_ref: CanonicalTypeRef, column_name: str
+) -> tuple[bool, ColumnDefault | None, bool, bool, bool, ForeignKey | None, list[CheckConstraint]]:
+    """Returns (nullable, default, auto_increment, primary_key_shorthand,
+    unique_shorthand, inline_foreign_key, inline_checks).
+
+    Inline `REFERENCES` and inline `CHECK` are the same constraints as their
+    table-level spellings, so they are lifted into the SAME canonical
+    fields rather than modelled separately -- otherwise two schemas that
+    are identical to every database would produce different canonical
+    models and emit differently.
+    """
     nullable = True
     default: ColumnDefault | None = None
     auto_increment = False
     primary_key_shorthand = False
     unique_shorthand = False
+    inline_foreign_key: ForeignKey | None = None
+    inline_checks: list[CheckConstraint] = []
     for constraint in col_def.constraints or []:
         kind = constraint.kind
         if isinstance(kind, exp.NotNullColumnConstraint):
@@ -217,10 +227,22 @@ def _column_constraints(
             default = _parse_default(kind.this, type_ref)
         elif isinstance(kind, exp.UniqueColumnConstraint) and kind.this is None:
             unique_shorthand = True
+        elif isinstance(kind, exp.Reference):
+            # `b_id INTEGER REFERENCES b(id)` -- identical in meaning to a
+            # table-level FOREIGN KEY (b_id) REFERENCES b(id).
+            _require(inline_foreign_key is None, "CERTIFIED_DDL_UNSUPPORTED_COLUMN_CONSTRAINT",
+                      f"column {column_name!r} declares more than one inline REFERENCES")
+            inline_foreign_key = _parse_reference(kind, (column_name,), None)
+        elif isinstance(kind, exp.CheckColumnConstraint):
+            # `n INTEGER CHECK (n > 0)` -- lifted to a table-level CHECK,
+            # which is how every target dialect renders it anyway.
+            comparisons, connector = _parse_check(kind.this)
+            inline_checks.append(CheckConstraint(comparisons=comparisons, connector=connector, name=None))
         else:
             raise DialectError("CERTIFIED_DDL_UNSUPPORTED_COLUMN_CONSTRAINT",
                                 f"column constraint {type(kind).__name__} is outside certified-ddl-v1")
-    return nullable, default, auto_increment, primary_key_shorthand, unique_shorthand
+    return (nullable, default, auto_increment, primary_key_shorthand,
+            unique_shorthand, inline_foreign_key, inline_checks)
 
 
 def parse_create_table(sql: str, source_dialect: Dialect) -> Table:
@@ -252,13 +274,17 @@ def parse_create_table(sql: str, source_dialect: Dialect) -> Table:
                       f"column {column_name!r} is missing a type")
             assert item.kind is not None  # narrows for mypy; _require already enforced this at runtime
             type_ref = _parse_type(item.kind)
-            nullable, default, auto_increment, pk_shorthand, unique_shorthand = _column_constraints(item, type_ref)
+            (nullable, default, auto_increment, pk_shorthand, unique_shorthand,
+             inline_fk, inline_checks) = _column_constraints(item, type_ref, column_name)
             columns.append(Column(name=column_name, type_ref=type_ref, nullable=nullable,
                                    default=default, auto_increment=auto_increment))
             if pk_shorthand:
                 primary_key.append(column_name)
             if unique_shorthand:
                 unique_constraints.append((column_name,))
+            if inline_fk is not None:
+                foreign_keys.append(inline_fk)
+            check_constraints.extend(inline_checks)
         elif isinstance(item, exp.PrimaryKey):
             primary_key.extend(_plain_identifier(e, "PRIMARY KEY column") for e in item.expressions)
         elif isinstance(item, exp.Constraint):
@@ -282,6 +308,41 @@ def parse_create_table(sql: str, source_dialect: Dialect) -> Table:
                  check_constraints=tuple(check_constraints))
 
 
+def _parse_reference(reference: exp.Expression, columns: tuple[str, ...], name: str | None) -> ForeignKey:
+    """Build a canonical ForeignKey from a REFERENCES clause.
+
+    Shared by the table-level `FOREIGN KEY (c) REFERENCES t(c)` form and the
+    inline `c INTEGER REFERENCES t(c)` column form. They are the same
+    constraint written two ways -- every one of the four dialects accepts
+    both and treats them identically -- so they must produce the same
+    canonical model. Supporting only one of them was a real gap: a scan of
+    117 real migration files found 403 statements blocked purely because
+    their foreign key was written inline.
+    """
+    ref_schema = reference.this
+    ref_table_node = ref_schema.this if isinstance(ref_schema, exp.Schema) else ref_schema
+    ref_table = _plain_identifier(ref_table_node.this if isinstance(ref_table_node, exp.Table) else ref_table_node,
+                                   "FOREIGN KEY reference table")
+    ref_columns = tuple(_plain_identifier(e, "FOREIGN KEY reference column")
+                         for e in (ref_schema.expressions if isinstance(ref_schema, exp.Schema) else []))
+    on_delete = ReferentialAction.NO_ACTION
+    on_update = ReferentialAction.NO_ACTION
+    for option in reference.args.get("options") or []:
+        option_sql = str(option).upper()
+        for prefix, attr in (("ON DELETE ", "on_delete"), ("ON UPDATE ", "on_update")):
+            if option_sql.startswith(prefix):
+                action = _REFERENTIAL_ACTION_MAP.get(option_sql[len(prefix):].strip())
+                _require(action is not None, "CERTIFIED_DDL_UNSUPPORTED_REFERENTIAL_ACTION",
+                          f"referential action {option_sql!r} is outside certified-ddl-v1")
+                assert action is not None  # narrows for mypy; _require already enforced this at runtime
+                if attr == "on_delete":
+                    on_delete = action
+                else:
+                    on_update = action
+    return ForeignKey(columns=columns, ref_table=ref_table, ref_columns=ref_columns,
+                       on_delete=on_delete, on_update=on_update, name=name)
+
+
 def _apply_table_constraint(inner: exp.Expression, name: str | None, primary_key: list[str],
                              unique_constraints: list[tuple[str, ...]], foreign_keys: list[ForeignKey],
                              check_constraints: list[CheckConstraint]) -> None:
@@ -297,28 +358,7 @@ def _apply_table_constraint(inner: exp.Expression, name: str | None, primary_key
         reference = inner.args.get("reference")
         _require(reference is not None, "CERTIFIED_DDL_UNSUPPORTED_CONSTRAINT", "FOREIGN KEY requires REFERENCES")
         assert reference is not None  # narrows for mypy; _require already enforced this at runtime
-        ref_schema = reference.this
-        ref_table_node = ref_schema.this if isinstance(ref_schema, exp.Schema) else ref_schema
-        ref_table = _plain_identifier(ref_table_node.this if isinstance(ref_table_node, exp.Table) else ref_table_node,
-                                       "FOREIGN KEY reference table")
-        ref_columns = tuple(_plain_identifier(e, "FOREIGN KEY reference column")
-                             for e in (ref_schema.expressions if isinstance(ref_schema, exp.Schema) else []))
-        on_delete = ReferentialAction.NO_ACTION
-        on_update = ReferentialAction.NO_ACTION
-        for option in reference.args.get("options") or []:
-            option_sql = str(option).upper()
-            for prefix, attr in (("ON DELETE ", "on_delete"), ("ON UPDATE ", "on_update")):
-                if option_sql.startswith(prefix):
-                    action = _REFERENTIAL_ACTION_MAP.get(option_sql[len(prefix):].strip())
-                    _require(action is not None, "CERTIFIED_DDL_UNSUPPORTED_REFERENTIAL_ACTION",
-                              f"referential action {option_sql!r} is outside certified-ddl-v1")
-                    assert action is not None  # narrows for mypy; _require already enforced this at runtime
-                    if attr == "on_delete":
-                        on_delete = action
-                    else:
-                        on_update = action
-        foreign_keys.append(ForeignKey(columns=columns, ref_table=ref_table, ref_columns=ref_columns,
-                                        on_delete=on_delete, on_update=on_update, name=name))
+        foreign_keys.append(_parse_reference(reference, columns, name))
     elif isinstance(inner, exp.CheckColumnConstraint):
         comparisons, connector = _parse_check(inner.this)
         check_constraints.append(CheckConstraint(comparisons=comparisons, connector=connector, name=name))

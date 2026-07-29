@@ -265,6 +265,52 @@ types in roughly equal share — genuine semantic boundaries rather than
 oversights, which is the point at which further widening stops being
 cheap.
 
+## Addendum: measuring the SQL subset, and what it found
+
+`certified-component-v1` had a measured coverage number; `certified-ddl-v1`
+did not, which made it the one part of this work whose real-world value was
+unknown. A parse-only `scan` was added for it too, and run against this
+monorepo's own 64 migration files.
+
+The scan itself needed two decisions the component version did not:
+
+- **Split with the real parser.** `sqlglot.parse` separates statements, not
+  a semicolon split, because a semicolon inside a string literal, a
+  `$$`-quoted body or a `BEGIN ... END` block would miscount silently.
+- **Everything executable stays in the denominator.** The component scanner
+  excludes functions returning no JSX because a helper is not a migration
+  unit. There is no SQL equivalent: an `ALTER TABLE`, view or stored
+  procedure IS work the customer needs done, so excluding it would flatter
+  the ratio by hiding exactly what the engine cannot do.
+
+**First result: 8.0%.** Reading it found a genuine defect rather than a
+subset limit. Inline `b_id INTEGER REFERENCES b(id)` was rejected while the
+table-level `FOREIGN KEY (b_id) REFERENCES b(id)` was accepted -- the same
+constraint written two ways, treated identically by all four dialects.
+Producing different canonical models for them was wrong, not conservative,
+and the README advertised referential actions as supported. Inline `CHECK`
+had the same gap. Both now lift into the same canonical fields, asserted by
+tests that compare the two spellings' models directly. **8.0% -> 10.3%.**
+
+**A correction to the measurement method also came out of this**, and it
+matters more than the fix. Ranking blockers purely by occurrence count is
+misleading on real schemas: a single copy-pasted idiom -- one
+`CHECK (h IS NULL OR h ~ '^[0-9a-f]{64}$')` using Postgres' regex operator
+-- accounted for 340 of 342 occurrences of its blocker. Ranking by count
+alone would have pointed the next expansion at what is really one line of
+SQL repeated across a schema. Blockers now report **occurrences and
+distinct reasons separately**, and the report tells the reader to use the
+second. By that measure `PARSE_FAILED` (12 occurrences, 12 distinct) is a
+more genuine signal than `UNSUPPORTED_CHECK` (384 occurrences, 6 distinct).
+
+**The honest conclusion is that this profile's gap is structural, not
+incremental.** 470 of 910 blocked statements are not `CREATE TABLE` or
+`CREATE INDEX` at all -- 228 triggers, 128 `ALTER TABLE`, 18 schemas, 17
+functions. A real database migration is mostly `ALTER` and procedural code,
+and `certified-ddl-v1` addresses none of it. Widening within `CREATE TABLE`
+cannot fix that; only an `ALTER TABLE` profile would, and that is a
+different piece of work with its own per-dialect semantics.
+
 ## External gates
 
 Independent verification and external certification of both profiles remain
