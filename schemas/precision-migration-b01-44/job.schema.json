@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/precision-migration-b01-44/job.schema.json",
+  "title": "Precision Migration durable tenant job",
+  "type": "object",
+  "required": ["schema_version", "job_id", "tenant_id", "actor", "status", "progress", "created_at", "updated_at", "request_digest", "cancel_requested", "artifacts"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "job_id": { "type": "string", "pattern": "^pmj-[0-9a-f]{32}$" },
+    "tenant_id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$" },
+    "actor": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$" },
+    "status": { "enum": ["QUEUED", "RUNNING", "CANCEL_REQUESTED", "SUCCEEDED", "FAILED", "BLOCKED", "CANCELLED"] },
+    "progress": { "type": "integer", "minimum": 0, "maximum": 100 },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" },
+    "request_digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "retry_of": { "type": ["string", "null"], "pattern": "^pmj-[0-9a-f]{32}$" },
+    "cancel_requested": { "type": "boolean" },
+    "result": { "type": ["object", "null"] },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["uri", "digest", "size_bytes", "media_type"],
+        "properties": {
+          "uri": { "type": "string", "format": "uri", "pattern": "^file://" },
+          "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+          "size_bytes": { "type": "integer", "minimum": 0 },
+          "media_type": { "type": "string", "minLength": 1 }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

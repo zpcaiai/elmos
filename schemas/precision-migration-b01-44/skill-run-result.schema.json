@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/precision-migration-b01-44/skill-run-result.schema.json",
+  "title": "Precision Migration Skill Run Result",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "namespace",
+    "skill",
+    "source_skill",
+    "mode",
+    "status",
+    "adapter_maturity",
+    "artifacts",
+    "inputs",
+    "evidence",
+    "semantic_losses",
+    "unresolved",
+    "release_gate",
+    "production_certification",
+    "production_operation_authorized",
+    "result_digest"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "request_id": { "type": ["string", "null"] },
+    "namespace": { "const": "precision-migration-b01-44" },
+    "skill": { "type": "string", "minLength": 1 },
+    "source_skill": { "type": "string", "minLength": 1 },
+    "batch": { "type": ["integer", "null"], "minimum": 1, "maximum": 44 },
+    "mode": { "enum": ["assess", "transform", "validate", "repair", "certify"] },
+    "status": {
+      "enum": ["PROVED", "VERIFIED", "CONDITIONALLY_VERIFIED", "REQUIRES_ADAPTER", "REQUIRES_HUMAN_REVIEW", "UNSUPPORTED", "FAILED"]
+    },
+    "adapter": { "type": ["string", "null"] },
+    "adapter_maturity": { "enum": ["SPEC_ONLY", "INSTALLED", "ADAPTER_DECLARED", "ADAPTER_CONTRACT_PASSED", "LOCAL_EXECUTED", "HOLDOUT_PASSED", "EXTERNAL_VERIFIED", "CERTIFIED"] },
+    "artifacts": { "type": "array", "minItems": 4, "items": { "type": "object" } },
+    "inputs": { "type": "array", "items": { "type": "object" } },
+    "evidence": { "type": "array", "items": { "type": "object" } },
+    "proof": { "type": ["object", "null"] },
+    "semantic_losses": { "type": "array", "items": { "type": "object" } },
+    "unresolved": { "type": "array", "items": { "$ref": "#/$defs/unresolved" } },
+    "next_actions": { "type": "array", "items": { "type": "string" } },
+    "release_gate": {
+      "type": "object",
+      "required": ["gates", "decision", "unresolved", "maximum_local_decision", "production_operation_authorized"],
+      "properties": {
+        "gates": { "type": "array", "items": { "type": "object" } },
+        "decision": { "enum": ["SHADOW_ONLY", "BLOCK"] },
+        "unresolved": { "type": "array" },
+        "approvals": { "type": "array" },
+        "maximum_local_decision": { "const": "SHADOW_ONLY" },
+        "production_operation_authorized": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "external_evidence_status": { "enum": ["COMPLETE_FOR_REQUEST", "NOT_RUN_OR_INCOMPLETE"] },
+    "production_certification": { "const": "NOT_CERTIFIED" },
+    "production_operation_authorized": { "const": false },
+    "result_digest": { "$ref": "#/$defs/digest" }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "unresolved": {
+      "type": "object",
+      "required": ["code", "message", "blocking"],
+      "properties": {
+        "code": { "type": "string", "minLength": 1 },
+        "message": { "type": "string", "minLength": 1 },
+        "blocking": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

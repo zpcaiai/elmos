@@ -324,7 +324,25 @@ html[data-theme="dark"] .button-primary:hover { background: #194b49; }
 .status-not-certified { background: var(--red-soft); color: var(--red); }
 .status-experimental, .status-review { background: var(--violet-soft); color: var(--violet); }
 .status-limited, .status-supported { background: var(--blue-soft); color: var(--blue); }
-.status-draft, .status-repository-contract { background: var(--blue-soft); color: var(--blue); }
+.status-draft, .status-repository-contract, .status-contract-ready,
+.status-installed, .status-adapter-declared { background: var(--blue-soft); color: var(--blue); }
+.precision-job-card { display: grid; gap: 15px; }
+.precision-job-card > p { color: var(--muted); font-size: 11px; line-height: 1.65; }
+.precision-job-form { max-width: none; }
+.precision-local-auth { padding: 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface-soft); }
+.precision-local-auth summary { color: var(--ink-soft); font-size: 10px; font-weight: 800; cursor: pointer; }
+.precision-local-auth[open] summary { margin-bottom: 12px; }
+.precision-local-auth .form-grid { margin-bottom: 8px; }
+.precision-local-auth .precision-auth-token { grid-column: 1 / -1; }
+.precision-local-auth > small { color: var(--muted); font-size: 8px; line-height: 1.5; }
+.precision-job-result { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 10px; padding: 13px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-soft); }
+.precision-job-result > div { display: flex; min-width: 0; flex-direction: column; gap: 5px; }
+.precision-job-result span { color: var(--muted); font-size: 9px; font-weight: 750; text-transform: uppercase; letter-spacing: .06em; }
+.precision-job-result code { overflow: hidden; color: var(--ink); font-size: 10px; text-overflow: ellipsis; }
+.precision-artifacts { grid-column: 1 / -1; }
+.precision-artifact-link { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 10px; border: 0; border-radius: 8px; background: white; color: var(--cyan); font-size: 10px; font-weight: 750; text-align: left; cursor: pointer; }
+.precision-artifact-link:hover { background: var(--cyan-soft); }
+.precision-artifact-link small { color: var(--muted); font: 9px ui-monospace,monospace; }
 
 .marketplace-layout { display: grid; grid-template-columns: minmax(0,1fr) 300px; gap: 16px; align-items: start; }
 .market-main { min-width: 0; }
@@ -479,7 +497,7 @@ kbd { min-width: 22px; display: inline-grid; place-items: center; padding: 3px 6
 .metric-pair i { color: #a8b2b5; font-size: 16px; font-style: normal; font-weight: 500; }
 .skills-grid { display: grid; grid-template-columns: minmax(0,1.55fr) minmax(300px,.68fr); gap: 16px; align-items: stretch; }
 .namespace-explorer { overflow: hidden; padding: 23px; }
-.namespace-tabs { display: grid; grid-template-columns: repeat(2,1fr); gap: 8px; margin: 18px 0 13px; padding: 5px; border-radius: 12px; background: var(--surface-subtle); }
+.namespace-tabs { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin: 18px 0 13px; padding: 5px; border-radius: 12px; background: var(--surface-subtle); }
 .namespace-tabs button { min-height: 61px; display: grid; grid-template-columns: auto minmax(0,1fr) auto; align-items: center; gap: 10px; padding: 8px 12px; border: 1px solid transparent; border-radius: 9px; background: transparent; color: var(--muted); text-align: left; cursor: pointer; }
 .namespace-tabs button:hover { background: rgba(255,255,255,.65); }
 .namespace-tabs button.active { border-color: var(--line); background: white; color: var(--ink); box-shadow: var(--shadow-sm); }

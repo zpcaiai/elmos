@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B25: Postgresql Listen Notify"
+  short_description: "Run Precision Migration B25 with evidence controls"
+  default_prompt: "Use $pm-b25-postgresql-listen-notify to execute this Precision Migration contract with fail-closed evidence."

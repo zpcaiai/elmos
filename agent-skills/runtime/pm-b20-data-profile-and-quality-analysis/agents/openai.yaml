@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B20: Data Profile And Quality Analysis"
+  short_description: "Run Precision Migration B20 with evidence controls"
+  default_prompt: "Use $pm-b20-data-profile-and-quality-analysis to execute this Precision Migration contract with fail-closed evidence."

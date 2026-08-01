@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B11: Reference Knowledge Loader"
+  short_description: "Run Precision Migration B11 with evidence controls"
+  default_prompt: "Use $pm-b11-reference-knowledge-loader to execute this Precision Migration contract with fail-closed evidence."

@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "relation_id": "relation.authorization-binding-sensitive",
+  "claim_id": "claim.trust-decisions",
+  "owner": "elmos-security-engineering",
+  "preconditions": ["valid-content", "valid-ed25519-envelope"],
+  "transformation": { "kind": "change-one-request-scope-digest-or-role-binding-without-resigning" },
+  "expected_relation": { "kind": "verified-becomes-failed" },
+  "oracle_refs": ["oracle.runtime-contract", "oracle.negative-corpus"],
+  "non_applicable": []
+}

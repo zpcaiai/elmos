@@ -1,0 +1,29 @@
+batch: 37
+slug: agentic-migration-harness
+title: "Agentic Migration Harness"
+phase: "J 模型与Agent执行系统"
+skills:
+  - name: migration-task-decomposer
+    description: "按依赖、风险、模块、语言和验证边界拆分迁移任务图。"
+  - name: semantic-slice-task-planner
+    description: "为每个 Agent 准备最小语义切片、契约、规则、工具和验收条件。"
+  - name: multi-agent-worktree-manager
+    description: "为并行 Agent 创建隔离 Worktree/Workspace，控制冲突、合并和回滚。"
+  - name: build-repair-agent
+    description: "消费结构化编译/构建诊断，生成最小修复并持续验证。"
+  - name: test-migration-agent
+    description: "迁移源测试、保留 Oracle、补充目标测试并阻止弱化断言。"
+  - name: difference-diagnosis-agent
+    description: "分析源目标差分、定位根因、提出修复或规格冲突分类。"
+  - name: proof-agent
+    description: "生成证明义务、调用 Leanstral/SMT、解释反例并回写测试。"
+  - name: security-review-agent
+    description: "独立审查权限、输入、Secret、供应链、沙箱和生成代码安全。"
+  - name: human-approval-gate
+    description: "在高风险、规格冲突、语义损失、生产切流和例外放行处要求人工批准。"
+  - name: pause-resume-cancel
+    description: "持久化任务状态、证据和副作用，支持安全暂停、恢复和取消。"
+  - name: retry-and-idempotency
+    description: "确保 Agent 工具调用、构建、数据初始化和外部副作用可安全重试。"
+  - name: token-and-resource-governance
+    description: "按任务、租户、模型、阶段和风险治理 Token、计算、并发和预算。"

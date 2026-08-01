@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "cases": [
+    { "case_id": "DEV-001", "claim": "content-reference-valid", "expected": "VERIFIED" },
+    { "case_id": "DEV-002", "claim": "signed-evidence-valid", "expected": "VERIFIED" },
+    { "case_id": "DEV-003", "claim": "route-validator-dispatch", "expected": "LOCAL_EXECUTED" },
+    { "case_id": "DEV-004", "claim": "repository-inventory-bounded", "expected": "LOCAL_EXECUTED" }
+  ]
+}

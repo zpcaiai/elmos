@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "package_identity": {
+    "source_package_manifest_sha256": "54783f4ec2b33559f14fc5de91b5f19583d43ceeba46c59e27fa81297422a8a4",
+    "source_tree_sha256": "f2b879068c2182111de7823565e0b3ac6d223c754aa71861c11719705e15132b"
+  },
+  "local_checks": {
+    "source_package_integrity": { "state": "NOT_RUN", "evidence_refs": [] },
+    "installed_skill_integrity": { "state": "NOT_RUN", "evidence_refs": [] },
+    "runtime_interfaces": { "state": "NOT_RUN", "evidence_refs": [] },
+    "runtime_unit_tests": { "state": "NOT_RUN", "evidence_refs": [] },
+    "schema_validation": { "state": "NOT_RUN", "evidence_refs": [] },
+    "web_catalog": { "state": "NOT_RUN", "evidence_refs": [] }
+  },
+  "external_checks": {
+    "exact_source_target_builds": { "state": "NOT_RUN", "evidence_refs": [] },
+    "native_toolchain_matrix": { "state": "NOT_RUN", "evidence_refs": [] },
+    "independent_holdout": { "state": "NOT_RUN", "evidence_refs": [] },
+    "representative_workloads": { "state": "NOT_RUN", "evidence_refs": [] },
+    "formal_proof_where_claimed": { "state": "NOT_RUN", "evidence_refs": [] },
+    "shadow_canary_rollback": { "state": "NOT_RUN", "evidence_refs": [] },
+    "security_review": { "state": "NOT_RUN", "evidence_refs": [] },
+    "customer_acceptance": { "state": "NOT_RUN", "evidence_refs": [] }
+  }
+}

@@ -1,0 +1,192 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/precision-migration-b01-44/catalog.schema.json",
+  "title": "Precision Migration B01-B44 Installed Catalog",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "namespace",
+    "source_package",
+    "source_package_manifest_sha256",
+    "source_tree_sha256",
+    "batch_count",
+    "child_skill_count",
+    "orchestrator_count",
+    "runtime_skill_count",
+    "workspace_skill_count",
+    "workspace_installation",
+    "workspace_entrypoint",
+    "maturity_values",
+    "maturity_counts",
+    "structural_status",
+    "external_evidence_status",
+    "production_certification",
+    "skills"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "namespace": { "const": "precision-migration-b01-44" },
+    "source_package": { "const": "precision-migration-skills-batch-01-44" },
+    "source_version": { "type": "string", "minLength": 1 },
+    "source_package_manifest_sha256": { "$ref": "#/$defs/hexDigest" },
+    "source_tree_sha256": { "$ref": "#/$defs/hexDigest" },
+    "batch_count": { "const": 44 },
+    "child_skill_count": { "const": 587 },
+    "orchestrator_count": { "const": 45 },
+    "runtime_skill_count": { "const": 632 },
+    "workspace_skill_count": { "const": 632 },
+    "workspace_installation": { "const": "ALL_RUNTIME_SKILLS" },
+    "workspace_entrypoint": { "const": "pm-precision-migration-orchestrator" },
+    "status_values": {
+      "type": "array",
+      "uniqueItems": true,
+      "minItems": 7,
+      "maxItems": 7,
+      "items": { "$ref": "#/$defs/status" }
+    },
+    "maturity_values": {
+      "type": "array",
+      "uniqueItems": true,
+      "minItems": 8,
+      "maxItems": 8,
+      "items": { "$ref": "#/$defs/maturity" }
+    },
+    "maturity_counts": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "type": "integer", "minimum": 1 }
+    },
+    "batch_counts": {
+      "type": "object",
+      "minProperties": 44,
+      "maxProperties": 44,
+      "additionalProperties": { "type": "integer", "minimum": 1 }
+    },
+    "phase_counts": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "type": "integer", "minimum": 1 }
+    },
+    "structural_status": { "const": "PASS" },
+    "runtime_protocol_status": { "const": "CONTRACT_READY" },
+    "external_evidence_status": { "const": "NOT_RUN" },
+    "production_certification": { "const": "NOT_CERTIFIED" },
+    "maximum_local_decision": { "const": "READY_FOR_EXTERNAL_GATE" },
+    "completion_boundary": { "type": "string", "minLength": 1 },
+    "skills": {
+      "type": "array",
+      "minItems": 632,
+      "maxItems": 632,
+      "items": { "$ref": "#/$defs/skill" }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "hexDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "status": {
+      "enum": [
+        "PROVED",
+        "VERIFIED",
+        "CONDITIONALLY_VERIFIED",
+        "REQUIRES_ADAPTER",
+        "REQUIRES_HUMAN_REVIEW",
+        "UNSUPPORTED",
+        "FAILED"
+      ]
+    },
+    "maturity": {
+      "enum": [
+        "SPEC_ONLY",
+        "INSTALLED",
+        "ADAPTER_DECLARED",
+        "ADAPTER_CONTRACT_PASSED",
+        "LOCAL_EXECUTED",
+        "HOLDOUT_PASSED",
+        "EXTERNAL_VERIFIED",
+        "CERTIFIED"
+      ]
+    },
+    "skill": {
+      "type": "object",
+      "required": [
+        "kind",
+        "batch",
+        "source_name",
+        "name",
+        "description",
+        "source_path",
+        "source_sha256",
+        "installed_path",
+        "installed_sha256",
+        "workspace_path",
+        "workspace_sha256",
+        "interface_sha256",
+        "binding",
+        "maturity",
+        "contract_status",
+        "runtime_protocol_status",
+        "external_evidence_status"
+      ],
+      "properties": {
+        "kind": { "enum": ["skill", "batch-orchestrator", "global-orchestrator"] },
+        "batch": { "type": ["integer", "null"], "minimum": 1, "maximum": 44 },
+        "batch_slug": { "type": ["string", "null"] },
+        "batch_title": { "type": ["string", "null"] },
+        "phase": { "type": ["string", "null"] },
+        "source_name": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+        "name": { "type": "string", "pattern": "^pm-[a-z0-9-]+$", "maxLength": 64 },
+        "description": { "type": "string", "minLength": 1 },
+        "source_path": { "type": "string", "minLength": 1 },
+        "binding": {
+          "type": "object",
+          "required": [
+            "adapter",
+            "binding_state",
+            "handler_id",
+            "handler_entrypoint",
+            "contract_version",
+            "supported_modes",
+            "timeout_seconds",
+            "permissions",
+            "repository_surfaces",
+            "missing_surfaces",
+            "evidence_boundary"
+          ],
+          "properties": {
+            "adapter": { "type": "string", "minLength": 1 },
+            "binding_state": { "enum": ["DECLARED", "UNAVAILABLE"] },
+            "handler_id": { "type": "string", "minLength": 1 },
+            "handler_entrypoint": { "type": "string", "pattern": "^[a-zA-Z0-9_.]+:[a-zA-Z0-9_]+$" },
+            "contract_version": { "type": "string", "minLength": 1 },
+            "supported_modes": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": { "enum": ["assess", "transform", "validate", "repair", "certify"] }
+            },
+            "timeout_seconds": { "type": "integer", "minimum": 1, "maximum": 3600 },
+            "permissions": {
+              "type": "object",
+              "required": ["source", "output", "network", "secrets", "shell"],
+              "additionalProperties": { "type": "string", "minLength": 1 }
+            },
+            "repository_surfaces": { "type": "array", "items": { "type": "string" } },
+            "missing_surfaces": { "type": "array", "items": { "type": "string" } },
+            "evidence_boundary": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        "source_sha256": { "$ref": "#/$defs/hexDigest" },
+        "installed_path": { "type": "string", "pattern": "^agent-skills/runtime/pm-.+/SKILL\\.md$" },
+        "installed_sha256": { "$ref": "#/$defs/hexDigest" },
+        "workspace_path": { "type": "string", "pattern": "^\\.agents/skills/pm-.+/SKILL\\.md$" },
+        "workspace_sha256": { "$ref": "#/$defs/hexDigest" },
+        "interface_sha256": { "$ref": "#/$defs/hexDigest" },
+        "maturity": { "$ref": "#/$defs/maturity" },
+        "contract_status": { "const": "INSTALLED" },
+        "runtime_protocol_status": { "const": "CONTRACT_READY" },
+        "external_evidence_status": { "const": "NOT_RUN" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

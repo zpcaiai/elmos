@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B44: Audit And Compliance"
+  short_description: "Run Precision Migration B44 with evidence controls"
+  default_prompt: "Use $pm-b44-audit-and-compliance to execute this Precision Migration contract with fail-closed evidence."

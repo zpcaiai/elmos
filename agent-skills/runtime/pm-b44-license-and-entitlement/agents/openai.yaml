@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B44: License And Entitlement"
+  short_description: "Run Precision Migration B44 with evidence controls"
+  default_prompt: "Use $pm-b44-license-and-entitlement to execute this Precision Migration contract with fail-closed evidence."

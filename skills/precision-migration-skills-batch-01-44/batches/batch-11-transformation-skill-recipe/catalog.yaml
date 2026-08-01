@@ -1,0 +1,33 @@
+batch: 11
+slug: transformation-skill-recipe
+title: "Transformation Skill与Recipe体系"
+phase: "D 转换定义与规则引擎"
+skills:
+  - name: natural-language-transformation-definition
+    description: "将目标、范围、前置条件、例外、禁止项和验收要求结构化为转换定义。"
+  - name: transformation-skill-compiler
+    description: "把 Transformation Skill 编译为规则、查询、生成器、验证器和证据要求。"
+  - name: reference-knowledge-loader
+    description: "加载文档、API、版本说明、组织规范和历史迁移知识，并保持来源可追踪。"
+  - name: code-example-rule-induction
+    description: "从正反代码样例、失败案例和人工修复中归纳候选规则及适用条件。"
+  - name: declarative-recipe-dsl
+    description: "定义模式匹配、类型条件、重写、证明义务、测试和版本兼容的声明式 DSL。"
+  - name: imperative-recipe-runtime
+    description: "运行需要全局分析、多文件状态或复杂生成逻辑的命令式 Recipe。"
+  - name: recipe-precondition-engine
+    description: "在执行重写前验证类型、框架、版本、控制流和语义前置条件。"
+  - name: scanning-recipe-engine
+    description: "先扫描全仓库收集状态，再执行跨文件和跨模块变换。"
+  - name: multi-cycle-transformation-engine
+    description: "支持扫描、变换、构建反馈、再扫描和多轮收敛。"
+  - name: recipe-composition-and-ordering
+    description: "解决规则依赖、顺序、冲突、幂等和可交换性。"
+  - name: recipe-versioning
+    description: "管理规则语义版本、适用矩阵、迁移升级和回归兼容。"
+  - name: transformation-registry
+    description: "登记、发现、签名、授权、发布和撤回转换技能与方向包。"
+  - name: managed-transformation-pack
+    description: "封装平台维护、经过验证、可规模复用的托管转换包。"
+  - name: organization-private-transformation-pack
+    description: "封装客户私有框架、内部 API、命名规范和受限知识的专属转换包。"

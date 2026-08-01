@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B03: Estimate Confidence Calibrator"
+  short_description: "Run Precision Migration B03 with evidence controls"
+  default_prompt: "Use $pm-b03-estimate-confidence-calibrator to execute this Precision Migration contract with fail-closed evidence."

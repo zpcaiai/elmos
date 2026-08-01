@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B43: Direction Pack Continuous Improvement"
+  short_description: "Run Precision Migration B43 with evidence controls"
+  default_prompt: "Use $pm-b43-direction-pack-continuous-improvement to execute this Precision Migration contract with fail-closed evidence."

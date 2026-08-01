@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "case_key": "precision-migration-b01-44-runtime-assurance-v1",
+  "version": 1,
+  "owner": "elmos-verification-engineering",
+  "top_claim": "The local Precision Migration trust boundary is fit for continued engineering qualification without implying domain or production certification.",
+  "claims": [
+    {
+      "claim_id": "claim.evidence-integrity",
+      "statement": "Local PASS evidence is content-addressed, scoped, signed, replay-described, and independently attributed.",
+      "status": "partially-supported",
+      "evidence_refs": ["certification/local-test-result.json", "corpus/negative/cases.json", "counterexamples/sample.json"],
+      "assumptions": ["OpenSSL Ed25519 verification behaves according to the pinned local environment contract."],
+      "limitations": ["Remote provider evidence, HSM custody, and production revocation are NOT_RUN."]
+    },
+    {
+      "claim_id": "claim.trust-decisions",
+      "statement": "Caller booleans and unsigned strings cannot produce proof, approval, or repository readiness.",
+      "status": "partially-supported",
+      "evidence_refs": ["certification/local-test-result.json", "corpus/negative/cases.json"],
+      "assumptions": [],
+      "limitations": ["Independent holdout execution is NOT_RUN."]
+    },
+    {
+      "claim_id": "claim.maturity-honesty",
+      "statement": "The 587-Skill matrix exposes unimplemented and unverified scope per dimension.",
+      "status": "supported",
+      "evidence_refs": ["coverage/coverage-matrix.json"],
+      "assumptions": [],
+      "limitations": ["Structural coverage does not prove domain behavior."]
+    }
+  ],
+  "evidence": ["certification/local-test-result.json", "coverage/coverage-matrix.json", "corpus/negative/cases.json"],
+  "residual_risks": [
+    { "risk_id": "RISK-001", "severity": "P0", "status": "open", "description": "564 child Skills lack exact handlers." },
+    { "risk_id": "RISK-002", "severity": "P0", "status": "open", "description": "Independent holdout and representative workloads are NOT_RUN." },
+    { "risk_id": "RISK-003", "severity": "P0", "status": "open", "description": "Production key custody and revocation integration are NOT_RUN." }
+  ],
+  "monitoring_obligations": ["Fail CI on coverage matrix drift.", "Keep external and customer evidence NOT_RUN until signed execution exists."],
+  "approvals": []
+}

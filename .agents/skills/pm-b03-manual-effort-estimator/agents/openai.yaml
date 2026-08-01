@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B03: Manual Effort Estimator"
+  short_description: "Run Precision Migration B03 with evidence controls"
+  default_prompt: "Use $pm-b03-manual-effort-estimator to execute this Precision Migration contract with fail-closed evidence."

@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Skill Invocation",
+  "type": "object",
+  "required": [
+    "skill",
+    "mode",
+    "inputs",
+    "policy"
+  ],
+  "properties": {
+    "skill": {
+      "type": "string"
+    },
+    "mode": {
+      "type": "string"
+    },
+    "inputs": {
+      "type": "object"
+    },
+    "policy": {
+      "type": "object"
+    },
+    "budget": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": true
+}

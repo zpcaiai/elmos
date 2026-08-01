@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B21: Batch 21 Stored Procedure Conversion"
+  short_description: "Run Precision Migration B21 with evidence controls"
+  default_prompt: "Use $pm-b21-stored-procedure-conversion to execute this Precision Migration contract with fail-closed evidence."

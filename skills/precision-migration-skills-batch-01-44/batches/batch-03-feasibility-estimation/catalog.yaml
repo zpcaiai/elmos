@@ -1,0 +1,21 @@
+batch: 3
+slug: feasibility-estimation
+title: "转换可行性、正确率和耗时预测"
+phase: "A 市场、评估与转换决策"
+skills:
+  - name: conversion-feasibility-estimator
+    description: "判断整体转换、局部迁移、兼容层、重新设计或保持源实现的可行性。"
+  - name: conversion-success-range-estimator
+    description: "估算自动覆盖率、首轮构建率、功能等价率、行为等价率和生产就绪概率区间。"
+  - name: estimate-confidence-calibrator
+    description: "依据样本量、同类历史、未知项和试点结果校准预测置信度，避免虚假精确。"
+  - name: conversion-duration-estimator
+    description: "分解估算扫描、建模、生成、构建、测试、差分、修复、性能和人工审核耗时。"
+  - name: conversion-cost-estimator
+    description: "估算模型、计算、工具链、测试环境、人工、私有部署和持续维护成本。"
+  - name: iteration-count-planner
+    description: "根据风险和预期失败类型规划转换、构建修复、差分修复和升级模型的轮次。"
+  - name: manual-effort-estimator
+    description: "估算需要人工处理的比例、工作量、技能组合和关键审批点。"
+  - name: conversion-risk-register
+    description: "维护语义、依赖、数据、并发、性能、平台、合规和交付风险及其缓解措施。"

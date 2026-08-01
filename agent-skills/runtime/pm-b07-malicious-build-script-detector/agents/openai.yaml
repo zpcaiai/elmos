@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B07: Malicious Build Script Detector"
+  short_description: "Run Precision Migration B07 with evidence controls"
+  default_prompt: "Use $pm-b07-malicious-build-script-detector to execute this Precision Migration contract with fail-closed evidence."

@@ -1,0 +1,33 @@
+batch: 39
+slug: complete-project-generation
+title: "Complete Project Generation"
+phase: "K 从Skills生成完整项目"
+skills:
+  - name: complete-project-manifest
+    description: "定义应用、业务、数据、安全、运维、测试、部署和文档的必需构件清单。"
+  - name: repository-template-registry
+    description: "登记经过构建、测试、安全和版本验证的仓库模板及兼容矩阵。"
+  - name: architecture-blueprint-generator
+    description: "从 Skills、非功能要求和部署目标生成模块、边界、数据流和技术选型蓝图。"
+  - name: frontend-generator
+    description: "生成用户端页面、状态、路由、API、样式、测试和构建配置。"
+  - name: backend-generator
+    description: "生成 API、领域、数据、消息、任务、安全、测试和运行配置。"
+  - name: admin-generator
+    description: "生成管理端、权限、审计、运营、配置和数据治理功能。"
+  - name: database-generator
+    description: "生成 Schema、迁移、索引、Seed、备份、保留和数据测试。"
+  - name: worker-and-scheduler-generator
+    description: "生成后台 Worker、队列消费者、定时任务、重试、幂等和监控。"
+  - name: security-crosscutting-generator
+    description: "生成认证、授权、租户隔离、审计、Secret、限流和输入安全。"
+  - name: observability-generator
+    description: "生成日志、指标、Trace、健康检查、告警和业务 SLI。"
+  - name: ci-cd-generator
+    description: "生成构建、测试、安全、制品、部署、回滚和证据流水线。"
+  - name: deployment-generator
+    description: "生成容器、编排、配置、密钥、数据库迁移、环境和发布文件。"
+  - name: documentation-and-runbook-generator
+    description: "生成 README、架构、API、操作、故障、恢复和发布 Runbook。"
+  - name: project-completeness-score
+    description: "按必需构件、测试、门禁、未解决项和证据计算项目完整度。"

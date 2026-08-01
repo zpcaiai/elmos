@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "profile_key": "precision-migration-b01-44-runtime-profile-v1",
+  "version": 1,
+  "risk_tier": "P0",
+  "claims": [
+    {
+      "claim_id": "claim.evidence-integrity",
+      "description": "A PASS result requires resolvable bytes, matching size and SHA-256, scoped authorization, separate executor and verifier, environment identity, and replay metadata.",
+      "criticality": "P0",
+      "required_oracles": ["oracle.runtime-contract", "oracle.negative-corpus"],
+      "required_techniques": ["property", "metamorphic", "mutation", "security-negative", "counterexample-replay"]
+    },
+    {
+      "claim_id": "claim.trust-decisions",
+      "description": "Proof, approval, and repository readiness decisions require valid, scoped, unexpired, non-revoked Ed25519 records and never trust caller booleans.",
+      "criticality": "P0",
+      "required_oracles": ["oracle.runtime-contract", "oracle.negative-corpus"],
+      "required_techniques": ["model", "security-negative", "holdout"]
+    },
+    {
+      "claim_id": "claim.maturity-honesty",
+      "description": "Every one of 587 child Skills reports each verification dimension without promoting installation or handler declaration to domain implementation.",
+      "criticality": "P0",
+      "required_oracles": ["oracle.source-manifest", "oracle.coverage-matrix"],
+      "required_techniques": ["contract", "coverage", "representative-workload"]
+    }
+  ],
+  "techniques": ["property", "metamorphic", "mutation", "structured-fuzz", "model", "contract", "security", "counterexample-replay", "coverage", "assurance-case"],
+  "budgets": {
+    "max_property_cases": 512,
+    "max_fuzz_cases": 512,
+    "max_wall_time_minutes": 20,
+    "max_mutants": 12,
+    "max_artifact_bytes": 104857600
+  },
+  "stop_conditions": ["critical-oracle-conflict", "unknown-p0-property", "evidence-integrity-violation", "unreplayed-counterexample", "holdout-contamination", "budget-exhausted"],
+  "approvals": []
+}

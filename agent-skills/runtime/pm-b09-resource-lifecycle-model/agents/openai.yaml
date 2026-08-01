@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B09: Resource Lifecycle Model"
+  short_description: "Run Precision Migration B09 with evidence controls"
+  default_prompt: "Use $pm-b09-resource-lifecycle-model to execute this Precision Migration contract with fail-closed evidence."

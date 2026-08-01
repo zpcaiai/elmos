@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B10: Ui Layout Constraint Ir"
+  short_description: "Run Precision Migration B10 with evidence controls"
+  default_prompt: "Use $pm-b10-ui-layout-constraint-ir to execute this Precision Migration contract with fail-closed evidence."

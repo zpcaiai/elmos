@@ -1,0 +1,39 @@
+batch: 23
+slug: sqlserver-proprietary-pack
+title: "SQL Server专有能力包"
+phase: "G 数据库精密互转"
+skills:
+  - name: sqlserver-tsql
+    description: "迁移 T-SQL 语法、批次、变量、函数、错误和系统对象。"
+  - name: sqlserver-identity-and-sequence
+    description: "迁移 IDENTITY、Sequence、SET IDENTITY_INSERT 和取号行为。"
+  - name: sqlserver-merge
+    description: "迁移 MERGE，并评估并发、重复匹配和目标平台安全替代。"
+  - name: sqlserver-try-catch
+    description: "迁移 TRY/CATCH、THROW、RAISERROR、XACT_STATE 和错误语义。"
+  - name: sqlserver-table-variable
+    description: "迁移 Table Variable、统计、作用域和性能行为。"
+  - name: sqlserver-temporary-table
+    description: "迁移本地/全局临时表、生命周期、统计、并发和缓存。"
+  - name: sqlserver-agent
+    description: "迁移 SQL Agent Job、Step、Schedule、Operator、Proxy 和历史。"
+  - name: sqlserver-service-broker
+    description: "迁移 Service Broker 队列、会话、合同、事务和激活。"
+  - name: sqlserver-clr-stored-procedure
+    description: "迁移 SQL CLR、程序集、权限集和外部代码依赖。"
+  - name: sqlserver-linked-server
+    description: "迁移 Linked Server、四段名、OPENQUERY、权限和分布式事务。"
+  - name: sqlserver-indexed-view
+    description: "迁移 Indexed View、Schema binding、限制和优化器使用。"
+  - name: sqlserver-temporal-table
+    description: "迁移系统版本时间表、历史表、查询和保留策略。"
+  - name: sqlserver-cdc-and-change-tracking
+    description: "迁移 CDC、Change Tracking、位点、保留和消费接口。"
+  - name: sqlserver-row-level-security
+    description: "迁移 Predicate Function、Security Policy 和上下文。"
+  - name: sqlserver-always-encrypted
+    description: "迁移 Always Encrypted、密钥、驱动端加解密和查询限制。"
+  - name: sqlserver-ssis-dependency
+    description: "识别并迁移 SSIS Package、连接、数据流、控制流和调度依赖。"
+  - name: sqlserver-query-hint-and-plan
+    description: "处理 NOLOCK、UPDLOCK、INDEX、RECOMPILE、Plan Guide 和目标执行计划。"

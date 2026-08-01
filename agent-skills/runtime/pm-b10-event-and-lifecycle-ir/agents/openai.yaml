@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B10: Event And Lifecycle Ir"
+  short_description: "Run Precision Migration B10 with evidence controls"
+  default_prompt: "Use $pm-b10-event-and-lifecycle-ir to execute this Precision Migration contract with fail-closed evidence."

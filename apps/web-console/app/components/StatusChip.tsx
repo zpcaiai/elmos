@@ -19,6 +19,9 @@ const statusLabels: Record<string, string> = {
   FAILED: "已失败",
   LIVE_API: "实时 API",
   REPOSITORY_CONTRACT: "仓库契约",
+  CONTRACT_READY: "契约就绪",
+  INSTALLED: "已安装",
+  ADAPTER_DECLARED: "适配器已声明",
 };
 
 export function StatusChip({ status, compact = false }: { status: string; compact?: boolean }) {

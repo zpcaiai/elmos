@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B43: Successful Repair Rule Induction"
+  short_description: "Run Precision Migration B43 with evidence controls"
+  default_prompt: "Use $pm-b43-successful-repair-rule-induction to execute this Precision Migration contract with fail-closed evidence."

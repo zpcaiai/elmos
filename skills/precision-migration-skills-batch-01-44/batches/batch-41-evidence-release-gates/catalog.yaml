@@ -1,0 +1,25 @@
+batch: 41
+slug: evidence-release-gates
+title: "正确性证据与发布门禁"
+phase: "L 证据、上线和产品化"
+skills:
+  - name: evidence-manifest
+    description: "索引本次迁移的规则、模型、工具链、测试、证明、差异、审批和产物。"
+  - name: conversion-provenance
+    description: "追踪每段目标代码由何规则、Agent、输入、版本和修复生成。"
+  - name: rule-proof-certificate
+    description: "记录转换规则适用条件、证明、测试、反例和内核验收。"
+  - name: module-equivalence-certificate
+    description: "记录关键模块源目标类型、结果、状态、Effect 和观察等价证据。"
+  - name: runtime-evidence-package
+    description: "打包双运行、Fuzz、Mutation、并发、故障、性能、UI 和真机结果。"
+  - name: semantic-loss-report
+    description: "报告每项无损、归一化、近似、适配、未验证和不支持语义。"
+  - name: unresolved-obligation-report
+    description: "列出所有未证明、未测试、未知、超时、规格冲突和阻断项。"
+  - name: release-gate-engine
+    description: "以硬门槛而非平均分决定是否允许发布、灰度或要求人工。"
+  - name: correctness-level-classifier
+    description: "将结果分类为语法、构建、类型、局部语义、组合行为、系统性质和生产证据等级。"
+  - name: certificate-signing
+    description: "对证据、产物、规则、环境和审批生成不可篡改签名。"

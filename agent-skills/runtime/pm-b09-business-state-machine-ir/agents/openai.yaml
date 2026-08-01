@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B09: Business State Machine Ir"
+  short_description: "Run Precision Migration B09 with evidence controls"
+  default_prompt: "Use $pm-b09-business-state-machine-ir to execute this Precision Migration contract with fail-closed evidence."

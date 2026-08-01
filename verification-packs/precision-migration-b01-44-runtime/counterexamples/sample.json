@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "counterexample_id": "ce.fake-evidence-ref-v1",
+  "technique": "security-negative",
+  "claim_id": "claim.evidence-integrity",
+  "failure_fingerprint": "nonexistent-artifact-with-format-valid-digest-reached-VERIFIED",
+  "environment_digest": "sha256:19fa24fa672b426ee0b4c3940325776979000756066b97bfafd57b09eb31a682",
+  "artifact_digests": ["sha256:4979ccd2bb234fdd198068dd760b9c6b3c49c56f353ade19285cf67ebb7675a0"],
+  "input_ref": "counterexamples/input.json",
+  "replay": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests/precision-migration/test_precision_migration_runtime.py",
+    "expected_fingerprint": "EVIDENCE_CONTENT_UNVERIFIED"
+  },
+  "status": "fixed",
+  "owner": "elmos-verification-engineering"
+}

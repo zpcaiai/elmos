@@ -1,0 +1,21 @@
+batch: 28
+slug: source-test-assessment
+title: "源测试资产评估"
+phase: "H 测试、验证与自动修复"
+skills:
+  - name: source-test-inventory
+    description: "盘点单元、集成、契约、E2E、性能、安全、数据和设备测试。"
+  - name: test-coverage-normalizer
+    description: "统一语句、分支、路径、接口、状态、Effect、Journey 和风险覆盖指标。"
+  - name: assertion-quality-analyzer
+    description: "检测无断言、弱断言、仅状态码、过度快照和未验证副作用等问题。"
+  - name: skipped-and-flaky-test-detector
+    description: "识别跳过、条件跳过、重试掩盖、时间依赖和环境不稳定测试。"
+  - name: test-oracle-classifier
+    description: "标注 Oracle 来源为源运行、源测试、规格、业务规则、Trace、形式规格或 AI 推断。"
+  - name: test-mutation-strength-assessment
+    description: "通过通用和方向专用变异衡量测试能否发现真实转换错误。"
+  - name: missing-test-gap-analysis
+    description: "按接口、状态、错误、权限、数据、副作用、并发、故障和 Journey 找缺口。"
+  - name: test-migration-feasibility
+    description: "判断哪些测试可直接迁移、需重写、需双运行或不可复用。"

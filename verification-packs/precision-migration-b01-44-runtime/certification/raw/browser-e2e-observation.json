@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "pack_key": "precision-migration-b01-44-runtime",
+  "observed_at": "2026-08-01T08:10:24Z",
+  "executor": "codex-local-engineering-runner",
+  "independent_verifier": "NOT_RUN",
+  "command": "ELMOS_E2E_PORT=3230 ELMOS_E2E_WEB_SERVER_MODE=development ELMOS_E2E_CHROMIUM_CHANNEL=chrome pnpm --dir apps/web-console exec playwright test --workers=1 --project=chromium e2e/precision-migration-jobs.spec.ts",
+  "status": "PASSED",
+  "test_count": 2,
+  "tests": [
+    "tenant-isolated API executes a real read-only assessment, verifies content-addressed artifact download, rejects tampering, and rejects tenant switching",
+    "Skills UI submits, polls, downloads, and retries a durable Precision Migration job"
+  ],
+  "duration_seconds": 35.1,
+  "browser": "system Chrome through Playwright chromium project",
+  "external_evidence_status": "NOT_RUN",
+  "production_certification": "NOT_CERTIFIED"
+}

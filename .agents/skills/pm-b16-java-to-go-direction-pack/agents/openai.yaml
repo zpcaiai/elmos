@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B16: Java To Go Direction Pack"
+  short_description: "Run Precision Migration B16 with evidence controls"
+  default_prompt: "Use $pm-b16-java-to-go-direction-pack to execute this Precision Migration contract with fail-closed evidence."

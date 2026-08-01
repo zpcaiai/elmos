@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B22: Oracle Hierarchical Query"
+  short_description: "Run Precision Migration B22 with evidence controls"
+  default_prompt: "Use $pm-b22-oracle-hierarchical-query to execute this Precision Migration contract with fail-closed evidence."

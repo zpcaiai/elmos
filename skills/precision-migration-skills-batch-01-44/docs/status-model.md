@@ -1,0 +1,11 @@
+# Status Model
+
+- `PROVED`
+- `VERIFIED`
+- `CONDITIONALLY_VERIFIED`
+- `REQUIRES_ADAPTER`
+- `REQUIRES_HUMAN_REVIEW`
+- `UNSUPPORTED`
+- `FAILED`
+
+`PROVED` 仅由可信证明内核或求解器产生；`VERIFIED` 要求适用的运行门禁全部通过且未解释差异为0。

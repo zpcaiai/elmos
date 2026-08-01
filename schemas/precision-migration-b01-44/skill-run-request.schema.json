@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/precision-migration-b01-44/skill-run-request.schema.json",
+  "title": "Precision Migration Skill Run Request",
+  "type": "object",
+  "required": ["request_id", "skill", "mode", "inputs", "policy", "evidence"],
+  "properties": {
+    "request_id": { "type": "string", "minLength": 1 },
+    "skill": { "type": "string", "minLength": 1 },
+    "mode": { "enum": ["assess", "transform", "validate", "repair", "certify"] },
+    "inputs": {
+      "type": "object",
+      "required": ["assets"],
+      "properties": {
+        "assets": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/asset" }
+        },
+        "parameters": { "type": "object" }
+      },
+      "additionalProperties": false
+    },
+    "policy": {
+      "type": "object",
+      "required": ["unresolved_differences", "allow_test_weakening", "require_provenance", "risk_level"],
+      "properties": {
+        "unresolved_differences": { "const": "block" },
+        "allow_test_weakening": { "const": false },
+        "require_provenance": { "const": true },
+        "risk_level": { "enum": ["low", "medium", "high", "critical"] },
+        "request_actor": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "evidence": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/evidence" }
+    },
+    "semantic_losses": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/semanticLoss" }
+    },
+    "approvals": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/signedEnvelope" }
+    },
+    "claimed_status": {
+      "enum": [
+        "PROVED",
+        "VERIFIED",
+        "CONDITIONALLY_VERIFIED",
+        "REQUIRES_ADAPTER",
+        "REQUIRES_HUMAN_REVIEW",
+        "UNSUPPORTED",
+        "FAILED"
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "asset": {
+      "type": "object",
+      "required": ["uri", "digest", "size_bytes", "media_type", "sensitivity"],
+      "properties": {
+        "uri": { "type": "string", "minLength": 1 },
+        "digest": { "$ref": "#/$defs/digest" },
+        "size_bytes": { "type": "integer", "minimum": 0 },
+        "media_type": { "type": "string", "minLength": 1 },
+        "sensitivity": { "type": "string", "minLength": 1 },
+        "version": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "evidence": {
+      "type": "object",
+      "required": ["kind", "state"],
+      "properties": {
+        "kind": { "type": "string", "minLength": 1 },
+        "state": { "enum": ["PASS", "FAIL", "NOT_RUN", "INCONCLUSIVE"] },
+        "artifact_uri": { "type": "string", "minLength": 1 },
+        "digest": { "$ref": "#/$defs/digest" },
+        "size_bytes": { "type": "integer", "minimum": 0 },
+        "media_type": { "type": "string", "minLength": 1 },
+        "executor": { "type": "string", "minLength": 1 },
+        "verifier": { "type": "string", "minLength": 1 },
+        "replay_command": { "type": "string", "minLength": 1 },
+        "environment_digest": { "$ref": "#/$defs/digest" },
+        "authorization": { "$ref": "#/$defs/signedEnvelope" },
+        "proof_record": { "$ref": "#/$defs/signedEnvelope" }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": { "properties": { "state": { "const": "PASS" } }, "required": ["state"] },
+          "then": { "required": ["artifact_uri", "digest", "size_bytes", "media_type", "executor", "verifier", "replay_command", "environment_digest", "authorization"] }
+        }
+      ]
+    },
+    "semanticLoss": {
+      "type": "object",
+      "required": ["scope", "dimension", "classification"],
+      "properties": {
+        "scope": { "type": "string", "minLength": 1 },
+        "dimension": { "type": "string", "minLength": 1 },
+        "classification": {
+          "enum": ["LOSSLESS", "NORMALIZED", "APPROXIMATE", "REQUIRES_ADAPTER", "UNVERIFIED", "UNSUPPORTED"]
+        },
+        "evidence": { "type": "array", "items": { "type": "string" } },
+        "mitigation": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "signedEnvelope": {
+      "type": "object",
+      "required": ["algorithm", "key_id", "payload", "signature"],
+      "properties": {
+        "algorithm": { "const": "ed25519" },
+        "key_id": { "type": "string", "minLength": 1 },
+        "payload": { "type": "object", "minProperties": 1 },
+        "signature": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    }
+  }
+}

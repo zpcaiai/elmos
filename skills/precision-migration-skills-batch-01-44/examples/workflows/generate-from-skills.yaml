@@ -1,0 +1,16 @@
+mode: generate-from-skills
+skills:
+  - user-registration
+  - authentication
+  - rbac
+  - audit
+  - order-management
+target_stack:
+  frontend: vue3
+  backend: java21-spring3
+  database: postgresql
+manifest:
+  admin: required
+  tests: required
+  ci_cd: required
+  runbook: required

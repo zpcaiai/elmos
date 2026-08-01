@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "campaign_key": "mutation.precision-trust-boundary-v1",
+  "owner": "elmos-verification-engineering",
+  "target_scope": ["scripts/precision_migration/trust.py", "scripts/precision_migration/runtime.py", "scripts/precision_migration/run_gate.py"],
+  "operators": [
+    { "key": "skip-byte-digest-check", "risk": "P0" },
+    { "key": "accept-unknown-signing-key", "risk": "P0" },
+    { "key": "ignore-expiry-or-revocation", "risk": "P0" },
+    { "key": "replace-proof-record-with-boolean", "risk": "P0" },
+    { "key": "accept-nonexistent-gate-ref", "risk": "P0" }
+  ],
+  "budgets": { "max_mutants": 12, "max_minutes": 10 },
+  "required_tests": ["tests/precision-migration/test_precision_migration_runtime.py"],
+  "equivalent_mutant_policy": "independent-human-reviewed"
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B43: Batch 43 Continuous Modernization Learning"
+  short_description: "Run Precision Migration B43 with evidence controls"
+  default_prompt: "Use $pm-b43-continuous-modernization-learning to execute this Precision Migration contract with fail-closed evidence."

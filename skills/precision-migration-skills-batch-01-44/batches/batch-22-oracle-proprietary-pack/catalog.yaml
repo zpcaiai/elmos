@@ -1,0 +1,37 @@
+batch: 22
+slug: oracle-proprietary-pack
+title: "Oracle专有能力包"
+phase: "G 数据库精密互转"
+skills:
+  - name: oracle-plsql-package-and-state
+    description: "迁移 PL/SQL Package、公开/私有成员、初始化和会话级 Package State。"
+  - name: oracle-autonomous-transaction
+    description: "分析并迁移 Autonomous Transaction 的独立提交、可见性和审计语义。"
+  - name: oracle-sequence
+    description: "迁移 Sequence、缓存、循环、取值和并发语义。"
+  - name: oracle-synonym
+    description: "迁移公私有 Synonym、解析优先级、权限和跨 Schema 引用。"
+  - name: oracle-database-link
+    description: "迁移 Database Link、远程查询、权限、网络和分布式事务。"
+  - name: oracle-materialized-view
+    description: "迁移物化视图、刷新模式、日志、查询重写和一致性。"
+  - name: oracle-object-type
+    description: "迁移 Oracle Object Type、继承、方法和表对象。"
+  - name: oracle-collection
+    description: "迁移 VARRAY、Nested Table、Associative Array 和集合操作。"
+  - name: oracle-bulk-collect-forall
+    description: "迁移 Bulk Collect、FORALL、批处理异常和性能语义。"
+  - name: oracle-hierarchical-query
+    description: "迁移 CONNECT BY、START WITH、层级伪列和顺序。"
+  - name: oracle-flashback
+    description: "迁移 Flashback Query、Table、Database 和审计/历史用途。"
+  - name: oracle-advanced-queue
+    description: "迁移 Advanced Queue、消费者、优先级、延迟、事务和重试。"
+  - name: oracle-scheduler
+    description: "迁移 DBMS_SCHEDULER、Job、Program、Chain、窗口和凭证。"
+  - name: oracle-fine-grained-access-control
+    description: "迁移 VPD/FGAC 策略函数、上下文和行列级安全。"
+  - name: oracle-null-and-date-semantics
+    description: "处理空字符串等于 NULL、DATE/TIMESTAMP、NLS 和时区语义。"
+  - name: oracle-feature-migration-decision
+    description: "为 Oracle 专有能力输出 DIRECT_MAP、REWRITE、EMULATE、EXTERNALIZE、RETAIN 或 UNSUPPORTED。"

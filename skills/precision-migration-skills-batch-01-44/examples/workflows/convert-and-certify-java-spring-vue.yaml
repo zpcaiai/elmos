@@ -1,0 +1,13 @@
+mode: convert-and-certify
+source:
+  java: 8
+  spring_boot: 2
+  vue: 2
+target:
+  java: 21
+  spring_boot: 3
+  vue: 3
+validation:
+  original_tests: required
+  api_database_ui_differential: required
+  mutation_score_critical: 0.9

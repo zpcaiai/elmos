@@ -1,0 +1,33 @@
+batch: 29
+slug: automatic-test-generation
+title: "根据源系统自动生成测试"
+phase: "H 测试、验证与自动修复"
+skills:
+  - name: openapi-contract-test-generator
+    description: "从 OpenAPI 生成正常、边界、错误、权限和兼容性契约测试。"
+  - name: controller-route-test-generator
+    description: "从 Controller、Route、Middleware 和校验注解生成接口测试。"
+  - name: graphql-test-generator
+    description: "从 GraphQL Schema、Resolver、Directive 和错误契约生成测试。"
+  - name: protobuf-api-test-generator
+    description: "从 Protobuf/gRPC Schema、Field rule 和流式接口生成测试。"
+  - name: dto-validation-test-generator
+    description: "从 DTO、Schema、精化类型和校验规则生成边界与拒绝测试。"
+  - name: database-state-test-generator
+    description: "生成初始状态、写入、约束、回滚、触发器和最终状态验证。"
+  - name: side-effect-test-generator
+    description: "生成消息、外部调用、文件、缓存、审计和调用次数/顺序验证。"
+  - name: business-invariant-test-generator
+    description: "从金额、库存、权限、状态、幂等和守恒规则生成属性测试。"
+  - name: user-journey-test-generator
+    description: "从页面、路由、事件和 API 生成端到端用户 Journey。"
+  - name: production-trace-test-generator
+    description: "将脱敏生产 Trace 转换为可复现、参数化和可审计测试。"
+  - name: property-test-generator
+    description: "为跨语言契约生成 Property-based 测试与数据生成器。"
+  - name: fuzz-test-generator
+    description: "为 Parser、协议、接口、序列化和动态输入生成 Fuzz Harness。"
+  - name: mutation-test-generator
+    description: "生成通用和语言对专项 Mutant，验证测试的错误发现能力。"
+  - name: concurrency-test-generator
+    description: "从锁、事务、消息、幂等和异步流程生成并发交错场景。"

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B25: Postgresql Sequence And Identity"
+  short_description: "Run Precision Migration B25 with evidence controls"
+  default_prompt: "Use $pm-b25-postgresql-sequence-and-identity to execute this Precision Migration contract with fail-closed evidence."

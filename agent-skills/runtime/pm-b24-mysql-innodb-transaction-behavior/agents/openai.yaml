@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B24: Mysql Innodb Transaction Behavior"
+  short_description: "Run Precision Migration B24 with evidence controls"
+  default_prompt: "Use $pm-b24-mysql-innodb-transaction-behavior to execute this Precision Migration contract with fail-closed evidence."

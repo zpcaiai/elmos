@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B17: Lifecycle Semantic Mapping"
+  short_description: "Run Precision Migration B17 with evidence controls"
+  default_prompt: "Use $pm-b17-lifecycle-semantic-mapping to execute this Precision Migration contract with fail-closed evidence."

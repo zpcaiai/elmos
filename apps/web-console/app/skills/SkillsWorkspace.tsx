@@ -5,9 +5,22 @@ import { useState } from "react";
 import { Icon, type IconName } from "../components/Icon";
 import { StatusChip } from "../components/StatusChip";
 import { installedSkillInventory } from "../lib/catalog";
+import { precisionMigrationPhases, precisionMigrationSummary } from "../lib/precisionMigrationCatalog.generated";
+import { PrecisionMigrationJobs } from "./PrecisionMigrationJobs";
 
-type Namespace = "migration" | "product";
+type Namespace = "migration" | "precision" | "product";
 type RangeItem = { range: string; title: string; count: number; source: string; status: string; icon: IconName; note: string };
+
+const precisionIcons: IconName[] = ["route", "layers", "code", "workflow", "database", "test", "shield", "spark"];
+const precisionRanges: RangeItem[] = precisionMigrationPhases.map((phase, index) => ({
+  range: phase.batchRange.replace("-", "–"),
+  title: phase.phase.replace(/^[A-L]\s+/, ""),
+  count: phase.skillCount,
+  source: `${phase.adapterDeclaredCount} adapter contracts / ${phase.installedOnlyCount} installed only`,
+  status: Number(phase.installedOnlyCount) === 0 ? "ADAPTER_DECLARED" : "INSTALLED",
+  icon: precisionIcons[index % precisionIcons.length],
+  note: `结构契约已安装；${phase.adapterDeclaredCount} 个条目拥有受控 handler，实际执行、holdout 与外部证据仍为 NOT_RUN。`,
+}));
 
 const ranges: Record<Namespace, RangeItem[]> = {
   migration: [
@@ -15,6 +28,7 @@ const ranges: Record<Namespace, RangeItem[]> = {
     { range: "M29–M33", title: "精确迁移认证包", count: 102, source: "Imported original", status: "READY", icon: "route", note: "语言、框架、数据库、客户端与 Cloud 契约。" },
     { range: "M34–M45", title: "规模与成熟产品包", count: 270, source: "Repository contracts", status: "READY", icon: "shield", note: "结构和本地门禁就绪，现场证据仍未运行。" },
   ],
+  precision: precisionRanges,
   product: [
     { range: "B34–B39", title: "商业化核心控制", count: 236, source: "Complete source", status: "READY", icon: "shield", note: "租户、SCM、Runner、证据、授权与 Finance。" },
     { range: "B40A", title: "对话设计", count: 16, source: "Approved design", status: "READY", icon: "spark", note: "具有已批准的 conversation-design 来源。" },
@@ -35,12 +49,12 @@ export function SkillsWorkspace() {
 
   return <div className="page-stack skills-page">
     <section className="page-header skills-header">
-      <div><span className="overline">BATCH 1–55 · DUAL NAMESPACE</span><h1>Skills 与验证</h1><p>先看来源、版本和门禁，再决定一个 Skill 是否可以进入真实工作流。结构通过不会被包装成业务完成或生产认证。</p></div>
+      <div><span className="overline">MIGRATION · PRECISION · PRODUCT</span><h1>Skills 与验证</h1><p>先看命名空间、来源、版本和门禁，再决定一个 Skill 是否可以进入真实工作流。结构通过不会被包装成业务完成或生产认证。</p></div>
       <div className="header-actions"><Link className="button button-secondary" href="/migration"><Icon name="route" size={16} />迁移工坊</Link><Link className="button button-primary" href="/commercialization">商业化控制面<Icon name="arrow" size={15} /></Link></div>
     </section>
 
     <section className="metric-grid metric-grid-four" aria-label="Skills 资格摘要">
-      <article className="metric-card metric-card-accent"><span>组合包契约</span><strong>1,824</strong><small>官方结构 1,824 / 1,824</small></article>
+      <article className="metric-card metric-card-accent"><span>精密迁移成熟度</span><strong>{precisionMigrationSummary.maturityCounts.ADAPTER_DECLARED} / {precisionMigrationSummary.runtimeSkillCount}</strong><small>{precisionMigrationSummary.workspaceSkillCount} 个均可由 Codex 发现；其余仅安装、未声明适配器</small></article>
       <article className="metric-card"><span>Codex / Runtime</span><strong className="metric-pair">{installedSkillInventory.codexSkillCount.toLocaleString("en-US")} <i>/</i> {installedSkillInventory.runtimeSkillCount.toLocaleString("en-US")}</strong><small>按含 SKILL.md 的可调用目录统计</small></article>
       <article className="metric-card"><span>严格用例目录</span><strong>408</strong><small>Batch 1–37 · 八类变体</small></article>
       <article className="metric-card"><span>外部认证用例</span><strong className="warning-text">0 / 408</strong><small>全部保持 NOT_RUN</small></article>
@@ -51,6 +65,7 @@ export function SkillsWorkspace() {
         <div className="card-heading"><div><span className="overline">NAMESPACE EXPLORER</span><h2>选择一个明确命名空间</h2></div><span className="quiet-label">数字标签不可互换</span></div>
         <div className="namespace-tabs" role="tablist" aria-label="Skill 命名空间">
           <button role="tab" aria-selected={namespace === "migration"} className={namespace === "migration" ? "active" : ""} onClick={() => setNamespace("migration")}><Icon name="route" size={17} /><span><strong>Migration Packs</strong><small>M1–M45</small></span><b>820</b></button>
+          <button role="tab" aria-selected={namespace === "precision"} className={namespace === "precision" ? "active" : ""} onClick={() => setNamespace("precision")}><Icon name="workflow" size={17} /><span><strong>Precision migration</strong><small>B01–B44</small></span><b>{precisionMigrationSummary.runtimeSkillCount}</b></button>
           <button role="tab" aria-selected={namespace === "product"} className={namespace === "product" ? "active" : ""} onClick={() => setNamespace("product")}><Icon name="shield" size={17} /><span><strong>Product commercialization</strong><small>B34–B55</small></span><b>1,004</b></button>
         </div>
         <div className="namespace-range-list">
@@ -61,7 +76,7 @@ export function SkillsWorkspace() {
             <StatusChip status={item.status} compact />
           </div>)}
         </div>
-        <footer className="namespace-footer"><span>当前命名空间</span><strong>{namespace === "migration" ? "Migration M1–M45" : "Product B34–B55"}</strong><b>{total.toLocaleString("en-US")} Skills</b></footer>
+        <footer className="namespace-footer"><span>当前命名空间</span><strong>{namespace === "migration" ? "Migration M1–M45" : namespace === "precision" ? "Precision Migration B01–B44" : "Product B34–B55"}</strong><b>{total.toLocaleString("en-US")} {namespace === "precision" ? "Child Skills" : "Skills"}</b></footer>
       </article>
 
       <aside className="surface-card strict-gate-card">
@@ -73,6 +88,8 @@ export function SkillsWorkspace() {
       </aside>
     </section>
 
+    <PrecisionMigrationJobs />
+
     <section aria-labelledby="source-title">
       <div className="section-heading"><div><span className="overline">SOURCE QUALITY</span><h2 id="source-title">按来源可信度分层</h2></div><span className="quiet-label">总计 1,824</span></div>
       <div className="provenance-grid">
@@ -81,8 +98,8 @@ export function SkillsWorkspace() {
     </section>
 
     <section className="surface-card install-boundary">
-      <div><span className="install-icon"><Icon name="command" size={20} /></span><span><strong>安全默认安装</strong><small>默认仅安装 624 个权威、仓库或已批准来源的 Skills；其余内容必须显式启用。</small></span></div>
-      <code>make batch1-55-skills</code>
+      <div><span className="install-icon"><Icon name="command" size={20} /></span><span><strong>精密迁移结构与可信运行时验证</strong><small>验证 632 个入口、来源摘要、适配器声明、内容寻址证据、签名信任和失败闭合门禁；不替代外部执行。</small></span></div>
+      <code>make precision-migration-b01-44-check</code>
       <StatusChip status="NOT_RUN" />
     </section>
   </div>;

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B43: Framework Obsolescence Monitor"
+  short_description: "Run Precision Migration B43 with evidence controls"
+  default_prompt: "Use $pm-b43-framework-obsolescence-monitor to execute this Precision Migration contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B09: Async Cancellation Model"
+  short_description: "Run Precision Migration B09 with evidence controls"
+  default_prompt: "Use $pm-b09-async-cancellation-model to execute this Precision Migration contract with fail-closed evidence."

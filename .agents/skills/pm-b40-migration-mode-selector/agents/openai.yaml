@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B40: Migration Mode Selector"
+  short_description: "Run Precision Migration B40 with evidence controls"
+  default_prompt: "Use $pm-b40-migration-mode-selector to execute this Precision Migration contract with fail-closed evidence."

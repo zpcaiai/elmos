@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Semantic Loss Ledger",
+  "type": "object",
+  "required": [
+    "items"
+  ],
+  "properties": {
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "scope",
+          "dimension",
+          "classification"
+        ],
+        "properties": {
+          "scope": {
+            "type": "string"
+          },
+          "dimension": {
+            "type": "string"
+          },
+          "classification": {
+            "enum": [
+              "LOSSLESS",
+              "NORMALIZED",
+              "APPROXIMATE",
+              "REQUIRES_ADAPTER",
+              "UNVERIFIED",
+              "UNSUPPORTED"
+            ]
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "mitigation": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}

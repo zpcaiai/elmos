@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B41: Batch 41 Evidence Release Gates"
+  short_description: "Run Precision Migration B41 with evidence controls"
+  default_prompt: "Use $pm-b41-evidence-release-gates to execute this Precision Migration contract with fail-closed evidence."

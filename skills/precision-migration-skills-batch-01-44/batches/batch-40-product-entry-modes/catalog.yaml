@@ -1,0 +1,15 @@
+batch: 40
+slug: product-entry-modes
+title: "三种产品入口"
+phase: "K 从Skills生成完整项目"
+skills:
+  - name: compare-and-repair
+    description: "输入源仓库与失败目标仓库，检测功能差异、自动修复并重新认证。"
+  - name: convert-and-certify
+    description: "输入源仓库与目标技术栈，执行评估、转换、验证、修复和证据签发。"
+  - name: generate-from-skills
+    description: "输入可执行Skills、业务配置、目标栈和部署要求，生成完整可运行项目并验收。"
+  - name: migration-mode-selector
+    description: "根据源/目标资产、质量、规格和风险选择 Repair、Migration 或 Generation 模式。"
+  - name: asset-reuse-planner
+    description: "决定源码、测试、Schema、资源、协议、组件和部署资产的复用、适配或重建。"

@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "cases": [
+    { "case_id": "REP-001", "scope": "12 existing typed-pure-function-v1 language routes", "status": "NOT_RUN", "required_evidence": ["native-source-builds", "native-target-builds", "independent-differential-results"] },
+    { "case_id": "REP-002", "scope": "Spring Boot 2.7.18 to 3.5.3 reference pack", "status": "NOT_RUN", "required_evidence": ["exact-source-startup", "exact-target-startup", "holdout"] },
+    { "case_id": "REP-003", "scope": "SQLite 3.53.3 to PostgreSQL 17.5 reference pack", "status": "NOT_RUN", "required_evidence": ["real-source-engine", "real-target-engine", "detail-reconciliation"] },
+    { "case_id": "REP-004", "scope": "Precision B01-B44 customer migration estate", "status": "NOT_RUN", "required_evidence": ["authorization", "customer-acceptance", "independent-review"] }
+  ]
+}

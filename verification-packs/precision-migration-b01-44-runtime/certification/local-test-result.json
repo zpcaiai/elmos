@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "pack_key": "precision-migration-b01-44-runtime",
+  "status": "PASSED",
+  "started_at": "2026-08-01T08:10:54.930195Z",
+  "completed_at": "2026-08-01T08:10:57.720975Z",
+  "executor": "local-engineering-runner",
+  "independent_verifier": "NOT_RUN",
+  "environment": {
+    "python": "Python 3.14.6",
+    "openssl": "OpenSSL 3.6.3 9 Jun 2026 (Library: OpenSSL 3.6.3 9 Jun 2026)",
+    "contract": "docs/precision-migration-b01-44/local-environment-contract.json"
+  },
+  "checks": {
+    "adapter_registry": {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/precision_migration/adapters.py",
+        "validate-registry"
+      ],
+      "exit_code": 0,
+      "raw_evidence": "raw/adapter-registry.txt",
+      "digest": "sha256:13021387c6f0ce28a016ecd2f7c5575b1d3d5d66acba069b100515866bb8970d",
+      "size_bytes": 162
+    },
+    "runtime_tests": {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/precision-migration",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "raw_evidence": "raw/runtime-tests.txt",
+      "digest": "sha256:7925188c7067e61941b584e7a1b113deeeeaf2673f8492a65692184fdc669219",
+      "size_bytes": 5560
+    },
+    "coverage_matrix": {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/precision_migration/build_coverage.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "raw_evidence": "raw/coverage-matrix.txt",
+      "digest": "sha256:967ac44e0645affb396d515c6afdeb7075494baa7807b6a0bba3243109b7befd",
+      "size_bytes": 274
+    }
+  },
+  "test_count": 31,
+  "negative_corpus": "corpus/negative/cases.json",
+  "holdout_status": "NOT_RUN",
+  "representative_workload_status": "NOT_RUN",
+  "external_evidence_status": "NOT_RUN",
+  "production_certification": "NOT_CERTIFIED",
+  "result_digest": "sha256:62b3492383129b86a8e7e34a84dec856ea89dfe631ac613caf2b5b7cc06ef747"
+}

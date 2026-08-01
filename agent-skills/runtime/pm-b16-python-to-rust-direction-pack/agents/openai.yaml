@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B16: Python To Rust Direction Pack"
+  short_description: "Run Precision Migration B16 with evidence controls"
+  default_prompt: "Use $pm-b16-python-to-rust-direction-pack to execute this Precision Migration contract with fail-closed evidence."

@@ -1,0 +1,21 @@
+batch: 4
+slug: target-recommendation
+title: "目标语言与目标架构建议"
+phase: "A 市场、评估与转换决策"
+skills:
+  - name: target-language-suitability-analysis
+    description: "分析目标语言在性能、并发、安全、生态、人才、维护、部署和迁移风险方面的适配度。"
+  - name: target-framework-selector
+    description: "基于业务形态、非功能需求、团队能力和生态成熟度选择目标框架。"
+  - name: target-platform-benefit-analysis
+    description: "判断跨 Web、移动端、ArkUI、小程序或桌面平台迁移能否带来真实业务收益。"
+  - name: migration-alternative-generator
+    description: "生成整体转换、局部转换、双端保留、服务化、兼容层和重新设计等替代方案。"
+  - name: architecture-migration-strategy
+    description: "选择 Strangler、Rewrite、Wrap、Retain、Replatform、模块重建或服务拆分策略。"
+  - name: do-not-convert-advisor
+    description: "当收益低于风险、目标不适合或缺乏等价能力时，明确给出不转换或先治理建议。"
+  - name: team-capability-fit-analysis
+    description: "评估团队对目标语言、框架、工具链、运维和长期维护的能力匹配与培训成本。"
+  - name: migration-business-case
+    description: "汇总成本、收益、风险、TCO、机会成本和退出能力，形成可决策的商业论证。"

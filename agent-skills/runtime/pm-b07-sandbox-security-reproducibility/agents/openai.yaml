@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B07: Batch 07 Sandbox Security Reproducibility"
+  short_description: "Run Precision Migration B07 with evidence controls"
+  default_prompt: "Use $pm-b07-sandbox-security-reproducibility to execute this Precision Migration contract with fail-closed evidence."

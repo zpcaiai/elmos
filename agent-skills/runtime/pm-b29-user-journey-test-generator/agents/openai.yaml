@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B29: User Journey Test Generator"
+  short_description: "Run Precision Migration B29 with evidence controls"
+  default_prompt: "Use $pm-b29-user-journey-test-generator to execute this Precision Migration contract with fail-closed evidence."

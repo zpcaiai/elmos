@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B42: Live Event Replay"
+  short_description: "Run Precision Migration B42 with evidence controls"
+  default_prompt: "Use $pm-b42-live-event-replay to execute this Precision Migration contract with fail-closed evidence."

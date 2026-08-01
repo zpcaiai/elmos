@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B28: Source Test Inventory"
+  short_description: "Run Precision Migration B28 with evidence controls"
+  default_prompt: "Use $pm-b28-source-test-inventory to execute this Precision Migration contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B07: Dependency Proxy And Cache"
+  short_description: "Run Precision Migration B07 with evidence controls"
+  default_prompt: "Use $pm-b07-dependency-proxy-and-cache to execute this Precision Migration contract with fail-closed evidence."

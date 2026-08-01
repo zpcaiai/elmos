@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B02: Batch 02 Modernization Assessment"
+  short_description: "Run Precision Migration B02 with evidence controls"
+  default_prompt: "Use $pm-b02-modernization-assessment to execute this Precision Migration contract with fail-closed evidence."

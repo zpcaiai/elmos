@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B36: Model Output Calibration"
+  short_description: "Run Precision Migration B36 with evidence controls"
+  default_prompt: "Use $pm-b36-model-output-calibration to execute this Precision Migration contract with fail-closed evidence."

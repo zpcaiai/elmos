@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B39: Documentation And Runbook Generator"
+  short_description: "Run Precision Migration B39 with evidence controls"
+  default_prompt: "Use $pm-b39-documentation-and-runbook-generator to execute this Precision Migration contract with fail-closed evidence."

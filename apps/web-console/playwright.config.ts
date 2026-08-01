@@ -76,6 +76,8 @@ export default defineConfig({
       ).toISOString(),
       ELMOS_LOCAL_RUNNER_TENANT_ID: "local-e2e",
       ELMOS_LOCAL_RUNNER_ACTOR_ID: "user:e2e",
+      ELMOS_PRECISION_MIGRATION_JOB_ROOT: path.join(runnerRoot, "precision-migration-jobs"),
+      ELMOS_PRECISION_EVIDENCE_ROOTS: repositoryRoot,
       ELMOS_NEXT_DIST_DIR: nextDistDir,
     },
   },

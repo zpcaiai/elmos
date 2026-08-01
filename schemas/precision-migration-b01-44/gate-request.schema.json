@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/precision-migration-b01-44/gate-request.schema.json",
+  "title": "Precision Migration Repository Gate Request",
+  "type": "object",
+  "required": ["schema_version", "package_identity", "local_checks", "external_checks"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "package_identity": {
+      "type": "object",
+      "required": ["source_package_manifest_sha256", "source_tree_sha256"],
+      "properties": {
+        "source_package_manifest_sha256": { "$ref": "#/$defs/hexDigest" },
+        "source_tree_sha256": { "$ref": "#/$defs/hexDigest" }
+      },
+      "additionalProperties": false
+    },
+    "local_checks": {
+      "$ref": "#/$defs/checkGroup",
+      "required": [
+        "source_package_integrity",
+        "installed_skill_integrity",
+        "runtime_interfaces",
+        "runtime_unit_tests",
+        "schema_validation",
+        "web_catalog"
+      ],
+      "minProperties": 6,
+      "maxProperties": 6
+    },
+    "external_checks": {
+      "$ref": "#/$defs/checkGroup",
+      "required": [
+        "exact_source_target_builds",
+        "native_toolchain_matrix",
+        "independent_holdout",
+        "representative_workloads",
+        "formal_proof_where_claimed",
+        "shadow_canary_rollback",
+        "security_review",
+        "customer_acceptance"
+      ],
+      "minProperties": 8,
+      "maxProperties": 8
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "hexDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "check": {
+      "type": "object",
+      "required": ["state", "evidence_refs"],
+      "properties": {
+        "state": { "enum": ["PASSED", "FAILED", "INCONCLUSIVE", "NOT_RUN"] },
+        "evidence_refs": { "type": "array", "items": { "$ref": "#/$defs/evidenceRef" } }
+      },
+      "additionalProperties": false
+    },
+    "evidenceRef": {
+      "type": "object",
+      "required": ["uri", "digest", "size_bytes", "media_type", "authorization"],
+      "properties": {
+        "uri": { "type": "string", "minLength": 1 },
+        "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "size_bytes": { "type": "integer", "minimum": 0 },
+        "media_type": { "type": "string", "minLength": 1 },
+        "authorization": {
+          "type": "object",
+          "required": ["algorithm", "key_id", "payload", "signature"],
+          "properties": {
+            "algorithm": { "const": "ed25519" },
+            "key_id": { "type": "string", "minLength": 1 },
+            "payload": { "type": "object", "minProperties": 1 },
+            "signature": { "type": "string", "minLength": 1 }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "checkGroup": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/check" }
+    }
+  }
+}

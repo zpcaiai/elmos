@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B18: Wechat Miniprogram To React Direction Pack"
+  short_description: "Run Precision Migration B18 with evidence controls"
+  default_prompt: "Use $pm-b18-wechat-miniprogram-to-react-direction-pack to execute this Precision Migration contract with fail-closed evidence."

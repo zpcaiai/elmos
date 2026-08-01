@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B28: Batch 28 Source Test Assessment"
+  short_description: "Run Precision Migration B28 with evidence controls"
+  default_prompt: "Use $pm-b28-source-test-assessment to execute this Precision Migration contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B05: Data Flow Graph Builder"
+  short_description: "Run Precision Migration B05 with evidence controls"
+  default_prompt: "Use $pm-b05-data-flow-graph-builder to execute this Precision Migration contract with fail-closed evidence."

@@ -1,0 +1,37 @@
+batch: 25
+slug: postgresql-proprietary-pack
+title: "PostgreSQL专有能力包"
+phase: "G 数据库精密互转"
+skills:
+  - name: postgresql-plpgsql
+    description: "迁移 PL/pgSQL 块、函数、过程、异常、动态 SQL 和事务限制。"
+  - name: postgresql-extension
+    description: "盘点并迁移 Extension、版本、对象、权限、二进制依赖和替代方案。"
+  - name: postgresql-array-range-composite
+    description: "迁移 Array、Range、Multirange、Composite 和相关操作符。"
+  - name: postgresql-jsonb
+    description: "迁移 JSONB 存储、操作符、路径、GIN/GiST 索引和更新语义。"
+  - name: postgresql-returning
+    description: "迁移 INSERT/UPDATE/DELETE RETURNING 和应用消费方式。"
+  - name: postgresql-on-conflict
+    description: "迁移 ON CONFLICT 的冲突目标、排除表和并发语义。"
+  - name: postgresql-sequence-and-identity
+    description: "迁移 Sequence、Identity、缓存、OWNED BY 和事务外取号。"
+  - name: postgresql-partial-expression-index
+    description: "迁移 Partial/Expression Index、Predicate 和函数稳定性。"
+  - name: postgresql-materialized-view
+    description: "迁移物化视图、并发刷新、唯一索引和刷新调度。"
+  - name: postgresql-listen-notify
+    description: "迁移 LISTEN/NOTIFY 的会话、事务、负载限制和替代消息系统。"
+  - name: postgresql-logical-replication
+    description: "迁移 Publication、Subscription、Slot、冲突和 DDL 管理。"
+  - name: postgresql-logical-decoding
+    description: "迁移 Logical Decoding 插件、Slot、LSN、输出和消费恢复。"
+  - name: postgresql-row-level-security
+    description: "迁移 Policy、USING、WITH CHECK、角色和安全上下文。"
+  - name: postgresql-foreign-data-wrapper
+    description: "迁移 FDW、Foreign Server、User Mapping、Pushdown 和事务限制。"
+  - name: postgresql-event-trigger
+    description: "迁移 Event Trigger、DDL 事件、命令标签和递归风险。"
+  - name: postgresql-custom-operator-and-type
+    description: "迁移自定义 Type、Operator、Cast、Aggregate 和 Operator Class。"

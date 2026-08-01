@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/precision-migration-b01-44/adapter-registry.schema.json",
+  "title": "Precision Migration allowlisted adapter registry",
+  "type": "object",
+  "required": ["schema_version", "namespace", "source_tree_sha256", "entries"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "namespace": { "const": "precision-migration-b01-44" },
+    "source_tree_sha256": { "$ref": "#/$defs/hexDigest" },
+    "entries": {
+      "type": "array",
+      "minItems": 632,
+      "maxItems": 632,
+      "items": { "$ref": "#/$defs/entry" }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "hexDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "maturity": {
+      "enum": ["SPEC_ONLY", "INSTALLED", "ADAPTER_DECLARED", "ADAPTER_CONTRACT_PASSED", "LOCAL_EXECUTED", "HOLDOUT_PASSED", "EXTERNAL_VERIFIED", "CERTIFIED"]
+    },
+    "entry": {
+      "type": "object",
+      "required": ["skill", "source_skill", "batch", "kind", "maturity", "adapter", "binding_state", "handler_id", "handler_entrypoint", "contract_version", "supported_modes", "timeout_seconds", "permissions", "repository_surfaces", "missing_surfaces", "evidence_boundary"],
+      "properties": {
+        "skill": { "type": "string", "pattern": "^pm-[a-z0-9-]+$", "maxLength": 64 },
+        "source_skill": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+        "batch": { "type": ["integer", "null"], "minimum": 1, "maximum": 44 },
+        "kind": { "enum": ["skill", "batch-orchestrator", "global-orchestrator"] },
+        "maturity": { "$ref": "#/$defs/maturity" },
+        "adapter": { "type": "string", "minLength": 1 },
+        "binding_state": { "enum": ["DECLARED", "UNAVAILABLE"] },
+        "handler_id": { "type": "string", "minLength": 1 },
+        "handler_entrypoint": { "type": "string", "pattern": "^[a-zA-Z0-9_.]+:[a-zA-Z0-9_]+$" },
+        "contract_version": { "type": "string", "minLength": 1 },
+        "supported_modes": { "type": "array", "uniqueItems": true, "items": { "enum": ["assess", "transform", "validate", "repair", "certify"] } },
+        "timeout_seconds": { "type": "integer", "minimum": 1, "maximum": 3600 },
+        "permissions": {
+          "type": "object",
+          "required": ["source", "output", "network", "secrets", "shell"],
+          "properties": {
+            "source": { "const": "read-only" },
+            "output": { "const": "dedicated-directory" },
+            "network": { "const": "deny" },
+            "secrets": { "const": "deny" },
+            "shell": { "const": "deny-repository-content" }
+          },
+          "additionalProperties": false
+        },
+        "repository_surfaces": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "missing_surfaces": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "evidence_boundary": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    }
+  }
+}

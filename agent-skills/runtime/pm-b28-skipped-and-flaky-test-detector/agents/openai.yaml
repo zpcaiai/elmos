@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B28: Skipped And Flaky Test Detector"
+  short_description: "Run Precision Migration B28 with evidence controls"
+  default_prompt: "Use $pm-b28-skipped-and-flaky-test-detector to execute this Precision Migration contract with fail-closed evidence."

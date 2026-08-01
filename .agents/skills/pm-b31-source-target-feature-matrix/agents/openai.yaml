@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B31: Source Target Feature Matrix"
+  short_description: "Run Precision Migration B31 with evidence controls"
+  default_prompt: "Use $pm-b31-source-target-feature-matrix to execute this Precision Migration contract with fail-closed evidence."

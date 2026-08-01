@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B02: Assessment Report Generator"
+  short_description: "Run Precision Migration B02 with evidence controls"
+  default_prompt: "Use $pm-b02-assessment-report-generator to execute this Precision Migration contract with fail-closed evidence."

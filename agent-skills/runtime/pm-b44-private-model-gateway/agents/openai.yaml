@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B44: Private Model Gateway"
+  short_description: "Run Precision Migration B44 with evidence controls"
+  default_prompt: "Use $pm-b44-private-model-gateway to execute this Precision Migration contract with fail-closed evidence."

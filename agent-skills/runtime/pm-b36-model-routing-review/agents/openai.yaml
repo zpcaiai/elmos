@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B36: Batch 36 Model Routing Review"
+  short_description: "Run Precision Migration B36 with evidence controls"
+  default_prompt: "Use $pm-b36-model-routing-review to execute this Precision Migration contract with fail-closed evidence."

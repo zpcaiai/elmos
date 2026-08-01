@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/precision-migration-b01-44/trust-store.schema.json",
+  "title": "Precision Migration Ed25519 trust store",
+  "type": "object",
+  "required": ["schema_version", "keys", "revoked_record_ids"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "keys": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["key_id", "roles", "public_key_path", "not_before", "not_after", "revoked"],
+        "properties": {
+          "key_id": { "type": "string", "pattern": "^[A-Za-z0-9._:-]+$" },
+          "roles": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "enum": ["evidence-authorizer", "proof-verifier", "release-approver", "gate-evidence-authorizer"] } },
+          "public_key_path": { "type": "string", "minLength": 1 },
+          "not_before": { "type": "string", "format": "date-time" },
+          "not_after": { "type": "string", "format": "date-time" },
+          "revoked": { "type": "boolean" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "revoked_record_ids": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
+  },
+  "additionalProperties": false
+}

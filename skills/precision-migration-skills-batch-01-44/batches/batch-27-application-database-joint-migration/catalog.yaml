@@ -1,0 +1,29 @@
+batch: 27
+slug: application-database-joint-migration
+title: "应用代码与数据库联合迁移"
+phase: "G 数据库精密互转"
+skills:
+  - name: embedded-sql-discovery
+    description: "发现源码、模板、配置、报表和脚本中的嵌入式 SQL 与动态片段。"
+  - name: orm-dialect-migration
+    description: "迁移 ORM Dialect、实体映射、查询语言、生成策略和迁移脚本。"
+  - name: jdbc-ado-odbc-driver-migration
+    description: "迁移 JDBC、ADO.NET、ODBC、驱动配置、连接串、参数和类型绑定。"
+  - name: query-builder-migration
+    description: "迁移 Query Builder、Criteria、DSL、表达式树和方言扩展。"
+  - name: native-query-rewriter
+    description: "重写原生查询、Hint、锁、分页、函数、JSON、日期和返回类型。"
+  - name: stored-procedure-call-rewriter
+    description: "迁移过程调用、IN/OUT 参数、结果集、返回码、事务和异常。"
+  - name: transaction-api-rewriter
+    description: "迁移应用事务 API、传播、隔离、超时、重试和补偿。"
+  - name: pagination-and-locking-rewriter
+    description: "迁移分页、稳定排序、FOR UPDATE、锁提示、Skip locked 和并发行为。"
+  - name: database-error-code-mapping
+    description: "映射唯一、外键、死锁、超时、序列化失败和供应商错误码。"
+  - name: application-database-dual-validation
+    description: "在相同输入和初始数据下比较应用+数据库的输出、状态和副作用。"
+  - name: query-plan-regression-analysis
+    description: "比较目标查询计划、估算、实际行数、IO、锁和资源退化。"
+  - name: cross-layer-performance-tuning
+    description: "联合调优 SQL、索引、ORM、连接池、批处理、缓存和应用调用模式。"

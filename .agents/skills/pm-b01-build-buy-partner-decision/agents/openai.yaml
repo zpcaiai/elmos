@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B01: Build Buy Partner Decision"
+  short_description: "Run Precision Migration B01 with evidence controls"
+  default_prompt: "Use $pm-b01-build-buy-partner-decision to execute this Precision Migration contract with fail-closed evidence."

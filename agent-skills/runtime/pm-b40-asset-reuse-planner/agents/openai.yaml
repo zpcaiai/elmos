@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B40: Asset Reuse Planner"
+  short_description: "Run Precision Migration B40 with evidence controls"
+  default_prompt: "Use $pm-b40-asset-reuse-planner to execute this Precision Migration contract with fail-closed evidence."

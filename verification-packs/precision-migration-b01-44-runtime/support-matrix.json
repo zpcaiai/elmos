@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "pack_key": "precision-migration-b01-44-runtime",
+  "capabilities": [
+    {
+      "key": "content-addressed-local-evidence",
+      "status": "supported",
+      "owner": "elmos-verification-engineering",
+      "evidence_refs": ["certification/local-test-result.json"],
+      "limitations": ["Local file and CAS references only; signed remote provider attestations remain NOT_RUN."]
+    },
+    {
+      "key": "ed25519-evidence-proof-approval-trust",
+      "status": "supported",
+      "owner": "elmos-security-engineering",
+      "evidence_refs": ["certification/local-test-result.json", "corpus/negative/cases.json"],
+      "limitations": ["Key ceremony, HSM custody, organization identity, and production revocation service remain NOT_RUN."]
+    },
+    {
+      "key": "allowlisted-adapter-dispatch",
+      "status": "conditional",
+      "owner": "elmos-migration-platform-engineering",
+      "evidence_refs": ["coverage/coverage-matrix.json", "certification/local-test-result.json"],
+      "limitations": ["23 of 587 child Skills have declared handlers; only 13 have focused local execution evidence."]
+    },
+    {
+      "key": "587-skill-domain-semantics",
+      "status": "blocked",
+      "owner": "elmos-migration-platform-engineering",
+      "evidence_refs": ["coverage/coverage-matrix.json"],
+      "limitations": ["564 child Skills have no exact handler and all native, holdout, representative, independent, and external dimensions remain NOT_RUN."]
+    },
+    {
+      "key": "negative-trust-boundary-testing",
+      "status": "experimental",
+      "owner": "elmos-verification-engineering",
+      "evidence_refs": ["corpus/negative/cases.json", "certification/local-test-result.json", "counterexamples/sample.json"],
+      "limitations": ["Focused runtime trust boundary only; not whole-program mutation or fuzz coverage."]
+    },
+    {
+      "key": "external-certification",
+      "status": "blocked",
+      "owner": "independent-verification-owner-required",
+      "evidence_refs": [],
+      "limitations": ["Independent holdout, representative workloads, customer acceptance, and external certification are NOT_RUN."]
+    }
+  ]
+}

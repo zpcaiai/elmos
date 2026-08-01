@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "pack_key": "precision-migration-b01-44-runtime",
+  "oracles": [
+    {
+      "oracle_id": "oracle.runtime-contract",
+      "type": "contract",
+      "owner": "elmos-security-engineering",
+      "scope": ["claim.evidence-integrity", "claim.trust-decisions"],
+      "independence": "partially-independent",
+      "trust_level": "strong",
+      "version": "1.0.0",
+      "evidence_refs": ["../../docs/precision-migration-b01-44/local-environment-contract.json", "corpus/negative/cases.json"]
+    },
+    {
+      "oracle_id": "oracle.negative-corpus",
+      "type": "test",
+      "owner": "elmos-verification-engineering",
+      "scope": ["claim.evidence-integrity", "claim.trust-decisions"],
+      "independence": "partially-independent",
+      "trust_level": "strong",
+      "version": "1.0.0",
+      "evidence_refs": ["corpus/negative/cases.json", "certification/local-test-result.json"]
+    },
+    {
+      "oracle_id": "oracle.source-manifest",
+      "type": "contract",
+      "owner": "precision-migration-source-owner",
+      "scope": ["claim.maturity-honesty"],
+      "independence": "independent",
+      "trust_level": "authoritative",
+      "version": "1.0.0",
+      "evidence_refs": ["../../skills/precision-migration-skills-batch-01-44/manifest.json"]
+    },
+    {
+      "oracle_id": "oracle.coverage-matrix",
+      "type": "invariant",
+      "owner": "elmos-verification-engineering",
+      "scope": ["claim.maturity-honesty"],
+      "independence": "dependent",
+      "trust_level": "supporting",
+      "version": "1.0.0",
+      "evidence_refs": ["coverage/coverage-matrix.json"]
+    }
+  ],
+  "precedence_rules": [
+    { "claim_type": "trust-boundary", "ordered_oracles": ["oracle.runtime-contract", "oracle.negative-corpus"] },
+    { "claim_type": "skill-coverage", "ordered_oracles": ["oracle.source-manifest", "oracle.coverage-matrix"] }
+  ],
+  "conflicts": [],
+  "approvals": []
+}

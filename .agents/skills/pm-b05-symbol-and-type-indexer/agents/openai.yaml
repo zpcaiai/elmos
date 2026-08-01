@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B05: Symbol And Type Indexer"
+  short_description: "Run Precision Migration B05 with evidence controls"
+  default_prompt: "Use $pm-b05-symbol-and-type-indexer to execute this Precision Migration contract with fail-closed evidence."

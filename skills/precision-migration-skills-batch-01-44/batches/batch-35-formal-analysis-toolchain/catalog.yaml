@@ -1,0 +1,25 @@
+batch: 35
+slug: formal-analysis-toolchain
+title: "SMT、符号执行与模型检查"
+phase: "I 形式化证明"
+skills:
+  - name: smt-translation-validator
+    description: "将源目标 Core IR 编码为 SMT 关系，证明等价或寻找反例。"
+  - name: relational-verification
+    description: "验证两个实现之间的输入、状态、输出和 Effect 关系。"
+  - name: symbolic-execution
+    description: "对关键切片探索符号路径并求解崩溃、违规和不等价输入。"
+  - name: concolic-differential-execution
+    description: "结合具体执行与符号约束扩展源目标差分路径覆盖。"
+  - name: abstract-interpretation
+    description: "推断范围、Nullability、可达状态、异常、资源和动态类型近似。"
+  - name: tla-state-machine-generator
+    description: "从业务/协议 IR 生成 TLA+ 状态机、安全性和活性性质。"
+  - name: model-checking-runner
+    description: "运行状态空间探索、对称约简、边界配置和反例提取。"
+  - name: alloy-architecture-validator
+    description: "用 Alloy 验证模块、权限、所有权、Schema 和架构关系约束。"
+  - name: proof-counterexample-to-test
+    description: "把 SMT、Lean、模型检查或符号执行反例转换为永久回归测试。"
+  - name: formal-runtime-evidence-merger
+    description: "合并形式证明覆盖与运行时验证证据，并显式标记假设和未建模部分。"

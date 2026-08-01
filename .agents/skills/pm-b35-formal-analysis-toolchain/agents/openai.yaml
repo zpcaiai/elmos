@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B35: Batch 35 Formal Analysis Toolchain"
+  short_description: "Run Precision Migration B35 with evidence controls"
+  default_prompt: "Use $pm-b35-formal-analysis-toolchain to execute this Precision Migration contract with fail-closed evidence."

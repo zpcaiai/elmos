@@ -1,0 +1,10 @@
+mode: compare-and-repair
+source_repository: repo://vue-source
+target_repository: repo://flutter-target
+journeys: [login, order-search, order-edit]
+comparators: [http, ui_semantic_tree, visual, navigation, storage]
+repair:
+  max_iterations: 5
+  retranslate_threshold: 0.5
+policy:
+  unresolved_differences: block

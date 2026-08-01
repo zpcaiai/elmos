@@ -1,0 +1,25 @@
+batch: 34
+slug: leanstral-lean-proof
+title: "Leanstral与Lean证明工程"
+phase: "I 形式化证明"
+skills:
+  - name: semantic-core-lean-model
+    description: "把 Semantic Core、类型、Effect、状态和求值关系编码为 Lean 定义。"
+  - name: lean-theorem-generator
+    description: "从证明义务生成 Lean 定理陈述、上下文、前置条件和辅助结构。"
+  - name: leanstral-proof-synthesis
+    description: "使用 Leanstral 生成证明、辅助引理和策略候选。"
+  - name: leanstral-proof-repair
+    description: "根据 Lean 编译与语言服务器反馈定位并修复证明失败。"
+  - name: lemma-library-retrieval
+    description: "检索项目、Mathlib、方向包和历史证明中的可复用引理。"
+  - name: proof-build-runner
+    description: "运行 lake build、目标定理检查、资源限制和结果规范化。"
+  - name: sorry-and-axiom-detector
+    description: "阻止 sorry、未批准公理、不透明逃逸和不可信证明依赖。"
+  - name: lean-kernel-certificate
+    description: "记录 Lean 版本、依赖摘要、定理、Axiom 报告和内核验收结果。"
+  - name: proof-regression-ci
+    description: "在 IR、规则、生成器和依赖变化时持续重跑证明回归。"
+  - name: unproved-obligation-ledger
+    description: "记录 PROVED、DISPROVED、UNKNOWN、TIMEOUT、UNSUPPORTED 和规格冲突。"

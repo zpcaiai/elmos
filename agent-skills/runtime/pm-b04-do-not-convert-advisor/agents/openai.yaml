@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B04: Do Not Convert Advisor"
+  short_description: "Run Precision Migration B04 with evidence controls"
+  default_prompt: "Use $pm-b04-do-not-convert-advisor to execute this Precision Migration contract with fail-closed evidence."

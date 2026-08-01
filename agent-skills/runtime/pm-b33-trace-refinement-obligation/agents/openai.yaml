@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B33: Trace Refinement Obligation"
+  short_description: "Run Precision Migration B33 with evidence controls"
+  default_prompt: "Use $pm-b33-trace-refinement-obligation to execute this Precision Migration contract with fail-closed evidence."

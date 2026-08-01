@@ -1,0 +1,17 @@
+operation: create_order
+inputs:
+  request: CreateOrderRequest
+observations:
+  - http_response
+  - database_delta
+  - message_effects
+  - external_calls
+effects:
+  - write: orders
+  - write: order_items
+  - publish: OrderCreated
+invariants:
+  - total >= 0
+  - one_idempotency_key_creates_at_most_one_order
+  - failure_has_no_partial_commit
+oracle_sources: [SOURCE_RUNTIME, SOURCE_TEST, BUSINESS_RULE]

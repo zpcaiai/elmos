@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "proof_id": "proof.precision-runtime-not-run",
+  "property_id": "property.no-unverified-pass",
+  "solver": {
+    "name": "not-selected",
+    "version": "NOT_RUN",
+    "options": {},
+    "timeout_ms": 10000
+  },
+  "status": "unknown",
+  "assumptions": ["No solver claim is needed for local signature and byte verification; domain proof Skills remain individually scoped."],
+  "input_digest": "sha256:4979ccd2bb234fdd198068dd760b9c6b3c49c56f353ade19285cf67ebb7675a0",
+  "evidence_refs": []
+}

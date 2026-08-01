@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B28: Missing Test Gap Analysis"
+  short_description: "Run Precision Migration B28 with evidence controls"
+  default_prompt: "Use $pm-b28-missing-test-gap-analysis to execute this Precision Migration contract with fail-closed evidence."

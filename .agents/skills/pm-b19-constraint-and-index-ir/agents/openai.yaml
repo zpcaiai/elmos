@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B19: Constraint And Index Ir"
+  short_description: "Run Precision Migration B19 with evidence controls"
+  default_prompt: "Use $pm-b19-constraint-and-index-ir to execute this Precision Migration contract with fail-closed evidence."

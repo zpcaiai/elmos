@@ -1,0 +1,38 @@
+{
+  "request_id": "example-assessment-not-run",
+  "skill": "pm-b02-repository-modernization-assessment",
+  "mode": "assess",
+  "inputs": {
+    "assets": [
+      {
+        "uri": "workspace://repo/skills/precision-migration-skills-batch-01-44/manifest.json",
+        "digest": "sha256:54783f4ec2b33559f14fc5de91b5f19583d43ceeba46c59e27fa81297422a8a4",
+        "size_bytes": 150841,
+        "media_type": "application/json",
+        "sensitivity": "internal",
+        "version": "source-package-manifest"
+      }
+    ],
+    "parameters": {
+      "target_stack": "explicit-version-required"
+    }
+  },
+  "policy": {
+    "unresolved_differences": "block",
+    "allow_test_weakening": false,
+    "require_provenance": true,
+    "risk_level": "medium"
+  },
+  "evidence": [
+    {
+      "kind": "input-provenance",
+      "state": "NOT_RUN"
+    },
+    {
+      "kind": "assessment-schema",
+      "state": "NOT_RUN"
+    }
+  ],
+  "semantic_losses": [],
+  "approvals": []
+}

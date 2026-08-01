@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B08: Datetime Timezone Model"
+  short_description: "Run Precision Migration B08 with evidence controls"
+  default_prompt: "Use $pm-b08-datetime-timezone-model to execute this Precision Migration contract with fail-closed evidence."

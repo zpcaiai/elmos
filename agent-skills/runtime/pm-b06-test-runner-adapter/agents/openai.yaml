@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B06: Test Runner Adapter"
+  short_description: "Run Precision Migration B06 with evidence controls"
+  default_prompt: "Use $pm-b06-test-runner-adapter to execute this Precision Migration contract with fail-closed evidence."

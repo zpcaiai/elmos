@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "cases": [
+    { "case_id": "HOLDOUT-001", "scenario": "symlink-race-after-resolution", "status": "NOT_RUN" },
+    { "case_id": "HOLDOUT-002", "scenario": "signature-valid-but-wrong-request-binding", "status": "NOT_RUN" },
+    { "case_id": "HOLDOUT-003", "scenario": "duplicate-CAS-object-across-approved-roots", "status": "NOT_RUN" },
+    { "case_id": "HOLDOUT-004", "scenario": "approval-valid-but-revoked-after-issuance", "status": "NOT_RUN" }
+  ]
+}

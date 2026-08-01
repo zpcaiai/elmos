@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B12: Import And Namespace Rewriter"
+  short_description: "Run Precision Migration B12 with evidence controls"
+  default_prompt: "Use $pm-b12-import-and-namespace-rewriter to execute this Precision Migration contract with fail-closed evidence."

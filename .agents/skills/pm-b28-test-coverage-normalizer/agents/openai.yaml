@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B28: Test Coverage Normalizer"
+  short_description: "Run Precision Migration B28 with evidence controls"
+  default_prompt: "Use $pm-b28-test-coverage-normalizer to execute this Precision Migration contract with fail-closed evidence."

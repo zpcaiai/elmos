@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B37: Migration Task Decomposer"
+  short_description: "Run Precision Migration B37 with evidence controls"
+  default_prompt: "Use $pm-b37-migration-task-decomposer to execute this Precision Migration contract with fail-closed evidence."

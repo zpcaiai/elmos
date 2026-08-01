@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B38: Acceptance Test Compiler"
+  short_description: "Run Precision Migration B38 with evidence controls"
+  default_prompt: "Use $pm-b38-acceptance-test-compiler to execute this Precision Migration contract with fail-closed evidence."

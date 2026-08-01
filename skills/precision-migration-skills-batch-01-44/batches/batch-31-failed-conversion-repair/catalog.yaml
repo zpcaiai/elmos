@@ -1,0 +1,29 @@
+batch: 31
+slug: failed-conversion-repair
+title: "失败转换检测与自动修复"
+phase: "H 测试、验证与自动修复"
+skills:
+  - name: source-target-feature-matrix
+    description: "从源目标仓库建立页面、接口、状态、数据、权限、平台能力和运维功能矩阵。"
+  - name: missing-feature-detector
+    description: "识别源有目标无、目标仅占位、部分实现和未接线功能。"
+  - name: behavior-mismatch-classifier
+    description: "将差异分类为请求、状态、路由、数据、副作用、并发、视觉、平台或性能问题。"
+  - name: minimal-counterexample-generator
+    description: "生成能稳定复现源目标不等价的最小输入、状态和事件轨迹。"
+  - name: suspected-code-slice-locator
+    description: "将反例映射到最相关的源目标文件、符号、调用和规则。"
+  - name: patch-existing-decision
+    description: "判断当前目标架构正确且差异局部时是否继续补丁修复。"
+  - name: regenerate-module-decision
+    description: "判断模块质量或语义偏差过大时是否保留外围并重新生成核心模块。"
+  - name: retranslate-project-decision
+    description: "判断整体架构、技术选型或功能覆盖过差时是否重新转换整库。"
+  - name: manual-redesign-decision
+    description: "识别目标平台无直接等价能力或 UX 需重构时的人工设计点。"
+  - name: counterexample-guided-repair
+    description: "依据结构化反例生成修复候选，并通过构建、测试和双运行迭代收敛。"
+  - name: repair-regression-validator
+    description: "确保修复解决当前反例且未破坏已通过功能、性能和安全门禁。"
+  - name: repair-evidence-generator
+    description: "记录差异、根因、补丁、验证、残余风险和最终状态证据。"

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B12: Comment And Format Preservation"
+  short_description: "Run Precision Migration B12 with evidence controls"
+  default_prompt: "Use $pm-b12-comment-and-format-preservation to execute this Precision Migration contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B29: Mutation Test Generator"
+  short_description: "Run Precision Migration B29 with evidence controls"
+  default_prompt: "Use $pm-b29-mutation-test-generator to execute this Precision Migration contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B20: Batch 20 Database Schema Data Migration"
+  short_description: "Run Precision Migration B20 with evidence controls"
+  default_prompt: "Use $pm-b20-database-schema-data-migration to execute this Precision Migration contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B08: Option Result Union Model"
+  short_description: "Run Precision Migration B08 with evidence controls"
+  default_prompt: "Use $pm-b08-option-result-union-model to execute this Precision Migration contract with fail-closed evidence."

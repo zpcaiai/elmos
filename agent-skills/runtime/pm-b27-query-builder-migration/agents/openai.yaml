@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B27: Query Builder Migration"
+  short_description: "Run Precision Migration B27 with evidence controls"
+  default_prompt: "Use $pm-b27-query-builder-migration to execute this Precision Migration contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B21: Stored Procedure Parser"
+  short_description: "Run Precision Migration B21 with evidence controls"
+  default_prompt: "Use $pm-b21-stored-procedure-parser to execute this Precision Migration contract with fail-closed evidence."

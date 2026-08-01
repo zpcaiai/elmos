@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B44: Air Gapped Installation"
+  short_description: "Run Precision Migration B44 with evidence controls"
+  default_prompt: "Use $pm-b44-air-gapped-installation to execute this Precision Migration contract with fail-closed evidence."

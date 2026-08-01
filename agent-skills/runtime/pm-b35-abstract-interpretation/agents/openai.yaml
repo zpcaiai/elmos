@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B35: Abstract Interpretation"
+  short_description: "Run Precision Migration B35 with evidence controls"
+  default_prompt: "Use $pm-b35-abstract-interpretation to execute this Precision Migration contract with fail-closed evidence."

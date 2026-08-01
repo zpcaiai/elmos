@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B06: Batch 06 Toolchain Registry"
+  short_description: "Run Precision Migration B06 with evidence controls"
+  default_prompt: "Use $pm-b06-toolchain-registry to execute this Precision Migration contract with fail-closed evidence."

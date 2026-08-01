@@ -1,0 +1,15 @@
+mode: validate
+source_ir: artifact://source-core-ir
+target_ir: artifact://target-core-ir
+obligations:
+  - type_preservation
+  - numeric_semantics
+  - effect_preservation
+  - pure_function_equivalence
+proof_engine:
+  leanstral: assistant
+  lean_kernel: authority
+  smt: enabled
+policy:
+  unknown_is_pass: false
+  allow_sorry: false

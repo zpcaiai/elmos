@@ -1,0 +1,29 @@
+batch: 9
+slug: effect-state-observation
+title: "Effect、State与Observation系统"
+phase: "C 精密语义表示"
+skills:
+  - name: effect-system
+    description: "定义 Read、Write、Call、Publish、Throw、Spawn、Await、Clock、Random 等统一 Effect。"
+  - name: database-effect-model
+    description: "表达表读写、事务、锁、隔离级别、触发器和过程代码数据库 Effect。"
+  - name: message-effect-model
+    description: "表达 Topic、Key、顺序、投递、重试、ACK、DLQ 和逻辑 Exactly-once Effect。"
+  - name: external-call-effect-model
+    description: "表达外部调用参数、次数、顺序、超时、重试、幂等和不可逆副作用。"
+  - name: resource-lifecycle-model
+    description: "表达文件、连接、锁、内存、线程、任务和设备资源的获取、使用与释放。"
+  - name: transaction-effect-model
+    description: "表达事务传播、保存点、提交、回滚、补偿和部分可见性。"
+  - name: async-cancellation-model
+    description: "表达异步任务、取消传播、Latest-wins、超时、悬挂任务和完成顺序。"
+  - name: business-state-machine-ir
+    description: "提取和表达订单、支付、库存、权限等业务状态与合法转换。"
+  - name: ui-state-machine-ir
+    description: "表达 Loading、Success、Failure、Refresh、Submitting 等 UI 状态与事件转换。"
+  - name: protocol-and-workflow-ir
+    description: "表达重试、Saga、Outbox、审批、消息交互和长流程协议。"
+  - name: observable-behavior-ir
+    description: "统一返回值、异常、HTTP、状态变更、消息、Trace、UI、导航和性能观察。"
+  - name: semantic-loss-ledger
+    description: "逐模块记录无损、归一化、近似、需适配、未验证和不支持的语义损失。"

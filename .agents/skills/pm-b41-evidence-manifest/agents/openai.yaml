@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B41: Evidence Manifest"
+  short_description: "Run Precision Migration B41 with evidence controls"
+  default_prompt: "Use $pm-b41-evidence-manifest to execute this Precision Migration contract with fail-closed evidence."

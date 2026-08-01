@@ -1,0 +1,33 @@
+batch: 15
+slug: backend-semantic-lowering
+title: "后端通用语义转换能力"
+phase: "E 后端语言互转"
+skills:
+  - name: exception-to-result-error-lowering
+    description: "在异常、Result、error tuple、panic 和错误码之间保持错误路径与清理语义。"
+  - name: null-to-option-pointer-lowering
+    description: "在 Null、Option、Nullable、Pointer、zero value 和 Missing 之间安全映射。"
+  - name: inheritance-to-composition-lowering
+    description: "把类继承、模板方法和基类状态转换为组合、嵌入、委托或 Trait。"
+  - name: interface-trait-protocol-lowering
+    description: "在 Interface、Trait、Protocol、结构类型和动态协议之间映射契约。"
+  - name: generic-type-lowering
+    description: "处理泛型擦除、实例化、约束、协变、Trait bound 和运行时类型。"
+  - name: collection-pipeline-lowering
+    description: "在 Stream、LINQ、Iterator、Loop、Generator 和 Array pipeline 之间保持顺序与惰性。"
+  - name: sync-async-lowering
+    description: "在同步、Future、Promise、Task、asyncio 和阻塞边界之间安全迁移。"
+  - name: thread-goroutine-future-lowering
+    description: "映射线程、goroutine、Task、Future、channel、锁、取消和调度语义。"
+  - name: resource-ownership-lowering
+    description: "迁移 GC、RAII、ARC、Ownership、Borrow、Dispose、defer 和上下文管理。"
+  - name: reflection-elimination
+    description: "通过代码生成、注册表、显式映射或兼容层消除无法迁移的反射和动态加载。"
+  - name: dependency-injection-lowering
+    description: "映射容器、生命周期、Scope、拦截、代理、工厂和条件绑定。"
+  - name: orm-and-transaction-lowering
+    description: "映射 ORM 实体、Tracking、查询、Lazy load、事务传播、锁和并发控制。"
+  - name: configuration-lowering
+    description: "迁移配置源、优先级、环境、Secret、动态刷新和类型绑定。"
+  - name: logging-observability-lowering
+    description: "迁移日志、指标、Trace、Correlation、错误报告和语义约定。"

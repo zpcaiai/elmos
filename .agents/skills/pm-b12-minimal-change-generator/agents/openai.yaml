@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B12: Minimal Change Generator"
+  short_description: "Run Precision Migration B12 with evidence controls"
+  default_prompt: "Use $pm-b12-minimal-change-generator to execute this Precision Migration contract with fail-closed evidence."

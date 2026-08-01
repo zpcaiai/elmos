@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B43: Security Modernization Scan"
+  short_description: "Run Precision Migration B43 with evidence controls"
+  default_prompt: "Use $pm-b43-security-modernization-scan to execute this Precision Migration contract with fail-closed evidence."

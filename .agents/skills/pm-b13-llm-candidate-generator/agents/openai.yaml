@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B13: Llm Candidate Generator"
+  short_description: "Run Precision Migration B13 with evidence controls"
+  default_prompt: "Use $pm-b13-llm-candidate-generator to execute this Precision Migration contract with fail-closed evidence."

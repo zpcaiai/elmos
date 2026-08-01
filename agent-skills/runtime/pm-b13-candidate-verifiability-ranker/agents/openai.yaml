@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B13: Candidate Verifiability Ranker"
+  short_description: "Run Precision Migration B13 with evidence controls"
+  default_prompt: "Use $pm-b13-candidate-verifiability-ranker to execute this Precision Migration contract with fail-closed evidence."

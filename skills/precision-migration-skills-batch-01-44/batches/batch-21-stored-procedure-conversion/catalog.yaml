@@ -1,0 +1,33 @@
+batch: 21
+slug: stored-procedure-conversion
+title: "复杂存储过程与数据库程序转换"
+phase: "G 数据库精密互转"
+skills:
+  - name: stored-procedure-parser
+    description: "解析过程、函数、Package、变量、游标、异常、事务和动态 SQL。"
+  - name: procedure-cfg-builder
+    description: "构建过程代码控制流、调用图、数据流、事务和副作用图。"
+  - name: cursor-semantics-converter
+    description: "转换显式/隐式游标、游标属性、批量提取、顺序和资源关闭。"
+  - name: dynamic-sql-converter
+    description: "解析、枚举、参数化和重写动态 SQL，并检测注入与不可解析路径。"
+  - name: exception-handler-converter
+    description: "映射异常类别、处理顺序、回滚、继续执行和错误返回。"
+  - name: transaction-boundary-converter
+    description: "映射隐式/显式提交、自治事务、保存点、传播和失败可见性。"
+  - name: temporary-object-converter
+    description: "转换临时表、表变量、临时 Schema、会话状态和生命周期。"
+  - name: package-state-converter
+    description: "将 Package 公私有成员、会话状态和初始化转换为 Schema、模块或服务状态。"
+  - name: trigger-semantics-converter
+    description: "转换触发器时机、粒度、顺序、递归、OLD/NEW 和副作用。"
+  - name: scheduled-event-converter
+    description: "转换数据库 Job、Event、Scheduler 到目标调度器或外部工作流。"
+  - name: procedure-side-effect-analyzer
+    description: "总结过程对表、序列、消息、外部调用、事务和权限的副作用。"
+  - name: procedure-symbolic-validator
+    description: "对关键过程切片执行符号或关系验证，寻找源目标反例。"
+  - name: procedure-differential-test-generator
+    description: "从签名、分支、数据约束和源行为生成双库差分测试。"
+  - name: procedure-performance-validator
+    description: "比较执行计划、IO、CPU、临时空间、锁、吞吐和延迟。"

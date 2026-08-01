@@ -1,0 +1,35 @@
+batch: 24
+slug: mysql-proprietary-pack
+title: "MySQL专有能力包"
+phase: "G 数据库精密互转"
+skills:
+  - name: mysql-stored-procedure-and-function
+    description: "迁移 MySQL Procedure、Function、变量、游标、Handler 和事务。"
+  - name: mysql-trigger
+    description: "迁移 MySQL Trigger 的时机、粒度、OLD/NEW、顺序和限制。"
+  - name: mysql-event-scheduler
+    description: "迁移 Event Scheduler、时区、重复规则和失败处理。"
+  - name: mysql-auto-increment
+    description: "迁移 AUTO_INCREMENT、步长、偏移、锁模式和复制行为。"
+  - name: mysql-enum-and-set
+    description: "迁移 ENUM/SET 的顺序、隐式数值、校验和 Schema 演进。"
+  - name: mysql-generated-column
+    description: "迁移虚拟/存储 Generated Column、表达式和索引。"
+  - name: mysql-json
+    description: "迁移 JSON 类型、路径、函数、索引和比较语义。"
+  - name: mysql-spatial
+    description: "迁移空间类型、SRID、函数、索引和坐标语义。"
+  - name: mysql-on-duplicate-key
+    description: "迁移 ON DUPLICATE KEY UPDATE 的冲突目标、受影响行和触发器行为。"
+  - name: mysql-character-set-and-collation
+    description: "迁移字符集、Collation、大小写、重音、尾空格和索引限制。"
+  - name: mysql-innodb-transaction-behavior
+    description: "迁移 InnoDB MVCC、锁、间隙锁、隔离和死锁重试。"
+  - name: mysql-implicit-type-conversion
+    description: "检测并消除 MySQL 宽松隐式转换、零日期和比较差异。"
+  - name: mysql-sql-mode
+    description: "迁移 STRICT、ONLY_FULL_GROUP_BY、NO_ZERO_DATE 等 SQL Mode 影响。"
+  - name: mysql-partition
+    description: "迁移分区类型、分区裁剪、唯一键限制和维护操作。"
+  - name: mysql-replication-and-binlog
+    description: "迁移 Binlog 格式、GTID、复制拓扑、过滤、冲突和 CDC。"

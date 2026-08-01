@@ -1,0 +1,25 @@
+batch: 12
+slug: lossless-semantic-transformation
+title: "Lossless Semantic Transformation"
+phase: "D 转换定义与规则引擎"
+skills:
+  - name: lossless-source-tree
+    description: "构建保留空白、注释、顺序、源位置和语法细节的无损源码树。"
+  - name: type-attributed-tree
+    description: "为无损源码树附加符号、类型、调用和语义归因。"
+  - name: comment-and-format-preservation
+    description: "在转换中保留注释、文档、格式和组织约定，避免无关 Diff。"
+  - name: symbol-safe-renaming
+    description: "在作用域、重载、反射、配置和序列化约束下安全重命名符号。"
+  - name: import-and-namespace-rewriter
+    description: "精确更新 Import、Namespace、模块路径、别名和依赖声明。"
+  - name: minimal-change-generator
+    description: "优先生成最小语义变更集，限制无关格式化、重排和风格漂移。"
+  - name: source-location-mapper
+    description: "维护源 AST、IR、目标代码、诊断和证据之间的双向位置映射。"
+  - name: semantic-diff-generator
+    description: "生成类型、调用、Effect、状态和观察维度的语义 Diff，而非仅文本 Diff。"
+  - name: transformation-result-set
+    description: "以统一结果集表达修改、跳过、警告、需人工、失败和证据。"
+  - name: rollback-patch-generator
+    description: "生成可验证、可逆、按模块或规则粒度回滚的补丁。"

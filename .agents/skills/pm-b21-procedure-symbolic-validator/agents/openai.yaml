@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B21: Procedure Symbolic Validator"
+  short_description: "Run Precision Migration B21 with evidence controls"
+  default_prompt: "Use $pm-b21-procedure-symbolic-validator to execute this Precision Migration contract with fail-closed evidence."

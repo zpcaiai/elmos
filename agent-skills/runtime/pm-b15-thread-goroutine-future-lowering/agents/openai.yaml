@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B15: Thread Goroutine Future Lowering"
+  short_description: "Run Precision Migration B15 with evidence controls"
+  default_prompt: "Use $pm-b15-thread-goroutine-future-lowering to execute this Precision Migration contract with fail-closed evidence."

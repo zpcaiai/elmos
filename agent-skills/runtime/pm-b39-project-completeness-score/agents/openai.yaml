@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B39: Project Completeness Score"
+  short_description: "Run Precision Migration B39 with evidence controls"
+  default_prompt: "Use $pm-b39-project-completeness-score to execute this Precision Migration contract with fail-closed evidence."

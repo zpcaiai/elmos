@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B05: Semantic Slice Extractor"
+  short_description: "Run Precision Migration B05 with evidence controls"
+  default_prompt: "Use $pm-b05-semantic-slice-extractor to execute this Precision Migration contract with fail-closed evidence."

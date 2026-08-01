@@ -1,0 +1,25 @@
+batch: 7
+slug: sandbox-security-reproducibility
+title: "沙箱、安全与可复现执行"
+phase: "B 源码理解与可信执行底座"
+skills:
+  - name: untrusted-code-sandbox
+    description: "在强隔离、非 root、受限系统调用和可销毁环境中执行不可信代码。"
+  - name: network-egress-policy
+    description: "默认禁止外网，按域名、协议、时间和任务最小化开放依赖获取与测试出口。"
+  - name: resource-quota-governor
+    description: "限制 CPU、内存、磁盘、进程、文件句柄、GPU、网络和执行时长。"
+  - name: secret-scope-manager
+    description: "按任务注入最小必要凭证，阻止跨项目、跨租户和跨阶段访问。"
+  - name: ephemeral-workspace-manager
+    description: "创建内容寻址、隔离、可快照和任务结束后可销毁的工作空间。"
+  - name: dependency-proxy-and-cache
+    description: "通过受控代理、镜像和缓存获取依赖，并记录来源、摘要和许可证。"
+  - name: artifact-signing-and-provenance
+    description: "为源码、规则、模型输出、构建产物和证据生成签名与来源链。"
+  - name: reproducible-build-validator
+    description: "在独立环境重复构建并比较产物、元数据和非确定性来源。"
+  - name: malicious-build-script-detector
+    description: "检测危险安装脚本、宿主访问、凭证读取、持久化、挖矿和供应链行为。"
+  - name: execution-audit-recorder
+    description: "记录工具调用、命令、文件变化、网络、资源、凭证作用域和决策审计。"

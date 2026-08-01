@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Conversion Assessment",
+  "type": "object",
+  "required": [
+    "source",
+    "target",
+    "estimates",
+    "recommendation",
+    "risks"
+  ],
+  "properties": {
+    "source": {
+      "type": "object"
+    },
+    "target": {
+      "type": "object"
+    },
+    "estimates": {
+      "type": "object"
+    },
+    "confidence": {
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ]
+    },
+    "recommendation": {
+      "enum": [
+        "CONVERT",
+        "CONVERT_WITH_ADAPTERS",
+        "PARTIAL_MIGRATION",
+        "DO_NOT_CONVERT",
+        "REARCHITECT_FIRST",
+        "PILOT_REQUIRED"
+      ]
+    },
+    "risks": {
+      "type": "array"
+    },
+    "unknowns": {
+      "type": "array"
+    },
+    "test_assets": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": true
+}

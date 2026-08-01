@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B10: Batch 10 Backend Frontend Semantic Ir"
+  short_description: "Run Precision Migration B10 with evidence controls"
+  default_prompt: "Use $pm-b10-backend-frontend-semantic-ir to execute this Precision Migration contract with fail-closed evidence."

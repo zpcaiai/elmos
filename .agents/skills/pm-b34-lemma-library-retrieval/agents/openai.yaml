@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B34: Lemma Library Retrieval"
+  short_description: "Run Precision Migration B34 with evidence controls"
+  default_prompt: "Use $pm-b34-lemma-library-retrieval to execute this Precision Migration contract with fail-closed evidence."

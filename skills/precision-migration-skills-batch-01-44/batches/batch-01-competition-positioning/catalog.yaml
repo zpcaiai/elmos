@@ -1,0 +1,17 @@
+batch: 1
+slug: competition-positioning
+title: "竞争格局与产品定位"
+phase: "A 市场、评估与转换决策"
+skills:
+  - name: competitor-capability-radar
+    description: "持续跟踪竞争产品、开源项目和云平台在评估、转换、验证、私有化与发布治理方面的能力变化。"
+  - name: capability-gap-analyzer
+    description: "将本系统能力与选定竞争者进行结构化对比，找出缺口、重叠、领先点与优先补齐项。"
+  - name: build-buy-partner-decision
+    description: "依据战略重要性、成熟度、成本、数据壁垒和交付责任，决定自研、采购、集成或合作。"
+  - name: platform-commoditization-risk
+    description: "评估某项转换或验证能力被基础模型、云厂商或开源工具快速商品化的风险。"
+  - name: vertical-market-selector
+    description: "从语言方向、行业、客户类型和交付痛点中选择最有商业闭环的垂直市场。"
+  - name: differentiation-strategy-generator
+    description: "生成模型中立、深度验证、私有部署、行业语义和证据交付导向的差异化方案。"

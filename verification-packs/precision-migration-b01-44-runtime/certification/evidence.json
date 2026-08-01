@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "pack_key": "precision-migration-b01-44-runtime",
+  "metrics": {
+    "child_skills": 587,
+    "source_contract_passed": 587,
+    "installed_identity_passed": 587,
+    "adapter_declared": 23,
+    "installed_without_exact_adapter": 564,
+    "focused_local_execution": 13,
+    "runtime_tests": 31,
+    "browser_api_e2e": 2,
+    "holdout_executed": 0,
+    "representative_workloads_executed": 0,
+    "external_verified": 0
+  },
+  "zero_tolerance": {
+    "accepted_nonexistent_evidence": 0,
+    "accepted_digest_mismatch": 0,
+    "accepted_unsigned_authorization": 0,
+    "accepted_caller_proof_boolean": 0,
+    "accepted_nonexistent_gate_reference": 0,
+    "accepted_tampered_job_artifact": 0,
+    "accepted_tampered_audit_chain": 0,
+    "accepted_mutable_or_symlinked_trust_key": 0,
+    "accepted_requester_self_approval": 0,
+    "accepted_weakened_job_policy": 0
+  },
+  "evidence_refs": ["certification/local-test-result.json", "certification/raw/browser-e2e-observation.json", "coverage/coverage-matrix.json", "corpus/negative/cases.json"],
+  "notes": ["Local engineering qualification only.", "Domain, native, independent, representative, customer, production, and certification evidence remain NOT_RUN."]
+}

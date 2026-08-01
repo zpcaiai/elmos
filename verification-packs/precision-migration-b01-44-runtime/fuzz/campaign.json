@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "campaign_key": "fuzz.precision-json-trust-inputs-v1",
+  "owner": "elmos-verification-engineering",
+  "targets": ["skill-run-request.schema.json", "gate-request.schema.json", "trust-store.schema.json"],
+  "seed_corpus": ["corpus/development/cases.json", "corpus/negative/cases.json"],
+  "coverage_signal": "schema-branch-and-decision-code-coverage",
+  "budgets": { "max_seconds": 120, "max_memory_mb": 512, "max_cases": 512 },
+  "sanitizers": ["python-exception-boundary", "subprocess-timeout", "output-size-budget"],
+  "dictionary_refs": []
+}

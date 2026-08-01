@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B30: Database State Comparator"
+  short_description: "Run Precision Migration B30 with evidence controls"
+  default_prompt: "Use $pm-b30-database-state-comparator to execute this Precision Migration contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B04: Target Framework Selector"
+  short_description: "Run Precision Migration B04 with evidence controls"
+  default_prompt: "Use $pm-b04-target-framework-selector to execute this Precision Migration contract with fail-closed evidence."
