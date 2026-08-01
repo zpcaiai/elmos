@@ -1,0 +1,40 @@
+name: Repository migration platform skills
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "skills/repository-migration-platform-skills-batch1-38/**"
+      - "Makefile"
+      - ".github/workflows/repository-migration-platform-skills.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "skills/repository-migration-platform-skills-batch1-38/**"
+      - "Makefile"
+      - ".github/workflows/repository-migration-platform-skills.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: repository-migration-platform-skills-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate package, transactions, and concurrency
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.12.11"
+
+      - name: Run repository migration platform skill gate
+        run: make repository-migration-platform-skills
