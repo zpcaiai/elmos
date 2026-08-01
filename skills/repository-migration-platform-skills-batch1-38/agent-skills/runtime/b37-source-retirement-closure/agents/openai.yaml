@@ -1,0 +1,4 @@
+interface:
+  display_name: "B37 Source Retirement Closure"
+  short_description: "Help with B37 Source Retirement Closure tasks"
+  default_prompt: "Use $b37-source-retirement-closure to execute its evidence-governed repository migration workflow and report every unmet gate explicitly."

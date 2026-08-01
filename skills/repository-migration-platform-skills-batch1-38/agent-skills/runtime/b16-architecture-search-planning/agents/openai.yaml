@@ -1,0 +1,4 @@
+interface:
+  display_name: "B16 Architecture Search Planning"
+  short_description: "Help with B16 Architecture Search Planning tasks"
+  default_prompt: "Use $b16-architecture-search-planning to execute its evidence-governed repository migration workflow and report every unmet gate explicitly."

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PackageTrustPolicy",
+  "type": "object",
+  "required": ["schema_version", "policy_id", "certification_enabled", "maximum_certificate_days", "keys"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "policy_id": {"type": "string", "minLength": 1},
+    "certification_enabled": {"type": "boolean"},
+    "maximum_certificate_days": {"type": "integer", "minimum": 1},
+    "keys": {"type": "array"}
+  },
+  "additionalProperties": false
+}

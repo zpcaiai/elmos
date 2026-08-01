@@ -1,0 +1,7 @@
+{
+  "schema_version": "1.0",
+  "policy_id": "repository-migration-platform-disabled-v1",
+  "certification_enabled": false,
+  "maximum_certificate_days": 30,
+  "keys": []
+}

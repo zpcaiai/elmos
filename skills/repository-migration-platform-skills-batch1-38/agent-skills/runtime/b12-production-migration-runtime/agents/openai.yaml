@@ -1,0 +1,4 @@
+interface:
+  display_name: "B12 Production Migration Runtime"
+  short_description: "Help with B12 Production Migration Runtime tasks"
+  default_prompt: "Use $b12-production-migration-runtime to execute its evidence-governed repository migration workflow and report every unmet gate explicitly."

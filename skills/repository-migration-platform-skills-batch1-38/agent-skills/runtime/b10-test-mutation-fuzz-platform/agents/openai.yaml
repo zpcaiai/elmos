@@ -1,0 +1,4 @@
+interface:
+  display_name: "B10 Test Mutation Fuzz Platform"
+  short_description: "Help with B10 Test Mutation Fuzz Platform tasks"
+  default_prompt: "Use $b10-test-mutation-fuzz-platform to execute its evidence-governed repository migration workflow and report every unmet gate explicitly."

@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EvidenceRecord",
+  "type": "object",
+  "required": ["schema_version", "evidence_id", "recorded_at", "batch", "claim_type", "claim_index", "claim", "kind", "producer_id", "producer_role", "environment", "outcome", "external", "object", "subject_sha256", "scope", "record_sha256"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "evidence_id": {"type": "string", "pattern": "^evidence-[a-f0-9]{24}$"},
+    "recorded_at": {"type": "string", "format": "date-time"},
+    "batch": {"type": "integer", "minimum": 1, "maximum": 38},
+    "claim_type": {"enum": ["output", "test", "external"]},
+    "claim_index": {"type": "integer", "minimum": 0},
+    "claim": {"type": "string", "minLength": 1},
+    "kind": {"enum": ["artifact", "execution", "test", "proof", "review", "production", "finding", "counterexample"]},
+    "producer_id": {"type": "string", "minLength": 1},
+    "producer_role": {"type": "string", "minLength": 1},
+    "environment": {"type": "string", "minLength": 1},
+    "outcome": {"enum": ["PASS", "FAIL", "INCONCLUSIVE", "BLOCKED", "NOT_RUN"]},
+    "external": {"type": "boolean"},
+    "subject_sha256": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "record_sha256": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "scope": {
+      "type": "object",
+      "required": ["source_fingerprint", "target_objective", "assumptions"],
+      "properties": {
+        "source_fingerprint": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+        "target_objective": {"type": "string", "minLength": 1},
+        "assumptions": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": false
+    },
+    "object": {
+      "type": "object",
+      "required": ["uri", "sha256", "bytes", "object_path"],
+      "properties": {
+        "uri": {"type": "string", "pattern": "^artifact://sha256:[a-f0-9]{64}$"},
+        "sha256": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+        "bytes": {"type": "integer", "minimum": 0},
+        "object_path": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

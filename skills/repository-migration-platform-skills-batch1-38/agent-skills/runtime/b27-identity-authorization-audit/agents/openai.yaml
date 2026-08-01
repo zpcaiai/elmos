@@ -1,0 +1,4 @@
+interface:
+  display_name: "B27 Identity Authorization Audit"
+  short_description: "Help with B27 Identity Authorization Audit tasks"
+  default_prompt: "Use $b27-identity-authorization-audit to execute its evidence-governed repository migration workflow and report every unmet gate explicitly."

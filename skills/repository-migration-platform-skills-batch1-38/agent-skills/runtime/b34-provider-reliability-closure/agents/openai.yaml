@@ -1,0 +1,4 @@
+interface:
+  display_name: "B34 Provider Reliability Closure"
+  short_description: "Help with B34 Provider Reliability Closure tasks"
+  default_prompt: "Use $b34-provider-reliability-closure to execute its evidence-governed repository migration workflow and report every unmet gate explicitly."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "B38 Final System Assurance"
+  short_description: "Help with B38 Final System Assurance tasks"
+  default_prompt: "Use $b38-final-system-assurance to execute its evidence-governed repository migration workflow and report every unmet gate explicitly."

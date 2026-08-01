@@ -1,0 +1,635 @@
+{
+  "package": "repository-migration-platform-skills-batch1-38",
+  "version": "3.0.0",
+  "generated_from": "approved Batch 1–38 architecture",
+  "installable_skill_count": 39,
+  "batch_skill_count": 38,
+  "master_skill": "repository-migration-platform-batch1-38-master",
+  "skills": [
+    {
+      "batch": 1,
+      "name": "b01-source-executable-specification",
+      "title": "Migration Constitution与Source Executable Specification",
+      "path": "agent-skills/runtime/b01-source-executable-specification/SKILL.md",
+      "dependencies": [],
+      "gate": "B01 Source Baseline Gate"
+    },
+    {
+      "batch": 2,
+      "name": "b02-differential-execution-harness",
+      "title": "Differential Execution Harness与Deterministic Environment",
+      "path": "agent-skills/runtime/b02-differential-execution-harness/SKILL.md",
+      "dependencies": [
+        1
+      ],
+      "gate": "B02 Differential Gate"
+    },
+    {
+      "batch": 3,
+      "name": "b03-semantic-frontends-unified-ir",
+      "title": "10-Language Semantic Frontend与Unified Semantic IR",
+      "path": "agent-skills/runtime/b03-semantic-frontends-unified-ir/SKILL.md",
+      "dependencies": [
+        1,
+        2
+      ],
+      "gate": "B03 Semantic Frontend Gate"
+    },
+    {
+      "batch": 4,
+      "name": "b04-directional-semantic-rule-packs",
+      "title": "90 Directional Semantic Rule、Mutation、Test与Certification Packs",
+      "path": "agent-skills/runtime/b04-directional-semantic-rule-packs/SKILL.md",
+      "dependencies": [
+        3
+      ],
+      "gate": "DP1–DP5"
+    },
+    {
+      "batch": 5,
+      "name": "b05-framework-adapter-matrix",
+      "title": "Framework Adapter与Framework Combination Matrix",
+      "path": "agent-skills/runtime/b05-framework-adapter-matrix/SKILL.md",
+      "dependencies": [
+        3,
+        4
+      ],
+      "gate": "FA1–FA5"
+    },
+    {
+      "batch": 6,
+      "name": "b06-dependency-supply-chain-graph",
+      "title": "Dependency、Native、License与Supply-Chain Graph",
+      "path": "agent-skills/runtime/b06-dependency-supply-chain-graph/SKILL.md",
+      "dependencies": [
+        1,
+        3,
+        4,
+        5
+      ],
+      "gate": "DA/DR Certification"
+    },
+    {
+      "batch": 7,
+      "name": "b07-data-messaging-migration",
+      "title": "Database、Cache、Search、Object Storage与Messaging Migration",
+      "path": "agent-skills/runtime/b07-data-messaging-migration/SKILL.md",
+      "dependencies": [
+        3,
+        4,
+        5,
+        6
+      ],
+      "gate": "DI1–DI5"
+    },
+    {
+      "batch": 8,
+      "name": "b08-api-gateway-mesh-migration",
+      "title": "API、RPC、Serialization、Schema、Gateway与Service Mesh Migration",
+      "path": "agent-skills/runtime/b08-api-gateway-mesh-migration/SKILL.md",
+      "dependencies": [
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "gate": "CI1–CI5"
+    },
+    {
+      "batch": 9,
+      "name": "b09-concurrency-memory-native-semantics",
+      "title": "Concurrency、Async、Memory、Lifetime与Native Semantics",
+      "path": "agent-skills/runtime/b09-concurrency-memory-native-semantics/SKILL.md",
+      "dependencies": [
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "gate": "CM1–CM5"
+    },
+    {
+      "batch": 10,
+      "name": "b10-test-mutation-fuzz-platform",
+      "title": "Test Generation、Mutation、Fuzz、Property、Concurrency与Fault Platform",
+      "path": "agent-skills/runtime/b10-test-mutation-fuzz-platform/SKILL.md",
+      "dependencies": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "gate": "TQ1–TQ5"
+    },
+    {
+      "batch": 11,
+      "name": "b11-domain-journey-verification",
+      "title": "Domain Packs与Full-Stack Journey Verification",
+      "path": "agent-skills/runtime/b11-domain-journey-verification/SKILL.md",
+      "dependencies": [
+        7,
+        8,
+        9,
+        10
+      ],
+      "gate": "DV1–DV5"
+    },
+    {
+      "batch": 12,
+      "name": "b12-production-migration-runtime",
+      "title": "Shadow、Strangler、Canary、Rollback与E1–E5",
+      "path": "agent-skills/runtime/b12-production-migration-runtime/SKILL.md",
+      "dependencies": [
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "gate": "E1–E5"
+    },
+    {
+      "batch": 13,
+      "name": "b13-evidence-graph-certification",
+      "title": "Evidence Graph、独立裁判、红队与持续认证",
+      "path": "agent-skills/runtime/b13-evidence-graph-certification/SKILL.md",
+      "dependencies": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "gate": "EA1–EA5"
+    },
+    {
+      "batch": 14,
+      "name": "b14-formal-proof-carrying-migration",
+      "title": "Formal Verification与Proof-Carrying Migration",
+      "path": "agent-skills/runtime/b14-formal-proof-carrying-migration/SKILL.md",
+      "dependencies": [
+        3,
+        4,
+        7,
+        8,
+        9,
+        10,
+        11,
+        13
+      ],
+      "gate": "F1–F5"
+    },
+    {
+      "batch": 15,
+      "name": "b15-counterexample-guided-repair",
+      "title": "Counterexample-Guided Repair与自演进验证",
+      "path": "agent-skills/runtime/b15-counterexample-guided-repair/SKILL.md",
+      "dependencies": [
+        10,
+        13,
+        14
+      ],
+      "gate": "CR1–CR5"
+    },
+    {
+      "batch": 16,
+      "name": "b16-architecture-search-planning",
+      "title": "Target Architecture Search与Migration Planning",
+      "path": "agent-skills/runtime/b16-architecture-search-planning/SKILL.md",
+      "dependencies": [
+        1,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "gate": "AP1–AP5"
+    },
+    {
+      "batch": 17,
+      "name": "b17-migration-execution-os",
+      "title": "Migration Execution OS",
+      "path": "agent-skills/runtime/b17-migration-execution-os/SKILL.md",
+      "dependencies": [
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "gate": "MX1–MX5"
+    },
+    {
+      "batch": 18,
+      "name": "b18-complete-project-generation",
+      "title": "Complete Project Generation Standard",
+      "path": "agent-skills/runtime/b18-complete-project-generation/SKILL.md",
+      "dependencies": [
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        16,
+        17
+      ],
+      "gate": "CP1–CP5"
+    },
+    {
+      "batch": 19,
+      "name": "b19-executable-generator-packs",
+      "title": "90路径Executable Generator Packs",
+      "path": "agent-skills/runtime/b19-executable-generator-packs/SKILL.md",
+      "dependencies": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        13,
+        14,
+        15,
+        17,
+        18
+      ],
+      "gate": "GP1–GP5"
+    },
+    {
+      "batch": 20,
+      "name": "b20-skill-productization",
+      "title": "Skill SDK、Runtime、Registry与产品化封装",
+      "path": "agent-skills/runtime/b20-skill-productization/SKILL.md",
+      "dependencies": [
+        13,
+        17,
+        18,
+        19
+      ],
+      "gate": "SC1–SC5"
+    },
+    {
+      "batch": 21,
+      "name": "b21-capability-closure-registry",
+      "title": "System Capability Closure Registry",
+      "path": "agent-skills/runtime/b21-capability-closure-registry/SKILL.md",
+      "dependencies": [
+        1,
+        11,
+        18
+      ],
+      "gate": "Capability Closure Gate"
+    },
+    {
+      "batch": 22,
+      "name": "b22-business-line-closure",
+      "title": "Business-Line Functional Closure Packs",
+      "path": "agent-skills/runtime/b22-business-line-closure/SKILL.md",
+      "dependencies": [
+        11,
+        21
+      ],
+      "gate": "Business-Line Closure Gate"
+    },
+    {
+      "batch": 23,
+      "name": "b23-cross-business-journey-closure",
+      "title": "Cross-Business Journey、Saga与逻辑闭环",
+      "path": "agent-skills/runtime/b23-cross-business-journey-closure/SKILL.md",
+      "dependencies": [
+        22,
+        7,
+        8,
+        10,
+        11
+      ],
+      "gate": "Cross-Business Journey Gate"
+    },
+    {
+      "batch": 24,
+      "name": "b24-data-lineage-completeness",
+      "title": "End-to-End Data Flow、Lineage与Completeness",
+      "path": "agent-skills/runtime/b24-data-lineage-completeness/SKILL.md",
+      "dependencies": [
+        7,
+        8,
+        11,
+        21
+      ],
+      "gate": "Data Flow Closure Gate"
+    },
+    {
+      "batch": 25,
+      "name": "b25-data-quality-reconciliation",
+      "title": "Data Quality、Reconciliation与Accounting Integrity",
+      "path": "agent-skills/runtime/b25-data-quality-reconciliation/SKILL.md",
+      "dependencies": [
+        24,
+        7,
+        11,
+        13,
+        15
+      ],
+      "gate": "Data Integrity Gate"
+    },
+    {
+      "batch": 26,
+      "name": "b26-admin-control-plane-closure",
+      "title": "Management Console与Control Plane Functional Closure",
+      "path": "agent-skills/runtime/b26-admin-control-plane-closure/SKILL.md",
+      "dependencies": [
+        21,
+        22,
+        23
+      ],
+      "gate": "Admin Closure Gate"
+    },
+    {
+      "batch": 27,
+      "name": "b27-identity-authorization-audit",
+      "title": "Identity、Authorization、Approval与Audit Closure",
+      "path": "agent-skills/runtime/b27-identity-authorization-audit/SKILL.md",
+      "dependencies": [
+        8,
+        13,
+        20,
+        21,
+        26
+      ],
+      "gate": "Identity & Authorization Gate"
+    },
+    {
+      "batch": 28,
+      "name": "b28-functional-operational-usability",
+      "title": "Functional Usability与Operational Usability",
+      "path": "agent-skills/runtime/b28-functional-operational-usability/SKILL.md",
+      "dependencies": [
+        21,
+        22,
+        23,
+        26,
+        27
+      ],
+      "gate": "Usability Closure Gate"
+    },
+    {
+      "batch": 29,
+      "name": "b29-system-regression-assurance",
+      "title": "System-Wide Regression与Change Impact Assurance",
+      "path": "agent-skills/runtime/b29-system-regression-assurance/SKILL.md",
+      "dependencies": [
+        10,
+        13,
+        15,
+        18,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28
+      ],
+      "gate": "System Regression Gate"
+    },
+    {
+      "batch": 30,
+      "name": "b30-ha-resilience-dr",
+      "title": "High Availability、Resilience与Disaster Recovery",
+      "path": "agent-skills/runtime/b30-ha-resilience-dr/SKILL.md",
+      "dependencies": [
+        7,
+        8,
+        12,
+        17,
+        18,
+        29
+      ],
+      "gate": "Resilience & DR Gate"
+    },
+    {
+      "batch": 31,
+      "name": "b31-concurrency-transaction-correctness",
+      "title": "Concurrency、Idempotency与Transaction Correctness",
+      "path": "agent-skills/runtime/b31-concurrency-transaction-correctness/SKILL.md",
+      "dependencies": [
+        7,
+        9,
+        10,
+        14,
+        15,
+        29,
+        30
+      ],
+      "gate": "Concurrency & Transaction Gate"
+    },
+    {
+      "batch": 32,
+      "name": "b32-performance-capacity-cost",
+      "title": "Performance、Capacity、Scalability与Cost Assurance",
+      "path": "agent-skills/runtime/b32-performance-capacity-cost/SKILL.md",
+      "dependencies": [
+        9,
+        10,
+        12,
+        16,
+        18,
+        29,
+        30,
+        31
+      ],
+      "gate": "Performance & Capacity Gate"
+    },
+    {
+      "batch": 33,
+      "name": "b33-migration-security-data-protection",
+      "title": "Migration Security与Data Protection Assurance",
+      "path": "agent-skills/runtime/b33-migration-security-data-protection/SKILL.md",
+      "dependencies": [
+        12,
+        13,
+        17,
+        20,
+        24,
+        25,
+        27,
+        29
+      ],
+      "gate": "Migration Security Gate"
+    },
+    {
+      "batch": 34,
+      "name": "b34-provider-reliability-closure",
+      "title": "External Integration与Provider Reliability Closure",
+      "path": "agent-skills/runtime/b34-provider-reliability-closure/SKILL.md",
+      "dependencies": [
+        7,
+        8,
+        10,
+        11,
+        12,
+        23,
+        25,
+        29,
+        30,
+        32,
+        33
+      ],
+      "gate": "Provider Reliability Gate"
+    },
+    {
+      "batch": 35,
+      "name": "b35-go-live-production-acceptance",
+      "title": "Release、Go-Live与Production Acceptance",
+      "path": "agent-skills/runtime/b35-go-live-production-acceptance/SKILL.md",
+      "dependencies": [
+        18,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34
+      ],
+      "gate": "Production Acceptance Gate"
+    },
+    {
+      "batch": 36,
+      "name": "b36-production-operations-support",
+      "title": "Production Operations、Support与Service Management",
+      "path": "agent-skills/runtime/b36-production-operations-support/SKILL.md",
+      "dependencies": [
+        30,
+        32,
+        34,
+        35
+      ],
+      "gate": "Production Operations Gate"
+    },
+    {
+      "batch": 37,
+      "name": "b37-source-retirement-closure",
+      "title": "Post-Migration Stabilization与Source Retirement Closure",
+      "path": "agent-skills/runtime/b37-source-retirement-closure/SKILL.md",
+      "dependencies": [
+        12,
+        24,
+        25,
+        29,
+        30,
+        34,
+        35,
+        36
+      ],
+      "gate": "Source Retirement Gate"
+    },
+    {
+      "batch": 38,
+      "name": "b38-final-system-assurance",
+      "title": "Final System Assurance与SA1–SA5 Certification",
+      "path": "agent-skills/runtime/b38-final-system-assurance/SKILL.md",
+      "dependencies": [
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37
+      ],
+      "gate": "SA1–SA5"
+    },
+    {
+      "batch": null,
+      "name": "repository-migration-platform-batch1-38-master",
+      "title": "Master Orchestrator",
+      "path": "agent-skills/runtime/repository-migration-platform-batch1-38-master/SKILL.md",
+      "dependencies": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38
+      ],
+      "gate": "SA1–SA5 final orchestration"
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "B06 Dependency Supply Chain Graph"
+  short_description: "Help with B06 Dependency Supply Chain Graph tasks"
+  default_prompt: "Use $b06-dependency-supply-chain-graph to execute its evidence-governed repository migration workflow and report every unmet gate explicitly."

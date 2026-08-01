@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TypedEvidenceEnvelope",
+  "type": "object",
+  "required": ["evidence_version", "batch", "claim", "producer", "environment", "subject", "scope", "observations", "replay"],
+  "properties": {
+    "evidence_version": {"const": "1.0"},
+    "batch": {"type": "integer", "minimum": 1, "maximum": 38},
+    "claim": {
+      "type": "object",
+      "required": ["type", "index"],
+      "properties": {
+        "type": {"enum": ["output", "test", "external"]},
+        "index": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "producer": {
+      "type": "object",
+      "required": ["id", "role"],
+      "properties": {"id": {"type": "string", "minLength": 1}, "role": {"type": "string", "minLength": 1}},
+      "additionalProperties": false
+    },
+    "environment": {
+      "type": "object",
+      "required": ["id", "digest"],
+      "properties": {"id": {"type": "string", "minLength": 1}, "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}},
+      "additionalProperties": false
+    },
+    "subject": {
+      "type": "object",
+      "required": ["type", "sha256", "uri", "bytes"],
+      "properties": {
+        "type": {"type": "string", "minLength": 1},
+        "sha256": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+        "uri": {"type": "string", "pattern": "^artifact://sha256:[a-f0-9]{64}$"},
+        "bytes": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "scope": {
+      "type": "object",
+      "required": ["source_fingerprint", "target_objective", "assumptions"],
+      "properties": {
+        "source_fingerprint": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+        "target_objective": {"type": "string", "minLength": 1},
+        "assumptions": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": false
+    },
+    "observations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["name", "outcome", "oracle"],
+        "properties": {
+          "name": {"type": "string", "minLength": 1},
+          "outcome": {"enum": ["PASS", "FAIL", "INCONCLUSIVE", "BLOCKED", "NOT_RUN"]},
+          "oracle": {"type": "string", "minLength": 1}
+        },
+        "additionalProperties": false
+      }
+    },
+    "replay": {
+      "type": "object",
+      "required": ["argv", "cwd", "command_digest"],
+      "properties": {
+        "argv": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "cwd": {"type": "string", "minLength": 1},
+        "command_digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

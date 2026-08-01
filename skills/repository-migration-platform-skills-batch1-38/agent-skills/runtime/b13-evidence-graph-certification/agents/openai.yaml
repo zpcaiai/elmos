@@ -1,0 +1,4 @@
+interface:
+  display_name: "B13 Evidence Graph Certification"
+  short_description: "Help with B13 Evidence Graph Certification tasks"
+  default_prompt: "Use $b13-evidence-graph-certification to execute its evidence-governed repository migration workflow and report every unmet gate explicitly."

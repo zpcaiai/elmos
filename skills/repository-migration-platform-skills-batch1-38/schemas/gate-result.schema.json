@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BatchGateResult",
+  "type": "object",
+  "required": ["schema_version", "batch", "skill", "gate", "evaluated_at", "mode", "source_fingerprint", "decision", "maximum_local_decision", "evidence_root", "evaluated_revision", "certificate_state_sha256", "missing_dependencies", "missing_output_indexes", "missing_test_indexes", "missing_external_evidence_indexes", "external_evidence_state", "findings", "certified"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "batch": {"type": "integer", "minimum": 1, "maximum": 38},
+    "skill": {"type": "string", "minLength": 1},
+    "gate": {"type": "string", "minLength": 1},
+    "evaluated_at": {"type": "string", "format": "date-time"},
+    "mode": {"enum": ["local", "certification"]},
+    "source_fingerprint": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "decision": {"enum": ["NOT_RUN", "INCOMPLETE", "BLOCKED", "LOCAL_TOOLKIT_PASS", "CERTIFIED"]},
+    "maximum_local_decision": {"const": "LOCAL_TOOLKIT_PASS"},
+    "evidence_root": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "evaluated_revision": {"type": "integer", "minimum": 0},
+    "certificate_state_sha256": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "missing_dependencies": {"type": "array", "items": {"type": "integer", "minimum": 1, "maximum": 38}},
+    "missing_output_indexes": {"type": "array", "items": {"type": "integer", "minimum": 0}},
+    "missing_test_indexes": {"type": "array", "items": {"type": "integer", "minimum": 0}},
+    "missing_external_evidence_indexes": {"type": "array", "items": {"type": "integer", "minimum": 0}},
+    "external_evidence_state": {"enum": ["NOT_RUN", "OBSERVED", "NOT_APPLICABLE"]},
+    "findings": {"type": "array", "items": {"type": "string"}},
+    "certified": {"type": "boolean"}
+  },
+  "additionalProperties": false
+}

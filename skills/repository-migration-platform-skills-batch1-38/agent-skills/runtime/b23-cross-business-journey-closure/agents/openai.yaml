@@ -1,0 +1,4 @@
+interface:
+  display_name: "B23 Cross Business Journey Closure"
+  short_description: "Help with B23 Cross Business Journey Closure tasks"
+  default_prompt: "Use $b23-cross-business-journey-closure to execute its evidence-governed repository migration workflow and report every unmet gate explicitly."

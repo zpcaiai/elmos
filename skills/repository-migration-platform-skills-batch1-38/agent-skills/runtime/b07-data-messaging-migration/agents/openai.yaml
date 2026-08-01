@@ -1,0 +1,4 @@
+interface:
+  display_name: "B07 Data Messaging Migration"
+  short_description: "Help with B07 Data Messaging Migration tasks"
+  default_prompt: "Use $b07-data-messaging-migration to execute its evidence-governed repository migration workflow and report every unmet gate explicitly."

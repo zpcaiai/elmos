@@ -1,0 +1,4 @@
+interface:
+  display_name: "B02 Differential Execution Harness"
+  short_description: "Help with B02 Differential Execution Harness tasks"
+  default_prompt: "Use $b02-differential-execution-harness to execute its evidence-governed repository migration workflow and report every unmet gate explicitly."

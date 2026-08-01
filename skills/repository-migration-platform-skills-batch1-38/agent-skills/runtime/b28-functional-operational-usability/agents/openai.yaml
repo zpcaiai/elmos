@@ -1,0 +1,4 @@
+interface:
+  display_name: "B28 Functional Operational Usability"
+  short_description: "Help with B28 Functional Operational Usability tasks"
+  default_prompt: "Use $b28-functional-operational-usability to execute its evidence-governed repository migration workflow and report every unmet gate explicitly."

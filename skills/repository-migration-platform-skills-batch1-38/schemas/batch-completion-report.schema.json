@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BatchCompletionReport",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "batch",
+    "skill",
+    "status",
+    "artifacts",
+    "evidence",
+    "findings",
+    "unknowns",
+    "limitations",
+    "gate_decision",
+    "external_evidence_state",
+    "certificate_ceiling"
+  ],
+  "properties": {
+    "schema_version": {"const": "2.0"},
+    "batch": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 38
+    },
+    "skill": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "PASS",
+        "FAIL",
+        "PARTIAL",
+        "BLOCKED",
+        "INCONCLUSIVE",
+        "NOT_RUN"
+      ]
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["uri", "sha256", "bytes", "object_path"],
+        "properties": {
+          "uri": {"type": "string", "pattern": "^artifact://sha256:[a-f0-9]{64}$"},
+          "sha256": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+          "bytes": {"type": "integer", "minimum": 0},
+          "object_path": {"type": "string", "minLength": 1}
+        },
+        "additionalProperties": false
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "certificates": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "unknowns": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "next_batch_inputs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "gate_decision": {
+      "enum": ["NOT_RUN", "INCOMPLETE", "BLOCKED", "LOCAL_TOOLKIT_PASS", "CERTIFIED"]
+    },
+    "external_evidence_state": {
+      "enum": ["NOT_RUN", "OBSERVED", "NOT_APPLICABLE"]
+    },
+    "certificate_ceiling": {
+      "const": "LOCAL_TOOLKIT_PASS"
+    }
+  },
+  "additionalProperties": false
+}

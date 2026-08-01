@@ -1,0 +1,4 @@
+interface:
+  display_name: "B25 Data Quality Reconciliation"
+  short_description: "Help with B25 Data Quality Reconciliation tasks"
+  default_prompt: "Use $b25-data-quality-reconciliation to execute its evidence-governed repository migration workflow and report every unmet gate explicitly."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "B11 Domain Journey Verification"
+  short_description: "Help with B11 Domain Journey Verification tasks"
+  default_prompt: "Use $b11-domain-journey-verification to execute its evidence-governed repository migration workflow and report every unmet gate explicitly."

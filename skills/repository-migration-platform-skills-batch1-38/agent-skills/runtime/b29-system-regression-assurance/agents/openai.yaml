@@ -1,0 +1,4 @@
+interface:
+  display_name: "B29 System Regression Assurance"
+  short_description: "Help with B29 System Regression Assurance tasks"
+  default_prompt: "Use $b29-system-regression-assurance to execute its evidence-governed repository migration workflow and report every unmet gate explicitly."

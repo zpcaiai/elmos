@@ -37,6 +37,9 @@ product-roadmap:
 	JAVA_HOME="$(JAVA_21_HOME)" "$(MAVEN)" -B -pl modules/product-roadmap-governance,apps/control-plane -am test
 migration-pack-admission:
 	JAVA_HOME="$(JAVA_21_HOME)" "$(MAVEN)" -B -pl modules/migration-pack-certification,apps/control-plane -am test
+.PHONY: repository-migration-platform-skills
+repository-migration-platform-skills:
+	cd skills/repository-migration-platform-skills-batch1-38 && ./validate.sh
 batch27-34-skills:
 	python3 tooling/validate_batch27_34_integration.py
 batch1-55-skills:

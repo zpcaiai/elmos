@@ -1,0 +1,4 @@
+interface:
+  display_name: "B36 Production Operations Support"
+  short_description: "Help with B36 Production Operations Support tasks"
+  default_prompt: "Use $b36-production-operations-support to execute its evidence-governed repository migration workflow and report every unmet gate explicitly."
