@@ -37,8 +37,13 @@ SERIES: dict[str, tuple[tuple[str, ...], tuple[str, ...], str | None]] = {
     ),
     "repository-migration-platform-b1-38": (
         ("skills/repository-migration-platform-skills-batch1-38/**/SKILL.md",),
-        (),
-        None,
+        ("skills/repository-migration-platform-skills-batch1-38/scripts",),
+        "skills/repository-migration-platform-skills-batch1-38/tests",
+    ),
+    "uir-java-python": (
+        ("engines/uir-java-python/**/*.md",),
+        ("engines/uir-java-python/j2p", "engines/uir-java-python/runtime"),
+        "engines/uir-java-python/tests",
     ),
     "codex-skills-b1-55": (
         ("elmos-codex-skills-batch1-55-complete/**/SKILL.md",),

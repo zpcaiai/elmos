@@ -1,0 +1,199 @@
+{
+  "total": 32,
+  "killed": 32,
+  "survivors": [],
+  "results": [
+    {
+      "id": "M01",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "int arithmetic wraps at 32 bits",
+      "status": "KILLED"
+    },
+    {
+      "id": "M02",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "long arithmetic wraps at 64 bits",
+      "status": "KILLED"
+    },
+    {
+      "id": "M03",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "char is unsigned 16-bit",
+      "status": "KILLED"
+    },
+    {
+      "id": "M04",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "byte narrows to 8 bits",
+      "status": "KILLED"
+    },
+    {
+      "id": "M05",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "integer division truncates toward zero",
+      "status": "KILLED"
+    },
+    {
+      "id": "M06",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "remainder takes the sign of the dividend",
+      "status": "KILLED"
+    },
+    {
+      "id": "M07",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "integer division by zero raises ArithmeticException",
+      "status": "KILLED"
+    },
+    {
+      "id": "M08",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "floating division by zero yields infinity instead of raising",
+      "status": "KILLED"
+    },
+    {
+      "id": "M09",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "shift distance is masked",
+      "status": "KILLED"
+    },
+    {
+      "id": "M10",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "unsigned right shift fills with zeros",
+      "status": "KILLED"
+    },
+    {
+      "id": "M11",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "double-to-int cast maps NaN to zero",
+      "status": "KILLED"
+    },
+    {
+      "id": "M12",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "double-to-int cast saturates instead of overflowing",
+      "status": "KILLED"
+    },
+    {
+      "id": "M13",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "Math.abs of MIN_VALUE wraps rather than widening",
+      "status": "KILLED"
+    },
+    {
+      "id": "M14",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "Double.toString uses Java's notation thresholds",
+      "status": "KILLED"
+    },
+    {
+      "id": "M15",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "null converts to the string \"null\"",
+      "status": "KILLED"
+    },
+    {
+      "id": "M16",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "booleans convert to lowercase true/false",
+      "status": "KILLED"
+    },
+    {
+      "id": "M17",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "array index bounds are checked on both sides",
+      "status": "KILLED"
+    },
+    {
+      "id": "M18",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "Integer.parseInt rejects values outside int range",
+      "status": "KILLED"
+    },
+    {
+      "id": "M19",
+      "file": "j2p/emit/python.py",
+      "rule": "integer division is emitted through the truncating helper",
+      "status": "KILLED"
+    },
+    {
+      "id": "M20",
+      "file": "j2p/emit/python.py",
+      "rule": "integral arithmetic is emitted through the wrapping helper",
+      "status": "KILLED"
+    },
+    {
+      "id": "M21",
+      "file": "j2p/emit/python.py",
+      "rule": "compound assignment casts back to the target type",
+      "status": "KILLED"
+    },
+    {
+      "id": "M22",
+      "file": "j2p/emit/python.py",
+      "rule": "switch fall-through is refused rather than mistranslated",
+      "status": "KILLED"
+    },
+    {
+      "id": "M23",
+      "file": "j2p/emit/python.py",
+      "rule": "string concatenation uses Java's conversion rules",
+      "status": "KILLED"
+    },
+    {
+      "id": "M24",
+      "file": "j2p/emit/python.py",
+      "rule": "the for-loop update runs even when the body continues",
+      "status": "KILLED"
+    },
+    {
+      "id": "M25",
+      "file": "j2p/emit/python.py",
+      "rule": "a record component and its accessor are kept distinct",
+      "status": "KILLED"
+    },
+    {
+      "id": "M26",
+      "file": "j2p/emit/python.py",
+      "rule": "++ in expression position is refused",
+      "status": "KILLED"
+    },
+    {
+      "id": "M27",
+      "file": "j2p/frontend/java.py",
+      "rule": "assignment inserts Java's implicit widening conversion",
+      "status": "KILLED"
+    },
+    {
+      "id": "M28",
+      "file": "j2p/frontend/java.py",
+      "rule": "shift result type comes from the left operand alone",
+      "status": "KILLED"
+    },
+    {
+      "id": "M29",
+      "file": "j2p/frontend/java.py",
+      "rule": "String + x is concatenation, not addition",
+      "status": "KILLED"
+    },
+    {
+      "id": "M30",
+      "file": "j2p/frontend/java.py",
+      "rule": "a parameter shadows a field of the same name",
+      "status": "KILLED"
+    },
+    {
+      "id": "M31",
+      "file": "j2p/uir.py",
+      "rule": "dict keys are ordered before serialization",
+      "status": "KILLED"
+    },
+    {
+      "id": "M32",
+      "file": "j2p/uir.py",
+      "rule": "floats are refused in the canonical form",
+      "status": "KILLED"
+    }
+  ]
+}

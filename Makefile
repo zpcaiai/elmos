@@ -230,3 +230,35 @@ include Makefile.batch42
 include Makefile.batch43
 include Makefile.batch44
 include Makefile.batch45
+
+
+# --- java->python UIR route -------------------------------------------------
+# TREE, WORKSPACE and SOURCE are overridable:
+#   make uir-j2p-survey TREE=engines/enterprise-suite-engine/src
+UIR_J2P_DIR := engines/uir-java-python
+TREE ?= .
+WORKSPACE ?= /tmp/uir-j2p-workspace
+SOURCE ?= $(CURDIR)/engines/uir-java-python
+
+uir-j2p-deps:
+	python3 -m pip install -r $(UIR_J2P_DIR)/requirements.txt
+
+uir-j2p-test:
+	cd $(UIR_J2P_DIR) && python3 -m unittest discover -s tests -v
+
+uir-j2p-mutation:
+	cd $(UIR_J2P_DIR) && python3 tools/mutation_check.py --json-out docs/mutation-report.json
+
+uir-j2p-survey:
+	cd $(UIR_J2P_DIR) && python3 -m j2p.cli survey $(CURDIR)/$(TREE) --out docs/survey-latest.json
+
+uir-j2p-evidence:
+	cd $(UIR_J2P_DIR) && python3 tools/record_batch_evidence.py \
+	  --runtime $(CURDIR)/skills/repository-migration-platform-skills-batch1-38/scripts/migration_platform.py \
+	  --workspace $(WORKSPACE) --source $(SOURCE) --survey-tree $(CURDIR)/$(TREE)
+
+# The gate is test + mutation together: a green suite that no mutation can turn
+# red is not evidence of anything.
+uir-j2p-gate: uir-j2p-test uir-j2p-mutation
+
+.PHONY: uir-j2p-deps uir-j2p-test uir-j2p-mutation uir-j2p-survey uir-j2p-evidence uir-j2p-gate

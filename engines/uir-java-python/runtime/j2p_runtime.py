@@ -1,0 +1,753 @@
+"""Java semantics, implemented in Python.
+
+Generated Python does not use Python's arithmetic directly.  Python integers are
+arbitrary precision, Python's ``//`` floors, Python's ``%`` takes the sign of the
+divisor, and Python's ``repr(float)`` does not spell numbers the way
+``Double.toString`` does.  Every one of those differences silently changes
+program behaviour, and every one of them is a bug a migration is supposed not to
+introduce.  So the emitter routes arithmetic through this module instead.
+
+Nothing here is decorative.  Each rule below is asserted by a differential test
+that compiles and runs the original Java and compares the two outputs byte for
+byte, and by a mutation experiment that deletes the rule and requires the tests
+to go red.
+"""
+
+from __future__ import annotations
+
+import math
+import struct
+
+INT_MIN = -(2 ** 31)
+INT_MAX = 2 ** 31 - 1
+LONG_MIN = -(2 ** 63)
+LONG_MAX = 2 ** 63 - 1
+CHAR_MAX = 2 ** 16 - 1
+
+
+# ---------------------------------------------------------------------------
+# Exceptions
+# ---------------------------------------------------------------------------
+
+
+class JavaThrowable(Exception):
+    """Base of every exception the generated code can raise.
+
+    ``java_name`` is what Java prints in a stack trace, and is what the
+    differential harness compares on, so an exception raised by the translation
+    must be the *same* exception Java raises, not merely "some error".
+    """
+
+    java_name = "java.lang.Throwable"
+
+    def __init__(self, message: str | None = None) -> None:
+        super().__init__(message if message is not None else "")
+        self.message = message
+
+
+class JavaException(JavaThrowable):
+    java_name = "java.lang.Exception"
+
+
+class RuntimeExceptionJ(JavaException):
+    java_name = "java.lang.RuntimeException"
+
+
+class ArithmeticExceptionJ(RuntimeExceptionJ):
+    java_name = "java.lang.ArithmeticException"
+
+
+class NullPointerExceptionJ(RuntimeExceptionJ):
+    java_name = "java.lang.NullPointerException"
+
+
+class ClassCastExceptionJ(RuntimeExceptionJ):
+    java_name = "java.lang.ClassCastException"
+
+
+class NumberFormatExceptionJ(RuntimeExceptionJ):
+    java_name = "java.lang.NumberFormatException"
+
+
+class IndexOutOfBoundsExceptionJ(RuntimeExceptionJ):
+    java_name = "java.lang.IndexOutOfBoundsException"
+
+
+class ArrayIndexOutOfBoundsExceptionJ(IndexOutOfBoundsExceptionJ):
+    java_name = "java.lang.ArrayIndexOutOfBoundsException"
+
+
+class StringIndexOutOfBoundsExceptionJ(IndexOutOfBoundsExceptionJ):
+    java_name = "java.lang.StringIndexOutOfBoundsException"
+
+
+class IllegalArgumentExceptionJ(RuntimeExceptionJ):
+    java_name = "java.lang.IllegalArgumentException"
+
+
+class IllegalStateExceptionJ(RuntimeExceptionJ):
+    java_name = "java.lang.IllegalStateException"
+
+
+class UnsupportedOperationExceptionJ(RuntimeExceptionJ):
+    java_name = "java.lang.UnsupportedOperationException"
+
+
+EXCEPTION_BY_SIMPLE_NAME: dict[str, type[JavaThrowable]] = {
+    "Throwable": JavaThrowable,
+    "Exception": JavaException,
+    "RuntimeException": RuntimeExceptionJ,
+    "ArithmeticException": ArithmeticExceptionJ,
+    "NullPointerException": NullPointerExceptionJ,
+    "ClassCastException": ClassCastExceptionJ,
+    "NumberFormatException": NumberFormatExceptionJ,
+    "IndexOutOfBoundsException": IndexOutOfBoundsExceptionJ,
+    "ArrayIndexOutOfBoundsException": ArrayIndexOutOfBoundsExceptionJ,
+    "StringIndexOutOfBoundsException": StringIndexOutOfBoundsExceptionJ,
+    "IllegalArgumentException": IllegalArgumentExceptionJ,
+    "IllegalStateException": IllegalStateExceptionJ,
+    "UnsupportedOperationException": UnsupportedOperationExceptionJ,
+}
+
+
+def throwable_class(simple_name: str) -> type[JavaThrowable]:
+    try:
+        return EXCEPTION_BY_SIMPLE_NAME[simple_name]
+    except KeyError:
+        raise KeyError(
+            f"unsupported Java throwable {simple_name!r}; the front end must "
+            f"reject it rather than let it reach the runtime"
+        ) from None
+
+
+# ---------------------------------------------------------------------------
+# Integral wrapping
+# ---------------------------------------------------------------------------
+
+
+def jint(value: int) -> int:
+    """Wrap to 32-bit two's complement, as every Java ``int`` operation does."""
+
+    return ((value + 2 ** 31) & (2 ** 32 - 1)) - 2 ** 31
+
+
+def jlong(value: int) -> int:
+    return ((value + 2 ** 63) & (2 ** 64 - 1)) - 2 ** 63
+
+
+def jbyte(value: int) -> int:
+    return ((value + 2 ** 7) & (2 ** 8 - 1)) - 2 ** 7
+
+
+def jshort(value: int) -> int:
+    return ((value + 2 ** 15) & (2 ** 16 - 1)) - 2 ** 15
+
+
+def jchar(value: int) -> int:
+    """``char`` is the one unsigned integral type in Java."""
+
+    return value & CHAR_MAX
+
+
+WRAP = {"int": jint, "long": jlong, "byte": jbyte, "short": jshort, "char": jchar}
+
+
+def wrap(kind: str, value: int) -> int:
+    return WRAP[kind](value)
+
+
+# ---------------------------------------------------------------------------
+# Integer division and remainder
+# ---------------------------------------------------------------------------
+
+
+def idiv(kind: str, a: int, b: int) -> int:
+    """Java integer division: truncates toward zero, not toward -infinity.
+
+    ``-7 / 2`` is ``-3`` in Java and ``-4`` with Python's ``//``.
+    """
+
+    if b == 0:
+        raise ArithmeticExceptionJ("/ by zero")
+    q = abs(a) // abs(b)
+    if (a < 0) != (b < 0):
+        q = -q
+    return WRAP[kind](q)
+
+
+def irem(kind: str, a: int, b: int) -> int:
+    """Java remainder takes the sign of the *dividend*.
+
+    ``-7 % 2`` is ``-1`` in Java and ``1`` in Python.
+    """
+
+    if b == 0:
+        raise ArithmeticExceptionJ("/ by zero")
+    r = abs(a) % abs(b)
+    if a < 0:
+        r = -r
+    return WRAP[kind](r)
+
+
+def ddiv(a: float, b: float) -> float:
+    """Floating division never throws in Java; it produces inf/NaN."""
+
+    if b == 0.0:
+        if a == 0.0 or math.isnan(a):
+            return math.nan
+        sign = math.copysign(1.0, a) * math.copysign(1.0, b)
+        return math.inf if sign > 0 else -math.inf
+    try:
+        return a / b
+    except OverflowError:  # pragma: no cover - defensive
+        return math.inf
+
+
+def drem(a: float, b: float) -> float:
+    if math.isnan(a) or math.isnan(b) or math.isinf(a) or b == 0.0:
+        return math.nan
+    if math.isinf(b):
+        return a
+    return math.fmod(a, b)
+
+
+# ---------------------------------------------------------------------------
+# Shifts
+# ---------------------------------------------------------------------------
+
+
+def shl(kind: str, a: int, b: int) -> int:
+    """Java masks the shift distance to 5 bits for int, 6 bits for long."""
+
+    b &= 63 if kind == "long" else 31
+    return WRAP[kind](a << b)
+
+
+def shr(kind: str, a: int, b: int) -> int:
+    b &= 63 if kind == "long" else 31
+    return WRAP[kind](a >> b)
+
+
+def ushr(kind: str, a: int, b: int) -> int:
+    """``>>>`` shifts in zeros, operating on the unsigned bit pattern."""
+
+    width = 64 if kind == "long" else 32
+    b &= width - 1
+    return WRAP[kind]((a & (2 ** width - 1)) >> b)
+
+
+# ---------------------------------------------------------------------------
+# Narrowing conversions
+# ---------------------------------------------------------------------------
+
+
+def d2i(value: float) -> int:
+    """``(int) someDouble``: NaN becomes 0 and out-of-range *saturates*.
+
+    Python's ``int()`` raises on NaN and never saturates, so a naive
+    translation of a cast turns a silently clamped value into a crash.
+    """
+
+    if math.isnan(value):
+        return 0
+    if value >= INT_MAX:
+        return INT_MAX
+    if value <= INT_MIN:
+        return INT_MIN
+    return int(value)
+
+
+def d2l(value: float) -> int:
+    if math.isnan(value):
+        return 0
+    if value >= LONG_MAX:
+        return LONG_MAX
+    if value <= LONG_MIN:
+        return LONG_MIN
+    return int(value)
+
+
+def i2d(value: int) -> float:
+    return float(value)
+
+
+def f32(value: float) -> float:
+    """Round a Python double to the nearest IEEE-754 single."""
+
+    return struct.unpack("<f", struct.pack("<f", value))[0]
+
+
+# ---------------------------------------------------------------------------
+# String conversion
+# ---------------------------------------------------------------------------
+
+
+def jdouble_to_string(value: float) -> str:
+    """Reproduce ``Double.toString``.
+
+    Java switches to scientific notation outside ``[1e-3, 1e7)`` and spells it
+    ``1.0E7``; Python's ``repr`` switches outside ``[1e-4, 1e16)`` and spells it
+    ``1e+16``.  Both pick the shortest round-tripping digit string, so the digits
+    agree and only the *formatting* has to be redone here.
+    """
+
+    if math.isnan(value):
+        return "NaN"
+    if math.isinf(value):
+        return "Infinity" if value > 0 else "-Infinity"
+    if value == 0.0:
+        return "-0.0" if math.copysign(1.0, value) < 0 else "0.0"
+
+    negative = value < 0
+    magnitude = abs(value)
+
+    digits, exponent = _shortest_digits(magnitude)
+
+    if 1e-3 <= magnitude < 1e7:
+        text = _plain_decimal(digits, exponent)
+    else:
+        text = _scientific(digits, exponent)
+    return "-" + text if negative else text
+
+
+def _shortest_digits(magnitude: float) -> tuple[str, int]:
+    """Return ``(digits, exponent)`` with value == 0.d1d2... * 10**exponent.
+
+    Uses Python's shortest round-trip repr as the digit source.
+    """
+
+    text = repr(magnitude)
+    if "e" in text or "E" in text:
+        mantissa, _, exp_text = text.replace("E", "e").partition("e")
+        exponent = int(exp_text)
+    else:
+        mantissa, exponent = text, 0
+
+    if "." in mantissa:
+        int_part, _, frac_part = mantissa.partition(".")
+    else:
+        int_part, frac_part = mantissa, ""
+
+    digits = (int_part + frac_part).lstrip("0")
+    leading_zeros = len(int_part + frac_part) - len((int_part + frac_part).lstrip("0"))
+    # Decimal point sits after len(int_part) digits; shift by stripped zeros.
+    exponent += len(int_part) - leading_zeros
+    digits = digits.rstrip("0") or "0"
+    return digits, exponent
+
+
+def _plain_decimal(digits: str, exponent: int) -> str:
+    if exponent <= 0:
+        return "0." + "0" * (-exponent) + digits
+    if exponent >= len(digits):
+        return digits + "0" * (exponent - len(digits)) + ".0"
+    return digits[:exponent] + "." + digits[exponent:]
+
+
+def _scientific(digits: str, exponent: int) -> str:
+    head = digits[0]
+    tail = digits[1:] or "0"
+    return f"{head}.{tail}E{exponent - 1}"
+
+
+def jstr(value) -> str:
+    """Java's string conversion, as applied by ``+`` and ``String.valueOf``."""
+
+    if value is None:
+        return "null"
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if isinstance(value, JChar):
+        return chr(value.code)
+    if isinstance(value, float):
+        return jdouble_to_string(value)
+    if isinstance(value, JArray):
+        return value.java_identity()
+    if isinstance(value, str):
+        return value
+    if isinstance(value, int):
+        return str(value)
+    to_string = getattr(value, "toString", None)
+    if callable(to_string):
+        return to_string()
+    return str(value)
+
+
+def concat(*parts) -> str:
+    return "".join(jstr(p) for p in parts)
+
+
+class JChar:
+    """A ``char`` value that remembers it is a character, not a number.
+
+    Java's ``System.out.println('a' + 1)`` prints ``98`` while
+    ``println("" + 'a')`` prints ``a``.  Carrying the distinction in the value
+    (rather than losing it at the first assignment) is what lets the emitter get
+    both cases right.
+    """
+
+    __slots__ = ("code",)
+
+    def __init__(self, code: int) -> None:
+        self.code = code & CHAR_MAX
+
+    def __int__(self) -> int:
+        return self.code
+
+    def __index__(self) -> int:
+        return self.code
+
+    def __eq__(self, other) -> bool:
+        if isinstance(other, JChar):
+            return self.code == other.code
+        if isinstance(other, int):
+            return self.code == other
+        return NotImplemented
+
+    def __hash__(self) -> int:
+        return hash(self.code)
+
+    def __repr__(self) -> str:  # pragma: no cover - debugging aid
+        return f"JChar({self.code!r})"
+
+
+def char_of(value) -> JChar:
+    if isinstance(value, JChar):
+        return value
+    if isinstance(value, str):
+        if len(value) != 1:
+            raise IllegalArgumentExceptionJ("not a single character")
+        return JChar(ord(value))
+    return JChar(int(value))
+
+
+def num(value):
+    """Unwrap a ``JChar`` for arithmetic, leaving other numbers untouched."""
+
+    return value.code if isinstance(value, JChar) else value
+
+
+# ---------------------------------------------------------------------------
+# Arrays
+# ---------------------------------------------------------------------------
+
+_DEFAULTS = {
+    "int": 0,
+    "long": 0,
+    "short": 0,
+    "byte": 0,
+    "double": 0.0,
+    "float": 0.0,
+    "boolean": False,
+}
+
+
+class JArray:
+    """A fixed-length Java array with bounds checking and default values.
+
+    Python lists grow, accept negative indices, and raise ``IndexError``.  All
+    three differ observably from Java, so arrays get their own type.
+    """
+
+    __slots__ = ("data", "element")
+
+    def __init__(self, element: str, length: int | None = None, values=None) -> None:
+        self.element = element
+        if values is not None:
+            self.data = list(values)
+        else:
+            if length is None:
+                raise ValueError("length or values required")
+            if length < 0:
+                raise NegativeArraySizeExceptionJ(str(length))
+            default = _DEFAULTS.get(element, JChar(0) if element == "char" else None)
+            self.data = [default] * length
+
+    @property
+    def length(self) -> int:
+        return len(self.data)
+
+    def _check(self, index: int) -> int:
+        index = num(index)
+        if index < 0 or index >= len(self.data):
+            raise ArrayIndexOutOfBoundsExceptionJ(
+                f"Index {index} out of bounds for length {len(self.data)}"
+            )
+        return index
+
+    def get(self, index: int):
+        return self.data[self._check(index)]
+
+    def set(self, index: int, value):
+        self.data[self._check(index)] = value
+        return value
+
+    def __len__(self) -> int:
+        return len(self.data)
+
+    def __iter__(self):
+        return iter(self.data)
+
+    def java_identity(self) -> str:
+        return f"[{self.element}@{id(self):x}"
+
+
+class NegativeArraySizeExceptionJ(RuntimeExceptionJ):
+    java_name = "java.lang.NegativeArraySizeException"
+
+
+EXCEPTION_BY_SIMPLE_NAME["NegativeArraySizeException"] = NegativeArraySizeExceptionJ
+
+
+def new_array(element: str, length: int) -> JArray:
+    return JArray(element, length=num(length))
+
+
+def array_of(element: str, values) -> JArray:
+    return JArray(element, values=list(values))
+
+
+# ---------------------------------------------------------------------------
+# Null checks
+# ---------------------------------------------------------------------------
+
+
+def iabs(kind: str, value: int) -> int:
+    """``Math.abs`` on an integral type.
+
+    ``Math.abs(Integer.MIN_VALUE)`` is ``Integer.MIN_VALUE``: negating it
+    overflows and wraps.  Python's ``abs`` would return 2147483648, a value the
+    Java program can never observe.
+    """
+
+    return WRAP[kind](value if value >= 0 else -value)
+
+
+def nonnull(value, what: str = "value"):
+    if value is None:
+        raise NullPointerExceptionJ(f"Cannot invoke method because {what} is null")
+    return value
+
+
+# ---------------------------------------------------------------------------
+# java.lang.String
+# ---------------------------------------------------------------------------
+
+
+class JString:
+    """Static-side helpers for ``String``; instances stay Python ``str``."""
+
+    @staticmethod
+    def length(s: str) -> int:
+        return len(nonnull(s, "string"))
+
+    @staticmethod
+    def charAt(s: str, index: int) -> JChar:
+        index = num(index)
+        if index < 0 or index >= len(s):
+            raise StringIndexOutOfBoundsExceptionJ(
+                f"index {index}, length {len(s)}"
+            )
+        return JChar(ord(s[index]))
+
+    @staticmethod
+    def substring(s: str, start: int, end: int | None = None) -> str:
+        start = num(start)
+        end = len(s) if end is None else num(end)
+        if start < 0 or end > len(s) or start > end:
+            raise StringIndexOutOfBoundsExceptionJ(
+                f"begin {start}, end {end}, length {len(s)}"
+            )
+        return s[start:end]
+
+    @staticmethod
+    def indexOf(s: str, target) -> int:
+        if isinstance(target, JChar):
+            target = chr(target.code)
+        return s.find(target)
+
+    @staticmethod
+    def isEmpty(s: str) -> bool:
+        return len(s) == 0
+
+    @staticmethod
+    def equals(a, b) -> bool:
+        return a == b
+
+    @staticmethod
+    def toUpperCase(s: str) -> str:
+        return s.upper()
+
+    @staticmethod
+    def toLowerCase(s: str) -> str:
+        return s.lower()
+
+    @staticmethod
+    def trim(s: str) -> str:
+        # Java's trim strips code points <= U+0020, not Unicode whitespace.
+        return s.strip("".join(chr(c) for c in range(0x21)))
+
+    @staticmethod
+    def valueOf(value) -> str:
+        return jstr(value)
+
+
+class StringBuilder:
+    __slots__ = ("_parts",)
+
+    def __init__(self, initial: str | None = None) -> None:
+        self._parts: list[str] = []
+        if isinstance(initial, str):
+            self._parts.append(initial)
+
+    def append(self, value) -> "StringBuilder":
+        self._parts.append(jstr(value))
+        return self
+
+    def toString(self) -> str:
+        return "".join(self._parts)
+
+    def length(self) -> int:
+        return sum(len(p) for p in self._parts)
+
+    def reverse(self) -> "StringBuilder":
+        self._parts = [self.toString()[::-1]]
+        return self
+
+
+# ---------------------------------------------------------------------------
+# Boxed-type statics
+# ---------------------------------------------------------------------------
+
+
+class Integer:
+    MIN_VALUE = INT_MIN
+    MAX_VALUE = INT_MAX
+
+    @staticmethod
+    def parseInt(text: str) -> int:
+        try:
+            stripped = text.strip() if text is not None else None
+            if stripped is None or stripped == "" or stripped != text:
+                raise ValueError
+            value = int(text, 10)
+        except (ValueError, TypeError):
+            raise NumberFormatExceptionJ(f'For input string: "{text}"') from None
+        if value < INT_MIN or value > INT_MAX:
+            raise NumberFormatExceptionJ(f'For input string: "{text}"')
+        return value
+
+    @staticmethod
+    def toString(value: int) -> str:
+        return str(jint(value))
+
+    @staticmethod
+    def valueOf(value) -> int:
+        return Integer.parseInt(value) if isinstance(value, str) else jint(value)
+
+    @staticmethod
+    def compare(a: int, b: int) -> int:
+        return (a > b) - (a < b)
+
+
+class Long:
+    MIN_VALUE = LONG_MIN
+    MAX_VALUE = LONG_MAX
+
+    @staticmethod
+    def parseLong(text: str) -> int:
+        try:
+            value = int(text, 10)
+        except (ValueError, TypeError):
+            raise NumberFormatExceptionJ(f'For input string: "{text}"') from None
+        if value < LONG_MIN or value > LONG_MAX:
+            raise NumberFormatExceptionJ(f'For input string: "{text}"')
+        return value
+
+    @staticmethod
+    def toString(value: int) -> str:
+        return str(jlong(value))
+
+
+class Double:
+    @staticmethod
+    def parseDouble(text: str) -> float:
+        try:
+            return float(text)
+        except (ValueError, TypeError):
+            raise NumberFormatExceptionJ(f'For input string: "{text}"') from None
+
+    @staticmethod
+    def toString(value: float) -> str:
+        return jdouble_to_string(value)
+
+
+class Math:
+    PI = math.pi
+    E = math.e
+
+    @staticmethod
+    def abs(value):
+        """Only the unambiguous cases; integral abs goes through :func:`iabs`.
+
+        The emitter knows the static type of the argument and calls ``iabs`` with
+        it.  Guessing here from the Python value would get
+        ``Math.abs(Integer.MIN_VALUE)`` wrong, which is the one case that matters.
+        """
+
+        if isinstance(value, float):
+            return abs(value)
+        raise IllegalStateExceptionJ(
+            "integral Math.abs must be emitted as iabs(kind, value)"
+        )
+
+    @staticmethod
+    def max(a, b):
+        return a if a >= b else b
+
+    @staticmethod
+    def min(a, b):
+        return a if a <= b else b
+
+    @staticmethod
+    def floor(value: float) -> float:
+        return float(math.floor(value))
+
+    @staticmethod
+    def ceil(value: float) -> float:
+        return float(math.ceil(value))
+
+    @staticmethod
+    def sqrt(value: float) -> float:
+        if value < 0:
+            return math.nan
+        return math.sqrt(value)
+
+    @staticmethod
+    def pow(a: float, b: float) -> float:
+        try:
+            return float(a) ** float(b)
+        except (OverflowError, ValueError):
+            return math.inf
+
+
+# ---------------------------------------------------------------------------
+# Output
+# ---------------------------------------------------------------------------
+
+
+class _SystemOut:
+    @staticmethod
+    def println(*args) -> None:
+        # ``println()`` prints an empty line; ``println(null)`` prints "null".
+        # Collapsing the two would make a null-handling bug invisible.
+        print("" if not args else jstr(args[0]))
+
+    @staticmethod
+    def print(value) -> None:
+        print(jstr(value), end="")
+
+
+class System:
+    out = _SystemOut()
+    err = _SystemOut()
