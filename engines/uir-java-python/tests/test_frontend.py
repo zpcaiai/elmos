@@ -131,20 +131,77 @@ class LoweringTest(unittest.TestCase):
         self.assertEqual(ret.value.value, "a\tbA\n")
 
 
+class LambdaLoweringTest(unittest.TestCase):
+    def test_expression_lambda_is_lowered(self):
+        module = parse(
+            "static int f(java.util.function.Function<Integer,Integer> g)"
+            " { g = x -> x + 1; return g.apply(1); }"
+        )
+        lambdas = [n for n in uir.walk(module) if isinstance(n, uir.Lambda)]
+        self.assertEqual(len(lambdas), 1)
+        self.assertIsNotNone(lambdas[0].body_expr)
+        self.assertIsNone(lambdas[0].body_block)
+
+    def test_block_lambda_is_lowered(self):
+        module = parse(
+            "static void f() { Runnable r = () -> { int a = 1; }; }"
+        )
+        lam = next(n for n in uir.walk(module) if isinstance(n, uir.Lambda))
+        self.assertIsNotNone(lam.body_block)
+
+    def test_parameter_type_comes_from_the_target_interface(self):
+        module = parse(
+            "static void f() { java.util.function.Function<Integer,Integer> g"
+            " = x -> x + 1; }"
+        )
+        lam = next(n for n in uir.walk(module) if isinstance(n, uir.Lambda))
+        self.assertEqual(lam.params[0].type, uir.ClassType("Integer"))
+
+    def test_lambda_argument_learns_its_type_from_the_callee_signature(self):
+        module = parse(
+            "static int use(java.util.function.Function<Integer,Integer> g)"
+            " { return g.apply(1); }\n"
+            "static int f() { return use(x -> x + 1); }"
+        )
+        lam = next(n for n in uir.walk(module) if isinstance(n, uir.Lambda))
+        self.assertEqual(lam.params[0].type, uir.ClassType("Integer"))
+
+    def test_return_inside_a_lambda_does_not_take_the_methods_return_type(self):
+        # The enclosing method returns void; a `return` in the lambda must not
+        # be coerced to void.
+        module = parse(
+            "static void f() { java.util.function.Function<Integer,Integer> g"
+            " = x -> { return x + 1; }; }"
+        )
+        lam = next(n for n in uir.walk(module) if isinstance(n, uir.Lambda))
+        ret = lam.body_block.body[0]
+        self.assertNotEqual(ret.value.type, uir.T_VOID)
+
+    def test_bound_and_static_method_references_are_distinguished(self):
+        module = parse_java(
+            b"class T { int m(int a) { return a; } static int s(int a) { return a; }"
+            b" void f() { Object b = this::m; Object c = T::s; } }",
+            "T.java",
+        )
+        refs = [n for n in uir.walk(module) if isinstance(n, uir.MethodRef)]
+        self.assertEqual([r.ref_kind for r in refs], ["bound", "static"])
+
+    def test_wildcard_type_argument_is_recorded_as_unknown(self):
+        module = parse("static void f(java.util.List<? extends Number> xs) { }")
+        param = module.types[0].methods[0].params[0]
+        self.assertIsInstance(param.type.args[0], uir.UnknownType)
+
+
 class RefusalTest(unittest.TestCase):
     def _refuses(self, body: str, needle: str):
         with self.assertRaises(UnsupportedConstruct) as ctx:
             parse(body)
         self.assertIn(needle, str(ctx.exception))
 
-    def test_lambda_is_refused(self):
+    def test_method_reference_to_an_undeclared_type_is_refused(self):
         self._refuses(
-            "static Object f() { return (Runnable) () -> {}; }", "lambda_expression"
-        )
-
-    def test_method_reference_is_refused(self):
-        self._refuses(
-            "static Object f() { return T::f; }", "method_reference"
+            "static Object f() { return String::trim; }",
+            "no declaration in this compilation unit",
         )
 
     def test_varargs_is_refused(self):

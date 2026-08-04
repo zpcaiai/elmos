@@ -188,8 +188,8 @@ MUTATIONS: list[Mutation] = [
         "M21",
         "j2p/emit/python.py",
         "compound assignment casts back to the target type",
-        "                value = self._expr(\n                    Cast(\n                        origin=expr.origin,\n                        type=expr.target.type,\n                        target=expr.target.type,\n                        operand=combined,\n                    )\n                )\n            self._emit_store(expr.target, value, indent, origin)\n            return\n\n        if isinstance(expr, IncDec):",
-        "                value = self._expr(combined)\n            self._emit_store(expr.target, value, indent, origin)\n            return\n\n        if isinstance(expr, IncDec):",
+        "                value = self._expr(\n                    Cast(\n                        origin=expr.origin,\n                        type=expr.target.type,\n                        target=expr.target.type,\n                        operand=combined,\n                    )\n                )\n            hoisted, self._hoisted = self._hoisted, saved",
+        "                value = self._expr(combined)\n            hoisted, self._hoisted = self._hoisted, saved",
     ),
     Mutation(
         "M22",
@@ -256,6 +256,56 @@ MUTATIONS: list[Mutation] = [
         "                if False:\n                    return Name(origin=origin, type=declared, ident=name)",
     ),
     # ---- IR --------------------------------------------------------------
+    # ---- lambdas ---------------------------------------------------------
+    Mutation(
+        "M33",
+        "j2p/emit/python.py",
+        "captured locals are bound by value, not by closure reference",
+        '        signature = ", ".join(params + [f"{name}={name}" for name in captures])',
+        '        signature = ", ".join(params)',
+    ),
+    Mutation(
+        "M34",
+        "j2p/emit/python.py",
+        "a lambda parameter is not treated as a capture",
+        "        return sorted(used - self._bound_names(body) - {p.name for p in params})",
+        "        return sorted(used - self._bound_names(body))",
+    ),
+    Mutation(
+        "M35",
+        "j2p/emit/python.py",
+        "locals declared inside a lambda body are not captured",
+        "        used = {n.ident for n in uir.walk(body) if isinstance(n, Name)}\n        return sorted(used - self._bound_names(body) - {p.name for p in params})",
+        "        used = {n.ident for n in uir.walk(body) if isinstance(n, Name)}\n        return sorted(used - {p.name for p in params})",
+    ),
+    Mutation(
+        "M36",
+        "j2p/emit/python.py",
+        "== between two reference types is refused",
+        "        if left_ref and right_ref:\n            raise EmitError(",
+        "        if False:\n            raise EmitError(",
+    ),
+    Mutation(
+        "M37",
+        "j2p/emit/python.py",
+        "only the single abstract method may be called on a lambda value",
+        '            if expr.name != sam:\n                raise EmitError(',
+        '            if False:\n                raise EmitError(',
+    ),
+    Mutation(
+        "M38",
+        "j2p/frontend/java.py",
+        "a lambda's result takes the conversion its interface declares",
+        '        sam = self._sam_name(expected) if expected is not None else None',
+        '        sam = None',
+    ),
+    Mutation(
+        "M39",
+        "j2p/frontend/java.py",
+        "lambda parameter types come from the target functional interface",
+        "        params = self._infer_lambda_param_types(params, expected)",
+        "        params = params",
+    ),
     Mutation(
         "M31",
         "j2p/uir.py",

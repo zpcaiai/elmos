@@ -2,65 +2,77 @@
   "summary": {
     "root": "/tmp/elmos-java",
     "files_seen": 884,
-    "parsed_to_uir": 271,
+    "parsed_to_uir": 351,
     "unparsed": 0,
     "parse_refusals": {
-      "unsupported Java construct: lambda_expression": 178,
+      "unsupported Java construct: class_literal": 158,
       "unsupported Java construct: compact_constructor_declaration": 129,
-      "unsupported Java construct: class_literal": 117,
-      "unsupported Java construct: method_reference": 68,
+      "unsupported Java construct: method_reference": 85,
+      "unsupported Java construct: try_with_resources_statement": 48,
       "unsupported Java construct: explicit_constructor_invocation": 40,
-      "unsupported Java construct: try_with_resources_statement": 31,
-      "unsupported Java construct: spread_parameter": 13,
-      "unsupported Java construct: switch_expression": 10,
+      "unsupported Java construct: switch_expression": 24,
+      "unsupported Java construct: spread_parameter": 14,
       "unsupported Java construct: class_declaration": 9,
       "unsupported Java construct: enum_constant": 7,
-      "unsupported Java construct: method_declaration": 4,
-      "unsupported Java construct: line_comment": 2,
-      "unsupported Java construct: switch_rule": 1,
+      "unsupported Java construct: method_declaration": 5,
+      "unsupported Java construct: switch_rule": 4,
+      "unsupported Java construct: line_comment": 3,
+      "unsupported Java construct: block_comment": 2,
       "unsupported Java construct: static_initializer": 1,
       "unsupported Java construct: string_literal": 1,
+      "unsupported Java construct: array_type": 1,
       "unsupported Java construct: record_declaration": 1,
       "unsupported Java construct: interface_declaration": 1
     },
-    "emitted_python": 30,
+    "emitted_python": 42,
     "emit_refusals": {
-      "interface declarations are not supported": 16,
+      "static call List.of is not supported": 12,
       "call to unknown method is": 10,
-      "static call List.of is not supported": 9,
+      "static call Set.of is not supported": 9,
+      "unsupported class instantiation: new ObjectMapper": 8,
       "Math.multiplyExact is not supported": 8,
-      "static call Set.of is not supported": 7,
+      "static call Objects.requireNonNull is not supported": 7,
+      "static call System.getProperty is not supported": 7,
+      "String.isBlank is not supported": 6,
+      "call parse on unresolved receiver type UnknownType(reason='name:Instant')": 6,
+      "call systemUTC on unresolved receiver type UnknownType(reason='name:Clock')": 5,
+      "unsupported class instantiation: new ConcurrentHashMap": 5,
       "unsupported class instantiation: new LinkedHashMap": 5,
       "call capabilities on unresolved receiver type ClassType(name='EvidenceBoundDomainEngine', args=())": 5,
-      "static call System.getProperty is not supported": 5,
-      "String.isBlank is not supported": 4,
+      "String.getBytes is not supported": 4,
+      "call isEmpty on unresolved receiver type ClassType(name='List', args=(ClassType(name='String', args=()),))": 4,
+      "call to unknown method required": 4,
       "String.matches is not supported": 3,
       "unsupported class instantiation: new SecureRandom": 3,
-      "call requireNonNull on unresolved receiver type UnknownType(reason='name:Objects')": 3,
-      "unsupported class instantiation: new ObjectMapper": 3,
       "unsupported class instantiation: new BlockedException": 3,
+      "interface with default/static methods or constants is not supported": 3,
       "call compile on unresolved receiver type UnknownType(reason='name:Pattern')": 3,
       "static call Set.copyOf is not supported": 3,
-      "call parse on unresolved receiver type UnknownType(reason='name:Instant')": 3,
       "static call System.exit is not supported": 3,
-      "String.getBytes is not supported": 3,
+      "System.out.printf is not supported": 3,
       "call organizationId on unresolved receiver type ClassType(name='CommercialPrincipal', args=())": 2,
+      "call of on unresolved receiver type UnknownType(reason='name:ZoneId')": 2,
+      "unsupported class instantiation: new CrossDomainDecisionGovernance": 2,
       "unsupported class instantiation: new MainframeCutoverGovernance": 2,
       "unsupported class instantiation: new ScmWorkspaceAdmissionService": 2,
       "unsupported class instantiation: new SecurityAuthorizationGovernance": 2,
       "unsupported class instantiation: new TestQualityGateGovernance": 2,
-      "call systemUTC on unresolved receiver type UnknownType(reason='name:Clock')": 2,
       "unsupported class instantiation: new UnimplementedModelHealthProbe": 2,
       "call current on unresolved receiver type UnknownType(reason='name:ThreadLocalRandom')": 2,
+      "unsupported class instantiation: new AtomicBoolean": 2,
+      "call newVirtualThreadPerTaskExecutor on unresolved receiver type UnknownType(reason='name:Executors')": 2,
+      "unsupported class instantiation: new AgentMetrics": 2,
+      "call empty on unresolved receiver type UnknownType(reason='name:Optional')": 2,
       "call toSeconds on unresolved receiver type ClassType(name='Duration', args=())": 2,
+      "call ofPattern on unresolved receiver type UnknownType(reason='name:DateTimeFormatter')": 2,
       "unsupported class instantiation: new JavaTimeModule": 2,
-      "call to unknown method required": 2,
       "call require on unresolved receiver type UnknownType(reason='name:EnterpriseModels')": 2,
+      "call getString on unresolved receiver type UnknownType(reason='inferred-lambda-parameter')": 2,
       "call createNativeQuery on unresolved receiver type ClassType(name='EntityManager', args=())": 1,
       "unsupported class instantiation: new HikariConfig": 1,
       "call error on unresolved receiver type ClassType(name='BillingMetrics', args=())": 1,
-      "call of on unresolved receiver type UnknownType(reason='name:ZoneId')": 1,
-      "call get on unresolved receiver type ClassType(name='Map', args=())": 1,
+      "call getMessage on unresolved receiver type ClassType(name='SQLException', args=())": 1,
+      "call get on unresolved receiver type ClassType(name='Map', args=(ClassType(name='String', args=()), ClassType(name='String', args=())))": 1,
       "call clone on unresolved receiver type ArrayType(element=PrimitiveType(name='byte'))": 1,
       "call code on unresolved receiver type ClassType(name='BillingApiException', args=())": 1,
       "unsupported class instantiation: new EntitlementAndFulfillmentService": 1,
@@ -68,14 +80,19 @@
       "unsupported class instantiation: new SimpleMeterRegistry": 1,
       "unsupported class instantiation: new CommercialController": 1,
       "call to unknown method status": 1,
+      "unsupported class instantiation: new PaymentProviderRouter": 1,
+      "call getResponse on unresolved receiver type UnknownType(reason='inferred-lambda-parameter')": 1,
+      "static call System.getenv is not supported": 1,
       "unsupported class instantiation: new CompositeModernizationOrchestrator": 1,
-      "unsupported class instantiation: new CrossDomainDecisionGovernance": 1,
       "unsupported class instantiation: new DatabaseDataCutoverGovernance": 1,
       "unsupported class instantiation: new DeliveryReadModel": 1,
       "call execute on unresolved receiver type ClassType(name='BatchOneDemoService', args=())": 1,
       "unsupported class instantiation: new FrontendClientReleaseGovernance": 1,
       "call begin on unresolved receiver type ClassType(name='GithubInstallationOnboardingService', args=())": 1,
       "call listAuthorized on unresolved receiver type ClassType(name='JdbcGitHubRepositoryCatalog', args=())": 1,
+      "unsupported class instantiation: new WebhookIngestionService": 1,
+      "call active on unresolved receiver type ClassType(name='GithubWebhookSecrets', args=())": 1,
+      "unsupported class instantiation: new JdbcExecutionJobStore": 1,
       "unsupported class instantiation: new InfrastructureCutoverGovernance": 1,
       "unsupported class instantiation: new MigrationPackAdmissionService": 1,
       "unsupported class instantiation: new ProductRoadmapGovernance": 1,
@@ -87,6 +104,7 @@
       "unsupported class instantiation: new EnterpriseIntegrationController": 1,
       "unsupported class instantiation: new EnterpriseSuiteController": 1,
       "unsupported class instantiation: new FrontendClientController": 1,
+      "String.toCharArray is not supported": 1,
       "unsupported class instantiation: new InfrastructureController": 1,
       "unsupported class instantiation: new MainframeController": 1,
       "unsupported class instantiation: new MigrationPackCertificationController": 1,
@@ -100,10 +118,10 @@
       "unsupported class instantiation: new EnterpriseController": 1,
       "call verify on unresolved receiver type ClassType(name='SpringArtifactVerifier', args=())": 1,
       "unsupported class instantiation: new EngineJobRegistry": 1,
-      "unsupported class instantiation: new ConcurrentHashMap": 1,
       "call resolve on unresolved receiver type ClassType(name='WorkspacePathResolver', args=())": 1,
       "unsupported class instantiation: new RecipeGovernanceService": 1,
       "call capabilities on unresolved receiver type ClassType(name='SpringUpgradeRunService', args=())": 1,
+      "unsupported class instantiation: new DisabledSpringUpgradeCodingAgentPort": 1,
       "call resolve on unresolved receiver type ClassType(name='Path', args=())": 1,
       "call handle on unresolved receiver type ClassType(name='EphemeralSpringTransformerBroker', args=())": 1,
       "call verify on unresolved receiver type ClassType(name='EphemeralSpringVerifierBroker', args=())": 1,
@@ -116,8 +134,10 @@
       "unsupported class instantiation: new DatabaseDataEngineService": 1,
       "call capabilities on unresolved receiver type ClassType(name='EnterpriseIntegrationEngineService', args=())": 1,
       "unsupported class instantiation: new Batch20IntegrationPolicy": 1,
+      "unsupported class instantiation: new IntegrationAdapterRegistry": 1,
       "call capabilities on unresolved receiver type ClassType(name='EnterpriseSuiteEngineService', args=())": 1,
       "unsupported class instantiation: new Batch21SuitePolicy": 1,
+      "unsupported class instantiation: new SuiteAdapterRegistry": 1,
       "call evidenceRefs on unresolved receiver type ClassType(name='ChangePlan', args=())": 1,
       "call capabilities on unresolved receiver type ClassType(name='InfrastructureEngineService', args=())": 1,
       "static call Map.entry is not supported": 1,
@@ -126,29 +146,38 @@
       "unsupported class instantiation: new InfrastructureEngineService": 1,
       "call capabilities on unresolved receiver type ClassType(name='MainframeEngineService', args=())": 1,
       "unsupported class instantiation: new Batch19MainframePolicy": 1,
+      "unsupported class instantiation: new MainframeAdapterRegistry": 1,
       "call capabilities on unresolved receiver type ClassType(name='SecurityComplianceEngineService', args=())": 1,
       "unsupported class instantiation: new Batch17SecurityPolicy": 1,
       "unsupported class instantiation: new SecurityComplianceEngineService": 1,
       "call capabilities on unresolved receiver type ClassType(name='TestQualityEngineService', args=())": 1,
       "unsupported class instantiation: new Batch18QualityPolicy": 1,
+      "unsupported class instantiation: new TestToolAdapterRegistry": 1,
       "static call Map.of is not supported": 1,
       "call to unknown method content": 1,
       "call failureFingerprint on unresolved receiver type ClassType(name='Counterexample', args=())": 1,
-      "call isEmpty on unresolved receiver type ClassType(name='List', args=())": 1,
+      "call isEmpty on unresolved receiver type ClassType(name='List', args=(ClassType(name='BigDecimal', args=()),))": 1,
       "call random on unresolved receiver type UnknownType(reason='name:OrganizationId')": 1,
+      "unsupported class instantiation: new AtomicReference": 1,
       "unsupported class instantiation: new IntegrationCutoverGovernance": 1,
       "unsupported class instantiation: new SuiteCutoverGovernance": 1,
       "unsupported class instantiation: new ClassFileImporter": 1,
       "call origin on unresolved receiver type ClassType(name='RecipeAsset', args=())": 1,
+      "call objectiveId on unresolved receiver type ClassType(name='ServiceLevelMeasurement', args=())": 1,
       "unsupported class instantiation: new ContinuousAuthorizationService": 1,
       "call domain on unresolved receiver type ClassType(name='Change', args=())": 1,
       "String.replaceAll is not supported": 1,
+      "static call Map.copyOf is not supported": 1,
       "call repositoryWrite on unresolved receiver type ClassType(name='PreviewRequest', args=())": 1,
       "call networkEnabled on unresolved receiver type ClassType(name='OfflineBundle', args=())": 1,
       "static call List.copyOf is not supported": 1,
       "call reviewer on unresolved receiver type ClassType(name='Approval', args=())": 1,
+      "`==` between two reference types (ClassType(name='Ownership', args=()) and UnknownType(reason='field:HUMAN')) compares identity in Java, not value": 1,
       "call sha256 on unresolved receiver type UnknownType(reason='name:Digests')": 1,
+      "`==` between two reference types (UnknownType(reason='this-type') and UnknownType(reason='name:DELIVERED')) compares identity in Java, not value": 1,
       "call require on unresolved receiver type UnknownType(reason='name:Identifiers')": 1,
+      "call contains on unresolved receiver type ClassType(name='Set', args=(ClassType(name='String', args=()),))": 1,
+      "unsupported class instantiation: new EnvModelCredentialSource": 1,
       "call interpret on unresolved receiver type UnknownType(reason='name:AnthropicModelHealthProbe')": 1,
       "call interpret on unresolved receiver type UnknownType(reason='name:DeepSeekModelHealthProbe')": 1,
       "call interpret on unresolved receiver type UnknownType(reason='name:DoubaoModelHealthProbe')": 1,
@@ -157,26 +186,35 @@
       "call interpret on unresolved receiver type UnknownType(reason='name:QwenModelHealthProbe')": 1,
       "call interpret on unresolved receiver type UnknownType(reason='name:XaiModelHealthProbe')": 1,
       "call interpret on unresolved receiver type UnknownType(reason='name:ZhipuModelHealthProbe')": 1,
+      "call isEmpty on unresolved receiver type ClassType(name='Collection', args=(ClassType(name='EvidenceType', args=()),))": 1,
+      "unsupported class instantiation: new EvidenceAssuranceService": 1,
       "call publicApi on unresolved receiver type ClassType(name='CompatibilityContract', args=())": 1,
       "call extensionId on unresolved receiver type ClassType(name='Dependency', args=())": 1,
       "call getInstance on unresolved receiver type UnknownType(reason='name:MessageDigest')": 1,
       "call expectedDigest on unresolved receiver type ClassType(name='RuntimeHealth', args=())": 1,
       "call verified on unresolved receiver type ClassType(name='PublisherProfile', args=())": 1,
+      "call defaultAction on unresolved receiver type ClassType(name='SandboxPolicy', args=())": 1,
       "call expectedDigest on unresolved receiver type ClassType(name='SupplyChainEnvelope', args=())": 1,
       "call getUrlEncoder on unresolved receiver type UnknownType(reason='name:Base64')": 1,
       "unsupported class instantiation: new String": 1,
+      "call repository on unresolved receiver type ClassType(name='DemoRecord', args=())": 1,
       "call normalizedEventType on unresolved receiver type ClassType(name='Delivery', args=())": 1,
       "call atOffset on unresolved receiver type ClassType(name='Instant', args=())": 1,
+      "unsupported class instantiation: new PostgreSQLContainer": 1,
       "call tenantId on unresolved receiver type ClassType(name='TaskRequest', args=())": 1,
+      "call requiredApprovals on unresolved receiver type ClassType(name='Campaign', args=())": 1,
       "unsupported class instantiation: new ProductDomainControls": 1,
+      "call of on unresolved receiver type UnknownType(reason='name:EnumSet')": 1,
       "call maximumCostMicros on unresolved receiver type ClassType(name='RepairBudget', args=())": 1,
       "String.startsWith is not supported": 1,
       "unsupported class instantiation: new SecureExecutionAdmissionService": 1,
+      "unsupported class instantiation: new TreeMap": 1,
+      "unsupported class instantiation: new FinalizationStore": 1,
       "call to unknown method getClass": 1,
       "call chinaSelfServeDraft on unresolved receiver type UnknownType(reason='name:PricingPlanCatalog')": 1
     },
-    "parse_rate": 0.3066,
-    "emit_rate": 0.0339
+    "parse_rate": 0.3971,
+    "emit_rate": 0.0475
   },
   "files": [
     {
@@ -241,9 +279,9 @@
     },
     {
       "file": "apps/commercial-api/src/main/java/io/elmos/commercialadapter/PostgresBillingDomainErrorClassifier.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: method_reference"
+      "reason": "call getMessage on unresolved receiver type ClassType(name='SQLException', args=())"
     },
     {
       "file": "apps/commercial-api/src/main/java/io/elmos/commercialadapter/payment/AlipayCallbackAdapter.java",
@@ -261,7 +299,7 @@
       "file": "apps/commercial-api/src/main/java/io/elmos/commercialadapter/payment/AlipaySignatureVerifier.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call get on unresolved receiver type ClassType(name='Map', args=())"
+      "reason": "call get on unresolved receiver type ClassType(name='Map', args=(ClassType(name='String', args=()), ClassType(name='String', args=())))"
     },
     {
       "file": "apps/commercial-api/src/main/java/io/elmos/commercialadapter/payment/CallbackReplayGuard.java",
@@ -273,13 +311,13 @@
       "file": "apps/commercial-api/src/main/java/io/elmos/commercialadapter/payment/JdbcCallbackPorts.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: try_with_resources_statement"
     },
     {
       "file": "apps/commercial-api/src/main/java/io/elmos/commercialadapter/payment/JdbcOrderPorts.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: try_with_resources_statement"
     },
     {
       "file": "apps/commercial-api/src/main/java/io/elmos/commercialadapter/payment/MoneyConversion.java",
@@ -367,9 +405,9 @@
     },
     {
       "file": "apps/commercial-api/src/main/java/io/elmos/commercialapi/CommercialSecurityConfiguration.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "String.isBlank is not supported"
     },
     {
       "file": "apps/commercial-api/src/main/java/io/elmos/commercialapi/JacksonWechatNotificationReader.java",
@@ -379,9 +417,9 @@
     },
     {
       "file": "apps/commercial-api/src/main/java/io/elmos/commercialapi/PaymentCallbackConfiguration.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "call systemUTC on unresolved receiver type UnknownType(reason='name:Clock')"
     },
     {
       "file": "apps/commercial-api/src/main/java/io/elmos/commercialapi/PaymentCallbackController.java",
@@ -417,7 +455,7 @@
       "file": "apps/commercial-api/src/test/java/io/elmos/commercialapi/CommercialPrincipalTest.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: class_literal"
     },
     {
       "file": "apps/commercial-api/src/test/java/io/elmos/commercialapi/CommercialSecurityConfigurationTest.java",
@@ -427,21 +465,21 @@
     },
     {
       "file": "apps/commercial-api/src/test/java/io/elmos/commercialapi/PaymentCallbackBindingTest.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported class instantiation: new PaymentProviderRouter"
     },
     {
       "file": "apps/commercial-api/src/test/java/io/elmos/commercialapi/PaymentCallbackSecurityTest.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "call getResponse on unresolved receiver type UnknownType(reason='inferred-lambda-parameter')"
     },
     {
       "file": "apps/commercial-api/src/test/java/io/elmos/commercialapi/SelfServiceBillingApiLiveTest.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "static call System.getenv is not supported"
     },
     {
       "file": "apps/commercial-api/src/test/java/io/elmos/commercialapi/StripeCheckoutGatewayTest.java",
@@ -483,7 +521,7 @@
       "file": "apps/control-plane/src/main/java/io/elmos/controlplane/ControlPlaneSecurityConfiguration.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: class_literal"
     },
     {
       "file": "apps/control-plane/src/main/java/io/elmos/controlplane/CrossDomainGovernanceController.java",
@@ -525,7 +563,7 @@
       "file": "apps/control-plane/src/main/java/io/elmos/controlplane/ExecutionJobController.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: switch_expression"
     },
     {
       "file": "apps/control-plane/src/main/java/io/elmos/controlplane/FrontendClientController.java",
@@ -555,7 +593,7 @@
       "file": "apps/control-plane/src/main/java/io/elmos/controlplane/GithubSnapshotConfiguration.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: class_literal"
     },
     {
       "file": "apps/control-plane/src/main/java/io/elmos/controlplane/GithubWebhookBodyLimitFilter.java",
@@ -565,27 +603,27 @@
     },
     {
       "file": "apps/control-plane/src/main/java/io/elmos/controlplane/GithubWebhookConfiguration.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported class instantiation: new WebhookIngestionService"
     },
     {
       "file": "apps/control-plane/src/main/java/io/elmos/controlplane/GithubWebhookController.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "call active on unresolved receiver type ClassType(name='GithubWebhookSecrets', args=())"
     },
     {
       "file": "apps/control-plane/src/main/java/io/elmos/controlplane/GithubWebhookSecrets.java",
       "stage": "emit",
-      "outcome": "REFUSED",
-      "reason": "interface declarations are not supported"
+      "outcome": "OK",
+      "digest": "sha256:2f8f1979fbcb5e8ce53258c73161b97e2c3b8b7c639c540d7f6db6e1e9d32720"
     },
     {
       "file": "apps/control-plane/src/main/java/io/elmos/controlplane/HostedExecutionConfiguration.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported class instantiation: new JdbcExecutionJobStore"
     },
     {
       "file": "apps/control-plane/src/main/java/io/elmos/controlplane/InfrastructureController.java",
@@ -597,7 +635,7 @@
       "file": "apps/control-plane/src/main/java/io/elmos/controlplane/JdbcGithubOnboardingStateStore.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call requireNonNull on unresolved receiver type UnknownType(reason='name:Objects')"
+      "reason": "static call Objects.requireNonNull is not supported"
     },
     {
       "file": "apps/control-plane/src/main/java/io/elmos/controlplane/MainframeController.java",
@@ -649,21 +687,21 @@
     },
     {
       "file": "apps/control-plane/src/main/java/io/elmos/controlplane/OperationsObservabilityController.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: method_reference"
+      "reason": "static call Objects.requireNonNull is not supported"
     },
     {
       "file": "apps/control-plane/src/main/java/io/elmos/controlplane/OrganizationSelfServiceController.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: line_comment"
     },
     {
       "file": "apps/control-plane/src/main/java/io/elmos/controlplane/OwnerOnlySecretFile.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: method_reference"
+      "reason": "static call Set.of is not supported"
     },
     {
       "file": "apps/control-plane/src/main/java/io/elmos/controlplane/ProductCommercializationController.java",
@@ -681,7 +719,7 @@
       "file": "apps/control-plane/src/main/java/io/elmos/controlplane/RepositoryWorkspaceConfiguration.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: method_reference"
     },
     {
       "file": "apps/control-plane/src/main/java/io/elmos/controlplane/RepositoryWorkspaceController.java",
@@ -699,7 +737,7 @@
       "file": "apps/control-plane/src/main/java/io/elmos/controlplane/RunnerFleetController.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: method_reference"
+      "reason": "unsupported Java construct: switch_expression"
     },
     {
       "file": "apps/control-plane/src/main/java/io/elmos/controlplane/SecurityComplianceController.java",
@@ -775,9 +813,9 @@
     },
     {
       "file": "apps/control-plane/src/test/java/io/elmos/controlplane/DemoControllerTest.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "call systemUTC on unresolved receiver type UnknownType(reason='name:Clock')"
     },
     {
       "file": "apps/control-plane/src/test/java/io/elmos/controlplane/EnterpriseIntegrationControllerTest.java",
@@ -805,9 +843,9 @@
     },
     {
       "file": "apps/control-plane/src/test/java/io/elmos/controlplane/GithubWebhookControllerTest.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "String.toCharArray is not supported"
     },
     {
       "file": "apps/control-plane/src/test/java/io/elmos/controlplane/InfrastructureControllerTest.java",
@@ -968,8 +1006,8 @@
     {
       "file": "apps/java-engine-verifier/src/main/java/io/elmos/verifier/MavenVerification.java",
       "stage": "emit",
-      "outcome": "REFUSED",
-      "reason": "interface declarations are not supported"
+      "outcome": "OK",
+      "digest": "sha256:c3aa6e77ee2bcb60b1c1daa5c1972e7aab74f5c0657492ba489e5ab2161dbd19"
     },
     {
       "file": "apps/java-engine-verifier/src/main/java/io/elmos/verifier/ProcessMavenVerification.java",
@@ -997,9 +1035,9 @@
     },
     {
       "file": "apps/java-engine-verifier/src/main/java/io/elmos/verifier/VerifierAuthentication.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported class instantiation: new ConcurrentHashMap"
     },
     {
       "file": "apps/java-engine-verifier/src/main/java/io/elmos/verifier/VerifierConfiguration.java",
@@ -1017,7 +1055,7 @@
       "file": "apps/java-engine-verifier/src/test/java/io/elmos/verifier/SpringArtifactVerifierTest.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: class_literal"
     },
     {
       "file": "apps/java-engine-worker/src/main/java/io/elmos/worker/DisabledSpringUpgradeCodingAgentPort.java",
@@ -1089,7 +1127,7 @@
       "file": "apps/java-engine-worker/src/main/java/io/elmos/worker/IsolatedSpringRuntimeExecutionPort.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: method_reference"
+      "reason": "unsupported Java construct: class_literal"
     },
     {
       "file": "apps/java-engine-worker/src/main/java/io/elmos/worker/JavaEngineWorkerApplication.java",
@@ -1107,7 +1145,7 @@
       "file": "apps/java-engine-worker/src/main/java/io/elmos/worker/LocalSpringUpgradeIndependentValidator.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: try_with_resources_statement"
     },
     {
       "file": "apps/java-engine-worker/src/main/java/io/elmos/worker/RecipeGovernanceController.java",
@@ -1137,7 +1175,7 @@
       "file": "apps/java-engine-worker/src/main/java/io/elmos/worker/SpringUpgradeConfiguration.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: method_reference"
     },
     {
       "file": "apps/java-engine-worker/src/main/java/io/elmos/worker/SpringUpgradeController.java",
@@ -1149,13 +1187,13 @@
       "file": "apps/java-engine-worker/src/main/java/io/elmos/worker/SpringUpgradeExecutionPort.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "interface declarations are not supported"
+      "reason": "interface with default/static methods or constants is not supported"
     },
     {
       "file": "apps/java-engine-worker/src/main/java/io/elmos/worker/SpringUpgradeIndependentValidationPort.java",
       "stage": "emit",
-      "outcome": "REFUSED",
-      "reason": "interface declarations are not supported"
+      "outcome": "OK",
+      "digest": "sha256:377f3f86426d00321f41a4e78ed426d92dd1842b7cdd5be394b090f656994745"
     },
     {
       "file": "apps/java-engine-worker/src/main/java/io/elmos/worker/SpringUpgradeModels.java",
@@ -1179,7 +1217,7 @@
       "file": "apps/java-engine-worker/src/main/java/io/elmos/worker/WorkspacePathResolver.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call requireNonNull on unresolved receiver type UnknownType(reason='name:Objects')"
+      "reason": "static call Objects.requireNonNull is not supported"
     },
     {
       "file": "apps/java-engine-worker/src/test/java/io/elmos/worker/DurableRunLeaseStoreTest.java",
@@ -1197,25 +1235,25 @@
       "file": "apps/java-engine-worker/src/test/java/io/elmos/worker/EphemeralSpringTransformationExecutionPortTest.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: class_literal"
     },
     {
       "file": "apps/java-engine-worker/src/test/java/io/elmos/worker/HealthPlanningControllerTest.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: class_literal"
     },
     {
       "file": "apps/java-engine-worker/src/test/java/io/elmos/worker/IsolatedSpringRuntimeExecutionPortTest.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: switch_expression"
     },
     {
       "file": "apps/java-engine-worker/src/test/java/io/elmos/worker/LocalSpringUpgradeExecutionPortCodingAgentEvidenceTest.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported class instantiation: new DisabledSpringUpgradeCodingAgentPort"
     },
     {
       "file": "apps/java-engine-worker/src/test/java/io/elmos/worker/LocalSpringUpgradeExecutionPortTest.java",
@@ -1269,7 +1307,7 @@
       "file": "apps/runner-agent/src/main/java/io/elmos/runner/AgentMetrics.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: try_with_resources_statement"
     },
     {
       "file": "apps/runner-agent/src/main/java/io/elmos/runner/ArtifactPublisher.java",
@@ -1297,15 +1335,15 @@
     },
     {
       "file": "apps/runner-agent/src/main/java/io/elmos/runner/HeartbeatPump.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: method_reference"
+      "reason": "unsupported class instantiation: new AtomicBoolean"
     },
     {
       "file": "apps/runner-agent/src/main/java/io/elmos/runner/JobExecutor.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: switch_expression"
     },
     {
       "file": "apps/runner-agent/src/main/java/io/elmos/runner/JobWorkspace.java",
@@ -1321,9 +1359,9 @@
     },
     {
       "file": "apps/runner-agent/src/main/java/io/elmos/runner/LeasePoller.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "call newVirtualThreadPerTaskExecutor on unresolved receiver type UnknownType(reason='name:Executors')"
     },
     {
       "file": "apps/runner-agent/src/main/java/io/elmos/runner/NodeCredentialStore.java",
@@ -1339,9 +1377,9 @@
     },
     {
       "file": "apps/runner-agent/src/main/java/io/elmos/runner/RunnerAgentMain.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported class instantiation: new AgentMetrics"
     },
     {
       "file": "apps/runner-agent/src/main/java/io/elmos/runner/SandboxAttestation.java",
@@ -1359,13 +1397,13 @@
       "file": "apps/runner-agent/src/test/java/io/elmos/runner/AgentSelfTest.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: try_with_resources_statement"
     },
     {
       "file": "apps/runner-agent/src/test/java/io/elmos/runner/FakeControlPlane.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: try_with_resources_statement"
     },
     {
       "file": "apps/workspace-service/src/main/java/io/elmos/workspaceservice/DirectorySecretProvider.java",
@@ -1389,25 +1427,25 @@
       "file": "apps/workspace-service/src/main/java/io/elmos/workspaceservice/DockerSnapshotVolumeMaterializer.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: try_with_resources_statement"
     },
     {
       "file": "apps/workspace-service/src/main/java/io/elmos/workspaceservice/DockerTmpfsSecretMaterializer.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: try_with_resources_statement"
     },
     {
       "file": "apps/workspace-service/src/main/java/io/elmos/workspaceservice/DockerWorkspaceProvisioner.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: array_type"
     },
     {
       "file": "apps/workspace-service/src/main/java/io/elmos/workspaceservice/EphemeralSpringTransformerBroker.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: method_reference"
     },
     {
       "file": "apps/workspace-service/src/main/java/io/elmos/workspaceservice/EphemeralSpringTransformerController.java",
@@ -1453,9 +1491,9 @@
     },
     {
       "file": "apps/workspace-service/src/main/java/io/elmos/workspaceservice/SpringRuntimeAuthentication.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported class instantiation: new ConcurrentHashMap"
     },
     {
       "file": "apps/workspace-service/src/main/java/io/elmos/workspaceservice/SpringRuntimeController.java",
@@ -1483,9 +1521,9 @@
     },
     {
       "file": "apps/workspace-service/src/main/java/io/elmos/workspaceservice/WorkspaceSecretRegistry.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "String.getBytes is not supported"
     },
     {
       "file": "apps/workspace-service/src/main/java/io/elmos/workspaceservice/WorkspaceServiceApplication.java",
@@ -1495,9 +1533,9 @@
     },
     {
       "file": "apps/workspace-service/src/main/java/io/elmos/workspaceservice/WorkspaceServiceConfiguration.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "call systemUTC on unresolved receiver type UnknownType(reason='name:Clock')"
     },
     {
       "file": "apps/workspace-service/src/test/java/io/elmos/workspaceservice/DirectorySecretProviderTest.java",
@@ -1507,9 +1545,9 @@
     },
     {
       "file": "apps/workspace-service/src/test/java/io/elmos/workspaceservice/SandboxImageDefinitionTest.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "static call System.getProperty is not supported"
     },
     {
       "file": "apps/workspace-service/src/test/java/io/elmos/workspaceservice/WorkspaceErrorHandlerTest.java",
@@ -1689,13 +1727,13 @@
       "file": "docs/p0-implementation/identity/src/main/java/io/elmos/identity/AuthenticationService.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: block_comment"
     },
     {
       "file": "docs/p0-implementation/identity/src/main/java/io/elmos/identity/Destinations.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "call empty on unresolved receiver type UnknownType(reason='name:Optional')"
     },
     {
       "file": "docs/p0-implementation/identity/src/main/java/io/elmos/identity/IdentityStore.java",
@@ -1707,7 +1745,7 @@
       "file": "docs/p0-implementation/identity/src/main/java/io/elmos/identity/JdbcIdentityStore.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: try_with_resources_statement"
     },
     {
       "file": "docs/p0-implementation/identity/src/main/java/io/elmos/identity/Secrets.java",
@@ -1725,13 +1763,13 @@
       "file": "docs/p0-implementation/identity/src/test/java/io/elmos/identity/AuthenticationServiceTest.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: try_with_resources_statement"
     },
     {
       "file": "docs/p0-implementation/identity/src/test/java/io/elmos/identity/IdentityCoreTest.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "call isEmpty on unresolved receiver type ClassType(name='List', args=(ClassType(name='String', args=()),))"
     },
     {
       "file": "docs/p0-implementation/java/ExecutionJobPort.java",
@@ -1743,7 +1781,7 @@
       "file": "docs/p0-implementation/java/JdbcExecutionJobStore.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: class_literal"
     },
     {
       "file": "docs/p0-implementation/java/ObjectStoragePort.java",
@@ -1755,7 +1793,7 @@
       "file": "docs/p0-implementation/java/RunnerFleetController.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: method_reference"
+      "reason": "unsupported Java construct: switch_expression"
     },
     {
       "file": "docs/p0-implementation/runner-agent/src/main/java/io/elmos/runner/AgentConfig.java",
@@ -1767,7 +1805,7 @@
       "file": "docs/p0-implementation/runner-agent/src/main/java/io/elmos/runner/AgentMetrics.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: try_with_resources_statement"
     },
     {
       "file": "docs/p0-implementation/runner-agent/src/main/java/io/elmos/runner/ArtifactPublisher.java",
@@ -1795,15 +1833,15 @@
     },
     {
       "file": "docs/p0-implementation/runner-agent/src/main/java/io/elmos/runner/HeartbeatPump.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: method_reference"
+      "reason": "unsupported class instantiation: new AtomicBoolean"
     },
     {
       "file": "docs/p0-implementation/runner-agent/src/main/java/io/elmos/runner/JobExecutor.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: switch_expression"
     },
     {
       "file": "docs/p0-implementation/runner-agent/src/main/java/io/elmos/runner/JobWorkspace.java",
@@ -1819,9 +1857,9 @@
     },
     {
       "file": "docs/p0-implementation/runner-agent/src/main/java/io/elmos/runner/LeasePoller.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "call newVirtualThreadPerTaskExecutor on unresolved receiver type UnknownType(reason='name:Executors')"
     },
     {
       "file": "docs/p0-implementation/runner-agent/src/main/java/io/elmos/runner/ProcessRunner.java",
@@ -1831,9 +1869,9 @@
     },
     {
       "file": "docs/p0-implementation/runner-agent/src/main/java/io/elmos/runner/RunnerAgentMain.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported class instantiation: new AgentMetrics"
     },
     {
       "file": "docs/p0-implementation/runner-agent/src/main/java/io/elmos/runner/SandboxAttestation.java",
@@ -1851,13 +1889,13 @@
       "file": "docs/p0-implementation/runner-agent/src/test/java/io/elmos/runner/AgentSelfTest.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: try_with_resources_statement"
     },
     {
       "file": "docs/p0-implementation/runner-agent/src/test/java/io/elmos/runner/FakeControlPlane.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: try_with_resources_statement"
     },
     {
       "file": "docs/p0-implementation/storage/spring/ArtifactController.java",
@@ -1869,7 +1907,7 @@
       "file": "docs/p0-implementation/storage/spring/JdbcObjectStorageStore.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: class_literal"
     },
     {
       "file": "docs/p0-implementation/storage/src/main/java/io/elmos/storage/S3ObjectStore.java",
@@ -1879,21 +1917,21 @@
     },
     {
       "file": "docs/p0-implementation/storage/src/main/java/io/elmos/storage/SigV4Presigner.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "call ofPattern on unresolved receiver type UnknownType(reason='name:DateTimeFormatter')"
     },
     {
       "file": "docs/p0-implementation/storage/src/test/java/io/elmos/storage/S3ObjectStoreTest.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: switch_rule"
     },
     {
       "file": "docs/p0-implementation/storage/src/test/java/io/elmos/storage/SigV4PresignerTest.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "call isEmpty on unresolved receiver type ClassType(name='List', args=(ClassType(name='String', args=()),))"
     },
     {
       "file": "engines/ai-platform-engine/src/main/java/io/elmos/ai/AiPlatformEngineApplication.java",
@@ -1970,8 +2008,8 @@
     {
       "file": "engines/database-data-engine/src/main/java/io/elmos/databasedata/DatabaseReplicationProvider.java",
       "stage": "emit",
-      "outcome": "REFUSED",
-      "reason": "interface declarations are not supported"
+      "outcome": "OK",
+      "digest": "sha256:f0230539f172fa5ddac26eb759fc36b9b65f592ee4007786a01070dde313c859"
     },
     {
       "file": "engines/database-data-engine/src/main/java/io/elmos/databasedata/DatabaseTargetPlanner.java",
@@ -1993,9 +2031,9 @@
     },
     {
       "file": "engines/database-data-engine/src/test/java/io/elmos/databasedata/Batch15ContractFixtureTest.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported class instantiation: new ObjectMapper"
     },
     {
       "file": "engines/database-data-engine/src/test/java/io/elmos/databasedata/CanonicalDatabaseIrTest.java",
@@ -2095,9 +2133,9 @@
     },
     {
       "file": "engines/enterprise-integration-engine/src/test/java/io/elmos/integration/Batch20ContractFixtureTest.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: method_reference"
+      "reason": "unsupported class instantiation: new ObjectMapper"
     },
     {
       "file": "engines/enterprise-integration-engine/src/test/java/io/elmos/integration/EnterpriseIntegrationEngineApplicationTest.java",
@@ -2113,9 +2151,9 @@
     },
     {
       "file": "engines/enterprise-integration-engine/src/test/java/io/elmos/integration/IntegrationAdapterRegistryTest.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported class instantiation: new IntegrationAdapterRegistry"
     },
     {
       "file": "engines/enterprise-suite-engine/src/main/java/io/elmos/suite/Batch21SuitePolicy.java",
@@ -2161,9 +2199,9 @@
     },
     {
       "file": "engines/enterprise-suite-engine/src/test/java/io/elmos/suite/Batch21ContractFixtureTest.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: method_reference"
+      "reason": "unsupported class instantiation: new ObjectMapper"
     },
     {
       "file": "engines/enterprise-suite-engine/src/test/java/io/elmos/suite/EnterpriseSuiteEngineApplicationTest.java",
@@ -2179,9 +2217,9 @@
     },
     {
       "file": "engines/enterprise-suite-engine/src/test/java/io/elmos/suite/SuiteAdapterRegistryTest.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported class instantiation: new SuiteAdapterRegistry"
     },
     {
       "file": "engines/infrastructure-engine/src/main/java/io/elmos/infrastructure/InfrastructureChangeGate.java",
@@ -2229,13 +2267,13 @@
       "file": "engines/infrastructure-engine/src/main/java/io/elmos/infrastructure/InfrastructureModernizationPolicy.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: method_reference"
     },
     {
       "file": "engines/infrastructure-engine/src/main/java/io/elmos/infrastructure/InfrastructureProvider.java",
       "stage": "emit",
-      "outcome": "REFUSED",
-      "reason": "interface declarations are not supported"
+      "outcome": "OK",
+      "digest": "sha256:21249d5c94bfe6b08d4c9ac645de96498db198ef6af7ba94da9492fb33f09fdf"
     },
     {
       "file": "engines/infrastructure-engine/src/main/java/io/elmos/infrastructure/ProviderRunnerRegistry.java",
@@ -2247,7 +2285,7 @@
       "file": "engines/infrastructure-engine/src/main/java/io/elmos/infrastructure/WorkloadPlacementPlanner.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: method_reference"
     },
     {
       "file": "engines/infrastructure-engine/src/test/java/io/elmos/infrastructure/Batch16AcceptanceScenariosTest.java",
@@ -2257,15 +2295,15 @@
     },
     {
       "file": "engines/infrastructure-engine/src/test/java/io/elmos/infrastructure/Batch16ContractFixtureTest.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported class instantiation: new ObjectMapper"
     },
     {
       "file": "engines/infrastructure-engine/src/test/java/io/elmos/infrastructure/InfrastructureDomainTest.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: class_literal"
     },
     {
       "file": "engines/infrastructure-engine/src/test/java/io/elmos/infrastructure/InfrastructureEngineControllerTest.java",
@@ -2329,9 +2367,9 @@
     },
     {
       "file": "engines/mainframe-engine/src/test/java/io/elmos/mainframe/MainframeAdapterRegistryTest.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported class instantiation: new MainframeAdapterRegistry"
     },
     {
       "file": "engines/mainframe-engine/src/test/java/io/elmos/mainframe/MainframeEngineApplicationTest.java",
@@ -2443,9 +2481,9 @@
     },
     {
       "file": "engines/security-compliance-engine/src/test/java/io/elmos/securitycompliance/Batch17ContractFixtureTest.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported class instantiation: new ObjectMapper"
     },
     {
       "file": "engines/security-compliance-engine/src/test/java/io/elmos/securitycompliance/SecurityComplianceEngineControllerTest.java",
@@ -2457,7 +2495,7 @@
       "file": "engines/security-compliance-engine/src/test/java/io/elmos/securitycompliance/SecurityComplianceEngineTest.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: class_literal"
     },
     {
       "file": "engines/security-compliance-engine/src/test/java/io/elmos/securitycompliance/SecurityDomainModelsTest.java",
@@ -2469,7 +2507,7 @@
       "file": "engines/security-compliance-engine/src/test/java/io/elmos/securitycompliance/SecurityToolAdapterRegistryTest.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: class_literal"
     },
     {
       "file": "engines/software-delivery-platform-engine/src/main/java/io/elmos/delivery/SoftwareDeliveryPlatformEngineApplication.java",
@@ -2529,7 +2567,7 @@
       "file": "engines/test-quality-engine/src/main/java/io/elmos/testquality/TestToolAdapterRegistry.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: method_reference"
     },
     {
       "file": "engines/test-quality-engine/src/test/java/io/elmos/testquality/Batch18AcceptanceScenariosTest.java",
@@ -2563,9 +2601,9 @@
     },
     {
       "file": "engines/test-quality-engine/src/test/java/io/elmos/testquality/TestToolAdapterRegistryTest.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported class instantiation: new TestToolAdapterRegistry"
     },
     {
       "file": "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/legacy-orders/src/main/java/io/elmos/fixtures/LegacyOrdersApplication.java",
@@ -2679,7 +2717,7 @@
       "file": "modules/advanced-verification/src/main/java/io/elmos/verification/NumericVerificationEngine.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call isEmpty on unresolved receiver type ClassType(name='List', args=())"
+      "reason": "call isEmpty on unresolved receiver type ClassType(name='List', args=(ClassType(name='BigDecimal', args=()),))"
     },
     {
       "file": "modules/advanced-verification/src/main/java/io/elmos/verification/OracleGovernance.java",
@@ -2709,13 +2747,13 @@
       "file": "modules/advanced-verification/src/test/java/io/elmos/verification/AdvancedVerificationTechniquesTest.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: method_reference"
     },
     {
       "file": "modules/advanced-verification/src/test/java/io/elmos/verification/VerificationGovernanceTest.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: method_reference"
+      "reason": "unsupported Java construct: class_literal"
     },
     {
       "file": "modules/application/src/main/java/io/elmos/application/BatchOneDemoService.java",
@@ -2727,7 +2765,7 @@
       "file": "modules/application/src/main/java/io/elmos/application/CrossDomainDecisionGovernance.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: method_reference"
     },
     {
       "file": "modules/application/src/main/java/io/elmos/application/DatabaseDataCutoverGovernance.java",
@@ -2738,8 +2776,8 @@
     {
       "file": "modules/application/src/main/java/io/elmos/application/DemoPersistencePort.java",
       "stage": "emit",
-      "outcome": "REFUSED",
-      "reason": "interface declarations are not supported"
+      "outcome": "OK",
+      "digest": "sha256:c636207ac459c61d8fa755f5e5561be89c5b5f3034a1d6322e0ed4e751fc13be"
     },
     {
       "file": "modules/application/src/main/java/io/elmos/application/DemoRecord.java",
@@ -2775,7 +2813,7 @@
       "file": "modules/application/src/main/java/io/elmos/application/LanguageEngineRouter.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: switch_expression"
     },
     {
       "file": "modules/application/src/main/java/io/elmos/application/MainframeCutoverGovernance.java",
@@ -2786,8 +2824,8 @@
     {
       "file": "modules/application/src/main/java/io/elmos/application/ModernizationEnginePort.java",
       "stage": "emit",
-      "outcome": "REFUSED",
-      "reason": "interface declarations are not supported"
+      "outcome": "OK",
+      "digest": "sha256:fa6e729fba021cf9130e485fccf543af8a71d9aff6f2d46de95d378279936b54"
     },
     {
       "file": "modules/application/src/main/java/io/elmos/application/SecurityAuthorizationGovernance.java",
@@ -2816,20 +2854,20 @@
     {
       "file": "modules/application/src/main/java/io/elmos/application/WorkflowStatePort.java",
       "stage": "emit",
-      "outcome": "REFUSED",
-      "reason": "interface declarations are not supported"
+      "outcome": "OK",
+      "digest": "sha256:64b5fca9ff6d44a9beaa19e28010febc5acd8f4492cdfa87d601cbd7dc8e7228"
     },
     {
       "file": "modules/application/src/test/java/io/elmos/application/BatchOneDemoServiceTest.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: method_reference"
+      "reason": "unsupported class instantiation: new AtomicReference"
     },
     {
       "file": "modules/application/src/test/java/io/elmos/application/CrossDomainDecisionGovernanceTest.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported class instantiation: new CrossDomainDecisionGovernance"
     },
     {
       "file": "modules/application/src/test/java/io/elmos/application/FrontendClientReleaseGovernanceTest.java",
@@ -2907,7 +2945,7 @@
       "file": "modules/architecture-tests/src/test/java/io/elmos/architecture/CompanySeriesAssuranceTest.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: method_reference"
     },
     {
       "file": "modules/architecture-tests/src/test/java/io/elmos/architecture/DotnetEngineBoundaryTest.java",
@@ -2923,15 +2961,15 @@
     },
     {
       "file": "modules/architecture-tests/src/test/java/io/elmos/architecture/ProductBatch40To55SkillAssuranceTest.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "static call System.getProperty is not supported"
     },
     {
       "file": "modules/behavior-equivalence/src/main/java/io/elmos/equivalence/BehaviorEquivalenceArtifactWriter.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: switch_expression"
     },
     {
       "file": "modules/behavior-equivalence/src/main/java/io/elmos/equivalence/BehaviorEquivalenceModels.java",
@@ -2943,7 +2981,7 @@
       "file": "modules/behavior-equivalence/src/main/java/io/elmos/equivalence/BehaviorEquivalencePorts.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "interface declarations are not supported"
+      "reason": "interface with default/static methods or constants is not supported"
     },
     {
       "file": "modules/behavior-equivalence/src/main/java/io/elmos/equivalence/BehaviorEquivalenceService.java",
@@ -2961,7 +2999,7 @@
       "file": "modules/commercial-loop/src/main/java/io/elmos/commercialloop/CommercialLoopArtifactWriter.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: switch_expression"
     },
     {
       "file": "modules/commercial-loop/src/main/java/io/elmos/commercialloop/CommercialLoopAuthorities.java",
@@ -2979,7 +3017,7 @@
       "file": "modules/commercial-loop/src/main/java/io/elmos/commercialloop/CommercialLoopService.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: method_reference"
     },
     {
       "file": "modules/commercial-loop/src/test/java/io/elmos/commercialloop/CommercialLoopServiceTest.java",
@@ -3009,13 +3047,13 @@
       "file": "modules/commercial-operations/src/main/java/io/elmos/commercial/EntitlementAndFulfillmentService.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: method_reference"
     },
     {
       "file": "modules/commercial-operations/src/main/java/io/elmos/commercial/OnboardingAndProjectService.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: method_reference"
     },
     {
       "file": "modules/commercial-operations/src/main/java/io/elmos/commercial/PricingPlanCatalog.java",
@@ -3031,9 +3069,9 @@
     },
     {
       "file": "modules/commercial-operations/src/main/java/io/elmos/commercial/SlaAndSupportService.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "call objectiveId on unresolved receiver type ClassType(name='ServiceLevelMeasurement', args=())"
     },
     {
       "file": "modules/commercial-operations/src/test/java/io/elmos/commercial/CommercialOperationsTest.java",
@@ -3055,9 +3093,9 @@
     },
     {
       "file": "modules/company-series/src/main/java/io/elmos/companyseries/CompanySeriesEvaluator.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "static call Objects.requireNonNull is not supported"
     },
     {
       "file": "modules/company-series/src/main/java/io/elmos/companyseries/CompanySeriesModels.java",
@@ -3135,7 +3173,7 @@
       "file": "modules/composite-modernization/src/main/java/io/elmos/composite/MigrationWavePlanner.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: method_reference"
     },
     {
       "file": "modules/composite-modernization/src/main/java/io/elmos/composite/ProgressiveTrafficController.java",
@@ -3177,7 +3215,7 @@
       "file": "modules/composite-modernization/src/test/java/io/elmos/composite/CompositeModernizationScenariosTest.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: class_literal"
     },
     {
       "file": "modules/continuous-authorization/src/main/java/io/elmos/product/policy/ContinuousAuthorizationModels.java",
@@ -3201,7 +3239,7 @@
       "file": "modules/delivery/src/main/java/io/elmos/delivery/AcceptancePolicy.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: method_reference"
     },
     {
       "file": "modules/delivery/src/main/java/io/elmos/delivery/DeliveryModels.java",
@@ -3213,7 +3251,7 @@
       "file": "modules/delivery/src/main/java/io/elmos/delivery/DeliveryReadModel.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: method_reference"
     },
     {
       "file": "modules/delivery/src/main/java/io/elmos/delivery/EvidencePackService.java",
@@ -3225,7 +3263,7 @@
       "file": "modules/delivery/src/main/java/io/elmos/delivery/ReportGenerator.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: method_reference"
     },
     {
       "file": "modules/delivery/src/main/java/io/elmos/delivery/RollbackPlanner.java",
@@ -3249,13 +3287,13 @@
       "file": "modules/dependency-migration/src/main/java/io/elmos/dependency/ApiSemanticProfiler.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: method_reference"
     },
     {
       "file": "modules/dependency-migration/src/main/java/io/elmos/dependency/BuildDependencyPatchPlanner.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: method_reference"
     },
     {
       "file": "modules/dependency-migration/src/main/java/io/elmos/dependency/DependencyArtifactWriter.java",
@@ -3267,7 +3305,7 @@
       "file": "modules/dependency-migration/src/main/java/io/elmos/dependency/DependencyInventoryNormalizer.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: method_reference"
     },
     {
       "file": "modules/dependency-migration/src/main/java/io/elmos/dependency/DependencyMigrationIds.java",
@@ -3285,7 +3323,7 @@
       "file": "modules/dependency-migration/src/main/java/io/elmos/dependency/DependencyMigrationService.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: method_reference"
     },
     {
       "file": "modules/dependency-migration/src/main/java/io/elmos/dependency/DependencyStrategyPlanner.java",
@@ -3301,9 +3339,9 @@
     },
     {
       "file": "modules/developer-workflow/src/main/java/io/elmos/developerworkflow/AffectedTestSelector.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: method_reference"
+      "reason": "static call Map.copyOf is not supported"
     },
     {
       "file": "modules/developer-workflow/src/main/java/io/elmos/developerworkflow/DeveloperWorkflowCli.java",
@@ -3374,8 +3412,8 @@
     {
       "file": "modules/developer-workflow/src/main/java/io/elmos/developerworkflow/SemanticConflictResolver.java",
       "stage": "emit",
-      "outcome": "OK",
-      "digest": "sha256:c1eef0083a8d394e4829045e85459532756b243bcac35e62bf0ef102b7ca122d"
+      "outcome": "REFUSED",
+      "reason": "`==` between two reference types (ClassType(name='Ownership', args=()) and UnknownType(reason='field:HUMAN')) compares identity in Java, not value"
     },
     {
       "file": "modules/developer-workflow/src/main/java/io/elmos/developerworkflow/SourceTargetNavigator.java",
@@ -3476,8 +3514,8 @@
     {
       "file": "modules/domain/src/main/java/io/elmos/domain/MigrationState.java",
       "stage": "emit",
-      "outcome": "OK",
-      "digest": "sha256:9b3af42a9e2a1eb887486acd30726975644fea74c2222d6614db05aea9c57535"
+      "outcome": "REFUSED",
+      "reason": "`==` between two reference types (UnknownType(reason='this-type') and UnknownType(reason='name:DELIVERED')) compares identity in Java, not value"
     },
     {
       "file": "modules/domain/src/main/java/io/elmos/domain/MigrationStepRun.java",
@@ -3537,7 +3575,7 @@
       "file": "modules/ecosystem-growth/src/main/java/io/elmos/ecosystemgrowth/EcosystemGrowthArtifactWriter.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: switch_expression"
     },
     {
       "file": "modules/ecosystem-growth/src/main/java/io/elmos/ecosystemgrowth/EcosystemGrowthAuthorities.java",
@@ -3571,9 +3609,9 @@
     },
     {
       "file": "modules/enterprise-governance/src/main/java/io/elmos/enterprise/DataAndDeploymentGovernance.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "call contains on unresolved receiver type ClassType(name='Set', args=(ClassType(name='String', args=()),))"
     },
     {
       "file": "modules/enterprise-governance/src/main/java/io/elmos/enterprise/DeepSeekModelHealthProbe.java",
@@ -3614,8 +3652,8 @@
     {
       "file": "modules/enterprise-governance/src/main/java/io/elmos/enterprise/ModelCredentialSource.java",
       "stage": "emit",
-      "outcome": "REFUSED",
-      "reason": "interface declarations are not supported"
+      "outcome": "OK",
+      "digest": "sha256:024bed0e00e3ea5d86b0d581a4fe19624e2f1b5ee7e0e1807d413dfff477b61e"
     },
     {
       "file": "modules/enterprise-governance/src/main/java/io/elmos/enterprise/ModelEndpointProvisioning.java",
@@ -3625,15 +3663,15 @@
     },
     {
       "file": "modules/enterprise-governance/src/main/java/io/elmos/enterprise/ModelEndpointProvisioningCli.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported class instantiation: new EnvModelCredentialSource"
     },
     {
       "file": "modules/enterprise-governance/src/main/java/io/elmos/enterprise/ModelEndpointRegistry.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported class instantiation: new ConcurrentHashMap"
     },
     {
       "file": "modules/enterprise-governance/src/main/java/io/elmos/enterprise/ModelHealthProbe.java",
@@ -3663,7 +3701,7 @@
       "file": "modules/enterprise-governance/src/main/java/io/elmos/enterprise/TenantIdentityAuthorization.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: switch_expression"
     },
     {
       "file": "modules/enterprise-governance/src/main/java/io/elmos/enterprise/UnimplementedModelHealthProbe.java",
@@ -3723,7 +3761,7 @@
       "file": "modules/enterprise-governance/src/test/java/io/elmos/enterprise/ModelEndpointProvisioningTest.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: class_literal"
     },
     {
       "file": "modules/enterprise-governance/src/test/java/io/elmos/enterprise/OpenAiModelHealthProbeTest.java",
@@ -3753,7 +3791,7 @@
       "file": "modules/enterprise-platform/src/main/java/io/elmos/platform/EnterprisePlatformArtifactWriter.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: switch_expression"
     },
     {
       "file": "modules/enterprise-platform/src/main/java/io/elmos/platform/EnterprisePlatformAuthorities.java",
@@ -3771,7 +3809,7 @@
       "file": "modules/enterprise-platform/src/main/java/io/elmos/platform/EnterprisePlatformService.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: method_reference"
     },
     {
       "file": "modules/enterprise-platform/src/test/java/io/elmos/platform/EnterprisePlatformServiceTest.java",
@@ -3805,9 +3843,9 @@
     },
     {
       "file": "modules/evidence/src/main/java/io/elmos/evidence/ValidationPolicy.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "call isEmpty on unresolved receiver type ClassType(name='Collection', args=(ClassType(name='EvidenceType', args=()),))"
     },
     {
       "file": "modules/evidence/src/test/java/io/elmos/evidence/ValidationPolicyTest.java",
@@ -3823,15 +3861,15 @@
     },
     {
       "file": "modules/evidence-assurance-fabric/src/main/java/io/elmos/product/assurance/EvidenceAssuranceService.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "call to unknown method required"
     },
     {
       "file": "modules/evidence-assurance-fabric/src/test/java/io/elmos/product/assurance/EvidenceAssuranceServiceTest.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported class instantiation: new EvidenceAssuranceService"
     },
     {
       "file": "modules/evidence-bound-engine/src/main/java/io/elmos/executiondomain/DomainDefinitions.java",
@@ -3847,15 +3885,15 @@
     },
     {
       "file": "modules/evidence-bound-engine/src/main/java/io/elmos/executiondomain/EvidenceBoundDomainEngine.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported class instantiation: new ConcurrentHashMap"
     },
     {
       "file": "modules/evidence-bound-engine/src/test/java/io/elmos/executiondomain/EvidenceBoundDomainEngineTest.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: method_reference"
+      "reason": "unsupported Java construct: class_literal"
     },
     {
       "file": "modules/extension-marketplace/src/main/java/io/elmos/marketplace/CompatibilityEngine.java",
@@ -3877,9 +3915,9 @@
     },
     {
       "file": "modules/extension-marketplace/src/main/java/io/elmos/marketplace/ExtensionManifestValidator.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "static call Set.of is not supported"
     },
     {
       "file": "modules/extension-marketplace/src/main/java/io/elmos/marketplace/InstallationRegistry.java",
@@ -3919,9 +3957,9 @@
     },
     {
       "file": "modules/extension-marketplace/src/main/java/io/elmos/marketplace/SandboxPolicyEngine.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "call defaultAction on unresolved receiver type ClassType(name='SandboxPolicy', args=())"
     },
     {
       "file": "modules/extension-marketplace/src/main/java/io/elmos/marketplace/SupplyChainVerifier.java",
@@ -3945,7 +3983,7 @@
       "file": "modules/framework-migration/src/main/java/io/elmos/frameworkmigration/EvidenceFrameworkFingerprintDetector.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: method_reference"
     },
     {
       "file": "modules/framework-migration/src/main/java/io/elmos/frameworkmigration/FrameworkArtifactWriter.java",
@@ -3975,7 +4013,7 @@
       "file": "modules/framework-migration/src/main/java/io/elmos/frameworkmigration/FrameworkRecipeRegistry.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: method_reference"
     },
     {
       "file": "modules/framework-migration/src/main/java/io/elmos/frameworkmigration/FrameworkSemanticValidator.java",
@@ -4004,8 +4042,8 @@
     {
       "file": "modules/health-check/src/main/java/io/elmos/health/HealthReportStore.java",
       "stage": "emit",
-      "outcome": "REFUSED",
-      "reason": "interface declarations are not supported"
+      "outcome": "OK",
+      "digest": "sha256:4ae998f412383b31fab94eb94ecf9108a4fdebd9b20c0838e8a1aec2da120c9a"
     },
     {
       "file": "modules/health-check/src/main/java/io/elmos/health/JavaLegacyHealthCheck.java",
@@ -4035,31 +4073,31 @@
       "file": "modules/health-check/src/main/java/io/elmos/health/SourceRiskAnalyzer.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: method_reference"
     },
     {
       "file": "modules/health-check/src/main/java/io/elmos/health/VulnerabilityProviders.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "static call List.of is not supported"
     },
     {
       "file": "modules/health-check/src/test/java/io/elmos/health/JavaLegacyHealthCheckTest.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: class_literal"
     },
     {
       "file": "modules/identity/src/main/java/io/elmos/identity/AuthenticationService.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: block_comment"
     },
     {
       "file": "modules/identity/src/main/java/io/elmos/identity/Destinations.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "call empty on unresolved receiver type UnknownType(reason='name:Optional')"
     },
     {
       "file": "modules/identity/src/main/java/io/elmos/identity/IdentityStore.java",
@@ -4071,7 +4109,7 @@
       "file": "modules/identity/src/main/java/io/elmos/identity/JdbcIdentityStore.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: try_with_resources_statement"
     },
     {
       "file": "modules/identity/src/main/java/io/elmos/identity/Secrets.java",
@@ -4087,15 +4125,15 @@
     },
     {
       "file": "modules/identity/src/test/java/io/elmos/identity/IdentityCoreTest.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "call isEmpty on unresolved receiver type ClassType(name='List', args=(ClassType(name='String', args=()),))"
     },
     {
       "file": "modules/intake/src/main/java/io/elmos/intake/BaselineRunner.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "interface with default/static methods or constants is not supported"
     },
     {
       "file": "modules/intake/src/main/java/io/elmos/intake/BuildManifestInspector.java",
@@ -4155,7 +4193,7 @@
       "file": "modules/integrations/src/main/java/io/elmos/integrations/GitHubRestInstallationTokenIssuer.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: class_literal"
     },
     {
       "file": "modules/integrations/src/main/java/io/elmos/integrations/GitRepositoryWorkspaceService.java",
@@ -4173,7 +4211,7 @@
       "file": "modules/integrations/src/main/java/io/elmos/integrations/JGitSnapshotSourceAdapter.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: try_with_resources_statement"
     },
     {
       "file": "modules/integrations/src/main/java/io/elmos/integrations/LocalContentAddressedArtifactStore.java",
@@ -4185,13 +4223,13 @@
       "file": "modules/integrations/src/main/java/io/elmos/integrations/OsvVulnerabilityProvider.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: method_reference"
     },
     {
       "file": "modules/integrations/src/main/java/io/elmos/integrations/ProviderPullRequestPublisher.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "static call Objects.requireNonNull is not supported"
     },
     {
       "file": "modules/integrations/src/test/java/io/elmos/integrations/GitHubAppJwtTest.java",
@@ -4203,7 +4241,7 @@
       "file": "modules/integrations/src/test/java/io/elmos/integrations/GitRepositoryWorkspaceServiceTest.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: class_literal"
     },
     {
       "file": "modules/integrations/src/test/java/io/elmos/integrations/JGitSnapshotSourceAdapterTest.java",
@@ -4227,7 +4265,7 @@
       "file": "modules/lowering/src/main/java/io/elmos/lowering/DisabledLoweringCodingAgentPort.java",
       "stage": "emit",
       "outcome": "OK",
-      "digest": "sha256:1f1eb66ff513c6e9b0ba9a885ea0bc140d31313d1bc3a47e989708f82bf0408f"
+      "digest": "sha256:0297d76b2166778678ca410d4ba704b0fdb1ec2de0b971d0af9a808b29bbede4"
     },
     {
       "file": "modules/lowering/src/main/java/io/elmos/lowering/EnterpriseGovernanceLoweringCodingAgentPort.java",
@@ -4239,13 +4277,13 @@
       "file": "modules/lowering/src/main/java/io/elmos/lowering/GeneratedRegionPatchManager.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: method_reference"
     },
     {
       "file": "modules/lowering/src/main/java/io/elmos/lowering/LoweringArtifactWriter.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: method_reference"
     },
     {
       "file": "modules/lowering/src/main/java/io/elmos/lowering/LoweringCodingAgentPort.java",
@@ -4269,7 +4307,7 @@
       "file": "modules/lowering/src/main/java/io/elmos/lowering/LoweringPlanner.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: class_literal"
     },
     {
       "file": "modules/lowering/src/main/java/io/elmos/lowering/LoweringRuleRegistry.java",
@@ -4287,25 +4325,25 @@
       "file": "modules/lowering/src/main/java/io/elmos/lowering/PolyglotRouteEngineBridge.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: switch_rule"
     },
     {
       "file": "modules/lowering/src/main/java/io/elmos/lowering/PolyglotRouteEngineProcessRunner.java",
       "stage": "emit",
-      "outcome": "REFUSED",
-      "reason": "interface declarations are not supported"
+      "outcome": "OK",
+      "digest": "sha256:6baea77cccab6fc2106ec6e4f1efdbe0f27e89f09e8dd77226702d025288b59d"
     },
     {
       "file": "modules/lowering/src/main/java/io/elmos/lowering/RealPolyglotRouteEngineProcessRunner.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: try_with_resources_statement"
     },
     {
       "file": "modules/lowering/src/main/java/io/elmos/lowering/TargetCapabilityMatrix.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: method_reference"
     },
     {
       "file": "modules/lowering/src/test/java/io/elmos/lowering/LoweringCodingAgentPortTest.java",
@@ -4321,9 +4359,9 @@
     },
     {
       "file": "modules/lowering/src/test/java/io/elmos/lowering/MethodBodyLoweringServiceTest.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "call parse on unresolved receiver type UnknownType(reason='name:Instant')"
     },
     {
       "file": "modules/lowering/src/test/java/io/elmos/lowering/PolyglotRouteEngineBridgeTest.java",
@@ -4333,15 +4371,15 @@
     },
     {
       "file": "modules/migration-pack-certification/src/main/java/io/elmos/migrationpack/MigrationPackAdmissionService.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "static call Objects.requireNonNull is not supported"
     },
     {
       "file": "modules/migration-pack-certification/src/main/java/io/elmos/migrationpack/MigrationPackCatalog.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "static call List.of is not supported"
     },
     {
       "file": "modules/migration-pack-certification/src/main/java/io/elmos/migrationpack/MigrationPackModels.java",
@@ -4359,7 +4397,7 @@
       "file": "modules/network-policy/src/main/java/io/elmos/network/NetworkDecisionService.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call requireNonNull on unresolved receiver type UnknownType(reason='name:Objects')"
+      "reason": "static call Objects.requireNonNull is not supported"
     },
     {
       "file": "modules/network-policy/src/main/java/io/elmos/network/NetworkPolicy.java",
@@ -4381,21 +4419,21 @@
     },
     {
       "file": "modules/object-storage/src/main/java/io/elmos/storage/SigV4Presigner.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "call ofPattern on unresolved receiver type UnknownType(reason='name:DateTimeFormatter')"
     },
     {
       "file": "modules/object-storage/src/test/java/io/elmos/storage/S3ObjectStoreTest.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: switch_rule"
     },
     {
       "file": "modules/object-storage/src/test/java/io/elmos/storage/SigV4PresignerTest.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "call isEmpty on unresolved receiver type ClassType(name='List', args=(ClassType(name='String', args=()),))"
     },
     {
       "file": "modules/persistence/src/main/java/io/elmos/persistence/JdbcApprovedImageRegistry.java",
@@ -4405,21 +4443,21 @@
     },
     {
       "file": "modules/persistence/src/main/java/io/elmos/persistence/JdbcDemoPersistence.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "call repository on unresolved receiver type ClassType(name='DemoRecord', args=())"
     },
     {
       "file": "modules/persistence/src/main/java/io/elmos/persistence/JdbcExecutionJobStore.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: class_literal"
     },
     {
       "file": "modules/persistence/src/main/java/io/elmos/persistence/JdbcGitHubInstallationStore.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: class_literal"
     },
     {
       "file": "modules/persistence/src/main/java/io/elmos/persistence/JdbcGitHubRepositoryAuthorization.java",
@@ -4429,9 +4467,9 @@
     },
     {
       "file": "modules/persistence/src/main/java/io/elmos/persistence/JdbcGitHubRepositoryCatalog.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "call getString on unresolved receiver type UnknownType(reason='inferred-lambda-parameter')"
     },
     {
       "file": "modules/persistence/src/main/java/io/elmos/persistence/JdbcHealthReportStore.java",
@@ -4449,19 +4487,19 @@
       "file": "modules/persistence/src/main/java/io/elmos/persistence/JdbcObjectStorageStore.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: class_literal"
     },
     {
       "file": "modules/persistence/src/main/java/io/elmos/persistence/JdbcOperationsManagementStore.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: class_literal"
     },
     {
       "file": "modules/persistence/src/main/java/io/elmos/persistence/JdbcOrganizationSelfServiceStore.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: class_literal"
     },
     {
       "file": "modules/persistence/src/main/java/io/elmos/persistence/JdbcRunHistoryStore.java",
@@ -4473,31 +4511,31 @@
       "file": "modules/persistence/src/main/java/io/elmos/persistence/JdbcRunnerRegistrationStore.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: class_literal"
     },
     {
       "file": "modules/persistence/src/main/java/io/elmos/persistence/JdbcSecretLeaseStore.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: class_literal"
     },
     {
       "file": "modules/persistence/src/main/java/io/elmos/persistence/JdbcSelfServiceBillingStore.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: class_literal"
     },
     {
       "file": "modules/persistence/src/main/java/io/elmos/persistence/JdbcSnapshotStore.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: method_reference"
+      "reason": "unsupported Java construct: class_literal"
     },
     {
       "file": "modules/persistence/src/main/java/io/elmos/persistence/JdbcUserActivityStore.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: class_literal"
     },
     {
       "file": "modules/persistence/src/main/java/io/elmos/persistence/JdbcWebhookDeliveryStore.java",
@@ -4507,9 +4545,9 @@
     },
     {
       "file": "modules/persistence/src/main/java/io/elmos/persistence/JdbcWorkflowStateAdapter.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "call getString on unresolved receiver type UnknownType(reason='inferred-lambda-parameter')"
     },
     {
       "file": "modules/persistence/src/main/java/io/elmos/persistence/JdbcWorkspaceLifecycleStore.java",
@@ -4527,7 +4565,7 @@
       "file": "modules/persistence/src/test/java/io/elmos/persistence/FlywayMigrationTest.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: class_literal"
     },
     {
       "file": "modules/persistence/src/test/java/io/elmos/persistence/JdbcQuotaAdministrationGuardTest.java",
@@ -4545,7 +4583,7 @@
       "file": "modules/persistence/src/test/java/io/elmos/persistence/JdbcRunHistoryReplayTest.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: method_declaration"
     },
     {
       "file": "modules/persistence/src/test/java/io/elmos/persistence/JdbcSelfServiceBillingLiveTest.java",
@@ -4561,9 +4599,9 @@
     },
     {
       "file": "modules/persistence/src/test/java/io/elmos/persistence/JdbcUserActivityExportTest.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: method_reference"
+      "reason": "unsupported class instantiation: new PostgreSQLContainer"
     },
     {
       "file": "modules/persistence/src/test/java/io/elmos/persistence/OperationsControlMigrationContractTest.java",
@@ -4591,15 +4629,15 @@
     },
     {
       "file": "modules/planning/src/main/java/io/elmos/planning/CompatibilityMatrix.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "String.isBlank is not supported"
     },
     {
       "file": "modules/planning/src/main/java/io/elmos/planning/MigrationPlanStore.java",
       "stage": "emit",
-      "outcome": "REFUSED",
-      "reason": "interface declarations are not supported"
+      "outcome": "OK",
+      "digest": "sha256:2b7721fa005469e615afa3389ec0402c68eeb7e99da340ed96f88eb8b1a830fd"
     },
     {
       "file": "modules/planning/src/main/java/io/elmos/planning/MigrationPlanner.java",
@@ -4615,9 +4653,9 @@
     },
     {
       "file": "modules/planning/src/test/java/io/elmos/planning/MigrationPlannerTest.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "call parse on unresolved receiver type UnknownType(reason='name:Instant')"
     },
     {
       "file": "modules/portfolio-scale/src/main/java/io/elmos/portfolio/DurableWorkflowEngine.java",
@@ -4645,9 +4683,9 @@
     },
     {
       "file": "modules/portfolio-scale/src/main/java/io/elmos/portfolio/PortfolioCampaignCoordinator.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "call requiredApprovals on unresolved receiver type ClassType(name='Campaign', args=())"
     },
     {
       "file": "modules/portfolio-scale/src/main/java/io/elmos/portfolio/PortfolioControlTower.java",
@@ -4713,13 +4751,13 @@
       "file": "modules/product-roadmap-governance/src/main/java/io/elmos/roadmap/ProductRoadmapCatalog.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: spread_parameter"
     },
     {
       "file": "modules/product-roadmap-governance/src/main/java/io/elmos/roadmap/ProductRoadmapGovernance.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: method_reference"
     },
     {
       "file": "modules/product-roadmap-governance/src/main/java/io/elmos/roadmap/ProductRoadmapModels.java",
@@ -4743,7 +4781,7 @@
       "file": "modules/production-cutover/src/main/java/io/elmos/cutover/ProductionCutoverArtifactWriter.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: switch_expression"
     },
     {
       "file": "modules/production-cutover/src/main/java/io/elmos/cutover/ProductionCutoverAuthorities.java",
@@ -4761,7 +4799,7 @@
       "file": "modules/production-cutover/src/main/java/io/elmos/cutover/ProductionCutoverService.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: method_reference"
     },
     {
       "file": "modules/production-cutover/src/main/java/io/elmos/cutover/ProductionCutoverStateMachine.java",
@@ -4779,7 +4817,7 @@
       "file": "modules/production-hardening/src/main/java/io/elmos/hardening/ProductionHardeningArtifactWriter.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: switch_expression"
     },
     {
       "file": "modules/production-hardening/src/main/java/io/elmos/hardening/ProductionHardeningAuthorities.java",
@@ -4797,7 +4835,7 @@
       "file": "modules/production-hardening/src/main/java/io/elmos/hardening/ProductionHardeningService.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: method_reference"
     },
     {
       "file": "modules/production-hardening/src/test/java/io/elmos/hardening/ProductionHardeningServiceTest.java",
@@ -4819,9 +4857,9 @@
     },
     {
       "file": "modules/recipe-governance/src/main/java/io/elmos/recipe/RecipeLicensePolicy.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "call of on unresolved receiver type UnknownType(reason='name:EnumSet')"
     },
     {
       "file": "modules/recipe-governance/src/main/java/io/elmos/recipe/RecipeModels.java",
@@ -4839,7 +4877,7 @@
       "file": "modules/recipe-governance/src/test/java/io/elmos/recipe/RecipeGovernanceTest.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: class_literal"
     },
     {
       "file": "modules/repair-orchestration/src/main/java/io/elmos/repair/AgentRouter.java",
@@ -4857,7 +4895,7 @@
       "file": "modules/repair-orchestration/src/main/java/io/elmos/repair/FailureNormalizer.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: method_reference"
     },
     {
       "file": "modules/repair-orchestration/src/main/java/io/elmos/repair/ProviderPolicies.java",
@@ -4869,7 +4907,7 @@
       "file": "modules/repair-orchestration/src/main/java/io/elmos/repair/RepairArtifactWriter.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: try_with_resources_statement"
     },
     {
       "file": "modules/repair-orchestration/src/main/java/io/elmos/repair/RepairDiagnosticProtocol.java",
@@ -4917,7 +4955,7 @@
       "file": "modules/repair-orchestration/src/main/java/io/elmos/repair/RepairPolicyEngine.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: method_reference"
     },
     {
       "file": "modules/repair-orchestration/src/main/java/io/elmos/repair/RepairTaskBuilder.java",
@@ -4929,7 +4967,7 @@
       "file": "modules/repair-orchestration/src/test/java/io/elmos/repair/RepairLoopServiceTest.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: method_reference"
     },
     {
       "file": "modules/repair-orchestration/src/test/java/io/elmos/repair/RepairOrchestrationTest.java",
@@ -4945,9 +4983,9 @@
     },
     {
       "file": "modules/scm/src/main/java/io/elmos/scm/GitHubBranchWritePolicy.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: method_reference"
+      "reason": "static call List.of is not supported"
     },
     {
       "file": "modules/scm/src/main/java/io/elmos/scm/GitHubInstallationLifecycleService.java",
@@ -4977,7 +5015,7 @@
       "file": "modules/scm/src/test/java/io/elmos/scm/GitHubInstallationTokenBrokerTest.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: class_literal"
     },
     {
       "file": "modules/scm/src/test/java/io/elmos/scm/GitHubPolicyTest.java",
@@ -4989,7 +5027,7 @@
       "file": "modules/scm/src/test/java/io/elmos/scm/GithubWebhookVerifierTest.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: class_literal"
     },
     {
       "file": "modules/secret/src/main/java/io/elmos/secret/SecretInjectionService.java",
@@ -5067,7 +5105,7 @@
       "file": "modules/semantic/src/main/java/io/elmos/semantic/PspArtifactWriter.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: class_literal"
     },
     {
       "file": "modules/semantic/src/main/java/io/elmos/semantic/PspModels.java",
@@ -5133,13 +5171,13 @@
       "file": "modules/skeleton/src/main/java/io/elmos/skeleton/SkeletonPlanner.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: class_literal"
     },
     {
       "file": "modules/skeleton/src/test/java/io/elmos/skeleton/SkeletonGenerationServiceTest.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: method_reference"
     },
     {
       "file": "modules/snapshot/src/main/java/io/elmos/snapshot/DeterministicSnapshotArchiver.java",
@@ -5181,19 +5219,19 @@
       "file": "modules/snapshot/src/test/java/io/elmos/snapshot/SnapshotCaptureServiceTest.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: class_literal"
     },
     {
       "file": "modules/snapshot/src/test/java/io/elmos/snapshot/SnapshotMaterializationServiceTest.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: class_literal"
     },
     {
       "file": "modules/source-control-workspace-governance/src/main/java/io/elmos/product/scmworkspace/ScmWorkspaceAdmissionService.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "call to unknown method required"
     },
     {
       "file": "modules/source-control-workspace-governance/src/main/java/io/elmos/product/scmworkspace/ScmWorkspaceModels.java",
@@ -5217,7 +5255,7 @@
       "file": "modules/uir/src/main/java/io/elmos/uir/UirArtifactWriter.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: class_literal"
     },
     {
       "file": "modules/uir/src/main/java/io/elmos/uir/UirConformanceValidator.java",
@@ -5227,9 +5265,9 @@
     },
     {
       "file": "modules/uir/src/main/java/io/elmos/uir/UirDialectRegistry.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: method_reference"
+      "reason": "unsupported class instantiation: new TreeMap"
     },
     {
       "file": "modules/uir/src/main/java/io/elmos/uir/UirIds.java",
@@ -5253,7 +5291,7 @@
       "file": "modules/validation/src/main/java/io/elmos/validation/IndependentValidationJudge.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: class_literal"
     },
     {
       "file": "modules/validation/src/main/java/io/elmos/validation/ValidationModels.java",
@@ -5265,7 +5303,7 @@
       "file": "modules/validation/src/test/java/io/elmos/validation/IndependentValidationJudgeTest.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported Java construct: method_reference"
     },
     {
       "file": "modules/workflow/src/main/java/io/elmos/workflow/DurableWorkflowService.java",
@@ -5306,8 +5344,8 @@
     {
       "file": "modules/workspace/src/main/java/io/elmos/workspace/WorkspaceInfrastructurePorts.java",
       "stage": "emit",
-      "outcome": "REFUSED",
-      "reason": "interface declarations are not supported"
+      "outcome": "OK",
+      "digest": "sha256:83b7d071e28bba87ac8ebae4bb7f859424c88b3efff4ca4f8798ad787de6e895"
     },
     {
       "file": "modules/workspace/src/main/java/io/elmos/workspace/WorkspaceModels.java",
@@ -5318,8 +5356,8 @@
     {
       "file": "modules/workspace/src/main/java/io/elmos/workspace/WorkspaceProvisioningPort.java",
       "stage": "emit",
-      "outcome": "REFUSED",
-      "reason": "interface declarations are not supported"
+      "outcome": "OK",
+      "digest": "sha256:216ca6e7e8aad12cf2b4ee0aec17fea4515408f43c0060361820a93985e68338"
     },
     {
       "file": "modules/workspace/src/main/java/io/elmos/workspace/WorkspaceReaper.java",
@@ -5335,15 +5373,15 @@
     },
     {
       "file": "modules/workspace/src/test/java/io/elmos/workspace/WorkspaceFinalizerTest.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "unsupported class instantiation: new FinalizationStore"
     },
     {
       "file": "modules/workspace/src/test/java/io/elmos/workspace/WorkspaceSecurityPolicyTest.java",
       "stage": "parse",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: method_reference"
+      "reason": "unsupported Java construct: class_literal"
     },
     {
       "file": "recipes/elmos-java-recipes/src/main/java/io/elmos/recipes/RewriteSpringFoundation.java",
@@ -5413,9 +5451,9 @@
     },
     {
       "file": "tooling/payment-crypto-selftest/CallbackAdapterSelfTest.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "call of on unresolved receiver type UnknownType(reason='name:ZoneId')"
     },
     {
       "file": "tooling/payment-crypto-selftest/CatalogContractSelfTest.java",
@@ -5425,9 +5463,9 @@
     },
     {
       "file": "tooling/payment-crypto-selftest/CheckoutGatewaySelfTest.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "System.out.printf is not supported"
     },
     {
       "file": "tooling/payment-crypto-selftest/CheckoutRoutingSelfTest.java",
@@ -5449,21 +5487,21 @@
     },
     {
       "file": "tooling/payment-crypto-selftest/PaymentCryptoSelfTest.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "System.out.printf is not supported"
     },
     {
       "file": "tooling/payment-crypto-selftest/PaymentPipelineSelfTest.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "System.out.printf is not supported"
     },
     {
       "file": "tooling/payment-crypto-selftest/ReplayGuardSelfTest.java",
-      "stage": "parse",
+      "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "unsupported Java construct: lambda_expression"
+      "reason": "call parse on unresolved receiver type UnknownType(reason='name:Instant')"
     },
     {
       "file": "tooling/payment-crypto-selftest/SecurityFilterChainSelfTest.java",

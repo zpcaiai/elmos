@@ -1,6 +1,6 @@
 {
-  "total": 32,
-  "killed": 32,
+  "total": 39,
+  "killed": 39,
   "survivors": [],
   "results": [
     {
@@ -181,6 +181,48 @@
       "id": "M30",
       "file": "j2p/frontend/java.py",
       "rule": "a parameter shadows a field of the same name",
+      "status": "KILLED"
+    },
+    {
+      "id": "M33",
+      "file": "j2p/emit/python.py",
+      "rule": "captured locals are bound by value, not by closure reference",
+      "status": "KILLED"
+    },
+    {
+      "id": "M34",
+      "file": "j2p/emit/python.py",
+      "rule": "a lambda parameter is not treated as a capture",
+      "status": "KILLED"
+    },
+    {
+      "id": "M35",
+      "file": "j2p/emit/python.py",
+      "rule": "locals declared inside a lambda body are not captured",
+      "status": "KILLED"
+    },
+    {
+      "id": "M36",
+      "file": "j2p/emit/python.py",
+      "rule": "== between two reference types is refused",
+      "status": "KILLED"
+    },
+    {
+      "id": "M37",
+      "file": "j2p/emit/python.py",
+      "rule": "only the single abstract method may be called on a lambda value",
+      "status": "KILLED"
+    },
+    {
+      "id": "M38",
+      "file": "j2p/frontend/java.py",
+      "rule": "a lambda's result takes the conversion its interface declares",
+      "status": "KILLED"
+    },
+    {
+      "id": "M39",
+      "file": "j2p/frontend/java.py",
+      "rule": "lambda parameter types come from the target functional interface",
       "status": "KILLED"
     },
     {

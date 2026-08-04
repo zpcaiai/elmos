@@ -48,7 +48,9 @@ from ..uir import (
     IncDec,
     InstanceOf,
     IntLiteral,
+    Lambda,
     LocalVar,
+    MethodRef,
     Method,
     Module,
     Name,
@@ -126,7 +128,9 @@ KNOWN_CLASS_TYPES = frozenset(
         "HashMap",
         "Set",
         "HashSet",
+        "Objects",
     }
+    | set(uir.FUNCTIONAL_INTERFACES)
 )
 
 _MODIFIER_TOKENS = frozenset(
@@ -203,8 +207,18 @@ class JavaFrontend:
         #: Return types of methods declared in this compilation unit, so calls
         #: to them are typed instead of degrading to UnknownType.
         self._method_types: dict[str, uir.Type] = {}
+        #: Declared parameter types per method, so that a lambda passed as an
+        #: argument learns its target functional interface.  Without this,
+        #: `fold((p, q) -> p - q, ...)` has untyped parameters and is refused.
+        self._method_param_types: dict[str, tuple[uir.Type, ...]] = {}
         self._field_types: dict[str, uir.Type] = {}
         self._static_field_names: set[str] = set()
+        self._static_method_names: set[str] = set()
+        #: Interfaces declared here that have exactly one abstract method, and
+        #: that method's name, result type and parameter types.  Without this a
+        #: lambda targeting a project's own callback interface has no types at
+        #: all, and every use of it is refused.
+        self._interface_sams: dict[str, tuple[str, uir.Type, tuple[uir.Type, ...]]] = {}
         self._class_names: set[str] = set()
         self._current_class: str | None = None
 
@@ -288,7 +302,27 @@ class JavaFrontend:
         )
 
     def _collect_signatures(self, decl: "Node") -> None:
-        self._class_names.add(self._text(decl.child_by_field_name("name")))
+        decl_name = self._text(decl.child_by_field_name("name"))
+        self._class_names.add(decl_name)
+        if decl.type == "interface_declaration":
+            body = decl.child_by_field_name("body")
+            abstract = [
+                m
+                for m in (self._named(body) if body is not None else [])
+                if m.type == "method_declaration"
+                and m.child_by_field_name("body") is None
+            ]
+            if len(abstract) == 1:
+                m = abstract[0]
+                self._interface_sams[decl_name] = (
+                    self._text(m.child_by_field_name("name")),
+                    self._type(m.child_by_field_name("type")),
+                    tuple(
+                        self._type(p.child_by_field_name("type"))
+                        for p in self._named(m.child_by_field_name("parameters"))
+                        if p.type == "formal_parameter"
+                    ),
+                )
         if decl.type == "record_declaration":
             params = decl.child_by_field_name("parameters")
             if params is not None:
@@ -310,6 +344,18 @@ class JavaFrontend:
             elif member.type == "method_declaration":
                 name = self._text(member.child_by_field_name("name"))
                 self._method_types[name] = self._type(member.child_by_field_name("type"))
+                self._method_param_types[name] = tuple(
+                    self._type(p.child_by_field_name("type"))
+                    for p in self._named(member.child_by_field_name("parameters"))
+                    if p.type == "formal_parameter"
+                )
+                if any(
+                    tok.type == "static"
+                    for mod in member.children
+                    if mod.type == "modifiers"
+                    for tok in mod.children
+                ):
+                    self._static_method_names.add(name)
             elif member.type == "field_declaration":
                 declared = self._type(member.child_by_field_name("type"))
                 is_static = any(
@@ -557,13 +603,25 @@ class JavaFrontend:
             name = self._text(node)
             return ClassType(name)
         if t == "generic_type":
-            base = self._named(node)[0]
-            args_node = node.child_by_field_name("type_arguments")
+            named = self._named(node)
+            base = named[0]
             args: list[uir.Type] = []
-            if args_node is not None:
-                for a in self._named(args_node):
-                    args.append(self._type(a))
-            return ClassType(self._text(base), tuple(args))
+            for child in named[1:]:
+                if child.type != "type_arguments":
+                    continue
+                for a in self._named(child):
+                    if a.type == "wildcard":
+                        # `List<? extends X>` erases to something this front end
+                        # cannot reason about, so it is recorded as unknown
+                        # rather than silently treated as X.
+                        args.append(UnknownType("wildcard-type-argument"))
+                    else:
+                        args.append(self._type(a))
+            base_type = self._type(base)
+            base_name = (
+                base_type.name if isinstance(base_type, ClassType) else self._text(base)
+            )
+            return ClassType(base_name, tuple(args))
         if t == "scoped_type_identifier":
             return ClassType(self._text(node).split(".")[-1])
         return self._reject(node, "type")
@@ -927,6 +985,12 @@ class JavaFrontend:
                 origin=origin, type=uir.T_BOOLEAN, operand=operand, target=target
             )
 
+        if t == "lambda_expression":
+            return self._lambda(node, scope, expected)
+
+        if t == "method_reference":
+            return self._method_ref(node, scope)
+
         if t == "method_invocation":
             return self._call(node, scope)
 
@@ -974,12 +1038,243 @@ class JavaFrontend:
 
         return self._reject(node, "expression")
 
-    # -- expression helpers ----------------------------------------------
+    # -- lambdas and method references ------------------------------------
 
-    def _args(self, node: "Node | None", scope: _Scope) -> tuple[Expr, ...]:
+    def _lambda(
+        self, node: "Node", scope: _Scope, expected: uir.Type | None
+    ) -> Expr:
+        """Lower a lambda.
+
+        The declared type comes from context.  When context does not supply a
+        functional interface the type is recorded as UnknownType rather than
+        guessed: the emitter can still emit the lambda, but a *call* through an
+        unknown type is refused rather than assumed to be the SAM.
+        """
+
+        origin = self._origin(node)
+        params = self._lambda_params(node.child_by_field_name("parameters"))
+        params = self._infer_lambda_param_types(params, expected)
+
+        inner = scope.child()
+        for p in params:
+            inner.names[p.name] = p.type
+        # A `return` inside a lambda returns from the *lambda*, not from the
+        # enclosing method.  Leaving the method's __return__ in scope would
+        # coerce the lambda's result to the wrong type - and to `void` whenever
+        # the lambda appears inside a void method.
+        sam = self._sam_name(expected) if expected is not None else None
+        inner.names["__return__"] = (
+            self._instance_call_type(expected, sam)
+            if sam is not None
+            else UnknownType("lambda-result-type")
+        )
+
+        body_node = node.child_by_field_name("body")
+        if body_node is None:
+            self._reject(node, "lambda without a body")
+
+        declared: uir.Type = (
+            expected
+            if expected is not None and self._sam_name(expected) is not None
+            else UnknownType("lambda-target-type")
+        )
+
+        if body_node.type == "block":
+            return Lambda(
+                origin=origin,
+                type=declared,
+                params=params,
+                body_expr=None,
+                body_block=self._block(body_node, inner),
+            )
+        # An expression-bodied lambda returns its expression, so it takes the
+        # same conversion a `return` would.  Applying it only to block bodies
+        # would make `x -> x / 2` and `x -> { return x / 2; }` behave
+        # differently on the same interface.
+        body_expr = self._expr(body_node, inner)
+        result_type = inner.names["__return__"]
+        return Lambda(
+            origin=origin,
+            type=declared,
+            params=params,
+            body_expr=self._coerce(body_expr, result_type),
+            body_block=None,
+        )
+
+    def _sam_name(self, t: uir.Type) -> str | None:
+        """The SAM of ``t``, whether it is a JDK interface or one declared here."""
+
+        builtin = uir.sam_of(t)
+        if builtin is not None:
+            return builtin
+        if isinstance(t, ClassType) and t.name in self._interface_sams:
+            return self._interface_sams[t.name][0]
+        return None
+
+    def _infer_lambda_param_types(
+        self, params: tuple[Param, ...], expected: uir.Type | None
+    ) -> tuple[Param, ...]:
+        """Give inferred lambda parameters the types the target interface implies.
+
+        Without this, ``x -> x + 1`` on a ``Function<Integer,Integer>`` has an
+        untyped ``x``, and the emitter cannot tell a 32-bit int addition from a
+        64-bit one or from string concatenation, so it refuses.
+        """
+
+        if expected is None or not isinstance(expected, ClassType):
+            return params
+
+        if expected.name in self._interface_sams:
+            return self._apply_param_types(
+                params, list(self._interface_sams[expected.name][2])
+            )
+
+        if uir.sam_of(expected) is None or not expected.args:
+            return params
+
+        name = expected.name
+        if name in ("Function", "BiFunction"):
+            argument_types = list(expected.args[:-1])
+        elif name in ("Predicate", "Consumer", "Supplier", "UnaryOperator",
+                      "BinaryOperator", "ToIntFunction", "IntFunction"):
+            argument_types = list(expected.args)
+        elif name in ("BiPredicate", "BiConsumer", "Comparator"):
+            argument_types = list(expected.args) * 2 if len(expected.args) == 1 else list(expected.args)
+        else:
+            return params
+
+        return self._apply_param_types(params, argument_types)
+
+    @staticmethod
+    def _apply_param_types(
+        params: tuple[Param, ...], argument_types: list[uir.Type]
+    ) -> tuple[Param, ...]:
+        out = []
+        for index, p in enumerate(params):
+            if isinstance(p.type, UnknownType) and index < len(argument_types):
+                out.append(Param(origin=p.origin, name=p.name, type=argument_types[index]))
+            else:
+                out.append(p)
+        return tuple(out)
+
+    def _lambda_params(self, node: "Node | None") -> tuple[Param, ...]:
+        """Java spells lambda parameters three different ways."""
+
         if node is None:
             return ()
-        return tuple(self._expr(a, scope) for a in self._named(node))
+        if node.type == "identifier":
+            # `x -> ...`
+            return (
+                Param(
+                    origin=self._origin(node),
+                    name=self._text(node),
+                    type=UnknownType("inferred-lambda-parameter"),
+                ),
+            )
+        if node.type == "inferred_parameters":
+            # `(x, y) -> ...`
+            return tuple(
+                Param(
+                    origin=self._origin(child),
+                    name=self._text(child),
+                    type=UnknownType("inferred-lambda-parameter"),
+                )
+                for child in self._named(node)
+                if child.type == "identifier"
+            )
+        if node.type == "formal_parameters":
+            # `(int x, int y) -> ...`
+            return self._params(node)
+        return self._reject(node, "lambda parameter list")
+
+    def _method_ref(self, node: "Node", scope: _Scope) -> Expr:
+        """Lower ``Target::name``.
+
+        A *bound* reference (``expr::m``) evaluates its receiver once, at the
+        point the reference is created.  Lowering it to the same node as an
+        unbound reference would lose that, and the receiver would be
+        re-evaluated on every call.
+        """
+
+        origin = self._origin(node)
+        children = self._named(node)
+        if not children:
+            self._reject(node, "method reference without a target")
+
+        target_node = children[0]
+        name_node = children[-1]
+        name = self._text(name_node)
+
+        if name_node.type == "new" or name == "new":
+            if target_node.type not in ("type_identifier", "identifier"):
+                self._reject(node, "constructor reference on a computed type")
+            owner = self._text(target_node)
+            if owner not in self._class_names:
+                self._reject(
+                    node,
+                    f"constructor reference to {owner}, which is not declared here",
+                )
+            return MethodRef(
+                origin=origin,
+                type=UnknownType("method-ref"),
+                ref_kind="constructor",
+                name="<init>",
+                owner=owner,
+            )
+
+        if target_node.type == "this":
+            return MethodRef(
+                origin=origin,
+                type=UnknownType("method-ref"),
+                ref_kind="bound",
+                name=name,
+                target=This(origin=self._origin(target_node), type=UnknownType("this-type")),
+            )
+
+        text = self._text(target_node)
+        if target_node.type in ("type_identifier", "identifier") and scope.resolve(text) is None:
+            if text not in self._class_names:
+                self._reject(
+                    node,
+                    f"method reference {text}::{name} on a type with no "
+                    f"declaration in this compilation unit",
+                )
+            return MethodRef(
+                origin=origin,
+                type=UnknownType("method-ref"),
+                ref_kind="static" if name in self._static_method_names else "unbound",
+                name=name,
+                owner=text,
+            )
+
+        return MethodRef(
+            origin=origin,
+            type=UnknownType("method-ref"),
+            ref_kind="bound",
+            name=name,
+            target=self._expr(target_node, scope),
+        )
+
+    # -- expression helpers ----------------------------------------------
+
+    def _args(
+        self,
+        node: "Node | None",
+        scope: _Scope,
+        expected: tuple[uir.Type, ...] | None = None,
+    ) -> tuple[Expr, ...]:
+        if node is None:
+            return ()
+        nodes = self._named(node)
+        out: list[Expr] = []
+        for index, a in enumerate(nodes):
+            want = (
+                expected[index]
+                if expected is not None and index < len(expected)
+                else None
+            )
+            out.append(self._expr(a, scope, expected=want))
+        return tuple(out)
 
     def _binary(self, node: "Node", scope: _Scope) -> Expr:
         origin = self._origin(node)
@@ -1042,7 +1337,11 @@ class JavaFrontend:
     def _call(self, node: "Node", scope: _Scope) -> Expr:
         origin = self._origin(node)
         name = self._text(node.child_by_field_name("name"))
-        args = self._args(node.child_by_field_name("arguments"), scope)
+        args = self._args(
+            node.child_by_field_name("arguments"),
+            scope,
+            self._method_param_types.get(name),
+        )
         obj = node.child_by_field_name("object")
 
         if obj is None:
@@ -1155,6 +1454,31 @@ class JavaFrontend:
         return UnknownType(f"static-call:{owner}.{name}")
 
     def _instance_call_type(self, target: uir.Type, name: str) -> uir.Type:
+        if isinstance(target, ClassType) and target.name in self._interface_sams:
+            sam_name, result, _params = self._interface_sams[target.name]
+            if sam_name == name:
+                return result
+        sam = uir.sam_of(target)
+        if sam == name and isinstance(target, ClassType):
+            # `Function<A,B>.apply` yields B; without the type argument the
+            # result is honestly unknown rather than assumed.
+            if target.name in ("Function", "BiFunction") and target.args:
+                return target.args[-1]
+            if target.name in ("Predicate", "BiPredicate"):
+                return uir.T_BOOLEAN
+            if target.name in ("Comparator", "ToIntFunction", "IntUnaryOperator",
+                               "IntBinaryOperator", "IntSupplier"):
+                return uir.T_INT
+            if target.name in ("Runnable", "Consumer", "BiConsumer"):
+                return uir.T_VOID
+            if target.name in ("UnaryOperator", "BinaryOperator") and target.args:
+                return target.args[0]
+            if target.name == "Supplier" and target.args:
+                return target.args[0]
+            return UnknownType(f"sam-result:{target.name}")
+        return self._instance_call_type_declared(target, name)
+
+    def _instance_call_type_declared(self, target: uir.Type, name: str) -> uir.Type:
         if self._is_string(target):
             table = {
                 "length": uir.T_INT,

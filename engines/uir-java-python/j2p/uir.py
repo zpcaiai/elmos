@@ -330,6 +330,63 @@ class StaticCall(Expr):
     args: tuple[Expr, ...]
 
 
+#: Java's functional interfaces and their single abstract method.  A call to the
+#: SAM on a value holding a lambda is a *call of that lambda*, not a method
+#: lookup, and the emitter needs this table to tell the two apart.
+FUNCTIONAL_INTERFACES: dict[str, str] = {
+    "BiConsumer": "accept",
+    "BiFunction": "apply",
+    "BiPredicate": "test",
+    "BinaryOperator": "apply",
+    "BooleanSupplier": "getAsBoolean",
+    "Callable": "call",
+    "Comparator": "compare",
+    "Consumer": "accept",
+    "Function": "apply",
+    "IntBinaryOperator": "applyAsInt",
+    "IntPredicate": "test",
+    "IntSupplier": "getAsInt",
+    "IntUnaryOperator": "applyAsInt",
+    "Predicate": "test",
+    "Runnable": "run",
+    "Supplier": "get",
+    "ToIntFunction": "applyAsInt",
+    "UnaryOperator": "apply",
+}
+
+
+@dataclass(frozen=True)
+class Lambda(Expr):
+    KIND = "Lambda"
+    params: tuple["Param", ...]
+    #: Exactly one of these is populated.
+    body_expr: "Expr | None" = None
+    body_block: "Block | None" = None
+
+    def __post_init__(self) -> None:
+        if (self.body_expr is None) == (self.body_block is None):
+            raise UirError("a lambda has exactly one of an expression or a block body")
+
+
+#: How a ``::`` reference names its target.  The distinction matters for
+#: evaluation order: a *bound* reference evaluates its receiver once, when the
+#: reference is created, not on each call.
+METHOD_REF_KINDS = ("static", "bound", "unbound", "constructor")
+
+
+@dataclass(frozen=True)
+class MethodRef(Expr):
+    KIND = "MethodRef"
+    ref_kind: str
+    name: str
+    owner: str | None = None
+    target: "Expr | None" = None
+
+    def __post_init__(self) -> None:
+        if self.ref_kind not in METHOD_REF_KINDS:
+            raise UirError(f"unknown method reference kind: {self.ref_kind!r}")
+
+
 @dataclass(frozen=True)
 class New(Expr):
     KIND = "New"
@@ -627,9 +684,50 @@ def type_of(expr: Expr) -> Type:
     return expr.type
 
 
+#: Java's boxed types and the primitives they unbox to.
+BOXED = {
+    "Boolean": "boolean",
+    "Byte": "byte",
+    "Character": "char",
+    "Double": "double",
+    "Float": "float",
+    "Integer": "int",
+    "Long": "long",
+    "Short": "short",
+}
+
+
+def unbox(t: "Type") -> "Type":
+    """Unbox ``Integer`` to ``int`` and so on, for arithmetic contexts.
+
+    Only for arithmetic.  ``==`` on two boxed values is *reference* comparison
+    in Java, so unboxing there would change the answer; the emitter refuses that
+    case instead.
+    """
+
+    if isinstance(t, ClassType) and t.name in BOXED:
+        return PrimitiveType(BOXED[t.name])
+    return t
+
+
+def is_reference(t: "Type") -> bool:
+    """True when ``==`` on this type compares identity rather than value."""
+
+    return not isinstance(t, PrimitiveType)
+
+
+def sam_of(t: "Type") -> str | None:
+    """The single abstract method name of ``t``, if it is a functional interface."""
+
+    if isinstance(t, ClassType):
+        return FUNCTIONAL_INTERFACES.get(t.name)
+    return None
+
+
 def unary_promote(t: "Type") -> "Type":
     """Java unary numeric promotion: anything narrower than int becomes int."""
 
+    t = unbox(t)
     if isinstance(t, PrimitiveType) and t.name in ("byte", "short", "char", "int"):
         return T_INT
     return t
@@ -645,6 +743,7 @@ def binary_promote(a: "Type", b: "Type") -> "Type":
     precision or vice versa.
     """
 
+    a, b = unbox(a), unbox(b)
     if not isinstance(a, PrimitiveType) or not isinstance(b, PrimitiveType):
         return UnknownType("non-primitive-operand")
     names = {a.name, b.name}

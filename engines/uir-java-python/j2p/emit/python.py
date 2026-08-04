@@ -44,9 +44,12 @@ from ..uir import (
     IncDec,
     InstanceOf,
     IntLiteral,
+    Lambda,
     LocalVar,
+    MethodRef,
     Method,
     Module,
+    Param,
     Name,
     New,
     NewArray,
@@ -100,6 +103,11 @@ class PythonEmitter:
         self._static_fields: set[str] = set()
         self._instance_fields: set[str] = set()
         self._record_components: set[str] = set()
+        #: Definitions that must be written immediately before the statement
+        #: currently being emitted.  A block-bodied lambda becomes a nested
+        #: `def`, and Python has no expression form for that.
+        self._hoisted: list[tuple[int, str, "Origin | None"]] = []
+        self._temp_index = 0
         self._class_names: set[str] = {t.name for t in module.types}
         self._enum_names: set[str] = {
             t.name for t in module.types if t.kind == "enum"
@@ -131,6 +139,65 @@ class PythonEmitter:
                 )
             )
 
+    def _fresh(self, stem: str) -> str:
+        self._temp_index += 1
+        return f"_{stem}_{self._temp_index}"
+
+    def _line(self, indent: int, build, origin: Origin | None = None) -> None:
+        """Emit one statement line, writing any hoisted definitions above it.
+
+        ``build`` is called first so that expression emission can queue nested
+        definitions; those are written at the same indent, immediately before
+        the statement that uses them.
+        """
+
+        saved, self._hoisted = self._hoisted, []
+        try:
+            text = build()
+            hoisted = self._hoisted
+        finally:
+            self._hoisted = saved
+        for rel, line, hoist_origin in hoisted:
+            self._write(indent + rel, line, hoist_origin)
+        self._write(indent, text, origin)
+
+    def _sub_emit(self, fn) -> list[tuple[int, str, "Origin | None"]]:
+        """Emit statements into a detached buffer, returning relative lines.
+
+        Used for a lambda body, which becomes a nested `def` written above the
+        statement that referenced it.  Source-map entries produced inside are
+        re-based by the caller, so a lambda body stays traceable to its Java
+        line.
+        """
+
+        saved_lines, saved_map, saved_hoist = self.lines, self.source_map, self._hoisted
+        self.lines, self.source_map, self._hoisted = [], [], []
+        try:
+            fn()
+            produced, produced_map = self.lines, self.source_map
+        finally:
+            self.lines, self.source_map, self._hoisted = (
+                saved_lines,
+                saved_map,
+                saved_hoist,
+            )
+        origin_by_line = {e.python_line: e for e in produced_map}
+        out: list[tuple[int, str, "Origin | None"]] = []
+        for index, raw in enumerate(produced, start=1):
+            stripped = raw.lstrip(" ")
+            rel = (len(raw) - len(stripped)) // 4
+            entry = origin_by_line.get(index)
+            out.append(
+                (
+                    rel,
+                    stripped,
+                    Origin(entry.java_file, entry.java_line, entry.java_column)
+                    if entry
+                    else None,
+                )
+            )
+        return out
+
     def _header(self) -> None:
         self._write(0, '"""Generated from Java by the UIR java->python route.')
         self._write(0, "")
@@ -145,7 +212,22 @@ class PythonEmitter:
 
     def _type_decl(self, decl: TypeDecl) -> None:
         if decl.kind == "interface":
-            raise EmitError("interface declarations are not supported", decl.origin)
+            # A pure abstract interface carries no behaviour, so an empty class
+            # reproduces it exactly.  One with default or static methods does
+            # carry behaviour, and dispatching that correctly needs an
+            # inheritance model this emitter does not have.
+            with_bodies = [m for m in decl.methods if m.body is not None]
+            if with_bodies or decl.fields:
+                raise EmitError(
+                    "interface with default/static methods or constants is not "
+                    "supported; only pure abstract interfaces are",
+                    with_bodies[0].origin if with_bodies else decl.origin,
+                )
+            self._write(0, f"class {decl.name}:", decl.origin)
+            self._write(1, '"""Pure abstract interface; carries no behaviour."""')
+            self._write(1, "pass")
+            self._write(0, "")
+            return
 
         self._static_methods = {m.name for m in decl.methods if m.is_static}
         self._instance_methods = {
@@ -320,12 +402,16 @@ class PythonEmitter:
             return
 
         if isinstance(stmt, LocalVar):
-            value = (
-                self._expr(stmt.init)
-                if stmt.init is not None
-                else self._zero(stmt.type)
+            self._line(
+                indent,
+                lambda: f"{stmt.name} = "
+                + (
+                    self._expr(stmt.init)
+                    if stmt.init is not None
+                    else self._zero(stmt.type)
+                ),
+                stmt.origin,
             )
-            self._write(indent, f"{stmt.name} = {value}", stmt.origin)
             return
 
         if isinstance(stmt, ExprStmt):
@@ -333,7 +419,7 @@ class PythonEmitter:
             return
 
         if isinstance(stmt, If):
-            self._write(indent, f"if {self._cond(stmt.cond)}:", stmt.origin)
+            self._line(indent, lambda: f"if {self._cond(stmt.cond)}:", stmt.origin)
             self._body(stmt.then, indent + 1)
             if stmt.other is not None:
                 self._write(indent, "else:", stmt.origin)
@@ -341,14 +427,16 @@ class PythonEmitter:
             return
 
         if isinstance(stmt, While):
-            self._write(indent, f"while {self._cond(stmt.cond)}:", stmt.origin)
+            self._line(indent, lambda: f"while {self._cond(stmt.cond)}:", stmt.origin)
             self._body(stmt.body, indent + 1)
             return
 
         if isinstance(stmt, DoWhile):
             self._write(indent, "while True:", stmt.origin)
             self._body(stmt.body, indent + 1)
-            self._write(indent + 1, f"if not ({self._cond(stmt.cond)}):", stmt.origin)
+            self._line(
+                indent + 1, lambda: f"if not ({self._cond(stmt.cond)}):", stmt.origin
+            )
             self._write(indent + 2, "break")
             return
 
@@ -361,7 +449,7 @@ class PythonEmitter:
             cond = self._cond(stmt.cond) if stmt.cond is not None else "True"
             if stmt.update:
                 self._write(indent, "while True:", stmt.origin)
-                self._write(indent + 1, f"if not ({cond}):", stmt.origin)
+                self._line(indent + 1, lambda: f"if not ({cond}):", stmt.origin)
                 self._write(indent + 2, "break")
                 self._write(indent + 1, "try:")
                 self._body(stmt.body, indent + 2)
@@ -369,13 +457,16 @@ class PythonEmitter:
                 for update in stmt.update:
                     self._expr_stmt(update, indent + 2, stmt.origin)
             else:
-                self._write(indent, f"while {cond}:", stmt.origin)
+                self._line(indent, lambda: f"while {cond}:", stmt.origin)
                 self._body(stmt.body, indent + 1)
             return
 
         if isinstance(stmt, ForEach):
-            iterable = self._expr(stmt.iterable)
-            self._write(indent, f"for {stmt.var_name} in {iterable}:", stmt.origin)
+            self._line(
+                indent,
+                lambda: f"for {stmt.var_name} in {self._expr(stmt.iterable)}:",
+                stmt.origin,
+            )
             self._body(stmt.body, indent + 1)
             return
 
@@ -383,7 +474,9 @@ class PythonEmitter:
             if stmt.value is None:
                 self._write(indent, "return", stmt.origin)
             else:
-                self._write(indent, f"return {self._expr(stmt.value)}", stmt.origin)
+                self._line(
+                    indent, lambda: f"return {self._expr(stmt.value)}", stmt.origin
+                )
             return
 
         if isinstance(stmt, Break):
@@ -395,7 +488,7 @@ class PythonEmitter:
             return
 
         if isinstance(stmt, Throw):
-            self._write(indent, f"raise {self._expr(stmt.value)}", stmt.origin)
+            self._line(indent, lambda: f"raise {self._expr(stmt.value)}", stmt.origin)
             return
 
         if isinstance(stmt, Try):
@@ -450,20 +543,24 @@ class PythonEmitter:
         for case in stmt.cases:
             self._require_terminated_case(case, stmt.origin)
 
-        subject = self._expr(stmt.subject)
         tmp = "_switch_subject"
-        self._write(indent, f"{tmp} = {subject}", stmt.origin)
+        self._line(indent, lambda: f"{tmp} = {self._expr(stmt.subject)}", stmt.origin)
         first = True
         default_case = None
         for case in stmt.cases:
             if not case.labels:
                 default_case = case
                 continue
-            tests = " or ".join(
-                f"{tmp} == {self._expr(label)}" for label in case.labels
-            )
             keyword = "if" if first else "elif"
-            self._write(indent, f"{keyword} {tests}:", case.origin)
+            self._line(
+                indent,
+                lambda case=case, keyword=keyword: f"{keyword} "
+                + " or ".join(
+                    f"{tmp} == {self._expr(label)}" for label in case.labels
+                )
+                + ":",
+                case.origin,
+            )
             self._emit_case_body(case, indent + 1)
             first = False
         if default_case is not None:
@@ -534,6 +631,7 @@ class PythonEmitter:
         """
 
         if isinstance(expr, Assign):
+            saved, self._hoisted = self._hoisted, []
             target = self._lvalue_read(expr.target)
             if expr.op == "=":
                 value = self._expr(expr.value)
@@ -567,6 +665,9 @@ class PythonEmitter:
                         operand=combined,
                     )
                 )
+            hoisted, self._hoisted = self._hoisted, saved
+            for rel, line, hoist_origin in hoisted:
+                self._write(indent + rel, line, hoist_origin)
             self._emit_store(expr.target, value, indent, origin)
             return
 
@@ -591,7 +692,7 @@ class PythonEmitter:
             self._emit_store(expr.target, value, indent, origin)
             return
 
-        self._write(indent, self._expr(expr), origin)
+        self._line(indent, lambda: self._expr(expr), origin)
 
     def _check_compound_target(self, target: Expr, origin: Origin) -> None:
         """A read-modify-write target must be safe to evaluate twice.
@@ -697,6 +798,10 @@ class PythonEmitter:
             return self._new(expr)
         if isinstance(expr, NewArray):
             return self._new_array(expr)
+        if isinstance(expr, Lambda):
+            return self._lambda(expr)
+        if isinstance(expr, MethodRef):
+            return self._method_ref(expr)
         if isinstance(expr, Call):
             return self._call(expr)
         if isinstance(expr, StaticCall):
@@ -719,6 +824,83 @@ class PythonEmitter:
         if isinstance(expr.target, This) and expr.name in self._record_components:
             return f"_{expr.name}"
         return expr.name
+
+    # -- lambdas -----------------------------------------------------------
+
+    @staticmethod
+    def _bound_names(node) -> set[str]:
+        """Names a subtree introduces: locals, loop variables, catch bindings."""
+
+        bound: set[str] = set()
+        for n in uir.walk(node):
+            if isinstance(n, LocalVar):
+                bound.add(n.name)
+            elif isinstance(n, ForEach):
+                bound.add(n.var_name)
+            elif isinstance(n, uir.CatchClause):
+                bound.add(n.name)
+            elif isinstance(n, Param):
+                bound.add(n.name)
+        return bound
+
+    def _captures(self, body, params: tuple[Param, ...]) -> list[str]:
+        """Locals the lambda body reads from its enclosing scope.
+
+        Java only permits capture of *effectively final* locals, so their value
+        cannot change after the lambda is created.  Python closures capture by
+        reference and read the variable's value at call time.  For an ordinary
+        capture the two agree; for a variable that is rebound each iteration of
+        an enclosing loop they do not, and every lambda created in that loop
+        would see the final value.  Capturing by value removes the difference.
+        """
+
+        used = {n.ident for n in uir.walk(body) if isinstance(n, Name)}
+        return sorted(used - self._bound_names(body) - {p.name for p in params})
+
+    def _lambda(self, expr: Lambda) -> str:
+        params = [p.name for p in expr.params]
+        captures = self._captures(
+            expr.body_expr if expr.body_expr is not None else expr.body_block,
+            expr.params,
+        )
+        # `n=n` binds the *current* value as a default argument: evaluated once,
+        # when the lambda is created, exactly as Java captures it.
+        signature = ", ".join(params + [f"{name}={name}" for name in captures])
+
+        if expr.body_expr is not None:
+            saved, self._hoisted = self._hoisted, []
+            try:
+                body = self._expr(expr.body_expr)
+                nested = self._hoisted
+            finally:
+                self._hoisted = saved
+            if nested:
+                raise EmitError(
+                    "a lambda whose body needs a nested definition cannot be "
+                    "emitted as a Python lambda expression; the definition "
+                    "would be hoisted out of the scope it captures",
+                    expr.origin,
+                )
+            return f"(lambda {signature}: {body})" if signature else f"(lambda: {body})"
+
+        name = self._fresh("lambda")
+        block = expr.body_block
+        lines = self._sub_emit(lambda: self._body(block, 1))
+        self._hoisted.append((0, f"def {name}({signature}):", expr.origin))
+        self._hoisted.extend(lines)
+        return name
+
+    def _method_ref(self, expr: MethodRef) -> str:
+        if expr.ref_kind == "constructor":
+            return f"(lambda *_a: {expr.owner}(*_a))"
+        if expr.ref_kind == "static":
+            return f"{expr.owner}.{expr.name}"
+        if expr.ref_kind == "unbound":
+            return f"(lambda _r, *_a: _r.{expr.name}(*_a))"
+        # A bound reference evaluates its receiver once, at creation.  The
+        # default argument is what makes that true here.
+        target = self._expr(expr.target) if expr.target is not None else "self"
+        return f"(lambda *_a, _t={target}: _t.{expr.name}(*_a))"
 
     def _name_ref(self, expr: Name) -> str:
         # Field references were already resolved by the front end into
@@ -770,10 +952,7 @@ class PythonEmitter:
             return f"({left} {py} {right})"
 
         if op in ("==", "!="):
-            # Reference identity vs value equality: both operands here are
-            # either primitives or Strings, for which Java's == on the values
-            # produced by this translation matches Python's ==.
-            return f"({left} {op} {right})"
+            return self._equality(expr, left, right)
 
         if op in ("<", "<=", ">", ">="):
             return f"({left} {op} {right})"
@@ -809,6 +988,34 @@ class PythonEmitter:
         raise EmitError(
             f"operator {op} on unresolved type {expr.type}", expr.origin
         )
+
+    def _equality(self, expr: Binary, left: str, right: str) -> str:
+        """``==`` in Java is value comparison only for primitives.
+
+        On any reference type it compares identity, which is why
+        ``Integer.valueOf(1000) == Integer.valueOf(1000)`` is false and why
+        comparing Strings with ``==`` is a bug rather than a style choice.
+        Emitting Python's ``==`` for those would turn a false into a true.
+        """
+
+        if isinstance(expr.left, NullLiteral) or isinstance(expr.right, NullLiteral):
+            return f"({left} is {'not None' if expr.op == '!=' else 'None'})" if isinstance(
+                expr.right, NullLiteral
+            ) else f"({right} is {'not None' if expr.op == '!=' else 'None'})"
+
+        # Java unboxes only when at least one operand is already primitive.
+        # Testing the *unboxed* types here would treat `Integer == Integer` as a
+        # value comparison, which is exactly the bug this guard exists to catch.
+        left_ref = uir.is_reference(expr.left.type)
+        right_ref = uir.is_reference(expr.right.type)
+        if left_ref and right_ref:
+            raise EmitError(
+                f"`{expr.op}` between two reference types "
+                f"({expr.left.type} and {expr.right.type}) compares identity in "
+                f"Java, not value; use .equals() or compare a primitive",
+                expr.origin,
+            )
+        return f"({left} {expr.op} {right})"
 
     @staticmethod
     def _wrapper(kind: str) -> str:
@@ -955,6 +1162,18 @@ class PythonEmitter:
         target_type = expr.target.type
         target = self._expr(expr.target)
 
+        sam = uir.sam_of(target_type) or self._user_sam(target_type)
+        if sam is not None:
+            if expr.name != sam:
+                raise EmitError(
+                    f"{target_type.name}.{expr.name} is not the single abstract "
+                    f"method ({sam}); default methods such as andThen/negate are "
+                    f"not supported",
+                    expr.origin,
+                )
+            # The value is a Python callable, so the SAM call *is* the call.
+            return f"{target}({', '.join(args)})"
+
         if isinstance(target_type, ClassType) and target_type.name == "String":
             return self._string_method(target, expr, args)
 
@@ -1011,6 +1230,20 @@ class PythonEmitter:
                 expr.origin,
             )
         return f"{target}.{expr.name}({', '.join(args)})"
+
+    def _user_sam(self, t: uir.Type) -> str | None:
+        """The SAM of an interface declared in this compilation unit."""
+
+        if not isinstance(t, ClassType):
+            return None
+        decl = next(
+            (d for d in self.module.types if d.name == t.name and d.kind == "interface"),
+            None,
+        )
+        if decl is None:
+            return None
+        abstract = [m for m in decl.methods if m.body is None]
+        return abstract[0].name if len(abstract) == 1 else None
 
     def _owner_of_method(self, name: str) -> str:
         for decl in self.module.types:

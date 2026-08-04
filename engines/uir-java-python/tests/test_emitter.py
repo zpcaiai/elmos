@@ -117,6 +117,86 @@ class StructureTest(unittest.TestCase):
         self.assertTrue(any(e.java_line == 3 for e in entries))
 
 
+class LambdaTest(unittest.TestCase):
+    def test_captured_local_is_bound_by_value(self):
+        # `n=n` is what makes this correct.  A plain closure would read `n` at
+        # call time, and every lambda made in a loop would see the last value.
+        code = emit(
+            "static void f(int n) { java.util.function.Supplier<Integer> s"
+            " = () -> n + 1; }"
+        )
+        self.assertIn("lambda n=n:", code)
+
+    def test_lambda_parameters_are_not_captured(self):
+        code = emit(
+            "static void f() { java.util.function.Function<Integer,Integer> g"
+            " = x -> x + 1; }"
+        )
+        self.assertIn("lambda x:", code)
+        self.assertNotIn("x=x", code)
+
+    def test_block_lambda_becomes_a_hoisted_def(self):
+        code = emit(
+            "static void f(int n) { Runnable r = () -> { int t = n; }; }"
+        )
+        self.assertIn("def _lambda_1(n=n):", code)
+        self.assertIn("r = _lambda_1", code)
+        compile(code, "T.py", "exec")
+
+    def test_sam_call_becomes_a_call(self):
+        code = emit(
+            "static int f(java.util.function.Function<Integer,Integer> g)"
+            " { return g.apply(1); }"
+        )
+        self.assertIn("return g(1)", code)
+
+    def test_bound_method_reference_evaluates_its_receiver_once(self):
+        code = emit_python(
+            parse_java(
+                b"class T { int m(int a) { return a; } void f() { Object b = this::m; } }",
+                "T.java",
+            )
+        )
+        self.assertIn("_t=self", code)
+
+    def test_arithmetic_inside_a_lambda_still_wraps(self):
+        code = emit(
+            "static void f() { java.util.function.Function<Integer,Integer> g"
+            " = x -> x * 2; }"
+        )
+        self.assertIn("rt.jint(", code)
+
+    def test_pure_abstract_interface_becomes_an_empty_class(self):
+        code = emit_python(parse_java(b"interface I { int m(int a); }", "I.java"))
+        self.assertIn("class I:", code)
+        compile(code, "I.py", "exec")
+
+
+class ReferenceEqualityTest(unittest.TestCase):
+    def test_comparing_two_strings_with_double_equals_is_refused(self):
+        # Java compares references there; Python would compare values and
+        # silently turn a false into a true.
+        with self.assertRaises(EmitError) as ctx:
+            emit("static boolean f(String a, String b) { return a == b; }")
+        self.assertIn("compares identity", str(ctx.exception))
+
+    def test_comparing_two_boxed_integers_is_refused(self):
+        with self.assertRaises(EmitError):
+            emit("static boolean f(Integer a, Integer b) { return a == b; }")
+
+    def test_comparing_against_null_uses_identity(self):
+        code = emit("static boolean f(String a) { return a != null; }")
+        self.assertIn("is not None", code)
+
+    def test_primitive_comparison_is_unaffected(self):
+        code = emit("static boolean f(int a, int b) { return a == b; }")
+        self.assertIn("(a == b)", code)
+
+    def test_unboxing_makes_mixed_comparison_a_value_comparison(self):
+        code = emit("static boolean f(Integer a, int b) { return a == b; }")
+        self.assertIn("(a == b)", code)
+
+
 class EmitRefusalTest(unittest.TestCase):
     def _refuses(self, body: str, needle: str):
         with self.assertRaises(EmitError) as ctx:
@@ -162,6 +242,20 @@ class EmitRefusalTest(unittest.TestCase):
             'static String f(String s) { return s.replaceAll("a", "b"); }',
             "not supported",
         )
+
+    def test_default_method_on_a_functional_interface_is_refused(self):
+        self._refuses(
+            "static Object f(java.util.function.Function<Integer,Integer> g)"
+            " { return g.andThen(g); }",
+            "not the single abstract method",
+        )
+
+    def test_interface_with_a_default_method_is_refused(self):
+        with self.assertRaises(EmitError) as ctx:
+            emit_python(
+                parse_java(b"interface I { default int m() { return 1; } }", "I.java")
+            )
+        self.assertIn("default/static methods", str(ctx.exception))
 
     def test_unknown_static_call_is_refused(self):
         self._refuses(

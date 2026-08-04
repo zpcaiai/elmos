@@ -30,6 +30,7 @@ CORPUS_PLAN = {
     "Arith.java": default_arg_vectors(2),
     "Control.java": default_arg_vectors(2),
     "Failure.java": default_arg_vectors(2),
+    "Lambdas.java": [[v] for v in BOUNDARY_INTS],
     "Mixed.java": [[v] for v in BOUNDARY_INTS],
     "Objects.java": [[v] for v in BOUNDARY_INTS],
     "Records.java": [[v] for v in BOUNDARY_INTS],
@@ -128,7 +129,7 @@ class HarnessHonestyTest(unittest.TestCase):
         refused = CORPUS / "_refused_for_test.java"
         refused.write_text(
             "public class _refused_for_test { public static void main(String[] a)"
-            " { Runnable r = () -> {}; } }",
+            " { outer: while (true) { break outer; } } }",
             encoding="utf-8",
         )
         try:

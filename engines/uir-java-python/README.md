@@ -14,11 +14,11 @@ Java 源码
 
 | 指标 | 数值 | 怎么来的 |
 |---|---:|---|
-| 单元 + 端到端测试 | **119** | `make uir-j2p-test` |
-| 差分比较（Java vs Python 实跑） | **468** | 7 个语料程序 × 边界输入向量 |
-| 变异实验 | **32/32 全部杀死** | `make uir-j2p-mutation` |
-| elmos 仓库 884 个 Java 文件的降级率 | **30.7%**（271 个） | `make uir-j2p-survey` |
-| 其中能生成 Python 的 | **3.4%**（30 个） | 同上 |
+| 单元 + 端到端测试 | **140** | `make uir-j2p-test` |
+| 差分比较（Java vs Python 实跑） | **500** | 8 个语料程序 × 边界输入向量 |
+| 变异实验 | **39/39 全部杀死** | `make uir-j2p-mutation` |
+| elmos 仓库 884 个 Java 文件的降级率 | **39.7%**（351 个） | `make uir-j2p-survey` |
+| 其中能生成 Python 的 | **4.8%**（42 个） | 同上 |
 | 已实现路线 | **1 / 90** | `java → python` |
 
 后两行是这个包最重要的两个数字。它们很难看，而且是真的。
@@ -36,21 +36,37 @@ return rt.idiv('int', a, b)
 
 所以算术全部走 `runtime/j2p_runtime.py`。噪音就是重点。
 
+## Lambda 的捕获是按值的
+
+Java 只允许捕获 effectively final 的局部变量；Python 闭包按引用捕获，调用时才读值。普通情况两者一致，但在循环里每轮重新绑定的变量上不一致——不做处理的话，循环里造出来的每个 lambda 都会看到最后一个值：
+
+```java
+for (int v : vals) { made[i] = () -> v * 10; i++; }
+```
+
+Java 打印 `cap0=30 cap1=40 cap2=50`；朴素翻译成 Python 闭包打印 `cap0=50 cap1=50 cap2=50`。所以捕获一律编译成默认参数：
+
+```python
+lambda v=v: rt.jint(v * 10)
+```
+
+默认参数在 lambda 创建时求值一次，正好等于 Java 的捕获时机。这条规则由 M33 变异实验守住——删掉它，差分立刻报出上面那组数字。
+
 ## Fail closed
 
 前端和生成器都**拒绝**它们看不懂的东西，带源码位置报错，绝不静默跳过：
 
 ```
-Foo.java:41:18: unsupported Java construct: lambda_expression (as expression)
+Foo.java:41:18: unsupported Java construct: class_literal (as expression)
 ```
 
 一个悄悄跳过 lambda 的前端会产出"看起来完整"的翻译。那正是这套工程要防的事。`make uir-j2p-survey` 输出的 refusal 统计就是下一步该做什么的依据——不是凭感觉挑的。
 
 ## 已支持 / 已拒绝
 
-**支持**：class、record、static 嵌套类、enum 常量、字段/方法/构造器、int/long/short/byte/char/boolean/double、数组、if/while/do/for/foreach/switch(不含 fall-through)/try-catch-finally/throw、String 与 StringBuilder 常用方法、Integer/Long/Double/Math、文本块、转义、字符串拼接、复合赋值、自增自减（语句位置）。
+**支持**：lambda（表达式体与块体、三种参数写法）、方法引用（`this::m`、`obj::m`、`Type::m`、`Type::new`）、JDK 函数式接口与项目自己声明的单抽象方法接口、class、record、static 嵌套类、enum 常量、字段/方法/构造器、int/long/short/byte/char/boolean/double、数组、if/while/do/for/foreach/switch(不含 fall-through)/try-catch-finally/throw、String 与 StringBuilder 常用方法、Integer/Long/Double/Math、文本块、转义、字符串拼接、复合赋值、自增自减（语句位置）。
 
-**明确拒绝**（每一条都有测试）：lambda、方法引用、varargs、泛型方法/泛型类声明、非静态内部类、`float`、try-with-resources、带标签的 break/continue、switch fall-through、多维数组、表达式位置的赋值与 `++`、未声明 `toString`/`hashCode` 的类调用它们、会被二次求值的复合赋值目标。
+**明确拒绝**（每一条都有测试）：`Foo.class`、record 紧凑构造器、指向本编译单元外类型的方法引用、try-with-resources、`==` 比较两个引用类型、函数式接口的 default 方法（`andThen`/`negate`）、带 default/static 方法的接口、varargs、泛型方法/泛型类声明、非静态内部类、`float`、带标签的 break/continue、switch fall-through、多维数组、表达式位置的赋值与 `++`、未声明 `toString`/`hashCode` 的类调用它们、会被二次求值的复合赋值目标。
 
 ## 用法
 
@@ -95,7 +111,7 @@ B19 记成 FAIL 是刻意的。把 1 条路线记成 90 条的 PASS 很容易，
 
 - **89 条路线没有实现**。`route-pack-inventory` 里逐条列出。
 - **另外九种语言没有前端**。B03 的 observation 里显式记为 `NOT_RUN`。
-- **lambda（178 个文件）和 record 紧凑构造器（129 个文件）是下一个瓶颈**，不是"边缘情况"——这是 survey 实测的排序。
+- **lambda 已经做了**（原本 178 个文件），降级率从 30.7% 提到 39.7%。没到我先前估的 50%——lambda 让路之后暴露出下一层瓶颈，实测排序是：`Foo.class` **158** 个文件、record 紧凑构造器 **129** 个、本单元外的方法引用 **85** 个。
 - **差分只比对 stdout 和抛出的异常类型/消息**。时间、内存、线程交错没有比对。
 - **语料是为这个引擎写的**，不是从客户仓库采样的。真实项目的差分需要真实项目。
 - **JVM 侧 843 个 Java 文件本次未编译、未测试**。
@@ -110,7 +126,7 @@ j2p/diff/harness.py         差分执行
 j2p/cli.py                  parse / emit / diff / survey
 runtime/j2p_runtime.py      Java 语义的 Python 实现（生成代码依赖它）
 corpus/                     语义陷阱语料（溢出、负除、MIN_VALUE、Double.toString…）
-tests/                      119 个测试
-tools/mutation_check.py     32 个变异实验
+tests/                      140 个测试
+tools/mutation_check.py     39 个变异实验
 tools/record_batch_evidence.py  接入 batch1-38 的证据生产者
 ```
