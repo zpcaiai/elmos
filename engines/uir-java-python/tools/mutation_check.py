@@ -255,6 +255,56 @@ MUTATIONS: list[Mutation] = [
         "                if not is_field:\n                    return Name(origin=origin, type=declared, ident=name)",
         "                if False:\n                    return Name(origin=origin, type=declared, ident=name)",
     ),
+    # ---- records and switch expressions ----------------------------------
+    Mutation(
+        "M40",
+        "j2p/emit/python.py",
+        "a compact constructor body runs before the fields are stored",
+        "            if compact is not None and compact.body is not None:\n                # The compact body runs first and may reassign the parameters;\n                # the fields are written from whatever they hold afterwards.\n                for stmt in compact.body.body:\n                    self._stmt(stmt, 2)\n",
+        "",
+    ),
+    Mutation(
+        "M41",
+        "j2p/frontend/java.py",
+        "compact constructor parameters shadow the record's components",
+        "        for component in components:\n            scope.names[component.name] = component.type",
+        "        pass",
+    ),
+    Mutation(
+        "M42",
+        "j2p/emit/python.py",
+        "a switch expression evaluates its subject exactly once",
+        '        tmp = self._fresh("switch_value")\n        self._hoisted.append((0, f"{tmp} = {self._expr(expr.subject)}", expr.origin))',
+        '        tmp = f"({self._expr(expr.subject)})"',
+    ),
+    Mutation(
+        "M43",
+        "j2p/emit/python.py",
+        "a hoisted statement is refused where it would be evaluated once instead of many times",
+        '        if hoisted:\n            raise EmitError(',
+        '        if False:\n            raise EmitError(',
+    ),
+    Mutation(
+        "M44",
+        "j2p/frontend/java.py",
+        "an arrow switch case is terminated so it cannot read as fall-through",
+        "        if not body or not isinstance(body[-1], (Return, Throw, Break)):\n            body.append(Break(origin=origin))",
+        "        pass",
+    ),
+    Mutation(
+        "M45",
+        "j2p/frontend/java.py",
+        "a switch expression without a default is refused",
+        '        if not any(not case.labels for case in cases):\n            self._reject(',
+        '        if False:\n            self._reject(',
+    ),
+    Mutation(
+        "M46",
+        "j2p/emit/python.py",
+        "a class literal is refused rather than invented",
+        '        if isinstance(expr, ClassLiteral):\n            raise EmitError(',
+        '        if isinstance(expr, ClassLiteral) and False:\n            raise EmitError(',
+    ),
     # ---- IR --------------------------------------------------------------
     # ---- lambdas ---------------------------------------------------------
     Mutation(

@@ -370,8 +370,11 @@ class Lambda(Expr):
 
 #: How a ``::`` reference names its target.  The distinction matters for
 #: evaluation order: a *bound* reference evaluates its receiver once, when the
-#: reference is created, not on each call.
-METHOD_REF_KINDS = ("static", "bound", "unbound", "constructor")
+#: reference is created, not on each call.  ``unresolved`` means the owner is
+#: declared outside this compilation unit, so the front end can record *what*
+#: was written without claiming to know whether it is static or unbound; the
+#: emitter decides whether it can be translated.
+METHOD_REF_KINDS = ("static", "bound", "unbound", "constructor", "unresolved")
 
 
 @dataclass(frozen=True)
@@ -523,6 +526,45 @@ class SwitchCase:
 
 
 @dataclass(frozen=True)
+class SwitchExprCase:
+    KIND = "SwitchExprCase"
+    origin: Origin
+    #: Empty tuple means ``default``.
+    labels: tuple[Expr, ...]
+    value: Expr
+
+
+@dataclass(frozen=True)
+class SwitchExpr(Expr):
+    KIND = "SwitchExpr"
+    #: A switch used as a value.  Distinct from the ``Switch`` statement
+    #: because it must produce a result and, unlike the statement form, cannot
+    #: fall through.
+    subject: Expr
+    cases: tuple[SwitchExprCase, ...]
+
+
+@dataclass(frozen=True)
+class ClassLiteral(Expr):
+    KIND = "ClassLiteral"
+    #: ``Foo.class``.  Representable in the IR; whether it can be *translated*
+    #: is a separate question the emitter answers.
+    name: str
+
+
+@dataclass(frozen=True)
+class ConstructorCall(Stmt):
+    KIND = "ConstructorCall"
+    #: ``this(...)`` or ``super(...)`` as the first statement of a constructor.
+    kind: str
+    args: tuple[Expr, ...]
+
+    def __post_init__(self) -> None:
+        if self.kind not in ("this", "super"):
+            raise UirError(f"unknown constructor call kind: {self.kind!r}")
+
+
+@dataclass(frozen=True)
 class Switch(Stmt):
     KIND = "Switch"
     subject: Expr
@@ -589,6 +631,10 @@ class TypeDecl:
     #: separate from ``fields`` because a record's accessor method shares its
     #: component's name, and the emitter has to resolve that collision.
     record_components: tuple[Param, ...] = ()
+    #: A record's compact constructor.  Its parameters *are* the components:
+    #: the body may reassign them, and whatever they hold at the end is what
+    #: gets stored.  Modelling it as an ordinary constructor would lose that.
+    compact_constructor: "Method | None" = None
     #: Name of the lexically enclosing type, for a nested declaration.
     enclosing: str | None = None
 

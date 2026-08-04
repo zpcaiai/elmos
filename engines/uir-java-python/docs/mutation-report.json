@@ -1,6 +1,6 @@
 {
-  "total": 39,
-  "killed": 39,
+  "total": 46,
+  "killed": 46,
   "survivors": [],
   "results": [
     {
@@ -181,6 +181,48 @@
       "id": "M30",
       "file": "j2p/frontend/java.py",
       "rule": "a parameter shadows a field of the same name",
+      "status": "KILLED"
+    },
+    {
+      "id": "M40",
+      "file": "j2p/emit/python.py",
+      "rule": "a compact constructor body runs before the fields are stored",
+      "status": "KILLED"
+    },
+    {
+      "id": "M41",
+      "file": "j2p/frontend/java.py",
+      "rule": "compact constructor parameters shadow the record's components",
+      "status": "KILLED"
+    },
+    {
+      "id": "M42",
+      "file": "j2p/emit/python.py",
+      "rule": "a switch expression evaluates its subject exactly once",
+      "status": "KILLED"
+    },
+    {
+      "id": "M43",
+      "file": "j2p/emit/python.py",
+      "rule": "a hoisted statement is refused where it would be evaluated once instead of many times",
+      "status": "KILLED"
+    },
+    {
+      "id": "M44",
+      "file": "j2p/frontend/java.py",
+      "rule": "an arrow switch case is terminated so it cannot read as fall-through",
+      "status": "KILLED"
+    },
+    {
+      "id": "M45",
+      "file": "j2p/frontend/java.py",
+      "rule": "a switch expression without a default is refused",
+      "status": "KILLED"
+    },
+    {
+      "id": "M46",
+      "file": "j2p/emit/python.py",
+      "rule": "a class literal is refused rather than invented",
       "status": "KILLED"
     },
     {

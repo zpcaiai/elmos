@@ -192,17 +192,84 @@ class LambdaLoweringTest(unittest.TestCase):
         self.assertIsInstance(param.type.args[0], uir.UnknownType)
 
 
+class RecordAndSwitchLoweringTest(unittest.TestCase):
+    def test_compact_constructor_parameters_are_the_components(self):
+        module = parse_java(b"record P(int x) { P { x = x + 1; } }", "P.java")
+        compact = module.types[0].compact_constructor
+        self.assertIsNotNone(compact)
+        self.assertEqual([p.name for p in compact.params], ["x"])
+
+    def test_compact_constructor_body_assigns_the_parameter_not_the_field(self):
+        # `x = x + 1` inside a compact constructor rebinds the *parameter*.
+        # Resolving it to the field would make the validation a no-op that
+        # writes the unvalidated value.
+        module = parse_java(b"record P(int x) { P { x = x + 1; } }", "P.java")
+        assign = module.types[0].compact_constructor.body.body[0].expr
+        self.assertIsInstance(assign.target, uir.Name)
+        self.assertEqual(assign.target.ident, "x")
+
+    def test_canonical_constructor_is_kept_as_a_constructor(self):
+        module = parse_java(
+            b"record P(int x) { P(int x) { this.x = x; } }", "P.java"
+        )
+        self.assertIsNone(module.types[0].compact_constructor)
+        self.assertTrue(any(m.is_constructor for m in module.types[0].methods))
+
+    def test_arrow_switch_rule_is_terminated(self):
+        module = parse(
+            "static int f(int n) { int t = 0; switch (n) { case 0 -> t = 1; "
+            "default -> t = 2; } return t; }"
+        )
+        switch = next(n for n in uir.walk(module) if isinstance(n, uir.Switch))
+        # Every arrow case must end in something terminal, because an arrow
+        # rule cannot fall through.
+        for case in switch.cases:
+            self.assertIsInstance(
+                case.body[-1], (uir.Break, uir.Return, uir.Throw)
+            )
+
+    def test_switch_expression_is_an_expression_node(self):
+        module = parse(
+            "static int f(int n) { return switch (n) { case 0 -> 1; "
+            "default -> 2; }; }"
+        )
+        found = [n for n in uir.walk(module) if isinstance(n, uir.SwitchExpr)]
+        self.assertEqual(len(found), 1)
+        self.assertEqual(len(found[0].cases), 2)
+
+    def test_yield_form_switch_expression_is_lowered(self):
+        module = parse(
+            'static String f(int n) { return switch (n) { case 1: yield "a"; '
+            'default: yield "b"; }; }'
+        )
+        found = next(n for n in uir.walk(module) if isinstance(n, uir.SwitchExpr))
+        self.assertEqual(len(found.cases), 2)
+
+    def test_method_reference_to_an_outside_type_is_recorded_as_unresolved(self):
+        module = parse("static Object f() { return String::trim; }")
+        ref = next(n for n in uir.walk(module) if isinstance(n, uir.MethodRef))
+        self.assertEqual(ref.ref_kind, "unresolved")
+        self.assertEqual((ref.owner, ref.name), ("String", "trim"))
+
+    def test_class_literal_is_represented(self):
+        module = parse("static Object f() { return T.class; }")
+        lit = next(n for n in uir.walk(module) if isinstance(n, uir.ClassLiteral))
+        self.assertEqual(lit.name, "T")
+
+    def test_explicit_constructor_invocation_is_represented(self):
+        module = parse_java(
+            b"class T { T(int a) {} T() { this(1); } }", "T.java"
+        )
+        call = next(n for n in uir.walk(module) if isinstance(n, uir.ConstructorCall))
+        self.assertEqual(call.kind, "this")
+        self.assertEqual(len(call.args), 1)
+
+
 class RefusalTest(unittest.TestCase):
     def _refuses(self, body: str, needle: str):
         with self.assertRaises(UnsupportedConstruct) as ctx:
             parse(body)
         self.assertIn(needle, str(ctx.exception))
-
-    def test_method_reference_to_an_undeclared_type_is_refused(self):
-        self._refuses(
-            "static Object f() { return String::trim; }",
-            "no declaration in this compilation unit",
-        )
 
     def test_varargs_is_refused(self):
         self._refuses("static int f(int... xs) { return 1; }", "varargs")
@@ -228,6 +295,19 @@ class RefusalTest(unittest.TestCase):
         self._refuses(
             "static void f() { outer: while (true) { break outer; } }",
             "labeled_statement",
+        )
+
+    def test_switch_expression_without_a_default_is_refused(self):
+        self._refuses(
+            "static int f(int n) { return switch (n) { case 0 -> 1; case 1 -> 2; }; }",
+            "without a default",
+        )
+
+    def test_switch_expression_case_with_statements_is_refused(self):
+        self._refuses(
+            "static int f(int n) { return switch (n) { case 0 -> { int t = 1; "
+            "yield t; } default -> 2; }; }",
+            "switch rule with a statement body",
         )
 
     def test_static_initializer_is_refused(self):

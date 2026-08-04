@@ -172,6 +172,105 @@ class LambdaTest(unittest.TestCase):
         compile(code, "I.py", "exec")
 
 
+class RecordConstructorTest(unittest.TestCase):
+    def test_compact_body_runs_before_the_fields_are_assigned(self):
+        code = emit_python(
+            parse_java(b"record P(int x) { P { x = x + 1; } }", "P.java")
+        )
+        body = code[code.index("def __init__"):]
+        self.assertLess(body.index("x = rt.jint(x + 1)"), body.index("self._x = x"))
+
+    def test_canonical_constructor_assigns_the_fields_itself(self):
+        code = emit_python(
+            parse_java(b"record P(int x) { P(int x) { this.x = x + 1; } }", "P.java")
+        )
+        self.assertIn("self._x = rt.jint(x + 1)", code)
+        # No second, unconditional assignment appended after the body.
+        # The trailing space matters: `self._x ==` in __eq__ is not a store.
+        self.assertEqual(code.count("self._x = "), 1)
+
+    def test_record_with_no_components_still_runs_its_compact_body(self):
+        code = emit_python(
+            parse_java(b"record P() { P { int t = 1; } }", "P.java")
+        )
+        self.assertIn("t = 1", code)
+        compile(code, "P.py", "exec")
+
+    def test_record_with_both_constructor_forms_is_refused(self):
+        with self.assertRaises(EmitError):
+            emit_python(
+                parse_java(
+                    b"record P(int x) { P { } P(int x) { this.x = x; } }", "P.java"
+                )
+            )
+
+
+class SwitchExpressionTest(unittest.TestCase):
+    def test_subject_is_evaluated_once_into_a_temporary(self):
+        # Inlining the subject would re-evaluate it per comparison; Java
+        # evaluates it exactly once.
+        code = emit(
+            "static int g(int n) { return n; }\n"
+            "static int f(int n) { return switch (g(n)) { case 0 -> 1; "
+            "default -> 2; }; }"
+        )
+        self.assertEqual(code.count("T.g(n)"), 1)
+        self.assertIn("_switch_value_1 =", code)
+
+    def test_multiple_labels_become_one_test(self):
+        code = emit(
+            "static int f(int n) { return switch (n) { case 0, 1 -> 5; "
+            "default -> 6; }; }"
+        )
+        self.assertIn("== 0 or", code)
+
+    def test_switch_expression_in_a_loop_condition_is_refused(self):
+        # The subject would be hoisted above the loop and evaluated once.
+        with self.assertRaises(EmitError) as ctx:
+            emit(
+                "static void f(int n) { while ((switch (n) { case 0 -> 1; "
+                "default -> 2; }) > 0) { n--; } }"
+            )
+        self.assertIn("evaluated more than once", str(ctx.exception))
+
+    def test_arrow_switch_statement_emits_without_fallthrough(self):
+        code = emit(
+            "static int f(int n) { int t = 0; switch (n) { case 0 -> t = 1; "
+            "default -> t = 2; } return t; }"
+        )
+        compile(code, "T.py", "exec")
+        self.assertIn("_switch_subject", code)
+
+
+class UntranslatableTest(unittest.TestCase):
+    def test_class_literal_is_refused_with_a_reason(self):
+        with self.assertRaises(EmitError) as ctx:
+            emit("static Object f() { return T.class; }")
+        self.assertIn("reflection", str(ctx.exception))
+
+    def test_unresolved_method_reference_without_a_runtime_equivalent_is_refused(self):
+        with self.assertRaises(EmitError) as ctx:
+            emit("static Object f() { return Instant::parse; }")
+        self.assertIn("outside", str(ctx.exception))
+
+    def test_unresolved_method_reference_with_a_runtime_equivalent_is_emitted(self):
+        code = emit("static Object f() { return String::trim; }")
+        self.assertIn("rt.JString.trim", code)
+
+    def test_this_delegation_is_refused(self):
+        with self.assertRaises(EmitError) as ctx:
+            emit_python(
+                parse_java(b"class T { T(int a) {} T() { this(1); } }", "T.java")
+            )
+        self.assertIn("not supported", str(ctx.exception))
+
+    def test_bare_super_call_is_a_no_op(self):
+        code = emit_python(
+            parse_java(b"class T { T() { super(); } }", "T.java")
+        )
+        compile(code, "T.py", "exec")
+
+
 class ReferenceEqualityTest(unittest.TestCase):
     def test_comparing_two_strings_with_double_equals_is_refused(self):
         # Java compares references there; Python would compare values and

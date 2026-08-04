@@ -14,14 +14,16 @@ Java 源码
 
 | 指标 | 数值 | 怎么来的 |
 |---|---:|---|
-| 单元 + 端到端测试 | **140** | `make uir-j2p-test` |
-| 差分比较（Java vs Python 实跑） | **500** | 8 个语料程序 × 边界输入向量 |
-| 变异实验 | **39/39 全部杀死** | `make uir-j2p-mutation` |
-| elmos 仓库 884 个 Java 文件的降级率 | **39.7%**（351 个） | `make uir-j2p-survey` |
-| 其中能生成 Python 的 | **4.8%**（42 个） | 同上 |
+| 单元 + 端到端测试 | **164** | `make uir-j2p-test` |
+| 差分比较（Java vs Python 实跑） | **512** | 9 个语料程序 × 边界输入向量 |
+| 变异实验 | **46/46 全部杀死** | `make uir-j2p-mutation` |
+| elmos 仓库 884 个 Java 文件**能降级到 UIR** | **76.6%**（677 个） | `make uir-j2p-survey` |
+| 其中**能真正生成 Python** | **4.9%**（43 个） | 同上 |
 | 已实现路线 | **1 / 90** | `java → python` |
 
-后两行是这个包最重要的两个数字。它们很难看，而且是真的。
+**最后三行要一起读，尤其是中间那道鸿沟。** 前端能看懂 77% 的文件，生成器只能翻译 5%。
+
+这不是矛盾，是两件不同的事：把 `Foo.class` 如实记进 IR 很容易（它就是一个类字面量节点），把它*翻译*成等价的 Python 不可能（反射语义复现不了）。所以前端理解它、生成器拒绝它。降级率衡量的是"读懂了多少"，生成率衡量的是"能保证行为一致地搬过去多少"。**后者才是迁移真正的进度。**
 
 ## 为什么代码长这样
 
@@ -64,9 +66,9 @@ Foo.java:41:18: unsupported Java construct: class_literal (as expression)
 
 ## 已支持 / 已拒绝
 
-**支持**：lambda（表达式体与块体、三种参数写法）、方法引用（`this::m`、`obj::m`、`Type::m`、`Type::new`）、JDK 函数式接口与项目自己声明的单抽象方法接口、class、record、static 嵌套类、enum 常量、字段/方法/构造器、int/long/short/byte/char/boolean/double、数组、if/while/do/for/foreach/switch(不含 fall-through)/try-catch-finally/throw、String 与 StringBuilder 常用方法、Integer/Long/Double/Math、文本块、转义、字符串拼接、复合赋值、自增自减（语句位置）。
+**支持**：record 紧凑构造器与显式规范构造器、switch 表达式（箭头式与 `yield` 式）、箭头式 switch 语句、lambda（表达式体与块体、三种参数写法）、方法引用（`this::m`、`obj::m`、`Type::m`、`Type::new`）、JDK 函数式接口与项目自己声明的单抽象方法接口、class、record、static 嵌套类、enum 常量、字段/方法/构造器、int/long/short/byte/char/boolean/double、数组、if/while/do/for/foreach/switch(不含 fall-through)/try-catch-finally/throw、String 与 StringBuilder 常用方法、Integer/Long/Double/Math、文本块、转义、字符串拼接、复合赋值、自增自减（语句位置）。
 
-**明确拒绝**（每一条都有测试）：`Foo.class`、record 紧凑构造器、指向本编译单元外类型的方法引用、try-with-resources、`==` 比较两个引用类型、函数式接口的 default 方法（`andThen`/`negate`）、带 default/static 方法的接口、varargs、泛型方法/泛型类声明、非静态内部类、`float`、带标签的 break/continue、switch fall-through、多维数组、表达式位置的赋值与 `++`、未声明 `toString`/`hashCode` 的类调用它们、会被二次求值的复合赋值目标。
+**明确拒绝**（每一条都有测试）：`Foo.class`、`this(...)`/`super(args)` 构造器委托、运行时没有对应实现的外部方法引用、无 default 的 switch 表达式、case 体不是单一表达式的 switch 表达式、会被重复求值的位置上需要提升语句的表达式（如循环条件里的 switch 表达式）、try-with-resources、`==` 比较两个引用类型、函数式接口的 default 方法（`andThen`/`negate`）、带 default/static 方法的接口、varargs、泛型方法/泛型类声明、非静态内部类、`float`、带标签的 break/continue、switch fall-through、多维数组、表达式位置的赋值与 `++`、未声明 `toString`/`hashCode` 的类调用它们、会被二次求值的复合赋值目标。
 
 ## 用法
 
@@ -111,7 +113,8 @@ B19 记成 FAIL 是刻意的。把 1 条路线记成 90 条的 PASS 很容易，
 
 - **89 条路线没有实现**。`route-pack-inventory` 里逐条列出。
 - **另外九种语言没有前端**。B03 的 observation 里显式记为 `NOT_RUN`。
-- **lambda 已经做了**（原本 178 个文件），降级率从 30.7% 提到 39.7%。没到我先前估的 50%——lambda 让路之后暴露出下一层瓶颈，实测排序是：`Foo.class` **158** 个文件、record 紧凑构造器 **129** 个、本单元外的方法引用 **85** 个。
+- **降级率 76.6% 里有很大一部分是"读懂但翻不动"**。`Foo.class`、外部类型的方法引用这些现在能进 IR，但生成器照样拒绝。别把 76.6% 当成迁移进度，4.9% 才是。
+- 下一层实测瓶颈：try-with-resources **83** 个文件、方法声明相关 **43** 个、varargs **28** 个。生成侧的瓶颈是另一回事——排第一的是 `String.isBlank`（28）、`Objects.requireNonNull`（28）、`List.of`（23）这类标准库缺口，每补一个都要连着差分证据一起补。
 - **差分只比对 stdout 和抛出的异常类型/消息**。时间、内存、线程交错没有比对。
 - **语料是为这个引擎写的**，不是从客户仓库采样的。真实项目的差分需要真实项目。
 - **JVM 侧 843 个 Java 文件本次未编译、未测试**。
@@ -126,7 +129,7 @@ j2p/diff/harness.py         差分执行
 j2p/cli.py                  parse / emit / diff / survey
 runtime/j2p_runtime.py      Java 语义的 Python 实现（生成代码依赖它）
 corpus/                     语义陷阱语料（溢出、负除、MIN_VALUE、Double.toString…）
-tests/                      140 个测试
-tools/mutation_check.py     39 个变异实验
+tests/                      164 个测试
+tools/mutation_check.py     46 个变异实验
 tools/record_batch_evidence.py  接入 batch1-38 的证据生产者
 ```

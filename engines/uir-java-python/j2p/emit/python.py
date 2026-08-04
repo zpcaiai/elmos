@@ -30,7 +30,9 @@ from ..uir import (
     Call,
     Cast,
     CharLiteral,
+    ClassLiteral,
     ClassType,
+    ConstructorCall,
     Continue,
     DoWhile,
     Expr,
@@ -63,6 +65,7 @@ from ..uir import (
     StringConcat,
     StringLiteral,
     Switch,
+    SwitchExpr,
     Ternary,
     This,
     Throw,
@@ -159,6 +162,31 @@ class PythonEmitter:
             self._hoisted = saved
         for rel, line, hoist_origin in hoisted:
             self._write(indent + rel, line, hoist_origin)
+        self._write(indent, text, origin)
+
+    def _line_evaluated_once(
+        self, indent: int, build, origin: Origin, position: str
+    ) -> None:
+        """Emit a line whose expression must NOT need a hoisted definition.
+
+        A loop condition is re-evaluated on every iteration.  A hoisted
+        statement placed above the loop would run once, so any expression that
+        needs one is refused here rather than silently changing how many times
+        it is evaluated.
+        """
+
+        saved, self._hoisted = self._hoisted, []
+        try:
+            text = build()
+            hoisted = self._hoisted
+        finally:
+            self._hoisted = saved
+        if hoisted:
+            raise EmitError(
+                f"this expression needs a statement emitted before it, but it "
+                f"appears in {position}, which is evaluated more than once",
+                origin,
+            )
         self._write(indent, text, origin)
 
     def _sub_emit(self, fn) -> list[tuple[int, str, "Origin | None"]]:
@@ -282,13 +310,43 @@ class PythonEmitter:
 
     def _emit_record(self, decl: TypeDecl) -> None:
         names = [p.name for p in decl.record_components]
-        params = ", ".join(["self"] + names)
-        self._write(1, f"def __init__({params}):", decl.origin)
-        if names:
-            for p in decl.record_components:
-                self._write(2, f"self._{p.name} = {p.name}", p.origin)
+        explicit = [m for m in decl.methods if m.is_constructor]
+        if len(explicit) > 1:
+            raise EmitError(
+                "a record may declare only one canonical constructor",
+                explicit[1].origin,
+            )
+        if explicit and decl.compact_constructor is not None:
+            raise EmitError(
+                "a record cannot have both a canonical and a compact constructor",
+                explicit[0].origin,
+            )
+
+        if explicit:
+            # The canonical constructor assigns every field itself, so nothing
+            # is appended after its body.
+            ctor = explicit[0]
+            params = ", ".join(["self"] + [p.name for p in ctor.params])
+            self._write(1, f"def __init__({params}):", ctor.origin)
+            if ctor.body is None or not ctor.body.body:
+                self._write(2, "pass")
+            else:
+                for stmt in ctor.body.body:
+                    self._stmt(stmt, 2)
         else:
-            self._write(2, "pass")
+            params = ", ".join(["self"] + names)
+            self._write(1, f"def __init__({params}):", decl.origin)
+            compact = decl.compact_constructor
+            if compact is not None and compact.body is not None:
+                # The compact body runs first and may reassign the parameters;
+                # the fields are written from whatever they hold afterwards.
+                for stmt in compact.body.body:
+                    self._stmt(stmt, 2)
+            if names:
+                for p in decl.record_components:
+                    self._write(2, f"self._{p.name} = {p.name}", p.origin)
+            elif compact is None or compact.body is None or not compact.body.body:
+                self._write(2, "pass")
 
         for p in decl.record_components:
             self._write(0, "")
@@ -327,9 +385,7 @@ class PythonEmitter:
 
         for method in decl.methods:
             if method.is_constructor:
-                raise EmitError(
-                    "explicit record constructors are not supported", method.origin
-                )
+                continue
             self._write(0, "")
             self._emit_method(method)
         self._write(0, "")
@@ -427,15 +483,19 @@ class PythonEmitter:
             return
 
         if isinstance(stmt, While):
-            self._line(indent, lambda: f"while {self._cond(stmt.cond)}:", stmt.origin)
+            self._line_evaluated_once(
+                indent, lambda: f"while {self._cond(stmt.cond)}:", stmt.origin,
+                "a while condition",
+            )
             self._body(stmt.body, indent + 1)
             return
 
         if isinstance(stmt, DoWhile):
             self._write(indent, "while True:", stmt.origin)
             self._body(stmt.body, indent + 1)
-            self._line(
-                indent + 1, lambda: f"if not ({self._cond(stmt.cond)}):", stmt.origin
+            self._line_evaluated_once(
+                indent + 1, lambda: f"if not ({self._cond(stmt.cond)}):", stmt.origin,
+                "a do/while condition",
             )
             self._write(indent + 2, "break")
             return
@@ -449,7 +509,10 @@ class PythonEmitter:
             cond = self._cond(stmt.cond) if stmt.cond is not None else "True"
             if stmt.update:
                 self._write(indent, "while True:", stmt.origin)
-                self._line(indent + 1, lambda: f"if not ({cond}):", stmt.origin)
+                self._line_evaluated_once(
+                    indent + 1, lambda: f"if not ({cond}):", stmt.origin,
+                    "a for condition",
+                )
                 self._write(indent + 2, "break")
                 self._write(indent + 1, "try:")
                 self._body(stmt.body, indent + 2)
@@ -457,7 +520,9 @@ class PythonEmitter:
                 for update in stmt.update:
                     self._expr_stmt(update, indent + 2, stmt.origin)
             else:
-                self._line(indent, lambda: f"while {cond}:", stmt.origin)
+                self._line_evaluated_once(
+                    indent, lambda: f"while {cond}:", stmt.origin, "a for condition"
+                )
                 self._body(stmt.body, indent + 1)
             return
 
@@ -498,6 +563,17 @@ class PythonEmitter:
         if isinstance(stmt, Switch):
             self._emit_switch(stmt, indent)
             return
+
+        if isinstance(stmt, ConstructorCall):
+            if stmt.kind == "super" and not stmt.args:
+                # An implicit Object superclass constructor does nothing.
+                self._write(indent, "pass", stmt.origin)
+                return
+            raise EmitError(
+                f"`{stmt.kind}(...)` constructor delegation is not supported; "
+                f"it requires constructor overloading or a modelled superclass",
+                stmt.origin,
+            )
 
         raise EmitError(f"cannot emit statement {type(stmt).__name__}", stmt.origin)
 
@@ -798,6 +874,14 @@ class PythonEmitter:
             return self._new(expr)
         if isinstance(expr, NewArray):
             return self._new_array(expr)
+        if isinstance(expr, SwitchExpr):
+            return self._switch_expr(expr)
+        if isinstance(expr, ClassLiteral):
+            raise EmitError(
+                f"`{expr.name}.class` has no translation: it denotes a runtime "
+                f"class object, and reflection over it cannot be reproduced",
+                expr.origin,
+            )
         if isinstance(expr, Lambda):
             return self._lambda(expr)
         if isinstance(expr, MethodRef):
@@ -890,7 +974,49 @@ class PythonEmitter:
         self._hoisted.extend(lines)
         return name
 
+    def _switch_expr(self, expr: SwitchExpr) -> str:
+        """A switch used as a value becomes a chained conditional.
+
+        The subject is hoisted into a temporary first: writing it inline would
+        re-evaluate it once per comparison, and Java evaluates it exactly once.
+        """
+
+        tmp = self._fresh("switch_value")
+        self._hoisted.append((0, f"{tmp} = {self._expr(expr.subject)}", expr.origin))
+
+        default = next((c for c in expr.cases if not c.labels), None)
+        if default is None:  # pragma: no cover - the front end already refuses
+            raise EmitError("switch expression without a default", expr.origin)
+
+        text = self._expr(default.value)
+        for case in reversed([c for c in expr.cases if c.labels]):
+            tests = " or ".join(
+                f"{tmp} == {self._expr(label)}" for label in case.labels
+            )
+            text = f"({self._expr(case.value)} if {tests} else {text})"
+        return text
+
+    #: Unbound references whose receiver method the runtime actually implements.
+    _RUNTIME_UNBOUND = {
+        "String": {
+            "length", "charAt", "substring", "indexOf", "isEmpty",
+            "toUpperCase", "toLowerCase", "trim",
+        },
+    }
+
     def _method_ref(self, expr: MethodRef) -> str:
+        if expr.ref_kind == "unresolved":
+            supported = self._RUNTIME_UNBOUND.get(expr.owner or "", set())
+            if expr.name in supported:
+                return (
+                    f"(lambda _r, *_a: {RUNTIME_ALIAS}.JString.{expr.name}(_r, *_a))"
+                )
+            raise EmitError(
+                f"`{expr.owner}::{expr.name}` refers to a type declared outside "
+                f"this compilation unit; the runtime has no equivalent, so the "
+                f"reference cannot be given the same behaviour",
+                expr.origin,
+            )
         if expr.ref_kind == "constructor":
             return f"(lambda *_a: {expr.owner}(*_a))"
         if expr.ref_kind == "static":

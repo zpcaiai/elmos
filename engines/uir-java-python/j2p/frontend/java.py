@@ -34,6 +34,8 @@ from ..uir import (
     Cast,
     CatchClause,
     CharLiteral,
+    ClassLiteral,
+    ConstructorCall,
     ClassType,
     Continue,
     DoWhile,
@@ -68,6 +70,8 @@ from ..uir import (
     StringLiteral,
     Switch,
     SwitchCase,
+    SwitchExpr,
+    SwitchExprCase,
     Ternary,
     This,
     Throw,
@@ -418,6 +422,7 @@ class JavaFrontend:
                 for entry in self._named(item) or [item]:
                     interfaces.append(self._type(entry))
 
+        compact: Method | None = None
         record_components: list[Param] = []
         if kind == "record":
             params_node = node.child_by_field_name("parameters")
@@ -455,7 +460,7 @@ class JavaFrontend:
                     nested.extend(self._type_decl(member, enclosing=name))
                     self._current_class = name
                 elif member.type == "compact_constructor_declaration":
-                    self._reject(member, "compact record constructor")
+                    compact = self._compact_constructor(member, record_components)
                 elif member.type == "static_initializer":
                     self._reject(member, "static initializer block")
                 elif member.type == "enum_constant":
@@ -482,6 +487,7 @@ class JavaFrontend:
             methods=tuple(methods),
             enum_constants=tuple(enum_constants),
             record_components=tuple(record_components),
+            compact_constructor=compact,
             enclosing=enclosing,
         )
         return [decl, *nested]
@@ -563,6 +569,34 @@ class JavaFrontend:
             origin=origin,
             name="<init>",
             params=params,
+            return_type=uir.T_VOID,
+            modifiers=self._modifiers(node),
+            body=body,
+            is_constructor=True,
+        )
+
+    def _compact_constructor(
+        self, node: "Node", components: list[Param]
+    ) -> Method:
+        """Lower a record's compact constructor.
+
+        Its parameters are the record components, and they are *parameters*,
+        not fields: ``y = y * 2`` inside the body reassigns the parameter, and
+        the field is written from the parameter afterwards.  Resolving those
+        names to fields instead would turn the validation body into a no-op
+        that writes the unvalidated value.
+        """
+
+        origin = self._origin(node)
+        scope = _Scope(names=dict(self._field_types), is_field_scope=True).child()
+        for component in components:
+            scope.names[component.name] = component.type
+        scope.names["__return__"] = uir.T_VOID
+        body = self._block(node.child_by_field_name("body"), scope)
+        return Method(
+            origin=origin,
+            name="<compact>",
+            params=tuple(components),
             return_type=uir.T_VOID,
             modifiers=self._modifiers(node),
             body=body,
@@ -763,6 +797,15 @@ class JavaFrontend:
                 origin=origin, body=body, catches=tuple(catches), finally_=finally_
             )
 
+        if t == "explicit_constructor_invocation":
+            constructor = node.child_by_field_name("constructor")
+            kind = "super" if self._text(constructor) == "super" else "this"
+            return ConstructorCall(
+                origin=origin,
+                kind=kind,
+                args=self._args(node.child_by_field_name("arguments"), scope),
+            )
+
         if t == "switch_expression":
             return self._switch(node, scope)
 
@@ -800,7 +843,10 @@ class JavaFrontend:
         cases: list[SwitchCase] = []
         for group in self._named(body):
             if group.type == "switch_rule":
-                self._reject(group, "arrow switch rule")
+                # An arrow rule cannot fall through, so it is lowered as a case
+                # that already terminates.
+                cases.append(self._switch_rule(group, scope))
+                continue
             if group.type != "switch_block_statement_group":
                 continue
             labels: list[Expr] = []
@@ -821,6 +867,102 @@ class JavaFrontend:
                 )
             )
         return Switch(origin=self._origin(node), subject=subject, cases=tuple(cases))
+
+    def _switch_rule(self, node: "Node", scope: _Scope) -> SwitchCase:
+        origin = self._origin(node)
+        inner = scope.child()
+        labels: list[Expr] = []
+        body: list[Stmt] = []
+        for child in self._named(node):
+            if child.type == "switch_label":
+                for label in self._named(child):
+                    labels.append(self._expr(label, inner))
+            elif child.type == "block":
+                body.append(self._block(child, inner))
+            else:
+                body.append(self._stmt(child, inner))
+        # `case X -> stmt;` ends the switch; make that explicit so the emitter's
+        # fall-through check sees a terminated case.
+        if not body or not isinstance(body[-1], (Return, Throw, Break)):
+            body.append(Break(origin=origin))
+        return SwitchCase(origin=origin, labels=tuple(labels), body=tuple(body))
+
+    def _switch_expr(
+        self, node: "Node", scope: _Scope, expected: uir.Type | None
+    ) -> Expr:
+        """Lower a switch used as a value.
+
+        Only cases that produce a single expression are accepted.  A rule with
+        a statement body, or a colon group with anything other than one
+        ``yield``, is refused rather than approximated: Python has no
+        expression form that can run statements and still yield a value in the
+        same place.
+        """
+
+        origin = self._origin(node)
+        subject = self._expr(node.child_by_field_name("condition"), scope)
+        body = node.child_by_field_name("body")
+        cases: list[SwitchExprCase] = []
+
+        for group in self._named(body):
+            inner = scope.child()
+            labels: list[Expr] = []
+            value: Expr | None = None
+
+            if group.type == "switch_rule":
+                for child in self._named(group):
+                    if child.type == "switch_label":
+                        for label in self._named(child):
+                            labels.append(self._expr(label, inner))
+                    elif child.type == "expression_statement":
+                        value = self._expr(child.named_children[0], inner, expected)
+                    elif child.type == "throw_statement":
+                        self._reject(child, "throwing switch rule in an expression")
+                    else:
+                        self._reject(child, "switch rule with a statement body")
+            elif group.type == "switch_block_statement_group":
+                statements = []
+                for child in self._named(group):
+                    if child.type == "switch_label":
+                        for label in self._named(child):
+                            labels.append(self._expr(label, inner))
+                    else:
+                        statements.append(child)
+                if len(statements) != 1 or statements[0].type != "yield_statement":
+                    self._reject(
+                        group, "switch expression case that is not a single yield"
+                    )
+                value = self._expr(
+                    self._named(statements[0])[0], inner, expected
+                )
+            else:
+                continue
+
+            if value is None:
+                self._reject(group, "switch expression case without a value")
+            cases.append(
+                SwitchExprCase(
+                    origin=self._origin(group), labels=tuple(labels), value=value
+                )
+            )
+
+        if not any(not case.labels for case in cases):
+            self._reject(
+                node,
+                "switch expression without a default; exhaustiveness cannot be "
+                "checked here and a missing case would silently yield nothing",
+            )
+
+        result = cases[0].value.type if cases else UnknownType("switch-expression")
+        for case in cases[1:]:
+            if case.value.type != result:
+                result = uir.binary_promote(result, case.value.type)
+        return SwitchExpr(
+            origin=origin,
+            type=expected if expected is not None else result,
+            subject=subject,
+            cases=tuple(cases),
+        )
 
     # -- expressions ------------------------------------------------------
 
@@ -990,6 +1132,18 @@ class JavaFrontend:
 
         if t == "method_reference":
             return self._method_ref(node, scope)
+
+        if t == "class_literal":
+            # Representable, but reflection is not reproducible; the emitter
+            # decides what, if anything, can be done with it.
+            return ClassLiteral(
+                origin=origin,
+                type=ClassType("Class"),
+                name=self._text(self._named(node)[0]),
+            )
+
+        if t == "switch_expression":
+            return self._switch_expr(node, scope, expected)
 
         if t == "method_invocation":
             return self._call(node, scope)
@@ -1234,10 +1388,15 @@ class JavaFrontend:
         text = self._text(target_node)
         if target_node.type in ("type_identifier", "identifier") and scope.resolve(text) is None:
             if text not in self._class_names:
-                self._reject(
-                    node,
-                    f"method reference {text}::{name} on a type with no "
-                    f"declaration in this compilation unit",
+                # The owner is declared elsewhere, so whether this is a static
+                # or an unbound reference is not knowable here.  Record it
+                # faithfully and let the emitter decide.
+                return MethodRef(
+                    origin=origin,
+                    type=UnknownType("method-ref"),
+                    ref_kind="unresolved",
+                    name=name,
+                    owner=text,
                 )
             return MethodRef(
                 origin=origin,
