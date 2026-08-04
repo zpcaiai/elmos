@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:batch-03:type-ref",
+  "title": "TypeRef",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "canonical_name",
+    "lossy_lowering",
+    "nullability",
+    "record_id",
+    "schema_version",
+    "scope",
+    "type_id"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "known_limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "type_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "canonical_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "nullability": {
+      "enum": [
+        "non-null",
+        "nullable",
+        "unknown"
+      ]
+    },
+    "type_arguments": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "numeric_precision": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "lossy_lowering": {
+      "type": "boolean"
+    }
+  }
+}

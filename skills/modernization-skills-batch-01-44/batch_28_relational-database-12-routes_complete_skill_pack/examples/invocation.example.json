@@ -1,0 +1,12 @@
+{
+  "request_id": "b28-example-001",
+  "tenant_id": "example-tenant",
+  "project_id": "example-project",
+  "scope": "Oracle, SQL Server, MySQL and PostgreSQL 12 Directional Route Packs",
+  "upstream_certificate_refs": [
+    "batch-27-certificate-example"
+  ],
+  "options": {
+    "dry_run": true
+  }
+}

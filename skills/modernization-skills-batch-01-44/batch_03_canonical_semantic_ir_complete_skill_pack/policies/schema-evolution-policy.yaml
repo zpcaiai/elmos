@@ -1,0 +1,4 @@
+schema_evolution:
+  major_change_requires_migration: true
+  silent_field_removal: forbidden
+  unknown_field_at_boundary: reject

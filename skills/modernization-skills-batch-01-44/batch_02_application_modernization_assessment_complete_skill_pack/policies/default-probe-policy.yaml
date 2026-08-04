@@ -1,0 +1,5 @@
+probe:
+  production_probes: forbidden
+  probe_requires_approval: true
+  probe_budget_seconds: 900
+  probe_must_be_reversible: true

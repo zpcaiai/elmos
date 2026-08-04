@@ -1,0 +1,240 @@
+{
+  "schema_version": "1.0.0",
+  "package_id": "batch-26-dual-run-shadow-reconciliation-complete-skill-pack",
+  "batch": 26,
+  "title": "Dual Run, Shadow Execution and State Reconciliation",
+  "version": "1.0.0",
+  "generated_at": "2026-07-31T00:00:00Z",
+  "skill_count": 16,
+  "skills": [
+    "b26-dual-run-shadow-reconciliation-orchestrator",
+    "b26-dual-run-shadow-reconciliation-domain-model",
+    "b26-dual-run-shadow-reconciliation-discovery-inventory",
+    "b26-dual-run-shadow-reconciliation-capability-planning",
+    "b26-dual-run-shadow-reconciliation-deterministic-engine",
+    "b26-dual-run-shadow-reconciliation-adapter-provider",
+    "b26-dual-run-shadow-reconciliation-workflow-runtime",
+    "b26-dual-run-shadow-reconciliation-lineage-reconciliation",
+    "b26-dual-run-shadow-reconciliation-security-policy",
+    "b26-dual-run-shadow-reconciliation-human-approval",
+    "b26-dual-run-shadow-reconciliation-observability-economics",
+    "b26-dual-run-shadow-reconciliation-corpus-benchmark",
+    "b26-dual-run-shadow-reconciliation-failure-recovery",
+    "b26-dual-run-shadow-reconciliation-integration-api",
+    "b26-dual-run-shadow-reconciliation-lifecycle-recertification",
+    "b26-dual-run-shadow-reconciliation-certification-gate"
+  ],
+  "upstream_batch": 25,
+  "files": [
+    {
+      "path": "BATCH25_COMPATIBILITY.md",
+      "sha256": "0cb7bce9ec7eb8dc0d9127229435427e5096f15c98337683e4e9a976fee492a9",
+      "size": 2062
+    },
+    {
+      "path": "CODEX_IMPLEMENTATION_PROMPT.md",
+      "sha256": "4489cce155a97c0d9215c4368f08f2756ba338fafbd0cd7c603a512e39adea9d",
+      "size": 2233
+    },
+    {
+      "path": "IMPLEMENTATION_CHECKLIST.md",
+      "sha256": "7be3ff11e7e2579a0ec9caa23ba4e3b50c2f0724f3c7f4d6d681b36d74cbdd9f",
+      "size": 1725
+    },
+    {
+      "path": "README.md",
+      "sha256": "30d2f4eca24de5189d829734893059fba703af675f10a55c489331383a1defde",
+      "size": 1061
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "611ee5853f42c388f73cedc5b93d090efe4fbb7ecb29159b75726b5a6f33dfe3",
+      "size": 3500
+    },
+    {
+      "path": "SKILL_INDEX.md",
+      "sha256": "1f6e47fe75f1f5b4bd20fff8183235b234fb3f0f40fa6ab19a3cc21547e8a18e",
+      "size": 3100
+    },
+    {
+      "path": "VALIDATION_REPORT.md",
+      "sha256": "2577cbeb46dc7105ce73f2fdf2262b636d40434f33ebd03090153cfce8308fad",
+      "size": 572
+    },
+    {
+      "path": "examples/certificate.example.json",
+      "sha256": "80a781450b7ed89d97d4d753b4446fdeb38c3ea622156a2b99664dd99e8c8d7b",
+      "size": 452
+    },
+    {
+      "path": "examples/invocation.example.json",
+      "sha256": "f4895a167b595ee4214034a64789260707cdd2e92ec44f3aeb34a013ba1192e7",
+      "size": 285
+    },
+    {
+      "path": "install.sh",
+      "sha256": "cdaf3fdf0c010dd9e0fe29b4a92cd723ff35dd0617eaf14bb5f57e757bc2fa02",
+      "size": 305
+    },
+    {
+      "path": "policies/agent-boundary.yaml",
+      "sha256": "79adc8830adec220835b49067d29b50a3a1578f146a65e7d5b70a6d19ba09ab2",
+      "size": 150
+    },
+    {
+      "path": "policies/certification.yaml",
+      "sha256": "17f50ef51eb5cbf800b3b4990bfb399d4aed9c751cb7f440bee4a4d88ebf02ea",
+      "size": 182
+    },
+    {
+      "path": "policies/default-deny.yaml",
+      "sha256": "25c6a03403de8832018b82bfa5d9dd516d8f5136ba4974c85d40bdf8972f9366",
+      "size": 105
+    },
+    {
+      "path": "policies/evidence-first.yaml",
+      "sha256": "50408543ffa45cfea3461cd57bdabf39f9bdd422fc5b41cdfef4d3c679a058c2",
+      "size": 156
+    },
+    {
+      "path": "policies/human-approval.yaml",
+      "sha256": "d9a6b11cfe402c569440e95b1aa2377387e222a32b693c83fc278ddb1fd4482f",
+      "size": 143
+    },
+    {
+      "path": "schemas/batch-input.schema.json",
+      "sha256": "c7f5130682ba19df499b5ba30461d0a3657619d13ac3a95b081d5978e93b3277",
+      "size": 731
+    },
+    {
+      "path": "schemas/batch-output.schema.json",
+      "sha256": "b193a83842858004c6026773aa53d46ecb8ecd1cf3b137c2cd356f4d9bdd3b04",
+      "size": 832
+    },
+    {
+      "path": "schemas/capability-package.schema.json",
+      "sha256": "2cf99f907128a4ee7e2540ae5d9fe241a1325555776387cdabe34bfa2f1f6264",
+      "size": 1133
+    },
+    {
+      "path": "schemas/certification.schema.json",
+      "sha256": "12e8400991fb982c214f83799e5bf9a69379de3fb917c10d7a0a6e818ec9777e",
+      "size": 1281
+    },
+    {
+      "path": "schemas/evidence-ref.schema.json",
+      "sha256": "cffff2ad0be8eb71032e9ca7b580dfcf65e70b2c0436ad08b827678c94e5d11b",
+      "size": 996
+    },
+    {
+      "path": "schemas/workflow-run.schema.json",
+      "sha256": "8d4e30a5ec5bdd7c8fdfe65e834d76b53daf29e3d09cef2b803d6addbb63f186",
+      "size": 848
+    },
+    {
+      "path": "skills/b26-dual-run-shadow-reconciliation-adapter-provider/SKILL.md",
+      "sha256": "f5adfc6f2c03d559c2ca1590ccec1ed1d3ba869b2282c36574713101e89091ee",
+      "size": 3807
+    },
+    {
+      "path": "skills/b26-dual-run-shadow-reconciliation-capability-planning/SKILL.md",
+      "sha256": "0b546cec24501516a9e6225600fa8e89eb30ed3455216ba2d7224b539dc89fc8",
+      "size": 3709
+    },
+    {
+      "path": "skills/b26-dual-run-shadow-reconciliation-certification-gate/SKILL.md",
+      "sha256": "00b7480bb7d475519219b00b3bf90cb6974421e078389a8eea4cad8920841ebf",
+      "size": 3838
+    },
+    {
+      "path": "skills/b26-dual-run-shadow-reconciliation-corpus-benchmark/SKILL.md",
+      "sha256": "f70aafd163c513f4a3e2c631a285f9fd08dcfd72fa70d838089a1cd90ccc9f86",
+      "size": 3748
+    },
+    {
+      "path": "skills/b26-dual-run-shadow-reconciliation-deterministic-engine/SKILL.md",
+      "sha256": "b8261a3d927c73cbfbc41ceed2492aea312bccb0f59e12eda1b0251c93d42a08",
+      "size": 3725
+    },
+    {
+      "path": "skills/b26-dual-run-shadow-reconciliation-discovery-inventory/SKILL.md",
+      "sha256": "05b6ea8958152b70ac7585155852f31a0108b1133ffd88fbdf323c68d30ff2d5",
+      "size": 3752
+    },
+    {
+      "path": "skills/b26-dual-run-shadow-reconciliation-domain-model/SKILL.md",
+      "sha256": "3a3c69c4d8b9069389d824bfb5e498721631a1148cb912fb63f1e699462ea718",
+      "size": 3779
+    },
+    {
+      "path": "skills/b26-dual-run-shadow-reconciliation-failure-recovery/SKILL.md",
+      "sha256": "34b827cd9a68f3113cf654d6126fb839d4ac1bb54d82bbc7637378bff40da571",
+      "size": 3756
+    },
+    {
+      "path": "skills/b26-dual-run-shadow-reconciliation-human-approval/SKILL.md",
+      "sha256": "84252fa8d2176bfeacb29dc8988848baea2d9f21970e898cfc5db1144b82dc57",
+      "size": 3741
+    },
+    {
+      "path": "skills/b26-dual-run-shadow-reconciliation-integration-api/SKILL.md",
+      "sha256": "47a9facad5699838ebf7208e2015d671d36b5e59affef2244cc3fec5a18042c5",
+      "size": 3726
+    },
+    {
+      "path": "skills/b26-dual-run-shadow-reconciliation-lifecycle-recertification/SKILL.md",
+      "sha256": "f47f133d9d334828dc3b6139acdc8ced6775650babcf0883297ecf6f4d7ea902",
+      "size": 3816
+    },
+    {
+      "path": "skills/b26-dual-run-shadow-reconciliation-lineage-reconciliation/SKILL.md",
+      "sha256": "7344de06e6ff7a1776869c0f7f4997adc771d16d929b563bcfb199a6623bf6c4",
+      "size": 3767
+    },
+    {
+      "path": "skills/b26-dual-run-shadow-reconciliation-observability-economics/SKILL.md",
+      "sha256": "8d092111d652b357aeff15e4f99dceb69035bcfa5660fd7eddf7fa138875c0e8",
+      "size": 3782
+    },
+    {
+      "path": "skills/b26-dual-run-shadow-reconciliation-orchestrator/SKILL.md",
+      "sha256": "480886735a89905401ee13fa942793b94ca3e9fa83ea8f656d1a793207fb22c1",
+      "size": 3804
+    },
+    {
+      "path": "skills/b26-dual-run-shadow-reconciliation-security-policy/SKILL.md",
+      "sha256": "f264ddd0d07c4b252de9d77b8ff75163e1ca7fa423e0d5ac76f19c847f0af1ea",
+      "size": 3761
+    },
+    {
+      "path": "skills/b26-dual-run-shadow-reconciliation-workflow-runtime/SKILL.md",
+      "sha256": "712a1a19d02aa7cecb0c21e91dbb06df0e8596e50c157e8687ea64106b8ece6d",
+      "size": 3770
+    },
+    {
+      "path": "tests/README.md",
+      "sha256": "c929a99f5ad0fef8eb29e93a7a6003ebee63f3d13124feff7cd6775b41bc57f2",
+      "size": 338
+    },
+    {
+      "path": "tests/test_catalog.json",
+      "sha256": "0ef3259f404b9acfa46df399b7ece252564a1fdae75f8177e257bbad6ab98325",
+      "size": 1929
+    },
+    {
+      "path": "tools/validate_package.py",
+      "sha256": "1d0e2d5d5005b7602e810d0a54ae8e33f6145cab3d21bf348d7fefcfa8fb3023",
+      "size": 1519
+    },
+    {
+      "path": "validate.sh",
+      "sha256": "a1afca2d69d8fa3d11c820c8381b06b6449e31b289196b3cdc4156de471dd6c4",
+      "size": 72
+    }
+  ],
+  "validation": {
+    "static": "passed",
+    "runtime": "not-executed"
+  },
+  "trust_boundary": "Static package validation is not production certification."
+}

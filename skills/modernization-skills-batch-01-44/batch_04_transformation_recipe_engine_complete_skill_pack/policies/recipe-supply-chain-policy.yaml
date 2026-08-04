@@ -1,0 +1,4 @@
+supply_chain:
+  signature_required: true
+  unpinned_dependency: forbidden
+  provenance_attestation_required: true

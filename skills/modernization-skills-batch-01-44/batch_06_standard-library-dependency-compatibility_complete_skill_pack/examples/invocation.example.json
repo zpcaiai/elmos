@@ -1,0 +1,12 @@
+{
+  "request_id": "b06-example-001",
+  "tenant_id": "example-tenant",
+  "project_id": "example-project",
+  "scope": "Standard Library, Dependency Mapping and Compatibility Runtime",
+  "upstream_certificate_refs": [
+    "batch-05-certificate-example"
+  ],
+  "options": {
+    "dry_run": true
+  }
+}

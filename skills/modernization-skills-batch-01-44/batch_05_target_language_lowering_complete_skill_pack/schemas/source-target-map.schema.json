@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:batch-05:source-target-map",
+  "title": "SourceTargetMap",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "lossless",
+    "mapping_kind",
+    "record_id",
+    "schema_version",
+    "scope",
+    "source_node",
+    "target_node"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "known_limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "source_node": {
+      "type": "string",
+      "minLength": 1
+    },
+    "target_node": {
+      "type": "string",
+      "minLength": 1
+    },
+    "mapping_kind": {
+      "enum": [
+        "one-to-one",
+        "one-to-many",
+        "many-to-one",
+        "synthesised",
+        "dropped"
+      ]
+    },
+    "lossless": {
+      "type": "boolean"
+    }
+  }
+}

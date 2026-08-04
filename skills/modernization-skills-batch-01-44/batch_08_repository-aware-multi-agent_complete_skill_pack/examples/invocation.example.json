@@ -1,0 +1,12 @@
+{
+  "request_id": "b08-example-001",
+  "tenant_id": "example-tenant",
+  "project_id": "example-project",
+  "scope": "Repository-Aware Multi-Agent, Context and RAG System",
+  "upstream_certificate_refs": [
+    "batch-07-certificate-example"
+  ],
+  "options": {
+    "dry_run": true
+  }
+}

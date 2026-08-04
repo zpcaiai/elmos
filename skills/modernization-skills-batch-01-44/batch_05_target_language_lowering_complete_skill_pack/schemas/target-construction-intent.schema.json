@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:batch-05:target-construction-intent",
+  "title": "TargetConstructionIntent",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "construct",
+    "intent_id",
+    "manual_region",
+    "profile_id",
+    "record_id",
+    "schema_version",
+    "scope",
+    "source_node_refs"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "known_limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "intent_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "construct": {
+      "type": "string",
+      "minLength": 1
+    },
+    "profile_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_node_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "manual_region": {
+      "type": "boolean"
+    }
+  }
+}

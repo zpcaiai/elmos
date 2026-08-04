@@ -1,0 +1,12 @@
+{
+  "request_id": "b34-example-001",
+  "tenant_id": "example-tenant",
+  "project_id": "example-project",
+  "scope": "Portfolio-Scale Multi-Repository Migration Factory",
+  "upstream_certificate_refs": [
+    "batch-33-certificate-example"
+  ],
+  "options": {
+    "dry_run": true
+  }
+}

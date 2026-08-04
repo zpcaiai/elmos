@@ -1,0 +1,240 @@
+{
+  "schema_version": "1.0.0",
+  "package_id": "batch-13-evidence-graph-continuous-certification-complete-skill-pack",
+  "batch": 13,
+  "title": "Evidence Graph, Independent Oracle and Continuous Certification",
+  "version": "1.0.0",
+  "generated_at": "2026-07-31T00:00:00Z",
+  "skill_count": 16,
+  "skills": [
+    "b13-evidence-graph-continuous-certification-orchestrator",
+    "b13-evidence-graph-continuous-certification-domain-model",
+    "b13-evidence-graph-continuous-certification-discovery-inventory",
+    "b13-evidence-graph-continuous-certification-capability-planning",
+    "b13-evidence-graph-continuous-certification-deterministic-engine",
+    "b13-evidence-graph-continuous-certification-adapter-provider",
+    "b13-evidence-graph-continuous-certification-workflow-runtime",
+    "b13-evidence-graph-continuous-certification-lineage-reconciliation",
+    "b13-evidence-graph-continuous-certification-security-policy",
+    "b13-evidence-graph-continuous-certification-human-approval",
+    "b13-evidence-graph-continuous-certification-observability-economics",
+    "b13-evidence-graph-continuous-certification-corpus-benchmark",
+    "b13-evidence-graph-continuous-certification-failure-recovery",
+    "b13-evidence-graph-continuous-certification-integration-api",
+    "b13-evidence-graph-continuous-certification-lifecycle-recertification",
+    "b13-evidence-graph-continuous-certification-certification-gate"
+  ],
+  "upstream_batch": 12,
+  "files": [
+    {
+      "path": "BATCH12_COMPATIBILITY.md",
+      "sha256": "47c2c17df40a249c6bcff4519444fb571ecbd0f9d60a2cf9be2e78148eb5dac3",
+      "size": 2178
+    },
+    {
+      "path": "CODEX_IMPLEMENTATION_PROMPT.md",
+      "sha256": "ead3c3341596729c9c4cbb2cf04df3c7ef063d81f4958cba287ac02089fd42a2",
+      "size": 2374
+    },
+    {
+      "path": "IMPLEMENTATION_CHECKLIST.md",
+      "sha256": "50696c7650ee4768ebf41e59db16509322b32b1951505cf89a5500ba9ed9bce6",
+      "size": 1841
+    },
+    {
+      "path": "README.md",
+      "sha256": "1c9df48256cd655b454a86596334f748211810e07551e63702b76e887a26ca7a",
+      "size": 1098
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "ab51fb89f26f91eef1db435634fb82291d6db415abd57684df450584b0da845e",
+      "size": 3806
+    },
+    {
+      "path": "SKILL_INDEX.md",
+      "sha256": "552301cd276f547c0b4c62d71745164e3934b656d94cc986e9eb862536f24410",
+      "size": 3256
+    },
+    {
+      "path": "VALIDATION_REPORT.md",
+      "sha256": "b368925399cbeaa03a523128379bfc803426cdf381d5d6d7b7a4d0181f3ec136",
+      "size": 572
+    },
+    {
+      "path": "examples/certificate.example.json",
+      "sha256": "09e327e042d4d807a24b596a015887934e2b365db0227463dc14e1f02340cb5c",
+      "size": 452
+    },
+    {
+      "path": "examples/invocation.example.json",
+      "sha256": "a298efc7da8089b12dcaabd0740fb9fa86839a38b596ea99b16cbf044eb54ebb",
+      "size": 297
+    },
+    {
+      "path": "install.sh",
+      "sha256": "cdaf3fdf0c010dd9e0fe29b4a92cd723ff35dd0617eaf14bb5f57e757bc2fa02",
+      "size": 305
+    },
+    {
+      "path": "policies/agent-boundary.yaml",
+      "sha256": "79adc8830adec220835b49067d29b50a3a1578f146a65e7d5b70a6d19ba09ab2",
+      "size": 150
+    },
+    {
+      "path": "policies/certification.yaml",
+      "sha256": "17f50ef51eb5cbf800b3b4990bfb399d4aed9c751cb7f440bee4a4d88ebf02ea",
+      "size": 182
+    },
+    {
+      "path": "policies/default-deny.yaml",
+      "sha256": "25c6a03403de8832018b82bfa5d9dd516d8f5136ba4974c85d40bdf8972f9366",
+      "size": 105
+    },
+    {
+      "path": "policies/evidence-first.yaml",
+      "sha256": "50408543ffa45cfea3461cd57bdabf39f9bdd422fc5b41cdfef4d3c679a058c2",
+      "size": 156
+    },
+    {
+      "path": "policies/human-approval.yaml",
+      "sha256": "d9a6b11cfe402c569440e95b1aa2377387e222a32b693c83fc278ddb1fd4482f",
+      "size": 143
+    },
+    {
+      "path": "schemas/batch-input.schema.json",
+      "sha256": "7a436b080e6ab0719344a5315bfc1528d7c82ac747f96cca9324ac89523871f1",
+      "size": 731
+    },
+    {
+      "path": "schemas/batch-output.schema.json",
+      "sha256": "092f910eeb8381b8fcb6d23d89cd17aa131e8976abd4c2dd152d3cba85b2bbf5",
+      "size": 832
+    },
+    {
+      "path": "schemas/capability-package.schema.json",
+      "sha256": "dbd2d22175d65cee93c36583e058c7544bba83523546932e722dd33b858a6e69",
+      "size": 1133
+    },
+    {
+      "path": "schemas/certification.schema.json",
+      "sha256": "2aa2831998a1056c3e32f5a59f20f2333d2c5158c7e4bece01a63324510cff82",
+      "size": 1281
+    },
+    {
+      "path": "schemas/evidence-ref.schema.json",
+      "sha256": "3df3e81dd987595389d60fe65cc5864e1955ca354b22cbcacf55ef3d5d20398d",
+      "size": 996
+    },
+    {
+      "path": "schemas/workflow-run.schema.json",
+      "sha256": "9ca354ff0ae8e60618b1c635e5c98daca8a712549fd7187886073a75bf41114a",
+      "size": 848
+    },
+    {
+      "path": "skills/b13-evidence-graph-continuous-certification-adapter-provider/SKILL.md",
+      "sha256": "93ddaa34abda8e8b26f007c705ec312c90318151e97c49089ae446635dd1646c",
+      "size": 4009
+    },
+    {
+      "path": "skills/b13-evidence-graph-continuous-certification-capability-planning/SKILL.md",
+      "sha256": "5441a68c35fc8eeb46fe3dc2c621726a6ccef3ad50197dd90695484e600186ec",
+      "size": 3911
+    },
+    {
+      "path": "skills/b13-evidence-graph-continuous-certification-certification-gate/SKILL.md",
+      "sha256": "5bf74c8624cbe38c9f832a54d469cbf0440cf11118a0c751aee9fe57e58738d9",
+      "size": 4040
+    },
+    {
+      "path": "skills/b13-evidence-graph-continuous-certification-corpus-benchmark/SKILL.md",
+      "sha256": "7fe92cc74ee9d956216fffe09cf830418dc5f422ecd40e7f6e5fc8252159fafe",
+      "size": 3950
+    },
+    {
+      "path": "skills/b13-evidence-graph-continuous-certification-deterministic-engine/SKILL.md",
+      "sha256": "ca8aabda4e1ef2fa9cac1fdcda253b2226cecf82795c0ce9fc01283797e1e85e",
+      "size": 3927
+    },
+    {
+      "path": "skills/b13-evidence-graph-continuous-certification-discovery-inventory/SKILL.md",
+      "sha256": "7f133dae2e72c55c0df5b06d33133ea91c9e68e6bae360bf875ed85d5a41466f",
+      "size": 3954
+    },
+    {
+      "path": "skills/b13-evidence-graph-continuous-certification-domain-model/SKILL.md",
+      "sha256": "888730be15d73184797458b0baead9a1770e1258cff81f07145e3057ac9dec6e",
+      "size": 3981
+    },
+    {
+      "path": "skills/b13-evidence-graph-continuous-certification-failure-recovery/SKILL.md",
+      "sha256": "e6dfe71b6bd75f3f559b741c1bdad44107e24309de3a3554ff2cc45bd33f396e",
+      "size": 3958
+    },
+    {
+      "path": "skills/b13-evidence-graph-continuous-certification-human-approval/SKILL.md",
+      "sha256": "d74f3ff77b37c838980364c60dbacc8d39c9831cd95713b970d93686b9caeb99",
+      "size": 3943
+    },
+    {
+      "path": "skills/b13-evidence-graph-continuous-certification-integration-api/SKILL.md",
+      "sha256": "6fc0a0682b0554ae9914847315eea4d46d70cc5197e1cbd95d9c3d8e3ee78585",
+      "size": 3928
+    },
+    {
+      "path": "skills/b13-evidence-graph-continuous-certification-lifecycle-recertification/SKILL.md",
+      "sha256": "a7082d08a196cd032d337b5f40e4b292dd91526dccd02c405008985c38e79d65",
+      "size": 4018
+    },
+    {
+      "path": "skills/b13-evidence-graph-continuous-certification-lineage-reconciliation/SKILL.md",
+      "sha256": "42bbc28d89befcde9db6f775d8fc8ab9fcbef9ff896e786e599061a62b9dcd35",
+      "size": 3969
+    },
+    {
+      "path": "skills/b13-evidence-graph-continuous-certification-observability-economics/SKILL.md",
+      "sha256": "94a7a0208aa40bc45bb08f94dda921db227ab1ea3b673a03cd2b312ee3b4fd9d",
+      "size": 3984
+    },
+    {
+      "path": "skills/b13-evidence-graph-continuous-certification-orchestrator/SKILL.md",
+      "sha256": "92341717424ae669aec9a6219f8ccd190e6a806d33af28b9af717853578c8f68",
+      "size": 4006
+    },
+    {
+      "path": "skills/b13-evidence-graph-continuous-certification-security-policy/SKILL.md",
+      "sha256": "7e14631fea40587c06fb9309e6443c88a0ef6b6712e10dcadd7a800ef190d14a",
+      "size": 3963
+    },
+    {
+      "path": "skills/b13-evidence-graph-continuous-certification-workflow-runtime/SKILL.md",
+      "sha256": "000f794188ea734ae6d2cf9c240b1a25f416185697916a9c35ca15903e08d8f1",
+      "size": 3972
+    },
+    {
+      "path": "tests/README.md",
+      "sha256": "08d9003a37aeae1e2c96f3f6d19c6a7a03e2c35232d8b51095ef8d9e439f0234",
+      "size": 442
+    },
+    {
+      "path": "tests/test_catalog.json",
+      "sha256": "e1f3862e62c7372a5dd74c448c3ecc5507efb6b8f8be209ecd10c3bebc76f8b4",
+      "size": 1941
+    },
+    {
+      "path": "tools/validate_package.py",
+      "sha256": "1d0e2d5d5005b7602e810d0a54ae8e33f6145cab3d21bf348d7fefcfa8fb3023",
+      "size": 1519
+    },
+    {
+      "path": "validate.sh",
+      "sha256": "a1afca2d69d8fa3d11c820c8381b06b6449e31b289196b3cdc4156de471dd6c4",
+      "size": 72
+    }
+  ],
+  "validation": {
+    "static": "passed",
+    "runtime": "not-executed"
+  },
+  "trust_boundary": "Static package validation is not production certification."
+}

@@ -1,0 +1,21 @@
+{
+  "batch": 4,
+  "archetypes": {
+    "orchestrator": "b04-transformation-orchestrator",
+    "domain-model": "b04-transformation-orchestrator",
+    "discovery-inventory": "b04-transformation-orchestrator",
+    "capability-planning": "b04-rewrite-operation-and-patch-planner",
+    "deterministic-engine": "b04-transformation-rule-dsl",
+    "adapter-provider": "b04-semantic-mapping-ontology-and-registry",
+    "integration-api": "b04-cross-file-symbol-api-and-graph-rewriter",
+    "workflow-runtime": "b04-deterministic-recipe-runtime",
+    "certification-gate": "b04-transformation-certification-gate",
+    "security-policy": "b04-transformation-orchestrator",
+    "human-approval": "b04-restricted-agent-repair-controller",
+    "failure-recovery": "b04-copy-on-write-transaction-and-rollback",
+    "lineage-reconciliation": "b04-source-map-format-comment-and-provenance-preserver",
+    "lifecycle-recertification": "b04-analysis-preservation-and-incremental-recompute",
+    "observability-economics": "b04-transformation-orchestrator",
+    "corpus-benchmark": "b04-recipe-corpus-benchmark-and-regression"
+  }
+}

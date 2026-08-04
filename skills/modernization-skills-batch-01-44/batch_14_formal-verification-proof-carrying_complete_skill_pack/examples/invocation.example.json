@@ -1,0 +1,12 @@
+{
+  "request_id": "b14-example-001",
+  "tenant_id": "example-tenant",
+  "project_id": "example-project",
+  "scope": "Formal Verification and Proof-Carrying Migration",
+  "upstream_certificate_refs": [
+    "batch-13-certificate-example"
+  ],
+  "options": {
+    "dry_run": true
+  }
+}

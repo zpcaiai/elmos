@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:batch-03:semantic-fact",
+  "title": "SemanticFact",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "derivation",
+    "node_id",
+    "predicate",
+    "record_id",
+    "schema_version",
+    "scope",
+    "value"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "known_limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "node_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "predicate": {
+      "type": "string",
+      "minLength": 1
+    },
+    "value": {
+      "type": "string",
+      "minLength": 1
+    },
+    "derivation": {
+      "enum": [
+        "parsed",
+        "inferred",
+        "runtime-observed",
+        "declared",
+        "unknown"
+      ]
+    },
+    "span_ref": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

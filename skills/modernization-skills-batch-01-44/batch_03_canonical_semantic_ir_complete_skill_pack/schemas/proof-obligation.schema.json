@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:batch-03:proof-obligation",
+  "title": "ProofObligation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "discharged_by",
+    "kind",
+    "obligation_id",
+    "record_id",
+    "schema_version",
+    "scope",
+    "statement"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "known_limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "obligation_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "kind": {
+      "enum": [
+        "type-preservation",
+        "evaluation-order",
+        "exception-shape",
+        "resource-release",
+        "numeric-precision",
+        "concurrency"
+      ]
+    },
+    "statement": {
+      "type": "string",
+      "minLength": 1
+    },
+    "discharged_by": {
+      "enum": [
+        "proof",
+        "test",
+        "differential",
+        "review",
+        "not-discharged"
+      ]
+    },
+    "node_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

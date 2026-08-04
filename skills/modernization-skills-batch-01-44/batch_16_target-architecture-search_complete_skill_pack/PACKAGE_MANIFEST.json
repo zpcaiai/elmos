@@ -1,0 +1,240 @@
+{
+  "schema_version": "1.0.0",
+  "package_id": "batch-16-target-architecture-search-complete-skill-pack",
+  "batch": 16,
+  "title": "Target Architecture Search and Migration Planning",
+  "version": "1.0.0",
+  "generated_at": "2026-07-31T00:00:00Z",
+  "skill_count": 16,
+  "skills": [
+    "b16-target-architecture-search-orchestrator",
+    "b16-target-architecture-search-domain-model",
+    "b16-target-architecture-search-discovery-inventory",
+    "b16-target-architecture-search-capability-planning",
+    "b16-target-architecture-search-deterministic-engine",
+    "b16-target-architecture-search-adapter-provider",
+    "b16-target-architecture-search-workflow-runtime",
+    "b16-target-architecture-search-lineage-reconciliation",
+    "b16-target-architecture-search-security-policy",
+    "b16-target-architecture-search-human-approval",
+    "b16-target-architecture-search-observability-economics",
+    "b16-target-architecture-search-corpus-benchmark",
+    "b16-target-architecture-search-failure-recovery",
+    "b16-target-architecture-search-integration-api",
+    "b16-target-architecture-search-lifecycle-recertification",
+    "b16-target-architecture-search-certification-gate"
+  ],
+  "upstream_batch": 15,
+  "files": [
+    {
+      "path": "BATCH15_COMPATIBILITY.md",
+      "sha256": "0b10d0722b5ce9388d281175d25e4192455425d900061814d20bb4736948011a",
+      "size": 2121
+    },
+    {
+      "path": "CODEX_IMPLEMENTATION_PROMPT.md",
+      "sha256": "d5037c0ccab672543920d96a2a8906f0b0dcfa49294d40a78ab9835f3348da63",
+      "size": 2332
+    },
+    {
+      "path": "IMPLEMENTATION_CHECKLIST.md",
+      "sha256": "473472f4ec54f891ac45ff357e82b7d2caf1b1622892d2bee5c4d555622b5421",
+      "size": 1784
+    },
+    {
+      "path": "README.md",
+      "sha256": "c15733a6b36b90d65a6b36393c307902ae51a759b063e95e5d3129a84b989bce",
+      "size": 1099
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "414219eb48e7bcfbb6f01d8210e3f183c78adf1ee2f9488b48ee813a71395ff1",
+      "size": 3529
+    },
+    {
+      "path": "SKILL_INDEX.md",
+      "sha256": "2910077c1bc4dd97a5bd8e036051ad25cb3a5a988e686e5bb6fd1e263c5b20a9",
+      "size": 3034
+    },
+    {
+      "path": "VALIDATION_REPORT.md",
+      "sha256": "4b01632aa2858835a244dce21af04a068dc1cd3ad0a5f33da1c47bb4240fb6c0",
+      "size": 572
+    },
+    {
+      "path": "examples/certificate.example.json",
+      "sha256": "473f834617d29a986825badf3d7b6f39af44a0c7d86edfabdc7a8135d98c7cb7",
+      "size": 452
+    },
+    {
+      "path": "examples/invocation.example.json",
+      "sha256": "3259993b668d56c2e3f78a52c15e66216d4c971d08491946996a732a9f2e08db",
+      "size": 283
+    },
+    {
+      "path": "install.sh",
+      "sha256": "cdaf3fdf0c010dd9e0fe29b4a92cd723ff35dd0617eaf14bb5f57e757bc2fa02",
+      "size": 305
+    },
+    {
+      "path": "policies/agent-boundary.yaml",
+      "sha256": "79adc8830adec220835b49067d29b50a3a1578f146a65e7d5b70a6d19ba09ab2",
+      "size": 150
+    },
+    {
+      "path": "policies/certification.yaml",
+      "sha256": "17f50ef51eb5cbf800b3b4990bfb399d4aed9c751cb7f440bee4a4d88ebf02ea",
+      "size": 182
+    },
+    {
+      "path": "policies/default-deny.yaml",
+      "sha256": "25c6a03403de8832018b82bfa5d9dd516d8f5136ba4974c85d40bdf8972f9366",
+      "size": 105
+    },
+    {
+      "path": "policies/evidence-first.yaml",
+      "sha256": "50408543ffa45cfea3461cd57bdabf39f9bdd422fc5b41cdfef4d3c679a058c2",
+      "size": 156
+    },
+    {
+      "path": "policies/human-approval.yaml",
+      "sha256": "d9a6b11cfe402c569440e95b1aa2377387e222a32b693c83fc278ddb1fd4482f",
+      "size": 143
+    },
+    {
+      "path": "schemas/batch-input.schema.json",
+      "sha256": "70facf2be7097fba7a835d881a3f3b800dfa05406adfb681a2a5fae0c725ad01",
+      "size": 731
+    },
+    {
+      "path": "schemas/batch-output.schema.json",
+      "sha256": "e66a62e0f0af55afde2139356b5fdafdee22fc9053a8eb32a344d6d32d025b00",
+      "size": 832
+    },
+    {
+      "path": "schemas/capability-package.schema.json",
+      "sha256": "4823ab56b1d06e3f344a0326d2bd07b8a25ef2451916fb1e4416c17f84cd9e00",
+      "size": 1133
+    },
+    {
+      "path": "schemas/certification.schema.json",
+      "sha256": "7849e22bef58853003f89ce540e1bf1cdf4517dbc3e5adfc5afcea99ca1d5314",
+      "size": 1281
+    },
+    {
+      "path": "schemas/evidence-ref.schema.json",
+      "sha256": "7ee4fb6ebc1d49777f200ee681ff5663220be1a6f948ebdc8d680ca1c02b3b2f",
+      "size": 996
+    },
+    {
+      "path": "schemas/workflow-run.schema.json",
+      "sha256": "c019c34ae98ea70afe1e05607e69e52aa4eebe53bb74077484866c42a8b13e3c",
+      "size": 848
+    },
+    {
+      "path": "skills/b16-target-architecture-search-adapter-provider/SKILL.md",
+      "sha256": "56f8226360d27c285c68e87a9ae3ebeaeee22f5553b150a91d11d2fd746e7929",
+      "size": 3921
+    },
+    {
+      "path": "skills/b16-target-architecture-search-capability-planning/SKILL.md",
+      "sha256": "83970867cf0bc1540a733f6a0948daee37169733278c67e3169b61373657c82a",
+      "size": 3823
+    },
+    {
+      "path": "skills/b16-target-architecture-search-certification-gate/SKILL.md",
+      "sha256": "5466b34d4dc25d062a0bc8ec2105c3a3199c965c8912bb6e6d96a4200e714b5f",
+      "size": 3952
+    },
+    {
+      "path": "skills/b16-target-architecture-search-corpus-benchmark/SKILL.md",
+      "sha256": "e79e942ecc31dc45583e7ea26385848ea7990be872d8bb3ed2f82daf5c3f0f92",
+      "size": 3862
+    },
+    {
+      "path": "skills/b16-target-architecture-search-deterministic-engine/SKILL.md",
+      "sha256": "ce3b91581476ba0a03fcf802d651f31d0654f88a4dca0a2b2099919ee737e6c5",
+      "size": 3839
+    },
+    {
+      "path": "skills/b16-target-architecture-search-discovery-inventory/SKILL.md",
+      "sha256": "0971e38c1c1477590a51c26cab78b977dd5bdeb1a204804debfe1ce55ebf7a51",
+      "size": 3866
+    },
+    {
+      "path": "skills/b16-target-architecture-search-domain-model/SKILL.md",
+      "sha256": "17976affa2e6d568e1a9bfc32e8144e25aebcba8dde89c5f97d777715c25d9e0",
+      "size": 3893
+    },
+    {
+      "path": "skills/b16-target-architecture-search-failure-recovery/SKILL.md",
+      "sha256": "ad8ddaccfb0a3593cde7d0d12f356587c12e19d24d2de9d69c965ec14331d423",
+      "size": 3870
+    },
+    {
+      "path": "skills/b16-target-architecture-search-human-approval/SKILL.md",
+      "sha256": "dc297cd6ddf09c9a4bd50281fd06d81f5a4c1c1816d4d6798a7ae332d344fab3",
+      "size": 3855
+    },
+    {
+      "path": "skills/b16-target-architecture-search-integration-api/SKILL.md",
+      "sha256": "f30fe83eeb3ac25026ad21d69ba22e0eaddcbbf36d8e4f67027582982a240977",
+      "size": 3840
+    },
+    {
+      "path": "skills/b16-target-architecture-search-lifecycle-recertification/SKILL.md",
+      "sha256": "ca165f33f674ec11af71955430dc4fc1f2cb92dc4c4530d5fbb46fbf7c38629d",
+      "size": 3930
+    },
+    {
+      "path": "skills/b16-target-architecture-search-lineage-reconciliation/SKILL.md",
+      "sha256": "a884336c40c87a6293666b7af221ddc571416d899d651adb10b0a876502e0ad7",
+      "size": 3881
+    },
+    {
+      "path": "skills/b16-target-architecture-search-observability-economics/SKILL.md",
+      "sha256": "c6c0f16974472274d6a080f1c097a9505bbefd786b852fb3f9e5e6e283dc814b",
+      "size": 3896
+    },
+    {
+      "path": "skills/b16-target-architecture-search-orchestrator/SKILL.md",
+      "sha256": "8ad0b65d0f8786e3e6919f519f3ffb9cdc83a98f0aaf799ab0b47d4222d0783a",
+      "size": 3918
+    },
+    {
+      "path": "skills/b16-target-architecture-search-security-policy/SKILL.md",
+      "sha256": "5dced4cff424310d9ed49bcbdf3864eefab486d5002d11bcafb294f53385a72c",
+      "size": 3875
+    },
+    {
+      "path": "skills/b16-target-architecture-search-workflow-runtime/SKILL.md",
+      "sha256": "5322fa5a4831e7b2f1965c310fd53bae56f93aaf6dc015a7ff873adcc216f357",
+      "size": 3884
+    },
+    {
+      "path": "tests/README.md",
+      "sha256": "38fa3605f5df14648e6b93ae0d43118019d4220b1282bfe5bace5ae6725972aa",
+      "size": 399
+    },
+    {
+      "path": "tests/test_catalog.json",
+      "sha256": "ad73a2ee392fa29a71d259708ea1863b804092a16f27808016cdc59ec208351b",
+      "size": 1927
+    },
+    {
+      "path": "tools/validate_package.py",
+      "sha256": "1d0e2d5d5005b7602e810d0a54ae8e33f6145cab3d21bf348d7fefcfa8fb3023",
+      "size": 1519
+    },
+    {
+      "path": "validate.sh",
+      "sha256": "a1afca2d69d8fa3d11c820c8381b06b6449e31b289196b3cdc4156de471dd6c4",
+      "size": 72
+    }
+  ],
+  "validation": {
+    "static": "passed",
+    "runtime": "not-executed"
+  },
+  "trust_boundary": "Static package validation is not production certification."
+}

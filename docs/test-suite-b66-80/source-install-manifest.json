@@ -2,7 +2,7 @@
   "canonical_package": "elmos-codex-skills-batch66-80-slightly-strict-tests",
   "cases": 450,
   "certification_authority": false,
-  "file_manifest_sha256": "sha256:5fb2678da1b8d4b40b7074f0336b86bbf65bb0f880af0d81bcaa32a0158f4d27",
+  "file_manifest_sha256": "sha256:860a8aed47b070d9a5c6ffc727b5a34fd0e36828dd867e4f218f92ffd5cb30d9",
   "initial_result_status": "not-run",
   "installed_skills": [
     {

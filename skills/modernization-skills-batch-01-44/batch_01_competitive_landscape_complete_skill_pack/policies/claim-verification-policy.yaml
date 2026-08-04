@@ -1,0 +1,5 @@
+claim_verification:
+  unverified_claim_in_battlecard: forbidden
+  minimum_confidence_for_public_claim: corroborated
+  vendor_marketing_alone_is_sufficient: false
+  recheck_interval_days: 90

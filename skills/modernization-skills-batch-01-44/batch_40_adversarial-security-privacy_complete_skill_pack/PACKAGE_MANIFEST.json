@@ -1,0 +1,240 @@
+{
+  "schema_version": "1.0.0",
+  "package_id": "batch-40-adversarial-security-privacy-complete-skill-pack",
+  "batch": 40,
+  "title": "Adversarial Security, Privacy and Supply-Chain Assurance",
+  "version": "1.0.0",
+  "generated_at": "2026-07-31T00:00:00Z",
+  "skill_count": 16,
+  "skills": [
+    "b40-adversarial-security-privacy-orchestrator",
+    "b40-adversarial-security-privacy-domain-model",
+    "b40-adversarial-security-privacy-discovery-inventory",
+    "b40-adversarial-security-privacy-capability-planning",
+    "b40-adversarial-security-privacy-deterministic-engine",
+    "b40-adversarial-security-privacy-adapter-provider",
+    "b40-adversarial-security-privacy-workflow-runtime",
+    "b40-adversarial-security-privacy-lineage-reconciliation",
+    "b40-adversarial-security-privacy-security-policy",
+    "b40-adversarial-security-privacy-human-approval",
+    "b40-adversarial-security-privacy-observability-economics",
+    "b40-adversarial-security-privacy-corpus-benchmark",
+    "b40-adversarial-security-privacy-failure-recovery",
+    "b40-adversarial-security-privacy-integration-api",
+    "b40-adversarial-security-privacy-lifecycle-recertification",
+    "b40-adversarial-security-privacy-certification-gate"
+  ],
+  "upstream_batch": 39,
+  "files": [
+    {
+      "path": "BATCH39_COMPATIBILITY.md",
+      "sha256": "575db832e561c4df560ba30f3dbde42b2cd939d9770ad5af4269bb9e87024f4f",
+      "size": 2177
+    },
+    {
+      "path": "CODEX_IMPLEMENTATION_PROMPT.md",
+      "sha256": "153406a408cbb4102937440479e20d717e26ad446ae14d85842440f4d75649f5",
+      "size": 2369
+    },
+    {
+      "path": "IMPLEMENTATION_CHECKLIST.md",
+      "sha256": "83271ecad53e163e62646a0524dab5510012d392676747eada75fcb45216fe28",
+      "size": 1852
+    },
+    {
+      "path": "README.md",
+      "sha256": "d2057b50e25577a1cfb530834cec97b0ba8bf150d60017a6ba0a73e25fb5d402",
+      "size": 1087
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "7ef45cb8f580beba584231611479263b8778bfe3e685b3d3083319c8da7bb56e",
+      "size": 3607
+    },
+    {
+      "path": "SKILL_INDEX.md",
+      "sha256": "5e118bddaa627d7b491387b3f4b1d9ebe05d8258d465c90755db69d889fd99c7",
+      "size": 3073
+    },
+    {
+      "path": "VALIDATION_REPORT.md",
+      "sha256": "ea4ffad48ea57e2f39cb62134d9723b49676a378a14b5a64b74931073acc40bd",
+      "size": 572
+    },
+    {
+      "path": "examples/certificate.example.json",
+      "sha256": "8b78c656903cbeda0499118c265acce201c45b48ccd2061a759091295580822f",
+      "size": 452
+    },
+    {
+      "path": "examples/invocation.example.json",
+      "sha256": "594d4e1f5ba65a8d177831fd12e6faa657b9641d44b879194c07e88a493e4e39",
+      "size": 290
+    },
+    {
+      "path": "install.sh",
+      "sha256": "cdaf3fdf0c010dd9e0fe29b4a92cd723ff35dd0617eaf14bb5f57e757bc2fa02",
+      "size": 305
+    },
+    {
+      "path": "policies/agent-boundary.yaml",
+      "sha256": "79adc8830adec220835b49067d29b50a3a1578f146a65e7d5b70a6d19ba09ab2",
+      "size": 150
+    },
+    {
+      "path": "policies/certification.yaml",
+      "sha256": "17f50ef51eb5cbf800b3b4990bfb399d4aed9c751cb7f440bee4a4d88ebf02ea",
+      "size": 182
+    },
+    {
+      "path": "policies/default-deny.yaml",
+      "sha256": "25c6a03403de8832018b82bfa5d9dd516d8f5136ba4974c85d40bdf8972f9366",
+      "size": 105
+    },
+    {
+      "path": "policies/evidence-first.yaml",
+      "sha256": "50408543ffa45cfea3461cd57bdabf39f9bdd422fc5b41cdfef4d3c679a058c2",
+      "size": 156
+    },
+    {
+      "path": "policies/human-approval.yaml",
+      "sha256": "d9a6b11cfe402c569440e95b1aa2377387e222a32b693c83fc278ddb1fd4482f",
+      "size": 143
+    },
+    {
+      "path": "schemas/batch-input.schema.json",
+      "sha256": "3c11698759dca23dc7f474529ba6f6f3e6ccf402b956697290b964023e06b31d",
+      "size": 731
+    },
+    {
+      "path": "schemas/batch-output.schema.json",
+      "sha256": "4cfba48467bbfaadc83e4c012d2d3a374e2f0d2e1badb7cb37a5306210094e1e",
+      "size": 832
+    },
+    {
+      "path": "schemas/capability-package.schema.json",
+      "sha256": "8faf5286819f1d29efcacb56a87523be48bf58d90889f638284d6ed85c78efa6",
+      "size": 1133
+    },
+    {
+      "path": "schemas/certification.schema.json",
+      "sha256": "ecf9cf84ba285c7d53218a5a64dc7106249f48563e150ffc7cf3d033eb67082e",
+      "size": 1281
+    },
+    {
+      "path": "schemas/evidence-ref.schema.json",
+      "sha256": "d4c2b791ab6af80dde8a2ae7c05c8914f869498d4eca5d27d1987900f31d5d77",
+      "size": 996
+    },
+    {
+      "path": "schemas/workflow-run.schema.json",
+      "sha256": "e8177c0e0d859a56432759e5d245c0d615fe4058b5327145f42c529d40ba08ba",
+      "size": 848
+    },
+    {
+      "path": "skills/b40-adversarial-security-privacy-adapter-provider/SKILL.md",
+      "sha256": "b11485f97e0e2fe06b694545054811f1a06d76f7693db2413871392465ab4a8e",
+      "size": 3936
+    },
+    {
+      "path": "skills/b40-adversarial-security-privacy-capability-planning/SKILL.md",
+      "sha256": "4cb8e7752445c61f2183696dd3580bb9f9efae1324000199902687dd22f09acd",
+      "size": 3838
+    },
+    {
+      "path": "skills/b40-adversarial-security-privacy-certification-gate/SKILL.md",
+      "sha256": "832ff7f87d3f28d38dc635a1471759bd1418a6587ed25acfd913406cc5ddb4b7",
+      "size": 3967
+    },
+    {
+      "path": "skills/b40-adversarial-security-privacy-corpus-benchmark/SKILL.md",
+      "sha256": "bab9b8d11a58b807035b722353828dcf26028903b928cb2c636c93fcc58238fc",
+      "size": 3877
+    },
+    {
+      "path": "skills/b40-adversarial-security-privacy-deterministic-engine/SKILL.md",
+      "sha256": "6486b0a8318fe87f70d2abbf8d6db340a9c146cb581ad3c37d07b187e92b1f15",
+      "size": 3854
+    },
+    {
+      "path": "skills/b40-adversarial-security-privacy-discovery-inventory/SKILL.md",
+      "sha256": "208f5ad08ebc0a348020cae153fdf028323ae3514607cd3e03da033b0e3a2e9a",
+      "size": 3881
+    },
+    {
+      "path": "skills/b40-adversarial-security-privacy-domain-model/SKILL.md",
+      "sha256": "0020694a3c0921316a218a6c334e77df24ab2fc5f63d675eb1ca32b21576427a",
+      "size": 3908
+    },
+    {
+      "path": "skills/b40-adversarial-security-privacy-failure-recovery/SKILL.md",
+      "sha256": "a586ef8c6319fc2d0984d690b6b6c8a802863fe254d45d240f718506eb48e2b6",
+      "size": 3885
+    },
+    {
+      "path": "skills/b40-adversarial-security-privacy-human-approval/SKILL.md",
+      "sha256": "d261ab6d6c3155f06b7ce6addef0adb8dfe07eac1c5424a225948ec0120acc0b",
+      "size": 3870
+    },
+    {
+      "path": "skills/b40-adversarial-security-privacy-integration-api/SKILL.md",
+      "sha256": "55f1beae37327cfb7cd74236ec78572721474959a01f4f2f8a57d5e52205c209",
+      "size": 3855
+    },
+    {
+      "path": "skills/b40-adversarial-security-privacy-lifecycle-recertification/SKILL.md",
+      "sha256": "24d2583e1c38b668e5c480f23909c606ea8fc858005410dcd2d1b8f8a7f4fd2b",
+      "size": 3945
+    },
+    {
+      "path": "skills/b40-adversarial-security-privacy-lineage-reconciliation/SKILL.md",
+      "sha256": "e1745e7bd1d2b3fead555cc09b61255e0a87983192aee30574f9dfbeab27995c",
+      "size": 3896
+    },
+    {
+      "path": "skills/b40-adversarial-security-privacy-observability-economics/SKILL.md",
+      "sha256": "e76b8a544fc67318c3d3393bb856d3a6293f1a4da9e9856145b8e89ee00d2012",
+      "size": 3911
+    },
+    {
+      "path": "skills/b40-adversarial-security-privacy-orchestrator/SKILL.md",
+      "sha256": "90b31d394d4f1ffcfe6ef81afca4a1bcb66e956c051d7ed237fb261121748762",
+      "size": 3933
+    },
+    {
+      "path": "skills/b40-adversarial-security-privacy-security-policy/SKILL.md",
+      "sha256": "2a54cae6d0750b3c434f07cfe7318910174c8b533ce778b93c72bcb55c4a9870",
+      "size": 3890
+    },
+    {
+      "path": "skills/b40-adversarial-security-privacy-workflow-runtime/SKILL.md",
+      "sha256": "a63c53ffcd7eb59696971d1c51e06255f4a32de0622668bae7d9e4607515d27e",
+      "size": 3899
+    },
+    {
+      "path": "tests/README.md",
+      "sha256": "680d7a2197106f27b0db74fb17a3cd087ac93a5a5cecaabc89d9a99a1864845a",
+      "size": 445
+    },
+    {
+      "path": "tests/test_catalog.json",
+      "sha256": "c586baf21d27e735fd58632054a44572d9de65496bac16504e056aa92aea46d0",
+      "size": 1934
+    },
+    {
+      "path": "tools/validate_package.py",
+      "sha256": "1d0e2d5d5005b7602e810d0a54ae8e33f6145cab3d21bf348d7fefcfa8fb3023",
+      "size": 1519
+    },
+    {
+      "path": "validate.sh",
+      "sha256": "a1afca2d69d8fa3d11c820c8381b06b6449e31b289196b3cdc4156de471dd6c4",
+      "size": 72
+    }
+  ],
+  "validation": {
+    "static": "passed",
+    "runtime": "not-executed"
+  },
+  "trust_boundary": "Static package validation is not production certification."
+}

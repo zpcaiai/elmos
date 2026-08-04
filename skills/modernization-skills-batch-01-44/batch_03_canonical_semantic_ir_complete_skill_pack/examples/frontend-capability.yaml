@@ -1,0 +1,8 @@
+# Example instance for batch-03: frontend-capability
+feature: example
+language: example
+language_version: example
+record_id: example
+representation: native
+schema_version: 1.0.0
+scope: example

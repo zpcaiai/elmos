@@ -1,6 +1,6 @@
 {
   "package": "elmos-codex-skills-batch66-80-slightly-strict-tests",
-  "file_count": 544,
+  "file_count": 543,
   "files": [
     {
       "path": "AGENTS.md",
@@ -2706,11 +2706,6 @@
       "path": "test-suites/batch66-80-slightly-strict/waivers/.gitkeep",
       "size_bytes": 0,
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-    },
-    {
-      "path": "tests/__pycache__/test_toolkit.cpython-313.pyc",
-      "size_bytes": 7241,
-      "sha256": "f026a6e2a61b71abc9a134ff98b9eef890e76a94c52895b320e4a9d34de35b5f"
     },
     {
       "path": "tests/test_toolkit.py",

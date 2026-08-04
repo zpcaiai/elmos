@@ -1,0 +1,11 @@
+# Example instance for batch-01: battlecard
+competitor_id: example
+legal_review: required
+our_strengths:
+  - example
+record_id: example
+schema_version: 1.0.0
+scope: example
+their_strengths:
+  - example
+verified_claims_only: false

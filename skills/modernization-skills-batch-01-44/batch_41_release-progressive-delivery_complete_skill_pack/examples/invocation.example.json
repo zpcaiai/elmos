@@ -1,0 +1,12 @@
+{
+  "request_id": "b41-example-001",
+  "tenant_id": "example-tenant",
+  "project_id": "example-project",
+  "scope": "Release Engineering, Progressive Delivery and Automated Rollback",
+  "upstream_certificate_refs": [
+    "batch-40-certificate-example"
+  ],
+  "options": {
+    "dry_run": true
+  }
+}

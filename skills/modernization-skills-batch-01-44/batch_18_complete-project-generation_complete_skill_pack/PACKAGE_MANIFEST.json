@@ -1,0 +1,240 @@
+{
+  "schema_version": "1.0.0",
+  "package_id": "batch-18-complete-project-generation-complete-skill-pack",
+  "batch": 18,
+  "title": "Complete Project Generation Standard",
+  "version": "1.0.0",
+  "generated_at": "2026-07-31T00:00:00Z",
+  "skill_count": 16,
+  "skills": [
+    "b18-complete-project-generation-orchestrator",
+    "b18-complete-project-generation-domain-model",
+    "b18-complete-project-generation-discovery-inventory",
+    "b18-complete-project-generation-capability-planning",
+    "b18-complete-project-generation-deterministic-engine",
+    "b18-complete-project-generation-adapter-provider",
+    "b18-complete-project-generation-workflow-runtime",
+    "b18-complete-project-generation-lineage-reconciliation",
+    "b18-complete-project-generation-security-policy",
+    "b18-complete-project-generation-human-approval",
+    "b18-complete-project-generation-observability-economics",
+    "b18-complete-project-generation-corpus-benchmark",
+    "b18-complete-project-generation-failure-recovery",
+    "b18-complete-project-generation-integration-api",
+    "b18-complete-project-generation-lifecycle-recertification",
+    "b18-complete-project-generation-certification-gate"
+  ],
+  "upstream_batch": 17,
+  "files": [
+    {
+      "path": "BATCH17_COMPATIBILITY.md",
+      "sha256": "acd180ed6f4eb46ce6f738093166dc360e2f9cada5cc12b479f855a6836dd1f9",
+      "size": 2129
+    },
+    {
+      "path": "CODEX_IMPLEMENTATION_PROMPT.md",
+      "sha256": "d22fa2c2c5bf80730d4baabbf3b01ed804b5daff1b6785399ba3dc5c03393da5",
+      "size": 2332
+    },
+    {
+      "path": "IMPLEMENTATION_CHECKLIST.md",
+      "sha256": "e22175aa8d775a1da2c316b57399955743b217d2950532cadadddaa8ad1cd495",
+      "size": 1792
+    },
+    {
+      "path": "README.md",
+      "sha256": "cbc44d54ed4bcc316ccb369d532d79a3eadece341d68d3c82f29ca950c1f7f93",
+      "size": 1078
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "e47fb359852db4504228ca658d5d99fa84c0ca2a26691a3d90aff5700387d78e",
+      "size": 3533
+    },
+    {
+      "path": "SKILL_INDEX.md",
+      "sha256": "03ba0381a9a75306826c36d8ae3461b78b943872887acca404fdb06cb019eec7",
+      "size": 3037
+    },
+    {
+      "path": "VALIDATION_REPORT.md",
+      "sha256": "407cd326655e393985bfc26d7b696be130297c1b2ee47a61ca71e8dd2194c2ea",
+      "size": 572
+    },
+    {
+      "path": "examples/certificate.example.json",
+      "sha256": "ffdc0364832c453a913aaa06d07c3632019ac6f0b2466a502a3c5f58f20debca",
+      "size": 452
+    },
+    {
+      "path": "examples/invocation.example.json",
+      "sha256": "ab00fb2473074b1cede519dde34bab77afb9d40208414a371b5cb62f9d72f76d",
+      "size": 270
+    },
+    {
+      "path": "install.sh",
+      "sha256": "cdaf3fdf0c010dd9e0fe29b4a92cd723ff35dd0617eaf14bb5f57e757bc2fa02",
+      "size": 305
+    },
+    {
+      "path": "policies/agent-boundary.yaml",
+      "sha256": "79adc8830adec220835b49067d29b50a3a1578f146a65e7d5b70a6d19ba09ab2",
+      "size": 150
+    },
+    {
+      "path": "policies/certification.yaml",
+      "sha256": "17f50ef51eb5cbf800b3b4990bfb399d4aed9c751cb7f440bee4a4d88ebf02ea",
+      "size": 182
+    },
+    {
+      "path": "policies/default-deny.yaml",
+      "sha256": "25c6a03403de8832018b82bfa5d9dd516d8f5136ba4974c85d40bdf8972f9366",
+      "size": 105
+    },
+    {
+      "path": "policies/evidence-first.yaml",
+      "sha256": "50408543ffa45cfea3461cd57bdabf39f9bdd422fc5b41cdfef4d3c679a058c2",
+      "size": 156
+    },
+    {
+      "path": "policies/human-approval.yaml",
+      "sha256": "d9a6b11cfe402c569440e95b1aa2377387e222a32b693c83fc278ddb1fd4482f",
+      "size": 143
+    },
+    {
+      "path": "schemas/batch-input.schema.json",
+      "sha256": "24789053ebb2cf6d21e39865f8ce0d7afd206bac539ce4c86dd5c3023e1f94e5",
+      "size": 731
+    },
+    {
+      "path": "schemas/batch-output.schema.json",
+      "sha256": "52e3d6e93699b8cb03ba35afb7676fa78e58589f4540475da69d56ccfe8aac51",
+      "size": 832
+    },
+    {
+      "path": "schemas/capability-package.schema.json",
+      "sha256": "bad00c4729f83275c3386a8dcf13234ca27424e54ec4c65767fb701a93354bc0",
+      "size": 1133
+    },
+    {
+      "path": "schemas/certification.schema.json",
+      "sha256": "5758e20d72892012c55df56a025deabab1b2a75b6a42bd0aba4f62bc468659bb",
+      "size": 1281
+    },
+    {
+      "path": "schemas/evidence-ref.schema.json",
+      "sha256": "8492f41b5419eff04174edd2c594e4d7e6cee735c114895d2e7467bcc20f06c6",
+      "size": 996
+    },
+    {
+      "path": "schemas/workflow-run.schema.json",
+      "sha256": "eaafdee5fe18c5d346d97f8a11f68b78bfc8595ed5ccf807965192b7fadc3c89",
+      "size": 848
+    },
+    {
+      "path": "skills/b18-complete-project-generation-adapter-provider/SKILL.md",
+      "sha256": "362bca6794ad51616701e00c093696e682549dcaa06042eb143b02c3026df741",
+      "size": 3905
+    },
+    {
+      "path": "skills/b18-complete-project-generation-capability-planning/SKILL.md",
+      "sha256": "f9a13a6afcff63fc28f63739ecc1fbb817cd166efd5859799568d25ed239819b",
+      "size": 3807
+    },
+    {
+      "path": "skills/b18-complete-project-generation-certification-gate/SKILL.md",
+      "sha256": "d589b6accc1624f9802058675acaa0a8ed80dc1ebf78e49a53b4c15806978c6e",
+      "size": 3936
+    },
+    {
+      "path": "skills/b18-complete-project-generation-corpus-benchmark/SKILL.md",
+      "sha256": "1d62087dbe42831382d1a0c623add61c3354d2c2bb40c86b59239b6435609036",
+      "size": 3846
+    },
+    {
+      "path": "skills/b18-complete-project-generation-deterministic-engine/SKILL.md",
+      "sha256": "5e34e9e4c12b05ca5cdce8eaa49d3404bc229738ab04347d17215a2fcf82cac0",
+      "size": 3823
+    },
+    {
+      "path": "skills/b18-complete-project-generation-discovery-inventory/SKILL.md",
+      "sha256": "95e0dbcf46a7285b9bdf4940a4d32138175b17db12edca9b0131929cee5603db",
+      "size": 3850
+    },
+    {
+      "path": "skills/b18-complete-project-generation-domain-model/SKILL.md",
+      "sha256": "2145d8b68f3b5531588a3d73bbb340c827509530f547d435ec7c963d2e250a16",
+      "size": 3877
+    },
+    {
+      "path": "skills/b18-complete-project-generation-failure-recovery/SKILL.md",
+      "sha256": "d04d01a1e350e0d8c2e81159734fce371894f4d98a39acd7d95f277cfd48fcb9",
+      "size": 3854
+    },
+    {
+      "path": "skills/b18-complete-project-generation-human-approval/SKILL.md",
+      "sha256": "289250cc35cbf6ba517cd7c561b689d7a933d5deadad1a6a95d0e00c2d974bce",
+      "size": 3839
+    },
+    {
+      "path": "skills/b18-complete-project-generation-integration-api/SKILL.md",
+      "sha256": "be57c387b8c477be8452b2ed028e543dce05dcfb191327eae17889b533034f29",
+      "size": 3824
+    },
+    {
+      "path": "skills/b18-complete-project-generation-lifecycle-recertification/SKILL.md",
+      "sha256": "de6f7c45f9e1775f6529476e4bae85e3315343fdfc97575d5d920b26bce2a36b",
+      "size": 3914
+    },
+    {
+      "path": "skills/b18-complete-project-generation-lineage-reconciliation/SKILL.md",
+      "sha256": "2d50ecc2ec7564dbec59cb038793b0d16f38c91c87e418ddc6835ccfcf78037b",
+      "size": 3865
+    },
+    {
+      "path": "skills/b18-complete-project-generation-observability-economics/SKILL.md",
+      "sha256": "1023272c9ca876d981de68ae3241f35fdab66b89a7f72cedf846c03fab597b10",
+      "size": 3880
+    },
+    {
+      "path": "skills/b18-complete-project-generation-orchestrator/SKILL.md",
+      "sha256": "b135359c166d15d663465d3493ffa853c39e512726cbea2b56578b53630edbd7",
+      "size": 3902
+    },
+    {
+      "path": "skills/b18-complete-project-generation-security-policy/SKILL.md",
+      "sha256": "e9f582ca871877bf3725cc855dde35c75d6703f5ffe1187c9a3fc85e03b3490c",
+      "size": 3859
+    },
+    {
+      "path": "skills/b18-complete-project-generation-workflow-runtime/SKILL.md",
+      "sha256": "28c9f3457ec862b58f5926866d8f9b0cb7a595b4189a0e7259981bc3d2dcd480",
+      "size": 3868
+    },
+    {
+      "path": "tests/README.md",
+      "sha256": "4fba10e68f921f49c2673e7290f3277e0a0daaf53806c6cddace810d605ebab4",
+      "size": 420
+    },
+    {
+      "path": "tests/test_catalog.json",
+      "sha256": "960a1deb1d5ec24e73001d604fad2b30094546cb5f1d524a1317b7c4eebe8240",
+      "size": 1914
+    },
+    {
+      "path": "tools/validate_package.py",
+      "sha256": "1d0e2d5d5005b7602e810d0a54ae8e33f6145cab3d21bf348d7fefcfa8fb3023",
+      "size": 1519
+    },
+    {
+      "path": "validate.sh",
+      "sha256": "a1afca2d69d8fa3d11c820c8381b06b6449e31b289196b3cdc4156de471dd6c4",
+      "size": 72
+    }
+  ],
+  "validation": {
+    "static": "passed",
+    "runtime": "not-executed"
+  },
+  "trust_boundary": "Static package validation is not production certification."
+}

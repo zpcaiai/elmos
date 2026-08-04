@@ -1,0 +1,78 @@
+{
+  "batch": 17,
+  "title": "Migration Execution Operating System",
+  "cases": [
+    {
+      "id": "B17-T001",
+      "name": "schema-valid",
+      "priority": "P0",
+      "expected": "valid input and output conform to schemas"
+    },
+    {
+      "id": "B17-T002",
+      "name": "schema-invalid-unknown-field",
+      "priority": "P0",
+      "expected": "trust boundary rejects unknown input fields"
+    },
+    {
+      "id": "B17-T003",
+      "name": "missing-upstream-certificate",
+      "priority": "P0",
+      "expected": "execution is blocked"
+    },
+    {
+      "id": "B17-T004",
+      "name": "fake-certified-status",
+      "priority": "P0",
+      "expected": "conservative gate rejects missing evidence"
+    },
+    {
+      "id": "B17-T005",
+      "name": "cross-tenant-access",
+      "priority": "P0",
+      "expected": "request is denied and audited"
+    },
+    {
+      "id": "B17-T006",
+      "name": "agent-modifies-tests",
+      "priority": "P0",
+      "expected": "proposal is rejected"
+    },
+    {
+      "id": "B17-T007",
+      "name": "provider-version-drift",
+      "priority": "P1",
+      "expected": "certificate is invalidated"
+    },
+    {
+      "id": "B17-T008",
+      "name": "duplicate-event",
+      "priority": "P1",
+      "expected": "idempotent processing produces one effect"
+    },
+    {
+      "id": "B17-T009",
+      "name": "runner-disconnect",
+      "priority": "P1",
+      "expected": "lease expires into reconciliation"
+    },
+    {
+      "id": "B17-T010",
+      "name": "rollback-recovery",
+      "priority": "P1",
+      "expected": "workspace and side effects reconcile"
+    },
+    {
+      "id": "B17-T011",
+      "name": "holdout-regression",
+      "priority": "P1",
+      "expected": "release is blocked"
+    },
+    {
+      "id": "B17-T012",
+      "name": "evidence-expiry",
+      "priority": "P1",
+      "expected": "status becomes stale and recertification starts"
+    }
+  ]
+}

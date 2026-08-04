@@ -95,5 +95,4 @@ templates/product-convergence/reference-route-plan.json
 templates/product-convergence/skill-registry.json
 templates/product-convergence/success-metrics.json
 templates/product-convergence/workflow-definition.json
-tests/product-convergence/__pycache__/test_toolkit.cpython-313.pyc
 tests/product-convergence/test_toolkit.py

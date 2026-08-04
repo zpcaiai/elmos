@@ -1,0 +1,12 @@
+{
+  "request_id": "b43-example-001",
+  "tenant_id": "example-tenant",
+  "project_id": "example-project",
+  "scope": "Legacy Coexistence, Cutover, Hypercare and Continuous Modernization",
+  "upstream_certificate_refs": [
+    "batch-42-certificate-example"
+  ],
+  "options": {
+    "dry_run": true
+  }
+}

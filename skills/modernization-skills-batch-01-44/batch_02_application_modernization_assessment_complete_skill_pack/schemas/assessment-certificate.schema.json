@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:batch-02:assessment-certificate",
+  "title": "AssessmentCertificate",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "coverage_denominator",
+    "coverage_numerator",
+    "expires_at",
+    "issued_at",
+    "record_id",
+    "schema_version",
+    "scope",
+    "snapshot_digest",
+    "status",
+    "unknown_count"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "known_limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "status": {
+      "enum": [
+        "certified",
+        "limited",
+        "experimental",
+        "blocked",
+        "stale",
+        "revoked"
+      ]
+    },
+    "snapshot_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "coverage_numerator": {
+      "type": "integer"
+    },
+    "coverage_denominator": {
+      "type": "integer"
+    },
+    "unknown_count": {
+      "type": "integer"
+    },
+    "issued_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

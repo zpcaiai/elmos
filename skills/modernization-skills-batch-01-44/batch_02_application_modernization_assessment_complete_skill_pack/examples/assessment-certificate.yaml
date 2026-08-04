@@ -1,0 +1,11 @@
+# Example instance for batch-02: assessment-certificate
+coverage_denominator: 1
+coverage_numerator: 1
+expires_at: "2026-07-31T00:00:00Z"
+issued_at: "2026-07-31T00:00:00Z"
+record_id: example
+schema_version: 1.0.0
+scope: example
+snapshot_digest: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+status: certified
+unknown_count: 1

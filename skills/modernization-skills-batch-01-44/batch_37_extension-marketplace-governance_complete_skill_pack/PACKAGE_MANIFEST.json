@@ -1,0 +1,240 @@
+{
+  "schema_version": "1.0.0",
+  "package_id": "batch-37-extension-marketplace-governance-complete-skill-pack",
+  "batch": 37,
+  "title": "Extension SDK, Marketplace and Supply-Chain Governance",
+  "version": "1.0.0",
+  "generated_at": "2026-07-31T00:00:00Z",
+  "skill_count": 16,
+  "skills": [
+    "b37-extension-marketplace-governance-orchestrator",
+    "b37-extension-marketplace-governance-domain-model",
+    "b37-extension-marketplace-governance-discovery-inventory",
+    "b37-extension-marketplace-governance-capability-planning",
+    "b37-extension-marketplace-governance-deterministic-engine",
+    "b37-extension-marketplace-governance-adapter-provider",
+    "b37-extension-marketplace-governance-workflow-runtime",
+    "b37-extension-marketplace-governance-lineage-reconciliation",
+    "b37-extension-marketplace-governance-security-policy",
+    "b37-extension-marketplace-governance-human-approval",
+    "b37-extension-marketplace-governance-observability-economics",
+    "b37-extension-marketplace-governance-corpus-benchmark",
+    "b37-extension-marketplace-governance-failure-recovery",
+    "b37-extension-marketplace-governance-integration-api",
+    "b37-extension-marketplace-governance-lifecycle-recertification",
+    "b37-extension-marketplace-governance-certification-gate"
+  ],
+  "upstream_batch": 36,
+  "files": [
+    {
+      "path": "BATCH36_COMPATIBILITY.md",
+      "sha256": "f3bab869d049398945f8c5ca1099170e61d84a8fbee6cafab479459011cba667",
+      "size": 2124
+    },
+    {
+      "path": "CODEX_IMPLEMENTATION_PROMPT.md",
+      "sha256": "d01dabe03c2d42cde6de1d72ca8acee44a57dada50584a3345fcfe388e3f3b1f",
+      "size": 2301
+    },
+    {
+      "path": "IMPLEMENTATION_CHECKLIST.md",
+      "sha256": "1b189ab5ff282351e4ab2358d1e4ea44196f86c64ef32d376e65d275ca1c5496",
+      "size": 1791
+    },
+    {
+      "path": "README.md",
+      "sha256": "d704dda9af0e3dae3ca6e15dca82a69471b337d131e6cc7ecc3da3b294d35bb8",
+      "size": 1070
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "bea3e48b655d6a90cddd19c3a5b15cbbca6e738b87222a3dd190de845b3e6b37",
+      "size": 3605
+    },
+    {
+      "path": "SKILL_INDEX.md",
+      "sha256": "53ad83015d340ef9a640761986224384f2af74b4a401ca2531cb8f749b7dd972",
+      "size": 3135
+    },
+    {
+      "path": "VALIDATION_REPORT.md",
+      "sha256": "116f3e3bc41d5077bda7ba4a3667e7867b3c48c66a911b321991746c4d457190",
+      "size": 572
+    },
+    {
+      "path": "examples/certificate.example.json",
+      "sha256": "61e47b604d05b398d57098060cd04388c4ee829b2a675c9da9d8849ab2eb6e72",
+      "size": 452
+    },
+    {
+      "path": "examples/invocation.example.json",
+      "sha256": "e20c7e523a4a492abeb311405974b20eb1dda913b3fb23bd9344b184c5736211",
+      "size": 288
+    },
+    {
+      "path": "install.sh",
+      "sha256": "cdaf3fdf0c010dd9e0fe29b4a92cd723ff35dd0617eaf14bb5f57e757bc2fa02",
+      "size": 305
+    },
+    {
+      "path": "policies/agent-boundary.yaml",
+      "sha256": "79adc8830adec220835b49067d29b50a3a1578f146a65e7d5b70a6d19ba09ab2",
+      "size": 150
+    },
+    {
+      "path": "policies/certification.yaml",
+      "sha256": "17f50ef51eb5cbf800b3b4990bfb399d4aed9c751cb7f440bee4a4d88ebf02ea",
+      "size": 182
+    },
+    {
+      "path": "policies/default-deny.yaml",
+      "sha256": "25c6a03403de8832018b82bfa5d9dd516d8f5136ba4974c85d40bdf8972f9366",
+      "size": 105
+    },
+    {
+      "path": "policies/evidence-first.yaml",
+      "sha256": "50408543ffa45cfea3461cd57bdabf39f9bdd422fc5b41cdfef4d3c679a058c2",
+      "size": 156
+    },
+    {
+      "path": "policies/human-approval.yaml",
+      "sha256": "d9a6b11cfe402c569440e95b1aa2377387e222a32b693c83fc278ddb1fd4482f",
+      "size": 143
+    },
+    {
+      "path": "schemas/batch-input.schema.json",
+      "sha256": "49815e83f620c94ded286e075e9ed4c94e1e0d274b2db2d57fefaa149998d341",
+      "size": 731
+    },
+    {
+      "path": "schemas/batch-output.schema.json",
+      "sha256": "171f4e04d1cd9054380e9181e4ebaf762bd1f662b15a3f66e104df94a2e662fd",
+      "size": 832
+    },
+    {
+      "path": "schemas/capability-package.schema.json",
+      "sha256": "94886dc2652abc6191f626cf397357637dd7a4f43a23ef8491f6be1f98c3db94",
+      "size": 1133
+    },
+    {
+      "path": "schemas/certification.schema.json",
+      "sha256": "48da7f89dd66cd83e0e9b3cdaf0a22abc77bc6343e51fee5065d64d0bb0293da",
+      "size": 1281
+    },
+    {
+      "path": "schemas/evidence-ref.schema.json",
+      "sha256": "12dbf773f224ad320ba305534dbe56638dfd52859ca8fcfe9932453aebaa8cb6",
+      "size": 996
+    },
+    {
+      "path": "schemas/workflow-run.schema.json",
+      "sha256": "e767db3821a39017cc257475accc0e170d6eb0db8b0d3920d363bf0897da958a",
+      "size": 848
+    },
+    {
+      "path": "skills/b37-extension-marketplace-governance-adapter-provider/SKILL.md",
+      "sha256": "c5c10a80fc8be1214a07f8aad4ea22d91cc7048efbfd814ee1016350bc53154a",
+      "size": 3865
+    },
+    {
+      "path": "skills/b37-extension-marketplace-governance-capability-planning/SKILL.md",
+      "sha256": "eb97f7a13406cc5f7b294ecdb6c7c66ad56ce4f6dac7c1c5ad0fa539adff9a04",
+      "size": 3767
+    },
+    {
+      "path": "skills/b37-extension-marketplace-governance-certification-gate/SKILL.md",
+      "sha256": "11f843f61e60b03d09626324346e3760cc664beabc4c5500243d70135da585d7",
+      "size": 3896
+    },
+    {
+      "path": "skills/b37-extension-marketplace-governance-corpus-benchmark/SKILL.md",
+      "sha256": "d8840d5f70f503782ec943cc1782e07c1d6b219f049f48b23c4fc2603ad023d0",
+      "size": 3806
+    },
+    {
+      "path": "skills/b37-extension-marketplace-governance-deterministic-engine/SKILL.md",
+      "sha256": "235a9b8d2eaa1646218318808b55d6ab743ec59496fa77090d00e059ac2e387b",
+      "size": 3783
+    },
+    {
+      "path": "skills/b37-extension-marketplace-governance-discovery-inventory/SKILL.md",
+      "sha256": "df0d9d5bfd6b4278e4441d08b69fb94afcbe354642b51a67210cc0f3f68656ec",
+      "size": 3810
+    },
+    {
+      "path": "skills/b37-extension-marketplace-governance-domain-model/SKILL.md",
+      "sha256": "6a7ecc9f28e25b38c8b2102630fb94b69158c3a51905df0f85ebceb692c5da2c",
+      "size": 3837
+    },
+    {
+      "path": "skills/b37-extension-marketplace-governance-failure-recovery/SKILL.md",
+      "sha256": "654d3ce4b14eeee88cf9c07abab6eb07e9e70f6f051074449c69cc850f5fc522",
+      "size": 3814
+    },
+    {
+      "path": "skills/b37-extension-marketplace-governance-human-approval/SKILL.md",
+      "sha256": "05de9229b7e1fedf18a81ffdb42e1bc1d54d8432162c05a02319b24258b5c885",
+      "size": 3799
+    },
+    {
+      "path": "skills/b37-extension-marketplace-governance-integration-api/SKILL.md",
+      "sha256": "494440be808670ba7a79aee3f64d3e21dbc241cc64d91cb9c5f5f19e8c881347",
+      "size": 3784
+    },
+    {
+      "path": "skills/b37-extension-marketplace-governance-lifecycle-recertification/SKILL.md",
+      "sha256": "d185c059496408d8f07a3f279ccb78fd9e50fa266f54e12101742600b9d48ac1",
+      "size": 3874
+    },
+    {
+      "path": "skills/b37-extension-marketplace-governance-lineage-reconciliation/SKILL.md",
+      "sha256": "72e4e9cd6a0af7369c141c50eea727680fb569169353b4f39e17715500021c95",
+      "size": 3825
+    },
+    {
+      "path": "skills/b37-extension-marketplace-governance-observability-economics/SKILL.md",
+      "sha256": "42e0a57ea9cdac33057e239d8462a36ff5cc95b52c4cb957301c4c820eefccd4",
+      "size": 3840
+    },
+    {
+      "path": "skills/b37-extension-marketplace-governance-orchestrator/SKILL.md",
+      "sha256": "a18c69e638a10982304a53f2de0d93e08e15588cb90c97a5a6cdc34fad962f59",
+      "size": 3862
+    },
+    {
+      "path": "skills/b37-extension-marketplace-governance-security-policy/SKILL.md",
+      "sha256": "1e8fb2af3c122d9f5f198653bc3c6a5c61d9a66b24a2daa51cc60bebf08e205b",
+      "size": 3819
+    },
+    {
+      "path": "skills/b37-extension-marketplace-governance-workflow-runtime/SKILL.md",
+      "sha256": "9aa435b32be351f32328dc777aa744ed65d693e04391a134ab9e725d6b6d0741",
+      "size": 3828
+    },
+    {
+      "path": "tests/README.md",
+      "sha256": "3984d286228e6a462fc79300eb6ffce96f40122716d6140d3d51389fe544051f",
+      "size": 396
+    },
+    {
+      "path": "tests/test_catalog.json",
+      "sha256": "a46db60ef8f2d1a241e533cb18ad3fc3519905099c40a16a9cbdec776af866ad",
+      "size": 1932
+    },
+    {
+      "path": "tools/validate_package.py",
+      "sha256": "1d0e2d5d5005b7602e810d0a54ae8e33f6145cab3d21bf348d7fefcfa8fb3023",
+      "size": 1519
+    },
+    {
+      "path": "validate.sh",
+      "sha256": "a1afca2d69d8fa3d11c820c8381b06b6449e31b289196b3cdc4156de471dd6c4",
+      "size": 72
+    }
+  ],
+  "validation": {
+    "static": "passed",
+    "runtime": "not-executed"
+  },
+  "trust_boundary": "Static package validation is not production certification."
+}

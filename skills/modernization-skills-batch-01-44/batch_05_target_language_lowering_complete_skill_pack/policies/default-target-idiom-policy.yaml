@@ -1,0 +1,4 @@
+target_idiom:
+  idiom_selection_must_be_declared: true
+  semantics_outrank_idiom: true
+  unsupported_idiom_is_limitation: true

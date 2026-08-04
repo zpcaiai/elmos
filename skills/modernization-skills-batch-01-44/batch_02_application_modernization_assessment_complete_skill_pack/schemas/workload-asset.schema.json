@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:batch-02:workload-asset",
+  "title": "WorkloadAsset",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "asset_kind",
+    "record_id",
+    "schema_version",
+    "scope",
+    "source_refs"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "known_limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "asset_kind": {
+      "enum": [
+        "application",
+        "service",
+        "batch-job",
+        "database",
+        "integration",
+        "ui"
+      ]
+    },
+    "language": {
+      "type": "string",
+      "minLength": 1
+    },
+    "framework": {
+      "type": "string",
+      "minLength": 1
+    },
+    "loc": {
+      "type": "integer"
+    },
+    "source_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "unknown_regions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

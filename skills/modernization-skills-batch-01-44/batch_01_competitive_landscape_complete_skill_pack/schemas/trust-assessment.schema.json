@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:batch-01:trust-assessment",
+  "title": "TrustAssessment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "competitor_id",
+    "evidence_disclosure",
+    "independent_oracle",
+    "record_id",
+    "schema_version",
+    "scope",
+    "verification_model"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "known_limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "competitor_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "verification_model": {
+      "enum": [
+        "none",
+        "self-reported",
+        "test-based",
+        "differential",
+        "formal",
+        "unknown"
+      ]
+    },
+    "evidence_disclosure": {
+      "enum": [
+        "none",
+        "summary",
+        "detailed",
+        "reproducible"
+      ]
+    },
+    "independent_oracle": {
+      "type": "boolean"
+    },
+    "notes": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

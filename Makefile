@@ -49,6 +49,18 @@ precision-migration-b01-44-check: precision-migration-b01-44-skills
 	$(UV) run --quiet --with jsonschema python scripts/batch35/run_verification_gate.py verification-packs/precision-migration-b01-44-runtime
 precision-migration-b01-44-qualification: precision-migration-b01-44-check
 	python3 scripts/precision_migration/run_local_qualification.py
+modernization-b01-44-packages:
+	PYTHONDONTWRITEBYTECODE=1 python3 -m scripts.modernization_b01_44.cli packages --summary
+modernization-b01-44-foundation:
+	PYTHONDONTWRITEBYTECODE=1 python3 -m scripts.modernization_b01_44.generate_foundation --check
+modernization-b01-44-test: modernization-b01-44-packages modernization-b01-44-foundation
+	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests/modernization-b01-44 -p 'test_*.py'
+modernization-b01-44-mutation:
+	PYTHONDONTWRITEBYTECODE=1 python3 -m scripts.modernization_b01_44.mutation_check
+modernization-b01-44-run:
+	PYTHONDONTWRITEBYTECODE=1 python3 -m scripts.modernization_b01_44.cli run --batches 1-44 --scope svc-a
+modernization-b01-44-gate: modernization-b01-44-test modernization-b01-44-mutation
+	@echo "modernization B01-44: packages verified, suite green, mutations killed"
 batch27-34-skills:
 	python3 tooling/validate_batch27_34_integration.py
 batch1-55-skills:

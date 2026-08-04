@@ -25,7 +25,7 @@ INSTALL_MANIFEST = ROOT / "docs" / "test-suite-b66-80" / "source-install-manifes
 SKILL_GENERATOR = Path(
     "/Users/stephen/.codex/skills/.system/skill-creator/scripts/generate_openai_yaml.py"
 )
-EXPECTED_FILES = 544
+EXPECTED_FILES = 543
 EXPECTED_TEST_SKILLS = 35
 EXPECTED_CASES = 450
 EXPECTED_SOURCE_SKILLS = 195
@@ -115,6 +115,10 @@ def read_file_inventory(source: Path) -> tuple[dict[str, Any], dict[str, dict[st
         relative = entry.get("path")
         if not isinstance(relative, str) or not relative or relative in by_path:
             raise SystemExit(f"Invalid or duplicate test-package file path: {relative!r}")
+        # Build detritus must never enter the manifest: a committed .pyc pins the
+        # package to one interpreter version and fails everywhere else.
+        if "__pycache__" in relative.split("/") or relative.endswith(".pyc"):
+            raise SystemExit(f"Test package manifest contains a cache artefact: {relative}")
         path = safe_path(source, relative)
         if not path.is_file():
             raise SystemExit(f"Test package file is missing: {relative}")

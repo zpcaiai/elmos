@@ -1,0 +1,12 @@
+{
+  "request_id": "b07-example-001",
+  "tenant_id": "example-tenant",
+  "project_id": "example-project",
+  "scope": "Framework Contract Model and Framework Migration Recipe Packs",
+  "upstream_certificate_refs": [
+    "batch-06-certificate-example"
+  ],
+  "options": {
+    "dry_run": true
+  }
+}

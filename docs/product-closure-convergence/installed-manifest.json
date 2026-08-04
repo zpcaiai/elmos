@@ -723,7 +723,7 @@
     },
     {
       "installed_path": "scripts/product-convergence/validate_skill_bundle.py",
-      "sha256": "sha256:6508020f5a446482e91d937dd279f1a075405f583a95700fdf47d9e4547b885c",
+      "sha256": "sha256:faba38b0826c483242a21b1e49cb7f96b39219660c1baef01972449c6295fbb6",
       "source_path": "elmos-product-convergence-reference-skills/scripts/product-convergence/validate_skill_bundle.py"
     },
     {

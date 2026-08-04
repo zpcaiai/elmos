@@ -1,0 +1,240 @@
+{
+  "schema_version": "1.0.0",
+  "package_id": "batch-29-multi-language-route-factory-complete-skill-pack",
+  "batch": 29,
+  "title": "Multi-Language Route Certification Factory",
+  "version": "1.0.0",
+  "generated_at": "2026-07-31T00:00:00Z",
+  "skill_count": 16,
+  "skills": [
+    "b29-multi-language-route-factory-orchestrator",
+    "b29-multi-language-route-factory-domain-model",
+    "b29-multi-language-route-factory-discovery-inventory",
+    "b29-multi-language-route-factory-capability-planning",
+    "b29-multi-language-route-factory-deterministic-engine",
+    "b29-multi-language-route-factory-adapter-provider",
+    "b29-multi-language-route-factory-workflow-runtime",
+    "b29-multi-language-route-factory-lineage-reconciliation",
+    "b29-multi-language-route-factory-security-policy",
+    "b29-multi-language-route-factory-human-approval",
+    "b29-multi-language-route-factory-observability-economics",
+    "b29-multi-language-route-factory-corpus-benchmark",
+    "b29-multi-language-route-factory-failure-recovery",
+    "b29-multi-language-route-factory-integration-api",
+    "b29-multi-language-route-factory-lifecycle-recertification",
+    "b29-multi-language-route-factory-certification-gate"
+  ],
+  "upstream_batch": 28,
+  "files": [
+    {
+      "path": "BATCH28_COMPATIBILITY.md",
+      "sha256": "c346abf4f105cd6088a076c7b43e3bd169eb8555b960cba52fc7c7221d942944",
+      "size": 2078
+    },
+    {
+      "path": "CODEX_IMPLEMENTATION_PROMPT.md",
+      "sha256": "a59e1256e924ca4535df1c4e66c7531099fcb81e800d3b4f294df963c473caa5",
+      "size": 2252
+    },
+    {
+      "path": "IMPLEMENTATION_CHECKLIST.md",
+      "sha256": "c4820ad78a7a2bef509341e612875e77a7b68f2d062891473e19075d3999b7c8",
+      "size": 1741
+    },
+    {
+      "path": "README.md",
+      "sha256": "9eb4c432431890c476ef25b0333de142d40e9719a583de300c371bb2fab09079",
+      "size": 1055
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "11a8b19cac6d9533c249fd1ac063b698294aedb6ccf1b8a1c35cfb64639246c3",
+      "size": 3476
+    },
+    {
+      "path": "SKILL_INDEX.md",
+      "sha256": "8e78f118b68116410094b5f64b45a4d81a756591400e91085c74c7afddd835d6",
+      "size": 3059
+    },
+    {
+      "path": "VALIDATION_REPORT.md",
+      "sha256": "5fa33c2963f1da3bf936c321a0d383d60844e4b517af7bb23bb56fda6728bedf",
+      "size": 572
+    },
+    {
+      "path": "examples/certificate.example.json",
+      "sha256": "d85da1d58a17c50697921fa1882238fb275390c33192d231ea88d68491c3cdde",
+      "size": 452
+    },
+    {
+      "path": "examples/invocation.example.json",
+      "sha256": "b76c40313c7b76312a4349524a77cb208ce11ecd0e36e4bdf5ca14e60aa9fcff",
+      "size": 276
+    },
+    {
+      "path": "install.sh",
+      "sha256": "cdaf3fdf0c010dd9e0fe29b4a92cd723ff35dd0617eaf14bb5f57e757bc2fa02",
+      "size": 305
+    },
+    {
+      "path": "policies/agent-boundary.yaml",
+      "sha256": "79adc8830adec220835b49067d29b50a3a1578f146a65e7d5b70a6d19ba09ab2",
+      "size": 150
+    },
+    {
+      "path": "policies/certification.yaml",
+      "sha256": "17f50ef51eb5cbf800b3b4990bfb399d4aed9c751cb7f440bee4a4d88ebf02ea",
+      "size": 182
+    },
+    {
+      "path": "policies/default-deny.yaml",
+      "sha256": "25c6a03403de8832018b82bfa5d9dd516d8f5136ba4974c85d40bdf8972f9366",
+      "size": 105
+    },
+    {
+      "path": "policies/evidence-first.yaml",
+      "sha256": "50408543ffa45cfea3461cd57bdabf39f9bdd422fc5b41cdfef4d3c679a058c2",
+      "size": 156
+    },
+    {
+      "path": "policies/human-approval.yaml",
+      "sha256": "d9a6b11cfe402c569440e95b1aa2377387e222a32b693c83fc278ddb1fd4482f",
+      "size": 143
+    },
+    {
+      "path": "schemas/batch-input.schema.json",
+      "sha256": "986577f3195470fa1105e4f4f494b91bd66c340bab811879d105a51dec24784e",
+      "size": 731
+    },
+    {
+      "path": "schemas/batch-output.schema.json",
+      "sha256": "62a5da651b16496f4e97b5b6c09f1f2862a5e5a08929335092925559d05566a4",
+      "size": 832
+    },
+    {
+      "path": "schemas/capability-package.schema.json",
+      "sha256": "d58378ec3af68598b05a81d5f1cb2800a6db67e411bfb83ecd71c0fc0b0d48d9",
+      "size": 1133
+    },
+    {
+      "path": "schemas/certification.schema.json",
+      "sha256": "1e36220031f5e1cf916c84149eb38d5b0c02e7d71e3fcf6b74397d1fb6fefc68",
+      "size": 1281
+    },
+    {
+      "path": "schemas/evidence-ref.schema.json",
+      "sha256": "1ede74e3d08fb5b961ef72f2a738dad6c86dc69784bb2fdec7e76a1d344747d1",
+      "size": 996
+    },
+    {
+      "path": "schemas/workflow-run.schema.json",
+      "sha256": "94a596cf4d14371d36713d292cd223dd9e45afcc777c02a5e0079916faccb0a6",
+      "size": 848
+    },
+    {
+      "path": "skills/b29-multi-language-route-factory-adapter-provider/SKILL.md",
+      "sha256": "6aaa008b062ecc56489d4b4a9244dd3effd617795316d78ae73bca8cc7649216",
+      "size": 3822
+    },
+    {
+      "path": "skills/b29-multi-language-route-factory-capability-planning/SKILL.md",
+      "sha256": "8a648d2983a66333ef396e5a43ced2946ad0b31218414b7ff4749176daa58825",
+      "size": 3724
+    },
+    {
+      "path": "skills/b29-multi-language-route-factory-certification-gate/SKILL.md",
+      "sha256": "84c71129e96dca9a22f491815235b5fc31cf28cc062d3cc755f7ed82d6a6d8ae",
+      "size": 3853
+    },
+    {
+      "path": "skills/b29-multi-language-route-factory-corpus-benchmark/SKILL.md",
+      "sha256": "619d14deec3a7f096569f32985bb395e9c3610c42ca53851b8f43240368ebced",
+      "size": 3763
+    },
+    {
+      "path": "skills/b29-multi-language-route-factory-deterministic-engine/SKILL.md",
+      "sha256": "286ea5c029bb3d0a18d0a908ef5546b74ea6fc0f0d4c615b63dba3acc93a1b31",
+      "size": 3740
+    },
+    {
+      "path": "skills/b29-multi-language-route-factory-discovery-inventory/SKILL.md",
+      "sha256": "29e8fa775e744f7ec3a0b7aad7c92b79f4244032081d89bed6a97a67e2c13aea",
+      "size": 3767
+    },
+    {
+      "path": "skills/b29-multi-language-route-factory-domain-model/SKILL.md",
+      "sha256": "ef9b39609a02d8a4c662b3784a6411032c875920ffb15207505a754a42972357",
+      "size": 3794
+    },
+    {
+      "path": "skills/b29-multi-language-route-factory-failure-recovery/SKILL.md",
+      "sha256": "c1a82e9959b9c860b0cce75158e7f4b84f1ade5c3f2b9632b6a6f496afbfe063",
+      "size": 3771
+    },
+    {
+      "path": "skills/b29-multi-language-route-factory-human-approval/SKILL.md",
+      "sha256": "961408cb9afe79241e523f568e416377dba9a252ad02bbd897e922399eab46a0",
+      "size": 3756
+    },
+    {
+      "path": "skills/b29-multi-language-route-factory-integration-api/SKILL.md",
+      "sha256": "189f4464725c37f4801ddc2032758fd48effa7e196f4b461ab3ce6e1657189f9",
+      "size": 3741
+    },
+    {
+      "path": "skills/b29-multi-language-route-factory-lifecycle-recertification/SKILL.md",
+      "sha256": "369d2ca3a64e880b289082f08f6b619efa1a1490ec279120b268df788cc94e5b",
+      "size": 3831
+    },
+    {
+      "path": "skills/b29-multi-language-route-factory-lineage-reconciliation/SKILL.md",
+      "sha256": "6f179a921b10a09ede434500daaedd7e2d3c79247fc9bb6ef007073dfb869b49",
+      "size": 3782
+    },
+    {
+      "path": "skills/b29-multi-language-route-factory-observability-economics/SKILL.md",
+      "sha256": "81eac77e87584d556206a9f66961bda357e08adabb980153f1f6c0b4bd305c82",
+      "size": 3797
+    },
+    {
+      "path": "skills/b29-multi-language-route-factory-orchestrator/SKILL.md",
+      "sha256": "bc6c5576e362c9e64e37207d5a2d73324bbdaa5dac93500480716dde4f41a783",
+      "size": 3819
+    },
+    {
+      "path": "skills/b29-multi-language-route-factory-security-policy/SKILL.md",
+      "sha256": "2925037f1b2cf97a106fa10fe78a0069ea1c1a1d327d45b6ee02db1d587d7bb8",
+      "size": 3776
+    },
+    {
+      "path": "skills/b29-multi-language-route-factory-workflow-runtime/SKILL.md",
+      "sha256": "27531da8d3cb01aa0a0fa6d95e22bb6278736f7a7522f7e8852712e75af17a9a",
+      "size": 3785
+    },
+    {
+      "path": "tests/README.md",
+      "sha256": "f1a3052d79b92217ddba87496c17dd5c44b3579f998988248eb4253ac08702e8",
+      "size": 363
+    },
+    {
+      "path": "tests/test_catalog.json",
+      "sha256": "c3fac0a4775b74b6f0ff6baa71475dd77446ca46976e6fcb17965fefa689859a",
+      "size": 1920
+    },
+    {
+      "path": "tools/validate_package.py",
+      "sha256": "1d0e2d5d5005b7602e810d0a54ae8e33f6145cab3d21bf348d7fefcfa8fb3023",
+      "size": 1519
+    },
+    {
+      "path": "validate.sh",
+      "sha256": "a1afca2d69d8fa3d11c820c8381b06b6449e31b289196b3cdc4156de471dd6c4",
+      "size": 72
+    }
+  ],
+  "validation": {
+    "static": "passed",
+    "runtime": "not-executed"
+  },
+  "trust_boundary": "Static package validation is not production certification."
+}

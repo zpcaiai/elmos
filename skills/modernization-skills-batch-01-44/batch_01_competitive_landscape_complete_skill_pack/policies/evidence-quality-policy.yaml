@@ -1,0 +1,5 @@
+evidence_quality:
+  source_uri_required: true
+  observed_version_required: true
+  model_claim_is_evidence: false
+  conflicting_sources_must_be_registered: true
