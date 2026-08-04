@@ -1,10 +1,77 @@
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { FrontendClientEngine } from "./engine.js";
 import type { EngineJobRequest, ExecuteStepRequest, JobResponse } from "./contracts.js";
+import {
+  validateFrtBatchPlanRequest,
+  validateFrtRunTransitionRequest,
+  validateFrtSkillRunRequest,
+} from "./frt-contract-validation.js";
+import { FrtRuntime } from "./frt-runtime.js";
+import type { FrtRunStore } from "./frt-run-store.js";
+import {
+  frtSecurityFromEnvironment,
+  FrtSecurityError,
+  verifyFrtIdentityToken,
+  type FrtIdentityClaims,
+  type FrtSecurityContext,
+} from "./frt-security.js";
+import type { FrtBatchPlanRequest, FrtSkillRunRequest } from "./frt-types.js";
 import { uiProjectGenerationCapabilities } from "./project-generation.js";
 
-const engine = new FrontendClientEngine();
 const maximumBodyBytes = 1_048_576;
+
+export interface FrontendClientServerOptions {
+  readonly engine?: FrontendClientEngine;
+  readonly frtRuntime?: FrtRuntime;
+  readonly frtSecurity?: FrtSecurityContext;
+  readonly frtRunStore?: FrtRunStore;
+}
+
+class FrtHttpAuthorizationError extends Error {
+  readonly status: 401 | 403;
+  readonly errorCode: string;
+
+  constructor(status: 401 | 403, errorCode: string) {
+    super(errorCode);
+    this.status = status;
+    this.errorCode = errorCode;
+  }
+}
+
+function authorizeFrt(
+  request: IncomingMessage,
+  security: FrtSecurityContext,
+  permission: FrtIdentityClaims["permissions"][number],
+): FrtIdentityClaims {
+  const header = request.headers.authorization;
+  if (!header?.startsWith("Bearer ") || header.length <= 7) {
+    throw new FrtHttpAuthorizationError(401, "FRT_AUTHENTICATION_REQUIRED");
+  }
+  let claims: FrtIdentityClaims;
+  try {
+    claims = verifyFrtIdentityToken(header.slice(7), security.trustStore, security.now());
+  } catch (error) {
+    const code = error instanceof FrtSecurityError ? error.code : "FRT_IDENTITY_TOKEN_INVALID";
+    const publicCode = code.includes("EXPIRED") ? "FRT_IDENTITY_EXPIRED"
+      : code.includes("SIGNATURE") ? "FRT_IDENTITY_SIGNATURE_INVALID"
+        : code.includes("TRUST_KEY") ? "FRT_IDENTITY_TRUST_REJECTED"
+          : "FRT_IDENTITY_TOKEN_INVALID";
+    throw new FrtHttpAuthorizationError(401, publicCode);
+  }
+  if (!claims.permissions.includes(permission)) {
+    throw new FrtHttpAuthorizationError(403, "FRT_PERMISSION_DENIED");
+  }
+  return claims;
+}
+
+function assertFrtScope(claims: FrtIdentityClaims, request: FrtBatchPlanRequest | FrtSkillRunRequest): void {
+  const exactScope = Object.entries(claims.scope).every(
+    ([key, value]) => request.context[key as keyof typeof claims.scope] === value,
+  );
+  if (!exactScope || request.context.requestedBy !== claims.subject) {
+    throw new FrtHttpAuthorizationError(403, "FRT_SCOPE_MISMATCH");
+  }
+}
 
 async function body(request: IncomingMessage): Promise<unknown> {
   const chunks: Buffer[] = [];
@@ -34,12 +101,113 @@ function sendJob(response: ServerResponse, value: JobResponse, successStatus: 20
   send(response, status, status >= 400 ? value.error : value);
 }
 
-export const server = createServer(async (request, response) => {
+export function createFrontendClientServer(options: FrontendClientServerOptions = {}) {
+  const engine = options.engine ?? new FrontendClientEngine();
+  const security = options.frtSecurity ?? frtSecurityFromEnvironment();
+  const frtRuntime = options.frtRuntime ?? new FrtRuntime({
+    security,
+    ...(options.frtRunStore ? { store: options.frtRunStore } : {}),
+  });
+  return createServer(async (request, response) => {
   try {
     const url = new URL(request.url ?? "/", "http://localhost");
     if (request.method === "GET" && url.pathname === "/engine/v1/capabilities") return send(response, 200, engine.capabilities());
     if (request.method === "GET" && url.pathname === "/engine/v1/ui-projects/capabilities") {
       return send(response, 200, uiProjectGenerationCapabilities());
+    }
+    if (request.method === "GET" && url.pathname === "/engine/v1/frt/catalog") {
+      return send(response, 200, frtRuntime.catalog(
+        url.searchParams.get("batch") ?? undefined,
+        url.searchParams.get("query") ?? undefined,
+      ));
+    }
+    if (request.method === "GET" && url.pathname === "/engine/v1/frt/routes") {
+      return send(response, 200, {
+        schemaVersion: "1.0",
+        directedRouteCount: frtRuntime.routes().length,
+        routes: frtRuntime.routes(),
+        certification: "NOT_CERTIFIED",
+      });
+    }
+    const skillDefinition = url.pathname.match(/^\/engine\/v1\/frt\/skills\/([^/]+)$/);
+    if (request.method === "GET" && skillDefinition) {
+      const skill = frtRuntime.skill(skillDefinition[1]!);
+      return skill ? send(response, 200, skill) : send(response, 404, { errorCode: "FRT_SKILL_NOT_FOUND" });
+    }
+    const skillRun = url.pathname.match(/^\/engine\/v1\/frt\/skills\/([^/]+)\/runs$/);
+    if (request.method === "POST" && skillRun) {
+      const principal = authorizeFrt(request, security, "frt:run");
+      const value = validateFrtSkillRunRequest(await body(request)) as FrtSkillRunRequest;
+      assertFrtScope(principal, value);
+      if (value.action === "VERIFY" && !principal.permissions.includes("frt:evidence")) {
+        throw new FrtHttpAuthorizationError(403, "FRT_PERMISSION_DENIED");
+      }
+      if (frtRuntime.skill(skillRun[1]!)?.id !== frtRuntime.skill(value.skillId)?.id) {
+        return send(response, 400, { errorCode: "FRT_SKILL_SCOPE_MISMATCH" });
+      }
+      const result = frtRuntime.run(value);
+      return send(response, result.state === "FAILED" ? 400 : 202, result);
+    }
+    const batchPlan = url.pathname.match(/^\/engine\/v1\/frt\/batches\/([^/]+)\/plans$/);
+    if (request.method === "POST" && batchPlan) {
+      const principal = authorizeFrt(request, security, "frt:plan");
+      const value = validateFrtBatchPlanRequest(await body(request)) as FrtBatchPlanRequest;
+      assertFrtScope(principal, value);
+      if (value.batch.toLocaleUpperCase("en-US") !== batchPlan[1]!.toLocaleUpperCase("en-US")) {
+        return send(response, 400, { errorCode: "FRT_BATCH_SCOPE_MISMATCH" });
+      }
+      const result = frtRuntime.planBatch(value);
+      return send(response, result.state === "BLOCKED" ? 409 : 200, result);
+    }
+    const frtRun = url.pathname.match(/^\/engine\/v1\/frt\/runs\/([^/]+)$/);
+    if (request.method === "GET" && frtRun) {
+      const principal = authorizeFrt(request, security, "frt:read");
+      const result = frtRuntime.getRun(principal.scope, frtRun[1]!);
+      return result ? send(response, 200, result) : send(response, 404, { errorCode: "FRT_RUN_NOT_FOUND" });
+    }
+    const frtAudit = url.pathname.match(/^\/engine\/v1\/frt\/runs\/([^/]+)\/audit$/);
+    if (request.method === "GET" && frtAudit) {
+      const principal = authorizeFrt(request, security, "frt:read");
+      const audit = frtRuntime.audit(principal.scope, frtAudit[1]!);
+      return audit ? send(response, 200, { runId: frtAudit[1], audit })
+        : send(response, 404, { errorCode: "FRT_RUN_NOT_FOUND" });
+    }
+    const frtTransition = url.pathname.match(
+      /^\/engine\/v1\/frt\/runs\/([^/]+)\/(claim|cancel|retry)$/,
+    );
+    if (request.method === "POST" && frtTransition) {
+      const principal = authorizeFrt(request, security, "frt:run");
+      const command = validateFrtRunTransitionRequest(await body(request));
+      try {
+        const result = frtTransition[2] === "claim"
+          ? frtRuntime.claim(principal.scope, frtTransition[1]!, command.expectedVersion, principal.subject)
+          : frtTransition[2] === "cancel"
+            ? frtRuntime.cancel(principal.scope, frtTransition[1]!, command.expectedVersion, principal.subject)
+            : frtRuntime.retry(principal.scope, frtTransition[1]!, command.expectedVersion, principal.subject);
+        return result ? send(response, 200, result)
+          : send(response, 404, { errorCode: "FRT_RUN_NOT_FOUND" });
+      } catch {
+        return send(response, 409, { errorCode: "FRT_RUN_TRANSITION_REJECTED" });
+      }
+    }
+    const frtFindings = url.pathname.match(/^\/engine\/v1\/frt\/runs\/([^/]+)\/findings$/);
+    if (request.method === "GET" && frtFindings) {
+      const principal = authorizeFrt(request, security, "frt:read");
+      const result = frtRuntime.getRun(principal.scope, frtFindings[1]!);
+      return result ? send(response, 200, { runId: result.runId, findings: result.findings })
+        : send(response, 404, { errorCode: "FRT_RUN_NOT_FOUND" });
+    }
+    const frtEvidence = url.pathname.match(/^\/engine\/v1\/frt\/runs\/([^/]+)\/evidence$/);
+    if (request.method === "GET" && frtEvidence) {
+      const principal = authorizeFrt(request, security, "frt:read");
+      const result = frtRuntime.getRun(principal.scope, frtEvidence[1]!);
+      return result ? send(response, 200, {
+        runId: result.runId,
+        inputDigest: result.inputDigest,
+        resultDigest: result.resultDigest,
+        evidence: result.evidence,
+        certificateFragment: result.certificateFragment,
+      }) : send(response, 404, { errorCode: "FRT_RUN_NOT_FOUND" });
     }
     if (request.method === "GET" && url.pathname === "/health") return send(response, 200, { status: "UP", engine: "ELMOS_FRONTEND_CLIENT" });
     const match = url.pathname.match(/^\/engine\/v1\/jobs\/([^/]+)$/);
@@ -63,10 +231,16 @@ export const server = createServer(async (request, response) => {
       if (result) return sendJob(response, result, 202);
     }
     send(response, 404, { errorCode: "NOT_FOUND" });
-  } catch {
+  } catch (error) {
+    if (error instanceof FrtHttpAuthorizationError) {
+      return send(response, error.status, { errorCode: error.errorCode });
+    }
     send(response, 400, { errorCode: "FRONTEND_REQUEST_REJECTED", message: "The frontend engine request was rejected by its contract." });
   }
-});
+  });
+}
+
+export const server = createFrontendClientServer();
 
 if (process.argv[1] && import.meta.url === new URL(`file://${process.argv[1]}`).href) {
   const port = Number.parseInt(process.env.ELMOS_FRONTEND_PORT ?? "8088", 10);

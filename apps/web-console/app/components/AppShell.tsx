@@ -18,6 +18,7 @@ const navigation: Array<{
   { href: "/spring", label: "Spring 老项目翻新", enLabel: "Spring modernization", hint: "Legacy modernization", icon: "workflow" },
   { href: "/translation", label: "全库跨语言转换", enLabel: "Language translation", hint: "Directed routes", icon: "code" },
   { href: "/generation", label: "多语言项目生成", enLabel: "Project generation", hint: "Project synthesis", icon: "spark" },
+  { href: "/frontend", label: "前端转换工厂", enLabel: "Frontend transformation", hint: "FRT G01–G30", icon: "route" },
   { href: "/repositories", label: "代码仓库工作区", enLabel: "Repository workspace", hint: "GitHub / Gitee / Git", icon: "box" },
   { href: "/migration", label: "迁移工坊", enLabel: "Migration studio", hint: "Migration", icon: "route" },
   { href: "/pricing", label: "套餐与用量", enLabel: "Plans and usage", hint: "Plans & usage", icon: "layers" },
@@ -27,7 +28,7 @@ const navigation: Array<{
 ];
 
 const mobileNavigation = navigation.filter((item) =>
-  ["/", "/spring", "/translation", "/generation", "/skills"].includes(item.href),
+  ["/", "/spring", "/translation", "/generation", "/frontend", "/skills"].includes(item.href),
 );
 
 const commands = [
@@ -39,6 +40,7 @@ const commands = [
   { href: "/commercialization", label: "查看 B34–B38 可信链", hint: "Tenant / Runner / Evidence / Policy", icon: "shield" as IconName, group: "能力", keywords: "B34 B35 B36 B37 B38 租户 runner 证据 授权" },
   { href: "/pricing", label: "比较人民币套餐", hint: "免费体验 / 月付 / 年付", icon: "layers" as IconName, group: "商业", keywords: "套餐 价格 人民币 token credit 免费 月付 年付" },
   { href: "/generation", label: "创建多语言项目草稿", hint: "Java / Python / C#", icon: "spark" as IconName, group: "能力", keywords: "生成 项目 synthesis Java Spring Python FastAPI C# ASP.NET" },
+  { href: "/frontend", label: "规划前端技术栈转换", hint: "G01–G30 / 472 Skills / 30 routes", icon: "route" as IconName, group: "能力", keywords: "前端 FRT Vue React 小程序 ArkUI Flutter 迁移 转换" },
   { href: "/repositories", label: "拉取并修改代码仓库", hint: "GitHub / Gitee / 通用 Git", icon: "box" as IconName, group: "能力", keywords: "仓库 repository GitHub Gitee clone 配置 部署 修改" },
   { href: "/skills", label: "查看 Batch 1–55 双命名空间", hint: "1,824 Skills / 408 cases", icon: "test" as IconName, group: "验证", keywords: "Batch 1 55 1824 408 strict cases" },
   { href: "/admin", label: "查看操作日志与性能", hint: "用户操作 / API / 错误 / P95", icon: "settings" as IconName, group: "管理", keywords: "管理端 操作日志 性能 错误 P95 observability" },
@@ -317,7 +319,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         {mobileNavigation.map((item) => {
           const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
           const label = navLabel(item);
-          return <Link href={item.href} className={active ? "active" : ""} aria-current={active ? "page" : undefined} key={item.href}><Icon name={item.icon} size={19} /><span>{english ? label : label.replace("Spring 老项目翻新", "Spring").replace("全库跨语言转换", "转换").replace("多语言项目生成", "生成").replace("Skills 与验证", "验证")}</span></Link>;
+          return <Link href={item.href} className={active ? "active" : ""} aria-current={active ? "page" : undefined} key={item.href}><Icon name={item.icon} size={19} /><span>{english ? label : label.replace("Spring 老项目翻新", "Spring").replace("全库跨语言转换", "转换").replace("多语言项目生成", "生成").replace("前端转换工厂", "前端").replace("Skills 与验证", "验证")}</span></Link>;
         })}
       </nav>
       {showBackToTop && <button className="back-to-top" type="button" onClick={scrollToTop} aria-label="返回页面顶部">

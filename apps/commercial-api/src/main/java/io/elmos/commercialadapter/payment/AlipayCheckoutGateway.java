@@ -65,6 +65,15 @@ public final class AlipayCheckoutGateway implements PaymentProviderRouter.Checko
         return PaymentProvider.ALIPAY_CHECKOUT;
     }
 
+    /**
+     * 支付宝电脑网站支付下单<b>不发任何网络请求</b>：产物就是一个带签名的跳转 URL。
+     * 因此 {@link #prepare} 失败时可以确定提供方那边什么都没发生。
+     */
+    @Override
+    public boolean contactsProviderDuringPrepare() {
+        return false;
+    }
+
     @Override
     public PaymentProviderRouter.CheckoutHandoff prepare(String outTradeNo, long amountFen,
                                                          String subject) {

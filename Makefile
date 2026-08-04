@@ -8,6 +8,8 @@ PNPM ?= pnpm dlx pnpm@$(PNPM_VERSION)
 
 .PHONY: verify business-line-contracts model-catalog-check backend database-data infrastructure security-compliance test-quality mainframe enterprise-integration enterprise-suite mature-product-skills mature-product-packages product-roadmap production-readiness-check precision-migration-b01-44-skills precision-migration-b01-44-check precision-migration-b01-44-qualification batch1-55-skills batch66-80-skills batch66-80-test-skills language-packs-batch81-95 batch81-95-test-skills batch97-104-skills product-batch56-skills product-closure-convergence-skills product-closure-gate product-convergence-gate product-batch33-38-skills product-batch33-39-skills product-batch33-55-skills product-batch40-55-skills product-batch35-38 migration-pack-admission batch27-34-skills test-suite-validate test-suite-test test-suite-check test-suite-gate test-suite-1-55-check test-suite-1-55-gate test-suite-1-65-check test-suite-1-65-gate test-suite-66-80-check test-suite-66-80-gate test-suite-81-95-check test-suite-81-95-gate test-suite-b38-45-validate test-suite-b38-45-test test-suite-b38-45-check test-suite-b38-45-gate test-suite-local-qualification dotnet python project-synthesis project-synthesis-toolchains frontend sql-dialect component-dialect web up down
 
+.PHONY: frt-g01-g30-skills frt-g01-g30-check
+
 verify: business-line-contracts backend dotnet python frontend sql-dialect component-dialect web
 business-line-contracts: model-catalog-check
 	python3 scripts/operations/validate_spring_route_contract.py
@@ -51,6 +53,13 @@ precision-migration-b01-44-qualification: precision-migration-b01-44-check
 	python3 scripts/precision_migration/run_local_qualification.py
 batch27-34-skills:
 	python3 tooling/validate_batch27_34_integration.py
+frt-g01-g30-skills:
+	python3 skills/FRT_G01_G30_Complete_Skills_Pack/scripts/validate_package.py
+	python3 tooling/integrate_frt_g01_g30.py --check
+	python3 scripts/frt/validate_frt_platform.py
+frt-g01-g30-check: frt-g01-g30-skills frontend
+	CI=true PATH="$(NODE_RUNTIME_BIN):$$PATH" $(PNPM) --dir apps/web-console install --frozen-lockfile
+	PATH="$(NODE_RUNTIME_BIN):$$PATH" $(PNPM) --dir apps/web-console check
 batch1-55-skills:
 	$(UV) run --quiet --with pyyaml python tooling/validate_batch1_55_skill_pack.py
 	$(UV) run --quiet --with pyyaml python tooling/ensure_runtime_skill_interfaces.py --check --root .agents/skills

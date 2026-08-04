@@ -8,11 +8,21 @@
     "build": "tsc -p tsconfig.json",
     "test": "pnpm run build && node --test dist/test/*.test.js",
     "check": "pnpm run test",
+    "frt": "node dist/src/frt-cli.js",
     "polyglot": "node dist/src/polyglot-cli.js",
     "project:generate": "node dist/src/project-cli.js"
   },
   "devDependencies": {
     "@types/node": "24.3.0",
-    "typescript": "5.9.2"
+    "@types/react": "19.1.10",
+    "@types/react-dom": "19.1.7",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "typescript": "5.9.2",
+    "vue": "2.7.16",
+    "vue-template-compiler": "2.7.16"
+  },
+  "dependencies": {
+    "@vue/compiler-sfc": "3.5.39"
   }
 }

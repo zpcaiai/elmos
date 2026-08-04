@@ -207,6 +207,7 @@ public final class PaymentPipelineSelfTest {
         long callbackAmountFen = 12900;
         int activations;
         int recorded;
+        String recordedOrganizationId;
         String caseReason;
         String caseDetail;
         Boolean caseHadOrder;
@@ -239,9 +240,12 @@ public final class PaymentPipelineSelfTest {
                                     "elmos-pro-monthly", 12900))
                             : Optional.empty();
                 },
-                (callback, body) -> {
+                (order, callback, body) -> {
                     ports.calls.add("record");
                     ports.recorded++;
+                    // 事件必须带着订单的组织落库：payment_provider_events 有强制 RLS，
+                    // 组织为空写不进去。这条断言把"端口拿得到组织"钉住。
+                    ports.recordedOrganizationId = order.organizationId();
                 },
                 (order, callback) -> {
                     ports.calls.add("activate");
@@ -266,7 +270,13 @@ public final class PaymentPipelineSelfTest {
                                                              String subject) {
             return new PaymentProviderRouter.CheckoutHandoff(provider, "https://example", null);
         }
-    }
+    
+        /** 替身不发网络请求；失败可确定"提供方那边什么都没发生"。 */
+        @Override
+        public boolean contactsProviderDuringPrepare() {
+            return false;
+        }
+}
 
     // ---------------------------------------------------------------- 工具
 

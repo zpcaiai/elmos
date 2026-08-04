@@ -37,6 +37,7 @@ test-results/
 .env
 .env.*
 !.env.example
+.elmos/
 
 # Generated Spring route reference build (175M of regenerable output).
 build/

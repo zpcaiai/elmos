@@ -152,14 +152,23 @@ public final class JdbcRunHistoryStore {
             // Ordered by the clock first so the timeline reads as one, with
             // step and attempt breaking ties. started_at is nullable -- a step
             // that never began still belongs in the story, at the end.
+            //
+            // The tenant predicate is stated even though row-level security
+            // already applies it. Every sibling query here filters explicitly;
+            // one that did not would be the single section that leaks if this
+            // class is ever pointed at a connection where the policy is not
+            // forced. Redundant with the database is the correct amount of
+            // redundant for a tenant boundary.
             Section<StepAttempt> steps = section(jdbc.sql("""
                     select step_run_id, step_id, attempt, executor_type, state,
                            started_at, finished_at, failure_code
                       from migration_step_runs
-                     where migration_run_id = :run
+                     where organization_id = :organization
+                       and migration_run_id = :run
                      order by started_at asc nulls last, step_id asc, attempt asc
                      limit :limit
                     """)
+                    .param("organization", organizationId)
                     .param("run", migrationRunId).param("limit", sectionCap + 1)
                     .query(JdbcRunHistoryStore::mapStep)
                     .list());

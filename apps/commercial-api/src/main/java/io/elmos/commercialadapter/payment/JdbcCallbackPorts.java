@@ -72,10 +72,28 @@ public final class JdbcCallbackPorts {
      * <p>该表有 {@code CHECK (signature_verified)}——只有验签通过的事件才允许落库。
      * 管线保证到这一步时验签必然已通过，因此这里恒填 {@code true}；
      * 若将来有人把这个调用挪到验签之前，数据库会直接拒绝，这是有意的第二道防线。
+     *
+     * <h2>组织来自订单，不来自构造参数（2026-07-29 修）</h2>
+     *
+     * <p>此方法此前签名是 {@code providerEventStore(DataSource, String organizationId)}，
+     * 把组织固定在 Bean 上。那是<b>两个</b>错：
+     *
+     * <ol>
+     *   <li>多租户下所有租户的支付事件会被记到同一个组织名下；</li>
+     *   <li>V49 把 {@code payment_provider_events} 列入了强制 RLS 表清单
+     *       （{@code ENABLE} + {@code FORCE ROW LEVEL SECURITY}，策略
+     *       {@code organization_id = current_setting('app.organization_id', true)}）。
+     *       原实现既没设租户上下文，也不可能设对——所以它的 INSERT
+     *       会被 WITH CHECK 一律拒绝。<b>这条路径在真库上从来跑不通。</b></li>
+     * </ol>
+     *
+     * <p>现在组织由管线在第 3 步解析出的订单提供，并在同一个事务里
+     * 先 {@code set_config('app.organization_id', ..., true)} 再插入。
+     * {@code set_config} 的第三个参数 {@code true} = {@code SET LOCAL}，
+     * 出了事务就失效，因此<b>必须</b>关掉自动提交，否则上下文在 INSERT 之前就没了。
      */
-    public static PaymentCallbackPipeline.ProviderEventStore providerEventStore(
-            DataSource source, String organizationId) {
-        return (callback, rawBody) -> {
+    public static PaymentCallbackPipeline.ProviderEventStore providerEventStore(DataSource source) {
+        return (order, callback, rawBody) -> {
             String sql = """
                     INSERT INTO payment_provider_events (
                         payment_provider_event_id, organization_id, provider, event_type,
@@ -83,19 +101,35 @@ public final class JdbcCallbackPorts {
                         payload_sha256, signature_verified, processing_status, idempotency_key)
                     VALUES (?, ?, ?, ?, ?, ?, 'CNY', now(), ?, true, 'APPLIED', ?)
                     """;
-            try (Connection connection = source.getConnection();
-                 PreparedStatement statement = connection.prepareStatement(sql)) {
-                statement.setString(1, callback.providerEventId());
-                statement.setString(2, organizationId);
-                statement.setString(3, callback.provider().name());
-                statement.setString(4, callback.tradeStatus());
-                statement.setString(5, callback.outTradeNo());
-                statement.setLong(6, callback.amountFen());
-                statement.setString(7, sha256Hex(rawBody));
-                statement.setString(8, PaymentCallbackPipeline.idempotencyKey(callback));
-                statement.executeUpdate();
+            try (Connection connection = source.getConnection()) {
+                boolean previousAutoCommit = connection.getAutoCommit();
+                connection.setAutoCommit(false);
+                try {
+                    try (PreparedStatement tenant = connection.prepareStatement(
+                            "SELECT set_config('app.organization_id', ?, true)")) {
+                        tenant.setString(1, order.organizationId());
+                        tenant.execute();
+                    }
+                    try (PreparedStatement statement = connection.prepareStatement(sql)) {
+                        statement.setString(1, callback.providerEventId());
+                        statement.setString(2, order.organizationId());
+                        statement.setString(3, callback.provider().name());
+                        statement.setString(4, callback.tradeStatus());
+                        statement.setString(5, callback.outTradeNo());
+                        statement.setLong(6, callback.amountFen());
+                        statement.setString(7, sha256Hex(rawBody));
+                        statement.setString(8, PaymentCallbackPipeline.idempotencyKey(callback));
+                        statement.executeUpdate();
+                    }
+                    connection.commit();
+                } catch (SQLException | RuntimeException failure) {
+                    connection.rollback();
+                    throw new IllegalStateException("写入提供方事件失败，已回滚", failure);
+                } finally {
+                    connection.setAutoCommit(previousAutoCommit);
+                }
             } catch (SQLException failure) {
-                throw new IllegalStateException("写入提供方事件失败", failure);
+                throw new IllegalStateException("写入提供方事件连接失败", failure);
             }
         };
     }
@@ -146,6 +180,14 @@ public final class JdbcCallbackPorts {
         }
     }
 
+    /**
+     * 开立对账案件。
+     *
+     * <p>{@code payment_reconciliation_cases} 同样在 V49 的强制 RLS 表清单里，
+     * 所以和 {@link #providerEventStore} 一样必须在事务内先设租户上下文。
+     * 早先的实现漏了这一步，结果是：金额不符时不但不开案件，还会抛异常，
+     * 把一个"应当留痕并人工介入"的情形变成"回调处理失败、提供方无限重发"。
+     */
     private static void insertCase(DataSource source, String reasonCode,
                                    PaymentCallbackPipeline.NormalizedCallback callback,
                                    PaymentCallbackPipeline.LocalOrder order, String detail) {
@@ -157,21 +199,37 @@ public final class JdbcCallbackPorts {
                 VALUES (?, ?, ?, ?, ?, ?, 'OPEN', ?, ?)
                 ON CONFLICT (organization_id, idempotency_key) DO NOTHING
                 """;
-        try (Connection connection = source.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-            String caseId = "case-" + callback.provider().name().toLowerCase()
-                    + "-" + callback.providerEventId();
-            statement.setString(1, caseId);
-            statement.setString(2, order.organizationId());
-            statement.setString(3, callback.provider().name());
-            statement.setString(4, callback.outTradeNo());
-            statement.setString(5, "AMOUNT=" + order.expectedAmountFen());
-            statement.setString(6, "AMOUNT=" + callback.amountFen());
-            statement.setString(7, reasonCode);
-            statement.setString(8, PaymentCallbackPipeline.idempotencyKey(callback));
-            statement.executeUpdate();
+        try (Connection connection = source.getConnection()) {
+            boolean previousAutoCommit = connection.getAutoCommit();
+            connection.setAutoCommit(false);
+            try {
+                try (PreparedStatement tenant = connection.prepareStatement(
+                        "SELECT set_config('app.organization_id', ?, true)")) {
+                    tenant.setString(1, order.organizationId());
+                    tenant.execute();
+                }
+                try (PreparedStatement statement = connection.prepareStatement(sql)) {
+                    String caseId = "case-" + callback.provider().name().toLowerCase()
+                            + "-" + callback.providerEventId();
+                    statement.setString(1, caseId);
+                    statement.setString(2, order.organizationId());
+                    statement.setString(3, callback.provider().name());
+                    statement.setString(4, callback.outTradeNo());
+                    statement.setString(5, "AMOUNT=" + order.expectedAmountFen());
+                    statement.setString(6, "AMOUNT=" + callback.amountFen());
+                    statement.setString(7, reasonCode);
+                    statement.setString(8, PaymentCallbackPipeline.idempotencyKey(callback));
+                    statement.executeUpdate();
+                }
+                connection.commit();
+            } catch (SQLException | RuntimeException failure) {
+                connection.rollback();
+                throw new IllegalStateException("开立对账案件失败，已回滚", failure);
+            } finally {
+                connection.setAutoCommit(previousAutoCommit);
+            }
         } catch (SQLException failure) {
-            throw new IllegalStateException("开立对账案件失败", failure);
+            throw new IllegalStateException("开立对账案件连接失败", failure);
         }
     }
 

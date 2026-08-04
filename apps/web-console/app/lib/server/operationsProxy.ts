@@ -530,6 +530,115 @@ export async function fetchAuditExport(
   });
 }
 
+/**
+ * The reconstructed history of one migration run.
+ *
+ * The other half of the audit loop: the export answers what happened across the
+ * tenant, this answers what happened to one run. Both are GET and both are
+ * VIEWER, because a replay reveals nothing the export does not already reveal
+ * to the same reader.
+ *
+ * The run id is validated here rather than forwarded raw so a malformed id
+ * fails as a 400 with a reason, instead of travelling to the control plane and
+ * coming back as an opaque rejection. It is the same identifier contract every
+ * other proxied id goes through -- one place, one rule.
+ *
+ * No paging: a single run's history is bounded by the run, and the store
+ * reports {@code truncated} per section rather than silently shortening. That
+ * flag is forwarded untouched; deciding it "probably doesn't matter" here is
+ * exactly how a partial audit artifact starts looking complete.
+ */
+export async function fetchRunHistoryReplay(
+  migrationRunId: string,
+  administrator: AdminPrincipal,
+): Promise<Response> {
+  const runId = identifier(migrationRunId, "migrationRunId");
+  return fetch(
+    `${controlPlaneBaseUrl()}/api/v1/operations-observability/runs/${encodeURIComponent(runId)}/replay`,
+    {
+      headers: internalHeaders(randomUUID(), administrator),
+      cache: "no-store",
+      signal: AbortSignal.timeout(15_000),
+    },
+  );
+}
+
+/**
+ * Reads the tenant's allowance for operator review.
+ *
+ * A separate function rather than a path passed to a generic helper: the quota
+ * endpoints live under their own control-plane prefix because a quota is
+ * commercial state, not an observation, and routing them through the
+ * observability allowlist would have meant widening that allowlist to cover a
+ * write to billing.
+ */
+export async function fetchTenantQuota(administrator: AdminPrincipal): Promise<Response> {
+  return fetch(`${controlPlaneBaseUrl()}/api/v1/tenant-quota`, {
+    headers: internalHeaders(randomUUID(), administrator),
+    cache: "no-store",
+    signal: AbortSignal.timeout(10_000),
+  });
+}
+
+/**
+ * Adjusts the allowance.
+ *
+ * `expectedVersion` is forwarded, not defaulted. A proxy that supplied a
+ * plausible-looking version on the caller's behalf would defeat the only
+ * mechanism stopping two operators from overwriting each other, so a body
+ * arriving without one is a 400 here rather than a guess.
+ *
+ * `reasonCode` is checked against the same token shape the control plane
+ * enforces. Validating in both places is not duplication for its own sake: this
+ * one produces a message the operator can act on, and the control plane's one
+ * still holds if this proxy is ever bypassed.
+ */
+export async function adjustTenantQuota(
+  body: unknown,
+  administrator: AdminPrincipal,
+): Promise<Response> {
+  if (typeof body !== "object" || body === null) {
+    throw new OperationsProxyError(400, "ADMIN_QUOTA_REQUEST_INVALID", "配额调整请求格式无效。");
+  }
+  const raw = body as Record<string, unknown>;
+  const quotaAllocationId = identifier(raw.quotaAllocationId, "quotaAllocationId");
+  const tokenLimit = decimalString(raw.tokenLimit, "tokenLimit");
+  const creditLimit = decimalString(raw.creditLimit, "creditLimit");
+  if (typeof raw.expectedVersion !== "number" || !Number.isInteger(raw.expectedVersion) || raw.expectedVersion < 0) {
+    throw new OperationsProxyError(400, "ADMIN_QUOTA_VERSION_INVALID", "缺少或非法的 expectedVersion，请先重新读取配额。");
+  }
+  if (typeof raw.reasonCode !== "string" || !/^[A-Z][A-Z0-9_]{2,47}$/.test(raw.reasonCode)) {
+    throw new OperationsProxyError(400, "ADMIN_QUOTA_REASON_INVALID", "调整原因必须是大写字母、数字与下划线组成的代号。");
+  }
+  return fetch(`${controlPlaneBaseUrl()}/api/v1/tenant-quota/adjust`, {
+    method: "POST",
+    headers: internalHeaders(randomUUID(), administrator),
+    body: JSON.stringify({
+      quotaAllocationId,
+      tokenLimit,
+      creditLimit,
+      expectedVersion: raw.expectedVersion,
+      reasonCode: raw.reasonCode,
+    }),
+    cache: "no-store",
+    signal: AbortSignal.timeout(10_000),
+  });
+}
+
+/**
+ * A limit crosses the wire as a decimal string, never as a JavaScript number.
+ * `BigDecimal` on the other side holds values this language cannot represent
+ * exactly, and a limit that arrives off by a fraction because it round-tripped
+ * through a float is a billing defect nobody would think to look for.
+ */
+function decimalString(value: unknown, field: string): string {
+  const text = typeof value === "number" ? String(value) : value;
+  if (typeof text !== "string" || !/^(?:0|[1-9][0-9]{0,11})(?:\.[0-9]{1,6})?$/.test(text)) {
+    throw new OperationsProxyError(400, "ADMIN_QUOTA_LIMIT_INVALID", `${field} 必须是非负的十进制数值。`);
+  }
+  return text;
+}
+
 export async function mutateOperations(
   path: string,
   body: Record<string, unknown>,

@@ -51,7 +51,7 @@ export interface JobResponse {
 export interface Capabilities {
   readonly schemaVersion: "1.0";
   readonly engine: "ELMOS_FRONTEND_CLIENT";
-  readonly engineVersion: "1.1.0";
+  readonly engineVersion: "1.2.0";
   readonly languages: readonly string[];
   readonly webFrameworks: readonly string[];
   readonly desktopFrameworks: readonly string[];
@@ -64,4 +64,10 @@ export interface Capabilities {
   readonly restartRecovery: "NOT_SUPPORTED_BY_WORKER";
   readonly uiProjectGeneration: "STATIC_PROJECT_AND_CONFIGURATION_READY";
   readonly directedUiRouteCount: 72;
+  readonly frtPlatform: "G01_G30_DURABLE_RUNTIME_READY_EXTERNAL_GATES_NOT_RUN";
+  readonly frtRunPersistence: "FILESYSTEM_ATOMIC_TENANT_SCOPED";
+  readonly frtRestartRecovery: "RUNNING_FAILS_CLOSED_QUEUED_RETAINED";
+  readonly frtBatchCount: 30;
+  readonly frtSkillCount: 472;
+  readonly frtDirectedRouteCount: 30;
 }

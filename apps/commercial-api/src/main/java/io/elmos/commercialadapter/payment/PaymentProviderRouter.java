@@ -27,6 +27,26 @@ public final class PaymentProviderRouter {
          * @return 前端所需的支付入口
          */
         CheckoutHandoff prepare(String outTradeNo, long amountFen, String subject);
+
+        /**
+         * {@link #prepare} 过程中是否会向提供方发出请求。
+         *
+         * <p>这决定了 {@code prepare} 抛异常时该怎么记账，两种记法差别很大：
+         *
+         * <ul>
+         *   <li>{@code false}（支付宝）——下单只是本地构造参数并签名，
+         *       一个字节都没发出去。失败就是失败，订单可以直接标记为
+         *       {@code FAILED}，不需要人工介入。</li>
+         *   <li>{@code true}（微信）——已经发过 HTTPS 请求。异常可能发生在
+         *       收到响应<b>之前</b>，也可能在<b>之后</b>，提供方那边到底建没建单
+         *       我们并不知道。这种订单必须进对账；标记成 {@code FAILED} 等于
+         *       单方面认定"没建单"，而那正是产生挂账的方式。</li>
+         * </ul>
+         *
+         * <p>写成接口方法而不是在调用方按通道名 if-else：将来新增通道时，
+         * 作者<b>必须</b>在实现里明确回答这个问题，而不是让它默默落进某个分支。
+         */
+        boolean contactsProviderDuringPrepare();
     }
 
     /** 前端支付入口。两种形态互斥，二者必有其一。 */

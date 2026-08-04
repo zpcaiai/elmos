@@ -183,3 +183,98 @@ export type AuditExportPage = {
   nextOccurredAt?: string;
   nextEventId?: string;
 };
+
+/**
+ * A tenant's allowance, as an operator sees it.
+ *
+ * Every amount is a decimal string, not a number: these are `BigDecimal` on the
+ * server, and a limit that lost precision by round-tripping through a JavaScript
+ * float would be a billing defect with no visible symptom.
+ *
+ * `minimumTokenLimit` and `minimumCreditLimit` are consumed + reserved. A
+ * decrease below them is refused, because a reservation is a promise already
+ * made to the tenant. They are carried in the view so the UI can say so before
+ * the operator submits, rather than after.
+ */
+export type TenantQuotaView = {
+  organizationId: string;
+  quotaAllocationId: string;
+  subscriptionId: string;
+  planId: string;
+  planDisplayName: string;
+  periodStartsAt: string;
+  periodEndsAt: string;
+  tokenLimit: string;
+  creditLimit: string;
+  consumedTokens: string;
+  consumedCredits: string;
+  reservedTokens: string;
+  reservedCredits: string;
+  minimumTokenLimit: string;
+  minimumCreditLimit: string;
+  allocationVersion: number;
+};
+
+/**
+ * One section of a run replay.
+ *
+ * `truncated` is not decoration. The store reads one row past its cap and sets
+ * this rather than quietly returning a short list, so anything rendering a
+ * section must say so when it is true -- a replay that looks complete but is
+ * missing the attempt where the run failed is worse than one that admits it.
+ */
+export type ReplaySection<T> = {
+  rows: T[];
+  truncated: boolean;
+};
+
+/** One attempt at one step. Attempts are not collapsed: a run that succeeded on its third try is a different story from one that succeeded on its first. */
+export type ReplayStepAttempt = {
+  stepRunId: string;
+  stepId: string;
+  attempt: number;
+  executorType: string;
+  state: string;
+  startedAt?: string;
+  finishedAt?: string;
+  failureCode?: string;
+};
+
+export type ReplayEvidenceRef = {
+  evidenceId: string;
+  stepRunId?: string;
+  evidenceType: string;
+  producerType: string;
+  producerName: string;
+  producerVersion: string;
+  status: string;
+  summary: string;
+  artifactRef: string;
+  contentHash: string;
+  createdAt?: string;
+};
+
+export type ReplayAuditEntry = {
+  auditId: string;
+  actorType: string;
+  actorId: string;
+  action: string;
+  resourceType: string;
+  occurredAt?: string;
+  policyDecision: string;
+  result: string;
+  requestId: string;
+};
+
+/** The reconstructed history of one migration run. Read-only by construction: there is no write endpoint behind it. */
+export type RunReplayTimeline = {
+  migrationRunId: string;
+  organizationId: string;
+  snapshotId: string;
+  migrationPlanId: string;
+  planVersion: number;
+  state: string;
+  steps: ReplaySection<ReplayStepAttempt>;
+  evidence: ReplaySection<ReplayEvidenceRef>;
+  audit: ReplaySection<ReplayAuditEntry>;
+};

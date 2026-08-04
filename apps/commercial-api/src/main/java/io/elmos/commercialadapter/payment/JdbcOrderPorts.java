@@ -63,16 +63,32 @@ public final class JdbcOrderPorts {
      * <p>不包含 {@code EXPIRED} / {@code FAILED}：那些订单上的支付成功回调
      * 确实是异常，应当进对账。
      *
-     * <p>本查询<b>不设租户上下文</b>：回调到达时组织未知，正是要靠这次查询
-     * 把组织查出来。因此执行它的角色必须能跨组织读 {@code payment_checkout_sessions}，
-     * 这一点需要在部署时单独确认 —— 若该表启用了强制 RLS，
-     * 本查询必须以专用的回调解析角色执行，而不是普通运行角色。
+     * <h2>为什么不直接查 payment_checkout_sessions（2026-07-29 修）</h2>
+     *
+     * <p>因为查不到。V49 把 {@code payment_checkout_sessions} 列进了强制 RLS 表清单
+     * （{@code FORCE ROW LEVEL SECURITY}，策略
+     * {@code organization_id = current_setting('app.organization_id', true)}）。
+     * 回调到达时组织未知，设不了这个上下文，策略于是求值成
+     * {@code organization_id = NULL} —— 恒为 NULL，一行都不返回。
+     *
+     * <p>原实现的注释里写着"若该表启用了强制 RLS，本查询必须以专用角色执行"，
+     * 而它<b>确实</b>已经启用了。那条路径在真库上的结果是：
+     * <b>每一笔回调都判成 ORDER_UNKNOWN</b>，全部进滞留表，没有一个订阅会被开通。
+     * 而且这个故障是静默的——回调返回 400，提供方持续重发，
+     * 直到有人去看 {@code payment_unmatched_callbacks} 才会发现。
+     *
+     * <p>解决办法不是给运行角色开 {@code BYPASSRLS}（那等于对整张表关掉租户隔离），
+     * 而是 V62 引入的 {@code payment_order_directory}：一张<b>只含解析所需最小列</b>
+     * 的无 RLS 目录表，由 {@code payment_checkout_sessions} 上的触发器自动维护。
+     * 回调先用它把组织解析出来，此后所有读写都在正常租户上下文里进行。
+     * 信任边界因此是显式且可审计的：能跨租户读到的只有
+     * (订单号 → 组织, 套餐, 金额, 状态) 这一个映射，别的什么都没有。
      */
     public static PaymentCallbackPipeline.OrderLookup orderLookup(DataSource source) {
         return outTradeNo -> {
             String sql = """
-                    SELECT checkout_session_id, organization_id, actor_id, plan_id, amount_minor
-                      FROM payment_checkout_sessions
+                    SELECT checkout_session_id, organization_id, plan_id, amount_minor
+                      FROM payment_order_directory
                      WHERE checkout_session_id = ?
                        AND status IN ('CREATING', 'OPEN', 'COMPLETED')
                     """;

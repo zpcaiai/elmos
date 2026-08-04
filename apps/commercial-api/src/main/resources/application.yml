@@ -21,6 +21,21 @@ elmos:
   billing:
     live-enabled: ${ELMOS_BILLING_LIVE_ENABLED:false}
     email-alerts-enabled: ${ELMOS_USAGE_EMAIL_ALERTS_ENABLED:false}
+    # 回调时间窗。容差就是重放窗口，CallbackReplayGuard 会拒绝超过 1 小时的值。
+    callback:
+      timestamp-tolerance-seconds: ${ELMOS_CALLBACK_TIMESTAMP_TOLERANCE_SECONDS:300}
+    # 支付宝。公钥走文件而不是环境变量：环境变量会出现在 /proc、
+    # 容器检查输出和崩溃转储里，文件可以挂成 0400 的 secret。
+    # app-id 不是可选项——它是判断"这条通知是不是发给我们的"的唯一凭据，
+    # 缺了它，别的商户的合法通知在我们这里验签同样会过。
+    alipay:
+      app-id: ${ELMOS_ALIPAY_APP_ID:}
+      public-key-file: ${ELMOS_ALIPAY_PUBLIC_KEY_FILE:}
+    # 微信支付。mch-id 的作用与支付宝的 app-id 相同。
+    wechatpay:
+      mch-id: ${ELMOS_WECHATPAY_MCHID:}
+      platform-certificate-file: ${ELMOS_WECHATPAY_PLATFORM_CERT_FILE:}
+      api-v3-key: ${ELMOS_WECHATPAY_API_V3_KEY:}
     stripe:
       secret-key: ${ELMOS_STRIPE_SECRET_KEY:}
       webhook-secret: ${ELMOS_STRIPE_WEBHOOK_SECRET:}

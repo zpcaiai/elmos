@@ -9,6 +9,8 @@ import type {
   OperationsConsoleView,
   OperationsIncident,
   OperationsRemediation,
+  RunReplayTimeline,
+  TenantQuotaView,
 } from "../lib/operationsContracts";
 import styles from "./OperationsAdmin.module.css";
 
@@ -124,6 +126,17 @@ export function OperationsAdmin() {
   const [exportBusy, setExportBusy] = useState(false);
   const [exportError, setExportError] = useState("");
   const [exportNotice, setExportNotice] = useState("");
+  const [replayRunId, setReplayRunId] = useState("");
+  const [replayBusy, setReplayBusy] = useState(false);
+  const [replayError, setReplayError] = useState("");
+  const [replay, setReplay] = useState<RunReplayTimeline | null>(null);
+  const [quota, setQuota] = useState<TenantQuotaView | null>(null);
+  const [quotaBusy, setQuotaBusy] = useState(false);
+  const [quotaError, setQuotaError] = useState("");
+  const [quotaNotice, setQuotaNotice] = useState("");
+  const [quotaTokenLimit, setQuotaTokenLimit] = useState("");
+  const [quotaCreditLimit, setQuotaCreditLimit] = useState("");
+  const [quotaReason, setQuotaReason] = useState("");
   const [adminSection, setAdminSection] = useState<AdminSection>("USERS");
 
   const summary = view?.activity ?? null;
@@ -209,6 +222,143 @@ export function OperationsAdmin() {
       );
     } finally {
       setExportBusy(false);
+    }
+  }
+
+  /**
+   * Reconstructs one run's history.
+   *
+   * A single request, not a cursor walk: one run's history is bounded by the
+   * run. The endpoint returns each section with a `truncated` flag instead of
+   * silently shortening, and the rendering below surfaces it -- a replay that
+   * looks whole while missing the failed attempt is the one failure mode worth
+   * spending screen space on.
+   *
+   * 404 is deliberately not distinguished from "belongs to another tenant":
+   * upstream returns the same status for both so this page cannot leak the
+   * difference even by accident.
+   */
+  async function loadReplay() {
+    const runId = replayRunId.trim();
+    if (!runId) {
+      setReplayError("请输入迁移运行 ID。");
+      return;
+    }
+    if (account.status !== "authenticated" && token.trim().length < 24) {
+      setReplayError("请输入至少 24 字符的短期管理令牌。");
+      return;
+    }
+    setReplayBusy(true);
+    setReplayError("");
+    setReplay(null);
+    try {
+      const response = await fetch(`/api/admin/run-replay/${encodeURIComponent(runId)}`, {
+        headers: token.trim() ? { Authorization: `Bearer ${token.trim()}` } : undefined,
+        credentials: "same-origin",
+        cache: "no-store",
+      });
+      const payload = await response.json() as RunReplayTimeline & { message?: string };
+      if (!response.ok) {
+        throw new Error(
+          response.status === 404
+            ? "本租户下没有这个运行 ID。"
+            : payload.message || "运行历史读取失败。",
+        );
+      }
+      setReplay(payload);
+    } catch (replayFailure) {
+      setReplayError(
+        replayFailure instanceof Error ? replayFailure.message : "运行历史读取失败。",
+      );
+    } finally {
+      setReplayBusy(false);
+    }
+  }
+
+  /**
+   * Reads the tenant's allowance and seeds the adjustment form from it.
+   *
+   * Seeding matters: the form carries `allocationVersion` back on submit, and
+   * an operator who typed a version by hand would eventually type a stale one
+   * that happened to match. Filling both limits with the current values also
+   * means the common case -- change one number -- cannot accidentally reset the
+   * other to zero.
+   */
+  async function loadQuota() {
+    if (account.status !== "authenticated" && token.trim().length < 24) {
+      setQuotaError("请输入至少 24 字符的短期管理令牌。");
+      return;
+    }
+    setQuotaBusy(true);
+    setQuotaError("");
+    setQuotaNotice("");
+    try {
+      const response = await fetch("/api/admin/tenant-quota", {
+        headers: token.trim() ? { Authorization: `Bearer ${token.trim()}` } : undefined,
+        credentials: "same-origin",
+        cache: "no-store",
+      });
+      const payload = await response.json() as TenantQuotaView & { message?: string };
+      if (!response.ok) throw new Error(payload.message || "配额读取失败。");
+      setQuota(payload);
+      setQuotaTokenLimit(payload.tokenLimit);
+      setQuotaCreditLimit(payload.creditLimit);
+    } catch (quotaFailure) {
+      setQuota(null);
+      setQuotaError(quotaFailure instanceof Error ? quotaFailure.message : "配额读取失败。");
+    } finally {
+      setQuotaBusy(false);
+    }
+  }
+
+  /**
+   * Submits an adjustment against the version that was read.
+   *
+   * A 409 means someone else changed the allowance since this screen was drawn.
+   * It is surfaced as an instruction to re-read rather than retried, because
+   * retrying would apply this operator's intent on top of a change they never
+   * saw -- which is the exact outcome the version check exists to prevent.
+   */
+  async function submitQuotaAdjustment(event: FormEvent) {
+    event.preventDefault();
+    if (!quota) return;
+    setQuotaBusy(true);
+    setQuotaError("");
+    setQuotaNotice("");
+    try {
+      const response = await fetch("/api/admin/tenant-quota", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token.trim() ? { Authorization: `Bearer ${token.trim()}` } : {}),
+        },
+        credentials: "same-origin",
+        cache: "no-store",
+        body: JSON.stringify({
+          quotaAllocationId: quota.quotaAllocationId,
+          tokenLimit: quotaTokenLimit.trim(),
+          creditLimit: quotaCreditLimit.trim(),
+          expectedVersion: quota.allocationVersion,
+          reasonCode: quotaReason.trim().toUpperCase(),
+        }),
+      });
+      const payload = await response.json() as TenantQuotaView & { message?: string };
+      if (!response.ok) {
+        throw new Error(
+          response.status === 409
+            ? "配额已被其他管理员改动，请重新读取后再调整。"
+            : payload.message || "配额调整失败。",
+        );
+      }
+      setQuota(payload);
+      setQuotaTokenLimit(payload.tokenLimit);
+      setQuotaCreditLimit(payload.creditLimit);
+      setQuotaReason("");
+      setQuotaNotice(`已调整，当前版本 ${payload.allocationVersion}。`);
+    } catch (adjustFailure) {
+      setQuotaError(adjustFailure instanceof Error ? adjustFailure.message : "配额调整失败。");
+    } finally {
+      setQuotaBusy(false);
     }
   }
 
@@ -382,6 +532,116 @@ export function OperationsAdmin() {
         </section>
       )}
 
+      {state === "READY" && adminSection === "AUDIT" && (
+        <section className={styles.panel} aria-label="运行历史回放">
+          <h2><Icon name="clock" size={18} /> 运行历史回放</h2>
+          <p>
+            按迁移运行 ID 重建一次运行的完整过程：每一次步骤尝试、沿途产出的证据、
+            以及点名这次运行的审计记录。只读重建，不会改动被回放的记录。
+          </p>
+          <div className={styles.inlineActions}>
+            <label>
+              <span>运行 ID</span>
+              <input
+                value={replayRunId}
+                onChange={(event) => setReplayRunId(event.target.value)}
+                aria-label="迁移运行 ID"
+                placeholder="migration-run-…"
+                disabled={replayBusy}
+              />
+            </label>
+            <button
+              className="secondary-button"
+              type="button"
+              onClick={loadReplay}
+              disabled={replayBusy}
+            >
+              <Icon name={replayBusy ? "refresh" : "search"} size={17} />
+              {replayBusy ? "读取中…" : "回放"}
+            </button>
+          </div>
+          {replayError && <p className={styles.bad} role="alert">{replayError}</p>}
+
+          {replay && (
+            <div className={styles.evidence}>
+              <p>
+                <strong>{replay.migrationRunId}</strong> · 状态 {replay.state} ·
+                计划 {replay.migrationPlanId} v{replay.planVersion} · 快照 {replay.snapshotId}
+              </p>
+
+              <h3>步骤尝试（{replay.steps.rows.length}）</h3>
+              {replay.steps.truncated && (
+                <p className={styles.bad} role="alert">
+                  步骤过多，仅显示前 {replay.steps.rows.length} 条——这份回放不完整，不能作为完整凭据。
+                </p>
+              )}
+              <div className={styles.tableWrap}>
+                <table>
+                  <thead>
+                    <tr><th>步骤</th><th>第几次</th><th>状态</th><th>开始</th><th>结束</th><th>失败码</th></tr>
+                  </thead>
+                  <tbody>
+                    {replay.steps.rows.map((attempt) => (
+                      <tr key={attempt.stepRunId}>
+                        <td>{attempt.stepId}</td>
+                        <td>{attempt.attempt}</td>
+                        <td className={attempt.failureCode ? styles.resultBad : styles.resultGood}>
+                          {attempt.state}
+                        </td>
+                        <td>{attempt.startedAt ?? "未开始"}</td>
+                        <td>{attempt.finishedAt ?? "—"}</td>
+                        <td>{attempt.failureCode ?? "—"}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <h3>证据（{replay.evidence.rows.length}）</h3>
+              {replay.evidence.truncated && (
+                <p className={styles.bad} role="alert">
+                  证据过多，仅显示前 {replay.evidence.rows.length} 条——这份回放不完整。
+                </p>
+              )}
+              {replay.evidence.rows.length === 0 ? (
+                <p className={styles.empty}>这次运行没有留下证据记录。</p>
+              ) : (
+                <ul className={styles.lineList}>
+                  {replay.evidence.rows.map((item) => (
+                    <li key={item.evidenceId}>
+                      <span className={styles.kind}>{item.evidenceType}</span>
+                      {item.producerName} {item.producerVersion} · {item.status} · {item.summary}
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              <h3>审计（{replay.audit.rows.length}）</h3>
+              {replay.audit.truncated && (
+                <p className={styles.bad} role="alert">
+                  审计记录过多，仅显示前 {replay.audit.rows.length} 条——这份回放不完整。
+                </p>
+              )}
+              {replay.audit.rows.length === 0 ? (
+                <p className={styles.empty}>
+                  没有点名这次运行的审计记录。审计行通过 resource_id 关联，未设置该字段的行不会出现在这里。
+                </p>
+              ) : (
+                <ul className={styles.lineList}>
+                  {replay.audit.rows.map((entry) => (
+                    <li key={entry.auditId}>
+                      <span className={styles.kind}>{entry.action}</span>
+                      {entry.actorType} {entry.actorId} · {entry.policyDecision} · {entry.result}
+                      {entry.occurredAt ? ` · ${entry.occurredAt}` : ""}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+        </section>
+      )}
+
       {state === "LOCKED" && (
         <section className={styles.locked}>
           <span><Icon name="lock" size={24} /></span>
@@ -490,6 +750,109 @@ export function OperationsAdmin() {
             >
               执行 30 天保留
             </button>
+          </section>}
+
+          {adminSection === "USAGE" && <section className={styles.panel} aria-label="租户配额">
+            <h2><Icon name="database" size={18} /> 租户配额</h2>
+            <p>
+              读取需要 VIEWER，调整需要 APPROVER。调高会产生费用，调低会中断租户已被允许的工作，
+              因此与审批修复提案同级——两个动作故意设成不同门槛，否则只为看一个数字就得共用审批凭据。
+            </p>
+            <div className={styles.inlineActions}>
+              <button
+                className="secondary-button"
+                type="button"
+                onClick={loadQuota}
+                disabled={quotaBusy}
+              >
+                <Icon name={quotaBusy ? "refresh" : "search"} size={17} />
+                {quotaBusy ? "读取中…" : "读取当前配额"}
+              </button>
+            </div>
+            {quotaError && <p className={styles.bad} role="alert">{quotaError}</p>}
+            {quotaNotice && <p className={styles.good} role="status">{quotaNotice}</p>}
+
+            {quota && (
+              <div className={styles.evidence}>
+                <p>
+                  <strong>{quota.planDisplayName}</strong>（{quota.planId}） · 版本 {quota.allocationVersion} ·
+                  周期 {formatTime(quota.periodStartsAt)} — {formatTime(quota.periodEndsAt)}
+                </p>
+                <div className={styles.tableWrap}>
+                  <table>
+                    <thead>
+                      <tr><th>额度</th><th>上限</th><th>已消耗</th><th>已预留</th><th>下限</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Token</td><td>{quota.tokenLimit}</td>
+                        <td>{quota.consumedTokens}</td><td>{quota.reservedTokens}</td>
+                        <td>{quota.minimumTokenLimit}</td>
+                      </tr>
+                      <tr>
+                        <td>Credit</td><td>{quota.creditLimit}</td>
+                        <td>{quota.consumedCredits}</td><td>{quota.reservedCredits}</td>
+                        <td>{quota.minimumCreditLimit}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                {/*
+                  The floor is shown before the operator types, not after the
+                  server refuses. It is consumed + reserved: a reservation is a
+                  promise already made to the tenant, so lowering a limit
+                  underneath one would retract work the tenant was told it could
+                  perform.
+                */}
+                <p>下限为「已消耗 + 已预留」，低于它的调整会被拒绝——预留是已经对租户作出的承诺。</p>
+
+                {can("APPROVER") ? (
+                  <form className={styles.inlineActions} onSubmit={submitQuotaAdjustment}>
+                    <label>
+                      <span>Token 上限</span>
+                      <input
+                        value={quotaTokenLimit}
+                        onChange={(event) => setQuotaTokenLimit(event.target.value)}
+                        aria-label="调整后的 Token 上限"
+                        inputMode="decimal"
+                        disabled={quotaBusy}
+                        required
+                      />
+                    </label>
+                    <label>
+                      <span>Credit 上限</span>
+                      <input
+                        value={quotaCreditLimit}
+                        onChange={(event) => setQuotaCreditLimit(event.target.value)}
+                        aria-label="调整后的 Credit 上限"
+                        inputMode="decimal"
+                        disabled={quotaBusy}
+                        required
+                      />
+                    </label>
+                    <label>
+                      <span>调整原因代号</span>
+                      <input
+                        value={quotaReason}
+                        onChange={(event) => setQuotaReason(event.target.value)}
+                        aria-label="调整原因代号"
+                        placeholder="PLAN_UPGRADE"
+                        pattern="[A-Za-z][A-Za-z0-9_]{2,47}"
+                        title="大写字母、数字与下划线组成的代号，例如 PLAN_UPGRADE。原因会写入只读审计流水与导出。"
+                        disabled={quotaBusy}
+                        required
+                      />
+                    </label>
+                    <button className="primary-button" type="submit" disabled={quotaBusy}>
+                      <Icon name={quotaBusy ? "refresh" : "check"} size={17} />
+                      {quotaBusy ? "提交中…" : "按版本 " + quota.allocationVersion + " 提交调整"}
+                    </button>
+                  </form>
+                ) : (
+                  <p>当前角色为 {view.role}，只能查看配额；调整需要 APPROVER。</p>
+                )}
+              </div>
+            )}
           </section>}
 
           {adminSection === "USAGE" && <section className={styles.metrics} aria-label="运营指标">

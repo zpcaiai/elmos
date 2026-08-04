@@ -76,3 +76,18 @@
     flex: 1;
   }
 }
+
+/* 微信 Native 支付二维码。
+   固定尺寸而不是 100%：二维码渲染得太小会扫不出来，
+   而被容器拉伸成非正方形则会直接失效。 */
+.paymentQrCode {
+  width: 220px;
+  height: 220px;
+  align-self: center;
+  margin-top: 12px;
+  /* 二维码必须白底。深色主题下透明底会反色，反色的二维码扫不出来。 */
+  background: #ffffff;
+  padding: 8px;
+  border-radius: 8px;
+  image-rendering: pixelated;
+}

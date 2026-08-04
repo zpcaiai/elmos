@@ -57,8 +57,19 @@ public class CommercialSecurityConfiguration {
                                 "/readyz",
                                 "/commercial/v1/pricing/catalog",
                                 "/commercial/v1/capabilities",
-                                "/commercial/v1/billing/webhooks/stripe")
+                                // 支付回调路径必须放行：提供方不会携带我们的令牌，
+                                // 安全性完全由各自的验签保证（RSA2 / APIv3 平台证书）。
+                                //
+                                // 逐条列出精确路径，**不要**写成 /callbacks/**：
+                                // 通配会把将来任何新增的 callbacks 子路径一并放行，
+                                // 而新增路径未必带验签。放行范围必须与验签实现一一对应。
+                                "/commercial/v1/billing/webhooks/stripe",
+                                "/commercial/v1/billing/callbacks/alipay",
+                                "/commercial/v1/billing/callbacks/wechat")
                         .permitAll()
+                        // 注意顺序：上面的精确路径先匹配先生效。
+                        // 这条规则覆盖 /commercial/v1/billing/** 全部其余路径，
+                        // 回调路径若不在上面列出，会落到这里变成 401。
                         .requestMatchers("/commercial/v1/billing/**").authenticated()
                         .anyRequest().denyAll())
                 .oauth2ResourceServer(resourceServer -> resourceServer.jwt(Customizer.withDefaults()))

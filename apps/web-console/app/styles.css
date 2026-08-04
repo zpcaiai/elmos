@@ -1012,9 +1012,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .content-shell { margin-left: 0; padding-bottom: 70px; }.mobile-menu { display: grid; }.breadcrumb { margin-right: auto; margin-left: 8px; }
   .command-trigger { min-width: 38px; width: 38px; padding: 0; justify-content: center; }.command-trigger span, .command-trigger kbd { display: none; }
   .brand-mark { width: 44px; height: 44px; }.sidebar-close, .secondary-link { min-height: 44px; }.sidebar-close { width: 44px; }
-  .mobile-bottom-nav { position: fixed; z-index: 22; left: 12px; right: 12px; bottom: 10px; height: 61px; display: grid; grid-template-columns: repeat(5,1fr); padding: 5px; border: 1px solid rgba(255,255,255,.65); border-radius: 16px; background: rgba(20,37,40,.94); color: #8fa6a8; box-shadow: 0 15px 45px rgba(10,28,30,.28); backdrop-filter: blur(14px); }
-  .mobile-bottom-nav a { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; border-radius: 11px; font-size: 9px; }
-  .mobile-bottom-nav a.active { background: rgba(124,205,198,.13); color: #d8f2ef; }
+  .mobile-bottom-nav { position: fixed; z-index: 22; left: 12px; right: 12px; bottom: 10px; height: 61px; display: grid; grid-template-columns: repeat(5,1fr); padding: 5px; border: 1px solid rgba(255,255,255,.65); border-radius: 16px; background: #142528; color: #b8c9ca; box-shadow: 0 15px 45px rgba(10,28,30,.28); }
+  .mobile-bottom-nav a { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; border-radius: 11px; background: #142528; color: #b8c9ca; font-size: 9px; }
+  .mobile-bottom-nav a.active { background: #294a4c; color: #e7f7f5; }
   .back-to-top { right: 15px; bottom: 83px; }
   .welcome-card { grid-template-columns: 1fr; }.trust-visual { display: none; }
   .studio-layout, .control-grid, .marketplace-layout, .generation-layout { grid-template-columns: 1fr; }.detail-panel { position: static; }.market-side { display: grid; grid-template-columns: repeat(2,1fr); }

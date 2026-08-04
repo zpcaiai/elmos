@@ -46,7 +46,7 @@ export class FrontendClientEngine {
 
   capabilities(): Capabilities {
     return {
-      schemaVersion: "1.0", engine: "ELMOS_FRONTEND_CLIENT", engineVersion: "1.1.0",
+      schemaVersion: "1.0", engine: "ELMOS_FRONTEND_CLIENT", engineVersion: "1.2.0",
       languages: ["JAVASCRIPT", "TYPESCRIPT", "HTML", "CSS", "DART", "ARKTS"],
       webFrameworks: ["ANGULARJS", "ANGULAR", "VUE2", "VUE3", "REACT", "JQUERY", "SVELTE"],
       desktopFrameworks: ["ELECTRON", "WPF", "WINFORMS", "WEBVIEW", "JAVA_DESKTOP_INVENTORY", "QT_INVENTORY"],
@@ -56,7 +56,13 @@ export class FrontendClientEngine {
       jobStatePersistence: "EPHEMERAL_PROCESS_LOCAL", durableStateAuthority: "ELMOS_CONTROL_PLANE",
       restartRecovery: "NOT_SUPPORTED_BY_WORKER",
       uiProjectGeneration: "STATIC_PROJECT_AND_CONFIGURATION_READY",
-      directedUiRouteCount: 72
+      directedUiRouteCount: 72,
+      frtPlatform: "G01_G30_DURABLE_RUNTIME_READY_EXTERNAL_GATES_NOT_RUN",
+      frtRunPersistence: "FILESYSTEM_ATOMIC_TENANT_SCOPED",
+      frtRestartRecovery: "RUNNING_FAILS_CLOSED_QUEUED_RETAINED",
+      frtBatchCount: 30,
+      frtSkillCount: 472,
+      frtDirectedRouteCount: 30
     };
   }
 

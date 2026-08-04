@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { MutableRefObject } from "react";
 import type { PricingPlan } from "../lib/pricingCatalog";
+import { renderQrSvg } from "../lib/qrCode";
 import { Icon } from "../components/Icon";
 import styles from "./BillingActions.module.css";
 
@@ -17,10 +18,19 @@ type TrialGrant = {
   status: string;
 };
 
+type PaymentProvider = "STRIPE_CHECKOUT" | "ALIPAY_CHECKOUT" | "WECHAT_PAY_NATIVE";
+
+// 结账响应有两种互斥形态，取决于目录里的 paymentProvider：
+//   跳转型（Stripe / 支付宝）→ checkoutUrl，浏览器跳过去付
+//   扫码型（微信 Native）    → qrCodeUrl，本地渲染二维码给用户扫
+// 两个字段都是可选的，因为任一时刻只会有一个。
+// /api/billing/checkout 已经保证"恰好有一个"，这里的可选只是类型上的诚实。
 type Checkout = {
   planId: string;
-  checkoutUrl: string;
   status: string;
+  paymentProvider: PaymentProvider;
+  checkoutUrl?: string;
+  qrCodeUrl?: string;
 };
 
 type Subscription = {
@@ -50,6 +60,27 @@ function errorMessage(payload: BillingError, fallback: string): string {
   return payload.message || fallback;
 }
 
+/**
+ * 结账跳转地址的可信域。
+ *
+ * 逐通道白名单，不做"只要是 https 就行"：结账地址来自上游响应，
+ * 而上游响应可能因为配置错误、代理被劫持或供应链问题指向别处。
+ * 一旦跳错，用户是把钱付给别人。
+ */
+function isTrustedCheckoutHost(provider: PaymentProvider, hostname: string): boolean {
+  if (provider === "STRIPE_CHECKOUT") {
+    return hostname === "stripe.com" || hostname.endsWith(".stripe.com");
+  }
+  if (provider === "ALIPAY_CHECKOUT") {
+    // openapi.alipay.com 是生产网关，openapi.alipaydev.com 是沙箱。
+    // 沙箱域名保留是为了让联调走同一条代码路径——联调绕过校验，
+    // 等于上线前从没验过这段校验。
+    return hostname === "openapi.alipay.com" || hostname === "openapi.alipaydev.com";
+  }
+  // 微信 Native 不走跳转，走到这里说明上游给错了形态
+  return false;
+}
+
 function planName(planId: string): string {
   if (planId === "elmos-free-trial") return "免费体验";
   if (planId === "elmos-pro-monthly") return "专业月付";
@@ -75,12 +106,14 @@ export function PlanBillingAction({
   const [pending, setPending] = useState(false);
   const [message, setMessage] = useState("");
   const [failed, setFailed] = useState(false);
+  const [qrCode, setQrCode] = useState<{ svg: string; planId: string } | null>(null);
   const trial = plan.planId === "elmos-free-trial";
 
   const activate = async () => {
     setPending(true);
     setMessage("");
     setFailed(false);
+    setQrCode(null);
     try {
       const response = await fetch(trial ? "/api/billing/trial" : "/api/billing/checkout", {
         method: "POST",
@@ -100,13 +133,33 @@ export function PlanBillingAction({
         return;
       }
 
+      if (payload.paymentProvider === "WECHAT_PAY_NATIVE") {
+        // 微信 Native：code_url 形如 weixin://wxpay/bizpayurl?pr=...
+        // **绝对不能 window.location.assign 过去**——在桌面浏览器上它什么也不会发生，
+        // 用户只会看到页面卡住。正确做法是本地渲染成二维码让用户用微信扫。
+        const codeUrl = payload.qrCodeUrl ?? "";
+        if (!codeUrl.startsWith("weixin://wxpay/bizpayurl?")) {
+          throw new Error("支付服务返回了无法识别的微信支付二维码内容。");
+        }
+        try {
+          setQrCode({ svg: renderQrSvg(codeUrl), planId: plan.planId });
+        } catch {
+          // 编码失败宁可报错也不要显示一张画错的二维码：
+          // 用户会去扫它，然后付款失败或付到别处，而我们这边看不出异常。
+          throw new Error("二维码生成失败，请重试或改用其它支付方式。");
+        }
+        setMessage("请用微信扫码完成支付，支付成功后本页会自动更新。");
+        return;
+      }
+
       let destination: URL;
       try {
-        destination = new URL(payload.checkoutUrl);
+        destination = new URL(payload.checkoutUrl ?? "");
       } catch {
         throw new Error("支付服务返回了无效的结账地址。");
       }
-      if (destination.protocol !== "https:" || !destination.hostname.endsWith(".stripe.com")) {
+      if (destination.protocol !== "https:"
+          || !isTrustedCheckoutHost(payload.paymentProvider, destination.hostname)) {
         throw new Error("支付服务返回了不受信任的结账地址。");
       }
       window.location.assign(destination.toString());
@@ -130,13 +183,22 @@ export function PlanBillingAction({
         {pending ? "正在处理…" : trial ? "开始免费体验" : paidUnavailable ? "等待开放" : "安全结账"}
         {!pending && <Icon name={paidUnavailable ? "clock" : "arrow"} size={15} />}
       </button>
+      {qrCode && qrCode.planId === plan.planId && (
+        <img
+          className={styles.paymentQrCode}
+          src={`data:image/svg+xml;utf8,${encodeURIComponent(qrCode.svg)}`}
+          alt="微信支付二维码"
+          width={220}
+          height={220}
+        />
+      )}
       {message ? (
         <p className={failed ? styles.actionError : styles.actionSuccess} role={failed ? "alert" : "status"}>
           {message}
         </p>
       ) : (
         <p className={styles.actionHint}>
-          {trial ? "需登录并具有已验证邮箱或手机号" : paidUnavailable ? "完成支付、税务与成本门禁后开放" : "跳转至 Stripe 安全结账"}
+          {trial ? "需登录并具有已验证邮箱或手机号" : paidUnavailable ? "完成支付、税务与成本门禁后开放" : "跳转至支付页或扫码完成支付"}
         </p>
       )}
     </div>

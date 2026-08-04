@@ -66,6 +66,15 @@ public final class WechatPayNativeGateway implements PaymentProviderRouter.Check
         return PaymentProvider.WECHAT_PAY_NATIVE;
     }
 
+    /**
+     * 微信 Native 下单<b>必须</b>发一次 HTTPS 请求换 {@code code_url}。
+     * 因此 {@link #prepare} 抛异常时，提供方那边可能已经建了单——必须进对账。
+     */
+    @Override
+    public boolean contactsProviderDuringPrepare() {
+        return true;
+    }
+
     @Override
     public PaymentProviderRouter.CheckoutHandoff prepare(String outTradeNo, long amountFen,
                                                          String subject) {

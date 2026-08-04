@@ -5,16 +5,21 @@ import java.util.Optional;
 /**
  * 支付回调的处理管线。
  *
- * <p><b>这五步的顺序不可调换：</b>
+ * <p><b>这些步骤的顺序不可调换：</b>
  *
- * <ol>
+ * <ol start="0">
+ *   <li><b>时间窗</b>——{@link ProviderAdapter#acceptsTimestamp}。只用于拒绝，
+ *       从不用于放行，所以放在验签之前是安全的，而且能让伪造报文在做 RSA 之前就出局。</li>
  *   <li><b>验签</b>——不通过就到此为止。跳过它等于接受任何人构造的报文。</li>
  *   <li><b>幂等去重</b>——必须在任何有副作用的动作之前。提供方会重发回调，
  *       重复放行会导致重复发放额度。</li>
  *   <li><b>金额比对</b>——必须在写订阅之前。回调金额可被篡改，
  *       只验签不比金额等于接受"付 1 分钱开通年付"。</li>
  *   <li><b>写 provider event</b>——先落原始事实，再动业务状态。
- *       顺序反了会出现"订阅已开通但没有对应事件"的孤儿状态，对账时无从追溯。</li>
+ *       顺序反了会出现"订阅已开通但没有对应事件"的孤儿状态，对账时无从追溯。
+ *       非付款成功的事件同样要落，否则退款/关单在库里查无痕迹。</li>
+ *   <li><b>判定是否付款成功</b>——{@link ProviderAdapter#indicatesPaymentSuccess}。
+ *       必须在事件落库<b>之后</b>、动订阅<b>之前</b>。</li>
  *   <li><b>更新订阅</b>——最后一步，也是唯一改变客户可见状态的一步。</li>
  * </ol>
  *
@@ -28,6 +33,11 @@ public final class PaymentCallbackPipeline {
 
     /** 处理结果。除 {@link #ACCEPTED} 外都不得更新订阅。 */
     public enum Outcome {
+        /**
+         * 时间戳超出容差窗口 —— 陈旧或未来报文，典型的重放。
+         * 在验签<b>之前</b>判定，理由见 {@link ProviderAdapter#acceptsTimestamp}。
+         */
+        STALE_TIMESTAMP,
         /** 验签失败。拒绝回调，不重试——重试一个伪造回调仍然是伪造回调。 */
         SIGNATURE_REJECTED,
         /** 幂等键已处理过。对提供方返回成功，但不重复执行任何副作用。 */
@@ -36,6 +46,16 @@ public final class PaymentCallbackPipeline {
         ORDER_UNKNOWN,
         /** 回调金额与本地订单不一致。开对账案件，绝不更新订阅。 */
         AMOUNT_MISMATCH,
+        /**
+         * 事件合法且已落库，但它不是"支付成功"——例如支付宝的 {@code TRADE_CLOSED}
+         * 或微信的 {@code CLOSED} / {@code REVOKED} / {@code PAYERROR}。
+         *
+         * <p>对提供方返回成功（我们确实正确处理了这条通知），但<b>绝不激活订阅</b>。
+         * 少了这一步，一条关单通知会被当成付款通知，凭空开通订阅——
+         * 而验签、幂等、金额比对全都拦不住它：关单通知的签名是真的，
+         * 事件 ID 是新的，金额字段与订单一致。
+         */
+        NOT_A_PAYMENT_SUCCESS,
         /** 全部通过，订阅已更新。 */
         ACCEPTED
     }
@@ -63,6 +83,34 @@ public final class PaymentCallbackPipeline {
 
         /** 仅在验签通过后调用。 */
         NormalizedCallback normalize(RawCallback raw);
+
+        /**
+         * 第 0 步：时间戳是否落在容差窗口内（{@link CallbackReplayGuard}）。
+         *
+         * <p><b>为什么放在验签之前。</b>这里读的是<b>未经验签</b>的字段
+         * （微信的 {@code Wechatpay-Timestamp} 头、支付宝的 {@code notify_time}），
+         * 看上去违反"不信任未验签数据"的原则。区别在于方向：
+         * 我们只用它<b>拒绝</b>，从不用它<b>放行</b>。基于伪造输入拒绝一个报文是安全的
+         * （最坏结果是拒绝了本来就该被验签拒绝的东西）；基于伪造输入放行才是危险的。
+         * 换来的是：伪造报文在做一次 RSA 验签之前就被挡掉，验签是这条路径上最贵的一步。
+         *
+         * <p>默认返回 {@code true}，即"不做时间校验"。这样既有的测试替身无需改动，
+         * 但<b>真实适配器必须覆写</b>——见 {@code AlipayCallbackAdapter} /
+         * {@code WechatPayCallbackAdapter}。
+         */
+        default boolean acceptsTimestamp(RawCallback raw) {
+            return true;
+        }
+
+        /**
+         * 该事件是否表示"支付成功"。
+         *
+         * <p>默认返回 {@code true} 是为了兼容既有替身；真实适配器<b>必须</b>覆写，
+         * 否则关单/退款通知会被当成付款通知。见 {@link Outcome#NOT_A_PAYMENT_SUCCESS}。
+         */
+        default boolean indicatesPaymentSuccess(NormalizedCallback callback) {
+            return true;
+        }
     }
 
     /** 幂等去重。实现必须是原子的（数据库唯一约束或条件插入）。 */
@@ -81,9 +129,20 @@ public final class PaymentCallbackPipeline {
         Optional<LocalOrder> findByOutTradeNo(String outTradeNo);
     }
 
-    /** 第 4 步：写入不可改写的提供方事件。 */
+    /**
+     * 第 4 步：写入不可改写的提供方事件。
+     *
+     * <p><b>{@code order} 必须传进来，不能由实现方持有一个固定的组织。</b>
+     * {@code payment_provider_events.organization_id} 是 NOT NULL 且带
+     * {@code FORCE ROW LEVEL SECURITY}（V49 第 425 行起的租户表清单里就有它），
+     * 策略是 {@code organization_id = current_setting('app.organization_id')}。
+     * 因此实现必须：① 用本次订单的组织，② 在同一事务里先
+     * {@code set_config('app.organization_id', ...)}，否则 WITH CHECK 直接拒绝插入。
+     *
+     * <p>管线在第 3 步已经解析出订单，此处传参不需要任何额外查询。
+     */
     public interface ProviderEventStore {
-        void record(NormalizedCallback callback, String rawBody);
+        void record(LocalOrder order, NormalizedCallback callback, String rawBody);
     }
 
     /** 第 5 步：更新订阅。唯一改变客户可见状态的动作。 */
@@ -131,6 +190,11 @@ public final class PaymentCallbackPipeline {
      * 未验签的报文不应被解析，更不应进入任何日志的业务字段。
      */
     public Outcome process(RawCallback raw) {
+        // 第 0 步 · 时间窗（只用于拒绝，不用于放行）
+        if (!adapter.acceptsTimestamp(raw)) {
+            return Outcome.STALE_TIMESTAMP;
+        }
+
         // 第 1 步 · 验签
         if (!adapter.verifySignature(raw)) {
             return Outcome.SIGNATURE_REJECTED;
@@ -159,8 +223,13 @@ public final class PaymentCallbackPipeline {
             return Outcome.AMOUNT_MISMATCH;
         }
 
-        // 第 4 步 · 先落原始事实
-        events.record(callback, raw.rawBody());
+        // 第 4 步 · 先落原始事实。非成功事件也要落，否则退款/关单在库里查无痕迹。
+        events.record(order, callback, raw.rawBody());
+
+        // 第 4.5 步 · 事件落库之后、动订阅之前，判断它到底是不是"付款成功"
+        if (!adapter.indicatesPaymentSuccess(callback)) {
+            return Outcome.NOT_A_PAYMENT_SUCCESS;
+        }
 
         // 第 5 步 · 最后才动订阅
         subscriptions.activate(order, callback);
