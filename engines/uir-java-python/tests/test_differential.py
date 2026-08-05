@@ -31,7 +31,13 @@ CORPUS_PLAN = {
     "Control.java": default_arg_vectors(2),
     "Failure.java": default_arg_vectors(2),
     "Lambdas.java": [[v] for v in BOUNDARY_INTS],
+    "Library.java": [
+        [v, w]
+        for v in ["0", "7", "-7", "2147483647"]
+        for w in ["abc", "a", "", "A b"]
+    ],
     "Mixed.java": [[v] for v in BOUNDARY_INTS],
+    "Resources.java": [[v] for v in BOUNDARY_INTS],
     "Objects.java": [[v] for v in BOUNDARY_INTS],
     "Records.java": [[v] for v in BOUNDARY_INTS],
     "Records2.java": [[v] for v in BOUNDARY_INTS],

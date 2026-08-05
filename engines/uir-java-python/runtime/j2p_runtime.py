@@ -591,6 +591,371 @@ class JString:
     def valueOf(value) -> str:
         return jstr(value)
 
+    @staticmethod
+    def isBlank(s: str) -> bool:
+        # Java's definition is "empty or every code point is
+        # Character.isWhitespace", which is NOT Python's str.isspace():
+        # Python counts U+00A0 as whitespace and Java does not.
+        return all(is_java_whitespace(ord(ch)) for ch in s)
+
+    @staticmethod
+    def strip(s: str) -> str:
+        start, end = 0, len(s)
+        while start < end and is_java_whitespace(ord(s[start])):
+            start += 1
+        while end > start and is_java_whitespace(ord(s[end - 1])):
+            end -= 1
+        return s[start:end]
+
+    @staticmethod
+    def startsWith(s: str, prefix: str, offset: int = 0) -> bool:
+        return s.startswith(prefix, num(offset))
+
+    @staticmethod
+    def endsWith(s: str, suffix: str) -> bool:
+        return s.endswith(suffix)
+
+    @staticmethod
+    def contains(s: str, part) -> bool:
+        return jstr(part) in s
+
+    @staticmethod
+    def replace(s: str, target, replacement) -> str:
+        return s.replace(jstr(target), jstr(replacement))
+
+    @staticmethod
+    def lastIndexOf(s: str, target) -> int:
+        if isinstance(target, JChar):
+            target = chr(target.code)
+        return s.rfind(target)
+
+    @staticmethod
+    def repeat(s: str, count: int) -> str:
+        count = num(count)
+        if count < 0:
+            raise IllegalArgumentExceptionJ(f"count is negative: {count}")
+        return s * count
+
+    @staticmethod
+    def concat(s: str, other: str) -> str:
+        return s + nonnull(other, "string")
+
+    @staticmethod
+    def equalsIgnoreCase(s: str, other) -> bool:
+        if other is None:
+            return False
+        return s.lower() == other.lower()
+
+    @staticmethod
+    def compareTo(s: str, other: str) -> int:
+        """Java returns the *char difference*, not just its sign.
+
+        ``"a".compareTo("A")`` is 32, not 1.  Programs that print or arithmetic
+        on the result would diverge from a sign-only implementation.
+        """
+
+        nonnull(other, "string")
+        for a, b in zip(s, other):
+            if a != b:
+                return jint(ord(a) - ord(b))
+        return jint(len(s) - len(other))
+
+    @staticmethod
+    def hashCode(s: str) -> int:
+        """``h = 31*h + c``, wrapped to 32 bits at every step."""
+
+        h = 0
+        for ch in s:
+            h = jint(31 * h + ord(ch))
+        return h
+
+    @staticmethod
+    def split(s: str, separator: str) -> JArray:
+        """``String.split`` with a *literal* separator.
+
+        Java drops trailing empty strings when the limit is zero, so
+        ``"a,b,,".split(",")`` has length 2, while Python's ``str.split`` gives
+        four elements.  The emitter refuses any separator that is not a literal
+        without regex metacharacters, because Java and Python regex dialects do
+        not agree.
+        """
+
+        if separator == "":
+            parts = list(s)
+        else:
+            parts = s.split(separator)
+        while len(parts) > 1 and parts[-1] == "":
+            parts.pop()
+        if parts == [""] and s == "":
+            parts = [""]
+        return array_of("ref", parts)
+
+
+def is_java_whitespace(code_point: int) -> bool:
+    """``Character.isWhitespace``.
+
+    Deliberately spelled out rather than delegating to Python: Python treats
+    U+00A0 (non-breaking space) and U+2007 as whitespace and Java does not,
+    which changes what ``isBlank`` and ``strip`` do.
+    """
+
+    if code_point in (0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x1C, 0x1D, 0x1E, 0x1F, 0x20):
+        return True
+    if code_point in (0xA0, 0x2007, 0x202F):
+        return False  # non-breaking: whitespace to Python, not to Java
+    import unicodedata
+
+    return unicodedata.category(chr(code_point)) in ("Zs", "Zl", "Zp")
+
+
+def throwable_to_string(exception: JavaThrowable) -> str:
+    """``Throwable.toString``: the class name, and the message when present."""
+
+    if exception.message is None:
+        return exception.java_name
+    return f"{exception.java_name}: {exception.message}"
+
+
+def throw(exception: JavaThrowable):
+    """Raise from expression position.
+
+    Java allows ``case X -> throw ...`` inside a switch *expression*; Python has
+    no raise expression.  Only the selected branch of a conditional is
+    evaluated, so routing the throw through a call preserves that.
+    """
+
+    raise exception
+
+
+class UnsupportedOperationOnImmutable(UnsupportedOperationExceptionJ):
+    java_name = "java.lang.UnsupportedOperationException"
+
+
+class JList:
+    """An immutable ``List.of`` result.
+
+    Java's ``List.of`` rejects nulls and throws on every mutating method.  A
+    plain Python list would silently accept both, so a program that relies on
+    the immutability contract would behave differently after migration.
+    """
+
+    __slots__ = ("_items",)
+
+    def __init__(self, items) -> None:
+        self._items = list(items)
+        for item in self._items:
+            if item is None:
+                raise NullPointerExceptionJ("element is null")
+
+    def size(self) -> int:
+        return len(self._items)
+
+    def isEmpty(self) -> bool:
+        return not self._items
+
+    def get(self, index: int):
+        index = num(index)
+        if index < 0 or index >= len(self._items):
+            raise IndexOutOfBoundsExceptionJ(
+                f"Index {index} out of bounds for length {len(self._items)}"
+            )
+        return self._items[index]
+
+    def contains(self, value) -> bool:
+        return any(_java_equals(item, value) for item in self._items)
+
+    def indexOf(self, value) -> int:
+        for index, item in enumerate(self._items):
+            if _java_equals(item, value):
+                return index
+        return -1
+
+    def add(self, *_args):
+        raise UnsupportedOperationExceptionJ(None)
+
+    def remove(self, *_args):
+        raise UnsupportedOperationExceptionJ(None)
+
+    def set(self, *_args):
+        raise UnsupportedOperationExceptionJ(None)
+
+    def clear(self):
+        raise UnsupportedOperationExceptionJ(None)
+
+    def __iter__(self):
+        return iter(self._items)
+
+    def __len__(self) -> int:
+        return len(self._items)
+
+    def __eq__(self, other) -> bool:
+        if isinstance(other, (JList, JArrayList)):
+            return list(self) == list(other)
+        return NotImplemented
+
+    def __hash__(self) -> int:
+        return _java_list_hash(self._items)
+
+    def toString(self) -> str:
+        return "[" + ", ".join(jstr(v) for v in self._items) + "]"
+
+
+class JArrayList:
+    """A mutable ``ArrayList`` with Java's bounds behaviour."""
+
+    __slots__ = ("_items",)
+
+    def __init__(self, initial=None) -> None:
+        self._items = list(initial) if initial is not None else []
+
+    def size(self) -> int:
+        return len(self._items)
+
+    def isEmpty(self) -> bool:
+        return not self._items
+
+    def add(self, value) -> bool:
+        self._items.append(value)
+        return True
+
+    def get(self, index: int):
+        index = num(index)
+        if index < 0 or index >= len(self._items):
+            raise IndexOutOfBoundsExceptionJ(
+                f"Index {index} out of bounds for length {len(self._items)}"
+            )
+        return self._items[index]
+
+    def set(self, index: int, value):
+        index = num(index)
+        if index < 0 or index >= len(self._items):
+            raise IndexOutOfBoundsExceptionJ(
+                f"Index {index} out of bounds for length {len(self._items)}"
+            )
+        previous = self._items[index]
+        self._items[index] = value
+        return previous
+
+    def contains(self, value) -> bool:
+        return any(_java_equals(item, value) for item in self._items)
+
+    def indexOf(self, value) -> int:
+        for index, item in enumerate(self._items):
+            if _java_equals(item, value):
+                return index
+        return -1
+
+    def clear(self) -> None:
+        self._items.clear()
+
+    def __iter__(self):
+        return iter(self._items)
+
+    def __len__(self) -> int:
+        return len(self._items)
+
+    def __eq__(self, other) -> bool:
+        if isinstance(other, (JList, JArrayList)):
+            return list(self) == list(other)
+        return NotImplemented
+
+    def __hash__(self) -> int:
+        return _java_list_hash(self._items)
+
+    def toString(self) -> str:
+        return "[" + ", ".join(jstr(v) for v in self._items) + "]"
+
+
+def _java_equals(a, b) -> bool:
+    if a is None or b is None:
+        return a is None and b is None
+    if isinstance(a, JChar) or isinstance(b, JChar):
+        return num(a) == num(b)
+    return a == b
+
+
+def _java_list_hash(items) -> int:
+    result = 1
+    for item in items:
+        result = jint(31 * result + java_hash_code(item))
+    return jint(result)
+
+
+def java_hash_code(value) -> int:
+    """``Object.hashCode`` for the values this translation produces."""
+
+    if value is None:
+        return 0
+    if isinstance(value, bool):
+        return 1231 if value else 1237
+    if isinstance(value, str):
+        return JString.hashCode(value)
+    if isinstance(value, JChar):
+        return value.code
+    if isinstance(value, int):
+        return jint(value ^ (value >> 32)) if not (INT_MIN <= value <= INT_MAX) else jint(value)
+    if isinstance(value, float):
+        import struct as _struct
+
+        bits = _struct.unpack("<q", _struct.pack("<d", value))[0]
+        return jint(bits ^ ((bits >> 32) & 0xFFFFFFFF))
+    hash_code = getattr(value, "hashCode", None)
+    if callable(hash_code):
+        return hash_code()
+    return jint(hash(value))
+
+
+class JavaList:
+    """Static factories.  ``List.of`` is immutable and rejects nulls."""
+
+    @staticmethod
+    def of(*values) -> JList:
+        return JList(values)
+
+    @staticmethod
+    def copyOf(source) -> JList:
+        return JList(list(source))
+
+
+class Objects:
+    @staticmethod
+    def requireNonNull(value, message: str | None = None):
+        if value is None:
+            raise NullPointerExceptionJ(message)
+        return value
+
+    @staticmethod
+    def requireNonNullElse(value, fallback):
+        return value if value is not None else Objects.requireNonNull(
+            fallback, "defaultObj"
+        )
+
+    @staticmethod
+    def equals(a, b) -> bool:
+        return _java_equals(a, b)
+
+    @staticmethod
+    def isNull(value) -> bool:
+        return value is None
+
+    @staticmethod
+    def nonNull(value) -> bool:
+        return value is not None
+
+    @staticmethod
+    def toString(value, fallback: str | None = None) -> str:
+        if value is None:
+            return "null" if fallback is None else fallback
+        return jstr(value)
+
+    @staticmethod
+    def hash(*values) -> int:
+        return _java_list_hash(values)
+
+    @staticmethod
+    def hashCode(value) -> int:
+        return java_hash_code(value)
+
 
 class StringBuilder:
     __slots__ = ("_parts",)
@@ -648,6 +1013,43 @@ class Integer:
     @staticmethod
     def compare(a: int, b: int) -> int:
         return (a > b) - (a < b)
+
+    @staticmethod
+    def max(a: int, b: int) -> int:
+        return a if a >= b else b
+
+    @staticmethod
+    def min(a: int, b: int) -> int:
+        return a if a <= b else b
+
+    @staticmethod
+    def sum(a: int, b: int) -> int:
+        return jint(a + b)
+
+    @staticmethod
+    def toHexString(value: int) -> str:
+        # Java formats the *unsigned* 32-bit pattern: -1 is "ffffffff".
+        return format(value & 0xFFFFFFFF, "x")
+
+    @staticmethod
+    def toBinaryString(value: int) -> str:
+        return format(value & 0xFFFFFFFF, "b")
+
+    @staticmethod
+    def toOctalString(value: int) -> str:
+        return format(value & 0xFFFFFFFF, "o")
+
+    @staticmethod
+    def bitCount(value: int) -> int:
+        return bin(value & 0xFFFFFFFF).count("1")
+
+    @staticmethod
+    def signum(value: int) -> int:
+        return (value > 0) - (value < 0)
+
+    @staticmethod
+    def hashCode(value: int) -> int:
+        return jint(value)
 
 
 class Long:
@@ -729,6 +1131,82 @@ class Math:
             return float(a) ** float(b)
         except (OverflowError, ValueError):
             return math.inf
+
+    @staticmethod
+    def round(value: float) -> int:
+        """``Math.round`` is ``floor(x + 0.5)``, not banker's rounding.
+
+        Python's ``round(2.5)`` is 2 and ``round(-2.5)`` is -2; Java's are 3
+        and -2.  Half of those disagree.
+        """
+
+        if math.isnan(value):
+            return 0
+        if value >= LONG_MAX:
+            return LONG_MAX
+        if value <= LONG_MIN:
+            return LONG_MIN
+        return int(math.floor(value + 0.5))
+
+    @staticmethod
+    def signum(value: float) -> float:
+        if math.isnan(value):
+            return math.nan
+        if value > 0:
+            return 1.0
+        if value < 0:
+            return -1.0
+        return value  # preserves -0.0
+
+    @staticmethod
+    def floorDiv(a: int, b: int) -> int:
+        if b == 0:
+            raise ArithmeticExceptionJ("/ by zero")
+        return a // b
+
+    @staticmethod
+    def floorMod(a: int, b: int) -> int:
+        if b == 0:
+            raise ArithmeticExceptionJ("/ by zero")
+        return a - Math.floorDiv(a, b) * b
+
+    @staticmethod
+    def hypot(a: float, b: float) -> float:
+        return math.hypot(a, b)
+
+
+def _exact(kind: str, value: int, what: str) -> int:
+    """Range-check an exact arithmetic result, as Math.*Exact does.
+
+    ``Math.addExact`` exists precisely so that overflow is an exception rather
+    than a wrapped value.  Emitting plain wrapping arithmetic for it would
+    convert a loud failure into a silently wrong number.
+    """
+
+    low, high = (INT_MIN, INT_MAX) if kind == "int" else (LONG_MIN, LONG_MAX)
+    if value < low or value > high:
+        raise ArithmeticExceptionJ(f"{what} overflow")
+    return value
+
+
+def addExact(kind: str, a: int, b: int) -> int:
+    return _exact(kind, a + b, "integer" if kind == "int" else "long")
+
+
+def subtractExact(kind: str, a: int, b: int) -> int:
+    return _exact(kind, a - b, "integer" if kind == "int" else "long")
+
+
+def multiplyExact(kind: str, a: int, b: int) -> int:
+    return _exact(kind, a * b, "integer" if kind == "int" else "long")
+
+
+def negateExact(kind: str, a: int) -> int:
+    return _exact(kind, -a, "integer" if kind == "int" else "long")
+
+
+def toIntExact(value: int) -> int:
+    return _exact("int", value, "integer")
 
 
 # ---------------------------------------------------------------------------

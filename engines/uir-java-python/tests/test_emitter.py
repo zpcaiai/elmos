@@ -336,6 +336,21 @@ class EmitRefusalTest(unittest.TestCase):
             )
         self.assertIn("identity hash", str(ctx.exception))
 
+    def test_split_with_a_regex_separator_is_refused(self):
+        # Java's split takes a regex, and Java's dialect is not Python's, so
+        # only a literal separator can be translated with the same meaning.
+        with self.assertRaises(EmitError) as ctx:
+            emit(r'static String[] f(String s) { return s.split("\\s+"); }')
+        self.assertIn("regex syntax", str(ctx.exception))
+
+    def test_split_with_a_non_literal_separator_is_refused(self):
+        with self.assertRaises(EmitError):
+            emit("static String[] f(String s, String sep) { return s.split(sep); }")
+
+    def test_split_with_a_literal_separator_is_emitted(self):
+        code = emit('static String[] f(String s) { return s.split(","); }')
+        self.assertIn("rt.JString.split", code)
+
     def test_unsupported_string_method_is_refused(self):
         self._refuses(
             'static String f(String s) { return s.replaceAll("a", "b"); }',

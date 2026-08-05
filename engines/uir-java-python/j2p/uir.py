@@ -514,6 +514,9 @@ class Try(Stmt):
     body: Stmt
     catches: tuple[CatchClause, ...]
     finally_: Stmt | None
+    #: try-with-resources declarations, in source order.  They are closed in
+    #: *reverse* order, before any catch or finally runs.
+    resources: tuple["LocalVar", ...] = ()
 
 
 @dataclass(frozen=True)
@@ -542,6 +545,15 @@ class SwitchExpr(Expr):
     #: fall through.
     subject: Expr
     cases: tuple[SwitchExprCase, ...]
+
+
+@dataclass(frozen=True)
+class ThrowExpr(Expr):
+    KIND = "ThrowExpr"
+    #: ``case X -> throw ...`` inside a switch *expression*.  Java allows a
+    #: throwing rule there; Python has no raise expression, so this is a
+    #: distinct node the emitter routes through a helper call.
+    value: Expr
 
 
 @dataclass(frozen=True)
@@ -582,6 +594,9 @@ class Param:
     origin: Origin
     name: str
     type: Type
+    #: ``int... xs``.  The parameter's type is the array; the flag records that
+    #: call sites pack their trailing arguments into it.
+    is_varargs: bool = False
 
 
 @dataclass(frozen=True)

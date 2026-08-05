@@ -14,14 +14,14 @@ Java 源码
 
 | 指标 | 数值 | 怎么来的 |
 |---|---:|---|
-| 单元 + 端到端测试 | **164** | `make uir-j2p-test` |
-| 差分比较（Java vs Python 实跑） | **512** | 9 个语料程序 × 边界输入向量 |
-| 变异实验 | **46/46 全部杀死** | `make uir-j2p-mutation` |
-| elmos 仓库 884 个 Java 文件**能降级到 UIR** | **76.6%**（677 个） | `make uir-j2p-survey` |
-| 其中**能真正生成 Python** | **4.9%**（43 个） | 同上 |
+| 单元 + 端到端测试 | **189** | `make uir-j2p-test` |
+| 差分比较（Java vs Python 实跑） | **540** | 11 个语料程序 × 边界输入向量 |
+| 变异实验 | **61/61 全部杀死** | `make uir-j2p-mutation` |
+| elmos 仓库 884 个 Java 文件**能降级到 UIR** | **94.9%**（839 个） | `make uir-j2p-survey` |
+| 其中**能真正生成 Python** | **5.8%**（51 个） | 同上 |
 | 已实现路线 | **1 / 90** | `java → python` |
 
-**最后三行要一起读，尤其是中间那道鸿沟。** 前端能看懂 77% 的文件，生成器只能翻译 5%。
+**最后三行要一起读，尤其是中间那道鸿沟。** 前端能看懂 95% 的文件，生成器只能翻译 6%。
 
 这不是矛盾，是两件不同的事：把 `Foo.class` 如实记进 IR 很容易（它就是一个类字面量节点），把它*翻译*成等价的 Python 不可能（反射语义复现不了）。所以前端理解它、生成器拒绝它。降级率衡量的是"读懂了多少"，生成率衡量的是"能保证行为一致地搬过去多少"。**后者才是迁移真正的进度。**
 
@@ -66,7 +66,9 @@ Foo.java:41:18: unsupported Java construct: class_literal (as expression)
 
 ## 已支持 / 已拒绝
 
-**支持**：record 紧凑构造器与显式规范构造器、switch 表达式（箭头式与 `yield` 式）、箭头式 switch 语句、lambda（表达式体与块体、三种参数写法）、方法引用（`this::m`、`obj::m`、`Type::m`、`Type::new`）、JDK 函数式接口与项目自己声明的单抽象方法接口、class、record、static 嵌套类、enum 常量、字段/方法/构造器、int/long/short/byte/char/boolean/double、数组、if/while/do/for/foreach/switch(不含 fall-through)/try-catch-finally/throw、String 与 StringBuilder 常用方法、Integer/Long/Double/Math、文本块、转义、字符串拼接、复合赋值、自增自减（语句位置）。
+**支持**：try-with-resources（含 suppressed 语义）、泛型方法与泛型类（按 Java 的方式擦除）、varargs、record 紧凑构造器与显式规范构造器、switch 表达式（箭头式与 `yield` 式）、箭头式 switch 语句、lambda（表达式体与块体、三种参数写法）、方法引用（`this::m`、`obj::m`、`Type::m`、`Type::new`）、JDK 函数式接口与项目自己声明的单抽象方法接口、class、record、static 嵌套类、enum 常量、字段/方法/构造器、int/long/short/byte/char/boolean/double、数组、if/while/do/for/foreach/switch(不含 fall-through)/try-catch-finally/throw、String 与 StringBuilder 常用方法、Integer/Long/Double/Math、文本块（含行连接符）、转义、字符串拼接、复合赋值、自增自减（语句位置）。
+
+**运行时库**（每一条都有对照 `javac`/`java` 的差分证据）：`String` 的 `isBlank`/`strip`/`startsWith`/`endsWith`/`contains`/`replace`/`repeat`/`concat`/`equalsIgnoreCase`/`compareTo`/`hashCode`/`split`/`lastIndexOf`，`Objects` 的 `requireNonNull`/`equals`/`hash`/`toString`/`isNull`/`nonNull`，`Math` 的 `round`/`floorDiv`/`floorMod`/`signum`/`hypot`/`addExact`/`subtractExact`/`multiplyExact`/`toIntExact`，`Integer` 的 `toHexString`/`toBinaryString`/`bitCount`/`sum`/`max`/`min`，`List.of`（不可变）/`List.copyOf`/`ArrayList`。
 
 **明确拒绝**（每一条都有测试）：`Foo.class`、`this(...)`/`super(args)` 构造器委托、运行时没有对应实现的外部方法引用、无 default 的 switch 表达式、case 体不是单一表达式的 switch 表达式、会被重复求值的位置上需要提升语句的表达式（如循环条件里的 switch 表达式）、try-with-resources、`==` 比较两个引用类型、函数式接口的 default 方法（`andThen`/`negate`）、带 default/static 方法的接口、varargs、泛型方法/泛型类声明、非静态内部类、`float`、带标签的 break/continue、switch fall-through、多维数组、表达式位置的赋值与 `++`、未声明 `toString`/`hashCode` 的类调用它们、会被二次求值的复合赋值目标。
 
@@ -129,7 +131,7 @@ j2p/diff/harness.py         差分执行
 j2p/cli.py                  parse / emit / diff / survey
 runtime/j2p_runtime.py      Java 语义的 Python 实现（生成代码依赖它）
 corpus/                     语义陷阱语料（溢出、负除、MIN_VALUE、Double.toString…）
-tests/                      164 个测试
-tools/mutation_check.py     46 个变异实验
+tests/                      189 个测试
+tools/mutation_check.py     61 个变异实验
 tools/record_batch_evidence.py  接入 batch1-38 的证据生产者
 ```

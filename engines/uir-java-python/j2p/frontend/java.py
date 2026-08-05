@@ -75,6 +75,7 @@ from ..uir import (
     Ternary,
     This,
     Throw,
+    ThrowExpr,
     Try,
     TypeDecl,
     Unary,
@@ -225,6 +226,12 @@ class JavaFrontend:
         self._interface_sams: dict[str, tuple[str, uir.Type, tuple[uir.Type, ...]]] = {}
         self._class_names: set[str] = set()
         self._current_class: str | None = None
+        #: Type variables in scope.  Java erases generics at run time, so a
+        #: type variable carries no information Python lacks; it is recorded as
+        #: an unknown type rather than treated as a class that exists.
+        self._type_variables: set[str] = set()
+        #: Methods whose last parameter is varargs, so call sites can pack.
+        self._method_varargs: dict[str, bool] = {}
 
     # -- entry point ------------------------------------------------------
 
@@ -268,9 +275,16 @@ class JavaFrontend:
             f"unsupported Java construct: {node.type} (as {what})", self._origin(node)
         )
 
-    @staticmethod
-    def _named(node: "Node") -> list["Node"]:
-        return [c for c in node.children if c.is_named]
+    #: Comments appear as named children anywhere a token can, including inside
+    #: argument and parameter lists.  They carry no meaning, so they are dropped
+    #: here rather than at each of the twenty places that iterate children.
+    _COMMENT_NODES = frozenset({"line_comment", "block_comment"})
+
+    @classmethod
+    def _named(cls, node: "Node") -> list["Node"]:
+        return [
+            c for c in node.children if c.is_named and c.type not in cls._COMMENT_NODES
+        ]
 
     # -- module -----------------------------------------------------------
 
@@ -281,9 +295,9 @@ class JavaFrontend:
 
         for child in self._named(root):
             if child.type == "package_declaration":
-                package = self._text(child.named_children[0])
+                package = self._text(self._named(child)[0])
             elif child.type == "import_declaration":
-                imports.append(self._text(child.named_children[0]))
+                imports.append(self._text(self._named(child)[0]))
             elif child.type in _TYPE_DECL_NODES:
                 decls.append(child)
             elif child.type in ("line_comment", "block_comment"):
@@ -347,7 +361,13 @@ class JavaFrontend:
                 self._collect_signatures(member)
             elif member.type == "method_declaration":
                 name = self._text(member.child_by_field_name("name"))
+                introduced = self._declare_type_variables(member)
                 self._method_types[name] = self._type(member.child_by_field_name("type"))
+                self._method_varargs[name] = any(
+                    p.type == "spread_parameter"
+                    for p in self._named(member.child_by_field_name("parameters"))
+                )
+                self._type_variables -= introduced
                 self._method_param_types[name] = tuple(
                     self._type(p.child_by_field_name("type"))
                     for p in self._named(member.child_by_field_name("parameters"))
@@ -406,8 +426,7 @@ class JavaFrontend:
             )
         nested: list[TypeDecl] = []
 
-        if node.child_by_field_name("type_parameters") is not None:
-            self._reject(node, "generic type declaration")
+        introduced_by_type = self._declare_type_variables(node)
 
         superclass: uir.Type | None = None
         superclass_node = node.child_by_field_name("superclass")
@@ -474,6 +493,7 @@ class JavaFrontend:
                 else:
                     self._reject(member, "class member")
 
+        self._type_variables -= introduced_by_type
         self._current_class = previous_class
         self._static_field_names = previous_static
         decl = TypeDecl(
@@ -491,6 +511,24 @@ class JavaFrontend:
             enclosing=enclosing,
         )
         return [decl, *nested]
+
+    def _declare_type_variables(self, node: "Node") -> set[str]:
+        """Bring ``<T, U>`` into scope as erased types, returning what was added."""
+
+        params = node.child_by_field_name("type_parameters")
+        if params is None:
+            return set()
+        introduced = set()
+        for child in self._named(params):
+            if child.type != "type_parameter":
+                continue
+            names = [c for c in self._named(child) if c.type == "type_identifier"]
+            if names:
+                name = self._text(names[0])
+                if name not in self._type_variables:
+                    introduced.add(name)
+        self._type_variables |= introduced
+        return introduced
 
     def _modifiers(self, node: "Node") -> tuple[str, ...]:
         for child in node.children:
@@ -530,9 +568,8 @@ class JavaFrontend:
         return out
 
     def _method(self, node: "Node", owner: str) -> Method:
-        if node.child_by_field_name("type_parameters") is not None:
-            self._reject(node, "generic method")
         origin = self._origin(node)
+        introduced = self._declare_type_variables(node)
         name = self._text(node.child_by_field_name("name"))
         return_type = self._type(node.child_by_field_name("type"))
         modifiers = self._modifiers(node)
@@ -546,6 +583,7 @@ class JavaFrontend:
 
         body_node = node.child_by_field_name("body")
         body = self._block(body_node, scope) if body_node is not None else None
+        self._type_variables -= introduced
         return Method(
             origin=origin,
             name=name,
@@ -607,7 +645,21 @@ class JavaFrontend:
         out: list[Param] = []
         for child in self._named(node):
             if child.type == "spread_parameter":
-                self._reject(child, "varargs parameter")
+                named = self._named(child)
+                declarator = next(
+                    (c for c in named if c.type == "variable_declarator"), None
+                )
+                if declarator is None:
+                    self._reject(child, "varargs parameter without a name")
+                out.append(
+                    Param(
+                        origin=self._origin(child),
+                        name=self._text(declarator.child_by_field_name("name")),
+                        type=ArrayType(self._type(named[0])),
+                        is_varargs=True,
+                    )
+                )
+                continue
             if child.type != "formal_parameter":
                 self._reject(child, "parameter")
             out.append(
@@ -635,6 +687,8 @@ class JavaFrontend:
             return ArrayType(element=self._type(node.child_by_field_name("element")))
         if t == "type_identifier":
             name = self._text(node)
+            if name in self._type_variables:
+                return UnknownType(f"type-variable:{name}")
             return ClassType(name)
         if t == "generic_type":
             named = self._named(node)
@@ -703,7 +757,7 @@ class JavaFrontend:
             return Block(origin=origin, body=tuple(stmts))
 
         if t == "expression_statement":
-            return ExprStmt(origin=origin, expr=self._expr(node.named_children[0], scope))
+            return ExprStmt(origin=origin, expr=self._expr(self._named(node)[0], scope))
 
         if t == "if_statement":
             cond = self._expr(node.child_by_field_name("condition"), scope)
@@ -780,11 +834,37 @@ class JavaFrontend:
             return Continue(origin=origin)
 
         if t == "throw_statement":
-            return Throw(origin=origin, value=self._expr(node.named_children[0], scope))
+            return Throw(origin=origin, value=self._expr(self._named(node)[0], scope))
 
-        if t == "try_statement":
-            if node.child_by_field_name("resources") is not None:
-                self._reject(node, "try-with-resources")
+        if t in ("try_statement", "try_with_resources_statement"):
+            inner = scope.child()
+            resources: list[LocalVar] = []
+            spec = node.child_by_field_name("resources")
+            if spec is not None:
+                for resource in self._named(spec):
+                    if resource.type != "resource":
+                        continue
+                    name_node = resource.child_by_field_name("name")
+                    if name_node is None:
+                        self._reject(
+                            resource,
+                            "try-with-resources over an existing variable",
+                        )
+                    declared = self._type(resource.child_by_field_name("type"))
+                    value = resource.child_by_field_name("value")
+                    if value is None:
+                        self._reject(resource, "resource without an initializer")
+                    name = self._text(name_node)
+                    inner.names[name] = declared
+                    resources.append(
+                        LocalVar(
+                            origin=self._origin(resource),
+                            name=name,
+                            type=declared,
+                            init=self._expr(value, inner, expected=declared),
+                        )
+                    )
+            scope = inner
             body = self._block(node.child_by_field_name("body"), scope)
             catches: list[CatchClause] = []
             finally_: Stmt | None = None
@@ -794,7 +874,11 @@ class JavaFrontend:
                 elif child.type == "finally_clause":
                     finally_ = self._block(self._named(child)[0], scope)
             return Try(
-                origin=origin, body=body, catches=tuple(catches), finally_=finally_
+                origin=origin,
+                body=body,
+                catches=tuple(catches),
+                finally_=finally_,
+                resources=tuple(resources),
             )
 
         if t == "explicit_constructor_invocation":
@@ -917,7 +1001,12 @@ class JavaFrontend:
                     elif child.type == "expression_statement":
                         value = self._expr(child.named_children[0], inner, expected)
                     elif child.type == "throw_statement":
-                        self._reject(child, "throwing switch rule in an expression")
+                        thrown = self._expr(self._named(child)[0], inner)
+                        value = ThrowExpr(
+                            origin=self._origin(child),
+                            type=UnknownType("throw-expression"),
+                            value=thrown,
+                        )
                     else:
                         self._reject(child, "switch rule with a statement body")
             elif group.type == "switch_block_statement_group":
@@ -986,7 +1075,17 @@ class JavaFrontend:
             is_long = text.lower().endswith("l")
             if is_long:
                 text = text[:-1]
-            value = int(text, 0)
+            # Java spells octal with a bare leading zero; Python 3 requires
+            # `0o`, and `int(text, 0)` rejects "0400" outright.
+            body = text
+            if body.lower().startswith("0x"):
+                value = int(body, 16)
+            elif body.lower().startswith("0b"):
+                value = int(body, 2)
+            elif len(body) > 1 and body.startswith(("0", "-0")):
+                value = int(body, 8)
+            else:
+                value = int(body, 10)
             kind = uir.T_LONG if is_long else uir.T_INT
             width = 64 if is_long else 32
             if value >= 2 ** (width - 1):
@@ -1580,7 +1679,30 @@ class JavaFrontend:
         return table.get((owner, name), UnknownType(f"static-field:{owner}.{name}"))
 
     def _static_call_type(self, owner: str, name: str, args: tuple[Expr, ...]) -> uir.Type:
+        if owner == "Objects":
+            if name in ("isNull", "nonNull", "equals"):
+                return uir.T_BOOLEAN
+            if name in ("hash", "hashCode"):
+                return uir.T_INT
+            if name == "toString":
+                return uir.T_STRING
+            if name in ("requireNonNull", "requireNonNullElse"):
+                return args[0].type if args else UnknownType("requireNonNull")
+        if owner in ("List", "Set", "Map"):
+            if name in ("of", "copyOf"):
+                return ClassType("List") if owner == "List" else ClassType(owner)
         if owner == "Math":
+            if name in ("round", "floorDiv", "floorMod", "addExact",
+                        "subtractExact", "multiplyExact", "negateExact"):
+                if name == "round":
+                    return uir.T_LONG
+                return self._binary_promote(
+                    args[0].type, args[-1].type if len(args) > 1 else args[0].type
+                ) if args else UnknownType("math")
+            if name == "toIntExact":
+                return uir.T_INT
+            if name in ("signum", "hypot"):
+                return uir.T_DOUBLE
             if name in ("abs", "max", "min"):
                 if args:
                     return self._binary_promote(
@@ -1590,6 +1712,10 @@ class JavaFrontend:
             if name in ("floor", "ceil", "sqrt", "pow"):
                 return uir.T_DOUBLE
         if owner == "Integer":
+            if name in ("toHexString", "toBinaryString", "toOctalString"):
+                return uir.T_STRING
+            if name in ("bitCount", "signum", "hashCode", "max", "min", "sum"):
+                return uir.T_INT
             if name in ("parseInt", "compare"):
                 return uir.T_INT
             if name == "toString":
@@ -1640,6 +1766,19 @@ class JavaFrontend:
     def _instance_call_type_declared(self, target: uir.Type, name: str) -> uir.Type:
         if self._is_string(target):
             table = {
+                "isBlank": uir.T_BOOLEAN,
+                "startsWith": uir.T_BOOLEAN,
+                "endsWith": uir.T_BOOLEAN,
+                "contains": uir.T_BOOLEAN,
+                "equalsIgnoreCase": uir.T_BOOLEAN,
+                "replace": uir.T_STRING,
+                "strip": uir.T_STRING,
+                "repeat": uir.T_STRING,
+                "concat": uir.T_STRING,
+                "lastIndexOf": uir.T_INT,
+                "compareTo": uir.T_INT,
+                "hashCode": uir.T_INT,
+                "split": ArrayType(uir.T_STRING),
                 "length": uir.T_INT,
                 "charAt": uir.T_CHAR,
                 "indexOf": uir.T_INT,
@@ -1652,6 +1791,20 @@ class JavaFrontend:
             }
             if name in table:
                 return table[name]
+        if isinstance(target, ClassType) and target.name.endswith("Exception") or (
+            isinstance(target, ClassType) and target.name in ("Throwable", "Error")
+        ):
+            if name in ("getMessage", "getLocalizedMessage", "toString"):
+                return uir.T_STRING
+        if isinstance(target, ClassType) and target.name in ("List", "ArrayList"):
+            if name in ("size", "indexOf"):
+                return uir.T_INT
+            if name in ("isEmpty", "contains", "add"):
+                return uir.T_BOOLEAN
+            if name in ("get", "set"):
+                return target.args[0] if target.args else UnknownType("list-element")
+            if name == "clear":
+                return uir.T_VOID
         if isinstance(target, ClassType) and target.name == "StringBuilder":
             if name == "toString":
                 return uir.T_STRING
@@ -1719,6 +1872,10 @@ class JavaFrontend:
             if i >= len(raw):
                 self._reject(node, "dangling escape in literal")
             esc = raw[i]
+            if esc == "\n":
+                # A backslash at end of line in a text block joins the lines.
+                i += 1
+                continue
             if esc in _ESCAPES:
                 out.append(_ESCAPES[esc])
                 i += 1

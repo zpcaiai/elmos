@@ -265,17 +265,68 @@ class RecordAndSwitchLoweringTest(unittest.TestCase):
         self.assertEqual(len(call.args), 1)
 
 
+class ErasureAndResourceLoweringTest(unittest.TestCase):
+    def test_generic_method_type_variable_erases_to_unknown(self):
+        # Java erases generics at run time, so a type variable carries nothing
+        # Python lacks.  Recording it as UnknownType keeps that visible.
+        module = parse("static <A> A f(A a) { return a; }")
+        method = module.types[0].methods[0]
+        self.assertIsInstance(method.return_type, uir.UnknownType)
+        self.assertIn("type-variable:A", method.return_type.reason)
+
+    def test_type_variable_leaves_scope_after_the_method(self):
+        module = parse(
+            "static <A> A f(A a) { return a; }\n"
+            "static A g(A a) { return a; }"
+        )
+        # `A` outside the generic method is an ordinary (unknown) class name,
+        # not the erased type variable.
+        second = module.types[0].methods[1]
+        self.assertIsInstance(second.return_type, uir.ClassType)
+
+    def test_generic_class_declaration_is_erased(self):
+        module = parse_java(b"class Box<T> { T value; }", "Box.java")
+        self.assertIsInstance(module.types[0].fields[0].type, uir.UnknownType)
+
+    def test_varargs_parameter_is_an_array(self):
+        module = parse("static int f(int... xs) { return xs.length; }")
+        param = module.types[0].methods[0].params[0]
+        self.assertTrue(param.is_varargs)
+        self.assertIsInstance(param.type, uir.ArrayType)
+
+    def test_try_with_resources_records_its_resources_in_order(self):
+        module = parse(
+            "static void f() { try (R a = null; R b = null) { } finally { } }"
+        )
+        node = next(n for n in uir.walk(module) if isinstance(n, uir.Try))
+        self.assertEqual([r.name for r in node.resources], ["a", "b"])
+
+    def test_comments_inside_an_argument_list_are_dropped(self):
+        module = parse("static int f() { return g(1 /* here */, 2); }\n"
+                       "static int g(int a, int b) { return a; }")
+        call = next(n for n in uir.walk(module) if isinstance(n, uir.Call))
+        self.assertEqual(len(call.args), 2)
+
+    def test_text_block_line_continuation_joins_lines(self):
+        source = 'class T { static String f() { return """\n    a\\\n    b\n    """; } }'
+        module = parse_java(source.encode("utf-8"), "T.java")
+        ret = module.types[0].methods[0].body.body[0]
+        self.assertEqual(ret.value.value, "ab\n")
+
+    def test_throwing_switch_rule_is_an_expression_node(self):
+        module = parse(
+            "static int f(int n) { return switch (n) { case 0 -> 1; "
+            "default -> throw new IllegalStateException(\"no\"); }; }"
+        )
+        found = [n for n in uir.walk(module) if isinstance(n, uir.ThrowExpr)]
+        self.assertEqual(len(found), 1)
+
+
 class RefusalTest(unittest.TestCase):
     def _refuses(self, body: str, needle: str):
         with self.assertRaises(UnsupportedConstruct) as ctx:
             parse(body)
         self.assertIn(needle, str(ctx.exception))
-
-    def test_varargs_is_refused(self):
-        self._refuses("static int f(int... xs) { return 1; }", "varargs")
-
-    def test_generic_method_is_refused(self):
-        self._refuses("static <A> A f(A a) { return a; }", "generic method")
 
     def test_non_static_inner_class_is_refused(self):
         self._refuses("class Inner { }", "non-static inner class")
@@ -283,10 +334,10 @@ class RefusalTest(unittest.TestCase):
     def test_float_literal_is_refused(self):
         self._refuses("static double f() { return 1.5f; }", "float literal")
 
-    def test_try_with_resources_is_refused(self):
+    def test_try_with_resources_over_an_existing_variable_is_refused(self):
         self._refuses(
-            "static void f() throws Exception { try (AutoCloseable c = null) { } }",
-            "try_with_resources",
+            "static void f(AutoCloseable c) throws Exception { try (c) { } }",
+            "existing variable",
         )
 
     def test_labelled_statement_is_refused(self):
@@ -319,7 +370,7 @@ class RefusalTest(unittest.TestCase):
 
     def test_refusal_carries_a_source_location(self):
         with self.assertRaises(UnsupportedConstruct) as ctx:
-            parse("static int f(int... xs) { return 1; }")
+            parse("static void f() { outer: while (true) { break outer; } }")
         self.assertEqual(ctx.exception.origin.file, "T.java")
         self.assertGreaterEqual(ctx.exception.origin.line, 1)
 

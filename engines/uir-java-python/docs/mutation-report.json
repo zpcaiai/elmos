@@ -1,6 +1,6 @@
 {
-  "total": 46,
-  "killed": 46,
+  "total": 61,
+  "killed": 61,
   "survivors": [],
   "results": [
     {
@@ -223,6 +223,96 @@
       "id": "M46",
       "file": "j2p/emit/python.py",
       "rule": "a class literal is refused rather than invented",
+      "status": "KILLED"
+    },
+    {
+      "id": "M47",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "Math.round is floor(x+0.5), not Python's banker's rounding",
+      "status": "KILLED"
+    },
+    {
+      "id": "M48",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "Math.*Exact raises on overflow instead of wrapping",
+      "status": "KILLED"
+    },
+    {
+      "id": "M49",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "String.hashCode wraps at every step of the 31-based algorithm",
+      "status": "KILLED"
+    },
+    {
+      "id": "M50",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "String.compareTo returns the character difference, not its sign",
+      "status": "KILLED"
+    },
+    {
+      "id": "M51",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "String.split drops trailing empty strings",
+      "status": "KILLED"
+    },
+    {
+      "id": "M52",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "isBlank uses Java's whitespace set, not Python's",
+      "status": "KILLED"
+    },
+    {
+      "id": "M53",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "Integer.toHexString formats the unsigned 32-bit pattern",
+      "status": "KILLED"
+    },
+    {
+      "id": "M54",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "List.of is immutable",
+      "status": "KILLED"
+    },
+    {
+      "id": "M55",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "List.of rejects null elements",
+      "status": "KILLED"
+    },
+    {
+      "id": "M56",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "list indices are bounds-checked on both sides",
+      "status": "KILLED"
+    },
+    {
+      "id": "M57",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "Objects.requireNonNull raises rather than returning null",
+      "status": "KILLED"
+    },
+    {
+      "id": "M58",
+      "file": "j2p/emit/python.py",
+      "rule": "a close() failure during an in-flight exception is suppressed",
+      "status": "KILLED"
+    },
+    {
+      "id": "M59",
+      "file": "j2p/emit/python.py",
+      "rule": "resources are closed in reverse declaration order",
+      "status": "KILLED"
+    },
+    {
+      "id": "M60",
+      "file": "j2p/emit/python.py",
+      "rule": "varargs arguments are packed into an array at the call site",
+      "status": "KILLED"
+    },
+    {
+      "id": "M61",
+      "file": "j2p/emit/python.py",
+      "rule": "String.split refuses a regex separator",
       "status": "KILLED"
     },
     {

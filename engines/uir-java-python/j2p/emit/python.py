@@ -69,6 +69,7 @@ from ..uir import (
     Ternary,
     This,
     Throw,
+    ThrowExpr,
     Try,
     TypeDecl,
     Unary,
@@ -584,10 +585,79 @@ class PythonEmitter:
             self._write(indent, "pass")
 
     def _emit_try(self, stmt: Try, indent: int) -> None:
-        if not stmt.catches and stmt.finally_ is None:
+        if not stmt.catches and stmt.finally_ is None and not stmt.resources:
             raise EmitError("try with neither catch nor finally", stmt.origin)
+
+        if stmt.resources:
+            if not stmt.catches and stmt.finally_ is None:
+                self._emit_resources(stmt, 0, indent)
+                return
+            # `try (r) {...} catch/finally` is `try { try (r) {...} } catch/finally`:
+            # resources close *before* the handler runs.
+            self._write(indent, "try:", stmt.origin)
+            self._emit_resources(stmt, 0, indent + 1)
+            self._emit_handlers(stmt, indent)
+            return
+
         self._write(indent, "try:", stmt.origin)
         self._body(stmt.body, indent + 1)
+        self._emit_handlers(stmt, indent)
+
+    def _emit_resources(self, stmt: Try, index: int, indent: int) -> None:
+        """Emit one resource level, recursing so the last opened closes first.
+
+        Java closes resources in reverse declaration order, before any catch or
+        finally runs, and a failure in ``close()`` while another exception is in
+        flight is *suppressed* rather than propagated.  Python's plain
+        ``finally`` does the opposite: the close failure would replace the real
+        exception and the original would be lost.
+        """
+
+        if index >= len(stmt.resources):
+            self._body(stmt.body, indent)
+            return
+
+        resource = stmt.resources[index]
+        self._require_closeable(resource)
+        self._line(
+            indent,
+            lambda: f"{resource.name} = "
+            + (self._expr(resource.init) if resource.init is not None else "None"),
+            resource.origin,
+        )
+        primary = self._fresh("primary")
+        caught = self._fresh("in_flight")
+        self._write(indent, f"{primary} = None", resource.origin)
+        self._write(indent, "try:")
+        self._emit_resources(stmt, index + 1, indent + 1)
+        self._write(indent, f"except {RUNTIME_ALIAS}.JavaThrowable as {caught}:")
+        self._write(indent + 1, f"{primary} = {caught}")
+        self._write(indent + 1, "raise")
+        self._write(indent, "finally:")
+        self._write(indent + 1, "try:")
+        self._write(indent + 2, f"{resource.name}.close()")
+        self._write(indent + 1, f"except {RUNTIME_ALIAS}.JavaThrowable:")
+        self._write(indent + 2, f"if {primary} is None:")
+        self._write(indent + 3, "raise")
+
+    def _require_closeable(self, resource) -> None:
+        declared = resource.type
+        if not isinstance(declared, ClassType):
+            raise EmitError(
+                "a try-with-resources resource must have a class type",
+                resource.origin,
+            )
+        decl = next(
+            (d for d in self.module.types if d.name == declared.name), None
+        )
+        if decl is None or not any(m.name == "close" for m in decl.methods):
+            raise EmitError(
+                f"`{declared.name}` is not declared in this compilation unit "
+                f"with a close() method, so its closing behaviour is unknown",
+                resource.origin,
+            )
+
+    def _emit_handlers(self, stmt: Try, indent: int) -> None:
         for catch in stmt.catches:
             names = []
             for ty in catch.types:
@@ -874,6 +944,8 @@ class PythonEmitter:
             return self._new(expr)
         if isinstance(expr, NewArray):
             return self._new_array(expr)
+        if isinstance(expr, ThrowExpr):
+            return f"{RUNTIME_ALIAS}.throw({self._expr(expr.value)})"
         if isinstance(expr, SwitchExpr):
             return self._switch_expr(expr)
         if isinstance(expr, ClassLiteral):
@@ -1238,17 +1310,15 @@ class PythonEmitter:
         if name == "StringBuilder":
             return f"{RUNTIME_ALIAS}.StringBuilder({args})"
         if name in ("ArrayList", "List"):
-            if args:
-                raise EmitError("new ArrayList with arguments", expr.origin)
-            return "[]"
-        if name in ("HashMap", "Map"):
-            if args:
-                raise EmitError("new HashMap with arguments", expr.origin)
-            return "{}"
-        if name in ("HashSet", "Set"):
-            if args:
-                raise EmitError("new HashSet with arguments", expr.origin)
-            return "set()"
+            return f"{RUNTIME_ALIAS}.JArrayList({args})" if args else f"{RUNTIME_ALIAS}.JArrayList()"
+        if name in ("HashMap", "Map", "HashSet", "Set", "LinkedHashMap",
+                    "TreeMap", "ConcurrentHashMap"):
+            raise EmitError(
+                f"new {name} is not supported: Java's iteration order for this "
+                f"collection is either unspecified or insertion/comparator "
+                f"defined, and no Python built-in reproduces it in every case",
+                expr.origin,
+            )
         cls = self._throwable_class(name)
         if cls is not None:
             return f"{RUNTIME_ALIAS}.{cls}({args})"
@@ -1278,6 +1348,7 @@ class PythonEmitter:
         args = [self._expr(a) for a in expr.args]
 
         if expr.target is None:
+            args = self._pack_varargs(expr.name, expr, args)
             if expr.name in self._static_methods:
                 owner = self._owner_of_method(expr.name)
                 return f"{owner}.{expr.name}({', '.join(args)})"
@@ -1306,7 +1377,32 @@ class PythonEmitter:
         if isinstance(target_type, ClassType) and target_type.name == "StringBuilder":
             return f"{target}.{expr.name}({', '.join(args)})"
 
+        if isinstance(target_type, ClassType) and self._throwable_class(target_type.name):
+            # A caught exception's message is observable; its stack trace is
+            # not, so only the message-shaped accessors are supported.
+            if expr.name in ("getMessage", "getLocalizedMessage"):
+                return f"{target}.message"
+            if expr.name == "toString":
+                return f"{RUNTIME_ALIAS}.throwable_to_string({target})"
+            raise EmitError(
+                f"{target_type.name}.{expr.name} is not supported; stack traces "
+                f"and causes cannot be reproduced",
+                expr.origin,
+            )
+
+        if isinstance(target_type, ClassType) and target_type.name in ("List", "ArrayList"):
+            supported = {
+                "size", "isEmpty", "add", "get", "set", "contains", "indexOf",
+                "clear", "toString",
+            }
+            if expr.name not in supported:
+                raise EmitError(
+                    f"List.{expr.name} is not supported", expr.origin
+                )
+            return f"{target}.{expr.name}({', '.join(args)})"
+
         if isinstance(target_type, ClassType) and target_type.name in self._class_names:
+            args = self._pack_varargs(expr.name, expr, args)
             return self._user_object_method(target, target_type.name, expr, args)
 
         if isinstance(expr.target, This):
@@ -1371,30 +1467,85 @@ class PythonEmitter:
         abstract = [m for m in decl.methods if m.body is None]
         return abstract[0].name if len(abstract) == 1 else None
 
+    def _find_method(self, name: str) -> Method | None:
+        for decl in self.module.types:
+            for method in decl.methods:
+                if method.name == name:
+                    return method
+        return None
+
+    def _pack_varargs(self, name: str, expr: Call | StaticCall, args: list[str]) -> list[str]:
+        """Collect the trailing arguments of a varargs call into one array.
+
+        Java builds the array at the call site.  Passing the arguments through
+        individually would give the callee a different arity than it declares.
+        """
+
+        method = self._find_method(name)
+        if method is None or not method.params or not method.params[-1].is_varargs:
+            return args
+        fixed = len(method.params) - 1
+        if len(args) == len(method.params) and isinstance(
+            expr.args[-1].type, ArrayType
+        ):
+            # Already an array: Java passes it straight through.
+            return args
+        element = method.params[-1].type.element
+        element_name = element.name if isinstance(element, PrimitiveType) else "ref"
+        rest = ", ".join(args[fixed:])
+        return args[:fixed] + [
+            f"{RUNTIME_ALIAS}.array_of({element_name!r}, [{rest}])"
+        ]
+
     def _owner_of_method(self, name: str) -> str:
         for decl in self.module.types:
             if any(m.name == name and m.is_static for m in decl.methods):
                 return decl.name
         return self.module.types[0].name  # pragma: no cover - defensive
 
+    #: String methods the runtime reproduces exactly.
+    _STRING_METHODS = frozenset({
+        "length", "charAt", "substring", "indexOf", "lastIndexOf", "isEmpty",
+        "isBlank", "equals", "equalsIgnoreCase", "toUpperCase", "toLowerCase",
+        "trim", "strip", "startsWith", "endsWith", "contains", "replace",
+        "repeat", "concat", "compareTo", "hashCode", "split",
+    })
+
+    #: Characters that make a `split` argument a regex rather than a literal.
+    _REGEX_METACHARACTERS = set(".^$*+?()[]{}|\\")
+
     def _string_method(self, target: str, expr: Call, args: list[str]) -> str:
-        supported = {
-            "length",
-            "charAt",
-            "substring",
-            "indexOf",
-            "isEmpty",
-            "equals",
-            "toUpperCase",
-            "toLowerCase",
-            "trim",
-        }
-        if expr.name not in supported:
+        if expr.name not in self._STRING_METHODS:
             raise EmitError(
                 f"String.{expr.name} is not supported", expr.origin
             )
+        if expr.name == "split":
+            self._check_literal_separator(expr)
         joined = ", ".join([target] + args)
         return f"{RUNTIME_ALIAS}.JString.{expr.name}({joined})"
+
+    def _check_literal_separator(self, expr: Call) -> None:
+        """``String.split`` takes a *regex*, and the dialects do not agree.
+
+        Java and Python differ on named groups, ``\\p{...}`` classes, and
+        possessive quantifiers, so only a literal separator can be translated
+        with confidence.
+        """
+
+        if len(expr.args) != 1 or not isinstance(expr.args[0], StringLiteral):
+            raise EmitError(
+                "String.split with a non-literal or limited pattern is not "
+                "supported: it takes a regex, and Java's dialect is not "
+                "Python's",
+                expr.origin,
+            )
+        pattern = expr.args[0].value
+        if any(ch in self._REGEX_METACHARACTERS for ch in pattern):
+            raise EmitError(
+                f"String.split({pattern!r}) uses regex syntax; only a literal "
+                f"separator can be translated with the same meaning",
+                expr.origin,
+            )
 
     def _static_call(self, expr: StaticCall) -> str:
         args = [self._expr(a) for a in expr.args]
@@ -1405,12 +1556,63 @@ class PythonEmitter:
             stream = "out" if expr.owner == "System.out" else "err"
             return f"{RUNTIME_ALIAS}.System.{stream}.{expr.name}({', '.join(args)})"
 
+        if expr.owner == "Objects":
+            supported = {
+                "requireNonNull", "requireNonNullElse", "equals", "isNull",
+                "nonNull", "toString", "hash", "hashCode",
+            }
+            if expr.name not in supported:
+                raise EmitError(
+                    f"Objects.{expr.name} is not supported", expr.origin
+                )
+            return f"{RUNTIME_ALIAS}.Objects.{expr.name}({', '.join(args)})"
+
+        if expr.owner == "List":
+            if expr.name not in ("of", "copyOf"):
+                raise EmitError(f"List.{expr.name} is not supported", expr.origin)
+            return f"{RUNTIME_ALIAS}.JavaList.{expr.name}({', '.join(args)})"
+
+        if expr.owner in ("Set", "Map"):
+            # Java does not specify the iteration order of Set.of/Map.of, and
+            # randomises it per JVM run.  There is no Python structure whose
+            # iteration matches, so no translation can be correct.
+            raise EmitError(
+                f"{expr.owner}.{expr.name} has an unspecified iteration order "
+                f"that Java randomises per run; it cannot be reproduced",
+                expr.origin,
+            )
+
         if expr.owner == "Math":
+            exact = {
+                "addExact": "addExact",
+                "subtractExact": "subtractExact",
+                "multiplyExact": "multiplyExact",
+                "negateExact": "negateExact",
+            }
+            if expr.name in exact and expr.args:
+                kind = self._kind(
+                    uir.binary_promote(
+                        expr.args[0].type,
+                        expr.args[-1].type if len(expr.args) > 1 else expr.args[0].type,
+                    )
+                )
+                if kind is None:
+                    raise EmitError(
+                        f"Math.{expr.name} on a non-integral type", expr.origin
+                    )
+                return (
+                    f"{RUNTIME_ALIAS}.{exact[expr.name]}({kind!r}, {', '.join(args)})"
+                )
+            if expr.name == "toIntExact":
+                return f"{RUNTIME_ALIAS}.toIntExact({', '.join(args)})"
             if expr.name == "abs" and expr.args:
                 kind = self._kind(expr.args[0].type)
                 if kind is not None:
                     return f"{RUNTIME_ALIAS}.iabs({kind!r}, {args[0]})"
-            if expr.name not in ("abs", "max", "min", "floor", "ceil", "sqrt", "pow"):
+            if expr.name not in (
+                "abs", "max", "min", "floor", "ceil", "sqrt", "pow",
+                "round", "signum", "floorDiv", "floorMod", "hypot",
+            ):
                 raise EmitError(f"Math.{expr.name} is not supported", expr.origin)
             return f"{RUNTIME_ALIAS}.Math.{expr.name}({', '.join(args)})"
 
@@ -1423,6 +1625,7 @@ class PythonEmitter:
             return f"{RUNTIME_ALIAS}.JString.valueOf({', '.join(args)})"
 
         if expr.owner in self._class_names:
+            args = self._pack_varargs(expr.name, expr, args)
             return f"{expr.owner}.{expr.name}({', '.join(args)})"
 
         raise EmitError(

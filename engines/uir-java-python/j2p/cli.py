@@ -115,6 +115,7 @@ def cmd_survey(args: argparse.Namespace) -> int:
     parsed = 0
     refused: dict[str, int] = {}
     unparsed = 0
+    crashed: list[dict] = []
     emitted = 0
     emit_refused: dict[str, int] = {}
     per_file: list[dict] = []
@@ -139,6 +140,15 @@ def cmd_survey(args: argparse.Namespace) -> int:
             record.update(stage="parse", outcome="UNPARSED", reason="recursion")
             per_file.append(record)
             continue
+        except Exception as exc:  # noqa: BLE001 - see below
+            # An unexpected exception is a defect in the front end, not a
+            # property of the file.  It is counted separately and reported
+            # rather than aborting the survey, so one bad file cannot hide the
+            # measurement for the other 883.
+            crashed.append({"file": record["file"], "error": repr(exc)[:200]})
+            record.update(stage="parse", outcome="CRASHED", reason=type(exc).__name__)
+            per_file.append(record)
+            continue
         parsed += 1
         try:
             PythonEmitter(module).emit()
@@ -153,6 +163,11 @@ def cmd_survey(args: argparse.Namespace) -> int:
             record.update(stage="emit", outcome="REFUSED", reason="recursion")
             per_file.append(record)
             continue
+        except Exception as exc:  # noqa: BLE001 - a defect, reported not hidden
+            crashed.append({"file": record["file"], "error": repr(exc)[:200]})
+            record.update(stage="emit", outcome="CRASHED", reason=type(exc).__name__)
+            per_file.append(record)
+            continue
         emitted += 1
         record.update(stage="emit", outcome="OK", digest=uir.digest(module))
         per_file.append(record)
@@ -162,6 +177,8 @@ def cmd_survey(args: argparse.Namespace) -> int:
         "files_seen": len(files),
         "parsed_to_uir": parsed,
         "unparsed": unparsed,
+        "crashed": len(crashed),
+        "crash_detail": crashed[:20],
         "parse_refusals": dict(sorted(refused.items(), key=lambda kv: -kv[1])),
         "emitted_python": emitted,
         "emit_refusals": dict(sorted(emit_refused.items(), key=lambda kv: -kv[1])),

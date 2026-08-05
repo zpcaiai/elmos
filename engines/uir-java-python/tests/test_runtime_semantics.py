@@ -178,6 +178,96 @@ class StringApiTest(unittest.TestCase):
         self.assertEqual(rt.JString.trim(" x "), " x")
 
 
+class LibrarySemanticsTest(unittest.TestCase):
+    """Standard-library methods whose Java behaviour differs from Python's."""
+
+    def test_math_round_is_floor_of_x_plus_half_not_bankers(self):
+        # Python's round(2.5) is 2 and round(0.5) is 0.
+        self.assertEqual(rt.Math.round(2.5), 3)
+        self.assertEqual(rt.Math.round(0.5), 1)
+        self.assertEqual(rt.Math.round(-2.5), -2)
+        self.assertEqual(rt.Math.round(math.nan), 0)
+
+    def test_exact_arithmetic_raises_instead_of_wrapping(self):
+        with self.assertRaises(rt.ArithmeticExceptionJ) as ctx:
+            rt.addExact("int", rt.INT_MAX, 1)
+        self.assertEqual(ctx.exception.message, "integer overflow")
+        with self.assertRaises(rt.ArithmeticExceptionJ):
+            rt.multiplyExact("int", 2 ** 20, 2 ** 20)
+        self.assertEqual(rt.addExact("long", rt.INT_MAX, 1), 2 ** 31)
+
+    def test_floor_div_and_mod_differ_from_the_operators(self):
+        # `/` truncates toward zero; floorDiv rounds toward -infinity.
+        self.assertEqual(rt.idiv("int", -7, 2), -3)
+        self.assertEqual(rt.Math.floorDiv(-7, 2), -4)
+        self.assertEqual(rt.irem("int", -7, 2), -1)
+        self.assertEqual(rt.Math.floorMod(-7, 2), 1)
+
+    def test_string_hash_code_is_the_31_based_algorithm(self):
+        self.assertEqual(rt.JString.hashCode(""), 0)
+        self.assertEqual(rt.JString.hashCode("hello"), 99162322)
+        # It wraps: a long string must stay inside the int range.
+        self.assertTrue(rt.INT_MIN <= rt.JString.hashCode("x" * 100) <= rt.INT_MAX)
+
+    def test_compare_to_returns_the_character_difference(self):
+        # Not merely the sign: "a" vs "A" is 32.
+        self.assertEqual(rt.JString.compareTo("a", "A"), 32)
+        self.assertEqual(rt.JString.compareTo("abc", "abcd"), -1)
+        self.assertEqual(rt.JString.compareTo("abc", "abc"), 0)
+
+    def test_split_drops_trailing_empty_strings(self):
+        # Python's "a,b,,".split(",") has four elements.
+        self.assertEqual(list(rt.JString.split("a,b,,", ",")), ["a", "b"])
+        self.assertEqual(list(rt.JString.split("no", ",")), ["no"])
+        self.assertEqual(list(rt.JString.split(",a", ",")), ["", "a"])
+
+    def test_is_blank_uses_javas_whitespace_not_pythons(self):
+        self.assertTrue(rt.JString.isBlank(" \t\n"))
+        self.assertTrue(rt.JString.isBlank(""))
+        # U+00A0 is whitespace to Python and not to Java.
+        self.assertFalse(rt.JString.isBlank("\u00a0"))
+        self.assertTrue("\u00a0".isspace())
+
+    def test_integer_hex_string_is_unsigned(self):
+        self.assertEqual(rt.Integer.toHexString(-1), "ffffffff")
+        self.assertEqual(rt.Integer.bitCount(-1), 32)
+
+    def test_require_non_null_raises_with_the_message(self):
+        with self.assertRaises(rt.NullPointerExceptionJ) as ctx:
+            rt.Objects.requireNonNull(None, "boom")
+        self.assertEqual(ctx.exception.message, "boom")
+        self.assertEqual(rt.Objects.requireNonNull(5), 5)
+
+    def test_objects_hash_is_the_31_based_array_hash(self):
+        self.assertEqual(rt.Objects.hash(1, 2, 3), 30817)
+        self.assertEqual(rt.Objects.hash(), 1)
+
+    def test_list_of_is_immutable_and_rejects_nulls(self):
+        values = rt.JavaList.of(1, 2, 3)
+        with self.assertRaises(rt.UnsupportedOperationExceptionJ):
+            values.add(4)
+        with self.assertRaises(rt.NullPointerExceptionJ):
+            rt.JavaList.of(1, None)
+
+    def test_list_index_out_of_range_raises_the_java_exception(self):
+        values = rt.JavaList.of(1)
+        with self.assertRaises(rt.IndexOutOfBoundsExceptionJ):
+            values.get(1)
+        with self.assertRaises(rt.IndexOutOfBoundsExceptionJ):
+            values.get(-1)
+
+    def test_array_list_grows_and_prints_like_java(self):
+        items = rt.JArrayList()
+        items.add(1)
+        items.add(2)
+        self.assertEqual(items.size(), 2)
+        self.assertEqual(items.toString(), "[1, 2]")
+
+    def test_throw_helper_raises_from_expression_position(self):
+        with self.assertRaises(rt.IllegalStateExceptionJ):
+            rt.throw(rt.IllegalStateExceptionJ("x"))
+
+
 class ThrowableTest(unittest.TestCase):
     def test_every_mapped_name_is_a_java_throwable(self):
         for name, cls in rt.EXCEPTION_BY_SIMPLE_NAME.items():
