@@ -8,7 +8,7 @@ description: "转换表、列、主外键、唯一、检查、默认值和依赖
 
 - Invoke this repository Skill as `$pm-b20-table-and-constraint-converter`.
 - Immutable source identity: `table-and-constraint-converter` in `precision-migration-b01-44` (B20).
-- Runtime adapter: `database-and-data-route`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `database-and-data-route`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b20-table-and-constraint-converter`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

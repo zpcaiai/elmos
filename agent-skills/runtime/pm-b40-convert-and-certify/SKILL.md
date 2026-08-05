@@ -8,7 +8,7 @@ description: "输入源仓库与目标技术栈，执行评估、转换、验证
 
 - Invoke this repository Skill as `$pm-b40-convert-and-certify`.
 - Immutable source identity: `convert-and-certify` in `precision-migration-b01-44` (B40).
-- Runtime adapter: `skill-and-project-synthesis`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `skill-and-project-synthesis`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b40-convert-and-certify`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

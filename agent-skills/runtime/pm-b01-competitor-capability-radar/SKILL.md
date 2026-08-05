@@ -8,7 +8,7 @@ description: "持续跟踪竞争产品、开源项目和云平台在评估、转
 
 - Invoke this repository Skill as `$pm-b01-competitor-capability-radar`.
 - Immutable source identity: `competitor-capability-radar` in `precision-migration-b01-44` (B01).
-- Runtime adapter: `assessment-and-target-planning`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `assessment-and-target-planning`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b01-competitor-capability-radar`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

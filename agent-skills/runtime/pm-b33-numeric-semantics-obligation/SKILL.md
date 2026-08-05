@@ -8,7 +8,7 @@ description: "生成位宽、溢出、精度、舍入、NaN 和边界语义保�
 
 - Invoke this repository Skill as `$pm-b33-numeric-semantics-obligation`.
 - Immutable source identity: `numeric-semantics-obligation` in `precision-migration-b01-44` (B33).
-- Runtime adapter: `formal-and-advanced-verification`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `formal-and-advanced-verification`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b33-numeric-semantics-obligation`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

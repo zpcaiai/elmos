@@ -1,0 +1,29 @@
+{
+  "expressions": [
+    "name",
+    "literal",
+    "binary"
+  ],
+  "fail_closed": true,
+  "operators": [
+    "+",
+    "-",
+    "*",
+    "/",
+    "%",
+    "<",
+    "<=",
+    ">",
+    ">=",
+    "==",
+    "!=",
+    "&&",
+    "||"
+  ],
+  "profile": "typed-pure-function-v1",
+  "schema_version": 1,
+  "statements": [
+    "if",
+    "return"
+  ]
+}

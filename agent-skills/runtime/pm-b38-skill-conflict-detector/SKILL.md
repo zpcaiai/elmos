@@ -8,7 +8,7 @@ description: "发现领域、Schema、权限、状态、资源、路由和依赖
 
 - Invoke this repository Skill as `$pm-b38-skill-conflict-detector`.
 - Immutable source identity: `skill-conflict-detector` in `precision-migration-b01-44` (B38).
-- Runtime adapter: `skill-and-project-synthesis`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `skill-and-project-synthesis`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b38-skill-conflict-detector`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

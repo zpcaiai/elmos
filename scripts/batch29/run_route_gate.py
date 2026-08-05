@@ -88,6 +88,22 @@ def validate_evidence_refs(
             failures.append(f"source-map coverage is not 1: {reference}")
 
 
+def validate_negative_refs(failures: list[str], route: Path, evidence: dict[str, Any]) -> None:
+    references = evidence.get("negative_runs")
+    if not isinstance(references, list) or not references:
+        failures.append("negative evidence runs are empty")
+        return
+    for reference in references:
+        if not isinstance(reference, str) or not (route / reference).is_file():
+            failures.append(f"negative evidence run is missing: {reference}")
+            continue
+        result = load(route / reference)
+        if result.get("status") != "PASSED" or result.get("expected_result") != "BLOCKED":
+            failures.append(f"negative evidence did not fail closed: {reference}")
+        if result.get("test_integrity") != "PRESERVED":
+            failures.append(f"negative test integrity is invalid: {reference}")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("route_dir")
@@ -141,6 +157,7 @@ def main() -> int:
         validate_independent_corpus(failures, route, "holdout")
         validate_independent_corpus(failures, route, "real-repository")
         validate_evidence_refs(failures, route, evidence)
+        validate_negative_refs(failures, route, evidence)
 
     gate_results = certification.get("gate_results", {})
     if status == "limited":

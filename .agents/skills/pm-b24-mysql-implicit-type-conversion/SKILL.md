@@ -8,7 +8,7 @@ description: "检测并消除 MySQL 宽松隐式转换、零日期和比较差�
 
 - Invoke this repository Skill as `$pm-b24-mysql-implicit-type-conversion`.
 - Immutable source identity: `mysql-implicit-type-conversion` in `precision-migration-b01-44` (B24).
-- Runtime adapter: `database-and-data-route`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `database-and-data-route`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b24-mysql-implicit-type-conversion`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

@@ -8,7 +8,7 @@ description: "维护离线可验证的编译器、Runtime、数据库、浏览�
 
 - Invoke this repository Skill as `$pm-b44-offline-toolchain-registry`.
 - Immutable source identity: `offline-toolchain-registry` in `precision-migration-b01-44` (B44).
-- Runtime adapter: `enterprise-private-commercialization`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `enterprise-private-commercialization`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b44-offline-toolchain-registry`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

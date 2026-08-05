@@ -8,7 +8,7 @@ description: "为 Parser、协议、接口、序列化和动态输入生成 Fuzz
 
 - Invoke this repository Skill as `$pm-b29-fuzz-test-generator`.
 - Immutable source identity: `fuzz-test-generator` in `precision-migration-b01-44` (B29).
-- Runtime adapter: `differential-test-and-repair`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `differential-test-and-repair`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b29-fuzz-test-generator`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

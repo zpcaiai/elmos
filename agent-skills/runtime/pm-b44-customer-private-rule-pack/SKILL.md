@@ -8,7 +8,7 @@ description: "安全开发、测试、签名、部署和升级客户私有转换
 
 - Invoke this repository Skill as `$pm-b44-customer-private-rule-pack`.
 - Immutable source identity: `customer-private-rule-pack` in `precision-migration-b01-44` (B44).
-- Runtime adapter: `enterprise-private-commercialization`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `enterprise-private-commercialization`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b44-customer-private-rule-pack`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

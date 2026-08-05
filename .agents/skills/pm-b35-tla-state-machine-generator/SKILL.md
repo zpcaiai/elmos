@@ -8,7 +8,7 @@ description: "从业务/协议 IR 生成 TLA+ 状态机、安全性和活性性�
 
 - Invoke this repository Skill as `$pm-b35-tla-state-machine-generator`.
 - Immutable source identity: `tla-state-machine-generator` in `precision-migration-b01-44` (B35).
-- Runtime adapter: `formal-and-advanced-verification`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `formal-and-advanced-verification`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b35-tla-state-machine-generator`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

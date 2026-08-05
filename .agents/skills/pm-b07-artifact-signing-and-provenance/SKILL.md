@@ -8,7 +8,7 @@ description: "为源码、规则、模型输出、构建产物和证据生成签
 
 - Invoke this repository Skill as `$pm-b07-artifact-signing-and-provenance`.
 - Immutable source identity: `artifact-signing-and-provenance` in `precision-migration-b01-44` (B07).
-- Runtime adapter: `semantic-recovery-and-ir`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `semantic-recovery-and-ir`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b07-artifact-signing-and-provenance`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

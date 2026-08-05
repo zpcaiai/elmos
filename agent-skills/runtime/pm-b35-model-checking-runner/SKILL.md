@@ -8,7 +8,7 @@ description: "运行状态空间探索、对称约简、边界配置和反例提
 
 - Invoke this repository Skill as `$pm-b35-model-checking-runner`.
 - Immutable source identity: `model-checking-runner` in `precision-migration-b01-44` (B35).
-- Runtime adapter: `formal-and-advanced-verification`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `formal-and-advanced-verification`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b35-model-checking-runner`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

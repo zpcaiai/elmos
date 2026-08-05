@@ -8,7 +8,7 @@ description: "生成 API、领域、数据、消息、任务、安全、测试�
 
 - Invoke this repository Skill as `$pm-b39-backend-generator`.
 - Immutable source identity: `backend-generator` in `precision-migration-b01-44` (B39).
-- Runtime adapter: `skill-and-project-synthesis`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `skill-and-project-synthesis`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b39-backend-generator`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

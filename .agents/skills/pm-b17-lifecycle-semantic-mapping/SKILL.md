@@ -8,7 +8,7 @@ description: "映射 Vue、React、小程序、ArkUI 和 Flutter 生命周期及
 
 - Invoke this repository Skill as `$pm-b17-lifecycle-semantic-mapping`.
 - Immutable source identity: `lifecycle-semantic-mapping` in `precision-migration-b01-44` (B17).
-- Runtime adapter: `frontend-client-route`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `frontend-client-route`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b17-lifecycle-semantic-mapping`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

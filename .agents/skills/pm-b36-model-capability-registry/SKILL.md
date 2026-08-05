@@ -8,7 +8,7 @@ description: "登记模型版本、上下文、工具能力、部署方式、成
 
 - Invoke this repository Skill as `$pm-b36-model-capability-registry`.
 - Immutable source identity: `model-capability-registry` in `precision-migration-b01-44` (B36).
-- Runtime adapter: `model-routing-and-agent-harness`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `model-routing-and-agent-harness`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b36-model-capability-registry`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

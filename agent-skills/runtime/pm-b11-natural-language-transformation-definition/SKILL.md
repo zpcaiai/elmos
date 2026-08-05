@@ -8,7 +8,7 @@ description: "将目标、范围、前置条件、例外、禁止项和验收要
 
 - Invoke this repository Skill as `$pm-b11-natural-language-transformation-definition`.
 - Immutable source identity: `natural-language-transformation-definition` in `precision-migration-b01-44` (B11).
-- Runtime adapter: `semantic-recovery-and-ir`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `semantic-recovery-and-ir`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b11-natural-language-transformation-definition`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

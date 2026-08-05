@@ -8,7 +8,7 @@ description: "监控框架生命周期、废弃 API、运行时支持和迁移�
 
 - Invoke this repository Skill as `$pm-b43-framework-obsolescence-monitor`.
 - Immutable source identity: `framework-obsolescence-monitor` in `precision-migration-b01-44` (B43).
-- Runtime adapter: `continuous-modernization-learning`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `continuous-modernization-learning`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b43-framework-obsolescence-monitor`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

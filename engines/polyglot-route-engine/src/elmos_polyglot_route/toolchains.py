@@ -103,6 +103,29 @@ def _typescript() -> ExactToolchain:
     return ExactToolchain("typescript", "5.9.2 / Node 26.0.0", node, str(tsc))
 
 
+def _go() -> ExactToolchain:
+    executable = shutil.which("go")
+    if not executable:
+        raise RouteError("EXACT_TOOLCHAIN_UNAVAILABLE:go")
+    observed = _output([executable, "version"])
+    expected = "go version go1.25.0 darwin/arm64"
+    if observed != expected:
+        raise RouteError(f"EXACT_TOOLCHAIN_MISMATCH:go:expected={expected}:observed={observed}")
+    return ExactToolchain("go", "1.25.0", executable)
+
+
+def _rust() -> ExactToolchain:
+    executable = shutil.which("rustc")
+    cargo = shutil.which("cargo")
+    if not executable or not cargo:
+        raise RouteError("EXACT_TOOLCHAIN_UNAVAILABLE:rust")
+    observed = _output([executable, "--version"])
+    expected = "rustc 1.89.0 (29483883e 2025-08-04)"
+    if observed != expected:
+        raise RouteError(f"EXACT_TOOLCHAIN_MISMATCH:rust:expected={expected}:observed={observed}")
+    return ExactToolchain("rust", "1.89.0", executable, cargo)
+
+
 #: The clang and Swift builds ship with Xcode / the Linux toolchain rather
 #: than being downloadable at a fixed URL the way the JDK and .NET SDK are, so
 #: the exact build differs per machine. These stay pinned -- the engine still
@@ -171,6 +194,8 @@ def exact_toolchain(language: Language) -> ExactToolchain:
         "python": _python,
         "csharp": _csharp,
         "typescript": _typescript,
+        "go": _go,
+        "rust": _rust,
         "cpp": _cpp,
         "objc": _objc,
         "swift": _swift,

@@ -8,7 +8,7 @@ description: "迁移物化视图、并发刷新、唯一索引和刷新调度. P
 
 - Invoke this repository Skill as `$pm-b25-postgresql-materialized-view`.
 - Immutable source identity: `postgresql-materialized-view` in `precision-migration-b01-44` (B25).
-- Runtime adapter: `database-and-data-route`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `database-and-data-route`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b25-postgresql-materialized-view`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

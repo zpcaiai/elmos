@@ -8,7 +8,7 @@ description: "将 React Class 组件迁移为函数组件与 Hooks，并验证�
 
 - Invoke this repository Skill as `$pm-b18-react-class-to-hooks-modernization-pack`.
 - Immutable source identity: `react-class-to-hooks-modernization-pack` in `precision-migration-b01-44` (B18).
-- Runtime adapter: `frontend-client-route`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `frontend-client-route`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b18-react-class-to-hooks-modernization-pack`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

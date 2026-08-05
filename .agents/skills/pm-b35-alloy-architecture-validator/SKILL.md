@@ -8,7 +8,7 @@ description: "用 Alloy 验证模块、权限、所有权、Schema 和架构关�
 
 - Invoke this repository Skill as `$pm-b35-alloy-architecture-validator`.
 - Immutable source identity: `alloy-architecture-validator` in `precision-migration-b01-44` (B35).
-- Runtime adapter: `formal-and-advanced-verification`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `formal-and-advanced-verification`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b35-alloy-architecture-validator`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

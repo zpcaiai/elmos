@@ -8,7 +8,7 @@ description: "设计停机、低停机、双写、切流、回滚和数据收敛
 
 - Invoke this repository Skill as `$pm-b20-cutover-and-rollback-plan`.
 - Immutable source identity: `cutover-and-rollback-plan` in `precision-migration-b01-44` (B20).
-- Runtime adapter: `database-and-data-route`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `database-and-data-route`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b20-cutover-and-rollback-plan`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

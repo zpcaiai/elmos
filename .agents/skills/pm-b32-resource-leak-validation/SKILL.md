@@ -8,7 +8,7 @@ description: "检测线程、任务、连接、文件、内存、句柄、订阅
 
 - Invoke this repository Skill as `$pm-b32-resource-leak-validation`.
 - Immutable source identity: `resource-leak-validation` in `precision-migration-b01-44` (B32).
-- Runtime adapter: `differential-test-and-repair`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `differential-test-and-repair`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b32-resource-leak-validation`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

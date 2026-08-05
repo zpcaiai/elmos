@@ -8,7 +8,7 @@ description: "基于业务形态、非功能需求、团队能力和生态成熟
 
 - Invoke this repository Skill as `$pm-b04-target-framework-selector`.
 - Immutable source identity: `target-framework-selector` in `precision-migration-b01-44` (B04).
-- Runtime adapter: `assessment-and-target-planning`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `assessment-and-target-planning`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b04-target-framework-selector`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

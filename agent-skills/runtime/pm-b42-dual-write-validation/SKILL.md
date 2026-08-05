@@ -8,7 +8,7 @@ description: "验证源目标双写一致性、冲突、顺序、补偿和回收
 
 - Invoke this repository Skill as `$pm-b42-dual-write-validation`.
 - Immutable source identity: `dual-write-validation` in `precision-migration-b01-44` (B42).
-- Runtime adapter: `shadow-canary-cutover`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `shadow-canary-cutover`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b42-dual-write-validation`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

@@ -8,7 +8,7 @@ description: "把类继承、模板方法和基类状态转换为组合、嵌入
 
 - Invoke this repository Skill as `$pm-b15-inheritance-to-composition-lowering`.
 - Immutable source identity: `inheritance-to-composition-lowering` in `precision-migration-b01-44` (B15).
-- Runtime adapter: `directed-backend-route`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `directed-backend-route`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b15-inheritance-to-composition-lowering`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

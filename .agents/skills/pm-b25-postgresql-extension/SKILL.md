@@ -8,7 +8,7 @@ description: "盘点并迁移 Extension、版本、对象、权限、二进制�
 
 - Invoke this repository Skill as `$pm-b25-postgresql-extension`.
 - Immutable source identity: `postgresql-extension` in `precision-migration-b01-44` (B25).
-- Runtime adapter: `database-and-data-route`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `database-and-data-route`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b25-postgresql-extension`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

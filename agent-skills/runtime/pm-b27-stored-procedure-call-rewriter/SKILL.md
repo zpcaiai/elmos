@@ -8,7 +8,7 @@ description: "迁移过程调用、IN/OUT 参数、结果集、返回码、事�
 
 - Invoke this repository Skill as `$pm-b27-stored-procedure-call-rewriter`.
 - Immutable source identity: `stored-procedure-call-rewriter` in `precision-migration-b01-44` (B27).
-- Runtime adapter: `database-and-data-route`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `database-and-data-route`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b27-stored-procedure-call-rewriter`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

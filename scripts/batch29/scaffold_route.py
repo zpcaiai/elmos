@@ -5,7 +5,7 @@ import argparse
 import json
 from pathlib import Path
 
-LANGUAGES = {"java", "csharp", "python", "typescript"}
+LANGUAGES = {"java", "csharp", "go", "rust", "python", "typescript"}
 
 
 def main() -> int:

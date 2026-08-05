@@ -81,6 +81,28 @@ def analyze(source: Path, language: Language, function_name: str) -> SemanticIR:
             [toolchain.executable, "run", "--project", str(project), "--", str(source), function_name],
             cwd=REPOSITORY_ROOT,
         )
+    elif language == "go":
+        helper = ENGINE_ROOT / "native" / "go" / "analyzer.go"
+        value = _run([toolchain.executable, "run", str(helper), "--", str(source), function_name], cwd=ENGINE_ROOT)
+    elif language == "rust":
+        package = ENGINE_ROOT / "native" / "rust"
+        assert toolchain.auxiliary is not None
+        value = _run(
+            [
+                toolchain.auxiliary,
+                "run",
+                "--quiet",
+                "--offline",
+                "--locked",
+                "--manifest-path",
+                str(package / "Cargo.toml"),
+                "--",
+                str(source),
+                function_name,
+            ],
+            cwd=package,
+            timeout=900,
+        )
     else:
         frontend = REPOSITORY_ROOT / "engines" / "frontend-client-engine"
         cli = frontend / "dist" / "src" / "polyglot-cli.js"

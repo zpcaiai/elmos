@@ -8,7 +8,7 @@ description: "从 Skills、非功能要求和部署目标生成模块、边界�
 
 - Invoke this repository Skill as `$pm-b39-architecture-blueprint-generator`.
 - Immutable source identity: `architecture-blueprint-generator` in `precision-migration-b01-44` (B39).
-- Runtime adapter: `skill-and-project-synthesis`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `skill-and-project-synthesis`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b39-architecture-blueprint-generator`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

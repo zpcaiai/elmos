@@ -8,7 +8,7 @@ description: "生成迁移后权限集合不扩大、拒绝规则不弱化的义
 
 - Invoke this repository Skill as `$pm-b33-permission-non-expansion-obligation`.
 - Immutable source identity: `permission-non-expansion-obligation` in `precision-migration-b01-44` (B33).
-- Runtime adapter: `formal-and-advanced-verification`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `formal-and-advanced-verification`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b33-permission-non-expansion-obligation`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

@@ -8,7 +8,7 @@ description: "在相同输入和初始数据下比较应用+数据库的输出�
 
 - Invoke this repository Skill as `$pm-b27-application-database-dual-validation`.
 - Immutable source identity: `application-database-dual-validation` in `precision-migration-b01-44` (B27).
-- Runtime adapter: `database-and-data-route`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `database-and-data-route`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b27-application-database-dual-validation`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

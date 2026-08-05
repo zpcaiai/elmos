@@ -8,7 +8,7 @@ description: "生成用户端页面、状态、路由、API、样式、测试和
 
 - Invoke this repository Skill as `$pm-b39-frontend-generator`.
 - Immutable source identity: `frontend-generator` in `precision-migration-b01-44` (B39).
-- Runtime adapter: `skill-and-project-synthesis`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `skill-and-project-synthesis`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b39-frontend-generator`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

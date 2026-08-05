@@ -8,7 +8,7 @@ description: "表达表读写、事务、锁、隔离级别、触发器和过程
 
 - Invoke this repository Skill as `$pm-b09-database-effect-model`.
 - Immutable source identity: `database-effect-model` in `precision-migration-b01-44` (B09).
-- Runtime adapter: `semantic-recovery-and-ir`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `semantic-recovery-and-ir`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b09-database-effect-model`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

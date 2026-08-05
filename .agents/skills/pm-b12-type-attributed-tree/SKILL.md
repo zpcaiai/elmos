@@ -8,7 +8,7 @@ description: "为无损源码树附加符号、类型、调用和语义归因. P
 
 - Invoke this repository Skill as `$pm-b12-type-attributed-tree`.
 - Immutable source identity: `type-attributed-tree` in `precision-migration-b01-44` (B12).
-- Runtime adapter: `semantic-recovery-and-ir`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `semantic-recovery-and-ir`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b12-type-attributed-tree`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

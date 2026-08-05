@@ -8,7 +8,7 @@ description: "评估某项转换或验证能力被基础模型、云厂商或开
 
 - Invoke this repository Skill as `$pm-b01-platform-commoditization-risk`.
 - Immutable source identity: `platform-commoditization-risk` in `precision-migration-b01-44` (B01).
-- Runtime adapter: `assessment-and-target-planning`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `assessment-and-target-planning`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b01-platform-commoditization-risk`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

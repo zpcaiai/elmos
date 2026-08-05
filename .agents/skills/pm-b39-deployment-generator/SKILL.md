@@ -8,7 +8,7 @@ description: "生成容器、编排、配置、密钥、数据库迁移、环境
 
 - Invoke this repository Skill as `$pm-b39-deployment-generator`.
 - Immutable source identity: `deployment-generator` in `precision-migration-b01-44` (B39).
-- Runtime adapter: `skill-and-project-synthesis`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `skill-and-project-synthesis`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b39-deployment-generator`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

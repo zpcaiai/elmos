@@ -2,8 +2,8 @@
   "schema_version": 1,
   "pack_key": "precision-migration-b01-44-runtime",
   "status": "PASSED",
-  "started_at": "2026-08-01T08:10:54.930195Z",
-  "completed_at": "2026-08-01T08:10:57.720975Z",
+  "started_at": "2026-08-05T09:38:55.068985Z",
+  "completed_at": "2026-08-05T09:39:14.551526Z",
   "executor": "local-engineering-runner",
   "independent_verifier": "NOT_RUN",
   "environment": {
@@ -37,8 +37,29 @@
       ],
       "exit_code": 0,
       "raw_evidence": "raw/runtime-tests.txt",
-      "digest": "sha256:7925188c7067e61941b584e7a1b113deeeeaf2673f8492a65692184fdc669219",
-      "size_bytes": 5560
+      "digest": "sha256:5f439b7e40a8314c32061d321f1dc49e35e7bc116a7ba538ba7fb65fdc4a4fe6",
+      "size_bytes": 6154
+    },
+    "contract_qualification": {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/precision_migration/qualify_contracts.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "raw_evidence": "raw/contract-qualification.txt",
+      "digest": "sha256:6e2dec6a88cda985821a512b6e65a1a5c5dff0721d269b6664364354a229fe26",
+      "size_bytes": 178
+    },
+    "batch16_routes": {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/precision_migration/validate_b16_routes.py"
+      ],
+      "exit_code": 0,
+      "raw_evidence": "raw/batch16-routes.txt",
+      "digest": "sha256:42171e2d784a4cd8511dc56554ced57c0d56cddef2d9a98cbab0f65fb2a4951f",
+      "size_bytes": 306
     },
     "coverage_matrix": {
       "command": [
@@ -52,11 +73,11 @@
       "size_bytes": 274
     }
   },
-  "test_count": 31,
+  "test_count": 34,
   "negative_corpus": "corpus/negative/cases.json",
-  "holdout_status": "NOT_RUN",
-  "representative_workload_status": "NOT_RUN",
+  "holdout_status": "PASSED_LOCAL_FOR_B16_30_OF_587; OTHER_DOMAIN_HOLDOUT_NOT_RUN",
+  "representative_workload_status": "PASSED_LOCAL_FOR_B16_30_OF_587; CUSTOMER_WORKLOAD_NOT_RUN",
   "external_evidence_status": "NOT_RUN",
   "production_certification": "NOT_CERTIFIED",
-  "result_digest": "sha256:62b3492383129b86a8e7e34a84dec856ea89dfe631ac613caf2b5b7cc06ef747"
+  "result_digest": "sha256:dd612cf6627f3d910e96a9b77b2406c9c2f0c1c33ffff5ab0ffdef19a09bf3cc"
 }

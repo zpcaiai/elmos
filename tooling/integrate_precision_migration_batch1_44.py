@@ -17,6 +17,7 @@ import io
 import json
 import re
 import shutil
+import sys
 import tempfile
 from collections import Counter, defaultdict
 from pathlib import Path
@@ -26,12 +27,17 @@ import yaml
 
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from scripts.precision_migration.contracts import compile_contract  # noqa: E402
 SOURCE = ROOT / "skills" / "precision-migration-skills-batch-01-44"
 RUNTIME_ROOT = ROOT / "agent-skills" / "runtime"
 WORKSPACE_SKILL_ROOT = ROOT / ".agents" / "skills"
 DOC_ROOT = ROOT / "docs" / "precision-migration-b01-44"
 INSTALL_MANIFEST = DOC_ROOT / "installed-manifest.json"
 ADAPTER_REGISTRY = DOC_ROOT / "adapter-registry.json"
+EXECUTABLE_CONTRACTS = DOC_ROOT / "executable-contracts.json"
 WEB_CATALOG = (
     ROOT / "apps" / "web-console" / "app" / "lib" / "precisionMigrationCatalog.generated.ts"
 )
@@ -134,6 +140,7 @@ def runtime_name(source_name: str, batch: int | None, kind: str) -> str:
 
 
 def binding_for_record(batch: int | None, source_name: str, kind: str) -> dict[str, Any]:
+    secrets_permission = "deny"
     if batch is None:
         adapter = "precision-migration-orchestrator"
         surfaces = ["scripts/precision_migration/runtime.py", "scripts/precision_migration/adapters.py"]
@@ -192,21 +199,37 @@ def binding_for_record(batch: int | None, source_name: str, kind: str) -> dict[s
         supported_modes = ["assess"]
         surfaces = [*surfaces, "scripts/precision_migration/adapters.py"]
     elif batch == 16 and route_path.is_file():
-        handler_id = "batch29-route-validator-v1"
-        handler_entrypoint = "scripts.precision_migration.adapters:execute_batch29_route_validation"
-        supported_modes = ["validate", "certify"]
+        handler_id = f"batch29-route-executor-v1:{route_key}"
+        handler_entrypoint = "scripts.precision_migration.adapters:execute_batch29_route"
+        supported_modes = ["transform", "validate", "certify"]
         surfaces = [*surfaces, f"routes/{route_key}/route.json"]
     elif batch == 41:
-        handler_id = "precision-evidence-gate-v1"
-        handler_entrypoint = "scripts.precision_migration.adapters:execute_evidence_gate"
+        b41_functions = {
+            "evidence-manifest": "execute_evidence_manifest",
+            "conversion-provenance": "execute_conversion_provenance",
+            "rule-proof-certificate": "execute_rule_proof_certificate",
+            "module-equivalence-certificate": "execute_module_equivalence_certificate",
+            "runtime-evidence-package": "execute_runtime_evidence_package",
+            "semantic-loss-report": "execute_semantic_loss_report",
+            "unresolved-obligation-report": "execute_unresolved_obligation_report",
+            "release-gate-engine": "execute_release_gate",
+            "correctness-level-classifier": "execute_correctness_classifier",
+            "certificate-signing": "execute_certificate_signing",
+        }
+        function = b41_functions[source_name]
+        handler_id = f"b41-{source_name}-v1"
+        handler_entrypoint = f"scripts.precision_migration.b41:{function}"
         supported_modes = ["validate", "certify"]
-        surfaces = [*surfaces, "scripts/precision_migration/trust.py"]
+        surfaces = [*surfaces, "scripts/precision_migration/trust.py", "scripts/precision_migration/b41.py"]
+        if source_name == "certificate-signing":
+            secrets_permission = "secret-reference-only"
     else:
-        handler_id = "contract-only-v1"
-        handler_entrypoint = "scripts.precision_migration.adapters:explain_missing_adapter"
-        supported_modes = []
+        handler_id = f"precision-skill-v1:{source_name}"
+        handler_entrypoint = "scripts.precision_migration.adapters:execute_skill_contract"
+        supported_modes = modes_for_batch(batch)
+        surfaces = [*surfaces, "scripts/precision_migration/contracts.py"]
     missing = [path for path in surfaces if not (ROOT / path).exists()]
-    declared = handler_id != "contract-only-v1" and not missing
+    declared = not missing
     return {
         "adapter": adapter,
         "binding_state": "DECLARED" if declared else "UNAVAILABLE",
@@ -219,7 +242,7 @@ def binding_for_record(batch: int | None, source_name: str, kind: str) -> dict[s
             "source": "read-only",
             "output": "dedicated-directory",
             "network": "deny",
-            "secrets": "deny",
+            "secrets": secrets_permission,
             "shell": "deny-repository-content",
         },
         "repository_surfaces": surfaces,
@@ -229,6 +252,28 @@ def binding_for_record(batch: int | None, source_name: str, kind: str) -> dict[s
             "holdout, external, customer, production, or certification evidence."
         ),
     }
+
+
+def modes_for_batch(batch: int | None) -> list[str]:
+    if batch is None:
+        return ["assess"]
+    if batch <= 4:
+        return ["assess"]
+    if batch <= 10:
+        return ["assess", "validate"]
+    if batch <= 27:
+        return ["transform", "validate", "repair"]
+    if batch <= 35:
+        return ["validate", "repair", "certify"]
+    if batch <= 40:
+        return ["assess", "transform", "validate"]
+    if batch == 41:
+        return ["validate", "certify"]
+    if batch == 42:
+        return ["validate", "repair", "certify"]
+    if batch == 43:
+        return ["assess", "validate", "repair"]
+    return ["assess", "validate", "certify"]
 
 
 def source_records() -> list[dict[str, Any]]:
@@ -575,10 +620,26 @@ def build_expected(staging_root: Path) -> tuple[dict[str, Any], dict[str, Path]]
         json.dumps(adapter_registry, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
+    executable_contracts = {
+        "schema_version": 1,
+        "namespace": NAMESPACE,
+        "source_tree_sha256": manifest["source_tree_sha256"],
+        "contracts": [
+            compile_contract(record, SOURCE / str(record["source_path"]))
+            for record in records
+            if record["kind"] == "skill"
+        ],
+    }
+    contracts_path = staging_root / "executable-contracts.json"
+    contracts_path.write_text(
+        json.dumps(executable_contracts, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
     paths = {str(record["name"]): generated_root / str(record["name"]) for record in records}
     paths["__manifest__"] = manifest_path
     paths["__web__"] = web_path
     paths["__adapters__"] = adapter_path
+    paths["__contracts__"] = contracts_path
     return manifest, paths
 
 
@@ -616,6 +677,10 @@ def check_install(manifest: dict[str, Any], expected: dict[str, Path]) -> None:
         "__adapters__"
     ].read_bytes():
         failures.append("adapter-registry")
+    if not EXECUTABLE_CONTRACTS.is_file() or EXECUTABLE_CONTRACTS.read_bytes() != expected[
+        "__contracts__"
+    ].read_bytes():
+        failures.append("executable-contracts")
     if failures:
         fail(f"Precision Migration installation drifted: {failures[:12]} ({len(failures)} total)")
     print(
@@ -682,6 +747,7 @@ def install(manifest: dict[str, Any], expected: dict[str, Path]) -> None:
     DOC_ROOT.mkdir(parents=True, exist_ok=True)
     shutil.copy2(expected["__manifest__"], INSTALL_MANIFEST)
     shutil.copy2(expected["__adapters__"], ADAPTER_REGISTRY)
+    shutil.copy2(expected["__contracts__"], EXECUTABLE_CONTRACTS)
     WEB_CATALOG.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(expected["__web__"], WEB_CATALOG)
     print(

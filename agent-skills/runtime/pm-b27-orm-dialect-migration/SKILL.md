@@ -8,7 +8,7 @@ description: "迁移 ORM Dialect、实体映射、查询语言、生成策略和
 
 - Invoke this repository Skill as `$pm-b27-orm-dialect-migration`.
 - Immutable source identity: `orm-dialect-migration` in `precision-migration-b01-44` (B27).
-- Runtime adapter: `database-and-data-route`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `database-and-data-route`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b27-orm-dialect-migration`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

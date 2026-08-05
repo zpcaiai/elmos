@@ -8,7 +8,7 @@ description: "打包离线镜像、依赖、工具链、模型、许可证、升
 
 - Invoke this repository Skill as `$pm-b44-air-gapped-installation`.
 - Immutable source identity: `air-gapped-installation` in `precision-migration-b01-44` (B44).
-- Runtime adapter: `enterprise-private-commercialization`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `enterprise-private-commercialization`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b44-air-gapped-installation`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

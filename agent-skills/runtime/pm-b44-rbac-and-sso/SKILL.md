@@ -8,7 +8,7 @@ description: "实现组织、角色、项目、审批、SSO、SCIM 和最小权�
 
 - Invoke this repository Skill as `$pm-b44-rbac-and-sso`.
 - Immutable source identity: `rbac-and-sso` in `precision-migration-b01-44` (B44).
-- Runtime adapter: `enterprise-private-commercialization`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `enterprise-private-commercialization`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b44-rbac-and-sso`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

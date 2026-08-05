@@ -8,7 +8,7 @@ description: "识别跳过、条件跳过、重试掩盖、时间依赖和环境
 
 - Invoke this repository Skill as `$pm-b28-skipped-and-flaky-test-detector`.
 - Immutable source identity: `skipped-and-flaky-test-detector` in `precision-migration-b01-44` (B28).
-- Runtime adapter: `differential-test-and-repair`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `differential-test-and-repair`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b28-skipped-and-flaky-test-detector`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

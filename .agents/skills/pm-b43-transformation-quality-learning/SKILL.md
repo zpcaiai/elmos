@@ -8,7 +8,7 @@ description: "用真实验收结果校准模型、路由、估计、规则优先
 
 - Invoke this repository Skill as `$pm-b43-transformation-quality-learning`.
 - Immutable source identity: `transformation-quality-learning` in `precision-migration-b01-44` (B43).
-- Runtime adapter: `continuous-modernization-learning`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `continuous-modernization-learning`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b43-transformation-quality-learning`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

@@ -8,7 +8,7 @@ description: "汇总成本、收益、风险、TCO、机会成本和退出能力
 
 - Invoke this repository Skill as `$pm-b04-migration-business-case`.
 - Immutable source identity: `migration-business-case` in `precision-migration-b01-44` (B04).
-- Runtime adapter: `assessment-and-target-planning`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `assessment-and-target-planning`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b04-migration-business-case`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

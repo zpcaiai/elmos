@@ -8,7 +8,7 @@ description: "分析源目标差分、定位根因、提出修复或规格冲突
 
 - Invoke this repository Skill as `$pm-b37-difference-diagnosis-agent`.
 - Immutable source identity: `difference-diagnosis-agent` in `precision-migration-b01-44` (B37).
-- Runtime adapter: `model-routing-and-agent-harness`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `model-routing-and-agent-harness`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b37-difference-diagnosis-agent`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

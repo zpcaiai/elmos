@@ -8,7 +8,7 @@ description: "解析直接与传递依赖、插件、许可证、原生扩展和
 
 - Invoke this repository Skill as `$pm-b05-dependency-and-plugin-discovery`.
 - Immutable source identity: `dependency-and-plugin-discovery` in `precision-migration-b01-44` (B05).
-- Runtime adapter: `semantic-recovery-and-ir`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `semantic-recovery-and-ir`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b05-dependency-and-plugin-discovery`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

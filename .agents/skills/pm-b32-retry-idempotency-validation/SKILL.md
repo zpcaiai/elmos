@@ -8,7 +8,7 @@ description: "验证超时、重试、重复投递和幂等键不会造成重复
 
 - Invoke this repository Skill as `$pm-b32-retry-idempotency-validation`.
 - Immutable source identity: `retry-idempotency-validation` in `precision-migration-b01-44` (B32).
-- Runtime adapter: `differential-test-and-repair`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `differential-test-and-repair`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b32-retry-idempotency-validation`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

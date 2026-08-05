@@ -8,7 +8,7 @@ description: "判断哪些测试可直接迁移、需重写、需双运行或不
 
 - Invoke this repository Skill as `$pm-b28-test-migration-feasibility`.
 - Immutable source identity: `test-migration-feasibility` in `precision-migration-b01-44` (B28).
-- Runtime adapter: `differential-test-and-repair`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `differential-test-and-repair`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b28-test-migration-feasibility`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

@@ -1,0 +1,2 @@
+$ /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/precision_migration/qualify_contracts.py --check
+{"external": "NOT_RUN", "results": 2935, "skills": 587, "status": "PASS"}

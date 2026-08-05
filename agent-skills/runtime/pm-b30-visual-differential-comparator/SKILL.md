@@ -8,7 +8,7 @@ description: "比较关键区域、布局、文本、主题、响应式和感知
 
 - Invoke this repository Skill as `$pm-b30-visual-differential-comparator`.
 - Immutable source identity: `visual-differential-comparator` in `precision-migration-b01-44` (B30).
-- Runtime adapter: `differential-test-and-repair`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `differential-test-and-repair`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b30-visual-differential-comparator`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

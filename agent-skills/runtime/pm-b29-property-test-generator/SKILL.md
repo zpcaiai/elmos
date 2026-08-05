@@ -8,7 +8,7 @@ description: "为跨语言契约生成 Property-based 测试与数据生成器. 
 
 - Invoke this repository Skill as `$pm-b29-property-test-generator`.
 - Immutable source identity: `property-test-generator` in `precision-migration-b01-44` (B29).
-- Runtime adapter: `differential-test-and-repair`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `differential-test-and-repair`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b29-property-test-generator`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

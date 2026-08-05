@@ -8,7 +8,7 @@ description: "估算自动覆盖率、首轮构建率、功能等价率、行为
 
 - Invoke this repository Skill as `$pm-b03-conversion-success-range-estimator`.
 - Immutable source identity: `conversion-success-range-estimator` in `precision-migration-b01-44` (B03).
-- Runtime adapter: `assessment-and-target-planning`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `assessment-and-target-planning`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b03-conversion-success-range-estimator`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

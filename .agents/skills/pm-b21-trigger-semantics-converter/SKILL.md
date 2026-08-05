@@ -8,7 +8,7 @@ description: "转换触发器时机、粒度、顺序、递归、OLD/NEW 和副�
 
 - Invoke this repository Skill as `$pm-b21-trigger-semantics-converter`.
 - Immutable source identity: `trigger-semantics-converter` in `precision-migration-b01-44` (B21).
-- Runtime adapter: `database-and-data-route`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `database-and-data-route`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b21-trigger-semantics-converter`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

@@ -29,14 +29,14 @@
   "target": {
     "language": "python",
     "path": "migrated.py",
-    "sha256": "sha256:900e8c524344c1d7ba759768753174e189fc7e4b5981775634786864f761d927"
+    "sha256": "sha256:0dd92e04f4890ba3014067542bc1e4dc688abdf13b0f5e37248a0be0829e5501"
   },
   "validation": {
     "case_count": 3,
     "commands": [
       {
         "command": [
-          "/Users/stephen/DevProjects/AIProjects/elmos/engines/polyglot-route-engine/.venv/bin/python3",
+          "/Users/stephen/DevProjects/AIProjects/elmos/engines/polyglot-route-engine/.venv/bin/python",
           "-m",
           "py_compile",
           "migrated.py",
@@ -47,7 +47,7 @@
       },
       {
         "command": [
-          "/Users/stephen/DevProjects/AIProjects/elmos/engines/polyglot-route-engine/.venv/bin/python3",
+          "/Users/stephen/DevProjects/AIProjects/elmos/engines/polyglot-route-engine/.venv/bin/python",
           "route_harness.py"
         ],
         "stderr": "",

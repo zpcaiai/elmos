@@ -8,7 +8,7 @@ description: "将 JavaScript 仓库迁移为严格 TypeScript，恢复类型、�
 
 - Invoke this repository Skill as `$pm-b18-javascript-to-typescript-modernization-pack`.
 - Immutable source identity: `javascript-to-typescript-modernization-pack` in `precision-migration-b01-44` (B18).
-- Runtime adapter: `frontend-client-route`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `frontend-client-route`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b18-javascript-to-typescript-modernization-pack`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

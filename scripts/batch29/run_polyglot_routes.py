@@ -18,27 +18,35 @@ sys.path.insert(
 )
 
 from elmos_polyglot_route.engine import migrate  # noqa: E402
-from elmos_polyglot_route.models import SUPPORTED_LANGUAGES, Language  # noqa: E402
+from elmos_polyglot_route.models import Language, RouteError  # noqa: E402
+
+B16_LANGUAGES: tuple[Language, ...] = ("java", "csharp", "go", "rust", "python", "typescript")
 
 VERSIONS = {
     "java": ["Java 21.0.11", "JDK Compiler Tree API"],
     "python": ["Python 3.12.12", "CPython AST"],
     "csharp": ["C# 14", ".NET SDK 10.0.301", "Roslyn 5.6.0"],
     "typescript": ["TypeScript 5.9.2", "Node.js 26.0.0"],
+    "go": ["Go 1.25.0", "go/parser AST"],
+    "rust": ["Rust 1.89.0", "syn 2.0.119"],
 }
 ENGINE_PATHS = {
     "java": "engines/polyglot-route-engine/native/java/Analyzer.java",
     "python": "engines/polyglot-route-engine/src/elmos_polyglot_route/python_analyzer.py",
     "csharp": "engines/dotnet-engine/src/Elmos.Dotnet.SemanticCli",
     "typescript": "engines/frontend-client-engine/src/polyglot.ts",
+    "go": "engines/polyglot-route-engine/native/go/analyzer.go",
+    "rust": "engines/polyglot-route-engine/native/rust/src/main.rs",
 }
 SHORT_VERSIONS = {
     "java": "21.0.11",
     "python": "3.12.12",
     "csharp": "10.0.301",
     "typescript": "5.9.2 / Node 26.0.0",
+    "go": "1.25.0",
+    "rust": "1.89.0",
 }
-EXTENSIONS = {"java": "java", "python": "py", "csharp": "cs", "typescript": "ts"}
+EXTENSIONS = {"java": "java", "python": "py", "csharp": "cs", "typescript": "ts", "go": "go", "rust": "rs"}
 CORPORA = {
     "development": ("", "Pricing", "pricing", "calculate", "behavior-cases.json"),
     "holdout": ("holdout", "Clamp", "clamp", "clamp", "holdout/cases.json"),
@@ -244,6 +252,7 @@ def execute_route(repo: Path, fixtures: Path, source: Language, target: Language
                 "real-repository": "local-representative-evidence.json",
             }[corpus]
             write_json(route / "certification" / evidence_name, report)
+    negative_ref = execute_negative(route, fixtures, source, target)
     evidence = {
         "schema_version": 1,
         "route_key": f"{source}-to-{target}",
@@ -266,6 +275,7 @@ def execute_route(repo: Path, fixtures: Path, source: Language, target: Language
             "certification/local-holdout-evidence.json",
             "certification/local-representative-evidence.json",
         ],
+        "negative_runs": [negative_ref],
         "notes": [
             "The exact typed-pure-function-v1 profile passed native source analysis, "
             "native target compilation, and behavior replay.",
@@ -295,6 +305,37 @@ def execute_route(repo: Path, fixtures: Path, source: Language, target: Language
             },
         },
     )
+
+
+def execute_negative(route: Path, fixtures: Path, source: Language, target: Language) -> str:
+    source_file, _, cases = source_path(fixtures, "development", source)
+    with tempfile.TemporaryDirectory(prefix=f"elmos-negative-{source}-to-{target}-") as temporary:
+        try:
+            migrate(source_file, source, target, "__elmos_missing_function__", cases, Path(temporary) / "output")
+        except RouteError as exc:
+            reason = str(exc)
+        else:
+            raise RuntimeError(f"NEGATIVE_CASE_UNEXPECTEDLY_PASSED:{source}-to-{target}")
+    if not any(code in reason for code in ("FUNCTION_NOT_FOUND", "NO_SUPPORTED_FUNCTIONS")):
+        raise RuntimeError(f"NEGATIVE_CASE_WRONG_FAILURE:{source}-to-{target}:{reason}")
+    relative = "certification/local-negative-evidence.json"
+    write_json(
+        route / relative,
+        {
+            "schema_version": 1,
+            "status": "PASSED",
+            "route": f"{source}-to-{target}",
+            "case": "missing-function-fails-closed",
+            "expected_result": "BLOCKED",
+            "observed_reason": reason,
+            "source_native_analyzer": "EXECUTED",
+            "target_execution": "NOT_REACHED_BY_DESIGN",
+            "test_integrity": "PRESERVED",
+            "independent_verifier": "NOT_RUN",
+            "external_certification": "NOT_RUN",
+        },
+    )
+    return relative
     (route / "certification" / "gate-report.md").write_text(
         f"# {source}-to-{target} route gate\n\n"
         "- Local bounded profile: `PASSED`\n"
@@ -333,8 +374,8 @@ def write_inventory(repo: Path) -> None:
             "independent_verification_status": "NOT_RUN",
             "external_certification_status": "NOT_RUN",
         }
-        for source in SUPPORTED_LANGUAGES
-        for target in SUPPORTED_LANGUAGES
+        for source in B16_LANGUAGES
+        for target in B16_LANGUAGES
         if source != target
     ]
     write_json(
@@ -356,7 +397,7 @@ def write_inventory(repo: Path) -> None:
                     "version": SHORT_VERSIONS[language],
                     "engine_path": ENGINE_PATHS[language],
                 }
-                for language in SUPPORTED_LANGUAGES
+                for language in B16_LANGUAGES
             },
             "routes": routes,
         },
@@ -367,6 +408,7 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--repo-root", default=".")
     parser.add_argument("--inventory-only", action="store_true")
+    parser.add_argument("--negative-only", action="store_true")
     args = parser.parse_args()
     repo = Path(args.repo_root).resolve()
     if args.inventory_only:
@@ -374,8 +416,21 @@ def main() -> int:
         print("PASS: exact limited route inventory updated")
         return 0
     fixtures = repo / "engines" / "polyglot-route-engine" / "fixtures"
-    for source in SUPPORTED_LANGUAGES:
-        for target in SUPPORTED_LANGUAGES:
+    if args.negative_only:
+        for source in B16_LANGUAGES:
+            for target in B16_LANGUAGES:
+                if source == target:
+                    continue
+                route = repo / "routes" / f"{source}-to-{target}"
+                reference = execute_negative(route, fixtures, source, target)
+                evidence_path = route / "certification" / "evidence.json"
+                evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
+                evidence["negative_runs"] = [reference]
+                write_json(evidence_path, evidence)
+        print("PASS: 30 directed B16 negative cases failed closed")
+        return 0
+    for source in B16_LANGUAGES:
+        for target in B16_LANGUAGES:
             if source == target:
                 continue
             execute_route(repo, fixtures, source, target)
@@ -389,7 +444,7 @@ def main() -> int:
                 if completed.returncode != 0:
                     return completed.returncode
     write_inventory(repo)
-    print("PASS: 12 directed polyglot routes completed with limited local evidence")
+    print(f"PASS: {len(B16_LANGUAGES) * (len(B16_LANGUAGES) - 1)} directed polyglot routes completed with limited local evidence")
     return 0
 
 

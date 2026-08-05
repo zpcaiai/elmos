@@ -8,7 +8,7 @@ description: "判断整体架构、技术选型或功能覆盖过差时是否重
 
 - Invoke this repository Skill as `$pm-b31-retranslate-project-decision`.
 - Immutable source identity: `retranslate-project-decision` in `precision-migration-b01-44` (B31).
-- Runtime adapter: `differential-test-and-repair`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `differential-test-and-repair`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b31-retranslate-project-decision`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

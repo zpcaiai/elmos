@@ -8,7 +8,7 @@ description: "支持扫描、变换、构建反馈、再扫描和多轮收敛. P
 
 - Invoke this repository Skill as `$pm-b11-multi-cycle-transformation-engine`.
 - Immutable source identity: `multi-cycle-transformation-engine` in `precision-migration-b01-44` (B11).
-- Runtime adapter: `semantic-recovery-and-ir`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `semantic-recovery-and-ir`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b11-multi-cycle-transformation-engine`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

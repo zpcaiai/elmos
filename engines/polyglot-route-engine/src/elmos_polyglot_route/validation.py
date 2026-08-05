@@ -41,7 +41,11 @@ def _argument(value: object, language: Language) -> str:
         return "true" if value else "false"
     if isinstance(value, str):
         encoded = json.dumps(value, ensure_ascii=False)
-        return f"@{encoded}" if language == "objc" else encoded
+        if language == "objc":
+            return f"@{encoded}"
+        if language == "rust":
+            return f"{encoded}.to_string()"
+        return encoded
     return str(value)
 
 
@@ -146,6 +150,39 @@ def _swift_harness(function: Function, cases: list[dict[str, Any]]) -> str:
     return "import Foundation\n\n" + "\n".join(checks) + "\n"
 
 
+def _go_harness(function: Function, cases: list[dict[str, Any]]) -> str:
+    checks = []
+    for index, case in enumerate(cases):
+        args = ", ".join(_argument(value, "go") for value in case["args"])
+        expected = _expected(case["expected"], "go")
+        checks.append(f'    if {function.name}({args}) != {expected} {{ panic("case {index}") }}')
+    return "package main\n\nfunc main() {\n" + "\n".join(checks) + "\n}\n"
+
+
+def _rust_harness(function: Function, cases: list[dict[str, Any]]) -> str:
+    checks = []
+    for index, case in enumerate(cases):
+        rendered_args = []
+        for value, parameter in zip(case["args"], function.parameters, strict=True):
+            if parameter.type == "number" and isinstance(value, int) and not isinstance(value, bool):
+                rendered_args.append(f"{value}.0")
+            else:
+                rendered_args.append(_argument(value, "rust"))
+        args = ", ".join(rendered_args)
+        expected_value = case["expected"]
+        expected = (
+            f"{expected_value}.0"
+            if (
+                function.return_type == "number"
+                and isinstance(expected_value, int)
+                and not isinstance(expected_value, bool)
+            )
+            else _expected(expected_value, "rust")
+        )
+        checks.append(f'    assert!({function.name}({args}) == {expected}, "case {index}");')
+    return 'include!("migrated.rs");\n\nfn main() {\n' + "\n".join(checks) + "\n}\n"
+
+
 def validate(
     emitted: EmittedFile,
     language: Language,
@@ -240,6 +277,18 @@ def validate(
                 "migrated.swift",
                 "main.swift",
             ],
+            ["./route_harness"],
+        ]
+    elif language == "go":
+        (output / "route_harness.go").write_text(_go_harness(function, cases), encoding="utf-8")
+        commands = [
+            [toolchain.executable, "build", "-o", "route_harness", "migrated.go", "route_harness.go"],
+            ["./route_harness"],
+        ]
+    elif language == "rust":
+        (output / "route_harness.rs").write_text(_rust_harness(function, cases), encoding="utf-8")
+        commands = [
+            [toolchain.executable, "--edition=2021", "-D", "warnings", "-o", "route_harness", "route_harness.rs"],
             ["./route_harness"],
         ]
     else:

@@ -8,7 +8,7 @@ description: "表达外部调用参数、次数、顺序、超时、重试、幂
 
 - Invoke this repository Skill as `$pm-b09-external-call-effect-model`.
 - Immutable source identity: `external-call-effect-model` in `precision-migration-b01-44` (B09).
-- Runtime adapter: `semantic-recovery-and-ir`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `semantic-recovery-and-ir`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b09-external-call-effect-model`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

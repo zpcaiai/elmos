@@ -8,7 +8,7 @@ description: "生成目标状态机对源状态机的 Simulation/Refinement 义�
 
 - Invoke this repository Skill as `$pm-b33-state-refinement-obligation`.
 - Immutable source identity: `state-refinement-obligation` in `precision-migration-b01-44` (B33).
-- Runtime adapter: `formal-and-advanced-verification`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `formal-and-advanced-verification`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b33-state-refinement-obligation`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

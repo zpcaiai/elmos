@@ -8,7 +8,7 @@ description: "表达日志、位点、快照、增量、顺序、冲突、Exactl
 
 - Invoke this repository Skill as `$pm-b19-replication-and-cdc-ir`.
 - Immutable source identity: `replication-and-cdc-ir` in `precision-migration-b01-44` (B19).
-- Runtime adapter: `database-and-data-route`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `database-and-data-route`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b19-replication-and-cdc-ir`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

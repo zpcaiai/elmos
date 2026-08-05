@@ -8,7 +8,7 @@ description: "定义模式匹配、类型条件、重写、证明义务、测试
 
 - Invoke this repository Skill as `$pm-b11-declarative-recipe-dsl`.
 - Immutable source identity: `declarative-recipe-dsl` in `precision-migration-b01-44` (B11).
-- Runtime adapter: `semantic-recovery-and-ir`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `semantic-recovery-and-ir`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b11-declarative-recipe-dsl`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

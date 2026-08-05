@@ -8,7 +8,7 @@ description: "提供从 ArkTS/ArkUI 到 微信小程序 的前端整库专用转
 
 - Invoke this repository Skill as `$pm-b18-arkui-to-wechat-miniprogram-direction-pack`.
 - Immutable source identity: `arkui-to-wechat-miniprogram-direction-pack` in `precision-migration-b01-44` (B18).
-- Runtime adapter: `frontend-client-route`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `frontend-client-route`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b18-arkui-to-wechat-miniprogram-direction-pack`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

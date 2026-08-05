@@ -8,7 +8,7 @@ description: "逐模块记录无损、归一化、近似、需适配、未验证
 
 - Invoke this repository Skill as `$pm-b09-semantic-loss-ledger`.
 - Immutable source identity: `semantic-loss-ledger` in `precision-migration-b01-44` (B09).
-- Runtime adapter: `semantic-recovery-and-ir`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `semantic-recovery-and-ir`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b09-semantic-loss-ledger`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

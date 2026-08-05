@@ -8,7 +8,7 @@ description: "在 IR、规则、生成器和依赖变化时持续重跑证明回
 
 - Invoke this repository Skill as `$pm-b34-proof-regression-ci`.
 - Immutable source identity: `proof-regression-ci` in `precision-migration-b01-44` (B34).
-- Runtime adapter: `formal-and-advanced-verification`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `formal-and-advanced-verification`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b34-proof-regression-ci`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

@@ -8,7 +8,7 @@ description: "迁移系统版本时间表、历史表、查询和保留策略. P
 
 - Invoke this repository Skill as `$pm-b23-sqlserver-temporal-table`.
 - Immutable source identity: `sqlserver-temporal-table` in `precision-migration-b01-44` (B23).
-- Runtime adapter: `database-and-data-route`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `database-and-data-route`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b23-sqlserver-temporal-table`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

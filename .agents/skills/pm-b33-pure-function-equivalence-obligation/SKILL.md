@@ -8,7 +8,7 @@ description: "生成纯函数在前置条件下对所有输入结果等价的关
 
 - Invoke this repository Skill as `$pm-b33-pure-function-equivalence-obligation`.
 - Immutable source identity: `pure-function-equivalence-obligation` in `precision-migration-b01-44` (B33).
-- Runtime adapter: `formal-and-advanced-verification`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `formal-and-advanced-verification`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b33-pure-function-equivalence-obligation`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

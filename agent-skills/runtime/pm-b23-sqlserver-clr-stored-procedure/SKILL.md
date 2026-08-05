@@ -8,7 +8,7 @@ description: "迁移 SQL CLR、程序集、权限集和外部代码依赖. Preci
 
 - Invoke this repository Skill as `$pm-b23-sqlserver-clr-stored-procedure`.
 - Immutable source identity: `sqlserver-clr-stored-procedure` in `precision-migration-b01-44` (B23).
-- Runtime adapter: `database-and-data-route`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `database-and-data-route`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b23-sqlserver-clr-stored-procedure`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

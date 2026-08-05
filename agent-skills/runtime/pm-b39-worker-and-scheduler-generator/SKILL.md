@@ -8,7 +8,7 @@ description: "生成后台 Worker、队列消费者、定时任务、重试、�
 
 - Invoke this repository Skill as `$pm-b39-worker-and-scheduler-generator`.
 - Immutable source identity: `worker-and-scheduler-generator` in `precision-migration-b01-44` (B39).
-- Runtime adapter: `skill-and-project-synthesis`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `skill-and-project-synthesis`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b39-worker-and-scheduler-generator`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

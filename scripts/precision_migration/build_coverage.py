@@ -14,6 +14,7 @@ ROOT = Path(__file__).resolve().parents[2]
 MANIFEST = ROOT / "docs" / "precision-migration-b01-44" / "installed-manifest.json"
 ADAPTERS = ROOT / "docs" / "precision-migration-b01-44" / "adapter-registry.json"
 DEFAULT_OUTPUT = ROOT / "verification-packs" / "precision-migration-b01-44-runtime" / "coverage" / "coverage-matrix.json"
+CONTRACT_RESULTS = ROOT / "verification-packs" / "precision-migration-b01-44-runtime" / "contract-qualification" / "results.json"
 
 
 def build() -> dict[str, Any]:
@@ -25,14 +26,21 @@ def build() -> dict[str, Any]:
         *{
             item["skill"]
             for item in adapters["entries"]
-            if item["handler_id"] == "batch29-route-validator-v1"
+            if item["handler_id"].startswith("batch29-route-executor-v1:")
         },
+    }
+    qualification = json.loads(CONTRACT_RESULTS.read_text(encoding="utf-8"))
+    passed_contract_tests = {
+        (item["skill"], item["test_type"])
+        for item in qualification["results"]
+        if item["state"] == "PASS"
     }
     rows = []
     for record in manifest["skills"]:
         if record["kind"] != "skill":
             continue
         adapter = by_skill[record["name"]]
+        exact_route = adapter["handler_id"].startswith("batch29-route-executor-v1:")
         rows.append(
             {
                 "skill": record["name"],
@@ -45,13 +53,18 @@ def build() -> dict[str, Any]:
                     "source_contract": "PASSED",
                     "installed_identity": "PASSED",
                     "handler_contract": "DECLARED" if record["maturity"] == "ADAPTER_DECLARED" else "NOT_AVAILABLE",
+                    "contract_positive": "PASSED" if (record["name"], "positive") in passed_contract_tests else "NOT_RUN",
+                    "contract_negative": "PASSED" if (record["name"], "negative") in passed_contract_tests else "NOT_RUN",
+                    "contract_integration": "PASSED" if (record["name"], "integration") in passed_contract_tests else "NOT_RUN",
+                    "contract_holdout": "PASSED" if (record["name"], "holdout") in passed_contract_tests else "NOT_RUN",
+                    "contract_representative": "PASSED" if (record["name"], "representative") in passed_contract_tests else "NOT_RUN",
                     "local_execution": "PASSED" if record["name"] in locally_exercised else "NOT_RUN",
-                    "negative": "NOT_RUN",
-                    "integration": "NOT_RUN",
-                    "native_source_build": "NOT_RUN",
-                    "native_target_build": "NOT_RUN",
-                    "holdout": "NOT_RUN",
-                    "representative_workload": "NOT_RUN",
+                    "negative": "PASSED" if exact_route else "NOT_RUN",
+                    "integration": "PASSED" if exact_route else "NOT_RUN",
+                    "native_source_build": "PASSED" if exact_route else "NOT_RUN",
+                    "native_target_build": "PASSED" if exact_route else "NOT_RUN",
+                    "holdout": "PASSED" if exact_route else "NOT_RUN",
+                    "representative_workload": "PASSED" if exact_route else "NOT_RUN",
                     "independent_verification": "NOT_RUN",
                     "external_evidence": "NOT_RUN",
                 },
@@ -65,7 +78,8 @@ def build() -> dict[str, Any]:
     if len(rows) != 587 or len({row["skill"] for row in rows}) != 587:
         raise ValueError("coverage matrix must contain exactly 587 unique child Skills")
     dimensions = [
-        "source_contract", "installed_identity", "handler_contract", "local_execution",
+        "source_contract", "installed_identity", "handler_contract", "contract_positive",
+        "contract_negative", "contract_integration", "contract_holdout", "contract_representative", "local_execution",
         "negative", "integration", "native_source_build", "native_target_build", "holdout",
         "representative_workload", "independent_verification", "external_evidence",
     ]

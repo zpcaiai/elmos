@@ -11,7 +11,7 @@
     "independent_verification": "NOT_RUN",
     "local_execution": "PASSED"
   },
-  "issued_at": "2026-07-28T08:47:55.702028+00:00",
+  "issued_at": "2026-08-05T09:29:12.832330+00:00",
   "metrics": {
     "build_green_rate": 1.0,
     "cost_per_verified_workload": 0,

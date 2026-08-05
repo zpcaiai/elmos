@@ -46,6 +46,8 @@ precision-migration-b01-44-skills:
 	$(UV) run --quiet --with pyyaml --with jsonschema python scripts/precision_migration/validate_platform.py
 precision-migration-b01-44-check: precision-migration-b01-44-skills
 	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests/precision-migration -p 'test_*.py'
+	python3 scripts/precision_migration/qualify_contracts.py --check
+	python3 scripts/precision_migration/validate_b16_routes.py
 	python3 scripts/precision_migration/build_coverage.py --check
 	$(UV) run --quiet --with jsonschema python scripts/batch35/validate_verification_pack.py verification-packs/precision-migration-b01-44-runtime
 	$(UV) run --quiet --with jsonschema python scripts/batch35/run_verification_gate.py verification-packs/precision-migration-b01-44-runtime

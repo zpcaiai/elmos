@@ -8,7 +8,7 @@ description: "围绕入口、业务能力或风险点提取最小可转换和可
 
 - Invoke this repository Skill as `$pm-b05-semantic-slice-extractor`.
 - Immutable source identity: `semantic-slice-extractor` in `precision-migration-b01-44` (B05).
-- Runtime adapter: `semantic-recovery-and-ir`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `semantic-recovery-and-ir`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b05-semantic-slice-extractor`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

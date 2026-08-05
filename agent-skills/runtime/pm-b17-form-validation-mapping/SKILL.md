@@ -8,7 +8,7 @@ description: "映射表单字段、校验、触摸状态、错误显示、提交
 
 - Invoke this repository Skill as `$pm-b17-form-validation-mapping`.
 - Immutable source identity: `form-validation-mapping` in `precision-migration-b01-44` (B17).
-- Runtime adapter: `frontend-client-route`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `frontend-client-route`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b17-form-validation-mapping`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

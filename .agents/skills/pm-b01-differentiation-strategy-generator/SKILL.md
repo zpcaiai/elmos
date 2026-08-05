@@ -8,7 +8,7 @@ description: "生成模型中立、深度验证、私有部署、行业语义和
 
 - Invoke this repository Skill as `$pm-b01-differentiation-strategy-generator`.
 - Immutable source identity: `differentiation-strategy-generator` in `precision-migration-b01-44` (B01).
-- Runtime adapter: `assessment-and-target-planning`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `assessment-and-target-planning`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b01-differentiation-strategy-generator`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

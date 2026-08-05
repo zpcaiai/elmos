@@ -8,7 +8,7 @@ description: "表达组件输入、输出、状态、派生状态、子内容、
 
 - Invoke this repository Skill as `$pm-b10-frontend-component-ir`.
 - Immutable source identity: `frontend-component-ir` in `precision-migration-b01-44` (B10).
-- Runtime adapter: `semantic-recovery-and-ir`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `semantic-recovery-and-ir`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b10-frontend-component-ir`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

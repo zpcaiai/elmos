@@ -8,7 +8,7 @@ description: "切换后持续监控差异、异常、性能、数据质量、回
 
 - Invoke this repository Skill as `$pm-b42-post-cutover-monitoring`.
 - Immutable source identity: `post-cutover-monitoring` in `precision-migration-b01-44` (B42).
-- Runtime adapter: `shadow-canary-cutover`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `shadow-canary-cutover`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b42-post-cutover-monitoring`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

@@ -8,7 +8,7 @@ description: "按模块、流量、租户或能力逐步切换并验证每级门
 
 - Invoke this repository Skill as `$pm-b42-progressive-cutover`.
 - Immutable source identity: `progressive-cutover` in `precision-migration-b01-44` (B42).
-- Runtime adapter: `shadow-canary-cutover`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `shadow-canary-cutover`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b42-progressive-cutover`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

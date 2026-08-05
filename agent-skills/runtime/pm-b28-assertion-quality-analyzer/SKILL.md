@@ -8,7 +8,7 @@ description: "检测无断言、弱断言、仅状态码、过度快照和未验
 
 - Invoke this repository Skill as `$pm-b28-assertion-quality-analyzer`.
 - Immutable source identity: `assertion-quality-analyzer` in `precision-migration-b01-44` (B28).
-- Runtime adapter: `differential-test-and-repair`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `differential-test-and-repair`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b28-assertion-quality-analyzer`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

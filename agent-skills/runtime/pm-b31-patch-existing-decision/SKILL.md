@@ -8,7 +8,7 @@ description: "判断当前目标架构正确且差异局部时是否继续补丁
 
 - Invoke this repository Skill as `$pm-b31-patch-existing-decision`.
 - Immutable source identity: `patch-existing-decision` in `precision-migration-b01-44` (B31).
-- Runtime adapter: `differential-test-and-repair`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `differential-test-and-repair`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b31-patch-existing-decision`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

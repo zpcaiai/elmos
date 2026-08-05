@@ -8,7 +8,7 @@ description: "在 Null、Option、Nullable、Pointer、zero value 和 Missing �
 
 - Invoke this repository Skill as `$pm-b15-null-to-option-pointer-lowering`.
 - Immutable source identity: `null-to-option-pointer-lowering` in `precision-migration-b01-44` (B15).
-- Runtime adapter: `directed-backend-route`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `directed-backend-route`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b15-null-to-option-pointer-lowering`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

@@ -8,7 +8,7 @@ description: "注入可控时钟、随机种子、UUID、序列和调度点，�
 
 - Invoke this repository Skill as `$pm-b30-clock-random-uuid-controller`.
 - Immutable source identity: `clock-random-uuid-controller` in `precision-migration-b01-44` (B30).
-- Runtime adapter: `differential-test-and-repair`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `differential-test-and-repair`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b30-clock-random-uuid-controller`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

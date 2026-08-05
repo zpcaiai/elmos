@@ -8,7 +8,7 @@ description: "根据仓库结构和工具链生成可复现的解析、构建、
 
 - Invoke this repository Skill as `$pm-b06-build-command-generator`.
 - Immutable source identity: `build-command-generator` in `precision-migration-b01-44` (B06).
-- Runtime adapter: `semantic-recovery-and-ir`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `semantic-recovery-and-ir`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b06-build-command-generator`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

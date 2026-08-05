@@ -8,7 +8,7 @@ description: "在同步、Future、Promise、Task、asyncio 和阻塞边界之�
 
 - Invoke this repository Skill as `$pm-b15-sync-async-lowering`.
 - Immutable source identity: `sync-async-lowering` in `precision-migration-b01-44` (B15).
-- Runtime adapter: `directed-backend-route`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `directed-backend-route`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b15-sync-async-lowering`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

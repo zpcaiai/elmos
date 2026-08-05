@@ -8,7 +8,7 @@ description: "把 SMT、Lean、模型检查或符号执行反例转换为永久�
 
 - Invoke this repository Skill as `$pm-b35-proof-counterexample-to-test`.
 - Immutable source identity: `proof-counterexample-to-test` in `precision-migration-b01-44` (B35).
-- Runtime adapter: `formal-and-advanced-verification`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `formal-and-advanced-verification`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b35-proof-counterexample-to-test`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

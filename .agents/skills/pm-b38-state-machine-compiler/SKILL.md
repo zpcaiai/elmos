@@ -8,7 +8,7 @@ description: "把业务和 UI 状态机编译为生成器、运行时检查和�
 
 - Invoke this repository Skill as `$pm-b38-state-machine-compiler`.
 - Immutable source identity: `state-machine-compiler` in `precision-migration-b01-44` (B38).
-- Runtime adapter: `skill-and-project-synthesis`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `skill-and-project-synthesis`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b38-state-machine-compiler`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

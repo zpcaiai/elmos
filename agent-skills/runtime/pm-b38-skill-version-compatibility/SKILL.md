@@ -8,7 +8,7 @@ description: "检查 Skill 升级、降级、数据迁移、依赖和生成代�
 
 - Invoke this repository Skill as `$pm-b38-skill-version-compatibility`.
 - Immutable source identity: `skill-version-compatibility` in `precision-migration-b01-44` (B38).
-- Runtime adapter: `skill-and-project-synthesis`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `skill-and-project-synthesis`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b38-skill-version-compatibility`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

@@ -8,7 +8,7 @@ description: "通过通用和方向专用变异衡量测试能否发现真实转
 
 - Invoke this repository Skill as `$pm-b28-test-mutation-strength-assessment`.
 - Immutable source identity: `test-mutation-strength-assessment` in `precision-migration-b01-44` (B28).
-- Runtime adapter: `differential-test-and-repair`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `differential-test-and-repair`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b28-test-mutation-strength-assessment`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

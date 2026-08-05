@@ -8,7 +8,7 @@ description: "向模型提供最小语义切片、契约、方向包和验收测
 
 - Invoke this repository Skill as `$pm-b13-llm-candidate-generator`.
 - Immutable source identity: `llm-candidate-generator` in `precision-migration-b01-44` (B13).
-- Runtime adapter: `semantic-recovery-and-ir`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `semantic-recovery-and-ir`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b13-llm-candidate-generator`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

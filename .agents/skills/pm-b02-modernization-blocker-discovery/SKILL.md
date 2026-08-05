@@ -8,7 +8,7 @@ description: "发现反射、动态加载、原生库、私有框架、平台 AP
 
 - Invoke this repository Skill as `$pm-b02-modernization-blocker-discovery`.
 - Immutable source identity: `modernization-blocker-discovery` in `precision-migration-b01-44` (B02).
-- Runtime adapter: `assessment-and-target-planning`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `assessment-and-target-planning`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b02-modernization-blocker-discovery`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

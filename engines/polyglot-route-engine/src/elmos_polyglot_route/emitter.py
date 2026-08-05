@@ -43,6 +43,8 @@ _TYPE_SPELLING: dict[Language, dict[str, str]] = {
     "python": {"integer": "int", "number": "float", "boolean": "bool", "string": "str"},
     "csharp": {"integer": "long", "number": "double", "boolean": "bool", "string": "string"},
     "typescript": {"integer": "number", "number": "number", "boolean": "boolean", "string": "string"},
+    "go": {"integer": "int64", "number": "float64", "boolean": "bool", "string": "string"},
+    "rust": {"integer": "i64", "number": "f64", "boolean": "bool", "string": "String"},
     "cpp": {
         "integer": "std::int64_t",
         "number": "double",
@@ -60,8 +62,8 @@ _TYPE_SPELLING: dict[Language, dict[str, str]] = {
 
 #: Languages whose emitted source is brace-delimited and statement-terminated
 #: with `;`. Swift is brace-delimited but takes no terminator.
-_BRACE_LANGUAGES = frozenset({"java", "csharp", "typescript", "cpp", "objc", "swift"})
-_SEMICOLON_LANGUAGES = frozenset({"java", "csharp", "typescript", "cpp", "objc"})
+_BRACE_LANGUAGES = frozenset({"java", "csharp", "typescript", "go", "rust", "cpp", "objc", "swift"})
+_SEMICOLON_LANGUAGES = frozenset({"java", "csharp", "typescript", "rust", "cpp", "objc"})
 
 #: Targets that place the function body inside a type declaration, so the
 #: body is indented one extra level.
@@ -166,7 +168,8 @@ def _literal(language: Language, value: str | int | float | bool | None) -> str:
             return "YES" if value else "NO"
         return "true" if value else "false"
     if isinstance(value, str):
-        return _string_literal(language, value)
+        rendered = _string_literal(language, value)
+        return f"{rendered}.to_string()" if language == "rust" else rendered
     if isinstance(value, int):
         return _integer_literal(language, value)
     if isinstance(value, float):
@@ -188,6 +191,11 @@ def _binary(context: _Context, expression: Expression, environment: dict[str, st
     right_type = types.infer(expression.right, environment)
     left = _expression(context, expression.left, environment)
     right = _expression(context, expression.right, environment)
+    if language == "rust":
+        if left_type == "number" and right_type == "integer":
+            right = f"({right} as f64)"
+        elif left_type == "integer" and right_type == "number":
+            left = f"({left} as f64)"
     both_integer = left_type == "integer" and right_type == "integer"
 
     if operator == "/" and both_integer:
@@ -234,6 +242,8 @@ def _binary(context: _Context, expression: Expression, environment: dict[str, st
     elif language == "typescript":
         # Strict equality only: TypeScript's == applies type coercion.
         rendered = {"==": "===", "!=": "!=="}.get(operator, operator)
+    if language == "rust":
+        return f"{left} {rendered} {right}"
     return f"({left} {rendered} {right})"
 
 
@@ -265,6 +275,12 @@ def _statements(
         if statement.kind == "return" and statement.expression is not None:
             suffix = ";" if language in _SEMICOLON_LANGUAGES else ""
             value = _expression(context, statement.expression, environment)
+            if (
+                language == "rust"
+                and return_type == "number"
+                and types.infer(statement.expression, environment) == "integer"
+            ):
+                value = f"{value} as f64"
             if language == "typescript" and return_type == "integer":
                 context.helpers.add("typescript_safe_integer")
                 value = f"_elmosRequireSafeInteger({value})"
@@ -278,6 +294,14 @@ def _statements(
                 if statement.else_body:
                     lines.append(f"{prefix}else:")
                     lines.extend(_statements(context, statement.else_body, environment, indent + 1, return_type))
+            elif language in {"go", "rust"}:
+                lines.append(f"{prefix}if {condition} {{")
+                lines.extend(_statements(context, statement.then_body, environment, indent + 1, return_type))
+                lines.append(f"{prefix}}}")
+                if statement.else_body:
+                    lines.append(f"{prefix}else {{")
+                    lines.extend(_statements(context, statement.else_body, environment, indent + 1, return_type))
+                    lines.append(f"{prefix}}}")
             else:
                 lines.append(f"{prefix}if ({condition}) {{")
                 lines.extend(_statements(context, statement.then_body, environment, indent + 1, return_type))
@@ -304,6 +328,16 @@ def _signature(language: Language, function: Function) -> str:
             f"{item.name}: {_type(language, item.type)}" for item in function.parameters
         )
         return f"export function {function.name}({parameters}): {return_type} {{"
+    if language == "go":
+        parameters = ", ".join(
+            f"{item.name} {_type(language, item.type)}" for item in function.parameters
+        )
+        return f"func {function.name}({parameters}) {return_type} {{"
+    if language == "rust":
+        parameters = ", ".join(
+            f"{item.name}: {_type(language, item.type)}" for item in function.parameters
+        )
+        return f"fn {function.name}({parameters}) -> {return_type} {{"
     if language == "swift":
         # `_` on every parameter keeps call sites positional, which is what
         # every other target and the behaviour harness emit.
@@ -357,6 +391,10 @@ def emit(ir: SemanticIR, target: Language) -> EmittedFile:
         for name in sorted(context.helpers):
             preamble += "\n\n" + _PYTHON_HELPERS[name]
         return EmittedFile("migrated.py", f"{preamble}\n\n{functions}\n")
+    if target == "go":
+        return EmittedFile("migrated.go", "package main\n\n" + functions + "\n")
+    if target == "rust":
+        return EmittedFile("migrated.rs", functions + "\n")
     if target == "cpp":
         # <cstdint> for std::int64_t and <string> for std::string: both are
         # required by the canonical type spellings, so both are always

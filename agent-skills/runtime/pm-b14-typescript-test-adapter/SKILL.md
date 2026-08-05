@@ -8,7 +8,7 @@ description: "发现、迁移、运行并规范化 TypeScript/Node.js 单元、�
 
 - Invoke this repository Skill as `$pm-b14-typescript-test-adapter`.
 - Immutable source identity: `typescript-test-adapter` in `precision-migration-b01-44` (B14).
-- Runtime adapter: `directed-backend-route`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `directed-backend-route`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b14-typescript-test-adapter`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

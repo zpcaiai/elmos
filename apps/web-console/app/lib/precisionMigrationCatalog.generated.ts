@@ -11,8 +11,7 @@ export const precisionMigrationSummary = {
   "structuralStatus": "PASS",
   "runtimeProtocolStatus": "CONTRACT_READY",
   "maturityCounts": {
-    "ADAPTER_DECLARED": 68,
-    "INSTALLED": 564
+    "ADAPTER_DECLARED": 632
   },
   "externalEvidenceStatus": "NOT_RUN",
   "productionCertification": "NOT_CERTIFIED"
@@ -23,84 +22,84 @@ export const precisionMigrationPhases = [
     "phase": "A 市场、评估与转换决策",
     "batchRange": "B01-B04",
     "skillCount": 30,
-    "adapterDeclaredCount": 1,
-    "installedOnlyCount": 29
+    "adapterDeclaredCount": 30,
+    "installedOnlyCount": 0
   },
   {
     "phase": "B 源码理解与可信执行底座",
     "batchRange": "B05-B07",
     "skillCount": 32,
-    "adapterDeclaredCount": 0,
-    "installedOnlyCount": 32
+    "adapterDeclaredCount": 32,
+    "installedOnlyCount": 0
   },
   {
     "phase": "C 精密语义表示",
     "batchRange": "B08-B10",
     "skillCount": 36,
-    "adapterDeclaredCount": 0,
-    "installedOnlyCount": 36
+    "adapterDeclaredCount": 36,
+    "installedOnlyCount": 0
   },
   {
     "phase": "D 转换定义与规则引擎",
     "batchRange": "B11-B13",
     "skillCount": 34,
-    "adapterDeclaredCount": 0,
-    "installedOnlyCount": 34
+    "adapterDeclaredCount": 34,
+    "installedOnlyCount": 0
   },
   {
     "phase": "E 后端语言互转",
     "batchRange": "B14-B16",
     "skillCount": 104,
-    "adapterDeclaredCount": 12,
-    "installedOnlyCount": 92
+    "adapterDeclaredCount": 104,
+    "installedOnlyCount": 0
   },
   {
     "phase": "F 前端与多端互转",
     "batchRange": "B17-B18",
     "skillCount": 44,
-    "adapterDeclaredCount": 0,
-    "installedOnlyCount": 44
+    "adapterDeclaredCount": 44,
+    "installedOnlyCount": 0
   },
   {
     "phase": "G 数据库精密互转",
     "batchRange": "B19-B27",
     "skillCount": 126,
-    "adapterDeclaredCount": 0,
-    "installedOnlyCount": 126
+    "adapterDeclaredCount": 126,
+    "installedOnlyCount": 0
   },
   {
     "phase": "H 测试、验证与自动修复",
     "batchRange": "B28-B32",
     "skillCount": 58,
-    "adapterDeclaredCount": 0,
-    "installedOnlyCount": 58
+    "adapterDeclaredCount": 58,
+    "installedOnlyCount": 0
   },
   {
     "phase": "I 形式化证明",
     "batchRange": "B33-B35",
     "skillCount": 30,
-    "adapterDeclaredCount": 0,
-    "installedOnlyCount": 30
+    "adapterDeclaredCount": 30,
+    "installedOnlyCount": 0
   },
   {
     "phase": "J 模型与Agent执行系统",
     "batchRange": "B36-B37",
     "skillCount": 22,
-    "adapterDeclaredCount": 0,
-    "installedOnlyCount": 22
+    "adapterDeclaredCount": 22,
+    "installedOnlyCount": 0
   },
   {
     "phase": "K 从Skills生成完整项目",
     "batchRange": "B38-B40",
     "skillCount": 29,
-    "adapterDeclaredCount": 0,
-    "installedOnlyCount": 29
+    "adapterDeclaredCount": 29,
+    "installedOnlyCount": 0
   },
   {
     "phase": "L 证据、上线和产品化",
     "batchRange": "B41-B44",
     "skillCount": 42,
-    "adapterDeclaredCount": 10,
-    "installedOnlyCount": 32
+    "adapterDeclaredCount": 42,
+    "installedOnlyCount": 0
   }
 ] as const;

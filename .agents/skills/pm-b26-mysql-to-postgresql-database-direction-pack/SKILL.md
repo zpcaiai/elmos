@@ -8,7 +8,7 @@ description: "提供从 MySQL 到 PostgreSQL 的数据库专用迁移包，覆�
 
 - Invoke this repository Skill as `$pm-b26-mysql-to-postgresql-database-direction-pack`.
 - Immutable source identity: `mysql-to-postgresql-database-direction-pack` in `precision-migration-b01-44` (B26).
-- Runtime adapter: `database-and-data-route`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `database-and-data-route`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b26-mysql-to-postgresql-database-direction-pack`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

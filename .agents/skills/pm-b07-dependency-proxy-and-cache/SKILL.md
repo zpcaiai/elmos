@@ -8,7 +8,7 @@ description: "通过受控代理、镜像和缓存获取依赖，并记录来源
 
 - Invoke this repository Skill as `$pm-b07-dependency-proxy-and-cache`.
 - Immutable source identity: `dependency-proxy-and-cache` in `precision-migration-b01-44` (B07).
-- Runtime adapter: `semantic-recovery-and-ir`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `semantic-recovery-and-ir`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b07-dependency-proxy-and-cache`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

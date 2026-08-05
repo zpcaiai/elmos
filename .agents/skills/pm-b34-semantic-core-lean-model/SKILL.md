@@ -8,7 +8,7 @@ description: "把 Semantic Core、类型、Effect、状态和求值关系编码�
 
 - Invoke this repository Skill as `$pm-b34-semantic-core-lean-model`.
 - Immutable source identity: `semantic-core-lean-model` in `precision-migration-b01-44` (B34).
-- Runtime adapter: `formal-and-advanced-verification`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `formal-and-advanced-verification`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b34-semantic-core-lean-model`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

@@ -8,7 +8,7 @@ description: "处理泛型擦除、实例化、约束、协变、Trait bound 和
 
 - Invoke this repository Skill as `$pm-b15-generic-type-lowering`.
 - Immutable source identity: `generic-type-lowering` in `precision-migration-b01-44` (B15).
-- Runtime adapter: `directed-backend-route`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `directed-backend-route`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b15-generic-type-lowering`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

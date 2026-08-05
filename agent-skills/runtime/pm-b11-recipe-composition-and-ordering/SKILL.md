@@ -8,7 +8,7 @@ description: "解决规则依赖、顺序、冲突、幂等和可交换性. Prec
 
 - Invoke this repository Skill as `$pm-b11-recipe-composition-and-ordering`.
 - Immutable source identity: `recipe-composition-and-ordering` in `precision-migration-b01-44` (B11).
-- Runtime adapter: `semantic-recovery-and-ir`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `semantic-recovery-and-ir`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b11-recipe-composition-and-ordering`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

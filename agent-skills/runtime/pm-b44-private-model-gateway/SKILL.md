@@ -8,7 +8,7 @@ description: "接入客户自有、开源或国产模型，支持审计、限流
 
 - Invoke this repository Skill as `$pm-b44-private-model-gateway`.
 - Immutable source identity: `private-model-gateway` in `precision-migration-b01-44` (B44).
-- Runtime adapter: `enterprise-private-commercialization`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `enterprise-private-commercialization`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b44-private-model-gateway`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

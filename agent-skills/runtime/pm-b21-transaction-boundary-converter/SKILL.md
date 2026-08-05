@@ -8,7 +8,7 @@ description: "映射隐式/显式提交、自治事务、保存点、传播和�
 
 - Invoke this repository Skill as `$pm-b21-transaction-boundary-converter`.
 - Immutable source identity: `transaction-boundary-converter` in `precision-migration-b01-44` (B21).
-- Runtime adapter: `database-and-data-route`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `database-and-data-route`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b21-transaction-boundary-converter`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

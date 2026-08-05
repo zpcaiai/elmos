@@ -8,7 +8,7 @@ description: "转换索引、分区、聚簇、表达式、部分索引和存储
 
 - Invoke this repository Skill as `$pm-b20-index-and-partition-converter`.
 - Immutable source identity: `index-and-partition-converter` in `precision-migration-b01-44` (B20).
-- Runtime adapter: `database-and-data-route`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `database-and-data-route`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b20-index-and-partition-converter`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

@@ -8,7 +8,7 @@ description: "映射请求序列化、取消、重试、缓存、错误、竞态
 
 - Invoke this repository Skill as `$pm-b17-network-request-semantic-mapping`.
 - Immutable source identity: `network-request-semantic-mapping` in `precision-migration-b01-44` (B17).
-- Runtime adapter: `frontend-client-route`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `frontend-client-route`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b17-network-request-semantic-mapping`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

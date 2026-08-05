@@ -8,7 +8,7 @@ description: "评估团队对目标语言、框架、工具链、运维和长期
 
 - Invoke this repository Skill as `$pm-b04-team-capability-fit-analysis`.
 - Immutable source identity: `team-capability-fit-analysis` in `precision-migration-b01-44` (B04).
-- Runtime adapter: `assessment-and-target-planning`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `assessment-and-target-planning`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b04-team-capability-fit-analysis`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

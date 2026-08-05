@@ -8,7 +8,7 @@ description: "验证失败路径无部分提交、事务边界正确且源目标
 
 - Invoke this repository Skill as `$pm-b32-transaction-atomicity-validation`.
 - Immutable source identity: `transaction-atomicity-validation` in `precision-migration-b01-44` (B32).
-- Runtime adapter: `differential-test-and-repair`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `differential-test-and-repair`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b32-transaction-atomicity-validation`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

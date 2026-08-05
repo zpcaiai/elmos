@@ -8,7 +8,7 @@ description: "表达异步任务、取消传播、Latest-wins、超时、悬挂�
 
 - Invoke this repository Skill as `$pm-b09-async-cancellation-model`.
 - Immutable source identity: `async-cancellation-model` in `precision-migration-b01-44` (B09).
-- Runtime adapter: `semantic-recovery-and-ir`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `semantic-recovery-and-ir`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b09-async-cancellation-model`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

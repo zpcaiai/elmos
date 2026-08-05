@@ -8,7 +8,7 @@ description: "优先选择更易类型检查、证明、差分和运行验证的
 
 - Invoke this repository Skill as `$pm-b13-candidate-verifiability-ranker`.
 - Immutable source identity: `candidate-verifiability-ranker` in `precision-migration-b01-44` (B13).
-- Runtime adapter: `semantic-recovery-and-ir`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `semantic-recovery-and-ir`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b13-candidate-verifiability-ranker`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

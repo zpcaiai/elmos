@@ -8,7 +8,7 @@ description: "按具体语言/框架/数据库方向排名模型，而非依赖�
 
 - Invoke this repository Skill as `$pm-b36-language-pair-model-ranking`.
 - Immutable source identity: `language-pair-model-ranking` in `precision-migration-b01-44` (B36).
-- Runtime adapter: `model-routing-and-agent-harness`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `model-routing-and-agent-harness`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b36-language-pair-model-ranking`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

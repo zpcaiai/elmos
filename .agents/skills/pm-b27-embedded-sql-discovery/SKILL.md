@@ -8,7 +8,7 @@ description: "发现源码、模板、配置、报表和脚本中的嵌入式 SQ
 
 - Invoke this repository Skill as `$pm-b27-embedded-sql-discovery`.
 - Immutable source identity: `embedded-sql-discovery` in `precision-migration-b01-44` (B27).
-- Runtime adapter: `database-and-data-route`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `database-and-data-route`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b27-embedded-sql-discovery`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

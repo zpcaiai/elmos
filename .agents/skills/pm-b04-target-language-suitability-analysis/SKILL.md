@@ -8,7 +8,7 @@ description: "分析目标语言在性能、并发、安全、生态、人才、
 
 - Invoke this repository Skill as `$pm-b04-target-language-suitability-analysis`.
 - Immutable source identity: `target-language-suitability-analysis` in `precision-migration-b01-44` (B04).
-- Runtime adapter: `assessment-and-target-planning`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `assessment-and-target-planning`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b04-target-language-suitability-analysis`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

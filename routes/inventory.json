@@ -9,6 +9,10 @@
       "engine_path": "engines/dotnet-engine/src/Elmos.Dotnet.SemanticCli",
       "version": "10.0.301"
     },
+    "go": {
+      "engine_path": "engines/polyglot-route-engine/native/go/analyzer.go",
+      "version": "1.25.0"
+    },
     "java": {
       "engine_path": "engines/polyglot-route-engine/native/java/Analyzer.java",
       "version": "21.0.11"
@@ -17,27 +21,20 @@
       "engine_path": "engines/polyglot-route-engine/src/elmos_polyglot_route/python_analyzer.py",
       "version": "3.12.12"
     },
+    "rust": {
+      "engine_path": "engines/polyglot-route-engine/native/rust/src/main.rs",
+      "version": "1.89.0"
+    },
     "typescript": {
       "engine_path": "engines/frontend-client-engine/src/polyglot.ts",
       "version": "5.9.2 / Node 26.0.0"
     }
   },
-  "limited_route_count": 12,
+  "limited_route_count": 30,
   "local_execution_evidence": "PASSED_LOCAL",
   "research_route_count": 0,
-  "route_count": 12,
+  "route_count": 30,
   "routes": [
-    {
-      "external_certification_status": "NOT_RUN",
-      "independent_verification_status": "NOT_RUN",
-      "local_execution_status": "PASSED_LOCAL",
-      "route_key": "java-to-python",
-      "source": "java",
-      "source_version": "21.0.11",
-      "status": "limited",
-      "target": "python",
-      "target_version": "3.12.12"
-    },
     {
       "external_certification_status": "NOT_RUN",
       "independent_verification_status": "NOT_RUN",
@@ -53,9 +50,207 @@
       "external_certification_status": "NOT_RUN",
       "independent_verification_status": "NOT_RUN",
       "local_execution_status": "PASSED_LOCAL",
+      "route_key": "java-to-go",
+      "source": "java",
+      "source_version": "21.0.11",
+      "status": "limited",
+      "target": "go",
+      "target_version": "1.25.0"
+    },
+    {
+      "external_certification_status": "NOT_RUN",
+      "independent_verification_status": "NOT_RUN",
+      "local_execution_status": "PASSED_LOCAL",
+      "route_key": "java-to-rust",
+      "source": "java",
+      "source_version": "21.0.11",
+      "status": "limited",
+      "target": "rust",
+      "target_version": "1.89.0"
+    },
+    {
+      "external_certification_status": "NOT_RUN",
+      "independent_verification_status": "NOT_RUN",
+      "local_execution_status": "PASSED_LOCAL",
+      "route_key": "java-to-python",
+      "source": "java",
+      "source_version": "21.0.11",
+      "status": "limited",
+      "target": "python",
+      "target_version": "3.12.12"
+    },
+    {
+      "external_certification_status": "NOT_RUN",
+      "independent_verification_status": "NOT_RUN",
+      "local_execution_status": "PASSED_LOCAL",
       "route_key": "java-to-typescript",
       "source": "java",
       "source_version": "21.0.11",
+      "status": "limited",
+      "target": "typescript",
+      "target_version": "5.9.2 / Node 26.0.0"
+    },
+    {
+      "external_certification_status": "NOT_RUN",
+      "independent_verification_status": "NOT_RUN",
+      "local_execution_status": "PASSED_LOCAL",
+      "route_key": "csharp-to-java",
+      "source": "csharp",
+      "source_version": "10.0.301",
+      "status": "limited",
+      "target": "java",
+      "target_version": "21.0.11"
+    },
+    {
+      "external_certification_status": "NOT_RUN",
+      "independent_verification_status": "NOT_RUN",
+      "local_execution_status": "PASSED_LOCAL",
+      "route_key": "csharp-to-go",
+      "source": "csharp",
+      "source_version": "10.0.301",
+      "status": "limited",
+      "target": "go",
+      "target_version": "1.25.0"
+    },
+    {
+      "external_certification_status": "NOT_RUN",
+      "independent_verification_status": "NOT_RUN",
+      "local_execution_status": "PASSED_LOCAL",
+      "route_key": "csharp-to-rust",
+      "source": "csharp",
+      "source_version": "10.0.301",
+      "status": "limited",
+      "target": "rust",
+      "target_version": "1.89.0"
+    },
+    {
+      "external_certification_status": "NOT_RUN",
+      "independent_verification_status": "NOT_RUN",
+      "local_execution_status": "PASSED_LOCAL",
+      "route_key": "csharp-to-python",
+      "source": "csharp",
+      "source_version": "10.0.301",
+      "status": "limited",
+      "target": "python",
+      "target_version": "3.12.12"
+    },
+    {
+      "external_certification_status": "NOT_RUN",
+      "independent_verification_status": "NOT_RUN",
+      "local_execution_status": "PASSED_LOCAL",
+      "route_key": "csharp-to-typescript",
+      "source": "csharp",
+      "source_version": "10.0.301",
+      "status": "limited",
+      "target": "typescript",
+      "target_version": "5.9.2 / Node 26.0.0"
+    },
+    {
+      "external_certification_status": "NOT_RUN",
+      "independent_verification_status": "NOT_RUN",
+      "local_execution_status": "PASSED_LOCAL",
+      "route_key": "go-to-java",
+      "source": "go",
+      "source_version": "1.25.0",
+      "status": "limited",
+      "target": "java",
+      "target_version": "21.0.11"
+    },
+    {
+      "external_certification_status": "NOT_RUN",
+      "independent_verification_status": "NOT_RUN",
+      "local_execution_status": "PASSED_LOCAL",
+      "route_key": "go-to-csharp",
+      "source": "go",
+      "source_version": "1.25.0",
+      "status": "limited",
+      "target": "csharp",
+      "target_version": "10.0.301"
+    },
+    {
+      "external_certification_status": "NOT_RUN",
+      "independent_verification_status": "NOT_RUN",
+      "local_execution_status": "PASSED_LOCAL",
+      "route_key": "go-to-rust",
+      "source": "go",
+      "source_version": "1.25.0",
+      "status": "limited",
+      "target": "rust",
+      "target_version": "1.89.0"
+    },
+    {
+      "external_certification_status": "NOT_RUN",
+      "independent_verification_status": "NOT_RUN",
+      "local_execution_status": "PASSED_LOCAL",
+      "route_key": "go-to-python",
+      "source": "go",
+      "source_version": "1.25.0",
+      "status": "limited",
+      "target": "python",
+      "target_version": "3.12.12"
+    },
+    {
+      "external_certification_status": "NOT_RUN",
+      "independent_verification_status": "NOT_RUN",
+      "local_execution_status": "PASSED_LOCAL",
+      "route_key": "go-to-typescript",
+      "source": "go",
+      "source_version": "1.25.0",
+      "status": "limited",
+      "target": "typescript",
+      "target_version": "5.9.2 / Node 26.0.0"
+    },
+    {
+      "external_certification_status": "NOT_RUN",
+      "independent_verification_status": "NOT_RUN",
+      "local_execution_status": "PASSED_LOCAL",
+      "route_key": "rust-to-java",
+      "source": "rust",
+      "source_version": "1.89.0",
+      "status": "limited",
+      "target": "java",
+      "target_version": "21.0.11"
+    },
+    {
+      "external_certification_status": "NOT_RUN",
+      "independent_verification_status": "NOT_RUN",
+      "local_execution_status": "PASSED_LOCAL",
+      "route_key": "rust-to-csharp",
+      "source": "rust",
+      "source_version": "1.89.0",
+      "status": "limited",
+      "target": "csharp",
+      "target_version": "10.0.301"
+    },
+    {
+      "external_certification_status": "NOT_RUN",
+      "independent_verification_status": "NOT_RUN",
+      "local_execution_status": "PASSED_LOCAL",
+      "route_key": "rust-to-go",
+      "source": "rust",
+      "source_version": "1.89.0",
+      "status": "limited",
+      "target": "go",
+      "target_version": "1.25.0"
+    },
+    {
+      "external_certification_status": "NOT_RUN",
+      "independent_verification_status": "NOT_RUN",
+      "local_execution_status": "PASSED_LOCAL",
+      "route_key": "rust-to-python",
+      "source": "rust",
+      "source_version": "1.89.0",
+      "status": "limited",
+      "target": "python",
+      "target_version": "3.12.12"
+    },
+    {
+      "external_certification_status": "NOT_RUN",
+      "independent_verification_status": "NOT_RUN",
+      "local_execution_status": "PASSED_LOCAL",
+      "route_key": "rust-to-typescript",
+      "source": "rust",
+      "source_version": "1.89.0",
       "status": "limited",
       "target": "typescript",
       "target_version": "5.9.2 / Node 26.0.0"
@@ -86,42 +281,31 @@
       "external_certification_status": "NOT_RUN",
       "independent_verification_status": "NOT_RUN",
       "local_execution_status": "PASSED_LOCAL",
-      "route_key": "python-to-typescript",
+      "route_key": "python-to-go",
       "source": "python",
       "source_version": "3.12.12",
       "status": "limited",
-      "target": "typescript",
-      "target_version": "5.9.2 / Node 26.0.0"
+      "target": "go",
+      "target_version": "1.25.0"
     },
     {
       "external_certification_status": "NOT_RUN",
       "independent_verification_status": "NOT_RUN",
       "local_execution_status": "PASSED_LOCAL",
-      "route_key": "csharp-to-java",
-      "source": "csharp",
-      "source_version": "10.0.301",
+      "route_key": "python-to-rust",
+      "source": "python",
+      "source_version": "3.12.12",
       "status": "limited",
-      "target": "java",
-      "target_version": "21.0.11"
+      "target": "rust",
+      "target_version": "1.89.0"
     },
     {
       "external_certification_status": "NOT_RUN",
       "independent_verification_status": "NOT_RUN",
       "local_execution_status": "PASSED_LOCAL",
-      "route_key": "csharp-to-python",
-      "source": "csharp",
-      "source_version": "10.0.301",
-      "status": "limited",
-      "target": "python",
-      "target_version": "3.12.12"
-    },
-    {
-      "external_certification_status": "NOT_RUN",
-      "independent_verification_status": "NOT_RUN",
-      "local_execution_status": "PASSED_LOCAL",
-      "route_key": "csharp-to-typescript",
-      "source": "csharp",
-      "source_version": "10.0.301",
+      "route_key": "python-to-typescript",
+      "source": "python",
+      "source_version": "3.12.12",
       "status": "limited",
       "target": "typescript",
       "target_version": "5.9.2 / Node 26.0.0"
@@ -141,23 +325,45 @@
       "external_certification_status": "NOT_RUN",
       "independent_verification_status": "NOT_RUN",
       "local_execution_status": "PASSED_LOCAL",
-      "route_key": "typescript-to-python",
-      "source": "typescript",
-      "source_version": "5.9.2 / Node 26.0.0",
-      "status": "limited",
-      "target": "python",
-      "target_version": "3.12.12"
-    },
-    {
-      "external_certification_status": "NOT_RUN",
-      "independent_verification_status": "NOT_RUN",
-      "local_execution_status": "PASSED_LOCAL",
       "route_key": "typescript-to-csharp",
       "source": "typescript",
       "source_version": "5.9.2 / Node 26.0.0",
       "status": "limited",
       "target": "csharp",
       "target_version": "10.0.301"
+    },
+    {
+      "external_certification_status": "NOT_RUN",
+      "independent_verification_status": "NOT_RUN",
+      "local_execution_status": "PASSED_LOCAL",
+      "route_key": "typescript-to-go",
+      "source": "typescript",
+      "source_version": "5.9.2 / Node 26.0.0",
+      "status": "limited",
+      "target": "go",
+      "target_version": "1.25.0"
+    },
+    {
+      "external_certification_status": "NOT_RUN",
+      "independent_verification_status": "NOT_RUN",
+      "local_execution_status": "PASSED_LOCAL",
+      "route_key": "typescript-to-rust",
+      "source": "typescript",
+      "source_version": "5.9.2 / Node 26.0.0",
+      "status": "limited",
+      "target": "rust",
+      "target_version": "1.89.0"
+    },
+    {
+      "external_certification_status": "NOT_RUN",
+      "independent_verification_status": "NOT_RUN",
+      "local_execution_status": "PASSED_LOCAL",
+      "route_key": "typescript-to-python",
+      "source": "typescript",
+      "source_version": "5.9.2 / Node 26.0.0",
+      "status": "limited",
+      "target": "python",
+      "target_version": "3.12.12"
     }
   ],
   "schema_version": "1.2.0",

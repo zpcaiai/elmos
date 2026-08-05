@@ -8,7 +8,7 @@ description: "生成原子性、守恒、幂等、回滚和状态可见性的事
 
 - Invoke this repository Skill as `$pm-b33-transaction-invariant-obligation`.
 - Immutable source identity: `transaction-invariant-obligation` in `precision-migration-b01-44` (B33).
-- Runtime adapter: `formal-and-advanced-verification`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `formal-and-advanced-verification`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b33-transaction-invariant-obligation`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

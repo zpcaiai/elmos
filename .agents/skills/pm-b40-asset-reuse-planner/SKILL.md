@@ -8,7 +8,7 @@ description: "决定源码、测试、Schema、资源、协议、组件和部署
 
 - Invoke this repository Skill as `$pm-b40-asset-reuse-planner`.
 - Immutable source identity: `asset-reuse-planner` in `precision-migration-b01-44` (B40).
-- Runtime adapter: `skill-and-project-synthesis`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `skill-and-project-synthesis`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b40-asset-reuse-planner`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

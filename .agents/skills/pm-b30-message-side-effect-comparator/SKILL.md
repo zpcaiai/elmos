@@ -8,7 +8,7 @@ description: "比较消息 Topic、Key、Header、Payload、次数、顺序、�
 
 - Invoke this repository Skill as `$pm-b30-message-side-effect-comparator`.
 - Immutable source identity: `message-side-effect-comparator` in `precision-migration-b01-44` (B30).
-- Runtime adapter: `differential-test-and-repair`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `differential-test-and-repair`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b30-message-side-effect-comparator`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

@@ -11,7 +11,7 @@ import subprocess
 import sys
 from collections import Counter
 from pathlib import Path
-from typing import Any, Callable
+from typing import Callable
 
 import jsonschema
 import yaml
@@ -27,6 +27,7 @@ WORKSPACE_ROOT = ROOT / ".agents" / "skills"
 SCHEMA_ROOT = ROOT / "schemas" / "precision-migration-b01-44"
 WEB_CATALOG = ROOT / "apps" / "web-console" / "app" / "lib" / "precisionMigrationCatalog.generated.ts"
 ADAPTER_REGISTRY = ROOT / "docs" / "precision-migration-b01-44" / "adapter-registry.json"
+EXECUTABLE_CONTRACTS = ROOT / "docs" / "precision-migration-b01-44" / "executable-contracts.json"
 TRUST_STORE_EXAMPLE = ROOT / "config" / "precision-migration" / "trust-store.example.json"
 TEMPLATE_ROOT = ROOT / "templates" / "precision-migration-b01-44"
 VERIFICATION_PACK = ROOT / "verification-packs" / "precision-migration-b01-44-runtime"
@@ -217,8 +218,12 @@ def main() -> int:
     )
 
     from scripts.precision_migration.runtime import Registry, evaluate
+    from scripts.precision_migration.contracts import ContractRegistry
 
     registry = Registry.load()
+    contracts = ContractRegistry.load(EXECUTABLE_CONTRACTS)
+    if len(contracts.by_skill) != 587 or len(contracts.by_handler) != 587:
+        fail("executable contract coverage is incomplete")
     for record in manifest["skills"]:
         if registry.resolve(record["name"])["source_name"] != record["source_name"]:
             fail(f"runtime alias resolution failed: {record['name']}")

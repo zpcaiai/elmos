@@ -8,7 +8,7 @@ description: "比较 Role、Name、State、Value、可见、可用、焦点和�
 
 - Invoke this repository Skill as `$pm-b30-ui-semantic-tree-comparator`.
 - Immutable source identity: `ui-semantic-tree-comparator` in `precision-migration-b01-44` (B30).
-- Runtime adapter: `differential-test-and-repair`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `differential-test-and-repair`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b30-ui-semantic-tree-comparator`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

@@ -8,7 +8,7 @@ description: "根据 Lean 编译与语言服务器反馈定位并修复证明失
 
 - Invoke this repository Skill as `$pm-b34-leanstral-proof-repair`.
 - Immutable source identity: `leanstral-proof-repair` in `precision-migration-b01-44` (B34).
-- Runtime adapter: `formal-and-advanced-verification`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `formal-and-advanced-verification`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b34-leanstral-proof-repair`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

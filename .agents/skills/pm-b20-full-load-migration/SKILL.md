@@ -8,7 +8,7 @@ description: "规划和执行可恢复、可分片、可校验的全量数据迁
 
 - Invoke this repository Skill as `$pm-b20-full-load-migration`.
 - Immutable source identity: `full-load-migration` in `precision-migration-b01-44` (B20).
-- Runtime adapter: `database-and-data-route`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `database-and-data-route`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b20-full-load-migration`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

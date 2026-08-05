@@ -8,7 +8,7 @@ description: "从金额、库存、权限、状态、幂等和守恒规则生成
 
 - Invoke this repository Skill as `$pm-b29-business-invariant-test-generator`.
 - Immutable source identity: `business-invariant-test-generator` in `precision-migration-b01-44` (B29).
-- Runtime adapter: `differential-test-and-repair`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `differential-test-and-repair`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b29-business-invariant-test-generator`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

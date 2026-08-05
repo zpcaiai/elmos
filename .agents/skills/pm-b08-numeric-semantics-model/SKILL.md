@@ -8,7 +8,7 @@ description: "建模整数溢出、浮点、NaN、Infinity、负零、除法和�
 
 - Invoke this repository Skill as `$pm-b08-numeric-semantics-model`.
 - Immutable source identity: `numeric-semantics-model` in `precision-migration-b01-44` (B08).
-- Runtime adapter: `semantic-recovery-and-ir`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `semantic-recovery-and-ir`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b08-numeric-semantics-model`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

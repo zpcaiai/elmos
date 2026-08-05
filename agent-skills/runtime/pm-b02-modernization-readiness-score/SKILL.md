@@ -8,7 +8,7 @@ description: "从可转换性、测试、可观测性、依赖、风险和组织
 
 - Invoke this repository Skill as `$pm-b02-modernization-readiness-score`.
 - Immutable source identity: `modernization-readiness-score` in `precision-migration-b01-44` (B02).
-- Runtime adapter: `assessment-and-target-planning`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `assessment-and-target-planning`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b02-modernization-readiness-score`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

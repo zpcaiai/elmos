@@ -8,7 +8,7 @@ description: "比较规范化 Trace 图、关键偏序和业务语义 Span. Prec
 
 - Invoke this repository Skill as `$pm-b30-trace-graph-comparator`.
 - Immutable source identity: `trace-graph-comparator` in `precision-migration-b01-44` (B30).
-- Runtime adapter: `differential-test-and-repair`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `differential-test-and-repair`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b30-trace-graph-comparator`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

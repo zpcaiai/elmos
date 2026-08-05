@@ -8,7 +8,7 @@ description: "迁移 Sequence、缓存、循环、取值和并发语义. Precisi
 
 - Invoke this repository Skill as `$pm-b22-oracle-sequence`.
 - Immutable source identity: `oracle-sequence` in `precision-migration-b01-44` (B22).
-- Runtime adapter: `database-and-data-route`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `database-and-data-route`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b22-oracle-sequence`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

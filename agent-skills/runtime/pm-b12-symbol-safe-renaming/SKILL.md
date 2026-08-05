@@ -8,7 +8,7 @@ description: "在作用域、重载、反射、配置和序列化约束下安全
 
 - Invoke this repository Skill as `$pm-b12-symbol-safe-renaming`.
 - Immutable source identity: `symbol-safe-renaming` in `precision-migration-b01-44` (B12).
-- Runtime adapter: `semantic-recovery-and-ir`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `semantic-recovery-and-ir`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b12-symbol-safe-renaming`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

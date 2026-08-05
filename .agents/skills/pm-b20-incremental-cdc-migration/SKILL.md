@@ -8,7 +8,7 @@ description: "规划和执行日志/触发器/时间戳增量迁移及位点恢�
 
 - Invoke this repository Skill as `$pm-b20-incremental-cdc-migration`.
 - Immutable source identity: `incremental-cdc-migration` in `precision-migration-b01-44` (B20).
-- Runtime adapter: `database-and-data-route`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `database-and-data-route`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b20-incremental-cdc-migration`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

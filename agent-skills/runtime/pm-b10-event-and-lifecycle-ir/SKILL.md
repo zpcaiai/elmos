@@ -8,7 +8,7 @@ description: "表达挂载、更新、销毁、Effect、订阅、焦点、键盘
 
 - Invoke this repository Skill as `$pm-b10-event-and-lifecycle-ir`.
 - Immutable source identity: `event-and-lifecycle-ir` in `precision-migration-b01-44` (B10).
-- Runtime adapter: `semantic-recovery-and-ir`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `semantic-recovery-and-ir`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b10-event-and-lifecycle-ir`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

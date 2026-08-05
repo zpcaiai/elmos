@@ -8,7 +8,7 @@ description: "迁移 VPD/FGAC 策略函数、上下文和行列级安全. Precis
 
 - Invoke this repository Skill as `$pm-b22-oracle-fine-grained-access-control`.
 - Immutable source identity: `oracle-fine-grained-access-control` in `precision-migration-b01-44` (B22).
-- Runtime adapter: `database-and-data-route`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `database-and-data-route`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b22-oracle-fine-grained-access-control`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

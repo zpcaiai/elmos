@@ -29,7 +29,7 @@
   "target": {
     "language": "typescript",
     "path": "migrated.ts",
-    "sha256": "sha256:b3d004e774de233e05efd8bfed2c1c5711807f5e90000d9bf068da04de2b9a18"
+    "sha256": "sha256:ebcac71db43dbb55136919819718e545ad996a9e8174de7809298f076ba1fd5d"
   },
   "validation": {
     "case_count": 3,

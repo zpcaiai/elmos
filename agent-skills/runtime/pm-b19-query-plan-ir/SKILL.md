@@ -8,7 +8,7 @@ description: "表达访问路径、Join、排序、聚合、并行、统计、�
 
 - Invoke this repository Skill as `$pm-b19-query-plan-ir`.
 - Immutable source identity: `query-plan-ir` in `precision-migration-b01-44` (B19).
-- Runtime adapter: `database-and-data-route`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `database-and-data-route`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b19-query-plan-ir`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

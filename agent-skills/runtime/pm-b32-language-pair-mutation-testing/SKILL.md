@@ -8,7 +8,7 @@ description: "注入特定语言方向常见错误，验证专用测试和验证
 
 - Invoke this repository Skill as `$pm-b32-language-pair-mutation-testing`.
 - Immutable source identity: `language-pair-mutation-testing` in `precision-migration-b01-44` (B32).
-- Runtime adapter: `differential-test-and-repair`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `differential-test-and-repair`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b32-language-pair-mutation-testing`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

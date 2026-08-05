@@ -8,7 +8,7 @@ description: "验证 Skill 元数据、输入输出、前置条件、行为契�
 
 - Invoke this repository Skill as `$pm-b38-skill-schema-validator`.
 - Immutable source identity: `skill-schema-validator` in `precision-migration-b01-44` (B38).
-- Runtime adapter: `skill-and-project-synthesis`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `skill-and-project-synthesis`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b38-skill-schema-validator`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

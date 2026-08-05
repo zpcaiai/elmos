@@ -8,7 +8,7 @@ description: "在缺乏精确 Oracle 时使用输入变换与输出关系验证�
 
 - Invoke this repository Skill as `$pm-b32-metamorphic-testing`.
 - Immutable source identity: `metamorphic-testing` in `precision-migration-b01-44` (B32).
-- Runtime adapter: `differential-test-and-repair`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `differential-test-and-repair`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b32-metamorphic-testing`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

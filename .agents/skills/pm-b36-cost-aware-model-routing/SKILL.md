@@ -8,7 +8,7 @@ description: "在发布门槛不变的前提下最小化每个验收模块的模
 
 - Invoke this repository Skill as `$pm-b36-cost-aware-model-routing`.
 - Immutable source identity: `cost-aware-model-routing` in `precision-migration-b01-44` (B36).
-- Runtime adapter: `model-routing-and-agent-harness`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `model-routing-and-agent-harness`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b36-cost-aware-model-routing`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

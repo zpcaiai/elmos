@@ -44,7 +44,7 @@
             "source": { "const": "read-only" },
             "output": { "const": "dedicated-directory" },
             "network": { "const": "deny" },
-            "secrets": { "const": "deny" },
+            "secrets": { "enum": ["deny", "secret-reference-only"] },
             "shell": { "const": "deny-repository-content" }
           },
           "additionalProperties": false

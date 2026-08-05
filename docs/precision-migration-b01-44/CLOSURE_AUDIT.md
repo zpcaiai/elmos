@@ -4,7 +4,7 @@
 
 - Removed directory-presence and static-validation promotion to `IMPLEMENTED`.
 - Every installed identity uses the ordered maturity model from `SPEC_ONLY` to `CERTIFIED`.
-- Current exact state is 68 `ADAPTER_DECLARED` and 564 `INSTALLED`; neither state is execution or certification.
+- Current exact state is 632 `ADAPTER_DECLARED` and 0 `INSTALLED` without a handler; declaration is still not domain execution or certification.
 
 ## 2. Content-addressed evidence — closed locally
 
@@ -23,8 +23,10 @@
 
 - All 632 identities have exact immutable registry entries and importable handler entrypoints.
 - Repository/request content cannot choose executables or shell commands.
-- 45 orchestrators, one repository assessment, 12 Batch 29 route validators, and 10 evidence-gate Skills own declared handlers.
-- The other 564 entries return typed `REQUIRES_ADAPTER`; this is an explicit domain implementation gap, not a hidden pass.
+- All 587 child Skills own unique digest-bound executable contracts and exact allowlisted handler IDs; repository content cannot select commands.
+- B16 now owns 30 real route executors across Java, C#, Go, Rust, Python, and TypeScript. Each runs native source analysis, target emission/build, three behavior corpora, a negative fail-closed case, and the conservative Batch 29 gate.
+- B41 owns ten distinct handlers for evidence manifests, provenance, rule proof, module equivalence, runtime packages, semantic loss, unresolved obligations, release gates, correctness levels, and Ed25519 certificate signing/verification.
+- The other child handlers execute exact input/content/evidence contracts but do not pretend that their domain-native operation ran; those per-domain executions remain explicit coverage gaps.
 
 ## 5. Direct usability and product loop — closed locally
 
@@ -35,7 +37,7 @@
 ## 6. Operations, coverage, and regression — closed locally
 
 - Durable jobs enforce active, retained-job, request-size, and storage quotas; private file modes; cooperative cancellation; new-ID retry; hash-chained audit; tamper detection; and recoverable archival.
-- The 587-by-12 coverage matrix preserves every `NOT_RUN` and `NOT_AVAILABLE` dimension.
+- The 587-row multidimensional coverage matrix preserves every domain `NOT_RUN`; 2,935 per-Skill positive, negative, integration, holdout, and representative contract tests are tracked separately from domain evidence.
 - CI runs structural/package validation, 632 adapter/discovery checks, trust/runtime negatives, coverage, Batch 35 gate, Web build, and browser/API journeys.
 
 ## Priority disposition
@@ -46,4 +48,4 @@
 
 ## Non-overridable evidence boundary
 
-Local remediation does not complete 564 domain handlers and cannot manufacture independent holdout, representative workload, native source/target, customer, HSM/provider, canary/rollback, production, or certification evidence. Those dimensions remain `NOT_RUN`; production remains `NOT_CERTIFIED` until separately authorized owners execute and sign them.
+Local remediation supplies all exact handler contracts, 30 real B16 route implementations, ten independent B41 handlers, and local Ed25519 signing. It cannot manufacture the remaining domain-native executions, an independent verifier, real customer workloads, production HSM custody, canary/rollback operation, production evidence, or certification. Those dimensions remain `NOT_RUN`; production remains `NOT_CERTIFIED` until separately authorized owners execute and sign them.

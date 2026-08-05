@@ -8,7 +8,7 @@ description: "同步输入、配置、依赖、数据库、外部返回、Locale
 
 - Invoke this repository Skill as `$pm-b30-input-and-environment-synchronizer`.
 - Immutable source identity: `input-and-environment-synchronizer` in `precision-migration-b01-44` (B30).
-- Runtime adapter: `differential-test-and-repair`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `differential-test-and-repair`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b30-input-and-environment-synchronizer`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

@@ -8,7 +8,7 @@ description: "提取并规范化 Rust 类型、泛型、可空性、联合类型
 
 - Invoke this repository Skill as `$pm-b14-rust-type-adapter`.
 - Immutable source identity: `rust-type-adapter` in `precision-migration-b01-44` (B14).
-- Runtime adapter: `directed-backend-route`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `directed-backend-route`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b14-rust-type-adapter`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

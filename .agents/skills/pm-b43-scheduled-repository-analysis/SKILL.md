@@ -8,7 +8,7 @@ description: "按计划重新分析仓库、依赖、版本、架构、测试和
 
 - Invoke this repository Skill as `$pm-b43-scheduled-repository-analysis`.
 - Immutable source identity: `scheduled-repository-analysis` in `precision-migration-b01-44` (B43).
-- Runtime adapter: `continuous-modernization-learning`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `continuous-modernization-learning`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b43-scheduled-repository-analysis`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

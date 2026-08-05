@@ -8,7 +8,7 @@ description: "估算需要人工处理的比例、工作量、技能组合和关
 
 - Invoke this repository Skill as `$pm-b03-manual-effort-estimator`.
 - Immutable source identity: `manual-effort-estimator` in `precision-migration-b01-44` (B03).
-- Runtime adapter: `assessment-and-target-planning`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `assessment-and-target-planning`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b03-manual-effort-estimator`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

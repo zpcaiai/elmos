@@ -8,7 +8,7 @@ description: "迁移 MERGE，并评估并发、重复匹配和目标平台安全
 
 - Invoke this repository Skill as `$pm-b23-sqlserver-merge`.
 - Immutable source identity: `sqlserver-merge` in `precision-migration-b01-44` (B23).
-- Runtime adapter: `database-and-data-route`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `database-and-data-route`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b23-sqlserver-merge`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

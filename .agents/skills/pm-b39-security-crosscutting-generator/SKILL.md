@@ -8,7 +8,7 @@ description: "生成认证、授权、租户隔离、审计、Secret、限流和
 
 - Invoke this repository Skill as `$pm-b39-security-crosscutting-generator`.
 - Immutable source identity: `security-crosscutting-generator` in `precision-migration-b01-44` (B39).
-- Runtime adapter: `skill-and-project-synthesis`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `skill-and-project-synthesis`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b39-security-crosscutting-generator`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

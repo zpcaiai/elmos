@@ -8,7 +8,7 @@ description: "统一 Maven、Gradle、NuGet、npm、pnpm、Cargo、pip、Go Modu
 
 - Invoke this repository Skill as `$pm-b06-package-manager-adapter`.
 - Immutable source identity: `package-manager-adapter` in `precision-migration-b01-44` (B06).
-- Runtime adapter: `semantic-recovery-and-ir`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `semantic-recovery-and-ir`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b06-package-manager-adapter`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

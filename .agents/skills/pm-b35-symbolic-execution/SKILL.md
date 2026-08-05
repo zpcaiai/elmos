@@ -8,7 +8,7 @@ description: "对关键切片探索符号路径并求解崩溃、违规和不等
 
 - Invoke this repository Skill as `$pm-b35-symbolic-execution`.
 - Immutable source identity: `symbolic-execution` in `precision-migration-b01-44` (B35).
-- Runtime adapter: `formal-and-advanced-verification`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `formal-and-advanced-verification`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b35-symbolic-execution`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

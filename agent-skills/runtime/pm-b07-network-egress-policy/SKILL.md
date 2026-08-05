@@ -8,7 +8,7 @@ description: "默认禁止外网，按域名、协议、时间和任务最小化
 
 - Invoke this repository Skill as `$pm-b07-network-egress-policy`.
 - Immutable source identity: `network-egress-policy` in `precision-migration-b01-44` (B07).
-- Runtime adapter: `semantic-recovery-and-ir`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `semantic-recovery-and-ir`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b07-network-egress-policy`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

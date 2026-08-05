@@ -8,7 +8,7 @@ description: "定义应用、模块、端口、服务、命令、查询、实体
 
 - Invoke this repository Skill as `$pm-b10-backend-application-ir`.
 - Immutable source identity: `backend-application-ir` in `precision-migration-b01-44` (B10).
-- Runtime adapter: `semantic-recovery-and-ir`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `semantic-recovery-and-ir`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b10-backend-application-ir`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

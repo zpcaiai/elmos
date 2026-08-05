@@ -16,6 +16,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
 from scripts.precision_migration.adapters import AdapterRegistry, execute  # noqa: E402
+from scripts.precision_migration.contracts import ContractRegistry  # noqa: E402
 from scripts.precision_migration.run_gate import (  # noqa: E402
     EXTERNAL_CHECKS,
     LOCAL_CHECKS,
@@ -50,7 +51,7 @@ class PrecisionMigrationRuntimeTest(unittest.TestCase):
         cls.root = Path(cls.temporary.name)
         cls.keys: dict[str, Path] = {}
         trust_keys = []
-        for role in ("evidence-authorizer", "proof-verifier", "release-approver", "gate-evidence-authorizer"):
+        for role in ("evidence-authorizer", "proof-verifier", "release-approver", "gate-evidence-authorizer", "certificate-signer"):
             private = cls.root / f"{role}.private.pem"
             public = cls.root / f"{role}.public.pem"
             subprocess.run(
@@ -282,8 +283,8 @@ class PrecisionMigrationRuntimeTest(unittest.TestCase):
         self.assertEqual(632, self.registry.manifest["workspace_skill_count"])
         self.assertEqual("ALL_RUNTIME_SKILLS", self.registry.manifest["workspace_installation"])
         maturities = {record["maturity"] for record in self.registry.by_runtime_name.values()}
-        self.assertEqual({"INSTALLED", "ADAPTER_DECLARED"}, maturities)
-        self.assertEqual(68, sum(record["maturity"] == "ADAPTER_DECLARED" for record in self.registry.by_runtime_name.values()))
+        self.assertEqual({"ADAPTER_DECLARED"}, maturities)
+        self.assertEqual(632, sum(record["maturity"] == "ADAPTER_DECLARED" for record in self.registry.by_runtime_name.values()))
         for runtime_name, record in self.registry.by_runtime_name.items():
             self.assertEqual(record, self.registry.resolve(runtime_name))
             self.assertEqual(record, self.registry.resolve(record["source_name"]))
@@ -296,6 +297,18 @@ class PrecisionMigrationRuntimeTest(unittest.TestCase):
         batches = [item["batch"] for stage in batch_plan(self.registry, record)["stages"] for item in stage["batches"]]
         self.assertLess(batches.index(2), batches.index(16))
         self.assertLess(batches.index(16), batches.index(41))
+
+    def test_all_child_skills_have_unique_digest_bound_executable_contracts(self) -> None:
+        contracts = ContractRegistry.load()
+        self.assertEqual(587, len(contracts.by_skill))
+        self.assertEqual(587, len(contracts.by_handler))
+        for skill, contract in contracts.by_skill.items():
+            entry = self.adapter_registry.by_skill[skill]
+            if entry["handler_id"].startswith("precision-skill-v1:"):
+                self.assertEqual(contract["handler_id"], entry["handler_id"])
+            self.assertTrue(contract["source_sha256"].startswith("sha256:"))
+            self.assertTrue(contract["workflow"])
+            self.assertTrue(contract["validation_gates"])
 
     def test_assessment_with_real_signed_evidence_is_verified(self) -> None:
         result = self.evaluate(self.complete_request("repository-modernization-assessment"))
@@ -380,9 +393,9 @@ class PrecisionMigrationRuntimeTest(unittest.TestCase):
         self.assertEqual("CONDITIONALLY_VERIFIED", result["status"])
         self.assertEqual("BLOCK", result["release_gate"]["decision"])
 
-    def test_installed_only_skill_requires_adapter_even_with_evidence(self) -> None:
+    def test_exact_skill_with_complete_signed_evidence_is_verified(self) -> None:
         result = self.evaluate(self.complete_request("java-to-go-direction-pack", "transform"))
-        self.assertEqual("REQUIRES_ADAPTER", result["status"])
+        self.assertEqual("VERIFIED", result["status"])
 
     def test_signed_scoped_approval_is_required_for_high_risk(self) -> None:
         request = self.complete_request("repository-modernization-assessment")
@@ -522,21 +535,33 @@ class PrecisionMigrationRuntimeTest(unittest.TestCase):
         report = json.loads((output / "repository-assessment.json").read_text(encoding="utf-8"))
         self.assertGreater(report["file_count"], 0)
 
-    def test_exact_batch29_route_adapter_executes_checked_in_validator(self) -> None:
+    def test_exact_batch29_route_adapter_transforms_builds_and_replays_behavior(self) -> None:
         request = self.base_request("java-to-python-direction-pack", "validate")
+        source = ROOT / "engines" / "polyglot-route-engine" / "fixtures" / "java" / "Pricing.java"
+        cases = ROOT / "engines" / "polyglot-route-engine" / "fixtures" / "behavior-cases.json"
+        request["inputs"] = {
+            "assets": [
+                {**self.content_ref(source), "sensitivity": "internal", "version": "fixture-v1"},
+                {**self.content_ref(cases), "sensitivity": "internal", "version": "fixture-v1"},
+            ],
+            "parameters": {"function_name": "calculate", "source_asset_index": 0, "cases_asset_index": 1},
+        }
         output = self.root / "adapter-route"
         result = execute(
             request,
             output,
-            evidence_roots=[self.root],
+            evidence_roots=[ROOT, self.root],
             adapter_registry=self.adapter_registry,
             skill_registry=self.registry,
         )
         self.assertEqual("LOCAL_EXECUTED", result["execution_state"])
-        self.assertEqual(0, json.loads((output / "route-validation.json").read_text())["exit_code"])
+        report = json.loads((output / "route-execution.json").read_text())
+        self.assertEqual(0, report["engine_exit_code"])
+        self.assertEqual(0, report["route_gate_exit_code"])
+        self.assertTrue((output / "migration" / "migrated.py").is_file())
 
     def test_repository_content_cannot_select_a_command(self) -> None:
-        request = self.base_request("java-to-go-direction-pack", "transform")
+        request = self.base_request("business-rule-extractor", "validate")
         request["inputs"]["parameters"] = {"command": "touch should-not-exist"}
         output = self.root / "adapter-command-injection"
         result = execute(
@@ -546,8 +571,37 @@ class PrecisionMigrationRuntimeTest(unittest.TestCase):
             adapter_registry=self.adapter_registry,
             skill_registry=self.registry,
         )
-        self.assertEqual("REQUIRES_ADAPTER", result["execution_state"])
+        self.assertEqual("CONDITIONALLY_VERIFIED", result["execution_state"])
         self.assertFalse((ROOT / "should-not-exist").exists())
+
+    def test_b41_capabilities_use_ten_independent_handlers(self) -> None:
+        entries = [entry for entry in self.adapter_registry.by_skill.values() if entry.get("batch") == 41 and entry.get("kind") == "skill"]
+        self.assertEqual(10, len(entries))
+        self.assertEqual(10, len({entry["handler_id"] for entry in entries}))
+        self.assertEqual(10, len({entry["handler_entrypoint"] for entry in entries}))
+
+    def test_b41_ed25519_certificate_is_signed_and_immediately_verified(self) -> None:
+        request = self.base_request("certificate-signing", "validate")
+        request["inputs"]["parameters"] = {
+            "signing_key_path": str(self.keys["certificate-signer"]),
+            "key_id": "test-certificate-signer",
+            "payload_asset_index": 0,
+            "issued_at": "2025-12-31T00:00:00Z",
+            "expires_at": "2026-12-31T00:00:00Z",
+        }
+        output = self.root / "b41-signing"
+        result = execute(
+            request,
+            output,
+            evidence_roots=[self.root],
+            trust_store=self.trust_store,
+            adapter_registry=self.adapter_registry,
+            skill_registry=self.registry,
+        )
+        self.assertEqual("LOCAL_EXECUTED", result["execution_state"])
+        certificate = json.loads((output / "signed-certificate.json").read_text())
+        self.assertEqual("PASSED", certificate["verification"])
+        self.assertEqual("NOT_RUN", certificate["hsm_execution"])
 
     def test_tenant_job_lifecycle_retry_and_audit_are_durable(self) -> None:
         store = JobStore(self.root / "jobs-lifecycle", max_active=2, max_jobs=10, max_bytes=10_000_000)

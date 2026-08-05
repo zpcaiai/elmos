@@ -8,7 +8,7 @@ description: "记录不可抵赖操作、数据处理、模型调用、审批和
 
 - Invoke this repository Skill as `$pm-b44-audit-and-compliance`.
 - Immutable source identity: `audit-and-compliance` in `precision-migration-b01-44` (B44).
-- Runtime adapter: `enterprise-private-commercialization`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `enterprise-private-commercialization`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b44-audit-and-compliance`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

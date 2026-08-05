@@ -8,7 +8,7 @@ description: "运行需要全局分析、多文件状态或复杂生成逻辑的
 
 - Invoke this repository Skill as `$pm-b11-imperative-recipe-runtime`.
 - Immutable source identity: `imperative-recipe-runtime` in `precision-migration-b01-44` (B11).
-- Runtime adapter: `semantic-recovery-and-ir`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `semantic-recovery-and-ir`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b11-imperative-recipe-runtime`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

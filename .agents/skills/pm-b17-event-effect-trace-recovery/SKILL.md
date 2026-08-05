@@ -8,7 +8,7 @@ description: "恢复用户事件、网络、存储、导航、定时器和平台
 
 - Invoke this repository Skill as `$pm-b17-event-effect-trace-recovery`.
 - Immutable source identity: `event-effect-trace-recovery` in `precision-migration-b01-44` (B17).
-- Runtime adapter: `frontend-client-route`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `frontend-client-route`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b17-event-effect-trace-recovery`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

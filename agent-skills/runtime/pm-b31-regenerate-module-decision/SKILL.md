@@ -8,7 +8,7 @@ description: "判断模块质量或语义偏差过大时是否保留外围并重
 
 - Invoke this repository Skill as `$pm-b31-regenerate-module-decision`.
 - Immutable source identity: `regenerate-module-decision` in `precision-migration-b01-44` (B31).
-- Runtime adapter: `differential-test-and-repair`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `differential-test-and-repair`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b31-regenerate-module-decision`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

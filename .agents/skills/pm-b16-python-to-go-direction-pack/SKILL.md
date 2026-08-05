@@ -8,7 +8,7 @@ description: "提供从 Python 到 Go 的仓库级专用转换与验证包，覆
 
 - Invoke this repository Skill as `$pm-b16-python-to-go-direction-pack`.
 - Immutable source identity: `python-to-go-direction-pack` in `precision-migration-b01-44` (B16).
-- Runtime adapter: `directed-backend-route`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `directed-backend-route`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b16-python-to-go-direction-pack`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

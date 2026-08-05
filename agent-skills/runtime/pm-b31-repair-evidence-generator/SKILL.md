@@ -8,7 +8,7 @@ description: "记录差异、根因、补丁、验证、残余风险和最终状
 
 - Invoke this repository Skill as `$pm-b31-repair-evidence-generator`.
 - Immutable source identity: `repair-evidence-generator` in `precision-migration-b01-44` (B31).
-- Runtime adapter: `differential-test-and-repair`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `differential-test-and-repair`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b31-repair-evidence-generator`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

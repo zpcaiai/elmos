@@ -8,7 +8,7 @@ description: "阻止 sorry、未批准公理、不透明逃逸和不可信证明
 
 - Invoke this repository Skill as `$pm-b34-sorry-and-axiom-detector`.
 - Immutable source identity: `sorry-and-axiom-detector` in `precision-migration-b01-44` (B34).
-- Runtime adapter: `formal-and-advanced-verification`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `formal-and-advanced-verification`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b34-sorry-and-axiom-detector`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

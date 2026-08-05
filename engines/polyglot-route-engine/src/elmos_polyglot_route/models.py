@@ -3,12 +3,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Literal
 
-Language = Literal["java", "python", "csharp", "typescript", "cpp", "objc", "swift"]
+Language = Literal["java", "python", "csharp", "typescript", "go", "rust", "cpp", "objc", "swift"]
 SUPPORTED_LANGUAGES: tuple[Language, ...] = (
     "java",
     "python",
     "csharp",
     "typescript",
+    "go",
+    "rust",
     "cpp",
     "objc",
     "swift",

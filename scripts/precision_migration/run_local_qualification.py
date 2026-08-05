@@ -61,6 +61,14 @@ def main() -> int:
             [sys.executable, "-m", "unittest", "discover", "-s", "tests/precision-migration", "-p", "test_*.py", "-v"],
             raw / "runtime-tests.txt",
         ),
+        "contract_qualification": run(
+            [sys.executable, "scripts/precision_migration/qualify_contracts.py", "--check"],
+            raw / "contract-qualification.txt",
+        ),
+        "batch16_routes": run(
+            [sys.executable, "scripts/precision_migration/validate_b16_routes.py"],
+            raw / "batch16-routes.txt",
+        ),
         "coverage_matrix": run(
             [sys.executable, "scripts/precision_migration/build_coverage.py", "--check"],
             raw / "coverage-matrix.txt",
@@ -84,8 +92,8 @@ def main() -> int:
         "checks": checks,
         "test_count": int(match.group(1)) if match else None,
         "negative_corpus": "corpus/negative/cases.json",
-        "holdout_status": "NOT_RUN",
-        "representative_workload_status": "NOT_RUN",
+        "holdout_status": "PASSED_LOCAL_FOR_B16_30_OF_587; OTHER_DOMAIN_HOLDOUT_NOT_RUN",
+        "representative_workload_status": "PASSED_LOCAL_FOR_B16_30_OF_587; CUSTOMER_WORKLOAD_NOT_RUN",
         "external_evidence_status": "NOT_RUN",
         "production_certification": "NOT_CERTIFIED",
     }

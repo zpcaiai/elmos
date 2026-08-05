@@ -8,7 +8,7 @@ description: "提供从 微信小程序 到 Vue 3 的前端整库专用转换与
 
 - Invoke this repository Skill as `$pm-b18-wechat-miniprogram-to-vue3-direction-pack`.
 - Immutable source identity: `wechat-miniprogram-to-vue3-direction-pack` in `precision-migration-b01-44` (B18).
-- Runtime adapter: `frontend-client-route`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `frontend-client-route`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b18-wechat-miniprogram-to-vue3-direction-pack`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

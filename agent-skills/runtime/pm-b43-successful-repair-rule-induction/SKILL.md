@@ -8,7 +8,7 @@ description: "从重复成功修复中归纳新规则、前置条件和测试. P
 
 - Invoke this repository Skill as `$pm-b43-successful-repair-rule-induction`.
 - Immutable source identity: `successful-repair-rule-induction` in `precision-migration-b01-44` (B43).
-- Runtime adapter: `continuous-modernization-learning`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `continuous-modernization-learning`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b43-successful-repair-rule-induction`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

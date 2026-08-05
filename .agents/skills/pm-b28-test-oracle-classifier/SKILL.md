@@ -8,7 +8,7 @@ description: "标注 Oracle 来源为源运行、源测试、规格、业务规�
 
 - Invoke this repository Skill as `$pm-b28-test-oracle-classifier`.
 - Immutable source identity: `test-oracle-classifier` in `precision-migration-b01-44` (B28).
-- Runtime adapter: `differential-test-and-repair`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `differential-test-and-repair`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b28-test-oracle-classifier`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

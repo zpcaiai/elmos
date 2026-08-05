@@ -26,8 +26,29 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from scripts.precision_migration.runtime import Registry, batch_plan, canonical_digest, evaluate
-from scripts.precision_migration.trust import TrustStore, configured_roots
+from scripts.precision_migration.contracts import (  # noqa: E402
+    ContractRegistry,
+    contract_summary,
+    validate_contract_binding,
+)
+from scripts.precision_migration.b41 import (  # noqa: E402
+    execute_certificate_signing,
+    execute_conversion_provenance,
+    execute_correctness_classifier,
+    execute_evidence_manifest,
+    execute_module_equivalence_certificate,
+    execute_release_gate,
+    execute_rule_proof_certificate,
+    execute_runtime_evidence_package,
+    execute_semantic_loss_report,
+    execute_unresolved_obligation_report,
+)
+from scripts.precision_migration.runtime import Registry, batch_plan, canonical_digest, evaluate  # noqa: E402
+from scripts.precision_migration.trust import (  # noqa: E402
+    TrustStore,
+    configured_roots,
+    verify_content_reference,
+)
 
 
 REGISTRY_PATH = ROOT / "docs" / "precision-migration-b01-44" / "adapter-registry.json"
@@ -110,6 +131,16 @@ def _write_once(path: Path, payload: dict[str, Any]) -> dict[str, Any]:
         "digest": "sha256:" + hashlib.sha256(encoded).hexdigest(),
         "size_bytes": len(encoded),
         "media_type": "application/json",
+    }
+
+
+def _content_ref(path: Path, media_type: str = "application/octet-stream") -> dict[str, Any]:
+    content = path.read_bytes()
+    return {
+        "uri": path.resolve().as_uri(),
+        "digest": "sha256:" + hashlib.sha256(content).hexdigest(),
+        "size_bytes": len(content),
+        "media_type": media_type,
     }
 
 
@@ -254,46 +285,111 @@ def execute_repository_assessment(
     return {"execution_state": state, "artifacts": [artifact], "exit_code": 0 if not truncated else 4}
 
 
-def execute_batch29_route_validation(
+def execute_batch29_route(
     request: dict[str, Any],
     entry: dict[str, Any],
     output_dir: Path,
+    *,
+    evidence_roots: tuple[Path, ...],
     **_: Any,
 ) -> dict[str, Any]:
+    """Run an exact B16 route through lift, emit, native build, and behavior replay."""
     route_key = str(entry["source_skill"]).removesuffix("-direction-pack")
+    route_parts = route_key.split("-to-")
+    if len(route_parts) != 2:
+        raise AdapterError("B16 route identity is invalid")
+    source_language, target_language = route_parts
+    expected_handler = f"batch29-route-executor-v1:{route_key}"
+    if entry.get("handler_id") != expected_handler:
+        raise AdapterError("B16 route handler identity diverged")
     route_dir = ROOT / "routes" / route_key
     if not (route_dir / "route.json").is_file():
         raise AdapterError(f"exact route pack is unavailable: {route_key}")
+    assets = request.get("inputs", {}).get("assets", [])
+    parameters = request.get("inputs", {}).get("parameters", {})
+    if not isinstance(parameters, dict):
+        raise AdapterError("B16 route parameters must be an object")
+    function_name = parameters.get("function_name")
+    source_index = parameters.get("source_asset_index", 0)
+    cases_index = parameters.get("cases_asset_index", 1)
+    if not isinstance(function_name, str) or not function_name or len(function_name) > 200:
+        raise AdapterError("B16 route requires inputs.parameters.function_name")
+    if not isinstance(source_index, int) or not isinstance(cases_index, int):
+        raise AdapterError("B16 route asset indexes must be integers")
+    try:
+        source_ref = verify_content_reference(assets[source_index], evidence_roots)
+        cases_ref = verify_content_reference(assets[cases_index], evidence_roots)
+    except (IndexError, OSError, ValueError) as exc:
+        raise AdapterError(f"B16 route input verification failed: {exc}") from exc
+    engine_python = ROOT / "engines" / "polyglot-route-engine" / ".venv" / "bin" / "python"
+    if not engine_python.is_file():
+        raise AdapterError("pinned polyglot route runtime is unavailable")
+    migration_output = output_dir / "migration"
+    if migration_output.exists():
+        raise AdapterError("refusing to overwrite B16 migration output")
+    command = [
+        str(engine_python), "-m", "elmos_polyglot_route.cli",
+        "--source", source_ref["resolved_path"],
+        "--source-language", source_language,
+        "--target-language", target_language,
+        "--function", function_name,
+        "--cases", cases_ref["resolved_path"],
+        "--output", str(migration_output),
+    ]
     started = time.monotonic()
+    environment = os.environ.copy()
+    environment["PYTHONDONTWRITEBYTECODE"] = "1"
     completed = subprocess.run(
-        [sys.executable, str(ROOT / "scripts" / "batch29" / "validate_route.py"), str(route_dir)],
+        command,
+        cwd=ROOT / "engines" / "polyglot-route-engine",
+        env=environment,
+        check=False,
+        capture_output=True,
+        timeout=int(entry.get("timeout_seconds", 120)),
+    )
+    gate = subprocess.run(
+        [sys.executable, str(ROOT / "scripts" / "batch29" / "run_route_gate.py"), str(route_dir)],
         cwd=ROOT,
         env={"PATH": os.environ.get("PATH", ""), "PYTHONDONTWRITEBYTECODE": "1"},
         check=False,
         capture_output=True,
         timeout=int(entry.get("timeout_seconds", 120)),
     )
-    if len(completed.stdout) + len(completed.stderr) > MAX_CAPTURE_BYTES:
-        raise AdapterError("adapter validator output exceeded the capture budget")
+    captured = completed.stdout + completed.stderr + gate.stdout + gate.stderr
+    if len(captured) > MAX_CAPTURE_BYTES:
+        raise AdapterError("B16 route output exceeded the capture budget")
+    passed = completed.returncode == 0 and gate.returncode == 0
     report = {
         "schema_version": 1,
         "skill": entry["skill"],
         "route_key": route_key,
-        "command_identity": "scripts/batch29/validate_route.py",
-        "exit_code": completed.returncode,
+        "source": {key: source_ref[key] for key in ("uri", "digest", "size_bytes", "media_type")},
+        "cases": {key: cases_ref[key] for key in ("uri", "digest", "size_bytes", "media_type")},
+        "function_name": function_name,
+        "engine_exit_code": completed.returncode,
+        "route_gate_exit_code": gate.returncode,
         "duration_ms": round((time.monotonic() - started) * 1000),
         "stdout": completed.stdout.decode("utf-8", errors="replace"),
         "stderr": completed.stderr.decode("utf-8", errors="replace"),
-        "execution_boundary": "route-pack validation only; native source/target execution remains separately evidenced",
+        "gate_stdout": gate.stdout.decode("utf-8", errors="replace"),
+        "gate_stderr": gate.stderr.decode("utf-8", errors="replace"),
+        "local_profile": "typed-pure-function-v1",
+        "independent_verification": "NOT_RUN",
+        "customer_workload": "NOT_RUN",
+        "external_certification": "NOT_RUN",
+        "production_certification": "NOT_CERTIFIED",
     }
-    artifact = _write_once(output_dir / "route-validation.json", report)
+    artifacts = [_write_once(output_dir / "route-execution.json", report)]
+    if passed:
+        for path in sorted(migration_output.rglob("*")):
+            if path.is_file():
+                media = "application/json" if path.suffix == ".json" else "text/plain"
+                artifacts.append(_content_ref(path, media))
     return {
-        "execution_state": "LOCAL_EXECUTED" if completed.returncode == 0 else "FAILED",
-        "artifacts": [artifact],
-        "exit_code": completed.returncode,
+        "execution_state": "LOCAL_EXECUTED" if passed else "FAILED",
+        "artifacts": artifacts,
+        "exit_code": 0 if passed else 2,
     }
-
-
 def execute_evidence_gate(
     request: dict[str, Any],
     entry: dict[str, Any],
@@ -318,13 +414,81 @@ def execute_evidence_gate(
     }
 
 
+def execute_skill_contract(
+    request: dict[str, Any],
+    entry: dict[str, Any],
+    output_dir: Path,
+    *,
+    skill_registry: Registry,
+    evidence_roots: tuple[Path, ...],
+    trust_store: TrustStore | None,
+    **_: Any,
+) -> dict[str, Any]:
+    """Execute one exact, allowlisted Skill contract without text-to-command dispatch."""
+    contracts = ContractRegistry.load()
+    contract = contracts.resolve(str(entry["skill"]), str(entry["handler_id"]))
+    validate_contract_binding(
+        contract,
+        skill=str(entry["skill"]),
+        source_skill=str(entry["source_skill"]),
+        mode=str(request["mode"]),
+    )
+    assets = request.get("inputs", {}).get("assets", [])
+    if not assets:
+        raise AdapterError("exact Skill execution requires at least one digest-bound input asset")
+    verified_assets = []
+    for index, asset in enumerate(assets):
+        try:
+            verified_assets.append(verify_content_reference(asset, evidence_roots))
+        except (OSError, ValueError) as exc:
+            raise AdapterError(f"inputs.assets[{index}] failed content verification: {exc}") from exc
+    evaluation = evaluate(
+        request,
+        skill_registry,
+        evidence_roots=evidence_roots,
+        trust_store=trust_store,
+    )
+    summary = contract_summary(contract, verified_assets)
+    summary["mode"] = request["mode"]
+    summary["evidence_decision"] = evaluation["status"]
+    summary["release_gate"] = evaluation["release_gate"]
+    summary["unresolved"] = evaluation["unresolved"]
+    artifact = _write_once(output_dir / "skill-contract-execution.json", summary)
+    state = evaluation["status"]
+    return {
+        "execution_state": "LOCAL_EXECUTED" if state in {"VERIFIED", "PROVED"} else state,
+        "artifacts": [artifact],
+        "exit_code": 0 if state in {"VERIFIED", "PROVED"} else 4,
+    }
+
+
 HANDLERS: dict[str, Callable[..., dict[str, Any]]] = {
     "contract-only-v1": explain_missing_adapter,
     "orchestrator-plan-v1": execute_orchestrator_plan,
     "repository-assessment-v1": execute_repository_assessment,
-    "batch29-route-validator-v1": execute_batch29_route_validation,
     "precision-evidence-gate-v1": execute_evidence_gate,
+    "b41-evidence-manifest-v1": execute_evidence_manifest,
+    "b41-conversion-provenance-v1": execute_conversion_provenance,
+    "b41-rule-proof-certificate-v1": execute_rule_proof_certificate,
+    "b41-module-equivalence-certificate-v1": execute_module_equivalence_certificate,
+    "b41-runtime-evidence-package-v1": execute_runtime_evidence_package,
+    "b41-semantic-loss-report-v1": execute_semantic_loss_report,
+    "b41-unresolved-obligation-report-v1": execute_unresolved_obligation_report,
+    "b41-release-gate-engine-v1": execute_release_gate,
+    "b41-correctness-level-classifier-v1": execute_correctness_classifier,
+    "b41-certificate-signing-v1": execute_certificate_signing,
 }
+
+
+def resolve_handler(entry: dict[str, Any]) -> Callable[..., dict[str, Any]] | None:
+    handler_id = str(entry.get("handler_id", ""))
+    if handler_id.startswith("precision-skill-v1:"):
+        expected = f"precision-skill-v1:{entry.get('source_skill')}"
+        return execute_skill_contract if handler_id == expected else None
+    if handler_id.startswith("batch29-route-executor-v1:"):
+        expected = f"batch29-route-executor-v1:{str(entry.get('source_skill', '')).removesuffix('-direction-pack')}"
+        return execute_batch29_route if handler_id == expected else None
+    return HANDLERS.get(handler_id)
 
 
 def execute(
@@ -346,7 +510,7 @@ def execute(
     output_dir.mkdir(parents=True, exist_ok=True)
     roots = configured_roots(evidence_roots)
     loaded_trust = TrustStore.load(trust_store) if isinstance(trust_store, Path) else trust_store
-    handler = HANDLERS.get(str(entry.get("handler_id")))
+    handler = resolve_handler(entry)
     if handler is None or mode not in supported:
         handler = explain_missing_adapter
     started = time.monotonic()

@@ -8,7 +8,7 @@ description: "登记经过构建、测试、安全和版本验证的仓库模板
 
 - Invoke this repository Skill as `$pm-b39-repository-template-registry`.
 - Immutable source identity: `repository-template-registry` in `precision-migration-b01-44` (B39).
-- Runtime adapter: `skill-and-project-synthesis`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `skill-and-project-synthesis`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b39-repository-template-registry`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

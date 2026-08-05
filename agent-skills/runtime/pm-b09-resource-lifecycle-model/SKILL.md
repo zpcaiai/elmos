@@ -8,7 +8,7 @@ description: "表达文件、连接、锁、内存、线程、任务和设备资
 
 - Invoke this repository Skill as `$pm-b09-resource-lifecycle-model`.
 - Immutable source identity: `resource-lifecycle-model` in `precision-migration-b01-44` (B09).
-- Runtime adapter: `semantic-recovery-and-ir`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `semantic-recovery-and-ir`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b09-resource-lifecycle-model`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

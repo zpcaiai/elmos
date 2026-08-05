@@ -8,7 +8,7 @@ description: "从静态代码、配置、部署文件和运行 Trace 中恢复�
 
 - Invoke this repository Skill as `$pm-b02-application-architecture-recovery`.
 - Immutable source identity: `application-architecture-recovery` in `precision-migration-b01-44` (B02).
-- Runtime adapter: `assessment-and-target-planning`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `assessment-and-target-planning`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b02-application-architecture-recovery`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

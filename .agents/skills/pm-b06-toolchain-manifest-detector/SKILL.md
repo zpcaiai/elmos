@@ -8,7 +8,7 @@ description: "从仓库和锁文件推断语言、版本、框架、构建系统
 
 - Invoke this repository Skill as `$pm-b06-toolchain-manifest-detector`.
 - Immutable source identity: `toolchain-manifest-detector` in `precision-migration-b01-44` (B06).
-- Runtime adapter: `semantic-recovery-and-ir`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `semantic-recovery-and-ir`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b06-toolchain-manifest-detector`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 

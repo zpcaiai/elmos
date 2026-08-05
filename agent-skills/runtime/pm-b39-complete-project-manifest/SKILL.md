@@ -8,7 +8,7 @@ description: "定义应用、业务、数据、安全、运维、测试、部署
 
 - Invoke this repository Skill as `$pm-b39-complete-project-manifest`.
 - Immutable source identity: `complete-project-manifest` in `precision-migration-b01-44` (B39).
-- Runtime adapter: `skill-and-project-synthesis`; binding state: `UNAVAILABLE`.
+- Runtime adapter: `skill-and-project-synthesis`; binding state: `DECLARED`.
 - Resolve and plan with `python3 scripts/precision_migration/runtime.py plan --skill pm-b39-complete-project-manifest`.
 - Static installation and local evidence evaluation never substitute for exact source/target execution, independent review, customer acceptance, production operation, or certification; missing evidence stays `NOT_RUN`.
 
