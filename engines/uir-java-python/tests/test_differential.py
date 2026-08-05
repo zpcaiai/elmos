@@ -42,6 +42,32 @@ CORPUS_PLAN = {
     "Records.java": [[v] for v in BOUNDARY_INTS],
     "Records2.java": [[v] for v in BOUNDARY_INTS],
     "Ctors.java": [[v] for v in BOUNDARY_INTS],
+    "Maps.java": [
+        [v, k]
+        for v in ["0", "7", "-7", "2147483647"]
+        for k in ["a", "zz", "p"]
+    ],
+    "Bytes.java": [
+        [v]
+        for v in ["abc", "h\u00e9llo", "\u65e5\u672c\u8a9e", "", "~", "\u00ff", "A b C", "12345"]
+    ],
+    "Regex.java": [
+        [v]
+        for v in [
+            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+            "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+            "123456", "abc", "a c", "abc\n", "", " ", "\t", "13812345678",
+            # An Arabic-Indic digit string: \d matches it in Python and not in
+            # Java, which is the whole reason the pattern is compiled ASCII.
+            "\u0663\u0664\u0665\u0666\u0667\u0668",
+            "refs/heads/main", "a_b", "${VAR}", "example.com", "a\nc", "abc1",
+        ]
+    ],
+    "Streams.java": [
+        [v, w]
+        for v in ["8", "0", "-7", "2147483647", "-2147483648"]
+        for w in ["alpha", "zzz", "tail"]
+    ],
     "Times.java": [
         [v] for v in ["0", "1", "-1", "86400", "-90061", "1700000000", "2147483647"]
     ],

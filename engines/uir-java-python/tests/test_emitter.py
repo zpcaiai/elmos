@@ -314,7 +314,7 @@ class BlockerSurveyTest(unittest.TestCase):
     def test_all_blockers_in_a_statement_are_collected(self):
         # Stopping at the first would report one of these two.
         found = self._survey(
-            'static void f(String a) { g(a.matches("x"), a.getBytes()); }\n'
+            'static void f(String a) { g(a.chars(), a.getBytes()); }\n'
             "static void g(Object p, Object q) { }"
         )
         self.assertEqual(len(found), 2)
@@ -324,7 +324,7 @@ class BlockerSurveyTest(unittest.TestCase):
             "static void f(String a, String b) {\n"
             "  Object x = T.class;\n"
             "  boolean c = (a == b);\n"
-            "  java.util.Set.of(1);\n"
+            "  a.getBytes();\n"
             "}"
         )
         self.assertGreaterEqual(len(found), 3)
@@ -338,14 +338,14 @@ class BlockerSurveyTest(unittest.TestCase):
             "static Object f(int n, String a) {\n"
             "  switch (n) { case 1: case 2: n = 3; break; default: n = 4; }\n"
             "  Object x = T.class;\n"
-            "  return a.matches(\"x\");\n"
+            "  return a.getBytes();\n"
             "}"
         )
         categories = {b.category for b in found}
         self.assertEqual(len(categories), 3, categories)
         self.assertTrue(any("falls through" in c for c in categories), categories)
         self.assertTrue(any("runtime class object" in c for c in categories), categories)
-        self.assertTrue(any("matches" in c for c in categories), categories)
+        self.assertTrue(any("getBytes" in c for c in categories), categories)
 
     def test_a_file_with_no_blockers_reports_none(self):
         self.assertEqual(self._survey("static int f(int a) { return a + 1; }"), [])

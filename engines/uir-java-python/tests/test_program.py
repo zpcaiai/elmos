@@ -195,7 +195,7 @@ class CrossFileEmissionTest(unittest.TestCase):
         with self.assertRaisesRegex(EmitError, "not declared in the scanned program"):
             tree.emit("Main.java")
 
-    def test_overloads_in_another_file_are_refused_rather_than_guessed(self):
+    def test_same_arity_overloads_in_another_file_are_refused(self):
         tree = _Tree({
             "Helper.java": (
                 "class Helper {\n"
@@ -206,7 +206,35 @@ class CrossFileEmissionTest(unittest.TestCase):
             "Main.java": "class Main { static int g() { return Helper.f(1); } }",
         })
         self.addCleanup(tree.close)
-        with self.assertRaisesRegex(EmitError, "overloads"):
+        with self.assertRaisesRegex(EmitError, "2 overloads taking 1 arguments"):
+            tree.emit("Main.java")
+
+    def test_arity_distinct_overloads_in_another_file_resolve(self):
+        # Argument count is present at run time, so this choice is exact.
+        tree = _Tree({
+            "Helper.java": (
+                "class Helper {\n"
+                "  static int f(int v) { return v; }\n"
+                "  static int f(int v, int w) { return v + w; }\n"
+                "}\n"
+            ),
+            "Main.java": "class Main { static int g() { return Helper.f(1, 2); } }",
+        })
+        self.addCleanup(tree.close)
+        self.assertIn("_m_Helper.Helper.f(1, 2)", tree.emit("Main.java"))
+
+    def test_an_overload_with_no_matching_arity_is_refused(self):
+        tree = _Tree({
+            "Helper.java": (
+                "class Helper {\n"
+                "  static int f(int v) { return v; }\n"
+                "  static int f(int v, int w) { return v + w; }\n"
+                "}\n"
+            ),
+            "Main.java": "class Main { static int g() { return Helper.f(1, 2, 3); } }",
+        })
+        self.addCleanup(tree.close)
+        with self.assertRaisesRegex(EmitError, "no overload taking 3"):
             tree.emit("Main.java")
 
     def test_an_instance_method_called_statically_is_refused(self):
@@ -433,6 +461,132 @@ class MultiDimensionalArrayTest(unittest.TestCase):
 
         with self.assertRaisesRegex(UnsupportedConstruct, "multi-dimensional"):
             parse_java(b"class T { static int f(int[][] m) { return 1; } }", "T.java")
+
+
+class EnclosingStaticCallTest(unittest.TestCase):
+    """A nested type may call the enclosing class's statics unqualified.
+
+    The emitter flattens nested types into separate top-level Python classes, so
+    the qualification Java left implicit has to be put back.  This was the
+    largest single remaining blocker in the survey.
+    """
+
+    def test_a_nested_type_may_call_an_enclosing_static(self):
+        tree = _Tree({
+            "R.java": (
+                "public class R {\n"
+                "  public record Inner(String id) {\n"
+                "    public Inner { require(id, \"id\"); }\n"
+                "  }\n"
+                "  static void require(String v, String n) {\n"
+                "    if (v == null) throw new IllegalArgumentException(n);\n"
+                "  }\n"
+                "}\n"
+            ),
+        })
+        self.addCleanup(tree.close)
+        self.assertIn("R.require(id, 'id')", tree.emit("R.java"))
+
+    def test_an_ambiguous_unqualified_static_is_refused(self):
+        # Java resolves this by lexical nesting; the flattened IR no longer
+        # carries that, so guessing would be a coin flip.
+        tree = _Tree({
+            "A.java": (
+                "public class A {\n"
+                "  static class One { static void helper() { } }\n"
+                "  static class Two { static void helper() { } }\n"
+                "  static class Three { static void go() { helper(); } }\n"
+                "}\n"
+            ),
+        })
+        self.addCleanup(tree.close)
+        with self.assertRaisesRegex(EmitError, "lexical nesting"):
+            tree.emit("A.java")
+
+
+class FileScopeTest(unittest.TestCase):
+    """A file's own declarations win over anything else in the program."""
+
+    def test_a_files_own_nested_enum_beats_an_ambiguous_global_name(self):
+        # Three files declare a nested `Decision`.  Resolving globally makes the
+        # name ambiguous and therefore unresolvable *inside the file that
+        # declares it*, which is where it is least ambiguous of all.
+        files = {
+            f"Holder{n}.java": (
+                f"package p{n};\n"
+                f"public class Holder{n} {{\n"
+                "  public enum Decision { PASS, FAIL }\n"
+                "  static boolean ok(Decision d) { return d == Decision.PASS; }\n"
+                "}\n"
+            )
+            for n in (1, 2, 3)
+        }
+        tree = _Tree(files)
+        self.addCleanup(tree.close)
+        for n in (1, 2, 3):
+            with self.subTest(n=n):
+                # `==` on two enums is identity, which the singletons reproduce.
+                self.assertIn(" is ", tree.emit(f"Holder{n}.java"))
+
+    def test_the_global_table_is_still_used_for_types_from_elsewhere(self):
+        tree = _Tree({
+            "Helper.java": "class Helper { static int twice(int v) { return v * 2; } }",
+            "Main.java": "class Main { static int g() { return Helper.twice(1); } }",
+        })
+        self.addCleanup(tree.close)
+        self.assertIn("_m_Helper.Helper.twice", tree.emit("Main.java"))
+
+
+class VarInferenceTest(unittest.TestCase):
+    """`var` is not a type; it is whatever the initialiser is."""
+
+    def test_var_takes_the_initialisers_type(self):
+        tree = _Tree({
+            "V.java": (
+                "class V { static int f(String s) { var t = s.trim();"
+                " return t.length(); } }"
+            ),
+        })
+        self.addCleanup(tree.close)
+        # Without inference `t` is a class named "var" and `t.length()` has an
+        # unresolvable receiver -- which is how it showed up all over the survey.
+        self.assertIn("rt.JString.length(t)", tree.emit("V.java"))
+
+    def test_var_in_a_for_each_takes_the_element_type(self):
+        tree = _Tree({
+            "V.java": (
+                "import java.util.List;\n"
+                "class V { static void f(List<String> l) {"
+                " for (var w : l) { w.trim(); } } }"
+            ),
+        })
+        self.addCleanup(tree.close)
+        self.assertIn("rt.JString.trim(w)", tree.emit("V.java"))
+
+    def test_a_factory_call_carries_its_element_type(self):
+        tree = _Tree({
+            "V.java": (
+                "import java.util.List;\n"
+                "class V { static void f() { var l = List.of(\"a\");"
+                " for (var w : l) { w.trim(); } } }"
+            ),
+        })
+        self.addCleanup(tree.close)
+        self.assertIn("rt.JString.trim(w)", tree.emit("V.java"))
+
+    def test_a_factory_with_mixed_element_types_stays_unknown(self):
+        # Java infers List<Object> here; claiming String would give the emitter
+        # a type the elements do not all have.
+        tree = _Tree({
+            "V.java": (
+                "import java.util.List;\n"
+                "class V { static void f() { var l = List.of(\"a\", 1);"
+                " for (var w : l) { w.trim(); } } }"
+            ),
+        })
+        self.addCleanup(tree.close)
+        with self.assertRaises(EmitError):
+            tree.emit("V.java")
 
 
 class SurveyHonestyTest(unittest.TestCase):

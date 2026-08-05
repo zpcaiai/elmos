@@ -56,7 +56,19 @@ from j2p_errors import (  # noqa: F401
     IndexOutOfBoundsExceptionJ,
     JavaException,
     JavaThrowable,
+    ArrayStoreExceptionJ,
+    CloneNotSupportedExceptionJ,
+    ConcurrentModificationExceptionJ,
+    FileNotFoundExceptionJ,
+    IOExceptionJ,
+    InterruptedExceptionJ,
+    NoSuchAlgorithmExceptionJ,
+    NoSuchFileExceptionJ,
+    TimeoutExceptionJ,
+    UncheckedIOExceptionJ,
+    NoSuchElementExceptionJ,
     NullPointerExceptionJ,
+    SecurityExceptionJ,
     NumberFormatExceptionJ,
     RuntimeExceptionJ,
     StringIndexOutOfBoundsExceptionJ,
@@ -79,6 +91,18 @@ EXCEPTION_BY_SIMPLE_NAME: dict[str, type[JavaThrowable]] = {
     "StringIndexOutOfBoundsException": StringIndexOutOfBoundsExceptionJ,
     "IllegalArgumentException": IllegalArgumentExceptionJ,
     "IllegalStateException": IllegalStateExceptionJ,
+    "NoSuchElementException": NoSuchElementExceptionJ,
+    "SecurityException": SecurityExceptionJ,
+    "ConcurrentModificationException": ConcurrentModificationExceptionJ,
+    "ArrayStoreException": ArrayStoreExceptionJ,
+    "CloneNotSupportedException": CloneNotSupportedExceptionJ,
+    "InterruptedException": InterruptedExceptionJ,
+    "IOException": IOExceptionJ,
+    "UncheckedIOException": UncheckedIOExceptionJ,
+    "FileNotFoundException": FileNotFoundExceptionJ,
+    "NoSuchFileException": NoSuchFileExceptionJ,
+    "NoSuchAlgorithmException": NoSuchAlgorithmExceptionJ,
+    "TimeoutException": TimeoutExceptionJ,
     "UnsupportedOperationException": UnsupportedOperationExceptionJ,
 }
 
@@ -683,6 +707,36 @@ class JString:
         return h
 
     @staticmethod
+    def getBytes(s: str, charset: str) -> JArray:
+        """``String.getBytes(charset)``.
+
+        Java returns *signed* bytes, so a UTF-8 continuation byte such as 0xC3
+        comes back as -61.  Handing back Python's unsigned values would make
+        every hash and every comparison over the result differ.  The no-argument
+        overload is refused by the emitter: it uses the platform default
+        charset, which depends on the machine the program runs on.
+        """
+
+        codec = charset.codec if isinstance(charset, JCharset) else charset
+        # Java's String.getBytes(Charset) never throws: the encoder is set to
+        # REPLACE, so a character the charset cannot represent becomes '?'.
+        # Python raises instead, which would turn a lossy-but-successful call
+        # into a crash -- found by the differential on "h\u00e9llo" as ASCII.
+        raw = s.encode(codec, errors="replace")
+        return array_of("byte", [jbyte(b) for b in raw])
+
+    @staticmethod
+    def matches(s: str, translated_pattern: str) -> bool:
+        """``String.matches`` requires the *whole* string to match.
+
+        Java\'s ``matches`` is anchored at both ends whether or not the pattern
+        says so, which is ``re.fullmatch``, not ``re.match``.  The pattern
+        arriving here has already been translated and vetted by the emitter.
+        """
+
+        return _compiled(translated_pattern).fullmatch(s) is not None
+
+    @staticmethod
     def split(s: str, separator: str) -> JArray:
         """``String.split`` with a *literal* separator.
 
@@ -916,6 +970,667 @@ def java_hash_code(value) -> int:
     if callable(hash_code):
         return hash_code()
     return jint(hash(value))
+
+
+class _JKey:
+    """A dict key that hashes and compares the way Java's map keys do.
+
+    Python's ``dict`` uses ``__hash__``/``__eq__``; Java's uses
+    ``hashCode``/``equals``.  They agree for strings and for the classes this
+    translation generates, and disagree in two places that matter: ``True == 1``
+    and ``1.0 == 1`` are true in Python and false in Java (a ``Boolean`` key and
+    an ``Integer`` key are never equal, nor are ``Integer`` and ``Double``).
+    Wrapping the key in its Java type makes the distinction survive.
+    """
+
+    __slots__ = ("value", "_kind", "_hash")
+
+    def __init__(self, value) -> None:
+        self.value = value
+        if value is None:
+            self._kind, self._hash = "null", 0
+        elif isinstance(value, bool):
+            self._kind, self._hash = "bool", java_hash_code(value)
+        elif isinstance(value, JChar):
+            self._kind, self._hash = "char", value.code
+        elif isinstance(value, float):
+            self._kind, self._hash = "float", java_hash_code(value)
+        elif isinstance(value, int):
+            self._kind, self._hash = "int", java_hash_code(value)
+        elif isinstance(value, str):
+            self._kind, self._hash = "str", java_hash_code(value)
+        else:
+            self._kind, self._hash = "obj", java_hash_code(value)
+
+    def __hash__(self) -> int:
+        return self._hash
+
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, _JKey):
+            return NotImplemented
+        if self._kind != other._kind:
+            return False
+        if self._kind == "char":
+            return self.value.code == other.value.code
+        return _java_equals(self.value, other.value)
+
+
+class JMap:
+    """A Java ``Map``.
+
+    Iteration order is the interesting part.  ``HashMap`` and ``Map.of`` leave it
+    *unspecified* -- and ``Map.of`` actively randomises it per JVM run, so two
+    runs of the same program print entries in different orders.  Nothing in
+    Python reproduces that, so this class stores insertion order and the
+    **emitter refuses to iterate** a map whose declared type does not promise an
+    order.  Everything order-independent (``get``, ``containsKey``, ``size``,
+    ``equals``) is exact and is allowed.
+
+    ``sorted_keys`` covers ``TreeMap``, whose order *is* specified.
+    """
+
+    __slots__ = ("_data", "_immutable", "_sorted", "_kind")
+
+    def __init__(self, entries=None, immutable=False, sorted_keys=False,
+                 kind="HashMap") -> None:
+        self._data: dict = {}
+        self._immutable = immutable
+        self._sorted = sorted_keys
+        self._kind = kind
+        if entries:
+            for key, value in entries:
+                if immutable:
+                    if key is None or value is None:
+                        raise NullPointerExceptionJ(None)
+                    if _JKey(key) in self._data:
+                        raise IllegalArgumentExceptionJ(f"duplicate key: {jstr(key)}")
+                self._data[_JKey(key)] = value
+
+    # -- order-independent -------------------------------------------------
+
+    def size(self) -> int:
+        return len(self._data)
+
+    def isEmpty(self) -> bool:
+        return not self._data
+
+    def get(self, key):
+        return self._data.get(_JKey(key))
+
+    def getOrDefault(self, key, fallback):
+        found = self._data.get(_JKey(key), _MISSING)
+        return fallback if found is _MISSING else found
+
+    def containsKey(self, key) -> bool:
+        return _JKey(key) in self._data
+
+    def containsValue(self, value) -> bool:
+        return any(_java_equals(v, value) for v in self._data.values())
+
+    def equals(self, other) -> bool:
+        return self == other
+
+    def _check_mutable(self) -> None:
+        if self._immutable:
+            raise UnsupportedOperationExceptionJ(None)
+
+    def put(self, key, value):
+        self._check_mutable()
+        wrapped = _JKey(key)
+        previous = self._data.get(wrapped)
+        self._data[wrapped] = value
+        return previous
+
+    def putIfAbsent(self, key, value):
+        self._check_mutable()
+        wrapped = _JKey(key)
+        if wrapped in self._data and self._data[wrapped] is not None:
+            return self._data[wrapped]
+        self._data[wrapped] = value
+        return None
+
+    def remove(self, key):
+        self._check_mutable()
+        return self._data.pop(_JKey(key), None)
+
+    def clear(self) -> None:
+        self._check_mutable()
+        self._data.clear()
+
+    def __eq__(self, other) -> bool:
+        # Java's Map.equals compares entry sets, not order.
+        if not isinstance(other, JMap):
+            return NotImplemented
+        if len(self._data) != len(other._data):
+            return False
+        for key, value in self._data.items():
+            if key not in other._data:
+                return False
+            if not _java_equals(other._data[key], value):
+                return False
+        return True
+
+    def __hash__(self) -> int:
+        total = 0
+        for key, value in self._data.items():
+            total = jint(total + (java_hash_code(key.value) ^ java_hash_code(value)))
+        return total
+
+    # -- order-dependent ---------------------------------------------------
+    #
+    # Reachable only when the emitter established that the declared type
+    # promises an order (LinkedHashMap, TreeMap).
+
+    def _ordered_keys(self) -> list:
+        keys = list(self._data)
+        if self._sorted:
+            keys.sort(key=lambda k: _sort_key(k.value))
+        return keys
+
+    def keySet(self) -> "JSet":
+        return JSet(
+            [k.value for k in self._ordered_keys()],
+            sorted_values=self._sorted,
+            kind="LinkedHashSet",
+        )
+
+    def values(self) -> "JArrayList":
+        return JArrayList([self._data[k] for k in self._ordered_keys()])
+
+    def entrySet(self) -> "JArrayList":
+        return JArrayList(
+            [JMapEntry(k.value, self._data[k]) for k in self._ordered_keys()]
+        )
+
+    def __iter__(self):
+        return iter(k.value for k in self._ordered_keys())
+
+    def __len__(self) -> int:
+        return len(self._data)
+
+    def toString(self) -> str:
+        return "{" + ", ".join(
+            f"{jstr(k.value)}={jstr(self._data[k])}" for k in self._ordered_keys()
+        ) + "}"
+
+
+class JMapEntry:
+    __slots__ = ("_key", "_value")
+
+    def __init__(self, key, value) -> None:
+        self._key = key
+        self._value = value
+
+    def getKey(self):
+        return self._key
+
+    def getValue(self):
+        return self._value
+
+    def toString(self) -> str:
+        return f"{jstr(self._key)}={jstr(self._value)}"
+
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, JMapEntry):
+            return NotImplemented
+        return _java_equals(self._key, other._key) and _java_equals(
+            self._value, other._value
+        )
+
+    def __hash__(self) -> int:
+        return jint(java_hash_code(self._key) ^ java_hash_code(self._value))
+
+
+class JSet:
+    """A Java ``Set``.  Same order story as :class:`JMap`."""
+
+    __slots__ = ("_data", "_immutable", "_sorted", "_kind")
+
+    def __init__(self, values=None, immutable=False, sorted_values=False,
+                 kind="HashSet") -> None:
+        self._data: dict = {}
+        self._immutable = immutable
+        self._sorted = sorted_values
+        self._kind = kind
+        for value in values or ():
+            if immutable:
+                if value is None:
+                    raise NullPointerExceptionJ(None)
+                if _JKey(value) in self._data:
+                    raise IllegalArgumentExceptionJ(f"duplicate element: {jstr(value)}")
+            self._data[_JKey(value)] = True
+
+    def size(self) -> int:
+        return len(self._data)
+
+    def isEmpty(self) -> bool:
+        return not self._data
+
+    def contains(self, value) -> bool:
+        return _JKey(value) in self._data
+
+    def containsAll(self, other) -> bool:
+        return all(self.contains(v) for v in other)
+
+    def equals(self, other) -> bool:
+        return self == other
+
+    def add(self, value) -> bool:
+        if self._immutable:
+            raise UnsupportedOperationExceptionJ(None)
+        wrapped = _JKey(value)
+        if wrapped in self._data:
+            return False
+        self._data[wrapped] = True
+        return True
+
+    def addAll(self, other) -> bool:
+        changed = False
+        for value in other:
+            changed = self.add(value) or changed
+        return changed
+
+    def remove(self, value) -> bool:
+        if self._immutable:
+            raise UnsupportedOperationExceptionJ(None)
+        return self._data.pop(_JKey(value), None) is not None
+
+    def clear(self) -> None:
+        if self._immutable:
+            raise UnsupportedOperationExceptionJ(None)
+        self._data.clear()
+
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, JSet):
+            return NotImplemented
+        return len(self._data) == len(other._data) and all(
+            k in other._data for k in self._data
+        )
+
+    def __hash__(self) -> int:
+        total = 0
+        for key in self._data:
+            total = jint(total + java_hash_code(key.value))
+        return total
+
+    def _ordered(self) -> list:
+        keys = list(self._data)
+        if self._sorted:
+            keys.sort(key=lambda k: _sort_key(k.value))
+        return [k.value for k in keys]
+
+    def __iter__(self):
+        return iter(self._ordered())
+
+    def __len__(self) -> int:
+        return len(self._data)
+
+    def toString(self) -> str:
+        return "[" + ", ".join(jstr(v) for v in self._ordered()) + "]"
+
+
+class _Missing:
+    __slots__ = ()
+
+
+_MISSING = _Missing()
+
+
+def _sort_key(value):
+    """Natural ordering for the key types a TreeMap/TreeSet can hold here."""
+
+    if isinstance(value, JChar):
+        return value.code
+    if isinstance(value, bool):
+        return int(value)
+    if isinstance(value, (int, float, str)):
+        return value
+    compare = getattr(value, "compareTo", None)
+    if callable(compare):
+        import functools
+
+        return functools.cmp_to_key(lambda a, b: a.compareTo(b))(value)
+    raise ClassCastExceptionJ(f"{type(value).__name__} is not Comparable")
+
+
+class JavaMap:
+    """``Map`` static factories."""
+
+    @staticmethod
+    def of(*pairs) -> JMap:
+        if len(pairs) % 2 != 0:
+            raise IllegalArgumentExceptionJ("Map.of takes key/value pairs")
+        entries = [(pairs[i], pairs[i + 1]) for i in range(0, len(pairs), 2)]
+        return JMap(entries, immutable=True, kind="Map.of")
+
+    @staticmethod
+    def copyOf(source) -> JMap:
+        if isinstance(source, JMap):
+            entries = [(k.value, v) for k, v in source._data.items()]
+        else:
+            entries = list(source)
+        return JMap(entries, immutable=True, kind="Map.copyOf")
+
+    @staticmethod
+    def entry(key, value) -> JMapEntry:
+        if key is None or value is None:
+            raise NullPointerExceptionJ(None)
+        return JMapEntry(key, value)
+
+    @staticmethod
+    def ofEntries(*entries) -> JMap:
+        return JMap(
+            [(e.getKey(), e.getValue()) for e in entries],
+            immutable=True,
+            kind="Map.ofEntries",
+        )
+
+
+class JOptional:
+    """``java.util.Optional``.
+
+    Kept as a real object rather than collapsed to ``None``: Java distinguishes
+    an empty Optional from an Optional holding null (the latter is impossible --
+    ``Optional.of(null)`` throws), and ``get`` on an empty one raises
+    ``NoSuchElementException`` rather than returning a falsy value.
+    """
+
+    __slots__ = ("_value", "_present")
+
+    def __init__(self, value=None, present=False) -> None:
+        self._value = value
+        self._present = present
+
+    @staticmethod
+    def of(value) -> "JOptional":
+        if value is None:
+            raise NullPointerExceptionJ(None)
+        return JOptional(value, True)
+
+    @staticmethod
+    def ofNullable(value) -> "JOptional":
+        return JOptional(value, value is not None)
+
+    @staticmethod
+    def empty() -> "JOptional":
+        return JOptional()
+
+    def isPresent(self) -> bool:
+        return self._present
+
+    def isEmpty(self) -> bool:
+        return not self._present
+
+    def get(self):
+        if not self._present:
+            raise NoSuchElementExceptionJ("No value present")
+        return self._value
+
+    def orElse(self, fallback):
+        return self._value if self._present else fallback
+
+    def orElseGet(self, supplier):
+        return self._value if self._present else supplier()
+
+    def orElseThrow(self, supplier=None):
+        if self._present:
+            return self._value
+        if supplier is None:
+            raise NoSuchElementExceptionJ("No value present")
+        raise supplier()
+
+    def map(self, fn) -> "JOptional":
+        if not self._present:
+            return JOptional()
+        return JOptional.ofNullable(fn(self._value))
+
+    def filter(self, predicate) -> "JOptional":
+        if self._present and predicate(self._value):
+            return self
+        return JOptional()
+
+    def ifPresent(self, action) -> None:
+        if self._present:
+            action(self._value)
+
+    def toString(self) -> str:
+        return f"Optional[{jstr(self._value)}]" if self._present else "Optional.empty"
+
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, JOptional):
+            return NotImplemented
+        if self._present != other._present:
+            return False
+        return not self._present or _java_equals(self._value, other._value)
+
+    def __hash__(self) -> int:
+        return java_hash_code(self._value) if self._present else 0
+
+
+class JStream:
+    """A ``java.util.stream.Stream``.
+
+    Eager rather than lazy.  Laziness is observable in Java only through side
+    effects in the intermediate operations and through short-circuiting, and the
+    emitter refuses the constructs where that difference could show: `peek` is
+    not supported, and the short-circuiting terminals (`anyMatch`, `findFirst`)
+    are implemented with real short-circuiting below.
+
+    Order is the same story as for maps.  A stream drawn from a `List` is
+    ordered; one drawn from a `HashSet` or a `Map.of` is not, and the emitter
+    refuses the terminals that would observe order on an unordered stream.
+    """
+
+    __slots__ = ("_items",)
+
+    def __init__(self, items) -> None:
+        self._items = list(items)
+
+    # -- intermediate ------------------------------------------------------
+
+    def map(self, fn) -> "JStream":
+        return JStream([fn(v) for v in self._items])
+
+    def mapToInt(self, fn) -> "JStream":
+        return JStream([jint(num(fn(v))) for v in self._items])
+
+    def mapToLong(self, fn) -> "JStream":
+        return JStream([jlong(num(fn(v))) for v in self._items])
+
+    def mapToObj(self, fn) -> "JStream":
+        return JStream([fn(v) for v in self._items])
+
+    def filter(self, predicate) -> "JStream":
+        return JStream([v for v in self._items if predicate(v)])
+
+    def flatMap(self, fn) -> "JStream":
+        out = []
+        for value in self._items:
+            produced = fn(value)
+            out.extend(produced._items if isinstance(produced, JStream) else produced)
+        return JStream(out)
+
+    def distinct(self) -> "JStream":
+        seen: dict = {}
+        for value in self._items:
+            seen.setdefault(_JKey(value), value)
+        return JStream(list(seen.values()))
+
+    def sorted(self, comparator=None) -> "JStream":
+        if comparator is None:
+            return JStream(sorted(self._items, key=_sort_key))
+        import functools
+
+        return JStream(
+            sorted(self._items, key=functools.cmp_to_key(lambda a, b: num(comparator(a, b))))
+        )
+
+    def limit(self, count: int) -> "JStream":
+        return JStream(self._items[: max(0, num(count))])
+
+    def skip(self, count: int) -> "JStream":
+        return JStream(self._items[max(0, num(count)) :])
+
+    # -- terminal ----------------------------------------------------------
+
+    def count(self) -> int:
+        return jlong(len(self._items))
+
+    def anyMatch(self, predicate) -> bool:
+        for value in self._items:
+            if predicate(value):
+                return True
+        return False
+
+    def allMatch(self, predicate) -> bool:
+        for value in self._items:
+            if not predicate(value):
+                return False
+        return True
+
+    def noneMatch(self, predicate) -> bool:
+        return not self.anyMatch(predicate)
+
+    def findFirst(self) -> JOptional:
+        return JOptional(self._items[0], True) if self._items else JOptional()
+
+    def forEach(self, action) -> None:
+        for value in self._items:
+            action(value)
+
+    def toList(self) -> JList:
+        return JList(self._items)
+
+    def collect(self, collector):
+        return collector(self._items)
+
+    def reduce(self, identity, accumulator):
+        total = identity
+        for value in self._items:
+            total = accumulator(total, value)
+        return total
+
+    def sum(self) -> int:
+        total = 0
+        for value in self._items:
+            total += num(value)
+        return jint(total)
+
+    def max(self, comparator=None) -> JOptional:
+        if not self._items:
+            return JOptional()
+        ordered = self.sorted(comparator)._items
+        return JOptional(ordered[-1], True)
+
+    def min(self, comparator=None) -> JOptional:
+        if not self._items:
+            return JOptional()
+        ordered = self.sorted(comparator)._items
+        return JOptional(ordered[0], True)
+
+
+class Collectors:
+    """The collectors whose result order is defined.
+
+    ``toSet`` and ``toMap`` are absent on purpose: they produce a ``HashSet`` /
+    ``HashMap`` whose iteration order Java does not specify, and this runtime
+    would have to invent one.  ``toCollection(LinkedHashSet::new)`` and
+    ``joining`` are order-defined and are here.
+    """
+
+    @staticmethod
+    def toList():
+        return lambda items: JArrayList(items)
+
+    @staticmethod
+    def toUnmodifiableList():
+        return lambda items: JList(items)
+
+    @staticmethod
+    def joining(separator="", prefix="", suffix=""):
+        return lambda items: prefix + separator.join(jstr(v) for v in items) + suffix
+
+    @staticmethod
+    def counting():
+        return lambda items: jlong(len(items))
+
+
+def stream_of(source) -> JStream:
+    """``collection.stream()``.  The emitter decides whether that is allowed."""
+
+    if isinstance(source, JMap):
+        return JStream(list(source))
+    return JStream(list(source))
+
+
+def map_copy(source, kind="HashMap", sorted_keys=False) -> JMap:
+    """``new HashMap<>(other)`` and friends: a mutable copy of another map."""
+
+    if isinstance(source, JMap):
+        entries = [(k.value, v) for k, v in source._data.items()]
+    else:
+        entries = [(e.getKey(), e.getValue()) for e in source]
+    return JMap(entries, kind=kind, sorted_keys=sorted_keys)
+
+
+class JavaSet:
+    """``Set`` static factories."""
+
+    @staticmethod
+    def of(*values) -> JSet:
+        return JSet(values, immutable=True, kind="Set.of")
+
+    @staticmethod
+    def copyOf(source) -> JSet:
+        return JSet(list(source), immutable=True, kind="Set.copyOf")
+
+
+class JCharset:
+    """A ``java.nio.charset.Charset`` with a fixed, machine-independent encoding.
+
+    Only the constants whose byte sequences are defined by the standard are
+    here; the platform default is not, because it depends on the machine the
+    program runs on and so has nothing to reproduce.
+    """
+
+    __slots__ = ("_name", "codec")
+
+    def __init__(self, name: str, codec: str) -> None:
+        self._name = name
+        self.codec = codec
+
+    def name(self) -> str:
+        return self._name
+
+    def toString(self) -> str:
+        return self._name
+
+
+class StandardCharsets:
+    UTF_8 = JCharset("UTF-8", "utf-8")
+    US_ASCII = JCharset("US-ASCII", "ascii")
+    ISO_8859_1 = JCharset("ISO-8859-1", "latin-1")
+    UTF_16BE = JCharset("UTF-16BE", "utf-16-be")
+    UTF_16LE = JCharset("UTF-16LE", "utf-16-le")
+
+
+class _RegexHolder:
+    """Compiled patterns, cached by their already-translated Python text."""
+
+    cache: dict = {}
+
+
+def _compiled(pattern: str):
+    import re
+
+    found = _RegexHolder.cache.get(pattern)
+    if found is None:
+        # re.ASCII, because Java's \d, \w, \s and \b are ASCII-only by
+        # default and Python's are Unicode-aware: without it "\u0663".matches
+        # ("\\d") would be false in Java and true here.
+        found = re.compile(pattern, re.ASCII)
+        _RegexHolder.cache[pattern] = found
+    return found
 
 
 class JavaList:

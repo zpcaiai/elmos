@@ -102,6 +102,12 @@ class ProgramIndex:
         self._by_simple: dict[str, list[TypeInfo]] = {}
         #: Nested types keyed by the way they are usually written: `Outer.Inner`.
         self._by_tail: dict[str, list[TypeInfo]] = {}
+        #: Types declared in each file, by simple name.  A file's own nested
+        #: types are in scope unqualified, and they win over anything the rest
+        #: of the program declares -- which is how Java scoping works, and what
+        #: a purely global lookup got wrong for every repeated name like
+        #: `Status` or `Decision`.
+        self._by_file: dict[str, dict[str, TypeInfo]] = {}
         self.files: list[FileDeclarations] = []
         #: Files that could not be scanned at all, with why.  Reported rather
         #: than swallowed: a missing file silently narrows every lookup.
@@ -123,9 +129,17 @@ class ProgramIndex:
                 continue
             self.types[info.qualified_name] = info
             self._by_simple.setdefault(info.simple_name, []).append(info)
+            stem = info.source_file.replace("\\", "/").rsplit("/", 1)[-1]
+            self._by_file.setdefault(stem, {}).setdefault(info.simple_name, info)
             if info.enclosing is not None:
                 tail = f"{info.enclosing.rsplit('.', 1)[-1]}.{info.simple_name}"
                 self._by_tail.setdefault(tail, []).append(info)
+
+    def resolve_in_file(self, name: str, source_file: str) -> TypeInfo | None:
+        """A type declared in ``source_file`` itself, by simple name."""
+
+        stem = source_file.replace("\\", "/").rsplit("/", 1)[-1]
+        return self._by_file.get(stem, {}).get(name.rsplit(".", 1)[-1])
 
     def resolve(
         self, name: str, package: str | None, imports: tuple[str, ...]

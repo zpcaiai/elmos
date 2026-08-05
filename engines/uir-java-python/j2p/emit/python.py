@@ -169,6 +169,51 @@ def _module_stem(path: str) -> str:
     return name[:-5] if name.endswith(".java") else name
 
 
+#: Concrete map and set implementations the runtime reproduces.
+_MAP_TYPES = frozenset({"HashMap", "LinkedHashMap", "TreeMap", "ConcurrentHashMap"})
+_SET_TYPES = frozenset({"HashSet", "LinkedHashSet", "TreeSet"})
+
+#: The types whose iteration order Java actually specifies.  Everything else --
+#: HashMap, HashSet, Map.of, Set.of -- leaves it unspecified, and the `of`
+#: factories randomise it per JVM run.
+_ORDERED_COLLECTION_TYPES = frozenset(
+    {"LinkedHashMap", "TreeMap", "LinkedHashSet", "TreeSet"}
+)
+
+_MAP_METHODS = frozenset({
+    "get", "getOrDefault", "put", "putIfAbsent", "remove", "containsKey",
+    "containsValue", "size", "isEmpty", "clear", "equals",
+})
+_MAP_ORDERED_METHODS = frozenset({"keySet", "values", "entrySet", "toString"})
+
+_SET_METHODS = frozenset({
+    "add", "addAll", "remove", "contains", "containsAll", "size", "isEmpty",
+    "clear", "equals",
+})
+_SET_ORDERED_METHODS = frozenset({"toString"})
+
+#: Stream operations that do not observe order, so they are exact even on a
+#: stream drawn from a HashSet or a Map.of.
+_STREAM_UNORDERED_SAFE = frozenset({
+    "filter", "map", "mapToInt", "mapToLong", "mapToObj", "flatMap", "distinct",
+    "anyMatch", "allMatch", "noneMatch", "count", "sum", "max", "min", "sorted",
+})
+
+#: Stream operations whose result depends on the order of the source.
+_STREAM_ORDER_SENSITIVE = frozenset({
+    "toList", "collect", "findFirst", "findAny", "forEach", "reduce", "limit",
+    "skip",
+})
+
+_OPTIONAL_METHODS = frozenset({
+    "isPresent", "isEmpty", "get", "orElse", "orElseGet", "orElseThrow", "map",
+    "filter", "ifPresent", "toString",
+})
+
+#: Collectors whose result order is defined.  `toSet`/`toMap` are absent: they
+#: build a HashSet/HashMap, whose iteration order Java does not specify.
+_COLLECTORS = frozenset({"toList", "toUnmodifiableList", "joining", "counting"})
+
 #: Enum members every constant has, provided by the runtime's JEnum.  `values`
 #: and `valueOf` are deliberately absent: they need the constant list, which the
 #: generated class does not carry in an ordered form.
@@ -335,12 +380,15 @@ class PythonEmitter:
         self._program_imports[info.simple_name] = info.module
         return f"_m_{info.module}.{info.simple_name}"
 
-    def _program_method(self, info, name: str, origin: Origin):
+    def _program_method(self, info, name: str, origin: Origin, argc: int | None = None):
         """A method of an indexed type, refusing what cannot be dispatched.
 
-        Overloads are refused rather than guessed at: picking one needs argument
-        types the front end does not always have, and picking the wrong one is a
-        silent behaviour change.
+        Overloads are selected by argument *count* when that is enough to
+        determine the choice -- exactly the rule the generated code can carry,
+        since Python dispatches on the call it actually receives.  When two
+        overloads could take the same count, Java separates them by the static
+        types of the arguments, which are gone at run time, so the call is
+        refused rather than guessed.
         """
 
         overloads = info.methods.get(name)
@@ -353,14 +401,34 @@ class PythonEmitter:
                 f"program",
                 origin,
             )
-        if len(overloads) > 1:
+        if len(overloads) == 1:
+            return overloads[0]
+        if argc is None:
             raise EmitError(
-                f"{info.qualified_name}.{name} has {len(overloads)} overloads; "
-                f"selecting one needs argument types the front end does not "
-                f"always have, so the call is refused rather than guessed",
+                f"{info.qualified_name}.{name} has {len(overloads)} overloads "
+                f"and the call site's argument count is unknown",
                 origin,
             )
-        return overloads[0]
+        matching = [
+            m
+            for m in overloads
+            if len(m.param_types) == argc
+            or (m.is_varargs and argc >= len(m.param_types) - 1)
+        ]
+        if len(matching) == 1:
+            return matching[0]
+        if not matching:
+            raise EmitError(
+                f"{info.qualified_name}.{name} has no overload taking {argc} "
+                f"arguments",
+                origin,
+            )
+        raise EmitError(
+            f"{info.qualified_name}.{name} has {len(matching)} overloads taking "
+            f"{argc} arguments; Java separates them by the static types of the "
+            f"arguments, which are not present at run time",
+            origin,
+        )
 
     def _inherited_method(self, info, name: str):
         seen = set()
@@ -906,6 +974,7 @@ class PythonEmitter:
             return
 
         if isinstance(stmt, ForEach):
+            self._reject_unordered(stmt.iterable, "iterated by a for-each loop")
             self._line(
                 indent,
                 lambda: f"for {stmt.var_name} in {self._expr(stmt.iterable)}:",
@@ -1318,6 +1387,8 @@ class PythonEmitter:
         if isinstance(expr, Unary):
             return self._unary(expr)
         if isinstance(expr, StringConcat):
+            for part in expr.parts:
+                self._reject_unordered(part, "converted to a string")
             parts = ", ".join(self._expr(p) for p in expr.parts)
             return f"{RUNTIME_ALIAS}.concat({parts})"
         if isinstance(expr, Ternary):
@@ -1512,6 +1583,21 @@ class PythonEmitter:
             # These are static *fields* in Java and factory calls here, because
             # a mutable module-level instance would be shared across uses.
             return f"{RUNTIME_ALIAS}.{expr.owner}.{expr.name}()"
+        if expr.owner.rsplit(".", 1)[-1] == "StandardCharsets":
+            if expr.name not in self._CHARSETS:
+                raise EmitError(
+                    f"StandardCharsets.{expr.name} is not supported; the "
+                    f"encodings this translation reproduces are "
+                    f"{', '.join(sorted(self._CHARSETS))}",
+                    expr.origin,
+                )
+            return f"{RUNTIME_ALIAS}.StandardCharsets.{expr.name}"
+        if expr.owner == "Boolean" and expr.owner not in self._class_names:
+            if expr.name not in ("TRUE", "FALSE"):
+                raise EmitError(
+                    f"Boolean.{expr.name} is not supported", expr.origin
+                )
+            return "True" if expr.name == "TRUE" else "False"
         if expr.owner in ("Integer", "Long", "Math") and expr.owner not in self._class_names:
             return f"{RUNTIME_ALIAS}.{expr.owner}.{expr.name}"
         if expr.owner in self._class_names:
@@ -1739,14 +1825,31 @@ class PythonEmitter:
             return f"{RUNTIME_ALIAS}.StringBuilder({args})"
         if name in ("ArrayList", "List"):
             return f"{RUNTIME_ALIAS}.JArrayList({args})" if args else f"{RUNTIME_ALIAS}.JArrayList()"
-        if name in ("HashMap", "Map", "HashSet", "Set", "LinkedHashMap",
-                    "TreeMap", "ConcurrentHashMap"):
-            raise EmitError(
-                f"new {name} is not supported: Java's iteration order for this "
-                f"collection is either unspecified or insertion/comparator "
-                f"defined, and no Python built-in reproduces it in every case",
-                expr.origin,
-            )
+        if name in _MAP_TYPES:
+            if len(expr.args) > 1:
+                raise EmitError(
+                    f"new {name} with {len(expr.args)} arguments is not "
+                    f"supported; only the empty and copy constructors are",
+                    expr.origin,
+                )
+            sorted_flag = ", sorted_keys=True" if name == "TreeMap" else ""
+            if args:
+                return f"{RUNTIME_ALIAS}.map_copy({args}, {name!r}{sorted_flag})"
+            return f"{RUNTIME_ALIAS}.JMap(kind={name!r}{sorted_flag})"
+        if name in _SET_TYPES:
+            if len(expr.args) > 1:
+                raise EmitError(
+                    f"new {name} with {len(expr.args)} arguments is not "
+                    f"supported; only the empty and copy constructors are",
+                    expr.origin,
+                )
+            sorted_flag = ", sorted_values=True" if name == "TreeSet" else ""
+            if args:
+                return (
+                    f"{RUNTIME_ALIAS}.JSet(list({args}), kind={name!r}"
+                    f"{sorted_flag})"
+                )
+            return f"{RUNTIME_ALIAS}.JSet(kind={name!r}{sorted_flag})"
         cls = self._throwable_class(name)
         if cls is not None:
             return f"{RUNTIME_ALIAS}.{cls}({args})"
@@ -1853,6 +1956,9 @@ class PythonEmitter:
                 return f"{owner}.{expr.name}({', '.join(args)})"
             if expr.name in self._instance_methods:
                 return f"self.{expr.name}({', '.join(args)})"
+            enclosing = self._enclosing_static_owner(expr.name, expr.origin)
+            if enclosing is not None:
+                return f"{enclosing}.{expr.name}({', '.join(args)})"
             raise EmitError(f"call to unknown method {expr.name}", expr.origin)
 
         target_type = expr.target.type
@@ -1898,10 +2004,36 @@ class PythonEmitter:
                 expr.origin,
             )
 
+        if isinstance(target_type, ClassType) and target_type.name == "Stream":
+            return self._stream_method(target, expr, args)
+
+        if isinstance(target_type, ClassType) and target_type.name == "Optional":
+            if expr.name not in _OPTIONAL_METHODS:
+                raise EmitError(
+                    f"Optional.{expr.name} is not supported", expr.origin
+                )
+            return f"{target}.{expr.name}({', '.join(args)})"
+
+        if isinstance(target_type, ClassType) and target_type.name in (
+            _MAP_TYPES | _SET_TYPES | {"Map", "Set"}
+        ):
+            if expr.name == "stream":
+                return f"{RUNTIME_ALIAS}.stream_of({target})"
+            return self._collection_method(target, target_type, expr, args)
+
+        if isinstance(target_type, ClassType) and target_type.name == "Entry":
+            if expr.name not in ("getKey", "getValue", "toString"):
+                raise EmitError(
+                    f"Map.Entry.{expr.name} is not supported", expr.origin
+                )
+            return f"{target}.{expr.name}({', '.join(args)})"
+
         if isinstance(target_type, ClassType) and target_type.name in ("List", "ArrayList"):
+            if expr.name == "stream":
+                return f"{RUNTIME_ALIAS}.stream_of({target})"
             supported = {
                 "size", "isEmpty", "add", "get", "set", "contains", "indexOf",
-                "clear", "toString",
+                "clear", "toString", "forEach", "addAll",
             }
             if expr.name not in supported:
                 raise EmitError(
@@ -1964,7 +2096,7 @@ class PythonEmitter:
         if expr.name in components and not args:
             return f"{target}.{expr.name}()"
 
-        method = self._program_method(info, expr.name, expr.origin)
+        method = self._program_method(info, expr.name, expr.origin, len(expr.args))
         if method.is_static:
             raise EmitError(
                 f"{info.simple_name}.{expr.name} is static but is called on an "
@@ -2019,6 +2151,139 @@ class PythonEmitter:
         return args[:fixed] + [
             f"{RUNTIME_ALIAS}.array_of({element_name!r}, [{rest}])"
         ]
+
+    def _stream_method(self, target: str, expr: Call, args: list[str]) -> str:
+        """A stream operation, checked against the order of its *source*.
+
+        Java calls this an ordered or unordered stream, and the distinction is
+        real: `set.stream().anyMatch(p)` gives the same answer whatever the
+        iteration order, while `set.stream().toList()` gives a different list.
+        So the order-independent operations are allowed on any source, and the
+        order-sensitive ones only where the source promises an order --
+        which `sorted()` also establishes, since it imposes one.
+        """
+
+        if expr.name in _STREAM_ORDER_SENSITIVE and not self._stream_is_ordered(
+            expr.target
+        ):
+            raise EmitError(
+                f"Stream.{expr.name} depends on encounter order, and this "
+                f"stream comes from a collection whose iteration order Java "
+                f"leaves unspecified; call sorted() first, or draw the stream "
+                f"from a List or a LinkedHashSet/TreeSet",
+                expr.origin,
+            )
+        if expr.name == "collect":
+            return self._stream_collect(target, expr, args)
+        if expr.name not in (_STREAM_UNORDERED_SAFE | _STREAM_ORDER_SENSITIVE):
+            raise EmitError(f"Stream.{expr.name} is not supported", expr.origin)
+        return f"{target}.{expr.name}({', '.join(args)})"
+
+    def _stream_collect(self, target: str, expr: Call, args: list[str]) -> str:
+        if len(expr.args) != 1 or not isinstance(expr.args[0], StaticCall):
+            raise EmitError(
+                "collect() is supported only with a Collectors factory, because "
+                "a hand-written Collector's combiner runs in an order this "
+                "translation does not control",
+                expr.origin,
+            )
+        collector = expr.args[0]
+        if collector.owner != "Collectors" or collector.name not in _COLLECTORS:
+            raise EmitError(
+                f"Collectors.{collector.name} is not supported; toSet and toMap "
+                f"build a HashSet/HashMap whose iteration order Java does not "
+                f"specify",
+                expr.origin,
+            )
+        return f"{target}.collect({args[0]})"
+
+    def _stream_is_ordered(self, source: Expr | None) -> bool:
+        """Whether a stream expression has a defined encounter order.
+
+        Walks back down the chain to whatever produced it: a List or an ordered
+        Set/Map view gives an ordered stream, a HashSet or a `Set.of` does not,
+        and `sorted()` imposes an order regardless of what came before.
+        """
+
+        while isinstance(source, Call):
+            if source.name == "sorted":
+                return True
+            if source.name == "stream":
+                origin_type = source.target.type if source.target else None
+                if not isinstance(origin_type, ClassType):
+                    return False
+                if origin_type.name in ("List", "ArrayList"):
+                    return True
+                return origin_type.name in _ORDERED_COLLECTION_TYPES
+            if source.name in ("keySet", "values", "entrySet"):
+                # Only reachable when _collection_method already established the
+                # declared type promises an order.
+                return True
+            source = source.target
+        return False
+
+    def _reject_unordered(self, expr: Expr, what: str) -> None:
+        """Refuse an observation of a collection whose order Java leaves open.
+
+        Printing a `Map.of` or looping over a `HashSet` reads like ordinary code
+        and is the single easiest way for a migration to produce output that is
+        right on the developer\'s machine and wrong in production -- Java
+        randomises the order of the `of` factories per JVM run, so even the Java
+        side does not agree with itself between runs.
+        """
+
+        t = expr.type
+        if not isinstance(t, ClassType):
+            return
+        if t.name in ("Map", "Set") or t.name in (_MAP_TYPES | _SET_TYPES):
+            if t.name in _ORDERED_COLLECTION_TYPES:
+                return
+            raise EmitError(
+                f"a {t.name} is {what}, and Java leaves its iteration order "
+                f"unspecified (Map.of and Set.of randomise it per JVM run); "
+                f"only LinkedHashMap/LinkedHashSet/TreeMap/TreeSet promise an "
+                f"order that can be reproduced",
+                expr.origin,
+            )
+
+    def _collection_method(
+        self, target: str, target_type: ClassType, expr: Call, args: list[str]
+    ) -> str:
+        """A call on a Map or a Set.
+
+        The division that matters is order.  ``get``/``containsKey``/``size``/
+        ``equals`` are exact for every map, because none of them can observe
+        iteration order.  ``keySet``/``entrySet``/``values``/``forEach``/
+        ``toString`` *are* iteration, and Java only specifies an order for
+        ``LinkedHashMap``/``TreeMap`` (and their Set counterparts).  For a value
+        whose declared type is ``Map``, ``HashMap`` or ``Map.of``, the order is
+        unspecified -- ``Map.of`` randomises it per JVM run -- so those are
+        refused with the name of the method that would have observed it.
+
+        The declared type is what decides, which is conservative: a
+        ``LinkedHashMap`` held in a variable declared ``Map`` is refused too,
+        because the emitter cannot see through the declaration.
+        """
+
+        name = target_type.name
+        is_map = name in _MAP_TYPES or name == "Map"
+        supported = _MAP_METHODS if is_map else _SET_METHODS
+        ordered_only = _MAP_ORDERED_METHODS if is_map else _SET_ORDERED_METHODS
+
+        if expr.name in ordered_only:
+            if name not in _ORDERED_COLLECTION_TYPES:
+                raise EmitError(
+                    f"{name}.{expr.name} observes iteration order, and Java "
+                    f"leaves the order of {name} unspecified (Map.of and Set.of "
+                    f"randomise it per JVM run); only LinkedHashMap/LinkedHashSet"
+                    f"/TreeMap/TreeSet promise an order that can be reproduced",
+                    expr.origin,
+                )
+            return f"{target}.{expr.name}({', '.join(args)})"
+
+        if expr.name not in supported:
+            raise EmitError(f"{name}.{expr.name} is not supported", expr.origin)
+        return f"{target}.{expr.name}({', '.join(args)})"
 
     def _user_object_method(
         self, target: str, class_name: str, expr: Call, args: list[str]
@@ -2111,6 +2376,33 @@ class PythonEmitter:
             f"{RUNTIME_ALIAS}.array_of({element_name!r}, [{rest}])"
         ]
 
+    def _enclosing_static_owner(self, name: str, origin: Origin) -> str | None:
+        """The class whose static method an unqualified call means.
+
+        A nested type may call the enclosing class\'s static methods without
+        qualifying them, and the emitter flattens nested types into separate
+        top-level Python classes, so the qualification has to be put back.  Two
+        candidates means the call is ambiguous to *this* emitter (Java would
+        resolve it by lexical nesting, which the flattened IR no longer carries),
+        so it is refused rather than guessed.
+        """
+
+        owners = [
+            decl.name
+            for decl in self.module.types
+            if any(m.name == name and m.is_static for m in decl.methods)
+        ]
+        if not owners:
+            return None
+        if len(owners) > 1:
+            raise EmitError(
+                f"unqualified call to {name}, which {len(owners)} types in this "
+                f"file declare as a static method; which one Java means depends "
+                f"on lexical nesting that the flattened IR does not carry",
+                origin,
+            )
+        return owners[0]
+
     def _owner_of_method(self, name: str) -> str:
         for decl in self.module.types:
             if any(m.name == name and m.is_static for m in decl.methods):
@@ -2122,13 +2414,18 @@ class PythonEmitter:
         "length", "charAt", "substring", "indexOf", "lastIndexOf", "isEmpty",
         "isBlank", "equals", "equalsIgnoreCase", "toUpperCase", "toLowerCase",
         "trim", "strip", "startsWith", "endsWith", "contains", "replace",
-        "repeat", "concat", "compareTo", "hashCode", "split",
+        "repeat", "concat", "compareTo", "hashCode", "split", "matches",
+        "getBytes",
     })
 
     #: Characters that make a `split` argument a regex rather than a literal.
     _REGEX_METACHARACTERS = set(".^$*+?()[]{}|\\")
 
     def _string_method(self, target: str, expr: Call, args: list[str]) -> str:
+        if expr.name == "matches":
+            return self._string_matches(target, expr)
+        if expr.name == "getBytes":
+            return self._string_get_bytes(target, expr)
         if expr.name not in self._STRING_METHODS:
             raise EmitError(
                 f"String.{expr.name} is not supported", expr.origin
@@ -2137,6 +2434,75 @@ class PythonEmitter:
             self._check_literal_separator(expr)
         joined = ", ".join([target] + args)
         return f"{RUNTIME_ALIAS}.JString.{expr.name}({joined})"
+
+    #: Charsets whose encoding is fixed and identical in both languages.
+    #: The platform default is deliberately absent.
+    _CHARSETS = {
+        "UTF_8": "utf-8",
+        "US_ASCII": "ascii",
+        "ISO_8859_1": "latin-1",
+        "UTF_16BE": "utf-16-be",
+        "UTF_16LE": "utf-16-le",
+    }
+
+    def _string_get_bytes(self, target: str, expr: Call) -> str:
+        """``String.getBytes(StandardCharsets.X)``.
+
+        The no-argument overload uses the *platform default* charset, so the
+        same program produces different bytes on different machines; there is
+        nothing to reproduce, and it is refused.
+        """
+
+        if not expr.args:
+            raise EmitError(
+                "String.getBytes() without a charset uses the platform default, "
+                "which differs between machines; pass a StandardCharsets "
+                "constant",
+                expr.origin,
+            )
+        charset = expr.args[0]
+        owner_ok = (
+            isinstance(charset, StaticFieldAccess)
+            and charset.owner.rsplit(".", 1)[-1] == "StandardCharsets"
+        )
+        if not owner_ok:
+            raise EmitError(
+                "String.getBytes takes a StandardCharsets constant this "
+                "translation knows the encoding of "
+                f"({', '.join(sorted(self._CHARSETS))})",
+                expr.origin,
+            )
+        return (
+            f"{RUNTIME_ALIAS}.JString.getBytes({target}, "
+            f"{self._expr(charset)})"
+        )
+
+    def _string_matches(self, target: str, expr: Call) -> str:
+        """``s.matches(regex)`` over the verified common subset of the dialects.
+
+        The pattern is translated *here*, not at run time, so a construct the
+        two engines disagree about is refused with a source location rather than
+        producing a translation that quietly matches different strings.
+        """
+
+        from .regex import UnsupportedRegex, translate
+
+        if len(expr.args) != 1 or not isinstance(expr.args[0], StringLiteral):
+            raise EmitError(
+                "String.matches with a non-literal pattern is not supported: "
+                "the pattern has to be checked against the differences between "
+                "Java's regex dialect and Python's, which needs it at "
+                "translation time",
+                expr.origin,
+            )
+        try:
+            translated = translate(expr.args[0].value)
+        except UnsupportedRegex as exc:
+            raise EmitError(
+                f"String.matches({expr.args[0].value!r}) is not supported: {exc}",
+                expr.origin,
+            ) from None
+        return f"{RUNTIME_ALIAS}.JString.matches({target}, {translated!r})"
 
     def _check_literal_separator(self, expr: Call) -> None:
         """``String.split`` takes a *regex*, and the dialects do not agree.
@@ -2167,6 +2533,8 @@ class PythonEmitter:
         if expr.owner in ("System.out", "System.err"):
             if expr.name not in ("println", "print"):
                 raise EmitError(f"System.out.{expr.name} is not supported", expr.origin)
+            for arg in expr.args:
+                self._reject_unordered(arg, "printed")
             stream = "out" if expr.owner == "System.out" else "err"
             return f"{RUNTIME_ALIAS}.System.{stream}.{expr.name}({', '.join(args)})"
 
@@ -2196,6 +2564,9 @@ class PythonEmitter:
                 raise EmitError(
                     f"Objects.{expr.name} is not supported", expr.origin
                 )
+            if expr.name in ("toString", "hash"):
+                for arg in expr.args:
+                    self._reject_unordered(arg, "converted to a string")
             return f"{RUNTIME_ALIAS}.Objects.{expr.name}({', '.join(args)})"
 
         if expr.owner == "List":
@@ -2203,15 +2574,36 @@ class PythonEmitter:
                 raise EmitError(f"List.{expr.name} is not supported", expr.origin)
             return f"{RUNTIME_ALIAS}.JavaList.{expr.name}({', '.join(args)})"
 
-        if expr.owner in ("Set", "Map"):
-            # Java does not specify the iteration order of Set.of/Map.of, and
-            # randomises it per JVM run.  There is no Python structure whose
-            # iteration matches, so no translation can be correct.
-            raise EmitError(
-                f"{expr.owner}.{expr.name} has an unspecified iteration order "
-                f"that Java randomises per run; it cannot be reproduced",
-                expr.origin,
-            )
+        if expr.owner == "Map":
+            # `Map.of` itself is fine: construction, lookup and equality do not
+            # depend on order.  What Java randomises per run is *iteration*, and
+            # that is refused where the value is used, not here -- see
+            # `_collection_method`.
+            if expr.name not in ("of", "copyOf", "entry", "ofEntries"):
+                raise EmitError(f"Map.{expr.name} is not supported", expr.origin)
+            return f"{RUNTIME_ALIAS}.JavaMap.{expr.name}({', '.join(args)})"
+
+        if expr.owner == "Collectors":
+            if expr.name not in _COLLECTORS:
+                raise EmitError(
+                    f"Collectors.{expr.name} is not supported; toSet and toMap "
+                    f"build a HashSet/HashMap whose iteration order Java does "
+                    f"not specify",
+                    expr.origin,
+                )
+            return f"{RUNTIME_ALIAS}.Collectors.{expr.name}({', '.join(args)})"
+
+        if expr.owner == "Optional":
+            if expr.name not in ("of", "ofNullable", "empty"):
+                raise EmitError(
+                    f"Optional.{expr.name} is not supported", expr.origin
+                )
+            return f"{RUNTIME_ALIAS}.JOptional.{expr.name}({', '.join(args)})"
+
+        if expr.owner == "Set":
+            if expr.name not in ("of", "copyOf"):
+                raise EmitError(f"Set.{expr.name} is not supported", expr.origin)
+            return f"{RUNTIME_ALIAS}.JavaSet.{expr.name}({', '.join(args)})"
 
         if expr.owner == "Math":
             exact = {
@@ -2253,6 +2645,8 @@ class PythonEmitter:
         if expr.owner == "String":
             if expr.name != "valueOf":
                 raise EmitError(f"String.{expr.name} is not supported", expr.origin)
+            for arg in expr.args:
+                self._reject_unordered(arg, "converted to a string")
             return f"{RUNTIME_ALIAS}.JString.valueOf({', '.join(args)})"
 
         if expr.owner in self._class_names:
@@ -2261,7 +2655,9 @@ class PythonEmitter:
 
         info = self._program_type(expr.owner)
         if info is not None:
-            method = self._program_method(info, expr.name, expr.origin)
+            method = self._program_method(
+                info, expr.name, expr.origin, len(expr.args)
+            )
             if not method.is_static:
                 raise EmitError(
                     f"{info.simple_name}.{expr.name} is an instance method but "

@@ -174,6 +174,11 @@ _TYPE_DECL_NODES = (
 )
 
 #: Types whose values map onto Python built-ins without a wrapper class.
+_MAP_TYPE_NAMES = frozenset(
+    {"Map", "HashMap", "LinkedHashMap", "TreeMap", "ConcurrentHashMap"}
+)
+_SET_TYPE_NAMES = frozenset({"Set", "HashSet", "LinkedHashSet", "TreeSet"})
+
 KNOWN_CLASS_TYPES = frozenset(
     {
         "String",
@@ -192,6 +197,15 @@ KNOWN_CLASS_TYPES = frozenset(
         "HashMap",
         "Set",
         "HashSet",
+        "LinkedHashMap",
+        "LinkedHashSet",
+        "TreeMap",
+        "TreeSet",
+        "ConcurrentHashMap",
+        "Collectors",
+        "StandardCharsets",
+        "Optional",
+        "Stream",
         "Objects",
         "Instant",
         "Duration",
@@ -836,7 +850,17 @@ class JavaFrontend:
             return self._block(node, scope)
 
         if t == "local_variable_declaration":
-            declared = self._type(node.child_by_field_name("type"))
+            type_node = node.child_by_field_name("type")
+            # `var` is not a type: it means "whatever the initialiser is".
+            # Lowering it as a class named "var" gave every use of the variable
+            # an unresolvable receiver, which is why it showed up all over the
+            # survey as `unresolved receiver type ClassType(name='var')`.
+            inferred = self._text(type_node) == "var"
+            declared = (
+                UnknownType("var-without-initialiser")
+                if inferred
+                else self._type(type_node)
+            )
             stmts: list[Stmt] = []
             for declarator in node.children_by_field_name("declarator"):
                 name = self._text(declarator.child_by_field_name("name"))
@@ -849,8 +873,12 @@ class JavaFrontend:
                 value_node = declarator.child_by_field_name("value")
                 init = None
                 if value_node is not None:
-                    init = self._expr(value_node, scope, expected=var_type)
-                    init = self._coerce(init, var_type)
+                    if inferred:
+                        init = self._expr(value_node, scope)
+                        var_type = init.type
+                    else:
+                        init = self._expr(value_node, scope, expected=var_type)
+                        init = self._coerce(init, var_type)
                 scope.names[name] = var_type
                 stmts.append(
                     LocalVar(origin=origin, name=name, type=var_type, init=init)
@@ -903,9 +931,15 @@ class JavaFrontend:
             )
 
         if t == "enhanced_for_statement":
-            var_type = self._type(node.child_by_field_name("type"))
+            type_node = node.child_by_field_name("type")
             var_name = self._text(node.child_by_field_name("name"))
             iterable = self._expr(node.child_by_field_name("value"), scope)
+            if self._text(type_node) == "var":
+                # `for (var w : words)` takes the element type of what is being
+                # iterated, the same way `var w = words.get(0)` would.
+                var_type = self._element_type(iterable.type)
+            else:
+                var_type = self._type(type_node)
             inner = scope.child()
             inner.names[var_name] = var_type
             return ForEach(
@@ -1474,6 +1508,14 @@ class JavaFrontend:
 
         if self.index is None:
             return None
+        # This file's own declarations -- including its nested types -- are in
+        # scope unqualified and take precedence.  Going straight to the global
+        # table made every repeated simple name (`Status`, `Decision`, `Result`)
+        # ambiguous and therefore unresolvable, in the very files that declare
+        # them.
+        own = self.index.resolve_in_file(name, self.filename)
+        if own is not None:
+            return own
         return self.index.resolve(name, self.package, self.imports)
 
     def _is_program_type(self, name: str) -> bool:
@@ -1545,6 +1587,59 @@ class JavaFrontend:
                     return sam[0]
         return None
 
+    #: Stream and Optional methods, and the functional interface each takes.
+    #: Without this a lambda passed to `filter` has an untyped parameter, and
+    #: every operation inside it is refused for want of a type.
+    _STREAM_FUNCTIONAL_PARAM = {
+        "map": "Function",
+        "mapToInt": "ToIntFunction",
+        "mapToLong": "ToIntFunction",
+        "mapToObj": "Function",
+        "flatMap": "Function",
+        "filter": "Predicate",
+        "anyMatch": "Predicate",
+        "allMatch": "Predicate",
+        "noneMatch": "Predicate",
+        "forEach": "Consumer",
+        "ifPresent": "Consumer",
+        "orElseGet": "Supplier",
+        "orElseThrow": "Supplier",
+    }
+
+    def _library_param_types(self, obj_node, name: str, scope: "_Scope"):
+        """Expected parameter types for a call on a Stream, Optional or List.
+
+        The receiver has to be lowered to know its element type, which is why
+        this is separate from the declaration-driven path above.  Lowering it
+        here is safe because lowering is pure; the receiver is lowered again
+        when the call itself is built.
+        """
+
+        interface = self._STREAM_FUNCTIONAL_PARAM.get(name)
+        if interface is None and name not in ("reduce", "sorted", "max", "min"):
+            return None
+        try:
+            target = self._expr(obj_node, scope)
+        except (UnsupportedConstruct, RecursionError):
+            return None
+        t = target.type
+        if not isinstance(t, ClassType) or t.name not in ("Stream", "Optional"):
+            return None
+        element = t.args[0] if t.args else UnknownType("stream-element")
+        if name == "reduce":
+            # reduce(identity, BinaryOperator<T>): the accumulator takes two of
+            # the element type, and without that its lambda has no types at all.
+            return (element, ClassType("BinaryOperator", (element,)))
+        if name in ("sorted", "max", "min"):
+            return (ClassType("Comparator", (element,)),)
+        if interface == "Supplier":
+            return (ClassType("Supplier", (UnknownType("supplier-result"),)),)
+        if interface == "Function":
+            return (
+                ClassType("Function", (element, UnknownType("function-result"))),
+            )
+        return (ClassType(interface, (element,)),)
+
     def _infer_lambda_param_types(
         self, params: tuple[Param, ...], expected: uir.Type | None
     ) -> tuple[Param, ...]:
@@ -1576,9 +1671,9 @@ class JavaFrontend:
         if name in ("Function", "BiFunction"):
             argument_types = list(expected.args[:-1])
         elif name in ("Predicate", "Consumer", "Supplier", "UnaryOperator",
-                      "BinaryOperator", "ToIntFunction", "IntFunction"):
+                      "ToIntFunction", "IntFunction"):
             argument_types = list(expected.args)
-        elif name in ("BiPredicate", "BiConsumer", "Comparator"):
+        elif name in ("BiPredicate", "BiConsumer", "Comparator", "BinaryOperator"):
             argument_types = list(expected.args) * 2 if len(expected.args) == 1 else list(expected.args)
         else:
             return params
@@ -1801,6 +1896,10 @@ class JavaFrontend:
                     found = info.method(name)
                     if found is not None:
                         expected_params = found.param_types
+        if expected_params is None:
+            obj_node = node.child_by_field_name("object")
+            if obj_node is not None:
+                expected_params = self._library_param_types(obj_node, name, scope)
         args = self._args(
             node.child_by_field_name("arguments"), scope, expected_params
         )
@@ -1897,6 +1996,13 @@ class JavaFrontend:
             ("Long", "MIN_VALUE"): uir.T_LONG,
             ("Math", "PI"): uir.T_DOUBLE,
             ("Math", "E"): uir.T_DOUBLE,
+            ("StandardCharsets", "UTF_8"): ClassType("Charset"),
+            ("StandardCharsets", "US_ASCII"): ClassType("Charset"),
+            ("StandardCharsets", "ISO_8859_1"): ClassType("Charset"),
+            ("StandardCharsets", "UTF_16BE"): ClassType("Charset"),
+            ("StandardCharsets", "UTF_16LE"): ClassType("Charset"),
+            ("Boolean", "TRUE"): uir.T_BOOLEAN,
+            ("Boolean", "FALSE"): uir.T_BOOLEAN,
         }
         resolved = self.__class__._static_table_lookup(table, owner, name)
         if resolved is not None:
@@ -1929,8 +2035,26 @@ class JavaFrontend:
             if name in ("requireNonNull", "requireNonNullElse"):
                 return args[0].type if args else UnknownType("requireNonNull")
         if owner in ("List", "Set", "Map"):
-            if name in ("of", "copyOf"):
-                return ClassType("List") if owner == "List" else ClassType(owner)
+            if name in ("of", "copyOf", "ofEntries"):
+                # The element type comes from the arguments.  Without it `var
+                # items = List.of("a")` gives every use of `items` an
+                # unresolvable element type.
+                if owner == "Map":
+                    keys = self._common_type([a.type for a in args[0::2]])
+                    values = self._common_type([a.type for a in args[1::2]])
+                    return ClassType("Map", (keys, values))
+                element = self._common_type([a.type for a in args])
+                return ClassType("List" if owner == "List" else "Set", (element,))
+            if owner == "Map" and name == "entry" and len(args) == 2:
+                return ClassType("Entry", (args[0].type, args[1].type))
+        if owner == "Optional":
+            if name == "empty":
+                return ClassType("Optional", (UnknownType("optional-empty"),))
+            if name in ("of", "ofNullable"):
+                element = args[0].type if args else UnknownType("optional-element")
+                return ClassType("Optional", (element,))
+        if owner == "Collectors":
+            return ClassType("Collector")
         if owner == "Math":
             if name in ("round", "floorDiv", "floorMod", "addExact",
                         "subtractExact", "multiplyExact", "negateExact"):
@@ -2033,6 +2157,74 @@ class JavaFrontend:
         info = self._lookup(name)
         return info is not None and info.kind == "enum"
 
+    @staticmethod
+    def _common_type(types: list[uir.Type]) -> uir.Type:
+        """The element type of a factory call, or unknown if they disagree.
+
+        `List.of("a", "b")` is a `List<String>`; `List.of("a", 1)` is a
+        `List<Object>` in Java, and pretending otherwise would give the emitter
+        a type the elements do not all have.
+        """
+
+        if not types:
+            return UnknownType("empty-factory")
+        first = types[0]
+        return first if all(t == first for t in types[1:]) else UnknownType(
+            "mixed-factory-elements"
+        )
+
+    @staticmethod
+    def _element_type(container: uir.Type) -> uir.Type:
+        if isinstance(container, ArrayType):
+            return container.element
+        if isinstance(container, ClassType) and container.args:
+            return container.args[0]
+        return UnknownType("foreach-element")
+
+    def _stream_call_type(self, target: ClassType, name: str) -> uir.Type | None:
+        """Result types for a Stream or Optional chain.
+
+        The element type flows through the operations that preserve it, which is
+        what lets a lambda two links down the chain still have typed parameters.
+        """
+
+        element = target.args[0] if target.args else UnknownType("stream-element")
+        if target.name == "Stream":
+            if name in ("filter", "distinct", "sorted", "limit", "skip"):
+                return target
+            if name in ("map", "flatMap", "mapToObj"):
+                return ClassType("Stream", (UnknownType("map-result"),))
+            if name == "mapToInt":
+                return ClassType("Stream", (uir.T_INT,))
+            if name == "mapToLong":
+                return ClassType("Stream", (uir.T_LONG,))
+            if name in ("anyMatch", "allMatch", "noneMatch"):
+                return uir.T_BOOLEAN
+            if name == "count":
+                return uir.T_LONG
+            if name == "sum":
+                return uir.T_INT
+            if name in ("findFirst", "findAny", "max", "min"):
+                return ClassType("Optional", (element,))
+            if name == "toList":
+                return ClassType("List", (element,))
+            if name == "forEach":
+                return uir.T_VOID
+            if name == "reduce":
+                return element
+            return None
+        if name in ("get", "orElse", "orElseGet", "orElseThrow"):
+            return element
+        if name in ("isPresent", "isEmpty"):
+            return uir.T_BOOLEAN
+        if name == "filter":
+            return target
+        if name == "map":
+            return ClassType("Optional", (UnknownType("map-result"),))
+        if name == "ifPresent":
+            return uir.T_VOID
+        return None
+
     def _instance_call_type_declared(self, target: uir.Type, name: str) -> uir.Type:
         if self._is_string(target):
             table = {
@@ -2049,6 +2241,8 @@ class JavaFrontend:
                 "compareTo": uir.T_INT,
                 "hashCode": uir.T_INT,
                 "split": ArrayType(uir.T_STRING),
+                "getBytes": ArrayType(uir.T_BYTE),
+                "matches": uir.T_BOOLEAN,
                 "length": uir.T_INT,
                 "charAt": uir.T_CHAR,
                 "indexOf": uir.T_INT,
@@ -2074,6 +2268,55 @@ class JavaFrontend:
         ):
             if name in ("getMessage", "getLocalizedMessage", "toString"):
                 return uir.T_STRING
+        if isinstance(target, ClassType) and target.name in ("Stream", "Optional"):
+            resolved = self._stream_call_type(target, name)
+            if resolved is not None:
+                return resolved
+
+        if isinstance(target, ClassType) and target.name in _MAP_TYPE_NAMES:
+            key = target.args[0] if len(target.args) > 1 else UnknownType("map-key")
+            value = target.args[1] if len(target.args) > 1 else UnknownType("map-value")
+            if name in ("get", "getOrDefault", "put", "putIfAbsent", "remove"):
+                return value
+            if name in ("containsKey", "containsValue", "isEmpty", "equals"):
+                return uir.T_BOOLEAN
+            if name == "size":
+                return uir.T_INT
+            if name == "keySet":
+                return ClassType("LinkedHashSet", (key,))
+            if name == "values":
+                return ClassType("List", (value,))
+            if name == "entrySet":
+                return ClassType("List", (ClassType("Entry", (key, value)),))
+            if name == "toString":
+                return uir.T_STRING
+
+        if isinstance(target, ClassType) and target.name in _SET_TYPE_NAMES:
+            element = target.args[0] if target.args else UnknownType("set-element")
+            if name in ("contains", "containsAll", "add", "addAll", "remove",
+                        "isEmpty", "equals"):
+                return uir.T_BOOLEAN
+            if name == "size":
+                return uir.T_INT
+            if name == "toString":
+                return uir.T_STRING
+            del element
+
+        if isinstance(target, ClassType) and target.name == "Entry":
+            if name == "getKey":
+                return target.args[0] if target.args else UnknownType("entry-key")
+            if name == "getValue":
+                return target.args[1] if len(target.args) > 1 else UnknownType("entry-value")
+            if name == "toString":
+                return uir.T_STRING
+
+        if isinstance(target, ClassType) and target.name in (
+            "List", "ArrayList", "Set", "HashSet", "LinkedHashSet", "TreeSet",
+            "Map", "HashMap", "LinkedHashMap", "TreeMap", "ConcurrentHashMap",
+        ) and name == "stream":
+            element = target.args[0] if target.args else UnknownType("stream-element")
+            return ClassType("Stream", (element,))
+
         if isinstance(target, ClassType) and target.name in ("List", "ArrayList"):
             if name in ("size", "indexOf"):
                 return uir.T_INT

@@ -69,6 +69,54 @@ class IllegalStateExceptionJ(RuntimeExceptionJ):
     java_name = "java.lang.IllegalStateException"
 
 
+class IOExceptionJ(JavaException):
+    java_name = "java.io.IOException"
+
+
+class UncheckedIOExceptionJ(RuntimeExceptionJ):
+    java_name = "java.io.UncheckedIOException"
+
+
+class FileNotFoundExceptionJ(IOExceptionJ):
+    java_name = "java.io.FileNotFoundException"
+
+
+class NoSuchFileExceptionJ(IOExceptionJ):
+    java_name = "java.nio.file.NoSuchFileException"
+
+
+class NoSuchAlgorithmExceptionJ(JavaException):
+    java_name = "java.security.NoSuchAlgorithmException"
+
+
+class TimeoutExceptionJ(JavaException):
+    java_name = "java.util.concurrent.TimeoutException"
+
+
+class SecurityExceptionJ(RuntimeExceptionJ):
+    java_name = "java.lang.SecurityException"
+
+
+class ConcurrentModificationExceptionJ(RuntimeExceptionJ):
+    java_name = "java.util.ConcurrentModificationException"
+
+
+class ArrayStoreExceptionJ(RuntimeExceptionJ):
+    java_name = "java.lang.ArrayStoreException"
+
+
+class CloneNotSupportedExceptionJ(JavaException):
+    java_name = "java.lang.CloneNotSupportedException"
+
+
+class InterruptedExceptionJ(JavaException):
+    java_name = "java.lang.InterruptedException"
+
+
+class NoSuchElementExceptionJ(RuntimeExceptionJ):
+    java_name = "java.util.NoSuchElementException"
+
+
 class UnsupportedOperationExceptionJ(RuntimeExceptionJ):
     java_name = "java.lang.UnsupportedOperationException"
 
