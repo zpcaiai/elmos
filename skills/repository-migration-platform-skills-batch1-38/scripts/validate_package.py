@@ -225,6 +225,7 @@ def validate_json_assets(errors: list[str]) -> None:
         "actor-trust-store.schema.json", "oracle-registry.schema.json",
         "domain-execution-result.schema.json",
         "domain-executor-registry.schema.json",
+        "real-toolchain-e2e-report.schema.json",
     }
     if required_schemas - {path.name for path in schemas}:
         errors.append(f"schemas missing: {sorted(required_schemas - {path.name for path in schemas})}")

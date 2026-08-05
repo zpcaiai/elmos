@@ -23,7 +23,11 @@ PASS: injected-fault rollback and stale-gate detection
 PASS: fail-closed LOCAL_TOOLKIT_PASS ceiling; CERTIFIED disabled
 PASS: schema, checksum, secret-hygiene and relocatable installation checks
 PASS: production-role evidence ingress without certification escalation
-PASS: 22 runtime, transaction, concurrency, installation and negative behavior tests
+PASS: PostgreSQL 16.10 to 17.5 pg_dump/pg_restore detail reconciliation and rollback restore
+PASS: checksum-bound idempotent target migration and duplicate/transaction negative tests
+PASS: isolated MinIO S3 put/get/delete/cleanup and authenticated read-only GitHub exact-commit check
+PASS: Batch 07 and Batch 34 real-toolchain results accepted by their exact Claim dispatchers
+PASS: 27 runtime, transaction, concurrency, installation, adapter and negative behavior tests
 ```
 
 ## Implemented Runtime Surface
@@ -41,7 +45,17 @@ PASS: 22 runtime, transaction, concurrency, installation and negative behavior t
 - workspace-bound Actor Trust Store for Ed25519 Executor, Oracle Owner and Verifier authentication;
 - required development/negative/holdout/production corpus composition before a Claim is satisfied;
 - typed native domain-result validation with exact tool versions, argv digest, Claim assertions and raw evidence bytes.
+- disposable real-toolchain E2E for PostgreSQL migration, MinIO S3 operations, GitHub Provider reads,
+  detail reconciliation, target expand-contract migration, rollback restore and cleanup evidence.
 
 ## Evidence Boundary
 
-This result proves the package's local engineering behavior, authenticated evidence ingestion, Claim-Oracle composition, and concurrency/transaction regression fixtures. The 38 handlers validate exact native execution results; they do not manufacture an unavailable database, provider, customer, holdout owner, production environment, or CA. It does **not** prove a real customer migration, all 90 source/target toolchains, production canary, provider sandbox, hardware or cluster operation, customer acceptance, Lean Kernel proof, independent security review, source retirement, SA1-SA5, or external certification. Those executions remain `NOT_RUN`; this distribution cannot emit `CERTIFIED`.
+This result proves the package's local engineering behavior, authenticated evidence ingestion,
+Claim-Oracle composition, concurrency/transaction regression fixtures, and the exact disposable
+PostgreSQL/MinIO/GitHub development tuple above. The remaining handlers validate exact native
+execution results; they do not manufacture every unavailable database, provider, customer,
+independent Holdout owner, production environment, or CA. It does **not** prove a real customer
+migration, all 90 source/target toolchains, production canary, destructive cloud operation,
+customer acceptance, Lean Kernel proof, independent security review, source retirement, SA1-SA5,
+or external certification. Those executions remain `NOT_RUN`; this distribution cannot emit
+`CERTIFIED`.

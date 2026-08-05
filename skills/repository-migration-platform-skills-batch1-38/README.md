@@ -42,7 +42,26 @@ Source冻结与语义恢复
 ./validate.sh
 ```
 
-验证会执行包结构、Skill接口、依赖DAG、Schema、Checksum和22个运行时、事务、并发、安装与负向行为测试。
+验证会执行包结构、Skill接口、依赖DAG、Schema、Checksum以及运行时、事务、并发、安装、
+真实工具链适配和负向行为测试。
+
+## 真实数据库与Provider垂直切片
+
+`scripts/real_toolchain_e2e.py`只创建唯一命名、可清理的一次性资源。它将精度和事务Fixture从
+PostgreSQL 16经真实`pg_dump`/`pg_restore`迁移到PostgreSQL 17（或显式指定的目标镜像），
+执行逐行对账、负向约束、事务回滚、校验和绑定的幂等Expand迁移和备份恢复；同时通过真实
+S3 API执行MinIO put/get/delete/cleanup，并通过已认证只读GitHub Provider API核对精确Commit。
+
+```bash
+python3 scripts/real_toolchain_e2e.py \
+  --output /absolute/new/evidence-directory \
+  --github-repository zpcaiai/elmos \
+  --github-sha "$(git rev-parse origin/main)"
+```
+
+命令会生成Batch 07和Batch 34的`domain-execution-result`并交给包内Claim-Oracle dispatcher
+验证。这是真实的一次性development执行证据；独立Holdout、客户生产切换、破坏性Cloud apply
+和外部认证机构仍为`NOT_RUN` / `NOT_CERTIFIED`。
 
 ## 可执行运行时
 

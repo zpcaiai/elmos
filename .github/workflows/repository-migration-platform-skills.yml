@@ -38,3 +38,36 @@ jobs:
 
       - name: Run repository migration platform skill gate
         run: make repository-migration-platform-skills
+
+  real-toolchain-e2e:
+    name: PostgreSQL migration and Provider E2E
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.12.11"
+
+      - name: Run real database migration and Provider contracts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 skills/repository-migration-platform-skills-batch1-38/scripts/real_toolchain_e2e.py \
+            --output "$RUNNER_TEMP/rmp-real-e2e" \
+            --source-image "postgres@sha256:253815cf7579ffa05e1673d92e78d37273e61be0e4414e9a1449337d7925be94" \
+            --target-image "postgres@sha256:fbcea1bd13b6a882cd6caa6b58db3ae5c102efe50ec625b3e2a5cbc50db5bfe4" \
+            --github-repository "${{ github.repository }}" \
+            --github-sha "${{ github.sha }}"
+
+      - name: Preserve content-addressed E2E evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: repository-migration-real-toolchain-e2e-${{ github.sha }}
+          path: ${{ runner.temp }}/rmp-real-e2e
+          if-no-files-found: error
+          retention-days: 30

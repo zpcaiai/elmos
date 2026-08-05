@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/real-toolchain-e2e-report.schema.json",
+  "title": "Repository migration real-toolchain E2E report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "run_id", "decision", "certified", "database", "providers", "corpora", "cleanup", "limitations"],
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "pass": {"const": "PASS"},
+    "engine": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["engine_version", "image", "image_digest"],
+      "properties": {
+        "engine_version": {"type": "string", "minLength": 1},
+        "image": {"type": ["string", "null"], "minLength": 1},
+        "image_digest": {"type": ["string", "null"], "pattern": "^[^@]+@sha256:[0-9a-f]{64}$"}
+      }
+    }
+  },
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "run_id": {"type": "string", "pattern": "^rmp-e2e-[0-9a-f]{8}$"},
+    "decision": {"const": "PASS"},
+    "certified": {"const": false},
+    "database": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["route", "source", "target", "migration_tools", "row_counts", "data_sha256", "schema_sha256", "rollback_sha256", "detail_reconciliation", "backup_restore", "expand_contract_idempotency", "negative_tests"],
+      "properties": {
+        "route": {"type": "string", "minLength": 1},
+        "source": {"$ref": "#/$defs/engine"},
+        "target": {"$ref": "#/$defs/engine"},
+        "migration_tools": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["source_dump", "target_restore", "migration_checksum", "migration_ledger"],
+          "properties": {
+            "source_dump": {"type": "string", "minLength": 1},
+            "target_restore": {"type": "string", "minLength": 1},
+            "migration_checksum": {"$ref": "#/$defs/sha256"},
+            "migration_ledger": {"type": "string", "minLength": 1}
+          }
+        },
+        "row_counts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["accounts", "ledger_entries"],
+          "properties": {
+            "accounts": {"type": "integer", "minimum": 1},
+            "ledger_entries": {"type": "integer", "minimum": 1}
+          }
+        },
+        "data_sha256": {"$ref": "#/$defs/sha256"},
+        "schema_sha256": {"$ref": "#/$defs/sha256"},
+        "rollback_sha256": {"$ref": "#/$defs/sha256"},
+        "detail_reconciliation": {"$ref": "#/$defs/pass"},
+        "backup_restore": {"$ref": "#/$defs/pass"},
+        "expand_contract_idempotency": {"$ref": "#/$defs/pass"},
+        "negative_tests": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["duplicate_idempotency_key", "transaction_rollback"],
+          "properties": {
+            "duplicate_idempotency_key": {"$ref": "#/$defs/pass"},
+            "transaction_rollback": {"$ref": "#/$defs/pass"}
+          }
+        }
+      }
+    },
+    "providers": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["minio_s3", "github"],
+      "properties": {
+        "minio_s3": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["endpoint_kind", "server_image", "server_image_digest", "client_image", "client_image_digest", "server_version", "client_version", "object_sha256", "stat_sha256", "put_get_delete", "cleanup"],
+          "properties": {
+            "endpoint_kind": {"const": "isolated-local-integration"},
+            "server_image": {"type": "string", "pattern": "^[^@]+@sha256:[0-9a-f]{64}$"},
+            "server_image_digest": {"type": "string", "pattern": "^[^@]+@sha256:[0-9a-f]{64}$"},
+            "client_image": {"type": "string", "pattern": "^[^@]+@sha256:[0-9a-f]{64}$"},
+            "client_image_digest": {"type": "string", "pattern": "^[^@]+@sha256:[0-9a-f]{64}$"},
+            "server_version": {"type": "string", "minLength": 1},
+            "client_version": {"type": "string", "minLength": 1},
+            "object_sha256": {"$ref": "#/$defs/sha256"},
+            "stat_sha256": {"$ref": "#/$defs/sha256"},
+            "put_get_delete": {"$ref": "#/$defs/pass"},
+            "cleanup": {"$ref": "#/$defs/pass"}
+          }
+        },
+        "github": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["endpoint", "repository", "visibility", "default_branch", "expected_commit", "observed_commit", "authenticated_read"],
+          "properties": {
+            "endpoint": {"const": "api.github.com"},
+            "repository": {"type": "string", "pattern": "^[^/]+/[^/]+$"},
+            "visibility": {"enum": ["public", "private", "internal"]},
+            "default_branch": {"type": "string", "minLength": 1},
+            "expected_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+            "observed_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+            "authenticated_read": {"$ref": "#/$defs/pass"}
+          }
+        }
+      }
+    },
+    "corpora": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["development", "negative", "holdout", "production"],
+      "properties": {
+        "development": {"const": "EXECUTED"},
+        "negative": {"const": "EXECUTED"},
+        "holdout": {"const": "NOT_RUN"},
+        "production": {"const": "NOT_RUN"}
+      }
+    },
+    "cleanup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["database", "provider", "network"],
+      "properties": {
+        "database": {"$ref": "#/$defs/pass"},
+        "provider": {"$ref": "#/$defs/pass"},
+        "network": {"$ref": "#/$defs/pass"}
+      }
+    },
+    "limitations": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+  }
+}
