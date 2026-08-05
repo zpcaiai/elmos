@@ -1,0 +1,4 @@
+# Example instance for batch-05: csharp12-aspnet8-postgresql
+record_id: "example-csharp12-aspnet8-postgresql"
+schema_version: 1.0.0
+scope: "batch-05"

@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:batch-05:generation-certificate",
+  "title": "GenerationCertificate",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "expires_at",
+    "issued_at",
+    "manual_regions_preserved",
+    "project_id",
+    "record_id",
+    "schema_version",
+    "scope",
+    "status"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "known_limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "status": {
+      "enum": [
+        "certified",
+        "limited",
+        "experimental",
+        "blocked",
+        "stale",
+        "revoked"
+      ]
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "build_evidence_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "test_evidence_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "manual_regions_preserved": {
+      "type": "boolean"
+    },
+    "issued_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

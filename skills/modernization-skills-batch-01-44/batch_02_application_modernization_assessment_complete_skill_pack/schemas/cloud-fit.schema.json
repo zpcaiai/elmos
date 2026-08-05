@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:batch-02:cloud-fit",
+  "title": "CloudFit",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "asset_ref",
+    "fit",
+    "record_id",
+    "schema_version",
+    "scope",
+    "target_model"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "known_limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "asset_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "target_model": {
+      "enum": [
+        "rehost",
+        "replatform",
+        "refactor",
+        "rearchitect",
+        "retire",
+        "retain"
+      ]
+    },
+    "blockers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "fit": {
+      "enum": [
+        "good",
+        "conditional",
+        "poor",
+        "unknown"
+      ]
+    }
+  }
+}

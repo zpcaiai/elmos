@@ -1,0 +1,347 @@
+{
+  "manifest_version": "1.1.0",
+  "batch_id": "batch-02",
+  "package_name": "batch_02_application_modernization_assessment_complete_skill_pack",
+  "reissued_by": "scripts/modernization_b01_44/generate_foundation.py",
+  "file_count": 67,
+  "skill_count": 21,
+  "schema_count": 19,
+  "files": [
+    {
+      "path": "ARCHETYPE_MAP.json",
+      "size_bytes": 1020,
+      "sha256": "68ebf167dc1d659d4cc93b24718a6fd2cc501d9db215f72f828b0b12b858a6c2"
+    },
+    {
+      "path": "BATCH01_COMPATIBILITY.md",
+      "size_bytes": 2322,
+      "sha256": "c2148cdfa98db45dd5a2f8b0e1e020a62b6cac1747b288bf11b68046cf6006cb"
+    },
+    {
+      "path": "CODEX_IMPLEMENTATION_PROMPT.md",
+      "size_bytes": 4085,
+      "sha256": "80bc9909370a89e128c3fe4f38b9d4fe833a3caa65010f23af9388ffd6e19a93"
+    },
+    {
+      "path": "IMPLEMENTATION_CHECKLIST.md",
+      "size_bytes": 2133,
+      "sha256": "ceec816b18a35cf6875f61fedad70f287e87f5969264b221a625c2ff493cb4c2"
+    },
+    {
+      "path": "README.md",
+      "size_bytes": 2163,
+      "sha256": "905637d6e474ed289207fce022dd1f089fac68d66e3b1b0ec2a7e4cbd32cd17b"
+    },
+    {
+      "path": "SKILL.md",
+      "size_bytes": 11124,
+      "sha256": "fb4750c5ac518cd6bd1d159b0939dfe5de19ee76035d26c1234d45443ee34b23"
+    },
+    {
+      "path": "SKILL_INDEX.md",
+      "size_bytes": 8519,
+      "sha256": "c57af28fc96ed0dcdce7ded3a77414096f95aac2a1c75dc91d8e815794e0937d"
+    },
+    {
+      "path": "VALIDATION_REPORT.md",
+      "size_bytes": 1492,
+      "sha256": "c7dce45c96622c6c8a671fa74d4a8c66d70110c5d25642e4ac15c23f83e7d21e"
+    },
+    {
+      "path": "examples/assessment-certificate.yaml",
+      "size_bytes": 344,
+      "sha256": "4428c0338338e5c5b16f4311a015ac131a037810e73fd46773db560b35dd8add"
+    },
+    {
+      "path": "examples/assessment-request.yaml",
+      "size_bytes": 176,
+      "sha256": "060a4aa0ba1f3dc26ff313fd7f8fa16982414d5d77669f8157453a7ebb86322e"
+    },
+    {
+      "path": "examples/migration-candidate.yaml",
+      "size_bytes": 189,
+      "sha256": "d408d674361b823982bf2507e9ee7dc31f5a58366adc2c1dba5d5aeae6bfb0ae"
+    },
+    {
+      "path": "examples/prediction-estimate.yaml",
+      "size_bytes": 237,
+      "sha256": "aeecdba88d0355dc007d9a4f0ebd6f063ee5a7a7d0e204aa1b33560526bc2f92"
+    },
+    {
+      "path": "install.sh",
+      "size_bytes": 305,
+      "sha256": "d01f17d6fcaf60d1011a3eb1954df1daca553f4a48855ed46ef2ace1d47a43fb"
+    },
+    {
+      "path": "policies/agent-boundary.yaml",
+      "size_bytes": 150,
+      "sha256": "79adc8830adec220835b49067d29b50a3a1578f146a65e7d5b70a6d19ba09ab2"
+    },
+    {
+      "path": "policies/certification.yaml",
+      "size_bytes": 182,
+      "sha256": "17f50ef51eb5cbf800b3b4990bfb399d4aed9c751cb7f440bee4a4d88ebf02ea"
+    },
+    {
+      "path": "policies/default-access-policy.yaml",
+      "size_bytes": 117,
+      "sha256": "b57322954144cb371f8318cb4ccb3a6672b886a284039523f5e82da9e1925941"
+    },
+    {
+      "path": "policies/default-certificate-policy.yaml",
+      "size_bytes": 182,
+      "sha256": "17f50ef51eb5cbf800b3b4990bfb399d4aed9c751cb7f440bee4a4d88ebf02ea"
+    },
+    {
+      "path": "policies/default-deny.yaml",
+      "size_bytes": 105,
+      "sha256": "25c6a03403de8832018b82bfa5d9dd516d8f5136ba4974c85d40bdf8972f9366"
+    },
+    {
+      "path": "policies/default-evidence-policy.yaml",
+      "size_bytes": 156,
+      "sha256": "50408543ffa45cfea3461cd57bdabf39f9bdd422fc5b41cdfef4d3c679a058c2"
+    },
+    {
+      "path": "policies/default-prediction-policy.yaml",
+      "size_bytes": 150,
+      "sha256": "54c22c3e11207da75c2f354f2c48b71dde4d8ba45155e9aff7103b158f11cf25"
+    },
+    {
+      "path": "policies/default-probe-policy.yaml",
+      "size_bytes": 131,
+      "sha256": "06f38515e7ed2fcf43deb8770ee12e21f950d9bfbd37847148386d90208090b3"
+    },
+    {
+      "path": "policies/evidence-first.yaml",
+      "size_bytes": 156,
+      "sha256": "50408543ffa45cfea3461cd57bdabf39f9bdd422fc5b41cdfef4d3c679a058c2"
+    },
+    {
+      "path": "policies/human-approval.yaml",
+      "size_bytes": 143,
+      "sha256": "d9a6b11cfe402c569440e95b1aa2377387e222a32b693c83fc278ddb1fd4482f"
+    },
+    {
+      "path": "schemas/architecture-graph.schema.json",
+      "size_bytes": 2179,
+      "sha256": "173a677ae5db71a4a1e4faf271612a9511cdfb846fbabac6e48a70c3ead0b209"
+    },
+    {
+      "path": "schemas/assessment-certificate.schema.json",
+      "size_bytes": 1471,
+      "sha256": "e9455719c039b44107bcca67e0b40f17f66bfb4afd9aed5091d15bb8c07cf451"
+    },
+    {
+      "path": "schemas/assessment-finding.schema.json",
+      "size_bytes": 1355,
+      "sha256": "60f1b02a2cc31c58b58240cb5161202c2a883861e6b03990da6f08b1e43f15df"
+    },
+    {
+      "path": "schemas/assessment-request.schema.json",
+      "size_bytes": 1249,
+      "sha256": "d064887692091c9bab77eb566d8273f1be2be141e09bedb0ba894783a40e7466"
+    },
+    {
+      "path": "schemas/assessment-snapshot.schema.json",
+      "size_bytes": 1205,
+      "sha256": "ceed46c5aad13cfefdffcf496d1cec5ba4fd2a56a55bb7aecfa4eb59ffd5bd1e"
+    },
+    {
+      "path": "schemas/batch-input.schema.json",
+      "size_bytes": 731,
+      "sha256": "47f68421b7afe250dd779f08e857574a9f6bf76fcd30c6074a6c6fb38bbf6b27"
+    },
+    {
+      "path": "schemas/batch-output.schema.json",
+      "size_bytes": 832,
+      "sha256": "74c32eb11b55d1e3a129d36136ccd812e4a8f9f544d0da05145b90c06b070013"
+    },
+    {
+      "path": "schemas/capability-package.schema.json",
+      "size_bytes": 1133,
+      "sha256": "0a1ea6306466bed3f6ffd73f1c793332f5a3c5762f233553f8502d86ca7f0c2b"
+    },
+    {
+      "path": "schemas/certification.schema.json",
+      "size_bytes": 1280,
+      "sha256": "f0d1c5a004cc50942123fce93ac5efd642f41c3adf987c4d9ae94a0371a87f9e"
+    },
+    {
+      "path": "schemas/cloud-fit.schema.json",
+      "size_bytes": 1217,
+      "sha256": "b0d091a3c455d3cafd83f2e675a2a03f70b7da0960150555469d26fd7403e311"
+    },
+    {
+      "path": "schemas/dataflow-edge.schema.json",
+      "size_bytes": 1319,
+      "sha256": "72fe89a661fa22588044cedd4b909a4e2bd6bcf73351eec5e5841bf35ae28934"
+    },
+    {
+      "path": "schemas/dependency-edge.schema.json",
+      "size_bytes": 1314,
+      "sha256": "f4e42e491e882656fafe511b9209fb7527c40bf1cc3baebce87edfd906096f1b"
+    },
+    {
+      "path": "schemas/evidence-ref.schema.json",
+      "size_bytes": 996,
+      "sha256": "0a9768a252b074adfbe144c3d2deefee53211bed8615d270883598d35877b1bf"
+    },
+    {
+      "path": "schemas/migration-candidate.schema.json",
+      "size_bytes": 1281,
+      "sha256": "1101f0746dffbf7c6c4ff99357af77951e17f88467d68d7e9f48f985eb8ae3f2"
+    },
+    {
+      "path": "schemas/portfolio-source.schema.json",
+      "size_bytes": 1168,
+      "sha256": "7ac4fb379b143260720e3380c1707491cbe345094e8779367f4ba7f5375690b9"
+    },
+    {
+      "path": "schemas/prediction-estimate.schema.json",
+      "size_bytes": 1505,
+      "sha256": "8cc033cf1ca8e07ec67c1ed90c5d1b75307749246310c9c06b0950f3129e23cd"
+    },
+    {
+      "path": "schemas/wave-plan.schema.json",
+      "size_bytes": 1427,
+      "sha256": "6db465700d3e94e63ff162d8c1f8bb5845cb04e86990826d96d6162349c8e503"
+    },
+    {
+      "path": "schemas/workflow-run.schema.json",
+      "size_bytes": 848,
+      "sha256": "94d786f99bfec608c1f913682009338673d24e42830938823f66e1a8786d41a6"
+    },
+    {
+      "path": "schemas/workload-asset.schema.json",
+      "size_bytes": 1320,
+      "sha256": "5557ef5a9c3600e3158bb262185e36c94466367441416c52e07982a67fa1a8c7"
+    },
+    {
+      "path": "skills/01-assessment-orchestrator/SKILL.md",
+      "size_bytes": 3538,
+      "sha256": "adbd7dc72ca4399ac567713192fc42bd7ea6e82264ed889351f853d7e3880103"
+    },
+    {
+      "path": "skills/02-portfolio-intake-and-scope/SKILL.md",
+      "size_bytes": 3450,
+      "sha256": "ef326b2033acd6ae29f3a2a282c2a74e56c46cd4c70f608b2bd771334724b573"
+    },
+    {
+      "path": "skills/03-assessment-access-and-data-governance/SKILL.md",
+      "size_bytes": 3460,
+      "sha256": "bf94bb3d4a88c07465f77d93776a80e2c662f1b8f62c55122a09bd716152298b"
+    },
+    {
+      "path": "skills/04-source-repository-discovery/SKILL.md",
+      "size_bytes": 3475,
+      "sha256": "cd81ee17b6bc60456719f1162ebeb2f3cb34d687d3f2d4033e0977ff0c1eef38"
+    },
+    {
+      "path": "skills/05-binary-and-artifact-discovery/SKILL.md",
+      "size_bytes": 3476,
+      "sha256": "5f445bd568c2ffbac6b22e9d7264e80bd096a479ff7725b72bcd4ecb719d717b"
+    },
+    {
+      "path": "skills/06-infrastructure-runtime-document-ingestion/SKILL.md",
+      "size_bytes": 3518,
+      "sha256": "7a2c3818b2bf3c84ec7646b039251151bb8abdfc58a5e077c384b3cee7ade4c3"
+    },
+    {
+      "path": "skills/07-canonical-workload-inventory-builder/SKILL.md",
+      "size_bytes": 3534,
+      "sha256": "2d6c200463d0b942c5068a3674507f278c63bcdccf0228010682536bc0baff9b"
+    },
+    {
+      "path": "skills/08-assessment-evidence-quality-controller/SKILL.md",
+      "size_bytes": 3457,
+      "sha256": "994f70c78def44455b811d22459be8066e2d3044cb33028316e9200ece75c11a"
+    },
+    {
+      "path": "skills/09-semantic-source-indexer/SKILL.md",
+      "size_bytes": 3425,
+      "sha256": "62c1ecdb33f05aeaa83ad4efed700567f90ff87e86589037bb7e3fbe4c06de91"
+    },
+    {
+      "path": "skills/10-architecture-recovery-engine/SKILL.md",
+      "size_bytes": 3455,
+      "sha256": "52cb63fd6fc4d01e49a415d3929cca6cb3291820ca719520215108a71ab1ca22"
+    },
+    {
+      "path": "skills/11-dependency-callgraph-impact-analyzer/SKILL.md",
+      "size_bytes": 3481,
+      "sha256": "e8a633e9f88721edb911c6767bf4640e20f58923a151cc59b110f5c2ee7e3447"
+    },
+    {
+      "path": "skills/12-dataflow-state-integration-analyzer/SKILL.md",
+      "size_bytes": 3557,
+      "sha256": "cd5747809a3b03abc8828013660924f3c405f8f12bcf4dae235047e43a6f864c"
+    },
+    {
+      "path": "skills/13-runtime-topology-correlator/SKILL.md",
+      "size_bytes": 3464,
+      "sha256": "0ce489e9cc85582f4c8d561e3ce989e0897046ed0d889fc471624c3bac8caa00"
+    },
+    {
+      "path": "skills/14-technical-debt-maintainability-assessor/SKILL.md",
+      "size_bytes": 3478,
+      "sha256": "16fd90c8e5db3269a6b53191b3714e03c1db8c50d13c0ef65b8ec599bfa3c202"
+    },
+    {
+      "path": "skills/15-security-supply-chain-compliance-assessor/SKILL.md",
+      "size_bytes": 3550,
+      "sha256": "9d990f97d21de5b7b6b5bf6d61c085484626d09c3631e6e420f4fe6d71fa3690"
+    },
+    {
+      "path": "skills/16-cloud-platform-fit-analyzer/SKILL.md",
+      "size_bytes": 3471,
+      "sha256": "4fcc993bb5e14f071012eb15402d93a4bcf31bb1a13a80a7522472584d2e431e"
+    },
+    {
+      "path": "skills/17-migration-strategy-route-candidate-generator/SKILL.md",
+      "size_bytes": 3542,
+      "sha256": "306e919b2750fb3c91c70c35b7718bf2dc81a55cc38ef3e5e4255d55d9cabb70"
+    },
+    {
+      "path": "skills/18-feasibility-probe-and-baseline-runner/SKILL.md",
+      "size_bytes": 3522,
+      "sha256": "7279e12708ed0ce9431ede318ae313989e974496684b7c7e04db783a6d043004"
+    },
+    {
+      "path": "skills/19-prediction-calibration-engine/SKILL.md",
+      "size_bytes": 3499,
+      "sha256": "891f8922f6c91699a67fe0c4dabea43301238d4e1d18f8dc901325702c4effec"
+    },
+    {
+      "path": "skills/20-portfolio-prioritization-wave-planner/SKILL.md",
+      "size_bytes": 3514,
+      "sha256": "ecc64e84f919577633a5648d36e275d02c2142c90532747492ff1aca404028bf"
+    },
+    {
+      "path": "skills/21-assessment-report-and-certificate-gate/SKILL.md",
+      "size_bytes": 3532,
+      "sha256": "488023e707aae7b5aa23b4e19a14427e44c9646d61205b439c27e0e1fd24baf9"
+    },
+    {
+      "path": "tests/SCENARIOS.md",
+      "size_bytes": 2605,
+      "sha256": "c9da640472df2a9b910674c953046461f107d6a87509800590b25c61f4dbe75f"
+    },
+    {
+      "path": "tests/test_catalog.json",
+      "size_bytes": 1914,
+      "sha256": "66afbc403ddcc4cbcb77d7aca4ed3b76ac7be793af1b22b9901d481029035aa9"
+    },
+    {
+      "path": "tools/validate_package.py",
+      "size_bytes": 2280,
+      "sha256": "0f174d018825cc82f9734490e552de8818bfd8577b72be1cbd1fc51c6ddf52a5"
+    },
+    {
+      "path": "validate.sh",
+      "size_bytes": 72,
+      "sha256": "a1afca2d69d8fa3d11c820c8381b06b6449e31b289196b3cdc4156de471dd6c4"
+    }
+  ],
+  "manifest_excludes_itself": true
+}

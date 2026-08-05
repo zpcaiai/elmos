@@ -1,0 +1,240 @@
+{
+  "schema_version": "1.0.0",
+  "package_id": "batch-22-semantic-recovery-hardening-complete-skill-pack",
+  "batch": 22,
+  "title": "Semantic Recovery Hardening and Runtime-Enriched CSIR",
+  "version": "1.0.0",
+  "generated_at": "2026-07-31T00:00:00Z",
+  "skill_count": 16,
+  "skills": [
+    "b22-semantic-recovery-hardening-orchestrator",
+    "b22-semantic-recovery-hardening-domain-model",
+    "b22-semantic-recovery-hardening-discovery-inventory",
+    "b22-semantic-recovery-hardening-capability-planning",
+    "b22-semantic-recovery-hardening-deterministic-engine",
+    "b22-semantic-recovery-hardening-adapter-provider",
+    "b22-semantic-recovery-hardening-workflow-runtime",
+    "b22-semantic-recovery-hardening-lineage-reconciliation",
+    "b22-semantic-recovery-hardening-security-policy",
+    "b22-semantic-recovery-hardening-human-approval",
+    "b22-semantic-recovery-hardening-observability-economics",
+    "b22-semantic-recovery-hardening-corpus-benchmark",
+    "b22-semantic-recovery-hardening-failure-recovery",
+    "b22-semantic-recovery-hardening-integration-api",
+    "b22-semantic-recovery-hardening-lifecycle-recertification",
+    "b22-semantic-recovery-hardening-certification-gate"
+  ],
+  "upstream_batch": 21,
+  "files": [
+    {
+      "path": "BATCH21_COMPATIBILITY.md",
+      "sha256": "ce2d91b852cdb8e786cfecec05c80fc91063f7aa27e5d27cca5639492493e92f",
+      "size": 2135
+    },
+    {
+      "path": "CODEX_IMPLEMENTATION_PROMPT.md",
+      "sha256": "23892ba72b7fca711012708546aa0a7a1edd5e891d37228c80f4e31f5333120a",
+      "size": 2316
+    },
+    {
+      "path": "IMPLEMENTATION_CHECKLIST.md",
+      "sha256": "93bda8348fe1e02613cc09ca3b2a462831c93f7ee855da8c3875c6577521eced",
+      "size": 1798
+    },
+    {
+      "path": "README.md",
+      "sha256": "c40466531679757460f2d303e0a534bd4ee6292534325f6acbff440e220e0bdc",
+      "size": 1073
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "4a21bd8313f716172b035928e483055ca7cbe6488270572d4130dbbbfdf9c479",
+      "size": 3534
+    },
+    {
+      "path": "SKILL_INDEX.md",
+      "sha256": "bf8ef7543a97f6681653133871c8847f0e45f79286f033a4e2dfe8995a893825",
+      "size": 3054
+    },
+    {
+      "path": "VALIDATION_REPORT.md",
+      "sha256": "86beceecbddccdb229e64632c29a1edcbf1325b66477cba93a0ebb610b03657c",
+      "size": 572
+    },
+    {
+      "path": "examples/certificate.example.json",
+      "sha256": "e1d41a6269189507324bb6bf4226b3f268f0f45f0e5fc381ea6d213d6d73b315",
+      "size": 452
+    },
+    {
+      "path": "examples/invocation.example.json",
+      "sha256": "722088c6b35362cfff8a4d7a4c505d15a69becec89c1d4ad55230d06d3fff0a8",
+      "size": 287
+    },
+    {
+      "path": "install.sh",
+      "sha256": "cdaf3fdf0c010dd9e0fe29b4a92cd723ff35dd0617eaf14bb5f57e757bc2fa02",
+      "size": 305
+    },
+    {
+      "path": "policies/agent-boundary.yaml",
+      "sha256": "79adc8830adec220835b49067d29b50a3a1578f146a65e7d5b70a6d19ba09ab2",
+      "size": 150
+    },
+    {
+      "path": "policies/certification.yaml",
+      "sha256": "17f50ef51eb5cbf800b3b4990bfb399d4aed9c751cb7f440bee4a4d88ebf02ea",
+      "size": 182
+    },
+    {
+      "path": "policies/default-deny.yaml",
+      "sha256": "25c6a03403de8832018b82bfa5d9dd516d8f5136ba4974c85d40bdf8972f9366",
+      "size": 105
+    },
+    {
+      "path": "policies/evidence-first.yaml",
+      "sha256": "50408543ffa45cfea3461cd57bdabf39f9bdd422fc5b41cdfef4d3c679a058c2",
+      "size": 156
+    },
+    {
+      "path": "policies/human-approval.yaml",
+      "sha256": "d9a6b11cfe402c569440e95b1aa2377387e222a32b693c83fc278ddb1fd4482f",
+      "size": 143
+    },
+    {
+      "path": "schemas/batch-input.schema.json",
+      "sha256": "52d8ddd7280365a1a6c1daab47a8a68facb9a2dba4556607c38c89932ac69ae8",
+      "size": 731
+    },
+    {
+      "path": "schemas/batch-output.schema.json",
+      "sha256": "2e1689ec2c6fa142eaf6e570ba4f79b8fe713a55ded150bfc30b1144416f3d0c",
+      "size": 832
+    },
+    {
+      "path": "schemas/capability-package.schema.json",
+      "sha256": "9930a6cdbddec16227003c98075fef55ad5e7a15cc96b1dc59033c131095175a",
+      "size": 1133
+    },
+    {
+      "path": "schemas/certification.schema.json",
+      "sha256": "a1014d74726c6b95dabfb6523d8eb2ff789a7abca75449ded0b9c17ab2fb1653",
+      "size": 1281
+    },
+    {
+      "path": "schemas/evidence-ref.schema.json",
+      "sha256": "b91be6db61f4c3617f4cefc4f0bcb38db891f089f4fa9cb8892f9db835c0b517",
+      "size": 996
+    },
+    {
+      "path": "schemas/workflow-run.schema.json",
+      "sha256": "492717d7d4092bef2bd045aafdf894fab1f121a4b646b168a5a7f2f18b28e4de",
+      "size": 848
+    },
+    {
+      "path": "skills/b22-semantic-recovery-hardening-adapter-provider/SKILL.md",
+      "sha256": "7917159dcb66ca46a28fb14c66f1275aa1db7620b2c2b9ecfd5c0660d902a2bd",
+      "size": 3905
+    },
+    {
+      "path": "skills/b22-semantic-recovery-hardening-capability-planning/SKILL.md",
+      "sha256": "5432e677c47a36f87268067684afa0d801bd31a36bffde20ed7816d4342bdb47",
+      "size": 3807
+    },
+    {
+      "path": "skills/b22-semantic-recovery-hardening-certification-gate/SKILL.md",
+      "sha256": "77645bec07433a9a3d0ba1fe848b1bcdcec104d8dd1431495bac5c70592a3c2a",
+      "size": 3936
+    },
+    {
+      "path": "skills/b22-semantic-recovery-hardening-corpus-benchmark/SKILL.md",
+      "sha256": "2317e56ef49fa168760fc4ddd8cf350c07ca1c9ed5feb881c2e5ed5c934e402c",
+      "size": 3846
+    },
+    {
+      "path": "skills/b22-semantic-recovery-hardening-deterministic-engine/SKILL.md",
+      "sha256": "537fcdfc6c18d41b1133b5762f12d6bb68910e96869d797ec5dbc67bcd54913c",
+      "size": 3823
+    },
+    {
+      "path": "skills/b22-semantic-recovery-hardening-discovery-inventory/SKILL.md",
+      "sha256": "0fea37c8e91ea6b0935241ee0b93ef1a14f5e20bc8a3c1581161b2c3c22e0d5d",
+      "size": 3850
+    },
+    {
+      "path": "skills/b22-semantic-recovery-hardening-domain-model/SKILL.md",
+      "sha256": "b6402a8f123c93d6a50b1c017f4e83bd54496c5586c268dd73d02877155d2159",
+      "size": 3877
+    },
+    {
+      "path": "skills/b22-semantic-recovery-hardening-failure-recovery/SKILL.md",
+      "sha256": "ffb0f5359f739e6a28788b8f958901405430008cfedbdfe49e8451b198414f95",
+      "size": 3854
+    },
+    {
+      "path": "skills/b22-semantic-recovery-hardening-human-approval/SKILL.md",
+      "sha256": "6930538bffbf88f65857d89fe4c02913becdc39aeebe736ef29d5fb03c3efd19",
+      "size": 3839
+    },
+    {
+      "path": "skills/b22-semantic-recovery-hardening-integration-api/SKILL.md",
+      "sha256": "6175fcb971833f3a9d07763fd6df31c90aae732bc13ad5ca5b8eb4ef03d920f8",
+      "size": 3824
+    },
+    {
+      "path": "skills/b22-semantic-recovery-hardening-lifecycle-recertification/SKILL.md",
+      "sha256": "9d20ec4cc4e10ae6ae242a083940a45d23320ac3d0c109cb9b7d28a95c48937a",
+      "size": 3914
+    },
+    {
+      "path": "skills/b22-semantic-recovery-hardening-lineage-reconciliation/SKILL.md",
+      "sha256": "40ce8512b927128e191785262d40f32653bf58963d301560df6c0c819f97650b",
+      "size": 3865
+    },
+    {
+      "path": "skills/b22-semantic-recovery-hardening-observability-economics/SKILL.md",
+      "sha256": "84da2302915ca31c9d115c63538572d7099ab6a2700a83c4f110326f16cb5863",
+      "size": 3880
+    },
+    {
+      "path": "skills/b22-semantic-recovery-hardening-orchestrator/SKILL.md",
+      "sha256": "16ebf2b05389709576a27af59cbc108cefa4b152acffa61d670f2b92f298a243",
+      "size": 3902
+    },
+    {
+      "path": "skills/b22-semantic-recovery-hardening-security-policy/SKILL.md",
+      "sha256": "cf98e475ecd6e72d3824a6e2833daf3a10637591b118973c6e5ce418c06e0cea",
+      "size": 3859
+    },
+    {
+      "path": "skills/b22-semantic-recovery-hardening-workflow-runtime/SKILL.md",
+      "sha256": "a94600ec3cb138bf699d169b2f1b0e6c1effa2b8ed80410a79fa9cc8c8d34203",
+      "size": 3868
+    },
+    {
+      "path": "tests/README.md",
+      "sha256": "66bf7c366c0db21db9e458f35116aa6f3fa11559a953f97438f23d27689bdd31",
+      "size": 409
+    },
+    {
+      "path": "tests/test_catalog.json",
+      "sha256": "01c4027195b958db480fa8cd070de0673219a88732a406ec941c5f1ecb551d20",
+      "size": 1931
+    },
+    {
+      "path": "tools/validate_package.py",
+      "sha256": "1d0e2d5d5005b7602e810d0a54ae8e33f6145cab3d21bf348d7fefcfa8fb3023",
+      "size": 1519
+    },
+    {
+      "path": "validate.sh",
+      "sha256": "a1afca2d69d8fa3d11c820c8381b06b6449e31b289196b3cdc4156de471dd6c4",
+      "size": 72
+    }
+  ],
+  "validation": {
+    "static": "passed",
+    "runtime": "not-executed"
+  },
+  "trust_boundary": "Static package validation is not production certification."
+}

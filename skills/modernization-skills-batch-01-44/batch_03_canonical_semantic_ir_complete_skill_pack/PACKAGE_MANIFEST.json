@@ -1,0 +1,347 @@
+{
+  "manifest_version": "1.1.0",
+  "batch_id": "batch-03",
+  "package_name": "batch_03_canonical_semantic_ir_complete_skill_pack",
+  "reissued_by": "scripts/modernization_b01_44/generate_foundation.py",
+  "file_count": 67,
+  "skill_count": 24,
+  "schema_count": 16,
+  "files": [
+    {
+      "path": "ARCHETYPE_MAP.json",
+      "size_bytes": 1070,
+      "sha256": "2c455d524e56968d034fc80ad22f4d96b339c0f5db878a99437a084f40179b2f"
+    },
+    {
+      "path": "BATCH02_COMPATIBILITY.md",
+      "size_bytes": 2217,
+      "sha256": "8f7f5ecc75799f0b063f5e80ada2f90fc3aad330901c0a0e4e6b2aa84b3c9945"
+    },
+    {
+      "path": "CODEX_IMPLEMENTATION_PROMPT.md",
+      "size_bytes": 4315,
+      "sha256": "6a9c07f408fd70cfd1e2ea93d9595c41ec98fb572eb7b8f75f39dcfabc4e9dfa"
+    },
+    {
+      "path": "IMPLEMENTATION_CHECKLIST.md",
+      "size_bytes": 2135,
+      "sha256": "d4f0af23a15f0f68ac4cbdde69d0093c34e0363dc48623612c94c5df1a3cb018"
+    },
+    {
+      "path": "README.md",
+      "size_bytes": 2264,
+      "sha256": "d79003bfe89399bd66b14f2bae7cc96fa76b2f0b68a30ad2356b8b1d19e06dca"
+    },
+    {
+      "path": "SKILL.md",
+      "size_bytes": 12434,
+      "sha256": "00a3260323ae408b010d0f0e83deac9c9b76581a12ccb94165d4ce4a46c2de62"
+    },
+    {
+      "path": "SKILL_INDEX.md",
+      "size_bytes": 9615,
+      "sha256": "d4554a50e8611e51f142ee43cd79f6394f17094fa1c8d4c75a0f4b1b76e3bba9"
+    },
+    {
+      "path": "VALIDATION_REPORT.md",
+      "size_bytes": 1477,
+      "sha256": "19ba520a28a15b4fc5543d727bbbea4beca0373e928e3dd79fda65801b011a95"
+    },
+    {
+      "path": "examples/frontend-capability.yaml",
+      "size_bytes": 193,
+      "sha256": "3b062c9862b04e8670b4d513d30d0c22bc26d15c1f394692f74d29c2384db139"
+    },
+    {
+      "path": "examples/ir-bundle-manifest.yaml",
+      "size_bytes": 322,
+      "sha256": "23beb944c2529e1ab8768f32d83f4ba03663bdd6f0b7bafaafb13e0795150c4c"
+    },
+    {
+      "path": "examples/proof-obligation.yaml",
+      "size_bytes": 195,
+      "sha256": "890d20caf30269324b89253ba4ce67e009054006ebcece8985b705ef13e126bf"
+    },
+    {
+      "path": "examples/sql-unit.yaml",
+      "size_bytes": 157,
+      "sha256": "f2712b3511838720663c5da73adc64c3b640f1d3aa50ba8fe6596d06bbe2aff8"
+    },
+    {
+      "path": "install.sh",
+      "size_bytes": 305,
+      "sha256": "7adccf7436af44aa81d7b0d3919061cd063cba6f0ad14b1f3b5726213bed1e7b"
+    },
+    {
+      "path": "policies/agent-boundary.yaml",
+      "size_bytes": 150,
+      "sha256": "79adc8830adec220835b49067d29b50a3a1578f146a65e7d5b70a6d19ba09ab2"
+    },
+    {
+      "path": "policies/cache-invalidation-policy.yaml",
+      "size_bytes": 169,
+      "sha256": "5b090da35f2f140f8582374019dd6412d6686b7b09b6b765fd7d69eb56a58cf5"
+    },
+    {
+      "path": "policies/certification.yaml",
+      "size_bytes": 182,
+      "sha256": "17f50ef51eb5cbf800b3b4990bfb399d4aed9c751cb7f440bee4a4d88ebf02ea"
+    },
+    {
+      "path": "policies/default-deny.yaml",
+      "size_bytes": 105,
+      "sha256": "25c6a03403de8832018b82bfa5d9dd516d8f5136ba4974c85d40bdf8972f9366"
+    },
+    {
+      "path": "policies/evidence-first.yaml",
+      "size_bytes": 156,
+      "sha256": "50408543ffa45cfea3461cd57bdabf39f9bdd422fc5b41cdfef4d3c679a058c2"
+    },
+    {
+      "path": "policies/frontend-selection-policy.yaml",
+      "size_bytes": 133,
+      "sha256": "016931e30f56e3bd7091337e16fdb0d6e8ff6c16c9e6a6ccb6de36a7ffe85f38"
+    },
+    {
+      "path": "policies/human-approval.yaml",
+      "size_bytes": 143,
+      "sha256": "d9a6b11cfe402c569440e95b1aa2377387e222a32b693c83fc278ddb1fd4482f"
+    },
+    {
+      "path": "policies/schema-evolution-policy.yaml",
+      "size_bytes": 128,
+      "sha256": "6f377439e49bbd32fe8a8b811d2b701760977dd120b2ffb757f0406e3d176ff4"
+    },
+    {
+      "path": "policies/semantic-level-policy.yaml",
+      "size_bytes": 135,
+      "sha256": "be7e5c238ab9237e4b7b0f9cf2ce0b2cc48ccac8d5703e76c0bf59fb67c9f933"
+    },
+    {
+      "path": "policies/unknown-handling-policy.yaml",
+      "size_bytes": 164,
+      "sha256": "7c3f1019640185ebce3ca11ca94962feb76505c826aa7daa871d3a5b157dd06a"
+    },
+    {
+      "path": "schemas/batch-input.schema.json",
+      "size_bytes": 731,
+      "sha256": "e385c1e7adfaab366ae931f7bb3a5b4eec6e46476dbf951ce4738276881c32ab"
+    },
+    {
+      "path": "schemas/batch-output.schema.json",
+      "size_bytes": 832,
+      "sha256": "e60276a6eb6dea876a19c0b25662bd4247764a52c9ca0e5ff5a7aa0492a6866b"
+    },
+    {
+      "path": "schemas/capability-package.schema.json",
+      "size_bytes": 1133,
+      "sha256": "33d2393f43ec39a6961158f01969c7b53a76472846234b511988c4748eb88529"
+    },
+    {
+      "path": "schemas/certification.schema.json",
+      "size_bytes": 1280,
+      "sha256": "253773a6fcdcd3541c47379ab9d250004f3a561ac3bf9ed40214a224a55dcf55"
+    },
+    {
+      "path": "schemas/evidence-ref.schema.json",
+      "size_bytes": 996,
+      "sha256": "b79648dd271fc49698cdaf2f9a7038a40c864830b873cdf46015b8e32aaf1f0e"
+    },
+    {
+      "path": "schemas/ir-bundle-manifest.schema.json",
+      "size_bytes": 1465,
+      "sha256": "d42e889e22ae2e0fa2f27bacf1a79235f81a1149b77b7b63a604c3232079a067"
+    },
+    {
+      "path": "schemas/ir-certificate.schema.json",
+      "size_bytes": 1411,
+      "sha256": "50a6d4f887de8762d707c34ec45c5206dd28d72eef2608508e45c0178d11418d"
+    },
+    {
+      "path": "schemas/ir-node-header.schema.json",
+      "size_bytes": 1322,
+      "sha256": "7debc8bab49d2754128c0782b8d0296a8cbfac8dfc0eae5cdec4c41610051bc9"
+    },
+    {
+      "path": "schemas/language-extension-capsule.schema.json",
+      "size_bytes": 1278,
+      "sha256": "3e76b9678c7128572c842f6ba10bce69790f531a9c1ea01287b0bbe0b5f02cf8"
+    },
+    {
+      "path": "schemas/proof-obligation.schema.json",
+      "size_bytes": 1404,
+      "sha256": "005f24c6664db1cf3ffc9575939d28da021a5628198ab2df49cf7fae08dbb7a3"
+    },
+    {
+      "path": "schemas/provenance-edge.schema.json",
+      "size_bytes": 1063,
+      "sha256": "07e6113c3a5fed857ede9ce640c9c223afa18aea188c3b33384cbf0482e9c01d"
+    },
+    {
+      "path": "schemas/semantic-fact.schema.json",
+      "size_bytes": 1215,
+      "sha256": "2b0b12391999f748c549b8b9cf55181040e99022779ed84f5147863616545ad4"
+    },
+    {
+      "path": "schemas/source-span.schema.json",
+      "size_bytes": 1185,
+      "sha256": "c7e7478086b832ff3b9d9ffc454ff593bfb81452edba2e7bc8b243717223895a"
+    },
+    {
+      "path": "schemas/symbol-identity.schema.json",
+      "size_bytes": 1327,
+      "sha256": "b69bc9bc9819ccdeb27b1f2e277b3e4d3641d6462e9355d51abf14add0d8572a"
+    },
+    {
+      "path": "schemas/type-ref.schema.json",
+      "size_bytes": 1293,
+      "sha256": "114681e667e71be92988f60212a2da2a6c90276518aef1c35ec65b4b7a909070"
+    },
+    {
+      "path": "schemas/workflow-run.schema.json",
+      "size_bytes": 848,
+      "sha256": "18b36e0f46a829239a1cc577ca9631e8c86e36c052f8ae730c34b9f7694a4708"
+    },
+    {
+      "path": "skills/01-ir-foundation-orchestrator/SKILL.md",
+      "size_bytes": 3531,
+      "sha256": "b2a44d3754724e7fc778ced1b9ac696188c813ef1a7dcdb73ce75b116d267897"
+    },
+    {
+      "path": "skills/02-source-artifact-normalizer/SKILL.md",
+      "size_bytes": 3585,
+      "sha256": "6d036244b5006e44648f6d11940a2440f67002e7c2f20ceaf063ac9c42d27556"
+    },
+    {
+      "path": "skills/03-language-version-and-region-detector/SKILL.md",
+      "size_bytes": 3555,
+      "sha256": "ca8c5b46802a4a9c10a039937c901f330624561ec6362f232c52f4d416983e26"
+    },
+    {
+      "path": "skills/04-build-context-and-toolchain-resolver/SKILL.md",
+      "size_bytes": 3610,
+      "sha256": "81a5c5070112133063e955b784462a7f7c23363d2e47a400c3db3f874772179e"
+    },
+    {
+      "path": "skills/05-frontend-adapter-sdk-and-registry/SKILL.md",
+      "size_bytes": 3621,
+      "sha256": "41fba42653410e73d73751955808d62da92e2bf990b4e07f5edcdefe5f0e3241"
+    },
+    {
+      "path": "skills/06-native-lossless-syntax-ir-builder/SKILL.md",
+      "size_bytes": 3599,
+      "sha256": "ed66caa70289eb28a62aa59859b042cacae51e47417fc3a205a0fbbd15472f17"
+    },
+    {
+      "path": "skills/07-native-semantic-attribution-engine/SKILL.md",
+      "size_bytes": 3571,
+      "sha256": "3de0f83d02da9cd1b644adf27df23ada2fc60e95bbfa50ff19e734bb0f988172"
+    },
+    {
+      "path": "skills/08-canonical-semantic-ir-schema-and-lowering/SKILL.md",
+      "size_bytes": 3581,
+      "sha256": "6717d73b497127c31f9227b4b3fc6e0db8de33a980af1d1117263a44e5ce2ff8"
+    },
+    {
+      "path": "skills/09-symbol-identity-scope-and-linker/SKILL.md",
+      "size_bytes": 3522,
+      "sha256": "b9f21c105be75a6d2fe2c2b523285db7351d4bba444b1cfb61283302b4e0a33e"
+    },
+    {
+      "path": "skills/10-canonical-type-system-and-language-relations/SKILL.md",
+      "size_bytes": 3531,
+      "sha256": "8ebd43bdc744a1478d232e92c7252cfeb430eb4294ce3a076c3c5a7acac46e7c"
+    },
+    {
+      "path": "skills/11-expression-statement-and-evaluation-order-lowerer/SKILL.md",
+      "size_bytes": 3638,
+      "sha256": "0f17ebcd7bdf4fb370414ea0f6ed956838eeeffbc738bccfc5db162f769d718e"
+    },
+    {
+      "path": "skills/12-control-flow-ssa-and-dataflow-builder/SKILL.md",
+      "size_bytes": 3522,
+      "sha256": "975a939799283e227f05b91d484ab8e4db79b39a39ddf101748854756344168a"
+    },
+    {
+      "path": "skills/13-callgraph-dispatch-reflection-and-dynamic-linker/SKILL.md",
+      "size_bytes": 3550,
+      "sha256": "c7643d701037b786955a0bcf12b76ffa558ff50febe3c7e04d6642fde2101d39"
+    },
+    {
+      "path": "skills/14-effect-exception-concurrency-and-resource-modeler/SKILL.md",
+      "size_bytes": 3553,
+      "sha256": "94367d39aff37e1278cd979007a71b2901a570f9c77912e4fbdef40413a53e57"
+    },
+    {
+      "path": "skills/15-build-config-and-resource-ir-builder/SKILL.md",
+      "size_bytes": 3560,
+      "sha256": "56f112d9e8f163f1f11b1fcf406ed78d3e2781cc210de4e1686596a80f24bee4"
+    },
+    {
+      "path": "skills/16-api-message-and-contract-ir-builder/SKILL.md",
+      "size_bytes": 3519,
+      "sha256": "f1d4054a0e290f2cfff82aba74f26bf06d0795b703db5319a538f2e9bc2054c8"
+    },
+    {
+      "path": "skills/17-sql-and-database-procedural-ir-builder/SKILL.md",
+      "size_bytes": 3599,
+      "sha256": "3f2367ba5ed7a23f56083ca2b4617899b081a7241dfa5b6866ad690a75e436dd"
+    },
+    {
+      "path": "skills/18-binary-bytecode-and-native-metadata-ir/SKILL.md",
+      "size_bytes": 3580,
+      "sha256": "40895a7cdbc1c0df0707797cccc41f233b5af18470e27baa31f50950e32d8dab"
+    },
+    {
+      "path": "skills/19-generated-code-macro-and-metaprogramming-modeler/SKILL.md",
+      "size_bytes": 3582,
+      "sha256": "8bdfef48ef676f0fab4b167248652404e2cbc806e65827a45ca1e00b7c1af4a7"
+    },
+    {
+      "path": "skills/20-source-map-provenance-and-semantic-fingerprint/SKILL.md",
+      "size_bytes": 3591,
+      "sha256": "bc17af023c83d35b49bb0cf54016f55611722eca3b628abc0275964617cd9eab"
+    },
+    {
+      "path": "skills/21-formalizable-core-and-proof-obligation-contract/SKILL.md",
+      "size_bytes": 3629,
+      "sha256": "ee959c22df1d71ce215c54b20ecc2f8a04c5ce0635e995413a042cdeac7287d4"
+    },
+    {
+      "path": "skills/22-incremental-ir-cache-and-chunk-store/SKILL.md",
+      "size_bytes": 3616,
+      "sha256": "dd8dc16606b201f9f958d1d6047e41f604ec54a74ddac72ce73aca7d7c020852"
+    },
+    {
+      "path": "skills/23-ir-query-diff-and-export-service/SKILL.md",
+      "size_bytes": 3540,
+      "sha256": "03ed0cd95a8e38bfea4b34508dbe5f43c12eabd4619c0c0b4f0f323e9453c454"
+    },
+    {
+      "path": "skills/24-frontend-conformance-and-ir-certification-gate/SKILL.md",
+      "size_bytes": 3611,
+      "sha256": "8e3a63c333e97fac0e2ca3bc287893ad1cd08997a8f1ce6ac30eb50db799feae"
+    },
+    {
+      "path": "tests/SCENARIOS.md",
+      "size_bytes": 2647,
+      "sha256": "f41fd8b53eaebf7a36144dc9b9eeae92e69b70dbaf1e1feaee59f1633848d572"
+    },
+    {
+      "path": "tests/test_catalog.json",
+      "size_bytes": 1956,
+      "sha256": "df0bc0d20474917470cbd712275bea3e7eadf02f2fa75489124d1b71973b663d"
+    },
+    {
+      "path": "tools/validate_package.py",
+      "size_bytes": 2280,
+      "sha256": "0f174d018825cc82f9734490e552de8818bfd8577b72be1cbd1fc51c6ddf52a5"
+    },
+    {
+      "path": "validate.sh",
+      "size_bytes": 72,
+      "sha256": "a1afca2d69d8fa3d11c820c8381b06b6449e31b289196b3cdc4156de471dd6c4"
+    }
+  ],
+  "manifest_excludes_itself": true
+}

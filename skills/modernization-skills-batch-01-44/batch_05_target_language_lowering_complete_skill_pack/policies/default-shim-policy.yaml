@@ -1,0 +1,4 @@
+shim:
+  shim_must_be_declared: true
+  silent_shim: forbidden
+  shim_counts_as_limitation: true

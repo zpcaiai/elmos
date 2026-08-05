@@ -1,0 +1,4 @@
+scoring:
+  explicit_denominator_required: true
+  unknown_counts_against_coverage: true
+  weights_must_be_declared: true

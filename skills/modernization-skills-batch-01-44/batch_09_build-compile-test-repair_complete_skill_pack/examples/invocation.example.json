@@ -1,0 +1,12 @@
+{
+  "request_id": "b09-example-001",
+  "tenant_id": "example-tenant",
+  "project_id": "example-project",
+  "scope": "Build, Compile, Test Repair and Bounded Fix Loop",
+  "upstream_certificate_refs": [
+    "batch-08-certificate-example"
+  ],
+  "options": {
+    "dry_run": true
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "certificate_id": "batch-33-certificate-example",
+  "batch": 33,
+  "status": "experimental",
+  "scope": "static package example only",
+  "input_digests": [
+    "0000000000000000000000000000000000000000000000000000000000000000"
+  ],
+  "evidence_refs": [
+    "example-static-validation"
+  ],
+  "issued_at": "2026-07-31T00:00:00Z",
+  "expires_at": "2026-10-29T00:00:00Z",
+  "limitations": [
+    "No target runtime executed"
+  ],
+  "signature": null
+}

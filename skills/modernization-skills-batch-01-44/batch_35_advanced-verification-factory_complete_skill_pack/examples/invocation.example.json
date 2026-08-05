@@ -1,0 +1,12 @@
+{
+  "request_id": "b35-example-001",
+  "tenant_id": "example-tenant",
+  "project_id": "example-project",
+  "scope": "Advanced Verification, Fuzzing, Mutation and Formal Assurance Factory",
+  "upstream_certificate_refs": [
+    "batch-34-certificate-example"
+  ],
+  "options": {
+    "dry_run": true
+  }
+}

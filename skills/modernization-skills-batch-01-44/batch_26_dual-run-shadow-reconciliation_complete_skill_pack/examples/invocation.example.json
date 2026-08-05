@@ -1,0 +1,12 @@
+{
+  "request_id": "b26-example-001",
+  "tenant_id": "example-tenant",
+  "project_id": "example-project",
+  "scope": "Dual Run, Shadow Execution and State Reconciliation",
+  "upstream_certificate_refs": [
+    "batch-25-certificate-example"
+  ],
+  "options": {
+    "dry_run": true
+  }
+}

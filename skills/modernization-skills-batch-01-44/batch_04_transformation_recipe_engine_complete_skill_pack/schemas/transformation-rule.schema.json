@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:batch-04:transformation-rule",
+  "title": "TransformationRule",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "direction",
+    "match",
+    "priority",
+    "record_id",
+    "rewrite",
+    "rule_id",
+    "schema_version",
+    "scope"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "known_limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "rule_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "match": {
+      "type": "string",
+      "minLength": 1
+    },
+    "rewrite": {
+      "type": "string",
+      "minLength": 1
+    },
+    "guards": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "direction": {
+      "type": "string",
+      "minLength": 1
+    },
+    "priority": {
+      "type": "integer"
+    }
+  }
+}

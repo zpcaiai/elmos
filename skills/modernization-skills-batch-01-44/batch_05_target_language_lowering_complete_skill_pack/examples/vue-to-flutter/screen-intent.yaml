@@ -1,0 +1,10 @@
+# Example instance for batch-05: screen-intent
+construct: example
+intent_id: example
+manual_region: false
+profile_id: example
+record_id: example
+schema_version: 1.0.0
+scope: example
+source_node_refs:
+  - example

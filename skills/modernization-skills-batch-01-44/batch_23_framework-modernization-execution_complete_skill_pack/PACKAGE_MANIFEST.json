@@ -1,0 +1,240 @@
+{
+  "schema_version": "1.0.0",
+  "package_id": "batch-23-framework-modernization-execution-complete-skill-pack",
+  "batch": 23,
+  "title": "Framework Modernization Execution Packs",
+  "version": "1.0.0",
+  "generated_at": "2026-07-31T00:00:00Z",
+  "skill_count": 16,
+  "skills": [
+    "b23-framework-modernization-execution-orchestrator",
+    "b23-framework-modernization-execution-domain-model",
+    "b23-framework-modernization-execution-discovery-inventory",
+    "b23-framework-modernization-execution-capability-planning",
+    "b23-framework-modernization-execution-deterministic-engine",
+    "b23-framework-modernization-execution-adapter-provider",
+    "b23-framework-modernization-execution-workflow-runtime",
+    "b23-framework-modernization-execution-lineage-reconciliation",
+    "b23-framework-modernization-execution-security-policy",
+    "b23-framework-modernization-execution-human-approval",
+    "b23-framework-modernization-execution-observability-economics",
+    "b23-framework-modernization-execution-corpus-benchmark",
+    "b23-framework-modernization-execution-failure-recovery",
+    "b23-framework-modernization-execution-integration-api",
+    "b23-framework-modernization-execution-lifecycle-recertification",
+    "b23-framework-modernization-execution-certification-gate"
+  ],
+  "upstream_batch": 22,
+  "files": [
+    {
+      "path": "BATCH22_COMPATIBILITY.md",
+      "sha256": "4fcd239d8461509f51f0f3b8afaf14d1a5e8f74fbd699c6da638af398d264d03",
+      "size": 2054
+    },
+    {
+      "path": "CODEX_IMPLEMENTATION_PROMPT.md",
+      "sha256": "c1e49aea0f1a36b4f03b11cce33dea09fa0ae024bd73e9b76f37a32088fc21c2",
+      "size": 2244
+    },
+    {
+      "path": "IMPLEMENTATION_CHECKLIST.md",
+      "sha256": "ed24570d33663170944d261de6f7097fe09b8550fe7f465ffbf77b01b98bb172",
+      "size": 1717
+    },
+    {
+      "path": "README.md",
+      "sha256": "ba44127d9acddce25463d0908780b5931574e7019b90a54c03c26bfb309d193f",
+      "size": 1068
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "4ddfb36cee00b4c3a82ce600ba2d47629bcf1cc8b4e8e8289bfd65b8304d3880",
+      "size": 3550
+    },
+    {
+      "path": "SKILL_INDEX.md",
+      "sha256": "c990672a6aa3dff8b71079b43ff5b63d732a8b4400ff0b41f02b51107214274d",
+      "size": 3136
+    },
+    {
+      "path": "VALIDATION_REPORT.md",
+      "sha256": "fa8496a61cc4e1d6064532afb48a0db54f2a82fbb3b5ec7f327311491299f457",
+      "size": 572
+    },
+    {
+      "path": "examples/certificate.example.json",
+      "sha256": "8a456bb6aa32917e19faa0dd5155bed17dfda7e6e4042a7111977054b8c76a50",
+      "size": 452
+    },
+    {
+      "path": "examples/invocation.example.json",
+      "sha256": "af24bc1bac2cd004152084241b3c54b7322f4e0b35f35617712858f52d3e1725",
+      "size": 273
+    },
+    {
+      "path": "install.sh",
+      "sha256": "cdaf3fdf0c010dd9e0fe29b4a92cd723ff35dd0617eaf14bb5f57e757bc2fa02",
+      "size": 305
+    },
+    {
+      "path": "policies/agent-boundary.yaml",
+      "sha256": "79adc8830adec220835b49067d29b50a3a1578f146a65e7d5b70a6d19ba09ab2",
+      "size": 150
+    },
+    {
+      "path": "policies/certification.yaml",
+      "sha256": "17f50ef51eb5cbf800b3b4990bfb399d4aed9c751cb7f440bee4a4d88ebf02ea",
+      "size": 182
+    },
+    {
+      "path": "policies/default-deny.yaml",
+      "sha256": "25c6a03403de8832018b82bfa5d9dd516d8f5136ba4974c85d40bdf8972f9366",
+      "size": 105
+    },
+    {
+      "path": "policies/evidence-first.yaml",
+      "sha256": "50408543ffa45cfea3461cd57bdabf39f9bdd422fc5b41cdfef4d3c679a058c2",
+      "size": 156
+    },
+    {
+      "path": "policies/human-approval.yaml",
+      "sha256": "d9a6b11cfe402c569440e95b1aa2377387e222a32b693c83fc278ddb1fd4482f",
+      "size": 143
+    },
+    {
+      "path": "schemas/batch-input.schema.json",
+      "sha256": "1826050c1f85ec8b6bc2c0cac0c2bd4d2cb7b26a8f4120d88ab1f423508c446c",
+      "size": 731
+    },
+    {
+      "path": "schemas/batch-output.schema.json",
+      "sha256": "fc3d87bdea7fe126d6420396c8a3e54b579b455a7ce3cf0015e5612c6bbe6fc3",
+      "size": 832
+    },
+    {
+      "path": "schemas/capability-package.schema.json",
+      "sha256": "7a3ee5e53fd0dba35d2f3cea96d09271e1ee0a7f39ec1a6470bb79d5d8989c30",
+      "size": 1133
+    },
+    {
+      "path": "schemas/certification.schema.json",
+      "sha256": "ebb3aca08cab7dd034db9fa933bacc56a042a2f8ab1b2e3e87b2f3259f569084",
+      "size": 1281
+    },
+    {
+      "path": "schemas/evidence-ref.schema.json",
+      "sha256": "5eb58f4f032e3a458e0562543de4581e8d7395d3d29c7f64424df3c4a8dac57a",
+      "size": 996
+    },
+    {
+      "path": "schemas/workflow-run.schema.json",
+      "sha256": "0dcae69558bfe5b94239fb20042a942a3a4ffd45a65d49163d48c71ce63a8b12",
+      "size": 848
+    },
+    {
+      "path": "skills/b23-framework-modernization-execution-adapter-provider/SKILL.md",
+      "sha256": "ddbaae9387bd9c405b7d09d4c0785bd9d3aaedcc5fe7b31209eab257074249ce",
+      "size": 3810
+    },
+    {
+      "path": "skills/b23-framework-modernization-execution-capability-planning/SKILL.md",
+      "sha256": "bbeeac8ae1142e5d4d9ff7eff651b0ba7b1816f0c2ff05f0df1bc83a651b7ca8",
+      "size": 3712
+    },
+    {
+      "path": "skills/b23-framework-modernization-execution-certification-gate/SKILL.md",
+      "sha256": "48fdab5427c6be33023ce0e4f4b5d87392a64c4ce1521febdbd4395a929f4052",
+      "size": 3841
+    },
+    {
+      "path": "skills/b23-framework-modernization-execution-corpus-benchmark/SKILL.md",
+      "sha256": "588bf83efa1d0668c7e9ba3f34b530e312aa04300bf6468d62c9f37768eb2f48",
+      "size": 3751
+    },
+    {
+      "path": "skills/b23-framework-modernization-execution-deterministic-engine/SKILL.md",
+      "sha256": "85834d9e21a889618c092bf030cb33068fb637238936920a7981e2175de7ce1a",
+      "size": 3728
+    },
+    {
+      "path": "skills/b23-framework-modernization-execution-discovery-inventory/SKILL.md",
+      "sha256": "4cdbf921f3e7cc2667d26729a33a6c7ba4d3ecc24926e3dae4d33a16a2d08327",
+      "size": 3755
+    },
+    {
+      "path": "skills/b23-framework-modernization-execution-domain-model/SKILL.md",
+      "sha256": "ba7b87653236af09f72529d1400c5894dee5c5d968eb5fc269f001a03c4c26e1",
+      "size": 3782
+    },
+    {
+      "path": "skills/b23-framework-modernization-execution-failure-recovery/SKILL.md",
+      "sha256": "68ac66cc401d7efefec86e2c56b75f403152152695387ff53454e2d23c911394",
+      "size": 3759
+    },
+    {
+      "path": "skills/b23-framework-modernization-execution-human-approval/SKILL.md",
+      "sha256": "b54708f7fbee2132b068e9da40dd92cd9fcd36b1282a6c6df2dcd35f7d1c9e9f",
+      "size": 3744
+    },
+    {
+      "path": "skills/b23-framework-modernization-execution-integration-api/SKILL.md",
+      "sha256": "8433f52eaa1a96e78d6074cd2e76dcb97f8217551b4186742defe7c8255ec550",
+      "size": 3729
+    },
+    {
+      "path": "skills/b23-framework-modernization-execution-lifecycle-recertification/SKILL.md",
+      "sha256": "efae6a0f97daddb6a7120e8cf4d8ef94a43b0867b6ffdc573d39a8390c071d81",
+      "size": 3819
+    },
+    {
+      "path": "skills/b23-framework-modernization-execution-lineage-reconciliation/SKILL.md",
+      "sha256": "81501aca849a9a44755187ae1b2c2b9890592ca55d008a67cecee64148243603",
+      "size": 3770
+    },
+    {
+      "path": "skills/b23-framework-modernization-execution-observability-economics/SKILL.md",
+      "sha256": "3b8f5b92ff9d21fd1bf82bb7726cf14825690c32e09a3cf3083922999be0dc86",
+      "size": 3785
+    },
+    {
+      "path": "skills/b23-framework-modernization-execution-orchestrator/SKILL.md",
+      "sha256": "8e84e18a77da7f1e8359b989db88edcc8e4949c56886b2d622e8a33840428ae6",
+      "size": 3807
+    },
+    {
+      "path": "skills/b23-framework-modernization-execution-security-policy/SKILL.md",
+      "sha256": "5252c08044a7fdae105faabd362d7ddae7968e3843b76afd4c4d5810c728172f",
+      "size": 3764
+    },
+    {
+      "path": "skills/b23-framework-modernization-execution-workflow-runtime/SKILL.md",
+      "sha256": "5ff224e536295e2ddf5c3acdaa25affeec0093fdc571f30a86560f6388829b51",
+      "size": 3773
+    },
+    {
+      "path": "tests/README.md",
+      "sha256": "81b44b2eed067ad4516d246abe84e2449916a05885685d35364b38316fed7b24",
+      "size": 342
+    },
+    {
+      "path": "tests/test_catalog.json",
+      "sha256": "618aa58f18edb7e93834f1c5746cd1791f7e7b94b36bf2b91a1852ef343d2820",
+      "size": 1917
+    },
+    {
+      "path": "tools/validate_package.py",
+      "sha256": "1d0e2d5d5005b7602e810d0a54ae8e33f6145cab3d21bf348d7fefcfa8fb3023",
+      "size": 1519
+    },
+    {
+      "path": "validate.sh",
+      "sha256": "a1afca2d69d8fa3d11c820c8381b06b6449e31b289196b3cdc4156de471dd6c4",
+      "size": 72
+    }
+  ],
+  "validation": {
+    "static": "passed",
+    "runtime": "not-executed"
+  },
+  "trust_boundary": "Static package validation is not production certification."
+}

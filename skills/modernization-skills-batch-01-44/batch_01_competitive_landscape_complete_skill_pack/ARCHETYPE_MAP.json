@@ -1,0 +1,21 @@
+{
+  "batch": 1,
+  "archetypes": {
+    "orchestrator": "b01-competitive-landscape-orchestrator",
+    "domain-model": "b01-modernization-capability-taxonomy",
+    "discovery-inventory": "b01-competitive-landscape-orchestrator",
+    "capability-planning": "b01-modernization-market-boundary",
+    "deterministic-engine": "b01-competitor-capability-normalizer",
+    "adapter-provider": "b01-competitor-discovery-registry",
+    "integration-api": "b01-competitive-landscape-orchestrator",
+    "workflow-runtime": "b01-competitive-landscape-orchestrator",
+    "certification-gate": "b01-battlecard-and-continuous-intelligence-gate",
+    "security-policy": "b01-deployment-sovereignty-lockin-analyzer",
+    "human-approval": "b01-competitive-landscape-orchestrator",
+    "failure-recovery": "b01-competitive-landscape-orchestrator",
+    "lineage-reconciliation": "b01-competitive-evidence-harvester",
+    "lifecycle-recertification": "b01-competitive-landscape-orchestrator",
+    "observability-economics": "b01-commercial-economics-analyzer",
+    "corpus-benchmark": "b01-competitive-claim-benchmark-verifier"
+  }
+}

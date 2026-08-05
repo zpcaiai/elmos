@@ -29,7 +29,42 @@ DIGEST_PATTERN = re.compile(r"^sha256:([0-9a-f]{64})$")
 
 
 def canonical_bytes(value: Any) -> bytes:
-    return json.dumps(value, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    """Canonical JSON shared with the TypeScript control plane.
+
+    Both implementations must agree byte for byte or a signature produced on one side
+    cannot verify on the other. The contract is: object keys sorted by code point, no
+    insignificant whitespace, and raw UTF-8 rather than ``\\uXXXX`` escapes.
+
+    ``ensure_ascii=False`` is required for that last part. Left at its default this
+    emits ``\\uXXXX`` while ``JSON.stringify`` emits the character itself, so every
+    payload carrying a non-ASCII byte silently canonicalizes differently on the two
+    sides. All-ASCII payloads are unaffected by this setting.
+
+    Known and accepted limit: ``sort_keys`` compares code points, while the TypeScript
+    side compares UTF-16 code units. The two disagree only for keys containing
+    supplementary-plane characters (U+10000 and above). Every key in every signed
+    payload is a schema-constrained ASCII identifier, so this cannot be reached today;
+    widening a key pattern beyond ASCII means fixing both sides in one change.
+    """
+    return json.dumps(
+        value,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+    ).encode("utf-8")
+
+
+def decode_signature(signature_text: str) -> bytes:
+    """Decode a base64url signature, matching Node's ``Buffer.from(x, "base64url")``.
+
+    Standard base64 is accepted as well so records signed before the two sides were
+    unified still verify; base64url is what new signatures use.
+    """
+    if not isinstance(signature_text, str) or not signature_text:
+        raise ValueError("signature must be a non-empty string")
+    normalized = signature_text.replace("-", "+").replace("_", "/")
+    padded = normalized + "=" * (-len(normalized) % 4)
+    return base64.b64decode(padded, validate=True)
 
 
 def canonical_digest(value: Any) -> str:
@@ -299,7 +334,7 @@ class TrustStore:
             if payload.get(field) != expected:
                 raise ValueError(f"signed envelope binding mismatch: {field}")
         try:
-            signature = base64.b64decode(signature_text, validate=True)
+            signature = decode_signature(signature_text)
         except (ValueError, TypeError) as exc:
             raise ValueError("signed envelope signature is not valid base64") from exc
         with tempfile.TemporaryDirectory(prefix="precision-signature-") as temporary:

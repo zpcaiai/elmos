@@ -1,0 +1,240 @@
+{
+  "schema_version": "1.0.0",
+  "package_id": "batch-11-performance-security-production-semantics-complete-skill-pack",
+  "batch": 11,
+  "title": "Performance, Security and Production Semantics Validation",
+  "version": "1.0.0",
+  "generated_at": "2026-07-31T00:00:00Z",
+  "skill_count": 16,
+  "skills": [
+    "b11-performance-security-production-semantics-orchestrator",
+    "b11-performance-security-production-semantics-domain-model",
+    "b11-performance-security-production-semantics-discovery-inventory",
+    "b11-performance-security-production-semantics-capability-planning",
+    "b11-performance-security-production-semantics-deterministic-engine",
+    "b11-performance-security-production-semantics-adapter-provider",
+    "b11-performance-security-production-semantics-workflow-runtime",
+    "b11-performance-security-production-semantics-lineage-reconciliation",
+    "b11-performance-security-production-semantics-security-policy",
+    "b11-performance-security-production-semantics-human-approval",
+    "b11-performance-security-production-semantics-observability-economics",
+    "b11-performance-security-production-semantics-corpus-benchmark",
+    "b11-performance-security-production-semantics-failure-recovery",
+    "b11-performance-security-production-semantics-integration-api",
+    "b11-performance-security-production-semantics-lifecycle-recertification",
+    "b11-performance-security-production-semantics-certification-gate"
+  ],
+  "upstream_batch": 10,
+  "files": [
+    {
+      "path": "BATCH10_COMPATIBILITY.md",
+      "sha256": "1624d15cd954091fa918b1a5bac7bab27a9e4566581ba6caf3444ba6bff7a3a0",
+      "size": 2162
+    },
+    {
+      "path": "CODEX_IMPLEMENTATION_PROMPT.md",
+      "sha256": "ad171a3165e70566cfa339b35ce9c2e9b8fae6d64dc3c8d6e78bda8e91121558",
+      "size": 2351
+    },
+    {
+      "path": "IMPLEMENTATION_CHECKLIST.md",
+      "sha256": "d68e2c0cad5c2dc4c6547885071104a777f44a862225bfea9767de532c708e2b",
+      "size": 1825
+    },
+    {
+      "path": "README.md",
+      "sha256": "ce9656ae781f447329235ff770eae75cdb82dccfef14e3f79298277593623e38",
+      "size": 1085
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "202ef39992de92149d697a81f1941069c0458e229e8773efe736db73acfcffd4",
+      "size": 3811
+    },
+    {
+      "path": "SKILL_INDEX.md",
+      "sha256": "1da091548098965c7e2c9347880725f74c3030e4877d5b932ea04f8f7ce5fc78",
+      "size": 3282
+    },
+    {
+      "path": "VALIDATION_REPORT.md",
+      "sha256": "d1675648e9bd3457967de87d430bb53d70d5e58a4e8d5ad8b169b5e87c828d0c",
+      "size": 572
+    },
+    {
+      "path": "examples/certificate.example.json",
+      "sha256": "388fe9d626534cb20e2af7783dd218da3e869d0746a5922c9780549e88f15f54",
+      "size": 452
+    },
+    {
+      "path": "examples/invocation.example.json",
+      "sha256": "3f3063a60137c2853abdb990116a8be2352c350b86f8d5a4de63cf9eca24d0ce",
+      "size": 291
+    },
+    {
+      "path": "install.sh",
+      "sha256": "cdaf3fdf0c010dd9e0fe29b4a92cd723ff35dd0617eaf14bb5f57e757bc2fa02",
+      "size": 305
+    },
+    {
+      "path": "policies/agent-boundary.yaml",
+      "sha256": "79adc8830adec220835b49067d29b50a3a1578f146a65e7d5b70a6d19ba09ab2",
+      "size": 150
+    },
+    {
+      "path": "policies/certification.yaml",
+      "sha256": "17f50ef51eb5cbf800b3b4990bfb399d4aed9c751cb7f440bee4a4d88ebf02ea",
+      "size": 182
+    },
+    {
+      "path": "policies/default-deny.yaml",
+      "sha256": "25c6a03403de8832018b82bfa5d9dd516d8f5136ba4974c85d40bdf8972f9366",
+      "size": 105
+    },
+    {
+      "path": "policies/evidence-first.yaml",
+      "sha256": "50408543ffa45cfea3461cd57bdabf39f9bdd422fc5b41cdfef4d3c679a058c2",
+      "size": 156
+    },
+    {
+      "path": "policies/human-approval.yaml",
+      "sha256": "d9a6b11cfe402c569440e95b1aa2377387e222a32b693c83fc278ddb1fd4482f",
+      "size": 143
+    },
+    {
+      "path": "schemas/batch-input.schema.json",
+      "sha256": "8582a726ac43db87c01a8ffe714e423edd63817afa3fe623fca8df042ea4877b",
+      "size": 731
+    },
+    {
+      "path": "schemas/batch-output.schema.json",
+      "sha256": "38f9a52da3f4c19c9e698670758810aecab7093fea3db58e1005bb249f2fcd8d",
+      "size": 832
+    },
+    {
+      "path": "schemas/capability-package.schema.json",
+      "sha256": "356a45604367e1b09f438763aa3d8c09569f2e48ab4d40c157b59d60a80b7a0c",
+      "size": 1133
+    },
+    {
+      "path": "schemas/certification.schema.json",
+      "sha256": "6602ac1df6ae4e898b03763da9409c577e1077ab2ddc30d1ab17c919e0518ad3",
+      "size": 1281
+    },
+    {
+      "path": "schemas/evidence-ref.schema.json",
+      "sha256": "f42fcad74005c0a1f3ad40e9b00dd970b736cb3a6bfff1f2b77f739b6aa12c72",
+      "size": 996
+    },
+    {
+      "path": "schemas/workflow-run.schema.json",
+      "sha256": "3544f9a10748e520c685b02b6909481cc05b233765425b84e86aae4d3c651499",
+      "size": 848
+    },
+    {
+      "path": "skills/b11-performance-security-production-semantics-adapter-provider/SKILL.md",
+      "sha256": "75da7b5c2584a62d44a06a37ecee18d673cf47b089aeace54e810649075d24f6",
+      "size": 3958
+    },
+    {
+      "path": "skills/b11-performance-security-production-semantics-capability-planning/SKILL.md",
+      "sha256": "8c485b828ee9f52776e3993dbb1d7dcdd374c7fd8c739acf838a27991e5afd49",
+      "size": 3860
+    },
+    {
+      "path": "skills/b11-performance-security-production-semantics-certification-gate/SKILL.md",
+      "sha256": "cd61b0488ab6d35b5d6be1c0349c8b30910c9972ed629c4eff917bf29803061e",
+      "size": 3989
+    },
+    {
+      "path": "skills/b11-performance-security-production-semantics-corpus-benchmark/SKILL.md",
+      "sha256": "8400dbf67825f831d2ca6b4bb69df0d477adbd9d98679af8d5a21f198049fdca",
+      "size": 3899
+    },
+    {
+      "path": "skills/b11-performance-security-production-semantics-deterministic-engine/SKILL.md",
+      "sha256": "dac80d71650b9014f558fdb0aa7dc129124652d970cd8cda5f21a47ab2440409",
+      "size": 3876
+    },
+    {
+      "path": "skills/b11-performance-security-production-semantics-discovery-inventory/SKILL.md",
+      "sha256": "08a3c87cfcc44d86906bd81730f4543166bb1afeae70b17d0bd1ef95b94f35b9",
+      "size": 3903
+    },
+    {
+      "path": "skills/b11-performance-security-production-semantics-domain-model/SKILL.md",
+      "sha256": "cf5b2dc733ab0fc6db430a837309309d524bc7624b7c2ba210f43d6aae95399c",
+      "size": 3930
+    },
+    {
+      "path": "skills/b11-performance-security-production-semantics-failure-recovery/SKILL.md",
+      "sha256": "772197a6fcab71fc12f95fe32cd1586155027a1df07512f6bff5141a1b0c1193",
+      "size": 3907
+    },
+    {
+      "path": "skills/b11-performance-security-production-semantics-human-approval/SKILL.md",
+      "sha256": "2a535dd09f889f090b3cd216e2c037016c0afd5d7ab35619d5e7891d2461b853",
+      "size": 3892
+    },
+    {
+      "path": "skills/b11-performance-security-production-semantics-integration-api/SKILL.md",
+      "sha256": "efec5069c7382948fd6cdce68eea65cabd0dec3c43d254bd3698082f67e2dc01",
+      "size": 3877
+    },
+    {
+      "path": "skills/b11-performance-security-production-semantics-lifecycle-recertification/SKILL.md",
+      "sha256": "0c2a67f7fb264fafe5895f2c7fb79fe5216f61abc42b20a35272dbc354abce01",
+      "size": 3967
+    },
+    {
+      "path": "skills/b11-performance-security-production-semantics-lineage-reconciliation/SKILL.md",
+      "sha256": "bcd021da0894df6d7a0b1cababa377dfb6c4110c12b9d5b40250880e3b811d6b",
+      "size": 3918
+    },
+    {
+      "path": "skills/b11-performance-security-production-semantics-observability-economics/SKILL.md",
+      "sha256": "0fb6803178daa5810c305a94582ec626b658178094a8916d60450a42cc24bbff",
+      "size": 3933
+    },
+    {
+      "path": "skills/b11-performance-security-production-semantics-orchestrator/SKILL.md",
+      "sha256": "4726f9b61ab2dea6b0cd43443835b576aea4fee9e745c7d3721b256ca6b6ded4",
+      "size": 3955
+    },
+    {
+      "path": "skills/b11-performance-security-production-semantics-security-policy/SKILL.md",
+      "sha256": "a0408c12ecb32ef57f0fb105ab06b55786ec8506fcf70ae099de79ca170c6abe",
+      "size": 3912
+    },
+    {
+      "path": "skills/b11-performance-security-production-semantics-workflow-runtime/SKILL.md",
+      "sha256": "353a1a6bff35f9e954f3b751b18cc8570e5268bad4002f272bc362aec9d679ed",
+      "size": 3921
+    },
+    {
+      "path": "tests/README.md",
+      "sha256": "1387bc92bf5376088938813147187cadd22b0d986d6701ec5f41756a5e7d3f73",
+      "size": 432
+    },
+    {
+      "path": "tests/test_catalog.json",
+      "sha256": "fd4999fe49a4260030e4fab85cb19157e9f2fd5e5cdeabd3f043bbdca291aae1",
+      "size": 1935
+    },
+    {
+      "path": "tools/validate_package.py",
+      "sha256": "1d0e2d5d5005b7602e810d0a54ae8e33f6145cab3d21bf348d7fefcfa8fb3023",
+      "size": 1519
+    },
+    {
+      "path": "validate.sh",
+      "sha256": "a1afca2d69d8fa3d11c820c8381b06b6449e31b289196b3cdc4156de471dd6c4",
+      "size": 72
+    }
+  ],
+  "validation": {
+    "static": "passed",
+    "runtime": "not-executed"
+  },
+  "trust_boundary": "Static package validation is not production certification."
+}

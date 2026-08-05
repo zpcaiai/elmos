@@ -1,0 +1,12 @@
+{
+  "request_id": "b44-example-001",
+  "tenant_id": "example-tenant",
+  "project_id": "example-project",
+  "scope": "Unified Production Release Gate and Continuous Recertification",
+  "upstream_certificate_refs": [
+    "batch-43-certificate-example"
+  ],
+  "options": {
+    "dry_run": true
+  }
+}

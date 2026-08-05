@@ -1,0 +1,7 @@
+# Example instance for batch-03: sql-unit
+node_id: example
+node_kind: example
+record_id: example
+schema_version: 1.0.0
+scope: example
+semantic_level: syntax

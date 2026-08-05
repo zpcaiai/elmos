@@ -1,0 +1,297 @@
+{
+  "manifest_version": "1.1.0",
+  "batch_id": "batch-01",
+  "package_name": "batch_01_competitive_landscape_complete_skill_pack",
+  "reissued_by": "scripts/modernization_b01_44/generate_foundation.py",
+  "file_count": 57,
+  "skill_count": 16,
+  "schema_count": 14,
+  "files": [
+    {
+      "path": "ARCHETYPE_MAP.json",
+      "size_bytes": 1110,
+      "sha256": "5afe82ab7a96b8d28f240bc9fc4df65fd7209083fe4e528f5bf4edf8c164e5b3"
+    },
+    {
+      "path": "CODEX_IMPLEMENTATION_PROMPT.md",
+      "size_bytes": 4009,
+      "sha256": "ebb4d613108b9146245b781d8cdbd32c3c1b7d140c41e6a71ad810ae60ab70f6"
+    },
+    {
+      "path": "FOUNDATION_COMPATIBILITY.md",
+      "size_bytes": 2006,
+      "sha256": "1df7f66b3a1bed9fb30542992ed1c086aad5c964c4dad68e14241fc9cd9cdea8"
+    },
+    {
+      "path": "IMPLEMENTATION_CHECKLIST.md",
+      "size_bytes": 2117,
+      "sha256": "c3c21beb7ddff910a8a7e61772ea584da08f277d5dab895fc4d7f18307d72882"
+    },
+    {
+      "path": "README.md",
+      "size_bytes": 2225,
+      "sha256": "9b6ea4beee1fd36dbb0845be7fa653d6ab875c8945fa3bc3e0070a3e061a400a"
+    },
+    {
+      "path": "SKILL.md",
+      "size_bytes": 9275,
+      "sha256": "d7a0559a8fe5a68d76f956b3c38cbcf8df4e6ed42a2e36d8750a51aec04958dd"
+    },
+    {
+      "path": "SKILL_INDEX.md",
+      "size_bytes": 6615,
+      "sha256": "5ca72d56729f8b0a539d226595ba19ed9eeb6d9c1bd383a2a011fc80e6bbe635"
+    },
+    {
+      "path": "VALIDATION_REPORT.md",
+      "size_bytes": 1474,
+      "sha256": "08103f5080fd3c8b7e88cba5dba183a2f639bee635e77acd746045c0beb68d5e"
+    },
+    {
+      "path": "examples/battlecard.yaml",
+      "size_bytes": 230,
+      "sha256": "4a9d43ef8679c22d2cfb3b6c6335c5f4f8e3d3c5036cb5593f8bbe1535182ad2"
+    },
+    {
+      "path": "examples/capability-matrix.yaml",
+      "size_bytes": 244,
+      "sha256": "c68d1fe61e7599fa49bd4517ffcd71bcc0912f0d582b90364c1a67a5d08f2cfa"
+    },
+    {
+      "path": "examples/competitor-profile.yaml",
+      "size_bytes": 170,
+      "sha256": "d22e6fb8caf365cba9b2dc3d19f84ea746fb689f6139a6cbb5753527366bd726"
+    },
+    {
+      "path": "examples/positioning-decision.yaml",
+      "size_bytes": 189,
+      "sha256": "4ea76701f57722f9e3641f2097f643bc097d339934be2338e99726440ce97ce4"
+    },
+    {
+      "path": "install.sh",
+      "size_bytes": 305,
+      "sha256": "cdaf3fdf0c010dd9e0fe29b4a92cd723ff35dd0617eaf14bb5f57e757bc2fa02"
+    },
+    {
+      "path": "policies/agent-boundary.yaml",
+      "size_bytes": 150,
+      "sha256": "79adc8830adec220835b49067d29b50a3a1578f146a65e7d5b70a6d19ba09ab2"
+    },
+    {
+      "path": "policies/certification.yaml",
+      "size_bytes": 182,
+      "sha256": "17f50ef51eb5cbf800b3b4990bfb399d4aed9c751cb7f440bee4a4d88ebf02ea"
+    },
+    {
+      "path": "policies/claim-verification-policy.yaml",
+      "size_bytes": 190,
+      "sha256": "c658830d67f0e0020b9e7959959c0959fc28ab0a7811715f2aa43f083c6a51c7"
+    },
+    {
+      "path": "policies/default-deny.yaml",
+      "size_bytes": 105,
+      "sha256": "25c6a03403de8832018b82bfa5d9dd516d8f5136ba4974c85d40bdf8972f9366"
+    },
+    {
+      "path": "policies/evidence-first.yaml",
+      "size_bytes": 156,
+      "sha256": "50408543ffa45cfea3461cd57bdabf39f9bdd422fc5b41cdfef4d3c679a058c2"
+    },
+    {
+      "path": "policies/evidence-quality-policy.yaml",
+      "size_bytes": 160,
+      "sha256": "47451d7624c8a92c3a3d36162c897101c2e278038d977d0d9082777526e0a747"
+    },
+    {
+      "path": "policies/human-approval.yaml",
+      "size_bytes": 143,
+      "sha256": "d9a6b11cfe402c569440e95b1aa2377387e222a32b693c83fc278ddb1fd4482f"
+    },
+    {
+      "path": "policies/legal-comparison-policy.yaml",
+      "size_bytes": 133,
+      "sha256": "68908d634122ab96b9072a33cf55b9cbc4d7b210e2552ead51a01a01e43b14cd"
+    },
+    {
+      "path": "policies/scoring-policy.yaml",
+      "size_bytes": 120,
+      "sha256": "55755f4349cc77e9f1cab96b159ea5bf19c93d53d117aba269bfcf85f72bc34d"
+    },
+    {
+      "path": "policies/stale-evidence-policy.yaml",
+      "size_bytes": 115,
+      "sha256": "434068ed88b3ec512ad08a2489ccb92b7f66e731941b1c954c1c852e31be50a4"
+    },
+    {
+      "path": "schemas/batch-input.schema.json",
+      "size_bytes": 731,
+      "sha256": "ab950ea76022c3b22e8bed1f4cfac8d394ebaef8129ddf4676075d6c862ee927"
+    },
+    {
+      "path": "schemas/batch-output.schema.json",
+      "size_bytes": 832,
+      "sha256": "198c5f11aeac21230f7150c8d3a972d168dd4642342c5132738c4f232b1efab8"
+    },
+    {
+      "path": "schemas/battlecard.schema.json",
+      "size_bytes": 1390,
+      "sha256": "6f4264dab7ce2eb5429d95f77d394cdf33011ef9fa608ac7b3f951ff1527d564"
+    },
+    {
+      "path": "schemas/capability-fact.schema.json",
+      "size_bytes": 1591,
+      "sha256": "1ec883308dd7cc083e9b245015fc08c4227397db296fbab1f917df6ce73dbe46"
+    },
+    {
+      "path": "schemas/capability-package.schema.json",
+      "size_bytes": 1133,
+      "sha256": "f49e6732bcc9c94e10def366b3a18967aae90fe61ef235da7a7b3f01a3d4432d"
+    },
+    {
+      "path": "schemas/certification.schema.json",
+      "size_bytes": 1280,
+      "sha256": "05c60be22eeb13f9c64dec05cc379b78877aa2d6286f0a764ea212a3f9fd85c5"
+    },
+    {
+      "path": "schemas/competitor-record.schema.json",
+      "size_bytes": 1530,
+      "sha256": "f154669687f988c643d2f56fad7c78130bfa2d5f38be62438493d23ccb16fd62"
+    },
+    {
+      "path": "schemas/database-route.schema.json",
+      "size_bytes": 1634,
+      "sha256": "2cfb80190b98be4d3e92b0527699dfda87de82a0d1c081e9b876102bbbaec63b"
+    },
+    {
+      "path": "schemas/evidence-ref.schema.json",
+      "size_bytes": 996,
+      "sha256": "9c85caa427b2f0ba8016290dcfe176a0f1cb9a822ac3e8e00e9b0fee7be7685b"
+    },
+    {
+      "path": "schemas/market-boundary.schema.json",
+      "size_bytes": 1177,
+      "sha256": "a61a27ea1cc5cf790de833e448977bdd5233acce72b76cf2d4ab777bcde567b6"
+    },
+    {
+      "path": "schemas/positioning-decision.schema.json",
+      "size_bytes": 1270,
+      "sha256": "fe3f607e185be767b77e228eafcd4aba9962b52b960fe35964773eaf8444497b"
+    },
+    {
+      "path": "schemas/route-coverage.schema.json",
+      "size_bytes": 1302,
+      "sha256": "33af30f38d23f0ea69dfad67e4b45d6de08fc772f497cf987ee19a73de7323c3"
+    },
+    {
+      "path": "schemas/trust-assessment.schema.json",
+      "size_bytes": 1347,
+      "sha256": "9dac8c082e80c131758980d91b09fc6ace87ccf8644b07faa59ad38f3e3d74b4"
+    },
+    {
+      "path": "schemas/workflow-run.schema.json",
+      "size_bytes": 848,
+      "sha256": "5b917cc7b739e5e13a8460e9e8f83fbd174e2a2fa4e3d975f768d7fe569ec517"
+    },
+    {
+      "path": "skills/01-competitive-landscape-orchestrator/SKILL.md",
+      "size_bytes": 3605,
+      "sha256": "ddd8808495ff2af2a1dd35aff36ce7e5c4a9187bfd6169cbe75195876f83d344"
+    },
+    {
+      "path": "skills/02-modernization-market-boundary/SKILL.md",
+      "size_bytes": 3574,
+      "sha256": "6eb058198f72cade5f1df00fc1e8e2bbe8cfecc02e9ae286d518428f8f12664e"
+    },
+    {
+      "path": "skills/03-competitor-discovery-registry/SKILL.md",
+      "size_bytes": 3593,
+      "sha256": "cd310a9af9fc000cc8cc4bb38ef47253f1da85922ca815744f26ddc5f1f97c50"
+    },
+    {
+      "path": "skills/04-competitive-evidence-harvester/SKILL.md",
+      "size_bytes": 3593,
+      "sha256": "85a4dce5756093f41b8d5cd60f46e3dde0e7dae022a7fde59c77e722d7eaa2c6"
+    },
+    {
+      "path": "skills/05-modernization-capability-taxonomy/SKILL.md",
+      "size_bytes": 3577,
+      "sha256": "419a5a78204678b53770b3afa6841e752d61cfa6ac3b74379170642bcc59bdbb"
+    },
+    {
+      "path": "skills/06-competitor-capability-normalizer/SKILL.md",
+      "size_bytes": 3503,
+      "sha256": "9699c0b0b42ac959fc4b3b9ae97d41c94c4b60b458d34fbddf88cff0b57d39c8"
+    },
+    {
+      "path": "skills/07-end-to-end-stage-coverage-analyzer/SKILL.md",
+      "size_bytes": 3524,
+      "sha256": "291ce9bc72a85bf9fbf3918a013697f1789654844253fe0ad607c9f064ce5d3e"
+    },
+    {
+      "path": "skills/08-language-framework-route-coverage/SKILL.md",
+      "size_bytes": 3574,
+      "sha256": "4dfa7c24baf980545350fadb0b1a4fdafe3dfc2b70b376cab84957457b0a3869"
+    },
+    {
+      "path": "skills/09-database-route-competitive-analyzer/SKILL.md",
+      "size_bytes": 3621,
+      "sha256": "8aa7080f40e81af6c7565ce951a3fc3973ac75e6d2760c4c7fabdc3ae57bd866"
+    },
+    {
+      "path": "skills/10-verification-and-trust-model-analyzer/SKILL.md",
+      "size_bytes": 3514,
+      "sha256": "af016b87af256d381c85367a2b5ee7eef1e2c5d9b3dd8e28222f33900e17f77c"
+    },
+    {
+      "path": "skills/11-deployment-sovereignty-lockin-analyzer/SKILL.md",
+      "size_bytes": 3578,
+      "sha256": "bb31b1e3afa59a3c81e87a19163de27430021d8a8085d48c9a13347e859d58b6"
+    },
+    {
+      "path": "skills/12-commercial-economics-analyzer/SKILL.md",
+      "size_bytes": 3518,
+      "sha256": "52a5c7c86e78e2f2cb7b1a4310118f36f1eadaebe3411fd223ede0885d8987ca"
+    },
+    {
+      "path": "skills/13-competitive-claim-benchmark-verifier/SKILL.md",
+      "size_bytes": 3535,
+      "sha256": "110940744473bde72747378f9b975d94cfcde86d9ef7373a8210aa9ac8ab02e3"
+    },
+    {
+      "path": "skills/14-competitive-gap-opportunity-engine/SKILL.md",
+      "size_bytes": 3523,
+      "sha256": "cb103b704ed64853602470cfdf43b0b407f1c4625e4b516648567bb63b7bbd09"
+    },
+    {
+      "path": "skills/15-product-positioning-and-boundary/SKILL.md",
+      "size_bytes": 3606,
+      "sha256": "0e301ebeb85aeeac0387f0b437eae88f51f802d81a13a12a0bc72b0a73d1aff9"
+    },
+    {
+      "path": "skills/16-battlecard-and-continuous-intelligence-gate/SKILL.md",
+      "size_bytes": 3603,
+      "sha256": "4c21b90605b701973cc07ca8a3ed1466d9bff974d42259c8cf99cd851b321768"
+    },
+    {
+      "path": "tests/SCENARIOS.md",
+      "size_bytes": 2626,
+      "sha256": "8e84f89e7c10dad6fb0ec24e0a0cbeade9604629db703ddcf88829b0748fa4e1"
+    },
+    {
+      "path": "tests/test_catalog.json",
+      "size_bytes": 1935,
+      "sha256": "a536bc83338209691081d4c21a8975880a4fe932d6607844d2877085acfb40f2"
+    },
+    {
+      "path": "tools/validate_package.py",
+      "size_bytes": 2280,
+      "sha256": "0f174d018825cc82f9734490e552de8818bfd8577b72be1cbd1fc51c6ddf52a5"
+    },
+    {
+      "path": "validate.sh",
+      "size_bytes": 72,
+      "sha256": "a1afca2d69d8fa3d11c820c8381b06b6449e31b289196b3cdc4156de471dd6c4"
+    }
+  ],
+  "manifest_excludes_itself": true
+}

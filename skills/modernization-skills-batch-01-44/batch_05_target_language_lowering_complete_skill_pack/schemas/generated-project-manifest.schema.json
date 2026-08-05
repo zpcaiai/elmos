@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:batch-05:generated-project-manifest",
+  "title": "GeneratedProjectManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "build_status",
+    "file_count",
+    "manual_region_count",
+    "profile_id",
+    "project_digest",
+    "project_id",
+    "record_id",
+    "schema_version",
+    "scope",
+    "test_status"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "known_limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "profile_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "file_count": {
+      "type": "integer"
+    },
+    "manual_region_count": {
+      "type": "integer"
+    },
+    "build_status": {
+      "enum": [
+        "not-run",
+        "pass",
+        "fail"
+      ]
+    },
+    "test_status": {
+      "enum": [
+        "not-run",
+        "pass",
+        "fail"
+      ]
+    },
+    "project_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+}

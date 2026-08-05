@@ -1,0 +1,240 @@
+{
+  "schema_version": "1.0.0",
+  "package_id": "batch-39-durable-workflow-runner-reliability-complete-skill-pack",
+  "batch": 39,
+  "title": "Durable Workflow, Runner Fleet and Provider Reliability",
+  "version": "1.0.0",
+  "generated_at": "2026-07-31T00:00:00Z",
+  "skill_count": 16,
+  "skills": [
+    "b39-durable-workflow-runner-reliability-orchestrator",
+    "b39-durable-workflow-runner-reliability-domain-model",
+    "b39-durable-workflow-runner-reliability-discovery-inventory",
+    "b39-durable-workflow-runner-reliability-capability-planning",
+    "b39-durable-workflow-runner-reliability-deterministic-engine",
+    "b39-durable-workflow-runner-reliability-adapter-provider",
+    "b39-durable-workflow-runner-reliability-workflow-runtime",
+    "b39-durable-workflow-runner-reliability-lineage-reconciliation",
+    "b39-durable-workflow-runner-reliability-security-policy",
+    "b39-durable-workflow-runner-reliability-human-approval",
+    "b39-durable-workflow-runner-reliability-observability-economics",
+    "b39-durable-workflow-runner-reliability-corpus-benchmark",
+    "b39-durable-workflow-runner-reliability-failure-recovery",
+    "b39-durable-workflow-runner-reliability-integration-api",
+    "b39-durable-workflow-runner-reliability-lifecycle-recertification",
+    "b39-durable-workflow-runner-reliability-certification-gate"
+  ],
+  "upstream_batch": 38,
+  "files": [
+    {
+      "path": "BATCH38_COMPATIBILITY.md",
+      "sha256": "0950739fb3dcd2b3d9b80666bbffe89f0ae396c78757852898e84bcde6f3838d",
+      "size": 2140
+    },
+    {
+      "path": "CODEX_IMPLEMENTATION_PROMPT.md",
+      "sha256": "70389cd6b0bef807b5931635dc2c30d13999355f98c738932fc16c052f846c8c",
+      "size": 2325
+    },
+    {
+      "path": "IMPLEMENTATION_CHECKLIST.md",
+      "sha256": "e1dfd04bd08a836e5d611756c871531c798cfe4a55f904e5ed669718054df28d",
+      "size": 1807
+    },
+    {
+      "path": "README.md",
+      "sha256": "3a633704b4ea8b55eb33776f6f2fcf23f0ef7bde02773fec5b654ba11bf97361",
+      "size": 1079
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "0d370ba567cda54c39d89fbe11ee7c8e335f5e50b79a8fc7eafcb26a15ab7c3c",
+      "size": 3681
+    },
+    {
+      "path": "SKILL_INDEX.md",
+      "sha256": "bebaee170114c1c5ca4a4b1754a923ea4c2b77de1baba99181f472cde061b057",
+      "size": 3184
+    },
+    {
+      "path": "VALIDATION_REPORT.md",
+      "sha256": "6d0e9cb86db740dad9d8e1dcf2396a080d6eb906c079c0f81c209d4420bc6829",
+      "size": 572
+    },
+    {
+      "path": "examples/certificate.example.json",
+      "sha256": "833d01d93101dc9de436500846ccb42cd421e65ebd3e3c05b34831084eb57efe",
+      "size": 452
+    },
+    {
+      "path": "examples/invocation.example.json",
+      "sha256": "2808e972e1180adffac2a591be915d1031451981291af9fc10a3a211bc8ab3b9",
+      "size": 289
+    },
+    {
+      "path": "install.sh",
+      "sha256": "cdaf3fdf0c010dd9e0fe29b4a92cd723ff35dd0617eaf14bb5f57e757bc2fa02",
+      "size": 305
+    },
+    {
+      "path": "policies/agent-boundary.yaml",
+      "sha256": "79adc8830adec220835b49067d29b50a3a1578f146a65e7d5b70a6d19ba09ab2",
+      "size": 150
+    },
+    {
+      "path": "policies/certification.yaml",
+      "sha256": "17f50ef51eb5cbf800b3b4990bfb399d4aed9c751cb7f440bee4a4d88ebf02ea",
+      "size": 182
+    },
+    {
+      "path": "policies/default-deny.yaml",
+      "sha256": "25c6a03403de8832018b82bfa5d9dd516d8f5136ba4974c85d40bdf8972f9366",
+      "size": 105
+    },
+    {
+      "path": "policies/evidence-first.yaml",
+      "sha256": "50408543ffa45cfea3461cd57bdabf39f9bdd422fc5b41cdfef4d3c679a058c2",
+      "size": 156
+    },
+    {
+      "path": "policies/human-approval.yaml",
+      "sha256": "d9a6b11cfe402c569440e95b1aa2377387e222a32b693c83fc278ddb1fd4482f",
+      "size": 143
+    },
+    {
+      "path": "schemas/batch-input.schema.json",
+      "sha256": "79fa6f5d3c27fb59951c9908661329fa2d75580981a0e2acdcaa5af63ba1a4a4",
+      "size": 731
+    },
+    {
+      "path": "schemas/batch-output.schema.json",
+      "sha256": "f47b2e9e0eb47052066f117003366825cf5939914db9f8299553645e889ef598",
+      "size": 832
+    },
+    {
+      "path": "schemas/capability-package.schema.json",
+      "sha256": "e755eb2c5d284eb48056564243c6d5564bf834623c3c66a3395d9b8eaa6bd20c",
+      "size": 1133
+    },
+    {
+      "path": "schemas/certification.schema.json",
+      "sha256": "97542bfed9a394f315c5969ec2ce36c0648a446e922326c63966dac0656c1252",
+      "size": 1281
+    },
+    {
+      "path": "schemas/evidence-ref.schema.json",
+      "sha256": "4fde36c7bd99e27478c807ceeeed8d49fafd35b8b89d807ccd0f801df2a3491c",
+      "size": 996
+    },
+    {
+      "path": "schemas/workflow-run.schema.json",
+      "sha256": "93319052d11c58c207a16561130de5da597656c0dc613504c41c3584ce053e07",
+      "size": 848
+    },
+    {
+      "path": "skills/b39-durable-workflow-runner-reliability-adapter-provider/SKILL.md",
+      "sha256": "813ef90c10a1099a5ff23f184b55b57585abb329d33ae4160d613b95ccb37432",
+      "size": 3921
+    },
+    {
+      "path": "skills/b39-durable-workflow-runner-reliability-capability-planning/SKILL.md",
+      "sha256": "f81e0806ddd70fad0d5a8c13a6cde869cb7a2b21e642ae9a27d0af3b7f8d3bf5",
+      "size": 3823
+    },
+    {
+      "path": "skills/b39-durable-workflow-runner-reliability-certification-gate/SKILL.md",
+      "sha256": "9497f6fc65df8a2d20f65a22d58f257cdddf7f4abaf5ff65f2ed8b66fe67af65",
+      "size": 3952
+    },
+    {
+      "path": "skills/b39-durable-workflow-runner-reliability-corpus-benchmark/SKILL.md",
+      "sha256": "4416977e22bb9fdcd3c9f943876993c2c953f7eece4012381e7c2ad1bb7ee813",
+      "size": 3862
+    },
+    {
+      "path": "skills/b39-durable-workflow-runner-reliability-deterministic-engine/SKILL.md",
+      "sha256": "39bae9a2c0c45c7b7370b85ecb9fa3dbd2e150b02b783e90171945f7f5bb3dd5",
+      "size": 3839
+    },
+    {
+      "path": "skills/b39-durable-workflow-runner-reliability-discovery-inventory/SKILL.md",
+      "sha256": "eaae42b6dddc62948058351a8955c285b11f6970ded880803cbc19586aab5913",
+      "size": 3866
+    },
+    {
+      "path": "skills/b39-durable-workflow-runner-reliability-domain-model/SKILL.md",
+      "sha256": "eef318e9e49212e4beeb25d7ff02e803595952dee96c5d8ed16a133cd3ac77dc",
+      "size": 3893
+    },
+    {
+      "path": "skills/b39-durable-workflow-runner-reliability-failure-recovery/SKILL.md",
+      "sha256": "adf2a2e3c1809185a99feaabf618103589a61c9aeb24b6d49ded81a264799f41",
+      "size": 3870
+    },
+    {
+      "path": "skills/b39-durable-workflow-runner-reliability-human-approval/SKILL.md",
+      "sha256": "986f33071378bb55d1f5a2afabb0f3c46505076bb6c3de7703f2eaeea0c6f719",
+      "size": 3855
+    },
+    {
+      "path": "skills/b39-durable-workflow-runner-reliability-integration-api/SKILL.md",
+      "sha256": "ba742c46e3a3a8bb20b274fd3330d9cd4551fde0ac6701d1e054ef22ee687998",
+      "size": 3840
+    },
+    {
+      "path": "skills/b39-durable-workflow-runner-reliability-lifecycle-recertification/SKILL.md",
+      "sha256": "6e77450dec844562226ef50bef01c500cd923fda2016c841ca5266c5f71ac3fa",
+      "size": 3930
+    },
+    {
+      "path": "skills/b39-durable-workflow-runner-reliability-lineage-reconciliation/SKILL.md",
+      "sha256": "db149a8903f070b838d0f4d64595fd81fe5cd5c82926c04e3f7908d5f36046b1",
+      "size": 3881
+    },
+    {
+      "path": "skills/b39-durable-workflow-runner-reliability-observability-economics/SKILL.md",
+      "sha256": "e472cb9979104c58840ca989ea851126ebc25660140212a7ee3a16cdc97d8e68",
+      "size": 3896
+    },
+    {
+      "path": "skills/b39-durable-workflow-runner-reliability-orchestrator/SKILL.md",
+      "sha256": "96eb86c275a95195b3c47b3e8a8a70b5e30c9b8c3fd5dce632aa2132a384de75",
+      "size": 3918
+    },
+    {
+      "path": "skills/b39-durable-workflow-runner-reliability-security-policy/SKILL.md",
+      "sha256": "71352f2bdb080307816851e89e064e3fbb950dd877d50b6c40205e79c7c5cbbc",
+      "size": 3875
+    },
+    {
+      "path": "skills/b39-durable-workflow-runner-reliability-workflow-runtime/SKILL.md",
+      "sha256": "d28f4392627d5872852429c015ee25a5cb66109d6ef68026ad760d3c13f78f89",
+      "size": 3884
+    },
+    {
+      "path": "tests/README.md",
+      "sha256": "7bf23e82a53eabc3201136394854b25638cc9898b40dcca0af4d92d0f8c143e9",
+      "size": 411
+    },
+    {
+      "path": "tests/test_catalog.json",
+      "sha256": "56b69ad5637a9aa83d65818483b65cca04fec4d8eba152fa7ef0e7b1b49a5478",
+      "size": 1933
+    },
+    {
+      "path": "tools/validate_package.py",
+      "sha256": "1d0e2d5d5005b7602e810d0a54ae8e33f6145cab3d21bf348d7fefcfa8fb3023",
+      "size": 1519
+    },
+    {
+      "path": "validate.sh",
+      "sha256": "a1afca2d69d8fa3d11c820c8381b06b6449e31b289196b3cdc4156de471dd6c4",
+      "size": 72
+    }
+  ],
+  "validation": {
+    "static": "passed",
+    "runtime": "not-executed"
+  },
+  "trust_boundary": "Static package validation is not production certification."
+}

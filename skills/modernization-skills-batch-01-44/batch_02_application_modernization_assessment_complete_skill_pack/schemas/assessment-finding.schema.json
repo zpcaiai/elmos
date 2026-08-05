@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:batch-02:assessment-finding",
+  "title": "AssessmentFinding",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "asset_refs",
+    "finding_kind",
+    "record_id",
+    "schema_version",
+    "scope",
+    "severity",
+    "statement"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "known_limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "finding_kind": {
+      "enum": [
+        "debt",
+        "security",
+        "compliance",
+        "compatibility",
+        "operability",
+        "unknown"
+      ]
+    },
+    "severity": {
+      "enum": [
+        "critical",
+        "high",
+        "medium",
+        "low",
+        "info"
+      ]
+    },
+    "asset_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "statement": {
+      "type": "string",
+      "minLength": 1
+    },
+    "remediation": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

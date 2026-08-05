@@ -1,0 +1,5 @@
+deterministic_runtime:
+  stable_ordering_required: true
+  wallclock_in_output: forbidden
+  worker_count_must_not_change_output: true
+  iteration_ceiling: 64

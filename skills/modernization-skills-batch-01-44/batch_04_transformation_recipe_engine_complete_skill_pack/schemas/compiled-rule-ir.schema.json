@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:batch-04:compiled-rule-ir",
+  "title": "CompiledRuleIR",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "compiled_digest",
+    "record_id",
+    "rule_id",
+    "schema_version",
+    "scope",
+    "static_checks",
+    "terminating"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "known_limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "rule_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "compiled_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "static_checks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "terminating": {
+      "type": "boolean"
+    },
+    "confluent": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    }
+  }
+}

@@ -51,6 +51,18 @@ precision-migration-b01-44-check: precision-migration-b01-44-skills
 	$(UV) run --quiet --with jsonschema python scripts/batch35/run_verification_gate.py verification-packs/precision-migration-b01-44-runtime
 precision-migration-b01-44-qualification: precision-migration-b01-44-check
 	python3 scripts/precision_migration/run_local_qualification.py
+modernization-b01-44-packages:
+	PYTHONDONTWRITEBYTECODE=1 python3 -m scripts.modernization_b01_44.cli packages --summary
+modernization-b01-44-foundation:
+	PYTHONDONTWRITEBYTECODE=1 python3 -m scripts.modernization_b01_44.generate_foundation --check
+modernization-b01-44-test: modernization-b01-44-packages modernization-b01-44-foundation
+	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests/modernization-b01-44 -p 'test_*.py'
+modernization-b01-44-mutation:
+	PYTHONDONTWRITEBYTECODE=1 python3 -m scripts.modernization_b01_44.mutation_check
+modernization-b01-44-run:
+	PYTHONDONTWRITEBYTECODE=1 python3 -m scripts.modernization_b01_44.cli run --batches 1-44 --scope svc-a
+modernization-b01-44-gate: modernization-b01-44-test modernization-b01-44-mutation
+	@echo "modernization B01-44: packages verified, suite green, mutations killed"
 batch27-34-skills:
 	python3 tooling/validate_batch27_34_integration.py
 frt-g01-g30-skills:
@@ -227,3 +239,41 @@ include Makefile.batch42
 include Makefile.batch43
 include Makefile.batch44
 include Makefile.batch45
+
+
+# --- java->python UIR route -------------------------------------------------
+# TREE, WORKSPACE and SOURCE are overridable:
+#   make uir-j2p-survey TREE=engines/enterprise-suite-engine/src
+UIR_J2P_DIR := engines/uir-java-python
+TREE ?= .
+WORKSPACE ?= /tmp/uir-j2p-workspace
+SOURCE ?= $(CURDIR)/engines/uir-java-python
+
+uir-j2p-deps:
+	python3 -m pip install -r $(UIR_J2P_DIR)/requirements.txt
+
+uir-j2p-test:
+	cd $(UIR_J2P_DIR) && python3 -m unittest discover -s tests -v
+
+uir-j2p-mutation:
+	cd $(UIR_J2P_DIR) && python3 tools/mutation_check.py --json-out docs/mutation-report.json
+
+uir-j2p-survey:
+	cd $(UIR_J2P_DIR) && python3 -m j2p.cli survey $(CURDIR)/$(TREE) --out docs/survey-latest.json
+
+# The control measurement: the same survey with whole-program resolution turned
+# off. A claim that cross-file resolution moved the number is only worth
+# something if the unimproved number can still be reproduced on demand.
+uir-j2p-survey-noindex:
+	cd $(UIR_J2P_DIR) && python3 -m j2p.cli survey $(CURDIR)/$(TREE) --no-index --out docs/survey-noindex.json
+
+uir-j2p-evidence:
+	cd $(UIR_J2P_DIR) && python3 tools/record_batch_evidence.py \
+	  --runtime $(CURDIR)/skills/repository-migration-platform-skills-batch1-38/scripts/migration_platform.py \
+	  --workspace $(WORKSPACE) --source $(SOURCE) --survey-tree $(CURDIR)/$(TREE)
+
+# The gate is test + mutation together: a green suite that no mutation can turn
+# red is not evidence of anything.
+uir-j2p-gate: uir-j2p-test uir-j2p-mutation
+
+.PHONY: uir-j2p-deps uir-j2p-test uir-j2p-mutation uir-j2p-survey uir-j2p-survey-noindex uir-j2p-evidence uir-j2p-gate

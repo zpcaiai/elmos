@@ -1,0 +1,21 @@
+{
+  "batch": 2,
+  "archetypes": {
+    "orchestrator": "b02-assessment-orchestrator",
+    "domain-model": "b02-assessment-orchestrator",
+    "discovery-inventory": "b02-portfolio-intake-and-scope",
+    "capability-planning": "b02-portfolio-prioritization-wave-planner",
+    "deterministic-engine": "b02-infrastructure-runtime-document-ingestion",
+    "adapter-provider": "b02-assessment-orchestrator",
+    "integration-api": "b02-assessment-orchestrator",
+    "workflow-runtime": "b02-assessment-orchestrator",
+    "certification-gate": "b02-assessment-report-and-certificate-gate",
+    "security-policy": "b02-assessment-access-and-data-governance",
+    "human-approval": "b02-assessment-orchestrator",
+    "failure-recovery": "b02-assessment-orchestrator",
+    "lineage-reconciliation": "b02-assessment-evidence-quality-controller",
+    "lifecycle-recertification": "b02-assessment-orchestrator",
+    "observability-economics": "b02-assessment-orchestrator",
+    "corpus-benchmark": "b02-assessment-orchestrator"
+  }
+}

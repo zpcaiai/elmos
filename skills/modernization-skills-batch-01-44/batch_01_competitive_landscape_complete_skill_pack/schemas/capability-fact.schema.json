@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:batch-01:capability-fact",
+  "title": "CapabilityFact",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "capability_id",
+    "claim",
+    "competitor_id",
+    "confidence",
+    "record_id",
+    "schema_version",
+    "scope",
+    "source_kind"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "known_limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "competitor_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "capability_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "claim": {
+      "type": "string",
+      "minLength": 1
+    },
+    "confidence": {
+      "enum": [
+        "verified",
+        "corroborated",
+        "single-source",
+        "asserted",
+        "unknown"
+      ]
+    },
+    "source_kind": {
+      "enum": [
+        "vendor-doc",
+        "vendor-marketing",
+        "third-party",
+        "hands-on",
+        "customer-report"
+      ]
+    },
+    "source_uri": {
+      "type": "string",
+      "minLength": 1
+    },
+    "observed_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

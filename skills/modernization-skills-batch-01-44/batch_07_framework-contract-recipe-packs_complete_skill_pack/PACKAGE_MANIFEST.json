@@ -1,0 +1,240 @@
+{
+  "schema_version": "1.0.0",
+  "package_id": "batch-07-framework-contract-recipe-packs-complete-skill-pack",
+  "batch": 7,
+  "title": "Framework Contract Model and Framework Migration Recipe Packs",
+  "version": "1.0.0",
+  "generated_at": "2026-07-31T00:00:00Z",
+  "skill_count": 16,
+  "skills": [
+    "b07-framework-contract-recipe-packs-orchestrator",
+    "b07-framework-contract-recipe-packs-domain-model",
+    "b07-framework-contract-recipe-packs-discovery-inventory",
+    "b07-framework-contract-recipe-packs-capability-planning",
+    "b07-framework-contract-recipe-packs-deterministic-engine",
+    "b07-framework-contract-recipe-packs-adapter-provider",
+    "b07-framework-contract-recipe-packs-workflow-runtime",
+    "b07-framework-contract-recipe-packs-lineage-reconciliation",
+    "b07-framework-contract-recipe-packs-security-policy",
+    "b07-framework-contract-recipe-packs-human-approval",
+    "b07-framework-contract-recipe-packs-observability-economics",
+    "b07-framework-contract-recipe-packs-corpus-benchmark",
+    "b07-framework-contract-recipe-packs-failure-recovery",
+    "b07-framework-contract-recipe-packs-integration-api",
+    "b07-framework-contract-recipe-packs-lifecycle-recertification",
+    "b07-framework-contract-recipe-packs-certification-gate"
+  ],
+  "upstream_batch": 6,
+  "files": [
+    {
+      "path": "BATCH06_COMPATIBILITY.md",
+      "sha256": "461f091f99ce0ac53f2d729e0c52aa6200b01715f1b62ad98c7dd9223852496d",
+      "size": 2185
+    },
+    {
+      "path": "CODEX_IMPLEMENTATION_PROMPT.md",
+      "sha256": "9191ddfd69818f5f25625dfb3cdd2e22431c6f59c00912572e64f5076471295f",
+      "size": 2384
+    },
+    {
+      "path": "IMPLEMENTATION_CHECKLIST.md",
+      "sha256": "62ee5ca17978dfe681b3affe8f3228d385a26c63b4dcc6c127aff711c48fb042",
+      "size": 1848
+    },
+    {
+      "path": "README.md",
+      "sha256": "823358c507ede14bbdf88b4b64cf3c34601a52540cf9f156ec177e5df2a1f174",
+      "size": 1099
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "f2c7bc537af51d41f43b4762089c5fee74fac9b36453379861bb7918ab2a6ef6",
+      "size": 3678
+    },
+    {
+      "path": "SKILL_INDEX.md",
+      "sha256": "198ae2f9cb189252bac022df7272d93bb857924a9a8acd35b04cf8ead5cf237f",
+      "size": 3126
+    },
+    {
+      "path": "VALIDATION_REPORT.md",
+      "sha256": "7fba43fae7760ba373313367ef79b7395255690481022b17374e5673ac3df76f",
+      "size": 572
+    },
+    {
+      "path": "examples/certificate.example.json",
+      "sha256": "ea01de6d400ecea7c2b824bc7bd09f8984b93e076169f156366248cf249c733f",
+      "size": 451
+    },
+    {
+      "path": "examples/invocation.example.json",
+      "sha256": "63c365bf97ff6d645ed29a66d0758123985e89109d10ed5ca969c21dea832068",
+      "size": 295
+    },
+    {
+      "path": "install.sh",
+      "sha256": "cdaf3fdf0c010dd9e0fe29b4a92cd723ff35dd0617eaf14bb5f57e757bc2fa02",
+      "size": 305
+    },
+    {
+      "path": "policies/agent-boundary.yaml",
+      "sha256": "79adc8830adec220835b49067d29b50a3a1578f146a65e7d5b70a6d19ba09ab2",
+      "size": 150
+    },
+    {
+      "path": "policies/certification.yaml",
+      "sha256": "17f50ef51eb5cbf800b3b4990bfb399d4aed9c751cb7f440bee4a4d88ebf02ea",
+      "size": 182
+    },
+    {
+      "path": "policies/default-deny.yaml",
+      "sha256": "25c6a03403de8832018b82bfa5d9dd516d8f5136ba4974c85d40bdf8972f9366",
+      "size": 105
+    },
+    {
+      "path": "policies/evidence-first.yaml",
+      "sha256": "50408543ffa45cfea3461cd57bdabf39f9bdd422fc5b41cdfef4d3c679a058c2",
+      "size": 156
+    },
+    {
+      "path": "policies/human-approval.yaml",
+      "sha256": "d9a6b11cfe402c569440e95b1aa2377387e222a32b693c83fc278ddb1fd4482f",
+      "size": 143
+    },
+    {
+      "path": "schemas/batch-input.schema.json",
+      "sha256": "52263004423e95293fa91bf08c47416de0f7921288f625b70001b9d180dd165f",
+      "size": 731
+    },
+    {
+      "path": "schemas/batch-output.schema.json",
+      "sha256": "2278a30170a9fc12c4a9cca33866d9634157851138ef4e027752a98be312f752",
+      "size": 832
+    },
+    {
+      "path": "schemas/capability-package.schema.json",
+      "sha256": "bf797b806ce4bdf80583d973767501e809c84725a59bae2b26969f6b56914ae3",
+      "size": 1133
+    },
+    {
+      "path": "schemas/certification.schema.json",
+      "sha256": "fd0ae63a320bf0cab2bc8497be3732e4557f6207b141ee9344c264c8e37ace4e",
+      "size": 1280
+    },
+    {
+      "path": "schemas/evidence-ref.schema.json",
+      "sha256": "6e08fb5b89ed802503ffc842db20fcbaa295c4f027f6f389c8b2c37c5de1f237",
+      "size": 996
+    },
+    {
+      "path": "schemas/workflow-run.schema.json",
+      "sha256": "c01cc949f99f1c1f43493e34f3da217c4f9bd584a44343a9e214d930925861ec",
+      "size": 848
+    },
+    {
+      "path": "skills/b07-framework-contract-recipe-packs-adapter-provider/SKILL.md",
+      "sha256": "3c58f046a27d9fb567101e277b44ff195c2bb6405b5c90af6cfb20b3658333bb",
+      "size": 3984
+    },
+    {
+      "path": "skills/b07-framework-contract-recipe-packs-capability-planning/SKILL.md",
+      "sha256": "9718db6f0b5d7ad4e2a6656272e66635d364324911106a530da621977eab353e",
+      "size": 3886
+    },
+    {
+      "path": "skills/b07-framework-contract-recipe-packs-certification-gate/SKILL.md",
+      "sha256": "c2e3c5da047a1370b9bef54d379011f078858c1fff7aa5bcea9b18083dde5b14",
+      "size": 4015
+    },
+    {
+      "path": "skills/b07-framework-contract-recipe-packs-corpus-benchmark/SKILL.md",
+      "sha256": "08c0811e880c6d082449599a1a1bb8a72d6d876042f5fbd19f9065ab0b37557b",
+      "size": 3925
+    },
+    {
+      "path": "skills/b07-framework-contract-recipe-packs-deterministic-engine/SKILL.md",
+      "sha256": "652c39455f6c4f93313ad0251cd4b6601666ed03e6c00dfad7814f8419b4e41e",
+      "size": 3902
+    },
+    {
+      "path": "skills/b07-framework-contract-recipe-packs-discovery-inventory/SKILL.md",
+      "sha256": "3d0fcc31e803ef0fb20a0bca30335419112886138ed641fd8211fb350d7cf764",
+      "size": 3929
+    },
+    {
+      "path": "skills/b07-framework-contract-recipe-packs-domain-model/SKILL.md",
+      "sha256": "6dcce26e233112f19a92e207631a54286fc652af39ad5c13cbc6e64f3e707aed",
+      "size": 3956
+    },
+    {
+      "path": "skills/b07-framework-contract-recipe-packs-failure-recovery/SKILL.md",
+      "sha256": "7cadf05525d270f7e32fbd4595c42a1a56ae78c73a2d5b100d49e70fedda1250",
+      "size": 3933
+    },
+    {
+      "path": "skills/b07-framework-contract-recipe-packs-human-approval/SKILL.md",
+      "sha256": "60f9f665d9e650dce0bfeb137b89cbbe2891c89a1ce9d3468b53f01a068c387a",
+      "size": 3918
+    },
+    {
+      "path": "skills/b07-framework-contract-recipe-packs-integration-api/SKILL.md",
+      "sha256": "9bf1dca61fb2204650252f95c875f68f743746d378f991ae7f330db3e7e16d48",
+      "size": 3903
+    },
+    {
+      "path": "skills/b07-framework-contract-recipe-packs-lifecycle-recertification/SKILL.md",
+      "sha256": "d3f720ae95b2af68d0f41c300303ca65d9a68d1e8637a72bd4fffff63747834b",
+      "size": 3993
+    },
+    {
+      "path": "skills/b07-framework-contract-recipe-packs-lineage-reconciliation/SKILL.md",
+      "sha256": "c012af88b4cf63f3b181acf45e3c35dc265057a002777596c1a874881fca571a",
+      "size": 3944
+    },
+    {
+      "path": "skills/b07-framework-contract-recipe-packs-observability-economics/SKILL.md",
+      "sha256": "9f202d48392b54b01e8762a32e7a8e0a391bd9f3b0e93a2ce9194c0ef31779ec",
+      "size": 3959
+    },
+    {
+      "path": "skills/b07-framework-contract-recipe-packs-orchestrator/SKILL.md",
+      "sha256": "ac565e8c07700e8c1904b1894c64772bf60df24a9ad753583c85bfb711decc6d",
+      "size": 3981
+    },
+    {
+      "path": "skills/b07-framework-contract-recipe-packs-security-policy/SKILL.md",
+      "sha256": "cdcfc9b63590e8364dfb5996f2af5f86bbe91b916fc284b89558635296a71e7b",
+      "size": 3938
+    },
+    {
+      "path": "skills/b07-framework-contract-recipe-packs-workflow-runtime/SKILL.md",
+      "sha256": "4db6dffd72303f80034087c81e6d884f9fa1cd48cd37a146cbd31fac79392081",
+      "size": 3947
+    },
+    {
+      "path": "tests/README.md",
+      "sha256": "9a8bd752502bdbf371a79b4f067e5affc7b0c49c074cde9703b29342b665c10d",
+      "size": 451
+    },
+    {
+      "path": "tests/test_catalog.json",
+      "sha256": "01e4ac3a1301f46bef3ffd74ec41eb395dda12a8bcefa7d750b71a4e242e98a4",
+      "size": 1938
+    },
+    {
+      "path": "tools/validate_package.py",
+      "sha256": "1d0e2d5d5005b7602e810d0a54ae8e33f6145cab3d21bf348d7fefcfa8fb3023",
+      "size": 1519
+    },
+    {
+      "path": "validate.sh",
+      "sha256": "a1afca2d69d8fa3d11c820c8381b06b6449e31b289196b3cdc4156de471dd6c4",
+      "size": 72
+    }
+  ],
+  "validation": {
+    "static": "passed",
+    "runtime": "not-executed"
+  },
+  "trust_boundary": "Static package validation is not production certification."
+}
