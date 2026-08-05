@@ -11,8 +11,13 @@
     "polyglot": "node dist/src/polyglot-cli.js",
     "project:generate": "node dist/src/project-cli.js"
   },
+  "dependencies": {
+    "@vue/compiler-sfc": "3.5.13"
+  },
   "devDependencies": {
     "@types/node": "24.3.0",
+    "@types/react": "19.1.10",
+    "@types/react-dom": "19.1.7",
     "typescript": "5.9.2"
   }
 }
