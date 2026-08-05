@@ -1,0 +1,2044 @@
+{
+  "all_tests_passed": true,
+  "execution_scope": "LOCAL_DAG_PREFLIGHT_AND_STATE_MACHINE",
+  "external_verification": "NOT_RUN",
+  "orchestrator_count": 45,
+  "production_certification": "NOT_CERTIFIED",
+  "result_count": 225,
+  "results": [
+    {
+      "evidence": {
+        "artifact": "sha256:5bdf31b133a0e7915e4056571870de5b72be3810bdb4cce67c1181cb7e148b6e"
+      },
+      "result_digest": "sha256:47ec48d95b6d9495475e0237219e314224e42b87c90d63b79a809abf50b3b2c2",
+      "skill": "pm-b01-competition-positioning",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:9eff7fb272735ed1d785da843bea22d37cd2d675df1709dba220f41a1c8e302b",
+      "skill": "pm-b01-competition-positioning",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:c0d2d998d36041813f5d92ee732ead1a041261964809264f30f531f4f8a59f23"
+      },
+      "result_digest": "sha256:7f46025223c5515dcbffb653e6c2dff4bafddc12a1ac7f3b45ee717b61eae5b7",
+      "skill": "pm-b01-competition-positioning",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:1f4cd0f79437a0caf065684c254df6dc18e076b532df5f2d301e085bc853f17f"
+      },
+      "result_digest": "sha256:c196284715d9fb8dcf1fd665cfa849a790a9e5679aa9e7223922a781805708dd",
+      "skill": "pm-b01-competition-positioning",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:10ee4f4fffe1d5c9beec1b78ce46ce9824da811ff59f6260ed8e7ac342fcb402"
+      },
+      "result_digest": "sha256:ee57487c2e0fbff67eb05c08faaa54175086f680b7799915cd051946a505ac41",
+      "skill": "pm-b01-competition-positioning",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:dd826def731b494fc1215ecc31778eca616d2e29ad4c454b7895f2e03ae53772"
+      },
+      "result_digest": "sha256:1f0db20d26de9932980d22076db1820965be2d23e93efe460558bb9c9d5cb83d",
+      "skill": "pm-b02-modernization-assessment",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:7338a7943dccfaef1be853271896ed279b12321b04f398d147b686063afdd9c7",
+      "skill": "pm-b02-modernization-assessment",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:1a0e56689df291a82e6b5a3e7ecdefae4a0cb1a2bf0221890b5e2ec6cb7709dc"
+      },
+      "result_digest": "sha256:94d76a675f7c931c0696ace65dbbc4b9965f83d37cd2ec25128c697a6cea13d4",
+      "skill": "pm-b02-modernization-assessment",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:cee349c071397928aa36c67debf6fdd71c1f46ca8fb441c168475bb5489c9e62"
+      },
+      "result_digest": "sha256:2707ff09e4fcf002b42621d13133672aedcb7fa8bc03f6992ad541e2f286a536",
+      "skill": "pm-b02-modernization-assessment",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:f504517ffd7ff8a62c6cb667206d0022c94a95fe61ffa92af9b57127868faa2e"
+      },
+      "result_digest": "sha256:8abce2a80bb72132444dde266ce5879ef0625bf909efb95b4aacdf6947c4ad8f",
+      "skill": "pm-b02-modernization-assessment",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:4e27c3e1094dd2c6ceb78ff65834a6995371826c9e80a2dd318f781d7c949421"
+      },
+      "result_digest": "sha256:2c66d078c09ac3ae4767438acafe50b77ec0803ced248a23b15999c8206f1eb5",
+      "skill": "pm-b03-feasibility-estimation",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:b9330fa8e3ca05c4c41985893e72b454360e0a7b0c09e48cb9fc1dcd320bf1bb",
+      "skill": "pm-b03-feasibility-estimation",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:5ab0d8ff553cdb13a10bb33b3283d7c622b0c5eeb7262a0a49f606a121f9535b"
+      },
+      "result_digest": "sha256:f36c0f8292f7552171e86a79bbe2c2430b01a86578f8d462f8482170dbef091b",
+      "skill": "pm-b03-feasibility-estimation",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:1116f8583cc684f6bdf7946362a6364f12b7fe63236c3702ee0ba9dfc0eea0b1"
+      },
+      "result_digest": "sha256:ce31642590f023e026192ab07c359b2b54b692c0cd24e98025647eba2b36a9da",
+      "skill": "pm-b03-feasibility-estimation",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:fb243fee8904c6f554f447e1fa94970e6518c8dfc7558d03f278b72cee13d72c"
+      },
+      "result_digest": "sha256:f7b69b8a697e02f27c9da921ec403de66f2905ec8b2d9a48780c176bd2e154b3",
+      "skill": "pm-b03-feasibility-estimation",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:25efc58522bbedef95ee35a68db4de1d956df6b7ee3bd3b6d024b95bedc72f48"
+      },
+      "result_digest": "sha256:f2bcb8a725b4bc8101002c74d23ce679b0436bcdaa8a0b1b62d67de2b184e136",
+      "skill": "pm-b04-target-recommendation",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:17d1fa2d777aa0d8641ce0fe0adb4129af5e8a075c0ed2c949bda94a6aaebd02",
+      "skill": "pm-b04-target-recommendation",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:f90deade4079bac4cb28fc423eaefe07b35f7f110d102e050d4205c2de653d6a"
+      },
+      "result_digest": "sha256:bec2e84ae5ebebed927483fe289913f58b8c4047e2a7c1ccaf791c8741b638c6",
+      "skill": "pm-b04-target-recommendation",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:b3634f75fff7742fe88c8955679290b0b8a73aa57978356d8cbab6b14b0953c9"
+      },
+      "result_digest": "sha256:fd4486ea193b6ae5a62abd1b53f365d1c67a0db0bc4b8d5ff635f7e03add2360",
+      "skill": "pm-b04-target-recommendation",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:a75a8b1d10ae8fa5e867ee5fde7025df2a4d4a814927bb9ae96b906880073508"
+      },
+      "result_digest": "sha256:faadc0a65dde209d6600ded13ffbdf08a8a15035cceb1af320813c8b3654bb54",
+      "skill": "pm-b04-target-recommendation",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:5222acdab7fe6e4ba8fa70a860b329a151b4f6f41c29cca361c35553b223f48e"
+      },
+      "result_digest": "sha256:2b7b872eb549706b41fad163861245b73ead0608b225daa9f551861ed3a093ad",
+      "skill": "pm-b05-repository-semantic-recovery",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:a91ead7ebc5bb6dc2a2e86eac477b74b748d51b363de36bebecaa2de705f1070",
+      "skill": "pm-b05-repository-semantic-recovery",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:aafe019bb3bfee84a627d7b0616796da55b3b3cc937f761ce1b7de62004478a9"
+      },
+      "result_digest": "sha256:cd200ff967b09cfa2d36a34c52ce93fe0ef55f9df56ea1ef325dc82018e8075c",
+      "skill": "pm-b05-repository-semantic-recovery",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:50dbfa655f2c604994529169b4abcb5fe67c0fbf8af87dcdcb1856904a2ca3e2"
+      },
+      "result_digest": "sha256:0d4d160f630da5051d2560e6e658ecbdec2e7b27b556053b263159b69dd5b0a4",
+      "skill": "pm-b05-repository-semantic-recovery",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:969341575bd0851681864b6c7efac4fa4dd29b7487c0acc0cf85f6e95b3a852c"
+      },
+      "result_digest": "sha256:9f092f557f8af424f5477ba928572c19104004205d6857c3a278fcc36c267f46",
+      "skill": "pm-b05-repository-semantic-recovery",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:39f0cdc356a0e650d656c3a4eb0471fb4e6b602cdc4925c736742be9497bd736"
+      },
+      "result_digest": "sha256:492fee84341e4a3fe4d00890648cb2b785cd17ea23d477f933ac5713281e58aa",
+      "skill": "pm-b06-toolchain-registry",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:e6950fbe819a8a6c14bdd8e3528ec4826a7ea0e90486f736db190a64be1a0641",
+      "skill": "pm-b06-toolchain-registry",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:a31c1c2eae50775479d4deddf2c68acb9df1a39f7487cbcea4da95ba1687f5b9"
+      },
+      "result_digest": "sha256:c176c1a49d90f7e42165c833d51b8d44656bb3396a6ac5b66b3216a30d03f227",
+      "skill": "pm-b06-toolchain-registry",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:8f517c845314f41cea87b736cdceb312f84f4f890d00c3606aaa010bd957e3a7"
+      },
+      "result_digest": "sha256:2ccebea0fa522b6686927938790c5bab218abad29b1c32bccbb649a236d830e5",
+      "skill": "pm-b06-toolchain-registry",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:26082c4256d22b9b9f3476433acc3a81c8861c484c5c890d54bdc6660bfbf177"
+      },
+      "result_digest": "sha256:fb80acb92f93c0ca487e5c3a80fbce39e1ebab548fa44b99932053859b1cf4ec",
+      "skill": "pm-b06-toolchain-registry",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:e8ec0c93578ef7566e49d531b0baf7ad73dde8b7ff1e12703c668800dcc1ff54"
+      },
+      "result_digest": "sha256:bff1ec55ab7dd3fe02ade417703d71c8dcbc3c1edacabbc5bed64deb697fc7c8",
+      "skill": "pm-b07-sandbox-security-reproducibility",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:8a2b4cb59bfe84f5c8f9e62188706defeaa58dd2a50d085fb96dba7efaa35ad6",
+      "skill": "pm-b07-sandbox-security-reproducibility",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:5524752c574800a7871cab1b64d2e901e447fc5a52d04ddecfa7f661b973a5c7"
+      },
+      "result_digest": "sha256:3754308f40457126ba30cca4834b4f36ca427543ec75658fdeda688d923b5a6b",
+      "skill": "pm-b07-sandbox-security-reproducibility",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:bd46f53588d209813d0dd68328aa9acd60a40246979b42c49e605a193fcde9cd"
+      },
+      "result_digest": "sha256:1b14694ea5b960214791cff6228668624ecec1c6a6fc06023b6be5c33173a80d",
+      "skill": "pm-b07-sandbox-security-reproducibility",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:8972a8acea3b78afd188f47f399b6c14ab03dd08b3e5823a81fc6532042d50f5"
+      },
+      "result_digest": "sha256:adcaad272cd1d9d291d91b6d7bde47b2f51cab58dc4f82a5d13d12f7d2709942",
+      "skill": "pm-b07-sandbox-security-reproducibility",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:b160dc0012115c7a4410a0e3e6d8602668af54fc552845baaa7ee8ab346a83c8"
+      },
+      "result_digest": "sha256:8625f6a40571f71d49d8c1b98df7902495e514ff54a3357183e4b99475468432",
+      "skill": "pm-b08-canonical-type-system",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:8afed33ae6185e268ba772f81fa9a8af9bc881c7514e4c5d596c8dd37b68cf1c",
+      "skill": "pm-b08-canonical-type-system",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:424d8f0dc3abf5a0f98126d01f7b255a3e6cbbe6fdf7f2d7050cac7230c39e09"
+      },
+      "result_digest": "sha256:49e631effbbffc3ef334df0ad4f94cbc45fc3840f20f4d88adeff9c75dad2888",
+      "skill": "pm-b08-canonical-type-system",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:3ea871e78f1d875ec5809ea9ae0969e3325fa4c0939aa769192d79b049698b60"
+      },
+      "result_digest": "sha256:83f83d4ac77c71727941ecdacadaefdd00c14670a345a3f5f528a09d695951ff",
+      "skill": "pm-b08-canonical-type-system",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:6ae797d046f1e7a86f4ea16239d71eaf0b047d9550c6ed1085cdb81d72526452"
+      },
+      "result_digest": "sha256:54e6eb653523d721e88eb595f4d0e6de6c30208df86d4662bd7c3813b789a89e",
+      "skill": "pm-b08-canonical-type-system",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:ddad3e89771f9d1f73155dc04fd56e2bfbf295335ee25109c77a997076729919"
+      },
+      "result_digest": "sha256:55c0469950f07e73f5741b6994d966509f2d2ea7c66fd66b91730a3fd12562b2",
+      "skill": "pm-b09-effect-state-observation",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:96b1326533d5e94a2c9e684570030aa0ee672e00c148be062279e66cedc8d5a3",
+      "skill": "pm-b09-effect-state-observation",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:1fc375759b0cb16b9142dc4505ff29eb69bf20ecfcf1187398292cd26c3ddce4"
+      },
+      "result_digest": "sha256:b022dd0eda92209fe97331ab7538ab6e905f435f4e76994a1d1b3c70ac0045e8",
+      "skill": "pm-b09-effect-state-observation",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:bd9806aef913f7b608be19b146840d7835177fc6e36eed62c5d35d8938b97d2a"
+      },
+      "result_digest": "sha256:1f9a8f6601d8fb72d6e36882c4f10ac6edc16c62b55fcfec51acb1e40b0c8107",
+      "skill": "pm-b09-effect-state-observation",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:84c668fc1b7b01ef37dcc9c0afdfa237ec20931dfc11252ea229dac86b53ce7b"
+      },
+      "result_digest": "sha256:71269947aae0a364ad5aebb8be6dfdfe19b633b5ad1cc34a7da231c0d42f76ed",
+      "skill": "pm-b09-effect-state-observation",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:3dbb25ca70e9fe9ce58c6b6c3dc6602faef79dd31d65908058423400e300fe76"
+      },
+      "result_digest": "sha256:fb773811e430c7ada56cb3472e3884d01c26ee091717aed3e425ac9f33e04bc8",
+      "skill": "pm-b10-backend-frontend-semantic-ir",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:a23942292754e68e46526ab39eef46c0f596aaab6f2aa7a0868de458508bc6a3",
+      "skill": "pm-b10-backend-frontend-semantic-ir",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:1a98c782f2e829517edcecc46d04be43a11a38c5b4ffeb6516f58f310071d821"
+      },
+      "result_digest": "sha256:f79853dff9fef4b3601fb2a3a43311147b45be557acdab775d5a2cf50ceb605d",
+      "skill": "pm-b10-backend-frontend-semantic-ir",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:7d5538f0b2b7ceff869178cb5789f7a376d68786cd6c431d8dc3b39a14f19f1d"
+      },
+      "result_digest": "sha256:f05f314f62b6b1db51b34d50e872752bdc7c0dce83abd6d40ad5920134d06922",
+      "skill": "pm-b10-backend-frontend-semantic-ir",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:691329ebcb946ebad9edaf04c0cef9286df5d089fe09379033ac3b5b1e8d2fd2"
+      },
+      "result_digest": "sha256:68f2601ce03a6a8d48fc8ce14ec1e52351925576ba99fd2905525add445b8853",
+      "skill": "pm-b10-backend-frontend-semantic-ir",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:bcc9e08e39104f8b3971516f899aedde78678581165053746dd457052f5279b4"
+      },
+      "result_digest": "sha256:90c1d0eb321fcb10b6aa7337b28aa55bbe72648e022aa4ed024e4c00870888df",
+      "skill": "pm-b11-transformation-skill-recipe",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:4125ab5dd4f9db800764bfd25c588dc24226a3a127f42466aa67ca4bfc56b18d",
+      "skill": "pm-b11-transformation-skill-recipe",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:c3cca4de8834a2776403fc0e585079166bd060e25469e55470d47abf6105b779"
+      },
+      "result_digest": "sha256:be316350dfa206df5d406d664d36329c7a6c03bf61b70adfcea9c7a1235fef96",
+      "skill": "pm-b11-transformation-skill-recipe",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:8aae85ad4fc6a542928a0172d9ac52a72c279ed31b0894191f4d38e4cd53c362"
+      },
+      "result_digest": "sha256:e71b3209df655ce62e8e80b09b52c0ebb30d81e90e7b9f71dcf3a42af9d9d271",
+      "skill": "pm-b11-transformation-skill-recipe",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:d9283fa752b57edfe3d3885908f9cbb8dbf3eed6558d02f05b16ed6303c5e327"
+      },
+      "result_digest": "sha256:7612e2ad7d4e43795b079f3a566231be0a8a3cdbbec32f566a2420f455e07fc7",
+      "skill": "pm-b11-transformation-skill-recipe",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:18bfb1f423d9f948584676b5612aceabc8964e5b65d38dc8761b908503dc1332"
+      },
+      "result_digest": "sha256:a956d6fab1db4d0ec832de7a00cb6e04e1e1cc51de1726145481971983ee952d",
+      "skill": "pm-b12-lossless-semantic-transformation",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:23a33bfb31deae4fc16a2f88d764547a28da5277c2dd0e5a27b36ba9428daf47",
+      "skill": "pm-b12-lossless-semantic-transformation",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:e0b4d2d57f2e5ff2f5687e3eea6aaa9153fddb686433456e72f04b6b08bacc79"
+      },
+      "result_digest": "sha256:1fcfb8d7fe3fa3183a8e383d655f6045e04d2584895052e8142175aed53ca99c",
+      "skill": "pm-b12-lossless-semantic-transformation",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:ab1be703d57e1c96cd915f39b994d68a3840f473e1e66a48252a98f3a2adfa36"
+      },
+      "result_digest": "sha256:b25343478e713387b7540c7b32e11e8e833a269b755963be58851a132999748e",
+      "skill": "pm-b12-lossless-semantic-transformation",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:0ece97c2e2c21504fb8b3a2bdde09cdb6c9965d452a45f3dd0ec8af5ee2b73c3"
+      },
+      "result_digest": "sha256:f2694e9e96acb4bf493d3156a448594f2c204a72f55a25a4d9ba0b24778dc2e7",
+      "skill": "pm-b12-lossless-semantic-transformation",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:80411dc049a33302938062c993de8a3c3b8ae3a29ffa51adcad7ff07500a5e7e"
+      },
+      "result_digest": "sha256:7385f7caad9991e19ed26ddbd74464df26ce237e1fea9ab1c07796dc3d445883",
+      "skill": "pm-b13-neurosymbolic-candidate-generation",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:35850eadb06c8caf2b81d0a1b2e2d2ef20f551d22ea8790936309043eda18e47",
+      "skill": "pm-b13-neurosymbolic-candidate-generation",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:f7857a2cef2398240232b34fe65fa62fabf556ce3b89b307371894e11998d4ac"
+      },
+      "result_digest": "sha256:1a9bc8db023d093d2fc967b5a886d5b453364c3d0f2b5adfa32d0a383bd5e8d1",
+      "skill": "pm-b13-neurosymbolic-candidate-generation",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:3d4007c1feae16ff316a9ca153d605a197e68c3831b91fa35eda099e8546e379"
+      },
+      "result_digest": "sha256:0141d1e52506bc7d4b7fe287b7a5f01faa8f3b15306185328c6f4c267db0825f",
+      "skill": "pm-b13-neurosymbolic-candidate-generation",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:9e5e866f0ff07c80e9395a262bc7928029bbfa22fc8b584f2303019e2b29f708"
+      },
+      "result_digest": "sha256:60627315262683954d6515909cd1dc18516cec94fc3cb18d430ad883ec5541e7",
+      "skill": "pm-b13-neurosymbolic-candidate-generation",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:adff1882b29deef5a08e87ce87d0b6215e938425e2adcd84b4b1c131fbc32acb"
+      },
+      "result_digest": "sha256:aa9196a6f428181fb9daa3eecd22a242f01a9487d2b9bd68a97856dfef250499",
+      "skill": "pm-b14-backend-compiler-adapters",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:135de0432f13a29ab5515ce4a0b314f5c52f179cc7d51e5ecaa4ca20a472eb4b",
+      "skill": "pm-b14-backend-compiler-adapters",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:9997e8e66dfbf62f64e750e80131fdaf67fda73876343b94ce39e01529d93715"
+      },
+      "result_digest": "sha256:eec4c8bb0ea9b5b3689a0b41a3a35707171932873c41ecb2fdd32fc858642fa3",
+      "skill": "pm-b14-backend-compiler-adapters",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:d4182d2b6c51c6e3aa57e6ee6970fe6177cadb00ba76493be56c4e9cc839fc1d"
+      },
+      "result_digest": "sha256:d31944686c140de6f4f9d698c5a18caeea605f49aa8c62d9850b483bb41c6df5",
+      "skill": "pm-b14-backend-compiler-adapters",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:53bc8ef6a6c762cfa98a09918a0fef0815bd3610a77fdabd96bbc82a200a8909"
+      },
+      "result_digest": "sha256:0d4f974ba73bb8f567a5d2d54cecf94f110fc73591b3aee43f38069e69bcfe07",
+      "skill": "pm-b14-backend-compiler-adapters",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:99b133c0d04783a9583be4fe33f31cec1227fe645b72df0dee16714e3ee9f51c"
+      },
+      "result_digest": "sha256:5fb9803f5d45c372aa9d2bba7e39c75029e30c9a686fae1136b2c0640f8fe59f",
+      "skill": "pm-b15-backend-semantic-lowering",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:b42e9e11632f94d55bb654eb39c771d059a9533e21c4412b94286d58a135dcf6",
+      "skill": "pm-b15-backend-semantic-lowering",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:8040682ebf60d6e6416458a1cd5ea45275c48ed6b09bb4b59a6ced8fb6b1de83"
+      },
+      "result_digest": "sha256:9c90e9b8be236837ed03e7d99135e4b5fee11ba131b3aaa6725066c898741cee",
+      "skill": "pm-b15-backend-semantic-lowering",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:5453627ac3fda29c0c4b66c51479a1a98a2f756bb471392418a48755b7195727"
+      },
+      "result_digest": "sha256:82bfa2681e67d2456be0e64ac18e0b80a61dfec032294aba1b56fb292d5816dd",
+      "skill": "pm-b15-backend-semantic-lowering",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:d7c0d80f51b20d59922e92eaf3e37a1605793eb93c529305c4b7f0933d118182"
+      },
+      "result_digest": "sha256:bb13dbf7941abbaed87870981181c7bdae24fb45db5d672331a45a65b58e73da",
+      "skill": "pm-b15-backend-semantic-lowering",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:5e9f5aadc8d2f196ea5d7ddfc7d891cf6133110c43b0a327b2bba99c93c5bcf6"
+      },
+      "result_digest": "sha256:3540889e20a6c5831263c532453100e03b7d628763b2d10a370abb3eb0866c5b",
+      "skill": "pm-b16-backend-direction-packs",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:410413d06934b8558c4702f22e47fc8aea884915791ba305aec0aa89044565fb",
+      "skill": "pm-b16-backend-direction-packs",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:ade1b36cbbfe68aeb9708b5440ad62c5397ca648cdc5aeac37d4c0500e42e79e"
+      },
+      "result_digest": "sha256:74bef9e59f9400cffed5003e505ff41f7bd529db08656d1b7c474361adb4a50a",
+      "skill": "pm-b16-backend-direction-packs",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:288158e08e730cdca3a70ff21372fab5a203befcd28a08b60243544b65c8c5e8"
+      },
+      "result_digest": "sha256:7ad898ad1e1733a34d2898d128fa7634fafd0fdedb5645860cc76b60375ecc6a",
+      "skill": "pm-b16-backend-direction-packs",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:a0e0271f7822569a9cee79ce92597299e9848124e47b111634bf51dceaa100e5"
+      },
+      "result_digest": "sha256:12b73c527a689b422180c99c17fb1952b3565f5f1b51f271541c81ddeb67de75",
+      "skill": "pm-b16-backend-direction-packs",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:81152ddd7cb3b59f0c2724b9da5c5e20b9ef2a824353dd34f0134838505ba198"
+      },
+      "result_digest": "sha256:dc3e33b844443790cceb2732b6c7e5fc2d2530ebfd15f2e6597abd2b7bb70e36",
+      "skill": "pm-b17-frontend-semantic-conversion",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:d54248b9e525faebbd5d41029773284781682693b0f02964bb40b659c42de3d2",
+      "skill": "pm-b17-frontend-semantic-conversion",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:38da1de728818ae3ff202e7d9e0591b25e6e15ad0531d6606ade5835c6b5b07b"
+      },
+      "result_digest": "sha256:8b4ff2c1ad16f1ae749a548805970b38bdb39ed4ca61e7a39728a80937c8dd16",
+      "skill": "pm-b17-frontend-semantic-conversion",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:4f51f1f357eb1b9ca5b8fa1af02b5b61eff5b718e0cafd3fd22af160fb15a092"
+      },
+      "result_digest": "sha256:4e76c0218e8879a4dbf50a9ccae89068633174584dfe698496b99a7a109edbd5",
+      "skill": "pm-b17-frontend-semantic-conversion",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:52d1859e4b634f91199e654ef4d8cddd177395cb3a0620921533eaac575bd992"
+      },
+      "result_digest": "sha256:6a5433cc95500d8603085e19cc4b07c93683bcf585c3558ecced27b8a792acc8",
+      "skill": "pm-b17-frontend-semantic-conversion",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:9976d824708a8df17b7293ceba0e01507218acf5c96efe0af6a6448015972e12"
+      },
+      "result_digest": "sha256:133598f7897e5aacef7fd10eac3ade6c71ba70004e03aed6ce70ed762718ca92",
+      "skill": "pm-b18-frontend-direction-packs",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:22981941683ec48fceb5ee1d6dacb02d603e06240b7f7e3e98160d2d8c238a17",
+      "skill": "pm-b18-frontend-direction-packs",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:ac080dcf313448b2e6a839371fc3bf6e93b8cf4b7dd12c8a43fbb5ebe9354d01"
+      },
+      "result_digest": "sha256:bc9ad525183128b75dc1f40d34c6e53e7a2ccd787bba6fef8288fd228637bc35",
+      "skill": "pm-b18-frontend-direction-packs",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:3e2c576286c1e130cd8f76be90b6c18f2799d4ff5abdd0dcb856abd9753997a9"
+      },
+      "result_digest": "sha256:f51001d5d3429a43c4a80384c3adb4d403e74e02b732b56999144013c5a2294f",
+      "skill": "pm-b18-frontend-direction-packs",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:c02951b959cc20fa941255e3900050e95770ee1c63709529edfc769bb0b3eb33"
+      },
+      "result_digest": "sha256:28e3f6ccf7994c4e9830a15cd7b4cb0f2767c348fc37d7e9c8ca52f22401d71c",
+      "skill": "pm-b18-frontend-direction-packs",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:73f62600da83699b259a73c864e4d05f8827fd8dc5fedbc6aca70cb0c9948981"
+      },
+      "result_digest": "sha256:47a3ec6964f6ead8c91477328e4836d180b15f501c8a2a940d088349b74b9797",
+      "skill": "pm-b19-database-semantic-ir",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:a08569e9c2cb520f3b5a4a133451027dcafbb7d9871e4431a5e6da167056ffa3",
+      "skill": "pm-b19-database-semantic-ir",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:c3bc76aa0e57a5def6e411cc3a200ce8a3d3d99e1f8cd2c9333b8c72c58e9fb1"
+      },
+      "result_digest": "sha256:e6ccbf4c2a1c74cee965bb6ee6a0802bd193998360438d654eec035fd927624a",
+      "skill": "pm-b19-database-semantic-ir",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:eeab8a272dc269a8de4c9ac890ef03fa645b473bd1f0ad8c4858072bf1353ffa"
+      },
+      "result_digest": "sha256:b1a888676afcb3511bbbd8beae467170ce524b8b38b15b768e3d0351c183003b",
+      "skill": "pm-b19-database-semantic-ir",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:7b9022ad53e3227af1361ac8d5c555aaaa36feefbd3ec0041c2f4deed31594ba"
+      },
+      "result_digest": "sha256:80048412a9b9b52325f6af1d5d6fa2c7fcf38b4c8523ed1e5f3fa999dd74fa0b",
+      "skill": "pm-b19-database-semantic-ir",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:cf94d37179ed0db8c46659df41466e1961db818ff6e8183e88afa54559d6a4c5"
+      },
+      "result_digest": "sha256:62f39b21d78e5b7724a428a4d09d36a16e0776eccce68ee92513b46633f2e206",
+      "skill": "pm-b20-database-schema-data-migration",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:74cee426bf580378594b53199267b6c4ed6a88b8d267ed59dfa2c355941194ba",
+      "skill": "pm-b20-database-schema-data-migration",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:ba2f2bff29404a358e0dccf67f549a1170600b9b9fd652590ea118455c186b5b"
+      },
+      "result_digest": "sha256:08e82936f96b85c035326f3f43042338b9b197f5b9c68a3c7445c38c42a1ffb7",
+      "skill": "pm-b20-database-schema-data-migration",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:5ceccdfa11d4eb2394e8f68ce0b9409d053249defc45bee5cfc6cfef98671e00"
+      },
+      "result_digest": "sha256:7de97692641e8aa05336ec6d50564798516dd84d94d57c3c9ba858dcbbfd04cc",
+      "skill": "pm-b20-database-schema-data-migration",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:aebedf1fc2a84f79bc648b0d89f3ab27125b6e182437268688a301029fa7685f"
+      },
+      "result_digest": "sha256:af4daa93ec958569dad92eb5be026a5490f7b5e2710f2ecec8ebc0b656911a18",
+      "skill": "pm-b20-database-schema-data-migration",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:c8bce8b9d79db0a261c41b87082e15d5889b54b05d902d1a94763f8cdd4b4f2e"
+      },
+      "result_digest": "sha256:7367942d6140938c1325f733756b36398b3a65d310e8103372474b575fd5e384",
+      "skill": "pm-b21-stored-procedure-conversion",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:60767e55ef90da278bd661496c0d3b4d867fa6ae558d62c4c943799c89f77f93",
+      "skill": "pm-b21-stored-procedure-conversion",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:0e664d860130fbff8e176887ffd9cab93185b47a3a0a234bf952320d72ebf235"
+      },
+      "result_digest": "sha256:3979947fec07176e08ccf791b9633b64ec1ac55d0c189dabe1633a81867fa767",
+      "skill": "pm-b21-stored-procedure-conversion",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:c34d62cca3f3398a587f4167b996b65fff29ede30f6e213df9198755ce1496f0"
+      },
+      "result_digest": "sha256:0d3a43eb5a5592889c8c9b5166ce864f433c846477a10121b4690cda5ab26813",
+      "skill": "pm-b21-stored-procedure-conversion",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:5aedbd4e8d71b94ec6cd0c421a6c490615f2c1f89304d4cbf45fc3f5275f12c5"
+      },
+      "result_digest": "sha256:0b138d825f71d10b1946e208798d3062768f995a3b429520cbacc900b15ac20b",
+      "skill": "pm-b21-stored-procedure-conversion",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:60df021723ae61a47c803d54adc2162e5a3097f46210d7e0fa229bb827ca62ee"
+      },
+      "result_digest": "sha256:1852d7380b21de5f18f5cfbb33790e2a188a25754cd97518223f8b245a2adf3a",
+      "skill": "pm-b22-oracle-proprietary-pack",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:8de44671195950eafd971107f7e41015db68d7f4b978ee80ce055491a4f633af",
+      "skill": "pm-b22-oracle-proprietary-pack",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:65c5b061ee8b27e4f223ac618df4463871b33b07a638c73fec607a74973aba09"
+      },
+      "result_digest": "sha256:d94f93908f802c50b4455200e73c63b6d3cb0d9a04026fd6af69101b15938d37",
+      "skill": "pm-b22-oracle-proprietary-pack",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:e6f59ac91605c87cfa5157b951932c933ba52d2aa1272895e920fc07d27efbc9"
+      },
+      "result_digest": "sha256:f7aa80cd6c6473df834d71186f925a739b9a0654991cf9e519f7ec44c8067a8a",
+      "skill": "pm-b22-oracle-proprietary-pack",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:599dc95ee91b4611b48a8cfa0aa18732e9e66c57b6fe197de8d6a1d4d72889b1"
+      },
+      "result_digest": "sha256:d73c751a6443eb9ba0ed92a7db9c48b422f632d4f5bbaf13da08c7672a3e0182",
+      "skill": "pm-b22-oracle-proprietary-pack",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:2bb9cdd541fa018420e7559e33d05295b846e17284a4a9e5aeccd3b51cab613d"
+      },
+      "result_digest": "sha256:606ee4da40410d647969fed7628e8a36fc9d14f5e6fcfbda5d616341900d4d31",
+      "skill": "pm-b23-sqlserver-proprietary-pack",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:cfd98b2cbef81710b2a65e005c2d9bf7bceb9a51dc796ec5150fada9458db2a4",
+      "skill": "pm-b23-sqlserver-proprietary-pack",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:0295daa648e549af2f25aeae5f2d6cc41817b8402ff68fba6749d5d0359948bc"
+      },
+      "result_digest": "sha256:652792af5b75253aae40b8d010d9fdb3994abfedfe6b5fc29ddd4a94c5fb74a5",
+      "skill": "pm-b23-sqlserver-proprietary-pack",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:7bed4db96885825506f15ec88161017d77b02cdd7b4aa2f8af7bbe511ae01798"
+      },
+      "result_digest": "sha256:977c18567b8fb635fd74001a566e9cecdc9cd822767fb22143114f18481dcbf4",
+      "skill": "pm-b23-sqlserver-proprietary-pack",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:689512b798b1bcfcdff8e432cf9ffc0ef1d97b08c4c944f28f7ff4135977781e"
+      },
+      "result_digest": "sha256:347e4092231724f4f3628a5930ed10a271bb33bf521538474984fda3ea1d220b",
+      "skill": "pm-b23-sqlserver-proprietary-pack",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:8f47329efffff5ceb5b04b1b9feaf5e8d4738888f01b59e1540907bb7a608fc7"
+      },
+      "result_digest": "sha256:2a9af43a1c7788ec0aef007e32297dff8c3974b724cb80a05013495703da4b17",
+      "skill": "pm-b24-mysql-proprietary-pack",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:7bd5674cf6eb849e5130b1ec2d6cf24b6845f4f5aec54ea4835ef2033e605b78",
+      "skill": "pm-b24-mysql-proprietary-pack",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:b6ca085539258751ff1368ba7906b73ae9624f34854c6ba8a100b0c975de7dbc"
+      },
+      "result_digest": "sha256:80eaf3ebf813f8e63e91c9d1366e2dd4a4b31886ae234f6d5520dc849c30ca02",
+      "skill": "pm-b24-mysql-proprietary-pack",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:08da85a89c7e61f2ddd1fc9c1c01469963a22fb7261c7ef87bb74765e03d06f4"
+      },
+      "result_digest": "sha256:964f0a7c08192d3a555c60a7e3341d968981b72b6a02880835d9f65c8c24fc42",
+      "skill": "pm-b24-mysql-proprietary-pack",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:d2ab957e3be701e083c1fd5bbd92b2fa5b77dd1bb69500a0e55f92c4460ec42f"
+      },
+      "result_digest": "sha256:9d3431cb279762242ab80a2e9fcd396c2483c8318188f303ad706653ac6af661",
+      "skill": "pm-b24-mysql-proprietary-pack",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:5f5709e1b87471914e0f1e9e81ca4fec97436f2a4f75fd6ef670855ff0a25733"
+      },
+      "result_digest": "sha256:ebeca1916d6f2f4910ec246b192c749b99f5ffd57099d1a997fde12fb9f1d3c5",
+      "skill": "pm-b25-postgresql-proprietary-pack",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:b0415d003d06c093a8a5103e78e276ec804c46edd2c10792bc55745b73a58ea3",
+      "skill": "pm-b25-postgresql-proprietary-pack",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:2def36792398dc40116a0bcf9ada0d8b1086e8f082a74aaa020e8d551c8d4a12"
+      },
+      "result_digest": "sha256:1a897be03b05a0668318d6c1e4cb039fa13e79b081543de860ee548a1312d745",
+      "skill": "pm-b25-postgresql-proprietary-pack",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:530d1d4fd1deda9ef7ae40c6094632c29bc3ad368681ca459c1034b311d9a2b7"
+      },
+      "result_digest": "sha256:776ba73137566336aeec8d496d6cb48f9db1995333607ef2393517e1cbcf7df8",
+      "skill": "pm-b25-postgresql-proprietary-pack",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:39dbf842658c374562b2b9f697d806ec74a20f789d99306e2453689264f46425"
+      },
+      "result_digest": "sha256:ca588869b112990299b6ca539978ba992028e2a3bb618e524d2c597f8bac6a3e",
+      "skill": "pm-b25-postgresql-proprietary-pack",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:b475b1f2d08030dea2d4f19d3401af555b8997f71a0873fb33d5240cc585df61"
+      },
+      "result_digest": "sha256:460a4ed95d0ad6a8de071fe19fe7108014042ac841c00f3f4476808cb3e5f09d",
+      "skill": "pm-b26-database-direction-packs",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:836f8aa105bc154dcff5b4f401b892f99e4234b987d7618986f59fa819b42399",
+      "skill": "pm-b26-database-direction-packs",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:bdacc59b2a6970522d0aab8a83e6923b493952c9510694692308ce15a6d89998"
+      },
+      "result_digest": "sha256:366c2c5277b183b6766bf67cc2548d542d5e1ca2d51f6d5e27c6810235f60feb",
+      "skill": "pm-b26-database-direction-packs",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:040a7f3e3a7d07c532ab69af98e42e01e1ef8bb3fac9b0e8e115f3bd80a96d40"
+      },
+      "result_digest": "sha256:df3a41727e53e762b31a0614f65bf1d6e8888e233324056ddbaf142a3c3d7516",
+      "skill": "pm-b26-database-direction-packs",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:3e07c6b561d2917d2ee45bf76ce1fb0930a447895784f41fc6ef6b0b17b1b2d7"
+      },
+      "result_digest": "sha256:bff38908a64c358cab0a583f72b85da84b2ae067206754a333ceb784ab270cc0",
+      "skill": "pm-b26-database-direction-packs",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:0134b0a71a1f1b68dfc7fedfb42b8b493bc7faaeba1b8e8689d8ff751ebf7b53"
+      },
+      "result_digest": "sha256:ce95f022e4e6625709f3b69ca61be20e0c5eb4868bd30539d96345621f8d4e1f",
+      "skill": "pm-b27-application-database-joint-migration",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:4971910a687ee6552d8ac12859cc4c42a6e3ceea50f53ae02872aaf277c61a28",
+      "skill": "pm-b27-application-database-joint-migration",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:4ddc073183ee5d97397e0f194e7032545fc28ce48faecac4a0088d3025671498"
+      },
+      "result_digest": "sha256:7b35d5dd414ba8419362070f1ab91a3b7df2d3c8d8ef1aeb72a0c4f2cfdf4fb5",
+      "skill": "pm-b27-application-database-joint-migration",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:b6fa7f19b387771b1c19a4ab424f1629d5857cd8a172064377c4c71ce243dcc7"
+      },
+      "result_digest": "sha256:dd9721530deb4b7e2745cb5e14ee76ee88c923145d2b07c145de89806079c812",
+      "skill": "pm-b27-application-database-joint-migration",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:f2579cd2ae30b9c0d9bcda3b4aeaf74b52872deb72853293dda18e18a1abde8b"
+      },
+      "result_digest": "sha256:6c779dac67efee40fc3138ce578b0e18c804eca1160cc28b387872b87e5ac47e",
+      "skill": "pm-b27-application-database-joint-migration",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:f24d8e293eb3e9565da851c53685f0d10ea7ee0ac36d013559dd5dbfd432090b"
+      },
+      "result_digest": "sha256:29537915042e241d27d99e23743ebeee48b245cbe092375c13bad7503a6a52db",
+      "skill": "pm-b28-source-test-assessment",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:b7d7d7db1d99f19de7ac83e849623de39b4fd4bb0e840a59062d5c580aa85e73",
+      "skill": "pm-b28-source-test-assessment",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:a8234f4c76c244f7fce1e5e7e94c13207ac09434e27e641b2d36923a4a1a172c"
+      },
+      "result_digest": "sha256:db58528121ca49192759e5afdd52b13b33667b301bd97e4d65f33b66bb8b96d9",
+      "skill": "pm-b28-source-test-assessment",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:8612f38e65ab1c2cc637c61b9d04c2cdcc117b3de786325ec3856c0b4f48bcf4"
+      },
+      "result_digest": "sha256:a85c046b32094d7f5074340ce88439804a0ae16e3273b75b26918e50032ae4de",
+      "skill": "pm-b28-source-test-assessment",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:fca5ce5247a494415da67eb79a9707de11537e30f29dd1db65b709857116f5af"
+      },
+      "result_digest": "sha256:8e89a520abac0f82423dee21b61e20686831f04362b09c54865f0f53c86aa502",
+      "skill": "pm-b28-source-test-assessment",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:a5fcb6bcb1479c74252cd973509655563c5aba223332892d4758e7b551af9668"
+      },
+      "result_digest": "sha256:e94610f464c1982bb9412043d42df976d4dda09048a612cb99c5c8f19e113bb2",
+      "skill": "pm-b29-automatic-test-generation",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:e67fa8e0c19eb9ceaad7c95574c63384afad81a8a6a16889dae0212b965ad3d0",
+      "skill": "pm-b29-automatic-test-generation",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:a71aed6b1eb11978d3cb5e87a732f481b4607eeeb5b9a7257a305504beb389de"
+      },
+      "result_digest": "sha256:d749cd281dbfa158a1c6dedc0aa059935c62eb04903639ebfed5d0f3bd0f367b",
+      "skill": "pm-b29-automatic-test-generation",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:2ad6b1a6b2b0f960c05b5efed76fe05295cca2cd049d5b25f47cfba7f9bf5cf4"
+      },
+      "result_digest": "sha256:c71b0826e9252e8c2cd1426ce59817875b0d81b01544bf7ca54c10ea68d5cd7e",
+      "skill": "pm-b29-automatic-test-generation",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:a33d0b3511c9d79ec34836305dc4d6bc0ed98a5e0f0e9b49ffdb346d3aa97603"
+      },
+      "result_digest": "sha256:bfc136be6de2d8bbe3f1515e4ae9c788add96172ed96bed3744868bce2d366e4",
+      "skill": "pm-b29-automatic-test-generation",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:ce7bdfb05f15da5c8c2eb9dc96200999f7cfcd0087efb5a698170eac012b336b"
+      },
+      "result_digest": "sha256:89d45f1dfbfc199a91d9a4169e8fadb630d26d3eb2ba0709f0fc2b99e2035abf",
+      "skill": "pm-b30-dual-run-differential",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:3281cc174bff605a56bb67a465fae505988af4f7bce32dc4d906e9e2017cf50f",
+      "skill": "pm-b30-dual-run-differential",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:6510cf751506cfabfe25c31a3b170fb85a9e01fbd0f4566a8a390c9854c3f43d"
+      },
+      "result_digest": "sha256:40f52823407ea7e7d415e1ea73194821f5327962345624038f112d717890b550",
+      "skill": "pm-b30-dual-run-differential",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:004222b82022337182fbfeb808da871c83ed71a8d16387c79f6f08bbb1eff00b"
+      },
+      "result_digest": "sha256:0fbd07fcf90ca5ead5895db79d0f4eb14f3ab9fa66321f9448c1a05e2d483bdc",
+      "skill": "pm-b30-dual-run-differential",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:1d331f8bfce6e602d2c9d92e03e129e4d4ac8c4f666a89a04cd618c41fb264a1"
+      },
+      "result_digest": "sha256:fc45410b5d7b89ba0aba3e1b93b142bc405920f46adaafb446744441a3ff198c",
+      "skill": "pm-b30-dual-run-differential",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:28cd01fa906573561921d5b2d6c9da025d15c2730d491021c62f54e348dbec2a"
+      },
+      "result_digest": "sha256:01bdcf9ca8c0513c0fa31e621d8be43ade49997a8b3a2c4bdcc7bae021d40d24",
+      "skill": "pm-b31-failed-conversion-repair",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:41453feacd90705815ceea3de0c6a9af3a50eda41085b3173eef3ca011be0eef",
+      "skill": "pm-b31-failed-conversion-repair",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:78af9ae302c2f303185923f3ded7d4bd88b7357c573dae4e183957ed3451bb1d"
+      },
+      "result_digest": "sha256:e286a6e209577730844dfe13efa4adb43135c5e11505c48d2c7ceedb0457ef4f",
+      "skill": "pm-b31-failed-conversion-repair",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:2eeb9da40ee11864ffcceba49d4310dff4c79fce984772c8bb4432f894deb895"
+      },
+      "result_digest": "sha256:66280fa329d5dadace7ad4dd360c859388dc5b542782dd6f095c4bd326652e65",
+      "skill": "pm-b31-failed-conversion-repair",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:62d06a0d2612f3ec1ce7b3c631d182dce2c9eac433d77e936d2b3a6f63450855"
+      },
+      "result_digest": "sha256:6eace8055b9b192bc838f99e5d76eff48e60b75582b029d6eb8499d1308c9812",
+      "skill": "pm-b31-failed-conversion-repair",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:00027738d72f3a0f575ba2202aae5b40da39f3f4cdc8e15b7e018fad334d8453"
+      },
+      "result_digest": "sha256:ce80b8fd4cc6832af11d56d8684cf708e6f13ac64f7b3962d2b8e8b76c793e7f",
+      "skill": "pm-b32-advanced-dynamic-validation",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:2c5c6abebe0a3cee077a5b32fb6b3681099b3cfea370e23d59bc7c19932b275b",
+      "skill": "pm-b32-advanced-dynamic-validation",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:059b5d3ce4eca3e2b90dbd55a4d0d3db7d6ce0689afa127a2b0599847d5de07c"
+      },
+      "result_digest": "sha256:363ec8825e8f1492ac9e7193dbe9c05bacd19d936a030779988c83922eeb5f44",
+      "skill": "pm-b32-advanced-dynamic-validation",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:7dcef3d44774bd406ca2bfdfe40ca045c545418aaf72487ced1a7faada19eb96"
+      },
+      "result_digest": "sha256:c27ac3a06dc484428990189fcfd30e30bb9ca67c4f0097bb96c25ab3ff620308",
+      "skill": "pm-b32-advanced-dynamic-validation",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:0391a8b4a4e9b45e66186c8c43d34904a55e1628dc98338b01e5e34480333d74"
+      },
+      "result_digest": "sha256:ee3a1b2e7b6be3b0cce76c22c27705ee97e02dc107c2afce41898ee2e2a081ed",
+      "skill": "pm-b32-advanced-dynamic-validation",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:0401476ab8fc05e4419fa3b4c8fcd82096327945d4ed036f553a54062e54126f"
+      },
+      "result_digest": "sha256:120b8d1ade7fd2e942af1ad35879cfd1d1fafe63c7a02522c1634fedf91726da",
+      "skill": "pm-b33-proof-obligations",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:26e4c5649be1a4d278c48a26ee1cba7ccbc83f96f3e6f1712c4f73752115564d",
+      "skill": "pm-b33-proof-obligations",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:c43a92c702d1a31bf15a3cb0420c74fedb57540c0b1eb2d82a1fd9daa2a6f48c"
+      },
+      "result_digest": "sha256:ae4f529059a06a4e979274244c582b79a81eacd38a22c85e73a02373c539c827",
+      "skill": "pm-b33-proof-obligations",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:0efa3bb42a87c4391ede5c0239a37dbb01fe0ecaa811cf30952343ee8550e1f8"
+      },
+      "result_digest": "sha256:f0b1276b94a32ad52e7495ac74d6ea0112a7b48d6d518964ea397150b21dce1b",
+      "skill": "pm-b33-proof-obligations",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:626f34ac33ec70a9631762380aaab89b7cb865336f9a66c5a2d912cd77741966"
+      },
+      "result_digest": "sha256:6893c57072e0eb9be77ddcf013b85bb66c94b04ee9ae5741dd58c84c7731b8d2",
+      "skill": "pm-b33-proof-obligations",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:2349ad321206fe50c92d6d6a6b8d90b2a2756193ce61a552ff1afd86810d4887"
+      },
+      "result_digest": "sha256:27972e7b5c33a43c6130a6c8242065547a272f9095cff57b462a6b3f3ae30b1e",
+      "skill": "pm-b34-leanstral-lean-proof",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:4519003acde282f9afce89e6d70c919e2cdb8d86afef253fb29a8fd59208b1c1",
+      "skill": "pm-b34-leanstral-lean-proof",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:9047a4d693e7f451374894d4f10c2fc353d8746b2fc237aaab7f709612156a52"
+      },
+      "result_digest": "sha256:5337fe95c847d93844465b7ac793f088ec3f03b00ec452cb42fe856eb9f5efd2",
+      "skill": "pm-b34-leanstral-lean-proof",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:5fd7ca23c21ded3ee96952be51dfe4ea57e9e46b4939cd5fc5f8fadf8e983067"
+      },
+      "result_digest": "sha256:bc18a69abfd96c6cea27a6fcb55b7ea114c11497a85621ca18e1b735a5d04857",
+      "skill": "pm-b34-leanstral-lean-proof",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:1b07c8f8dc9f6f582ee65af48ba233e85d45b37074bb69896cf6b85952152177"
+      },
+      "result_digest": "sha256:003c7f5af45b5825e53be2dba693f36029cf91bc70749bf255e7c77a98dfbbd3",
+      "skill": "pm-b34-leanstral-lean-proof",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:0daeaa078d0b856c785a416764d0364a5f1714b8d2bada2226f7ee332b0a3768"
+      },
+      "result_digest": "sha256:2e2ce08178d0a2a7955cfc443d99c22344840eb2172927c52a599f03e11e2b94",
+      "skill": "pm-b35-formal-analysis-toolchain",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:709c54e12c1d691eb808f34b6928acdf8786054e37d95c1f5acc594bfe30ec0d",
+      "skill": "pm-b35-formal-analysis-toolchain",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:0eb82d14a91dc066897d40a849bec887daeeea990ed387c22c0b4d5f1ac60336"
+      },
+      "result_digest": "sha256:b3ea7a5c5695f77a1d681123f203cbb5503539fb2902f0fa1da23334ed29ddfc",
+      "skill": "pm-b35-formal-analysis-toolchain",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:2b1c172232480d4095745d00b0f54c80e09a62cb4b8b1cab74a954e4239d28e7"
+      },
+      "result_digest": "sha256:6fed84e3a4e7884528e5bb75c12766a07e9116956abf5f57ee3dbb844169e27b",
+      "skill": "pm-b35-formal-analysis-toolchain",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:77ba15e2631351fecb5aad5c9211536a2d39c8eba1118032af013b47c553b88d"
+      },
+      "result_digest": "sha256:74b47df2d2101b8d38af7323124c068d44c9b3354b4d9f97520fa5f88a024d0b",
+      "skill": "pm-b35-formal-analysis-toolchain",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:2ea14abf1ddcf203477d159074e91d6b444578387497fc338b109b91d0190d0d"
+      },
+      "result_digest": "sha256:2472a9e349e5bad1d1e8f4107a049e5f57af21afbcb765bf28e1410b6f26a81c",
+      "skill": "pm-b36-model-routing-review",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:bb5484337df3cbeea68cddfe1c4f6471fbaaaa4413b23bdc6a0933b96ed81253",
+      "skill": "pm-b36-model-routing-review",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:1ae8e6c809a5e6b1b1092267e662835dfb240b05f22c497cc5c89fc9db8bfcb2"
+      },
+      "result_digest": "sha256:d99f4d3a605cc5cbe82c15b1cae8509fded38fc4376d960d2e8bced36a4bb1b8",
+      "skill": "pm-b36-model-routing-review",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:aa58bcdc01f451dafab267a0bd43fed1a2f152ddc30ccc5bbd528c842602ec72"
+      },
+      "result_digest": "sha256:8739abb0cbddaa80521cc13736e9c156b8c6c1cfbcdba65a8b513db063c647fd",
+      "skill": "pm-b36-model-routing-review",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:378a042238eed2469708d07858878d11842b0054df20f8662ced2484c4cf50b3"
+      },
+      "result_digest": "sha256:2b9f264bc0a8065c71495ecb57254a7bf1d09c1d24f9f2a10d6dddd16dd6c387",
+      "skill": "pm-b36-model-routing-review",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:d098d7ead4d84d9e70e709fa93299e74a5a25ea811caf13750c8696215e505dc"
+      },
+      "result_digest": "sha256:4d1b6565902776e73ffc88356105a8d221a2d6eb823d5dbf8b39ef4adcf1c6a4",
+      "skill": "pm-b37-agentic-migration-harness",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:b2cf9e3b524a71abac65fa2b6593bd2b36868d11d039664a7cc1991cb81f3d30",
+      "skill": "pm-b37-agentic-migration-harness",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:3598e4d91293d31f9ce924adc9064871b28f8f0ded73c2196af708b00f4d55ba"
+      },
+      "result_digest": "sha256:f53ef0ac1f236d3f6bed62fde379e638ee73a573d636b5a56e72653c6f2b3f24",
+      "skill": "pm-b37-agentic-migration-harness",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:e808f173560b616eb245fe7a158fa141d35c00bbc2de3c8a2b65108f5f9f41f2"
+      },
+      "result_digest": "sha256:af4cc67b8ebf2f7b3cf001ddc2b5435183a24eb577abe4e1222b191b0d90796a",
+      "skill": "pm-b37-agentic-migration-harness",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:40f798359280b829d45ec241cedf14455de4c3fd3176ec24d1381b1016dbec61"
+      },
+      "result_digest": "sha256:3a5d3d4d256579d0a806e7e3072829a83f1e810ec9ad184a0c954796545d0a25",
+      "skill": "pm-b37-agentic-migration-harness",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:c25feae42dd3595fe2837dc78236cce0fed9dd2a55e1b92d28a8e7f520ebd91d"
+      },
+      "result_digest": "sha256:d1b73accacb86d1f8e8571ab4cbfd3a1753886a2ee3942c4fe464d1130ca5594",
+      "skill": "pm-b38-executable-skill-specification",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:1c6eb066efa5b7fb69bf24c13e162b6b56d3eaa9f301410da3b96ab1bebb5a73",
+      "skill": "pm-b38-executable-skill-specification",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:08f9e6739a4fd456349c09ea942d8218a896cb84ee1f8a868c6026670274b5d0"
+      },
+      "result_digest": "sha256:2db60f32d2f647b2fc5a4212b69dde62ca3d2745f2506d0d606639516f30ff0f",
+      "skill": "pm-b38-executable-skill-specification",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:9bfbebbc42e933078a448c1961b66a11bd9bdfb3a66e39ad5ae5d1164d2e2065"
+      },
+      "result_digest": "sha256:0fcbf5ed343bea9c92d3ee710eab959174c3fe8cecdb3e1a916b86d91ef8d613",
+      "skill": "pm-b38-executable-skill-specification",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:6b4c623d166814f2718c78cd681b1ae47bdd33ce35c904cda0be10f914d5c574"
+      },
+      "result_digest": "sha256:07a7de460963972378ae7ed5dc39c53844a8f452bc1b81dc1c643d8c4a8d9fb1",
+      "skill": "pm-b38-executable-skill-specification",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:e0af041e0f2a1fd73f1aa1f54c13562e49466cb63d5ed05490136a31008dbf0a"
+      },
+      "result_digest": "sha256:38a9935a92eb15af9b8f55dd233a05fd3051bcc1871da74c376807af2a585cb3",
+      "skill": "pm-b39-complete-project-generation",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:3f7a761835f780c65cafb75002fda09c547020cdaad7d3b23fc7bc9055348cbc",
+      "skill": "pm-b39-complete-project-generation",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:28499c20715b46fce5ca430903d7f6266f2995f2e37a7a2da644cd8a3419030c"
+      },
+      "result_digest": "sha256:0b0a8e1609e78fc9ab7f22942d88053f04ebe7dd6cde1fcf0100756ba90bebce",
+      "skill": "pm-b39-complete-project-generation",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:5c903cef837d89cd9d21c9f1310f86e3ce21fec95ecd8cc8ef4158d18e2a1736"
+      },
+      "result_digest": "sha256:ed5553f15f583eaa2cb447b7670bf234d1bd1a6d16db880535ccac2da7e72c12",
+      "skill": "pm-b39-complete-project-generation",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:0859b3c89d42e25687462ad177d5990a5c7e2309c47df82094bf4e25b7672ccb"
+      },
+      "result_digest": "sha256:154342ec0cb85ba1e36e270a008492d788f80982572eae3e1e5328fb4a0176a3",
+      "skill": "pm-b39-complete-project-generation",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:7037fef409e2269900dba13ebe774eff422867f40fe7d67439fb43bc47b7fea6"
+      },
+      "result_digest": "sha256:676f6160ae4a3a1f4f841682c5fb8a880ec9ad4c106f80be69a1fbb768e055c2",
+      "skill": "pm-b40-product-entry-modes",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:d3173ed5bbb716943e8e7d9127cb3e652f8eb3daee694ba24b8d258b31b9ebe7",
+      "skill": "pm-b40-product-entry-modes",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:eef9d66b5b500877ce3e61e7c5caea3b89359310ac70d110a45d06fac5e293fc"
+      },
+      "result_digest": "sha256:85242e6120a3977d992ba4dfe0ba604deba0a3078a68725de19e7a887415d419",
+      "skill": "pm-b40-product-entry-modes",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:cbc8f9ccf2911c86d15e4639f23bafe5f7ca372272004a39b90df022edeedf5b"
+      },
+      "result_digest": "sha256:ca0c7730682bc9a103e839327fb7594ac025cc207867aedbf85499c03e53cbae",
+      "skill": "pm-b40-product-entry-modes",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:3733c2df11d98b19e0428d738f735092d9dc02a88303b253b2abf09b6c2b2fec"
+      },
+      "result_digest": "sha256:c4ff72bb1f9c9ef6fc9926695b1201f4a5f5b4119fd169938bdfad1379d9c7f9",
+      "skill": "pm-b40-product-entry-modes",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:f759703c0ef5b3e808d29fd464d6caae38a47e984cf8eeded4ecc07a6f973fcd"
+      },
+      "result_digest": "sha256:d7cb342422155e261c8758a8e2b3c4629fc1795307ab1fae1ac1f3fe74bb0921",
+      "skill": "pm-b41-evidence-release-gates",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:4a5c8eafb1b5b50dce251c8dcafa6161310e0e9e1803c581eafec5f8286f0643",
+      "skill": "pm-b41-evidence-release-gates",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:ce822e655234eba5c47638a963986135d183dc59f425d5f9e8d5634f43ace6f1"
+      },
+      "result_digest": "sha256:07201e88fb003033e863483e3f00b712e2bf5715d5f4b03792ab4ed198b65cae",
+      "skill": "pm-b41-evidence-release-gates",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:0b4f0e9a88c5e72a481bd2faec0b291c3287e15878e3352c964801afd380a11b"
+      },
+      "result_digest": "sha256:7345b8608e54884a1bd91b58721f9927eeffa7e9cf18496718255ed6f124b877",
+      "skill": "pm-b41-evidence-release-gates",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:62d9163bb1a0eb096ff53e1e75673295ca75969a681cccb6f8594756b7d30ce6"
+      },
+      "result_digest": "sha256:b3817da343773ec38416ab983250bf33dd208c016e4ef73d046a1e8e6134db2c",
+      "skill": "pm-b41-evidence-release-gates",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:90e56dd7f68133df6280aab538fac2fb91b747c69c7b153c04e2973d61b9b62c"
+      },
+      "result_digest": "sha256:2e121b4fbcd3c12679efb56a59e3ee255420cc1c0847bbd0dfd5fcc7f327c295",
+      "skill": "pm-b42-shadow-canary-cutover",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:4bcab7a5ec50a8fa5a838175541812db552645492be3a20faf3db721039c0635",
+      "skill": "pm-b42-shadow-canary-cutover",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:e48a91d7c6acadc43f4bce142d30dcb4040bac59900f78be5c161645cf8ab6ab"
+      },
+      "result_digest": "sha256:17df98b96713a890be34f10663482b715e2c755cbc183a05b2869803b09a7ef6",
+      "skill": "pm-b42-shadow-canary-cutover",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:e8e106b0a2d647bc7864b2c395fa2b007ee77a68a205511960540fb5394b76c6"
+      },
+      "result_digest": "sha256:cf7f92c839d9a6bc3b8ac4a1428c242be60ae4f086db307c24d48dc2a2f73ff5",
+      "skill": "pm-b42-shadow-canary-cutover",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:c90227586ff0c943140a2d4064be804055c2eef470981e7e72f4a74c3449cfd5"
+      },
+      "result_digest": "sha256:ae9891252ecc3a88b248ed60dc557450978bdf3cd3cf245cac53747f197ae354",
+      "skill": "pm-b42-shadow-canary-cutover",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:20a8b3f7e37de31ccc68e2a5d0d47c61e29cb3f1ec952c6af386ab6058971760"
+      },
+      "result_digest": "sha256:207d21509854900b4c1091805f7bda6257e1675305b49cd37528888519e229fa",
+      "skill": "pm-b43-continuous-modernization-learning",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:4bb906bffafab324a06fa737246a7ff9f1e1243759a01ae458c1e6c7ccc112b0",
+      "skill": "pm-b43-continuous-modernization-learning",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:e05b6da313ac74a4ce7ba0365c42bd4283cc7b21c963f79b76b4c5d5b924daa3"
+      },
+      "result_digest": "sha256:36fcb1ce2a0ba38926d198bc8249d965b4ead9635a28fc0700fd23de50b638de",
+      "skill": "pm-b43-continuous-modernization-learning",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:1501f255110f176583ce5a2851f720b34181224af20493971bdf8c3e3dd75cfe"
+      },
+      "result_digest": "sha256:74533771e04cb6cd6ed3ea86666df4321238b9c9d582115c22b2c9fe23c5b44b",
+      "skill": "pm-b43-continuous-modernization-learning",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:82fe2ae54a748c4b086a7a18716ca26fd1c0ab426996e13af78039eea93d4172"
+      },
+      "result_digest": "sha256:329e811d49d308b5c5cb6bb42ae2a317b603aabf0a720ccec5ae3a976bce1e0b",
+      "skill": "pm-b43-continuous-modernization-learning",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:cf380e48403e9af79bcc815fb1e8784cd75aa329a793c480eeaed7cede8c1222"
+      },
+      "result_digest": "sha256:8553483b6d6520e45b45715c6f3a961bfda9abfcc96577d4487fbd8fc7101e5d",
+      "skill": "pm-b44-enterprise-private-commercialization",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:32fd4dab6c6eecb3720110ce52ebdd5af6f2f228166ae0226cd1ef121f41f36e",
+      "skill": "pm-b44-enterprise-private-commercialization",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:267acac0f7023628935e69303d3c347ef5a4a70805a1f6c87de6f9923438f7d8"
+      },
+      "result_digest": "sha256:fe29d5b0444a1ea08f65335731e2b020c67e9b4eb3f771bb44e04cf490dd49e8",
+      "skill": "pm-b44-enterprise-private-commercialization",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:79eeb2311ba66dfc2b1527202c3b6d27d52280e707bd9546189afc5132dab14d"
+      },
+      "result_digest": "sha256:31c48f451fff482d85799d2cd5bbaf168601ab73d104c2bcf6d8e1d17438952f",
+      "skill": "pm-b44-enterprise-private-commercialization",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:ea697faa3e077aaa76715a34622dc0bbbc806d2511a2e7d423f5c8eabd23cec8"
+      },
+      "result_digest": "sha256:8f399e77b6dc515cdfd63bebabd96e6fe75f6c5fa009d370527d953081e88147",
+      "skill": "pm-b44-enterprise-private-commercialization",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:9758436d6d731d1a49204a4d1b29b94df2236f1eb11878299891c61761450851"
+      },
+      "result_digest": "sha256:947bb53392f55a6c0a2d1b8e063cabf483f485b0e2647c5a6d751de2ea74173c",
+      "skill": "pm-precision-migration-orchestrator",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "unknown_node_rejected": true
+      },
+      "result_digest": "sha256:9cb0e5be887498a4004662483bb13f4b24f9aefab043a926ee7a9d89575c0705",
+      "skill": "pm-precision-migration-orchestrator",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:0d2367ad1e2675d9d233ece39864ef84af1d306c2007bd7225b975e9e81b087c"
+      },
+      "result_digest": "sha256:2b258da8b588ff07a6ec18aeed26f468f12be0c3c973aa399f83539101e4eacb",
+      "skill": "pm-precision-migration-orchestrator",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:4cabbd95719f4207e6612b9ce3bc3f9794a6808d5e4efd232661fc69edb4d271"
+      },
+      "result_digest": "sha256:daf2eccddc0f5517a5bdafda99a044fa6237e900a9f25387c4d8ec404b7f7fd5",
+      "skill": "pm-precision-migration-orchestrator",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "artifact": "sha256:103dbf08fe8347b22f9c30cf81c01313261f99cc5da32a51d9be2919ce51998d"
+      },
+      "result_digest": "sha256:a310a8f15f96f114ace06608f5809b5209315c12e1a7ddcf3dbc43a3f5251277",
+      "skill": "pm-precision-migration-orchestrator",
+      "state": "PASS",
+      "test_type": "representative"
+    }
+  ],
+  "schema_version": 1,
+  "suite": "precision-migration-b01-44-orchestrator-v2",
+  "test_types": [
+    "positive",
+    "negative",
+    "integration",
+    "holdout",
+    "representative"
+  ]
+}

@@ -31,7 +31,8 @@ from scripts.precision_migration.contracts import (  # noqa: E402
     contract_summary,
     validate_contract_binding,
 )
-from scripts.precision_migration.domain import execute_domain_skill  # noqa: E402
+from scripts.precision_migration.generated_handlers import EXACT_HANDLERS  # noqa: E402
+from scripts.precision_migration.generated_orchestrators import ORCHESTRATOR_HANDLERS  # noqa: E402
 from scripts.precision_migration.b41 import (  # noqa: E402
     execute_certificate_signing,
     execute_conversion_provenance,
@@ -508,9 +509,12 @@ def resolve_handler(entry: dict[str, Any]) -> Callable[..., dict[str, Any]] | No
     if handler_id.startswith("precision-skill-v1:"):
         expected = f"precision-skill-v1:{entry.get('source_skill')}"
         return execute_skill_contract if handler_id == expected else None
-    if handler_id.startswith("domain-skill-v2:"):
-        expected = f"domain-skill-v2:{entry.get('source_skill')}"
-        return execute_domain_skill if handler_id == expected else None
+    if handler_id.startswith("exact-skill-v4:"):
+        expected = f"exact-skill-v4:{entry.get('source_skill')}"
+        return EXACT_HANDLERS.get(handler_id) if handler_id == expected else None
+    if handler_id.startswith("orchestrator-dag-v2:"):
+        expected = f"orchestrator-dag-v2:{entry.get('source_skill')}"
+        return ORCHESTRATOR_HANDLERS.get(handler_id) if handler_id == expected else None
     if handler_id.startswith("batch29-route-executor-v1:"):
         expected = f"batch29-route-executor-v1:{str(entry.get('source_skill', '')).removesuffix('-direction-pack')}"
         return execute_batch29_route if handler_id == expected else None

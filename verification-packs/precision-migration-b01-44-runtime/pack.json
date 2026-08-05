@@ -8,7 +8,7 @@
   "scope": {
     "migration_route": "precision-source-contract-to-allowlisted-runtime",
     "source_artifact_digest": "sha256:54783f4ec2b33559f14fc5de91b5f19583d43ceeba46c59e27fa81297422a8a4",
-    "target_artifact_digest": "sha256:66b56d132b478e1fc3ba88bbb1dfc52f1cea672872e9e36e92250972e14f13cc",
+    "target_artifact_digest": "sha256:be67c0853fed09a30b9a7e218462e1e1dfb3eaead32b191d9e91c030a00f9c6b",
     "workload_key": "precision-migration-runtime-trust-boundary",
     "risk_tier": "P0",
     "environment_digest": "sha256:19fa24fa672b426ee0b4c3940325776979000756066b97bfafd57b09eb31a682"

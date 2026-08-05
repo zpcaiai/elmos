@@ -16,6 +16,8 @@ DEFAULT_OUTPUT = ROOT / "verification-packs" / "precision-migration-b01-44-runti
 CONTRACT_RESULTS = ROOT / "verification-packs" / "precision-migration-b01-44-runtime" / "contract-qualification" / "results.json"
 DOMAIN_RESULTS = ROOT / "verification-packs" / "precision-migration-b01-44-runtime" / "domain-qualification" / "results.json"
 B41_RESULTS = ROOT / "verification-packs" / "precision-migration-b01-44-runtime" / "b41-qualification" / "results.json"
+B16_RESULTS = ROOT / "verification-packs" / "precision-migration-b01-44-runtime" / "b16-qualification" / "results.json"
+SPECIALIZED_RESULTS = ROOT / "verification-packs" / "precision-migration-b01-44-runtime" / "specialized-qualification" / "results.json"
 
 
 def build() -> dict[str, Any]:
@@ -42,20 +44,20 @@ def build() -> dict[str, Any]:
         for item in domain_qualification["results"]
         if item["state"] == "PASS"
     }
-    b41_qualification = json.loads(B41_RESULTS.read_text(encoding="utf-8"))
-    passed_domain_tests.update(
-        (item["skill"], item["test_type"])
-        for item in b41_qualification["results"]
-        if item["state"] == "PASS"
-    )
+    for qualification_path in (B41_RESULTS, B16_RESULTS, SPECIALIZED_RESULTS):
+        specialized_qualification = json.loads(qualification_path.read_text(encoding="utf-8"))
+        passed_domain_tests.update(
+            (item["skill"], item["test_type"])
+            for item in specialized_qualification["results"]
+            if item["state"] == "PASS"
+        )
     rows = []
     for record in manifest["skills"]:
         if record["kind"] != "skill":
             continue
         adapter = by_skill[record["name"]]
         exact_route = adapter["handler_id"].startswith("batch29-route-executor-v1:")
-        exact_b42 = adapter["handler_id"].startswith("b42-")
-        exact_domain = adapter["handler_id"].startswith("domain-skill-v2:")
+        exact_domain = adapter["handler_id"].startswith("exact-skill-v4:")
         locally_executed = record["name"] in locally_exercised or exact_domain
         rows.append(
             {
@@ -80,8 +82,8 @@ def build() -> dict[str, Any]:
                     "bounded_domain_holdout": "PASSED" if (record["name"], "holdout") in passed_domain_tests else "NOT_RUN",
                     "bounded_domain_representative": "PASSED" if (record["name"], "representative") in passed_domain_tests else "NOT_RUN",
                     "local_execution": "PASSED" if locally_executed else "NOT_RUN",
-                    "negative": "PASSED" if exact_route or exact_b42 else "NOT_RUN",
-                    "integration": "PASSED" if exact_route or exact_b42 else "NOT_RUN",
+                    "negative": "PASSED" if (record["name"], "negative") in passed_domain_tests else "NOT_RUN",
+                    "integration": "PASSED" if (record["name"], "integration") in passed_domain_tests else "NOT_RUN",
                     "native_source_build": "PASSED" if exact_route else "NOT_RUN",
                     "native_target_build": "PASSED" if exact_route else "NOT_RUN",
                     "holdout": "PASSED" if exact_route else "NOT_RUN",

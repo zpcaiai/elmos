@@ -2,8 +2,8 @@
   "schema_version": 1,
   "pack_key": "precision-migration-b01-44-runtime",
   "status": "PASSED",
-  "started_at": "2026-08-05T10:31:38.420694Z",
-  "completed_at": "2026-08-05T10:32:06.405149Z",
+  "started_at": "2026-08-05T15:45:49.028767Z",
+  "completed_at": "2026-08-05T15:46:23.915274Z",
   "executor": "local-engineering-runner",
   "independent_verifier": "NOT_RUN",
   "environment": {
@@ -19,6 +19,8 @@
         "validate-registry"
       ],
       "exit_code": 0,
+      "timed_out": false,
+      "timeout_seconds": 300,
       "raw_evidence": "raw/adapter-registry.txt",
       "digest": "sha256:13021387c6f0ce28a016ecd2f7c5575b1d3d5d66acba069b100515866bb8970d",
       "size_bytes": 162
@@ -36,9 +38,11 @@
         "-v"
       ],
       "exit_code": 0,
+      "timed_out": false,
+      "timeout_seconds": 300,
       "raw_evidence": "raw/runtime-tests.txt",
-      "digest": "sha256:dd6b22adb0bcea255aa39a98b125c9cb4ab4bf4294b9053bae5549718df8bad3",
-      "size_bytes": 6814
+      "digest": "sha256:4a5382a5fdce37b9f82b388cc40201dc87c8df2abe199e7cc1ea3bfdcfcaaa34",
+      "size_bytes": 8942
     },
     "contract_qualification": {
       "command": [
@@ -47,20 +51,37 @@
         "--check"
       ],
       "exit_code": 0,
+      "timed_out": false,
+      "timeout_seconds": 300,
       "raw_evidence": "raw/contract-qualification.txt",
       "digest": "sha256:6e2dec6a88cda985821a512b6e65a1a5c5dff0721d269b6664364354a229fe26",
       "size_bytes": 178
     },
-    "bounded_domain_qualification": {
+    "exact_handler_qualification": {
       "command": [
         "/opt/homebrew/opt/python@3.14/bin/python3.14",
         "scripts/precision_migration/qualify_domains.py",
         "--check"
       ],
       "exit_code": 0,
-      "raw_evidence": "raw/bounded-domain-qualification.txt",
-      "digest": "sha256:1074a12e4f96c27876f295f3317f85bdfb32656d2d72d398628517c5240484fd",
-      "size_bytes": 190
+      "timed_out": false,
+      "timeout_seconds": 300,
+      "raw_evidence": "raw/exact-handler-qualification.txt",
+      "digest": "sha256:7f2dab67752d88d2dc70f65c980b05da47e8623f4b25c688efcf6c5bb53df1be",
+      "size_bytes": 186
+    },
+    "orchestrator_qualification": {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/precision_migration/qualify_orchestrators.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "timeout_seconds": 300,
+      "raw_evidence": "raw/orchestrator-qualification.txt",
+      "digest": "sha256:a7f79c61aa7f7cc553d4aeac9c953be583b36379b952482dbe38bd44aa0f21db",
+      "size_bytes": 164
     },
     "batch41_qualification": {
       "command": [
@@ -69,6 +90,8 @@
         "--check"
       ],
       "exit_code": 0,
+      "timed_out": false,
+      "timeout_seconds": 300,
       "raw_evidence": "raw/batch41-qualification.txt",
       "digest": "sha256:e573505834d3a6443181540f3182bc9cc360d8913071a6f429f1fb15cfa987a3",
       "size_bytes": 164
@@ -79,9 +102,37 @@
         "scripts/precision_migration/validate_b16_routes.py"
       ],
       "exit_code": 0,
+      "timed_out": false,
+      "timeout_seconds": 900,
       "raw_evidence": "raw/batch16-routes.txt",
       "digest": "sha256:42171e2d784a4cd8511dc56554ced57c0d56cddef2d9a98cbab0f65fb2a4951f",
       "size_bytes": 306
+    },
+    "batch16_qualification": {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/precision_migration/qualify_b16.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "timeout_seconds": 300,
+      "raw_evidence": "raw/batch16-qualification.txt",
+      "digest": "sha256:00e30ef09098e7ce05f958602c5b2a75ed4921f00ccc2ab7695461a9e8224286",
+      "size_bytes": 147
+    },
+    "specialized_qualification": {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/precision_migration/qualify_specialized.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "timeout_seconds": 300,
+      "raw_evidence": "raw/specialized-qualification.txt",
+      "digest": "sha256:cf43a649a238df5490efa2033644ac7e92144a73a122ef626db610b2244f30a7",
+      "size_bytes": 154
     },
     "coverage_matrix": {
       "command": [
@@ -90,17 +141,32 @@
         "--check"
       ],
       "exit_code": 0,
+      "timed_out": false,
+      "timeout_seconds": 300,
       "raw_evidence": "raw/coverage-matrix.txt",
       "digest": "sha256:967ac44e0645affb396d515c6afdeb7075494baa7807b6a0bba3243109b7befd",
       "size_bytes": 274
+    },
+    "production_code_gate": {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/precision_migration/run_production_code_gate.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "timeout_seconds": 300,
+      "raw_evidence": "raw/production-code-gate.txt",
+      "digest": "sha256:10af66686a4e3321fd0881ee26a5ca7a0956c4d6b7e8c9d5d7b0881026a29bcf",
+      "size_bytes": 187
     }
   },
-  "test_count": 38,
+  "test_count": 49,
   "negative_corpus": "corpus/negative/cases.json",
-  "local_execution_status": "PASSED_BOUNDED_LOCAL_FOR_587_OF_587",
-  "holdout_status": "PASSED_ENGINEERING_FIXTURE_FOR_546_AND_NATIVE_LOCAL_B16_FOR_30; INDEPENDENT_HOLDOUT_NOT_RUN",
-  "representative_workload_status": "PASSED_ENGINEERING_FIXTURE_FOR_546_AND_NATIVE_LOCAL_B16_FOR_30; CUSTOMER_WORKLOAD_NOT_RUN",
+  "local_execution_status": "PASSED_PRODUCTION_CODE_CLOSURE_FOR_587_OF_587_AND_EXECUTABLE_DAG_FOR_45_OF_45",
+  "holdout_status": "PASSED_ENGINEERING_FIXTURE_FOR_557_AND_NATIVE_LOCAL_B16_FOR_30; INDEPENDENT_EXTERNAL_HOLDOUT_NOT_RUN",
+  "representative_workload_status": "PASSED_ENGINEERING_FIXTURE_FOR_557_AND_NATIVE_LOCAL_B16_FOR_30; CUSTOMER_WORKLOAD_NOT_RUN",
   "external_evidence_status": "NOT_RUN",
   "production_certification": "NOT_CERTIFIED",
-  "result_digest": "sha256:1faf7844f7783f74f573748c1ecd6840940d6cd1abca7948a5d3499a5f631756"
+  "result_digest": "sha256:85cd3d96f6bd540af300913fd281bd70a68ba8480118ba130c3a8f7836e6b4c0"
 }

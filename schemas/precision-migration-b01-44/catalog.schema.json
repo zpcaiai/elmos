@@ -68,7 +68,7 @@
       "additionalProperties": { "type": "integer", "minimum": 1 }
     },
     "structural_status": { "const": "PASS" },
-    "runtime_protocol_status": { "enum": ["CONTRACT_READY", "BOUNDED_LOCAL_EXECUTION"] },
+    "runtime_protocol_status": { "enum": ["CONTRACT_READY", "BOUNDED_LOCAL_EXECUTION", "EXACT_LOCAL_EXECUTION"] },
     "external_evidence_status": { "const": "NOT_RUN" },
     "production_certification": { "const": "NOT_CERTIFIED" },
     "maximum_local_decision": { "const": "READY_FOR_EXTERNAL_GATE" },
@@ -183,7 +183,7 @@
         "interface_sha256": { "$ref": "#/$defs/hexDigest" },
         "maturity": { "$ref": "#/$defs/maturity" },
         "contract_status": { "const": "INSTALLED" },
-        "runtime_protocol_status": { "enum": ["CONTRACT_READY", "BOUNDED_LOCAL_EXECUTION"] },
+        "runtime_protocol_status": { "enum": ["CONTRACT_READY", "BOUNDED_LOCAL_EXECUTION", "EXACT_LOCAL_EXECUTION", "EXECUTABLE_DAG"] },
         "external_evidence_status": { "const": "NOT_RUN" }
       },
       "additionalProperties": false

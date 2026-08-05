@@ -18,17 +18,24 @@
     },
     {
       "key": "allowlisted-adapter-dispatch",
-      "status": "conditional",
+      "status": "supported",
       "owner": "elmos-migration-platform-engineering",
       "evidence_refs": ["coverage/coverage-matrix.json", "certification/local-test-result.json"],
-      "limitations": ["23 of 587 child Skills have declared handlers; only 13 have focused local execution evidence."]
+      "limitations": ["All 587 child Skills and 45 orchestrators have immutable allowlisted local entrypoints; repository input cannot choose commands, flags, plugins, environment variables, or working directories."]
     },
     {
       "key": "587-skill-domain-semantics",
-      "status": "blocked",
+      "status": "conditional",
       "owner": "elmos-migration-platform-engineering",
       "evidence_refs": ["coverage/coverage-matrix.json"],
-      "limitations": ["564 child Skills have no exact handler and all native, holdout, representative, independent, and external dimensions remain NOT_RUN."]
+      "limitations": ["All 587 Skills passed exact local positive, negative, integration, engineering holdout, and representative fixtures. Native source/target build and behavior evidence is local for 30 B16 routes and remains NOT_RUN for 557 Skills; independent, customer, and external evidence remains NOT_RUN for all 587."]
+    },
+    {
+      "key": "production-code-closure",
+      "status": "supported",
+      "owner": "elmos-migration-platform-engineering",
+      "evidence_refs": ["certification/production-code-closure.json"],
+      "limitations": ["The maximum local decision is READY_FOR_EXTERNAL_GATE. Production operation authorization and certification remain false until independently evidenced."]
     },
     {
       "key": "negative-trust-boundary-testing",

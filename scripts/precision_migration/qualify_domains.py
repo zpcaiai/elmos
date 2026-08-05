@@ -18,6 +18,7 @@ from scripts.precision_migration.adapters import (
     resolve_handler,
 )
 from scripts.precision_migration.domain import DomainExecutionError
+from scripts.precision_migration.exact import ExactImplementationRegistry
 from scripts.precision_migration.runtime import Registry, canonical_digest
 
 TEST_TYPES = ("positive", "negative", "integration", "holdout", "representative")
@@ -72,11 +73,11 @@ def content_ref(path: Path, *, tampered: bool = False) -> dict[str, Any]:
     }
 
 
-def request(skill: str, reference: dict[str, Any], role: str) -> dict[str, Any]:
+def request(skill: str, reference: dict[str, Any], role: str, mode: str) -> dict[str, Any]:
     return {
         "request_id": f"domain-{skill}-{role}",
         "skill": skill,
-        "mode": "validate",
+        "mode": mode,
         "inputs": {"assets": [reference], "parameters": {"fixture_role": role}},
         "policy": {"unresolved_differences": "block", "allow_test_weakening": False, "require_provenance": True, "risk_level": "medium"},
         "evidence": [],
@@ -93,7 +94,8 @@ def passed(skill: str, test_type: str, evidence: dict[str, Any]) -> dict[str, An
 def build() -> dict[str, Any]:
     registry = Registry.load()
     adapters = AdapterRegistry.load()
-    entries = [entry for entry in adapters.payload["entries"] if entry["handler_id"].startswith("domain-skill-v2:")]
+    implementations = ExactImplementationRegistry.load()
+    entries = [entry for entry in adapters.payload["entries"] if entry["handler_id"].startswith("exact-skill-v4:")]
     results: list[dict[str, Any]] = []
     with tempfile.TemporaryDirectory(prefix="precision-domain-qualification-") as temporary:
         root = Path(temporary).resolve()
@@ -102,27 +104,30 @@ def build() -> dict[str, Any]:
             path = root / f"{role}.json"
             path.write_text(json.dumps(fixture(role), ensure_ascii=False, sort_keys=True) + "\n", encoding="utf-8")
             references[role] = content_ref(path)
+        # Qualification retains content digests, not per-case scratch files. Reuse
+        # one output directory so 2,680 executions do not accumulate thousands of
+        # disposable artifacts on low-disk CI/developer hosts.
+        output_dir = root / "execution-output"
+        output_dir.mkdir()
         for entry in entries:
             skill = entry["skill"]
+            mode = entry["supported_modes"][0]
             handler = resolve_handler(entry)
             if handler is None:
                 raise ValueError(f"domain handler did not resolve: {skill}")
             outputs = {}
             for role, test_type in (("development", "positive"), ("holdout", "holdout"), ("representative", "representative")):
-                output_dir = root / "outputs" / skill / role
-                output_dir.mkdir(parents=True)
-                result = handler(request(skill, references[role], role), entry, output_dir, evidence_roots=(root,), skill_registry=registry, trust_store=None)
+                result = handler(request(skill, references[role], role, mode), entry, output_dir, evidence_roots=(root,), skill_registry=registry, trust_store=None)
                 if result.get("execution_state") != "LOCAL_EXECUTED" or result.get("exit_code") != 0:
                     raise ValueError(f"domain execution did not pass: {skill}/{role}")
                 artifact = result["artifacts"][0]
                 outputs[role] = artifact["digest"]
                 results.append(passed(skill, test_type, {"artifact_digest": artifact["digest"], "fixture_digest": references[role]["digest"], "scope": "BOUNDED_STRUCTURED_LOCAL"}))
+                (output_dir / implementations.by_skill[skill]["artifact_name"]).unlink()
             results.append(passed(skill, "integration", {"handler_id": entry["handler_id"], "entrypoint": entry["handler_entrypoint"], "development_artifact": outputs["development"]}))
-            negative_dir = root / "outputs" / skill / "negative"
-            negative_dir.mkdir(parents=True)
             rejected = False
             try:
-                handler(request(skill, {**references["development"], "digest": "sha256:" + "0" * 64}, "negative"), entry, negative_dir, evidence_roots=(root,), skill_registry=registry, trust_store=None)
+                handler(request(skill, {**references["development"], "digest": "sha256:" + "0" * 64}, "negative", mode), entry, output_dir, evidence_roots=(root,), skill_registry=registry, trust_store=None)
             except DomainExecutionError:
                 rejected = True
             if not rejected:
@@ -134,12 +139,12 @@ def build() -> dict[str, Any]:
     results.sort(key=lambda item: (item["skill"], TEST_TYPES.index(item["test_type"])))
     return {
         "schema_version": 1,
-        "suite": "precision-migration-b01-44-bounded-domain-v1",
+        "suite": "precision-migration-b01-44-exact-handler-v2",
         "skill_count": len(entries),
         "result_count": len(results),
         "test_types": list(TEST_TYPES),
         "all_tests_passed": True,
-        "execution_scope": "BOUNDED_STRUCTURED_LOCAL",
+        "execution_scope": "EXACT_CONTRACT_LOCAL",
         "native_toolchains": "NOT_RUN_EXCEPT_SEPARATELY_EVIDENCED_HANDLERS",
         "independent_verification": "NOT_RUN",
         "customer_workloads": "NOT_RUN",
@@ -160,7 +165,7 @@ def main() -> int:
     else:
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(rendered, encoding="utf-8")
-    print(json.dumps({"status": "PASS", "skills": 536, "results": 2680, "scope": "BOUNDED_STRUCTURED_LOCAL"}, sort_keys=True))
+    print(json.dumps({"status": "PASS", "skills": 536, "results": 2680, "scope": "EXACT_CONTRACT_LOCAL"}, sort_keys=True))
     return 0
 
 

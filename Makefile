@@ -43,14 +43,19 @@ migration-pack-admission:
 repository-migration-platform-skills:
 	cd skills/repository-migration-platform-skills-batch1-38 && ./validate.sh
 precision-migration-b01-44-skills:
+	python3 tooling/generate_precision_migration_handlers.py --check
 	$(UV) run --quiet --with pyyaml --with jsonschema python scripts/precision_migration/validate_platform.py
 precision-migration-b01-44-check: precision-migration-b01-44-skills
 	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests/precision-migration -p 'test_*.py'
 	python3 scripts/precision_migration/qualify_contracts.py --check
 	python3 scripts/precision_migration/qualify_domains.py --check
+	python3 scripts/precision_migration/qualify_orchestrators.py --check
 	python3 scripts/precision_migration/qualify_b41.py --check
+	python3 scripts/precision_migration/qualify_specialized.py --check
 	python3 scripts/precision_migration/validate_b16_routes.py
+	python3 scripts/precision_migration/qualify_b16.py --check
 	python3 scripts/precision_migration/build_coverage.py --check
+	python3 scripts/precision_migration/run_production_code_gate.py --check
 	$(UV) run --quiet --with jsonschema python scripts/batch35/validate_verification_pack.py verification-packs/precision-migration-b01-44-runtime
 	$(UV) run --quiet --with jsonschema python scripts/batch35/run_verification_gate.py verification-packs/precision-migration-b01-44-runtime
 precision-migration-b01-44-qualification: precision-migration-b01-44-check

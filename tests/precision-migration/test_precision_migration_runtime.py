@@ -17,13 +17,19 @@ sys.path.insert(0, str(ROOT))
 
 from scripts.precision_migration.adapters import AdapterRegistry, execute
 from scripts.precision_migration.contracts import ContractRegistry
+from scripts.precision_migration.exact import ExactImplementationRegistry
+from scripts.precision_migration.generated_handlers import EXACT_HANDLERS
+from scripts.precision_migration.generated_orchestrators import ORCHESTRATOR_HANDLERS
 from scripts.precision_migration.jobs import JobError, JobStore
+from scripts.precision_migration.native import EXTERNAL_NATIVE_ADAPTERS, NATIVE_ADAPTERS
+from scripts.precision_migration.orchestration import OrchestratorRegistry
 from scripts.precision_migration.run_gate import (
     EXTERNAL_CHECKS,
     LOCAL_CHECKS,
     evaluate_gate,
     gate_binding_digest,
 )
+from scripts.precision_migration.run_production_code_gate import build as build_production_code_gate
 from scripts.precision_migration.runtime import (
     Registry,
     batch_plan,
@@ -282,9 +288,8 @@ class PrecisionMigrationRuntimeTest(unittest.TestCase):
         self.assertEqual(632, self.registry.manifest["workspace_skill_count"])
         self.assertEqual("ALL_RUNTIME_SKILLS", self.registry.manifest["workspace_installation"])
         maturities = {record["maturity"] for record in self.registry.by_runtime_name.values()}
-        self.assertEqual({"ADAPTER_DECLARED", "LOCAL_EXECUTED"}, maturities)
-        self.assertEqual(45, sum(record["maturity"] == "ADAPTER_DECLARED" for record in self.registry.by_runtime_name.values()))
-        self.assertEqual(587, sum(record["maturity"] == "LOCAL_EXECUTED" for record in self.registry.by_runtime_name.values()))
+        self.assertEqual({"LOCAL_EXECUTED"}, maturities)
+        self.assertEqual(632, sum(record["maturity"] == "LOCAL_EXECUTED" for record in self.registry.by_runtime_name.values()))
         for runtime_name, record in self.registry.by_runtime_name.items():
             self.assertEqual(record, self.registry.resolve(runtime_name))
             self.assertEqual(record, self.registry.resolve(record["source_name"]))
@@ -309,6 +314,49 @@ class PrecisionMigrationRuntimeTest(unittest.TestCase):
             self.assertTrue(contract["source_sha256"].startswith("sha256:"))
             self.assertTrue(contract["workflow"])
             self.assertTrue(contract["validation_gates"])
+
+    def test_all_generic_skills_have_unique_exact_entrypoints(self) -> None:
+        implementations = ExactImplementationRegistry.load()
+        self.assertEqual(536, len(implementations.by_handler))
+        self.assertEqual(536, len(EXACT_HANDLERS))
+        self.assertEqual(
+            536,
+            len({profile["handler_entrypoint"] for profile in implementations.by_handler.values()}),
+        )
+        self.assertFalse(
+            any(
+                entry["handler_id"].startswith(("domain-skill-v2:", "exact-skill-v3:"))
+                for entry in self.adapter_registry.by_skill.values()
+            )
+        )
+        self.assertEqual(
+            536,
+            len({profile["implementation_digest"] for profile in implementations.by_handler.values()}),
+        )
+        for profile in implementations.by_handler.values():
+            self.assertEqual("precision-exact-program-v1", profile["program_version"])
+            self.assertEqual(
+                ["verify-inputs", "execute-algorithm", "execute-native", "evaluate-gates", "emit-artifact"],
+                [step["op"] for step in profile["program"]],
+            )
+            self.assertTrue(set(profile["native_tools"]) <= (set(NATIVE_ADAPTERS) | set(EXTERNAL_NATIVE_ADAPTERS)))
+
+    def test_all_orchestrators_have_unique_executable_dags(self) -> None:
+        orchestrators = OrchestratorRegistry.load()
+        self.assertEqual(45, len(orchestrators.by_handler))
+        self.assertEqual(45, len(ORCHESTRATOR_HANDLERS))
+        self.assertEqual(
+            45,
+            len({profile["handler_entrypoint"] for profile in orchestrators.by_handler.values()}),
+        )
+
+    def test_production_code_gate_is_ready_only_for_external_gate(self) -> None:
+        result = build_production_code_gate()
+        self.assertEqual("PASSED", result["status"])
+        self.assertEqual("READY_FOR_EXTERNAL_GATE", result["decision"])
+        self.assertFalse(result["production_operation_authorized"])
+        self.assertEqual("NOT_CERTIFIED", result["production_certification"])
+        self.assertTrue(all(value == "NOT_RUN" for value in result["external_boundaries"].values()))
 
     def test_assessment_with_real_signed_evidence_is_verified(self) -> None:
         result = self.evaluate(self.complete_request("repository-modernization-assessment"))
@@ -572,10 +620,251 @@ class PrecisionMigrationRuntimeTest(unittest.TestCase):
             skill_registry=self.registry,
         )
         self.assertEqual("LOCAL_EXECUTED", result["execution_state"])
-        domain_result = json.loads((output / "domain-execution.json").read_text())
-        self.assertEqual("BOUNDED_STRUCTURED_LOCAL", domain_result["execution_scope"])
-        self.assertEqual("NOT_RUN", domain_result["native_toolchain_execution"])
+        artifact_name = ExactImplementationRegistry.load().by_skill["pm-b05-business-rule-extractor"]["artifact_name"]
+        domain_result = json.loads((output / artifact_name).read_text())
+        self.assertEqual("EXACT_CONTRACT_LOCAL", domain_result["execution_scope"])
+        self.assertEqual("NOT_RUN", domain_result["native_readiness"]["execution"])
         self.assertFalse((ROOT / "should-not-exist").exists())
+
+    def test_batch_orchestrator_executes_identity_bound_dag(self) -> None:
+        request = self.base_request("batch-01-competition-positioning")
+        request["inputs"]["parameters"] = {}
+        output = self.root / "batch-orchestrator"
+        result = execute(
+            request,
+            output,
+            evidence_roots=[self.root],
+            adapter_registry=self.adapter_registry,
+            skill_registry=self.registry,
+        )
+        self.assertEqual("LOCAL_EXECUTED", result["execution_state"])
+        dag = json.loads((output / "orchestrator-execution.json").read_text())
+        self.assertEqual("RUNNABLE", dag["state"])
+        self.assertEqual(6, len(dag["topological_order"]))
+        self.assertEqual(1, len(dag["ready_nodes"]))
+        self.assertEqual("NOT_RUN", dag["production_execution"])
+
+    def test_all_orchestrators_preflight_every_allowlisted_child(self) -> None:
+        orchestrators = OrchestratorRegistry.load()
+        for index, (handler_id, profile) in enumerate(sorted(orchestrators.by_handler.items())):
+            request = self.base_request(profile["skill"])
+            request["inputs"] = {"assets": [], "parameters": {"orchestration_action": "preflight"}}
+            output = self.root / "orchestrator-preflight" / f"{index:02d}"
+            result = execute(
+                request,
+                output,
+                evidence_roots=[self.root],
+                adapter_registry=self.adapter_registry,
+                skill_registry=self.registry,
+            )
+            self.assertEqual("LOCAL_EXECUTED", result["execution_state"], handler_id)
+            report = json.loads((output / "orchestrator-execution.json").read_text())
+            self.assertEqual(len(profile["nodes"]), len(report["preflight"]))
+            self.assertTrue(all(item["state"] == "READY" for item in report["preflight"]))
+
+    def test_batch_orchestrator_executes_children_and_derives_receipts(self) -> None:
+        profile = OrchestratorRegistry.load().by_handler["orchestrator-dag-v2:batch-01-competition-positioning"]
+        selected = profile["nodes"][:2]
+        fixture = self.root / "orchestrator-decision.json"
+        fixture.write_text(
+            json.dumps(
+                {
+                    "candidates": [
+                        {"id": "build", "metrics": {"quality": 0.9, "cost": 0.6}},
+                        {"id": "buy", "metrics": {"quality": 0.7, "cost": 0.9}},
+                    ],
+                    "criteria": {"quality": 2, "cost": 1},
+                }
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        node_requests = {}
+        for node in selected:
+            child = self.base_request(node, "assess")
+            child["inputs"]["assets"] = [
+                {**self.content_ref(fixture), "sensitivity": "internal", "version": "orchestrator-fixture-v1"}
+            ]
+            node_requests[node] = child
+        request = self.base_request(profile["skill"])
+        request["inputs"] = {
+            "assets": [],
+            "parameters": {
+                "orchestration_action": "execute",
+                "selected_nodes": selected,
+                "node_requests": node_requests,
+            },
+        }
+        output = self.root / "orchestrator-child-execution"
+        result = execute(
+            request,
+            output,
+            evidence_roots=[self.root],
+            adapter_registry=self.adapter_registry,
+            skill_registry=self.registry,
+        )
+        self.assertEqual("LOCAL_EXECUTED", result["execution_state"])
+        report = json.loads((output / "orchestrator-execution.json").read_text())
+        self.assertEqual("COMPLETE", report["state"])
+        self.assertEqual(["SUCCEEDED", "SUCCEEDED"], [item["state"] for item in report["node_runs"]])
+        self.assertTrue(all(item["result_digest"].startswith("sha256:") for item in report["node_runs"]))
+
+    def test_batch_orchestrator_resumes_only_content_verified_child_receipts(self) -> None:
+        profile = OrchestratorRegistry.load().by_handler["orchestrator-dag-v2:batch-01-competition-positioning"]
+        selected = profile["nodes"][:1]
+        fixture = self.root / "orchestrator-checkpoint-decision.json"
+        fixture.write_text(
+            json.dumps(
+                {
+                    "candidates": [{"id": "build", "metrics": {"quality": 0.9}}],
+                    "criteria": {"quality": 1},
+                }
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        child = self.base_request(selected[0], "assess")
+        child["inputs"]["assets"] = [
+            {**self.content_ref(fixture), "sensitivity": "internal", "version": "checkpoint-fixture-v1"}
+        ]
+        first = self.base_request(profile["skill"])
+        first["inputs"] = {
+            "assets": [],
+            "parameters": {
+                "orchestration_action": "execute",
+                "selected_nodes": selected,
+                "node_requests": {selected[0]: child},
+            },
+        }
+        first_output = self.root / "orchestrator-checkpoint-first"
+        first_result = execute(
+            first,
+            first_output,
+            evidence_roots=[self.root],
+            adapter_registry=self.adapter_registry,
+            skill_registry=self.registry,
+        )
+        self.assertEqual("LOCAL_EXECUTED", first_result["execution_state"])
+        checkpoint = first_output / "orchestrator-execution.json"
+        resumed = self.base_request(profile["skill"])
+        resumed["inputs"] = {
+            "assets": [
+                {**self.content_ref(checkpoint), "sensitivity": "internal", "version": "orchestrator-checkpoint-v1"}
+            ],
+            "parameters": {
+                "orchestration_action": "execute",
+                "selected_nodes": selected,
+                "node_requests": {},
+                "checkpoint_asset_index": 0,
+            },
+        }
+        resumed_output = self.root / "orchestrator-checkpoint-resumed"
+        resumed_result = execute(
+            resumed,
+            resumed_output,
+            evidence_roots=[self.root],
+            adapter_registry=self.adapter_registry,
+            skill_registry=self.registry,
+        )
+        self.assertEqual("LOCAL_EXECUTED", resumed_result["execution_state"])
+        report = json.loads((resumed_output / "orchestrator-execution.json").read_text())
+        self.assertEqual("COMPLETE", report["state"])
+        self.assertEqual("REUSED_CHECKPOINT", report["node_runs"][0]["state"])
+
+    def test_exact_python_adapter_runs_allowlisted_native_compiler(self) -> None:
+        source = self.root / "native-fixture.py"
+        source.write_text("def add(left: int, right: int) -> int:\n    return left + right\n", encoding="utf-8")
+        request = self.base_request("python-parser-adapter", "transform")
+        request["inputs"] = {
+            "assets": [{**self.content_ref(source), "sensitivity": "internal", "version": "native-fixture-v1"}],
+            "parameters": {"execute_native": True, "native_assets": {"python3": 0}},
+        }
+        output = self.root / "native-python-adapter"
+        result = execute(
+            request,
+            output,
+            evidence_roots=[self.root],
+            adapter_registry=self.adapter_registry,
+            skill_registry=self.registry,
+        )
+        self.assertEqual("LOCAL_EXECUTED", result["execution_state"])
+        artifact_name = ExactImplementationRegistry.load().by_skill["pm-b14-python-parser-adapter"]["artifact_name"]
+        artifact = json.loads((output / artifact_name).read_text())
+        self.assertEqual("PASSED", artifact["native_execution"]["state"])
+        self.assertEqual("python3", artifact["native_execution"]["runs"][0]["tool"])
+
+    def test_native_command_injection_is_not_an_allowed_parameter(self) -> None:
+        source = self.root / "native-injection.py"
+        source.write_text("VALUE = 1\n", encoding="utf-8")
+        request = self.base_request("python-parser-adapter", "transform")
+        request["inputs"] = {
+            "assets": [{**self.content_ref(source), "sensitivity": "internal", "version": "native-fixture-v1"}],
+            "parameters": {
+                "execute_native": True,
+                "native_assets": {"python3": 0},
+                "native_command": ["touch", str(ROOT / "forbidden")],
+            },
+        }
+        output = self.root / "native-command-injection"
+        result = execute(
+            request,
+            output,
+            evidence_roots=[self.root],
+            adapter_registry=self.adapter_registry,
+            skill_registry=self.registry,
+        )
+        self.assertEqual("LOCAL_EXECUTED", result["execution_state"])
+        self.assertFalse((ROOT / "forbidden").exists())
+
+    def test_database_native_adapter_fails_closed_into_typed_external_gate(self) -> None:
+        implementations = ExactImplementationRegistry.load()
+        profile = next(item for item in implementations.by_handler.values() if item["native_tools"] == ["sqlplus"])
+        source = self.root / "native-oracle.sql"
+        source.write_text("SELECT 1 FROM dual;\n", encoding="utf-8")
+        request = self.base_request(profile["skill"], profile["supported_modes"][0])
+        request["inputs"] = {
+            "assets": [{**self.content_ref(source), "sensitivity": "internal", "version": "native-sql-v1"}],
+            "parameters": {"execute_native": True, "native_assets": {"sqlplus": 0}},
+        }
+        output = self.root / "native-database-external-gate"
+        result = execute(
+            request,
+            output,
+            evidence_roots=[self.root],
+            adapter_registry=self.adapter_registry,
+            skill_registry=self.registry,
+        )
+        self.assertEqual("FAILED", result["execution_state"])
+        artifact = json.loads((output / profile["artifact_name"]).read_text())
+        run = artifact["native_execution"]["runs"][0]
+        self.assertEqual("REQUIRES_EXTERNAL_GATE", run["state"])
+        self.assertEqual("DISPOSABLE_DATABASE", run["gate"])
+
+    def test_database_native_adapter_accepts_only_independently_signed_external_receipt(self) -> None:
+        implementations = ExactImplementationRegistry.load()
+        profile = next(item for item in implementations.by_handler.values() if item["native_tools"] == ["sqlplus"])
+        source = self.root / "native-oracle-receipt.sql"
+        source.write_text("SELECT 1 FROM dual;\n", encoding="utf-8")
+        request = self.base_request(profile["skill"], profile["supported_modes"][0])
+        request["inputs"] = {
+            "assets": [{**self.content_ref(source), "sensitivity": "internal", "version": "native-sql-v1"}],
+            "parameters": {"execute_native": True, "native_assets": {"sqlplus": 0}},
+        }
+        request["evidence"] = [self.passed(request, "native-tool:sqlplus")]
+        output = self.root / "native-database-signed-receipt"
+        result = execute(
+            request,
+            output,
+            evidence_roots=[self.root],
+            trust_store=self.trust_store,
+            adapter_registry=self.adapter_registry,
+            skill_registry=self.registry,
+        )
+        self.assertEqual("LOCAL_EXECUTED", result["execution_state"])
+        artifact = json.loads((output / profile["artifact_name"]).read_text())
+        run = artifact["native_execution"]["runs"][0]
+        self.assertEqual("EXTERNAL_VERIFIED", run["state"])
+        self.assertNotEqual(run["executor"], run["verifier"])
 
     def test_b41_capabilities_use_ten_independent_handlers(self) -> None:
         entries = [entry for entry in self.adapter_registry.by_skill.values() if entry.get("batch") == 41 and entry.get("kind") == "skill"]

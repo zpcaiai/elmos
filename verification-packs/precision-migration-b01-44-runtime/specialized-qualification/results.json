@@ -1,0 +1,598 @@
+{
+  "all_tests_passed": true,
+  "execution_scope": "SPECIALIZED_LOCAL",
+  "external_verification": "NOT_RUN",
+  "production_certification": "NOT_CERTIFIED",
+  "production_execution": "NOT_RUN",
+  "result_count": 55,
+  "results": [
+    {
+      "evidence": {
+        "detected_manifests": [
+          "pyproject.toml"
+        ],
+        "file_count": 2,
+        "truncated": false
+      },
+      "result_digest": "sha256:14f64ff5c89a38bd3f486c69d3d3409424da5f60221e5a09a1d281c6628ac83e",
+      "skill": "pm-b02-repository-modernization-assessment",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "path_escape_rejected": true
+      },
+      "result_digest": "sha256:e001812ab041275edcbb53f52b5b112ffa936a01fe22650f76454494db7e13b4",
+      "skill": "pm-b02-repository-modernization-assessment",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "handler_id": "repository-assessment-v1",
+        "inventory_created": true
+      },
+      "result_digest": "sha256:7de2b595950f8346c9a04db87de501439fe15d0a35a7b1b89aba0129e08411a5",
+      "skill": "pm-b02-repository-modernization-assessment",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "detected_manifests": [
+          "pyproject.toml"
+        ],
+        "file_count": 3,
+        "truncated": false
+      },
+      "result_digest": "sha256:4dd9207411bb2d985c069859e6abc85edb901889d77e3faded17476a32a381c6",
+      "skill": "pm-b02-repository-modernization-assessment",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "detected_manifests": [
+          "pyproject.toml"
+        ],
+        "file_count": 5,
+        "truncated": false
+      },
+      "result_digest": "sha256:1c096ee4bd1121b3d4767e53b81ef7f484b8686cd70f94c5c94da4a0d38be666",
+      "skill": "pm-b02-repository-modernization-assessment",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "decision_state": "CONTINUE",
+        "input_digest": "sha256:47dade0d7efecbfa2d58ad1b6261da4c6ff46cd46d6cd7b3970fd6f71dd3ac78",
+        "production_side_effects_executed": false
+      },
+      "result_digest": "sha256:d8e6e7c7c437d504d555da9fc32e5f379517de90803b5ac11b4088054cd925ed",
+      "skill": "pm-b42-automatic-rollback",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "tampered_input_rejected": true
+      },
+      "result_digest": "sha256:8e3c1f9f872d180d6ab1dddb88496b614ed5814528244bad1aab87fd47f157de",
+      "skill": "pm-b42-automatic-rollback",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "entrypoint": "scripts.precision_migration.b42:execute_automatic_rollback",
+        "handler_id": "b42-automatic-rollback-v1"
+      },
+      "result_digest": "sha256:b1eaf3b86a984ecf8244a8904ad4d994b1543cd55e0c36d7946a1ee3065b3c46",
+      "skill": "pm-b42-automatic-rollback",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "decision_state": "CONTINUE",
+        "input_digest": "sha256:9c196fffe0c41da9b72bee9e616d99ff2516c4ff11a459afe25b6fae337cf3e6",
+        "production_side_effects_executed": false
+      },
+      "result_digest": "sha256:019fa159a79242e1c3c89fb592588ad0d6c1d7755a49577f2b3d7f159c09b66a",
+      "skill": "pm-b42-automatic-rollback",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "decision_state": "CONTINUE",
+        "input_digest": "sha256:7d9a0181ecbcd47e591b36f2fc4c28b1d76ed63ff1bef424061246c62b26f6f5",
+        "production_side_effects_executed": false
+      },
+      "result_digest": "sha256:8884401e4540f6121514a255a74bf9fd9d830470e67c7232126418ef04bde640",
+      "skill": "pm-b42-automatic-rollback",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "decision_state": "PASS",
+        "input_digest": "sha256:35a2533cde444ae7a8f1a5d5309e4386afccb039557af7142c6bdcbaa9a090fd",
+        "production_side_effects_executed": false
+      },
+      "result_digest": "sha256:8617ad01319771b3da245e99efa99fdd4a240e3f285003b44164866ddd7ada4a",
+      "skill": "pm-b42-canary-traffic-planner",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "tampered_input_rejected": true
+      },
+      "result_digest": "sha256:e99abe092d96a8495ccfc3c2d592df770871234e6f687ca62420a57b653642cf",
+      "skill": "pm-b42-canary-traffic-planner",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "entrypoint": "scripts.precision_migration.b42:execute_canary_traffic_planner",
+        "handler_id": "b42-canary-traffic-planner-v1"
+      },
+      "result_digest": "sha256:9e0b4e6f02c5fc2f3430f6c92567ed6a4de088732b3c71ec2b95c36664524a4b",
+      "skill": "pm-b42-canary-traffic-planner",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "decision_state": "PASS",
+        "input_digest": "sha256:6b91a36da2d99a83d33b4211c9cc676adcde2a77c8475f558a7d04bc2bf4bc2d",
+        "production_side_effects_executed": false
+      },
+      "result_digest": "sha256:d6457e6f55704fdeceb1c1f5d37b365555052f1c8f1afc7f18ca4c19e1e089b6",
+      "skill": "pm-b42-canary-traffic-planner",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "decision_state": "PASS",
+        "input_digest": "sha256:a48c454895d585bbc280c8df901d853814a22d13aa785b4986ca14358b8725a2",
+        "production_side_effects_executed": false
+      },
+      "result_digest": "sha256:ebf937f72a363424771a462fd0b2401dba452efcd0be03c766788e3f6a82b72b",
+      "skill": "pm-b42-canary-traffic-planner",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "decision_state": "PASS",
+        "input_digest": "sha256:0857d79c8670149ec59e11bd533c92db42f9ef7d5e767b83b12adf4eeb4e2b1d",
+        "production_side_effects_executed": false
+      },
+      "result_digest": "sha256:3e51f9fa2b9b4add7036fc711d260ad2be8fb1af19c96e927d2155e0f62ae7f8",
+      "skill": "pm-b42-dual-write-validation",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "tampered_input_rejected": true
+      },
+      "result_digest": "sha256:2a109ea1c960a687ca22d46c6b769e0f48e40278d43ea90f310be0ed0f9efb45",
+      "skill": "pm-b42-dual-write-validation",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "entrypoint": "scripts.precision_migration.b42:execute_dual_write_validation",
+        "handler_id": "b42-dual-write-validation-v1"
+      },
+      "result_digest": "sha256:55e9393ae209866e79f9ca571530144bf1ffde2f21830bd6963e22baa33804ec",
+      "skill": "pm-b42-dual-write-validation",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "decision_state": "PASS",
+        "input_digest": "sha256:9c89a63a4ee25e0e04afd8ad961c5c7d3dcd1977f7261546323964468c03d9a5",
+        "production_side_effects_executed": false
+      },
+      "result_digest": "sha256:44221e4491506fd7f6fc4397c5bb32c15eb0c7cb2d8e6f2cbbf5d138776ea16f",
+      "skill": "pm-b42-dual-write-validation",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "decision_state": "PASS",
+        "input_digest": "sha256:4e6d288840eddcab5417dd4eba3486616c1bb7137655f9d7abbdf96de91abe67",
+        "production_side_effects_executed": false
+      },
+      "result_digest": "sha256:3a4108125092d919ebd15754e256c42c9c0aa3f536df0a364ff27fc3d89d68ab",
+      "skill": "pm-b42-dual-write-validation",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "decision_state": "PASS",
+        "input_digest": "sha256:d50823cf77abc1e6e1009f54c9e4920d0023e58a0205a0928ffd0f7c5fed0e75",
+        "production_side_effects_executed": false
+      },
+      "result_digest": "sha256:1b38ef9010ccb003d7543a7a2bb460844b5f1ec5df0a6706d76edb1518c77935",
+      "skill": "pm-b42-live-event-replay",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "tampered_input_rejected": true
+      },
+      "result_digest": "sha256:1da11a83d63242ace0e3f07b868c6a412fa2e2383b6eda0ce1acd85807d962c4",
+      "skill": "pm-b42-live-event-replay",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "entrypoint": "scripts.precision_migration.b42:execute_live_event_replay",
+        "handler_id": "b42-live-event-replay-v1"
+      },
+      "result_digest": "sha256:2594baa06b0507917bdd267d7633eac2fe10fdbdce6c536c4b4f0857d0610efb",
+      "skill": "pm-b42-live-event-replay",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "decision_state": "PASS",
+        "input_digest": "sha256:06b4390639d8358213f69d12aba5079a43c34524c6e8dda1d99f94b7962e2b25",
+        "production_side_effects_executed": false
+      },
+      "result_digest": "sha256:d2059073fb1920348b7a7b4ea0c1175451986da168b280680dad53c9b162fb5b",
+      "skill": "pm-b42-live-event-replay",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "decision_state": "PASS",
+        "input_digest": "sha256:edc19a10e4d07192f612eee726a88775dc85d59858b05f7df8338deaf7cd5201",
+        "production_side_effects_executed": false
+      },
+      "result_digest": "sha256:1edb3dc468b5ddd41c71ebfe7b915c531ffa20f8ce1c0450cb64f0d51f5db394",
+      "skill": "pm-b42-live-event-replay",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "decision_state": "PASS",
+        "input_digest": "sha256:2840c9aa8c20a58d9e99acbebca5f95c37c0734d8588e214f4f3e4d234575b8b",
+        "production_side_effects_executed": false
+      },
+      "result_digest": "sha256:0ebe04afc8371377fd0a3675205ecc8fcd16f44acbd06c35b35902f25353c06d",
+      "skill": "pm-b42-migration-wave-planner",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "tampered_input_rejected": true
+      },
+      "result_digest": "sha256:65d13a3b4020ac7554dff9008c6354b45be2bfeb96221c7e9ff6fca72191b0af",
+      "skill": "pm-b42-migration-wave-planner",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "entrypoint": "scripts.precision_migration.b42:execute_migration_wave_planner",
+        "handler_id": "b42-migration-wave-planner-v1"
+      },
+      "result_digest": "sha256:036b619cb689714b6a14fc92c96c0290e6ce0687880c00a88dbf9be45efeed60",
+      "skill": "pm-b42-migration-wave-planner",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "decision_state": "PASS",
+        "input_digest": "sha256:889061263ed1cf11527614d13aa75865d935de771f10679ab2f81df1e55ee827",
+        "production_side_effects_executed": false
+      },
+      "result_digest": "sha256:6407ef757ca535f06ba152545d0a0d9fd8c0ea72f9681e881f7fef3c4b38e3bd",
+      "skill": "pm-b42-migration-wave-planner",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "decision_state": "PASS",
+        "input_digest": "sha256:c023660d301029dc279fa1a6498a9581efaeab4b0e1b8bc5b9704ef07d317f10",
+        "production_side_effects_executed": false
+      },
+      "result_digest": "sha256:1a5c4096fa278492263c3f4e6602334faa7da944a9478f33c59ea9cefd99c04c",
+      "skill": "pm-b42-migration-wave-planner",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "decision_state": "PASS",
+        "input_digest": "sha256:8c4c5525f04253d461d847d559cb35fe307a5bf20c89ff89a7d6bec4a2ba160b",
+        "production_side_effects_executed": false
+      },
+      "result_digest": "sha256:a705316e32c77b08d4273a4fcfc0eb67056ff6300b13bf50dbd36774fe63c53a",
+      "skill": "pm-b42-post-cutover-monitoring",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "tampered_input_rejected": true
+      },
+      "result_digest": "sha256:e477e8d52b937efb3c110af2e12d6a021c4c58a671b5202d7e5998185cc66048",
+      "skill": "pm-b42-post-cutover-monitoring",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "entrypoint": "scripts.precision_migration.b42:execute_post_cutover_monitoring",
+        "handler_id": "b42-post-cutover-monitoring-v1"
+      },
+      "result_digest": "sha256:a26197762f4c18ad6cc6bc1a1bcebadece1ee64f6b5c24319a974b8c68dbeed0",
+      "skill": "pm-b42-post-cutover-monitoring",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "decision_state": "PASS",
+        "input_digest": "sha256:ad9b883e7291fc0ea8a0fab903959cb8488b10df8683d4164388392c8d0713be",
+        "production_side_effects_executed": false
+      },
+      "result_digest": "sha256:352b5c80a09d6aff01a969da8f77a219a9b2bdc26c6439738d608ed36abfffcd",
+      "skill": "pm-b42-post-cutover-monitoring",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "decision_state": "PASS",
+        "input_digest": "sha256:7527dd46960b420f0763f0edd1c15d84e70c1f36bdaedc2bf77a9b34cea3179a",
+        "production_side_effects_executed": false
+      },
+      "result_digest": "sha256:ae879a09953580e7ab45cbba1074eac1c4f15f33cf5a6706194720cc717e28e7",
+      "skill": "pm-b42-post-cutover-monitoring",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "decision_state": "PASS",
+        "input_digest": "sha256:c16c3a375b6f77bcdf8e095c05aafa7da15b725437effc23add5997f7c0db984",
+        "production_side_effects_executed": false
+      },
+      "result_digest": "sha256:39c2fafa99145bd65d80c3129e851376161a20b706293239fd6abbfea19882b0",
+      "skill": "pm-b42-production-shadow-run",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "tampered_input_rejected": true
+      },
+      "result_digest": "sha256:9a48cbd298f5e7feeee3a2c875382cda55b6b0b49af5b69ba0463529511599ef",
+      "skill": "pm-b42-production-shadow-run",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "entrypoint": "scripts.precision_migration.b42:execute_production_shadow_run",
+        "handler_id": "b42-production-shadow-run-v1"
+      },
+      "result_digest": "sha256:b7838e05a745f20a0640a355c5a0094e1450b264569906837f5e49c3f768f097",
+      "skill": "pm-b42-production-shadow-run",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "decision_state": "PASS",
+        "input_digest": "sha256:fd333ba79e26b626e33dead2d9b4b326ac20ef5e7ef1d0c9fb4f20a99e8512e7",
+        "production_side_effects_executed": false
+      },
+      "result_digest": "sha256:9a884210d286d5098fb9eb259bc8e768022d38e16f21872af9937d88eaea6930",
+      "skill": "pm-b42-production-shadow-run",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "decision_state": "PASS",
+        "input_digest": "sha256:41f4a4993fe664c3ac04fcc1634aa5e5d1feaa0cfbe5aad3f20311451231e073",
+        "production_side_effects_executed": false
+      },
+      "result_digest": "sha256:415b0cdadbfa35a3023dbc6f3866390795465d74a2060f1c752b3ff80fe1a4d8",
+      "skill": "pm-b42-production-shadow-run",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "decision_state": "PASS",
+        "input_digest": "sha256:dc014d92ef7a3921d2d6d5239f556f3a15ab2d7d92da3b2fa425e7809a7abafa",
+        "production_side_effects_executed": false
+      },
+      "result_digest": "sha256:633bb9ecc9cf38c4d1bdc5f1f4bbaeba94fbbf5431a18183916b9b73f12d60ba",
+      "skill": "pm-b42-progressive-cutover",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "tampered_input_rejected": true
+      },
+      "result_digest": "sha256:3862c2f01cfa85a96d9f16f11a48dd1ade2335f77e15a1d542f0a1cb05ec025a",
+      "skill": "pm-b42-progressive-cutover",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "entrypoint": "scripts.precision_migration.b42:execute_progressive_cutover",
+        "handler_id": "b42-progressive-cutover-v1"
+      },
+      "result_digest": "sha256:c00056af7b84a2f099a56b5180d4683780c22e708060d1273fbf94aea7d6b649",
+      "skill": "pm-b42-progressive-cutover",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "decision_state": "PASS",
+        "input_digest": "sha256:0635243f54ebefa3025a23ae8d8164205b71a800f096087d97556e8fbd0986f0",
+        "production_side_effects_executed": false
+      },
+      "result_digest": "sha256:0ea78f143a59454c148093a0e7a1245affe7c9b95e5b6883410a19d57bd685c4",
+      "skill": "pm-b42-progressive-cutover",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "decision_state": "PASS",
+        "input_digest": "sha256:7c8e3a8c3565af8012c8aa290980a6616063531e340c2a1ece923239da3e2066",
+        "production_side_effects_executed": false
+      },
+      "result_digest": "sha256:49eb50b990b18d6167bd4df9156e80c679587aa22350cdcc148a33c0a0697370",
+      "skill": "pm-b42-progressive-cutover",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "decision_state": "PASS",
+        "input_digest": "sha256:55e270607d092db077e358e4beddb7f011352f44a4f32267369daf163e111f36",
+        "production_side_effects_executed": false
+      },
+      "result_digest": "sha256:aa81119e32c759f7f39b576544d720f9d373be7403ecb2c03d5338a2a1f5a537",
+      "skill": "pm-b42-side-effect-suppression",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "tampered_input_rejected": true
+      },
+      "result_digest": "sha256:5c38a125aa3bdef6e29bf56d986ea6e8db0fe54e4aa7d5bb7dac7ac5044c9549",
+      "skill": "pm-b42-side-effect-suppression",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "entrypoint": "scripts.precision_migration.b42:execute_side_effect_suppression",
+        "handler_id": "b42-side-effect-suppression-v1"
+      },
+      "result_digest": "sha256:581a6d919d0a1fc1e33ed35bf8ef725126d112a6fa92443231da192425926ac7",
+      "skill": "pm-b42-side-effect-suppression",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "decision_state": "PASS",
+        "input_digest": "sha256:d0a4dbb2502c8ce682b599612415fb434e8d20611ad3b171be8cb6177e9967cb",
+        "production_side_effects_executed": false
+      },
+      "result_digest": "sha256:1c7bae940384d4ebd6c262c374ebbe5aa9120934f3c70f8a2a61da757e444584",
+      "skill": "pm-b42-side-effect-suppression",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "decision_state": "PASS",
+        "input_digest": "sha256:bdfb0d4ae8acb221f121e32d543e580df3c2c6e539692eac834c6157f91c0d9c",
+        "production_side_effects_executed": false
+      },
+      "result_digest": "sha256:ea6a035e1c1cfa8ac80a7e82673b9108a2511826a8c093903de8d2f6798e935f",
+      "skill": "pm-b42-side-effect-suppression",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "decision_state": "PASS",
+        "input_digest": "sha256:8419407a809d8bd37aec551ed4151d8e65d312dd39e6115c804bc13d034cd45e",
+        "production_side_effects_executed": false
+      },
+      "result_digest": "sha256:b4a707ee0780af674357f2e45c6a75e77be6116845bac2aa50ef80f5c83d5a9f",
+      "skill": "pm-b42-strangler-routing",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "tampered_input_rejected": true
+      },
+      "result_digest": "sha256:1147fc86d1aa4920c5ab5ee74a0e31e77d5fb1424dd969dd9c6875c8cf992cab",
+      "skill": "pm-b42-strangler-routing",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "entrypoint": "scripts.precision_migration.b42:execute_strangler_routing",
+        "handler_id": "b42-strangler-routing-v1"
+      },
+      "result_digest": "sha256:374c2853a031142b8a10183b12318520d7d4993faccd687e1df733a5382c2eb7",
+      "skill": "pm-b42-strangler-routing",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "decision_state": "PASS",
+        "input_digest": "sha256:63a8ba7e6afc7ee093cd4d4512f02495a49bc4ed9aaadda875a94be3cdfa2029",
+        "production_side_effects_executed": false
+      },
+      "result_digest": "sha256:e86b5e17c7f496dfed6fb207b8a6fc63748b2be9e58cc902cf4380485faadf54",
+      "skill": "pm-b42-strangler-routing",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "decision_state": "PASS",
+        "input_digest": "sha256:eb074159878bccf0d6fb0aeabf92b6b4a2b07a6eeee856aec9fd135b0cb5ee27",
+        "production_side_effects_executed": false
+      },
+      "result_digest": "sha256:cb03a5c2a0e2520c4d5ad04e29afa478ea54605537c0104a85352e259d4ca7f4",
+      "skill": "pm-b42-strangler-routing",
+      "state": "PASS",
+      "test_type": "representative"
+    }
+  ],
+  "schema_version": 1,
+  "skill_count": 11,
+  "suite": "precision-migration-specialized-local-v1",
+  "test_types": [
+    "positive",
+    "negative",
+    "integration",
+    "holdout",
+    "representative"
+  ]
+}

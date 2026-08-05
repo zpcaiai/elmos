@@ -1,0 +1,2 @@
+$ /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/precision_migration/qualify_orchestrators.py --check
+{"orchestrators": 45, "results": 225, "status": "PASS"}

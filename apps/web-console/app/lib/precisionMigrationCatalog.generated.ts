@@ -9,10 +9,9 @@ export const precisionMigrationSummary = {
   "runtimeSkillCount": 632,
   "workspaceSkillCount": 632,
   "structuralStatus": "PASS",
-  "runtimeProtocolStatus": "BOUNDED_LOCAL_EXECUTION",
+  "runtimeProtocolStatus": "EXACT_LOCAL_EXECUTION",
   "maturityCounts": {
-    "ADAPTER_DECLARED": 45,
-    "LOCAL_EXECUTED": 587
+    "LOCAL_EXECUTED": 632
   },
   "externalEvidenceStatus": "NOT_RUN",
   "productionCertification": "NOT_CERTIFIED"

@@ -140,6 +140,10 @@ def runtime_name(source_name: str, batch: int | None, kind: str) -> str:
     return f"{candidate[:55].rstrip('-')}-{suffix}"
 
 
+def handler_function_name(runtime_skill: str) -> str:
+    return "execute_" + re.sub(r"[^a-z0-9]+", "_", runtime_skill.lower()).strip("_")
+
+
 def binding_for_record(batch: int | None, source_name: str, kind: str) -> dict[str, Any]:
     secrets_permission = "deny"
     if batch is None:
@@ -190,10 +194,20 @@ def binding_for_record(batch: int | None, source_name: str, kind: str) -> dict[s
         surfaces = ["apps/control-plane", "apps/commercial-api"]
     route_key = source_name.removesuffix("-direction-pack")
     route_path = ROOT / "routes" / route_key / "route.json"
+    runtime_skill = runtime_name(source_name, batch, kind)
     if kind in {"global-orchestrator", "batch-orchestrator"}:
-        handler_id = "orchestrator-plan-v1"
-        handler_entrypoint = "scripts.precision_migration.adapters:execute_orchestrator_plan"
+        handler_id = f"orchestrator-dag-v2:{source_name}"
+        handler_entrypoint = (
+            "scripts.precision_migration.generated_orchestrators:"
+            + handler_function_name(runtime_skill)
+        )
         supported_modes = ["assess"]
+        surfaces = [
+            *surfaces,
+            "scripts/precision_migration/orchestration.py",
+            "scripts/precision_migration/generated_orchestrators.py",
+            "docs/precision-migration-b01-44/orchestrator-implementations.json",
+        ]
     elif source_name == "repository-modernization-assessment":
         handler_id = "repository-assessment-v1"
         handler_entrypoint = "scripts.precision_migration.adapters:execute_repository_assessment"
@@ -243,10 +257,20 @@ def binding_for_record(batch: int | None, source_name: str, kind: str) -> dict[s
         supported_modes = ["validate", "repair", "certify"]
         surfaces = [*surfaces, "scripts/precision_migration/b42.py"]
     else:
-        handler_id = f"domain-skill-v2:{source_name}"
-        handler_entrypoint = "scripts.precision_migration.domain:execute_domain_skill"
+        handler_id = f"exact-skill-v4:{source_name}"
+        handler_entrypoint = (
+            "scripts.precision_migration.generated_handlers:"
+            + handler_function_name(runtime_skill)
+        )
         supported_modes = modes_for_batch(batch)
-        surfaces = [*surfaces, "scripts/precision_migration/contracts.py", "scripts/precision_migration/domain.py"]
+        surfaces = [
+            *surfaces,
+            "scripts/precision_migration/contracts.py",
+            "scripts/precision_migration/exact.py",
+            "scripts/precision_migration/native.py",
+            "scripts/precision_migration/generated_handlers.py",
+            "docs/precision-migration-b01-44/handler-implementations.json",
+        ]
     missing = [path for path in surfaces if not (ROOT / path).exists()]
     declared = not missing
     return {
@@ -267,8 +291,9 @@ def binding_for_record(batch: int | None, source_name: str, kind: str) -> dict[s
         "repository_surfaces": surfaces,
         "missing_surfaces": missing,
         "evidence_boundary": (
-            "DECLARED means an allowlisted handler contract exists; it is not execution, "
-            "holdout, external, customer, production, or certification evidence."
+            "DECLARED means an allowlisted digest-bound implementation exists. LOCAL_EXECUTED "
+            "requires replayed local evidence; it is not external, customer, production, or "
+            "certification evidence."
         ),
     }
 
@@ -564,7 +589,7 @@ def build_expected(staging_root: Path) -> tuple[dict[str, Any], dict[str, Path]]
         installed["interface_sha256"] = sha256(
             (destination / "agents" / "openai.yaml").read_bytes()
         )
-        if installed["kind"] == "skill" and installed["binding"]["binding_state"] == "DECLARED":
+        if installed["binding"]["binding_state"] == "DECLARED":
             installed["maturity"] = "LOCAL_EXECUTED"
         else:
             installed["maturity"] = (
@@ -574,7 +599,7 @@ def build_expected(staging_root: Path) -> tuple[dict[str, Any], dict[str, Path]]
             )
         installed["contract_status"] = "INSTALLED"
         installed["runtime_protocol_status"] = (
-            "BOUNDED_LOCAL_EXECUTION" if installed["kind"] == "skill" else "CONTRACT_READY"
+            "EXACT_LOCAL_EXECUTION" if installed["kind"] == "skill" else "EXECUTABLE_DAG"
         )
         installed["external_evidence_status"] = "NOT_RUN"
         installed_records.append(installed)
@@ -606,12 +631,12 @@ def build_expected(staging_root: Path) -> tuple[dict[str, Any], dict[str, Path]]
         "batch_counts": dict(sorted(batch_counts.items())),
         "phase_counts": dict(phase_counts),
         "structural_status": "PASS",
-        "runtime_protocol_status": "BOUNDED_LOCAL_EXECUTION",
+        "runtime_protocol_status": "EXACT_LOCAL_EXECUTION",
         "external_evidence_status": "NOT_RUN",
         "production_certification": "NOT_CERTIFIED",
         "maximum_local_decision": "READY_FOR_EXTERNAL_GATE",
         "completion_boundary": (
-            "All source contracts and bounded local handlers are installed and locally executed. "
+            "All source contracts, exact local handlers, and orchestrator DAGs are installed and locally executed. "
             "Native toolchain breadth, independent holdout, external review, customer traffic, "
             "and certification require separately verified evidence."
         ),

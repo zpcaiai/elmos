@@ -23,16 +23,23 @@
     },
     {
       "claim_id": "claim.maturity-honesty",
-      "statement": "The 587-Skill matrix exposes unimplemented and unverified scope per dimension.",
+      "statement": "The 587-Skill matrix separates exact local implementation from unverified native and external scope per dimension.",
       "status": "supported",
       "evidence_refs": ["coverage/coverage-matrix.json"],
       "assumptions": [],
       "limitations": ["Structural coverage does not prove domain behavior."]
+    },
+    {
+      "claim_id": "claim.production-code-closure",
+      "statement": "All installed handlers, typed programs, native-tool classifications, orchestration child bindings, qualification results, and runtime code surfaces are fail-closed and digest-bound for external-gate preparation.",
+      "status": "supported",
+      "evidence_refs": ["certification/production-code-closure.json"],
+      "assumptions": [],
+      "limitations": ["READY_FOR_EXTERNAL_GATE is not production execution, customer acceptance, independent verification, or certification."]
     }
   ],
-  "evidence": ["certification/local-test-result.json", "coverage/coverage-matrix.json", "corpus/negative/cases.json"],
+  "evidence": ["certification/local-test-result.json", "certification/production-code-closure.json", "coverage/coverage-matrix.json", "corpus/negative/cases.json"],
   "residual_risks": [
-    { "risk_id": "RISK-001", "severity": "P0", "status": "open", "description": "564 child Skills lack exact handlers." },
     { "risk_id": "RISK-002", "severity": "P0", "status": "open", "description": "Independent holdout and representative workloads are NOT_RUN." },
     { "risk_id": "RISK-003", "severity": "P0", "status": "open", "description": "Production key custody and revocation integration are NOT_RUN." }
   ],

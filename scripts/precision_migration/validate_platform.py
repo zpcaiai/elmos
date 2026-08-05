@@ -223,12 +223,20 @@ def main() -> int:
     )
 
     from scripts.precision_migration.contracts import ContractRegistry
+    from scripts.precision_migration.exact import ExactImplementationRegistry
+    from scripts.precision_migration.orchestration import OrchestratorRegistry
     from scripts.precision_migration.runtime import Registry, evaluate
 
     registry = Registry.load()
     contracts = ContractRegistry.load(EXECUTABLE_CONTRACTS)
     if len(contracts.by_skill) != 587 or len(contracts.by_handler) != 587:
         fail("executable contract coverage is incomplete")
+    exact_implementations = ExactImplementationRegistry.load()
+    orchestrator_implementations = OrchestratorRegistry.load()
+    if len(exact_implementations.by_handler) != 536:
+        fail("exact per-Skill implementation coverage is incomplete")
+    if len(orchestrator_implementations.by_handler) != 45:
+        fail("executable orchestrator DAG coverage is incomplete")
     for record in manifest["skills"]:
         if registry.resolve(record["name"])["source_name"] != record["source_name"]:
             fail(f"runtime alias resolution failed: {record['name']}")

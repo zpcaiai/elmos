@@ -22,21 +22,34 @@ def sha(path: Path) -> str:
     return "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def run(command: list[str], output: Path) -> dict[str, Any]:
-    completed = subprocess.run(
-        command,
-        cwd=ROOT,
-        env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"},
-        check=False,
-        capture_output=True,
-        text=True,
-        timeout=300,
-    )
-    rendered = "$ " + " ".join(command) + "\n" + completed.stdout + completed.stderr
+def run(command: list[str], output: Path, *, timeout_seconds: int = 300) -> dict[str, Any]:
+    try:
+        completed = subprocess.run(
+            command,
+            cwd=ROOT,
+            env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"},
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=timeout_seconds,
+        )
+        stdout = completed.stdout
+        stderr = completed.stderr
+        exit_code = completed.returncode
+        timed_out = False
+    except subprocess.TimeoutExpired as exc:
+        stdout = exc.stdout.decode("utf-8", errors="replace") if isinstance(exc.stdout, bytes) else (exc.stdout or "")
+        stderr = exc.stderr.decode("utf-8", errors="replace") if isinstance(exc.stderr, bytes) else (exc.stderr or "")
+        exit_code = 124
+        timed_out = True
+        stderr += f"\nTIMEOUT: exceeded {timeout_seconds} seconds\n"
+    rendered = "$ " + " ".join(command) + "\n" + stdout + stderr
     output.write_text(rendered, encoding="utf-8")
     return {
         "command": command,
-        "exit_code": completed.returncode,
+        "exit_code": exit_code,
+        "timed_out": timed_out,
+        "timeout_seconds": timeout_seconds,
         "raw_evidence": output.relative_to(output.parents[1]).as_posix(),
         "digest": sha(output),
         "size_bytes": output.stat().st_size,
@@ -64,9 +77,13 @@ def main() -> int:
             [sys.executable, "scripts/precision_migration/qualify_contracts.py", "--check"],
             raw / "contract-qualification.txt",
         ),
-        "bounded_domain_qualification": run(
+        "exact_handler_qualification": run(
             [sys.executable, "scripts/precision_migration/qualify_domains.py", "--check"],
-            raw / "bounded-domain-qualification.txt",
+            raw / "exact-handler-qualification.txt",
+        ),
+        "orchestrator_qualification": run(
+            [sys.executable, "scripts/precision_migration/qualify_orchestrators.py", "--check"],
+            raw / "orchestrator-qualification.txt",
         ),
         "batch41_qualification": run(
             [sys.executable, "scripts/precision_migration/qualify_b41.py", "--check"],
@@ -75,10 +92,23 @@ def main() -> int:
         "batch16_routes": run(
             [sys.executable, "scripts/precision_migration/validate_b16_routes.py"],
             raw / "batch16-routes.txt",
+            timeout_seconds=900,
+        ),
+        "batch16_qualification": run(
+            [sys.executable, "scripts/precision_migration/qualify_b16.py", "--check"],
+            raw / "batch16-qualification.txt",
+        ),
+        "specialized_qualification": run(
+            [sys.executable, "scripts/precision_migration/qualify_specialized.py", "--check"],
+            raw / "specialized-qualification.txt",
         ),
         "coverage_matrix": run(
             [sys.executable, "scripts/precision_migration/build_coverage.py", "--check"],
             raw / "coverage-matrix.txt",
+        ),
+        "production_code_gate": run(
+            [sys.executable, "scripts/precision_migration/run_production_code_gate.py", "--check"],
+            raw / "production-code-gate.txt",
         ),
     }
     runtime_text = (raw / "runtime-tests.txt").read_text(encoding="utf-8")
@@ -99,9 +129,9 @@ def main() -> int:
         "checks": checks,
         "test_count": int(match.group(1)) if match else None,
         "negative_corpus": "corpus/negative/cases.json",
-        "local_execution_status": "PASSED_BOUNDED_LOCAL_FOR_587_OF_587",
-        "holdout_status": "PASSED_ENGINEERING_FIXTURE_FOR_546_AND_NATIVE_LOCAL_B16_FOR_30; INDEPENDENT_HOLDOUT_NOT_RUN",
-        "representative_workload_status": "PASSED_ENGINEERING_FIXTURE_FOR_546_AND_NATIVE_LOCAL_B16_FOR_30; CUSTOMER_WORKLOAD_NOT_RUN",
+        "local_execution_status": "PASSED_PRODUCTION_CODE_CLOSURE_FOR_587_OF_587_AND_EXECUTABLE_DAG_FOR_45_OF_45",
+        "holdout_status": "PASSED_ENGINEERING_FIXTURE_FOR_557_AND_NATIVE_LOCAL_B16_FOR_30; INDEPENDENT_EXTERNAL_HOLDOUT_NOT_RUN",
+        "representative_workload_status": "PASSED_ENGINEERING_FIXTURE_FOR_557_AND_NATIVE_LOCAL_B16_FOR_30; CUSTOMER_WORKLOAD_NOT_RUN",
         "external_evidence_status": "NOT_RUN",
         "production_certification": "NOT_CERTIFIED",
     }

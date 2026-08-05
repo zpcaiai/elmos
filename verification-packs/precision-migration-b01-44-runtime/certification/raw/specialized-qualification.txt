@@ -1,0 +1,2 @@
+$ /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/precision_migration/qualify_specialized.py --check
+{"results": 55, "skills": 11, "status": "PASS"}

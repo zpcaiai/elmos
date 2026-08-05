@@ -13,9 +13,11 @@ separate `precision-migration-b01-44` namespace:
 `tooling/integrate_precision_migration_batch1_44.py` performs deterministic,
 collision-safe installation. It preserves source identities and hashes, adds
 Codex UI metadata, generates one exact adapter record per Skill, and refuses to
-overwrite an unowned Runtime Skill. The current maturity is intentionally not
-"fully implemented": 68 Runtime entries (23 child Skills plus orchestrators)
-are `ADAPTER_DECLARED`; 564 child/runtime entries remain `INSTALLED` only.
+overwrite an unowned Runtime Skill. All 632 identities are now `LOCAL_EXECUTED`:
+536 generated child handlers have unique entrypoints and immutable v4 typed
+execution programs, 51 child handlers retain specialized implementations, and
+the remaining 45 identities execute digest-bound orchestration DAGs with plan,
+full-child preflight, and isolated child-execution modes.
 
 ## Functional loop
 
@@ -48,7 +50,9 @@ environment metadata, separate executor/verifier, and a scoped Ed25519
 authorization. Proofs and high-risk approvals use separate signed roles with
 expiry, revocation and request binding. The adapter dispatcher accepts only
 generated allowlisted handlers; request or repository content cannot select a
-command.
+command. Each generated program pins its algorithm, workflow, native-tool plan,
+gate policy, artifact name, media type, and write-once policy at generation
+time; runtime Batch/name inference is forbidden.
 
 The authenticated Web Console API exposes durable tenant-isolated jobs:
 
@@ -81,6 +85,14 @@ make precision-migration-b01-44-check
 make precision-migration-b01-44-qualification
 ```
 
+`scripts/precision_migration/run_production_code_gate.py` is included in the
+official check. Its maximum decision is `READY_FOR_EXTERNAL_GATE`; a pass means
+the checked-in production code surface is closed and digest-bound, not that an
+external provider, customer, HSM, Canary, production operation, or certification
+has run.
+
 The installed identities and evidence boundary are recorded in
 `installed-manifest.json`; handler declarations are in `adapter-registry.json`,
-and the 587-by-12 dimensional report is in the Batch 35 verification pack.
+exact implementation profiles are in `handler-implementations.json` and
+`orchestrator-implementations.json`, and the multidimensional 587-Skill report
+is in the Batch 35 verification pack.

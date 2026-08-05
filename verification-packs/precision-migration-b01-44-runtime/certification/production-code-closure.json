@@ -1,0 +1,102 @@
+{
+  "bindings": {
+    "adapter_registry": "sha256:3f654604105712a6063187e1f857c1ce7a4a4e850b52523a0a728882b5e172c7",
+    "coverage_matrix": "sha256:cb802c436122401c211d191b104e33214e753396d3309b1534bcef82dcc5fa40",
+    "exact_registry": "sha256:67d55900bf24740359b3f7720c41d47d8592cc14a53f1bb99481054f0cd99745",
+    "installed_manifest": "sha256:be67c0853fed09a30b9a7e218462e1e1dfb3eaead32b191d9e91c030a00f9c6b",
+    "orchestrator_registry": "sha256:212a88ffcecbbc334ca9cf7f42bba4d27cec2778067fe5d9840f708630755860",
+    "runtime_code": {
+      "scripts/precision_migration/adapters.py": "sha256:68cf5a14d7471bce155d153576fcf36675d182b2786ec707fb1f952aa4e96438",
+      "scripts/precision_migration/exact.py": "sha256:92bd9633b742ff6d45a69aa9022be8dfeaeacb0dd8a496a458fddab709f612aa",
+      "scripts/precision_migration/generated_handlers.py": "sha256:5d6b45d6988eb117e9990a62004732ebd9ff5466b0c8cbfe1afe8763a73d25f4",
+      "scripts/precision_migration/generated_orchestrators.py": "sha256:dab95722c479ab0c49d5a82863a8d2fe3b8f5ab6a4873b27050a2a4888a5ab18",
+      "scripts/precision_migration/native.py": "sha256:bebcdb1e0ae308561089838d4d4eab8d08680be9a37f06009a83f6197b1be051",
+      "scripts/precision_migration/orchestration.py": "sha256:ee5986a555c64ffb9a4ec4835d71f5985d54910874ae10fdb969d61b99c49a09",
+      "scripts/precision_migration/runtime.py": "sha256:8e317bf912517cc65e029ee8d1fbdb8d580d563c1bbbd77bda4628d2b540cd16",
+      "scripts/precision_migration/trust.py": "sha256:e0fc4864973491051e6b2c1360c4b7a2a06cbf8547a7a3a984ed67e9edb7762a",
+      "tooling/generate_precision_migration_handlers.py": "sha256:cf130cb6b2688f0725bc3fb98bcfb7a8183afc581960d4eb24dd5a1f85529875",
+      "tooling/integrate_precision_migration_batch1_44.py": "sha256:2a5fd5b551b9829caf7dfc979013ec7ec0cebc94a87193731e8d4b2aa48d3077"
+    }
+  },
+  "decision": "READY_FOR_EXTERNAL_GATE",
+  "external_boundaries": {
+    "authorized_canary_and_rollback": "NOT_RUN",
+    "customer_workloads": "NOT_RUN",
+    "external_certification": "NOT_RUN",
+    "independent_holdout": "NOT_RUN",
+    "native_toolchain_outside_local_evidence": "NOT_RUN",
+    "production_evidence": "NOT_RUN",
+    "production_hsm": "NOT_RUN"
+  },
+  "failures": [],
+  "gate": "precision-migration-b01-44-production-code-closure",
+  "handler_families": {
+    "b41-certificate-signing-v1": 1,
+    "b41-conversion-provenance-v1": 1,
+    "b41-correctness-level-classifier-v1": 1,
+    "b41-evidence-manifest-v1": 1,
+    "b41-module-equivalence-certificate-v1": 1,
+    "b41-release-gate-engine-v1": 1,
+    "b41-rule-proof-certificate-v1": 1,
+    "b41-runtime-evidence-package-v1": 1,
+    "b41-semantic-loss-report-v1": 1,
+    "b41-unresolved-obligation-report-v1": 1,
+    "b42-automatic-rollback-v1": 1,
+    "b42-canary-traffic-planner-v1": 1,
+    "b42-dual-write-validation-v1": 1,
+    "b42-live-event-replay-v1": 1,
+    "b42-migration-wave-planner-v1": 1,
+    "b42-post-cutover-monitoring-v1": 1,
+    "b42-production-shadow-run-v1": 1,
+    "b42-progressive-cutover-v1": 1,
+    "b42-side-effect-suppression-v1": 1,
+    "b42-strangler-routing-v1": 1,
+    "batch29-route-executor-v1": 30,
+    "exact-skill-v4": 536,
+    "orchestrator-dag-v2": 45,
+    "repository-assessment-v1": 1
+  },
+  "production_certification": "NOT_CERTIFIED",
+  "production_operation_authorized": false,
+  "qualification": {
+    "b16": {
+      "digest": "sha256:6b4bdba12b6020e3077a2199eadc53c7b99a8ae2a210d98f7d4985a903e52e4e",
+      "results": 150,
+      "skills": 30
+    },
+    "b41": {
+      "digest": "sha256:74edc8582146bd1f5f44bd85d78fae373748add8d1e4a84b692a2e5fcad94a51",
+      "results": 50,
+      "skills": 10
+    },
+    "contract": {
+      "digest": "sha256:856d0780ea8573d7904b8a666e49f5809bfcd8218383ee60149d6957240c9ad1",
+      "results": 2935,
+      "skills": 587
+    },
+    "exact": {
+      "digest": "sha256:05c820f9558e63ab52e5249f44c2587c9b2c3768998d0a0a1e34be57e5c3e585",
+      "results": 2680,
+      "skills": 536
+    },
+    "orchestrator": {
+      "digest": "sha256:f3c8107a3208f6d3f886b6a4e2add48403825a97681d3ab0d8d856f59a848031",
+      "results": 225,
+      "skills": 45
+    },
+    "specialized": {
+      "digest": "sha256:701cff6f28df1642bebe12f1b298deb44ebedd2d5351ae44287d65e3f3dc59cd",
+      "results": 55,
+      "skills": 11
+    }
+  },
+  "schema_version": 1,
+  "scope": {
+    "child_skills": 587,
+    "exact_programs": 536,
+    "orchestrators": 45,
+    "runtime_skills": 632,
+    "specialized_handlers": 51
+  },
+  "status": "PASSED"
+}
