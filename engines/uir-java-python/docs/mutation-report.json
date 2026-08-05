@@ -1,6 +1,6 @@
 {
-  "total": 69,
-  "killed": 69,
+  "total": 73,
+  "killed": 73,
   "survivors": [],
   "results": [
     {
@@ -361,6 +361,30 @@
       "id": "M69",
       "file": "j2p/emit/python.py",
       "rule": "named time zones are refused because the tz database is not pinned",
+      "status": "KILLED"
+    },
+    {
+      "id": "M70",
+      "file": "j2p/emit/python.py",
+      "rule": "survey-mode output is refused as a translation",
+      "status": "KILLED"
+    },
+    {
+      "id": "M71",
+      "file": "j2p/emit/python.py",
+      "rule": "an untranslatable expression does not hide the rest of the statement",
+      "status": "KILLED"
+    },
+    {
+      "id": "M72",
+      "file": "j2p/emit/python.py",
+      "rule": "an untranslatable statement does not hide the rest of the file",
+      "status": "KILLED"
+    },
+    {
+      "id": "M73",
+      "file": "j2p/emit/python.py",
+      "rule": "blocker categories group by capability, not by occurrence",
       "status": "KILLED"
     },
     {

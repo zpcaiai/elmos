@@ -469,6 +469,35 @@ MUTATIONS: list[Mutation] = [
         '        if expr.owner in ("ZoneId", "ZonedDateTime"):\n            raise EmitError(',
         '        if False:\n            raise EmitError(',
     ),
+    # ---- blocker survey ---------------------------------------------------
+    Mutation(
+        "M70",
+        "j2p/emit/python.py",
+        "survey-mode output is refused as a translation",
+        '        if self.survey:\n            raise SurveyModeError(',
+        '        if False:\n            raise SurveyModeError(',
+    ),
+    Mutation(
+        "M71",
+        "j2p/emit/python.py",
+        "an untranslatable expression does not hide the rest of the statement",
+        "            try:\n                return self._expr_inner(expr)\n            except EmitError as exc:\n                self._record(exc)\n                return BLOCKED_PLACEHOLDER",
+        "            return self._expr_inner(expr)",
+    ),
+    Mutation(
+        "M72",
+        "j2p/emit/python.py",
+        "an untranslatable statement does not hide the rest of the file",
+        "            except EmitError as exc:\n                self._record(exc)\n                del self.lines[depth:]\n                self._write(indent, \"pass\", stmt.origin)\n            return",
+        "            except EmitError:\n                raise\n            return",
+    ),
+    Mutation(
+        "M73",
+        "j2p/emit/python.py",
+        "blocker categories group by capability, not by occurrence",
+        '    text = _BACKTICKED.sub("_", text)\n    text = _PARENTHESISED.sub("", text)',
+        "    pass",
+    ),
     # ---- IR --------------------------------------------------------------
     # ---- lambdas ---------------------------------------------------------
     Mutation(

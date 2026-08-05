@@ -16,7 +16,7 @@ from pathlib import Path
 
 from . import uir
 from .diff.harness import DifferentialHarness, default_arg_vectors
-from .emit.python import EmitError, PythonEmitter
+from .emit.python import EmitError, PythonEmitter, blocker_category, survey_blockers
 from .frontend.java import ParseError, UnsupportedConstruct, parse_java_file
 
 EXIT_OK = 0
@@ -116,6 +116,8 @@ def cmd_survey(args: argparse.Namespace) -> int:
     refused: dict[str, int] = {}
     unparsed = 0
     crashed: list[dict] = []
+    blocker_sets: dict[str, list[str]] = {}
+    blocker_files: dict[str, set] = {}
     emitted = 0
     emit_refused: dict[str, int] = {}
     per_file: list[dict] = []
@@ -153,9 +155,22 @@ def cmd_survey(args: argparse.Namespace) -> int:
         try:
             PythonEmitter(module).emit()
         except EmitError as exc:
-            key = exc.reason.split(";")[0].strip()
+            key = blocker_category(exc.reason)
             emit_refused[key] = emit_refused.get(key, 0) + 1
             record.update(stage="emit", outcome="REFUSED", reason=key)
+            # Emission stops at the first refusal, which says nothing about how
+            # far the file is from translating.  Collect the whole set.
+            try:
+                found = sorted({b.category for b in survey_blockers(module)})
+            except Exception as exc2:  # noqa: BLE001 - reported, not hidden
+                crashed.append(
+                    {"file": record["file"], "error": f"survey: {exc2!r}"[:200]}
+                )
+                found = [key]
+            record["blockers"] = found
+            blocker_sets[record["file"]] = found
+            for category in found:
+                blocker_files.setdefault(category, set()).add(record["file"])
             per_file.append(record)
             continue
         except RecursionError:
@@ -172,6 +187,42 @@ def cmd_survey(args: argparse.Namespace) -> int:
         record.update(stage="emit", outcome="OK", digest=uir.digest(module))
         per_file.append(record)
 
+    histogram: dict[str, int] = {}
+    for found in blocker_sets.values():
+        histogram[str(len(found))] = histogram.get(str(len(found)), 0) + 1
+
+    # Files whose *entire* known blocker set is a single capability: implementing
+    # that one thing is projected to make them translatable.
+    one_away: dict[str, int] = {}
+    for path, found in blocker_sets.items():
+        if len(found) == 1:
+            one_away[found[0]] = one_away.get(found[0], 0) + 1
+
+    # And the greedy plan: repeatedly take the capability that frees the most
+    # files, given everything chosen before it.  This is what "what should we
+    # build next" actually asks.
+    remaining = {p: set(v) for p, v in blocker_sets.items()}
+    chosen: list[dict] = []
+    fixed: set = set()
+    for _ in range(12):
+        gains: dict[str, int] = {}
+        for path, found in remaining.items():
+            outstanding = found - fixed
+            if len(outstanding) == 1:
+                only = next(iter(outstanding))
+                gains[only] = gains.get(only, 0) + 1
+        if not gains:
+            break
+        best = max(gains.items(), key=lambda kv: (kv[1], kv[0]))
+        fixed.add(best[0])
+        chosen.append(
+            {
+                "capability": best[0],
+                "files_unblocked": best[1],
+                "cumulative": sum(c["files_unblocked"] for c in chosen) + best[1],
+            }
+        )
+
     summary = {
         "root": str(root),
         "files_seen": len(files),
@@ -184,6 +235,22 @@ def cmd_survey(args: argparse.Namespace) -> int:
         "emit_refusals": dict(sorted(emit_refused.items(), key=lambda kv: -kv[1])),
         "parse_rate": round(parsed / len(files), 4) if files else 0.0,
         "emit_rate": round(emitted / len(files), 4) if files else 0.0,
+        "blockers_per_file_histogram": dict(sorted(histogram.items(), key=lambda kv: int(kv[0]))),
+        "files_blocked_by_capability": dict(
+            sorted(
+                ((k, len(v)) for k, v in blocker_files.items()),
+                key=lambda kv: -kv[1],
+            )
+        ),
+        "one_blocker_away": dict(sorted(one_away.items(), key=lambda kv: -kv[1])),
+        "greedy_build_order": chosen,
+        "projection_caveat": (
+            "one_blocker_away and greedy_build_order are projections, not "
+            "measurements: where an expression could not be emitted a "
+            "placeholder took its place, so a construct consuming that value "
+            "may not have been reached. Fixing a listed capability makes a file "
+            "likely, not certain, to translate."
+        ),
     }
     if args.out:
         Path(args.out).write_text(

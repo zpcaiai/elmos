@@ -14,9 +14,9 @@ Java 源码
 
 | 指标 | 数值 | 怎么来的 |
 |---|---:|---|
-| 单元 + 端到端测试 | **205** | `make uir-j2p-test` |
+| 单元 + 端到端测试 | **214** | `make uir-j2p-test` |
 | 差分比较（Java vs Python 实跑） | **547** | 12 个语料程序 × 边界输入向量 |
-| 变异实验 | **69/69 全部杀死** | `make uir-j2p-mutation` |
+| 变异实验 | **73/73 全部杀死** | `make uir-j2p-mutation` |
 | elmos 仓库 884 个 Java 文件**能降级到 UIR** | **94.9%**（839 个） | `make uir-j2p-survey` |
 | 其中**能真正生成 Python** | **5.9%**（52 个） | 同上 |
 | 已实现路线 | **1 / 90** | `java → python` |
@@ -25,15 +25,28 @@ Java 源码
 
 这不是矛盾，是两件不同的事：把 `Foo.class` 如实记进 IR 很容易（它就是一个类字面量节点），把它*翻译*成等价的 Python 不可能（反射语义复现不了）。所以前端理解它、生成器拒绝它。降级率衡量的是"读懂了多少"，生成率衡量的是"能保证行为一致地搬过去多少"。**后者才是迁移真正的进度。**
 
-## 一条实测出来的规律：文件级覆盖率是"与"不是"或"
+## 最重要的一个测量结果：瓶颈不是库，是"只看一个文件"
 
-这一轮我完整实现了 `java.time`——700 行忠实运行时、12 个单元测试、8 个变异实验、全部对照真 Java 差分验证通过。`Instant` 原本在生成侧挡着 37 处。
+生成器原本在遇到第一个障碍时就停，所以"这个文件离能翻译还有多远"从来没被测过。现在 `survey` 会继续走完整个文件、收集**全部**障碍（`make uir-j2p-survey`，字段 `blockers_per_file_histogram` / `one_blocker_away` / `greedy_build_order`）。
 
-**生成率从 5.8% 涨到 5.9%——一个文件。**
+787 个生成失败的文件里：
 
-原因不是实现得不好，是**一个文件只有当它用到的每一个构造都能翻译时才算能翻译**。那 37 处 `Instant` 分布的文件里，大多同时还用着 Jackson、`Path`、`Set.of`、重载构造器。拆掉四个障碍中的一个，文件还是过不去。
+| | |
+|---|---:|
+| 只差 **1** 个能力 | 50（6%） |
+| 差 ≤2 个 | 119 |
+| 差 **>20** 个 | 302 |
+| **被"跨文件类型解析"挡住** | **742（94%）** |
 
-所以"哪个障碍出现次数最多"是个**错的排序依据**。对的问题是"哪些文件只差最后一个障碍"。这条规律是这次实测撞出来的，不是设计出来的——写在这里免得下一个人重复同样的判断。
+单看"哪个能力挡住最多文件"，第一名是重载构造器，做完解锁 **14** 个文件；贪心做完前 12 项，一共解锁 **68** 个。都是零头。
+
+**真正的瓶颈是结构性的：引擎一次只解析一个文件。** 一个调用如果指向别的文件里定义的类，它就没有类型，于是被拒。94% 的失败文件撞的是这一件事。
+
+把跨文件符号解析 + 构造器重载做掉之后的投影：**137 个文件障碍清零**（生成率 5.9% → 约 21%），另有 **218 个只剩最后一个障碍**。
+
+这也解释了前面几轮为什么白费力气——`java.time` 整个子系统换来一个文件，不是实现得不好，是**一直在错的轴上用力**。这个测量本身比它之前的任何一轮工作都更有价值。
+
+⚠️ `one_blocker_away` 和 `greedy_build_order` 是**投影不是测量**：表达式翻不动时会被占位符替换，消费这个值的构造可能就没被走到。修掉列出的能力让文件**很可能**能翻译，不是一定。类型来自前端而不是生成阶段，所以"类型错了又派生出假障碍"这种级联不会发生。
 
 ## 为什么代码长这样
 
@@ -90,7 +103,7 @@ pip install -r requirements.txt          # tree_sitter, tree_sitter_java
 python3 -m j2p.cli parse   Foo.java                    # 降级到 UIR，打印 digest
 python3 -m j2p.cli emit    Foo.java --out Foo.py --source-map Foo.map.json
 python3 -m j2p.cli diff    Foo.java --arity 2          # 真差分执行
-python3 -m j2p.cli survey  /path/to/java/tree          # 覆盖率与拒绝统计
+python3 -m j2p.cli survey  /path/to/java/tree          # 覆盖率、拒绝统计、每文件完整障碍集
 ```
 
 退出码：`0` 正常，`2` 差分不一致，`3` 拒绝翻译（这是正常结果，不是错误）。
@@ -143,7 +156,7 @@ runtime/j2p_errors.py       Java throwable 层级（运行时与 java.time 共�
 runtime/j2p_runtime.py      Java 语义的 Python 实现（生成代码依赖它）
 runtime/j2p_time.py         java.time，按 Java 自己的 (秒, 纳秒) 模型实现
 corpus/                     语义陷阱语料（溢出、负除、MIN_VALUE、Double.toString…）
-tests/                      205 个测试
-tools/mutation_check.py     69 个变异实验
+tests/                      214 个测试
+tools/mutation_check.py     73 个变异实验
 tools/record_batch_evidence.py  接入 batch1-38 的证据生产者
 ```

@@ -9,7 +9,15 @@ sampled inputs.  The differential tests cover behaviour; these cover intent.
 
 import unittest
 
-from j2p.emit.python import EmitError, PythonEmitter, emit_python
+from j2p.emit.python import (
+    BLOCKED_PLACEHOLDER,
+    EmitError,
+    PythonEmitter,
+    SurveyModeError,
+    blocker_category,
+    emit_python,
+    survey_blockers,
+)
 from j2p.frontend.java import parse_java
 
 
@@ -292,6 +300,87 @@ class UntranslatableTest(unittest.TestCase):
             parse_java(b"class T { T() { super(); } }", "T.java")
         )
         compile(code, "T.py", "exec")
+
+
+class BlockerSurveyTest(unittest.TestCase):
+    """The survey must see a file's whole blocker set, not just the first one."""
+
+    def _survey(self, body: str):
+        module = parse_java(
+            f"public class T {{\n{body}\n}}".encode("utf-8"), "T.java"
+        )
+        return survey_blockers(module)
+
+    def test_all_blockers_in_a_statement_are_collected(self):
+        # Stopping at the first would report one of these two.
+        found = self._survey(
+            'static void f(String a) { g(a.matches("x"), a.getBytes()); }\n'
+            "static void g(Object p, Object q) { }"
+        )
+        self.assertEqual(len(found), 2)
+
+    def test_blockers_across_statements_are_collected(self):
+        found = self._survey(
+            "static void f(String a, String b) {\n"
+            "  Object x = T.class;\n"
+            "  boolean c = (a == b);\n"
+            "  java.util.Set.of(1);\n"
+            "}"
+        )
+        self.assertGreaterEqual(len(found), 3)
+
+    def test_a_statement_level_blocker_does_not_hide_the_rest_of_its_method(self):
+        # Not every refusal comes from an expression: a fall-through switch is
+        # rejected by the statement emitter itself.  Recovering only at the
+        # method boundary would lose everything after it in the *same* method,
+        # which is exactly where the second blocker sits here.
+        found = self._survey(
+            "static Object f(int n, String a) {\n"
+            "  switch (n) { case 1: case 2: n = 3; break; default: n = 4; }\n"
+            "  Object x = T.class;\n"
+            "  return a.matches(\"x\");\n"
+            "}"
+        )
+        categories = {b.category for b in found}
+        self.assertEqual(len(categories), 3, categories)
+        self.assertTrue(any("falls through" in c for c in categories), categories)
+        self.assertTrue(any("runtime class object" in c for c in categories), categories)
+        self.assertTrue(any("matches" in c for c in categories), categories)
+
+    def test_a_file_with_no_blockers_reports_none(self):
+        self.assertEqual(self._survey("static int f(int a) { return a + 1; }"), [])
+
+    def test_blockers_carry_a_source_location(self):
+        found = self._survey("static Object f() { return T.class; }")
+        self.assertEqual(found[0].file, "T.java")
+        self.assertGreaterEqual(found[0].line, 1)
+
+    def test_survey_output_is_refused_as_code(self):
+        # It contains placeholders where translation failed; handing it back as
+        # a translation is exactly the failure this project exists to prevent.
+        module = parse_java(
+            b"public class T { static Object f() { return T.class; } }", "T.java"
+        )
+        emitter = PythonEmitter(module, survey=True)
+        with self.assertRaises(SurveyModeError):
+            emitter.emit()
+        self.assertIn(BLOCKED_PLACEHOLDER, "\n".join(emitter.lines))
+
+    def test_normal_mode_still_raises_on_the_first_blocker(self):
+        with self.assertRaises(EmitError):
+            emit("static Object f() { return T.class; }")
+
+    def test_categories_group_by_capability_not_by_occurrence(self):
+        # `T.class` and `Foo.class` are the same missing capability.
+        first = blocker_category("`T.class` has no translation: it denotes a runtime class object")
+        second = blocker_category("`Foo.class` has no translation: it denotes a runtime class object")
+        self.assertEqual(first, second)
+
+    def test_categories_keep_genuinely_different_reasons_apart(self):
+        self.assertNotEqual(
+            blocker_category("String.matches is not supported"),
+            blocker_category("String.getBytes is not supported"),
+        )
 
 
 class ReferenceEqualityTest(unittest.TestCase):

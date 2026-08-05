@@ -158,9 +158,58 @@ class SourceMapEntry:
     java_column: int
 
 
+#: A placeholder substituted for an expression that could not be emitted, used
+#: only while surveying.  It is deliberately not valid Python: code produced in
+#: survey mode must never be mistaken for a translation.
+BLOCKED_PLACEHOLDER = "<<blocked>>"
+
+
+_BACKTICKED = __import__("re").compile(r"`[^`]*`")
+_PARENTHESISED = __import__("re").compile(r"\s*\([^()]*\)")
+_WHITESPACE = __import__("re").compile(r"\s+")
+
+
+def blocker_category(reason: str) -> str:
+    """Normalise a refusal message into a comparable category.
+
+    Messages embed the specific name or type that triggered them, which is what
+    makes them useful to a human and useless to a histogram: ``T.class`` and
+    ``Foo.class`` are the same missing capability.  Quoted names and
+    parenthesised detail are therefore stripped before grouping, so the counts
+    are per *capability* rather than per occurrence.
+    """
+
+    text = reason.split(";")[0]
+    text = _BACKTICKED.sub("_", text)
+    text = _PARENTHESISED.sub("", text)
+    text = _WHITESPACE.sub(" ", text).strip()
+    return text[:110]
+
+
+@dataclass(frozen=True)
+class Blocker:
+    """One reason a file cannot be translated, with where it was found."""
+
+    category: str
+    reason: str
+    file: str
+    line: int
+    column: int
+
+
+class SurveyModeError(Exception):
+    """Raised when survey-mode output is mistaken for a translation."""
+
+
 class PythonEmitter:
-    def __init__(self, module: Module) -> None:
+    def __init__(self, module: Module, survey: bool = False) -> None:
         self.module = module
+        #: In survey mode the emitter records refusals and keeps going, so a
+        #: file's *whole* blocker set becomes visible instead of just whichever
+        #: one happened to come first.  The resulting text is not a translation
+        #: and `emit()` refuses to return it.
+        self.survey = survey
+        self.blockers: list[Blocker] = []
         self.lines: list[str] = []
         self.source_map: list[SourceMapEntry] = []
         self._static_methods: set[str] = set()
@@ -181,11 +230,45 @@ class PythonEmitter:
     # -- public -----------------------------------------------------------
 
     def emit(self) -> str:
+        text = self._emit_text()
+        if self.survey:
+            raise SurveyModeError(
+                "survey mode substitutes placeholders for what it could not "
+                "translate; its output is a measurement, not runnable code. "
+                "Use survey_blockers() instead."
+            )
+        return text
+
+    def _emit_text(self) -> str:
         self._header()
         for decl in self.module.types:
-            self._type_decl(decl)
+            self._guard(lambda d=decl: self._type_decl(d), decl.origin)
         self._main_entry()
         return "\n".join(self.lines) + "\n"
+
+    def _record(self, exc: "EmitError") -> None:
+        self.blockers.append(
+            Blocker(
+                category=blocker_category(exc.reason),
+                reason=exc.reason,
+                file=exc.origin.file,
+                line=exc.origin.line,
+                column=exc.origin.column,
+            )
+        )
+
+    def _guard(self, run, origin: Origin) -> bool:
+        """Run ``run``; in survey mode record a refusal instead of raising."""
+
+        if not self.survey:
+            run()
+            return True
+        try:
+            run()
+            return True
+        except EmitError as exc:
+            self._record(exc)
+            return False
 
     def source_map_entries(self) -> list[SourceMapEntry]:
         return list(self.source_map)
@@ -363,7 +446,8 @@ class PythonEmitter:
             if method.is_constructor:
                 continue
             self._write(0, "")
-            self._emit_method(method)
+            if not self._guard(lambda m=method: self._emit_method(m), method.origin):
+                self._write(1, "pass")
             body_started = True
 
         if not body_started:  # pragma: no cover - defensive
@@ -511,6 +595,20 @@ class PythonEmitter:
     # -- statements -------------------------------------------------------
 
     def _stmt(self, stmt: Stmt, indent: int) -> None:
+        if self.survey:
+            # A statement is a recovery point: one untranslatable statement must
+            # not hide the rest of the file.
+            depth = len(self.lines)
+            try:
+                self._stmt_inner(stmt, indent)
+            except EmitError as exc:
+                self._record(exc)
+                del self.lines[depth:]
+                self._write(indent, "pass", stmt.origin)
+            return
+        self._stmt_inner(stmt, indent)
+
+    def _stmt_inner(self, stmt: Stmt, indent: int) -> None:
         if isinstance(stmt, Block):
             if not stmt.body:
                 self._write(indent, "pass", stmt.origin)
@@ -961,6 +1059,17 @@ class PythonEmitter:
     # -- expressions ------------------------------------------------------
 
     def _expr(self, expr: Expr) -> str:
+        if self.survey:
+            # Expressions are the finer recovery point: `foo(a.bad(), b.alsoBad())`
+            # has two blockers, and stopping at the first would report one.
+            try:
+                return self._expr_inner(expr)
+            except EmitError as exc:
+                self._record(exc)
+                return BLOCKED_PLACEHOLDER
+        return self._expr_inner(expr)
+
+    def _expr_inner(self, expr: Expr) -> str:
         if isinstance(expr, IntLiteral):
             return repr(expr.value)
         if isinstance(expr, FloatLiteral):
@@ -1746,3 +1855,22 @@ class PythonEmitter:
 
 def emit_python(module: Module) -> str:
     return PythonEmitter(module).emit()
+
+
+def survey_blockers(module: Module) -> list[Blocker]:
+    """Every distinct reason ``module`` cannot be translated.
+
+    This is a *projection*, not a proof: where an expression could not be
+    emitted, a placeholder took its place, and a construct that consumed that
+    value may not have been reached.  Fixing everything listed here therefore
+    makes a file *likely* to translate, not certain to.  Types come from the
+    front end rather than from emission, so the common cascade -- a wrong type
+    inventing a second, spurious blocker -- does not occur.
+    """
+
+    emitter = PythonEmitter(module, survey=True)
+    try:
+        emitter.emit()
+    except SurveyModeError:
+        pass
+    return emitter.blockers
