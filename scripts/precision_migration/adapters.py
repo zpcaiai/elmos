@@ -31,6 +31,7 @@ from scripts.precision_migration.contracts import (  # noqa: E402
     contract_summary,
     validate_contract_binding,
 )
+from scripts.precision_migration.domain import execute_domain_skill  # noqa: E402
 from scripts.precision_migration.b41 import (  # noqa: E402
     execute_certificate_signing,
     execute_conversion_provenance,
@@ -42,6 +43,18 @@ from scripts.precision_migration.b41 import (  # noqa: E402
     execute_runtime_evidence_package,
     execute_semantic_loss_report,
     execute_unresolved_obligation_report,
+)
+from scripts.precision_migration.b42 import (  # noqa: E402
+    execute_automatic_rollback,
+    execute_canary_traffic_planner,
+    execute_dual_write_validation,
+    execute_live_event_replay,
+    execute_migration_wave_planner,
+    execute_post_cutover_monitoring,
+    execute_production_shadow_run,
+    execute_progressive_cutover,
+    execute_side_effect_suppression,
+    execute_strangler_routing,
 )
 from scripts.precision_migration.runtime import Registry, batch_plan, canonical_digest, evaluate  # noqa: E402
 from scripts.precision_migration.trust import (  # noqa: E402
@@ -477,6 +490,16 @@ HANDLERS: dict[str, Callable[..., dict[str, Any]]] = {
     "b41-release-gate-engine-v1": execute_release_gate,
     "b41-correctness-level-classifier-v1": execute_correctness_classifier,
     "b41-certificate-signing-v1": execute_certificate_signing,
+    "b42-production-shadow-run-v1": execute_production_shadow_run,
+    "b42-live-event-replay-v1": execute_live_event_replay,
+    "b42-side-effect-suppression-v1": execute_side_effect_suppression,
+    "b42-dual-write-validation-v1": execute_dual_write_validation,
+    "b42-canary-traffic-planner-v1": execute_canary_traffic_planner,
+    "b42-progressive-cutover-v1": execute_progressive_cutover,
+    "b42-automatic-rollback-v1": execute_automatic_rollback,
+    "b42-migration-wave-planner-v1": execute_migration_wave_planner,
+    "b42-strangler-routing-v1": execute_strangler_routing,
+    "b42-post-cutover-monitoring-v1": execute_post_cutover_monitoring,
 }
 
 
@@ -485,6 +508,9 @@ def resolve_handler(entry: dict[str, Any]) -> Callable[..., dict[str, Any]] | No
     if handler_id.startswith("precision-skill-v1:"):
         expected = f"precision-skill-v1:{entry.get('source_skill')}"
         return execute_skill_contract if handler_id == expected else None
+    if handler_id.startswith("domain-skill-v2:"):
+        expected = f"domain-skill-v2:{entry.get('source_skill')}"
+        return execute_domain_skill if handler_id == expected else None
     if handler_id.startswith("batch29-route-executor-v1:"):
         expected = f"batch29-route-executor-v1:{str(entry.get('source_skill', '')).removesuffix('-direction-pack')}"
         return execute_batch29_route if handler_id == expected else None

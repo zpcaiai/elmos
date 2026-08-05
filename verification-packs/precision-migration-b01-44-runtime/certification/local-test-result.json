@@ -2,8 +2,8 @@
   "schema_version": 1,
   "pack_key": "precision-migration-b01-44-runtime",
   "status": "PASSED",
-  "started_at": "2026-08-05T09:38:55.068985Z",
-  "completed_at": "2026-08-05T09:39:14.551526Z",
+  "started_at": "2026-08-05T10:31:38.420694Z",
+  "completed_at": "2026-08-05T10:32:06.405149Z",
   "executor": "local-engineering-runner",
   "independent_verifier": "NOT_RUN",
   "environment": {
@@ -37,8 +37,8 @@
       ],
       "exit_code": 0,
       "raw_evidence": "raw/runtime-tests.txt",
-      "digest": "sha256:5f439b7e40a8314c32061d321f1dc49e35e7bc116a7ba538ba7fb65fdc4a4fe6",
-      "size_bytes": 6154
+      "digest": "sha256:dd6b22adb0bcea255aa39a98b125c9cb4ab4bf4294b9053bae5549718df8bad3",
+      "size_bytes": 6814
     },
     "contract_qualification": {
       "command": [
@@ -50,6 +50,28 @@
       "raw_evidence": "raw/contract-qualification.txt",
       "digest": "sha256:6e2dec6a88cda985821a512b6e65a1a5c5dff0721d269b6664364354a229fe26",
       "size_bytes": 178
+    },
+    "bounded_domain_qualification": {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/precision_migration/qualify_domains.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "raw_evidence": "raw/bounded-domain-qualification.txt",
+      "digest": "sha256:1074a12e4f96c27876f295f3317f85bdfb32656d2d72d398628517c5240484fd",
+      "size_bytes": 190
+    },
+    "batch41_qualification": {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/precision_migration/qualify_b41.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "raw_evidence": "raw/batch41-qualification.txt",
+      "digest": "sha256:e573505834d3a6443181540f3182bc9cc360d8913071a6f429f1fb15cfa987a3",
+      "size_bytes": 164
     },
     "batch16_routes": {
       "command": [
@@ -73,11 +95,12 @@
       "size_bytes": 274
     }
   },
-  "test_count": 34,
+  "test_count": 38,
   "negative_corpus": "corpus/negative/cases.json",
-  "holdout_status": "PASSED_LOCAL_FOR_B16_30_OF_587; OTHER_DOMAIN_HOLDOUT_NOT_RUN",
-  "representative_workload_status": "PASSED_LOCAL_FOR_B16_30_OF_587; CUSTOMER_WORKLOAD_NOT_RUN",
+  "local_execution_status": "PASSED_BOUNDED_LOCAL_FOR_587_OF_587",
+  "holdout_status": "PASSED_ENGINEERING_FIXTURE_FOR_546_AND_NATIVE_LOCAL_B16_FOR_30; INDEPENDENT_HOLDOUT_NOT_RUN",
+  "representative_workload_status": "PASSED_ENGINEERING_FIXTURE_FOR_546_AND_NATIVE_LOCAL_B16_FOR_30; CUSTOMER_WORKLOAD_NOT_RUN",
   "external_evidence_status": "NOT_RUN",
   "production_certification": "NOT_CERTIFIED",
-  "result_digest": "sha256:dd612cf6627f3d910e96a9b77b2406c9c2f0c1c33ffff5ab0ffdef19a09bf3cc"
+  "result_digest": "sha256:1faf7844f7783f74f573748c1ecd6840940d6cd1abca7948a5d3499a5f631756"
 }

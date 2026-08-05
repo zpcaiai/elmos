@@ -1,10 +1,14 @@
 $ /opt/homebrew/opt/python@3.14/bin/python3.14 -m unittest discover -s tests/precision-migration -p test_*.py -v
+test_all_ten_handlers_execute_bounded_algorithms (test_precision_migration_b42.PrecisionMigrationB42Test.test_all_ten_handlers_execute_bounded_algorithms) ... ok
+test_all_ten_handlers_reject_tampered_input (test_precision_migration_b42.PrecisionMigrationB42Test.test_all_ten_handlers_reject_tampered_input) ... ok
+test_rollback_breach_requires_authorized_controller (test_precision_migration_b42.PrecisionMigrationB42Test.test_rollback_breach_requires_authorized_controller) ... ok
 test_all_child_skills_have_unique_digest_bound_executable_contracts (test_precision_migration_runtime.PrecisionMigrationRuntimeTest.test_all_child_skills_have_unique_digest_bound_executable_contracts) ... ok
 test_all_source_and_runtime_names_resolve_with_honest_maturity (test_precision_migration_runtime.PrecisionMigrationRuntimeTest.test_all_source_and_runtime_names_resolve_with_honest_maturity) ... ok
 test_approval_separation_of_duties_is_enforced (test_precision_migration_runtime.PrecisionMigrationRuntimeTest.test_approval_separation_of_duties_is_enforced) ... ok
 test_assessment_with_real_signed_evidence_is_verified (test_precision_migration_runtime.PrecisionMigrationRuntimeTest.test_assessment_with_real_signed_evidence_is_verified) ... ok
 test_b41_capabilities_use_ten_independent_handlers (test_precision_migration_runtime.PrecisionMigrationRuntimeTest.test_b41_capabilities_use_ten_independent_handlers) ... ok
 test_b41_ed25519_certificate_is_signed_and_immediately_verified (test_precision_migration_runtime.PrecisionMigrationRuntimeTest.test_b41_ed25519_certificate_is_signed_and_immediately_verified) ... ok
+test_b41_pkcs11_hsm_backend_fails_closed_without_pin (test_precision_migration_runtime.PrecisionMigrationRuntimeTest.test_b41_pkcs11_hsm_backend_fails_closed_without_pin) ... ok
 test_caller_boolean_cannot_claim_proof (test_precision_migration_runtime.PrecisionMigrationRuntimeTest.test_caller_boolean_cannot_claim_proof) ... ok
 test_digest_mismatch_is_rejected (test_precision_migration_runtime.PrecisionMigrationRuntimeTest.test_digest_mismatch_is_rejected) ... ok
 test_exact_batch29_route_adapter_transforms_builds_and_replays_behavior (test_precision_migration_runtime.PrecisionMigrationRuntimeTest.test_exact_batch29_route_adapter_transforms_builds_and_replays_behavior) ... ok
@@ -35,6 +39,6 @@ test_unsigned_authorization_is_rejected (test_precision_migration_runtime.Precis
 test_wrong_signing_role_is_rejected (test_precision_migration_runtime.PrecisionMigrationRuntimeTest.test_wrong_signing_role_is_rejected) ... ok
 
 ----------------------------------------------------------------------
-Ran 34 tests in 7.518s
+Ran 38 tests in 7.095s
 
 OK

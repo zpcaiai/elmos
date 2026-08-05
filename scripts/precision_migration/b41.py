@@ -227,11 +227,49 @@ def _confined_private_key(value: Any, roots: tuple[Path, ...]) -> Path:
     return resolved
 
 
+def _signing_command(
+    parameters: dict[str, Any],
+    roots: tuple[Path, ...],
+    payload_path: Path,
+    signature_path: Path,
+) -> tuple[list[str], dict[str, str], str, str]:
+    backend = parameters.get("signing_backend", "local-openssl-ed25519")
+    environment = {"PATH": os.environ.get("PATH", "")}
+    if backend == "local-openssl-ed25519":
+        key = _confined_private_key(parameters.get("signing_key_path"), roots)
+        return (
+            ["openssl", "pkeyutl", "-sign", "-inkey", str(key), "-rawin", "-in", str(payload_path), "-out", str(signature_path)],
+            environment,
+            "LOCAL_OPENSSL_ED25519",
+            "NOT_RUN",
+        )
+    if backend != "pkcs11-openssl-ed25519":
+        raise ValueError("signing_backend must be local-openssl-ed25519 or pkcs11-openssl-ed25519")
+    provider = parameters.get("hsm_provider")
+    key_uri = parameters.get("hsm_key_uri")
+    if provider != "pkcs11":
+        raise ValueError("HSM signing requires the allowlisted pkcs11 provider")
+    if not isinstance(key_uri, str) or not key_uri.startswith("pkcs11:") or any(character in key_uri for character in "\r\n\0"):
+        raise ValueError("HSM signing requires a valid PKCS#11 key URI")
+    pin = os.environ.get("ELMOS_PRECISION_HSM_PIN")
+    if not pin:
+        raise ValueError("HSM signing requires ELMOS_PRECISION_HSM_PIN")
+    environment["PKCS11_PIN"] = pin
+    return (
+        [
+            "openssl", "pkeyutl", "-provider", "default", "-provider", "pkcs11",
+            "-sign", "-inkey", key_uri, "-rawin", "-in", str(payload_path), "-out", str(signature_path),
+        ],
+        environment,
+        "PKCS11_OPENSSL_ED25519",
+        "EXECUTED_PENDING_VERIFICATION",
+    )
+
+
 def execute_certificate_signing(request: dict[str, Any], entry: dict[str, Any], output_dir: Path, *, evidence_roots: tuple[Path, ...], trust_store: TrustStore | None, **_: Any) -> dict[str, Any]:
     if trust_store is None:
         raise ValueError("certificate signing requires an independent trust store")
     parameters = request.get("inputs", {}).get("parameters", {})
-    key = _confined_private_key(parameters.get("signing_key_path"), evidence_roots)
     key_id = parameters.get("key_id")
     issued_at = parameters.get("issued_at")
     expires_at = parameters.get("expires_at")
@@ -239,15 +277,21 @@ def execute_certificate_signing(request: dict[str, Any], entry: dict[str, Any], 
     if not isinstance(key_id, str) or not key_id:
         raise ValueError("certificate signing requires key_id")
     if not isinstance(issued_at, str) or not isinstance(expires_at, str):
-        raise ValueError("certificate signing requires issued_at and expires_at")
+        raise TypeError("certificate signing requires issued_at and expires_at")
     if not isinstance(asset_index, int):
-        raise ValueError("payload_asset_index must be an integer")
+        raise TypeError("payload_asset_index must be an integer")
     assets = request.get("inputs", {}).get("assets", [])
     try:
         content = verify_content_reference(assets[asset_index], evidence_roots)
     except (IndexError, OSError, ValueError) as exc:
         raise ValueError(f"certificate payload verification failed: {exc}") from exc
-    payload = {
+    with tempfile.TemporaryDirectory(prefix="precision-sign-") as temporary:
+        payload_path = Path(temporary) / "payload.json"
+        signature_path = Path(temporary) / "signature.bin"
+        command, signing_environment, signing_backend, hsm_execution = _signing_command(
+            parameters, evidence_roots, payload_path, signature_path
+        )
+        payload = {
         "record_type": "PRECISION_MIGRATION_CERTIFICATE",
         "record_id": canonical_digest({"request_id": request["request_id"], "content": content["digest"]}),
         "request_id": request["request_id"],
@@ -256,19 +300,16 @@ def execute_certificate_signing(request: dict[str, Any], entry: dict[str, Any], 
         "content_size_bytes": content["size_bytes"],
         "issued_at": issued_at,
         "expires_at": expires_at,
-        "signing_backend": "LOCAL_OPENSSL_ED25519",
-        "hsm_execution": "NOT_RUN",
-    }
-    with tempfile.TemporaryDirectory(prefix="precision-sign-") as temporary:
-        payload_path = Path(temporary) / "payload.json"
-        signature_path = Path(temporary) / "signature.bin"
+        "signing_backend": signing_backend,
+        "hsm_execution": hsm_execution,
+        }
         payload_path.write_bytes(canonical_bytes(payload))
         completed = subprocess.run(
-            ["openssl", "pkeyutl", "-sign", "-inkey", str(key), "-rawin", "-in", str(payload_path), "-out", str(signature_path)],
+            command,
             check=False,
             capture_output=True,
             timeout=30,
-            env={"PATH": os.environ.get("PATH", "")},
+            env=signing_environment,
         )
         if completed.returncode != 0:
             raise ValueError("Ed25519 signing failed: " + completed.stderr.decode("utf-8", errors="replace")[-500:])
@@ -289,8 +330,9 @@ def execute_certificate_signing(request: dict[str, Any], entry: dict[str, Any], 
         },
         now=datetime.now(timezone.utc),
     )
+    final_hsm_state = "PASSED" if payload["signing_backend"] == "PKCS11_OPENSSL_ED25519" else "NOT_RUN"
     return _result(
         output_dir,
         "signed-certificate.json",
-        {"schema_version": 1, "envelope": envelope, "trust_store_digest": trust_store.digest, "verification": "PASSED", "hsm_execution": "NOT_RUN"},
+        {"schema_version": 1, "envelope": envelope, "trust_store_digest": trust_store.digest, "verification": "PASSED", "hsm_execution": final_hsm_state},
     )

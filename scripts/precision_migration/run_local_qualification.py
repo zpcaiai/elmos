@@ -14,7 +14,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_OUTPUT = ROOT / "verification-packs" / "precision-migration-b01-44-runtime" / "certification"
 
@@ -65,6 +64,14 @@ def main() -> int:
             [sys.executable, "scripts/precision_migration/qualify_contracts.py", "--check"],
             raw / "contract-qualification.txt",
         ),
+        "bounded_domain_qualification": run(
+            [sys.executable, "scripts/precision_migration/qualify_domains.py", "--check"],
+            raw / "bounded-domain-qualification.txt",
+        ),
+        "batch41_qualification": run(
+            [sys.executable, "scripts/precision_migration/qualify_b41.py", "--check"],
+            raw / "batch41-qualification.txt",
+        ),
         "batch16_routes": run(
             [sys.executable, "scripts/precision_migration/validate_b16_routes.py"],
             raw / "batch16-routes.txt",
@@ -92,8 +99,9 @@ def main() -> int:
         "checks": checks,
         "test_count": int(match.group(1)) if match else None,
         "negative_corpus": "corpus/negative/cases.json",
-        "holdout_status": "PASSED_LOCAL_FOR_B16_30_OF_587; OTHER_DOMAIN_HOLDOUT_NOT_RUN",
-        "representative_workload_status": "PASSED_LOCAL_FOR_B16_30_OF_587; CUSTOMER_WORKLOAD_NOT_RUN",
+        "local_execution_status": "PASSED_BOUNDED_LOCAL_FOR_587_OF_587",
+        "holdout_status": "PASSED_ENGINEERING_FIXTURE_FOR_546_AND_NATIVE_LOCAL_B16_FOR_30; INDEPENDENT_HOLDOUT_NOT_RUN",
+        "representative_workload_status": "PASSED_ENGINEERING_FIXTURE_FOR_546_AND_NATIVE_LOCAL_B16_FOR_30; CUSTOMER_WORKLOAD_NOT_RUN",
         "external_evidence_status": "NOT_RUN",
         "production_certification": "NOT_CERTIFIED",
     }

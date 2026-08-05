@@ -10,12 +10,11 @@ import re
 import subprocess
 import sys
 from collections import Counter
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable
 
 import jsonschema
 import yaml
-
 
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
@@ -115,7 +114,7 @@ def main() -> int:
             fail(f"verification {label} source digest drifted")
         if exact_scope.get("target_artifact_digest") != installed_digest:
             fail(f"verification {label} target digest drifted")
-    if set(path.name for path in SCHEMA_ROOT.glob("*.json")) != EXPECTED_SCHEMAS:
+    if {path.name for path in SCHEMA_ROOT.glob("*.json")} != EXPECTED_SCHEMAS:
         fail("Precision Migration schema inventory drifted")
     for schema_path in sorted(SCHEMA_ROOT.glob("*.json")):
         schema = json.loads(schema_path.read_text(encoding="utf-8"))
@@ -179,7 +178,13 @@ def main() -> int:
             fail(f"workspace Skill interface mismatch: {name}")
         maturity = record.get("maturity")
         state = record["binding"].get("binding_state")
-        if (state == "DECLARED") != (maturity == "ADAPTER_DECLARED"):
+        declared_maturities = {
+            "ADAPTER_DECLARED", "ADAPTER_CONTRACT_PASSED", "LOCAL_EXECUTED",
+            "HOLDOUT_PASSED", "EXTERNAL_VERIFIED", "CERTIFIED",
+        }
+        if (state == "DECLARED" and maturity not in declared_maturities) or (
+            state != "DECLARED" and maturity in declared_maturities
+        ):
             invalid_maturity.append(name)
 
     if kinds != {"skill": 587, "batch-orchestrator": 44, "global-orchestrator": 1}:
@@ -217,8 +222,8 @@ def main() -> int:
         check=True,
     )
 
-    from scripts.precision_migration.runtime import Registry, evaluate
     from scripts.precision_migration.contracts import ContractRegistry
+    from scripts.precision_migration.runtime import Registry, evaluate
 
     registry = Registry.load()
     contracts = ContractRegistry.load(EXECUTABLE_CONTRACTS)
@@ -245,7 +250,10 @@ def main() -> int:
                 "runtime_skills": 632,
                 "workspace_skills": 632,
                 "schemas": len(EXPECTED_SCHEMAS),
-                "adapter_contracts": manifest["maturity_counts"].get("ADAPTER_DECLARED", 0),
+                "adapter_contracts": sum(
+                    1 for item in adapter_registry["entries"]
+                    if item.get("binding_state") == "DECLARED"
+                ),
                 "installed_without_adapter": manifest["maturity_counts"].get("INSTALLED", 0),
                 "external_evidence": "NOT_RUN",
                 "production_certification": "NOT_CERTIFIED",

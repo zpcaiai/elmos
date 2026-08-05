@@ -47,6 +47,8 @@ precision-migration-b01-44-skills:
 precision-migration-b01-44-check: precision-migration-b01-44-skills
 	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests/precision-migration -p 'test_*.py'
 	python3 scripts/precision_migration/qualify_contracts.py --check
+	python3 scripts/precision_migration/qualify_domains.py --check
+	python3 scripts/precision_migration/qualify_b41.py --check
 	python3 scripts/precision_migration/validate_b16_routes.py
 	python3 scripts/precision_migration/build_coverage.py --check
 	$(UV) run --quiet --with jsonschema python scripts/batch35/validate_verification_pack.py verification-packs/precision-migration-b01-44-runtime

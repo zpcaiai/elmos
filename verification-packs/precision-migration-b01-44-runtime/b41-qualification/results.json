@@ -1,0 +1,540 @@
+{
+  "all_tests_passed": true,
+  "execution_scope": "BOUNDED_LOCAL",
+  "hsm_execution": "NOT_RUN",
+  "independent_verification": "NOT_RUN",
+  "production_certification": "NOT_CERTIFIED",
+  "result_count": 50,
+  "results": [
+    {
+      "evidence": {
+        "bounded_local": true,
+        "execution_state": "LOCAL_EXECUTED",
+        "exit_code": 0
+      },
+      "result_digest": "sha256:1c64623464fd905211f212dd6f5c78da0d1d9b9c39c28f858ab73e70425b5a28",
+      "skill": "pm-b41-certificate-signing",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "fail_closed": true
+      },
+      "result_digest": "sha256:aa9f87142b7fba9d0e17cac6ebe9415564268bd43db520d84a8a48c8bdc50bfc",
+      "skill": "pm-b41-certificate-signing",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "entrypoint": "scripts.precision_migration.b41:execute_certificate_signing",
+        "handler_id": "b41-certificate-signing-v1"
+      },
+      "result_digest": "sha256:f14c2f5abca82f7487996c69f38f965c13ce05195bfbb17f003ca2cb61cdefbd",
+      "skill": "pm-b41-certificate-signing",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "bounded_local": true,
+        "execution_state": "LOCAL_EXECUTED",
+        "exit_code": 0
+      },
+      "result_digest": "sha256:9419d178c80195be941c7d6354bcec6e9518cfec4d01307f58b3f28a5e7371c6",
+      "skill": "pm-b41-certificate-signing",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "bounded_local": true,
+        "execution_state": "LOCAL_EXECUTED",
+        "exit_code": 0
+      },
+      "result_digest": "sha256:810ea6854bfce7e06595edf37f5f557bfc3cff30b4a4bf0152b6269533be9656",
+      "skill": "pm-b41-certificate-signing",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "bounded_local": true,
+        "execution_state": "LOCAL_EXECUTED",
+        "exit_code": 0
+      },
+      "result_digest": "sha256:e1a2e655e94e331ffd0c4b51669f62233396ff0a110a5d25e106c4fe6ac5d0d2",
+      "skill": "pm-b41-conversion-provenance",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "fail_closed": true
+      },
+      "result_digest": "sha256:02c2ec64f569939923224661692b7093477636790df8a33d36f9cb8540cad2b6",
+      "skill": "pm-b41-conversion-provenance",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "entrypoint": "scripts.precision_migration.b41:execute_conversion_provenance",
+        "handler_id": "b41-conversion-provenance-v1"
+      },
+      "result_digest": "sha256:ac8c4117e6fe2c49babe5a5d4bad3425f96b99fae3bc2efb39cde4f601082d48",
+      "skill": "pm-b41-conversion-provenance",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "bounded_local": true,
+        "execution_state": "LOCAL_EXECUTED",
+        "exit_code": 0
+      },
+      "result_digest": "sha256:4626a960bca8a863996f7ed80ecb8641a0b5f00a00639963a4cfd8028cf76972",
+      "skill": "pm-b41-conversion-provenance",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "bounded_local": true,
+        "execution_state": "LOCAL_EXECUTED",
+        "exit_code": 0
+      },
+      "result_digest": "sha256:580bbbb0aadd4480b38b768992f570d4032154621ddb2d5da1cf6f1ccbe18db9",
+      "skill": "pm-b41-conversion-provenance",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "bounded_local": true,
+        "execution_state": "LOCAL_EXECUTED",
+        "exit_code": 0
+      },
+      "result_digest": "sha256:14ace2f9057703fec139416f3b5ee7e4a696ede32ace652864a6a9f20e07663b",
+      "skill": "pm-b41-correctness-level-classifier",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "fail_closed": true
+      },
+      "result_digest": "sha256:300340441eaeba217b2aa1c7a08553aeff173b6db29b59e7620ea4988c67ad27",
+      "skill": "pm-b41-correctness-level-classifier",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "entrypoint": "scripts.precision_migration.b41:execute_correctness_classifier",
+        "handler_id": "b41-correctness-level-classifier-v1"
+      },
+      "result_digest": "sha256:0a91f48d61d408c49e2d7227d2661e92fa7770339fa1e4b51b88d2da41534ca4",
+      "skill": "pm-b41-correctness-level-classifier",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "bounded_local": true,
+        "execution_state": "LOCAL_EXECUTED",
+        "exit_code": 0
+      },
+      "result_digest": "sha256:ec0b9694d25fe0631117412c9a169ea744e8e73434e7a35ae28df05a9fb9ffe0",
+      "skill": "pm-b41-correctness-level-classifier",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "bounded_local": true,
+        "execution_state": "LOCAL_EXECUTED",
+        "exit_code": 0
+      },
+      "result_digest": "sha256:1aee4e57e217036e379616fc13e946bddf6d6baeb8a77bc04bdb4b0d6917873d",
+      "skill": "pm-b41-correctness-level-classifier",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "bounded_local": true,
+        "execution_state": "LOCAL_EXECUTED",
+        "exit_code": 0
+      },
+      "result_digest": "sha256:5d4b423dccb3714b2bde660f4abab4b60535803e27eb98e4a1f8a6de81185d3f",
+      "skill": "pm-b41-evidence-manifest",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "fail_closed": true
+      },
+      "result_digest": "sha256:02672171f873104a17218ace5965e56f2b7523a17ae1515e1cf402a276853bb5",
+      "skill": "pm-b41-evidence-manifest",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "entrypoint": "scripts.precision_migration.b41:execute_evidence_manifest",
+        "handler_id": "b41-evidence-manifest-v1"
+      },
+      "result_digest": "sha256:2e58c86f2177efb3171da14ab342beb803e87266932d59bd6d60503224c26948",
+      "skill": "pm-b41-evidence-manifest",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "bounded_local": true,
+        "execution_state": "LOCAL_EXECUTED",
+        "exit_code": 0
+      },
+      "result_digest": "sha256:16238448cdfd8a264ad3171251ee2bbd10928929947014cb2f963a8da0d53a4e",
+      "skill": "pm-b41-evidence-manifest",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "bounded_local": true,
+        "execution_state": "LOCAL_EXECUTED",
+        "exit_code": 0
+      },
+      "result_digest": "sha256:eb9a638f79af1a6da99c83143948b91cbadee6872e0c877f3a3428bffdb8c6d1",
+      "skill": "pm-b41-evidence-manifest",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "bounded_local": true,
+        "execution_state": "CONDITIONALLY_VERIFIED",
+        "exit_code": 4
+      },
+      "result_digest": "sha256:8b36fced3137524a7b8dd1d52957ef57df339046104106362b79316d7319f958",
+      "skill": "pm-b41-module-equivalence-certificate",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "fail_closed": true
+      },
+      "result_digest": "sha256:e90107c89a122b9f656b93f2c4f086aaf3caf370505875de26eb94aea20efc0b",
+      "skill": "pm-b41-module-equivalence-certificate",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "entrypoint": "scripts.precision_migration.b41:execute_module_equivalence_certificate",
+        "handler_id": "b41-module-equivalence-certificate-v1"
+      },
+      "result_digest": "sha256:55ca5461fa554ed36e0eeb2265887b7e9521f3cdabb3ffd5583ca98f4761f946",
+      "skill": "pm-b41-module-equivalence-certificate",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "bounded_local": true,
+        "execution_state": "CONDITIONALLY_VERIFIED",
+        "exit_code": 4
+      },
+      "result_digest": "sha256:bdfa7cf950ac85e86ff33970bfada853f236b65c26921b143333976c0f8ad738",
+      "skill": "pm-b41-module-equivalence-certificate",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "bounded_local": true,
+        "execution_state": "CONDITIONALLY_VERIFIED",
+        "exit_code": 4
+      },
+      "result_digest": "sha256:5a055b2597dfcf966adcbc21702a8c6b44baad100dc6e79275a55cd8098fda55",
+      "skill": "pm-b41-module-equivalence-certificate",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "bounded_local": true,
+        "execution_state": "CONDITIONALLY_VERIFIED",
+        "exit_code": 4
+      },
+      "result_digest": "sha256:ebfa00c20738d92849431d63001da0a23243fc3828016499d18b13319dbd1dda",
+      "skill": "pm-b41-release-gate-engine",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "fail_closed": true
+      },
+      "result_digest": "sha256:6d278483e0377846930d926ec8af01e247dd14bc3b56dfe77cfa711f6e23bdd1",
+      "skill": "pm-b41-release-gate-engine",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "entrypoint": "scripts.precision_migration.b41:execute_release_gate",
+        "handler_id": "b41-release-gate-engine-v1"
+      },
+      "result_digest": "sha256:35bd6a2f9260c44663b95a961f713ffc4bc6a1ccad20cac932eb7be741028750",
+      "skill": "pm-b41-release-gate-engine",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "bounded_local": true,
+        "execution_state": "CONDITIONALLY_VERIFIED",
+        "exit_code": 4
+      },
+      "result_digest": "sha256:0544b13a7b61f55c9d0ad6be648f8397495a16ad503d36e40acc1b55c107c414",
+      "skill": "pm-b41-release-gate-engine",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "bounded_local": true,
+        "execution_state": "CONDITIONALLY_VERIFIED",
+        "exit_code": 4
+      },
+      "result_digest": "sha256:15cdc4fd771b2202d41fe8346abf69c23652f6f636e8ed59f98b1d417347ceb3",
+      "skill": "pm-b41-release-gate-engine",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "bounded_local": true,
+        "execution_state": "CONDITIONALLY_VERIFIED",
+        "exit_code": 4
+      },
+      "result_digest": "sha256:cbe6ca19331ea0e159b468e56f9a3bd0ba85ac3a50d2427f9b520855c5f8b59d",
+      "skill": "pm-b41-rule-proof-certificate",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "fail_closed": true
+      },
+      "result_digest": "sha256:3cee2b6268b977dfbf2f31efcce06199fa70e6618b372eb4c41761071c2a5e06",
+      "skill": "pm-b41-rule-proof-certificate",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "entrypoint": "scripts.precision_migration.b41:execute_rule_proof_certificate",
+        "handler_id": "b41-rule-proof-certificate-v1"
+      },
+      "result_digest": "sha256:6ceab974f83d8f2200e4a6a9034660405644abf6bae62f01003c02eb95bfc32c",
+      "skill": "pm-b41-rule-proof-certificate",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "bounded_local": true,
+        "execution_state": "CONDITIONALLY_VERIFIED",
+        "exit_code": 4
+      },
+      "result_digest": "sha256:db7198e6d4a8c3e81805b5b3e42cef549a19983ce3e3257b7bc5a522ef76950b",
+      "skill": "pm-b41-rule-proof-certificate",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "bounded_local": true,
+        "execution_state": "CONDITIONALLY_VERIFIED",
+        "exit_code": 4
+      },
+      "result_digest": "sha256:a1457e8f2975b70d1675bfd4f99fae19668e08c2c96943958745fbb6a8c304e1",
+      "skill": "pm-b41-rule-proof-certificate",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "bounded_local": true,
+        "execution_state": "LOCAL_EXECUTED",
+        "exit_code": 0
+      },
+      "result_digest": "sha256:db8bac615323adadf3b406c008a8985c95d5763ec4e35dad482efe49dc0aedd3",
+      "skill": "pm-b41-runtime-evidence-package",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "fail_closed": true
+      },
+      "result_digest": "sha256:e115e734d2af6254dff2a81f299a30ba94da149bf7553a52cbd6765be14619c2",
+      "skill": "pm-b41-runtime-evidence-package",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "entrypoint": "scripts.precision_migration.b41:execute_runtime_evidence_package",
+        "handler_id": "b41-runtime-evidence-package-v1"
+      },
+      "result_digest": "sha256:8ddbd3ee244e28e94aa4c9f76ffb21aa963beaecbb30b3958d7259ac26566515",
+      "skill": "pm-b41-runtime-evidence-package",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "bounded_local": true,
+        "execution_state": "LOCAL_EXECUTED",
+        "exit_code": 0
+      },
+      "result_digest": "sha256:0fce84a478fab4ab8b25b01a6256a9b6999e3d2444c5dd520328e70dfd90174c",
+      "skill": "pm-b41-runtime-evidence-package",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "bounded_local": true,
+        "execution_state": "LOCAL_EXECUTED",
+        "exit_code": 0
+      },
+      "result_digest": "sha256:02ada8c050a17538e212a641d6afa920f22015c1a2afe6a70cae07269eaff20b",
+      "skill": "pm-b41-runtime-evidence-package",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "bounded_local": true,
+        "execution_state": "LOCAL_EXECUTED",
+        "exit_code": 0
+      },
+      "result_digest": "sha256:423cfbf9129bef52aa13ca36c790e1eefa0cf8dae2763978c7a8638a354a1b91",
+      "skill": "pm-b41-semantic-loss-report",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "fail_closed": true
+      },
+      "result_digest": "sha256:6c4b8f2a168fdea08d73b4ef84d4d792cd9be47caed915a0c5185c0166039010",
+      "skill": "pm-b41-semantic-loss-report",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "entrypoint": "scripts.precision_migration.b41:execute_semantic_loss_report",
+        "handler_id": "b41-semantic-loss-report-v1"
+      },
+      "result_digest": "sha256:b12e1cf4bdb429b2d8663d94db2ff6667c220f04f96f090f87b20cb890d7cd11",
+      "skill": "pm-b41-semantic-loss-report",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "bounded_local": true,
+        "execution_state": "LOCAL_EXECUTED",
+        "exit_code": 0
+      },
+      "result_digest": "sha256:59914a426167668f37b3dccb68514a5dde687217a9f100e4c048b2f30e390d09",
+      "skill": "pm-b41-semantic-loss-report",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "bounded_local": true,
+        "execution_state": "LOCAL_EXECUTED",
+        "exit_code": 0
+      },
+      "result_digest": "sha256:fbbb146de06d966e27f02fe68abc67d0c8b7dee8cdb394e241b484190d8468b3",
+      "skill": "pm-b41-semantic-loss-report",
+      "state": "PASS",
+      "test_type": "representative"
+    },
+    {
+      "evidence": {
+        "bounded_local": true,
+        "execution_state": "LOCAL_EXECUTED",
+        "exit_code": 0
+      },
+      "result_digest": "sha256:0a5c92eeb1f5940744a6730af0c047d786e60d92f634709ccbc19b8b31b59b77",
+      "skill": "pm-b41-unresolved-obligation-report",
+      "state": "PASS",
+      "test_type": "positive"
+    },
+    {
+      "evidence": {
+        "fail_closed": true
+      },
+      "result_digest": "sha256:f4499a53d113ef8b9302e04ac05550b4769ebf463f491cee0064ab7e44e2a439",
+      "skill": "pm-b41-unresolved-obligation-report",
+      "state": "PASS",
+      "test_type": "negative"
+    },
+    {
+      "evidence": {
+        "entrypoint": "scripts.precision_migration.b41:execute_unresolved_obligation_report",
+        "handler_id": "b41-unresolved-obligation-report-v1"
+      },
+      "result_digest": "sha256:ee8793c0b23a55886eb1b6bbc34bb8335b17d494b553d86e35f5aa4244d4a8bc",
+      "skill": "pm-b41-unresolved-obligation-report",
+      "state": "PASS",
+      "test_type": "integration"
+    },
+    {
+      "evidence": {
+        "bounded_local": true,
+        "execution_state": "LOCAL_EXECUTED",
+        "exit_code": 0
+      },
+      "result_digest": "sha256:72aae17b995178269a82a54e32bf384b81225754de066174587b3fa3d232b6eb",
+      "skill": "pm-b41-unresolved-obligation-report",
+      "state": "PASS",
+      "test_type": "holdout"
+    },
+    {
+      "evidence": {
+        "bounded_local": true,
+        "execution_state": "LOCAL_EXECUTED",
+        "exit_code": 0
+      },
+      "result_digest": "sha256:744709d3c357ed885d2c70c494e7a1214b426a5d0e0a049ad76f69fdc69c637a",
+      "skill": "pm-b41-unresolved-obligation-report",
+      "state": "PASS",
+      "test_type": "representative"
+    }
+  ],
+  "schema_version": 1,
+  "skill_count": 10,
+  "suite": "precision-migration-b41-bounded-local-v1",
+  "test_types": [
+    "positive",
+    "negative",
+    "integration",
+    "holdout",
+    "representative"
+  ]
+}

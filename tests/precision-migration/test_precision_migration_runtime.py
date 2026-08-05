@@ -10,33 +10,32 @@ import tempfile
 import unittest
 from datetime import datetime, timezone
 from pathlib import Path
-
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
-from scripts.precision_migration.adapters import AdapterRegistry, execute  # noqa: E402
-from scripts.precision_migration.contracts import ContractRegistry  # noqa: E402
-from scripts.precision_migration.run_gate import (  # noqa: E402
+from scripts.precision_migration.adapters import AdapterRegistry, execute
+from scripts.precision_migration.contracts import ContractRegistry
+from scripts.precision_migration.jobs import JobError, JobStore
+from scripts.precision_migration.run_gate import (
     EXTERNAL_CHECKS,
     LOCAL_CHECKS,
     evaluate_gate,
     gate_binding_digest,
 )
-from scripts.precision_migration.jobs import JobError, JobStore  # noqa: E402
-from scripts.precision_migration.runtime import (  # noqa: E402
+from scripts.precision_migration.runtime import (
     Registry,
     batch_plan,
     evaluate,
     write_bundle,
 )
-from scripts.precision_migration.trust import (  # noqa: E402
+from scripts.precision_migration.trust import (
     TrustStore,
     canonical_bytes,
     request_binding_digest,
     verify_content_reference,
 )
-
 
 NOW = datetime(2026, 1, 1, tzinfo=timezone.utc)
 ENVIRONMENT_DIGEST = "sha256:" + "b" * 64
@@ -283,8 +282,9 @@ class PrecisionMigrationRuntimeTest(unittest.TestCase):
         self.assertEqual(632, self.registry.manifest["workspace_skill_count"])
         self.assertEqual("ALL_RUNTIME_SKILLS", self.registry.manifest["workspace_installation"])
         maturities = {record["maturity"] for record in self.registry.by_runtime_name.values()}
-        self.assertEqual({"ADAPTER_DECLARED"}, maturities)
-        self.assertEqual(632, sum(record["maturity"] == "ADAPTER_DECLARED" for record in self.registry.by_runtime_name.values()))
+        self.assertEqual({"ADAPTER_DECLARED", "LOCAL_EXECUTED"}, maturities)
+        self.assertEqual(45, sum(record["maturity"] == "ADAPTER_DECLARED" for record in self.registry.by_runtime_name.values()))
+        self.assertEqual(587, sum(record["maturity"] == "LOCAL_EXECUTED" for record in self.registry.by_runtime_name.values()))
         for runtime_name, record in self.registry.by_runtime_name.items():
             self.assertEqual(record, self.registry.resolve(runtime_name))
             self.assertEqual(record, self.registry.resolve(record["source_name"]))
@@ -571,7 +571,10 @@ class PrecisionMigrationRuntimeTest(unittest.TestCase):
             adapter_registry=self.adapter_registry,
             skill_registry=self.registry,
         )
-        self.assertEqual("CONDITIONALLY_VERIFIED", result["execution_state"])
+        self.assertEqual("LOCAL_EXECUTED", result["execution_state"])
+        domain_result = json.loads((output / "domain-execution.json").read_text())
+        self.assertEqual("BOUNDED_STRUCTURED_LOCAL", domain_result["execution_scope"])
+        self.assertEqual("NOT_RUN", domain_result["native_toolchain_execution"])
         self.assertFalse((ROOT / "should-not-exist").exists())
 
     def test_b41_capabilities_use_ten_independent_handlers(self) -> None:
@@ -602,6 +605,27 @@ class PrecisionMigrationRuntimeTest(unittest.TestCase):
         certificate = json.loads((output / "signed-certificate.json").read_text())
         self.assertEqual("PASSED", certificate["verification"])
         self.assertEqual("NOT_RUN", certificate["hsm_execution"])
+
+    def test_b41_pkcs11_hsm_backend_fails_closed_without_pin(self) -> None:
+        request = self.base_request("certificate-signing", "validate")
+        request["inputs"]["parameters"] = {
+            "signing_backend": "pkcs11-openssl-ed25519",
+            "hsm_provider": "pkcs11",
+            "hsm_key_uri": "pkcs11:token=precision;object=release-key;type=private",
+            "key_id": "hsm-release-key",
+            "payload_asset_index": 0,
+            "issued_at": "2025-12-31T00:00:00Z",
+            "expires_at": "2026-12-31T00:00:00Z",
+        }
+        with mock.patch.dict(os.environ, {}, clear=True), self.assertRaisesRegex(ValueError, "ELMOS_PRECISION_HSM_PIN"):
+            execute(
+                request,
+                self.root / "b41-hsm-missing-pin",
+                evidence_roots=[self.root],
+                trust_store=self.trust_store,
+                adapter_registry=self.adapter_registry,
+                skill_registry=self.registry,
+            )
 
     def test_tenant_job_lifecycle_retry_and_audit_are_durable(self) -> None:
         store = JobStore(self.root / "jobs-lifecycle", max_active=2, max_jobs=10, max_bytes=10_000_000)

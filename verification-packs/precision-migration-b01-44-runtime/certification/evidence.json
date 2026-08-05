@@ -9,8 +9,12 @@
     "installed_without_exact_adapter": 0,
     "exact_executable_contracts": 587,
     "contract_qualification_results": 2935,
-    "focused_local_execution": 31,
-    "runtime_tests": 34,
+    "bounded_local_execution": 587,
+    "bounded_domain_execution": 536,
+    "bounded_domain_qualification_results": 2680,
+    "b41_qualification_results": 50,
+    "b42_independent_handlers": 10,
+    "runtime_tests": 38,
     "browser_api_e2e": 2,
     "b16_native_routes_passed": 30,
     "b16_negative_routes_passed": 30,
@@ -31,6 +35,6 @@
     "accepted_requester_self_approval": 0,
     "accepted_weakened_job_policy": 0
   },
-  "evidence_refs": ["certification/local-test-result.json", "certification/raw/browser-e2e-observation.json", "coverage/coverage-matrix.json", "contract-qualification/results.json", "corpus/negative/cases.json"],
-  "notes": ["Local engineering qualification only.", "Thirty B16 routes have local native, negative, holdout, and bounded representative evidence.", "Other domain-native, independent, customer, HSM, Canary, rollback, production, and certification evidence remain NOT_RUN."]
+  "evidence_refs": ["certification/local-test-result.json", "certification/raw/browser-e2e-observation.json", "coverage/coverage-matrix.json", "contract-qualification/results.json", "domain-qualification/results.json", "b41-qualification/results.json", "corpus/negative/cases.json"],
+  "notes": ["Local engineering qualification only.", "All 587 child Skills have bounded local execution evidence; 536 use structured domain algorithms.", "Thirty B16 routes have local native, negative, holdout, and bounded representative evidence.", "Native breadth outside B16, independent, customer, real HSM, authorized Canary/rollback, production, and certification evidence remain NOT_RUN."]
 }

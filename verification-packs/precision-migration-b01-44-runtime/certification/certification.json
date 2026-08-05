@@ -6,7 +6,7 @@
   "exact_scope": {
     "migration_route": "precision-source-contract-to-allowlisted-runtime",
     "source_artifact_digest": "sha256:54783f4ec2b33559f14fc5de91b5f19583d43ceeba46c59e27fa81297422a8a4",
-    "target_artifact_digest": "sha256:2b79d1102a0fdcf73ef365fae3ea52aaae76caff1ec26d24a0d2cae646870e4b",
+    "target_artifact_digest": "sha256:66b56d132b478e1fc3ba88bbb1dfc52f1cea672872e9e36e92250972e14f13cc",
     "workload_key": "precision-migration-runtime-trust-boundary",
     "risk_tier": "P0",
     "environment_digest": "sha256:19fa24fa672b426ee0b4c3940325776979000756066b97bfafd57b09eb31a682"
@@ -14,7 +14,7 @@
   "metrics": {},
   "evidence_refs": [],
   "limitations": [
-    "All 587 handler contracts pass local qualification; this does not certify 587 domain implementations.",
+    "All 587 handlers are locally executed; 536 use bounded structured domain algorithms, which do not substitute for native toolchains.",
     "Thirty B16 routes pass bounded local native builds, negative cases, holdout, and representative fixtures.",
     "Independent verification, real customer workloads, production HSM, Canary/rollback, production evidence, and external review remain NOT_RUN."
   ],

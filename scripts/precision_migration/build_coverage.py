@@ -9,12 +9,13 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
-
 ROOT = Path(__file__).resolve().parents[2]
 MANIFEST = ROOT / "docs" / "precision-migration-b01-44" / "installed-manifest.json"
 ADAPTERS = ROOT / "docs" / "precision-migration-b01-44" / "adapter-registry.json"
 DEFAULT_OUTPUT = ROOT / "verification-packs" / "precision-migration-b01-44-runtime" / "coverage" / "coverage-matrix.json"
 CONTRACT_RESULTS = ROOT / "verification-packs" / "precision-migration-b01-44-runtime" / "contract-qualification" / "results.json"
+DOMAIN_RESULTS = ROOT / "verification-packs" / "precision-migration-b01-44-runtime" / "domain-qualification" / "results.json"
+B41_RESULTS = ROOT / "verification-packs" / "precision-migration-b01-44-runtime" / "b41-qualification" / "results.json"
 
 
 def build() -> dict[str, Any]:
@@ -26,7 +27,7 @@ def build() -> dict[str, Any]:
         *{
             item["skill"]
             for item in adapters["entries"]
-            if item["handler_id"].startswith("batch29-route-executor-v1:")
+            if item["handler_id"].startswith(("batch29-route-executor-v1:", "b41-", "b42-"))
         },
     }
     qualification = json.loads(CONTRACT_RESULTS.read_text(encoding="utf-8"))
@@ -35,32 +36,52 @@ def build() -> dict[str, Any]:
         for item in qualification["results"]
         if item["state"] == "PASS"
     }
+    domain_qualification = json.loads(DOMAIN_RESULTS.read_text(encoding="utf-8"))
+    passed_domain_tests = {
+        (item["skill"], item["test_type"])
+        for item in domain_qualification["results"]
+        if item["state"] == "PASS"
+    }
+    b41_qualification = json.loads(B41_RESULTS.read_text(encoding="utf-8"))
+    passed_domain_tests.update(
+        (item["skill"], item["test_type"])
+        for item in b41_qualification["results"]
+        if item["state"] == "PASS"
+    )
     rows = []
     for record in manifest["skills"]:
         if record["kind"] != "skill":
             continue
         adapter = by_skill[record["name"]]
         exact_route = adapter["handler_id"].startswith("batch29-route-executor-v1:")
+        exact_b42 = adapter["handler_id"].startswith("b42-")
+        exact_domain = adapter["handler_id"].startswith("domain-skill-v2:")
+        locally_executed = record["name"] in locally_exercised or exact_domain
         rows.append(
             {
                 "skill": record["name"],
                 "source_skill": record["source_name"],
                 "batch": record["batch"],
                 "risk_tier": "P0" if record["batch"] in {7, 19, 20, 21, 22, 23, 24, 25, 26, 30, 32, 33, 34, 35, 41, 42, 44} else "P1",
-                "maturity": record["maturity"],
+                "maturity": "LOCAL_EXECUTED" if locally_executed else record["maturity"],
                 "handler_id": adapter["handler_id"],
                 "coverage": {
                     "source_contract": "PASSED",
                     "installed_identity": "PASSED",
-                    "handler_contract": "DECLARED" if record["maturity"] == "ADAPTER_DECLARED" else "NOT_AVAILABLE",
+                    "handler_contract": "DECLARED" if adapter.get("binding_state") == "DECLARED" else "NOT_AVAILABLE",
                     "contract_positive": "PASSED" if (record["name"], "positive") in passed_contract_tests else "NOT_RUN",
                     "contract_negative": "PASSED" if (record["name"], "negative") in passed_contract_tests else "NOT_RUN",
                     "contract_integration": "PASSED" if (record["name"], "integration") in passed_contract_tests else "NOT_RUN",
                     "contract_holdout": "PASSED" if (record["name"], "holdout") in passed_contract_tests else "NOT_RUN",
                     "contract_representative": "PASSED" if (record["name"], "representative") in passed_contract_tests else "NOT_RUN",
-                    "local_execution": "PASSED" if record["name"] in locally_exercised else "NOT_RUN",
-                    "negative": "PASSED" if exact_route else "NOT_RUN",
-                    "integration": "PASSED" if exact_route else "NOT_RUN",
+                    "bounded_domain_positive": "PASSED" if (record["name"], "positive") in passed_domain_tests else "NOT_RUN",
+                    "bounded_domain_negative": "PASSED" if (record["name"], "negative") in passed_domain_tests else "NOT_RUN",
+                    "bounded_domain_integration": "PASSED" if (record["name"], "integration") in passed_domain_tests else "NOT_RUN",
+                    "bounded_domain_holdout": "PASSED" if (record["name"], "holdout") in passed_domain_tests else "NOT_RUN",
+                    "bounded_domain_representative": "PASSED" if (record["name"], "representative") in passed_domain_tests else "NOT_RUN",
+                    "local_execution": "PASSED" if locally_executed else "NOT_RUN",
+                    "negative": "PASSED" if exact_route or exact_b42 else "NOT_RUN",
+                    "integration": "PASSED" if exact_route or exact_b42 else "NOT_RUN",
                     "native_source_build": "PASSED" if exact_route else "NOT_RUN",
                     "native_target_build": "PASSED" if exact_route else "NOT_RUN",
                     "holdout": "PASSED" if exact_route else "NOT_RUN",
@@ -79,7 +100,9 @@ def build() -> dict[str, Any]:
         raise ValueError("coverage matrix must contain exactly 587 unique child Skills")
     dimensions = [
         "source_contract", "installed_identity", "handler_contract", "contract_positive",
-        "contract_negative", "contract_integration", "contract_holdout", "contract_representative", "local_execution",
+        "contract_negative", "contract_integration", "contract_holdout", "contract_representative",
+        "bounded_domain_positive", "bounded_domain_negative", "bounded_domain_integration",
+        "bounded_domain_holdout", "bounded_domain_representative", "local_execution",
         "negative", "integration", "native_source_build", "native_target_build", "holdout",
         "representative_workload", "independent_verification", "external_evidence",
     ]

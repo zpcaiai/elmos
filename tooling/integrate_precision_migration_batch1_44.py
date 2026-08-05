@@ -20,17 +20,18 @@ import shutil
 import sys
 import tempfile
 from collections import Counter, defaultdict
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 import yaml
-
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from scripts.precision_migration.contracts import compile_contract  # noqa: E402
+from scripts.precision_migration.contracts import compile_contract
+
 SOURCE = ROOT / "skills" / "precision-migration-skills-batch-01-44"
 RUNTIME_ROOT = ROOT / "agent-skills" / "runtime"
 WORKSPACE_SKILL_ROOT = ROOT / ".agents" / "skills"
@@ -135,7 +136,7 @@ def runtime_name(source_name: str, batch: int | None, kind: str) -> str:
         candidate = f"pm-b{batch:02d}-{source_name}"
     if len(candidate) <= 64:
         return candidate
-    suffix = sha256(f"{NAMESPACE}:{source_name}".encode("utf-8"))[:8]
+    suffix = sha256(f"{NAMESPACE}:{source_name}".encode())[:8]
     return f"{candidate[:55].rstrip('-')}-{suffix}"
 
 
@@ -223,11 +224,29 @@ def binding_for_record(batch: int | None, source_name: str, kind: str) -> dict[s
         surfaces = [*surfaces, "scripts/precision_migration/trust.py", "scripts/precision_migration/b41.py"]
         if source_name == "certificate-signing":
             secrets_permission = "secret-reference-only"
+    elif batch == 42:
+        b42_functions = {
+            "production-shadow-run": "execute_production_shadow_run",
+            "live-event-replay": "execute_live_event_replay",
+            "side-effect-suppression": "execute_side_effect_suppression",
+            "dual-write-validation": "execute_dual_write_validation",
+            "canary-traffic-planner": "execute_canary_traffic_planner",
+            "progressive-cutover": "execute_progressive_cutover",
+            "automatic-rollback": "execute_automatic_rollback",
+            "migration-wave-planner": "execute_migration_wave_planner",
+            "strangler-routing": "execute_strangler_routing",
+            "post-cutover-monitoring": "execute_post_cutover_monitoring",
+        }
+        function = b42_functions[source_name]
+        handler_id = f"b42-{source_name}-v1"
+        handler_entrypoint = f"scripts.precision_migration.b42:{function}"
+        supported_modes = ["validate", "repair", "certify"]
+        surfaces = [*surfaces, "scripts/precision_migration/b42.py"]
     else:
-        handler_id = f"precision-skill-v1:{source_name}"
-        handler_entrypoint = "scripts.precision_migration.adapters:execute_skill_contract"
+        handler_id = f"domain-skill-v2:{source_name}"
+        handler_entrypoint = "scripts.precision_migration.domain:execute_domain_skill"
         supported_modes = modes_for_batch(batch)
-        surfaces = [*surfaces, "scripts/precision_migration/contracts.py"]
+        surfaces = [*surfaces, "scripts/precision_migration/contracts.py", "scripts/precision_migration/domain.py"]
     missing = [path for path in surfaces if not (ROOT / path).exists()]
     declared = not missing
     return {
@@ -545,13 +564,18 @@ def build_expected(staging_root: Path) -> tuple[dict[str, Any], dict[str, Path]]
         installed["interface_sha256"] = sha256(
             (destination / "agents" / "openai.yaml").read_bytes()
         )
-        installed["maturity"] = (
-            "ADAPTER_DECLARED"
-            if installed["binding"]["binding_state"] == "DECLARED"
-            else "INSTALLED"
-        )
+        if installed["kind"] == "skill" and installed["binding"]["binding_state"] == "DECLARED":
+            installed["maturity"] = "LOCAL_EXECUTED"
+        else:
+            installed["maturity"] = (
+                "ADAPTER_DECLARED"
+                if installed["binding"]["binding_state"] == "DECLARED"
+                else "INSTALLED"
+            )
         installed["contract_status"] = "INSTALLED"
-        installed["runtime_protocol_status"] = "CONTRACT_READY"
+        installed["runtime_protocol_status"] = (
+            "BOUNDED_LOCAL_EXECUTION" if installed["kind"] == "skill" else "CONTRACT_READY"
+        )
         installed["external_evidence_status"] = "NOT_RUN"
         installed_records.append(installed)
 
@@ -582,13 +606,13 @@ def build_expected(staging_root: Path) -> tuple[dict[str, Any], dict[str, Path]]
         "batch_counts": dict(sorted(batch_counts.items())),
         "phase_counts": dict(phase_counts),
         "structural_status": "PASS",
-        "runtime_protocol_status": "CONTRACT_READY",
+        "runtime_protocol_status": "BOUNDED_LOCAL_EXECUTION",
         "external_evidence_status": "NOT_RUN",
         "production_certification": "NOT_CERTIFIED",
         "maximum_local_decision": "READY_FOR_EXTERNAL_GATE",
         "completion_boundary": (
-            "All source contracts are installed. Only entries marked ADAPTER_DECLARED own an "
-            "allowlisted handler contract; execution, holdout, external review, customer traffic, "
+            "All source contracts and bounded local handlers are installed and locally executed. "
+            "Native toolchain breadth, independent holdout, external review, customer traffic, "
             "and certification require separately verified evidence."
         ),
         "skills": installed_records,
