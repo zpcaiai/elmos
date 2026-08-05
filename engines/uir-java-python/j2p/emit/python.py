@@ -79,6 +79,67 @@ from ..uir import (
 
 RUNTIME_ALIAS = "rt"
 
+#: java.time types the runtime reproduces.
+_TIME_OWNERS = frozenset({
+    "Instant", "Duration", "LocalDate", "LocalTime", "LocalDateTime",
+    "ZoneOffset", "Clock", "DateTimeFormatter", "ChronoUnit",
+})
+
+_TIME_STATIC_METHODS = {
+    "Instant": frozenset({"ofEpochSecond", "ofEpochMilli", "parse", "now"}),
+    "Duration": frozenset({
+        "ofSeconds", "ofMillis", "ofNanos", "ofMinutes", "ofHours", "ofDays",
+        "between",
+    }),
+    "LocalDate": frozenset({"of", "parse", "ofEpochDay"}),
+    "LocalTime": frozenset({"of"}),
+    "LocalDateTime": frozenset({"of", "ofEpochSecond"}),
+    "ZoneOffset": frozenset({"ofHours", "ofHoursMinutes"}),
+    "Clock": frozenset({"fixed", "systemUTC"}),
+    "DateTimeFormatter": frozenset({"ofPattern"}),
+}
+
+_TIME_INSTANCE_METHODS = {
+    "Instant": frozenset({
+        "getEpochSecond", "getNano", "toEpochMilli", "plusSeconds",
+        "minusSeconds", "plusMillis", "plusNanos", "plus", "minus", "isBefore",
+        "isAfter", "compareTo", "toString",
+    }),
+    "Duration": frozenset({
+        "getSeconds", "getNano", "toMillis", "toNanos", "toSeconds",
+        "toMinutes", "toHours", "toDays", "isZero", "isNegative", "plus",
+        "minus", "plusSeconds", "plusMillis", "multipliedBy", "negated", "abs",
+        "compareTo", "toString",
+    }),
+    "LocalDate": frozenset({
+        "getYear", "getMonthValue", "getDayOfMonth", "toEpochDay",
+        "isLeapYear", "lengthOfMonth", "plusDays", "minusDays", "plusMonths",
+        "minusMonths", "plusYears", "isBefore", "isAfter", "compareTo",
+        "atStartOfDay", "toString",
+    }),
+    "LocalTime": frozenset({
+        "getHour", "getMinute", "getSecond", "toSecondOfDay", "toString",
+    }),
+    "LocalDateTime": frozenset({
+        "toLocalDate", "toLocalTime", "getYear", "getHour", "toEpochSecond",
+        "toInstant", "plusDays", "isBefore", "isAfter", "toString",
+    }),
+    "ZoneOffset": frozenset({"getTotalSeconds", "toString"}),
+    "Clock": frozenset({"instant", "millis"}),
+    "DateTimeFormatter": frozenset({"format"}),
+    "ChronoUnit": frozenset({"between", "toString"}),
+}
+
+_CHRONO_UNITS = frozenset({
+    "NANOS", "MILLIS", "SECONDS", "MINUTES", "HOURS", "DAYS", "WEEKS",
+    "MONTHS", "YEARS",
+})
+
+#: Java static fields the runtime exposes as factories.
+_TIME_CONSTANTS = frozenset({
+    ("Instant", "EPOCH"), ("Duration", "ZERO"), ("ZoneOffset", "UTC"),
+})
+
 INTEGRAL = ("byte", "short", "char", "int", "long")
 
 
@@ -1113,6 +1174,16 @@ class PythonEmitter:
         return self.module.types[0].name  # pragma: no cover - defensive
 
     def _static_field(self, expr: StaticFieldAccess) -> str:
+        if expr.owner == "ChronoUnit":
+            if expr.name not in _CHRONO_UNITS:
+                raise EmitError(
+                    f"ChronoUnit.{expr.name} is not supported", expr.origin
+                )
+            return f"{RUNTIME_ALIAS}.ChronoUnit.{expr.name}"
+        if (expr.owner, expr.name) in _TIME_CONSTANTS:
+            # These are static *fields* in Java and factory calls here, because
+            # a mutable module-level instance would be shared across uses.
+            return f"{RUNTIME_ALIAS}.{expr.owner}.{expr.name}()"
         if expr.owner in ("Integer", "Long", "Math") and expr.owner not in self._class_names:
             return f"{RUNTIME_ALIAS}.{expr.owner}.{expr.name}"
         if expr.owner in self._class_names:
@@ -1377,6 +1448,15 @@ class PythonEmitter:
         if isinstance(target_type, ClassType) and target_type.name == "StringBuilder":
             return f"{target}.{expr.name}({', '.join(args)})"
 
+        if isinstance(target_type, ClassType) and target_type.name in _TIME_OWNERS:
+            supported = _TIME_INSTANCE_METHODS.get(target_type.name, frozenset())
+            if expr.name not in supported:
+                raise EmitError(
+                    f"{target_type.name}.{expr.name} is not supported",
+                    expr.origin,
+                )
+            return f"{target}.{expr.name}({', '.join(args)})"
+
         if isinstance(target_type, ClassType) and self._throwable_class(target_type.name):
             # A caught exception's message is observable; its stack trace is
             # not, so only the message-shaped accessors are supported.
@@ -1555,6 +1635,23 @@ class PythonEmitter:
                 raise EmitError(f"System.out.{expr.name} is not supported", expr.origin)
             stream = "out" if expr.owner == "System.out" else "err"
             return f"{RUNTIME_ALIAS}.System.{stream}.{expr.name}({', '.join(args)})"
+
+        if expr.owner in ("ZoneId", "ZonedDateTime"):
+            raise EmitError(
+                f"{expr.owner} resolves through the tz database, and the JVM's "
+                f"bundled copy and Python's zoneinfo are versioned separately; "
+                f"the two can disagree about a past or future offset. Use a "
+                f"fixed ZoneOffset, which has no such dependency",
+                expr.origin,
+            )
+
+        if expr.owner in _TIME_OWNERS:
+            supported = _TIME_STATIC_METHODS.get(expr.owner, frozenset())
+            if expr.name not in supported:
+                raise EmitError(
+                    f"{expr.owner}.{expr.name} is not supported", expr.origin
+                )
+            return f"{RUNTIME_ALIAS}.{expr.owner}.{expr.name}({', '.join(args)})"
 
         if expr.owner == "Objects":
             supported = {

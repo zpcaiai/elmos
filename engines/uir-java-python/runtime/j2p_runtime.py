@@ -18,6 +18,23 @@ from __future__ import annotations
 import math
 import struct
 
+# java.time lives in its own module: it is large, and it is built on Java's own
+# (seconds, nanos) model rather than Python's datetime, whose precision and year
+# range are both narrower than Java's.
+from j2p_time import (  # noqa: F401
+    ChronoUnit,
+    Clock,
+    DateTimeExceptionJ,
+    DateTimeFormatter,
+    DateTimeParseExceptionJ,
+    Duration,
+    Instant,
+    LocalDate,
+    LocalDateTime,
+    LocalTime,
+    ZoneOffset,
+)
+
 INT_MIN = -(2 ** 31)
 INT_MAX = 2 ** 31 - 1
 LONG_MIN = -(2 ** 63)
@@ -30,70 +47,26 @@ CHAR_MAX = 2 ** 16 - 1
 # ---------------------------------------------------------------------------
 
 
-class JavaThrowable(Exception):
-    """Base of every exception the generated code can raise.
-
-    ``java_name`` is what Java prints in a stack trace, and is what the
-    differential harness compares on, so an exception raised by the translation
-    must be the *same* exception Java raises, not merely "some error".
-    """
-
-    java_name = "java.lang.Throwable"
-
-    def __init__(self, message: str | None = None) -> None:
-        super().__init__(message if message is not None else "")
-        self.message = message
-
-
-class JavaException(JavaThrowable):
-    java_name = "java.lang.Exception"
-
-
-class RuntimeExceptionJ(JavaException):
-    java_name = "java.lang.RuntimeException"
-
-
-class ArithmeticExceptionJ(RuntimeExceptionJ):
-    java_name = "java.lang.ArithmeticException"
-
-
-class NullPointerExceptionJ(RuntimeExceptionJ):
-    java_name = "java.lang.NullPointerException"
-
-
-class ClassCastExceptionJ(RuntimeExceptionJ):
-    java_name = "java.lang.ClassCastException"
-
-
-class NumberFormatExceptionJ(RuntimeExceptionJ):
-    java_name = "java.lang.NumberFormatException"
-
-
-class IndexOutOfBoundsExceptionJ(RuntimeExceptionJ):
-    java_name = "java.lang.IndexOutOfBoundsException"
-
-
-class ArrayIndexOutOfBoundsExceptionJ(IndexOutOfBoundsExceptionJ):
-    java_name = "java.lang.ArrayIndexOutOfBoundsException"
-
-
-class StringIndexOutOfBoundsExceptionJ(IndexOutOfBoundsExceptionJ):
-    java_name = "java.lang.StringIndexOutOfBoundsException"
-
-
-class IllegalArgumentExceptionJ(RuntimeExceptionJ):
-    java_name = "java.lang.IllegalArgumentException"
-
-
-class IllegalStateExceptionJ(RuntimeExceptionJ):
-    java_name = "java.lang.IllegalStateException"
-
-
-class UnsupportedOperationExceptionJ(RuntimeExceptionJ):
-    java_name = "java.lang.UnsupportedOperationException"
+from j2p_errors import (  # noqa: F401
+    ArithmeticExceptionJ,
+    ArrayIndexOutOfBoundsExceptionJ,
+    ClassCastExceptionJ,
+    IllegalArgumentExceptionJ,
+    IllegalStateExceptionJ,
+    IndexOutOfBoundsExceptionJ,
+    JavaException,
+    JavaThrowable,
+    NullPointerExceptionJ,
+    NumberFormatExceptionJ,
+    RuntimeExceptionJ,
+    StringIndexOutOfBoundsExceptionJ,
+    UnsupportedOperationExceptionJ,
+)
 
 
 EXCEPTION_BY_SIMPLE_NAME: dict[str, type[JavaThrowable]] = {
+    "DateTimeException": DateTimeExceptionJ,
+    "DateTimeParseException": DateTimeParseExceptionJ,
     "Throwable": JavaThrowable,
     "Exception": JavaException,
     "RuntimeException": RuntimeExceptionJ,

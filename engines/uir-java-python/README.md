@@ -14,16 +14,26 @@ Java 源码
 
 | 指标 | 数值 | 怎么来的 |
 |---|---:|---|
-| 单元 + 端到端测试 | **189** | `make uir-j2p-test` |
-| 差分比较（Java vs Python 实跑） | **540** | 11 个语料程序 × 边界输入向量 |
-| 变异实验 | **61/61 全部杀死** | `make uir-j2p-mutation` |
+| 单元 + 端到端测试 | **205** | `make uir-j2p-test` |
+| 差分比较（Java vs Python 实跑） | **547** | 12 个语料程序 × 边界输入向量 |
+| 变异实验 | **69/69 全部杀死** | `make uir-j2p-mutation` |
 | elmos 仓库 884 个 Java 文件**能降级到 UIR** | **94.9%**（839 个） | `make uir-j2p-survey` |
-| 其中**能真正生成 Python** | **5.8%**（51 个） | 同上 |
+| 其中**能真正生成 Python** | **5.9%**（52 个） | 同上 |
 | 已实现路线 | **1 / 90** | `java → python` |
 
 **最后三行要一起读，尤其是中间那道鸿沟。** 前端能看懂 95% 的文件，生成器只能翻译 6%。
 
 这不是矛盾，是两件不同的事：把 `Foo.class` 如实记进 IR 很容易（它就是一个类字面量节点），把它*翻译*成等价的 Python 不可能（反射语义复现不了）。所以前端理解它、生成器拒绝它。降级率衡量的是"读懂了多少"，生成率衡量的是"能保证行为一致地搬过去多少"。**后者才是迁移真正的进度。**
+
+## 一条实测出来的规律：文件级覆盖率是"与"不是"或"
+
+这一轮我完整实现了 `java.time`——700 行忠实运行时、12 个单元测试、8 个变异实验、全部对照真 Java 差分验证通过。`Instant` 原本在生成侧挡着 37 处。
+
+**生成率从 5.8% 涨到 5.9%——一个文件。**
+
+原因不是实现得不好，是**一个文件只有当它用到的每一个构造都能翻译时才算能翻译**。那 37 处 `Instant` 分布的文件里，大多同时还用着 Jackson、`Path`、`Set.of`、重载构造器。拆掉四个障碍中的一个，文件还是过不去。
+
+所以"哪个障碍出现次数最多"是个**错的排序依据**。对的问题是"哪些文件只差最后一个障碍"。这条规律是这次实测撞出来的，不是设计出来的——写在这里免得下一个人重复同样的判断。
 
 ## 为什么代码长这样
 
@@ -129,9 +139,11 @@ j2p/frontend/java.py        tree-sitter → UIR，fail-closed
 j2p/emit/python.py          UIR → Python，fail-closed，带 source map
 j2p/diff/harness.py         差分执行
 j2p/cli.py                  parse / emit / diff / survey
+runtime/j2p_errors.py       Java throwable 层级（运行时与 java.time 共用）
 runtime/j2p_runtime.py      Java 语义的 Python 实现（生成代码依赖它）
+runtime/j2p_time.py         java.time，按 Java 自己的 (秒, 纳秒) 模型实现
 corpus/                     语义陷阱语料（溢出、负除、MIN_VALUE、Double.toString…）
-tests/                      189 个测试
-tools/mutation_check.py     61 个变异实验
+tests/                      205 个测试
+tools/mutation_check.py     69 个变异实验
 tools/record_batch_evidence.py  接入 batch1-38 的证据生产者
 ```

@@ -17,7 +17,8 @@ import sys
 from pathlib import Path
 from types import ModuleType
 
-RUNTIME_PATH = Path(__file__).resolve().parent.parent / "runtime" / "j2p_runtime.py"
+RUNTIME_DIR = Path(__file__).resolve().parent.parent / "runtime"
+RUNTIME_PATH = RUNTIME_DIR / "j2p_runtime.py"
 
 _cached: ModuleType | None = None
 
@@ -28,6 +29,11 @@ def runtime_module() -> ModuleType:
         return _cached
     if not RUNTIME_PATH.is_file():
         raise FileNotFoundError(f"runtime not found at {RUNTIME_PATH}")
+    # The runtime modules import each other by plain name, exactly as they do
+    # when shipped next to generated code, so the directory has to be on the
+    # path rather than each file loaded in isolation.
+    if str(RUNTIME_DIR) not in sys.path:
+        sys.path.insert(0, str(RUNTIME_DIR))
     spec = importlib.util.spec_from_file_location("j2p_runtime", RUNTIME_PATH)
     if spec is None or spec.loader is None:  # pragma: no cover - defensive
         raise ImportError(f"cannot load runtime from {RUNTIME_PATH}")

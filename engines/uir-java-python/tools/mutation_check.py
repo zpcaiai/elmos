@@ -412,6 +412,63 @@ MUTATIONS: list[Mutation] = [
         "        if any(ch in self._REGEX_METACHARACTERS for ch in pattern):\n            raise EmitError(",
         "        if False:\n            raise EmitError(",
     ),
+    # ---- java.time -------------------------------------------------------
+    Mutation(
+        "M62",
+        "runtime/j2p_time.py",
+        "month arithmetic clamps the day to the target month's length",
+        "        return LocalDate(year, month, min(self.day, length_of_month(year, month)))",
+        "        return LocalDate(year, month, self.day)",
+    ),
+    Mutation(
+        "M63",
+        "runtime/j2p_time.py",
+        "Instant prints its fraction in groups of three digits",
+        '    if nanos % 1_000_000 == 0:\n        return str(nanos // 1_000_000).rjust(3, "0")\n    if nanos % 1000 == 0:\n        return str(nanos // 1000).rjust(6, "0")',
+        '    if False:\n        return ""\n    if False:\n        return ""',
+    ),
+    Mutation(
+        "M64",
+        "runtime/j2p_time.py",
+        "Duration.toString drops trailing zeros from the fraction",
+        '            out += ("." + str(self.nanos).rjust(9, "0")).rstrip("0")',
+        '            out += "." + str(self.nanos).rjust(9, "0")',
+    ),
+    Mutation(
+        "M65",
+        "runtime/j2p_time.py",
+        "LocalTime omits seconds when they are zero, unlike Instant",
+        "        if self.second != 0 or self.nano != 0:",
+        "        if True:",
+    ),
+    Mutation(
+        "M66",
+        "runtime/j2p_time.py",
+        "ChronoUnit truncates toward zero rather than flooring",
+        "        return _truncate_div(delta_nanos, self.seconds * NANOS_PER_SECOND)",
+        "        return delta_nanos // (self.seconds * NANOS_PER_SECOND)",
+    ),
+    Mutation(
+        "M67",
+        "runtime/j2p_time.py",
+        "an impossible date raises rather than being silently accepted",
+        "    if day > length_of_month(year, month):",
+        "    if False:",
+    ),
+    Mutation(
+        "M68",
+        "runtime/j2p_time.py",
+        "years beyond four digits are printed with Java's + prefix",
+        '    if year > 9999:\n        return "+" + str(year)',
+        '    if year > 9999:\n        return str(year)',
+    ),
+    Mutation(
+        "M69",
+        "j2p/emit/python.py",
+        "named time zones are refused because the tz database is not pinned",
+        '        if expr.owner in ("ZoneId", "ZonedDateTime"):\n            raise EmitError(',
+        '        if False:\n            raise EmitError(',
+    ),
     # ---- IR --------------------------------------------------------------
     # ---- lambdas ---------------------------------------------------------
     Mutation(

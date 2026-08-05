@@ -41,6 +41,9 @@ CORPUS_PLAN = {
     "Objects.java": [[v] for v in BOUNDARY_INTS],
     "Records.java": [[v] for v in BOUNDARY_INTS],
     "Records2.java": [[v] for v in BOUNDARY_INTS],
+    "Times.java": [
+        [v] for v in ["0", "1", "-1", "86400", "-90061", "1700000000", "2147483647"]
+    ],
     "Strings.java": [
         [v, s]
         for v in ["0", "7", "-7", "2147483647", "-2147483648"]

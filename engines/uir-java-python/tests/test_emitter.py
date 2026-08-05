@@ -257,6 +257,29 @@ class UntranslatableTest(unittest.TestCase):
         code = emit("static Object f() { return String::trim; }")
         self.assertIn("rt.JString.trim", code)
 
+    def test_named_time_zone_is_refused(self):
+        # The JVM's tz database and Python's zoneinfo are versioned separately
+        # and can disagree about a past or future offset.
+        with self.assertRaises(EmitError) as ctx:
+            emit('static Object f() { return java.time.ZoneId.of("Asia/Shanghai"); }')
+        self.assertIn("tz database", str(ctx.exception))
+
+    def test_zoned_date_time_is_refused(self):
+        with self.assertRaises(EmitError):
+            emit("static Object f() { return java.time.ZonedDateTime.now(); }")
+
+    def test_fixed_offset_is_supported(self):
+        code = emit("static Object f() { return java.time.ZoneOffset.ofHours(8); }")
+        self.assertIn("rt.ZoneOffset.ofHours", code)
+
+    def test_time_constants_become_factory_calls(self):
+        code = emit("static Object f() { return java.time.Instant.EPOCH; }")
+        self.assertIn("rt.Instant.EPOCH()", code)
+
+    def test_unsupported_time_method_is_refused(self):
+        with self.assertRaises(EmitError):
+            emit("static Object f() { return java.time.Instant.EPOCH.atZone(null); }")
+
     def test_this_delegation_is_refused(self):
         with self.assertRaises(EmitError) as ctx:
             emit_python(

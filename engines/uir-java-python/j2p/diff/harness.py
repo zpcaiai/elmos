@@ -31,7 +31,7 @@ from ..emit.python import EmitError, emit_python
 from ..frontend.java import ParseError, UnsupportedConstruct, parse_java_file
 from ..uir import digest
 
-RUNTIME_SOURCE = Path(__file__).resolve().parents[2] / "runtime" / "j2p_runtime.py"
+RUNTIME_DIR = Path(__file__).resolve().parents[2] / "runtime"
 
 _JAVA_EXCEPTION_LINE = re.compile(
     r'^Exception in thread "[^"]*" ([\w.$]+)(?:: (.*))?$'
@@ -170,7 +170,8 @@ class DifferentialHarness:
                 return report
 
             (py_dir / f"{main_class}.py").write_text(python_source, encoding="utf-8")
-            shutil.copy(RUNTIME_SOURCE, py_dir / "j2p_runtime.py")
+            for module in sorted(RUNTIME_DIR.glob("*.py")):
+                shutil.copy(module, py_dir / module.name)
 
             syntax = _run(
                 [sys.executable, "-m", "py_compile", f"{main_class}.py"],

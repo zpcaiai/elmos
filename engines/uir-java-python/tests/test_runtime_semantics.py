@@ -5,16 +5,17 @@ asserted "idiv(7, 2) == 3" would pass just as happily against Python's ``//``;
 the cases here are chosen so that the naive implementation fails.
 """
 
-import importlib.util
 import math
+import sys
 import unittest
 from pathlib import Path
 
-_SPEC = importlib.util.spec_from_file_location(
-    "j2p_runtime", Path(__file__).resolve().parents[1] / "runtime" / "j2p_runtime.py"
-)
-rt = importlib.util.module_from_spec(_SPEC)
-_SPEC.loader.exec_module(rt)
+# The runtime modules import each other by plain name, exactly as they do when
+# shipped next to generated code, so the directory goes on the path rather than
+# each file being loaded in isolation.
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "runtime"))
+
+import j2p_runtime as rt  # noqa: E402
 
 
 class IntegerWrappingTest(unittest.TestCase):
@@ -268,11 +269,114 @@ class LibrarySemanticsTest(unittest.TestCase):
             rt.throw(rt.IllegalStateExceptionJ("x"))
 
 
+class JavaTimeTest(unittest.TestCase):
+    """java.time, where Python's datetime is not merely inconvenient but unable."""
+
+    def test_instant_holds_nanoseconds(self):
+        # datetime resolves to microseconds; this value has no representation
+        # there at all.
+        instant = rt.Instant.ofEpochSecond(0, 1)
+        self.assertEqual(instant.getNano(), 1)
+        self.assertEqual(instant.toString(), "1970-01-01T00:00:00.000000001Z")
+
+    def test_instant_fraction_is_printed_in_groups_of_three(self):
+        self.assertEqual(
+            rt.Instant.ofEpochSecond(0, 100_000_000).toString(),
+            "1970-01-01T00:00:00.100Z",
+        )
+        self.assertEqual(
+            rt.Instant.ofEpochSecond(0, 100_200_000).toString(),
+            "1970-01-01T00:00:00.100200Z",
+        )
+
+    def test_instant_always_prints_seconds_but_local_time_does_not(self):
+        self.assertEqual(rt.Instant.EPOCH().toString(), "1970-01-01T00:00:00Z")
+        self.assertEqual(rt.LocalTime.of(10, 0).toString(), "10:00")
+
+    def test_duration_to_string_spelling(self):
+        # Zero has no special case in the implementation; this asserts the
+        # general path gets it right.
+        self.assertEqual(rt.Duration.ZERO().toString(), "PT0S")
+        # The sign sits on the component, not in front of the P.
+        self.assertEqual(rt.Duration.ofSeconds(-1).toString(), "PT-1S")
+        self.assertEqual(
+            rt.Duration.ofSeconds(2 * 3600 + 3 * 60 + 4, 500_000_000).toString(),
+            "PT2H3M4.5S",
+        )
+        self.assertEqual(rt.Duration.ofHours(1).toString(), "PT1H")
+
+    def test_month_arithmetic_clamps_the_day(self):
+        # Adding "one month" as 30 days would give March 2.
+        self.assertEqual(
+            rt.LocalDate.of(2021, 1, 31).plusMonths(1).toString(), "2021-02-28"
+        )
+        self.assertEqual(
+            rt.LocalDate.of(2020, 1, 31).plusMonths(1).toString(), "2020-02-29"
+        )
+        self.assertEqual(
+            rt.LocalDate.of(2024, 2, 29).plusYears(1).toString(), "2025-02-28"
+        )
+
+    def test_dates_outside_pythons_date_range(self):
+        # datetime.date only spans years 1..9999.
+        self.assertEqual(rt.LocalDate.of(12345, 6, 7).toString(), "+12345-06-07")
+        self.assertEqual(rt.LocalDate.of(-44, 3, 15).toString(), "-0044-03-15")
+
+    def test_chrono_unit_truncates_toward_zero(self):
+        self.assertEqual(
+            rt.ChronoUnit.HOURS.between(
+                rt.Instant.EPOCH(), rt.Instant.ofEpochSecond(3600 * 5 - 1)
+            ),
+            4,
+        )
+        # The negative direction is the one that separates truncation from
+        # flooring: floor would give -5 here.
+        self.assertEqual(
+            rt.ChronoUnit.HOURS.between(
+                rt.Instant.ofEpochSecond(3600 * 5 - 1), rt.Instant.EPOCH()
+            ),
+            -4,
+        )
+        self.assertEqual(
+            rt.ChronoUnit.MINUTES.between(
+                rt.Instant.ofEpochSecond(-90), rt.Instant.EPOCH()
+            ),
+            1,
+        )
+        self.assertEqual(
+            rt.ChronoUnit.DAYS.between(
+                rt.LocalDate.of(2021, 1, 1), rt.LocalDate.of(2020, 1, 1)
+            ),
+            -366,
+        )
+
+    def test_invalid_dates_raise_with_javas_message(self):
+        with self.assertRaises(rt.DateTimeExceptionJ) as ctx:
+            rt.LocalDate.of(2021, 2, 29)
+        self.assertIn("not a leap year", ctx.exception.message)
+        with self.assertRaises(rt.DateTimeExceptionJ):
+            rt.LocalTime.of(24, 0)
+
+    def test_parse_failure_is_a_date_time_parse_exception(self):
+        with self.assertRaises(rt.DateTimeParseExceptionJ):
+            rt.Instant.parse("not-a-time")
+
+    def test_time_exceptions_are_java_throwables(self):
+        self.assertTrue(issubclass(rt.DateTimeExceptionJ, rt.JavaThrowable))
+        self.assertTrue(
+            issubclass(rt.DateTimeParseExceptionJ, rt.DateTimeExceptionJ)
+        )
+
+
 class ThrowableTest(unittest.TestCase):
     def test_every_mapped_name_is_a_java_throwable(self):
         for name, cls in rt.EXCEPTION_BY_SIMPLE_NAME.items():
             self.assertTrue(issubclass(cls, rt.JavaThrowable), name)
-            self.assertTrue(cls.java_name.startswith("java.lang."), name)
+            # The fully qualified name is what the harness compares against
+            # Java's stack trace, so it must be a real package path -- not
+            # necessarily java.lang, now that java.time is here too.
+            self.assertRegex(cls.java_name, r"^java\.[a-z.]+\.[A-Z]\w+$", name)
+            self.assertEqual(cls.java_name.rsplit(".", 1)[1], name)
 
     def test_unmapped_name_is_refused_rather_than_invented(self):
         with self.assertRaises(KeyError):

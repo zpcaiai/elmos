@@ -107,6 +107,65 @@ class ParseError(Exception):
     """The source did not parse as Java."""
 
 
+#: Result types for the java.time calls the runtime reproduces.  Without these
+#: an expression like `Duration.between(a, b).toMillis()` has no static type and
+#: the emitter cannot tell a long from a String.
+_TIME_STATIC_RESULT: dict[str, dict[str, "uir.Type"]] = {
+    "Instant": {"parse": ClassType("Instant"), "now": ClassType("Instant"),
+                "ofEpochSecond": ClassType("Instant"),
+                "ofEpochMilli": ClassType("Instant")},
+    "Duration": {"between": ClassType("Duration"), "ofSeconds": ClassType("Duration"),
+                 "ofMillis": ClassType("Duration"), "ofNanos": ClassType("Duration"),
+                 "ofMinutes": ClassType("Duration"), "ofHours": ClassType("Duration"),
+                 "ofDays": ClassType("Duration")},
+    "LocalDate": {"of": ClassType("LocalDate"), "parse": ClassType("LocalDate"),
+                  "ofEpochDay": ClassType("LocalDate")},
+    "LocalTime": {"of": ClassType("LocalTime")},
+    "LocalDateTime": {"of": ClassType("LocalDateTime"),
+                      "ofEpochSecond": ClassType("LocalDateTime")},
+    "ZoneOffset": {"ofHours": ClassType("ZoneOffset"),
+                   "ofHoursMinutes": ClassType("ZoneOffset")},
+    "Clock": {"fixed": ClassType("Clock"), "systemUTC": ClassType("Clock")},
+    "DateTimeFormatter": {"ofPattern": ClassType("DateTimeFormatter")},
+}
+
+_LONG = uir.T_LONG
+_INT = uir.T_INT
+_BOOL = uir.T_BOOLEAN
+
+_TIME_INSTANCE_RESULT: dict[str, dict[str, "uir.Type"]] = {
+    "Instant": {
+        "getEpochSecond": _LONG, "toEpochMilli": _LONG, "getNano": _INT,
+        "isBefore": _BOOL, "isAfter": _BOOL, "compareTo": _INT,
+        "toString": uir.T_STRING,
+    },
+    "Duration": {
+        "getSeconds": _LONG, "toMillis": _LONG, "toNanos": _LONG,
+        "toSeconds": _LONG, "toMinutes": _LONG, "toHours": _LONG, "toDays": _LONG,
+        "getNano": _INT, "isZero": _BOOL, "isNegative": _BOOL, "compareTo": _INT,
+        "toString": uir.T_STRING,
+    },
+    "LocalDate": {
+        "getYear": _INT, "getMonthValue": _INT, "getDayOfMonth": _INT,
+        "toEpochDay": _LONG, "lengthOfMonth": _INT, "isLeapYear": _BOOL,
+        "isBefore": _BOOL, "isAfter": _BOOL, "compareTo": _INT,
+        "toString": uir.T_STRING, "atStartOfDay": ClassType("LocalDateTime"),
+    },
+    "LocalTime": {
+        "getHour": _INT, "getMinute": _INT, "getSecond": _INT,
+        "toSecondOfDay": _INT, "toString": uir.T_STRING,
+    },
+    "LocalDateTime": {
+        "getYear": _INT, "getHour": _INT, "toEpochSecond": _LONG,
+        "isBefore": _BOOL, "isAfter": _BOOL, "toString": uir.T_STRING,
+        "toLocalDate": ClassType("LocalDate"), "toLocalTime": ClassType("LocalTime"),
+        "toInstant": ClassType("Instant"),
+    },
+    "ZoneOffset": {"getTotalSeconds": _INT, "toString": uir.T_STRING},
+    "Clock": {"instant": ClassType("Instant"), "millis": _LONG},
+    "DateTimeFormatter": {"format": uir.T_STRING},
+}
+
 _TYPE_DECL_NODES = (
     "class_declaration",
     "interface_declaration",
@@ -134,6 +193,17 @@ KNOWN_CLASS_TYPES = frozenset(
         "Set",
         "HashSet",
         "Objects",
+        "Instant",
+        "Duration",
+        "LocalDate",
+        "LocalTime",
+        "LocalDateTime",
+        "ZoneOffset",
+        "ZoneId",
+        "ZonedDateTime",
+        "Clock",
+        "ChronoUnit",
+        "DateTimeFormatter",
     }
     | set(uir.FUNCTIONAL_INTERFACES)
 )
@@ -1153,6 +1223,14 @@ class JavaFrontend:
                 target = self._expr(obj, scope)
                 if isinstance(target.type, ArrayType):
                     return ArrayLength(origin=origin, type=uir.T_INT, array=target)
+            qualified = self._qualified_owner(self._text(obj))
+            if qualified is not None and scope.lookup(self._text(obj)) is None:
+                return StaticFieldAccess(
+                    origin=origin,
+                    type=self._static_field_type(qualified, field_name),
+                    owner=qualified,
+                    name=field_name,
+                )
             if obj.type == "identifier":
                 owner = self._text(obj)
                 if owner in KNOWN_CLASS_TYPES and scope.lookup(owner) is None:
@@ -1353,6 +1431,26 @@ class JavaFrontend:
             body_expr=self._coerce(body_expr, result_type),
             body_block=None,
         )
+
+    def _qualified_owner(self, text: str) -> str | None:
+        """Resolve ``java.time.Instant`` to ``Instant``.
+
+        Real code writes both the imported simple name and the fully qualified
+        one, sometimes in the same file.  Treating them as different types would
+        make support depend on which spelling the author happened to use.
+        """
+
+        if "." not in text:
+            return None
+        last = text.rsplit(".", 1)[1]
+        head = text.rsplit(".", 1)[0]
+        if not last[:1].isupper():
+            return None
+        if not all(part[:1].islower() or part[:1].isupper() for part in head.split(".")):
+            return None
+        if last in KNOWN_CLASS_TYPES or last in self._class_names:
+            return last
+        return None
 
     def _sam_name(self, t: uir.Type) -> str | None:
         """The SAM of ``t``, whether it is a JDK interface or one declared here."""
@@ -1613,6 +1711,16 @@ class JavaFrontend:
                 origin=origin, type=uir.T_VOID, owner=obj_text, name=name, args=args
             )
 
+        qualified = self._qualified_owner(obj_text)
+        if qualified is not None and scope.lookup(obj_text) is None:
+            return StaticCall(
+                origin=origin,
+                type=self._static_call_type(qualified, name, args),
+                owner=qualified,
+                name=name,
+                args=args,
+            )
+
         if obj.type == "identifier" and scope.lookup(obj_text) is None:
             if obj_text in KNOWN_CLASS_TYPES or obj_text in self._class_names:
                 return StaticCall(
@@ -1668,6 +1776,10 @@ class JavaFrontend:
         return Cast(origin=expr.origin, type=target, target=target, operand=expr)
 
     def _static_field_type(self, owner: str, name: str) -> uir.Type:
+        if owner == "ChronoUnit":
+            return ClassType("ChronoUnit")
+        if owner in ("Instant", "Duration", "ZoneOffset"):
+            return ClassType(owner)
         table = {
             ("Integer", "MAX_VALUE"): uir.T_INT,
             ("Integer", "MIN_VALUE"): uir.T_INT,
@@ -1679,6 +1791,11 @@ class JavaFrontend:
         return table.get((owner, name), UnknownType(f"static-field:{owner}.{name}"))
 
     def _static_call_type(self, owner: str, name: str, args: tuple[Expr, ...]) -> uir.Type:
+        if owner in _TIME_STATIC_RESULT:
+            table = _TIME_STATIC_RESULT[owner]
+            if name in table:
+                return table[name]
+            return ClassType(owner)
         if owner == "Objects":
             if name in ("isNull", "nonNull", "equals"):
                 return uir.T_BOOLEAN
@@ -1791,6 +1908,14 @@ class JavaFrontend:
             }
             if name in table:
                 return table[name]
+        if isinstance(target, ClassType) and target.name == "ChronoUnit":
+            if name == "between":
+                return uir.T_LONG
+        if isinstance(target, ClassType) and target.name in _TIME_INSTANCE_RESULT:
+            table = _TIME_INSTANCE_RESULT[target.name]
+            if name in table:
+                return table[name]
+            return ClassType(target.name)
         if isinstance(target, ClassType) and target.name.endswith("Exception") or (
             isinstance(target, ClassType) and target.name in ("Throwable", "Error")
         ):

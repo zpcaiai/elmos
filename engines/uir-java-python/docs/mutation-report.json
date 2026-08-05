@@ -1,6 +1,6 @@
 {
-  "total": 61,
-  "killed": 61,
+  "total": 69,
+  "killed": 69,
   "survivors": [],
   "results": [
     {
@@ -313,6 +313,54 @@
       "id": "M61",
       "file": "j2p/emit/python.py",
       "rule": "String.split refuses a regex separator",
+      "status": "KILLED"
+    },
+    {
+      "id": "M62",
+      "file": "runtime/j2p_time.py",
+      "rule": "month arithmetic clamps the day to the target month's length",
+      "status": "KILLED"
+    },
+    {
+      "id": "M63",
+      "file": "runtime/j2p_time.py",
+      "rule": "Instant prints its fraction in groups of three digits",
+      "status": "KILLED"
+    },
+    {
+      "id": "M64",
+      "file": "runtime/j2p_time.py",
+      "rule": "Duration.toString drops trailing zeros from the fraction",
+      "status": "KILLED"
+    },
+    {
+      "id": "M65",
+      "file": "runtime/j2p_time.py",
+      "rule": "LocalTime omits seconds when they are zero, unlike Instant",
+      "status": "KILLED"
+    },
+    {
+      "id": "M66",
+      "file": "runtime/j2p_time.py",
+      "rule": "ChronoUnit truncates toward zero rather than flooring",
+      "status": "KILLED"
+    },
+    {
+      "id": "M67",
+      "file": "runtime/j2p_time.py",
+      "rule": "an impossible date raises rather than being silently accepted",
+      "status": "KILLED"
+    },
+    {
+      "id": "M68",
+      "file": "runtime/j2p_time.py",
+      "rule": "years beyond four digits are printed with Java's + prefix",
+      "status": "KILLED"
+    },
+    {
+      "id": "M69",
+      "file": "j2p/emit/python.py",
+      "rule": "named time zones are refused because the tz database is not pinned",
       "status": "KILLED"
     },
     {

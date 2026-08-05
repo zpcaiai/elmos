@@ -19,57 +19,57 @@
       "unsupported Java construct: decimal_floating_point_literal": 1,
       "unsupported Java construct: super": 1
     },
-    "emitted_python": 51,
+    "emitted_python": 52,
     "emit_refusals": {
-      "Set.of has an unspecified iteration order that Java randomises per run": 49,
-      "call parse on unresolved receiver type UnknownType(reason='name:Instant')": 37,
-      "String.matches is not supported": 20,
+      "Set.of has an unspecified iteration order that Java randomises per run": 53,
+      "String.matches is not supported": 21,
       "Map.of has an unspecified iteration order that Java randomises per run": 20,
-      "unsupported class instantiation: new ObjectMapper": 19,
+      "unsupported class instantiation: new ObjectMapper": 20,
+      "call resolve on unresolved receiver type ClassType(name='Path', args=())": 17,
       "new HashMap is not supported: Java's iteration order for this collection is either unspecified or insertion/comparator defined, and no Python built-in reproduces it in every case": 15,
+      "overloaded constructors are not supported": 14,
       "static call System.getProperty is not supported": 14,
       "call require on unresolved receiver type UnknownType(reason='name:Identifiers')": 14,
-      "call resolve on unresolved receiver type ClassType(name='Path', args=())": 13,
-      "overloaded constructors are not supported": 11,
+      "String.getBytes is not supported": 12,
       "call toAbsolutePath on unresolved receiver type ClassType(name='Path', args=())": 11,
-      "String.getBytes is not supported": 11,
       "new LinkedHashMap is not supported: Java's iteration order for this collection is either unspecified or insertion/comparator defined, and no Python built-in reproduces it in every case": 11,
+      "unsupported class instantiation: new SecureRandom": 10,
       "call compile on unresolved receiver type UnknownType(reason='name:Pattern')": 10,
+      "call create on unresolved receiver type UnknownType(reason='name:URI')": 10,
       "new ConcurrentHashMap is not supported: Java's iteration order for this collection is either unspecified or insertion/comparator defined, and no Python built-in reproduces it in every case": 10,
       "`ReferenceApplication.class` has no translation: it denotes a runtime class object, and reflection over it cannot be reproduced": 10,
       "call to unknown method is": 10,
-      "unsupported class instantiation: new SecureRandom": 9,
-      "call create on unresolved receiver type UnknownType(reason='name:URI')": 8,
       "Map.copyOf has an unspecified iteration order that Java randomises per run": 8,
       "Set.copyOf has an unspecified iteration order that Java randomises per run": 8,
-      "call ofSeconds on unresolved receiver type UnknownType(reason='name:Duration')": 7,
       "new HashSet is not supported: Java's iteration order for this collection is either unspecified or insertion/comparator defined, and no Python built-in reproduces it in every case": 7,
       "`String.class` has no translation: it denotes a runtime class object, and reflection over it cannot be reproduced": 6,
       "static call System.exit is not supported": 6,
       "call to unknown method required": 6,
       "unsupported class instantiation: new JavaTimeModule": 6,
-      "call systemUTC on unresolved receiver type UnknownType(reason='name:Clock')": 5,
+      "call of on unresolved receiver type UnknownType(reason='name:Path')": 5,
       "call capabilities on unresolved receiver type ClassType(name='EvidenceBoundDomainEngine', args=())": 5,
       "Map.entry has an unspecified iteration order that Java randomises per run": 5,
       "call to unknown method require": 5,
-      "call of on unresolved receiver type UnknownType(reason='name:Path')": 4,
-      "call ofMinutes on unresolved receiver type UnknownType(reason='name:Duration')": 4,
       "call randomUUID on unresolved receiver type UnknownType(reason='name:UUID')": 4,
       "Stage.ordinal is not declared in this compilation unit": 4,
-      "call ofPattern on unresolved receiver type UnknownType(reason='name:DateTimeFormatter')": 3,
+      "call report on unresolved receiver type ClassType(name='Outcome', args=())": 4,
+      "call require on unresolved receiver type UnknownType(reason='name:EnterpriseModels')": 4,
       "static call System.getenv is not supported": 3,
       "String.toCharArray is not supported": 3,
       "`super(...)` constructor delegation is not supported": 3,
       "unsupported class instantiation: new BlockedException": 3,
       "interface with default/static methods or constants is not supported": 3,
       "call empty on unresolved receiver type UnknownType(reason='name:Optional')": 3,
-      "call require on unresolved receiver type UnknownType(reason='name:EnterpriseModels')": 3,
+      "call newBuilder on unresolved receiver type UnknownType(reason='name:HttpClient')": 3,
       "System.out.printf is not supported": 3,
       "call organizationId on unresolved receiver type ClassType(name='CommercialPrincipal', args=())": 2,
-      "call of on unresolved receiver type UnknownType(reason='name:ZoneId')": 2,
+      "ZoneId resolves through the tz database, and the JVM's bundled copy and Python's zoneinfo are versioned separately": 2,
       "`Connection` is not declared in this compilation unit with a close() method, so its closing behaviour is unknown": 2,
       "call clone on unresolved receiver type ArrayType(element=PrimitiveType(name='byte'))": 2,
+      "unsupported class instantiation: new EntitlementAndFulfillmentService": 2,
       "unsupported class instantiation: new BadJwtException": 2,
+      "unsupported class instantiation: new CallbackReplayGuard": 2,
+      "call presignUpload on unresolved receiver type ClassType(name='S3ObjectStore', args=())": 2,
       "unsupported class instantiation: new CrossDomainDecisionGovernance": 2,
       "unsupported class instantiation: new DeliveryReadModel": 2,
       "unsupported class instantiation: new IntegrationCutoverGovernance": 2,
@@ -82,6 +82,7 @@
       "unsupported class instantiation: new SecurityException": 2,
       "unsupported class instantiation: new BigDecimal": 2,
       "unsupported class instantiation: new TestQualityGateGovernance": 2,
+      "unsupported class instantiation: new TenantIdentityAuthorization": 2,
       "unsupported class instantiation: new UnimplementedModelHealthProbe": 2,
       "unsupported class instantiation: new IndependentValidationJudge": 2,
       "unsupported class instantiation: new DisabledSpringUpgradeCodingAgentPort": 2,
@@ -97,16 +98,18 @@
       "unsupported class instantiation: new CopyOnWriteArrayList": 2,
       "call isEmpty on unresolved receiver type ClassType(name='Optional', args=(ClassType(name='Destination', args=()),))": 2,
       "`PreparedStatement` is not declared in this compilation unit with a close() method, so its closing behaviour is unknown": 2,
-      "call toSeconds on unresolved receiver type ClassType(name='Duration', args=())": 2,
+      "call constantTimeEquals on unresolved receiver type UnknownType(reason='name:Secrets')": 2,
       "call getString on unresolved receiver type ClassType(name='ResultSet', args=())": 2,
+      "DateTimeFormatter.withZone is not supported": 2,
       "unsupported class instantiation: new DatabaseDataEngineService": 2,
       "unsupported class instantiation: new InfrastructureEngineService": 2,
       "call isEmpty on unresolved receiver type ClassType(name='var', args=())": 2,
       "unsupported class instantiation: new SecurityComplianceEngineService": 2,
       "unsupported class instantiation: new LinkedHashSet": 2,
       "call seed on unresolved receiver type ClassType(name='Budget', args=())": 2,
+      "call random on unresolved receiver type UnknownType(reason='name:OrganizationId')": 2,
       "call add on unresolved receiver type ClassType(name='var', args=())": 2,
-      "call isAfter on unresolved receiver type ClassType(name='Instant', args=())": 2,
+      "unsupported class instantiation: new AtomicReference": 2,
       "call chinaSelfServeDraft on unresolved receiver type UnknownType(reason='name:PricingPlanCatalog')": 2,
       "call getInstance on unresolved receiver type UnknownType(reason='name:MessageDigest')": 2,
       "static call Comparator.comparing is not supported": 2,
@@ -118,8 +121,8 @@
       "`Integer.class` has no translation: it denotes a runtime class object, and reflection over it cannot be reproduced": 2,
       "call getString on unresolved receiver type UnknownType(reason='inferred-lambda-parameter')": 2,
       "call sql on unresolved receiver type ClassType(name='JdbcClient', args=())": 2,
+      "unsupported class instantiation: new DriverManagerDataSource": 2,
       "unsupported class instantiation: new PostgreSQLContainer": 2,
-      "call ofHours on unresolved receiver type UnknownType(reason='name:Duration')": 2,
       "call createNativeQuery on unresolved receiver type ClassType(name='EntityManager', args=())": 1,
       "`AgentGatewayApplication.class` has no translation: it denotes a runtime class object, and reflection over it cannot be reproduced": 1,
       "unsupported class instantiation: new AgentGatewayController": 1,
@@ -127,6 +130,7 @@
       "call error on unresolved receiver type ClassType(name='BillingMetrics', args=())": 1,
       "`Boolean.class` has no translation: it denotes a runtime class object, and reflection over it cannot be reproduced": 1,
       "call getMessage on unresolved receiver type ClassType(name='SQLException', args=())": 1,
+      "Clock.systemDefaultZone is not supported": 1,
       "call get on unresolved receiver type ClassType(name='Map', args=(ClassType(name='String', args=()), ClassType(name='String', args=())))": 1,
       "call isEmpty on unresolved receiver type ClassType(name='Optional', args=(ClassType(name='LocalOrder', args=()),))": 1,
       "call callbackAdapter on unresolved receiver type ClassType(name='PaymentProviderRouter', args=())": 1,
@@ -134,12 +138,12 @@
       "call accepts on unresolved receiver type ClassType(name='CallbackReplayGuard', args=())": 1,
       "call code on unresolved receiver type ClassType(name='BillingApiException', args=())": 1,
       "`CommercialApiApplication.class` has no translation: it denotes a runtime class object, and reflection over it cannot be reproduced": 1,
-      "unsupported class instantiation: new EntitlementAndFulfillmentService": 1,
       "call path on unresolved receiver type ClassType(name='JsonNode', args=())": 1,
       "unsupported class instantiation: new SimpleMeterRegistry": 1,
       "unsupported class instantiation: new CommercialController": 1,
       "call to unknown method status": 1,
       "call getResponse on unresolved receiver type UnknownType(reason='inferred-lambda-parameter')": 1,
+      "call verifyAndNormalize on unresolved receiver type ClassType(name='var', args=())": 1,
       "unsupported class instantiation: new CompositeModernizationOrchestrator": 1,
       "`ControlPlaneApplication.class` has no translation: it denotes a runtime class object, and reflection over it cannot be reproduced": 1,
       "unsupported class instantiation: new DatabaseDataCutoverGovernance": 1,
@@ -164,21 +168,25 @@
       "call clearContext on unresolved receiver type UnknownType(reason='name:SecurityContextHolder')": 1,
       "unsupported class instantiation: new Request": 1,
       "unsupported class instantiation: new DatabaseDataController": 1,
+      "unsupported class instantiation: new BatchOneDemoService": 1,
       "unsupported class instantiation: new EnterpriseIntegrationController": 1,
       "unsupported class instantiation: new EnterpriseSuiteController": 1,
       "unsupported class instantiation: new FrontendClientController": 1,
       "unsupported class instantiation: new InfrastructureController": 1,
       "unsupported class instantiation: new MainframeController": 1,
       "unsupported class instantiation: new MigrationPackCertificationController": 1,
+      "`JdbcOperationsManagementStore.class` has no translation: it denotes a runtime class object, and reflection over it cannot be reproduced": 1,
       "call routes on unresolved receiver type UnknownType(reason='name:OperationsBusinessLineRegistry')": 1,
+      "`JdbcUserActivityStore.class` has no translation: it denotes a runtime class object, and reflection over it cannot be reproduced": 1,
       "unsupported class instantiation: new ProductCommercializationController": 1,
       "unsupported class instantiation: new ProductRoadmapController": 1,
+      "`GitRepositoryWorkspaceService.class` has no translation: it denotes a runtime class object, and reflection over it cannot be reproduced": 1,
       "unsupported class instantiation: new SecurityComplianceController": 1,
       "`SnapshotCaptureService.class` has no translation: it denotes a runtime class object, and reflection over it cannot be reproduced": 1,
+      "`SelfServiceBillingPort.class` has no translation: it denotes a runtime class object, and reflection over it cannot be reproduced": 1,
       "unsupported class instantiation: new TestQualityController": 1,
       "unsupported class instantiation: new ByteArrayOutputStream": 1,
       "`EnterpriseControlApplication.class` has no translation: it denotes a runtime class object, and reflection over it cannot be reproduced": 1,
-      "unsupported class instantiation: new TenantIdentityAuthorization": 1,
       "unsupported class instantiation: new EnterpriseController": 1,
       "`JavaEngineTransformerApplication.class` has no translation: it denotes a runtime class object, and reflection over it cannot be reproduced": 1,
       "`JavaEngineVerifierApplication.class` has no translation: it denotes a runtime class object, and reflection over it cannot be reproduced": 1,
@@ -189,6 +197,7 @@
       "unsupported class instantiation: new RecipeGovernanceService": 1,
       "unsupported class instantiation: new DisabledSpringUpgradeExecutionPort": 1,
       "call capabilities on unresolved receiver type ClassType(name='SpringUpgradeRunService', args=())": 1,
+      "unsupported class instantiation: new DurableRunLeaseStore": 1,
       "unsupported class instantiation: new EngineController": 1,
       "call select on unresolved receiver type UnknownType(reason='name:SpringRouteCatalog')": 1,
       "call close on unresolved receiver type ClassType(name='SpringUpgradeRunService', args=())": 1,
@@ -199,6 +208,7 @@
       "call handle on unresolved receiver type ClassType(name='RootlessSpringRuntimeService', args=())": 1,
       "call provision on unresolved receiver type ClassType(name='WorkspaceProvisioningPort', args=())": 1,
       "`WorkspaceServiceApplication.class` has no translation: it denotes a runtime class object, and reflection over it cannot be reproduced": 1,
+      "unsupported class instantiation: new WorkspaceSecurityPolicy": 1,
       "`WorkspaceProvisioningPort.class` has no translation: it denotes a runtime class object, and reflection over it cannot be reproduced": 1,
       "unsupported class instantiation: new WorkspaceSecretRegistry": 1,
       "`==` between two reference types (ClassType(name='JobStatus', args=()) and UnknownType(reason='field:SUCCEEDED')) compares identity in Java, not value": 1,
@@ -269,20 +279,22 @@
       "call to unknown method requireText": 1,
       "unsupported class instantiation: new PropertyVerificationEngine": 1,
       "unsupported class instantiation: new DeterministicScheduleExplorer": 1,
-      "call random on unresolved receiver type UnknownType(reason='name:OrganizationId')": 1,
+      "call isEmpty on unresolved receiver type ClassType(name='Map', args=(ClassType(name='String', args=()), ClassType(name='String', args=())))": 1,
       "call keySet on unresolved receiver type ClassType(name='Map', args=(ClassType(name='String', args=()), ClassType(name='String', args=())))": 1,
-      "unsupported class instantiation: new AtomicReference": 1,
       "unsupported class instantiation: new ClassFileImporter": 1,
+      "call evaluate on unresolved receiver type ClassType(name='BehaviorEquivalenceService', args=())": 1,
       "call required on unresolved receiver type UnknownType(reason='name:CommercialLoopModels')": 1,
       "call origin on unresolved receiver type ClassType(name='RecipeAsset', args=())": 1,
       "call evidenceRefs on unresolved receiver type ClassType(name='CustomerSignals', args=())": 1,
       "call objectiveId on unresolved receiver type ClassType(name='ServiceLevelMeasurement', args=())": 1,
       "`Objects::isNull` refers to a type declared outside this compilation unit": 1,
       "unsupported class instantiation: new ProgramDefinition": 1,
-      "call isBefore on unresolved receiver type ClassType(name='Instant', args=())": 1,
+      "call all on unresolved receiver type UnknownType(reason='name:CompanySeriesPrograms')": 1,
+      "`==` between two reference types (ClassType(name='LossPolicy', args=()) and UnknownType(reason='field:UNSUPPORTED')) compares identity in Java, not value": 1,
       "call status on unresolved receiver type UnknownType(reason='inferred-lambda-parameter')": 1,
       "unsupported class instantiation: new DependencyGraphAnalyzer": 1,
       "`==` between two reference types (ClassType(name='CompositeState', args=()) and UnknownType(reason='field:ROLLBACK_REQUIRED')) compares identity in Java, not value": 1,
+      "unsupported class instantiation: new LandscapeCoverage": 1,
       "unsupported class instantiation: new ContinuousAuthorizationService": 1,
       "call criterionId on unresolved receiver type UnknownType(reason='inferred-lambda-parameter')": 1,
       "call copy on unresolved receiver type ClassType(name='ObjectMapper', args=())": 1,
@@ -290,6 +302,7 @@
       "String.replaceAll is not supported": 1,
       "unsupported class instantiation: new UsageEvidenceBundle": 1,
       "call buildModel on unresolved receiver type ClassType(name='Request', args=())": 1,
+      "call migrate on unresolved receiver type ClassType(name='DependencyMigrationService', args=())": 1,
       "call authorize on unresolved receiver type ClassType(name='IdeProtocolGateway', args=())": 1,
       "call exactSha256 on unresolved receiver type UnknownType(reason='name:Digests')": 1,
       "call repositoryWrite on unresolved receiver type ClassType(name='PreviewRequest', args=())": 1,
@@ -301,7 +314,6 @@
       "`SourceNode::nodeId` refers to a type declared outside this compilation unit": 1,
       "`==` between two reference types (UnknownType(reason='this-type') and UnknownType(reason='name:DELIVERED')) compares identity in Java, not value": 1,
       "call contains on unresolved receiver type ClassType(name='Set', args=(ClassType(name='String', args=()),))": 1,
-      "call requireNonNull on unresolved receiver type UnknownType(reason='field:Objects')": 1,
       "call interpret on unresolved receiver type UnknownType(reason='name:AnthropicModelHealthProbe')": 1,
       "call interpret on unresolved receiver type UnknownType(reason='name:DeepSeekModelHealthProbe')": 1,
       "call interpret on unresolved receiver type UnknownType(reason='name:DoubaoModelHealthProbe')": 1,
@@ -321,10 +333,12 @@
       "call expectedDigest on unresolved receiver type ClassType(name='SupplyChainEnvelope', args=())": 1,
       "call kind on unresolved receiver type UnknownType(reason='inferred-lambda-parameter')": 1,
       "`AfsmEntity::entityId` refers to a type declared outside this compilation unit": 1,
+      "call migrate on unresolved receiver type ClassType(name='FrameworkMigrationService', args=())": 1,
       "call to unknown method safe": 1,
       "call newInstance on unresolved receiver type UnknownType(reason='name:DocumentBuilderFactory')": 1,
-      "call instant on unresolved receiver type ClassType(name='Clock', args=())": 1,
+      "unsupported class instantiation: new VulnerabilityEvidence": 1,
       "unsupported class instantiation: new SecureRepositoryScanner": 1,
+      "call disabled on unresolved receiver type UnknownType(reason='name:BaselineRunner')": 1,
       "call getUrlEncoder on unresolved receiver type UnknownType(reason='name:Base64')": 1,
       "call valueOf on unresolved receiver type UnknownType(reason='name:MediaType')": 1,
       "unsupported class instantiation: new String": 1,
@@ -339,16 +353,17 @@
       "call extractBody on unresolved receiver type UnknownType(reason='name:PolyglotRouteEngineBridge')": 1,
       "call pack on unresolved receiver type ClassType(name='AdmissionRequest', args=())": 1,
       "call pack on unresolved receiver type UnknownType(reason='inferred-lambda-parameter')": 1,
+      "`PackDefinition::pack` refers to a type declared outside this compilation unit": 1,
       "call expiresAt on unresolved receiver type ClassType(name='NetworkPolicy', args=())": 1,
       "`!=` between two reference types (ClassType(name='DefaultAction', args=()) and UnknownType(reason='field:DENY')) compares identity in Java, not value": 1,
+      "unsupported class instantiation: new NetworkDecisionService": 1,
       "call repository on unresolved receiver type ClassType(name='DemoRecord', args=())": 1,
       "call organizationId on unresolved receiver type ClassType(name='Installation', args=())": 1,
       "call status on unresolved receiver type ClassType(name='SecretLease', args=())": 1,
       "call to unknown method offset": 1,
       "call normalizedEventType on unresolved receiver type ClassType(name='Delivery', args=())": 1,
       "call resources on unresolved receiver type ClassType(name='WorkspaceRequest', args=())": 1,
-      "call atOffset on unresolved receiver type ClassType(name='Instant', args=())": 1,
-      "unsupported class instantiation: new DriverManagerDataSource": 1,
+      "Instant.atOffset is not supported": 1,
       "call detectedJavaVersion on unresolved receiver type ClassType(name='LegacyHealthReport', args=())": 1,
       "call requiredApprovals on unresolved receiver type ClassType(name='Campaign', args=())": 1,
       "unsupported class instantiation: new TenantSemanticIndex": 1,
@@ -357,6 +372,7 @@
       "call batch on unresolved receiver type UnknownType(reason='inferred-lambda-parameter')": 1,
       "call batch on unresolved receiver type ClassType(name='EvaluationRequest', args=())": 1,
       "unsupported class instantiation: new ProductDomainControls": 1,
+      "call all on unresolved receiver type UnknownType(reason='name:ProductRoadmapCatalog')": 1,
       "call required on unresolved receiver type UnknownType(reason='name:ProductionCutoverModels')": 1,
       "call required on unresolved receiver type UnknownType(reason='name:ProductionHardeningModels')": 1,
       "call of on unresolved receiver type UnknownType(reason='name:EnumSet')": 1,
@@ -369,19 +385,23 @@
       "unsupported class instantiation: new GitHubBranchWritePolicy": 1,
       "call clone on unresolved receiver type ArrayType(element=PrimitiveType(name='char'))": 1,
       "unsupported class instantiation: new SecureExecutionAdmissionService": 1,
+      "unsupported class instantiation: new LosslessFallbackAdapter": 1,
+      "unsupported class instantiation: new BuildBaseline": 1,
       "`EphemeralCredential` is not declared in this compilation unit with a close() method, so its closing behaviour is unknown": 1,
       "`this(...)` constructor delegation is not supported": 1,
       "`UirModels.Module.class` has no translation: it denotes a runtime class object, and reflection over it cannot be reproduced": 1,
       "new TreeMap is not supported: Java's iteration order for this collection is either unspecified or insertion/comparator defined, and no Python built-in reproduces it in every case": 1,
       "call builder on unresolved receiver type UnknownType(reason='name:JsonMapper')": 1,
+      "unsupported class instantiation: new UirDialectRegistry": 1,
       "call workspaceId on unresolved receiver type ClassType(name='Environment', args=())": 1,
       "List.stream is not supported": 1,
       "call labels on unresolved receiver type UnknownType(reason='inferred-lambda-parameter')": 1,
+      "unsupported class instantiation: new ResourceLimits": 1,
       "call to unknown method getClass": 1,
       "unsupported class instantiation: new AnnotationConfigWebApplicationContext": 1
     },
     "parse_rate": 0.9491,
-    "emit_rate": 0.0577
+    "emit_rate": 0.0588
   },
   "files": [
     {
@@ -454,13 +474,13 @@
       "file": "apps/commercial-api/src/main/java/io/elmos/commercialadapter/payment/AlipayCallbackAdapter.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call of on unresolved receiver type UnknownType(reason='name:ZoneId')"
+      "reason": "ZoneId resolves through the tz database, and the JVM's bundled copy and Python's zoneinfo are versioned separately"
     },
     {
       "file": "apps/commercial-api/src/main/java/io/elmos/commercialadapter/payment/AlipayCheckoutGateway.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call ofPattern on unresolved receiver type UnknownType(reason='name:DateTimeFormatter')"
+      "reason": "Clock.systemDefaultZone is not supported"
     },
     {
       "file": "apps/commercial-api/src/main/java/io/elmos/commercialadapter/payment/AlipaySignatureVerifier.java",
@@ -472,7 +492,7 @@
       "file": "apps/commercial-api/src/main/java/io/elmos/commercialadapter/payment/CallbackReplayGuard.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call ofMinutes on unresolved receiver type UnknownType(reason='name:Duration')"
+      "reason": "overloaded constructors are not supported"
     },
     {
       "file": "apps/commercial-api/src/main/java/io/elmos/commercialadapter/payment/JdbcCallbackPorts.java",
@@ -586,7 +606,7 @@
       "file": "apps/commercial-api/src/main/java/io/elmos/commercialapi/PaymentCallbackConfiguration.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call systemUTC on unresolved receiver type UnknownType(reason='name:Clock')"
+      "reason": "unsupported class instantiation: new CallbackReplayGuard"
     },
     {
       "file": "apps/commercial-api/src/main/java/io/elmos/commercialapi/PaymentCallbackController.java",
@@ -604,7 +624,7 @@
       "file": "apps/commercial-api/src/main/java/io/elmos/commercialapi/StripeCheckoutGateway.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call ofSeconds on unresolved receiver type UnknownType(reason='name:Duration')"
+      "reason": "overloaded constructors are not supported"
     },
     {
       "file": "apps/commercial-api/src/test/java/io/elmos/commercialapi/BillingApiErrorAdviceTest.java",
@@ -652,13 +672,13 @@
       "file": "apps/commercial-api/src/test/java/io/elmos/commercialapi/StripeCheckoutGatewayTest.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call parse on unresolved receiver type UnknownType(reason='name:Instant')"
+      "reason": "call verifyAndNormalize on unresolved receiver type ClassType(name='var', args=())"
     },
     {
       "file": "apps/control-plane/src/main/java/io/elmos/controlplane/ArtifactController.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call ofSeconds on unresolved receiver type UnknownType(reason='name:Duration')"
+      "reason": "call presignUpload on unresolved receiver type ClassType(name='S3ObjectStore', args=())"
     },
     {
       "file": "apps/control-plane/src/main/java/io/elmos/controlplane/AuthenticationController.java",
@@ -748,7 +768,7 @@
       "file": "apps/control-plane/src/main/java/io/elmos/controlplane/GithubInstallationOnboardingService.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call ofMinutes on unresolved receiver type UnknownType(reason='name:Duration')"
+      "reason": "unsupported class instantiation: new SecureRandom"
     },
     {
       "file": "apps/control-plane/src/main/java/io/elmos/controlplane/GithubRepositoryController.java",
@@ -982,7 +1002,7 @@
       "file": "apps/control-plane/src/test/java/io/elmos/controlplane/DemoControllerTest.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call systemUTC on unresolved receiver type UnknownType(reason='name:Clock')"
+      "reason": "unsupported class instantiation: new BatchOneDemoService"
     },
     {
       "file": "apps/control-plane/src/test/java/io/elmos/controlplane/EnterpriseIntegrationControllerTest.java",
@@ -1006,7 +1026,7 @@
       "file": "apps/control-plane/src/test/java/io/elmos/controlplane/GithubInstallationOnboardingStateTest.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call parse on unresolved receiver type UnknownType(reason='name:Instant')"
+      "reason": "String.getBytes is not supported"
     },
     {
       "file": "apps/control-plane/src/test/java/io/elmos/controlplane/GithubWebhookControllerTest.java",
@@ -1036,7 +1056,7 @@
       "file": "apps/control-plane/src/test/java/io/elmos/controlplane/OperationsAutomationSchedulerTest.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call parse on unresolved receiver type UnknownType(reason='name:Instant')"
+      "reason": "`JdbcOperationsManagementStore.class` has no translation: it denotes a runtime class object, and reflection over it cannot be reproduced"
     },
     {
       "file": "apps/control-plane/src/test/java/io/elmos/controlplane/OperationsBusinessLineRegistryTest.java",
@@ -1054,7 +1074,7 @@
       "file": "apps/control-plane/src/test/java/io/elmos/controlplane/OperationsObservabilityControllerTest.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call parse on unresolved receiver type UnknownType(reason='name:Instant')"
+      "reason": "`JdbcUserActivityStore.class` has no translation: it denotes a runtime class object, and reflection over it cannot be reproduced"
     },
     {
       "file": "apps/control-plane/src/test/java/io/elmos/controlplane/OwnerOnlySecretFileTest.java",
@@ -1078,7 +1098,7 @@
       "file": "apps/control-plane/src/test/java/io/elmos/controlplane/RepositoryWorkspaceControllerTest.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call parse on unresolved receiver type UnknownType(reason='name:Instant')"
+      "reason": "`GitRepositoryWorkspaceService.class` has no translation: it denotes a runtime class object, and reflection over it cannot be reproduced"
     },
     {
       "file": "apps/control-plane/src/test/java/io/elmos/controlplane/RepositoryWorkspaceCredentialStoreTest.java",
@@ -1102,7 +1122,7 @@
       "file": "apps/control-plane/src/test/java/io/elmos/controlplane/TenantQuotaControllerTest.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call parse on unresolved receiver type UnknownType(reason='name:Instant')"
+      "reason": "`SelfServiceBillingPort.class` has no translation: it denotes a runtime class object, and reflection over it cannot be reproduced"
     },
     {
       "file": "apps/control-plane/src/test/java/io/elmos/controlplane/TestQualityControllerTest.java",
@@ -1210,7 +1230,7 @@
       "file": "apps/java-engine-verifier/src/main/java/io/elmos/verifier/VerifierConfiguration.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call systemUTC on unresolved receiver type UnknownType(reason='name:Clock')"
+      "reason": "call of on unresolved receiver type UnknownType(reason='name:Path')"
     },
     {
       "file": "apps/java-engine-verifier/src/test/java/io/elmos/verifier/ProcessMavenVerificationTest.java",
@@ -1276,7 +1296,7 @@
       "file": "apps/java-engine-worker/src/main/java/io/elmos/worker/HealthPlanningConfiguration.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call systemUTC on unresolved receiver type UnknownType(reason='name:Clock')"
+      "reason": "call create on unresolved receiver type UnknownType(reason='name:URI')"
     },
     {
       "file": "apps/java-engine-worker/src/main/java/io/elmos/worker/HealthPlanningController.java",
@@ -1390,7 +1410,7 @@
       "file": "apps/java-engine-worker/src/test/java/io/elmos/worker/DurableRunLeaseStoreTest.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call parse on unresolved receiver type UnknownType(reason='name:Instant')"
+      "reason": "unsupported class instantiation: new DurableRunLeaseStore"
     },
     {
       "file": "apps/java-engine-worker/src/test/java/io/elmos/worker/EngineControllerTest.java",
@@ -1702,7 +1722,7 @@
       "file": "apps/workspace-service/src/main/java/io/elmos/workspaceservice/WorkspaceServiceConfiguration.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call systemUTC on unresolved receiver type UnknownType(reason='name:Clock')"
+      "reason": "unsupported class instantiation: new WorkspaceSecurityPolicy"
     },
     {
       "file": "apps/workspace-service/src/test/java/io/elmos/workspaceservice/DirectorySecretProviderTest.java",
@@ -1924,7 +1944,7 @@
       "file": "docs/p0-implementation/identity/src/main/java/io/elmos/identity/SessionCookies.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call toSeconds on unresolved receiver type ClassType(name='Duration', args=())"
+      "reason": "call constantTimeEquals on unresolved receiver type UnknownType(reason='name:Secrets')"
     },
     {
       "file": "docs/p0-implementation/identity/src/test/java/io/elmos/identity/AuthenticationServiceTest.java",
@@ -1996,7 +2016,7 @@
       "file": "docs/p0-implementation/runner-agent/src/main/java/io/elmos/runner/ControlPlaneClient.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call ofSeconds on unresolved receiver type UnknownType(reason='name:Duration')"
+      "reason": "call newBuilder on unresolved receiver type UnknownType(reason='name:HttpClient')"
     },
     {
       "file": "docs/p0-implementation/runner-agent/src/main/java/io/elmos/runner/HeartbeatPump.java",
@@ -2068,7 +2088,7 @@
       "file": "docs/p0-implementation/storage/spring/ArtifactController.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call ofSeconds on unresolved receiver type UnknownType(reason='name:Duration')"
+      "reason": "call presignUpload on unresolved receiver type ClassType(name='S3ObjectStore', args=())"
     },
     {
       "file": "docs/p0-implementation/storage/spring/JdbcObjectStorageStore.java",
@@ -2080,13 +2100,13 @@
       "file": "docs/p0-implementation/storage/src/main/java/io/elmos/storage/S3ObjectStore.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call ofSeconds on unresolved receiver type UnknownType(reason='name:Duration')"
+      "reason": "call newBuilder on unresolved receiver type UnknownType(reason='name:HttpClient')"
     },
     {
       "file": "docs/p0-implementation/storage/src/main/java/io/elmos/storage/SigV4Presigner.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call ofPattern on unresolved receiver type UnknownType(reason='name:DateTimeFormatter')"
+      "reason": "DateTimeFormatter.withZone is not supported"
     },
     {
       "file": "docs/p0-implementation/storage/src/test/java/io/elmos/storage/S3ObjectStoreTest.java",
@@ -2998,7 +3018,7 @@
       "file": "modules/application/src/main/java/io/elmos/application/SecurityAuthorizationGovernance.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call isAfter on unresolved receiver type ClassType(name='Instant', args=())"
+      "reason": "call isEmpty on unresolved receiver type ClassType(name='Map', args=(ClassType(name='String', args=()), ClassType(name='String', args=())))"
     },
     {
       "file": "modules/application/src/main/java/io/elmos/application/SuiteCutoverGovernance.java",
@@ -3160,7 +3180,7 @@
       "file": "modules/behavior-equivalence/src/test/java/io/elmos/equivalence/BehaviorEquivalenceServiceTest.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call parse on unresolved receiver type UnknownType(reason='name:Instant')"
+      "reason": "call evaluate on unresolved receiver type ClassType(name='BehaviorEquivalenceService', args=())"
     },
     {
       "file": "modules/commercial-loop/src/main/java/io/elmos/commercialloop/CommercialLoopArtifactWriter.java",
@@ -3190,7 +3210,7 @@
       "file": "modules/commercial-loop/src/test/java/io/elmos/commercialloop/CommercialLoopServiceTest.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call parse on unresolved receiver type UnknownType(reason='name:Instant')"
+      "reason": "call report on unresolved receiver type ClassType(name='Outcome', args=())"
     },
     {
       "file": "modules/commercial-operations/src/main/java/io/elmos/commercial/AssetAndKnowledgeGovernance.java",
@@ -3244,7 +3264,7 @@
       "file": "modules/commercial-operations/src/test/java/io/elmos/commercial/CommercialOperationsTest.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call parse on unresolved receiver type UnknownType(reason='name:Instant')"
+      "reason": "unsupported class instantiation: new EntitlementAndFulfillmentService"
     },
     {
       "file": "modules/commercial-operations/src/test/java/io/elmos/commercial/PricingPlanCatalogTest.java",
@@ -3280,7 +3300,7 @@
       "file": "modules/company-series/src/test/java/io/elmos/companyseries/CompanySeriesEvaluatorTest.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call parse on unresolved receiver type UnknownType(reason='name:Instant')"
+      "reason": "call all on unresolved receiver type UnknownType(reason='name:CompanySeriesPrograms')"
     },
     {
       "file": "modules/composite-modernization/src/main/java/io/elmos/composite/BusinessJourneyValidator.java",
@@ -3292,7 +3312,7 @@
       "file": "modules/composite-modernization/src/main/java/io/elmos/composite/CompatibilityGovernance.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call isBefore on unresolved receiver type ClassType(name='Instant', args=())"
+      "reason": "`==` between two reference types (ClassType(name='LossPolicy', args=()) and UnknownType(reason='field:UNSUPPORTED')) compares identity in Java, not value"
     },
     {
       "file": "modules/composite-modernization/src/main/java/io/elmos/composite/CompositeEvidenceMapper.java",
@@ -3376,13 +3396,13 @@
       "file": "modules/composite-modernization/src/test/java/io/elmos/composite/CompositeGovernanceTest.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call parse on unresolved receiver type UnknownType(reason='name:Instant')"
+      "reason": "Set.of has an unspecified iteration order that Java randomises per run"
     },
     {
       "file": "modules/composite-modernization/src/test/java/io/elmos/composite/CompositeModernizationScenariosTest.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call parse on unresolved receiver type UnknownType(reason='name:Instant')"
+      "reason": "unsupported class instantiation: new LandscapeCoverage"
     },
     {
       "file": "modules/continuous-authorization/src/main/java/io/elmos/product/policy/ContinuousAuthorizationModels.java",
@@ -3448,7 +3468,7 @@
       "file": "modules/delivery/src/test/java/io/elmos/delivery/DeliveryGovernanceTest.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call parse on unresolved receiver type UnknownType(reason='name:Instant')"
+      "reason": "unsupported class instantiation: new ObjectMapper"
     },
     {
       "file": "modules/dependency-migration/src/main/java/io/elmos/dependency/ApiSemanticProfiler.java",
@@ -3502,7 +3522,7 @@
       "file": "modules/dependency-migration/src/test/java/io/elmos/dependency/DependencyMigrationServiceTest.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call parse on unresolved receiver type UnknownType(reason='name:Instant')"
+      "reason": "call migrate on unresolved receiver type ClassType(name='DependencyMigrationService', args=())"
     },
     {
       "file": "modules/developer-workflow/src/main/java/io/elmos/developerworkflow/AffectedTestSelector.java",
@@ -3736,7 +3756,7 @@
       "file": "modules/domain/src/test/java/io/elmos/domain/MigrationRunTest.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call parse on unresolved receiver type UnknownType(reason='name:Instant')"
+      "reason": "call random on unresolved receiver type UnknownType(reason='name:OrganizationId')"
     },
     {
       "file": "modules/ecosystem-growth/src/main/java/io/elmos/ecosystemgrowth/EcosystemGrowthArtifactWriter.java",
@@ -3766,7 +3786,7 @@
       "file": "modules/ecosystem-growth/src/test/java/io/elmos/ecosystemgrowth/EcosystemGrowthServiceTest.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call parse on unresolved receiver type UnknownType(reason='name:Instant')"
+      "reason": "call report on unresolved receiver type ClassType(name='Outcome', args=())"
     },
     {
       "file": "modules/enterprise-governance/src/main/java/io/elmos/enterprise/AnthropicModelHealthProbe.java",
@@ -3808,7 +3828,7 @@
       "file": "modules/enterprise-governance/src/main/java/io/elmos/enterprise/GoogleModelHealthProbe.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call ofSeconds on unresolved receiver type UnknownType(reason='name:Duration')"
+      "reason": "overloaded constructors are not supported"
     },
     {
       "file": "modules/enterprise-governance/src/main/java/io/elmos/enterprise/ModelCatalog.java",
@@ -3826,7 +3846,7 @@
       "file": "modules/enterprise-governance/src/main/java/io/elmos/enterprise/ModelEndpointProvisioning.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call requireNonNull on unresolved receiver type UnknownType(reason='field:Objects')"
+      "reason": "call require on unresolved receiver type UnknownType(reason='name:EnterpriseModels')"
     },
     {
       "file": "modules/enterprise-governance/src/main/java/io/elmos/enterprise/ModelEndpointProvisioningCli.java",
@@ -3916,7 +3936,7 @@
       "file": "modules/enterprise-governance/src/test/java/io/elmos/enterprise/EnterpriseGovernanceTest.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call parse on unresolved receiver type UnknownType(reason='name:Instant')"
+      "reason": "unsupported class instantiation: new TenantIdentityAuthorization"
     },
     {
       "file": "modules/enterprise-governance/src/test/java/io/elmos/enterprise/GoogleModelHealthProbeTest.java",
@@ -3982,7 +4002,7 @@
       "file": "modules/enterprise-platform/src/test/java/io/elmos/platform/EnterprisePlatformServiceTest.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call parse on unresolved receiver type UnknownType(reason='name:Instant')"
+      "reason": "call report on unresolved receiver type ClassType(name='Outcome', args=())"
     },
     {
       "file": "modules/evidence/src/main/java/io/elmos/evidence/AuditEvent.java",
@@ -4192,7 +4212,7 @@
       "file": "modules/framework-migration/src/test/java/io/elmos/frameworkmigration/FrameworkMigrationServiceTest.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call parse on unresolved receiver type UnknownType(reason='name:Instant')"
+      "reason": "call migrate on unresolved receiver type ClassType(name='FrameworkMigrationService', args=())"
     },
     {
       "file": "modules/health-check/src/main/java/io/elmos/health/BuildInventory.java",
@@ -4246,13 +4266,13 @@
       "file": "modules/health-check/src/main/java/io/elmos/health/VulnerabilityProviders.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call instant on unresolved receiver type ClassType(name='Clock', args=())"
+      "reason": "unsupported class instantiation: new VulnerabilityEvidence"
     },
     {
       "file": "modules/health-check/src/test/java/io/elmos/health/JavaLegacyHealthCheckTest.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call parse on unresolved receiver type UnknownType(reason='name:Instant')"
+      "reason": "call resolve on unresolved receiver type ClassType(name='Path', args=())"
     },
     {
       "file": "modules/identity/src/main/java/io/elmos/identity/AuthenticationService.java",
@@ -4288,7 +4308,7 @@
       "file": "modules/identity/src/main/java/io/elmos/identity/SessionCookies.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call toSeconds on unresolved receiver type ClassType(name='Duration', args=())"
+      "reason": "call constantTimeEquals on unresolved receiver type UnknownType(reason='name:Secrets')"
     },
     {
       "file": "modules/identity/src/test/java/io/elmos/identity/IdentityCoreTest.java",
@@ -4336,7 +4356,7 @@
       "file": "modules/intake/src/test/java/io/elmos/intake/RepositoryIntakeServiceTest.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call parse on unresolved receiver type UnknownType(reason='name:Instant')"
+      "reason": "call disabled on unresolved receiver type UnknownType(reason='name:BaselineRunner')"
     },
     {
       "file": "modules/integrations/src/main/java/io/elmos/integrations/GitHubAppJwt.java",
@@ -4426,7 +4446,7 @@
       "file": "modules/integrations/src/test/java/io/elmos/integrations/OsvVulnerabilityProviderTest.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call parse on unresolved receiver type UnknownType(reason='name:Instant')"
+      "reason": "call create on unresolved receiver type UnknownType(reason='name:URI')"
     },
     {
       "file": "modules/lowering/src/main/java/io/elmos/lowering/DisabledLoweringCodingAgentPort.java",
@@ -4528,7 +4548,7 @@
       "file": "modules/lowering/src/test/java/io/elmos/lowering/MethodBodyLoweringServiceTest.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call parse on unresolved receiver type UnknownType(reason='name:Instant')"
+      "reason": "call resolve on unresolved receiver type ClassType(name='Path', args=())"
     },
     {
       "file": "modules/lowering/src/test/java/io/elmos/lowering/PolyglotRouteEngineBridgeTest.java",
@@ -4558,7 +4578,7 @@
       "file": "modules/migration-pack-certification/src/test/java/io/elmos/migrationpack/MigrationPackAdmissionServiceTest.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call parse on unresolved receiver type UnknownType(reason='name:Instant')"
+      "reason": "`PackDefinition::pack` refers to a type declared outside this compilation unit"
     },
     {
       "file": "modules/network-policy/src/main/java/io/elmos/network/NetworkDecisionService.java",
@@ -4576,19 +4596,19 @@
       "file": "modules/network-policy/src/test/java/io/elmos/network/NetworkDecisionServiceTest.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call parse on unresolved receiver type UnknownType(reason='name:Instant')"
+      "reason": "unsupported class instantiation: new NetworkDecisionService"
     },
     {
       "file": "modules/object-storage/src/main/java/io/elmos/storage/S3ObjectStore.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call ofSeconds on unresolved receiver type UnknownType(reason='name:Duration')"
+      "reason": "call newBuilder on unresolved receiver type UnknownType(reason='name:HttpClient')"
     },
     {
       "file": "modules/object-storage/src/main/java/io/elmos/storage/SigV4Presigner.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call ofPattern on unresolved receiver type UnknownType(reason='name:DateTimeFormatter')"
+      "reason": "DateTimeFormatter.withZone is not supported"
     },
     {
       "file": "modules/object-storage/src/test/java/io/elmos/storage/S3ObjectStoreTest.java",
@@ -4726,7 +4746,7 @@
       "file": "modules/persistence/src/main/java/io/elmos/persistence/SqlTimestamps.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call atOffset on unresolved receiver type ClassType(name='Instant', args=())"
+      "reason": "Instant.atOffset is not supported"
     },
     {
       "file": "modules/persistence/src/test/java/io/elmos/persistence/FlywayMigrationTest.java",
@@ -4762,7 +4782,7 @@
       "file": "modules/persistence/src/test/java/io/elmos/persistence/JdbcUserActivityExportGuardTest.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call parse on unresolved receiver type UnknownType(reason='name:Instant')"
+      "reason": "unsupported class instantiation: new DriverManagerDataSource"
     },
     {
       "file": "modules/persistence/src/test/java/io/elmos/persistence/JdbcUserActivityExportTest.java",
@@ -4822,7 +4842,7 @@
       "file": "modules/planning/src/test/java/io/elmos/planning/MigrationPlannerTest.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call parse on unresolved receiver type UnknownType(reason='name:Instant')"
+      "reason": "call resolve on unresolved receiver type ClassType(name='Path', args=())"
     },
     {
       "file": "modules/portfolio-scale/src/main/java/io/elmos/portfolio/DurableWorkflowEngine.java",
@@ -4942,7 +4962,7 @@
       "file": "modules/product-roadmap-governance/src/test/java/io/elmos/roadmap/ProductRoadmapGovernanceTest.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call parse on unresolved receiver type UnknownType(reason='name:Instant')"
+      "reason": "call all on unresolved receiver type UnknownType(reason='name:ProductRoadmapCatalog')"
     },
     {
       "file": "modules/production-cutover/src/main/java/io/elmos/cutover/ProductionCutoverArtifactWriter.java",
@@ -4978,7 +4998,7 @@
       "file": "modules/production-cutover/src/test/java/io/elmos/cutover/ProductionCutoverServiceTest.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call parse on unresolved receiver type UnknownType(reason='name:Instant')"
+      "reason": "call report on unresolved receiver type ClassType(name='Outcome', args=())"
     },
     {
       "file": "modules/production-hardening/src/main/java/io/elmos/hardening/ProductionHardeningArtifactWriter.java",
@@ -5008,7 +5028,7 @@
       "file": "modules/production-hardening/src/test/java/io/elmos/hardening/ProductionHardeningServiceTest.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call parse on unresolved receiver type UnknownType(reason='name:Instant')"
+      "reason": "call resolve on unresolved receiver type ClassType(name='Path', args=())"
     },
     {
       "file": "modules/recipe-governance/src/main/java/io/elmos/recipe/PatchGovernance.java",
@@ -5044,7 +5064,7 @@
       "file": "modules/recipe-governance/src/test/java/io/elmos/recipe/RecipeGovernanceTest.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call parse on unresolved receiver type UnknownType(reason='name:Instant')"
+      "reason": "Set.of has an unspecified iteration order that Java randomises per run"
     },
     {
       "file": "modules/repair-orchestration/src/main/java/io/elmos/repair/AgentRouter.java",
@@ -5164,7 +5184,7 @@
       "file": "modules/scm/src/main/java/io/elmos/scm/GitHubInstallationTokenBroker.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call ofHours on unresolved receiver type UnknownType(reason='name:Duration')"
+      "reason": "Set.of has an unspecified iteration order that Java randomises per run"
     },
     {
       "file": "modules/scm/src/main/java/io/elmos/scm/GithubWebhookVerifier.java",
@@ -5182,7 +5202,7 @@
       "file": "modules/scm/src/test/java/io/elmos/scm/GitHubInstallationTokenBrokerTest.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call parse on unresolved receiver type UnknownType(reason='name:Instant')"
+      "reason": "unsupported class instantiation: new AtomicReference"
     },
     {
       "file": "modules/scm/src/test/java/io/elmos/scm/GitHubPolicyTest.java",
@@ -5200,13 +5220,13 @@
       "file": "modules/secret/src/main/java/io/elmos/secret/SecretInjectionService.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call ofHours on unresolved receiver type UnknownType(reason='name:Duration')"
+      "reason": "String.matches is not supported"
     },
     {
       "file": "modules/secret/src/main/java/io/elmos/secret/SecretLease.java",
       "stage": "emit",
-      "outcome": "REFUSED",
-      "reason": "call isAfter on unresolved receiver type ClassType(name='Instant', args=())"
+      "outcome": "OK",
+      "digest": "sha256:093fb470bf53f3f58323c760a6d38f894f37a2d5c03c285e6c67f80089b12b46"
     },
     {
       "file": "modules/secret/src/main/java/io/elmos/secret/SecretRedactor.java",
@@ -5254,7 +5274,7 @@
       "file": "modules/security/src/test/java/io/elmos/security/SandboxPolicyTest.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call ofMinutes on unresolved receiver type UnknownType(reason='name:Duration')"
+      "reason": "Set.of has an unspecified iteration order that Java randomises per run"
     },
     {
       "file": "modules/semantic/src/main/java/io/elmos/semantic/AuthoritySemanticAdapter.java",
@@ -5314,7 +5334,7 @@
       "file": "modules/semantic/src/test/java/io/elmos/semantic/SemanticAnalysisPipelineTest.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call parse on unresolved receiver type UnknownType(reason='name:Instant')"
+      "reason": "unsupported class instantiation: new LosslessFallbackAdapter"
     },
     {
       "file": "modules/skeleton/src/main/java/io/elmos/skeleton/SkeletonGenerationService.java",
@@ -5344,7 +5364,7 @@
       "file": "modules/skeleton/src/test/java/io/elmos/skeleton/SkeletonGenerationServiceTest.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call parse on unresolved receiver type UnknownType(reason='name:Instant')"
+      "reason": "unsupported class instantiation: new BuildBaseline"
     },
     {
       "file": "modules/snapshot/src/main/java/io/elmos/snapshot/DeterministicSnapshotArchiver.java",
@@ -5452,7 +5472,7 @@
       "file": "modules/uir/src/test/java/io/elmos/uir/PspToUirPipelineTest.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call parse on unresolved receiver type UnknownType(reason='name:Instant')"
+      "reason": "unsupported class instantiation: new UirDialectRegistry"
     },
     {
       "file": "modules/validation/src/main/java/io/elmos/validation/IndependentValidationJudge.java",
@@ -5548,7 +5568,7 @@
       "file": "modules/workspace/src/test/java/io/elmos/workspace/WorkspaceSecurityPolicyTest.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call ofMinutes on unresolved receiver type UnknownType(reason='name:Duration')"
+      "reason": "unsupported class instantiation: new ResourceLimits"
     },
     {
       "file": "recipes/elmos-java-recipes/src/main/java/io/elmos/recipes/RewriteSpringFoundation.java",
@@ -5620,7 +5640,7 @@
       "file": "tooling/payment-crypto-selftest/CallbackAdapterSelfTest.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call of on unresolved receiver type UnknownType(reason='name:ZoneId')"
+      "reason": "ZoneId resolves through the tz database, and the JVM's bundled copy and Python's zoneinfo are versioned separately"
     },
     {
       "file": "tooling/payment-crypto-selftest/CatalogContractSelfTest.java",
@@ -5668,7 +5688,7 @@
       "file": "tooling/payment-crypto-selftest/ReplayGuardSelfTest.java",
       "stage": "emit",
       "outcome": "REFUSED",
-      "reason": "call parse on unresolved receiver type UnknownType(reason='name:Instant')"
+      "reason": "unsupported class instantiation: new CallbackReplayGuard"
     },
     {
       "file": "tooling/payment-crypto-selftest/SecurityFilterChainSelfTest.java",
