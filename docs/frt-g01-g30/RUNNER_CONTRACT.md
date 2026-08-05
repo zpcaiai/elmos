@@ -189,10 +189,23 @@ frt-cli claim    --organization ORG --tenant T --run $RUN --actor runner-1 --req
 frt-cli complete --organization ORG --tenant T --run $RUN --actor runner-1 --request completion-request.json
 ```
 
-## 7. 尚未实现（runner 侧接入前需要知道）
+## 7. Runner 侧代码与部署边界
 
-- **证据没有自动采集**：`evidenceCandidateFromBytes` 提供了物化与描述的机制，但「跑完构建自动把日志转成 candidate」这一步仍需 runner 自己接。控制面不会替你采集。
-- **verifier 签名服务未落地**：`signEvidenceAsVerifier` 是库函数，谁来运行它、密钥怎么分发和轮换，仍是部署决定。
-- **令牌 nonce 未做重放跟踪**：`verifyFrtIdentityToken` 校验签名与时效，但不记录 nonce，短时间内的重放依赖 5 分钟有效期兜底。
-- **产物库无生命周期管理**：对象只写不删，没有 GC、配额或保留策略。
-- **VERIFY 路径的密钥独立由信任库结构保证，而非逐点检查**：`action: "VERIFY"` 里手工提交的证据仍只在调用点查 `executor !== verifier`，但因为信任库已禁止一把密钥兼具执行与证明角色，执行者本就拿不到能签证据的密钥。若将来引入不经信任库的证据来源，需要补回逐点检查。
+- **证据自动采集已实现**：`collectRunnerEvidenceCandidates` 把一次 runner 的多角色
+  build/test/report 输出原子地物化为 content-addressed unsigned candidates，重复角色会
+  fail closed。候选仍必须由独立 verifier 签名，控制面不会自证。
+- **verifier 签名入口已实现**：库侧为 `signEvidenceAsVerifier`；外部 campaign CLI
+  `scripts/frt/external_evidence.py sign` 支持 executor/verifier/approver 三角色、时序、
+  trust-store、撤销和 exact payload digest。密钥托管、轮换与谁获准运行该服务仍是部署
+  authority 的职责，仓库不能自行授予。
+- **产物生命周期已实现**：`ContentAddressedFrtArtifactStore.archiveGarbage()` 接受完整
+  live digest 集、最小年龄、retention 和 active-byte quota。对象只会移入带 recovery root
+  的 archive，不会由 Runtime 永久删除；活跃引用永不移动，配额无法满足时明确返回
+  `quotaSatisfied=false`。
+- **VERIFY 独立性双重校验**：每个 evidence reference 检查 `executor !== verifier`，
+  trust store 同时禁止一把 key 兼具 runner execution 与 evidence/certificate attestation
+  角色，record-level revocation 可只撤销一条坏记录。
+- **Bearer token 的剩余边界**：`nonce` 是签名 token identity 的一部分并受 exact scope、
+  最短有效期和 mutation idempotency 约束，但 bearer token 在有效期内本来就允许复用。
+  若要抵御被窃 token 的逐请求重放，需要 IdP 与客户端共同启用 DPoP 或 mTLS sender
+  constraint；仅在服务端把 nonce 改成一次性会破坏正常多请求会话，因此未伪装成已解决。

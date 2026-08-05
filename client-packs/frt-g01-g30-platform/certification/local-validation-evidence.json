@@ -21,7 +21,7 @@
     "runtime_installation": {
       "state": "PASSED",
       "command": "python3 tooling/integrate_frt_g01_g30.py --check && python3 scripts/frt/validate_frt_platform.py",
-      "summary": "472 Runtime interfaces, 23 semantic handler kinds, 30 directed routes, 2,832 exact per-Skill surface manifests, 10 schemas, and 43 shared implementation surfaces passed"
+      "summary": "472 Runtime interfaces, 23 concrete semantic handler kinds, 30 directed routes, 2,832 exact per-Skill surface manifests, 10 schemas, and 46 shared implementation surfaces passed"
     },
     "strict_contract_and_security": {
       "state": "PASSED",
@@ -33,13 +33,13 @@
       "state": "PASSED",
       "command": "pnpm test",
       "working_directory": "engines/frontend-client-engine",
-      "summary": "Atomic tenant-scoped run storage, persisted idempotency, optimistic versions, claim/cancel/retry audit events, fail-closed restart recovery, and stable oversized-body 413 handling passed"
+      "summary": "Atomic tenant-scoped run storage, persisted idempotency, optimistic versions, claim/cancel/retry audit events, fail-closed restart recovery, content-addressed evidence collection, recoverable artifact archival, and stable oversized-body 413 handling passed"
     },
     "semantic_skill_coverage": {
       "state": "PASSED",
       "command": "pnpm test",
       "working_directory": "engines/frontend-client-engine",
-      "summary": "All 472 Skills dispatch through explicit descriptors and one of 23 typed handler kinds; all expose six exact surface manifests and an executable scoped PLAN path"
+      "summary": "All 472 Skills dispatch through explicit descriptors and one of 23 concrete typed handler kinds; the legacy metadata-only fallback is absent, unknown handlers fail closed, required inputs are enforced, and all Skills expose six exact surface manifests"
     },
     "directional_route_implementation": {
       "state": "PASSED",
@@ -55,7 +55,7 @@
       "state": "PASSED",
       "command": "pnpm test",
       "working_directory": "engines/frontend-client-engine",
-      "summary": "109 passed, 0 failed, 0 skipped"
+      "summary": "119 passed, 0 failed, 0 skipped"
     },
     "production_dependency_audit": {
       "state": "PASSED",
@@ -112,15 +112,20 @@
     }
   },
   "artifact_digests": {
-    "runtime": "sha256:243b9d660c069dbdb9b9727fc453e5f56aa3e1eaac76407544ee9994a8ccc39a",
+    "runtime": "sha256:5ade042d9ac7ba5c17d680d1371b24388c8b1d9d318228ad14dd13f596fc8b4d",
     "server": "sha256:431f46560d72119619a1821f37f5d8f4b63d502d189ae48f228c6f257dd32a2f",
     "contract_validation": "sha256:ddb89a1191162e2ef06a814304cc9eede722fbffa1c69b10ba72efa6a6538a27",
     "security": "sha256:239f989c3d638994ae4d76ba2d02e3a5027c0b42f09f3d2f4130b92becd4d953",
     "durable_store": "sha256:d408ee8f27c2914d3130fa05c6caf3ffa7b519eefc51834bb4dd9990dc0419ba",
     "handler_registry": "sha256:a477f56444c1e3d41294a9197df7e114acc86bb869f6eadc3317be58f388d782",
+    "semantic_handlers": "sha256:1269890d185f99d3a527902678e5cc63401a6c5e60ada0cf256ffcda663f3060",
+    "artifact_store": "sha256:2bb7bbafae7eac1fc956990d299baa52a5b452cb438bf755f48dd45217cc84f6",
+    "evidence_collection": "sha256:692e23b7fc9f2e13680b4fcbf5b9d4b9c97622a771a419175fc5184a984e16a4",
     "directional_route": "sha256:13c53626ea95596474a8dac54719b59254ec72ede74954270facb83fc7ba61ce",
     "additional_source_extractors": "sha256:f88d7aa95375b64d253f912703a35afdaffc2918f0e8e2d76e71682ec948e571",
-    "runtime_tests": "sha256:ade9032cee854add8741b7f063129e497b760b729e1de6009ce1b8559513ae36",
+    "runtime_tests": "sha256:886118de1002b898442813037ae1152da5515bfdeba243cdc3f0421855905e22",
+    "semantic_handler_tests": "sha256:075c5160b7ffd08e4468c229d3b675737bf9c5d2c208a5d296da0fa97572c9e4",
+    "artifact_lifecycle_tests": "sha256:8afc427ee4c884441d2334d48c4a1bc853e43a6a63cbf6894fdec54c62eec723",
     "additional_ir_tests": "sha256:cc53325055e023cba71c25c27d1ca313300b29d88eb5c33310fdda80ca912bd7",
     "web_studio": "sha256:6ca560f5268fa84cd8051e8571d57fd41ee20723a40b5b59cd70f8e0be1616be",
     "web_bff": "sha256:d1fa24e22b1f6cc3c449cf74f028562e692da4d9b9b3b1c13ed4eb554983f868",
@@ -133,7 +138,7 @@
     "local_device_inventory_candidate": "sha256:ccd2bd4543ea426f58eb33faad5a61c4573e0c672acc45af11d9110567aad0c7",
     "batch32_gate": "sha256:9489498a2999e97066c2ed61ca3b59026f958667691db562bb683d6603991694",
     "route_toolchain_evidence": "sha256:937b6ecd9de38f5f6c1c9b292bc4d6dd6b21560b1c50bfee9f3fedc50bc6742c",
-    "installed_manifest": "sha256:80e2f40a364ad3f3880e6aa78262277063f5e290c33c9fb65200a11c7e4b5e9b"
+    "installed_manifest": "sha256:70e05fa804ab8de3df0c3dcf665f23fc06feb183611345e8ffd6240301a05e31"
   },
   "evidence_boundary": {
     "arkui_native_hvigor": "NOT_RUN: DevEco Studio/hvigor is unavailable on this host; ELMOS_HVIGORW is supported for the exact rerun",
@@ -153,5 +158,5 @@
     "customer_acceptance": "NOT_RUN",
     "production_certification": "NOT_CERTIFIED"
   },
-  "refreshed_at": "2026-08-05T12:26:22.300395Z"
+  "refreshed_at": "2026-08-05T14:09:19.421364Z"
 }

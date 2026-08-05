@@ -11,7 +11,9 @@
   "contract_version": "1.0.0",
   "source_sha256": "sha256:754eb25b653d887b25130614dc33119c59565f3a96c92aa6c870a57583afd0b7",
   "implementation_paths": [
+    "engines/frontend-client-engine/test/frt-artifact-lifecycle.test.ts",
     "engines/frontend-client-engine/test/frt-runtime.test.ts",
+    "engines/frontend-client-engine/test/frt-semantic-handlers.test.ts",
     "engines/frontend-client-engine/test/server.test.ts",
     "apps/web-console/e2e/frt-frontend-transformation.spec.ts"
   ],

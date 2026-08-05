@@ -46,6 +46,7 @@ import {
   frtArtifactStoreFromEnvironment,
   type FrtArtifactStore,
 } from "./frt-artifact-store.js";
+import { executeFrtSemanticHandler } from "./frt-semantic-handlers.js";
 
 type FrtSkill = (typeof frtCatalog.skills)[number];
 type FrtBatch = (typeof frtCatalog.batches)[number];
@@ -563,26 +564,15 @@ function analysisArtifacts(
       ...routeMaterialization(skill.id, migration, store),
     };
   }
-  return {
+  return executeFrtSemanticHandler({
+    skill,
     handler,
-    semanticAnalysis: {
-      handlerKind: handler.handlerKind,
-      action: request.action,
-      declaredInputKeys: Object.keys(request.input ?? {}).sort(),
-      sourceSnapshotDigest: request.context.sourceSnapshotDigest,
-      policyVersion: request.context.policyVersion,
-      externalExecution: "NOT_RUN",
-    },
-    compiledContract: {
-      skillId: skill.id,
-      batch: skill.batch,
-      title: skill.title,
-      sourceDigest: skill.sourceSha256,
-      surfaceManifestPaths: handler.surfaceManifestPaths,
-      requiredEvidenceRoles: requiredEvidenceRoles(skill),
-      obligations: skillObligations(skill),
-    },
-  };
+    action: request.action,
+    ...(request.input === undefined ? {} : { input: request.input }),
+    routes: frtCatalog.routes,
+    requiredEvidenceRoles: requiredEvidenceRoles(skill),
+    obligations: skillObligations(skill),
+  });
 }
 
 function certificateFragment(
@@ -893,15 +883,27 @@ export class FrtRuntime {
         outcome = "BLOCKED_BY_PREREQUISITE";
       } else if (request.action === "ANALYZE") {
         artifacts = analysisArtifacts(skill, request, this.#artifacts);
-        outcome = "STATIC_ANALYSIS_COMPLETE";
+        const handlerFindings = (artifacts.handlerFindings ?? []) as readonly FrtFinding[];
+        findings = [...findings, ...handlerFindings];
+        if (handlerFindings.some(item => item.blocking)) {
+          state = "BLOCKED";
+          outcome = "BLOCKED_BY_INPUT_CONTRACT";
+        } else {
+          outcome = "STATIC_ANALYSIS_COMPLETE";
+        }
       } else if (request.action === "EXECUTE") {
         artifacts = analysisArtifacts(skill, request, this.#artifacts);
+        const handlerFindings = (artifacts.handlerFindings ?? []) as readonly FrtFinding[];
         findings = [
           ...findings,
+          ...handlerFindings,
           ...((artifacts.materializationFindings ?? []) as readonly FrtFinding[]),
         ];
         const typedGaps = (artifacts.typedGaps ?? []) as readonly FrtRouteTypedGap[];
-        if (typedGaps.some(item => item.blocking)) {
+        if (handlerFindings.some(item => item.blocking)) {
+          state = "BLOCKED";
+          outcome = "BLOCKED_BY_INPUT_CONTRACT";
+        } else if (typedGaps.some(item => item.blocking)) {
           state = "BLOCKED";
           outcome = "BLOCKED_BY_UNSUPPORTED_SEMANTICS";
           findings = [

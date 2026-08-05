@@ -119,6 +119,10 @@ const vue3Fixture = {
   ].join("\n"),
 } as const;
 
+const governanceExecuteInput = {
+  invariants: [{ id: "tenant-scope", satisfied: true }],
+} as const;
+
 after(() => {
   rmSync(evidenceRoot, { recursive: true, force: true });
   rmSync(runStoreRoot, { recursive: true, force: true });
@@ -798,7 +802,10 @@ test("a live lease survives restart, heartbeats extend it, and expiry reclaims t
   const durableRoot = join(runStoreRoot, "lease-lifecycle");
   const build = () => new FrtRuntime({ security: leasedSecurity, store: new FileFrtRunStore(durableRoot) });
 
-  const queued = build().run(request("FRT-0100", "EXECUTE", { key: "lease-lifecycle" }));
+  const queued = build().run(request("FRT-0100", "EXECUTE", {
+    key: "lease-lifecycle",
+    input: governanceExecuteInput,
+  }));
   assert.equal(queued.state, "QUEUED");
   assert.equal(queued.lease, null);
 
@@ -846,13 +853,19 @@ test("a live lease survives restart, heartbeats extend it, and expiry reclaims t
     ["RUN_CREATED", "RUN_CLAIMED", "RUN_HEARTBEAT", "RUN_LEASE_EXPIRED", "RUN_RETRIED", "RUN_CANCELLED"],
   );
 
-  const replayed = build().run(request("FRT-0100", "EXECUTE", { key: "lease-lifecycle" }));
+  const replayed = build().run(request("FRT-0100", "EXECUTE", {
+    key: "lease-lifecycle",
+    input: governanceExecuteInput,
+  }));
   assert.equal(replayed.resultDigest, cancelled.resultDigest);
 });
 test("an attested runner completion closes the EXECUTE lifecycle without certifying it", () => {
   const durableRoot = join(runStoreRoot, "runner-completion");
   const runtime = createRuntime(new FileFrtRunStore(durableRoot));
-  const queued = runtime.run(request("FRT-0100", "EXECUTE", { key: "runner-completion" }));
+  const queued = runtime.run(request("FRT-0100", "EXECUTE", {
+    key: "runner-completion",
+    input: governanceExecuteInput,
+  }));
   assert.equal(queued.state, "QUEUED");
   assert.equal(queued.outcome, "PROPOSAL_READY_FOR_RUNNER");
   assert.ok(queued.findings.some(item => item.code === "FRT_EXTERNAL_RUNNER_REQUIRED"));
@@ -903,7 +916,10 @@ test("an attested runner completion closes the EXECUTE lifecycle without certify
 
 test("runner completion rejects stale versions, unclaimed runs, and mismatched runner identity", () => {
   const runtime = createRuntime();
-  const queued = runtime.run(request("FRT-0100", "EXECUTE", { key: "runner-completion-guards" }));
+  const queued = runtime.run(request("FRT-0100", "EXECUTE", {
+    key: "runner-completion-guards",
+    input: governanceExecuteInput,
+  }));
   assert.throws(
     () => runtime.complete(scope, queued.runId, queued.version, "runner-alpha", runnerCompletion("runner-alpha")),
     /only a claimed run can be completed/,
@@ -934,7 +950,10 @@ test("runner completion rejects stale versions, unclaimed runs, and mismatched r
 
 test("an unattested runner completion cannot report that customer code executed", () => {
   const runtime = createRuntime();
-  const queued = runtime.run(request("FRT-0100", "EXECUTE", { key: "runner-unattested" }));
+  const queued = runtime.run(request("FRT-0100", "EXECUTE", {
+    key: "runner-unattested",
+    input: governanceExecuteInput,
+  }));
   const running = runtime.claim(scope, queued.runId, queued.version, "runner-alpha")!;
   const tampered: FrtRunnerCompletion = {
     ...runnerCompletion("runner-alpha", { customerCodeExecuted: true }),
@@ -954,7 +973,10 @@ test("an unattested runner completion cannot report that customer code executed"
 
 test("a runner cannot verify its own evidence or report a failed run as successful", () => {
   const runtime = createRuntime();
-  const queued = runtime.run(request("FRT-0100", "EXECUTE", { key: "runner-self-verified" }));
+  const queued = runtime.run(request("FRT-0100", "EXECUTE", {
+    key: "runner-self-verified",
+    input: governanceExecuteInput,
+  }));
   const running = runtime.claim(scope, queued.runId, queued.version, "runner-alpha")!;
   const selfVerified = runtime.complete(
     scope,
@@ -972,7 +994,10 @@ test("a runner cannot verify its own evidence or report a failed run as successf
   ));
 
   const failingRuntime = createRuntime();
-  const failingQueued = failingRuntime.run(request("FRT-0100", "EXECUTE", { key: "runner-failed" }));
+  const failingQueued = failingRuntime.run(request("FRT-0100", "EXECUTE", {
+    key: "runner-failed",
+    input: governanceExecuteInput,
+  }));
   const failingRunning = failingRuntime.claim(
     scope,
     failingQueued.runId,
@@ -1062,7 +1087,10 @@ test("the trust store refuses a key that both executes and attests", () => {
 
 test("evidence signed with the runner's own key is not independent", () => {
   const runtime = createRuntime();
-  const queued = runtime.run(request("FRT-0100", "EXECUTE", { key: "runner-shared-key" }));
+  const queued = runtime.run(request("FRT-0100", "EXECUTE", {
+    key: "runner-shared-key",
+    input: governanceExecuteInput,
+  }));
   const running = runtime.claim(scope, queued.runId, queued.version, "runner-alpha")!;
   // Two different names, one key. Names are cheap to fake, so the key is what decides.
   const blocked = runtime.complete(
@@ -1099,7 +1127,10 @@ test("a revoked record fails closed without revoking the key that signed everyth
     security: revoking,
     store: new FileFrtRunStore(join(runStoreRoot, "revocation")),
   });
-  const queued = runtime.run(request("FRT-0100", "EXECUTE", { key: "revoked-record" }));
+  const queued = runtime.run(request("FRT-0100", "EXECUTE", {
+    key: "revoked-record",
+    input: governanceExecuteInput,
+  }));
   const running = runtime.claim(scope, queued.runId, queued.version, "runner-alpha")!;
   const blocked = runtime.complete(
     scope,
@@ -1173,7 +1204,10 @@ test("a generated route is materialized into the artifact store, and says so whe
 test("content-addressed backup restores run and idempotency state and rejects tampering", () => {
   const primaryRoot = join(runStoreRoot, "dr-primary");
   const runtime = createRuntime(new FileFrtRunStore(primaryRoot));
-  const queued = runtime.run(request("FRT-0100", "EXECUTE", { key: "dr-replay" }));
+  const queued = runtime.run(request("FRT-0100", "EXECUTE", {
+    key: "dr-replay",
+    input: governanceExecuteInput,
+  }));
   assert.equal(queued.state, "QUEUED");
 
   const backupPath = join(runStoreRoot, "dr-backups", "run-store.json");
@@ -1187,7 +1221,10 @@ test("content-addressed backup restores run and idempotency state and rejects ta
   assert.equal(restoration.manifestDigest, backup.manifestDigest);
   const restoredRuntime = createRuntime(new FileFrtRunStore(restoredRoot));
   assert.equal(restoredRuntime.getRun(scope, queued.runId)?.resultDigest, queued.resultDigest);
-  const replayed = restoredRuntime.run(request("FRT-0100", "EXECUTE", { key: "dr-replay" }));
+  const replayed = restoredRuntime.run(request("FRT-0100", "EXECUTE", {
+    key: "dr-replay",
+    input: governanceExecuteInput,
+  }));
   assert.equal(replayed.resultDigest, queued.resultDigest);
 
   const tamperedPath = join(runStoreRoot, "dr-backups", "tampered.json");

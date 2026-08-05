@@ -72,6 +72,7 @@ SURFACE_IMPLEMENTATIONS = {
     ],
     "runtime": [
         "engines/frontend-client-engine/src/frt-runtime.ts",
+        "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
         "engines/frontend-client-engine/src/frt-handler-registry.generated.ts",
     ],
     "control_plane": ["engines/frontend-client-engine/src/server.ts"],
@@ -84,7 +85,9 @@ SURFACE_IMPLEMENTATIONS = {
         "apps/web-console/app/api/frt/catalog/route.ts",
     ],
     "tests": [
+        "engines/frontend-client-engine/test/frt-artifact-lifecycle.test.ts",
         "engines/frontend-client-engine/test/frt-runtime.test.ts",
+        "engines/frontend-client-engine/test/frt-semantic-handlers.test.ts",
         "engines/frontend-client-engine/test/server.test.ts",
         "apps/web-console/e2e/frt-frontend-transformation.spec.ts",
     ],

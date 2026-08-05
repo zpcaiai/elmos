@@ -399,6 +399,7 @@ test("HTTP FRT heartbeat renews a lease for its holder and refuses everyone else
       },
       prerequisiteCertificates: [],
       evidence: [],
+      input: { invariants: [{ id: "tenant-scope", satisfied: true }] },
     }),
   });
   const queued = await created.json() as { runId: string; version: number; state: string; lease: unknown };
@@ -473,6 +474,7 @@ test("HTTP FRT durable lifecycle exposes optimistic claim, cancel, retry, and au
       },
       prerequisiteCertificates: [],
       evidence: [],
+      input: { invariants: [{ id: "tenant-scope", satisfied: true }] },
     }),
   });
   const created = await createdResponse.json() as { runId: string; state: string; version: number };

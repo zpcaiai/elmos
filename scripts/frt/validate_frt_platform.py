@@ -26,6 +26,7 @@ REQUIRED_SCHEMAS = {
 REQUIRED_SURFACES = {
     "engines/frontend-client-engine/src/frt-contract-validation.ts",
     "engines/frontend-client-engine/src/frt-runtime.ts",
+    "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
     "engines/frontend-client-engine/src/frt-types.ts",
     "engines/frontend-client-engine/src/frt-security.ts",
     "engines/frontend-client-engine/src/frt-run-store.ts",
@@ -40,6 +41,8 @@ REQUIRED_SURFACES = {
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts",
     "engines/frontend-client-engine/src/frt-cli.ts",
     "engines/frontend-client-engine/test/frt-runtime.test.ts",
+    "engines/frontend-client-engine/test/frt-artifact-lifecycle.test.ts",
+    "engines/frontend-client-engine/test/frt-semantic-handlers.test.ts",
     "engines/frontend-client-engine/test/vue3-ui-ir.test.ts",
     "engines/frontend-client-engine/test/react-ui-ir.test.ts",
     "engines/frontend-client-engine/test/additional-ui-ir.test.ts",
@@ -75,6 +78,31 @@ SURFACE_NAMES = {
     "web_console",
     "admin_console",
     "tests",
+}
+EXPECTED_HANDLER_KINDS = {
+    "governance",
+    "estate_discovery",
+    "semantic_ir",
+    "typed_contract",
+    "migration_planning",
+    "source_generation",
+    "build_toolchain",
+    "test_automation",
+    "delivery_pipeline",
+    "design_system",
+    "mobile_client",
+    "cross_platform",
+    "directional_route",
+    "route_orchestration",
+    "compatibility",
+    "advanced_verification",
+    "runtime_operations",
+    "product_workflow",
+    "administration",
+    "performance_capacity",
+    "resilience_dr",
+    "security_privacy",
+    "production_readiness",
 }
 
 
@@ -138,6 +166,13 @@ def main() -> int:
             surface_count += 1
     if surface_count != 472 * 6:
         fail(f"FRT surface manifest count is invalid: {surface_count}")
+    if handler_kinds != EXPECTED_HANDLER_KINDS:
+        fail(f"FRT handler kind inventory is invalid: {sorted(handler_kinds)}")
+    runtime_source = (
+        ROOT / "engines/frontend-client-engine/src/frt-runtime.ts"
+    ).read_text(encoding="utf-8")
+    if 'semanticAnalysis:' in runtime_source or 'externalExecution: "NOT_RUN"' in runtime_source:
+        fail("FRT runtime still contains the legacy metadata-only semantic fallback")
     print(
         json.dumps(
             {

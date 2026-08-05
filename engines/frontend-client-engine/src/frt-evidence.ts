@@ -35,6 +35,14 @@ export interface FrtVerifierIdentity {
   readonly privateKey: string | KeyObject;
 }
 
+export interface FrtRunnerEvidenceOutput {
+  readonly role: string;
+  readonly state: FrtEvidenceState;
+  readonly bytes: Buffer;
+  readonly artifactName?: string;
+  readonly synthetic?: boolean;
+}
+
 export class FrtEvidenceError extends Error {
   readonly code: string;
 
@@ -76,6 +84,34 @@ export function evidenceCandidateFromBytes(
     synthetic: options.synthetic ?? false,
     byteCount: stored.byteCount,
   };
+}
+
+/**
+ * Converts a runner's complete output bundle into immutable unsigned candidates in one
+ * deterministic operation. Duplicate roles are rejected because a gate role must bind
+ * one unambiguous byte stream. This is collection, not attestation: candidates still
+ * require an independent verifier before the runtime will trust them.
+ */
+export function collectRunnerEvidenceCandidates(options: {
+  readonly executor: string;
+  readonly outputs: readonly FrtRunnerEvidenceOutput[];
+  readonly store: FrtArtifactStore;
+}): readonly FrtEvidenceCandidate[] {
+  if (!options.executor.trim()) throw new FrtEvidenceError("FRT_EVIDENCE_EXECUTOR_REQUIRED");
+  if (options.outputs.length === 0) throw new FrtEvidenceError("FRT_EVIDENCE_OUTPUTS_REQUIRED");
+  const roles = options.outputs.map(item => item.role);
+  if (new Set(roles).size !== roles.length) {
+    throw new FrtEvidenceError("FRT_EVIDENCE_ROLE_DUPLICATED");
+  }
+  return options.outputs.map(output => evidenceCandidateFromBytes({
+    role: output.role,
+    executor: options.executor,
+    state: output.state,
+    bytes: output.bytes,
+    store: options.store,
+    ...(output.artifactName === undefined ? {} : { artifactName: output.artifactName }),
+    ...(output.synthetic === undefined ? {} : { synthetic: output.synthetic }),
+  }));
 }
 
 /**

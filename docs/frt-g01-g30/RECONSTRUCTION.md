@@ -148,7 +148,7 @@ git log --all -- engines/frontend-client-engine/src/frt-server.ts    -> 0
 `engines/frontend-client-engine` 全 `src` + `test/frt-runtime.test.ts`：
 
 - `tsc --noEmit`：**0 error**
-- 仓库内 `pnpm test`：**82/82 全绿**（含租约、角色冲突、密钥独立性、记录撤销、产物物化、HTTP heartbeat）
+- 仓库内 `pnpm test`：**119/119 全绿**（含 23/23 handler 覆盖、租约、角色冲突、密钥独立性、记录撤销、证据收集、符号链接越界拒绝、可恢复产物归档、HTTP heartbeat）
 
 未在真实仓库上下文里跑的 4 个用例（surface manifest / checked-in schema / fixtures / corpora）
 因为验证是在隔离工程里做的，读不到四层父目录之外的文件，属环境原因而非断言失败。

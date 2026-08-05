@@ -18,8 +18,8 @@
         },
         {
           "path": "client-packs/frt-g01-g30-platform/certification/local-validation-evidence.json",
-          "sha256": "sha256:4180c390b982359560e85dcbf33e9bfdc8811bc26c5bc6d31d43094ef2e109ca",
-          "bytes": 10252
+          "sha256": "sha256:a1f6e000cc0573638a7977d0a299c0f8d6d5bdb434ed6d4d365b5696b0b2591e",
+          "bytes": 10932
         }
       ]
     },
@@ -28,18 +28,18 @@
       "evidence_refs": [
         {
           "path": "docs/frt-g01-g30/installed-manifest.json",
-          "sha256": "sha256:80e2f40a364ad3f3880e6aa78262277063f5e290c33c9fb65200a11c7e4b5e9b",
+          "sha256": "sha256:70e05fa804ab8de3df0c3dcf665f23fc06feb183611345e8ffd6240301a05e31",
           "bytes": 1095342
         },
         {
           "path": "scripts/frt/validate_frt_platform.py",
-          "sha256": "sha256:0b8d0469a630182cbf162bf117919f2374ec27d09449b9e338b54a9a8ae53822",
-          "bytes": 6938
+          "sha256": "sha256:9050636f93adb97edf0b6d35a7088fa6835f741ba70d7aab20c1833105bffb61",
+          "bytes": 8161
         },
         {
           "path": "client-packs/frt-g01-g30-platform/certification/local-validation-evidence.json",
-          "sha256": "sha256:4180c390b982359560e85dcbf33e9bfdc8811bc26c5bc6d31d43094ef2e109ca",
-          "bytes": 10252
+          "sha256": "sha256:a1f6e000cc0573638a7977d0a299c0f8d6d5bdb434ed6d4d365b5696b0b2591e",
+          "bytes": 10932
         }
       ]
     },
@@ -58,8 +58,8 @@
         },
         {
           "path": "engines/frontend-client-engine/test/server.test.ts",
-          "sha256": "sha256:e0f08c738ea296470b5592a07decd21c50f77c9232d5ba422f0fb7a481659b98",
-          "bytes": 21197
+          "sha256": "sha256:f1c0873ad24dbe6fc25bf413816884fd51353856dad86bf5f44523f2222f4409",
+          "bytes": 21341
         }
       ]
     },
@@ -73,8 +73,8 @@
         },
         {
           "path": "engines/frontend-client-engine/test/server.test.ts",
-          "sha256": "sha256:e0f08c738ea296470b5592a07decd21c50f77c9232d5ba422f0fb7a481659b98",
-          "bytes": 21197
+          "sha256": "sha256:f1c0873ad24dbe6fc25bf413816884fd51353856dad86bf5f44523f2222f4409",
+          "bytes": 21341
         },
         {
           "path": "scripts/frt/external_evidence.py",
@@ -112,14 +112,24 @@
           "bytes": 519793
         },
         {
+          "path": "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+          "sha256": "sha256:1269890d185f99d3a527902678e5cc63401a6c5e60ada0cf256ffcda663f3060",
+          "bytes": 43797
+        },
+        {
           "path": "engines/frontend-client-engine/src/frt-typed-gap-catalog.ts",
           "sha256": "sha256:190107ad1ae36e2e09bfbd9cb1e0714e28b3132345f3756219d2d49ea64609a1",
           "bytes": 28437
         },
         {
           "path": "engines/frontend-client-engine/test/frt-runtime.test.ts",
-          "sha256": "sha256:ade9032cee854add8741b7f063129e497b760b729e1de6009ce1b8559513ae36",
-          "bytes": 50267
+          "sha256": "sha256:886118de1002b898442813037ae1152da5515bfdeba243cdc3f0421855905e22",
+          "bytes": 50832
+        },
+        {
+          "path": "engines/frontend-client-engine/test/frt-semantic-handlers.test.ts",
+          "sha256": "sha256:075c5160b7ffd08e4468c229d3b675737bf9c5d2c208a5d296da0fa97572c9e4",
+          "bytes": 9011
         }
       ]
     },
@@ -132,19 +142,34 @@
           "bytes": 13832
         },
         {
+          "path": "engines/frontend-client-engine/src/frt-artifact-store.ts",
+          "sha256": "sha256:2bb7bbafae7eac1fc956990d299baa52a5b452cb438bf755f48dd45217cc84f6",
+          "bytes": 12099
+        },
+        {
+          "path": "engines/frontend-client-engine/src/frt-evidence.ts",
+          "sha256": "sha256:692e23b7fc9f2e13680b4fcbf5b9d4b9c97622a771a419175fc5184a984e16a4",
+          "bytes": 5389
+        },
+        {
           "path": "engines/frontend-client-engine/src/server.ts",
           "sha256": "sha256:431f46560d72119619a1821f37f5d8f4b63d502d189ae48f228c6f257dd32a2f",
           "bytes": 15603
         },
         {
           "path": "engines/frontend-client-engine/test/server.test.ts",
-          "sha256": "sha256:e0f08c738ea296470b5592a07decd21c50f77c9232d5ba422f0fb7a481659b98",
-          "bytes": 21197
+          "sha256": "sha256:f1c0873ad24dbe6fc25bf413816884fd51353856dad86bf5f44523f2222f4409",
+          "bytes": 21341
         },
         {
           "path": "engines/frontend-client-engine/test/frt-runtime.test.ts",
-          "sha256": "sha256:ade9032cee854add8741b7f063129e497b760b729e1de6009ce1b8559513ae36",
-          "bytes": 50267
+          "sha256": "sha256:886118de1002b898442813037ae1152da5515bfdeba243cdc3f0421855905e22",
+          "bytes": 50832
+        },
+        {
+          "path": "engines/frontend-client-engine/test/frt-artifact-lifecycle.test.ts",
+          "sha256": "sha256:8afc427ee4c884441d2334d48c4a1bc853e43a6a63cbf6894fdec54c62eec723",
+          "bytes": 4779
         }
       ]
     },
@@ -163,8 +188,8 @@
         },
         {
           "path": "engines/frontend-client-engine/src/vue3-ui-ir.ts",
-          "sha256": "sha256:f625d672090a39fb7ef264c9224939800e506ee937aff0d1010c2e2466a48239",
-          "bytes": 20095
+          "sha256": "sha256:04d21b898d0cae22a0bb43730ba5fbb0f67eb96def048501c3d33f2b5deac4eb",
+          "bytes": 20093
         },
         {
           "path": "engines/frontend-client-engine/src/react-ui-ir.ts",
@@ -188,13 +213,13 @@
       "evidence_refs": [
         {
           "path": "engines/frontend-client-engine/test/frt-runtime.test.ts",
-          "sha256": "sha256:ade9032cee854add8741b7f063129e497b760b729e1de6009ce1b8559513ae36",
-          "bytes": 50267
+          "sha256": "sha256:886118de1002b898442813037ae1152da5515bfdeba243cdc3f0421855905e22",
+          "bytes": 50832
         },
         {
           "path": "engines/frontend-client-engine/test/server.test.ts",
-          "sha256": "sha256:e0f08c738ea296470b5592a07decd21c50f77c9232d5ba422f0fb7a481659b98",
-          "bytes": 21197
+          "sha256": "sha256:f1c0873ad24dbe6fc25bf413816884fd51353856dad86bf5f44523f2222f4409",
+          "bytes": 21341
         },
         {
           "path": "engines/frontend-client-engine/test/vue3-ui-ir.test.ts",
@@ -212,9 +237,19 @@
           "bytes": 7052
         },
         {
+          "path": "engines/frontend-client-engine/test/frt-semantic-handlers.test.ts",
+          "sha256": "sha256:075c5160b7ffd08e4468c229d3b675737bf9c5d2c208a5d296da0fa97572c9e4",
+          "bytes": 9011
+        },
+        {
+          "path": "engines/frontend-client-engine/test/frt-artifact-lifecycle.test.ts",
+          "sha256": "sha256:8afc427ee4c884441d2334d48c4a1bc853e43a6a63cbf6894fdec54c62eec723",
+          "bytes": 4779
+        },
+        {
           "path": "client-packs/frt-g01-g30-platform/certification/local-validation-evidence.json",
-          "sha256": "sha256:4180c390b982359560e85dcbf33e9bfdc8811bc26c5bc6d31d43094ef2e109ca",
-          "bytes": 10252
+          "sha256": "sha256:a1f6e000cc0573638a7977d0a299c0f8d6d5bdb434ed6d4d365b5696b0b2591e",
+          "bytes": 10932
         }
       ]
     },
@@ -243,8 +278,8 @@
         },
         {
           "path": "client-packs/frt-g01-g30-platform/certification/local-validation-evidence.json",
-          "sha256": "sha256:4180c390b982359560e85dcbf33e9bfdc8811bc26c5bc6d31d43094ef2e109ca",
-          "bytes": 10252
+          "sha256": "sha256:a1f6e000cc0573638a7977d0a299c0f8d6d5bdb434ed6d4d365b5696b0b2591e",
+          "bytes": 10932
         }
       ]
     },
@@ -288,8 +323,8 @@
         },
         {
           "path": "client-packs/frt-g01-g30-platform/certification/local-validation-evidence.json",
-          "sha256": "sha256:4180c390b982359560e85dcbf33e9bfdc8811bc26c5bc6d31d43094ef2e109ca",
-          "bytes": 10252
+          "sha256": "sha256:a1f6e000cc0573638a7977d0a299c0f8d6d5bdb434ed6d4d365b5696b0b2591e",
+          "bytes": 10932
         }
       ]
     },
@@ -358,8 +393,8 @@
         },
         {
           "path": "client-packs/frt-g01-g30-platform/certification/local-validation-evidence.json",
-          "sha256": "sha256:4180c390b982359560e85dcbf33e9bfdc8811bc26c5bc6d31d43094ef2e109ca",
-          "bytes": 10252
+          "sha256": "sha256:a1f6e000cc0573638a7977d0a299c0f8d6d5bdb434ed6d4d365b5696b0b2591e",
+          "bytes": 10932
         }
       ]
     }
