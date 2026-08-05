@@ -252,6 +252,12 @@ uir-j2p-mutation:
 uir-j2p-survey:
 	cd $(UIR_J2P_DIR) && python3 -m j2p.cli survey $(CURDIR)/$(TREE) --out docs/survey-latest.json
 
+# The control measurement: the same survey with whole-program resolution turned
+# off. A claim that cross-file resolution moved the number is only worth
+# something if the unimproved number can still be reproduced on demand.
+uir-j2p-survey-noindex:
+	cd $(UIR_J2P_DIR) && python3 -m j2p.cli survey $(CURDIR)/$(TREE) --no-index --out docs/survey-noindex.json
+
 uir-j2p-evidence:
 	cd $(UIR_J2P_DIR) && python3 tools/record_batch_evidence.py \
 	  --runtime $(CURDIR)/skills/repository-migration-platform-skills-batch1-38/scripts/migration_platform.py \
@@ -261,4 +267,4 @@ uir-j2p-evidence:
 # red is not evidence of anything.
 uir-j2p-gate: uir-j2p-test uir-j2p-mutation
 
-.PHONY: uir-j2p-deps uir-j2p-test uir-j2p-mutation uir-j2p-survey uir-j2p-evidence uir-j2p-gate
+.PHONY: uir-j2p-deps uir-j2p-test uir-j2p-mutation uir-j2p-survey uir-j2p-survey-noindex uir-j2p-evidence uir-j2p-gate

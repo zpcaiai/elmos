@@ -350,6 +350,46 @@ def concat(*parts) -> str:
     return "".join(jstr(p) for p in parts)
 
 
+class JEnum:
+    """One enum constant.
+
+    A constant used to be emitted as its ordinal, which is right for exactly one
+    observation (comparing two constants) and wrong for every other: Java prints
+    ``ADD``, not ``0``, and ``name()`` and ``ordinal()`` are separate things.
+    Being a distinct object per constant also makes ``==`` -- identity in Java,
+    and the way enums are actually compared -- come out right without any
+    special handling.
+
+    ``equals``/``hashCode`` are left as Python's defaults, which are identity
+    based exactly as Java's are.
+    """
+
+    __slots__ = ("_enum", "_name", "_ordinal")
+
+    def __init__(self, enum_name: str, name: str, ordinal: int) -> None:
+        self._enum = enum_name
+        self._name = name
+        self._ordinal = ordinal
+
+    def name(self) -> str:
+        return self._name
+
+    def ordinal(self) -> int:
+        return self._ordinal
+
+    def toString(self) -> str:
+        return self._name
+
+    def compareTo(self, other: "JEnum") -> int:
+        return self._ordinal - other._ordinal
+
+    def __str__(self) -> str:
+        return self._name
+
+    def __repr__(self) -> str:  # pragma: no cover - debugging aid
+        return f"{self._enum}.{self._name}"
+
+
 class JChar:
     """A ``char`` value that remembers it is a character, not a number.
 

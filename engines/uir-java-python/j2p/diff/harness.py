@@ -27,8 +27,9 @@ import tempfile
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
-from ..emit.python import EmitError, emit_python
+from ..emit.python import EmitError, PythonEmitter, emit_python
 from ..frontend.java import ParseError, UnsupportedConstruct, parse_java_file
+from ..program import scan_files
 from ..uir import digest
 
 RUNTIME_DIR = Path(__file__).resolve().parents[2] / "runtime"
@@ -68,6 +69,10 @@ class DifferentialReport:
     detail: str = ""
     cases: list[CaseResult] = field(default_factory=list)
     generated_python: str = ""
+    #: Every other module the program needed, by generated module name.  A
+    #: cross-file translation that only shows the entry point would hide the
+    #: half of the output the entry point depends on.
+    companion_modules: dict[str, str] = field(default_factory=dict)
 
     @property
     def matched(self) -> int:
@@ -194,6 +199,121 @@ class DifferentialHarness:
             report.outcome = "FAIL"
             first = next(c for c in report.cases if c.outcome != "MATCH")
             report.detail = f"{report.mismatched} of {len(report.cases)} inputs differ; first: {first.detail}"
+        return report
+
+    def run_program(
+        self,
+        main_path: Path,
+        arg_vectors: list[list[str]],
+        sources: list[Path] | None = None,
+    ) -> DifferentialReport:
+        """Differentially execute a *multi-file* program.
+
+        Single-file differential evidence cannot say anything about whole-program
+        resolution, because the thing under test is precisely what happens when
+        a call leaves the file it was written in.  Every source is compiled by
+        one ``javac`` invocation and translated against one shared index, then
+        both programs are run from their own entry point and compared the same
+        way as the single-file case.
+        """
+
+        main_path = Path(main_path).resolve()
+        if sources is None:
+            sources = sorted(main_path.parent.glob("*.java"))
+        sources = [Path(s).resolve() for s in sources]
+        if main_path not in sources:
+            sources.append(main_path)
+        main_class = main_path.stem
+
+        index = scan_files(sources)
+        if index.unscanned:
+            return DifferentialReport(
+                source=str(main_path),
+                main_class=main_class,
+                uir_digest="",
+                outcome="TRANSLATION_REFUSED",
+                detail=f"declaration scan failed: {index.unscanned}",
+            )
+
+        generated: dict[str, str] = {}
+        main_digest = ""
+        for source in sources:
+            try:
+                module = parse_java_file(source, index=index)
+                code = PythonEmitter(module, index=index).emit()
+            except (UnsupportedConstruct, ParseError, EmitError) as exc:
+                return DifferentialReport(
+                    source=str(main_path),
+                    main_class=main_class,
+                    uir_digest=main_digest,
+                    outcome="TRANSLATION_REFUSED",
+                    detail=f"{source.name}: {exc}",
+                )
+            generated[source.stem] = code
+            if source == main_path:
+                main_digest = digest(module)
+
+        report = DifferentialReport(
+            source=str(main_path),
+            main_class=main_class,
+            uir_digest=main_digest,
+            outcome="PASS",
+            generated_python=generated[main_class],
+            companion_modules={
+                k: v for k, v in generated.items() if k != main_class
+            },
+        )
+
+        with tempfile.TemporaryDirectory(prefix="j2p-diff-prog-") as tmp:
+            work = Path(tmp)
+            java_dir = work / "java"
+            py_dir = work / "python"
+            java_dir.mkdir()
+            py_dir.mkdir()
+
+            for source in sources:
+                shutil.copy(source, java_dir / source.name)
+            compile_proc = _run(
+                ["javac", "-nowarn", *[s.name for s in sources]],
+                java_dir,
+                self.timeout,
+            )
+            if compile_proc.returncode != 0:
+                report.outcome = "BUILD_FAILED"
+                report.detail = f"javac failed:\n{compile_proc.stderr.strip()}"
+                return report
+
+            for name, code in generated.items():
+                (py_dir / f"{name}.py").write_text(code, encoding="utf-8")
+            for runtime_module in sorted(RUNTIME_DIR.glob("*.py")):
+                shutil.copy(runtime_module, py_dir / runtime_module.name)
+
+            for name in generated:
+                syntax = _run(
+                    [sys.executable, "-m", "py_compile", f"{name}.py"],
+                    py_dir,
+                    self.timeout,
+                )
+                if syntax.returncode != 0:
+                    report.outcome = "BUILD_FAILED"
+                    report.detail = (
+                        f"generated {name}.py does not compile:\n"
+                        f"{syntax.stderr.strip()}"
+                    )
+                    return report
+
+            for args in arg_vectors:
+                report.cases.append(
+                    self._one_case(java_dir, py_dir, main_class, args)
+                )
+
+        if any(c.outcome != "MATCH" for c in report.cases):
+            report.outcome = "FAIL"
+            first = next(c for c in report.cases if c.outcome != "MATCH")
+            report.detail = (
+                f"{report.mismatched} of {len(report.cases)} inputs differ; "
+                f"first: {first.detail}"
+            )
         return report
 
     def _one_case(

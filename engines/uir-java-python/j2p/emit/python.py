@@ -158,6 +158,23 @@ class SourceMapEntry:
     java_column: int
 
 
+def _module_stem(path: str) -> str:
+    """The generated Python module name for a Java source file.
+
+    Kept identical to what :mod:`j2p.program` records as ``TypeInfo.module`` so
+    an emitted import names the module the other file actually becomes.
+    """
+
+    name = path.replace("\\", "/").rsplit("/", 1)[-1]
+    return name[:-5] if name.endswith(".java") else name
+
+
+#: Enum members every constant has, provided by the runtime's JEnum.  `values`
+#: and `valueOf` are deliberately absent: they need the constant list, which the
+#: generated class does not carry in an ordered form.
+_ENUM_METHODS = frozenset({"name", "ordinal", "toString", "compareTo"})
+
+
 #: A placeholder substituted for an expression that could not be emitted, used
 #: only while surveying.  It is deliberately not valid Python: code produced in
 #: survey mode must never be mistaken for a translation.
@@ -202,14 +219,30 @@ class SurveyModeError(Exception):
 
 
 class PythonEmitter:
-    def __init__(self, module: Module, survey: bool = False) -> None:
+    def __init__(
+        self, module: Module, survey: bool = False, index=None
+    ) -> None:
         self.module = module
+        #: The whole-program symbol index, when the caller has one.  Without it
+        #: the emitter can only translate calls into classes declared in this
+        #: same file, which measurement showed is the single limitation blocking
+        #: 94% of files.  With it, a call into another file resolves, is checked
+        #: against that class's real signature, and the generated module gets an
+        #: import for it.
+        self.index = index
+        #: simple class name -> generated Python module it must be imported from.
+        self._program_imports: dict[str, str] = {}
+        self._program_cache: dict[str, object] = {}
         #: In survey mode the emitter records refusals and keeps going, so a
         #: file's *whole* blocker set becomes visible instead of just whichever
         #: one happened to come first.  The resulting text is not a translation
         #: and `emit()` refuses to return it.
         self.survey = survey
         self.blockers: list[Blocker] = []
+        #: Types whose emission was abandoned at the *declaration* level while
+        #: surveying.  Nothing inside them was measured, so their blocker count
+        #: is a floor, not a total -- see `survey_report`.
+        self.truncated_types: list[str] = []
         self.lines: list[str] = []
         self.source_map: list[SourceMapEntry] = []
         self._static_methods: set[str] = set()
@@ -226,6 +259,9 @@ class PythonEmitter:
         self._enum_names: set[str] = {
             t.name for t in module.types if t.kind == "enum"
         }
+        #: The generated module this file becomes, so a resolved type that lives
+        #: here is used without importing it from itself.
+        self._module_name = _module_stem(module.origin.file)
 
     # -- public -----------------------------------------------------------
 
@@ -240,11 +276,109 @@ class PythonEmitter:
         return text
 
     def _emit_text(self) -> str:
-        self._header()
+        # The body is emitted first because the header cannot be written until
+        # it is known which other generated modules this one references, and
+        # that is only known once every call site has been visited.
         for decl in self.module.types:
-            self._guard(lambda d=decl: self._type_decl(d), decl.origin)
+            if not self._guard(lambda d=decl: self._type_decl(d), decl.origin):
+                self.truncated_types.append(decl.name)
         self._main_entry()
+        body = self.lines
+        self.lines = []
+        self._header()
+        offset = len(self.lines)
+        self.lines = self.lines + body
+        self.source_map = [
+            SourceMapEntry(
+                python_line=e.python_line + offset,
+                java_file=e.java_file,
+                java_line=e.java_line,
+                java_column=e.java_column,
+            )
+            for e in self.source_map
+        ]
         return "\n".join(self.lines) + "\n"
+
+    # -- whole-program resolution ----------------------------------------
+
+    def _program_type(self, name: str):
+        """The indexed declaration for a type named in another file, if any.
+
+        Types declared in *this* file are excluded: the local declaration is
+        authoritative and needs no import.
+        """
+
+        if self.index is None or not name or name in self._class_names:
+            return None
+        if name in self._program_cache:
+            return self._program_cache[name]
+        info = self.index.resolve(name, self.module.package, self.module.imports)
+        self._program_cache[name] = info
+        return info
+
+    def _program_ref(self, info) -> str:
+        """How this module refers to ``info``'s class, recording the import.
+
+        The import is written as ``import Other as _m_Other`` and the class is
+        reached through it, rather than ``from Other import Other``.  Java has
+        no import cycles to speak of -- two classes may freely call each other
+        -- but ``from X import Y`` does: the second module to start importing
+        finds the first only partly initialised and the class name is not bound
+        yet.  A plain module import binds the (possibly partial) module object
+        and the attribute is looked up at call time, by which point both modules
+        are complete.  The ``_m_`` prefix keeps the module distinct from the
+        class, which usually has the same name.
+        """
+
+        if info.module == self._module_name:
+            return info.simple_name
+        self._program_imports[info.simple_name] = info.module
+        return f"_m_{info.module}.{info.simple_name}"
+
+    def _program_method(self, info, name: str, origin: Origin):
+        """A method of an indexed type, refusing what cannot be dispatched.
+
+        Overloads are refused rather than guessed at: picking one needs argument
+        types the front end does not always have, and picking the wrong one is a
+        silent behaviour change.
+        """
+
+        overloads = info.methods.get(name)
+        if not overloads:
+            inherited = self._inherited_method(info, name)
+            if inherited is not None:
+                return inherited
+            raise EmitError(
+                f"{info.qualified_name}.{name} is not declared in the scanned "
+                f"program",
+                origin,
+            )
+        if len(overloads) > 1:
+            raise EmitError(
+                f"{info.qualified_name}.{name} has {len(overloads)} overloads; "
+                f"selecting one needs argument types the front end does not "
+                f"always have, so the call is refused rather than guessed",
+                origin,
+            )
+        return overloads[0]
+
+    def _inherited_method(self, info, name: str):
+        seen = set()
+        current = info
+        while current is not None and current.superclass_text:
+            if current.superclass_text in seen:
+                break
+            seen.add(current.superclass_text)
+            parent = self._program_type(current.superclass_text)
+            if parent is None:
+                return None
+            overloads = parent.methods.get(name)
+            if overloads and len(overloads) == 1:
+                return overloads[0]
+            if overloads:
+                return None
+            current = parent
+        return None
 
     def _record(self, exc: "EmitError") -> None:
         self.blockers.append(
@@ -379,6 +513,8 @@ class PythonEmitter:
         self._write(0, '"""')
         self._write(0, "")
         self._write(0, "import j2p_runtime as rt")
+        for module in sorted(set(self._program_imports.values())):
+            self._write(0, f"import {module} as _m_{module}")
         self._write(0, "")
 
     # -- declarations -----------------------------------------------------
@@ -413,6 +549,25 @@ class PythonEmitter:
         # under a leading underscore and the accessor keeps the Java name.
         self._record_components = {p.name for p in decl.record_components}
 
+        if decl.kind != "record":
+            # Java keeps fields and methods in separate namespaces, so
+            # `int factor; int factor()` is ordinary code.  Python has one
+            # namespace per object, and `self.factor = factor` in __init__ would
+            # overwrite the method -- the call then fails with a TypeError far
+            # from the declaration that caused it.  A record is exempt because
+            # its components are stored under a leading underscore.
+            clash = sorted(
+                {f.name for f in decl.fields}
+                & {m.name for m in decl.methods if not m.is_constructor}
+            )
+            if clash:
+                raise EmitError(
+                    f"{decl.name} declares both a field and a method named "
+                    f"{clash[0]!r}; Java gives them separate namespaces and "
+                    f"Python does not, so one would silently overwrite the other",
+                    decl.origin,
+                )
+
         self._write(0, f"class {decl.name}:", decl.origin)
 
         body_started = False
@@ -425,7 +580,12 @@ class PythonEmitter:
 
         if decl.kind == "enum":
             for index, constant in enumerate(decl.enum_constants):
-                self._write(1, f"{constant} = {index}", decl.origin)
+                self._write(
+                    1,
+                    f"{constant} = {RUNTIME_ALIAS}.JEnum("
+                    f"{decl.name!r}, {constant!r}, {index})",
+                    decl.origin,
+                )
                 body_started = True
 
         if decl.kind == "record":
@@ -433,13 +593,12 @@ class PythonEmitter:
             return
 
         constructors = [m for m in decl.methods if m.is_constructor]
-        if len(constructors) > 1:
-            raise EmitError(
-                "overloaded constructors are not supported", constructors[1].origin
-            )
-
         self._write(0, "")
-        self._emit_init(decl, constructors[0] if constructors else None)
+        if len(constructors) > 1:
+            self._check_overloaded_init(decl, constructors)
+            self._emit_overloaded_init(decl, constructors)
+        else:
+            self._emit_init(decl, constructors[0] if constructors else None)
         body_started = True
 
         for method in decl.methods:
@@ -552,6 +711,66 @@ class PythonEmitter:
                 wrote = True
         if not wrote:
             self._write(2, "pass")
+
+    def _emit_overloaded_init(self, decl: TypeDecl, ctors: list[Method]) -> None:
+        """One ``__init__`` dispatching on argument count.
+
+        Java picks a constructor by the static types of the arguments; Python
+        has one ``__init__`` and no static types.  Where the overloads differ in
+        *arity* the choice is fully determined by the call and can be reproduced
+        exactly, so those are emitted.  Where two overloads share an arity the
+        choice depends on types that are not present at run time, so
+        :meth:`_check_overloaded_init` refuses the class before reaching here.
+
+        Field initialisers run once, before the dispatch, because Java runs them
+        before whichever constructor body was selected.
+        """
+
+        self._write(1, "def __init__(self, *_args):", decl.origin)
+        for f in decl.fields:
+            if f.is_static:
+                continue
+            value = self._expr(f.init) if f.init is not None else self._zero(f.type)
+            self._write(2, f"self.{f.name} = {value}", f.origin)
+        for ctor in sorted(ctors, key=lambda c: len(c.params)):
+            self._write(2, f"if len(_args) == {len(ctor.params)}:", ctor.origin)
+            if ctor.params:
+                names = ", ".join(p.name for p in ctor.params)
+                comma = "," if len(ctor.params) == 1 else ""
+                self._write(3, f"({names}{comma}) = _args")
+            body_written = False
+            if ctor.body is not None:
+                for stmt in ctor.body.body:
+                    self._stmt(stmt, 3)
+                    body_written = True
+            self._write(3, "return" if body_written else "return")
+        self._write(
+            2,
+            "raise rt.IllegalArgumentExceptionJ("
+            "'no constructor takes ' + str(len(_args)) + ' arguments')",
+            decl.origin,
+        )
+
+    @staticmethod
+    def _check_overloaded_init(decl: TypeDecl, ctors: list[Method]) -> None:
+        arities = [len(c.params) for c in ctors]
+        duplicated = sorted({a for a in arities if arities.count(a) > 1})
+        if duplicated:
+            raise EmitError(
+                f"{decl.name} declares {arities.count(duplicated[0])} constructors "
+                f"taking {duplicated[0]} arguments; Java selects between them by "
+                f"the static types of the arguments, which are not present at "
+                f"run time",
+                ctors[1].origin,
+            )
+        varargs = [c for c in ctors if c.params and c.params[-1].is_varargs]
+        if varargs:
+            raise EmitError(
+                f"{decl.name} has an overloaded varargs constructor; its arity "
+                f"is not fixed, so dispatching on argument count would pick the "
+                f"wrong one",
+                varargs[0].origin,
+            )
 
     def _emit_method(self, method: Method) -> None:
         name = method.name
@@ -1297,6 +1516,18 @@ class PythonEmitter:
             return f"{RUNTIME_ALIAS}.{expr.owner}.{expr.name}"
         if expr.owner in self._class_names:
             return f"{expr.owner}.{expr.name}"
+        info = self._program_type(expr.owner)
+        if info is not None:
+            if expr.name in info.enum_constants:
+                return f"{self._program_ref(info)}.{expr.name}"
+            declared = info.fields.get(expr.name)
+            if declared is None or not declared.is_static:
+                raise EmitError(
+                    f"{info.qualified_name}.{expr.name} is not a static field "
+                    f"of the scanned declaration",
+                    expr.origin,
+                )
+            return f"{self._program_ref(info)}.{expr.name}"
         raise EmitError(
             f"unsupported static field {expr.owner}.{expr.name}", expr.origin
         )
@@ -1384,6 +1615,12 @@ class PythonEmitter:
         # Java unboxes only when at least one operand is already primitive.
         # Testing the *unboxed* types here would treat `Integer == Integer` as a
         # value comparison, which is exactly the bug this guard exists to catch.
+        if self._is_enum_type(expr.left.type) and self._is_enum_type(expr.right.type):
+            # Enum constants are singletons on both sides, so Java's identity
+            # comparison -- which is how enums are meant to be compared -- is
+            # reproduced exactly by `is`.
+            return f"({left} {'is not' if expr.op == '!=' else 'is'} {right})"
+
         left_ref = uir.is_reference(expr.left.type)
         right_ref = uir.is_reference(expr.right.type)
         if left_ref and right_ref:
@@ -1394,6 +1631,14 @@ class PythonEmitter:
                 expr.origin,
             )
         return f"({left} {expr.op} {right})"
+
+    def _is_enum_type(self, t: uir.Type) -> bool:
+        if not isinstance(t, ClassType):
+            return False
+        if t.name in self._enum_names:
+            return True
+        info = self._program_type(t.name)
+        return info is not None and info.kind == "enum"
 
     @staticmethod
     def _wrapper(kind: str) -> str:
@@ -1478,6 +1723,9 @@ class PythonEmitter:
             return f"isinstance({self._expr(expr.operand)}, {mapping[name]})"
         if name in self._class_names:
             return f"isinstance({self._expr(expr.operand)}, {name})"
+        info = self._program_type(name)
+        if info is not None:
+            return f"isinstance({self._expr(expr.operand)}, {self._program_ref(info)})"
         raise EmitError(f"instanceof {name} is not supported", expr.origin)
 
     def _new(self, expr: New) -> str:
@@ -1502,7 +1750,78 @@ class PythonEmitter:
         cls = self._throwable_class(name)
         if cls is not None:
             return f"{RUNTIME_ALIAS}.{cls}({args})"
+        info = self._program_type(name)
+        if info is not None:
+            self._check_constructible(info, expr)
+            return f"{self._program_ref(info)}({args})"
         raise EmitError(f"unsupported class instantiation: new {name}", expr.origin)
+
+    def _check_constructible(self, info, expr: New) -> None:
+        """Refuse `new` on an indexed type whose construction is not faithful."""
+
+        if info.kind == "interface":
+            raise EmitError(
+                f"new {info.simple_name}() on an interface is an anonymous "
+                f"class; its body is not in the index",
+                expr.origin,
+            )
+        if "abstract" in info.modifiers:
+            raise EmitError(
+                f"new {info.simple_name}() on an abstract class is an anonymous "
+                f"subclass; its body is not in the index",
+                expr.origin,
+            )
+        constructors = info.methods.get("<init>", [])
+        if info.kind == "record":
+            expected = len(info.record_components) if not constructors else None
+            if expected is not None and len(expr.args) != expected:
+                raise EmitError(
+                    f"new {info.simple_name} passes {len(expr.args)} arguments "
+                    f"to a record with {expected} components",
+                    expr.origin,
+                )
+            return
+        if not constructors:
+            if expr.args:
+                raise EmitError(
+                    f"new {info.simple_name} passes {len(expr.args)} arguments "
+                    f"but the class declares only the default constructor",
+                    expr.origin,
+                )
+            return
+        arities = {
+            (len(c.param_types) - 1 if c.is_varargs else len(c.param_types))
+            for c in constructors
+        }
+        fits = any(
+            len(expr.args) == len(c.param_types)
+            or (c.is_varargs and len(expr.args) >= len(c.param_types) - 1)
+            for c in constructors
+        )
+        if not fits:
+            raise EmitError(
+                f"new {info.simple_name} passes {len(expr.args)} arguments; the "
+                f"declared constructors take {sorted(arities)}",
+                expr.origin,
+            )
+        matching = [
+            c
+            for c in constructors
+            if len(expr.args) == len(c.param_types)
+            or (c.is_varargs and len(expr.args) >= len(c.param_types) - 1)
+        ]
+        if len(matching) > 1:
+            # The generated class dispatches on argument *count*.  Two overloads
+            # that this call could reach with the same count are separated in
+            # Java by the static types of the arguments, which are gone at run
+            # time; guessing is worse than refusing.
+            raise EmitError(
+                f"new {info.simple_name} could reach {len(matching)} "
+                f"constructors with {len(expr.args)} arguments; Java separates "
+                f"them by static argument types, which are not present at run "
+                f"time",
+                expr.origin,
+            )
 
     @staticmethod
     def _throwable_class(simple_name: str) -> str | None:
@@ -1594,12 +1913,112 @@ class PythonEmitter:
             args = self._pack_varargs(expr.name, expr, args)
             return self._user_object_method(target, target_type.name, expr, args)
 
+        if isinstance(target_type, ClassType):
+            info = self._program_type(target_type.name)
+            if info is not None:
+                return self._program_object_method(target, info, expr, args)
+
         if isinstance(expr.target, This):
             return f"self.{expr.name}({', '.join(args)})"
 
         raise EmitError(
             f"call {expr.name} on unresolved receiver type {target_type}", expr.origin
         )
+
+    def _program_object_method(
+        self, target: str, info, expr: Call, args: list[str]
+    ) -> str:
+        """A call on an object whose class is declared in another file.
+
+        Dispatch itself needs no import -- Python looks the method up on the
+        instance -- so this deliberately does *not* record one.  What it does do
+        is check the call against the scanned declaration, so a name that does
+        not exist over there is refused here rather than becoming an
+        AttributeError at run time.
+        """
+
+        components = {name for name, _ in info.record_components}
+
+        if info.kind == "enum" and expr.name in _ENUM_METHODS:
+            return f"{target}.{expr.name}({', '.join(args)})"
+
+        if expr.name == "equals" and len(args) == 1 and not self._program_declares(info, "equals"):
+            return f"({target} == {args[0]})"
+        if expr.name == "hashCode" and not args and not self._program_declares(info, "hashCode"):
+            if info.kind == "record":
+                return f"hash({target})"
+            raise EmitError(
+                f"hashCode() on {info.simple_name}, which does not declare one, "
+                f"is identity based in Java and cannot be reproduced",
+                expr.origin,
+            )
+        if expr.name == "toString" and not args and not self._program_declares(info, "toString"):
+            if info.kind == "record":
+                return f"{target}.toString()"
+            raise EmitError(
+                f"toString() on {info.simple_name}, which does not declare one, "
+                f"prints an identity hash in Java and cannot be reproduced",
+                expr.origin,
+            )
+
+        if expr.name in components and not args:
+            return f"{target}.{expr.name}()"
+
+        method = self._program_method(info, expr.name, expr.origin)
+        if method.is_static:
+            raise EmitError(
+                f"{info.simple_name}.{expr.name} is static but is called on an "
+                f"instance",
+                expr.origin,
+            )
+        args = self._pack_program_varargs(method, expr, args)
+        return f"{target}.{expr.name}({', '.join(args)})"
+
+    def _program_declares(self, info, name: str) -> bool:
+        """Whether ``info`` or one of its indexed superclasses declares ``name``."""
+
+        current = info
+        seen: set[str] = set()
+        while current is not None:
+            if name in current.methods:
+                return True
+            parent_text = current.superclass_text
+            if not parent_text or parent_text in seen:
+                return False
+            seen.add(parent_text)
+            current = self._program_type(parent_text)
+        return False
+
+    def _pack_program_varargs(
+        self, method, expr: "Call | StaticCall", args: list[str]
+    ) -> list[str]:
+        """Call-site varargs packing against an indexed signature.
+
+        Same rule as for a local declaration: Java builds the array at the call
+        site, so passing the trailing arguments through individually would give
+        the callee a different arity than it declares.
+        """
+
+        if not method.is_varargs or not method.param_types:
+            return args
+        fixed = len(method.param_types) - 1
+        if len(args) == len(method.param_types) and isinstance(
+            expr.args[-1].type, ArrayType
+        ):
+            return args
+        if len(args) < fixed:
+            raise EmitError(
+                f"{method.name} takes at least {fixed} arguments, {len(args)} "
+                f"given",
+                expr.origin,
+            )
+        declared = method.param_types[-1]
+        element = declared.element if isinstance(declared, ArrayType) else declared
+        element_name = element.name if isinstance(element, PrimitiveType) else "ref"
+        rest = ", ".join(args[fixed:])
+        return args[:fixed] + [
+            f"{RUNTIME_ALIAS}.array_of({element_name!r}, [{rest}])"
+        ]
 
     def _user_object_method(
         self, target: str, class_name: str, expr: Call, args: list[str]
@@ -1614,6 +2033,8 @@ class PythonEmitter:
         """
 
         decl = next((d for d in self.module.types if d.name == class_name), None)
+        if decl is not None and decl.kind == "enum" and expr.name in _ENUM_METHODS:
+            return f"{target}.{expr.name}({', '.join(args)})"
         declared = {m.name for m in decl.methods} if decl is not None else set()
         components = {p.name for p in decl.record_components} if decl is not None else set()
 
@@ -1652,7 +2073,11 @@ class PythonEmitter:
             None,
         )
         if decl is None:
-            return None
+            info = self._program_type(t.name)
+            if info is None:
+                return None
+            functional = info.is_functional_interface()
+            return functional[0] if functional is not None else None
         abstract = [m for m in decl.methods if m.body is None]
         return abstract[0].name if len(abstract) == 1 else None
 
@@ -1834,6 +2259,19 @@ class PythonEmitter:
             args = self._pack_varargs(expr.name, expr, args)
             return f"{expr.owner}.{expr.name}({', '.join(args)})"
 
+        info = self._program_type(expr.owner)
+        if info is not None:
+            method = self._program_method(info, expr.name, expr.origin)
+            if not method.is_static:
+                raise EmitError(
+                    f"{info.simple_name}.{expr.name} is an instance method but "
+                    f"is called as a static one",
+                    expr.origin,
+                )
+            args = self._pack_program_varargs(method, expr, args)
+            ref = self._program_ref(info)
+            return f"{ref}.{expr.name}({', '.join(args)})"
+
         raise EmitError(
             f"static call {expr.owner}.{expr.name} is not supported", expr.origin
         )
@@ -1857,7 +2295,7 @@ def emit_python(module: Module) -> str:
     return PythonEmitter(module).emit()
 
 
-def survey_blockers(module: Module) -> list[Blocker]:
+def survey_blockers(module: Module, index=None) -> list[Blocker]:
     """Every distinct reason ``module`` cannot be translated.
 
     This is a *projection*, not a proof: where an expression could not be
@@ -1868,9 +2306,34 @@ def survey_blockers(module: Module) -> list[Blocker]:
     inventing a second, spurious blocker -- does not occur.
     """
 
-    emitter = PythonEmitter(module, survey=True)
+    return survey_report(module, index).blockers
+
+
+@dataclass
+class SurveyResult:
+    blockers: list[Blocker]
+    #: Types abandoned at the declaration level.  When this is non-empty the
+    #: blocker set is a *floor*: a refusal on the class itself (an interface
+    #: with default methods, a field/method name clash, two constructors of the
+    #: same arity) stops emission before any method body is walked, so every
+    #: blocker inside those bodies is missing from the count.  Treating such a
+    #: file as "one capability away" is how a projection ends up promising more
+    #: than the work delivers.
+    truncated_types: list[str]
+
+    @property
+    def truncated(self) -> bool:
+        return bool(self.truncated_types)
+
+
+def survey_report(module: Module, index=None) -> SurveyResult:
+    """Blockers plus whether the measurement was cut short. See SurveyResult."""
+
+    emitter = PythonEmitter(module, survey=True, index=index)
     try:
         emitter.emit()
     except SurveyModeError:
         pass
-    return emitter.blockers
+    return SurveyResult(
+        blockers=emitter.blockers, truncated_types=list(emitter.truncated_types)
+    )

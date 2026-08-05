@@ -16,16 +16,39 @@ from pathlib import Path
 
 from . import uir
 from .diff.harness import DifferentialHarness, default_arg_vectors
-from .emit.python import EmitError, PythonEmitter, blocker_category, survey_blockers
+from .emit.python import (
+    EmitError,
+    PythonEmitter,
+    blocker_category,
+    survey_report,
+)
 from .frontend.java import ParseError, UnsupportedConstruct, parse_java_file
+from .program import scan_tree
 
 EXIT_OK = 0
 EXIT_FAIL = 2
 EXIT_REFUSED = 3
 
 
-def _parse(path: Path):
-    return parse_java_file(path)
+def _parse(path: Path, index=None):
+    return parse_java_file(path, index=index)
+
+
+def _index_for(args) -> object | None:
+    """The whole-program index a command should lower and emit against.
+
+    ``--no-index`` is kept deliberately: it reproduces the old one-file-at-a-time
+    behaviour, which is what the before/after coverage numbers are measured
+    against.  A claim that whole-program resolution moved the number is only
+    worth anything if the unimproved number can still be reproduced on demand.
+    """
+
+    if getattr(args, "no_index", False):
+        return None
+    root = getattr(args, "index_root", None)
+    if root is None:
+        return None
+    return scan_tree(Path(root))
 
 
 def cmd_parse(args: argparse.Namespace) -> int:
@@ -54,8 +77,9 @@ def cmd_parse(args: argparse.Namespace) -> int:
 
 def cmd_emit(args: argparse.Namespace) -> int:
     try:
-        module = _parse(Path(args.source))
-        emitter = PythonEmitter(module)
+        index = _index_for(args)
+        module = _parse(Path(args.source), index=index)
+        emitter = PythonEmitter(module, index=index)
         code = emitter.emit()
     except (UnsupportedConstruct, ParseError, EmitError) as exc:
         print(f"REFUSED: {exc}", file=sys.stderr)
@@ -112,6 +136,12 @@ def cmd_survey(args: argparse.Namespace) -> int:
     if args.limit:
         files = files[: args.limit]
 
+    # The index always covers the *whole* tree even when the survey is limited
+    # to a sample: a limited index would make cross-file resolution look worse
+    # than it is for reasons that have nothing to do with the engine.
+    index = None if args.no_index else scan_tree(root)
+
+    truncated_files: list[str] = []
     parsed = 0
     refused: dict[str, int] = {}
     unparsed = 0
@@ -125,7 +155,7 @@ def cmd_survey(args: argparse.Namespace) -> int:
     for path in files:
         record = {"file": str(path.relative_to(root))}
         try:
-            module = _parse(path)
+            module = _parse(path, index=index)
         except UnsupportedConstruct as exc:
             key = exc.reason.split("(")[0].strip()
             refused[key] = refused.get(key, 0) + 1
@@ -153,22 +183,33 @@ def cmd_survey(args: argparse.Namespace) -> int:
             continue
         parsed += 1
         try:
-            PythonEmitter(module).emit()
+            PythonEmitter(module, index=index).emit()
         except EmitError as exc:
             key = blocker_category(exc.reason)
             emit_refused[key] = emit_refused.get(key, 0) + 1
             record.update(stage="emit", outcome="REFUSED", reason=key)
             # Emission stops at the first refusal, which says nothing about how
             # far the file is from translating.  Collect the whole set.
+            truncated = False
             try:
-                found = sorted({b.category for b in survey_blockers(module)})
+                result = survey_report(module, index=index)
+                found = sorted({b.category for b in result.blockers})
+                truncated = result.truncated
             except Exception as exc2:  # noqa: BLE001 - reported, not hidden
                 crashed.append(
                     {"file": record["file"], "error": f"survey: {exc2!r}"[:200]}
                 )
                 found = [key]
             record["blockers"] = found
-            blocker_sets[record["file"]] = found
+            if truncated:
+                # A class-level refusal stops emission before any method body is
+                # walked, so this file's blocker set is a floor.  Counting it as
+                # "one capability away" is exactly how the previous projection
+                # promised 137 files and delivered 28.
+                record["blockers_truncated"] = True
+                truncated_files.append(record["file"])
+            else:
+                blocker_sets[record["file"]] = found
             for category in found:
                 blocker_files.setdefault(category, set()).add(record["file"])
             per_file.append(record)
@@ -244,12 +285,17 @@ def cmd_survey(args: argparse.Namespace) -> int:
         ),
         "one_blocker_away": dict(sorted(one_away.items(), key=lambda kv: -kv[1])),
         "greedy_build_order": chosen,
+        "blockers_truncated": len(truncated_files),
+        "blockers_truncated_sample": truncated_files[:10],
         "projection_caveat": (
             "one_blocker_away and greedy_build_order are projections, not "
             "measurements: where an expression could not be emitted a "
             "placeholder took its place, so a construct consuming that value "
             "may not have been reached. Fixing a listed capability makes a file "
-            "likely, not certain, to translate."
+            "likely, not certain, to translate. Files counted in "
+            "blockers_truncated are excluded from both: a refusal on the class "
+            "declaration itself stops emission before any method body is "
+            "walked, so their blocker set is a floor rather than a total."
         ),
     }
     if args.out:
@@ -273,6 +319,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("source")
     p.add_argument("--out")
     p.add_argument("--source-map")
+    p.add_argument("--index-root", help="scan this tree for cross-file types")
+    p.add_argument("--no-index", action="store_true")
     p.set_defaults(func=cmd_emit)
 
     p = sub.add_parser("diff", help="run both sides and compare observable behaviour")
@@ -289,6 +337,11 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("root")
     p.add_argument("--limit", type=int, default=0)
     p.add_argument("--out")
+    p.add_argument(
+        "--no-index",
+        action="store_true",
+        help="measure without whole-program resolution (the old behaviour)",
+    )
     p.set_defaults(func=cmd_survey)
 
     return parser

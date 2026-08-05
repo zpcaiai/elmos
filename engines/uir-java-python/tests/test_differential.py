@@ -41,6 +41,7 @@ CORPUS_PLAN = {
     "Objects.java": [[v] for v in BOUNDARY_INTS],
     "Records.java": [[v] for v in BOUNDARY_INTS],
     "Records2.java": [[v] for v in BOUNDARY_INTS],
+    "Ctors.java": [[v] for v in BOUNDARY_INTS],
     "Times.java": [
         [v] for v in ["0", "1", "-1", "86400", "-90061", "1700000000", "2147483647"]
     ],
@@ -112,6 +113,49 @@ def _attach(name: str) -> None:
 
 for _name in sorted(CORPUS_PLAN):
     _attach(_name)
+
+
+#: The cross-file program.  Its arguments drive overflow, negative division and
+#: negative remainder through calls that leave the file they are written in.
+PROGRAM_VECTORS = [
+    [a, b]
+    for a in ["7", "-7", "0", "2147483647", "-2147483648"]
+    for b in ["3", "-3", "0", "1", "2"]
+]
+
+if os.environ.get("J2P_FAST") == "1":
+    PROGRAM_VECTORS = _thin(PROGRAM_VECTORS, 6)
+
+
+class CrossFileDifferentialTest(unittest.TestCase):
+    """The evidence for whole-program resolution.
+
+    Unit tests can assert that a cross-file call *emits* something; only this
+    can assert that what it emits behaves like the Java did.  Five files are
+    compiled by one javac invocation and translated against one index, and the
+    entry points are compared byte for byte.
+    """
+
+    def test_the_cross_file_program_matches_java(self):
+        harness = DifferentialHarness()
+        report = harness.run_program(
+            CORPUS / "program" / "Ledger.java", PROGRAM_VECTORS
+        )
+        self.assertEqual(report.outcome, "PASS", f"{report.outcome}: {report.detail}")
+        self.assertGreater(report.matched, 0)
+        self.assertEqual(report.mismatched, 0)
+        # Four companions, because a report showing only the entry point would
+        # hide the half of the translation the entry point depends on.
+        self.assertEqual(
+            sorted(report.companion_modules), ["Adjust", "Money", "Op", "Rates"]
+        )
+
+    def test_the_same_program_is_refused_without_the_index(self):
+        # Same files, same harness, one file at a time: this is what the engine
+        # did before, and it is why 94% of the corpus was blocked.
+        harness = DifferentialHarness()
+        report = harness.run(CORPUS / "program" / "Ledger.java", [["7", "3"]])
+        self.assertEqual(report.outcome, "TRANSLATION_REFUSED", report.detail)
 
 
 class HarnessHonestyTest(unittest.TestCase):

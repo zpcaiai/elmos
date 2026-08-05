@@ -272,11 +272,22 @@ class _Scope:
 
 
 class JavaFrontend:
-    """Lower one Java compilation unit to UIR."""
+    """Lower one Java compilation unit to UIR.
 
-    def __init__(self, source: bytes, filename: str) -> None:
+    With a :class:`~j2p.program.ProgramIndex` it can also resolve types declared
+    in *other* files.  Without one it behaves exactly as before, which keeps the
+    single-file path -- and every existing test -- working unchanged.
+    """
+
+    def __init__(self, source: bytes, filename: str, index=None) -> None:
         self.source = source
         self.filename = filename
+        #: Whole-program symbol table, or None for single-file lowering.
+        self.index = index
+        #: This file's package and imports, needed to resolve a written name the
+        #: way Java would.  Filled in during parsing.
+        self.package: str | None = None
+        self.imports: tuple[str, ...] = ()
         self._language = Language(tree_sitter_java.language())
         self._parser = Parser(self._language)
         #: Return types of methods declared in this compilation unit, so calls
@@ -295,6 +306,9 @@ class JavaFrontend:
         #: all, and every use of it is refused.
         self._interface_sams: dict[str, tuple[str, uir.Type, tuple[uir.Type, ...]]] = {}
         self._class_names: set[str] = set()
+        #: Kind ("class" | "interface" | "enum" | "record") per type declared in
+        #: this file, so an enum can be told from a class without the index.
+        self._type_kinds: dict[str, str] = {}
         self._current_class: str | None = None
         #: Type variables in scope.  Java erases generics at run time, so a
         #: type variable carries no information Python lacks; it is recorded as
@@ -366,14 +380,19 @@ class JavaFrontend:
         for child in self._named(root):
             if child.type == "package_declaration":
                 package = self._text(self._named(child)[0])
+                self.package = package
             elif child.type == "import_declaration":
-                imports.append(self._text(self._named(child)[0]))
+                text = self._text(child)
+                text = text.removeprefix("import").strip().rstrip(";").strip()
+                imports.append(text.removeprefix("static").strip())
             elif child.type in _TYPE_DECL_NODES:
                 decls.append(child)
             elif child.type in ("line_comment", "block_comment"):
                 continue
             else:
                 self._reject(child, "top-level declaration")
+
+        self.imports = tuple(imports)
 
         # Pre-pass: collect signatures so forward references type correctly.
         for decl in decls:
@@ -392,6 +411,12 @@ class JavaFrontend:
     def _collect_signatures(self, decl: "Node") -> None:
         decl_name = self._text(decl.child_by_field_name("name"))
         self._class_names.add(decl_name)
+        self._type_kinds[decl_name] = {
+            "class_declaration": "class",
+            "interface_declaration": "interface",
+            "enum_declaration": "enum",
+            "record_declaration": "record",
+        }.get(decl.type, "class")
         if decl.type == "interface_declaration":
             body = decl.child_by_field_name("body")
             abstract = [
@@ -754,6 +779,14 @@ class JavaFrontend:
         if t == "void_type":
             return uir.T_VOID
         if t == "array_type":
+            # tree-sitter models `int[][]` as one array_type whose `dimensions`
+            # child holds *both* bracket pairs, so recursing on `element` alone
+            # silently turns a two-dimensional array into a one-dimensional one.
+            # A wrong type is worse than a refusal: every index of it would then
+            # be typed as the element rather than as a nested array.
+            dimensions = node.child_by_field_name("dimensions")
+            if dimensions is not None and self._text(dimensions).count("[") > 1:
+                self._reject(node, "multi-dimensional array type")
             return ArrayType(element=self._type(node.child_by_field_name("element")))
         if t == "type_identifier":
             name = self._text(node)
@@ -1211,7 +1244,7 @@ class JavaFrontend:
                     target=This(origin=origin, type=UnknownType("this-type")),
                     name=name,
                 )
-            if name in KNOWN_CLASS_TYPES | self._class_names:
+            if name in KNOWN_CLASS_TYPES | self._class_names or self._is_program_type(name):
                 # A bare class name used as a call/field target.
                 return Name(origin=origin, type=ClassType(name), ident=name)
             return Name(origin=origin, type=UnknownType(f"name:{name}"), ident=name)
@@ -1233,7 +1266,11 @@ class JavaFrontend:
                 )
             if obj.type == "identifier":
                 owner = self._text(obj)
-                if owner in KNOWN_CLASS_TYPES and scope.lookup(owner) is None:
+                if (
+                    owner in KNOWN_CLASS_TYPES
+                    or owner in self._class_names
+                    or self._is_program_type(owner)
+                ) and scope.lookup(owner) is None:
                     return StaticFieldAccess(
                         origin=origin,
                         type=self._static_field_type(owner, field_name),
@@ -1432,6 +1469,44 @@ class JavaFrontend:
             body_block=None,
         )
 
+    def _lookup(self, name: str):
+        """The program-wide declaration of ``name``, if there is one."""
+
+        if self.index is None:
+            return None
+        return self.index.resolve(name, self.package, self.imports)
+
+    def _is_program_type(self, name: str) -> bool:
+        return self._lookup(name) is not None
+
+    def _program_method_return(self, owner: str, name: str) -> uir.Type | None:
+        info = self._lookup(owner)
+        if info is None:
+            return None
+        found = info.method(name)
+        if found is None:
+            # A method the class does not declare may still be inherited.
+            parent = info.superclass_text
+            seen = {owner}
+            while parent is not None and parent not in seen:
+                seen.add(parent)
+                parent_info = self._lookup(parent)
+                if parent_info is None:
+                    return None
+                found = parent_info.method(name)
+                if found is not None:
+                    return found.return_type
+                parent = parent_info.superclass_text
+            return None
+        return found.return_type
+
+    def _program_field_type(self, owner: str, name: str) -> uir.Type | None:
+        info = self._lookup(owner)
+        if info is None:
+            return None
+        found = info.fields.get(name)
+        return found.type if found is not None else None
+
     def _qualified_owner(self, text: str) -> str | None:
         """Resolve ``java.time.Instant`` to ``Instant``.
 
@@ -1450,6 +1525,8 @@ class JavaFrontend:
             return None
         if last in KNOWN_CLASS_TYPES or last in self._class_names:
             return last
+        if self._is_program_type(text) or self._is_program_type(last):
+            return last
         return None
 
     def _sam_name(self, t: uir.Type) -> str | None:
@@ -1460,6 +1537,12 @@ class JavaFrontend:
             return builtin
         if isinstance(t, ClassType) and t.name in self._interface_sams:
             return self._interface_sams[t.name][0]
+        if isinstance(t, ClassType):
+            info = self._lookup(t.name)
+            if info is not None:
+                sam = info.is_functional_interface()
+                if sam is not None:
+                    return sam[0]
         return None
 
     def _infer_lambda_param_types(
@@ -1479,6 +1562,12 @@ class JavaFrontend:
             return self._apply_param_types(
                 params, list(self._interface_sams[expected.name][2])
             )
+
+        info = self._lookup(expected.name)
+        if info is not None:
+            sam = info.is_functional_interface()
+            if sam is not None:
+                return self._apply_param_types(params, list(sam[1].param_types))
 
         if uir.sam_of(expected) is None or not expected.args:
             return params
@@ -1584,6 +1673,16 @@ class JavaFrontend:
 
         text = self._text(target_node)
         if target_node.type in ("type_identifier", "identifier") and scope.resolve(text) is None:
+            info = self._lookup(text)
+            if info is not None:
+                found = info.method(name)
+                return MethodRef(
+                    origin=origin,
+                    type=UnknownType("method-ref"),
+                    ref_kind="static" if (found and found.is_static) else "unbound",
+                    name=name,
+                    owner=text,
+                )
             if text not in self._class_names:
                 # The owner is declared elsewhere, so whether this is a static
                 # or an unbound reference is not knowable here.  Record it
@@ -1693,10 +1792,17 @@ class JavaFrontend:
     def _call(self, node: "Node", scope: _Scope) -> Expr:
         origin = self._origin(node)
         name = self._text(node.child_by_field_name("name"))
+        expected_params = self._method_param_types.get(name)
+        if expected_params is None and self.index is not None:
+            obj_node = node.child_by_field_name("object")
+            if obj_node is not None:
+                info = self._lookup(self._text(obj_node))
+                if info is not None:
+                    found = info.method(name)
+                    if found is not None:
+                        expected_params = found.param_types
         args = self._args(
-            node.child_by_field_name("arguments"),
-            scope,
-            self._method_param_types.get(name),
+            node.child_by_field_name("arguments"), scope, expected_params
         )
         obj = node.child_by_field_name("object")
 
@@ -1722,7 +1828,11 @@ class JavaFrontend:
             )
 
         if obj.type == "identifier" and scope.lookup(obj_text) is None:
-            if obj_text in KNOWN_CLASS_TYPES or obj_text in self._class_names:
+            if (
+                obj_text in KNOWN_CLASS_TYPES
+                or obj_text in self._class_names
+                or self._is_program_type(obj_text)
+            ):
                 return StaticCall(
                     origin=origin,
                     type=self._static_call_type(obj_text, name, args),
@@ -1788,7 +1898,20 @@ class JavaFrontend:
             ("Math", "PI"): uir.T_DOUBLE,
             ("Math", "E"): uir.T_DOUBLE,
         }
-        return table.get((owner, name), UnknownType(f"static-field:{owner}.{name}"))
+        resolved = self.__class__._static_table_lookup(table, owner, name)
+        if resolved is not None:
+            return resolved
+        program = self._program_field_type(owner, name)
+        if program is not None:
+            return program
+        info = self._lookup(owner)
+        if info is not None and name in info.enum_constants:
+            return ClassType(owner)
+        return UnknownType(f"static-field:{owner}.{name}")
+
+    @staticmethod
+    def _static_table_lookup(table, owner: str, name: str):
+        return table.get((owner, name))
 
     def _static_call_type(self, owner: str, name: str, args: tuple[Expr, ...]) -> uir.Type:
         if owner in _TIME_STATIC_RESULT:
@@ -1853,6 +1976,9 @@ class JavaFrontend:
             return uir.T_STRING
         if owner in self._class_names:
             return self._method_types.get(name, UnknownType(f"call:{owner}.{name}"))
+        resolved = self._program_method_return(owner, name)
+        if resolved is not None:
+            return resolved
         return UnknownType(f"static-call:{owner}.{name}")
 
     def _instance_call_type(self, target: uir.Type, name: str) -> uir.Type:
@@ -1860,6 +1986,12 @@ class JavaFrontend:
             sam_name, result, _params = self._interface_sams[target.name]
             if sam_name == name:
                 return result
+        if isinstance(target, ClassType):
+            info = self._lookup(target.name)
+            if info is not None:
+                sam = info.is_functional_interface()
+                if sam is not None and sam[0] == name:
+                    return sam[1].return_type
         sam = uir.sam_of(target)
         if sam == name and isinstance(target, ClassType):
             # `Function<A,B>.apply` yields B; without the type argument the
@@ -1878,7 +2010,28 @@ class JavaFrontend:
             if target.name == "Supplier" and target.args:
                 return target.args[0]
             return UnknownType(f"sam-result:{target.name}")
+        if isinstance(target, ClassType):
+            # Every enum constant inherits these from java.lang.Enum, so they
+            # are not in the declaration the scan recorded.
+            enum_members = {
+                "name": uir.T_STRING,
+                "toString": uir.T_STRING,
+                "ordinal": uir.T_INT,
+                "compareTo": uir.T_INT,
+            }
+            if name in enum_members and self._is_enum(target.name):
+                return enum_members[name]
+            resolved = self._program_method_return(target.name, name)
+            if resolved is not None:
+                return resolved
         return self._instance_call_type_declared(target, name)
+
+    def _is_enum(self, name: str) -> bool:
+        declared = self._type_kinds.get(name)
+        if declared is not None:
+            return declared == "enum"
+        info = self._lookup(name)
+        return info is not None and info.kind == "enum"
 
     def _instance_call_type_declared(self, target: uir.Type, name: str) -> uir.Type:
         if self._is_string(target):
@@ -2023,9 +2176,12 @@ class JavaFrontend:
         return "".join(out)
 
 
-def parse_java(source: bytes, filename: str = "<memory>") -> Module:
-    return JavaFrontend(source, filename).parse()
+def parse_java(source: bytes, filename: str = "<memory>", index=None) -> Module:
+    return JavaFrontend(source, filename, index).parse()
 
 
-def parse_java_file(path) -> Module:
-    return JavaFrontend.from_path(path).parse()
+def parse_java_file(path, index=None) -> Module:
+    import pathlib
+
+    p = pathlib.Path(path)
+    return JavaFrontend(p.read_bytes(), p.name, index).parse()

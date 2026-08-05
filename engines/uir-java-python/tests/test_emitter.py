@@ -434,9 +434,14 @@ class EmitRefusalTest(unittest.TestCase):
         )
 
     def test_multidimensional_array_is_refused(self):
-        self._refuses(
-            "static void f() { int[][] g = new int[2][2]; }", "one-dimensional"
-        )
+        # Refused by the *front end* now, not the emitter: `int[][]` used to
+        # lower to `int[]` (tree-sitter keeps both bracket pairs in one
+        # `dimensions` node), and a wrong type is worse than a refusal.
+        from j2p.frontend.java import UnsupportedConstruct
+
+        with self.assertRaises(UnsupportedConstruct) as ctx:
+            emit("static void f() { int[][] g = new int[2][2]; }")
+        self.assertIn("multi-dimensional", str(ctx.exception))
 
     def test_tostring_on_a_plain_class_is_refused(self):
         with self.assertRaises(EmitError) as ctx:
@@ -490,8 +495,9 @@ class EmitRefusalTest(unittest.TestCase):
 
     def test_refusal_carries_a_source_location(self):
         with self.assertRaises(EmitError) as ctx:
-            emit("static void f() { int[][] g = new int[2][2]; }")
+            emit("static Object f() { return T.class; }")
         self.assertEqual(ctx.exception.origin.file, "T.java")
+        self.assertGreater(ctx.exception.origin.line, 0)
 
 
 if __name__ == "__main__":  # pragma: no cover
