@@ -21,6 +21,7 @@ assert SPEC and SPEC.loader
 runtime = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(runtime)
 import domain_executors
+import domain_handlers
 
 
 class MigrationPlatformRuntimeTest(unittest.TestCase):
@@ -256,14 +257,37 @@ class MigrationPlatformRuntimeTest(unittest.TestCase):
                     self.record_claim(1, claim_type, index, corpus_role=corpus_role)
         return runtime.evaluate_gate(self.workspace, 1)
 
-    def domain_result_file(self, *, corpus_role: str = "development", independent: bool = False) -> Path:
-        obligation = runtime.OracleRegistry.load().resolve(1, "output", 0)
-        raw_file = self.root / f"native-tool-{corpus_role}.log"
-        raw_file.write_text("native tool executed against the exact fixture\n", encoding="utf-8")
-        raw_bytes = raw_file.read_bytes()
+    def domain_result_file(self, *, batch: int = 1, corpus_role: str = "development", independent: bool = False) -> Path:
+        obligation = runtime.OracleRegistry.load().resolve(batch, "output", 0)
+        policy = domain_handlers.POLICIES[batch]
+        tools = []
+        raw_evidence = []
+        for capability in policy.capabilities:
+            role = domain_handlers.evidence_role(policy, capability)
+            raw_file = self.root / f"native-tool-{batch}-{capability}-{corpus_role}.log"
+            raw_file.write_text(f"{policy.handler} executed {capability} against the exact fixture\n", encoding="utf-8")
+            raw_bytes = raw_file.read_bytes()
+            tools.append({
+                "name": f"{policy.handler}-native-{capability}", "version": "1.0.0",
+                "argv_sha256": runtime.sha256_bytes(f"{policy.operation}:{capability}".encode()),
+                "exit_code": 0, "evidence_role": role,
+            })
+            raw_evidence.append({"path": str(raw_file), "sha256": runtime.sha256_bytes(raw_bytes), "bytes": len(raw_bytes), "role": role})
+        assertions = [{
+            "name": f"{obligation.oracle_id}:operation:{policy.operation}", "outcome": "PASS",
+            "detail": f"{policy.operation} completed",
+        }]
+        assertions.extend({
+            "name": f"{obligation.oracle_id}:capability:{capability}", "outcome": "PASS",
+            "detail": f"{capability} produced byte-bound native evidence",
+        } for capability in policy.capabilities)
+        assertions.extend({
+            "name": f"{obligation.oracle_id}:safety:{control}", "outcome": "PASS",
+            "detail": f"{control} remained enforced",
+        } for control in policy.safety_controls)
         payload = {
             "schema_version": "1.0",
-            "batch": 1,
+            "batch": batch,
             "executor_id": obligation.executor_id,
             "claim": {"type": "output", "index": 0, "sha256": obligation.claim_sha256},
             "corpus": {
@@ -278,28 +302,14 @@ class MigrationPlatformRuntimeTest(unittest.TestCase):
                 "kind": "holdout" if corpus_role == "holdout" else "clean",
                 "digest": runtime.sha256_bytes(f"environment-{corpus_role}".encode()),
             },
-            "toolchain": [{
-                "name": "fixture-native-inspector",
-                "version": "1.0.0",
-                "argv_sha256": runtime.sha256_bytes(b"package-owned-fixture-command"),
-                "exit_code": 0,
-                "evidence_role": "native-execution-log",
-            }],
-            "assertions": [{
-                "name": "repository-snapshot-is-complete",
-                "outcome": "PASS",
-                "detail": "the native execution log is byte-bound to this result",
-            }],
-            "raw_evidence": [{
-                "path": str(raw_file),
-                "sha256": runtime.sha256_bytes(raw_bytes),
-                "bytes": len(raw_bytes),
-                "role": "native-execution-log",
-            }],
+            "domain_contract": domain_handlers.contract_for_batch(batch),
+            "toolchain": tools,
+            "assertions": assertions,
+            "raw_evidence": raw_evidence,
             "decision": "PASS",
             "limitations": [],
         }
-        result_file = self.root / f"domain-result-{corpus_role}.json"
+        result_file = self.root / f"domain-result-{batch}-{corpus_role}.json"
         result_file.write_text(json.dumps(payload), encoding="utf-8")
         return result_file
 
@@ -326,6 +336,34 @@ class MigrationPlatformRuntimeTest(unittest.TestCase):
         registry = domain_executors.ExecutorRegistry.load()
         self.assertEqual(list(range(1, 39)), sorted(registry.by_batch))
         self.assertEqual(38, len({entry["handler"] for entry in registry.by_batch.values()}))
+        self.assertEqual(set(entry["handler"] for entry in registry.by_batch.values()), set(domain_handlers.HANDLERS))
+        self.assertEqual(38, len({id(handler) for handler in domain_handlers.HANDLERS.values()}))
+
+    def test_all_38_domain_handlers_execute_their_exact_contract(self) -> None:
+        self.prepare(1)
+        for batch in range(1, 39):
+            with self.subTest(batch=batch):
+                subject = domain_executors.execute(self.domain_result_file(batch=batch), (self.root.resolve(),))
+                self.assertEqual(batch, subject["batch"])
+                self.assertIn(f"domain-handler:{domain_handlers.POLICIES[batch].handler}", {item["name"] for item in subject["checks"]})
+
+    def test_domain_handler_rejects_cross_batch_contract_substitution(self) -> None:
+        self.prepare(1)
+        result_file = self.domain_result_file(batch=1)
+        payload = json.loads(result_file.read_text(encoding="utf-8"))
+        payload["domain_contract"] = domain_handlers.contract_for_batch(2)
+        result_file.write_text(json.dumps(payload), encoding="utf-8")
+        with self.assertRaisesRegex(domain_executors.DomainExecutionError, "does not match handler"):
+            domain_executors.execute(result_file, (self.root.resolve(),))
+
+    def test_domain_handler_rejects_generic_success_tool(self) -> None:
+        self.prepare(1)
+        result_file = self.domain_result_file(batch=1)
+        payload = json.loads(result_file.read_text(encoding="utf-8"))
+        payload["toolchain"][0]["name"] = "/usr/bin/true"
+        result_file.write_text(json.dumps(payload), encoding="utf-8")
+        with self.assertRaisesRegex(domain_executors.DomainExecutionError, "generic/no-op"):
+            domain_executors.execute(result_file, (self.root.resolve(),))
 
     def test_domain_executor_requires_real_bytes_and_independent_holdout(self) -> None:
         self.prepare(1)
@@ -598,6 +636,7 @@ class MigrationPlatformRuntimeTest(unittest.TestCase):
         self.assertTrue((installed / "actor_trust.py").is_file())
         self.assertTrue((installed / "oracle_registry.py").is_file())
         self.assertTrue((installed / "domain_executors.py").is_file())
+        self.assertTrue((installed / "domain_handlers.py").is_file())
         self.assertTrue((installed / "oracle-registry.json").is_file())
         self.assertTrue((installed / "domain-executor-registry.json").is_file())
         self.assertTrue((installed / "trust-policy.json").is_file())

@@ -256,7 +256,8 @@ def validate_runtime(errors: list[str]) -> None:
         ROOT / "scripts" / "sync_skill_interfaces.py", ROOT / "scripts" / "validate_package.py",
         ROOT / "scripts" / "actor_trust.py", ROOT / "scripts" / "oracle_registry.py",
         ROOT / "scripts" / "build_oracle_registry.py",
-        ROOT / "scripts" / "domain_executors.py", ROOT / "scripts" / "build_domain_executor_registry.py",
+        ROOT / "scripts" / "domain_executors.py", ROOT / "scripts" / "domain_handlers.py",
+        ROOT / "scripts" / "build_domain_executor_registry.py",
     ]
     for script in scripts:
         if not script.is_file():

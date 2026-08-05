@@ -19,6 +19,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from domain_handlers import DomainHandlerError, execute_handler
 from oracle_registry import OracleRegistry
 
 
@@ -135,7 +136,7 @@ def execute(result_file: Path, roots: tuple[Path, ...]) -> dict[str, Any]:
     payload = json.loads(read_regular(result_file.resolve(strict=True), MAX_RESULT_BYTES, "domain result").decode("utf-8"))
     required = {
         "schema_version", "batch", "executor_id", "claim", "corpus", "source_fingerprint",
-        "environment", "toolchain", "assertions", "raw_evidence", "decision", "limitations",
+        "environment", "domain_contract", "toolchain", "assertions", "raw_evidence", "decision", "limitations",
     }
     if not isinstance(payload, dict) or set(payload) != required or payload.get("schema_version") != "1.0":
         raise DomainExecutionError("domain result fields are invalid")
@@ -182,6 +183,10 @@ def execute(result_file: Path, roots: tuple[Path, ...]) -> dict[str, Any]:
             raise DomainExecutionError(f"toolchain[{index}] is invalid")
         if not isinstance(tool.get("name"), str) or not tool["name"] or not isinstance(tool.get("version"), str) or not tool["version"]:
             raise DomainExecutionError(f"toolchain[{index}] identity/version is required")
+        if Path(tool["name"]).name.lower() in {"true", "false", "echo", "printf", "noop"}:
+            raise DomainExecutionError(f"toolchain[{index}] is a generic/no-op command, not a domain executor")
+        if not isinstance(tool.get("exit_code"), int) or isinstance(tool.get("exit_code"), bool):
+            raise DomainExecutionError(f"toolchain[{index}].exit_code must be an integer")
         require_digest(tool.get("argv_sha256"), f"toolchain[{index}].argv_sha256")
         if not isinstance(tool.get("evidence_role"), str) or not tool["evidence_role"]:
             raise DomainExecutionError(f"toolchain[{index}].evidence_role is required")
@@ -217,6 +222,14 @@ def execute(result_file: Path, roots: tuple[Path, ...]) -> dict[str, Any]:
         "name": f"raw-evidence:{item['role']}", "outcome": "PASS",
         "detail": f"{item['sha256']} bytes={item['bytes']}",
     } for item in verified_raw]
+    try:
+        domain_checks = execute_handler(
+            batch, executor["handler"], payload.get("domain_contract"), obligation.oracle_id,
+            toolchain, assertions, observed_roles, decision,
+        )
+    except DomainHandlerError as exc:
+        raise DomainExecutionError(str(exc)) from exc
+    all_checks.extend(domain_checks)
     if decision == "PASS" and any(check["outcome"] != "PASS" for check in all_checks):
         raise DomainExecutionError("domain result PASS contains failed, unknown or not-run checks")
     limitations = payload.get("limitations")

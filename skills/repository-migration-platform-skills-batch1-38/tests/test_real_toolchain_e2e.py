@@ -34,7 +34,11 @@ class RealToolchainE2ETest(unittest.TestCase):
             report.write_text(json.dumps({"decision": "PASS"}), encoding="utf-8")
             obligation = e2e.claim(7, "output", 0)
             result = output / "domain-result.json"
-            tools = [e2e.tool("pg_dump", "pg_dump 16.9", ["pg_dump", "-Fc", "rmp"])]
+            tools = [
+                e2e.tool("pg_dump", "pg_dump 16.9", ["pg_dump", "-Fc", "rmp"]),
+                e2e.tool("pg_restore", "pg_restore 17.5", ["pg_restore", "rmp"]),
+                e2e.tool("psql", "psql 17.5", ["psql", "rollback-check"]),
+            ]
             e2e.emit_domain_result(
                 result, report, obligation, tools,
                 "detail reconciliation and rollback passed",

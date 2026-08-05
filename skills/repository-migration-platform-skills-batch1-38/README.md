@@ -20,6 +20,7 @@ Source冻结与语义恢复
 - Batch 13–20的详细架构源文档已收录到`source-specs/`；其余Batch以统一工程模板展开为可执行Skill。
 - 共享运行时实现38个Batch Profile、Source指纹、真实仓库发现、90条路径清单、argv-only执行计划、内容寻址Typed Evidence、独立Verifier、依赖Gate和副作用账本。
 - 347个输出、测试和外部Claim全部绑定不可变专属Oracle；38个Batch分别绑定唯一Domain Executor handler，原始工具链证据必须通过字节数和SHA-256校验。
+- 38个handler均为可调用、互异的Batch领域策略；每个策略固定operation、capabilities和safety controls，并由全覆盖测试执行。跨Batch合同替换、能力证据缺失和安全断言缺失都会fail closed。
 - Executor、Oracle Owner、Verifier使用Ed25519认证并强制角色冲突隔离；development、negative、holdout与production Corpus按Claim分别闭合，Holdout/Production使用独立角色。
 - 权威状态使用SQLite WAL、`BEGIN IMMEDIATE`、外键、唯一约束、整数Fencing Token和哈希链事件；JSON文件只是可重建镜像。
 - 本地Gate最多返回`LOCAL_TOOLKIT_PASS`。随包Trust Policy不含信任密钥并禁用`CERTIFIED`；真实客户、生产、Provider、Kernel Proof、独立评审与CA证据保持`NOT_RUN`。
@@ -97,7 +98,10 @@ python3 "$RMP_RUNTIME" execute-plan \
   --plan /absolute/path/to/evidence-workspace/batches/batch-01/execution-plan.json
 ```
 
-真实领域工具链先生成`domain-execution-result`，由包内38个allowlisted handler之一验证Claim、环境、Corpus、工具版本、断言和原始证据字节，并转换成专属Claim-Oracle主体：
+真实领域工具链先生成`domain-execution-result`。包内dispatcher调用注册的唯一handler，要求其
+`domain_contract`与该Batch的operation、capabilities和safety controls完全一致；每项能力都必须
+同时绑定成功工具记录、原始证据字节角色和Claim专属Oracle断言。随后才会验证Claim、环境、
+Corpus和工具版本并转换成专属Claim-Oracle主体。仓库内容不能选择命令或handler：
 
 ```bash
 python3 "$HOME/.codex/skills/.repository-migration-platform-runtime/domain_executors.py" \

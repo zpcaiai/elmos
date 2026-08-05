@@ -27,6 +27,7 @@ from pathlib import Path
 from typing import Any
 
 from domain_executors import execute as validate_domain_result
+from domain_handlers import POLICIES, contract_for_batch, evidence_role
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -340,15 +341,41 @@ def emit_domain_result(
     assertion_detail: str, environment_digest: str,
 ) -> None:
     raw = report.read_bytes()
+    policy = POLICIES[obligation["batch"]]
+    if len(tools) != len(policy.capabilities):
+        raise E2EFailure(
+            f"Batch {policy.batch} requires one exact tool evidence role per capability: {policy.capabilities}"
+        )
+    bound_tools = []
+    raw_evidence = []
+    for capability, item in zip(policy.capabilities, tools, strict=True):
+        role = evidence_role(policy, capability)
+        bound_tools.append({**item, "evidence_role": role})
+        raw_evidence.append({
+            "path": str(report.resolve()), "sha256": digest_bytes(raw), "bytes": len(raw), "role": role,
+        })
+    assertions = [{
+        "name": f"{obligation['oracle_id']}:operation:{policy.operation}", "outcome": "PASS",
+        "detail": assertion_detail,
+    }]
+    assertions.extend({
+        "name": f"{obligation['oracle_id']}:capability:{capability}", "outcome": "PASS",
+        "detail": assertion_detail,
+    } for capability in policy.capabilities)
+    assertions.extend({
+        "name": f"{obligation['oracle_id']}:safety:{control}", "outcome": "PASS",
+        "detail": f"{control} was enforced by the disposable package-owned E2E adapter",
+    } for control in policy.safety_controls)
     result = {
         "schema_version": "1.0", "batch": obligation["batch"], "executor_id": obligation["executor_id"],
         "claim": {"type": obligation["claim_type"], "index": obligation["claim_index"], "sha256": obligation["claim_sha256"]},
         "corpus": {"role": "development", "id": "real-toolchain-development-v1", "sha256": fixture_digest(), "independent": False},
         "source_fingerprint": fixture_digest(),
         "environment": {"id": output.parent.name, "kind": "clean", "digest": environment_digest},
-        "toolchain": tools,
-        "assertions": [{"name": f"{obligation['oracle_id']}:real-toolchain-contract", "outcome": "PASS", "detail": assertion_detail}],
-        "raw_evidence": [{"path": str(report.resolve()), "sha256": digest_bytes(raw), "bytes": len(raw), "role": "real-toolchain-e2e-report"}],
+        "domain_contract": contract_for_batch(policy.batch),
+        "toolchain": bound_tools,
+        "assertions": assertions,
+        "raw_evidence": raw_evidence,
         "decision": "PASS",
         "limitations": ["development corpus only", "independent Holdout and production execution remain NOT_RUN"],
     }
