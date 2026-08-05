@@ -1,0 +1,4 @@
+interface:
+  display_name: "Retention and Deletion Compliance"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2918-retention-and-deletion-compliance to run FRT-2918 through the governed FRT runtime with exact scope and fail-closed evidence."

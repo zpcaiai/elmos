@@ -1,0 +1,4 @@
+interface:
+  display_name: "Proof Carrying Pack"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-1914-proof-carrying-pack to run FRT-1914 through the governed FRT runtime with exact scope and fail-closed evidence."

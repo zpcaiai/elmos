@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0312",
+  "skill_name": "frt-0312-semantic-ir-validator",
+  "batch": "G03",
+  "surface": "admin_console",
+  "logical_path": "apps/admin-console/src/features/g03/frt-0312-semantic-ir-validator/",
+  "status": "shared_implementation",
+  "handler_kind": "semantic_ir",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:95098e1581de8c80c2f040638467c9141a2161e32871ddee7fd45af1cab07a0d",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

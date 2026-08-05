@@ -1,0 +1,4 @@
+interface:
+  display_name: "Vue 3 to React Route Pack"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-1305-vue-3-to-react-route-pack to run FRT-1305 through the governed FRT runtime with exact scope and fail-closed evidence."

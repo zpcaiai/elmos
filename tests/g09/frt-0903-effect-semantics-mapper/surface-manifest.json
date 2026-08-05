@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0903",
+  "skill_name": "frt-0903-effect-semantics-mapper",
+  "batch": "G09",
+  "surface": "tests",
+  "logical_path": "tests/g09/frt-0903-effect-semantics-mapper/",
+  "status": "shared_implementation",
+  "handler_kind": "delivery_pipeline",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:44d1ad7bcfedb59fcac6f877b77c37c73b3895d882cc4c0a49c4756c9450267f",
+  "implementation_paths": [
+    "engines/frontend-client-engine/test/frt-runtime.test.ts",
+    "engines/frontend-client-engine/test/server.test.ts",
+    "apps/web-console/e2e/frt-frontend-transformation.spec.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

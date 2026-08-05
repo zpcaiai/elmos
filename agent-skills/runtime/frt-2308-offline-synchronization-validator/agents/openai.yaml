@@ -1,0 +1,4 @@
+interface:
+  display_name: "Offline Synchronization Validator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2308-offline-synchronization-validator to run FRT-2308 through the governed FRT runtime with exact scope and fail-closed evidence."

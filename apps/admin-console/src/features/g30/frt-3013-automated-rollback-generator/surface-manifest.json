@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-3013",
+  "skill_name": "frt-3013-automated-rollback-generator",
+  "batch": "G30",
+  "surface": "admin_console",
+  "logical_path": "apps/admin-console/src/features/g30/frt-3013-automated-rollback-generator/",
+  "status": "shared_implementation",
+  "handler_kind": "production_readiness",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:31d606e2110464140d8d1002bc1e7fe84d7d31a5fbb9c93cdf29d42f62e1f08d",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

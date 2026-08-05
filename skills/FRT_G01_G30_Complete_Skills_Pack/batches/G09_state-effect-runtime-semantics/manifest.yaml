@@ -1,0 +1,96 @@
+{
+  "apiVersion": "frt.openai.dev/v1alpha1",
+  "kind": "GenerationBatchManifest",
+  "metadata": {
+    "id": "G09",
+    "slug": "state-effect-runtime-semantics",
+    "version": "1.0.0",
+    "generatedAt": "2026-07-31"
+  },
+  "spec": {
+    "title": "State、Effect、Lifecycle、Concurrency、Cancellation与Resource语义",
+    "transitionFrom": "源框架运行时语义",
+    "transitionTo": "目标系统保持状态Authority、Effect顺序、取消、资源释放和恢复语义",
+    "certificateFamily": "RS",
+    "skills": [
+      {
+        "id": "FRT-0900",
+        "name": "Runtime Semantics Orchestrator",
+        "path": "skills/frt-0900-runtime-semantics-orchestrator/SKILL.md"
+      },
+      {
+        "id": "FRT-0901",
+        "name": "State Ownership Mapper",
+        "path": "skills/frt-0901-state-ownership-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-0902",
+        "name": "Derived State and Memoization Mapper",
+        "path": "skills/frt-0902-derived-state-and-memoization-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-0903",
+        "name": "Effect Semantics Mapper",
+        "path": "skills/frt-0903-effect-semantics-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-0904",
+        "name": "Lifecycle Ordering Validator",
+        "path": "skills/frt-0904-lifecycle-ordering-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-0905",
+        "name": "Async and Concurrency Mapper",
+        "path": "skills/frt-0905-async-and-concurrency-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-0906",
+        "name": "Cancellation Propagation Mapper",
+        "path": "skills/frt-0906-cancellation-propagation-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-0907",
+        "name": "Resource Ownership and Cleanup Mapper",
+        "path": "skills/frt-0907-resource-ownership-and-cleanup-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-0908",
+        "name": "Retry Backoff and Idempotency Mapper",
+        "path": "skills/frt-0908-retry-backoff-and-idempotency-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-0909",
+        "name": "Persistence and Hydration Mapper",
+        "path": "skills/frt-0909-persistence-and-hydration-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-0910",
+        "name": "Offline Resume and Checkpoint Mapper",
+        "path": "skills/frt-0910-offline-resume-and-checkpoint-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-0911",
+        "name": "Runtime Race Detector",
+        "path": "skills/frt-0911-runtime-race-detector/SKILL.md"
+      },
+      {
+        "id": "FRT-0912",
+        "name": "Runtime Semantics Test Generator",
+        "path": "skills/frt-0912-runtime-semantics-test-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-0913",
+        "name": "Runtime Semantics Certification",
+        "path": "skills/frt-0913-runtime-semantics-certification/SKILL.md"
+      }
+    ],
+    "gates": [
+      "State Authority明确",
+      "Effect无重复或遗漏Critical副作用",
+      "取消后不得启动新副作用",
+      "Timer/Subscription/Controller全部释放",
+      "Hydration和Offline冲突有策略",
+      "Critical Race=0"
+    ]
+  }
+}

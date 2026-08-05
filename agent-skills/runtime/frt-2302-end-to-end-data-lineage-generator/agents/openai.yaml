@@ -1,0 +1,4 @@
+interface:
+  display_name: "End-to-End Data Lineage Generator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2302-end-to-end-data-lineage-generator to run FRT-2302 through the governed FRT runtime with exact scope and fail-closed evidence."

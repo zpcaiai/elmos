@@ -1,0 +1,4 @@
+interface:
+  display_name: "Attack Surface Inventory"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2902-attack-surface-inventory to run FRT-2902 through the governed FRT runtime with exact scope and fail-closed evidence."

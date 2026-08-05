@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-3023",
+  "skill_name": "frt-3023-production-incident-learning-pack",
+  "batch": "G30",
+  "surface": "contract",
+  "logical_path": "packages/contracts/g30/frt-3023-production-incident-learning-pack/",
+  "status": "shared_implementation",
+  "handler_kind": "production_readiness",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:a493b278872c5adccacf1529fec70c801d7b0ee76879778e2f2ed2a77711956e",
+  "implementation_paths": [
+    "schemas/frt-g01-g30/skill-run-request.schema.json",
+    "schemas/frt-g01-g30/skill-run-result.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "SLI and SLO Generator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-3003-sli-and-slo-generator to run FRT-3003 through the governed FRT runtime with exact scope and fail-closed evidence."

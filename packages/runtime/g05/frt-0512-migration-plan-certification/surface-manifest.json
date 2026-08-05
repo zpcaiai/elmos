@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0512",
+  "skill_name": "frt-0512-migration-plan-certification",
+  "batch": "G05",
+  "surface": "runtime",
+  "logical_path": "packages/runtime/g05/frt-0512-migration-plan-certification/",
+  "status": "shared_implementation",
+  "handler_kind": "migration_planning",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:392563fe89413a348692c413917c600414ff1834bbe55e5f40591e05b826f643",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/frt-runtime.ts",
+    "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Vue 2 Architecture Synthesizer"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-0601-vue-2-architecture-synthesizer to run FRT-0601 through the governed FRT runtime with exact scope and fail-closed evidence."

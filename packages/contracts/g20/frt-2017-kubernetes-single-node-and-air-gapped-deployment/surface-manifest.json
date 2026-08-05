@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2017",
+  "skill_name": "frt-2017-kubernetes-single-node-and-air-gapped-deployment",
+  "batch": "G20",
+  "surface": "contract",
+  "logical_path": "packages/contracts/g20/frt-2017-kubernetes-single-node-and-air-gapped-deployment/",
+  "status": "shared_implementation",
+  "handler_kind": "runtime_operations",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:227ffd7ab444416cccabb9b95303eddb37b620cf403326eca4b54011b4b769a1",
+  "implementation_paths": [
+    "schemas/frt-g01-g30/skill-run-request.schema.json",
+    "schemas/frt-g01-g30/skill-run-result.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

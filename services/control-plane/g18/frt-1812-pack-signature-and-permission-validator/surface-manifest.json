@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1812",
+  "skill_name": "frt-1812-pack-signature-and-permission-validator",
+  "batch": "G18",
+  "surface": "control_plane",
+  "logical_path": "services/control-plane/g18/frt-1812-pack-signature-and-permission-validator/",
+  "status": "shared_implementation",
+  "handler_kind": "compatibility",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:db8c6f9f585b78bbec68bdf3476885933b6c65d467b1da27c0d46ce71e7a8116",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/server.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

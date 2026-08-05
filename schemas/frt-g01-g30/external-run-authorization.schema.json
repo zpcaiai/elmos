@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.io/frt-g01-g30/external-run-authorization.v1.schema.json",
+  "title": "FRT external run authorization",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "authorization_id", "pack_key", "check_id", "purpose", "environment", "evidence_root", "runner_capability", "run_parameters", "valid_from", "expires_at", "approver", "signature"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "authorization_id": { "type": "string", "minLength": 1 },
+    "pack_key": { "const": "frt-g01-g30-platform" },
+    "check_id": { "$ref": "#/$defs/checkId" },
+    "purpose": { "type": "string", "minLength": 1 },
+    "environment": { "type": "string", "minLength": 1 },
+    "evidence_root": { "type": "string", "minLength": 1 },
+    "runner_capability": { "type": "string", "minLength": 1 },
+    "run_parameters": { "type": "object", "minProperties": 1 },
+    "valid_from": { "type": "string", "format": "date-time" },
+    "expires_at": { "type": "string", "format": "date-time" },
+    "approver": { "$ref": "#/$defs/actor" },
+    "signature": { "$ref": "#/$defs/signature" }
+  },
+  "$defs": {
+    "checkId": {
+      "enum": ["real_source_target_builds", "device_matrix", "independent_holdout", "formal_proof", "performance", "chaos_dr", "penetration_test", "production_observation", "customer_acceptance"]
+    },
+    "actor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["principal_id", "organization_id"],
+      "properties": {
+        "principal_id": { "type": "string", "minLength": 1 },
+        "organization_id": { "type": "string", "minLength": 1 }
+      }
+    },
+    "signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "key_id", "role", "signed_at", "payload_sha256", "signature_base64"],
+      "properties": {
+        "algorithm": { "const": "ed25519" },
+        "key_id": { "type": "string", "minLength": 1 },
+        "role": { "enum": ["EXECUTOR", "VERIFIER", "APPROVER"] },
+        "signed_at": { "type": "string", "format": "date-time" },
+        "payload_sha256": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+        "signature_base64": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

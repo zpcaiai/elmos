@@ -1,0 +1,4 @@
+interface:
+  display_name: "Approval Policy RBAC and Audit"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2015-approval-policy-rbac-and-audit to run FRT-2015 through the governed FRT runtime with exact scope and fail-closed evidence."

@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2108",
+  "skill_name": "frt-2108-orphan-feature-and-dead-flow-detector",
+  "batch": "G21",
+  "surface": "contract",
+  "logical_path": "packages/contracts/g21/frt-2108-orphan-feature-and-dead-flow-detector/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:de7b4c30d3c0869da7d7c19fe309625184cf9186490a7e098131ed3f525449fc",
+  "implementation_paths": [
+    "schemas/frt-g01-g30/skill-run-request.schema.json",
+    "schemas/frt-g01-g30/skill-run-result.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

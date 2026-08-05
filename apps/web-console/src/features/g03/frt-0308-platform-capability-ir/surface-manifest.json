@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0308",
+  "skill_name": "frt-0308-platform-capability-ir",
+  "batch": "G03",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g03/frt-0308-platform-capability-ir/",
+  "status": "shared_implementation",
+  "handler_kind": "semantic_ir",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:d5b0c464e69bfb6a98ef96a89966b55d796d1b9b06937d4be9441ac1304253b0",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

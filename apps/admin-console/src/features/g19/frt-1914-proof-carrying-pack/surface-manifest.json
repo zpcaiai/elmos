@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1914",
+  "skill_name": "frt-1914-proof-carrying-pack",
+  "batch": "G19",
+  "surface": "admin_console",
+  "logical_path": "apps/admin-console/src/features/g19/frt-1914-proof-carrying-pack/",
+  "status": "shared_implementation",
+  "handler_kind": "advanced_verification",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:ead07b06f5023226a6e58dc8d24890950d5bdba47c36847ed265ef44f4acaf7f",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

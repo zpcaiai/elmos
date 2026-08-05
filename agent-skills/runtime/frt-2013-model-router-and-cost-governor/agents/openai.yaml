@@ -1,0 +1,4 @@
+interface:
+  display_name: "Model Router and Cost Governor"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2013-model-router-and-cost-governor to run FRT-2013 through the governed FRT runtime with exact scope and fail-closed evidence."

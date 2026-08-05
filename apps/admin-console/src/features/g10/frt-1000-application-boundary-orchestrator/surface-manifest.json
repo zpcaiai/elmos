@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1000",
+  "skill_name": "frt-1000-application-boundary-orchestrator",
+  "batch": "G10",
+  "surface": "admin_console",
+  "logical_path": "apps/admin-console/src/features/g10/frt-1000-application-boundary-orchestrator/",
+  "status": "shared_implementation",
+  "handler_kind": "design_system",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:12e88c054ab2e64e774e02f2391c88ea219f5917516362a9f2595208e31a1b22",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

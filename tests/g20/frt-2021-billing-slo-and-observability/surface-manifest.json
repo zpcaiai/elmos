@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2021",
+  "skill_name": "frt-2021-billing-slo-and-observability",
+  "batch": "G20",
+  "surface": "tests",
+  "logical_path": "tests/g20/frt-2021-billing-slo-and-observability/",
+  "status": "shared_implementation",
+  "handler_kind": "runtime_operations",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:bd50ca9a681313728580d824185ddab04e5585780a3ca42e7140a4d61918d939",
+  "implementation_paths": [
+    "engines/frontend-client-engine/test/frt-runtime.test.ts",
+    "engines/frontend-client-engine/test/server.test.ts",
+    "apps/web-console/e2e/frt-frontend-transformation.spec.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

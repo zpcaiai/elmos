@@ -1,0 +1,4 @@
+interface:
+  display_name: "Canary and Progressive Delivery"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-3011-canary-and-progressive-delivery to run FRT-3011 through the governed FRT runtime with exact scope and fail-closed evidence."

@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2814",
+  "skill_name": "frt-2814-disaster-recovery-drill-generator",
+  "batch": "G28",
+  "surface": "control_plane",
+  "logical_path": "services/control-plane/g28/frt-2814-disaster-recovery-drill-generator/",
+  "status": "shared_implementation",
+  "handler_kind": "resilience_dr",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:ee0d5b67aadab77130e9fb990d343f9d3b324ad304cf1d74a99aa2a6f2567d4c",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/server.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

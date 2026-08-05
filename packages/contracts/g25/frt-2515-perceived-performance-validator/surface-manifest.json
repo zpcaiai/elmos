@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2515",
+  "skill_name": "frt-2515-perceived-performance-validator",
+  "batch": "G25",
+  "surface": "contract",
+  "logical_path": "packages/contracts/g25/frt-2515-perceived-performance-validator/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:93bc7e6ff51dc97aa60316c9894ad5c1e638e61a638ae37c233f0e424501e3c4",
+  "implementation_paths": [
+    "schemas/frt-g01-g30/skill-run-request.schema.json",
+    "schemas/frt-g01-g30/skill-run-result.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

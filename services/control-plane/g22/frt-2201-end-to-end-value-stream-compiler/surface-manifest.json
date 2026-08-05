@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2201",
+  "skill_name": "frt-2201-end-to-end-value-stream-compiler",
+  "batch": "G22",
+  "surface": "control_plane",
+  "logical_path": "services/control-plane/g22/frt-2201-end-to-end-value-stream-compiler/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:35be3ecb83bf1ecdff8dbcf51165858fe06f504227313b6080961fa5226281fb",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/server.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2510",
+  "skill_name": "frt-2510-ime-and-international-input-validator",
+  "batch": "G25",
+  "surface": "tests",
+  "logical_path": "tests/g25/frt-2510-ime-and-international-input-validator/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:50db834f8c2dfb405917ded6fcf34db28b5d4828af94e623e07f498dd8788d21",
+  "implementation_paths": [
+    "engines/frontend-client-engine/test/frt-runtime.test.ts",
+    "engines/frontend-client-engine/test/server.test.ts",
+    "apps/web-console/e2e/frt-frontend-transformation.spec.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

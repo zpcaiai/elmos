@@ -1,0 +1,4 @@
+interface:
+  display_name: "Compensation and Reconciliation Generator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2204-compensation-and-reconciliation-generator to run FRT-2204 through the governed FRT runtime with exact scope and fail-closed evidence."

@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2013",
+  "skill_name": "frt-2013-model-router-and-cost-governor",
+  "batch": "G20",
+  "surface": "tests",
+  "logical_path": "tests/g20/frt-2013-model-router-and-cost-governor/",
+  "status": "shared_implementation",
+  "handler_kind": "runtime_operations",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:0126f91ce44e908f32eaec4b2680726e9d1d699a13e28b2c927c117b9429a14d",
+  "implementation_paths": [
+    "engines/frontend-client-engine/test/frt-runtime.test.ts",
+    "engines/frontend-client-engine/test/server.test.ts",
+    "apps/web-console/e2e/frt-frontend-transformation.spec.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

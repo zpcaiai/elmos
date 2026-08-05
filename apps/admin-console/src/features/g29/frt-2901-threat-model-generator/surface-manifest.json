@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2901",
+  "skill_name": "frt-2901-threat-model-generator",
+  "batch": "G29",
+  "surface": "admin_console",
+  "logical_path": "apps/admin-console/src/features/g29/frt-2901-threat-model-generator/",
+  "status": "shared_implementation",
+  "handler_kind": "security_privacy",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:c21104197c82839a5fc9a589c2b02a6cc75abd4f8fad2a13f64fc615a71937f2",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

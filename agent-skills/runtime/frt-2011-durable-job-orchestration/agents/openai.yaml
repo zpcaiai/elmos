@@ -1,0 +1,4 @@
+interface:
+  display_name: "Durable Job Orchestration"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2011-durable-job-orchestration to run FRT-2011 through the governed FRT runtime with exact scope and fail-closed evidence."

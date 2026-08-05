@@ -1,0 +1,4 @@
+interface:
+  display_name: "Web Mini Program Route Certification"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-1411-web-mini-program-route-certification to run FRT-1411 through the governed FRT runtime with exact scope and fail-closed evidence."

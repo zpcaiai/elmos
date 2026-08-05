@@ -1,0 +1,10 @@
+production_gate:
+  required_batches: G01-G30
+  required_production_level: PR5
+  absolute_blockers:
+    - stale_critical_certificate
+    - cross_tenant_leak
+    - fake_success
+    - unresolved_r5_finding
+    - missing_rollback
+    - failed_post_release_verification

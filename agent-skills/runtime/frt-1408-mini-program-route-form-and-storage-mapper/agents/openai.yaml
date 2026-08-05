@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mini Program Route Form and Storage Mapper"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-1408-mini-program-route-form-and-storage-mapper to run FRT-1408 through the governed FRT runtime with exact scope and fail-closed evidence."

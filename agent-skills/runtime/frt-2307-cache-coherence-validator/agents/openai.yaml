@@ -1,0 +1,4 @@
+interface:
+  display_name: "Cache Coherence Validator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2307-cache-coherence-validator to run FRT-2307 through the governed FRT runtime with exact scope and fail-closed evidence."

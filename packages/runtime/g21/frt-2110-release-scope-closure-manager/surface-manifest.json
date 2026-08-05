@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2110",
+  "skill_name": "frt-2110-release-scope-closure-manager",
+  "batch": "G21",
+  "surface": "runtime",
+  "logical_path": "packages/runtime/g21/frt-2110-release-scope-closure-manager/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:64277794b3900bfa46f23018604ae726b9b6fe264d06c61da7bcb79e85893cea",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/frt-runtime.ts",
+    "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

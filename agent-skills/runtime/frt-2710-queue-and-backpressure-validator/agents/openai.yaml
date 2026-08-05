@@ -1,0 +1,4 @@
+interface:
+  display_name: "Queue and Backpressure Validator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2710-queue-and-backpressure-validator to run FRT-2710 through the governed FRT runtime with exact scope and fail-closed evidence."

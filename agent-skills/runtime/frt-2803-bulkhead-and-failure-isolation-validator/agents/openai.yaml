@@ -1,0 +1,4 @@
+interface:
+  display_name: "Bulkhead and Failure Isolation Validator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2803-bulkhead-and-failure-isolation-validator to run FRT-2803 through the governed FRT runtime with exact scope and fail-closed evidence."

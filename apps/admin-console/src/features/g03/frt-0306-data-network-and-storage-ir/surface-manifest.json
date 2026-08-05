@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0306",
+  "skill_name": "frt-0306-data-network-and-storage-ir",
+  "batch": "G03",
+  "surface": "admin_console",
+  "logical_path": "apps/admin-console/src/features/g03/frt-0306-data-network-and-storage-ir/",
+  "status": "shared_implementation",
+  "handler_kind": "semantic_ir",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:7168828a196cee2598c100c8f5bb9dbeef2a1f1669085bd877f32af588f04cab",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

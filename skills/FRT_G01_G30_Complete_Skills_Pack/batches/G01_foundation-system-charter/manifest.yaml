@@ -1,0 +1,85 @@
+{
+  "apiVersion": "frt.openai.dev/v1alpha1",
+  "kind": "GenerationBatchManifest",
+  "metadata": {
+    "id": "G01",
+    "slug": "foundation-system-charter",
+    "version": "1.0.0",
+    "generatedAt": "2026-07-31"
+  },
+  "spec": {
+    "title": "系统宪章、Monorepo、Skill标准、Artifact与Release Gate基础",
+    "transitionFrom": "项目愿景与功能设想",
+    "transitionTo": "具备统一宪章、仓库结构、Skill协议、证据模型、隔离环境和基础发布门禁",
+    "certificateFamily": "FD",
+    "skills": [
+      {
+        "id": "FRT-0100",
+        "name": "Foundation Orchestrator",
+        "path": "skills/frt-0100-foundation-orchestrator/SKILL.md"
+      },
+      {
+        "id": "FRT-0101",
+        "name": "System Charter and Non-Negotiable Invariants",
+        "path": "skills/frt-0101-system-charter-and-non-negotiable-invariants/SKILL.md"
+      },
+      {
+        "id": "FRT-0102",
+        "name": "Monorepo Bootstrap and Module Boundaries",
+        "path": "skills/frt-0102-monorepo-bootstrap-and-module-boundaries/SKILL.md"
+      },
+      {
+        "id": "FRT-0103",
+        "name": "Skill Specification Standard",
+        "path": "skills/frt-0103-skill-specification-standard/SKILL.md"
+      },
+      {
+        "id": "FRT-0104",
+        "name": "Plugin and Extension Protocol",
+        "path": "skills/frt-0104-plugin-and-extension-protocol/SKILL.md"
+      },
+      {
+        "id": "FRT-0105",
+        "name": "Skill Registry Foundation",
+        "path": "skills/frt-0105-skill-registry-foundation/SKILL.md"
+      },
+      {
+        "id": "FRT-0106",
+        "name": "Artifact and Provenance Model",
+        "path": "skills/frt-0106-artifact-and-provenance-model/SKILL.md"
+      },
+      {
+        "id": "FRT-0107",
+        "name": "Configuration and Versioning Foundation",
+        "path": "skills/frt-0107-configuration-and-versioning-foundation/SKILL.md"
+      },
+      {
+        "id": "FRT-0108",
+        "name": "Sandbox and Worktree Isolation",
+        "path": "skills/frt-0108-sandbox-and-worktree-isolation/SKILL.md"
+      },
+      {
+        "id": "FRT-0109",
+        "name": "Fixture, Golden and Corpus Foundation",
+        "path": "skills/frt-0109-fixture-golden-and-corpus-foundation/SKILL.md"
+      },
+      {
+        "id": "FRT-0110",
+        "name": "Release Gate Foundation",
+        "path": "skills/frt-0110-release-gate-foundation/SKILL.md"
+      },
+      {
+        "id": "FRT-0111",
+        "name": "Safety Constitution and Trust Boundary",
+        "path": "skills/frt-0111-safety-constitution-and-trust-boundary/SKILL.md"
+      }
+    ],
+    "gates": [
+      "系统宪章和禁止项已版本化",
+      "所有Skill均有Manifest、Schema、Workflow、Verification、Stop条件和DoD",
+      "Source不可写且Sandbox默认无生产Secret",
+      "Artifact有Digest与Lineage",
+      "基础Release Gate不可被模型自行绕过"
+    ]
+  }
+}

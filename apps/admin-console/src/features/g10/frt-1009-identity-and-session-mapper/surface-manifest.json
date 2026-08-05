@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1009",
+  "skill_name": "frt-1009-identity-and-session-mapper",
+  "batch": "G10",
+  "surface": "admin_console",
+  "logical_path": "apps/admin-console/src/features/g10/frt-1009-identity-and-session-mapper/",
+  "status": "shared_implementation",
+  "handler_kind": "design_system",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:8722337b184e95943265ed5cf4acee6a24ea7386165563d1270560f2f628594d",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

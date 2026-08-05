@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2418",
+  "skill_name": "frt-2418-admin-dashboard-and-kpi-pack",
+  "batch": "G24",
+  "surface": "runtime",
+  "logical_path": "packages/runtime/g24/frt-2418-admin-dashboard-and-kpi-pack/",
+  "status": "shared_implementation",
+  "handler_kind": "administration",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:b6381a5567c9b351a762c61c26afc87c3f35b11a3d0d1dcbcc9f9fc6b76f9431",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/frt-runtime.ts",
+    "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

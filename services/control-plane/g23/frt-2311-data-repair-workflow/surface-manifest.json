@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2311",
+  "skill_name": "frt-2311-data-repair-workflow",
+  "batch": "G23",
+  "surface": "control_plane",
+  "logical_path": "services/control-plane/g23/frt-2311-data-repair-workflow/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:141b7cd6f2c07be76a46884260e0ef4a8a3cc0743d2050fefcee1be2490d18dc",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/server.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

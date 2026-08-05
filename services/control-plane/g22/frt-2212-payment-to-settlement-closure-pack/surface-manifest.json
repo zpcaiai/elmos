@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2212",
+  "skill_name": "frt-2212-payment-to-settlement-closure-pack",
+  "batch": "G22",
+  "surface": "control_plane",
+  "logical_path": "services/control-plane/g22/frt-2212-payment-to-settlement-closure-pack/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:4279c857338e94041f1371328372bbca28c7210972aa7e1601485b5fdcefad36",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/server.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

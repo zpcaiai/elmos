@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2103",
+  "skill_name": "frt-2103-requirement-to-artifact-traceability",
+  "batch": "G21",
+  "surface": "contract",
+  "logical_path": "packages/contracts/g21/frt-2103-requirement-to-artifact-traceability/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:f1ce7be92ec405b82f16f5d16cfee1357a836756c7f1254cf64cbdda9b6bb911",
+  "implementation_paths": [
+    "schemas/frt-g01-g30/skill-run-request.schema.json",
+    "schemas/frt-g01-g30/skill-run-result.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

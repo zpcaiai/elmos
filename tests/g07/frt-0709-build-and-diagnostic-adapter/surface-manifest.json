@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0709",
+  "skill_name": "frt-0709-build-and-diagnostic-adapter",
+  "batch": "G07",
+  "surface": "tests",
+  "logical_path": "tests/g07/frt-0709-build-and-diagnostic-adapter/",
+  "status": "shared_implementation",
+  "handler_kind": "build_toolchain",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:d29075cb5e7efdaabebefc927483796411a26a4fe9d0cc644af7ae83c752b372",
+  "implementation_paths": [
+    "engines/frontend-client-engine/test/frt-runtime.test.ts",
+    "engines/frontend-client-engine/test/server.test.ts",
+    "apps/web-console/e2e/frt-frontend-transformation.spec.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

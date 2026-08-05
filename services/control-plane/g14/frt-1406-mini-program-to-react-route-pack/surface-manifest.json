@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1406",
+  "skill_name": "frt-1406-mini-program-to-react-route-pack",
+  "batch": "G14",
+  "surface": "control_plane",
+  "logical_path": "services/control-plane/g14/frt-1406-mini-program-to-react-route-pack/",
+  "status": "shared_implementation",
+  "handler_kind": "directional_route",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:c502c5b2c0c24b8b2afb6fde7fc05454a6d0d18b4ac3f4b93a9b7c63c4b5bcc4",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/server.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Payment-to-Settlement Closure Pack"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2212-payment-to-settlement-closure-pack to run FRT-2212 through the governed FRT runtime with exact scope and fail-closed evidence."

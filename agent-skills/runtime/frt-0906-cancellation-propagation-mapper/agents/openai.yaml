@@ -1,0 +1,4 @@
+interface:
+  display_name: "Cancellation Propagation Mapper"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-0906-cancellation-propagation-mapper to run FRT-0906 through the governed FRT runtime with exact scope and fail-closed evidence."

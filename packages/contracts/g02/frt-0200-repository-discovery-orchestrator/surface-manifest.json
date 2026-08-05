@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0200",
+  "skill_name": "frt-0200-repository-discovery-orchestrator",
+  "batch": "G02",
+  "surface": "contract",
+  "logical_path": "packages/contracts/g02/frt-0200-repository-discovery-orchestrator/",
+  "status": "shared_implementation",
+  "handler_kind": "estate_discovery",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:636284f4a3e20f1070776d1f7a2a255a82067508bc0d4aa4760ee8202d6ea944",
+  "implementation_paths": [
+    "schemas/frt-g01-g30/skill-run-request.schema.json",
+    "schemas/frt-g01-g30/skill-run-result.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

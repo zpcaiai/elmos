@@ -3,6 +3,12 @@ from __future__ import annotations
 import argparse, json, subprocess, sys
 from pathlib import Path
 
+FRT_EXTERNAL_CHECKS = {
+    'real_source_target_builds', 'device_matrix', 'independent_holdout',
+    'formal_proof', 'performance', 'chaos_dr', 'penetration_test',
+    'production_observation', 'customer_acceptance',
+}
+
 def load(path: Path):
     return json.loads(path.read_text())
 
@@ -32,6 +38,49 @@ def main() -> int:
     evidence = load(pack / 'certification' / 'evidence.json')
     certification = load(pack / 'certification' / 'certification.json')
     failures: list[str] = []
+
+    if manifest.get('pack_key') == 'frt-g01-g30-platform':
+        profile_path = pack / 'acceptance' / 'external-evidence-profile.json'
+        baseline_path = pack / 'baselines' / 'manifest.json'
+        frt_result_path = pack / 'certification' / 'frt-gate-result.json'
+        for path in (profile_path, baseline_path, frt_result_path):
+            if not path.is_file():
+                failures.append(f'missing FRT evidence-governance contract: {path.relative_to(pack)}')
+        if profile_path.is_file():
+            external_profile = load(profile_path)
+            if set(external_profile.get('checks', {})) != FRT_EXTERNAL_CHECKS:
+                failures.append('FRT external evidence profile check inventory is not exact')
+            independence = external_profile.get('independence', {})
+            if not all(independence.get(key) is True for key in (
+                'executor_verifier_principals_must_differ',
+                'executor_verifier_organizations_must_differ',
+                'approver_executor_principals_must_differ',
+                'verifier_approver_principals_must_differ',
+                'all_passed_records_require_three_ed25519_signatures',
+            )):
+                failures.append('FRT external evidence independence policy is incomplete')
+        if baseline_path.is_file():
+            baseline = load(baseline_path)
+            if baseline.get('automatic_updates') is not False:
+                failures.append('FRT baseline automatic updates must be disabled')
+            if baseline.get('candidate_and_approved_roots_are_distinct') is not True:
+                failures.append('FRT baseline candidate and approved roots must remain distinct')
+        if frt_result_path.is_file():
+            frt_result = load(frt_result_path)
+            if frt_result.get('local_ready') is not True or frt_result.get('failures') != []:
+                failures.append('FRT repository gate is not locally ready')
+            if manifest.get('status') == 'certified' or certification.get('status') == 'certified':
+                if frt_result.get('external_checks_complete') is not True:
+                    failures.append('FRT certified status requires all signed external checks')
+                if set(frt_result.get('external_check_states', {})) != FRT_EXTERNAL_CHECKS or any(
+                    state != 'PASSED'
+                    for state in frt_result.get('external_check_states', {}).values()
+                ):
+                    failures.append('FRT certified status contains incomplete external states')
+                if not frt_result.get('external_trust_store_sha256'):
+                    failures.append('FRT certified status requires a bound external trust store')
+                if frt_result.get('production_certification') != 'CERTIFIED':
+                    failures.append('FRT repository readiness cannot self-issue production certification')
 
     if manifest.get('status') == 'certified' or certification.get('status') == 'certified':
         if manifest.get('status') != 'certified' or certification.get('status') != 'certified':

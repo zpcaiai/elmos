@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0802",
+  "skill_name": "frt-0802-props-and-input-contract-mapper",
+  "batch": "G08",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g08/frt-0802-props-and-input-contract-mapper/",
+  "status": "shared_implementation",
+  "handler_kind": "test_automation",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:ac9876ae373a674db5507ff3ca43ef35a4a9b50eddbae4df38c6972416532e4a",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

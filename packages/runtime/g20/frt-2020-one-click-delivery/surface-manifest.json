@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2020",
+  "skill_name": "frt-2020-one-click-delivery",
+  "batch": "G20",
+  "surface": "runtime",
+  "logical_path": "packages/runtime/g20/frt-2020-one-click-delivery/",
+  "status": "shared_implementation",
+  "handler_kind": "runtime_operations",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:7bfcb475eeecb765a5834030e504938470e0dc3919aa3b145d7d15f0d11f34dd",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/frt-runtime.ts",
+    "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

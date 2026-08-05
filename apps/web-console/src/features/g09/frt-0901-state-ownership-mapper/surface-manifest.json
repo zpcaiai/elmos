@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0901",
+  "skill_name": "frt-0901-state-ownership-mapper",
+  "batch": "G09",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g09/frt-0901-state-ownership-mapper/",
+  "status": "shared_implementation",
+  "handler_kind": "delivery_pipeline",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:dfee69f0d50b0342204a174af37eb0c677c307c1a425ca1d54c1849445a1ddce",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

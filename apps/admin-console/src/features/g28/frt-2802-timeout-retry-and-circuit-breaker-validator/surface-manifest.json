@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2802",
+  "skill_name": "frt-2802-timeout-retry-and-circuit-breaker-validator",
+  "batch": "G28",
+  "surface": "admin_console",
+  "logical_path": "apps/admin-console/src/features/g28/frt-2802-timeout-retry-and-circuit-breaker-validator/",
+  "status": "shared_implementation",
+  "handler_kind": "resilience_dr",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:981aaa37cada1d29d317a5424d287b103dd219c84a74c5192acd7865d745d741",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

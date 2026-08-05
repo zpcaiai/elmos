@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1917",
+  "skill_name": "frt-1917-proof-evidence-graph",
+  "batch": "G19",
+  "surface": "tests",
+  "logical_path": "tests/g19/frt-1917-proof-evidence-graph/",
+  "status": "shared_implementation",
+  "handler_kind": "advanced_verification",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:ddb9aedd44a683cc60d274ed25d973b28cd36161d3e6ec7b33e3e694b4886488",
+  "implementation_paths": [
+    "engines/frontend-client-engine/test/frt-runtime.test.ts",
+    "engines/frontend-client-engine/test/server.test.ts",
+    "apps/web-console/e2e/frt-frontend-transformation.spec.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

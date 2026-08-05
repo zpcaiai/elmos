@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-3011",
+  "skill_name": "frt-3011-canary-and-progressive-delivery",
+  "batch": "G30",
+  "surface": "runtime",
+  "logical_path": "packages/runtime/g30/frt-3011-canary-and-progressive-delivery/",
+  "status": "shared_implementation",
+  "handler_kind": "production_readiness",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:465a97d0447c5a4c511bfdd30220b8be2137a32ae770414867e67dc24d31cca3",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/frt-runtime.ts",
+    "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

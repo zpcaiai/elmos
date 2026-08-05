@@ -1,0 +1,4 @@
+interface:
+  display_name: "Cross-Domain Saga Generator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2203-cross-domain-saga-generator to run FRT-2203 through the governed FRT runtime with exact scope and fail-closed evidence."

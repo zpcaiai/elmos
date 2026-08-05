@@ -1,0 +1,83 @@
+{
+  "profile_key": "frt-g01-g30-platform-target",
+  "version": "1.1.0",
+  "owner": "ELMOS Frontend Client Engine Maintainers",
+  "framework": "elmos-frontend-client-runtime",
+  "versions": [
+    "1.2.0"
+  ],
+  "language": "typescript",
+  "language_versions": [
+    "5.9.2"
+  ],
+  "runtime": "nodejs",
+  "runtime_versions": [
+    "26.0.0"
+  ],
+  "build_tool": "typescript-5.9.2",
+  "package_manager": "pnpm-10.12.4",
+  "router": ["Node HTTP route matcher v1", "Next.js App Router 16.3.0"],
+  "rendering_strategy": {
+    "mode": "Next.js 16.3.0 SSR shell with React 19.2.7 client interactions"
+  },
+  "state_strategy": {
+    "provider": "typed process-local Runtime and React local UI state"
+  },
+  "form_strategy": {
+    "provider": "native labeled select and search controls"
+  },
+  "styling_strategy": {
+    "mode": "CSS Modules with existing ELMOS design tokens"
+  },
+  "design_system_strategy": {
+    "mode": "reuse ELMOS AppShell, Icon, color, spacing and focus contracts"
+  },
+  "api_client_strategy": {
+    "provider": "Fetch API with JSON v1 contracts"
+  },
+  "auth_strategy": {
+    "mode": "exact control-plane verified organization, tenant, workspace, project, account, environment and release scope"
+  },
+  "i18n_strategy": {
+    "provider": "zh-CN primary content with en-US stable identifiers"
+  },
+  "accessibility_profile": {
+    "standard": "WCAG 2.2 AA automated profile plus independent manual review required"
+  },
+  "browser_matrix": [
+    "Google Chrome 150.0.7871.189 desktop 1440x900 via Playwright 1.61.1",
+    "Firefox 151.0 desktop 1440x900 via Playwright 1.61.1",
+    "WebKit 26.5 desktop 1440x900 via Playwright 1.61.1",
+    "Google Chrome 150.0.7871.189 Pixel 7 emulation 390x844 via Playwright 1.61.1",
+    "WebKit 26.5 iPhone 15 emulation 393x852 via Playwright 1.61.1"
+  ],
+  "device_profiles": [
+    "Desktop Chrome, Firefox and WebKit local profiles",
+    "Pixel 7 Chromium and iPhone 15 WebKit emulation profiles",
+    "signed external physical-device profiles required for certification"
+  ],
+  "test_profiles": [
+    "Node.js 26.0.0 test runner contracts",
+    "Playwright 1.61.1 browser E2E",
+    "Axe 4.12.1 automated accessibility"
+  ],
+  "provision": {
+    "commands": [
+      "pnpm@10.12.4 install --frozen-lockfile",
+      "pnpm@10.12.4 run build"
+    ]
+  },
+  "health_check": {
+    "commands": [
+      "GET /engine/v1/frt/catalog",
+      "GET /api/frt/catalog"
+    ]
+  },
+  "security": {
+    "content_security_policy": "inherit ELMOS Web Console CSP and prohibit customer code execution in the process-local Runtime"
+  },
+  "lifecycle": {
+    "support_until": "2027-08-01",
+    "upgrade_policy": "exact dependency changes invalidate the target profile and require rerun"
+  }
+}

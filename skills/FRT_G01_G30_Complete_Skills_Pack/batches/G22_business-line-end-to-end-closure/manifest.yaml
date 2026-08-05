@@ -1,0 +1,121 @@
+{
+  "apiVersion": "frt.openai.dev/v1alpha1",
+  "kind": "GenerationBatchManifest",
+  "metadata": {
+    "id": "G22",
+    "slug": "business-line-end-to-end-closure",
+    "version": "1.0.0",
+    "generatedAt": "2026-07-31"
+  },
+  "spec": {
+    "title": "端到端价值流、业务状态机、Saga、补偿、对账与业务线闭环",
+    "transitionFrom": "每项需求与功能已经可追踪",
+    "transitionTo": "每条业务线的正常、异常、取消、超时、补偿、人工接管和最终一致性流程全部闭环",
+    "certificateFamily": "BC",
+    "skills": [
+      {
+        "id": "FRT-2200",
+        "name": "Business Line Closure Orchestrator",
+        "path": "skills/frt-2200-business-line-closure-orchestrator/SKILL.md"
+      },
+      {
+        "id": "FRT-2201",
+        "name": "End-to-End Value Stream Compiler",
+        "path": "skills/frt-2201-end-to-end-value-stream-compiler/SKILL.md"
+      },
+      {
+        "id": "FRT-2202",
+        "name": "Business State Machine Completeness Checker",
+        "path": "skills/frt-2202-business-state-machine-completeness-checker/SKILL.md"
+      },
+      {
+        "id": "FRT-2203",
+        "name": "Cross-Domain Saga Generator",
+        "path": "skills/frt-2203-cross-domain-saga-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-2204",
+        "name": "Compensation and Reconciliation Generator",
+        "path": "skills/frt-2204-compensation-and-reconciliation-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-2205",
+        "name": "Business Exception Taxonomy",
+        "path": "skills/frt-2205-business-exception-taxonomy/SKILL.md"
+      },
+      {
+        "id": "FRT-2206",
+        "name": "Manual Intervention Workflow Generator",
+        "path": "skills/frt-2206-manual-intervention-workflow-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-2207",
+        "name": "Business Deadline and Timeout Generator",
+        "path": "skills/frt-2207-business-deadline-and-timeout-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-2208",
+        "name": "Business Audit Trail Generator",
+        "path": "skills/frt-2208-business-audit-trail-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-2209",
+        "name": "Business Journey Replay Generator",
+        "path": "skills/frt-2209-business-journey-replay-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-2210",
+        "name": "Commerce Order-to-Cash Closure Pack",
+        "path": "skills/frt-2210-commerce-order-to-cash-closure-pack/SKILL.md"
+      },
+      {
+        "id": "FRT-2211",
+        "name": "Inventory Procure-to-Availability Closure Pack",
+        "path": "skills/frt-2211-inventory-procure-to-availability-closure-pack/SKILL.md"
+      },
+      {
+        "id": "FRT-2212",
+        "name": "Payment-to-Settlement Closure Pack",
+        "path": "skills/frt-2212-payment-to-settlement-closure-pack/SKILL.md"
+      },
+      {
+        "id": "FRT-2213",
+        "name": "Identity-to-Account Closure Pack",
+        "path": "skills/frt-2213-identity-to-account-closure-pack/SKILL.md"
+      },
+      {
+        "id": "FRT-2214",
+        "name": "Healthcare Encounter Closure Pack",
+        "path": "skills/frt-2214-healthcare-encounter-closure-pack/SKILL.md"
+      },
+      {
+        "id": "FRT-2215",
+        "name": "Industrial Command-to-Acknowledgement Closure Pack",
+        "path": "skills/frt-2215-industrial-command-to-acknowledgement-closure-pack/SKILL.md"
+      },
+      {
+        "id": "FRT-2216",
+        "name": "Logistics Order-to-Delivery Closure Pack",
+        "path": "skills/frt-2216-logistics-order-to-delivery-closure-pack/SKILL.md"
+      },
+      {
+        "id": "FRT-2217",
+        "name": "Energy Dispatch-to-Reconciliation Closure Pack",
+        "path": "skills/frt-2217-energy-dispatch-to-reconciliation-closure-pack/SKILL.md"
+      },
+      {
+        "id": "FRT-2218",
+        "name": "Agent Run-to-Human-Approval Closure Pack",
+        "path": "skills/frt-2218-agent-run-to-human-approval-closure-pack/SKILL.md"
+      }
+    ],
+    "gates": [
+      "Critical Value Stream均有Trigger、Owner、Business Outcome和Terminal Outcome",
+      "Critical非终态均有出口、Deadline或人工路径",
+      "跨域Critical流程均有Saga和Correlation",
+      "Unknown结果不得强制映射Success/Failure",
+      "Critical补偿失败均有Reconciliation与Escalation",
+      "九大业务线达到BC5"
+    ]
+  }
+}

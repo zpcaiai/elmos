@@ -1,0 +1,4 @@
+interface:
+  display_name: "Temporal Typestate and Refinement Verifier"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-1908-temporal-typestate-and-refinement-verifier to run FRT-1908 through the governed FRT runtime with exact scope and fail-closed evidence."

@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1808",
+  "skill_name": "frt-1808-enterprise-pack-framework",
+  "batch": "G18",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g18/frt-1808-enterprise-pack-framework/",
+  "status": "shared_implementation",
+  "handler_kind": "compatibility",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:4dd69bdbfa480afced238a319d56013cd7a457cd6a2613a0cf8e5b7f769841af",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

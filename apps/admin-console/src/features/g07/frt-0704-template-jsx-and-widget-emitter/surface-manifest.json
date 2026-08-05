@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0704",
+  "skill_name": "frt-0704-template-jsx-and-widget-emitter",
+  "batch": "G07",
+  "surface": "admin_console",
+  "logical_path": "apps/admin-console/src/features/g07/frt-0704-template-jsx-and-widget-emitter/",
+  "status": "shared_implementation",
+  "handler_kind": "build_toolchain",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:a3ead9c5230b62f90d6a41fc829303b6dadc77e1b5a2cd58f866c84fc2e4a617",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

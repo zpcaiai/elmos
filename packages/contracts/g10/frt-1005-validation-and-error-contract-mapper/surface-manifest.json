@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1005",
+  "skill_name": "frt-1005-validation-and-error-contract-mapper",
+  "batch": "G10",
+  "surface": "contract",
+  "logical_path": "packages/contracts/g10/frt-1005-validation-and-error-contract-mapper/",
+  "status": "shared_implementation",
+  "handler_kind": "design_system",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:9f86335c2cb1fab509167615a08f0732c9dd0c726164183138ee2846d85b6d37",
+  "implementation_paths": [
+    "schemas/frt-g01-g30/skill-run-request.schema.json",
+    "schemas/frt-g01-g30/skill-run-result.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

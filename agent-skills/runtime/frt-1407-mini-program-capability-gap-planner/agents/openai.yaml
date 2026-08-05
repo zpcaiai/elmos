@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mini Program Capability Gap Planner"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-1407-mini-program-capability-gap-planner to run FRT-1407 through the governed FRT runtime with exact scope and fail-closed evidence."

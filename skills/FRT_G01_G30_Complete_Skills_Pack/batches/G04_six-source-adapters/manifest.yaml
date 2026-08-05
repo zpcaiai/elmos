@@ -1,0 +1,90 @@
+{
+  "apiVersion": "frt.openai.dev/v1alpha1",
+  "kind": "GenerationBatchManifest",
+  "metadata": {
+    "id": "G04",
+    "slug": "six-source-adapters",
+    "version": "1.0.0",
+    "generatedAt": "2026-07-31"
+  },
+  "spec": {
+    "title": "Vue2、Vue3、React、小程序、ArkUI、Flutter六类Source Adapter",
+    "transitionFrom": "六种框架的不同AST、模板和运行模型",
+    "transitionTo": "通过一致Adapter Contract生成同构Typed Semantic IR",
+    "certificateFamily": "SA",
+    "skills": [
+      {
+        "id": "FRT-0400",
+        "name": "Source Adapter Orchestrator",
+        "path": "skills/frt-0400-source-adapter-orchestrator/SKILL.md"
+      },
+      {
+        "id": "FRT-0401",
+        "name": "Vue 2 Source Adapter",
+        "path": "skills/frt-0401-vue-2-source-adapter/SKILL.md"
+      },
+      {
+        "id": "FRT-0402",
+        "name": "Vue 3 Source Adapter",
+        "path": "skills/frt-0402-vue-3-source-adapter/SKILL.md"
+      },
+      {
+        "id": "FRT-0403",
+        "name": "React Source Adapter",
+        "path": "skills/frt-0403-react-source-adapter/SKILL.md"
+      },
+      {
+        "id": "FRT-0404",
+        "name": "WeChat Mini Program Source Adapter",
+        "path": "skills/frt-0404-wechat-mini-program-source-adapter/SKILL.md"
+      },
+      {
+        "id": "FRT-0405",
+        "name": "ArkUI Source Adapter",
+        "path": "skills/frt-0405-arkui-source-adapter/SKILL.md"
+      },
+      {
+        "id": "FRT-0406",
+        "name": "Flutter Source Adapter",
+        "path": "skills/frt-0406-flutter-source-adapter/SKILL.md"
+      },
+      {
+        "id": "FRT-0407",
+        "name": "Source AST Normalizer",
+        "path": "skills/frt-0407-source-ast-normalizer/SKILL.md"
+      },
+      {
+        "id": "FRT-0408",
+        "name": "Template JSX and Widget Extractor",
+        "path": "skills/frt-0408-template-jsx-and-widget-extractor/SKILL.md"
+      },
+      {
+        "id": "FRT-0409",
+        "name": "Reactive State Extractor",
+        "path": "skills/frt-0409-reactive-state-extractor/SKILL.md"
+      },
+      {
+        "id": "FRT-0410",
+        "name": "Lifecycle and Effect Extractor",
+        "path": "skills/frt-0410-lifecycle-and-effect-extractor/SKILL.md"
+      },
+      {
+        "id": "FRT-0411",
+        "name": "Router Navigation and Capability Extractor",
+        "path": "skills/frt-0411-router-navigation-and-capability-extractor/SKILL.md"
+      },
+      {
+        "id": "FRT-0412",
+        "name": "Source Adapter Conformance Certification",
+        "path": "skills/frt-0412-source-adapter-conformance-certification/SKILL.md"
+      }
+    ],
+    "gates": [
+      "Adapter不得调用Target Emitter",
+      "关键语义提取覆盖率达到策略",
+      "动态和未知行为进入Gap",
+      "Source Range和Semantic ID完整",
+      "六类Adapter Corpus通过"
+    ]
+  }
+}

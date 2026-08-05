@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0702",
+  "skill_name": "frt-0702-rule-registry-and-pass-manager",
+  "batch": "G07",
+  "surface": "tests",
+  "logical_path": "tests/g07/frt-0702-rule-registry-and-pass-manager/",
+  "status": "shared_implementation",
+  "handler_kind": "build_toolchain",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:0378c28dd18c7fc555f297fab9e7a7149b6b93d0edfd93647934d3afd986410f",
+  "implementation_paths": [
+    "engines/frontend-client-engine/test/frt-runtime.test.ts",
+    "engines/frontend-client-engine/test/server.test.ts",
+    "apps/web-console/e2e/frt-frontend-transformation.spec.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

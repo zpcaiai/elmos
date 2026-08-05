@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2509",
+  "skill_name": "frt-2509-keyboard-pointer-touch-and-gesture-matrix",
+  "batch": "G25",
+  "surface": "admin_console",
+  "logical_path": "apps/admin-console/src/features/g25/frt-2509-keyboard-pointer-touch-and-gesture-matrix/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:9a06d8ff3535c3a96af9e95511e7cf88f912676f36cfd07b41fc000882e5cdfa",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

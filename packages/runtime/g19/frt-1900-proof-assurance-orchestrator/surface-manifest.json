@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1900",
+  "skill_name": "frt-1900-proof-assurance-orchestrator",
+  "batch": "G19",
+  "surface": "runtime",
+  "logical_path": "packages/runtime/g19/frt-1900-proof-assurance-orchestrator/",
+  "status": "shared_implementation",
+  "handler_kind": "advanced_verification",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:c824ee59fafcd259c977d86623d3f001c9045e35a522cccedc7c8c2ecf46587d",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/frt-runtime.ts",
+    "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

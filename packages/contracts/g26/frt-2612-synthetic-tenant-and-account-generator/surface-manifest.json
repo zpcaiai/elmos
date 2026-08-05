@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2612",
+  "skill_name": "frt-2612-synthetic-tenant-and-account-generator",
+  "batch": "G26",
+  "surface": "contract",
+  "logical_path": "packages/contracts/g26/frt-2612-synthetic-tenant-and-account-generator/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:5799c7b3a01308640347d43b4fabf97b5fc2b1502d48c5d2b6afc051a74e9be2",
+  "implementation_paths": [
+    "schemas/frt-g01-g30/skill-run-request.schema.json",
+    "schemas/frt-g01-g30/skill-run-result.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1706",
+  "skill_name": "frt-1706-flutter-to-arkui-route-pack",
+  "batch": "G17",
+  "surface": "contract",
+  "logical_path": "packages/contracts/g17/frt-1706-flutter-to-arkui-route-pack/",
+  "status": "shared_implementation",
+  "handler_kind": "directional_route",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:43d39d9dfe23c8b54d4d70bf649fd5b15f7e1dc42e3b5f1aedf91dfea53e7486",
+  "implementation_paths": [
+    "schemas/frt-g01-g30/skill-run-request.schema.json",
+    "schemas/frt-g01-g30/skill-run-result.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-3021",
+  "skill_name": "frt-3021-production-closure-certificate",
+  "batch": "G30",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g30/frt-3021-production-closure-certificate/",
+  "status": "shared_implementation",
+  "handler_kind": "production_readiness",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:af733480c9a79875ae540acdfa155993fa771fb73957baeb4bf1c960345cf312",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

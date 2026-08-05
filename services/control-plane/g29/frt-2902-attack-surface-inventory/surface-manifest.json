@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2902",
+  "skill_name": "frt-2902-attack-surface-inventory",
+  "batch": "G29",
+  "surface": "control_plane",
+  "logical_path": "services/control-plane/g29/frt-2902-attack-surface-inventory/",
+  "status": "shared_implementation",
+  "handler_kind": "security_privacy",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:6e35dbd376b63875203b298a8a7483c0cd0ae3ff594403bbcab352c58cbbd7bc",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/server.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

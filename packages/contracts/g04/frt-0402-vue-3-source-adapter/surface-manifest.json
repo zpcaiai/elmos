@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0402",
+  "skill_name": "frt-0402-vue-3-source-adapter",
+  "batch": "G04",
+  "surface": "contract",
+  "logical_path": "packages/contracts/g04/frt-0402-vue-3-source-adapter/",
+  "status": "shared_implementation",
+  "handler_kind": "typed_contract",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:dcb0039eeaa93e3cb77e30aaa9f9451a67b12f733e9624887b3d081b3e24477a",
+  "implementation_paths": [
+    "schemas/frt-g01-g30/skill-run-request.schema.json",
+    "schemas/frt-g01-g30/skill-run-result.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

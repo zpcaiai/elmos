@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0503",
+  "skill_name": "frt-0503-source-target-feature-mapper",
+  "batch": "G05",
+  "surface": "tests",
+  "logical_path": "tests/g05/frt-0503-source-target-feature-mapper/",
+  "status": "shared_implementation",
+  "handler_kind": "migration_planning",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:3156767b24e3d590e45be082d2cc5ef78ecef16060104f5d1b70e77f5911c870",
+  "implementation_paths": [
+    "engines/frontend-client-engine/test/frt-runtime.test.ts",
+    "engines/frontend-client-engine/test/server.test.ts",
+    "apps/web-console/e2e/frt-frontend-transformation.spec.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

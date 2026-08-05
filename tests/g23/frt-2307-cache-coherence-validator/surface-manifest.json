@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2307",
+  "skill_name": "frt-2307-cache-coherence-validator",
+  "batch": "G23",
+  "surface": "tests",
+  "logical_path": "tests/g23/frt-2307-cache-coherence-validator/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:bce411d1523cc3fb2f22bfc36b7ee44d51fa90f0fa6aa2e0334d0dd7972c670e",
+  "implementation_paths": [
+    "engines/frontend-client-engine/test/frt-runtime.test.ts",
+    "engines/frontend-client-engine/test/server.test.ts",
+    "apps/web-console/e2e/frt-frontend-transformation.spec.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

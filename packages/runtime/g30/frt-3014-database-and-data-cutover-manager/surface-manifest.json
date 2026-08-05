@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-3014",
+  "skill_name": "frt-3014-database-and-data-cutover-manager",
+  "batch": "G30",
+  "surface": "runtime",
+  "logical_path": "packages/runtime/g30/frt-3014-database-and-data-cutover-manager/",
+  "status": "shared_implementation",
+  "handler_kind": "production_readiness",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:cf3ba172662b94b02f901317834c3771b180af95e1d8b67be23915723fe72d19",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/frt-runtime.ts",
+    "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

@@ -1,0 +1,127 @@
+{
+  "apiVersion": "frt.openai.dev/v1alpha1",
+  "kind": "GenerationBatchManifest",
+  "metadata": {
+    "id": "G28",
+    "slug": "resilience-ha-dr",
+    "version": "1.0.0",
+    "generatedAt": "2026-07-31"
+  },
+  "spec": {
+    "title": "高可用、故障隔离、Chaos、灾难恢复与持续韧性认证",
+    "transitionFrom": "系统在目标并发和压力下稳定运行",
+    "transitionTo": "服务、数据库、队列、Worker、存储、Provider、设备和Region故障时仍可隔离、保护、恢复并满足RTO/RPO",
+    "certificateFamily": "RC",
+    "skills": [
+      {
+        "id": "FRT-2800",
+        "name": "Resilience Orchestrator",
+        "path": "skills/frt-2800-resilience-orchestrator/SKILL.md"
+      },
+      {
+        "id": "FRT-2801",
+        "name": "Dependency Failure Model Registry",
+        "path": "skills/frt-2801-dependency-failure-model-registry/SKILL.md"
+      },
+      {
+        "id": "FRT-2802",
+        "name": "Timeout, Retry and Circuit Breaker Validator",
+        "path": "skills/frt-2802-timeout-retry-and-circuit-breaker-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-2803",
+        "name": "Bulkhead and Failure Isolation Validator",
+        "path": "skills/frt-2803-bulkhead-and-failure-isolation-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-2804",
+        "name": "Graceful Degradation Runtime",
+        "path": "skills/frt-2804-graceful-degradation-runtime/SKILL.md"
+      },
+      {
+        "id": "FRT-2805",
+        "name": "Queue Durability and Replay Validator",
+        "path": "skills/frt-2805-queue-durability-and-replay-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-2806",
+        "name": "Stateful Failover Validator",
+        "path": "skills/frt-2806-stateful-failover-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-2807",
+        "name": "Control Plane High Availability",
+        "path": "skills/frt-2807-control-plane-high-availability/SKILL.md"
+      },
+      {
+        "id": "FRT-2808",
+        "name": "Worker Pool High Availability",
+        "path": "skills/frt-2808-worker-pool-high-availability/SKILL.md"
+      },
+      {
+        "id": "FRT-2809",
+        "name": "Artifact and Evidence Store Resilience",
+        "path": "skills/frt-2809-artifact-and-evidence-store-resilience/SKILL.md"
+      },
+      {
+        "id": "FRT-2810",
+        "name": "Database Failover Validator",
+        "path": "skills/frt-2810-database-failover-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-2811",
+        "name": "Region Failure Validator",
+        "path": "skills/frt-2811-region-failure-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-2812",
+        "name": "Chaos Experiment Generator",
+        "path": "skills/frt-2812-chaos-experiment-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-2813",
+        "name": "Backup and Restore Validator",
+        "path": "skills/frt-2813-backup-and-restore-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-2814",
+        "name": "Disaster Recovery Drill Generator",
+        "path": "skills/frt-2814-disaster-recovery-drill-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-2815",
+        "name": "RTO and RPO Compliance Validator",
+        "path": "skills/frt-2815-rto-and-rpo-compliance-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-2816",
+        "name": "Safe Mode and Read-Only Mode Generator",
+        "path": "skills/frt-2816-safe-mode-and-read-only-mode-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-2817",
+        "name": "Partial-Service Availability Validator",
+        "path": "skills/frt-2817-partial-service-availability-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-2818",
+        "name": "Resilience Runbook Generator",
+        "path": "skills/frt-2818-resilience-runbook-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-2819",
+        "name": "Resilience Certification",
+        "path": "skills/frt-2819-resilience-certification/SKILL.md"
+      }
+    ],
+    "gates": [
+      "Critical依赖Failure Model和Recovery Plan覆盖率=100%",
+      "Unsafe Retry、Split Brain、Critical Message Loss=0",
+      "Old Leader/Expired Lease提交正式结果=0",
+      "Critical Artifact/Evidence不可恢复丢失=0",
+      "Critical Backup必须真实Restore通过",
+      "Critical RTO/RPO违规=0",
+      "Safe Mode不得关闭授权、隔离、审计和幂等"
+    ]
+  }
+}

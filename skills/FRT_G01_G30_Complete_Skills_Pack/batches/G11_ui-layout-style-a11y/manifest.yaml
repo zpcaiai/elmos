@@ -1,0 +1,95 @@
+{
+  "apiVersion": "frt.openai.dev/v1alpha1",
+  "kind": "GenerationBatchManifest",
+  "metadata": {
+    "id": "G11",
+    "slug": "ui-layout-style-a11y",
+    "version": "1.0.0",
+    "generatedAt": "2026-07-31"
+  },
+  "spec": {
+    "title": "UI、Layout、Style、Assets、i18n与Accessibility语义",
+    "transitionFrom": "源UI语义和目标组件",
+    "transitionTo": "保持视觉层级、响应式、资产、国际化和无障碍语义",
+    "certificateFamily": "UI",
+    "skills": [
+      {
+        "id": "FRT-1100",
+        "name": "UI Fidelity Orchestrator",
+        "path": "skills/frt-1100-ui-fidelity-orchestrator/SKILL.md"
+      },
+      {
+        "id": "FRT-1101",
+        "name": "Layout Semantic Mapper",
+        "path": "skills/frt-1101-layout-semantic-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-1102",
+        "name": "Style and Design Token Mapper",
+        "path": "skills/frt-1102-style-and-design-token-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-1103",
+        "name": "Responsive Layout Mapper",
+        "path": "skills/frt-1103-responsive-layout-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-1104",
+        "name": "Theme and Appearance Mapper",
+        "path": "skills/frt-1104-theme-and-appearance-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-1105",
+        "name": "Asset Pipeline Mapper",
+        "path": "skills/frt-1105-asset-pipeline-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-1106",
+        "name": "Font Icon and Typography Mapper",
+        "path": "skills/frt-1106-font-icon-and-typography-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-1107",
+        "name": "Internationalization Mapper",
+        "path": "skills/frt-1107-internationalization-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-1108",
+        "name": "RTL and Bidirectional Text Mapper",
+        "path": "skills/frt-1108-rtl-and-bidirectional-text-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-1109",
+        "name": "Accessibility Semantic Mapper",
+        "path": "skills/frt-1109-accessibility-semantic-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-1110",
+        "name": "Animation and Transition Mapper",
+        "path": "skills/frt-1110-animation-and-transition-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-1111",
+        "name": "Visual Regression Generator",
+        "path": "skills/frt-1111-visual-regression-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-1112",
+        "name": "Semantic UI Regression Generator",
+        "path": "skills/frt-1112-semantic-ui-regression-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-1113",
+        "name": "UI Fidelity Certification",
+        "path": "skills/frt-1113-ui-fidelity-certification/SKILL.md"
+      }
+    ],
+    "gates": [
+      "关键布局无裁剪和不可达动作",
+      "Design Token未登记漂移=0",
+      "Locale/RTL关键Journey通过",
+      "Accessible Name/Role/Focus保持",
+      "视觉差异均分类和批准"
+    ]
+  }
+}

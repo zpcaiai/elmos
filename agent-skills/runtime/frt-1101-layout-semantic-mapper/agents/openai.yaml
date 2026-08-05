@@ -1,0 +1,4 @@
+interface:
+  display_name: "Layout Semantic Mapper"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-1101-layout-semantic-mapper to run FRT-1101 through the governed FRT runtime with exact scope and fail-closed evidence."

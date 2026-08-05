@@ -1,0 +1,4 @@
+interface:
+  display_name: "Universal Semantic Type System"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-0301-universal-semantic-type-system to run FRT-0301 through the governed FRT runtime with exact scope and fail-closed evidence."

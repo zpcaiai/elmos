@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1905",
+  "skill_name": "frt-1905-smt-solver-adapter",
+  "batch": "G19",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g19/frt-1905-smt-solver-adapter/",
+  "status": "shared_implementation",
+  "handler_kind": "advanced_verification",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:19339e2ff43bf7e6ead460464fac3edb8d4bc51a31ec2bfbc16f4022abdc7976",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

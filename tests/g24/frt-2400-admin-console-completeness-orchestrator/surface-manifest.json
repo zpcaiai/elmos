@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2400",
+  "skill_name": "frt-2400-admin-console-completeness-orchestrator",
+  "batch": "G24",
+  "surface": "tests",
+  "logical_path": "tests/g24/frt-2400-admin-console-completeness-orchestrator/",
+  "status": "shared_implementation",
+  "handler_kind": "administration",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:cef408c1dd6bc0c5a0ee528b509e11e543b27a3e6e5a0733106aeda13517c863",
+  "implementation_paths": [
+    "engines/frontend-client-engine/test/frt-runtime.test.ts",
+    "engines/frontend-client-engine/test/server.test.ts",
+    "apps/web-console/e2e/frt-frontend-transformation.spec.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

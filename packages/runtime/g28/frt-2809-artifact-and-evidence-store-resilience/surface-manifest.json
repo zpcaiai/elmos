@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2809",
+  "skill_name": "frt-2809-artifact-and-evidence-store-resilience",
+  "batch": "G28",
+  "surface": "runtime",
+  "logical_path": "packages/runtime/g28/frt-2809-artifact-and-evidence-store-resilience/",
+  "status": "shared_implementation",
+  "handler_kind": "resilience_dr",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:2ef0d4f935004226456f2dc326019d8ac9cf4ce5e700559679aca6b7a98f7715",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/frt-runtime.ts",
+    "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

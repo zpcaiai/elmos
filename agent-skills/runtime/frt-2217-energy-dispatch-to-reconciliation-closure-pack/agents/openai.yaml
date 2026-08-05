@@ -1,0 +1,4 @@
+interface:
+  display_name: "Energy Dispatch-to-Reconciliation Closure Pack"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2217-energy-dispatch-to-reconciliation-closure-pack to run FRT-2217 through the governed FRT runtime with exact scope and fail-closed evidence."

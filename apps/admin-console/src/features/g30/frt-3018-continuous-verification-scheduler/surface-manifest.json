@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-3018",
+  "skill_name": "frt-3018-continuous-verification-scheduler",
+  "batch": "G30",
+  "surface": "admin_console",
+  "logical_path": "apps/admin-console/src/features/g30/frt-3018-continuous-verification-scheduler/",
+  "status": "shared_implementation",
+  "handler_kind": "production_readiness",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:3e567a9d8d7b0401012b3db0b3254829b915ee8870a942d7ce2a1fb0bca8b8a5",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1001",
+  "skill_name": "frt-1001-route-graph-generator",
+  "batch": "G10",
+  "surface": "control_plane",
+  "logical_path": "services/control-plane/g10/frt-1001-route-graph-generator/",
+  "status": "shared_implementation",
+  "handler_kind": "design_system",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:3deb199457b8ef3723a1de40c307c47ad4e382b6c3d2cba5c398ad05312f9fcb",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/server.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

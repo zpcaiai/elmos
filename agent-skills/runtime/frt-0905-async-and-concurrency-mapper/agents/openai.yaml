@@ -1,0 +1,4 @@
+interface:
+  display_name: "Async and Concurrency Mapper"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-0905-async-and-concurrency-mapper to run FRT-0905 through the governed FRT runtime with exact scope and fail-closed evidence."

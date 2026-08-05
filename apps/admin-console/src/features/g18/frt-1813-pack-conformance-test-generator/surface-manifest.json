@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1813",
+  "skill_name": "frt-1813-pack-conformance-test-generator",
+  "batch": "G18",
+  "surface": "admin_console",
+  "logical_path": "apps/admin-console/src/features/g18/frt-1813-pack-conformance-test-generator/",
+  "status": "shared_implementation",
+  "handler_kind": "compatibility",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:8850e03cc55943c10ceb876fda12a2a42b5608bdf341f092a6fe24ca3eb73eb6",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

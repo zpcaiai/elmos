@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1111",
+  "skill_name": "frt-1111-visual-regression-generator",
+  "batch": "G11",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g11/frt-1111-visual-regression-generator/",
+  "status": "shared_implementation",
+  "handler_kind": "mobile_client",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:cbc51bfd161cfb440007c79735b04ac6aebfc567c94fcd6b8e2fcd35d4e3aa97",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

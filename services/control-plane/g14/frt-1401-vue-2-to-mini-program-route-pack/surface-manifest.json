@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1401",
+  "skill_name": "frt-1401-vue-2-to-mini-program-route-pack",
+  "batch": "G14",
+  "surface": "control_plane",
+  "logical_path": "services/control-plane/g14/frt-1401-vue-2-to-mini-program-route-pack/",
+  "status": "shared_implementation",
+  "handler_kind": "directional_route",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:dff623e3def0e9a8da8f82e27b0a026e78c43619bc85590be9f27715e56d251e",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/server.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

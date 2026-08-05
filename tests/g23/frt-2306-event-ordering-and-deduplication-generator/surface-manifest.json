@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2306",
+  "skill_name": "frt-2306-event-ordering-and-deduplication-generator",
+  "batch": "G23",
+  "surface": "tests",
+  "logical_path": "tests/g23/frt-2306-event-ordering-and-deduplication-generator/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:ccb16f2d25d619f9d07e0e6e580f2aab42c2532ce8d2a8cec423915add662585",
+  "implementation_paths": [
+    "engines/frontend-client-engine/test/frt-runtime.test.ts",
+    "engines/frontend-client-engine/test/server.test.ts",
+    "apps/web-console/e2e/frt-frontend-transformation.spec.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

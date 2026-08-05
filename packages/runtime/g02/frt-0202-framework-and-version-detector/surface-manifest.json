@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0202",
+  "skill_name": "frt-0202-framework-and-version-detector",
+  "batch": "G02",
+  "surface": "runtime",
+  "logical_path": "packages/runtime/g02/frt-0202-framework-and-version-detector/",
+  "status": "shared_implementation",
+  "handler_kind": "estate_discovery",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:6f8426047c39870ea90dc479e7ea21997bf1d21204ea0c9c5d04dfb3d89d4547",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/frt-runtime.ts",
+    "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

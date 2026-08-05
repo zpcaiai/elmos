@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1309",
+  "skill_name": "frt-1309-web-differential-corpus",
+  "batch": "G13",
+  "surface": "admin_console",
+  "logical_path": "apps/admin-console/src/features/g13/frt-1309-web-differential-corpus/",
+  "status": "shared_implementation",
+  "handler_kind": "route_orchestration",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:cf2e7b427b1759bb27da5a04d55064add8152035948cfc2ddff93a87430e2235",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2812",
+  "skill_name": "frt-2812-chaos-experiment-generator",
+  "batch": "G28",
+  "surface": "tests",
+  "logical_path": "tests/g28/frt-2812-chaos-experiment-generator/",
+  "status": "shared_implementation",
+  "handler_kind": "resilience_dr",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:a30ac20a8c0daf9bf21619acf7d83d5ec13c7b98b2c09eba142576cab3c92b5c",
+  "implementation_paths": [
+    "engines/frontend-client-engine/test/frt-runtime.test.ts",
+    "engines/frontend-client-engine/test/server.test.ts",
+    "apps/web-console/e2e/frt-frontend-transformation.spec.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

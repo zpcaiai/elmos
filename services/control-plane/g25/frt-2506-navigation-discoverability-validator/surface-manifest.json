@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2506",
+  "skill_name": "frt-2506-navigation-discoverability-validator",
+  "batch": "G25",
+  "surface": "control_plane",
+  "logical_path": "services/control-plane/g25/frt-2506-navigation-discoverability-validator/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:1ec9564cc24e22d81a684ef0e0f2adcee4889be29b2c27aa92377d40a1fbc976",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/server.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

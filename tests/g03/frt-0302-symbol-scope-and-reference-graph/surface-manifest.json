@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0302",
+  "skill_name": "frt-0302-symbol-scope-and-reference-graph",
+  "batch": "G03",
+  "surface": "tests",
+  "logical_path": "tests/g03/frt-0302-symbol-scope-and-reference-graph/",
+  "status": "shared_implementation",
+  "handler_kind": "semantic_ir",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:c2bd344b111c207ce87f7e1fa393ba1d454a338b021ef3fa5410751803bc0913",
+  "implementation_paths": [
+    "engines/frontend-client-engine/test/frt-runtime.test.ts",
+    "engines/frontend-client-engine/test/server.test.ts",
+    "apps/web-console/e2e/frt-frontend-transformation.spec.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Flutter Capability Gap Planner"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-1607-flutter-capability-gap-planner to run FRT-1607 through the governed FRT runtime with exact scope and fail-closed evidence."

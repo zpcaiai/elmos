@@ -1,0 +1,4 @@
+interface:
+  display_name: "Semantic Gap Detector"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-0501-semantic-gap-detector to run FRT-0501 through the governed FRT runtime with exact scope and fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Bootstrap and Smoke Validator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-0611-bootstrap-and-smoke-validator to run FRT-0611 through the governed FRT runtime with exact scope and fail-closed evidence."

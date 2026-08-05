@@ -1,0 +1,4 @@
+interface:
+  display_name: "Data Correction and Reconciliation Console"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2411-data-correction-and-reconciliation-console to run FRT-2411 through the governed FRT runtime with exact scope and fail-closed evidence."

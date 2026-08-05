@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1101",
+  "skill_name": "frt-1101-layout-semantic-mapper",
+  "batch": "G11",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g11/frt-1101-layout-semantic-mapper/",
+  "status": "shared_implementation",
+  "handler_kind": "mobile_client",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:4c7f7c9532152778cbcd98ce6a4b1f5c20baacea5ef10ac9268cc6a6b0223b06",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1902",
+  "skill_name": "frt-1902-lean-specification-generator",
+  "batch": "G19",
+  "surface": "control_plane",
+  "logical_path": "services/control-plane/g19/frt-1902-lean-specification-generator/",
+  "status": "shared_implementation",
+  "handler_kind": "advanced_verification",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:19cdbea49dfaeb39d34e670e0ab687c8436f7f5a4d9952314608ffa84ce1f8b6",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/server.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

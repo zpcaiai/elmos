@@ -1,0 +1,143 @@
+{
+  "apiVersion": "frt.openai.dev/v1alpha1",
+  "kind": "GenerationBatchManifest",
+  "metadata": {
+    "id": "G29",
+    "slug": "security-privacy-supply-chain",
+    "version": "1.0.0",
+    "generatedAt": "2026-07-31"
+  },
+  "spec": {
+    "title": "威胁建模、身份权限、供应链、AI安全、隐私合规与持续安全认证",
+    "transitionFrom": "系统在基础设施和依赖故障下仍能安全恢复",
+    "transitionTo": "面对恶意用户、越权、注入、供应链、恶意Skill/Pack、Prompt Injection、凭证窃取和协议滥用时可预防、检测、限制、响应和再认证",
+    "certificateFamily": "SC",
+    "skills": [
+      {
+        "id": "FRT-2900",
+        "name": "Security Assurance Orchestrator",
+        "path": "skills/frt-2900-security-assurance-orchestrator/SKILL.md"
+      },
+      {
+        "id": "FRT-2901",
+        "name": "Threat Model Generator",
+        "path": "skills/frt-2901-threat-model-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-2902",
+        "name": "Attack Surface Inventory",
+        "path": "skills/frt-2902-attack-surface-inventory/SKILL.md"
+      },
+      {
+        "id": "FRT-2903",
+        "name": "Authentication Security Validator",
+        "path": "skills/frt-2903-authentication-security-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-2904",
+        "name": "Authorization and Policy Validator",
+        "path": "skills/frt-2904-authorization-and-policy-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-2905",
+        "name": "Tenant Isolation Security Validator",
+        "path": "skills/frt-2905-tenant-isolation-security-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-2906",
+        "name": "Session and Token Security Validator",
+        "path": "skills/frt-2906-session-and-token-security-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-2907",
+        "name": "API Security Validator",
+        "path": "skills/frt-2907-api-security-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-2908",
+        "name": "Input Validation and Injection Validator",
+        "path": "skills/frt-2908-input-validation-and-injection-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-2909",
+        "name": "File Upload and Content Security Validator",
+        "path": "skills/frt-2909-file-upload-and-content-security-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-2910",
+        "name": "Secrets and Key Management Validator",
+        "path": "skills/frt-2910-secrets-and-key-management-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-2911",
+        "name": "Supply Chain Security Validator",
+        "path": "skills/frt-2911-supply-chain-security-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-2912",
+        "name": "SBOM and Vulnerability Governance",
+        "path": "skills/frt-2912-sbom-and-vulnerability-governance/SKILL.md"
+      },
+      {
+        "id": "FRT-2913",
+        "name": "SAST Coordinator",
+        "path": "skills/frt-2913-sast-coordinator/SKILL.md"
+      },
+      {
+        "id": "FRT-2914",
+        "name": "DAST Coordinator",
+        "path": "skills/frt-2914-dast-coordinator/SKILL.md"
+      },
+      {
+        "id": "FRT-2915",
+        "name": "Fuzzing and Protocol Abuse Generator",
+        "path": "skills/frt-2915-fuzzing-and-protocol-abuse-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-2916",
+        "name": "Rate Abuse and Bot Protection Validator",
+        "path": "skills/frt-2916-rate-abuse-and-bot-protection-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-2917",
+        "name": "Privacy and Consent Validator",
+        "path": "skills/frt-2917-privacy-and-consent-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-2918",
+        "name": "Retention and Deletion Compliance",
+        "path": "skills/frt-2918-retention-and-deletion-compliance/SKILL.md"
+      },
+      {
+        "id": "FRT-2919",
+        "name": "Security Incident Response Generator",
+        "path": "skills/frt-2919-security-incident-response-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-2920",
+        "name": "Penetration Test Evidence Manager",
+        "path": "skills/frt-2920-penetration-test-evidence-manager/SKILL.md"
+      },
+      {
+        "id": "FRT-2921",
+        "name": "Secure Admin Console Validator",
+        "path": "skills/frt-2921-secure-admin-console-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-2922",
+        "name": "Security Regression and Recertification",
+        "path": "skills/frt-2922-security-regression-and-recertification/SKILL.md"
+      }
+    ],
+    "gates": [
+      "Critical Authentication/Authorization绕过=0",
+      "Cross-Tenant Leak=0",
+      "Critical Injection/Secret Leak=0",
+      "Unsigned Production Skill/Pack/Container=0",
+      "Reachable Critical Vulnerability=0",
+      "Prompt Injection Capability Escalation=0",
+      "Critical Privacy违规=0",
+      "未解决Critical Pentest Finding=0"
+    ]
+  }
+}

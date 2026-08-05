@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2606",
+  "skill_name": "frt-2606-differential-test-coordinator",
+  "batch": "G26",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g26/frt-2606-differential-test-coordinator/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:f2beaa1f6519d5e89fee9247fa4676de2c45489ea6420c5dc0b1aaee26af6c0a",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

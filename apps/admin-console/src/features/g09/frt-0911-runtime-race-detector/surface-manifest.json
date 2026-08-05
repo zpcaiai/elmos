@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0911",
+  "skill_name": "frt-0911-runtime-race-detector",
+  "batch": "G09",
+  "surface": "admin_console",
+  "logical_path": "apps/admin-console/src/features/g09/frt-0911-runtime-race-detector/",
+  "status": "shared_implementation",
+  "handler_kind": "delivery_pipeline",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:9e1b165b17842725455658e88ea43293762e71d8249fc9a0c3af9f3908f51a29",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

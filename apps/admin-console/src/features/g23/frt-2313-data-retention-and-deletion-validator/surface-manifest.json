@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2313",
+  "skill_name": "frt-2313-data-retention-and-deletion-validator",
+  "batch": "G23",
+  "surface": "admin_console",
+  "logical_path": "apps/admin-console/src/features/g23/frt-2313-data-retention-and-deletion-validator/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:9697b24dc5ef86030773d7530c918bd7abaaf59fdfdba97a0d1e1fb21f6b5301",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

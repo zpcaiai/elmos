@@ -1,0 +1,85 @@
+{
+  "apiVersion": "frt.openai.dev/v1alpha1",
+  "kind": "GenerationBatchManifest",
+  "metadata": {
+    "id": "G14",
+    "slug": "web-mini-program-six-directions",
+    "version": "1.0.0",
+    "generatedAt": "2026-07-31"
+  },
+  "spec": {
+    "title": "Web与微信小程序双向六条转换路径",
+    "transitionFrom": "三种Web框架和小程序平台模型",
+    "transitionTo": "Vue2/Vue3/React与小程序六条方向均可生成和验证",
+    "certificateFamily": "WM",
+    "skills": [
+      {
+        "id": "FRT-1400",
+        "name": "Web Mini Program Route Orchestrator",
+        "path": "skills/frt-1400-web-mini-program-route-orchestrator/SKILL.md"
+      },
+      {
+        "id": "FRT-1401",
+        "name": "Vue 2 to Mini Program Route Pack",
+        "path": "skills/frt-1401-vue-2-to-mini-program-route-pack/SKILL.md"
+      },
+      {
+        "id": "FRT-1402",
+        "name": "Mini Program to Vue 2 Route Pack",
+        "path": "skills/frt-1402-mini-program-to-vue-2-route-pack/SKILL.md"
+      },
+      {
+        "id": "FRT-1403",
+        "name": "Vue 3 to Mini Program Route Pack",
+        "path": "skills/frt-1403-vue-3-to-mini-program-route-pack/SKILL.md"
+      },
+      {
+        "id": "FRT-1404",
+        "name": "Mini Program to Vue 3 Route Pack",
+        "path": "skills/frt-1404-mini-program-to-vue-3-route-pack/SKILL.md"
+      },
+      {
+        "id": "FRT-1405",
+        "name": "React to Mini Program Route Pack",
+        "path": "skills/frt-1405-react-to-mini-program-route-pack/SKILL.md"
+      },
+      {
+        "id": "FRT-1406",
+        "name": "Mini Program to React Route Pack",
+        "path": "skills/frt-1406-mini-program-to-react-route-pack/SKILL.md"
+      },
+      {
+        "id": "FRT-1407",
+        "name": "Mini Program Capability Gap Planner",
+        "path": "skills/frt-1407-mini-program-capability-gap-planner/SKILL.md"
+      },
+      {
+        "id": "FRT-1408",
+        "name": "Mini Program Route Form and Storage Mapper",
+        "path": "skills/frt-1408-mini-program-route-form-and-storage-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-1409",
+        "name": "Mini Program Identity Payment and Permission Mapper",
+        "path": "skills/frt-1409-mini-program-identity-payment-and-permission-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-1410",
+        "name": "Web Mini Program Differential Corpus",
+        "path": "skills/frt-1410-web-mini-program-differential-corpus/SKILL.md"
+      },
+      {
+        "id": "FRT-1411",
+        "name": "Web Mini Program Route Certification",
+        "path": "skills/frt-1411-web-mini-program-route-certification/SKILL.md"
+      }
+    ],
+    "gates": [
+      "六条路径关键Journey通过",
+      "基础库和分包约束有效",
+      "支付/授权不得客户端自证成功",
+      "setData和响应式语义保持",
+      "平台不支持能力显式降级"
+    ]
+  }
+}

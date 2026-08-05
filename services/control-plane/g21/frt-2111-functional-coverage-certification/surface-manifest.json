@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2111",
+  "skill_name": "frt-2111-functional-coverage-certification",
+  "batch": "G21",
+  "surface": "control_plane",
+  "logical_path": "services/control-plane/g21/frt-2111-functional-coverage-certification/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:30c6dc0d9a4860e988df21adfcd51aef5f34c0729873ecabcc0af791b5591307",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/server.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

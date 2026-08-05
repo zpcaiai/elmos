@@ -1,0 +1,4 @@
+interface:
+  display_name: "Synthetic Tenant and Account Generator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2612-synthetic-tenant-and-account-generator to run FRT-2612 through the governed FRT runtime with exact scope and fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Business Line Closure Orchestrator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2200-business-line-closure-orchestrator to run FRT-2200 through the governed FRT runtime with exact scope and fail-closed evidence."

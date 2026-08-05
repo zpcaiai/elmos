@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1601",
+  "skill_name": "frt-1601-vue-2-to-flutter-route-pack",
+  "batch": "G16",
+  "surface": "contract",
+  "logical_path": "packages/contracts/g16/frt-1601-vue-2-to-flutter-route-pack/",
+  "status": "shared_implementation",
+  "handler_kind": "directional_route",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:37c78af10329faf7c6473f88fa43331fcfb8fd4e3edbca66bf0f00857dc52b0e",
+  "implementation_paths": [
+    "schemas/frt-g01-g30/skill-run-request.schema.json",
+    "schemas/frt-g01-g30/skill-run-result.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

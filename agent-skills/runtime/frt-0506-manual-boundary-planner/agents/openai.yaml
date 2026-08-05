@@ -1,0 +1,4 @@
+interface:
+  display_name: "Manual Boundary Planner"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-0506-manual-boundary-planner to run FRT-0506 through the governed FRT runtime with exact scope and fail-closed evidence."

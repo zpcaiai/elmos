@@ -1,0 +1,4 @@
+interface:
+  display_name: "Performance and Capacity Orchestrator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2700-performance-and-capacity-orchestrator to run FRT-2700 through the governed FRT runtime with exact scope and fail-closed evidence."

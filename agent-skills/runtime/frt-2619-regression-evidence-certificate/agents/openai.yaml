@@ -1,0 +1,4 @@
+interface:
+  display_name: "Regression Evidence Certificate"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2619-regression-evidence-certificate to run FRT-2619 through the governed FRT runtime with exact scope and fail-closed evidence."

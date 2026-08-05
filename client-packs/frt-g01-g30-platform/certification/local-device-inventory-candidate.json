@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "kind": "FRT_PHYSICAL_DEVICE_INVENTORY_CANDIDATE",
+  "generated_at": "2026-08-05T11:00:00.233174Z",
+  "state": "CANDIDATE_NOT_EXTERNALLY_VERIFIED",
+  "physical_device_count": 1,
+  "devices": [
+    {
+      "platform": "iOS",
+      "device_type": "iPhone",
+      "marketing_model": "iPhone 15 Pro Max",
+      "product_type": "iPhone16,2",
+      "architecture": "arm64e",
+      "os_version": "27.0",
+      "os_build": "24A5390f",
+      "developer_mode": "enabled",
+      "pairing_state": "paired",
+      "tunnel_state": "unavailable",
+      "device_pseudonym": "hmac-sha256:18ae1779d401ca270a0bb6b80f4eaa5a8ff631615edb7bed11e47eb18208f957",
+      "reality": "physical"
+    }
+  ],
+  "probes": {
+    "ios": {
+      "state": "COLLECTED",
+      "tool": "518.33",
+      "raw_output_sha256": "sha256:ac0e1a11c9cf04abe171f353ba52a2d959d3e887459542d1a86406974d151417",
+      "raw_output_persisted": false
+    },
+    "android": {
+      "state": "COLLECTED",
+      "tool": "adb",
+      "raw_output_sha256": "sha256:36f15c2fe32964a6fbe902e914a47739d4e6304b0d3e812bf08096ff0419b7ae",
+      "raw_output_persisted": false
+    }
+  },
+  "privacy": {
+    "raw_identifiers_persisted": false,
+    "raw_command_output_persisted": false,
+    "device_names_persisted": false,
+    "pseudonymization": "HMAC-SHA256 with an external non-persisted key"
+  },
+  "boundaries": {
+    "install_launch": "NOT_RUN",
+    "p0_journeys": "NOT_RUN",
+    "manual_visual_review": "NOT_RUN",
+    "assistive_technology": "NOT_RUN",
+    "external_device_matrix": "NOT_RUN"
+  }
+}

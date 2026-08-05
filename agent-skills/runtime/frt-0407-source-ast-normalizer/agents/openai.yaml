@@ -1,0 +1,4 @@
+interface:
+  display_name: "Source AST Normalizer"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-0407-source-ast-normalizer to run FRT-0407 through the governed FRT runtime with exact scope and fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Worker Pool High Availability"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2808-worker-pool-high-availability to run FRT-2808 through the governed FRT runtime with exact scope and fail-closed evidence."

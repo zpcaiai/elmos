@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2716",
+  "skill_name": "frt-2716-autoscaling-policy-validator",
+  "batch": "G27",
+  "surface": "control_plane",
+  "logical_path": "services/control-plane/g27/frt-2716-autoscaling-policy-validator/",
+  "status": "shared_implementation",
+  "handler_kind": "performance_capacity",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:cba58e9b30113dd1aaaf063e46296e0b7b0eccb6688e0a9d0610465fec1a4e31",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/server.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

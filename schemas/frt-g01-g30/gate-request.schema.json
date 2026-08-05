@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.io/frt-g01-g30/gate-request.v1.schema.json",
+  "title": "FRT G01-G30 repository gate request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "package_manifest_sha256", "source_tree_sha256", "local_checks", "external_checks"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "package_manifest_sha256": { "$ref": "#/$defs/digest" },
+    "source_tree_sha256": { "$ref": "#/$defs/digest" },
+    "local_checks": {
+      "type": "object",
+      "required": ["package_integrity", "runtime_interfaces", "contract_validation", "trusted_identity_evidence", "semantic_skill_coverage", "durable_run_lifecycle", "real_route_build", "runtime_tests", "web_build", "browser_journey", "keyboard_i18n", "accessibility"],
+      "additionalProperties": false,
+      "properties": {
+        "package_integrity": { "$ref": "#/$defs/check" },
+        "runtime_interfaces": { "$ref": "#/$defs/check" },
+        "contract_validation": { "$ref": "#/$defs/check" },
+        "trusted_identity_evidence": { "$ref": "#/$defs/check" },
+        "semantic_skill_coverage": { "$ref": "#/$defs/check" },
+        "durable_run_lifecycle": { "$ref": "#/$defs/check" },
+        "real_route_build": { "$ref": "#/$defs/check" },
+        "runtime_tests": { "$ref": "#/$defs/check" },
+        "web_build": { "$ref": "#/$defs/check" },
+        "browser_journey": { "$ref": "#/$defs/check" },
+        "keyboard_i18n": { "$ref": "#/$defs/check" },
+        "accessibility": { "$ref": "#/$defs/check" }
+      }
+    },
+    "external_checks": {
+      "type": "object",
+      "required": ["real_source_target_builds", "device_matrix", "independent_holdout", "formal_proof", "performance", "chaos_dr", "penetration_test", "production_observation", "customer_acceptance"],
+      "additionalProperties": false,
+      "properties": {
+        "real_source_target_builds": { "$ref": "#/$defs/check" },
+        "device_matrix": { "$ref": "#/$defs/check" },
+        "independent_holdout": { "$ref": "#/$defs/check" },
+        "formal_proof": { "$ref": "#/$defs/check" },
+        "performance": { "$ref": "#/$defs/check" },
+        "chaos_dr": { "$ref": "#/$defs/check" },
+        "penetration_test": { "$ref": "#/$defs/check" },
+        "production_observation": { "$ref": "#/$defs/check" },
+        "customer_acceptance": { "$ref": "#/$defs/check" }
+      }
+    }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "evidence_refs"],
+      "properties": {
+        "state": { "enum": ["PASSED", "FAILED", "INCONCLUSIVE", "NOT_RUN"] },
+        "evidence_refs": { "type": "array", "items": { "$ref": "#/$defs/evidenceRef" } }
+      }
+    },
+    "evidenceRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "bytes"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1, "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$" },
+        "sha256": { "$ref": "#/$defs/digest" },
+        "bytes": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}

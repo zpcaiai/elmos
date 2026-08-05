@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2706",
+  "skill_name": "frt-2706-load-test-coordinator",
+  "batch": "G27",
+  "surface": "control_plane",
+  "logical_path": "services/control-plane/g27/frt-2706-load-test-coordinator/",
+  "status": "shared_implementation",
+  "handler_kind": "performance_capacity",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:0cd957a43803ae50d10472c1636789520f165baf462f2baa768bf64be08c6cf5",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/server.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

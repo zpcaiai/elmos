@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0110",
+  "skill_name": "frt-0110-release-gate-foundation",
+  "batch": "G01",
+  "surface": "tests",
+  "logical_path": "tests/g01/frt-0110-release-gate-foundation/",
+  "status": "shared_implementation",
+  "handler_kind": "governance",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:19fc7411af178d705f2523fa6e378241f7028a279c54941e6b8a5942ec153888",
+  "implementation_paths": [
+    "engines/frontend-client-engine/test/frt-runtime.test.ts",
+    "engines/frontend-client-engine/test/server.test.ts",
+    "apps/web-console/e2e/frt-frontend-transformation.spec.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

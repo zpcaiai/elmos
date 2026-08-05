@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0410",
+  "skill_name": "frt-0410-lifecycle-and-effect-extractor",
+  "batch": "G04",
+  "surface": "tests",
+  "logical_path": "tests/g04/frt-0410-lifecycle-and-effect-extractor/",
+  "status": "shared_implementation",
+  "handler_kind": "typed_contract",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:94b6e46e54d1af7460365b515a92575e5bee0f7a787adcad3174e002358d0120",
+  "implementation_paths": [
+    "engines/frontend-client-engine/test/frt-runtime.test.ts",
+    "engines/frontend-client-engine/test/server.test.ts",
+    "apps/web-console/e2e/frt-frontend-transformation.spec.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2615",
+  "skill_name": "frt-2615-impacted-test-selection",
+  "batch": "G26",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g26/frt-2615-impacted-test-selection/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:d45ed2db547c0fe93a4afca8d97d34e65541da0b56b6df1e0eb12bd771bac3a8",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

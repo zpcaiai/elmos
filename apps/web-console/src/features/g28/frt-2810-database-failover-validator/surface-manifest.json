@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2810",
+  "skill_name": "frt-2810-database-failover-validator",
+  "batch": "G28",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g28/frt-2810-database-failover-validator/",
+  "status": "shared_implementation",
+  "handler_kind": "resilience_dr",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:2968007ebbdf51cf28dcd6af5f38d755d393afa0ee4b44c51304ccccb3286507",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

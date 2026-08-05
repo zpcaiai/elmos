@@ -158,6 +158,18 @@ function convertScript(source: string, sourcePath: string, gaps: VueReactTypedGa
           }
         }
         if (ts.isExpressionStatement(child) && ts.isBinaryExpression(child.expression)
+            && [ts.SyntaxKind.PlusEqualsToken, ts.SyntaxKind.MinusEqualsToken]
+              .includes(child.expression.operatorToken.kind)) {
+          const state = stateProperty(child.expression.left, new Set(states.keys()));
+          const mapping = state && states.get(state);
+          const value = renderScriptExpression(child.expression.right, new Set(states.keys()));
+          if (mapping && value !== undefined) {
+            const operator = child.expression.operatorToken.kind === ts.SyntaxKind.PlusEqualsToken ? "+" : "-";
+            converted.push(`${mapping.setter}(previous => previous ${operator} ${value});`);
+            continue;
+          }
+        }
+        if (ts.isExpressionStatement(child) && ts.isBinaryExpression(child.expression)
             && child.expression.operatorToken.kind === ts.SyntaxKind.EqualsToken) {
           const state = stateProperty(child.expression.left, new Set(states.keys()));
           const mapping = state && states.get(state);

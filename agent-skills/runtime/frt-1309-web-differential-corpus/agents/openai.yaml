@@ -1,0 +1,4 @@
+interface:
+  display_name: "Web Differential Corpus"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-1309-web-differential-corpus to run FRT-1309 through the governed FRT runtime with exact scope and fail-closed evidence."

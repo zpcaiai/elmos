@@ -1,0 +1,4 @@
+interface:
+  display_name: "Repository Model Certification"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-0212-repository-model-certification to run FRT-0212 through the governed FRT runtime with exact scope and fail-closed evidence."

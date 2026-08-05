@@ -1,0 +1,4 @@
+interface:
+  display_name: "Proof Evidence Graph"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-1917-proof-evidence-graph to run FRT-1917 through the governed FRT runtime with exact scope and fail-closed evidence."

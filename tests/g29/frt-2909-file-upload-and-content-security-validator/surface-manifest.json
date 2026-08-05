@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2909",
+  "skill_name": "frt-2909-file-upload-and-content-security-validator",
+  "batch": "G29",
+  "surface": "tests",
+  "logical_path": "tests/g29/frt-2909-file-upload-and-content-security-validator/",
+  "status": "shared_implementation",
+  "handler_kind": "security_privacy",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:2d7d947dfdadce844df996c18898d116a46736b4ae99da145c00a63c2ef048d3",
+  "implementation_paths": [
+    "engines/frontend-client-engine/test/frt-runtime.test.ts",
+    "engines/frontend-client-engine/test/server.test.ts",
+    "apps/web-console/e2e/frt-frontend-transformation.spec.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

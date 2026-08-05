@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2007",
+  "skill_name": "frt-2007-frt-api",
+  "batch": "G20",
+  "surface": "contract",
+  "logical_path": "packages/contracts/g20/frt-2007-frt-api/",
+  "status": "shared_implementation",
+  "handler_kind": "runtime_operations",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:747f739944798d30e1026294933557b75ef9d2c347aa1fd964f365337530aa89",
+  "implementation_paths": [
+    "schemas/frt-g01-g30/skill-run-request.schema.json",
+    "schemas/frt-g01-g30/skill-run-result.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

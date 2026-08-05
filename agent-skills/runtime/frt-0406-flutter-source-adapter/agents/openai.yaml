@@ -1,0 +1,4 @@
+interface:
+  display_name: "Flutter Source Adapter"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-0406-flutter-source-adapter to run FRT-0406 through the governed FRT runtime with exact scope and fail-closed evidence."

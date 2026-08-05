@@ -1,0 +1,4 @@
+interface:
+  display_name: "Task Completion Test Generator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2501-task-completion-test-generator to run FRT-2501 through the governed FRT runtime with exact scope and fail-closed evidence."

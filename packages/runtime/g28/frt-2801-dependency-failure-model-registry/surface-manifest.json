@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2801",
+  "skill_name": "frt-2801-dependency-failure-model-registry",
+  "batch": "G28",
+  "surface": "runtime",
+  "logical_path": "packages/runtime/g28/frt-2801-dependency-failure-model-registry/",
+  "status": "shared_implementation",
+  "handler_kind": "resilience_dr",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:571dfc276913ee2e8d7d428e963a7f0f519e2880e4f3deea79f97c155cbb36cf",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/frt-runtime.ts",
+    "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

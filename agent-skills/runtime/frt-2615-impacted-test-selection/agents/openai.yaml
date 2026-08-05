@@ -1,0 +1,4 @@
+interface:
+  display_name: "Impacted Test Selection"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2615-impacted-test-selection to run FRT-2615 through the governed FRT runtime with exact scope and fail-closed evidence."

@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/runner-schema/frt-runner-lease.schema.json",
+  "title": "FRT Runner Lease",
+  "description": "Lease a runner holds over a claimed FRT run. Distinct from runner-job-lease.schema.json, which covers the generic ELMOS job model and carries no FRT run identity. A lease grants no rights by itself: it only bounds how long the control plane waits before treating a RUNNING run as abandoned. Losing a lease can never turn into success.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "runId",
+    "runnerId",
+    "organizationId",
+    "tenantId",
+    "claimedVersion",
+    "acquiredAt",
+    "expiresAt",
+    "heartbeatIntervalSeconds",
+    "onExpiry"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "runId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{24}$"
+    },
+    "runnerId": { "$ref": "#/$defs/scopedId" },
+    "organizationId": { "$ref": "#/$defs/scopedId" },
+    "tenantId": {
+      "$ref": "#/$defs/scopedId",
+      "description": "Organization plus tenant is the isolation boundary of the run store; a lease never spans two tenants."
+    },
+    "claimedVersion": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Run version observed at claim time. The completion must present this version or it is rejected as a version conflict."
+    },
+    "acquiredAt": { "$ref": "#/$defs/timestamp" },
+    "expiresAt": {
+      "$ref": "#/$defs/timestamp",
+      "description": "Absolute deadline. After this instant the control plane may apply onExpiry without consulting the runner."
+    },
+    "heartbeatIntervalSeconds": {
+      "type": "integer",
+      "minimum": 5,
+      "maximum": 900,
+      "description": "How often the runner must renew. A renewal extends expiresAt only; it never changes claimedVersion or the run state."
+    },
+    "onExpiry": {
+      "enum": ["BLOCK", "REQUEUE"],
+      "description": "BLOCK moves the run to BLOCKED with a typed finding and requires an operator retry. REQUEUE returns it to QUEUED for another runner. Neither may produce SUCCEEDED, and neither may set customerCodeExecuted or productionOperationExecuted."
+    },
+    "maximumRenewals": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Optional cap on renewals so a stuck runner cannot hold a run indefinitely. Reaching the cap applies onExpiry."
+    }
+  },
+  "$defs": {
+    "scopedId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,255}$"
+    },
+    "timestamp": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
+    }
+  }
+}

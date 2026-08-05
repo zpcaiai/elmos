@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2202",
+  "skill_name": "frt-2202-business-state-machine-completeness-checker",
+  "batch": "G22",
+  "surface": "control_plane",
+  "logical_path": "services/control-plane/g22/frt-2202-business-state-machine-completeness-checker/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:7be58b2f6b76c1a1445ca00b24f6bd90e64402d088bfc3d85542ee4660a9055c",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/server.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

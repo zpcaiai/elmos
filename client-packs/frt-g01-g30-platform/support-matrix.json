@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "pack_key": "frt-g01-g30-platform",
+  "capabilities": [
+    {
+      "id": "runtime-skill-catalog",
+      "domain": "runtime",
+      "status": "experimental",
+      "owner": "ELMOS Frontend Client Engine Maintainers",
+      "source_versions": [
+        "1.0.0"
+      ],
+      "target_versions": [
+        "1.2.0"
+      ],
+      "evidence_refs": [],
+      "reason": "472 contracts are compiled locally; real external execution and certification evidence remains NOT_RUN."
+    },
+    {
+      "id": "typed-scope-and-idempotency",
+      "domain": "governance",
+      "status": "experimental",
+      "owner": "ELMOS Frontend Client Engine Maintainers",
+      "source_versions": [
+        "1.0.0"
+      ],
+      "target_versions": [
+        "1.2.0"
+      ],
+      "evidence_refs": [],
+      "reason": "Local negative tests and the tenant-scoped atomic durable store pass; a production control-plane state authority remains external."
+    },
+    {
+      "id": "directed-route-registry",
+      "domain": "routes",
+      "status": "experimental",
+      "owner": "ELMOS Frontend Platform Product Owner",
+      "source_versions": [
+        "1.0.0"
+      ],
+      "target_versions": [
+        "1.2.0"
+      ],
+      "evidence_refs": [],
+      "reason": "All 30 bounded directed pairs generate through typed UI IR. All six source stacks now have source-derived extractors with blocking typed gaps for unsupported semantics; five target toolchains pass locally, while ArkUI hvigor and external representative repositories remain NOT_RUN."
+    },
+    {
+      "id": "frt-http-api-and-cli",
+      "domain": "productization",
+      "status": "experimental",
+      "owner": "ELMOS Frontend Client Engine Maintainers",
+      "source_versions": [
+        "1.0.0"
+      ],
+      "target_versions": [
+        "1.2.0"
+      ],
+      "evidence_refs": [],
+      "reason": "Strict local API, signed identity, content-addressed evidence, CLI, durable run lifecycle, and authenticated Web BFF contracts pass; hosted production execution remains external."
+    },
+    {
+      "id": "frt-web-console",
+      "domain": "interaction",
+      "status": "experimental",
+      "owner": "ELMOS Web Console UX Owner",
+      "source_versions": [
+        "1.0.0"
+      ],
+      "target_versions": [
+        "1.2.0"
+      ],
+      "evidence_refs": [],
+      "reason": "The local functional matrix and frozen non-visual quality rehearsal pass desktop Chromium, Firefox, WebKit, Pixel 7 Chromium, and iPhone 15 WebKit. Visual comparison fails closed without a pre-approved baseline; independent visual, manual assistive technology, physical journey, customer and production acceptance evidence remain NOT_RUN."
+    },
+    {
+      "id": "external-certification-boundary",
+      "domain": "evidence",
+      "status": "experimental",
+      "owner": "ELMOS Accessibility Review Owner",
+      "source_versions": [
+        "1.0.0"
+      ],
+      "target_versions": [
+        "1.2.0"
+      ],
+      "evidence_refs": [],
+      "reason": "A signed external-runner protocol now requires preauthorization, exact evidence roles and metrics, privacy minimization, content digests, and separate executor/verifier/approver Ed25519 identities. No real external campaign has yet supplied those records, so every external state remains NOT_RUN and production remains NOT_CERTIFIED."
+    }
+  ]
+}

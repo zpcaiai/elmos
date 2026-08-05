@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "FRT_IOS_PHYSICAL_DEVICE_EXECUTION",
+  "generatedAt": "2026-08-01T09:32:50.625Z",
+  "routeScope": "bounded-single-public-counter-route-v1",
+  "device": {
+    "alias": "Ethan",
+    "platform": "ios",
+    "osVersion": "27.0",
+    "connection": "wireless",
+    "identifierSha256": "sha256:4d764b6cc3b267793c1d9518a6dd9d8a51a2ed1ee4645b3f87d04584dc3b5141"
+  },
+  "application": {
+    "bundleIdentifier": "io.elmos.frtFlutterRoute",
+    "buildMode": "profile",
+    "signed": true,
+    "appManifestSha256": "sha256:d9a16862003fe7ceaea47a68a46d2ba9f6ce6c85666e057056c5851610f99d2c",
+    "appFileCount": 49
+  },
+  "execution": {
+    "installOutcome": "success",
+    "launchOutcome": "success",
+    "processConfirmedAfterSeconds": 3,
+    "processIdentifier": 61785,
+    "executable": "Runner"
+  },
+  "rawEvidenceDigests": {
+    "install": "sha256:6f0afa2d10a5561ac570ee916997ab29172f74a194acb1d56157896bac8a3707",
+    "launch": "sha256:f7e25c82d899631b833379bde2da1fcfa4ab585c8703c6c9d77c74d319a9abbb",
+    "runningProcesses": "sha256:3c07e7c0d60575b1fe42e385bd1104da4bcdf4e85a26d0b62156cde863d2aa0b"
+  },
+  "status": "PASSED",
+  "boundaries": {
+    "manualVisualInspection": "NOT_RUN",
+    "manualAssistiveTechnology": "NOT_RUN",
+    "customerAcceptance": "NOT_RUN",
+    "productionCertification": "NOT_CERTIFIED"
+  }
+}

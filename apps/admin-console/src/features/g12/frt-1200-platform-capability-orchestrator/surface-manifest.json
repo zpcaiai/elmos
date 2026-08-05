@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1200",
+  "skill_name": "frt-1200-platform-capability-orchestrator",
+  "batch": "G12",
+  "surface": "admin_console",
+  "logical_path": "apps/admin-console/src/features/g12/frt-1200-platform-capability-orchestrator/",
+  "status": "shared_implementation",
+  "handler_kind": "cross_platform",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:cd8801b3ff5f4ec56a26c97012b62d7886ff86d72028ff81555fff765e90bd03",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-3019",
+  "skill_name": "frt-3019-continuous-security-recertification",
+  "batch": "G30",
+  "surface": "admin_console",
+  "logical_path": "apps/admin-console/src/features/g30/frt-3019-continuous-security-recertification/",
+  "status": "shared_implementation",
+  "handler_kind": "production_readiness",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:9e8ce9e18c080e7604163addc8202aa8042e4823bb1361b85d2664ba92cc0bc7",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

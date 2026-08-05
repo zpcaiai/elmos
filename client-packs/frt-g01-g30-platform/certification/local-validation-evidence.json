@@ -1,0 +1,157 @@
+{
+  "schema_version": 3,
+  "pack_key": "frt-g01-g30-platform",
+  "executed_on": "2026-08-05",
+  "environment": {
+    "operating_system": "macOS 26.6 arm64",
+    "node": "26.0.0",
+    "pnpm": "10.12.4",
+    "next": "16.3.0",
+    "playwright": "1.61.1",
+    "axe": "4.12.1",
+    "flutter": "3.44.1",
+    "browser_server_mode": "Next.js development server for the five-profile functional matrix; Next.js production build validated separately"
+  },
+  "results": {
+    "source_package": {
+      "state": "PASSED",
+      "command": "python3 skills/FRT_G01_G30_Complete_Skills_Pack/scripts/validate_package.py",
+      "summary": "30 batches and 472 individual Skills; required sections, unique IDs, and static secret checks passed"
+    },
+    "runtime_installation": {
+      "state": "PASSED",
+      "command": "python3 tooling/integrate_frt_g01_g30.py --check && python3 scripts/frt/validate_frt_platform.py",
+      "summary": "472 Runtime interfaces, 23 semantic handler kinds, 30 directed routes, 2,832 exact per-Skill surface manifests, 10 schemas, and 43 shared implementation surfaces passed"
+    },
+    "strict_contract_and_security": {
+      "state": "PASSED",
+      "command": "pnpm test",
+      "working_directory": "engines/frontend-client-engine",
+      "summary": "Exact JSON contracts reject additional properties; mutation and read scope comes only from short-lived Ed25519 identities; prerequisite certificates and content-addressed evidence fail closed on expiry, trust, signature, scope, digest, byte-count, or path violations"
+    },
+    "durable_lifecycle": {
+      "state": "PASSED",
+      "command": "pnpm test",
+      "working_directory": "engines/frontend-client-engine",
+      "summary": "Atomic tenant-scoped run storage, persisted idempotency, optimistic versions, claim/cancel/retry audit events, fail-closed restart recovery, and stable oversized-body 413 handling passed"
+    },
+    "semantic_skill_coverage": {
+      "state": "PASSED",
+      "command": "pnpm test",
+      "working_directory": "engines/frontend-client-engine",
+      "summary": "All 472 Skills dispatch through explicit descriptors and one of 23 typed handler kinds; all expose six exact surface manifests and an executable scoped PLAN path"
+    },
+    "directional_route_implementation": {
+      "state": "PASSED",
+      "command": "pnpm test && node scripts/frt/run_frt_route_toolchains.mjs",
+      "summary": "All 30 bounded routes generate from typed UI IR. React, Vue 3, Vue 2, WeChat Mini Program, ArkUI, and Flutter source adapters derive state, action, view, style, accessibility, version, and content-addressed source references from source bytes; declarations are cross-checked and unmodeled semantics fail with registered blocking gaps"
+    },
+    "route_target_toolchains": {
+      "state": "PARTIAL_LOCAL",
+      "command": "node scripts/frt/run_frt_route_toolchains.mjs",
+      "summary": "Vue 2, Vue 3, React, WeChat Mini Program, and Flutter real local target checks passed. Flutter supports offline-cache resolution plus an evidenced online cold-cache fallback. ArkUI native hvigor build remains NOT_RUN because DevEco/hvigor is not installed"
+    },
+    "runtime_contracts": {
+      "state": "PASSED",
+      "command": "pnpm test",
+      "working_directory": "engines/frontend-client-engine",
+      "summary": "109 passed, 0 failed, 0 skipped"
+    },
+    "production_dependency_audit": {
+      "state": "PASSED",
+      "command": "pnpm audit --prod --registry=https://registry.npmjs.org",
+      "working_directory": "apps/web-console",
+      "summary": "0 known production vulnerabilities with Next 16.3.0, PostCSS 8.5.24, and Sharp 0.35.3"
+    },
+    "production_build": {
+      "state": "PASSED",
+      "command": "pnpm exec tsc --noEmit && pnpm build",
+      "working_directory": "apps/web-console",
+      "summary": "TypeScript and Next.js 16.3.0 production build passed; /frontend and authenticated /api/frt run, read, audit, claim, cancel, and retry routes emitted"
+    },
+    "browser_journeys": {
+      "state": "PASSED",
+      "command": "ELMOS_E2E_WEB_SERVER_MODE=development ELMOS_E2E_PORT=3412 ELMOS_E2E_CHROMIUM_CHANNEL=chrome pnpm exec playwright test e2e/frt-frontend-transformation.spec.ts --workers=2",
+      "working_directory": "apps/web-console",
+      "summary": "19 passed and 6 intentional duplicate lifecycle/API checks skipped across desktop Chromium, Firefox, WebKit, Pixel 7 Chromium, and iPhone 15 WebKit profiles; the real Engine lifecycle ran once on desktop Chromium"
+    },
+    "automated_accessibility": {
+      "state": "PASSED",
+      "summary": "Axe reported zero automated violations and keyboard operation passed across the five declared browser profiles; manual assistive-technology review remains NOT_RUN"
+    },
+    "external_quality_rehearsal": {
+      "state": "PASSED_LOCAL_REHEARSAL",
+      "command": "ELMOS_E2E_CHROMIUM_CHANNEL=chrome pnpm exec playwright test --config=playwright.external-quality.config.ts --grep-invert @visual",
+      "working_directory": "apps/web-console",
+      "summary": "5/5 browser profiles passed the frozen local semantic, keyboard, Axe, network, console, CLS, navigation timing, transfer-size and responsive-overflow budgets; this is not representative external performance evidence"
+    },
+    "visual_baseline_negative_gate": {
+      "state": "PASSED_EXPECTED_REJECTION",
+      "command": "pnpm exec playwright test --config=playwright.external-quality.config.ts --grep @visual --project=chromium",
+      "working_directory": "apps/web-console",
+      "summary": "The run failed because no independently approved baseline exists, updateSnapshots=none prevented baseline creation, and the approved directory remained empty"
+    },
+    "external_evidence_protocol": {
+      "state": "PASSED_LOCAL_TOOLING",
+      "command": "python3 scripts/frt/test_external_evidence.py && python3 scripts/frt/test_run_frt_gate.py",
+      "summary": "6 signed-protocol tests and 4 gate-integrity tests passed. PASSED requires signed preauthorization, exact profile/source digests, privacy-minimized evidence roles, zero-tolerance metrics and distinct executor, independent verifier and approver Ed25519 identities"
+    },
+    "physical_device_inventory_candidate": {
+      "state": "CANDIDATE_NOT_EXTERNALLY_VERIFIED",
+      "command": "python3 scripts/frt/collect_physical_device_inventory.py",
+      "summary": "One physical iOS device was discovered without persisting device name, UDID, serial or raw command output; install/launch, P0 journeys, visual review and assistive technology remain NOT_RUN"
+    },
+    "local_corpus_separation": {
+      "state": "PASSED",
+      "summary": "Development, negative, local holdout, and synthetic representative fixtures have distinct roles and content digests; none is relabeled as external or customer evidence"
+    },
+    "gate_integrity_tests": {
+      "state": "PASSED",
+      "command": "python3 scripts/frt/test_run_frt_gate.py",
+      "summary": "Unknown fields plus missing, tampered, byte-mismatched, extra-field, repository-escaping and unsigned/self-verified external evidence fail closed"
+    }
+  },
+  "artifact_digests": {
+    "runtime": "sha256:243b9d660c069dbdb9b9727fc453e5f56aa3e1eaac76407544ee9994a8ccc39a",
+    "server": "sha256:431f46560d72119619a1821f37f5d8f4b63d502d189ae48f228c6f257dd32a2f",
+    "contract_validation": "sha256:ddb89a1191162e2ef06a814304cc9eede722fbffa1c69b10ba72efa6a6538a27",
+    "security": "sha256:239f989c3d638994ae4d76ba2d02e3a5027c0b42f09f3d2f4130b92becd4d953",
+    "durable_store": "sha256:d408ee8f27c2914d3130fa05c6caf3ffa7b519eefc51834bb4dd9990dc0419ba",
+    "handler_registry": "sha256:a477f56444c1e3d41294a9197df7e114acc86bb869f6eadc3317be58f388d782",
+    "directional_route": "sha256:13c53626ea95596474a8dac54719b59254ec72ede74954270facb83fc7ba61ce",
+    "additional_source_extractors": "sha256:f88d7aa95375b64d253f912703a35afdaffc2918f0e8e2d76e71682ec948e571",
+    "runtime_tests": "sha256:ade9032cee854add8741b7f063129e497b760b729e1de6009ce1b8559513ae36",
+    "additional_ir_tests": "sha256:cc53325055e023cba71c25c27d1ca313300b29d88eb5c33310fdda80ca912bd7",
+    "web_studio": "sha256:6ca560f5268fa84cd8051e8571d57fd41ee20723a40b5b59cd70f8e0be1616be",
+    "web_bff": "sha256:d1fa24e22b1f6cc3c449cf74f028562e692da4d9b9b3b1c13ed4eb554983f868",
+    "web_package": "sha256:4ea4d2c76e7d838da82cfdbddc08634cd0f9e1fd9c5734e606ab04485083b1ad",
+    "web_lockfile": "sha256:0ad881b3af1838a6e1a3af8a0ca2b8346c907080d78f7666422cb662d3e6ecc4",
+    "browser_tests": "sha256:73e2a84207918d3e19d1c2d77fcd99120f817e5b1c4b0e381e7d4a190aecf160",
+    "external_quality_tests": "sha256:13c3eeba77838f3484f625be5c533adbe2db972ae5aba9d392b37d9d6a9cbfe2",
+    "external_evidence_protocol": "sha256:c6bc6b1f6e141be9bb3be65120514da678140ddec8d1320527edff25c7323cb7",
+    "external_evidence_profile": "sha256:43af54c45dbdf60c2e68b3acc0ff12d91564cb8419a05784d68bcedd4d33bbc9",
+    "local_device_inventory_candidate": "sha256:ccd2bd4543ea426f58eb33faad5a61c4573e0c672acc45af11d9110567aad0c7",
+    "batch32_gate": "sha256:9489498a2999e97066c2ed61ca3b59026f958667691db562bb683d6603991694",
+    "route_toolchain_evidence": "sha256:937b6ecd9de38f5f6c1c9b292bc4d6dd6b21560b1c50bfee9f3fedc50bc6742c",
+    "installed_manifest": "sha256:80e2f40a364ad3f3880e6aa78262277063f5e290c33c9fb65200a11c7e4b5e9b"
+  },
+  "evidence_boundary": {
+    "arkui_native_hvigor": "NOT_RUN: DevEco Studio/hvigor is unavailable on this host; ELMOS_HVIGORW is supported for the exact rerun",
+    "firefox": "PASSED_LOCAL_FUNCTIONAL_MATRIX",
+    "webkit": "PASSED_LOCAL_FUNCTIONAL_MATRIX",
+    "independent_visual_approval": "NOT_RUN",
+    "manual_assistive_technology": "NOT_RUN",
+    "physical_ios_programmatic_install_launch": "PASSED_LOCAL_EVIDENCE_ONLY",
+    "physical_device_inventory": "CANDIDATE_NOT_EXTERNALLY_VERIFIED",
+    "physical_device_manual_acceptance": "NOT_RUN",
+    "real_customer_source_target_builds": "NOT_RUN",
+    "independent_holdout": "NOT_RUN",
+    "performance": "NOT_RUN",
+    "penetration_test": "NOT_RUN",
+    "chaos_dr": "NOT_RUN",
+    "production_observation": "NOT_RUN",
+    "customer_acceptance": "NOT_RUN",
+    "production_certification": "NOT_CERTIFIED"
+  },
+  "refreshed_at": "2026-08-05T12:26:22.300395Z"
+}

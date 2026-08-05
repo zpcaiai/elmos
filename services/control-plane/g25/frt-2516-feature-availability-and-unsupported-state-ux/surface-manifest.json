@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2516",
+  "skill_name": "frt-2516-feature-availability-and-unsupported-state-ux",
+  "batch": "G25",
+  "surface": "control_plane",
+  "logical_path": "services/control-plane/g25/frt-2516-feature-availability-and-unsupported-state-ux/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:ea56ac8d91f66a1bd77d9f96f13c7a59cc21309f19f3da44b48bbd08a236adf3",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/server.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

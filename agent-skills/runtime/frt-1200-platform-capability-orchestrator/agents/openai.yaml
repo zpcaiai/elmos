@@ -1,0 +1,4 @@
+interface:
+  display_name: "Platform Capability Orchestrator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-1200-platform-capability-orchestrator to run FRT-1200 through the governed FRT runtime with exact scope and fail-closed evidence."

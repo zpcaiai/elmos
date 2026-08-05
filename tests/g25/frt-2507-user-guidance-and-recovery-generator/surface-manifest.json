@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2507",
+  "skill_name": "frt-2507-user-guidance-and-recovery-generator",
+  "batch": "G25",
+  "surface": "tests",
+  "logical_path": "tests/g25/frt-2507-user-guidance-and-recovery-generator/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:f6f6ae7210efcf0e0e8fa5013bb4fb0cdab2aceeac7b7916eca0eb42a0ca52d3",
+  "implementation_paths": [
+    "engines/frontend-client-engine/test/frt-runtime.test.ts",
+    "engines/frontend-client-engine/test/server.test.ts",
+    "apps/web-console/e2e/frt-frontend-transformation.spec.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2300",
+  "skill_name": "frt-2300-data-integrity-orchestrator",
+  "batch": "G23",
+  "surface": "admin_console",
+  "logical_path": "apps/admin-console/src/features/g23/frt-2300-data-integrity-orchestrator/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:441fe37be835332942363425f88fccb5c5882b5aee39a42da489611f8b8f52a6",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1201",
+  "skill_name": "frt-1201-platform-capability-registry",
+  "batch": "G12",
+  "surface": "tests",
+  "logical_path": "tests/g12/frt-1201-platform-capability-registry/",
+  "status": "shared_implementation",
+  "handler_kind": "cross_platform",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:7d38904f953d9920116bcb2548543838b8a20e185f08f66b32c0c048aeeb0d35",
+  "implementation_paths": [
+    "engines/frontend-client-engine/test/frt-runtime.test.ts",
+    "engines/frontend-client-engine/test/server.test.ts",
+    "apps/web-console/e2e/frt-frontend-transformation.spec.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

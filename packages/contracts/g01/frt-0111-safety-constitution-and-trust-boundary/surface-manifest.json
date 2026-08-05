@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0111",
+  "skill_name": "frt-0111-safety-constitution-and-trust-boundary",
+  "batch": "G01",
+  "surface": "contract",
+  "logical_path": "packages/contracts/g01/frt-0111-safety-constitution-and-trust-boundary/",
+  "status": "shared_implementation",
+  "handler_kind": "governance",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:06865a8b8042364fdf58abcde71bc11e3c8459bc935288a3e127b5f8b8d970da",
+  "implementation_paths": [
+    "schemas/frt-g01-g30/skill-run-request.schema.json",
+    "schemas/frt-g01-g30/skill-run-result.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

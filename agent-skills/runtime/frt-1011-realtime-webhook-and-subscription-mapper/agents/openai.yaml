@@ -1,0 +1,4 @@
+interface:
+  display_name: "Realtime Webhook and Subscription Mapper"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-1011-realtime-webhook-and-subscription-mapper to run FRT-1011 through the governed FRT runtime with exact scope and fail-closed evidence."

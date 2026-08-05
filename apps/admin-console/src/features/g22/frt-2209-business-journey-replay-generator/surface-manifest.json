@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2209",
+  "skill_name": "frt-2209-business-journey-replay-generator",
+  "batch": "G22",
+  "surface": "admin_console",
+  "logical_path": "apps/admin-console/src/features/g22/frt-2209-business-journey-replay-generator/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:c4caed5c13fb1030f077b5db09a78f09531ca7b8da25f966a461b42c2633defb",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

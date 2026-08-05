@@ -1,0 +1,4 @@
+interface:
+  display_name: "Security Incident Response Generator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2919-security-incident-response-generator to run FRT-2919 through the governed FRT runtime with exact scope and fail-closed evidence."

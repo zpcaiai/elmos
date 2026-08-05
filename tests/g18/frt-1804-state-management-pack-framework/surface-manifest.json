@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1804",
+  "skill_name": "frt-1804-state-management-pack-framework",
+  "batch": "G18",
+  "surface": "tests",
+  "logical_path": "tests/g18/frt-1804-state-management-pack-framework/",
+  "status": "shared_implementation",
+  "handler_kind": "compatibility",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:1b3f36fdcb80ad18eb3d0fbd0c9c918a8b00f0f43aa84ec3a5007956a52f451c",
+  "implementation_paths": [
+    "engines/frontend-client-engine/test/frt-runtime.test.ts",
+    "engines/frontend-client-engine/test/server.test.ts",
+    "apps/web-console/e2e/frt-frontend-transformation.spec.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

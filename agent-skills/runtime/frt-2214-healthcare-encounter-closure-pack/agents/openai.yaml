@@ -1,0 +1,4 @@
+interface:
+  display_name: "Healthcare Encounter Closure Pack"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2214-healthcare-encounter-closure-pack to run FRT-2214 through the governed FRT runtime with exact scope and fail-closed evidence."

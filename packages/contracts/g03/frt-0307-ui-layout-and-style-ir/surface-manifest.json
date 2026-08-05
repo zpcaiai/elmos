@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0307",
+  "skill_name": "frt-0307-ui-layout-and-style-ir",
+  "batch": "G03",
+  "surface": "contract",
+  "logical_path": "packages/contracts/g03/frt-0307-ui-layout-and-style-ir/",
+  "status": "shared_implementation",
+  "handler_kind": "semantic_ir",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:d922cc4d1d0200d63c2cc3fc8e8a36f07d0ba5e3f2aef146ed1ea1aa107608f7",
+  "implementation_paths": [
+    "schemas/frt-g01-g30/skill-run-request.schema.json",
+    "schemas/frt-g01-g30/skill-run-result.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

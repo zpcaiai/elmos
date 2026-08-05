@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2715",
+  "skill_name": "frt-2715-capacity-planning-generator",
+  "batch": "G27",
+  "surface": "tests",
+  "logical_path": "tests/g27/frt-2715-capacity-planning-generator/",
+  "status": "shared_implementation",
+  "handler_kind": "performance_capacity",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:b99ea9e9c5f459cd737877f3e0ddae666e61f6ed0dec24d03211e196527edb32",
+  "implementation_paths": [
+    "engines/frontend-client-engine/test/frt-runtime.test.ts",
+    "engines/frontend-client-engine/test/server.test.ts",
+    "apps/web-console/e2e/frt-frontend-transformation.spec.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

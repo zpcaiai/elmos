@@ -1,0 +1,4 @@
+interface:
+  display_name: "Graceful Degradation Runtime"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2804-graceful-degradation-runtime to run FRT-2804 through the governed FRT runtime with exact scope and fail-closed evidence."

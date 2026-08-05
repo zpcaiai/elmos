@@ -1,0 +1,127 @@
+{
+  "apiVersion": "frt.openai.dev/v1alpha1",
+  "kind": "GenerationBatchManifest",
+  "metadata": {
+    "id": "G26",
+    "slug": "regression-assurance-release-qualification",
+    "version": "1.0.0",
+    "generatedAt": "2026-07-31"
+  },
+  "spec": {
+    "title": "全量回归测试、并行测试平台、Flaky治理与Release Qualification",
+    "transitionFrom": "关键功能在真实用户条件下可发现、理解、完成、恢复",
+    "transitionTo": "全系统回归稳定、并行、可重复地覆盖需求、业务、数据、管理、可用性、安全和性能，并成为Release强制资格认证",
+    "certificateFamily": "RQ",
+    "skills": [
+      {
+        "id": "FRT-2600",
+        "name": "Regression Assurance Orchestrator",
+        "path": "skills/frt-2600-regression-assurance-orchestrator/SKILL.md"
+      },
+      {
+        "id": "FRT-2601",
+        "name": "Requirement-Derived Test Generator",
+        "path": "skills/frt-2601-requirement-derived-test-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-2602",
+        "name": "Model-Based Business Test Generator",
+        "path": "skills/frt-2602-model-based-business-test-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-2603",
+        "name": "Unit and Component Test Coordinator",
+        "path": "skills/frt-2603-unit-and-component-test-coordinator/SKILL.md"
+      },
+      {
+        "id": "FRT-2604",
+        "name": "API and Event Contract Test Coordinator",
+        "path": "skills/frt-2604-api-and-event-contract-test-coordinator/SKILL.md"
+      },
+      {
+        "id": "FRT-2605",
+        "name": "End-to-End Journey Test Coordinator",
+        "path": "skills/frt-2605-end-to-end-journey-test-coordinator/SKILL.md"
+      },
+      {
+        "id": "FRT-2606",
+        "name": "Differential Test Coordinator",
+        "path": "skills/frt-2606-differential-test-coordinator/SKILL.md"
+      },
+      {
+        "id": "FRT-2607",
+        "name": "Mutation Test Coordinator",
+        "path": "skills/frt-2607-mutation-test-coordinator/SKILL.md"
+      },
+      {
+        "id": "FRT-2608",
+        "name": "Visual and Semantic Regression Coordinator",
+        "path": "skills/frt-2608-visual-and-semantic-regression-coordinator/SKILL.md"
+      },
+      {
+        "id": "FRT-2609",
+        "name": "Security Regression Coordinator",
+        "path": "skills/frt-2609-security-regression-coordinator/SKILL.md"
+      },
+      {
+        "id": "FRT-2610",
+        "name": "Performance Regression Coordinator",
+        "path": "skills/frt-2610-performance-regression-coordinator/SKILL.md"
+      },
+      {
+        "id": "FRT-2611",
+        "name": "Test Data Management",
+        "path": "skills/frt-2611-test-data-management/SKILL.md"
+      },
+      {
+        "id": "FRT-2612",
+        "name": "Synthetic Tenant and Account Generator",
+        "path": "skills/frt-2612-synthetic-tenant-and-account-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-2613",
+        "name": "Environment Parity Validator",
+        "path": "skills/frt-2613-environment-parity-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-2614",
+        "name": "Flaky Test Detection and Quarantine",
+        "path": "skills/frt-2614-flaky-test-detection-and-quarantine/SKILL.md"
+      },
+      {
+        "id": "FRT-2615",
+        "name": "Impacted Test Selection",
+        "path": "skills/frt-2615-impacted-test-selection/SKILL.md"
+      },
+      {
+        "id": "FRT-2616",
+        "name": "Parallel Test Grid",
+        "path": "skills/frt-2616-parallel-test-grid/SKILL.md"
+      },
+      {
+        "id": "FRT-2617",
+        "name": "Test Worker Failover",
+        "path": "skills/frt-2617-test-worker-failover/SKILL.md"
+      },
+      {
+        "id": "FRT-2618",
+        "name": "Release Qualification Engine",
+        "path": "skills/frt-2618-release-qualification-engine/SKILL.md"
+      },
+      {
+        "id": "FRT-2619",
+        "name": "Regression Evidence Certificate",
+        "path": "skills/frt-2619-regression-evidence-certificate/SKILL.md"
+      }
+    ],
+    "gates": [
+      "Critical Requirement均有Test Obligation和Oracle",
+      "Critical Journey不只断言UI而验证Authority",
+      "R4/R5 Mutation存活=0",
+      "Critical Flaky=0",
+      "Environment Critical Drift=0",
+      "Test Data Cross-Shard污染=0",
+      "RQ5全部非补偿式Gate通过"
+    ]
+  }
+}

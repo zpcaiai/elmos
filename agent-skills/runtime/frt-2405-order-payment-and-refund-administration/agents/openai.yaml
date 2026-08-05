@@ -1,0 +1,4 @@
+interface:
+  display_name: "Order, Payment and Refund Administration"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2405-order-payment-and-refund-administration to run FRT-2405 through the governed FRT runtime with exact scope and fail-closed evidence."

@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1209",
+  "skill_name": "frt-1209-app-lifecycle-and-background-capability",
+  "batch": "G12",
+  "surface": "runtime",
+  "logical_path": "packages/runtime/g12/frt-1209-app-lifecycle-and-background-capability/",
+  "status": "shared_implementation",
+  "handler_kind": "cross_platform",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:90ac24a086dc93cc22f2581d8f6880501b002bd1f4471d8301eb70d87444ebcd",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/frt-runtime.ts",
+    "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

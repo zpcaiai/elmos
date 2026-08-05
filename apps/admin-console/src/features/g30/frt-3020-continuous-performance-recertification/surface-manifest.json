@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-3020",
+  "skill_name": "frt-3020-continuous-performance-recertification",
+  "batch": "G30",
+  "surface": "admin_console",
+  "logical_path": "apps/admin-console/src/features/g30/frt-3020-continuous-performance-recertification/",
+  "status": "shared_implementation",
+  "handler_kind": "production_readiness",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:65a67a70d122070387448c26b821af3635b94d5ca8b25c2f116a642e91924b17",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

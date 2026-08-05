@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2922",
+  "skill_name": "frt-2922-security-regression-and-recertification",
+  "batch": "G29",
+  "surface": "tests",
+  "logical_path": "tests/g29/frt-2922-security-regression-and-recertification/",
+  "status": "shared_implementation",
+  "handler_kind": "security_privacy",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:fb3cdaed97ce3cf9b4792e8dec0574dfaa64f7fa56751a6ae3bf10f23f4e60e7",
+  "implementation_paths": [
+    "engines/frontend-client-engine/test/frt-runtime.test.ts",
+    "engines/frontend-client-engine/test/server.test.ts",
+    "apps/web-console/e2e/frt-frontend-transformation.spec.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

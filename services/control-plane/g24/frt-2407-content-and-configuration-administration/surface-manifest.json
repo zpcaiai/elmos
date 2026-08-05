@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2407",
+  "skill_name": "frt-2407-content-and-configuration-administration",
+  "batch": "G24",
+  "surface": "control_plane",
+  "logical_path": "services/control-plane/g24/frt-2407-content-and-configuration-administration/",
+  "status": "shared_implementation",
+  "handler_kind": "administration",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:6dcc8584d6279c478b408b264b66c08f36ed08cb8079081f1efadcb562ad5894",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/server.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

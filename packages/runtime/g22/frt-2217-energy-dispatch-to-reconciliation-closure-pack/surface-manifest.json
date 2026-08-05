@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2217",
+  "skill_name": "frt-2217-energy-dispatch-to-reconciliation-closure-pack",
+  "batch": "G22",
+  "surface": "runtime",
+  "logical_path": "packages/runtime/g22/frt-2217-energy-dispatch-to-reconciliation-closure-pack/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:64b389c91bb12717e41bac816b2586e6ff79d5d785643860209d84b6a7a0f6bb",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/frt-runtime.ts",
+    "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

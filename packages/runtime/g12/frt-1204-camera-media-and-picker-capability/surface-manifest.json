@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1204",
+  "skill_name": "frt-1204-camera-media-and-picker-capability",
+  "batch": "G12",
+  "surface": "runtime",
+  "logical_path": "packages/runtime/g12/frt-1204-camera-media-and-picker-capability/",
+  "status": "shared_implementation",
+  "handler_kind": "cross_platform",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:f8b9f9c11ce59d81099f6b589b6654b9f4e8dbb62b45f4c4ba3e603a41c2d4b1",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/frt-runtime.ts",
+    "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

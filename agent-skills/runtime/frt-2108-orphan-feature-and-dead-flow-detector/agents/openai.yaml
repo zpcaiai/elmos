@@ -1,0 +1,4 @@
+interface:
+  display_name: "Orphan Feature and Dead Flow Detector"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2108-orphan-feature-and-dead-flow-detector to run FRT-2108 through the governed FRT runtime with exact scope and fail-closed evidence."

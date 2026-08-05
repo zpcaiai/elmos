@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0712",
+  "skill_name": "frt-0712-incremental-regeneration-and-three-way-merge",
+  "batch": "G07",
+  "surface": "control_plane",
+  "logical_path": "services/control-plane/g07/frt-0712-incremental-regeneration-and-three-way-merge/",
+  "status": "shared_implementation",
+  "handler_kind": "build_toolchain",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:cb02e691c62a306aaa756198e55958178ea335bf14a47471367c62f514449329",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/server.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

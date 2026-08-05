@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2218",
+  "skill_name": "frt-2218-agent-run-to-human-approval-closure-pack",
+  "batch": "G22",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g22/frt-2218-agent-run-to-human-approval-closure-pack/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:9fb6caca3597ca37e41fa4593c7f8218abc2cc29290ad988cd271f254afcbbe6",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

@@ -1,0 +1,702 @@
+{
+  "schemaVersion": "1.0",
+  "evidenceKind": "FRT_DIRECTIONAL_ROUTE_LOCAL_TOOLCHAIN_EXECUTION",
+  "generatedAt": "2026-08-05T10:11:04.718Z",
+  "repositoryRoot": "/Users/stephen/DevProjects/AIProjects/elmos",
+  "workspacePolicy": "REMOVED_AFTER_HASHING",
+  "scope": "bounded-single-public-counter-route-v1",
+  "routeCount": 30,
+  "routeStatus": "PASSED",
+  "allRoutes": [
+    {
+      "route": "Vue 2 -> Vue 3",
+      "status": "GENERATED",
+      "sourceValidation": "PASSED",
+      "targetValidation": "PASSED",
+      "sourceSnapshotDigest": "sha256:8c2d613f0f7e9107c1b32a8da168aa46e48d0d467d1f23ea9af00b1a7fd90416",
+      "generatedFiles": {
+        "frt-route.json": "sha256:4244c64df258890393319afacb00347f8dcf816c02ea648f1572956db3706f83",
+        "package.json": "sha256:516e603b77f415977f270bceeeb01b5b23efb2022d93da516f9e5893f195db1b",
+        "src/App.vue": "sha256:e50eb1d32677884c3f9ceb6636ab75190b6fda343bbe8bf21ac63a1c49062a89"
+      },
+      "typedGaps": []
+    },
+    {
+      "route": "Vue 2 -> React",
+      "status": "GENERATED",
+      "sourceValidation": "PASSED",
+      "targetValidation": "PASSED",
+      "sourceSnapshotDigest": "sha256:8c2d613f0f7e9107c1b32a8da168aa46e48d0d467d1f23ea9af00b1a7fd90416",
+      "generatedFiles": {
+        "frt-route.json": "sha256:c713b7556ae421d16f893663f8ecd3b5241f45a0c503e452ff381e78f9c10ebc",
+        "package.json": "sha256:1cb209cd5eca01044025934235d31279ae8e169cb2d23cc8afce8398fca8feff",
+        "src/App.css": "sha256:63ed60c1d9d98dc07880cfe689bea7867c933e0336eac47553b6361775d7efe2",
+        "src/App.tsx": "sha256:6e43fb59e8a8c320a51bf72b8fc9219153b2fa7b28595b0d9e7f5ca742451ad0",
+        "tsconfig.json": "sha256:f0d2901347e1404b5d011eac8a630aefd0961cb20cc92f7261c50b5e37ddc231"
+      },
+      "typedGaps": []
+    },
+    {
+      "route": "Vue 2 -> WeChat Mini Program",
+      "status": "GENERATED",
+      "sourceValidation": "PASSED",
+      "targetValidation": "PASSED",
+      "sourceSnapshotDigest": "sha256:8c2d613f0f7e9107c1b32a8da168aa46e48d0d467d1f23ea9af00b1a7fd90416",
+      "generatedFiles": {
+        "app.json": "sha256:a8227a46813a049ec7adc2bba8af8ae96e6c20636dc96bf32a0414c674086cfb",
+        "frt-route.json": "sha256:00ef5ce2f3c8594993dcfbba8623b0774950e1246441cd70fd6cbb9b7541b666",
+        "pages/index/index.js": "sha256:e8ea3aaae87a53e83424c3ce967a881a61f161c156a0f2d200f5eb911ce1306f",
+        "pages/index/index.json": "sha256:6b4f592fb4f1ec858c23eab97c213dc131c256074c85c223594f7863c51e9ce1",
+        "pages/index/index.wxml": "sha256:9b107cf04b3bfa35be20ba550cdefe227bd7df693e4d29175992dd105e23032c",
+        "pages/index/index.wxss": "sha256:63ed60c1d9d98dc07880cfe689bea7867c933e0336eac47553b6361775d7efe2",
+        "project.config.json": "sha256:5529c5741b7e74cbf1216809df4ce3d1940862db9299dae1f3fd03aaac60f120"
+      },
+      "typedGaps": []
+    },
+    {
+      "route": "Vue 2 -> ArkUI",
+      "status": "GENERATED",
+      "sourceValidation": "PASSED",
+      "targetValidation": "PASSED",
+      "sourceSnapshotDigest": "sha256:8c2d613f0f7e9107c1b32a8da168aa46e48d0d467d1f23ea9af00b1a7fd90416",
+      "generatedFiles": {
+        "AppScope/app.json5": "sha256:ab0ec7ae9fa80c97f7fbfd3c4d468b8238747edbd45dcb12cd17ca59d3dd6acf",
+        "build-profile.json5": "sha256:ef04a2f2d12540c3942e7b05cecf37bf181a0cf3d9e0d9e7cdd3cbc2375baeec",
+        "entry/hvigorfile.ts": "sha256:f547983dcab9c8fff87cc3ddedb22bb98063663c5b8afe18bb32e131311ec289",
+        "entry/oh-package.json5": "sha256:48f45a9a056591c10618432a29fa61a4143990237daadb0874fae18ec747906c",
+        "entry/src/main/ets/pages/Index.ets": "sha256:b9898ab08401f3a8f23e6ec365eda286a5445cff3a166fe7a9269ae588edb516",
+        "entry/src/main/module.json5": "sha256:c35c25affe1258e5848744c6c2f5a9ae0324eaf54eaf5862469b6c411b75906f",
+        "entry/src/main/resources/base/profile/main_pages.json": "sha256:f21984fb1d5096f0db41314da0bb94c573e7ad018e5afae3044f8d5ff71b0bfc",
+        "frt-route.json": "sha256:0fefbab282e69f2effe2ebe64101b2f8b636878af2a3be4fde0e2efac084a67b",
+        "hvigor-config.json5": "sha256:c24b1704e827e0ff49d3a2acd013a97de53b05bef0e47b62931df1f121aa5398",
+        "hvigorfile.ts": "sha256:2378c5e0c5246005ada73a67e8c9834fa08adb9ffd6fb6c219051456753bed5a",
+        "oh-package.json5": "sha256:11c46ae73ed2defc4294479ef01f2559f2a480a5fda32cd84a7703829bd56bcf"
+      },
+      "typedGaps": []
+    },
+    {
+      "route": "Vue 2 -> Flutter",
+      "status": "GENERATED",
+      "sourceValidation": "PASSED",
+      "targetValidation": "PASSED",
+      "sourceSnapshotDigest": "sha256:8c2d613f0f7e9107c1b32a8da168aa46e48d0d467d1f23ea9af00b1a7fd90416",
+      "generatedFiles": {
+        ".fvmrc": "sha256:6748d55c6cc27876867415cd3ec374460c11bdefc03cc6e53bebeaa9b9a44147",
+        "analysis_options.yaml": "sha256:6dae439bab95cb2a1536bb4f90c3b751f855544ab2cc37ef7f6df234805aefea",
+        "frt-route.json": "sha256:1bc9d30b74bf7f5d1c80b8215dea719f0835cca5916ccabab11c7c3191dfa824",
+        "lib/main.dart": "sha256:c7a468e8f112cadba87c6b599a08485a6a591cfb227d332a0047150dfb9bfdfd",
+        "pubspec.yaml": "sha256:25357d2b876c1baab8761b18d0863c1e31127d0cd74972e3814bacb5aba89212",
+        "test/widget_test.dart": "sha256:6cc6458759538c88439efbf68831128c7c06e7fe001076693741a50f7d3d3e8c"
+      },
+      "typedGaps": []
+    },
+    {
+      "route": "Vue 3 -> Vue 2",
+      "status": "GENERATED",
+      "sourceValidation": "PASSED",
+      "targetValidation": "PASSED",
+      "sourceSnapshotDigest": "sha256:cb6eb3f08a31bf9fbc979cea88c358bacda76a53ecc17f6c7956cb01163dd772",
+      "generatedFiles": {
+        "frt-route.json": "sha256:3c3b627e81fb53374df952d5180b25df85039076b8f9bfbda654225dacae631a",
+        "package.json": "sha256:efea2253e496ff0d9bca25ff4cec70262767eae5d4847eda754366d9d2e8fc4a",
+        "src/App.vue": "sha256:14a06f3a87e918013e8407a61f9e41774a6567090b68e1bfb48276f3f59bfcb3"
+      },
+      "typedGaps": []
+    },
+    {
+      "route": "Vue 3 -> React",
+      "status": "GENERATED",
+      "sourceValidation": "PASSED",
+      "targetValidation": "PASSED",
+      "sourceSnapshotDigest": "sha256:cb6eb3f08a31bf9fbc979cea88c358bacda76a53ecc17f6c7956cb01163dd772",
+      "generatedFiles": {
+        "frt-route.json": "sha256:ecdab5fd8dbf41ece5e3446ad292f5c3c7d7647be67955704f8e3f6314cf2109",
+        "package.json": "sha256:1cb209cd5eca01044025934235d31279ae8e169cb2d23cc8afce8398fca8feff",
+        "src/App.css": "sha256:63ed60c1d9d98dc07880cfe689bea7867c933e0336eac47553b6361775d7efe2",
+        "src/App.tsx": "sha256:6e43fb59e8a8c320a51bf72b8fc9219153b2fa7b28595b0d9e7f5ca742451ad0",
+        "tsconfig.json": "sha256:f0d2901347e1404b5d011eac8a630aefd0961cb20cc92f7261c50b5e37ddc231"
+      },
+      "typedGaps": []
+    },
+    {
+      "route": "Vue 3 -> WeChat Mini Program",
+      "status": "GENERATED",
+      "sourceValidation": "PASSED",
+      "targetValidation": "PASSED",
+      "sourceSnapshotDigest": "sha256:cb6eb3f08a31bf9fbc979cea88c358bacda76a53ecc17f6c7956cb01163dd772",
+      "generatedFiles": {
+        "app.json": "sha256:a8227a46813a049ec7adc2bba8af8ae96e6c20636dc96bf32a0414c674086cfb",
+        "frt-route.json": "sha256:3b3b1ecbb204abc753434a2e00cfceab7816034d7d79cef87aba77b93bc00066",
+        "pages/index/index.js": "sha256:e8ea3aaae87a53e83424c3ce967a881a61f161c156a0f2d200f5eb911ce1306f",
+        "pages/index/index.json": "sha256:6b4f592fb4f1ec858c23eab97c213dc131c256074c85c223594f7863c51e9ce1",
+        "pages/index/index.wxml": "sha256:9b107cf04b3bfa35be20ba550cdefe227bd7df693e4d29175992dd105e23032c",
+        "pages/index/index.wxss": "sha256:63ed60c1d9d98dc07880cfe689bea7867c933e0336eac47553b6361775d7efe2",
+        "project.config.json": "sha256:5529c5741b7e74cbf1216809df4ce3d1940862db9299dae1f3fd03aaac60f120"
+      },
+      "typedGaps": []
+    },
+    {
+      "route": "Vue 3 -> ArkUI",
+      "status": "GENERATED",
+      "sourceValidation": "PASSED",
+      "targetValidation": "PASSED",
+      "sourceSnapshotDigest": "sha256:cb6eb3f08a31bf9fbc979cea88c358bacda76a53ecc17f6c7956cb01163dd772",
+      "generatedFiles": {
+        "AppScope/app.json5": "sha256:ab0ec7ae9fa80c97f7fbfd3c4d468b8238747edbd45dcb12cd17ca59d3dd6acf",
+        "build-profile.json5": "sha256:ef04a2f2d12540c3942e7b05cecf37bf181a0cf3d9e0d9e7cdd3cbc2375baeec",
+        "entry/hvigorfile.ts": "sha256:f547983dcab9c8fff87cc3ddedb22bb98063663c5b8afe18bb32e131311ec289",
+        "entry/oh-package.json5": "sha256:48f45a9a056591c10618432a29fa61a4143990237daadb0874fae18ec747906c",
+        "entry/src/main/ets/pages/Index.ets": "sha256:b9898ab08401f3a8f23e6ec365eda286a5445cff3a166fe7a9269ae588edb516",
+        "entry/src/main/module.json5": "sha256:c35c25affe1258e5848744c6c2f5a9ae0324eaf54eaf5862469b6c411b75906f",
+        "entry/src/main/resources/base/profile/main_pages.json": "sha256:f21984fb1d5096f0db41314da0bb94c573e7ad018e5afae3044f8d5ff71b0bfc",
+        "frt-route.json": "sha256:d36c752233e73148582f054da1a355ad88ad29562b67a13710f3b70ab262e450",
+        "hvigor-config.json5": "sha256:c24b1704e827e0ff49d3a2acd013a97de53b05bef0e47b62931df1f121aa5398",
+        "hvigorfile.ts": "sha256:2378c5e0c5246005ada73a67e8c9834fa08adb9ffd6fb6c219051456753bed5a",
+        "oh-package.json5": "sha256:11c46ae73ed2defc4294479ef01f2559f2a480a5fda32cd84a7703829bd56bcf"
+      },
+      "typedGaps": []
+    },
+    {
+      "route": "Vue 3 -> Flutter",
+      "status": "GENERATED",
+      "sourceValidation": "PASSED",
+      "targetValidation": "PASSED",
+      "sourceSnapshotDigest": "sha256:cb6eb3f08a31bf9fbc979cea88c358bacda76a53ecc17f6c7956cb01163dd772",
+      "generatedFiles": {
+        ".fvmrc": "sha256:6748d55c6cc27876867415cd3ec374460c11bdefc03cc6e53bebeaa9b9a44147",
+        "analysis_options.yaml": "sha256:6dae439bab95cb2a1536bb4f90c3b751f855544ab2cc37ef7f6df234805aefea",
+        "frt-route.json": "sha256:480cc5d14d3f62bf59c8c60a7a46ee88db6031d7cfe1ba345a38b82a56de5e88",
+        "lib/main.dart": "sha256:c7a468e8f112cadba87c6b599a08485a6a591cfb227d332a0047150dfb9bfdfd",
+        "pubspec.yaml": "sha256:25357d2b876c1baab8761b18d0863c1e31127d0cd74972e3814bacb5aba89212",
+        "test/widget_test.dart": "sha256:6cc6458759538c88439efbf68831128c7c06e7fe001076693741a50f7d3d3e8c"
+      },
+      "typedGaps": []
+    },
+    {
+      "route": "React -> Vue 2",
+      "status": "GENERATED",
+      "sourceValidation": "PASSED",
+      "targetValidation": "PASSED",
+      "sourceSnapshotDigest": "sha256:51bd145a21d29cd3c420c761816fbbc7085c5155d27ec4050e7d428b572dfad6",
+      "generatedFiles": {
+        "frt-route.json": "sha256:724371bf5ebd8d978816bad4582d781033bcc260d94030720a2dcbbec0098de6",
+        "package.json": "sha256:efea2253e496ff0d9bca25ff4cec70262767eae5d4847eda754366d9d2e8fc4a",
+        "src/App.vue": "sha256:14a06f3a87e918013e8407a61f9e41774a6567090b68e1bfb48276f3f59bfcb3"
+      },
+      "typedGaps": []
+    },
+    {
+      "route": "React -> Vue 3",
+      "status": "GENERATED",
+      "sourceValidation": "PASSED",
+      "targetValidation": "PASSED",
+      "sourceSnapshotDigest": "sha256:51bd145a21d29cd3c420c761816fbbc7085c5155d27ec4050e7d428b572dfad6",
+      "generatedFiles": {
+        "frt-route.json": "sha256:2f170719d3e6a73a6fd3e1faf1d6d694121676cb2d61d7db860dcf413007accf",
+        "package.json": "sha256:516e603b77f415977f270bceeeb01b5b23efb2022d93da516f9e5893f195db1b",
+        "src/App.vue": "sha256:e50eb1d32677884c3f9ceb6636ab75190b6fda343bbe8bf21ac63a1c49062a89"
+      },
+      "typedGaps": []
+    },
+    {
+      "route": "React -> WeChat Mini Program",
+      "status": "GENERATED",
+      "sourceValidation": "PASSED",
+      "targetValidation": "PASSED",
+      "sourceSnapshotDigest": "sha256:51bd145a21d29cd3c420c761816fbbc7085c5155d27ec4050e7d428b572dfad6",
+      "generatedFiles": {
+        "app.json": "sha256:a8227a46813a049ec7adc2bba8af8ae96e6c20636dc96bf32a0414c674086cfb",
+        "frt-route.json": "sha256:60a526e8d20ea5d4c65fc09383f78131e0e649c8d0ab526edf11b0a3f31bb68f",
+        "pages/index/index.js": "sha256:e8ea3aaae87a53e83424c3ce967a881a61f161c156a0f2d200f5eb911ce1306f",
+        "pages/index/index.json": "sha256:6b4f592fb4f1ec858c23eab97c213dc131c256074c85c223594f7863c51e9ce1",
+        "pages/index/index.wxml": "sha256:9b107cf04b3bfa35be20ba550cdefe227bd7df693e4d29175992dd105e23032c",
+        "pages/index/index.wxss": "sha256:63ed60c1d9d98dc07880cfe689bea7867c933e0336eac47553b6361775d7efe2",
+        "project.config.json": "sha256:5529c5741b7e74cbf1216809df4ce3d1940862db9299dae1f3fd03aaac60f120"
+      },
+      "typedGaps": []
+    },
+    {
+      "route": "React -> ArkUI",
+      "status": "GENERATED",
+      "sourceValidation": "PASSED",
+      "targetValidation": "PASSED",
+      "sourceSnapshotDigest": "sha256:51bd145a21d29cd3c420c761816fbbc7085c5155d27ec4050e7d428b572dfad6",
+      "generatedFiles": {
+        "AppScope/app.json5": "sha256:ab0ec7ae9fa80c97f7fbfd3c4d468b8238747edbd45dcb12cd17ca59d3dd6acf",
+        "build-profile.json5": "sha256:ef04a2f2d12540c3942e7b05cecf37bf181a0cf3d9e0d9e7cdd3cbc2375baeec",
+        "entry/hvigorfile.ts": "sha256:f547983dcab9c8fff87cc3ddedb22bb98063663c5b8afe18bb32e131311ec289",
+        "entry/oh-package.json5": "sha256:48f45a9a056591c10618432a29fa61a4143990237daadb0874fae18ec747906c",
+        "entry/src/main/ets/pages/Index.ets": "sha256:b9898ab08401f3a8f23e6ec365eda286a5445cff3a166fe7a9269ae588edb516",
+        "entry/src/main/module.json5": "sha256:c35c25affe1258e5848744c6c2f5a9ae0324eaf54eaf5862469b6c411b75906f",
+        "entry/src/main/resources/base/profile/main_pages.json": "sha256:f21984fb1d5096f0db41314da0bb94c573e7ad018e5afae3044f8d5ff71b0bfc",
+        "frt-route.json": "sha256:1cc064e5cb7e9ff8845d426615f2708ed76e5e6d6e01109d72957dc3f1a6f37e",
+        "hvigor-config.json5": "sha256:c24b1704e827e0ff49d3a2acd013a97de53b05bef0e47b62931df1f121aa5398",
+        "hvigorfile.ts": "sha256:2378c5e0c5246005ada73a67e8c9834fa08adb9ffd6fb6c219051456753bed5a",
+        "oh-package.json5": "sha256:11c46ae73ed2defc4294479ef01f2559f2a480a5fda32cd84a7703829bd56bcf"
+      },
+      "typedGaps": []
+    },
+    {
+      "route": "React -> Flutter",
+      "status": "GENERATED",
+      "sourceValidation": "PASSED",
+      "targetValidation": "PASSED",
+      "sourceSnapshotDigest": "sha256:51bd145a21d29cd3c420c761816fbbc7085c5155d27ec4050e7d428b572dfad6",
+      "generatedFiles": {
+        ".fvmrc": "sha256:6748d55c6cc27876867415cd3ec374460c11bdefc03cc6e53bebeaa9b9a44147",
+        "analysis_options.yaml": "sha256:6dae439bab95cb2a1536bb4f90c3b751f855544ab2cc37ef7f6df234805aefea",
+        "frt-route.json": "sha256:9d410fd853f9dd5aa7c558175f6b61e977deecc55403108cdd16c17ca582756d",
+        "lib/main.dart": "sha256:c7a468e8f112cadba87c6b599a08485a6a591cfb227d332a0047150dfb9bfdfd",
+        "pubspec.yaml": "sha256:25357d2b876c1baab8761b18d0863c1e31127d0cd74972e3814bacb5aba89212",
+        "test/widget_test.dart": "sha256:6cc6458759538c88439efbf68831128c7c06e7fe001076693741a50f7d3d3e8c"
+      },
+      "typedGaps": []
+    },
+    {
+      "route": "WeChat Mini Program -> Vue 2",
+      "status": "GENERATED",
+      "sourceValidation": "PASSED",
+      "targetValidation": "PASSED",
+      "sourceSnapshotDigest": "sha256:7f3ec83d3b7bf93d7db04bfc2aa4947684e87932ddf6a30b7fc4237631bede53",
+      "generatedFiles": {
+        "frt-route.json": "sha256:fb314bd5dd4d5eb4551f90207f93829808bf7d0bed12de82dc207ee6fb5e4b75",
+        "package.json": "sha256:efea2253e496ff0d9bca25ff4cec70262767eae5d4847eda754366d9d2e8fc4a",
+        "src/App.vue": "sha256:14a06f3a87e918013e8407a61f9e41774a6567090b68e1bfb48276f3f59bfcb3"
+      },
+      "typedGaps": []
+    },
+    {
+      "route": "WeChat Mini Program -> Vue 3",
+      "status": "GENERATED",
+      "sourceValidation": "PASSED",
+      "targetValidation": "PASSED",
+      "sourceSnapshotDigest": "sha256:7f3ec83d3b7bf93d7db04bfc2aa4947684e87932ddf6a30b7fc4237631bede53",
+      "generatedFiles": {
+        "frt-route.json": "sha256:c5f3e79d8481f5a5644dc2df2287c1845b3bdd4a9eafbec14c7623ed64c8b8f1",
+        "package.json": "sha256:516e603b77f415977f270bceeeb01b5b23efb2022d93da516f9e5893f195db1b",
+        "src/App.vue": "sha256:e50eb1d32677884c3f9ceb6636ab75190b6fda343bbe8bf21ac63a1c49062a89"
+      },
+      "typedGaps": []
+    },
+    {
+      "route": "WeChat Mini Program -> React",
+      "status": "GENERATED",
+      "sourceValidation": "PASSED",
+      "targetValidation": "PASSED",
+      "sourceSnapshotDigest": "sha256:7f3ec83d3b7bf93d7db04bfc2aa4947684e87932ddf6a30b7fc4237631bede53",
+      "generatedFiles": {
+        "frt-route.json": "sha256:7507a0d7acc0312c55a4544852306f7a9d7b02ba26458ecc3b8bf1df0d4046af",
+        "package.json": "sha256:1cb209cd5eca01044025934235d31279ae8e169cb2d23cc8afce8398fca8feff",
+        "src/App.css": "sha256:63ed60c1d9d98dc07880cfe689bea7867c933e0336eac47553b6361775d7efe2",
+        "src/App.tsx": "sha256:6e43fb59e8a8c320a51bf72b8fc9219153b2fa7b28595b0d9e7f5ca742451ad0",
+        "tsconfig.json": "sha256:f0d2901347e1404b5d011eac8a630aefd0961cb20cc92f7261c50b5e37ddc231"
+      },
+      "typedGaps": []
+    },
+    {
+      "route": "WeChat Mini Program -> ArkUI",
+      "status": "GENERATED",
+      "sourceValidation": "PASSED",
+      "targetValidation": "PASSED",
+      "sourceSnapshotDigest": "sha256:7f3ec83d3b7bf93d7db04bfc2aa4947684e87932ddf6a30b7fc4237631bede53",
+      "generatedFiles": {
+        "AppScope/app.json5": "sha256:ab0ec7ae9fa80c97f7fbfd3c4d468b8238747edbd45dcb12cd17ca59d3dd6acf",
+        "build-profile.json5": "sha256:ef04a2f2d12540c3942e7b05cecf37bf181a0cf3d9e0d9e7cdd3cbc2375baeec",
+        "entry/hvigorfile.ts": "sha256:f547983dcab9c8fff87cc3ddedb22bb98063663c5b8afe18bb32e131311ec289",
+        "entry/oh-package.json5": "sha256:48f45a9a056591c10618432a29fa61a4143990237daadb0874fae18ec747906c",
+        "entry/src/main/ets/pages/Index.ets": "sha256:b9898ab08401f3a8f23e6ec365eda286a5445cff3a166fe7a9269ae588edb516",
+        "entry/src/main/module.json5": "sha256:c35c25affe1258e5848744c6c2f5a9ae0324eaf54eaf5862469b6c411b75906f",
+        "entry/src/main/resources/base/profile/main_pages.json": "sha256:f21984fb1d5096f0db41314da0bb94c573e7ad018e5afae3044f8d5ff71b0bfc",
+        "frt-route.json": "sha256:d6a40495183893f4b8f1df5490604d7c26aefbdb64a1288dfaeda94617006b77",
+        "hvigor-config.json5": "sha256:c24b1704e827e0ff49d3a2acd013a97de53b05bef0e47b62931df1f121aa5398",
+        "hvigorfile.ts": "sha256:2378c5e0c5246005ada73a67e8c9834fa08adb9ffd6fb6c219051456753bed5a",
+        "oh-package.json5": "sha256:11c46ae73ed2defc4294479ef01f2559f2a480a5fda32cd84a7703829bd56bcf"
+      },
+      "typedGaps": []
+    },
+    {
+      "route": "WeChat Mini Program -> Flutter",
+      "status": "GENERATED",
+      "sourceValidation": "PASSED",
+      "targetValidation": "PASSED",
+      "sourceSnapshotDigest": "sha256:7f3ec83d3b7bf93d7db04bfc2aa4947684e87932ddf6a30b7fc4237631bede53",
+      "generatedFiles": {
+        ".fvmrc": "sha256:6748d55c6cc27876867415cd3ec374460c11bdefc03cc6e53bebeaa9b9a44147",
+        "analysis_options.yaml": "sha256:6dae439bab95cb2a1536bb4f90c3b751f855544ab2cc37ef7f6df234805aefea",
+        "frt-route.json": "sha256:bfc56228c6305f4c28ce10b4685223557425e83a3df6fac2271fdc572bfbfd01",
+        "lib/main.dart": "sha256:c7a468e8f112cadba87c6b599a08485a6a591cfb227d332a0047150dfb9bfdfd",
+        "pubspec.yaml": "sha256:25357d2b876c1baab8761b18d0863c1e31127d0cd74972e3814bacb5aba89212",
+        "test/widget_test.dart": "sha256:6cc6458759538c88439efbf68831128c7c06e7fe001076693741a50f7d3d3e8c"
+      },
+      "typedGaps": []
+    },
+    {
+      "route": "ArkUI -> Vue 2",
+      "status": "GENERATED",
+      "sourceValidation": "PASSED",
+      "targetValidation": "PASSED",
+      "sourceSnapshotDigest": "sha256:d939057c437af5d1e4c010e4e6803f60d2b6455b4d0f3ccb9905abf8b0f988dd",
+      "generatedFiles": {
+        "frt-route.json": "sha256:b0764e900bb80fbd50413c4979507fa493e1c84cc8c7f3d04112f65a996f5d7d",
+        "package.json": "sha256:efea2253e496ff0d9bca25ff4cec70262767eae5d4847eda754366d9d2e8fc4a",
+        "src/App.vue": "sha256:14a06f3a87e918013e8407a61f9e41774a6567090b68e1bfb48276f3f59bfcb3"
+      },
+      "typedGaps": []
+    },
+    {
+      "route": "ArkUI -> Vue 3",
+      "status": "GENERATED",
+      "sourceValidation": "PASSED",
+      "targetValidation": "PASSED",
+      "sourceSnapshotDigest": "sha256:d939057c437af5d1e4c010e4e6803f60d2b6455b4d0f3ccb9905abf8b0f988dd",
+      "generatedFiles": {
+        "frt-route.json": "sha256:61986994197feb095533aa4c1fd3cc3b5ddfdd10fddff9d2aa743d81081b2575",
+        "package.json": "sha256:516e603b77f415977f270bceeeb01b5b23efb2022d93da516f9e5893f195db1b",
+        "src/App.vue": "sha256:e50eb1d32677884c3f9ceb6636ab75190b6fda343bbe8bf21ac63a1c49062a89"
+      },
+      "typedGaps": []
+    },
+    {
+      "route": "ArkUI -> React",
+      "status": "GENERATED",
+      "sourceValidation": "PASSED",
+      "targetValidation": "PASSED",
+      "sourceSnapshotDigest": "sha256:d939057c437af5d1e4c010e4e6803f60d2b6455b4d0f3ccb9905abf8b0f988dd",
+      "generatedFiles": {
+        "frt-route.json": "sha256:66913ca585142798f98c1b64a597cf7824667bee5547b1873ccfbd27aaaefeb9",
+        "package.json": "sha256:1cb209cd5eca01044025934235d31279ae8e169cb2d23cc8afce8398fca8feff",
+        "src/App.css": "sha256:63ed60c1d9d98dc07880cfe689bea7867c933e0336eac47553b6361775d7efe2",
+        "src/App.tsx": "sha256:6e43fb59e8a8c320a51bf72b8fc9219153b2fa7b28595b0d9e7f5ca742451ad0",
+        "tsconfig.json": "sha256:f0d2901347e1404b5d011eac8a630aefd0961cb20cc92f7261c50b5e37ddc231"
+      },
+      "typedGaps": []
+    },
+    {
+      "route": "ArkUI -> WeChat Mini Program",
+      "status": "GENERATED",
+      "sourceValidation": "PASSED",
+      "targetValidation": "PASSED",
+      "sourceSnapshotDigest": "sha256:d939057c437af5d1e4c010e4e6803f60d2b6455b4d0f3ccb9905abf8b0f988dd",
+      "generatedFiles": {
+        "app.json": "sha256:a8227a46813a049ec7adc2bba8af8ae96e6c20636dc96bf32a0414c674086cfb",
+        "frt-route.json": "sha256:a9909fea8cc0ab8daa63943f5998dbb1ea8a02abdaaee2b6ae3dd3939d4d655e",
+        "pages/index/index.js": "sha256:e8ea3aaae87a53e83424c3ce967a881a61f161c156a0f2d200f5eb911ce1306f",
+        "pages/index/index.json": "sha256:6b4f592fb4f1ec858c23eab97c213dc131c256074c85c223594f7863c51e9ce1",
+        "pages/index/index.wxml": "sha256:9b107cf04b3bfa35be20ba550cdefe227bd7df693e4d29175992dd105e23032c",
+        "pages/index/index.wxss": "sha256:63ed60c1d9d98dc07880cfe689bea7867c933e0336eac47553b6361775d7efe2",
+        "project.config.json": "sha256:5529c5741b7e74cbf1216809df4ce3d1940862db9299dae1f3fd03aaac60f120"
+      },
+      "typedGaps": []
+    },
+    {
+      "route": "ArkUI -> Flutter",
+      "status": "GENERATED",
+      "sourceValidation": "PASSED",
+      "targetValidation": "PASSED",
+      "sourceSnapshotDigest": "sha256:d939057c437af5d1e4c010e4e6803f60d2b6455b4d0f3ccb9905abf8b0f988dd",
+      "generatedFiles": {
+        ".fvmrc": "sha256:6748d55c6cc27876867415cd3ec374460c11bdefc03cc6e53bebeaa9b9a44147",
+        "analysis_options.yaml": "sha256:6dae439bab95cb2a1536bb4f90c3b751f855544ab2cc37ef7f6df234805aefea",
+        "frt-route.json": "sha256:1c1a0d19b6cc6f96f950d282fb55a108e7639c3412b08ebec9a129bda88e6adf",
+        "lib/main.dart": "sha256:c7a468e8f112cadba87c6b599a08485a6a591cfb227d332a0047150dfb9bfdfd",
+        "pubspec.yaml": "sha256:25357d2b876c1baab8761b18d0863c1e31127d0cd74972e3814bacb5aba89212",
+        "test/widget_test.dart": "sha256:6cc6458759538c88439efbf68831128c7c06e7fe001076693741a50f7d3d3e8c"
+      },
+      "typedGaps": []
+    },
+    {
+      "route": "Flutter -> Vue 2",
+      "status": "GENERATED",
+      "sourceValidation": "PASSED",
+      "targetValidation": "PASSED",
+      "sourceSnapshotDigest": "sha256:8079a8d4f9410b86632e574533311ba868267c84f1a4fad4bd26e49fb4b15aee",
+      "generatedFiles": {
+        "frt-route.json": "sha256:85c04750c299c4d9a57fe93dcfd84ee56e0985b046e30a3fad109326035e07b5",
+        "package.json": "sha256:efea2253e496ff0d9bca25ff4cec70262767eae5d4847eda754366d9d2e8fc4a",
+        "src/App.vue": "sha256:14a06f3a87e918013e8407a61f9e41774a6567090b68e1bfb48276f3f59bfcb3"
+      },
+      "typedGaps": []
+    },
+    {
+      "route": "Flutter -> Vue 3",
+      "status": "GENERATED",
+      "sourceValidation": "PASSED",
+      "targetValidation": "PASSED",
+      "sourceSnapshotDigest": "sha256:8079a8d4f9410b86632e574533311ba868267c84f1a4fad4bd26e49fb4b15aee",
+      "generatedFiles": {
+        "frt-route.json": "sha256:7b619527fcd4ec2d7738e7af44727046868d026ad55de2aa745ab32e8204ccaa",
+        "package.json": "sha256:516e603b77f415977f270bceeeb01b5b23efb2022d93da516f9e5893f195db1b",
+        "src/App.vue": "sha256:e50eb1d32677884c3f9ceb6636ab75190b6fda343bbe8bf21ac63a1c49062a89"
+      },
+      "typedGaps": []
+    },
+    {
+      "route": "Flutter -> React",
+      "status": "GENERATED",
+      "sourceValidation": "PASSED",
+      "targetValidation": "PASSED",
+      "sourceSnapshotDigest": "sha256:8079a8d4f9410b86632e574533311ba868267c84f1a4fad4bd26e49fb4b15aee",
+      "generatedFiles": {
+        "frt-route.json": "sha256:90a4ae1e1b9bd26a4e83fd73f91b70363dd8106ce7596a2f45cd3fa739aeda3c",
+        "package.json": "sha256:1cb209cd5eca01044025934235d31279ae8e169cb2d23cc8afce8398fca8feff",
+        "src/App.css": "sha256:63ed60c1d9d98dc07880cfe689bea7867c933e0336eac47553b6361775d7efe2",
+        "src/App.tsx": "sha256:6e43fb59e8a8c320a51bf72b8fc9219153b2fa7b28595b0d9e7f5ca742451ad0",
+        "tsconfig.json": "sha256:f0d2901347e1404b5d011eac8a630aefd0961cb20cc92f7261c50b5e37ddc231"
+      },
+      "typedGaps": []
+    },
+    {
+      "route": "Flutter -> WeChat Mini Program",
+      "status": "GENERATED",
+      "sourceValidation": "PASSED",
+      "targetValidation": "PASSED",
+      "sourceSnapshotDigest": "sha256:8079a8d4f9410b86632e574533311ba868267c84f1a4fad4bd26e49fb4b15aee",
+      "generatedFiles": {
+        "app.json": "sha256:a8227a46813a049ec7adc2bba8af8ae96e6c20636dc96bf32a0414c674086cfb",
+        "frt-route.json": "sha256:834940db32ba8333a4d30393395ede27d63aeb3f34e7a7f7f60a3611b3d676cf",
+        "pages/index/index.js": "sha256:e8ea3aaae87a53e83424c3ce967a881a61f161c156a0f2d200f5eb911ce1306f",
+        "pages/index/index.json": "sha256:6b4f592fb4f1ec858c23eab97c213dc131c256074c85c223594f7863c51e9ce1",
+        "pages/index/index.wxml": "sha256:9b107cf04b3bfa35be20ba550cdefe227bd7df693e4d29175992dd105e23032c",
+        "pages/index/index.wxss": "sha256:63ed60c1d9d98dc07880cfe689bea7867c933e0336eac47553b6361775d7efe2",
+        "project.config.json": "sha256:5529c5741b7e74cbf1216809df4ce3d1940862db9299dae1f3fd03aaac60f120"
+      },
+      "typedGaps": []
+    },
+    {
+      "route": "Flutter -> ArkUI",
+      "status": "GENERATED",
+      "sourceValidation": "PASSED",
+      "targetValidation": "PASSED",
+      "sourceSnapshotDigest": "sha256:8079a8d4f9410b86632e574533311ba868267c84f1a4fad4bd26e49fb4b15aee",
+      "generatedFiles": {
+        "AppScope/app.json5": "sha256:ab0ec7ae9fa80c97f7fbfd3c4d468b8238747edbd45dcb12cd17ca59d3dd6acf",
+        "build-profile.json5": "sha256:ef04a2f2d12540c3942e7b05cecf37bf181a0cf3d9e0d9e7cdd3cbc2375baeec",
+        "entry/hvigorfile.ts": "sha256:f547983dcab9c8fff87cc3ddedb22bb98063663c5b8afe18bb32e131311ec289",
+        "entry/oh-package.json5": "sha256:48f45a9a056591c10618432a29fa61a4143990237daadb0874fae18ec747906c",
+        "entry/src/main/ets/pages/Index.ets": "sha256:b9898ab08401f3a8f23e6ec365eda286a5445cff3a166fe7a9269ae588edb516",
+        "entry/src/main/module.json5": "sha256:c35c25affe1258e5848744c6c2f5a9ae0324eaf54eaf5862469b6c411b75906f",
+        "entry/src/main/resources/base/profile/main_pages.json": "sha256:f21984fb1d5096f0db41314da0bb94c573e7ad018e5afae3044f8d5ff71b0bfc",
+        "frt-route.json": "sha256:bea24f8bdcf2064f1e7f238e3fa7cbf7266af564b6d14171ac032d567eefa3cf",
+        "hvigor-config.json5": "sha256:c24b1704e827e0ff49d3a2acd013a97de53b05bef0e47b62931df1f121aa5398",
+        "hvigorfile.ts": "sha256:2378c5e0c5246005ada73a67e8c9834fa08adb9ffd6fb6c219051456753bed5a",
+        "oh-package.json5": "sha256:11c46ae73ed2defc4294479ef01f2559f2a480a5fda32cd84a7703829bd56bcf"
+      },
+      "typedGaps": []
+    }
+  ],
+  "targetEvidence": [
+    {
+      "target": "Vue 2",
+      "sourceRoute": "Vue 3 -> Vue 2",
+      "generatedDigest": "sha256:fb8a9bec9d167c0dbb69ba4be2504b7f3ce6eae7daa6bb9d571f32da4444c6c0",
+      "evidenceType": "REAL_VUE2_TEMPLATE_BUILD",
+      "execution": {
+        "command": [
+          "/opt/homebrew/Cellar/node/26.0.0/bin/node",
+          "--disable-proto=throw",
+          "--input-type=module",
+          "-e",
+          "import { readFileSync } from \"node:fs\";import { createRequire } from \"node:module\";const require=createRequire(import.meta.url);const compiler=require(\"vue-template-compiler\");const source=readFileSync(process.argv[1],\"utf8\");const matched=source.match(/<template>([\\s\\S]*?)<\\/template>/);if(!matched)process.exit(2);const built=compiler.compile(matched[1],{outputSourceRange:true});if(built.errors.length){console.error(built.errors);process.exit(3)}console.log(\"vue2-template-build-passed\", built.render.length);",
+          "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-KcN5Vs/vue-2/src/App.vue"
+        ],
+        "cwd": "/Users/stephen/DevProjects/AIProjects/elmos/engines/frontend-client-engine",
+        "startedAt": "2026-08-05T10:10:30.559Z",
+        "durationMs": 173,
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "stdout": "vue2-template-build-passed 273\n",
+        "stderr": "",
+        "stdoutSha256": "sha256:d2e2cabfb3921a8912b524d9d2b3ff8a8b6fd4a28b932320cee51458c557649b",
+        "stderrSha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "PASSED"
+      }
+    },
+    {
+      "target": "Vue 3",
+      "sourceRoute": "Vue 2 -> Vue 3",
+      "generatedDigest": "sha256:bf92dbb0d2713e9b62aa007d5429bc350e82e13c181182d96c07e47f722b46b3",
+      "evidenceType": "REAL_VUE3_TEMPLATE_BUILD",
+      "execution": {
+        "command": [
+          "/opt/homebrew/Cellar/node/26.0.0/bin/node",
+          "--disable-proto=throw",
+          "--input-type=module",
+          "-e",
+          "import { readFileSync } from \"node:fs\";import { parse, compileTemplate } from \"@vue/compiler-sfc\";const source=readFileSync(process.argv[1],\"utf8\");const parsed=parse(source,{filename:\"App.vue\"});if(parsed.errors.length||!parsed.descriptor.template)process.exit(2);const built=compileTemplate({source:parsed.descriptor.template.content,filename:\"App.vue\",id:\"frt-real-build\"});if(built.errors.length){console.error(built.errors);process.exit(3)}console.log(\"vue3-template-build-passed\", built.code.length);",
+          "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-KcN5Vs/vue-3/src/App.vue"
+        ],
+        "cwd": "/Users/stephen/DevProjects/AIProjects/elmos/engines/frontend-client-engine",
+        "startedAt": "2026-08-05T10:10:30.737Z",
+        "durationMs": 232,
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "stdout": "vue3-template-build-passed 787\n",
+        "stderr": "",
+        "stdoutSha256": "sha256:af41a34b189c06bd0eb376c4f1e1fda70810159c376634ff8e828d3965db702b",
+        "stderrSha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "PASSED"
+      }
+    },
+    {
+      "target": "React",
+      "sourceRoute": "Vue 2 -> React",
+      "generatedDigest": "sha256:03925a5a050d11a41ec2aec6f43317663f971610431b24bd5cb28cc7b0dc21e5",
+      "evidenceType": "REAL_TYPESCRIPT_BUILD",
+      "execution": {
+        "command": [
+          "/Users/stephen/DevProjects/AIProjects/elmos/engines/frontend-client-engine/node_modules/.bin/tsc",
+          "-p",
+          "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-KcN5Vs/react/tsconfig.json"
+        ],
+        "cwd": "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-KcN5Vs/react",
+        "startedAt": "2026-08-05T10:10:30.971Z",
+        "durationMs": 2658,
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "stdout": "",
+        "stderr": "",
+        "stdoutSha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderrSha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "PASSED"
+      }
+    },
+    {
+      "target": "WeChat Mini Program",
+      "sourceRoute": "Vue 2 -> WeChat Mini Program",
+      "generatedDigest": "sha256:23ecb995624e3fbd9d919009060cf22c19f04be7a6f20dd4223ebf67cdc2b982",
+      "evidenceType": "REAL_WECHAT_DEVTOOLS_PROJECT_OPEN",
+      "execution": {
+        "command": [
+          "/Applications/wechatwebdevtools.app/Contents/MacOS/cli",
+          "open",
+          "--project",
+          "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-KcN5Vs/wechat-mini-program",
+          "--port",
+          "19420",
+          "--lang",
+          "en",
+          "--disable-gpu"
+        ],
+        "cwd": "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-KcN5Vs/wechat-mini-program",
+        "startedAt": "2026-08-05T10:10:33.631Z",
+        "durationMs": 702,
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "stdout": "",
+        "stderr": "- initialize\n\n✔ IDE server has started, listening on http://127.0.0.1:19420\n- preparing\n✔ open\n",
+        "stdoutSha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderrSha256": "sha256:359f6315ce9b522608fbe21241468931bd1359e496e05330bb43acb78d4ae7e5",
+        "status": "PASSED"
+      },
+      "close": {
+        "command": [
+          "/Applications/wechatwebdevtools.app/Contents/MacOS/cli",
+          "close",
+          "--project",
+          "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-KcN5Vs/wechat-mini-program",
+          "--port",
+          "19420"
+        ],
+        "cwd": "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-KcN5Vs/wechat-mini-program",
+        "startedAt": "2026-08-05T10:10:34.333Z",
+        "durationMs": 1552,
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "stdout": "",
+        "stderr": "- initialize\n\n✔ IDE server has started, listening on http://127.0.0.1:19420\n- preparing\n✔ close\n",
+        "stdoutSha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderrSha256": "sha256:b4681d390d0f71fa31ac2727a586fd0377883731e72c4674c0cd1c59ebe74cc4",
+        "status": "PASSED"
+      }
+    },
+    {
+      "target": "ArkUI",
+      "sourceRoute": "Vue 2 -> ArkUI",
+      "generatedDigest": "sha256:1bee789289ab6768079808eb23e6d167db26ca3399cdab5aef97b88fc02caced",
+      "evidenceType": "ARKUI_NATIVE_BUILD",
+      "status": "NOT_RUN",
+      "reason": "DEVECO_HVIGOR_TOOLCHAIN_UNAVAILABLE",
+      "remediation": "Install DevEco Studio/hvigor or set ELMOS_HVIGORW to the exact executable path, then rerun this script."
+    },
+    {
+      "target": "Flutter",
+      "sourceRoute": "Vue 2 -> Flutter",
+      "generatedDigest": "sha256:651cde7a5a32a16867f1727691661a842f20b881ce094c09f48178c646f8ca0d",
+      "evidenceType": "REAL_FLUTTER_ANALYZE_AND_WIDGET_TEST",
+      "status": "PASSED",
+      "dependencyResolution": {
+        "mode": "OFFLINE_CACHE",
+        "lockfileSha256": "sha256:20af009577ef72e57b2fdf20c0f58a9f563afc1e8fb91c2eb689059753a8cc66"
+      },
+      "executions": {
+        "offlinePubGet": {
+          "command": [
+            "flutter",
+            "pub",
+            "get",
+            "--offline"
+          ],
+          "cwd": "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-KcN5Vs/flutter",
+          "startedAt": "2026-08-05T10:10:35.922Z",
+          "durationMs": 2242,
+          "exitCode": 0,
+          "signal": null,
+          "error": null,
+          "stdout": "Resolving dependencies...\nDownloading packages...\n+ async 2.13.1\n+ boolean_selector 2.1.2\n+ characters 1.4.1\n+ clock 1.1.2\n+ collection 1.19.1\n+ fake_async 1.3.3\n+ flutter 0.0.0 from sdk flutter\n+ flutter_test 0.0.0 from sdk flutter\n+ leak_tracker 11.0.2\n+ leak_tracker_flutter_testing 3.0.10\n+ leak_tracker_testing 3.0.2\n+ matcher 0.12.19\n+ material_color_utilities 0.13.0\n+ meta 1.18.0\n+ path 1.9.1\n+ sky_engine 0.0.0 from sdk flutter\n+ source_span 1.10.2\n+ stack_trace 1.12.1\n+ stream_channel 2.1.4\n+ string_scanner 1.4.1\n+ term_glyph 1.2.2\n+ test_api 0.7.11\n+ vector_math 2.2.0\n+ vm_service 15.2.0\nChanged 24 dependencies!\n",
+          "stderr": "",
+          "stdoutSha256": "sha256:5494b44f8cb373fe70be8b0e0a066a7dd99337408d7b5c5ebd889a496ebbb572",
+          "stderrSha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "status": "PASSED"
+        },
+        "onlinePubGet": null,
+        "analyze": {
+          "command": [
+            "flutter",
+            "analyze",
+            "--no-pub"
+          ],
+          "cwd": "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-KcN5Vs/flutter",
+          "startedAt": "2026-08-05T10:10:38.164Z",
+          "durationMs": 9647,
+          "exitCode": 0,
+          "signal": null,
+          "error": null,
+          "stdout": "Analyzing flutter...                                            \nNo issues found! (ran in 4.7s)\n",
+          "stderr": "",
+          "stdoutSha256": "sha256:6cd3057fb51242b8f811e7286acd5563f7ac3adc06f17dd56fd029f0d5af56b0",
+          "stderrSha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "status": "PASSED"
+        },
+        "test": {
+          "command": [
+            "flutter",
+            "test",
+            "--no-pub"
+          ],
+          "cwd": "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-KcN5Vs/flutter",
+          "startedAt": "2026-08-05T10:10:47.811Z",
+          "durationMs": 16905,
+          "exitCode": 0,
+          "signal": null,
+          "error": null,
+          "stdout": "00:00 +0: loading /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-KcN5Vs/flutter/test/widget_test.dart\n00:00 +0: counter route preserves the interaction contract\n00:00 +1: All tests passed!\n",
+          "stderr": "",
+          "stdoutSha256": "sha256:9afd8cf6925e19d67627098a7195ffa1e5110de074613257c7ed43ce76ce2e3b",
+          "stderrSha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "status": "PASSED"
+        }
+      }
+    }
+  ],
+  "boundaries": {
+    "externalRepresentativeRepositories": "NOT_RUN",
+    "independentHoldout": "NOT_RUN",
+    "customerAcceptance": "NOT_RUN",
+    "productionCertification": "NOT_CERTIFIED"
+  }
+}

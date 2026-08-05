@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.io/frt-g01-g30/runner-completion.v1.schema.json",
+  "title": "FRT G01-G30 runner completion report",
+  "description": "A runner's signed report of what it actually executed for one claimed EXECUTE run. The control plane verifies the attestation against the RUNNER trust purpose before trusting any field. Recording a completion is never a certification: the run still requires a separate VERIFY with independently verified evidence, and certificateFragment.certification stays NOT_CERTIFIED.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "runnerId",
+    "exitStatus",
+    "startedAt",
+    "finishedAt",
+    "customerCodeExecuted",
+    "productionOperationExecuted",
+    "artifacts",
+    "evidence",
+    "authority",
+    "keyId",
+    "issuedAt",
+    "expiresAt",
+    "signature"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "runnerId": {
+      "$ref": "#/$defs/scopedId",
+      "description": "Must equal the identity that holds the run lease and the subject of the calling identity token."
+    },
+    "exitStatus": {
+      "enum": ["COMPLETED", "FAILED"],
+      "description": "FAILED moves the run to FAILED; it never blocks on its own, because a truthful failure report is a valid completion."
+    },
+    "startedAt": { "type": "string", "format": "date-time" },
+    "finishedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Must not precede startedAt."
+    },
+    "customerCodeExecuted": {
+      "type": "boolean",
+      "description": "Set true only if the runner really executed customer code. An unverified attestation forces this back to false."
+    },
+    "productionOperationExecuted": {
+      "type": "boolean",
+      "description": "Set true only if the runner really performed a production operation. An unverified attestation forces this back to false."
+    },
+    "artifacts": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/artifact" },
+      "description": "Content-addressed outputs. Duplicate names, a missing digest, an empty URI or a non-positive byte count all block the run."
+    },
+    "evidence": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/evidence" },
+      "description": "Evidence the runner produced. Every entry must name the runner as executor and someone else as verifier; a runner may never verify its own evidence."
+    },
+    "authority": { "$ref": "#/$defs/scopedId" },
+    "keyId": { "$ref": "#/$defs/scopedId" },
+    "issuedAt": { "type": "string", "format": "date-time" },
+    "expiresAt": { "type": "string", "format": "date-time" },
+    "signature": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]+$",
+      "description": "base64url Ed25519 signature over the canonical JSON of this object with the signature property removed, verified under the RUNNER trust purpose."
+    }
+  },
+  "$defs": {
+    "scopedId": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,255}$" },
+    "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "uri", "digest", "byteCount"],
+      "properties": {
+        "name": { "$ref": "#/$defs/scopedId" },
+        "uri": { "type": "string", "minLength": 1 },
+        "digest": { "$ref": "#/$defs/digest" },
+        "byteCount": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "uri",
+        "digest",
+        "state",
+        "executor",
+        "verifier",
+        "synthetic",
+        "byteCount",
+        "authority",
+        "keyId",
+        "issuedAt",
+        "expiresAt",
+        "signature"
+      ],
+      "properties": {
+        "role": { "type": "string", "minLength": 1 },
+        "uri": { "type": "string", "minLength": 1 },
+        "digest": { "$ref": "#/$defs/digest" },
+        "state": { "enum": ["PASSED", "FAILED", "INCONCLUSIVE", "NOT_RUN"] },
+        "executor": { "type": "string", "minLength": 1 },
+        "verifier": { "type": "string", "minLength": 1 },
+        "synthetic": {
+          "type": "boolean",
+          "description": "Synthetic evidence can never support a real gate; reporting true blocks the run."
+        },
+        "byteCount": { "type": "integer", "minimum": 0 },
+        "authority": { "$ref": "#/$defs/scopedId" },
+        "keyId": { "$ref": "#/$defs/scopedId" },
+        "issuedAt": { "type": "string", "format": "date-time" },
+        "expiresAt": { "type": "string", "format": "date-time" },
+        "signature": { "type": "string", "pattern": "^[A-Za-z0-9_-]+$" }
+      }
+    }
+  }
+}

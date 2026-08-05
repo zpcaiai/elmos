@@ -1,0 +1,4 @@
+interface:
+  display_name: "Fixture, Golden and Corpus Foundation"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-0109-fixture-golden-and-corpus-foundation to run FRT-0109 through the governed FRT runtime with exact scope and fail-closed evidence."

@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1110",
+  "skill_name": "frt-1110-animation-and-transition-mapper",
+  "batch": "G11",
+  "surface": "contract",
+  "logical_path": "packages/contracts/g11/frt-1110-animation-and-transition-mapper/",
+  "status": "shared_implementation",
+  "handler_kind": "mobile_client",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:869e2370f38c012fb307ba421a72799d0a70c725c624d9fc098a8bab185fab28",
+  "implementation_paths": [
+    "schemas/frt-g01-g30/skill-run-request.schema.json",
+    "schemas/frt-g01-g30/skill-run-result.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

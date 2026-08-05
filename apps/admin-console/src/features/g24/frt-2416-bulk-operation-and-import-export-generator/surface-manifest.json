@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2416",
+  "skill_name": "frt-2416-bulk-operation-and-import-export-generator",
+  "batch": "G24",
+  "surface": "admin_console",
+  "logical_path": "apps/admin-console/src/features/g24/frt-2416-bulk-operation-and-import-export-generator/",
+  "status": "shared_implementation",
+  "handler_kind": "administration",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:e31637cb9b191bb5ae3f6c2ec244543be590618f40bdcf0bcb178148034fb805",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

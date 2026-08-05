@@ -1,0 +1,4 @@
+interface:
+  display_name: "Concurrency Correctness Validator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2702-concurrency-correctness-validator to run FRT-2702 through the governed FRT runtime with exact scope and fail-closed evidence."

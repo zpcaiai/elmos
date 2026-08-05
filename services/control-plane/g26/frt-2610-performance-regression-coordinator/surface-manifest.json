@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2610",
+  "skill_name": "frt-2610-performance-regression-coordinator",
+  "batch": "G26",
+  "surface": "control_plane",
+  "logical_path": "services/control-plane/g26/frt-2610-performance-regression-coordinator/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:81240d635a3a63b3e4ed3dc2320de40c78bf8c85198caebaaa53cbb6f0c96465",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/server.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

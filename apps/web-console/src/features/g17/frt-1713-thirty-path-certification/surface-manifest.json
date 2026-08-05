@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1713",
+  "skill_name": "frt-1713-thirty-path-certification",
+  "batch": "G17",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g17/frt-1713-thirty-path-certification/",
+  "status": "shared_implementation",
+  "handler_kind": "route_orchestration",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:0e117d6a549c737fa611246046658dcc1f93e2d349cfb39c2f4742a02721c197",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

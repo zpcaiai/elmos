@@ -1,0 +1,4 @@
+interface:
+  display_name: "Post-Release Verification"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-3022-post-release-verification to run FRT-3022 through the governed FRT runtime with exact scope and fail-closed evidence."

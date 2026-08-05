@@ -46,6 +46,7 @@ const security = {
 };
 
 function identityToken(options: {
+  readonly subject?: string;
   readonly scope?: FrtExecutionScope;
   readonly permissions?: readonly ("frt:plan" | "frt:run" | "frt:read" | "frt:evidence")[];
   readonly expiresAt?: string;
@@ -56,12 +57,12 @@ function identityToken(options: {
     keyId,
     claims: {
       schemaVersion: "1.0",
-      subject: "operator-http-frt",
+      subject: options.subject ?? "operator-http-frt",
       permissions: options.permissions ?? ["frt:plan", "frt:run", "frt:read", "frt:evidence"],
       scope: options.scope ?? frtScope,
       issuedAt: "2026-07-31T00:00:00Z",
       expiresAt: options.expiresAt ?? "2026-08-02T00:00:00Z",
-      nonce: `nonce-${options.scope?.tenantId ?? "default"}-${options.permissions?.join("-") ?? "all"}`,
+      nonce: `nonce-${options.subject ?? "default"}-${options.scope?.tenantId ?? "default"}-${options.permissions?.join("-") ?? "all"}`,
     },
   }, privateKey);
 }
@@ -334,6 +335,123 @@ test("HTTP FRT reads derive tenant scope from identity and ignore spoofed query 
   });
   assert.equal(hidden.status, 404);
   assert.equal((await hidden.json() as { errorCode: string }).errorCode, "FRT_RUN_NOT_FOUND");
+});
+
+test("HTTP FRT body limits differ by route so a control message cannot carry a payload", async () => {
+  // A transition is a small control message: 64 KiB is generous and 2 MiB is nonsense.
+  const oversizedTransition = await fetch(
+    `${baseUrl}/engine/v1/frt/runs/${"0".repeat(24)}/claim`,
+    {
+      method: "POST",
+      headers: { "content-type": "application/json", ...frtAuthorization },
+      body: JSON.stringify({ schemaVersion: "1.0", expectedVersion: 0, padding: "x".repeat(2 * 1024 * 1024) }),
+    },
+  );
+  assert.equal(oversizedTransition.status, 413);
+  const refused = await oversizedTransition.json() as { errorCode: string; limitBytes: number };
+  assert.equal(refused.errorCode, "REQUEST_TOO_LARGE");
+  assert.equal(refused.limitBytes, 64 * 1024);
+
+  // Creating a run legitimately carries a source snapshot, so the same payload size that
+  // a transition refuses is accepted here and rejected on its contract instead.
+  const largeRun = await fetch(`${baseUrl}/engine/v1/frt/skills/FRT-0100/runs`, {
+    method: "POST",
+    headers: { "content-type": "application/json", ...frtAuthorization },
+    body: JSON.stringify({
+      schemaVersion: "1.0",
+      skillId: "FRT-0100",
+      action: "ANALYZE",
+      idempotencyKey: "http-frt-large-body",
+      expectedVersion: 0,
+      context: {
+        ...frtScope,
+        sourceSnapshotDigest: `sha256:${"1".repeat(64)}`,
+        policyVersion: "frt-policy-1.0.0",
+        requestedBy: "operator-http-frt",
+        risk: "R4",
+      },
+      prerequisiteCertificates: [],
+      evidence: [],
+      input: { files: { "src/App.vue": "x".repeat(2 * 1024 * 1024) } },
+    }),
+  });
+  // It got past the size gate; whatever it returns now is a decision about content.
+  assert.notEqual(largeRun.status, 413);
+  assert.ok([200, 202, 400, 409].includes(largeRun.status), `unexpected status ${largeRun.status}`);
+});
+
+test("HTTP FRT heartbeat renews a lease for its holder and refuses everyone else", async () => {
+  const created = await fetch(`${baseUrl}/engine/v1/frt/skills/FRT-0100/runs`, {
+    method: "POST",
+    headers: { "content-type": "application/json", ...frtAuthorization },
+    body: JSON.stringify({
+      schemaVersion: "1.0",
+      skillId: "FRT-0100",
+      action: "EXECUTE",
+      idempotencyKey: "http-frt-heartbeat",
+      expectedVersion: 0,
+      context: {
+        ...frtScope,
+        sourceSnapshotDigest: `sha256:${"1".repeat(64)}`,
+        policyVersion: "frt-policy-1.0.0",
+        requestedBy: "operator-http-frt",
+        risk: "R4",
+      },
+      prerequisiteCertificates: [],
+      evidence: [],
+    }),
+  });
+  const queued = await created.json() as { runId: string; version: number; state: string; lease: unknown };
+  assert.equal(queued.state, "QUEUED");
+  assert.equal(queued.lease, null);
+
+  const transition = async (operation: string, expectedVersion: number, authorization = frtAuthorization) =>
+    fetch(`${baseUrl}/engine/v1/frt/runs/${queued.runId}/${operation}`, {
+      method: "POST",
+      headers: { "content-type": "application/json", ...authorization },
+      body: JSON.stringify({ schemaVersion: "1.0", expectedVersion }),
+    });
+
+  const claimed = await transition("claim", queued.version);
+  const running = await claimed.json() as {
+    version: number;
+    state: string;
+    lease: { runnerId: string; expiresAt: string; heartbeatCount: number };
+  };
+  assert.equal(claimed.status, 200);
+  assert.equal(running.state, "RUNNING");
+  assert.equal(running.lease.runnerId, "operator-http-frt");
+  assert.equal(running.lease.heartbeatCount, 0);
+
+  // A renewal bumps the run version, so the runner must carry the new one forward.
+  const beat = await transition("heartbeat", running.version);
+  const renewed = await beat.json() as {
+    version: number;
+    state: string;
+    lease: { expiresAt: string; heartbeatCount: number };
+  };
+  assert.equal(beat.status, 200);
+  assert.equal(renewed.state, "RUNNING");
+  assert.equal(renewed.version, running.version + 1);
+  assert.equal(renewed.lease.heartbeatCount, 1);
+  assert.ok(Date.parse(renewed.lease.expiresAt) >= Date.parse(running.lease.expiresAt));
+
+  // The stale version is now a conflict, which is what makes repeated delivery safe.
+  assert.equal((await transition("heartbeat", running.version)).status, 409);
+
+  // Someone other than the lease holder cannot renew it, even with a valid token.
+  const intruder = {
+    authorization: `Bearer ${identityToken({ subject: "operator-http-frt-other" })}`,
+  };
+  assert.equal((await transition("heartbeat", renewed.version, intruder)).status, 409);
+
+  // And an unauthenticated renewal never reaches the runtime at all.
+  const anonymous = await fetch(`${baseUrl}/engine/v1/frt/runs/${queued.runId}/heartbeat`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ schemaVersion: "1.0", expectedVersion: renewed.version }),
+  });
+  assert.equal(anonymous.status, 401);
 });
 
 test("HTTP FRT durable lifecycle exposes optimistic claim, cancel, retry, and audit", async () => {

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Location Bluetooth and Device Capability"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-1205-location-bluetooth-and-device-capability to run FRT-1205 through the governed FRT runtime with exact scope and fail-closed evidence."

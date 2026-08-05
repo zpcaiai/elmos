@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0412",
+  "skill_name": "frt-0412-source-adapter-conformance-certification",
+  "batch": "G04",
+  "surface": "admin_console",
+  "logical_path": "apps/admin-console/src/features/g04/frt-0412-source-adapter-conformance-certification/",
+  "status": "shared_implementation",
+  "handler_kind": "typed_contract",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:2e6a1cb37e1659f44e6cc5ed10fd5cf72b0f814d927ef448346fb7c2304a4360",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

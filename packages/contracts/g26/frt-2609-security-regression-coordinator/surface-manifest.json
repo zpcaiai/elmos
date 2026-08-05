@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2609",
+  "skill_name": "frt-2609-security-regression-coordinator",
+  "batch": "G26",
+  "surface": "contract",
+  "logical_path": "packages/contracts/g26/frt-2609-security-regression-coordinator/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:c8ddc9876e25dfbdfd55f2fbc44b3fa5d7d0520b59fabed83cace5ffd53fb72c",
+  "implementation_paths": [
+    "schemas/frt-g01-g30/skill-run-request.schema.json",
+    "schemas/frt-g01-g30/skill-run-result.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

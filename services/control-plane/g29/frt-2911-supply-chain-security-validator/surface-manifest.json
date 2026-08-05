@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2911",
+  "skill_name": "frt-2911-supply-chain-security-validator",
+  "batch": "G29",
+  "surface": "control_plane",
+  "logical_path": "services/control-plane/g29/frt-2911-supply-chain-security-validator/",
+  "status": "shared_implementation",
+  "handler_kind": "security_privacy",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:ac70a7dca950ef5217530c77a95abd2f3478c5757cef37fd69fcc1f3009d55ea",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/server.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

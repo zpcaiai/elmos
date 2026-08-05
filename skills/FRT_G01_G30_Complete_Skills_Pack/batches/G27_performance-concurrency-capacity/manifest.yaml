@@ -1,0 +1,127 @@
+{
+  "apiVersion": "frt.openai.dev/v1alpha1",
+  "kind": "GenerationBatchManifest",
+  "metadata": {
+    "id": "G27",
+    "slug": "performance-concurrency-capacity",
+    "version": "1.0.0",
+    "generatedAt": "2026-07-31"
+  },
+  "spec": {
+    "title": "高并发正确性、性能容量、压力稳定性与安全降级",
+    "transitionFrom": "全系统具备稳定、并行、可重复的回归资格认证",
+    "transitionTo": "系统在声明的数据规模、并发用户、任务并发、事件吞吐和长时间压力下保持业务正确、资源稳定、延迟可预测并安全降级",
+    "certificateFamily": "PC",
+    "skills": [
+      {
+        "id": "FRT-2700",
+        "name": "Performance and Capacity Orchestrator",
+        "path": "skills/frt-2700-performance-and-capacity-orchestrator/SKILL.md"
+      },
+      {
+        "id": "FRT-2701",
+        "name": "Workload Model Registry",
+        "path": "skills/frt-2701-workload-model-registry/SKILL.md"
+      },
+      {
+        "id": "FRT-2702",
+        "name": "Concurrency Correctness Validator",
+        "path": "skills/frt-2702-concurrency-correctness-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-2703",
+        "name": "Race and Lost-Update Detector",
+        "path": "skills/frt-2703-race-and-lost-update-detector/SKILL.md"
+      },
+      {
+        "id": "FRT-2704",
+        "name": "Idempotency Under Load Validator",
+        "path": "skills/frt-2704-idempotency-under-load-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-2705",
+        "name": "Throughput and Latency Test Generator",
+        "path": "skills/frt-2705-throughput-and-latency-test-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-2706",
+        "name": "Load Test Coordinator",
+        "path": "skills/frt-2706-load-test-coordinator/SKILL.md"
+      },
+      {
+        "id": "FRT-2707",
+        "name": "Stress Test Coordinator",
+        "path": "skills/frt-2707-stress-test-coordinator/SKILL.md"
+      },
+      {
+        "id": "FRT-2708",
+        "name": "Spike Test Coordinator",
+        "path": "skills/frt-2708-spike-test-coordinator/SKILL.md"
+      },
+      {
+        "id": "FRT-2709",
+        "name": "Soak and Memory Leak Test Coordinator",
+        "path": "skills/frt-2709-soak-and-memory-leak-test-coordinator/SKILL.md"
+      },
+      {
+        "id": "FRT-2710",
+        "name": "Queue and Backpressure Validator",
+        "path": "skills/frt-2710-queue-and-backpressure-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-2711",
+        "name": "Rate Limit and Quota Validator",
+        "path": "skills/frt-2711-rate-limit-and-quota-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-2712",
+        "name": "Cache Performance and Stampede Validator",
+        "path": "skills/frt-2712-cache-performance-and-stampede-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-2713",
+        "name": "Database Hotspot and Query Validator",
+        "path": "skills/frt-2713-database-hotspot-and-query-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-2714",
+        "name": "Connection Pool and Resource Validator",
+        "path": "skills/frt-2714-connection-pool-and-resource-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-2715",
+        "name": "Capacity Planning Generator",
+        "path": "skills/frt-2715-capacity-planning-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-2716",
+        "name": "Autoscaling Policy Validator",
+        "path": "skills/frt-2716-autoscaling-policy-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-2717",
+        "name": "Graceful Degradation Validator",
+        "path": "skills/frt-2717-graceful-degradation-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-2718",
+        "name": "Performance Budget Governor",
+        "path": "skills/frt-2718-performance-budget-governor/SKILL.md"
+      },
+      {
+        "id": "FRT-2719",
+        "name": "Performance and Capacity Certificate",
+        "path": "skills/frt-2719-performance-and-capacity-certificate/SKILL.md"
+      }
+    ],
+    "gates": [
+      "Critical Concurrency错误、Lost Update、Duplicate Effective Side Effect=0",
+      "Target Normal/Peak Load业务正确性和SLO通过",
+      "Unbounded Critical Queue=0",
+      "Critical Resource Leak=0",
+      "DB在目标负载前饱和=0",
+      "Autoscaling不得压垮下游或终止有效Lease",
+      "Unsafe Degradation=0"
+    ]
+  }
+}

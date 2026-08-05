@@ -1,0 +1,4 @@
+interface:
+  display_name: "Inventory and Resource Administration"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2406-inventory-and-resource-administration to run FRT-2406 through the governed FRT runtime with exact scope and fail-closed evidence."

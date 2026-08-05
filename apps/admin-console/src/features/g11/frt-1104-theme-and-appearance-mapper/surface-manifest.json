@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1104",
+  "skill_name": "frt-1104-theme-and-appearance-mapper",
+  "batch": "G11",
+  "surface": "admin_console",
+  "logical_path": "apps/admin-console/src/features/g11/frt-1104-theme-and-appearance-mapper/",
+  "status": "shared_implementation",
+  "handler_kind": "mobile_client",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:6efceaea02990450d65052ce31b2d2c5979b7328cf0f66531a06fb2ecc4b08fa",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

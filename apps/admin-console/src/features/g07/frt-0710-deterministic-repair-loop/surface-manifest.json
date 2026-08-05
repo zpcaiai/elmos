@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0710",
+  "skill_name": "frt-0710-deterministic-repair-loop",
+  "batch": "G07",
+  "surface": "admin_console",
+  "logical_path": "apps/admin-console/src/features/g07/frt-0710-deterministic-repair-loop/",
+  "status": "shared_implementation",
+  "handler_kind": "build_toolchain",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:605405f2f863b0e9a9dc5f603fb19a5e7825e0705b5dde205f938d8b0ad9d41a",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

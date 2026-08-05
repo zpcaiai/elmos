@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.io/frt-g01-g30/skill-run-request.v1.schema.json",
+  "title": "FRT G01-G30 Skill run request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "skillId", "action", "idempotencyKey", "expectedVersion", "context", "prerequisiteCertificates", "evidence"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "skillId": { "pattern": "^(FRT-[0-9]{4}|frt-[a-z0-9-]+)$" },
+    "action": { "enum": ["PLAN", "ANALYZE", "EXECUTE", "VERIFY"] },
+    "idempotencyKey": { "$ref": "#/$defs/scopedId" },
+    "expectedVersion": { "type": "integer", "minimum": 0 },
+    "context": {
+      "allOf": [
+        { "$ref": "#/$defs/scope" },
+        {
+          "type": "object",
+          "required": ["sourceSnapshotDigest", "policyVersion", "requestedBy", "risk"],
+          "properties": {
+            "sourceSnapshotDigest": { "$ref": "#/$defs/digest" },
+            "policyVersion": { "$ref": "#/$defs/scopedId" },
+            "requestedBy": { "$ref": "#/$defs/scopedId" },
+            "risk": { "enum": ["R0", "R1", "R2", "R3", "R4", "R5"] }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "prerequisiteCertificates": { "type": "array", "items": { "$ref": "#/$defs/certificate" } },
+    "evidence": { "type": "array", "items": { "$ref": "#/$defs/evidence" } },
+    "input": { "type": "object" }
+  },
+  "$defs": {
+    "scopedId": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,255}$" },
+    "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "signature": { "type": "string", "pattern": "^[A-Za-z0-9_-]+$" },
+    "scope": {
+      "type": "object",
+      "required": ["organizationId", "tenantId", "workspaceId", "projectId", "accountId", "environmentId", "releaseId"],
+      "properties": {
+        "organizationId": { "$ref": "#/$defs/scopedId" },
+        "tenantId": { "$ref": "#/$defs/scopedId" },
+        "workspaceId": { "$ref": "#/$defs/scopedId" },
+        "projectId": { "$ref": "#/$defs/scopedId" },
+        "accountId": { "$ref": "#/$defs/scopedId" },
+        "environmentId": { "$ref": "#/$defs/scopedId" },
+        "releaseId": { "$ref": "#/$defs/scopedId" }
+      }
+    },
+    "certificate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["batch", "state", "scope", "artifactDigest", "evidenceRefs", "authority", "keyId", "issuedAt", "expiresAt", "signature"],
+      "properties": {
+        "batch": { "pattern": "^G(?:0[1-9]|[12][0-9]|30)$" },
+        "state": { "enum": ["ACTIVE", "STALE", "REVOKED", "RETEST_REQUIRED"] },
+        "scope": { "$ref": "#/$defs/scope" },
+        "artifactDigest": { "$ref": "#/$defs/digest" },
+        "evidenceRefs": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "authority": { "$ref": "#/$defs/scopedId" },
+        "keyId": { "$ref": "#/$defs/scopedId" },
+        "issuedAt": { "$ref": "#/$defs/timestamp" },
+        "expiresAt": { "$ref": "#/$defs/timestamp" },
+        "signature": { "$ref": "#/$defs/signature" }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "uri", "digest", "state", "executor", "verifier", "synthetic", "byteCount", "authority", "keyId", "issuedAt", "expiresAt", "signature"],
+      "properties": {
+        "role": { "type": "string", "minLength": 1 },
+        "uri": { "type": "string", "minLength": 1 },
+        "digest": { "$ref": "#/$defs/digest" },
+        "state": { "enum": ["PASSED", "FAILED", "INCONCLUSIVE", "NOT_RUN"] },
+        "executor": { "type": "string", "minLength": 1 },
+        "verifier": { "type": "string", "minLength": 1 },
+        "synthetic": { "type": "boolean" },
+        "byteCount": { "type": "integer", "minimum": 0 },
+        "authority": { "$ref": "#/$defs/scopedId" },
+        "keyId": { "$ref": "#/$defs/scopedId" },
+        "issuedAt": { "$ref": "#/$defs/timestamp" },
+        "expiresAt": { "$ref": "#/$defs/timestamp" },
+        "signature": { "$ref": "#/$defs/signature" }
+      }
+    }
+  }
+}

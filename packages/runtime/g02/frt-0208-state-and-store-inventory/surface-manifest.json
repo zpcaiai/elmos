@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0208",
+  "skill_name": "frt-0208-state-and-store-inventory",
+  "batch": "G02",
+  "surface": "runtime",
+  "logical_path": "packages/runtime/g02/frt-0208-state-and-store-inventory/",
+  "status": "shared_implementation",
+  "handler_kind": "estate_discovery",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:0fd53bc0decc700840e07805da4e43ab02539e3ea401703ea01bd49d8ba06c29",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/frt-runtime.ts",
+    "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

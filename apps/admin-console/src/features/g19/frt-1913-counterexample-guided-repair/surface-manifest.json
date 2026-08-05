@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1913",
+  "skill_name": "frt-1913-counterexample-guided-repair",
+  "batch": "G19",
+  "surface": "admin_console",
+  "logical_path": "apps/admin-console/src/features/g19/frt-1913-counterexample-guided-repair/",
+  "status": "shared_implementation",
+  "handler_kind": "advanced_verification",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:8ca91e2ae212fe454992a1c2984f7b692264b83a4afe917989b39f6b5a8d227e",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

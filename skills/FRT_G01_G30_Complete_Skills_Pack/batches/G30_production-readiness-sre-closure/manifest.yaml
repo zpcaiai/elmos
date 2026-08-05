@@ -1,0 +1,147 @@
+{
+  "apiVersion": "frt.openai.dev/v1alpha1",
+  "kind": "GenerationBatchManifest",
+  "metadata": {
+    "id": "G30",
+    "slug": "production-readiness-sre-closure",
+    "version": "1.0.0",
+    "generatedAt": "2026-07-31"
+  },
+  "spec": {
+    "title": "Production Readiness、SRE运营、渐进发布、自动回滚与持续认证总收口",
+    "transitionFrom": "需求、业务、数据、管理、可用性、测试、性能、韧性和安全均分别通过认证",
+    "transitionTo": "所有证书、运行指标、发布、告警、值班、回滚、Cutover、Support和持续再认证汇聚成唯一Production Release Gate",
+    "certificateFamily": "PR",
+    "skills": [
+      {
+        "id": "FRT-3000",
+        "name": "Production Readiness Orchestrator",
+        "path": "skills/frt-3000-production-readiness-orchestrator/SKILL.md"
+      },
+      {
+        "id": "FRT-3001",
+        "name": "Production Readiness Checklist Compiler",
+        "path": "skills/frt-3001-production-readiness-checklist-compiler/SKILL.md"
+      },
+      {
+        "id": "FRT-3002",
+        "name": "Service Catalog Generator",
+        "path": "skills/frt-3002-service-catalog-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-3003",
+        "name": "SLI and SLO Generator",
+        "path": "skills/frt-3003-sli-and-slo-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-3004",
+        "name": "Business SLI Generator",
+        "path": "skills/frt-3004-business-sli-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-3005",
+        "name": "Observability Coverage Validator",
+        "path": "skills/frt-3005-observability-coverage-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-3006",
+        "name": "Alert Quality Validator",
+        "path": "skills/frt-3006-alert-quality-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-3007",
+        "name": "Runbook Completeness Validator",
+        "path": "skills/frt-3007-runbook-completeness-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-3008",
+        "name": "On-Call Readiness Generator",
+        "path": "skills/frt-3008-on-call-readiness-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-3009",
+        "name": "Incident Management Workflow",
+        "path": "skills/frt-3009-incident-management-workflow/SKILL.md"
+      },
+      {
+        "id": "FRT-3010",
+        "name": "Release Train Orchestrator",
+        "path": "skills/frt-3010-release-train-orchestrator/SKILL.md"
+      },
+      {
+        "id": "FRT-3011",
+        "name": "Canary and Progressive Delivery",
+        "path": "skills/frt-3011-canary-and-progressive-delivery/SKILL.md"
+      },
+      {
+        "id": "FRT-3012",
+        "name": "Feature Flag Safety Validator",
+        "path": "skills/frt-3012-feature-flag-safety-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-3013",
+        "name": "Automated Rollback Generator",
+        "path": "skills/frt-3013-automated-rollback-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-3014",
+        "name": "Database and Data Cutover Manager",
+        "path": "skills/frt-3014-database-and-data-cutover-manager/SKILL.md"
+      },
+      {
+        "id": "FRT-3015",
+        "name": "Legacy Coexistence and Cutover Validator",
+        "path": "skills/frt-3015-legacy-coexistence-and-cutover-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-3016",
+        "name": "Customer Support Readiness",
+        "path": "skills/frt-3016-customer-support-readiness/SKILL.md"
+      },
+      {
+        "id": "FRT-3017",
+        "name": "Operational Dashboard Generator",
+        "path": "skills/frt-3017-operational-dashboard-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-3018",
+        "name": "Continuous Verification Scheduler",
+        "path": "skills/frt-3018-continuous-verification-scheduler/SKILL.md"
+      },
+      {
+        "id": "FRT-3019",
+        "name": "Continuous Security Recertification",
+        "path": "skills/frt-3019-continuous-security-recertification/SKILL.md"
+      },
+      {
+        "id": "FRT-3020",
+        "name": "Continuous Performance Recertification",
+        "path": "skills/frt-3020-continuous-performance-recertification/SKILL.md"
+      },
+      {
+        "id": "FRT-3021",
+        "name": "Production Closure Certificate",
+        "path": "skills/frt-3021-production-closure-certificate/SKILL.md"
+      },
+      {
+        "id": "FRT-3022",
+        "name": "Post-Release Verification",
+        "path": "skills/frt-3022-post-release-verification/SKILL.md"
+      },
+      {
+        "id": "FRT-3023",
+        "name": "Production Incident Learning Pack",
+        "path": "skills/frt-3023-production-incident-learning-pack/SKILL.md"
+      }
+    ],
+    "gates": [
+      "九类Critical前置Certificate全部有效且Scope一致",
+      "Critical Service Owner、SLI/SLO、Alert、Runbook、On-Call覆盖率=100%",
+      "Canary必须有Technical/Business/Data/Security Gate和Auto Halt",
+      "Critical Rollback与Cutover演练通过",
+      "Support不得依赖数据库直连",
+      "Post-Release Critical Journey/Data/Security验证通过",
+      "唯一Production Release Authority且PR5通过"
+    ]
+  }
+}

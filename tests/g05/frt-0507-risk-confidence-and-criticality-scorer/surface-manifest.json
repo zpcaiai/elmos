@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0507",
+  "skill_name": "frt-0507-risk-confidence-and-criticality-scorer",
+  "batch": "G05",
+  "surface": "tests",
+  "logical_path": "tests/g05/frt-0507-risk-confidence-and-criticality-scorer/",
+  "status": "shared_implementation",
+  "handler_kind": "migration_planning",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:47670935a9cf7ed0c14b0fe2a4b6d6596cadcba5ca39d28dc6933fbe97acb2af",
+  "implementation_paths": [
+    "engines/frontend-client-engine/test/frt-runtime.test.ts",
+    "engines/frontend-client-engine/test/server.test.ts",
+    "apps/web-console/e2e/frt-frontend-transformation.spec.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

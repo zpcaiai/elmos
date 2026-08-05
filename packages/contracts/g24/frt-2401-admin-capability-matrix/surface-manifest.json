@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2401",
+  "skill_name": "frt-2401-admin-capability-matrix",
+  "batch": "G24",
+  "surface": "contract",
+  "logical_path": "packages/contracts/g24/frt-2401-admin-capability-matrix/",
+  "status": "shared_implementation",
+  "handler_kind": "administration",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:5986b931debdc5b59b3449107140e82d021d044eb888de5f110f848aed169fa7",
+  "implementation_paths": [
+    "schemas/frt-g01-g30/skill-run-request.schema.json",
+    "schemas/frt-g01-g30/skill-run-result.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

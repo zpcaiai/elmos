@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1603",
+  "skill_name": "frt-1603-vue-3-to-flutter-route-pack",
+  "batch": "G16",
+  "surface": "tests",
+  "logical_path": "tests/g16/frt-1603-vue-3-to-flutter-route-pack/",
+  "status": "shared_implementation",
+  "handler_kind": "directional_route",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:feb46d580ed5202cc6ca009b0328f4e219966a85a2de6e87dcc18c02733b0af0",
+  "implementation_paths": [
+    "engines/frontend-client-engine/test/frt-runtime.test.ts",
+    "engines/frontend-client-engine/test/server.test.ts",
+    "apps/web-console/e2e/frt-frontend-transformation.spec.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

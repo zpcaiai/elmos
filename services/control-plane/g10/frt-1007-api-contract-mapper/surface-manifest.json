@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1007",
+  "skill_name": "frt-1007-api-contract-mapper",
+  "batch": "G10",
+  "surface": "control_plane",
+  "logical_path": "services/control-plane/g10/frt-1007-api-contract-mapper/",
+  "status": "shared_implementation",
+  "handler_kind": "design_system",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:754eb25b653d887b25130614dc33119c59565f3a96c92aa6c870a57583afd0b7",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/server.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

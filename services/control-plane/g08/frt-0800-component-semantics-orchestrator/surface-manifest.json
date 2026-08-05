@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0800",
+  "skill_name": "frt-0800-component-semantics-orchestrator",
+  "batch": "G08",
+  "surface": "control_plane",
+  "logical_path": "services/control-plane/g08/frt-0800-component-semantics-orchestrator/",
+  "status": "shared_implementation",
+  "handler_kind": "test_automation",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:fe62bab5652ae05559fd1ed2398eaa3fdaca035e83688b978a773cdb5d224736",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/server.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

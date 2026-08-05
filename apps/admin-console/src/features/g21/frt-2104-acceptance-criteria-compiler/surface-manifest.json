@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2104",
+  "skill_name": "frt-2104-acceptance-criteria-compiler",
+  "batch": "G21",
+  "surface": "admin_console",
+  "logical_path": "apps/admin-console/src/features/g21/frt-2104-acceptance-criteria-compiler/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:b8d0dc05689b8244a697df9782916ea37dc02ebaf132d684aa2ea0ab7ab66ab2",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

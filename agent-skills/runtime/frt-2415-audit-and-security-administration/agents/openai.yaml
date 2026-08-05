@@ -1,0 +1,4 @@
+interface:
+  display_name: "Audit and Security Administration"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2415-audit-and-security-administration to run FRT-2415 through the governed FRT runtime with exact scope and fail-closed evidence."

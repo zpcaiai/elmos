@@ -1,0 +1,4 @@
+interface:
+  display_name: "React Architecture Synthesizer"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-0603-react-architecture-synthesizer to run FRT-0603 through the governed FRT runtime with exact scope and fail-closed evidence."

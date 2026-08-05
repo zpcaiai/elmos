@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "profile_id": "frt-g01-g30-external-evidence-v1",
+  "pack_key": "frt-g01-g30-platform",
+  "version": "1.0.0",
+  "owner": "ELMOS Frontend Platform External Evidence Authority",
+  "runner_contract": {
+    "protocol": "elmos.external-runner.v1",
+    "executable_env": "ELMOS_FRT_EXTERNAL_RUNNER",
+    "shell_execution": false,
+    "repository_content_may_select_commands": false,
+    "default_network": "DENY",
+    "secret_values_in_evidence": false,
+    "raw_customer_source_in_repository_evidence": false
+  },
+  "independence": {
+    "executor_verifier_principals_must_differ": true,
+    "executor_verifier_organizations_must_differ": true,
+    "approver_executor_principals_must_differ": true,
+    "verifier_approver_principals_must_differ": true,
+    "all_passed_records_require_three_ed25519_signatures": true
+  },
+  "checks": {
+    "real_source_target_builds": {
+      "runner_capability": "FRT_REAL_CUSTOMER_ROUTE_CAMPAIGN",
+      "required_evidence_roles": ["authorization", "environment_inventory", "customer_repository_digest_manifest", "source_build_log", "target_build_log", "target_startup_probe", "route_equivalence_report", "cleanup_receipt"],
+      "required_metrics": ["repositories_expected", "repositories_passed", "routes_expected", "routes_passed", "unexplained_differences"],
+      "equal_metric_pairs": [["repositories_expected", "repositories_passed"], ["routes_expected", "routes_passed"]],
+      "exact_metrics": { "unexplained_differences": 0 },
+      "minimum_metrics": { "repositories_expected": 1, "routes_expected": 1 },
+      "required_claims": ["exact_commits_pinned", "customer_data_minimized", "source_and_target_really_built", "target_really_started", "cleanup_verified"]
+    },
+    "device_matrix": {
+      "runner_capability": "FRT_PHYSICAL_DEVICE_VISUAL_AT_MATRIX",
+      "required_evidence_roles": ["authorization", "physical_device_inventory", "install_launch_log", "p0_journey_log", "approved_visual_baseline", "visual_difference_report", "assistive_technology_transcript", "keyboard_focus_transcript", "accessibility_findings", "cleanup_receipt"],
+      "required_metrics": ["devices_expected", "devices_passed", "journeys_expected", "journeys_passed", "visual_regressions", "critical_accessibility_violations"],
+      "equal_metric_pairs": [["devices_expected", "devices_passed"], ["journeys_expected", "journeys_passed"]],
+      "exact_metrics": { "visual_regressions": 0, "critical_accessibility_violations": 0 },
+      "minimum_metrics": { "devices_expected": 1, "journeys_expected": 1 },
+      "required_claims": ["physical_devices_used", "baselines_approved_before_comparison", "no_baseline_auto_update", "manual_assistive_technology_executed", "privacy_reviewed"]
+    },
+    "independent_holdout": {
+      "runner_capability": "FRT_INDEPENDENT_HOLDOUT_CAMPAIGN",
+      "required_evidence_roles": ["authorization", "corpus_digest_manifest", "independence_attestation", "execution_log", "equivalence_report", "difference_register", "cleanup_receipt"],
+      "required_metrics": ["cases_expected", "cases_passed", "development_overlap", "unexplained_differences"],
+      "equal_metric_pairs": [["cases_expected", "cases_passed"]],
+      "exact_metrics": { "development_overlap": 0, "unexplained_differences": 0 },
+      "minimum_metrics": { "cases_expected": 1 },
+      "required_claims": ["physically_separate_corpus", "not_used_for_implementation", "independent_executor", "cleanup_verified"]
+    },
+    "formal_proof": {
+      "runner_capability": "FRT_BOUNDED_FORMAL_PROOF",
+      "required_evidence_roles": ["authorization", "proof_scope", "solver_inventory", "solver_transcript", "proof_artifact", "counterexample_replay"],
+      "required_metrics": ["obligations_expected", "obligations_proved", "counterexamples_unresolved"],
+      "equal_metric_pairs": [["obligations_expected", "obligations_proved"]],
+      "exact_metrics": { "counterexamples_unresolved": 0 },
+      "minimum_metrics": { "obligations_expected": 1 },
+      "required_claims": ["bounds_explicit", "assumptions_explicit", "solver_version_pinned", "counterexamples_replayable"]
+    },
+    "performance": {
+      "runner_capability": "FRT_REPRESENTATIVE_PERFORMANCE_CAMPAIGN",
+      "required_evidence_roles": ["authorization", "workload_digest_manifest", "environment_inventory", "raw_performance_results", "budget_comparison", "resource_utilization", "cleanup_receipt"],
+      "required_metrics": ["workloads_expected", "workloads_passed", "budget_breaches", "samples_per_workload"],
+      "equal_metric_pairs": [["workloads_expected", "workloads_passed"]],
+      "exact_metrics": { "budget_breaches": 0 },
+      "minimum_metrics": { "workloads_expected": 1, "samples_per_workload": 5 },
+      "required_claims": ["representative_workload", "warmup_separate", "raw_samples_preserved", "budgets_frozen_before_run"]
+    },
+    "chaos_dr": {
+      "runner_capability": "FRT_AUTHORIZED_CHAOS_DR_DRILL",
+      "required_evidence_roles": ["authorization", "drill_plan", "environment_inventory", "fault_injection_log", "backup_manifest", "restore_log", "integrity_reconciliation", "cleanup_receipt"],
+      "required_metrics": ["scenarios_expected", "scenarios_passed", "rpo_budget_seconds", "rpo_actual_seconds", "rto_budget_seconds", "rto_actual_seconds", "unreconciled_records"],
+      "equal_metric_pairs": [["scenarios_expected", "scenarios_passed"]],
+      "less_or_equal_metric_pairs": [["rpo_actual_seconds", "rpo_budget_seconds"], ["rto_actual_seconds", "rto_budget_seconds"]],
+      "exact_metrics": { "unreconciled_records": 0 },
+      "minimum_metrics": { "scenarios_expected": 1 },
+      "required_claims": ["isolated_authorized_environment", "rollback_tested", "restore_integrity_verified", "cleanup_verified"]
+    },
+    "penetration_test": {
+      "runner_capability": "FRT_AUTHORIZED_PENETRATION_ASSESSMENT",
+      "required_evidence_roles": ["authorization", "assessment_scope", "environment_inventory", "tool_inventory", "raw_scan_results", "manual_test_log", "finding_register", "retest_report"],
+      "required_metrics": ["scope_targets_expected", "scope_targets_tested", "open_critical", "open_high", "unretested_findings"],
+      "equal_metric_pairs": [["scope_targets_expected", "scope_targets_tested"]],
+      "exact_metrics": { "open_critical": 0, "open_high": 0, "unretested_findings": 0 },
+      "minimum_metrics": { "scope_targets_expected": 1 },
+      "required_claims": ["written_authorization", "scope_respected", "automated_and_manual_testing", "remediations_retested", "secrets_redacted"]
+    },
+    "production_observation": {
+      "runner_capability": "FRT_AUTHORIZED_PRODUCTION_OBSERVATION",
+      "required_evidence_roles": ["authorization", "deployment_digest_binding", "observation_window", "slo_raw_export", "alert_delivery_log", "privacy_redaction_report", "incident_register"],
+      "required_metrics": ["observation_minutes", "slo_windows_expected", "slo_windows_passed", "critical_incidents", "unreconciled_alerts"],
+      "equal_metric_pairs": [["slo_windows_expected", "slo_windows_passed"]],
+      "exact_metrics": { "critical_incidents": 0, "unreconciled_alerts": 0 },
+      "minimum_metrics": { "observation_minutes": 60, "slo_windows_expected": 1 },
+      "required_claims": ["exact_deployment_digest", "production_access_authorized", "telemetry_privacy_minimized", "alerts_reconciled"]
+    },
+    "customer_acceptance": {
+      "runner_capability": "FRT_INDEPENDENT_CUSTOMER_ACCEPTANCE",
+      "required_evidence_roles": ["authorization", "consent_and_purpose", "participant_role_matrix", "journey_scope", "task_observation_log", "finding_register", "customer_decision", "independent_review"],
+      "required_metrics": ["organizations_expected", "organizations_accepted", "participants_expected", "participants_completed", "p0_tasks_expected", "p0_tasks_passed", "open_critical", "open_high"],
+      "equal_metric_pairs": [["organizations_expected", "organizations_accepted"], ["participants_expected", "participants_completed"], ["p0_tasks_expected", "p0_tasks_passed"]],
+      "exact_metrics": { "open_critical": 0, "open_high": 0 },
+      "minimum_metrics": { "organizations_expected": 2, "participants_expected": 6, "p0_tasks_expected": 1 },
+      "required_claims": ["informed_consent", "customer_decision_not_agent_generated", "no_facilitator_intervention_for_p0", "independent_review_complete"]
+    }
+  }
+}

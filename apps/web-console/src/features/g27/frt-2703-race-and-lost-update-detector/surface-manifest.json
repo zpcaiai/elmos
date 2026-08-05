@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2703",
+  "skill_name": "frt-2703-race-and-lost-update-detector",
+  "batch": "G27",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g27/frt-2703-race-and-lost-update-detector/",
+  "status": "shared_implementation",
+  "handler_kind": "performance_capacity",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:6d9dc191aff3f1091bc7bc60f6f1ced6398ff25816c28a112d223e3501a4c2e4",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

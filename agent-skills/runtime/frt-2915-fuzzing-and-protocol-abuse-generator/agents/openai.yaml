@@ -1,0 +1,4 @@
+interface:
+  display_name: "Fuzzing and Protocol Abuse Generator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2915-fuzzing-and-protocol-abuse-generator to run FRT-2915 through the governed FRT runtime with exact scope and fail-closed evidence."

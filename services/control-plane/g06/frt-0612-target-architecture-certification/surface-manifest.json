@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0612",
+  "skill_name": "frt-0612-target-architecture-certification",
+  "batch": "G06",
+  "surface": "control_plane",
+  "logical_path": "services/control-plane/g06/frt-0612-target-architecture-certification/",
+  "status": "shared_implementation",
+  "handler_kind": "source_generation",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:4a516599efe8eac5e2a31f8db8bb99ad840745d5d7cf91e6a1d28641582bf99d",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/server.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

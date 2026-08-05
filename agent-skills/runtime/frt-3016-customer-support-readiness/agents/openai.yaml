@@ -1,0 +1,4 @@
+interface:
+  display_name: "Customer Support Readiness"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-3016-customer-support-readiness to run FRT-3016 through the governed FRT runtime with exact scope and fail-closed evidence."

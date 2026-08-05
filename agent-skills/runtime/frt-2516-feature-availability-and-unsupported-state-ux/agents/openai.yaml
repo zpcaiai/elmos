@@ -1,0 +1,4 @@
+interface:
+  display_name: "Feature Availability and Unsupported-State UX"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2516-feature-availability-and-unsupported-state-ux to run FRT-2516 through the governed FRT runtime with exact scope and fail-closed evidence."

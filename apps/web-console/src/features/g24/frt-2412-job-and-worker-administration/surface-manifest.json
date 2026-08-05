@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2412",
+  "skill_name": "frt-2412-job-and-worker-administration",
+  "batch": "G24",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g24/frt-2412-job-and-worker-administration/",
+  "status": "shared_implementation",
+  "handler_kind": "administration",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:4754c168b6366b77f65031ecd7852cc180018f668d4fd16d69c54b512dc1d951",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

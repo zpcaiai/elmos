@@ -1,0 +1,4 @@
+interface:
+  display_name: "Business State Machine Completeness Checker"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2202-business-state-machine-completeness-checker to run FRT-2202 through the governed FRT runtime with exact scope and fail-closed evidence."

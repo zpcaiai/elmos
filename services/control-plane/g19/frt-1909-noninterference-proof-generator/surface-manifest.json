@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1909",
+  "skill_name": "frt-1909-noninterference-proof-generator",
+  "batch": "G19",
+  "surface": "control_plane",
+  "logical_path": "services/control-plane/g19/frt-1909-noninterference-proof-generator/",
+  "status": "shared_implementation",
+  "handler_kind": "advanced_verification",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:1d1281ef4a595d56533d940400b0b37286b5ef77ddcbb296c4a8898c10361f49",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/server.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

@@ -1,0 +1,96 @@
+{
+  "apiVersion": "frt.openai.dev/v1alpha1",
+  "kind": "GenerationBatchManifest",
+  "metadata": {
+    "id": "G12",
+    "slug": "platform-capabilities-native-bridges",
+    "version": "1.0.0",
+    "generatedAt": "2026-07-31"
+  },
+  "spec": {
+    "title": "平台能力、Native Bridge、支付、权限与Device Fake",
+    "transitionFrom": "框架中立平台Capability IR",
+    "transitionTo": "在各目标平台安全实现或明确降级原生能力",
+    "certificateFamily": "CP",
+    "skills": [
+      {
+        "id": "FRT-1200",
+        "name": "Platform Capability Orchestrator",
+        "path": "skills/frt-1200-platform-capability-orchestrator/SKILL.md"
+      },
+      {
+        "id": "FRT-1201",
+        "name": "Platform Capability Registry",
+        "path": "skills/frt-1201-platform-capability-registry/SKILL.md"
+      },
+      {
+        "id": "FRT-1202",
+        "name": "Native Bridge Generator",
+        "path": "skills/frt-1202-native-bridge-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-1203",
+        "name": "File Clipboard and Share Capability",
+        "path": "skills/frt-1203-file-clipboard-and-share-capability/SKILL.md"
+      },
+      {
+        "id": "FRT-1204",
+        "name": "Camera Media and Picker Capability",
+        "path": "skills/frt-1204-camera-media-and-picker-capability/SKILL.md"
+      },
+      {
+        "id": "FRT-1205",
+        "name": "Location Bluetooth and Device Capability",
+        "path": "skills/frt-1205-location-bluetooth-and-device-capability/SKILL.md"
+      },
+      {
+        "id": "FRT-1206",
+        "name": "Notification Capability",
+        "path": "skills/frt-1206-notification-capability/SKILL.md"
+      },
+      {
+        "id": "FRT-1207",
+        "name": "Payment Capability",
+        "path": "skills/frt-1207-payment-capability/SKILL.md"
+      },
+      {
+        "id": "FRT-1208",
+        "name": "Permission State Machine Generator",
+        "path": "skills/frt-1208-permission-state-machine-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-1209",
+        "name": "App Lifecycle and Background Capability",
+        "path": "skills/frt-1209-app-lifecycle-and-background-capability/SKILL.md"
+      },
+      {
+        "id": "FRT-1210",
+        "name": "Device Fake and Simulator Generator",
+        "path": "skills/frt-1210-device-fake-and-simulator-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-1211",
+        "name": "Unsupported Capability UX Generator",
+        "path": "skills/frt-1211-unsupported-capability-ux-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-1212",
+        "name": "Platform Safety Validator",
+        "path": "skills/frt-1212-platform-safety-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-1213",
+        "name": "Platform Capability Certification",
+        "path": "skills/frt-1213-platform-capability-certification/SKILL.md"
+      }
+    ],
+    "gates": [
+      "Critical Capability不得Fake Success",
+      "Payment最终状态由Server确认",
+      "危险设备命令Unknown不得盲目重试",
+      "Permission状态完整",
+      "Shadow/Fake不得产生Production副作用",
+      "Unsupported能力有明确替代路径"
+    ]
+  }
+}

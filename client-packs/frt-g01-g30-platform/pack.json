@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "pack_key": "frt-g01-g30-platform",
+  "version": "1.0.0",
+  "mode": "modernization",
+  "status": "experimental",
+  "owner": "ELMOS Frontend Platform Product Owner",
+  "maintenance_owner": "ELMOS Frontend Client Engine Maintainers",
+  "ux_owner": "ELMOS Web Console UX Owner",
+  "accessibility_owner": "ELMOS Accessibility Review Owner",
+  "source": {
+    "stack": "frt-g01-g30-spec",
+    "versions": [
+      "1.0.0"
+    ],
+    "language": "markdown",
+    "language_versions": [
+      "1.0.0"
+    ],
+    "runtime": "codex-skill-contract",
+    "runtime_versions": [
+      "1.0.0"
+    ],
+    "build_tool": "frt-package-validator-1.0.0",
+    "package_manager": "immutable-package-manifest",
+    "router": ["FRT API contract v1"],
+    "renderer": ["Codex Skill Markdown v1"],
+    "state": ["immutable PACKAGE_MANIFEST.json"],
+    "forms": ["typed Skill execution request v1"],
+    "styling": ["not-applicable-static-contract-v1"],
+    "design_system": ["not-applicable-static-contract-v1"],
+    "api_client": ["not-applicable-static-contract-v1"],
+    "identity": ["source-digest-bound-package-v1"],
+    "i18n": ["Chinese-English contract content v1"],
+    "test_tools": ["validate_package.py 1.0.0"],
+    "browsers": [
+      "not-applicable-static-source-v1"
+    ],
+    "devices": []
+  },
+  "target": {
+    "stack": "elmos-frontend-client-runtime",
+    "versions": [
+      "1.2.0"
+    ],
+    "language": "typescript",
+    "language_versions": [
+      "5.9.2"
+    ],
+    "runtime": "nodejs",
+    "runtime_versions": [
+      "26.0.0"
+    ],
+    "build_tool": "typescript-5.9.2",
+    "package_manager": "pnpm-10.12.4",
+    "router": ["Node HTTP route matcher v1", "Next.js App Router 16.3.0"],
+    "renderer": ["React 19.2.7 CSR and Next.js 16.3.0 SSR"],
+    "state": ["process-local typed Runtime plus React local state"],
+    "forms": ["native typed controls"],
+    "styling": ["CSS Modules"],
+    "design_system": ["ELMOS Web Console tokens"],
+    "api_client": ["Fetch API"],
+    "identity": ["ELMOS control-plane verified scope"],
+    "i18n": ["zh-CN primary with en-US navigation"],
+    "test_tools": ["Node.js 26.0.0 test runner", "Playwright 1.61.1", "Axe 4.12.1"],
+    "browsers": [
+      "Google Chrome 150.0.7871.189, Firefox 151.0 and WebKit 26.5 via Playwright 1.61.1"
+    ],
+    "devices": []
+  },
+  "scope": {
+    "journeys": [
+      "browse all 30 batches and 472 Skills",
+      "select one of 30 directional frontend routes",
+      "filter Skills and inspect prerequisite and evidence boundaries",
+      "submit scoped plan, analysis, execution-proposal, and verification requests"
+    ],
+    "routes": [
+      "/frontend",
+      "/api/frt/catalog",
+      "/engine/v1/frt/catalog",
+      "/engine/v1/frt/routes",
+      "/engine/v1/frt/skills/{skill}/runs",
+      "/engine/v1/frt/batches/{batch}/plans",
+      "/engine/v1/frt/runs/{run}"
+    ],
+    "component_roots": [
+      "engines/frontend-client-engine/src/frt-runtime.ts",
+      "apps/web-console/app/frontend/FrontendTransformationStudio.tsx"
+    ],
+    "excluded": [
+      "customer repository code execution",
+      "real source and target builds outside checked-in fixtures",
+      "device-cloud and physical-device execution",
+      "formal proof, performance, Chaos, penetration, production, and customer certification"
+    ]
+  },
+  "paths": {
+    "source_fingerprint": "source-fingerprint/fingerprint.json",
+    "ui_ir": "ui-ir/model.json",
+    "target_profile": "target-profile/profile.json",
+    "acceptance_profile": "acceptance/acceptance-profile.json",
+    "support_matrix": "support-matrix.json",
+    "evidence": "certification/evidence.json",
+    "certification": "certification/certification.json"
+  },
+  "gates": {
+    "build": "required",
+    "startup_or_launch": "required",
+    "p0_journeys": "required",
+    "visual": "required",
+    "accessibility": "required",
+    "security": "required",
+    "holdout": "required"
+  }
+}

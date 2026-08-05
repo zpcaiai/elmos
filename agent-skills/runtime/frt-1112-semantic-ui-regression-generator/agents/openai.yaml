@@ -1,0 +1,4 @@
+interface:
+  display_name: "Semantic UI Regression Generator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-1112-semantic-ui-regression-generator to run FRT-1112 through the governed FRT runtime with exact scope and fail-closed evidence."

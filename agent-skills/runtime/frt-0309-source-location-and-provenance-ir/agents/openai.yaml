@@ -1,0 +1,4 @@
+interface:
+  display_name: "Source Location and Provenance IR"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-0309-source-location-and-provenance-ir to run FRT-0309 through the governed FRT runtime with exact scope and fail-closed evidence."

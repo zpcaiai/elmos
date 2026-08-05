@@ -1,0 +1,4 @@
+interface:
+  display_name: "Web ArkUI Route Certification"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-1511-web-arkui-route-certification to run FRT-1511 through the governed FRT runtime with exact scope and fail-closed evidence."

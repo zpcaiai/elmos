@@ -1,0 +1,107 @@
+{
+  "apiVersion": "frt.openai.dev/v1alpha1",
+  "kind": "GenerationBatchManifest",
+  "metadata": {
+    "id": "G23",
+    "slug": "data-integrity-lifecycle-closure",
+    "version": "1.0.0",
+    "generatedAt": "2026-07-31"
+  },
+  "spec": {
+    "title": "Data Contract、全链路血缘、数据Authority、一致性、修复与生命周期闭环",
+    "transitionFrom": "每条业务线的流程逻辑已经闭环",
+    "transitionTo": "每条业务数据从产生、校验、写入、传播、缓存、读取、离线同步、修正、归档到删除全部闭环",
+    "certificateFamily": "DC",
+    "skills": [
+      {
+        "id": "FRT-2300",
+        "name": "Data Integrity Orchestrator",
+        "path": "skills/frt-2300-data-integrity-orchestrator/SKILL.md"
+      },
+      {
+        "id": "FRT-2301",
+        "name": "Data Contract Registry",
+        "path": "skills/frt-2301-data-contract-registry/SKILL.md"
+      },
+      {
+        "id": "FRT-2302",
+        "name": "End-to-End Data Lineage Generator",
+        "path": "skills/frt-2302-end-to-end-data-lineage-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-2303",
+        "name": "Write-to-Read Path Validator",
+        "path": "skills/frt-2303-write-to-read-path-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-2304",
+        "name": "Data Ownership and Authority Registry",
+        "path": "skills/frt-2304-data-ownership-and-authority-registry/SKILL.md"
+      },
+      {
+        "id": "FRT-2305",
+        "name": "Schema Evolution and Compatibility Manager",
+        "path": "skills/frt-2305-schema-evolution-and-compatibility-manager/SKILL.md"
+      },
+      {
+        "id": "FRT-2306",
+        "name": "Event Ordering and Deduplication Generator",
+        "path": "skills/frt-2306-event-ordering-and-deduplication-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-2307",
+        "name": "Cache Coherence Validator",
+        "path": "skills/frt-2307-cache-coherence-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-2308",
+        "name": "Offline Synchronization Validator",
+        "path": "skills/frt-2308-offline-synchronization-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-2309",
+        "name": "Data Reconciliation Engine",
+        "path": "skills/frt-2309-data-reconciliation-engine/SKILL.md"
+      },
+      {
+        "id": "FRT-2310",
+        "name": "Data Quality Rule Engine",
+        "path": "skills/frt-2310-data-quality-rule-engine/SKILL.md"
+      },
+      {
+        "id": "FRT-2311",
+        "name": "Data Repair Workflow",
+        "path": "skills/frt-2311-data-repair-workflow/SKILL.md"
+      },
+      {
+        "id": "FRT-2312",
+        "name": "Sensitive Data Label Propagator",
+        "path": "skills/frt-2312-sensitive-data-label-propagator/SKILL.md"
+      },
+      {
+        "id": "FRT-2313",
+        "name": "Data Retention and Deletion Validator",
+        "path": "skills/frt-2313-data-retention-and-deletion-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-2314",
+        "name": "Cross-Tenant Data Isolation Validator",
+        "path": "skills/frt-2314-cross-tenant-data-isolation-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-2315",
+        "name": "Migration Data Verification Generator",
+        "path": "skills/frt-2315-migration-data-verification-generator/SKILL.md"
+      }
+    ],
+    "gates": [
+      "Critical数据实体和字段Contract覆盖率=100%",
+      "Critical Authority未知或双Writer=0",
+      "Critical写入无Read Path=0",
+      "重复Event产生重复有效副作用=0",
+      "Cross-Tenant数据泄漏=0",
+      "Sensitive Label丢失=0",
+      "Critical Migration语义差异=0"
+    ]
+  }
+}

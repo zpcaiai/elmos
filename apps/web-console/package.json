@@ -10,13 +10,15 @@
     "check": "tsc --noEmit && next build",
     "check:telemetry": "node ../../telemetry/validate.mjs",
     "test:e2e": "playwright test",
+    "test:frt-external-quality": "playwright test --config=playwright.external-quality.config.ts",
+    "capture:frt-visual-candidates": "playwright test e2e/frt-visual-candidate.spec.ts",
     "test:e2e:chromium": "playwright test --project=chromium --project=mobile-chromium"
   },
   "dependencies": {
     "html-to-text": "10.0.0",
     "jose": "6.1.2",
     "mammoth": "1.12.0",
-    "next": "16.2.12",
+    "next": "16.3.0",
     "pdfjs-dist": "6.1.200",
     "react": "19.2.7",
     "react-dom": "19.2.7"

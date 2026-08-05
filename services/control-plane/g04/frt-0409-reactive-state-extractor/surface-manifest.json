@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0409",
+  "skill_name": "frt-0409-reactive-state-extractor",
+  "batch": "G04",
+  "surface": "control_plane",
+  "logical_path": "services/control-plane/g04/frt-0409-reactive-state-extractor/",
+  "status": "shared_implementation",
+  "handler_kind": "typed_contract",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:59a5448788df9137b13cd349f70c1925f6b23e8043e05f1b075f6c212d98b935",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/server.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

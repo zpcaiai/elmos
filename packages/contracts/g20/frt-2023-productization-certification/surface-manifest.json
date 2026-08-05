@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2023",
+  "skill_name": "frt-2023-productization-certification",
+  "batch": "G20",
+  "surface": "contract",
+  "logical_path": "packages/contracts/g20/frt-2023-productization-certification/",
+  "status": "shared_implementation",
+  "handler_kind": "runtime_operations",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:1b569cf61aa38e795aee2c7ca31a45a3d2b8f32d6ea67ffa0fa8a715ce8d36f0",
+  "implementation_paths": [
+    "schemas/frt-g01-g30/skill-run-request.schema.json",
+    "schemas/frt-g01-g30/skill-run-result.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

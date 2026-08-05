@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2022",
+  "skill_name": "frt-2022-security-red-team-harness",
+  "batch": "G20",
+  "surface": "admin_console",
+  "logical_path": "apps/admin-console/src/features/g20/frt-2022-security-red-team-harness/",
+  "status": "shared_implementation",
+  "handler_kind": "runtime_operations",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:e026d79fc523eba3ade65799db0e39b2dc12a53ac9e46da9e9031b607b45c776",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

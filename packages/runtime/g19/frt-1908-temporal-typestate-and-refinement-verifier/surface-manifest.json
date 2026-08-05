@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1908",
+  "skill_name": "frt-1908-temporal-typestate-and-refinement-verifier",
+  "batch": "G19",
+  "surface": "runtime",
+  "logical_path": "packages/runtime/g19/frt-1908-temporal-typestate-and-refinement-verifier/",
+  "status": "shared_implementation",
+  "handler_kind": "advanced_verification",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:1e0c404e26e9c7d627d35bfac19073c9102a6520eb3404acf57cc43701a38006",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/frt-runtime.ts",
+    "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

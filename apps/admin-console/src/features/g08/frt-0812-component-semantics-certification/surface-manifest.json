@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0812",
+  "skill_name": "frt-0812-component-semantics-certification",
+  "batch": "G08",
+  "surface": "admin_console",
+  "logical_path": "apps/admin-console/src/features/g08/frt-0812-component-semantics-certification/",
+  "status": "shared_implementation",
+  "handler_kind": "test_automation",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:3c825f171ff8086e20a46891e3b1381b6b6124e0de59a91cc8346e43d25fc954",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

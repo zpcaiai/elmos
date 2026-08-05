@@ -3,6 +3,7 @@ import { FrontendClientEngine } from "./engine.js";
 import type { EngineJobRequest, ExecuteStepRequest, JobResponse } from "./contracts.js";
 import {
   validateFrtBatchPlanRequest,
+  validateFrtRunCompletionRequest,
   validateFrtRunTransitionRequest,
   validateFrtSkillRunRequest,
 } from "./frt-contract-validation.js";
@@ -19,12 +20,36 @@ import type { FrtBatchPlanRequest, FrtSkillRunRequest } from "./frt-types.js";
 import { uiProjectGenerationCapabilities } from "./project-generation.js";
 
 const maximumBodyBytes = 1_048_576;
+// Per docs/frt-g01-g30/RUNNER_CONTRACT.md section 2. Creating a run carries a source
+// snapshot and needs real headroom; every other FRT call is a small control message, so
+// it gets a much tighter ceiling. Non-FRT engine routes keep the original 1 MiB.
+const maximumFrtRunBytes = 16 * 1024 * 1024;
+const maximumFrtControlBytes = 64 * 1024;
+// A modest oversized request is drained without buffering so the server can return a
+// deterministic 413 instead of resetting a client that is still uploading. Requests
+// beyond the largest supported FRT envelope are terminated rather than drained forever.
+const maximumRejectedBodyDrainBytes = maximumFrtRunBytes;
 
 export interface FrontendClientServerOptions {
   readonly engine?: FrontendClientEngine;
   readonly frtRuntime?: FrtRuntime;
   readonly frtSecurity?: FrtSecurityContext;
   readonly frtRunStore?: FrtRunStore;
+}
+
+/**
+ * Raised when a request body exceeds its route limit. It is distinct from a contract
+ * rejection because the body is outside the route contract. Small rejected envelopes
+ * are drained without buffering; envelopes beyond the hard ceiling are reset.
+ */
+class PayloadTooLargeError extends Error {
+  constructor(
+    readonly limitBytes: number,
+    readonly requestDrained: boolean,
+  ) {
+    super("REQUEST_TOO_LARGE");
+    this.name = "PayloadTooLargeError";
+  }
 }
 
 class FrtHttpAuthorizationError extends Error {
@@ -73,15 +98,27 @@ function assertFrtScope(claims: FrtIdentityClaims, request: FrtBatchPlanRequest 
   }
 }
 
-async function body(request: IncomingMessage): Promise<unknown> {
+async function body(request: IncomingMessage, maximumBytes = maximumBodyBytes): Promise<unknown> {
   const chunks: Buffer[] = [];
   let size = 0;
+  let exceeded = false;
+  const contentLength = Number.parseInt(request.headers["content-length"] ?? "", 10);
+  if (Number.isFinite(contentLength) && contentLength > maximumRejectedBodyDrainBytes) {
+    throw new PayloadTooLargeError(maximumBytes, false);
+  }
   for await (const chunk of request) {
     const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
     size += buffer.length;
-    if (size > maximumBodyBytes) throw new Error("request body exceeds 1 MiB");
-    chunks.push(buffer);
+    if (size > maximumRejectedBodyDrainBytes) {
+      throw new PayloadTooLargeError(maximumBytes, false);
+    }
+    if (size > maximumBytes) {
+      exceeded = true;
+      continue;
+    }
+    if (!exceeded) chunks.push(buffer);
   }
+  if (exceeded) throw new PayloadTooLargeError(maximumBytes, true);
   return JSON.parse(Buffer.concat(chunks).toString("utf8"));
 }
 
@@ -137,7 +174,7 @@ export function createFrontendClientServer(options: FrontendClientServerOptions 
     const skillRun = url.pathname.match(/^\/engine\/v1\/frt\/skills\/([^/]+)\/runs$/);
     if (request.method === "POST" && skillRun) {
       const principal = authorizeFrt(request, security, "frt:run");
-      const value = validateFrtSkillRunRequest(await body(request)) as FrtSkillRunRequest;
+      const value = validateFrtSkillRunRequest(await body(request, maximumFrtRunBytes)) as FrtSkillRunRequest;
       assertFrtScope(principal, value);
       if (value.action === "VERIFY" && !principal.permissions.includes("frt:evidence")) {
         throw new FrtHttpAuthorizationError(403, "FRT_PERMISSION_DENIED");
@@ -151,7 +188,7 @@ export function createFrontendClientServer(options: FrontendClientServerOptions 
     const batchPlan = url.pathname.match(/^\/engine\/v1\/frt\/batches\/([^/]+)\/plans$/);
     if (request.method === "POST" && batchPlan) {
       const principal = authorizeFrt(request, security, "frt:plan");
-      const value = validateFrtBatchPlanRequest(await body(request)) as FrtBatchPlanRequest;
+      const value = validateFrtBatchPlanRequest(await body(request, maximumFrtControlBytes)) as FrtBatchPlanRequest;
       assertFrtScope(principal, value);
       if (value.batch.toLocaleUpperCase("en-US") !== batchPlan[1]!.toLocaleUpperCase("en-US")) {
         return send(response, 400, { errorCode: "FRT_BATCH_SCOPE_MISMATCH" });
@@ -173,18 +210,44 @@ export function createFrontendClientServer(options: FrontendClientServerOptions 
         : send(response, 404, { errorCode: "FRT_RUN_NOT_FOUND" });
     }
     const frtTransition = url.pathname.match(
-      /^\/engine\/v1\/frt\/runs\/([^/]+)\/(claim|cancel|retry)$/,
+      /^\/engine\/v1\/frt\/runs\/([^/]+)\/(claim|heartbeat|cancel|retry)$/,
     );
     if (request.method === "POST" && frtTransition) {
       const principal = authorizeFrt(request, security, "frt:run");
-      const command = validateFrtRunTransitionRequest(await body(request));
+      const command = validateFrtRunTransitionRequest(await body(request, maximumFrtControlBytes));
       try {
+        // A renewal is holder-only and refused once the lease has expired, so a runner that
+        // stalled past its lease cannot quietly regain authority by heartbeating.
         const result = frtTransition[2] === "claim"
           ? frtRuntime.claim(principal.scope, frtTransition[1]!, command.expectedVersion, principal.subject)
-          : frtTransition[2] === "cancel"
-            ? frtRuntime.cancel(principal.scope, frtTransition[1]!, command.expectedVersion, principal.subject)
-            : frtRuntime.retry(principal.scope, frtTransition[1]!, command.expectedVersion, principal.subject);
+          : frtTransition[2] === "heartbeat"
+            ? frtRuntime.heartbeat(principal.scope, frtTransition[1]!, command.expectedVersion, principal.subject)
+            : frtTransition[2] === "cancel"
+              ? frtRuntime.cancel(principal.scope, frtTransition[1]!, command.expectedVersion, principal.subject)
+              : frtRuntime.retry(principal.scope, frtTransition[1]!, command.expectedVersion, principal.subject);
         return result ? send(response, 200, result)
+          : send(response, 404, { errorCode: "FRT_RUN_NOT_FOUND" });
+      } catch {
+        return send(response, 409, { errorCode: "FRT_RUN_TRANSITION_REJECTED" });
+      }
+    }
+    const frtComplete = url.pathname.match(/^\/engine\/v1\/frt\/runs\/([^/]+)\/complete$/);
+    if (request.method === "POST" && frtComplete) {
+      // Recording an execution registers evidence, so it needs the evidence permission on
+      // top of frt:run. It still certifies nothing: the batch gate stays ineligible and the
+      // certificate family stays NOT_CERTIFIED until a separate VERIFY run passes.
+      authorizeFrt(request, security, "frt:run");
+      const principal = authorizeFrt(request, security, "frt:evidence");
+      const command = validateFrtRunCompletionRequest(await body(request, maximumFrtControlBytes));
+      try {
+        const result = frtRuntime.complete(
+          principal.scope,
+          frtComplete[1]!,
+          command.expectedVersion,
+          principal.subject,
+          command.completion,
+        );
+        return result ? send(response, result.state === "SUCCEEDED" ? 200 : 409, result)
           : send(response, 404, { errorCode: "FRT_RUN_NOT_FOUND" });
       } catch {
         return send(response, 409, { errorCode: "FRT_RUN_TRANSITION_REJECTED" });
@@ -232,6 +295,17 @@ export function createFrontendClientServer(options: FrontendClientServerOptions 
     }
     send(response, 404, { errorCode: "NOT_FOUND" });
   } catch (error) {
+    if (error instanceof PayloadTooLargeError) {
+      // Modest rejected bodies have already been drained without buffering. Only an
+      // envelope beyond the hard drain ceiling is reset immediately.
+      if (!error.requestDrained) request.destroy();
+      response.writeHead(413, {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store",
+        connection: "close",
+      });
+      return response.end(JSON.stringify({ errorCode: "REQUEST_TOO_LARGE", limitBytes: error.limitBytes }));
+    }
     if (error instanceof FrtHttpAuthorizationError) {
       return send(response, error.status, { errorCode: error.errorCode });
     }

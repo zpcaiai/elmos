@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2707",
+  "skill_name": "frt-2707-stress-test-coordinator",
+  "batch": "G27",
+  "surface": "contract",
+  "logical_path": "packages/contracts/g27/frt-2707-stress-test-coordinator/",
+  "status": "shared_implementation",
+  "handler_kind": "performance_capacity",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:80c64f8725b082691c7fd4233432d26eaa56f88df5f03ea4ef75ea60fa9ae652",
+  "implementation_paths": [
+    "schemas/frt-g01-g30/skill-run-request.schema.json",
+    "schemas/frt-g01-g30/skill-run-result.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

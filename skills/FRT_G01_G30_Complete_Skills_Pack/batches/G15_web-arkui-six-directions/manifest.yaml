@@ -1,0 +1,85 @@
+{
+  "apiVersion": "frt.openai.dev/v1alpha1",
+  "kind": "GenerationBatchManifest",
+  "metadata": {
+    "id": "G15",
+    "slug": "web-arkui-six-directions",
+    "version": "1.0.0",
+    "generatedAt": "2026-07-31"
+  },
+  "spec": {
+    "title": "Web与ArkUI双向六条转换路径",
+    "transitionFrom": "三种Web框架和ArkUI组件/状态模型",
+    "transitionTo": "Vue2/Vue3/React与ArkUI六条方向均具备可执行Route Pack",
+    "certificateFamily": "WA",
+    "skills": [
+      {
+        "id": "FRT-1500",
+        "name": "Web ArkUI Route Orchestrator",
+        "path": "skills/frt-1500-web-arkui-route-orchestrator/SKILL.md"
+      },
+      {
+        "id": "FRT-1501",
+        "name": "Vue 2 to ArkUI Route Pack",
+        "path": "skills/frt-1501-vue-2-to-arkui-route-pack/SKILL.md"
+      },
+      {
+        "id": "FRT-1502",
+        "name": "ArkUI to Vue 2 Route Pack",
+        "path": "skills/frt-1502-arkui-to-vue-2-route-pack/SKILL.md"
+      },
+      {
+        "id": "FRT-1503",
+        "name": "Vue 3 to ArkUI Route Pack",
+        "path": "skills/frt-1503-vue-3-to-arkui-route-pack/SKILL.md"
+      },
+      {
+        "id": "FRT-1504",
+        "name": "ArkUI to Vue 3 Route Pack",
+        "path": "skills/frt-1504-arkui-to-vue-3-route-pack/SKILL.md"
+      },
+      {
+        "id": "FRT-1505",
+        "name": "React to ArkUI Route Pack",
+        "path": "skills/frt-1505-react-to-arkui-route-pack/SKILL.md"
+      },
+      {
+        "id": "FRT-1506",
+        "name": "ArkUI to React Route Pack",
+        "path": "skills/frt-1506-arkui-to-react-route-pack/SKILL.md"
+      },
+      {
+        "id": "FRT-1507",
+        "name": "ArkUI Capability Gap Planner",
+        "path": "skills/frt-1507-arkui-capability-gap-planner/SKILL.md"
+      },
+      {
+        "id": "FRT-1508",
+        "name": "ArkUI State Navigation and Lifecycle Mapper",
+        "path": "skills/frt-1508-arkui-state-navigation-and-lifecycle-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-1509",
+        "name": "ArkUI Native Capability Mapper",
+        "path": "skills/frt-1509-arkui-native-capability-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-1510",
+        "name": "Web ArkUI Device Differential Corpus",
+        "path": "skills/frt-1510-web-arkui-device-differential-corpus/SKILL.md"
+      },
+      {
+        "id": "FRT-1511",
+        "name": "Web ArkUI Route Certification",
+        "path": "skills/frt-1511-web-arkui-route-certification/SKILL.md"
+      }
+    ],
+    "gates": [
+      "六条路径Build和关键设备Journey通过",
+      "ArkUI状态装饰器语义正确",
+      "Web-only DOM能力显式Gap",
+      "Native Permission和Lifecycle完整",
+      "真机/模拟器Evidence绑定版本"
+    ]
+  }
+}

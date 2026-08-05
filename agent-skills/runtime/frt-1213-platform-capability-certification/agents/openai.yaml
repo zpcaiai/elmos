@@ -1,0 +1,4 @@
+interface:
+  display_name: "Platform Capability Certification"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-1213-platform-capability-certification to run FRT-1213 through the governed FRT runtime with exact scope and fail-closed evidence."

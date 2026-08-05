@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2305",
+  "skill_name": "frt-2305-schema-evolution-and-compatibility-manager",
+  "batch": "G23",
+  "surface": "control_plane",
+  "logical_path": "services/control-plane/g23/frt-2305-schema-evolution-and-compatibility-manager/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:d6269865ad81eae92ce767d6fdd16f0ed25b6a9fb4a5cc344f2ad8251c8f47f3",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/server.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0602",
+  "skill_name": "frt-0602-vue-3-architecture-synthesizer",
+  "batch": "G06",
+  "surface": "tests",
+  "logical_path": "tests/g06/frt-0602-vue-3-architecture-synthesizer/",
+  "status": "shared_implementation",
+  "handler_kind": "source_generation",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:eb6aa8e85fa63e4b01e18e32fc2abaa7d066249f57fddd7ef85071a1a2574cd5",
+  "implementation_paths": [
+    "engines/frontend-client-engine/test/frt-runtime.test.ts",
+    "engines/frontend-client-engine/test/server.test.ts",
+    "apps/web-console/e2e/frt-frontend-transformation.spec.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

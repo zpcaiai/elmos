@@ -1,0 +1,4 @@
+interface:
+  display_name: "Release Scope Closure Manager"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2110-release-scope-closure-manager to run FRT-2110 through the governed FRT runtime with exact scope and fail-closed evidence."

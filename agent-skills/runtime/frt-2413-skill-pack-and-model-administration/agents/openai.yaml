@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill, Pack and Model Administration"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2413-skill-pack-and-model-administration to run FRT-2413 through the governed FRT runtime with exact scope and fail-closed evidence."

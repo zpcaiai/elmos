@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1806",
+  "skill_name": "frt-1806-build-tool-pack-framework",
+  "batch": "G18",
+  "surface": "tests",
+  "logical_path": "tests/g18/frt-1806-build-tool-pack-framework/",
+  "status": "shared_implementation",
+  "handler_kind": "compatibility",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:1552c1581a5b1023f94a42a67e5b7de5b1a07eabd28f76afce52128f76227cd1",
+  "implementation_paths": [
+    "engines/frontend-client-engine/test/frt-runtime.test.ts",
+    "engines/frontend-client-engine/test/server.test.ts",
+    "apps/web-console/e2e/frt-frontend-transformation.spec.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

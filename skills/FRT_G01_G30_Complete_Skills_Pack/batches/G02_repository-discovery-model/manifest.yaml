@@ -1,0 +1,90 @@
+{
+  "apiVersion": "frt.openai.dev/v1alpha1",
+  "kind": "GenerationBatchManifest",
+  "metadata": {
+    "id": "G02",
+    "slug": "repository-discovery-model",
+    "version": "1.0.0",
+    "generatedAt": "2026-07-31"
+  },
+  "spec": {
+    "title": "Repository Discovery、技术识别、依赖图与可迁移仓库模型",
+    "transitionFrom": "一个未知大型前端仓库",
+    "transitionTo": "形成可查询、可追踪、可认证的Repository Model与风险清单",
+    "certificateFamily": "RM",
+    "skills": [
+      {
+        "id": "FRT-0200",
+        "name": "Repository Discovery Orchestrator",
+        "path": "skills/frt-0200-repository-discovery-orchestrator/SKILL.md"
+      },
+      {
+        "id": "FRT-0201",
+        "name": "Workspace and Package Detector",
+        "path": "skills/frt-0201-workspace-and-package-detector/SKILL.md"
+      },
+      {
+        "id": "FRT-0202",
+        "name": "Framework and Version Detector",
+        "path": "skills/frt-0202-framework-and-version-detector/SKILL.md"
+      },
+      {
+        "id": "FRT-0203",
+        "name": "Build Toolchain Detector",
+        "path": "skills/frt-0203-build-toolchain-detector/SKILL.md"
+      },
+      {
+        "id": "FRT-0204",
+        "name": "Dependency Graph Builder",
+        "path": "skills/frt-0204-dependency-graph-builder/SKILL.md"
+      },
+      {
+        "id": "FRT-0205",
+        "name": "Module Boundary Analyzer",
+        "path": "skills/frt-0205-module-boundary-analyzer/SKILL.md"
+      },
+      {
+        "id": "FRT-0206",
+        "name": "Route and Page Inventory",
+        "path": "skills/frt-0206-route-and-page-inventory/SKILL.md"
+      },
+      {
+        "id": "FRT-0207",
+        "name": "Component Inventory",
+        "path": "skills/frt-0207-component-inventory/SKILL.md"
+      },
+      {
+        "id": "FRT-0208",
+        "name": "State and Store Inventory",
+        "path": "skills/frt-0208-state-and-store-inventory/SKILL.md"
+      },
+      {
+        "id": "FRT-0209",
+        "name": "API Event and Storage Inventory",
+        "path": "skills/frt-0209-api-event-and-storage-inventory/SKILL.md"
+      },
+      {
+        "id": "FRT-0210",
+        "name": "Asset I18n and Accessibility Inventory",
+        "path": "skills/frt-0210-asset-i18n-and-accessibility-inventory/SKILL.md"
+      },
+      {
+        "id": "FRT-0211",
+        "name": "Repository Risk Classifier",
+        "path": "skills/frt-0211-repository-risk-classifier/SKILL.md"
+      },
+      {
+        "id": "FRT-0212",
+        "name": "Repository Model Certification",
+        "path": "skills/frt-0212-repository-model-certification/SKILL.md"
+      }
+    ],
+    "gates": [
+      "所有可构建Package均已识别",
+      "Framework和版本未知项显式登记",
+      "关键路由、组件、Store、API和平台能力覆盖率达到策略",
+      "解析不执行不可信仓库代码",
+      "所有发现可追溯到Source Range"
+    ]
+  }
+}

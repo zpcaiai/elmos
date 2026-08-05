@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1503",
+  "skill_name": "frt-1503-vue-3-to-arkui-route-pack",
+  "batch": "G15",
+  "surface": "control_plane",
+  "logical_path": "services/control-plane/g15/frt-1503-vue-3-to-arkui-route-pack/",
+  "status": "shared_implementation",
+  "handler_kind": "directional_route",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:34078eddaea3dada2bf6e6ecc3f99f17e01fc4a8411d29cb9b2fbe73fed82f90",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/server.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

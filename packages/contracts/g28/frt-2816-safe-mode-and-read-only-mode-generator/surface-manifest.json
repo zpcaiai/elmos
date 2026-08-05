@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2816",
+  "skill_name": "frt-2816-safe-mode-and-read-only-mode-generator",
+  "batch": "G28",
+  "surface": "contract",
+  "logical_path": "packages/contracts/g28/frt-2816-safe-mode-and-read-only-mode-generator/",
+  "status": "shared_implementation",
+  "handler_kind": "resilience_dr",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:057834bbb87dd3a44eae085649342f70ea168c9e212cf323ab56a11c7f99fcc7",
+  "implementation_paths": [
+    "schemas/frt-g01-g30/skill-run-request.schema.json",
+    "schemas/frt-g01-g30/skill-run-result.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Identity and Session Mapper"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-1009-identity-and-session-mapper to run FRT-1009 through the governed FRT runtime with exact scope and fail-closed evidence."

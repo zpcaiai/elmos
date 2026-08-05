@@ -1,0 +1,4 @@
+interface:
+  display_name: "Performance Budget Governor"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2718-performance-budget-governor to run FRT-2718 through the governed FRT runtime with exact scope and fail-closed evidence."

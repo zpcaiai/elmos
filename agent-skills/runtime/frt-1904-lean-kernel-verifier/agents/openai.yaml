@@ -1,0 +1,4 @@
+interface:
+  display_name: "Lean Kernel Verifier"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-1904-lean-kernel-verifier to run FRT-1904 through the governed FRT runtime with exact scope and fail-closed evidence."

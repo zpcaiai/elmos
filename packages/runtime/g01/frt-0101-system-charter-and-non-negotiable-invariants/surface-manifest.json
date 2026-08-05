@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0101",
+  "skill_name": "frt-0101-system-charter-and-non-negotiable-invariants",
+  "batch": "G01",
+  "surface": "runtime",
+  "logical_path": "packages/runtime/g01/frt-0101-system-charter-and-non-negotiable-invariants/",
+  "status": "shared_implementation",
+  "handler_kind": "governance",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:471e9b276ce6f99f3a57e00fc084f7dc0de47ff61abfb7abba09c0f8eb5539ca",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/frt-runtime.ts",
+    "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

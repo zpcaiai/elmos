@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0210",
+  "skill_name": "frt-0210-asset-i18n-and-accessibility-inventory",
+  "batch": "G02",
+  "surface": "contract",
+  "logical_path": "packages/contracts/g02/frt-0210-asset-i18n-and-accessibility-inventory/",
+  "status": "shared_implementation",
+  "handler_kind": "estate_discovery",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:72de563ff375d521e7018ad1850fed5918dd6beb77af6495b3a81f11d26d84a8",
+  "implementation_paths": [
+    "schemas/frt-g01-g30/skill-run-request.schema.json",
+    "schemas/frt-g01-g30/skill-run-result.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

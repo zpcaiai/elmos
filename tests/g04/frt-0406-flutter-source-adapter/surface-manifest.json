@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0406",
+  "skill_name": "frt-0406-flutter-source-adapter",
+  "batch": "G04",
+  "surface": "tests",
+  "logical_path": "tests/g04/frt-0406-flutter-source-adapter/",
+  "status": "shared_implementation",
+  "handler_kind": "typed_contract",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:aee0f37e290b9609fd0561ca758d2d528861d7072d62fbf5cefd31581a3a3a3c",
+  "implementation_paths": [
+    "engines/frontend-client-engine/test/frt-runtime.test.ts",
+    "engines/frontend-client-engine/test/server.test.ts",
+    "apps/web-console/e2e/frt-frontend-transformation.spec.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

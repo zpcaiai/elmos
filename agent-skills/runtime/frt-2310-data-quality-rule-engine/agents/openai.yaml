@@ -1,0 +1,4 @@
+interface:
+  display_name: "Data Quality Rule Engine"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2310-data-quality-rule-engine to run FRT-2310 through the governed FRT runtime with exact scope and fail-closed evidence."

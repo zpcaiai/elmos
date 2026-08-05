@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1302",
+  "skill_name": "frt-1302-vue-3-to-vue-2-route-pack",
+  "batch": "G13",
+  "surface": "runtime",
+  "logical_path": "packages/runtime/g13/frt-1302-vue-3-to-vue-2-route-pack/",
+  "status": "shared_implementation",
+  "handler_kind": "directional_route",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:1aaa6b471cd034889988d96737305de3f840107c36393ddd8ecded52e3e8f25d",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/frt-runtime.ts",
+    "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

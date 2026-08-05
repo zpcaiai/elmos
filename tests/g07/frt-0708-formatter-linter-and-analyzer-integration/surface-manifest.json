@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0708",
+  "skill_name": "frt-0708-formatter-linter-and-analyzer-integration",
+  "batch": "G07",
+  "surface": "tests",
+  "logical_path": "tests/g07/frt-0708-formatter-linter-and-analyzer-integration/",
+  "status": "shared_implementation",
+  "handler_kind": "build_toolchain",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:faff3ac2623000f739d166dd1e8d6ca5c7c27ebb0bbf2f40872e670181f97539",
+  "implementation_paths": [
+    "engines/frontend-client-engine/test/frt-runtime.test.ts",
+    "engines/frontend-client-engine/test/server.test.ts",
+    "apps/web-console/e2e/frt-frontend-transformation.spec.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

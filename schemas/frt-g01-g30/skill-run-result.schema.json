@@ -1,0 +1,248 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.io/frt-g01-g30/skill-run-result.v1.schema.json",
+  "title": "FRT G01-G30 Skill run result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "runId",
+    "version",
+    "skillId",
+    "skillName",
+    "batch",
+    "action",
+    "state",
+    "outcome",
+    "inputDigest",
+    "resultDigest",
+    "requiredEvidenceRoles",
+    "obligations",
+    "findings",
+    "evidence",
+    "artifacts",
+    "lease",
+    "certificateFragment",
+    "customerCodeExecuted",
+    "productionOperationExecuted"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0"
+    },
+    "runId": {
+      "pattern": "^[a-f0-9]{24}$"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "skillId": {
+      "pattern": "^(FRT-[0-9]{4}|frt-[a-z0-9-]+)$"
+    },
+    "skillName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "batch": {
+      "pattern": "^(G(?:0[1-9]|[12][0-9]|30)|UNKNOWN)$"
+    },
+    "action": {
+      "enum": [
+        "PLAN",
+        "ANALYZE",
+        "EXECUTE",
+        "VERIFY"
+      ]
+    },
+    "state": {
+      "enum": [
+        "QUEUED",
+        "RUNNING",
+        "SUCCEEDED",
+        "BLOCKED",
+        "FAILED",
+        "CANCELLED"
+      ]
+    },
+    "outcome": {
+      "enum": [
+        "PLAN_READY",
+        "STATIC_ANALYSIS_COMPLETE",
+        "PROPOSAL_READY_FOR_RUNNER",
+        "READY_FOR_BATCH_GATE",
+        "BLOCKED_BY_PREREQUISITE",
+        "BLOCKED_BY_EVIDENCE",
+        "BLOCKED_BY_UNSUPPORTED_SEMANTICS",
+        "BLOCKED_BY_RUNNER_RECOVERY",
+        "RUNNER_EXECUTION_RECORDED",
+        "RUNNER_EXECUTION_FAILED",
+        "BLOCKED_BY_RUNNER_ATTESTATION",
+        "BLOCKED_BY_RUNNER_EVIDENCE",
+        "BLOCKED_BY_LEASE_EXPIRED",
+        "REQUEST_REJECTED",
+        "CANCELLED"
+      ]
+    },
+    "inputDigest": {
+      "$ref": "#/$defs/digest"
+    },
+    "resultDigest": {
+      "$ref": "#/$defs/digest"
+    },
+    "requiredEvidenceRoles": {
+      "$ref": "#/$defs/stringSet"
+    },
+    "obligations": {
+      "$ref": "#/$defs/stringSet"
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "code",
+          "severity",
+          "message",
+          "owner",
+          "blocking"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "minLength": 1
+          },
+          "severity": {
+            "enum": [
+              "INFO",
+              "WARNING",
+              "ERROR",
+              "CRITICAL"
+            ]
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1
+          },
+          "owner": {
+            "type": "string",
+            "minLength": 1
+          },
+          "blocking": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "artifacts": {
+      "type": "object"
+    },
+    "lease": {
+      "description": "Non-null only while the run is RUNNING under a live runner lease.",
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/lease"
+        }
+      ]
+    },
+    "certificateFragment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "batch",
+        "family",
+        "eligibleForBatchGate",
+        "certification",
+        "externalAuthorityRequired",
+        "evidenceRefs"
+      ],
+      "properties": {
+        "batch": {
+          "pattern": "^G(?:0[1-9]|[12][0-9]|30)$"
+        },
+        "family": {
+          "type": "string",
+          "minLength": 1
+        },
+        "eligibleForBatchGate": {
+          "type": "boolean"
+        },
+        "certification": {
+          "const": "NOT_CERTIFIED"
+        },
+        "externalAuthorityRequired": {
+          "const": true
+        },
+        "evidenceRefs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "customerCodeExecuted": {
+      "type": "boolean",
+      "description": "True only when a trust-store-verified runner attestation reported that customer code executed."
+    },
+    "productionOperationExecuted": {
+      "type": "boolean",
+      "description": "True only when a trust-store-verified runner attestation reported a production operation."
+    }
+  },
+  "$defs": {
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "stringSet": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "lease": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "runnerId",
+        "claimedAt",
+        "expiresAt",
+        "heartbeatCount"
+      ],
+      "properties": {
+        "runnerId": {
+          "$ref": "#/$defs/scopedId"
+        },
+        "claimedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "heartbeatCount": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "scopedId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,255}$"
+    }
+  }
+}

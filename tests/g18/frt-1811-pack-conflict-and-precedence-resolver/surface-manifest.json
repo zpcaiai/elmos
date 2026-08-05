@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1811",
+  "skill_name": "frt-1811-pack-conflict-and-precedence-resolver",
+  "batch": "G18",
+  "surface": "tests",
+  "logical_path": "tests/g18/frt-1811-pack-conflict-and-precedence-resolver/",
+  "status": "shared_implementation",
+  "handler_kind": "compatibility",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:cfdf4445ce7b5052cb8ad6ebe83c4eed732c24653b99d07608d4c9f262227066",
+  "implementation_paths": [
+    "engines/frontend-client-engine/test/frt-runtime.test.ts",
+    "engines/frontend-client-engine/test/server.test.ts",
+    "apps/web-console/e2e/frt-frontend-transformation.spec.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

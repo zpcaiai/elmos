@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0505",
+  "skill_name": "frt-0505-shim-requirement-planner",
+  "batch": "G05",
+  "surface": "runtime",
+  "logical_path": "packages/runtime/g05/frt-0505-shim-requirement-planner/",
+  "status": "shared_implementation",
+  "handler_kind": "migration_planning",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:52e30a54fe19df0979ed469d373c8af5e0e9bb63c0cbc8c774db26036eff19f4",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/frt-runtime.ts",
+    "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

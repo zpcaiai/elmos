@@ -1,0 +1,4 @@
+interface:
+  display_name: "Business Audit Trail Generator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2208-business-audit-trail-generator to run FRT-2208 through the governed FRT runtime with exact scope and fail-closed evidence."

@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2919",
+  "skill_name": "frt-2919-security-incident-response-generator",
+  "batch": "G29",
+  "surface": "runtime",
+  "logical_path": "packages/runtime/g29/frt-2919-security-incident-response-generator/",
+  "status": "shared_implementation",
+  "handler_kind": "security_privacy",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:8a48eca0d0a32f183e503849e6df2aa16438821edcfb14570d5fa11c62fdd474",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/frt-runtime.ts",
+    "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

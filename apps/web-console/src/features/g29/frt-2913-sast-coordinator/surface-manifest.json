@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2913",
+  "skill_name": "frt-2913-sast-coordinator",
+  "batch": "G29",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g29/frt-2913-sast-coordinator/",
+  "status": "shared_implementation",
+  "handler_kind": "security_privacy",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:1692424fa5f53a0bc13f216885dbd8ae3240e51f491408d55d432d074681d5d2",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

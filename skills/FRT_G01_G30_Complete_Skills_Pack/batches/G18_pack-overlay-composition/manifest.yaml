@@ -1,0 +1,101 @@
+{
+  "apiVersion": "frt.openai.dev/v1alpha1",
+  "kind": "GenerationBatchManifest",
+  "metadata": {
+    "id": "G18",
+    "slug": "pack-overlay-composition",
+    "version": "1.0.0",
+    "generatedAt": "2026-07-31"
+  },
+  "spec": {
+    "title": "Domain、Framework、UI、State、Router、Build、Version、Enterprise与Industry Packs",
+    "transitionFrom": "30条基础方向路径",
+    "transitionTo": "通过可组合、签名、版本化Overlay适配真实企业和行业项目",
+    "certificateFamily": "PK",
+    "skills": [
+      {
+        "id": "FRT-1800",
+        "name": "Pack Composition Orchestrator",
+        "path": "skills/frt-1800-pack-composition-orchestrator/SKILL.md"
+      },
+      {
+        "id": "FRT-1801",
+        "name": "Domain Pack Framework",
+        "path": "skills/frt-1801-domain-pack-framework/SKILL.md"
+      },
+      {
+        "id": "FRT-1802",
+        "name": "Framework Pack Framework",
+        "path": "skills/frt-1802-framework-pack-framework/SKILL.md"
+      },
+      {
+        "id": "FRT-1803",
+        "name": "UI Library Pack Framework",
+        "path": "skills/frt-1803-ui-library-pack-framework/SKILL.md"
+      },
+      {
+        "id": "FRT-1804",
+        "name": "State Management Pack Framework",
+        "path": "skills/frt-1804-state-management-pack-framework/SKILL.md"
+      },
+      {
+        "id": "FRT-1805",
+        "name": "Router Pack Framework",
+        "path": "skills/frt-1805-router-pack-framework/SKILL.md"
+      },
+      {
+        "id": "FRT-1806",
+        "name": "Build Tool Pack Framework",
+        "path": "skills/frt-1806-build-tool-pack-framework/SKILL.md"
+      },
+      {
+        "id": "FRT-1807",
+        "name": "Version Compatibility Pack",
+        "path": "skills/frt-1807-version-compatibility-pack/SKILL.md"
+      },
+      {
+        "id": "FRT-1808",
+        "name": "Enterprise Pack Framework",
+        "path": "skills/frt-1808-enterprise-pack-framework/SKILL.md"
+      },
+      {
+        "id": "FRT-1809",
+        "name": "Industry Pack Framework",
+        "path": "skills/frt-1809-industry-pack-framework/SKILL.md"
+      },
+      {
+        "id": "FRT-1810",
+        "name": "Pack Dependency Resolver",
+        "path": "skills/frt-1810-pack-dependency-resolver/SKILL.md"
+      },
+      {
+        "id": "FRT-1811",
+        "name": "Pack Conflict and Precedence Resolver",
+        "path": "skills/frt-1811-pack-conflict-and-precedence-resolver/SKILL.md"
+      },
+      {
+        "id": "FRT-1812",
+        "name": "Pack Signature and Permission Validator",
+        "path": "skills/frt-1812-pack-signature-and-permission-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-1813",
+        "name": "Pack Conformance Test Generator",
+        "path": "skills/frt-1813-pack-conformance-test-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-1814",
+        "name": "Pack Composition Certification",
+        "path": "skills/frt-1814-pack-composition-certification/SKILL.md"
+      }
+    ],
+    "gates": [
+      "Pack组合确定性",
+      "未声明权限访问=0",
+      "Conflict必须人工或规则解决",
+      "生产Pack必须签名和锁版本",
+      "Pack撤销传播到受影响证书",
+      "Conformance Corpus通过"
+    ]
+  }
+}

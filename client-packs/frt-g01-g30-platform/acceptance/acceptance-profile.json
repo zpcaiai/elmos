@@ -1,0 +1,91 @@
+{
+  "profile_key": "frt-g01-g30-platform-acceptance",
+  "version": "2.0.0",
+  "owner": "ELMOS Web Console UX and Accessibility Owners",
+  "browser_matrix": [
+    "Google Chrome 150.0.7871.189 desktop 1440x900 via Playwright 1.61.1",
+    "Firefox 151.0 desktop 1440x900 via Playwright 1.61.1",
+    "WebKit 26.5 desktop 1440x900 via Playwright 1.61.1",
+    "Google Chrome 150.0.7871.189 Pixel 7 emulation 390x844 via Playwright 1.61.1",
+    "WebKit 26.5 iPhone 15 emulation 393x852 via Playwright 1.61.1"
+  ],
+  "device_matrix": [
+    "Desktop Chrome, Firefox and WebKit local browser profiles",
+    "Pixel 7 Chromium and iPhone 15 WebKit emulation profiles",
+    "authorized physical-device profiles declared by a signed external run"
+  ],
+  "locales": [
+    "zh-CN",
+    "en-US"
+  ],
+  "themes": [
+    "default"
+  ],
+  "rendering": {
+    "modes": [
+      "Next.js SSR and React client hydration; production build and development-server browser journeys are separate evidence"
+    ]
+  },
+  "visual": {
+    "baseline_policy": "approved-only",
+    "baseline_manifest": "../baselines/manifest.json",
+    "candidate_output_is_never_approved": true,
+    "automatic_baseline_updates": false,
+    "max_unapproved_differences": 0
+  },
+  "accessibility": {
+    "standard": "WCAG 2.2 AA automated Axe profile plus signed independent manual assistive-technology sessions",
+    "manual_profiles": [
+      "macOS VoiceOver with exact Safari/WebKit and OS versions",
+      "Windows NVDA with exact Firefox and OS versions",
+      "Windows JAWS with exact Chrome and OS versions"
+    ],
+    "critical_violations": 0
+  },
+  "interaction": {
+    "p0_pass_rate": 1.0
+  },
+  "performance": {
+    "budgets": {
+      "horizontal_overflow_pixels": 0,
+      "console_errors": 0,
+      "dom_content_loaded_ms": 4000,
+      "load_event_ms": 6000,
+      "cumulative_layout_shift": 0.1,
+      "resource_transfer_bytes": 5242880
+    },
+    "minimum_samples_per_representative_workload": 5
+  },
+  "seo": {
+    "required": false
+  },
+  "i18n": {
+    "missing_keys": 0
+  },
+  "security": {
+    "authorization_regressions": 0
+  },
+  "p0_journeys": [
+    "open /frontend and confirm exact 30/472/30 inventory",
+    "select React to Flutter and inspect FRT-1605 evidence boundary",
+    "filter the complete catalog to FRT-3001",
+    "bind a repository snapshot and complete EXECUTE, claim, cancel, retry and audit against the real local Engine",
+    "operate the critical route and PLAN controls by keyboard in both zh-CN and en-US",
+    "read NOT_RUN and NOT_CERTIFIED states without hidden success"
+  ],
+  "thresholds": {
+    "source_fingerprint_coverage": 0.95,
+    "ui_ir_source_map_coverage": 0.95,
+    "target_build_green_rate": 1.0,
+    "target_startup_or_launch_rate": 1.0,
+    "p0_journey_pass_rate": 1.0,
+    "visual_regressions": 0,
+    "critical_accessibility_violations": 0
+  },
+  "external_evidence_profile": "external-evidence-profile.json",
+  "exclusions": [
+    "Independent visual-baseline approval, manual assistive-technology sessions and physical devices are NOT_RUN until a signed external device_matrix record passes",
+    "real customer source/target builds and representative customer journeys are NOT_RUN",
+    "independent holdout, formal proof, representative performance, authorized Chaos/DR, penetration, production observation and customer acceptance are NOT_RUN"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2811",
+  "skill_name": "frt-2811-region-failure-validator",
+  "batch": "G28",
+  "surface": "control_plane",
+  "logical_path": "services/control-plane/g28/frt-2811-region-failure-validator/",
+  "status": "shared_implementation",
+  "handler_kind": "resilience_dr",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:69aafd9bdb072d9bc304c3e96af7fa1a7a91b51abaf9a6416018b233aafb29c2",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/server.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

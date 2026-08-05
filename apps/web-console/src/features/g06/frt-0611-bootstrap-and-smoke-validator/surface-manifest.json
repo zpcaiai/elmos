@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0611",
+  "skill_name": "frt-0611-bootstrap-and-smoke-validator",
+  "batch": "G06",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g06/frt-0611-bootstrap-and-smoke-validator/",
+  "status": "shared_implementation",
+  "handler_kind": "source_generation",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:52585074067213086a81672144bd34ca71dab2259fe4869ca51e04715b7e78bd",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

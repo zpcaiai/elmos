@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2410",
+  "skill_name": "frt-2410-exception-and-manual-intervention-console",
+  "batch": "G24",
+  "surface": "contract",
+  "logical_path": "packages/contracts/g24/frt-2410-exception-and-manual-intervention-console/",
+  "status": "shared_implementation",
+  "handler_kind": "administration",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:9ca0a723e7423d8e6856b4290772799a954588d4d9facfa3f7bff0c423b620e4",
+  "implementation_paths": [
+    "schemas/frt-g01-g30/skill-run-request.schema.json",
+    "schemas/frt-g01-g30/skill-run-result.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

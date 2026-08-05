@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1008",
+  "skill_name": "frt-1008-storage-adapter-generator",
+  "batch": "G10",
+  "surface": "runtime",
+  "logical_path": "packages/runtime/g10/frt-1008-storage-adapter-generator/",
+  "status": "shared_implementation",
+  "handler_kind": "design_system",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:d53c1893d976cb0336aa9682ff79d745c75f56f5cd5208d4c6e2320e21836821",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/frt-runtime.ts",
+    "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

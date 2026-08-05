@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2404",
+  "skill_name": "frt-2404-business-operations-administration",
+  "batch": "G24",
+  "surface": "control_plane",
+  "logical_path": "services/control-plane/g24/frt-2404-business-operations-administration/",
+  "status": "shared_implementation",
+  "handler_kind": "administration",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:8c491eabcccc0f560d2706d74b6c344b87606a3e3d4184e32bc8236ce4c0d638",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/server.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

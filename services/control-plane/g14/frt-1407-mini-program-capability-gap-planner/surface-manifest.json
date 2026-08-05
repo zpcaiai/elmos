@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1407",
+  "skill_name": "frt-1407-mini-program-capability-gap-planner",
+  "batch": "G14",
+  "surface": "control_plane",
+  "logical_path": "services/control-plane/g14/frt-1407-mini-program-capability-gap-planner/",
+  "status": "shared_implementation",
+  "handler_kind": "route_orchestration",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:a74b11af3120e2d722b5a1e6d0e7f54fbca84be2c6c33d0c7b22dfbcdb5ecf6f",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/server.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

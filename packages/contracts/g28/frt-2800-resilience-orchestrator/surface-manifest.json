@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2800",
+  "skill_name": "frt-2800-resilience-orchestrator",
+  "batch": "G28",
+  "surface": "contract",
+  "logical_path": "packages/contracts/g28/frt-2800-resilience-orchestrator/",
+  "status": "shared_implementation",
+  "handler_kind": "resilience_dr",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:44a15c2e7b69da4b6639f38d6ed61d4759816f6bd2368ca1012ccf24ed433336",
+  "implementation_paths": [
+    "schemas/frt-g01-g30/skill-run-request.schema.json",
+    "schemas/frt-g01-g30/skill-run-result.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

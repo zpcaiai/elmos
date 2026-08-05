@@ -1,0 +1,4 @@
+interface:
+  display_name: "Refs Keys and Identity Mapper"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-0805-refs-keys-and-identity-mapper to run FRT-0805 through the governed FRT runtime with exact scope and fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "File Clipboard and Share Capability"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-1203-file-clipboard-and-share-capability to run FRT-1203 through the governed FRT runtime with exact scope and fail-closed evidence."

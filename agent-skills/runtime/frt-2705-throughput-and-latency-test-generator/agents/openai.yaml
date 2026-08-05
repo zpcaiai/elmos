@@ -1,0 +1,4 @@
+interface:
+  display_name: "Throughput and Latency Test Generator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2705-throughput-and-latency-test-generator to run FRT-2705 through the governed FRT runtime with exact scope and fail-closed evidence."

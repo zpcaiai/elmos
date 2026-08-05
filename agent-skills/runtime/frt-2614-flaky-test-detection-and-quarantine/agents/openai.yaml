@@ -1,0 +1,4 @@
+interface:
+  display_name: "Flaky Test Detection and Quarantine"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2614-flaky-test-detection-and-quarantine to run FRT-2614 through the governed FRT runtime with exact scope and fail-closed evidence."

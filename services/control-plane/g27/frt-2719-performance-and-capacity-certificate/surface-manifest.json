@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2719",
+  "skill_name": "frt-2719-performance-and-capacity-certificate",
+  "batch": "G27",
+  "surface": "control_plane",
+  "logical_path": "services/control-plane/g27/frt-2719-performance-and-capacity-certificate/",
+  "status": "shared_implementation",
+  "handler_kind": "performance_capacity",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:1b8976b76a2efe2163541b6aafb3722eb124fc436495da5538a12d027c7732c9",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/server.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

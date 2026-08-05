@@ -1,0 +1,90 @@
+{
+  "apiVersion": "frt.openai.dev/v1alpha1",
+  "kind": "GenerationBatchManifest",
+  "metadata": {
+    "id": "G06",
+    "slug": "target-architecture-synthesis",
+    "version": "1.0.0",
+    "generatedAt": "2026-07-31"
+  },
+  "spec": {
+    "title": "六类Target Architecture Synthesizer与可构建Skeleton",
+    "transitionFrom": "冻结Migration Plan与Typed Semantic IR",
+    "transitionTo": "生成符合目标生态习惯、可启动、可构建的目标架构和工程骨架",
+    "certificateFamily": "TA",
+    "skills": [
+      {
+        "id": "FRT-0600",
+        "name": "Target Architecture Orchestrator",
+        "path": "skills/frt-0600-target-architecture-orchestrator/SKILL.md"
+      },
+      {
+        "id": "FRT-0601",
+        "name": "Vue 2 Architecture Synthesizer",
+        "path": "skills/frt-0601-vue-2-architecture-synthesizer/SKILL.md"
+      },
+      {
+        "id": "FRT-0602",
+        "name": "Vue 3 Architecture Synthesizer",
+        "path": "skills/frt-0602-vue-3-architecture-synthesizer/SKILL.md"
+      },
+      {
+        "id": "FRT-0603",
+        "name": "React Architecture Synthesizer",
+        "path": "skills/frt-0603-react-architecture-synthesizer/SKILL.md"
+      },
+      {
+        "id": "FRT-0604",
+        "name": "WeChat Mini Program Architecture Synthesizer",
+        "path": "skills/frt-0604-wechat-mini-program-architecture-synthesizer/SKILL.md"
+      },
+      {
+        "id": "FRT-0605",
+        "name": "ArkUI Architecture Synthesizer",
+        "path": "skills/frt-0605-arkui-architecture-synthesizer/SKILL.md"
+      },
+      {
+        "id": "FRT-0606",
+        "name": "Flutter Architecture Synthesizer",
+        "path": "skills/frt-0606-flutter-architecture-synthesizer/SKILL.md"
+      },
+      {
+        "id": "FRT-0607",
+        "name": "Target Module Boundary Synthesizer",
+        "path": "skills/frt-0607-target-module-boundary-synthesizer/SKILL.md"
+      },
+      {
+        "id": "FRT-0608",
+        "name": "Dependency and Toolchain Resolver",
+        "path": "skills/frt-0608-dependency-and-toolchain-resolver/SKILL.md"
+      },
+      {
+        "id": "FRT-0609",
+        "name": "Project Layout Generator",
+        "path": "skills/frt-0609-project-layout-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-0610",
+        "name": "Buildable Skeleton Generator",
+        "path": "skills/frt-0610-buildable-skeleton-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-0611",
+        "name": "Bootstrap and Smoke Validator",
+        "path": "skills/frt-0611-bootstrap-and-smoke-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-0612",
+        "name": "Target Architecture Certification",
+        "path": "skills/frt-0612-target-architecture-certification/SKILL.md"
+      }
+    ],
+    "gates": [
+      "目标依赖图无未批准循环",
+      "Skeleton在干净环境可安装、Typecheck和启动",
+      "版本和Lockfile由真实工具生成",
+      "Critical能力均有目标模块Owner",
+      "目标架构不泄漏源框架惯用法"
+    ]
+  }
+}

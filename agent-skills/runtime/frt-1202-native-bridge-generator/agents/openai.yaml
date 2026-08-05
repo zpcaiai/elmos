@@ -1,0 +1,4 @@
+interface:
+  display_name: "Native Bridge Generator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-1202-native-bridge-generator to run FRT-1202 through the governed FRT runtime with exact scope and fail-closed evidence."

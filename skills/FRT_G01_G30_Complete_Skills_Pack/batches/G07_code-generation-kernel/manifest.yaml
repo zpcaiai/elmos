@@ -1,0 +1,101 @@
+{
+  "apiVersion": "frt.openai.dev/v1alpha1",
+  "kind": "GenerationBatchManifest",
+  "metadata": {
+    "id": "G07",
+    "slug": "code-generation-kernel",
+    "version": "1.0.0",
+    "generatedAt": "2026-07-31"
+  },
+  "spec": {
+    "title": "Code Generation Kernel、AST Emitter、Typed Hole与确定性修复",
+    "transitionFrom": "Target Architecture IR和Semantic IR",
+    "transitionTo": "生成可追踪、可增量、可构建且不静默丢语义的目标代码",
+    "certificateFamily": "CG",
+    "skills": [
+      {
+        "id": "FRT-0700",
+        "name": "Code Generation Orchestrator",
+        "path": "skills/frt-0700-code-generation-orchestrator/SKILL.md"
+      },
+      {
+        "id": "FRT-0701",
+        "name": "Typed Semantic Lowering Engine",
+        "path": "skills/frt-0701-typed-semantic-lowering-engine/SKILL.md"
+      },
+      {
+        "id": "FRT-0702",
+        "name": "Rule Registry and Pass Manager",
+        "path": "skills/frt-0702-rule-registry-and-pass-manager/SKILL.md"
+      },
+      {
+        "id": "FRT-0703",
+        "name": "Target Native AST Emitter",
+        "path": "skills/frt-0703-target-native-ast-emitter/SKILL.md"
+      },
+      {
+        "id": "FRT-0704",
+        "name": "Template JSX and Widget Emitter",
+        "path": "skills/frt-0704-template-jsx-and-widget-emitter/SKILL.md"
+      },
+      {
+        "id": "FRT-0705",
+        "name": "Import and Dependency Resolver",
+        "path": "skills/frt-0705-import-and-dependency-resolver/SKILL.md"
+      },
+      {
+        "id": "FRT-0706",
+        "name": "Deterministic Naming and File Allocation",
+        "path": "skills/frt-0706-deterministic-naming-and-file-allocation/SKILL.md"
+      },
+      {
+        "id": "FRT-0707",
+        "name": "Typed Hole and Gap Emitter",
+        "path": "skills/frt-0707-typed-hole-and-gap-emitter/SKILL.md"
+      },
+      {
+        "id": "FRT-0708",
+        "name": "Formatter Linter and Analyzer Integration",
+        "path": "skills/frt-0708-formatter-linter-and-analyzer-integration/SKILL.md"
+      },
+      {
+        "id": "FRT-0709",
+        "name": "Build and Diagnostic Adapter",
+        "path": "skills/frt-0709-build-and-diagnostic-adapter/SKILL.md"
+      },
+      {
+        "id": "FRT-0710",
+        "name": "Deterministic Repair Loop",
+        "path": "skills/frt-0710-deterministic-repair-loop/SKILL.md"
+      },
+      {
+        "id": "FRT-0711",
+        "name": "Restricted Agent Repair Envelope",
+        "path": "skills/frt-0711-restricted-agent-repair-envelope/SKILL.md"
+      },
+      {
+        "id": "FRT-0712",
+        "name": "Incremental Regeneration and Three-Way Merge",
+        "path": "skills/frt-0712-incremental-regeneration-and-three-way-merge/SKILL.md"
+      },
+      {
+        "id": "FRT-0713",
+        "name": "Source Target Map Generator",
+        "path": "skills/frt-0713-source-target-map-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-0714",
+        "name": "Code Generation Certification",
+        "path": "skills/frt-0714-code-generation-certification/SKILL.md"
+      }
+    ],
+    "gates": [
+      "禁止自由文本整仓生成",
+      "未知语义不得默认Any/空实现",
+      "目标代码可重新Parse、Typecheck、Build",
+      "相同输入产生确定性Digest",
+      "Agent不得直接提交或修改Gate",
+      "Source-Target Mapping覆盖达到策略"
+    ]
+  }
+}

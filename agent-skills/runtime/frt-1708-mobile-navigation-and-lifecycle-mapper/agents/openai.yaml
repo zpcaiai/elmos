@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mobile Navigation and Lifecycle Mapper"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-1708-mobile-navigation-and-lifecycle-mapper to run FRT-1708 through the governed FRT runtime with exact scope and fail-closed evidence."

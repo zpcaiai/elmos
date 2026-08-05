@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0810",
+  "skill_name": "frt-0810-dynamic-component-mapper",
+  "batch": "G08",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g08/frt-0810-dynamic-component-mapper/",
+  "status": "shared_implementation",
+  "handler_kind": "test_automation",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:4a92546e0213a0cde74162d7f926abf30e834db2dd50ed89372cbcae9222b195",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

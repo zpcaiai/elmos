@@ -1,0 +1,4 @@
+interface:
+  display_name: "Loading, Empty, Error and Retry State Validator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2505-loading-empty-error-and-retry-state-validator to run FRT-2505 through the governed FRT runtime with exact scope and fail-closed evidence."

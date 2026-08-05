@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1207",
+  "skill_name": "frt-1207-payment-capability",
+  "batch": "G12",
+  "surface": "control_plane",
+  "logical_path": "services/control-plane/g12/frt-1207-payment-capability/",
+  "status": "shared_implementation",
+  "handler_kind": "cross_platform",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:0b611d608c0bbec820a4642a34de1785696e903cb21d1fa776e99da1c72d46d3",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/server.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

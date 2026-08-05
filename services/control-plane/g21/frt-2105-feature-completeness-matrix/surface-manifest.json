@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2105",
+  "skill_name": "frt-2105-feature-completeness-matrix",
+  "batch": "G21",
+  "surface": "control_plane",
+  "logical_path": "services/control-plane/g21/frt-2105-feature-completeness-matrix/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:5b02914d063a5d354d36e1f5c00badc3232ac556d02abb6c170009c6c12f042c",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/server.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

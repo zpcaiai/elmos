@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "update_mode": "NONE",
+  "approved_root": "approved",
+  "candidate_root": "../../../../apps/web-console/test-results/frt-visual-candidates",
+  "max_diff_pixels": 0,
+  "pixel_threshold": 0,
+  "masks": [],
+  "tolerances_may_change_after_failure": false,
+  "approval_required_before_comparison": true,
+  "status": "NOT_RUN"
+}

@@ -1,65 +1,62 @@
-import { createHash } from "node:crypto";
-
 import { compileTemplate, parse as parseVueSfc } from "@vue/compiler-sfc";
 import ts from "typescript";
 
-export const frtRouteStacks = [
-  "Vue 2",
-  "Vue 3",
-  "React",
-  "WeChat Mini Program",
-  "ArkUI",
-  "Flutter",
-] as const;
+import {
+  assertDeclaredIrMatchesSource,
+  canonical,
+  frtRouteStackSet,
+  frtRouteStacks,
+  gap,
+  sha256,
+  type FrtRouteStack,
+  type FrtRouteTypedGap,
+  type PortableUiIr,
+  type SourceReference,
+} from "./frt-route-ir.js";
+import { deriveReactPortableUiIr } from "./react-ui-ir.js";
+import { deriveVue3PortableUiIr } from "./vue3-ui-ir.js";
+import {
+  deriveArkUiPortableUiIr,
+  deriveFlutterPortableUiIr,
+  deriveMiniProgramPortableUiIr,
+  deriveVue2PortableUiIr,
+} from "./additional-ui-ir.js";
 
-export type FrtRouteStack = (typeof frtRouteStacks)[number];
+export {
+  frtRouteStacks,
+  type FrtRouteStack,
+  type FrtRouteTypedGap,
+  type PortableUiIr,
+  type SourceReference,
+};
 
-export interface FrtRouteTypedGap {
-  readonly code: string;
-  readonly severity: "WARNING" | "ERROR" | "CRITICAL";
-  readonly sourcePath: string;
-  readonly message: string;
-  readonly blocking: boolean;
-}
+/**
+ * Source stacks with a real extractor, i.e. stacks whose IR is read out of the
+ * source bytes rather than taken on trust from a declaration.
+ *
+ * A stack joins this set only when its extractor exists and its typed gaps are
+ * registered in the catalogue. Every stack not listed here still runs on a
+ * declared IR, and the result says so through `irProvenance` instead of
+ * implying more rigour than the route actually has.
+ */
+export const frtSourceDerivedStacks: ReadonlySet<FrtRouteStack> =
+  new Set<FrtRouteStack>(frtRouteStacks);
 
-interface SourceReference {
-  readonly path: string;
-  readonly sha256: string;
-}
-
-interface PortableUiIr {
-  readonly schemaVersion: "1.0";
-  readonly source: {
-    readonly stack: FrtRouteStack;
-    readonly version: string;
-  };
-  readonly sourceSnapshotDigest: string;
-  readonly sourceRefs: readonly SourceReference[];
-  readonly route: {
-    readonly path: "/";
-    readonly requiresAuth: false;
-    readonly deepLink: true;
-  };
-  readonly view: {
-    readonly title: string;
-    readonly initialCount: number;
-    readonly incrementBy: number;
-    readonly buttonLabel: string;
-  };
-  readonly style: {
-    readonly accentColor: string;
-  };
-  readonly accessibility: {
-    readonly mainLabel: string;
-    readonly buttonLabel: string;
-    readonly liveRegion: "polite";
-  };
-  readonly capabilities: {
-    readonly permissions: readonly [];
-    readonly native: readonly [];
-    readonly network: readonly [];
-  };
-}
+/**
+ * Where the IR that drove this conversion came from.
+ *
+ * - `SOURCE_DERIVED` — extracted from the source bytes; nothing was declared.
+ * - `DECLARED_CROSS_CHECKED` — declared, and every field it asserts was checked
+ *   against the same source and agreed.
+ * - `DECLARED` — declared and schema-validated, but this source stack has no
+ *   extractor yet, so the declaration was not cross-checked.
+ * - `NONE` — no IR survived validation; the route is blocked.
+ */
+export type FrtIrProvenance =
+  | "SOURCE_DERIVED"
+  | "DECLARED_CROSS_CHECKED"
+  | "DECLARED"
+  | "NONE";
 
 export interface DirectionalRouteResult {
   readonly route: string;
@@ -71,6 +68,7 @@ export interface DirectionalRouteResult {
   readonly generatedFiles: Readonly<Record<string, string>>;
   readonly mappings: readonly string[];
   readonly typedGaps: readonly FrtRouteTypedGap[];
+  readonly irProvenance: FrtIrProvenance;
   readonly sourceValidation: "PASSED" | "BLOCKED";
   readonly targetValidation: "PASSED" | "BLOCKED";
   readonly sourceBuild: "NOT_RUN";
@@ -83,33 +81,6 @@ const digestPattern = /^sha256:[a-f0-9]{64}$/;
 const exactVersion = /^(?:[0-9]+\.)+[0-9]+(?:\([0-9]+\))?$/;
 const safePath = /^(?!\/)(?!.*(?:^|\/)\.\.(?:\/|$))[A-Za-z0-9._@/-]{1,512}$/;
 const safeColor = /^#[0-9A-Fa-f]{6}$/;
-const stacks = new Set<string>(frtRouteStacks);
-
-function sha256(value: string): string {
-  return `sha256:${createHash("sha256").update(value).digest("hex")}`;
-}
-
-function canonical(value: unknown): string {
-  if (Array.isArray(value)) return `[${value.map(canonical).join(",")}]`;
-  if (value && typeof value === "object") {
-    return `{${Object.entries(value as Record<string, unknown>)
-      .sort(([left], [right]) => left.localeCompare(right))
-      .map(([key, item]) => `${JSON.stringify(key)}:${canonical(item)}`)
-      .join(",")}}`;
-  }
-  return JSON.stringify(value);
-}
-
-function gap(
-  gaps: FrtRouteTypedGap[],
-  code: string,
-  sourcePath: string,
-  message: string,
-  severity: FrtRouteTypedGap["severity"] = "CRITICAL",
-): void {
-  gaps.push({ code, sourcePath, message, severity, blocking: severity !== "WARNING" });
-}
-
 function exactObject(
   value: unknown,
   keys: readonly string[],
@@ -165,7 +136,7 @@ function parsePortableUiIr(
   ], "route IR");
   if (root.schemaVersion !== "1.0") throw new Error("route IR schemaVersion is unsupported");
   const source = exactObject(root.source, ["stack", "version"], "route IR source");
-  if (source.stack !== expectedSource || !stacks.has(String(source.stack))) {
+  if (source.stack !== expectedSource || !frtRouteStackSet.has(String(source.stack))) {
     throw new Error("route IR source stack does not match the selected route");
   }
   if (typeof source.version !== "string" || !exactVersion.test(source.version)) {
@@ -495,8 +466,28 @@ function emitMiniProgram(ir: PortableUiIr): Record<string, string> {
 
 function emitArkUi(ir: PortableUiIr): Record<string, string> {
   return {
-    "build-profile.json5": json({ app: { products: [{ name: "default", signingConfig: "default" }] }, modules: [{ name: "entry", srcPath: "./entry", targets: [{ name: "default" }] }] }),
+    "build-profile.json5": json({ apiVersion: 20, app: { products: [{ name: "default" }] }, modules: [{ name: "entry", srcPath: "./entry", targets: [{ name: "default" }] }] }),
+    "hvigor-config.json5": json({ modelVersion: "5.0.5", dependencies: {} }),
+    "oh-package.json5": json({
+      modelVersion: "5.0.5",
+      name: "frt_arkui_route",
+      version: "1.0.0",
+      description: "Content-addressed FRT counter route",
+      dependencies: {},
+      devDependencies: { "@ohos/hvigor-ohos-plugin": "5.0.5" },
+    }),
+    "hvigorfile.ts": [
+      "import { appTasks } from '@ohos/hvigor-ohos-plugin';",
+      "export default { system: appTasks, plugins: [] };",
+      "",
+    ].join("\n"),
     "AppScope/app.json5": json({ app: { bundleName: "io.elmos.frtroute", vendor: "elmos", versionCode: 1000000, versionName: "1.0.0" } }),
+    "entry/oh-package.json5": json({ name: "entry", version: "1.0.0", description: "FRT route entry", main: "", author: "", license: "", dependencies: {} }),
+    "entry/hvigorfile.ts": [
+      "import { hapTasks } from '@ohos/hvigor-ohos-plugin';",
+      "export default { system: hapTasks, plugins: [] };",
+      "",
+    ].join("\n"),
     "entry/src/main/module.json5": json({ module: { name: "entry", type: "entry", srcEntry: "./ets/pages/Index.ets", deviceTypes: ["phone", "tablet"], pages: "$profile:main_pages" } }),
     "entry/src/main/resources/base/profile/main_pages.json": json({ src: ["pages/Index"] }),
     "entry/src/main/ets/pages/Index.ets": [
@@ -519,6 +510,7 @@ function emitArkUi(ir: PortableUiIr): Record<string, string> {
 
 function emitFlutter(ir: PortableUiIr): Record<string, string> {
   return {
+    ".fvmrc": json({ flutter: "3.44.1" }),
     "pubspec.yaml": [
       "name: frt_flutter_route",
       "description: Content-addressed FRT counter route",
@@ -552,7 +544,10 @@ function emitFlutter(ir: PortableUiIr): Record<string, string> {
       "  @override Widget build(BuildContext context) => Scaffold(body: SafeArea(child: Semantics(",
       `    label: ${dartString(ir.accessibility.mainLabel)}, container: true, child: Column(children: [`,
       `      Text(${dartString(ir.view.title)}),`,
-      `      ElevatedButton(onPressed: increment, child: Text(${dartString(ir.view.buttonLabel)})),`,
+      `      Semantics(button: true, label: ${dartString(ir.accessibility.buttonLabel)}, child: ExcludeSemantics(child: ElevatedButton(`,
+      `        style: ElevatedButton.styleFrom(foregroundColor: const Color(0xFF${ir.style.accentColor.slice(1).toUpperCase()})),`,
+      `        onPressed: increment, child: Text(${dartString(ir.view.buttonLabel)}),`,
+      "      ))),",
       "      Semantics(liveRegion: true, child: Text('$count', key: const Key('count'))),",
       "    ]),",
       "  )));",
@@ -565,12 +560,16 @@ function emitFlutter(ir: PortableUiIr): Record<string, string> {
       "import 'package:frt_flutter_route/main.dart';",
       "void main() {",
       "  testWidgets('counter route preserves the interaction contract', (tester) async {",
+      "    final semantics = tester.ensureSemantics();",
       "    await tester.pumpWidget(const CounterApp());",
       "    expect(find.byType(SafeArea), findsOneWidget);",
+      `    expect(find.byWidgetPredicate((widget) => widget is Semantics && widget.properties.label == ${dartString(ir.accessibility.mainLabel)}), findsOneWidget);`,
+      `    expect(find.byWidgetPredicate((widget) => widget is Semantics && widget.properties.label == ${dartString(ir.accessibility.buttonLabel)}), findsOneWidget);`,
       `    expect(find.text(${dartString(String(ir.view.initialCount))}), findsOneWidget);`,
       `    await tester.tap(find.text(${dartString(ir.view.buttonLabel)}));`,
       "    await tester.pump();",
       `    expect(find.text(${dartString(String(ir.view.initialCount + ir.view.incrementBy))}), findsOneWidget);`,
+      "    semantics.dispose();",
       "  });",
       "}",
       "",
@@ -617,21 +616,79 @@ function validateGeneratedTarget(target: FrtRouteStack, files: Readonly<Record<s
   JSON.parse(files["frt-route.json"] ?? "");
 }
 
+/**
+ * Dispatch to the extractor for a source stack that has one.
+ *
+ * Registered here rather than inline so that adding a stack to
+ * `frtSourceDerivedStacks` without writing its extractor fails to compile.
+ */
+function deriveSourceIr(
+  source: FrtRouteStack,
+  files: Readonly<Record<string, string>>,
+  gaps: FrtRouteTypedGap[],
+): PortableUiIr | undefined {
+  if (source === "Vue 3") return deriveVue3PortableUiIr(files, gaps);
+  if (source === "React") return deriveReactPortableUiIr(files, gaps);
+  if (source === "Vue 2") return deriveVue2PortableUiIr(files, gaps);
+  if (source === "WeChat Mini Program") return deriveMiniProgramPortableUiIr(files, gaps);
+  if (source === "ArkUI") return deriveArkUiPortableUiIr(files, gaps);
+  return deriveFlutterPortableUiIr(files, gaps);
+}
+
+function sourcePathOf(ir: PortableUiIr): string {
+  return ir.sourceRefs.find(item => /\.(?:vue|tsx|wxml|ets|dart)$/.test(item.path))?.path ?? "<source>";
+}
+
 export function convertDirectionalRoute(
   source: FrtRouteStack,
   target: FrtRouteStack,
   files: Readonly<Record<string, string>>,
 ): DirectionalRouteResult {
   const gaps: FrtRouteTypedGap[] = [];
-  if (!stacks.has(source) || !stacks.has(target) || source === target) {
+  if (!frtRouteStackSet.has(source) || !frtRouteStackSet.has(target) || source === target) {
     gap(gaps, "FRT_ROUTE_DIRECTION_INVALID", "<route>", "A known non-self source and target route is required.");
   }
   let ir: PortableUiIr | undefined;
-  try {
-    ir = parsePortableUiIr(files, source);
-    validateSourceShape(source, files, ir);
-  } catch (error) {
-    gap(gaps, "FRT_TYPED_UI_IR_OR_SOURCE_INVALID", "frt-ui-ir.json", error instanceof Error ? error.message : "Typed route input is invalid.");
+  let irProvenance: FrtIrProvenance = "NONE";
+  const extractable = frtSourceDerivedStacks.has(source);
+
+  if (files["frt-ui-ir.json"] === undefined) {
+    // Nothing declared: the IR has to come out of the source bytes, or not at all.
+    if (extractable) {
+      const derived = deriveSourceIr(source, files, gaps);
+      if (derived && !gaps.some(item => item.blocking)) {
+        ir = derived;
+        irProvenance = "SOURCE_DERIVED";
+      }
+    } else {
+      gap(gaps, "FRT_TYPED_UI_IR_OR_SOURCE_INVALID", "frt-ui-ir.json",
+        `No ${source} source extractor exists yet, so this route still requires a declared `
+        + "frt-ui-ir.json; it is not derived from source.");
+    }
+  } else {
+    let declared: PortableUiIr | undefined;
+    try {
+      declared = parsePortableUiIr(files, source);
+      validateSourceShape(source, files, declared);
+    } catch (error) {
+      gap(gaps, "FRT_TYPED_UI_IR_OR_SOURCE_INVALID", "frt-ui-ir.json",
+        error instanceof Error ? error.message : "Typed route input is invalid.");
+    }
+    if (declared) {
+      if (extractable) {
+        // A declaration is only as good as the source behind it: derive the same
+        // IR and make every disagreement explicit, field by field.
+        const derived = deriveSourceIr(source, files, gaps);
+        if (derived) assertDeclaredIrMatchesSource(declared, derived, sourcePathOf(derived), gaps);
+        if (!gaps.some(item => item.blocking)) {
+          ir = declared;
+          irProvenance = "DECLARED_CROSS_CHECKED";
+        }
+      } else if (!gaps.some(item => item.blocking)) {
+        ir = declared;
+        irProvenance = "DECLARED";
+      }
+    }
   }
   let generatedFiles: Readonly<Record<string, string>> = {};
   if (ir && !gaps.some(item => item.blocking)) {
@@ -660,6 +717,7 @@ export function convertDirectionalRoute(
       `typed design token -> ${target} native styling`,
     ],
     typedGaps: gaps,
+    irProvenance: blocked ? "NONE" : irProvenance,
     sourceValidation: blocked ? "BLOCKED" : "PASSED",
     targetValidation: blocked ? "BLOCKED" : "PASSED",
     sourceBuild: "NOT_RUN",
@@ -669,26 +727,77 @@ export function convertDirectionalRoute(
   };
 }
 
+function arkSourceFixture(): string {
+  return [
+    "@Entry",
+    "@Component",
+    "struct Index {",
+    "  @State count: number = 0;",
+    "  build() {",
+    "    Column() {",
+    '      Text("Counter").accessibilityText("Counter application")',
+    '      Button("Increment").accessibilityText("Increment counter").onClick(() => { this.count += 1; })',
+    "      Text(this.count.toString()).accessibilityLevel('yes')",
+    "    }.fontColor('#0057B8')",
+    "  }",
+    "}",
+    "",
+  ].join("\n");
+}
+
+function flutterSourceFixture(): string {
+  return [
+    "import 'package:flutter/material.dart';",
+    "void main() => runApp(const CounterApp());",
+    "class CounterApp extends StatelessWidget {",
+    "  const CounterApp({super.key});",
+    "  @override Widget build(BuildContext context) => const MaterialApp(home: CounterPage());",
+    "}",
+    "class CounterPage extends StatefulWidget {",
+    "  const CounterPage({super.key});",
+    "  @override State<CounterPage> createState() => _CounterPageState();",
+    "}",
+    "class _CounterPageState extends State<CounterPage> {",
+    "  int count = 0;",
+    "  void increment() => setState(() => count += 1);",
+    "  @override Widget build(BuildContext context) => Scaffold(body: SafeArea(child: Semantics(",
+    '    label: "Counter application", container: true, child: Column(children: [',
+    '      Text("Counter"),',
+    '      Semantics(button: true, label: "Increment counter", child: ExcludeSemantics(child: ElevatedButton(',
+    "        style: ElevatedButton.styleFrom(foregroundColor: const Color(0xFF0057B8)),",
+    '        onPressed: increment, child: Text("Increment"),',
+    "      ))),",
+    "      Semantics(liveRegion: true, child: Text('$count', key: const Key('count'))),",
+    "    ]),",
+    "  )));",
+    "}",
+    "",
+  ].join("\n");
+}
+
 export function createDirectionalRouteFixture(stack: FrtRouteStack): Readonly<Record<string, string>> {
   const native = stack === "Vue 2" ? {
     "package.json": json({ dependencies: { vue: "2.7.16" } }),
-    "src/App.vue": '<template><main><h1>{{ title }}</h1><button @click="increment">Increment</button><p>{{ count }}</p></main></template><script>export default { data: () => ({ title: "Counter", count: 0 }), methods: { increment() { this.count += 1; } } };</script><style scoped>button { color: #0057B8; }</style>\n',
+    "src/App.vue": '<template><main aria-label="Counter application"><h1>{{ title }}</h1><button aria-label="Increment counter" @click="increment">{{ buttonLabel }}</button><p aria-live="polite">{{ count }}</p></main></template><script>export default { data: () => ({ title: "Counter", buttonLabel: "Increment", count: 0 }), methods: { increment() { this.count += 1; } } };</script><style scoped>button { color: #0057B8; }</style>\n',
   } : stack === "Vue 3" ? {
     "package.json": json({ dependencies: { vue: "3.5.39" } }),
-    "src/App.vue": '<template><main><h1>{{ title }}</h1><button @click="increment">Increment</button><p>{{ count }}</p></main></template><script setup lang="ts">import { ref } from "vue"; const title = "Counter"; const count = ref(0); function increment() { count.value += 1; }</script><style scoped>button { color: #0057B8; }</style>\n',
+    "src/App.vue": '<template><main aria-label="Counter application"><h1>{{ title }}</h1><button aria-label="Increment counter" @click="increment">Increment</button><p aria-live="polite">{{ count }}</p></main></template><script setup lang="ts">import { ref } from "vue"; const title = "Counter"; const count = ref(0); function increment() { count.value += 1; }</script><style scoped>button { color: #0057B8; }</style>\n',
   } : stack === "React" ? {
     "package.json": json({ dependencies: { react: "19.2.7" } }),
-    "src/App.tsx": 'import { useState } from "react"; export function App(){ const [count,setCount]=useState(0); return <main><h1>Counter</h1><button onClick={()=>setCount(value=>value+1)}>Increment</button><p>{count}</p></main>; }\n',
+    "src/App.tsx": 'import { useState } from "react";\nimport "./App.css";\nexport function App() {\n  const [count, setCount] = useState(0);\n  return <main aria-label="Counter application"><h1>Counter</h1><button aria-label="Increment counter" onClick={() => setCount(value => value + 1)}>Increment</button><p aria-live="polite">{count}</p></main>;\n}\n',
+    "src/App.css": "button { color: #0057B8; }",
   } : stack === "WeChat Mini Program" ? {
     "project.config.json": json({ appid: "touristappid", projectname: "frt-source", compileType: "miniprogram", libVersion: "3.10.3" }),
-    "pages/index/index.wxml": "<view><text>Counter</text><button bindtap=\"increment\">Increment</button><text>{{count}}</text></view>\n",
-    "pages/index/index.js": "Page({ data: { count: 0 }, increment() { this.setData({ count: this.data.count + 1 }); } });\n",
+    "pages/index/index.wxml": '<view role="main" aria-label="Counter application"><text>Counter</text><button aria-label="Increment counter" bindtap="increment">{{buttonLabel}}</button><text aria-live="polite">{{count}}</text></view>\n',
+    "pages/index/index.js": 'Page({ data: { count: 0, buttonLabel: "Increment" }, increment() { this.setData({ count: this.data.count + 1 }); } });\n',
+    "pages/index/index.wxss": "button { color: #0057B8; }\n",
   } : stack === "ArkUI" ? {
     "build-profile.json5": json({ apiVersion: 20 }),
-    "entry/src/main/ets/pages/Index.ets": "@Entry @Component struct Index { @State count: number = 0; build() { Column() { Text('Counter') Button('Increment').onClick(() => { this.count += 1; }) Text(this.count.toString()) } } }\n",
+    "entry/src/main/ets/pages/Index.ets": arkSourceFixture(),
   } : {
+    ".fvmrc": json({ flutter: "3.44.1" }),
     "pubspec.yaml": "name: frt_source\nenvironment:\n  sdk: '>=3.12.0 <4.0.0'\ndependencies:\n  flutter:\n    sdk: flutter\n",
-    "lib/main.dart": "class CounterPage extends StatefulWidget { const CounterPage({super.key}); State<CounterPage> createState() => CounterState(); } class CounterState extends State<CounterPage> { int count = 0; Widget build(context) => Text('$count'); }\n",
+    "lib/main.dart": flutterSourceFixture(),
   };
   const sourceRefs = Object.entries(native).map(([path, content]) => ({ path, sha256: sha256(content) }))
     .sort((left, right) => left.path.localeCompare(right.path));

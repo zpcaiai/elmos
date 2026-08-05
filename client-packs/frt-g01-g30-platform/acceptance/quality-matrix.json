@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "matrix_id": "frt-g01-g30-quality-matrix-v1",
+  "pack_key": "frt-g01-g30-platform",
+  "acceptance_profile_version": "2.0.0",
+  "baseline_update_mode": "NONE",
+  "local_profiles": [
+    { "id": "desktop-chromium-zh-light", "browser": "Google Chrome 150.0.7871.189", "viewport": "1440x900", "locale": "zh-CN", "theme": "light" },
+    { "id": "desktop-firefox-zh-light", "browser": "Firefox 151.0", "viewport": "1440x900", "locale": "zh-CN", "theme": "light" },
+    { "id": "desktop-webkit-zh-light", "browser": "WebKit 26.5", "viewport": "1440x900", "locale": "zh-CN", "theme": "light" },
+    { "id": "pixel7-chromium-zh-light", "browser": "Google Chrome 150.0.7871.189", "viewport": "390x844", "locale": "zh-CN", "theme": "light" },
+    { "id": "iphone15-webkit-zh-light", "browser": "WebKit 26.5", "viewport": "393x852", "locale": "zh-CN", "theme": "light" }
+  ],
+  "required_states": ["default", "route-selected", "skill-filtered", "validation-error", "queued", "running", "cancelled", "retried"],
+  "required_observations": ["business-outcome", "semantic-tree", "keyboard-focus", "axe", "visual", "responsive-overflow", "console", "network", "performance-budget", "privacy"],
+  "external_profiles": {
+    "visual": "signed device_matrix evidence",
+    "assistive_technology": "signed device_matrix evidence",
+    "physical_devices": "signed device_matrix evidence",
+    "representative_workloads": "signed performance evidence"
+  }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Repository Risk Classifier"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-0211-repository-risk-classifier to run FRT-0211 through the governed FRT runtime with exact scope and fail-closed evidence."

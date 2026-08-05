@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1108",
+  "skill_name": "frt-1108-rtl-and-bidirectional-text-mapper",
+  "batch": "G11",
+  "surface": "runtime",
+  "logical_path": "packages/runtime/g11/frt-1108-rtl-and-bidirectional-text-mapper/",
+  "status": "shared_implementation",
+  "handler_kind": "mobile_client",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:4f19bf229e70f54457eb3fecc1ad675a9ca42fed67c5ac12d0d181ec9b79b1ce",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/frt-runtime.ts",
+    "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

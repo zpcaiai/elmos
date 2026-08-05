@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0109",
+  "skill_name": "frt-0109-fixture-golden-and-corpus-foundation",
+  "batch": "G01",
+  "surface": "admin_console",
+  "logical_path": "apps/admin-console/src/features/g01/frt-0109-fixture-golden-and-corpus-foundation/",
+  "status": "shared_implementation",
+  "handler_kind": "governance",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:00a786dd39b1ed7c027bfb95ebf5b8ed11b7e7d914f933d705d0423dd2297606",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

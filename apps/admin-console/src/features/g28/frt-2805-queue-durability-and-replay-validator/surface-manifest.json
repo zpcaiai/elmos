@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2805",
+  "skill_name": "frt-2805-queue-durability-and-replay-validator",
+  "batch": "G28",
+  "surface": "admin_console",
+  "logical_path": "apps/admin-console/src/features/g28/frt-2805-queue-durability-and-replay-validator/",
+  "status": "shared_implementation",
+  "handler_kind": "resilience_dr",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:b0ef22f4e7681b971d75e332e9e0aa20d52444d233b14192d53db87c618efb49",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

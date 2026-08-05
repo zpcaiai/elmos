@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1003",
+  "skill_name": "frt-1003-route-guard-mapper",
+  "batch": "G10",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g10/frt-1003-route-guard-mapper/",
+  "status": "shared_implementation",
+  "handler_kind": "design_system",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:be06f41b6581101f162994f52cccaa85d0200d684717fda75f28f747a6288a3e",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

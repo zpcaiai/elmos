@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "pack_key": "frt-g01-g30-platform",
+  "policy": "approved-before-comparison",
+  "automatic_updates": false,
+  "candidate_and_approved_roots_are_distinct": true,
+  "tracks": {
+    "visual": { "state": "NOT_RUN", "approved_manifest": null },
+    "accessibility": { "state": "NOT_RUN", "approved_manifest": null },
+    "network": { "state": "NOT_RUN", "approved_manifest": null },
+    "performance": { "state": "NOT_RUN", "approved_manifest": null }
+  },
+  "promotion_requirement": "A signed device_matrix or performance external evidence record with an independent verifier is required."
+}

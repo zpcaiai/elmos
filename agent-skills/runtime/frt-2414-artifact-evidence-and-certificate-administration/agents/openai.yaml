@@ -1,0 +1,4 @@
+interface:
+  display_name: "Artifact, Evidence and Certificate Administration"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2414-artifact-evidence-and-certificate-administration to run FRT-2414 through the governed FRT runtime with exact scope and fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Offline Resume and Checkpoint Mapper"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-0910-offline-resume-and-checkpoint-mapper to run FRT-0910 through the governed FRT runtime with exact scope and fail-closed evidence."

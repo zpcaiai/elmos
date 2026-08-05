@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.io/frt-g01-g30/external-evidence-trust-store.v1.schema.json",
+  "title": "FRT external evidence trust store",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "store_id", "keys"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "store_id": { "type": "string", "minLength": 1 },
+    "keys": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["key_id", "principal_id", "organization_id", "roles", "public_key_path", "valid_from", "expires_at", "revoked"],
+        "properties": {
+          "key_id": { "type": "string", "minLength": 1 },
+          "principal_id": { "type": "string", "minLength": 1 },
+          "organization_id": { "type": "string", "minLength": 1 },
+          "roles": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "enum": ["EXECUTOR", "VERIFIER", "APPROVER"] }
+          },
+          "public_key_path": { "type": "string", "minLength": 1, "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$" },
+          "valid_from": { "type": "string", "format": "date-time" },
+          "expires_at": { "type": "string", "format": "date-time" },
+          "revoked": { "type": "boolean" }
+        }
+      }
+    }
+  }
+}

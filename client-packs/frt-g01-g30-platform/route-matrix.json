@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "pack_key": "frt-g01-g30-platform",
+  "tuples": [
+    {
+      "source_stack": "frt-g01-g30-spec",
+      "source_version": "1.0.0",
+      "target_stack": "elmos-frontend-client-runtime",
+      "target_version": "1.2.0",
+      "status": "research",
+      "evidence_refs": [
+        "../../docs/frt-g01-g30/installed-manifest.json",
+        "../../engines/frontend-client-engine/test/frt-runtime.test.ts"
+      ]
+    }
+  ],
+  "recertification_triggers": [
+    "source package manifest or tree digest change",
+    "FRT schema, dependency graph, route registry, policy, or evidence role change",
+    "frontend-client-engine or web-console target tuple change",
+    "browser, device, accessibility, security, or production profile change"
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2613",
+  "skill_name": "frt-2613-environment-parity-validator",
+  "batch": "G26",
+  "surface": "admin_console",
+  "logical_path": "apps/admin-console/src/features/g26/frt-2613-environment-parity-validator/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:9a76793ac296e276bcb75b9b8b58c74f6bffb616d8b6709b83df3fcaca8e92b9",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

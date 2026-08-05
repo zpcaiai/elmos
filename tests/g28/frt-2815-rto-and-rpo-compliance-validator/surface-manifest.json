@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2815",
+  "skill_name": "frt-2815-rto-and-rpo-compliance-validator",
+  "batch": "G28",
+  "surface": "tests",
+  "logical_path": "tests/g28/frt-2815-rto-and-rpo-compliance-validator/",
+  "status": "shared_implementation",
+  "handler_kind": "resilience_dr",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:f5fbdc1b9ac1d10ed90d98474b2faf0f81d038290e7c75fb05891e3c12603592",
+  "implementation_paths": [
+    "engines/frontend-client-engine/test/frt-runtime.test.ts",
+    "engines/frontend-client-engine/test/server.test.ts",
+    "apps/web-console/e2e/frt-frontend-transformation.spec.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

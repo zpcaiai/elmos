@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "pack_key": "frt-g01-g30-platform",
+  "source_tuple": {
+    "stack": "frt-g01-g30-spec",
+    "versions": [
+      "1.0.0"
+    ],
+    "language": "markdown",
+    "language_versions": [
+      "1.0.0"
+    ],
+    "runtime": "codex-skill-contract",
+    "runtime_versions": [
+      "1.0.0"
+    ],
+    "build_tool": "frt-package-validator-1.0.0",
+    "package_manager": "immutable-package-manifest",
+    "router": ["FRT API contract v1"],
+    "renderer": ["Codex Skill Markdown v1"],
+    "state": ["immutable PACKAGE_MANIFEST.json"],
+    "forms": ["typed Skill execution request v1"],
+    "styling": ["not-applicable-static-contract-v1"],
+    "design_system": ["not-applicable-static-contract-v1"],
+    "api_client": ["not-applicable-static-contract-v1"],
+    "identity": ["source-digest-bound-package-v1"],
+    "i18n": ["Chinese-English contract content v1"],
+    "test_tools": ["validate_package.py 1.0.0"],
+    "browsers": [
+      "not-applicable-static-source-v1"
+    ],
+    "devices": []
+  },
+  "snapshot_digest": "sha256:dc69881e7e10d3c80159f8eaaf44a1ed13af1d9374275054742340e75f8a2d15",
+  "coverage": 1.0,
+  "routes": [{ "count": 30, "source": "G13-G17 route-pack Skills" }],
+  "components": [{ "count": 472, "source": "skills/*/SKILL.md" }],
+  "templates": [{ "count": 30, "source": "batches/G01-G30" }],
+  "state_stores": [{ "kind": "immutable package and generated install manifest" }],
+  "forms": [{ "kind": "FrtSkillRunRequest v1" }],
+  "api_clients": [{ "kind": "Node HTTP and Next.js catalog APIs" }],
+  "auth": [{ "kind": "control-plane verified exact scope" }],
+  "i18n": [{ "kind": "zh-CN console with English contract identifiers" }],
+  "design_assets": [{ "kind": "ELMOS CSS Module tokens" }],
+  "accessibility": [{ "kind": "landmarks, labels, keyboard, reduced motion, Axe" }],
+  "runtime_evidence": [{ "status": "local-runtime-test-passed", "external": "NOT_RUN" }],
+  "evidence_refs": [
+    "../../../docs/frt-g01-g30/installed-manifest.json",
+    "../../../engines/frontend-client-engine/test/frt-runtime.test.ts"
+  ]
+}

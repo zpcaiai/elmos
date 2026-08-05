@@ -1,0 +1,4 @@
+interface:
+  display_name: "On-Call Readiness Generator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-3008-on-call-readiness-generator to run FRT-3008 through the governed FRT runtime with exact scope and fail-closed evidence."

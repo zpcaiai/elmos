@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1211",
+  "skill_name": "frt-1211-unsupported-capability-ux-generator",
+  "batch": "G12",
+  "surface": "runtime",
+  "logical_path": "packages/runtime/g12/frt-1211-unsupported-capability-ux-generator/",
+  "status": "shared_implementation",
+  "handler_kind": "cross_platform",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:e570bf682dd6d4699d0d7687644bbd53d7ac03ce9bcfe4e69c768abb24d929c5",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/frt-runtime.ts",
+    "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2607",
+  "skill_name": "frt-2607-mutation-test-coordinator",
+  "batch": "G26",
+  "surface": "contract",
+  "logical_path": "packages/contracts/g26/frt-2607-mutation-test-coordinator/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:2c7e6b7b5b57e9ab3e1a1e12ec846bd3338f691cf9e1154ba62ac09fb13a106a",
+  "implementation_paths": [
+    "schemas/frt-g01-g30/skill-run-request.schema.json",
+    "schemas/frt-g01-g30/skill-run-result.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

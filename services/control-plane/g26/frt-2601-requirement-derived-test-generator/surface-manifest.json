@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2601",
+  "skill_name": "frt-2601-requirement-derived-test-generator",
+  "batch": "G26",
+  "surface": "control_plane",
+  "logical_path": "services/control-plane/g26/frt-2601-requirement-derived-test-generator/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:cf859c23cdf68e8efec26100c3848bddc6bcd128fd773268f546439a801a50c8",
+  "implementation_paths": [
+    "engines/frontend-client-engine/src/server.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

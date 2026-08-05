@@ -551,9 +551,122 @@ test("directional routes fail closed on missing or tampered typed source provena
   assert.equal(blocked.status, "BLOCKED");
   assert.ok(blocked.typedGaps.some(item => item.code === "FRT_TYPED_UI_IR_OR_SOURCE_INVALID"));
 
-  const missing = convertDirectionalRoute("React", "Vue 3", { "src/App.tsx": fixture["src/App.tsx"]! });
-  assert.equal(missing.status, "BLOCKED");
-  assert.ok(missing.typedGaps.some(item => item.message.includes("frt-ui-ir.json is required")));
+  // React has an extractor, so dropping the declaration falls back to reading
+  // the source. An incomplete snapshot still fails closed rather than emitting
+  // a partially guessed target.
+  const partial = convertDirectionalRoute("React", "Vue 3", { "src/App.tsx": fixture["src/App.tsx"]! });
+  assert.equal(partial.status, "BLOCKED");
+  assert.equal(partial.irProvenance, "NONE");
+  assert.deepEqual(partial.generatedFiles, {});
+  assert.ok(partial.typedGaps.every(item => item.blocking));
+
+  // Vue 2 now has a source extractor too: dropping only the declaration is a
+  // supported source-derived route rather than a reason to trust less input.
+  const vue2 = createDirectionalRouteFixture("Vue 2");
+  const missing = convertDirectionalRoute("Vue 2", "React", {
+    "src/App.vue": vue2["src/App.vue"]!,
+    "package.json": vue2["package.json"]!,
+  });
+  assert.equal(missing.status, "GENERATED");
+  assert.equal(missing.irProvenance, "SOURCE_DERIVED");
+  assert.deepEqual(missing.typedGaps, []);
+  assert.ok(Object.keys(missing.generatedFiles).length > 0);
+});
+
+test("a Vue 3 route run derives its IR from source while FRT-1305 keeps its deeper slice", () => {
+  const fixture = createDirectionalRouteFixture("Vue 3");
+  const sourceOnly = Object.fromEntries(
+    Object.entries(fixture).filter(([path]) => path !== "frt-ui-ir.json"),
+  );
+
+  const runtime = createRuntime();
+  const flutter = frtCatalog.skills.find(item => item.id === "FRT-1603");
+  assert.ok(flutter);
+  const derivedRun = runtime.run(request("FRT-1603", "EXECUTE", {
+    key: "vue3-flutter-derived",
+    ...(flutter.requiresCertificate ? { certificateBatch: flutter.requiresCertificate } : {}),
+    input: { files: sourceOnly },
+  }));
+  assert.equal(derivedRun.state, "QUEUED");
+  assert.equal(derivedRun.outcome, "PROPOSAL_READY_FOR_RUNNER");
+  const migration = derivedRun.artifacts.routeMigration as { status: string; irProvenance: string };
+  assert.equal(migration.status, "GENERATED");
+  assert.equal(migration.irProvenance, "SOURCE_DERIVED");
+  assert.equal(derivedRun.artifacts.routeRuntime, "TYPED_UI_IR_DIRECTIONAL_ROUTE_GENERATED");
+  // Deriving the IR does not manufacture execution evidence: still a proposal.
+  assert.ok(derivedRun.findings.some(item => item.code === "FRT_EXTERNAL_RUNNER_REQUIRED"));
+  assert.equal(derivedRun.certificateFragment.eligibleForBatchGate, false);
+
+  // FRT-1305 keeps routing source-only input through its own vertical slice,
+  // which supports template and script constructs the counter IR cannot hold.
+  const slice = createRuntime();
+  const sliceSkill = frtCatalog.skills.find(item => item.id === "FRT-1305");
+  assert.ok(sliceSkill);
+  const sliceRun = slice.run(request("FRT-1305", "EXECUTE", {
+    key: "vue3-react-slice",
+    ...(sliceSkill.requiresCertificate ? { certificateBatch: sliceSkill.requiresCertificate } : {}),
+    input: { files: sourceOnly },
+  }));
+  assert.equal(sliceRun.artifacts.routeRuntime, "VUE3_REACT_VERTICAL_SLICE_GENERATED");
+});
+
+test("typed UI IR derivation corpora stay separate and match their declared outcome", () => {
+  const entries = [
+    ["development", "vue3-increment-source.json"],
+    ["negative", "vue3-missing-accessibility.json"],
+    ["holdout", "vue3-decrement-source.json"],
+    ["representative", "vue3-literal-title-source.json"],
+  ] as const;
+  const digests = new Set<string>();
+  for (const [directory, name] of entries) {
+    const raw = readFileSync(
+      new URL(`../../test/fixtures/frt-ir/${directory}/${name}`, import.meta.url),
+      "utf8",
+    );
+    digests.add(createHash("sha256").update(raw).digest("hex"));
+    const fixture = JSON.parse(raw) as {
+      corpusRole: string;
+      files: Record<string, string>;
+      expectedStatus: "GENERATED" | "BLOCKED";
+      expectedGapCodes: readonly string[];
+    };
+    const result = convertDirectionalRoute("Vue 3", "Flutter", fixture.files);
+    assert.equal(result.status, fixture.expectedStatus, fixture.corpusRole);
+    assert.equal(
+      result.irProvenance,
+      fixture.expectedStatus === "GENERATED" ? "SOURCE_DERIVED" : "NONE",
+      fixture.corpusRole,
+    );
+    for (const code of fixture.expectedGapCodes) {
+      assert.ok(result.typedGaps.some(item => item.code === code), `${fixture.corpusRole} -> ${code}`);
+    }
+    if (fixture.expectedStatus === "GENERATED") {
+      assert.deepEqual(result.typedGaps, [], fixture.corpusRole);
+      assert.ok(Object.keys(result.generatedFiles).length >= 2, fixture.corpusRole);
+    } else {
+      assert.deepEqual(result.generatedFiles, {}, fixture.corpusRole);
+    }
+  }
+  // Independent corpora, not four copies of one case.
+  assert.equal(digests.size, entries.length);
+});
+
+test("the Vue 3 vertical slice converts compound assignment without a typed gap", () => {
+  const compound = {
+    "package.json": JSON.stringify({ dependencies: { vue: "3.5.39" } }),
+    "src/App.vue": [
+      `<script setup lang="ts">`,
+      `import { ref } from "vue";`,
+      `const count = ref(0);`,
+      `function increment() { count.value += 2; }`,
+      `</script>`,
+      `<template><main><h1>{{ count }}</h1><button @click="increment">Add</button></main></template>`,
+    ].join("\n"),
+  };
+  const migration = convertVue3ToReact(compound);
+  assert.equal(migration.status, "GENERATED");
+  assert.deepEqual(migration.typedGaps, []);
+  assert.match(migration.generatedFiles["src/App.tsx"]!, /setCount\(previous => previous \+ 2\)/);
 });
 
 test("verification exposes missing evidence roles and never treats NOT_RUN as passed", () => {
