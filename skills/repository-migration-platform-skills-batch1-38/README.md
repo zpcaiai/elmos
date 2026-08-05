@@ -1,6 +1,6 @@
 # Repository Migration Platform — Batch 1–38 Skills Bag
 
-版本：`3.0.0`
+版本：`3.1.0`
 
 本包包含 **38个Batch级Codex Skills + 1个Master Skill**，覆盖：
 
@@ -19,6 +19,8 @@ Source冻结与语义恢复
 - 本包是根据已批准的Batch 1–38架构整理的**规范化、可安装、可执行实施版**，不是聊天记录逐字导出。
 - Batch 13–20的详细架构源文档已收录到`source-specs/`；其余Batch以统一工程模板展开为可执行Skill。
 - 共享运行时实现38个Batch Profile、Source指纹、真实仓库发现、90条路径清单、argv-only执行计划、内容寻址Typed Evidence、独立Verifier、依赖Gate和副作用账本。
+- 347个输出、测试和外部Claim全部绑定不可变专属Oracle；38个Batch分别绑定唯一Domain Executor handler，原始工具链证据必须通过字节数和SHA-256校验。
+- Executor、Oracle Owner、Verifier使用Ed25519认证并强制角色冲突隔离；development、negative、holdout与production Corpus按Claim分别闭合，Holdout/Production使用独立角色。
 - 权威状态使用SQLite WAL、`BEGIN IMMEDIATE`、外键、唯一约束、整数Fencing Token和哈希链事件；JSON文件只是可重建镜像。
 - 本地Gate最多返回`LOCAL_TOOLKIT_PASS`。随包Trust Policy不含信任密钥并禁用`CERTIFIED`；真实客户、生产、Provider、Kernel Proof、独立评审与CA证据保持`NOT_RUN`。
 
@@ -40,7 +42,7 @@ Source冻结与语义恢复
 ./validate.sh
 ```
 
-验证会执行包结构、Skill接口、依赖DAG、Schema、Checksum和18个运行时、事务、并发、安装与负向行为测试。
+验证会执行包结构、Skill接口、依赖DAG、Schema、Checksum和22个运行时、事务、并发、安装与负向行为测试。
 
 ## 可执行运行时
 
@@ -56,6 +58,7 @@ RMP_RUNTIME="$HOME/.codex/skills/.repository-migration-platform-runtime/migratio
 python3 "$RMP_RUNTIME" prepare-all \
   --source /absolute/path/to/source \
   --workspace /absolute/path/to/evidence-workspace \
+  --actor-trust-store /absolute/path/to/actor-trust-store.json \
   --target-objective "明确、版本化的Target目标"
 ```
 
@@ -75,7 +78,16 @@ python3 "$RMP_RUNTIME" execute-plan \
   --plan /absolute/path/to/evidence-workspace/batches/batch-01/execution-plan.json
 ```
 
-对于执行器之外产生的字节，先用`ingest-artifact`导入不可变主体，再把返回的digest、URI和bytes写入Typed Evidence envelope，使用`record`保存，由不同Actor运行`verify`，最后执行：
+真实领域工具链先生成`domain-execution-result`，由包内38个allowlisted handler之一验证Claim、环境、Corpus、工具版本、断言和原始证据字节，并转换成专属Claim-Oracle主体：
+
+```bash
+python3 "$HOME/.codex/skills/.repository-migration-platform-runtime/domain_executors.py" \
+  /absolute/path/to/domain-execution-result.json \
+  --evidence-root /absolute/path/to/approved-evidence-root \
+  --output /absolute/path/to/claim-oracle-result.json
+```
+
+再把Claim-Oracle主体写入Typed Evidence envelope，以签名Executor和Oracle Owner运行`record`，由不同签名Verifier运行`verify`，最后执行：
 
 ```bash
 python3 "$RMP_RUNTIME" gate \
@@ -84,7 +96,7 @@ python3 "$RMP_RUNTIME" gate \
   --mode local
 ```
 
-当前发行版的包内Trust Policy明确禁用`request-certificate`、`import-certificate`和`CERTIFIED`。只有独立治理、预置并固定信任根的新发行版才能启用该路径；调用者不能提供自己的Trust Store。
+工作区可以绑定Actor Trust Store来认证Executor、Oracle Owner和Verifier；绑定后Digest不可变。它与认证CA Trust Policy严格分离。当前发行版的包内CA Trust Policy仍明确禁用`request-certificate`、`import-certificate`和`CERTIFIED`，调用者不能用Actor Trust Store自行开启认证。
 
 ## 目录
 
@@ -97,6 +109,11 @@ templates/
 scripts/validate_package.py
 scripts/migration_platform.py
 scripts/transaction_store.py
+scripts/actor_trust.py
+scripts/oracle_registry.py
+scripts/domain_executors.py
+oracle-registry.json
+domain-executor-registry.json
 scripts/sync_skill_interfaces.py
 trust-policy.json
 tests/test_migration_platform.py

@@ -71,7 +71,32 @@
         "command_digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}
       },
       "additionalProperties": false
+    },
+    "assurance": {
+      "type": "object",
+      "required": ["oracle_id", "claim_sha256", "corpus_role", "executor_attestation", "oracle_attestation"],
+      "properties": {
+        "oracle_id": {"type": "string", "minLength": 1},
+        "claim_sha256": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+        "corpus_role": {"enum": ["development", "negative", "holdout", "representative", "production"]},
+        "executor_attestation": {"$ref": "#/$defs/signedActorEnvelope"},
+        "oracle_attestation": {"$ref": "#/$defs/signedActorEnvelope"}
+      },
+      "additionalProperties": false
     }
   },
-  "additionalProperties": false
+  "additionalProperties": false,
+  "$defs": {
+    "signedActorEnvelope": {
+      "type": "object",
+      "required": ["algorithm", "key_id", "payload", "signature"],
+      "properties": {
+        "algorithm": {"const": "ed25519"},
+        "key_id": {"type": "string", "minLength": 1},
+        "payload": {"type": "object"},
+        "signature": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    }
+  }
 }

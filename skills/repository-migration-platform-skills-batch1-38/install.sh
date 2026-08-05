@@ -10,6 +10,11 @@ RUNTIME_DEST="$DEST/.repository-migration-platform-runtime"
 if [ -e "$RUNTIME_DEST" ] && [ "$MODE" != "--overwrite" ]; then
   if ! cmp -s "$ROOT/scripts/migration_platform.py" "$RUNTIME_DEST/migration_platform.py" || \
      ! cmp -s "$ROOT/scripts/transaction_store.py" "$RUNTIME_DEST/transaction_store.py" || \
+     ! cmp -s "$ROOT/scripts/actor_trust.py" "$RUNTIME_DEST/actor_trust.py" || \
+     ! cmp -s "$ROOT/scripts/oracle_registry.py" "$RUNTIME_DEST/oracle_registry.py" || \
+     ! cmp -s "$ROOT/oracle-registry.json" "$RUNTIME_DEST/oracle-registry.json" || \
+     ! cmp -s "$ROOT/scripts/domain_executors.py" "$RUNTIME_DEST/domain_executors.py" || \
+     ! cmp -s "$ROOT/domain-executor-registry.json" "$RUNTIME_DEST/domain-executor-registry.json" || \
      ! cmp -s "$ROOT/trust-policy.json" "$RUNTIME_DEST/trust-policy.json" || \
      ! cmp -s "$ROOT/manifest.json" "$RUNTIME_DEST/manifest.json" || \
      ! diff -qr "$ROOT/schemas" "$RUNTIME_DEST/schemas" >/dev/null || \
@@ -22,6 +27,11 @@ else
   trap 'rm -rf "$staging"' EXIT
   cp "$ROOT/scripts/migration_platform.py" "$staging/migration_platform.py"
   cp "$ROOT/scripts/transaction_store.py" "$staging/transaction_store.py"
+  cp "$ROOT/scripts/actor_trust.py" "$staging/actor_trust.py"
+  cp "$ROOT/scripts/oracle_registry.py" "$staging/oracle_registry.py"
+  cp "$ROOT/oracle-registry.json" "$staging/oracle-registry.json"
+  cp "$ROOT/scripts/domain_executors.py" "$staging/domain_executors.py"
+  cp "$ROOT/domain-executor-registry.json" "$staging/domain-executor-registry.json"
   cp "$ROOT/manifest.json" "$staging/manifest.json"
   cp "$ROOT/trust-policy.json" "$staging/trust-policy.json"
   cp -R "$ROOT/schemas" "$staging/schemas"

@@ -32,6 +32,8 @@ if str(SCRIPT_DIRECTORY) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIRECTORY))
 
 from transaction_store import StoreConflict, TransactionStore
+from actor_trust import ActorTrustStore
+from oracle_registry import OracleRegistry
 
 MANIFEST_PATH = PACKAGE_ROOT / "manifest.json"
 TRUST_POLICY_PATH = PACKAGE_ROOT / "trust-policy.json"
@@ -404,7 +406,14 @@ def state_store(workspace: Path) -> TransactionStore:
     return TransactionStore(workspace_paths(workspace)["root"])
 
 
-def initialize_workspace(source: Path, workspace: Path, target_objective: str, *, refresh: bool = False) -> dict[str, Any]:
+def initialize_workspace(
+    source: Path,
+    workspace: Path,
+    target_objective: str,
+    *,
+    refresh: bool = False,
+    actor_trust_store: Path | None = None,
+) -> dict[str, Any]:
     if not target_objective.strip():
         raise RuntimeFailure("target objective must not be empty")
     paths = workspace_paths(workspace)
@@ -423,6 +432,13 @@ def initialize_workspace(source: Path, workspace: Path, target_objective: str, *
                 raise RuntimeFailure("workspace is already bound to a different source")
             if existing["target_objective"] != target_objective:
                 raise RuntimeFailure("workspace is already bound to a different target objective")
+            if actor_trust_store is not None:
+                try:
+                    supplied_trust = ActorTrustStore.load(actor_trust_store)
+                except (OSError, ValueError, json.JSONDecodeError) as exc:
+                    raise RuntimeFailure(f"actor trust store is invalid: {exc}") from exc
+                if existing.get("actor_trust_store_sha256") != supplied_trust.digest:
+                    raise RuntimeFailure("workspace is already bound to a different actor trust store")
             if refresh:
                 raise RuntimeFailure("Source fingerprints are immutable; create a new workspace instead of refreshing")
             try:
@@ -437,6 +453,12 @@ def initialize_workspace(source: Path, workspace: Path, target_objective: str, *
             write_json(paths["metadata"], existing)
             return existing
         snapshot = create_snapshot(source, paths["root"])
+        loaded_trust: ActorTrustStore | None = None
+        if actor_trust_store is not None:
+            try:
+                loaded_trust = ActorTrustStore.load(actor_trust_store)
+            except (OSError, ValueError, json.JSONDecodeError) as exc:
+                raise RuntimeFailure(f"actor trust store is invalid: {exc}") from exc
         metadata = {
             "schema_version": "2.0",
             "runtime_version": RUNTIME_VERSION,
@@ -446,6 +468,9 @@ def initialize_workspace(source: Path, workspace: Path, target_objective: str, *
             "target_objective": target_objective,
             "external_evidence_state": "NOT_RUN",
             "certification_state": "DISABLED",
+            "actor_trust_store_path": str(loaded_trust.path) if loaded_trust else None,
+            "actor_trust_store_sha256": loaded_trust.digest if loaded_trust else None,
+            "oracle_registry_sha256": OracleRegistry.load().digest,
         }
         try:
             bound = store.initialize_metadata(metadata, snapshot, metadata["created_at"])
@@ -455,6 +480,21 @@ def initialize_workspace(source: Path, workspace: Path, target_objective: str, *
         write_json(paths["metadata"], bound)
         store_bytes(paths, canonical_bytes(snapshot))
         return bound
+
+
+def workspace_actor_trust(workspace: Path) -> ActorTrustStore:
+    metadata = state_store(workspace).metadata()
+    path_value = metadata.get("actor_trust_store_path")
+    expected = metadata.get("actor_trust_store_sha256")
+    if not isinstance(path_value, str) or not path_value or not isinstance(expected, str):
+        raise RuntimeFailure("workspace has no authenticated actor trust store")
+    try:
+        trust = ActorTrustStore.load(Path(path_value))
+    except (OSError, ValueError, json.JSONDecodeError) as exc:
+        raise RuntimeFailure(f"workspace actor trust store is invalid: {exc}") from exc
+    if trust.digest != expected:
+        raise RuntimeFailure("workspace actor trust store changed after initialization")
+    return trust
 
 
 def assert_source_unchanged(workspace: Path) -> None:
@@ -655,8 +695,16 @@ def batch_observation(batch: int, workspace: Path, snapshot: dict[str, Any], pro
     return observation
 
 
-def prepare_batch(batch: int, source: Path, workspace: Path, target_objective: str, *, refresh: bool = False) -> dict[str, Any]:
-    initialize_workspace(source, workspace, target_objective, refresh=refresh)
+def prepare_batch(
+    batch: int,
+    source: Path,
+    workspace: Path,
+    target_objective: str,
+    *,
+    refresh: bool = False,
+    actor_trust_store: Path | None = None,
+) -> dict[str, Any]:
+    initialize_workspace(source, workspace, target_objective, refresh=refresh, actor_trust_store=actor_trust_store)
     paths = workspace_paths(workspace)
     metadata = state_store(workspace).metadata()
     snapshot = load_json(paths["snapshot"])
@@ -780,8 +828,9 @@ def validate_evidence_envelope(
     outcome: str,
 ) -> None:
     required = {"evidence_version", "batch", "claim", "producer", "environment", "subject", "scope", "observations", "replay"}
-    if set(payload) != required:
-        raise RuntimeFailure(f"typed Evidence envelope fields must be exactly {sorted(required)}")
+    allowed = required | {"assurance"}
+    if not required.issubset(payload) or set(payload) - allowed:
+        raise RuntimeFailure(f"typed Evidence envelope fields must contain {sorted(required)} and optional assurance")
     if payload["evidence_version"] != "1.0" or payload["batch"] != batch:
         raise RuntimeFailure("typed Evidence version or Batch does not match the invocation")
     claim = payload.get("claim")
@@ -825,6 +874,19 @@ def validate_evidence_envelope(
     if not isinstance(replay["cwd"], str) or not replay["cwd"]:
         raise RuntimeFailure("typed Evidence replay cwd is invalid")
     require_digest(replay.get("command_digest"), "replay.command_digest")
+    assurance = payload.get("assurance")
+    if assurance is not None:
+        assurance_fields = {"oracle_id", "claim_sha256", "corpus_role", "executor_attestation", "oracle_attestation"}
+        if not isinstance(assurance, dict) or set(assurance) != assurance_fields:
+            raise RuntimeFailure("typed Evidence assurance fields are invalid")
+        if not isinstance(assurance.get("oracle_id"), str) or not assurance["oracle_id"]:
+            raise RuntimeFailure("typed Evidence assurance oracle_id is invalid")
+        require_digest(assurance.get("claim_sha256"), "assurance.claim_sha256")
+        if assurance.get("corpus_role") not in {"development", "negative", "holdout", "representative", "production"}:
+            raise RuntimeFailure("typed Evidence assurance corpus_role is invalid")
+        for field in ("executor_attestation", "oracle_attestation"):
+            if not isinstance(assurance.get(field), dict):
+                raise RuntimeFailure(f"typed Evidence assurance {field} is invalid")
 
 
 def record_evidence(
@@ -874,6 +936,58 @@ def record_evidence(
         raise RuntimeFailure("typed Evidence subject is not present in the workspace content store")
     if subject_path.stat().st_size != envelope["subject"]["bytes"] or sha256_file(subject_path) != subject_digest:
         raise RuntimeFailure("typed Evidence subject bytes do not match its digest and size")
+    assurance_receipt: dict[str, Any] | None = None
+    assurance = envelope.get("assurance")
+    if assurance is not None:
+        try:
+            registry = OracleRegistry.load()
+            obligation = registry.resolve(batch, claim_type, claim_index)
+        except (OSError, ValueError, json.JSONDecodeError) as exc:
+            raise RuntimeFailure(f"Claim Oracle registry is invalid: {exc}") from exc
+        if claims[claim_index] != obligation.claim or assurance.get("claim_sha256") != obligation.claim_sha256:
+            raise RuntimeFailure("typed Evidence Claim differs from its registered Oracle obligation")
+        if assurance.get("oracle_id") != obligation.oracle_id or envelope["subject"].get("type") != obligation.subject_type:
+            raise RuntimeFailure("typed Evidence is not produced by the registered Claim Oracle")
+        corpus_role = str(assurance.get("corpus_role", ""))
+        executor_role = "holdout-executor" if corpus_role == "holdout" else ("production-executor" if corpus_role == "production" else "executor")
+        if producer_role != executor_role:
+            raise RuntimeFailure(f"typed Evidence producer role must be {executor_role} for {corpus_role} corpus")
+        if any(observation.get("oracle") != obligation.oracle_id for observation in envelope["observations"]):
+            raise RuntimeFailure("typed Evidence observation does not use the registered Claim Oracle")
+        try:
+            oracle_subject = json.loads(subject_path.read_text(encoding="utf-8"))
+            registry.validate_subject(oracle_subject, obligation, corpus_role, outcome)
+            trust = workspace_actor_trust(workspace)
+            bindings = {
+                "batch": batch,
+                "claim_type": claim_type,
+                "claim_index": claim_index,
+                "claim_sha256": obligation.claim_sha256,
+                "subject_sha256": subject_digest,
+                "source_fingerprint": metadata["source_fingerprint"],
+                "corpus_role": corpus_role,
+                "outcome": outcome,
+                "oracle_id": obligation.oracle_id,
+            }
+            executor_receipt = trust.verify(
+                assurance["executor_attestation"], executor_role,
+                {**bindings, "actor_id": producer_id},
+            )
+            oracle_receipt = trust.verify(
+                assurance["oracle_attestation"], "oracle-owner", bindings,
+            )
+        except (OSError, ValueError, json.JSONDecodeError) as exc:
+            raise RuntimeFailure(f"typed Evidence assurance failed: {exc}") from exc
+        if oracle_receipt["actor_id"] == executor_receipt["actor_id"]:
+            raise RuntimeFailure("executor cannot attest its own Claim Oracle result")
+        assurance_receipt = {
+            "oracle_id": obligation.oracle_id,
+            "claim_sha256": obligation.claim_sha256,
+            "corpus_role": corpus_role,
+            "executor": executor_receipt,
+            "oracle_owner": oracle_receipt,
+            "oracle_registry_sha256": registry.digest,
+        }
     object_ref = store_bytes(paths, canonical_bytes(envelope))
     identity_input = {
         "batch": batch,
@@ -908,6 +1022,7 @@ def record_evidence(
         "object": object_ref,
         "subject_sha256": envelope["subject"]["sha256"],
         "scope": envelope["scope"],
+        "assurance": assurance_receipt,
     }
     record_sha256 = semantic_record_digest(record)
     record["record_sha256"] = record_sha256
@@ -932,7 +1047,14 @@ def verify_object(paths: dict[str, Path], evidence: dict[str, Any]) -> None:
         raise RuntimeFailure(f"evidence object failed byte/digest verification: {evidence.get('evidence_id')}")
 
 
-def verify_evidence(workspace: Path, batch: int, evidence_id: str, verifier_id: str, outcome: str) -> dict[str, Any]:
+def verify_evidence(
+    workspace: Path,
+    batch: int,
+    evidence_id: str,
+    verifier_id: str,
+    outcome: str,
+    attestation: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     paths, destination, _ = require_prepared(workspace, batch)
     store = state_store(workspace)
     if outcome not in VERIFICATION_OUTCOMES:
@@ -954,6 +1076,32 @@ def verify_evidence(workspace: Path, batch: int, evidence_id: str, verifier_id: 
     if verifier_id == evidence["producer_id"]:
         raise RuntimeFailure("builder/producer cannot verify its own evidence")
     verify_object(paths, evidence)
+    authentication: dict[str, Any] | None = None
+    if attestation is not None:
+        corpus_role = (evidence.get("assurance") or {}).get("corpus_role")
+        required_role = "holdout-verifier" if corpus_role == "holdout" else ("production-verifier" if corpus_role == "production" else "verifier")
+        try:
+            authentication = workspace_actor_trust(workspace).verify(
+                attestation,
+                required_role,
+                {
+                    "actor_id": verifier_id,
+                    "batch": batch,
+                    "evidence_id": evidence_id,
+                    "evidence_sha256": evidence_digest,
+                    "outcome": outcome,
+                    "corpus_role": corpus_role,
+                },
+            )
+        except (OSError, ValueError, json.JSONDecodeError) as exc:
+            raise RuntimeFailure(f"Verifier authentication failed: {exc}") from exc
+        assurance = evidence.get("assurance") or {}
+        conflicting = {
+            evidence.get("producer_id"),
+            (assurance.get("oracle_owner") or {}).get("actor_id"),
+        }
+        if authentication["actor_id"] in conflicting:
+            raise RuntimeFailure("Verifier role conflicts with executor or Oracle owner")
     record = {
         "schema_version": "1.0",
         "verification_id": "verification-" + hashlib.sha256(f"{evidence_id}\0{evidence_digest}\0{verifier_id}\0{outcome}".encode()).hexdigest()[:24],
@@ -963,6 +1111,7 @@ def verify_evidence(workspace: Path, batch: int, evidence_id: str, verifier_id: 
         "evidence_sha256": evidence_digest,
         "verifier_id": verifier_id,
         "outcome": outcome,
+        "authentication": authentication,
     }
     record_sha256 = semantic_record_digest(record)
     record["record_sha256"] = record_sha256
@@ -990,9 +1139,17 @@ def verified_claims(
     for verification in verification_records:
         verifications_by_evidence.setdefault(verification["evidence_id"], []).append(verification)
     claims: dict[tuple[str, int], bool] = {}
+    claim_corpora: dict[tuple[str, int], set[str]] = {}
     findings: list[str] = []
     external_seen = False
     subjects: dict[str, set[tuple[str, int]]] = {}
+    registry = OracleRegistry.load()
+    trust: ActorTrustStore | None = None
+    if any(isinstance(evidence.get("assurance"), dict) for evidence in evidence_records):
+        try:
+            trust = workspace_actor_trust(workspace)
+        except RuntimeFailure as exc:
+            findings.append(f"workspace actor trust is invalid: {exc}")
     for evidence in evidence_records:
         try:
             mirror = load_json(destination / "evidence" / f"{evidence['evidence_id']}.json")
@@ -1015,6 +1172,26 @@ def verified_claims(
                 environment=evidence["environment"],
                 outcome=evidence["outcome"],
             )
+            assurance = evidence.get("assurance")
+            if isinstance(assurance, dict):
+                obligation = registry.resolve(batch, evidence["claim_type"], evidence["claim_index"])
+                corpus_role = assurance.get("corpus_role")
+                executor_role = "holdout-executor" if corpus_role == "holdout" else ("production-executor" if corpus_role == "production" else "executor")
+                if assurance.get("oracle_id") != obligation.oracle_id or assurance.get("claim_sha256") != obligation.claim_sha256:
+                    raise RuntimeFailure("assurance is bound to another Claim Oracle")
+                if assurance.get("oracle_registry_sha256") != registry.digest:
+                    raise RuntimeFailure("assurance uses a stale Claim Oracle registry")
+                if evidence.get("producer_role") != executor_role:
+                    raise RuntimeFailure("assurance producer role is invalid for its corpus")
+                executor = assurance.get("executor") or {}
+                oracle_owner = assurance.get("oracle_owner") or {}
+                expected_trust = trust.digest if trust is not None else None
+                if (executor.get("actor_id") != evidence.get("producer_id") or executor.get("role") != executor_role or
+                        executor.get("trust_store_sha256") != expected_trust):
+                    raise RuntimeFailure("executor authentication receipt is invalid")
+                if (oracle_owner.get("role") != "oracle-owner" or oracle_owner.get("trust_store_sha256") != expected_trust or
+                        oracle_owner.get("actor_id") == executor.get("actor_id")):
+                    raise RuntimeFailure("Oracle-owner authentication receipt is invalid")
         except RuntimeFailure as exc:
             findings.append(f"{evidence['evidence_id']}: Evidence integrity failure: {exc}")
             continue
@@ -1031,16 +1208,29 @@ def verified_claims(
                     raise RuntimeFailure("Verification binds a stale Evidence digest")
                 if decision.get("verifier_id") == evidence.get("producer_id"):
                     raise RuntimeFailure("producer self-verification")
+                authentication = decision.get("authentication")
+                if isinstance(authentication, dict):
+                    corpus_role = (evidence.get("assurance") or {}).get("corpus_role")
+                    verifier_role = "holdout-verifier" if corpus_role == "holdout" else ("production-verifier" if corpus_role == "production" else "verifier")
+                    oracle_actor = ((evidence.get("assurance") or {}).get("oracle_owner") or {}).get("actor_id")
+                    expected_trust = trust.digest if trust is not None else None
+                    if (authentication.get("actor_id") != decision.get("verifier_id") or authentication.get("role") != verifier_role or
+                            authentication.get("trust_store_sha256") != expected_trust or authentication.get("actor_id") == oracle_actor):
+                        raise RuntimeFailure("Verifier authentication receipt is invalid")
                 valid_decisions.append(decision)
             except RuntimeFailure as exc:
                 findings.append(f"{decision.get('verification_id')}: {exc}")
-        passes = [item for item in valid_decisions if item.get("outcome") == "PASS"]
+        passes = [item for item in valid_decisions if item.get("outcome") == "PASS" and isinstance(item.get("authentication"), dict)]
         adverse = [item for item in valid_decisions if item.get("outcome") in {"FAIL", "INCONCLUSIVE"}]
-        eligible = evidence.get("outcome") == "PASS" and bool(passes) and not adverse
+        assurance = evidence.get("assurance")
+        eligible = evidence.get("outcome") == "PASS" and isinstance(assurance, dict) and bool(passes) and not adverse
         key = (evidence["claim_type"], evidence["claim_index"])
-        claims[key] = claims.get(key, False) or eligible
+        if eligible:
+            claim_corpora.setdefault(key, set()).add(str(assurance.get("corpus_role")))
+        elif evidence.get("outcome") == "PASS":
+            findings.append(f"{evidence['evidence_id']}: PASS lacks authenticated Claim Oracle and Verifier assurance")
         subjects.setdefault(evidence["subject_sha256"], set()).add(key)
-        external_seen = external_seen or (eligible and evidence.get("external", False))
+        external_seen = external_seen or (eligible and evidence.get("external", False) and assurance.get("corpus_role") == "production")
         if evidence.get("outcome") in {"FAIL", "BLOCKED"}:
             findings.append(f"{evidence['evidence_id']}: {evidence['outcome']} for {evidence['claim']}")
         if any(item.get("outcome") == "FAIL" for item in valid_decisions):
@@ -1048,6 +1238,9 @@ def verified_claims(
     for subject, claim_keys in subjects.items():
         if len(claim_keys) > 1:
             findings.append(f"subject {subject} is reused across distinct claims: {sorted(claim_keys)}")
+    for key, corpora in claim_corpora.items():
+        obligation = registry.resolve(batch, key[0], key[1])
+        claims[key] = set(obligation.required_corpora).issubset(corpora)
     return claims, findings, external_seen
 
 
@@ -1579,17 +1772,32 @@ def command_catalog(_: argparse.Namespace) -> tuple[Any, int]:
 
 
 def command_init(args: argparse.Namespace) -> tuple[Any, int]:
-    metadata = initialize_workspace(Path(args.source), Path(args.workspace), args.target_objective, refresh=args.refresh_source)
+    metadata = initialize_workspace(
+        Path(args.source), Path(args.workspace), args.target_objective,
+        refresh=args.refresh_source,
+        actor_trust_store=Path(args.actor_trust_store) if args.actor_trust_store else None,
+    )
     return metadata, 0
 
 
 def command_prepare(args: argparse.Namespace) -> tuple[Any, int]:
-    report = prepare_batch(args.batch, Path(args.source), Path(args.workspace), args.target_objective, refresh=args.refresh_source)
+    report = prepare_batch(
+        args.batch, Path(args.source), Path(args.workspace), args.target_objective,
+        refresh=args.refresh_source,
+        actor_trust_store=Path(args.actor_trust_store) if args.actor_trust_store else None,
+    )
     return report, 0
 
 
 def command_prepare_all(args: argparse.Namespace) -> tuple[Any, int]:
-    reports = [prepare_batch(number, Path(args.source), Path(args.workspace), args.target_objective, refresh=args.refresh_source and number == 1) for number in range(1, 39)]
+    reports = [
+        prepare_batch(
+            number, Path(args.source), Path(args.workspace), args.target_objective,
+            refresh=args.refresh_source and number == 1,
+            actor_trust_store=Path(args.actor_trust_store) if args.actor_trust_store else None,
+        )
+        for number in range(1, 39)
+    ]
     return {"prepared": 38, "reports": reports, "certification_state": "NOT_RUN"}, 0
 
 
@@ -1604,7 +1812,8 @@ def command_record(args: argparse.Namespace) -> tuple[Any, int]:
 
 
 def command_verify(args: argparse.Namespace) -> tuple[Any, int]:
-    return verify_evidence(Path(args.workspace), args.batch, args.evidence_id, args.verifier_id, args.outcome), 0
+    attestation = load_json(Path(args.attestation)) if args.attestation else None
+    return verify_evidence(Path(args.workspace), args.batch, args.evidence_id, args.verifier_id, args.outcome, attestation), 0
 
 
 def command_gate(args: argparse.Namespace) -> tuple[Any, int]:
@@ -1693,6 +1902,7 @@ def build_parser() -> argparse.ArgumentParser:
         target.add_argument("--workspace", required=True)
         target.add_argument("--target-objective", required=True)
         target.add_argument("--refresh-source", action="store_true")
+        target.add_argument("--actor-trust-store", help="immutable Ed25519 actor trust store")
 
     init_parser = subparsers.add_parser("init", help="bind a workspace to an immutable source fingerprint")
     add_workspace_inputs(init_parser)
@@ -1726,6 +1936,7 @@ def build_parser() -> argparse.ArgumentParser:
     verify_parser.add_argument("--evidence-id", required=True)
     verify_parser.add_argument("--verifier-id", required=True)
     verify_parser.add_argument("--outcome", required=True, choices=sorted(VERIFICATION_OUTCOMES))
+    verify_parser.add_argument("--attestation", help="Ed25519 verifier attestation envelope")
     verify_parser.set_defaults(handler=command_verify)
 
     gate_parser = subparsers.add_parser("gate", help="evaluate one fail-closed Batch gate")

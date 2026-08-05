@@ -59,18 +59,19 @@ Stop on unknown critical scope, broken lineage, invalid certificates, unsafe sid
 2. Prepare all work units without claiming completion:
 
    ```bash
-   python3 "$RMP_RUNTIME" prepare-all --source "$SOURCE_REPO" --workspace "$EVIDENCE_WORKSPACE" --target-objective "$TARGET_OBJECTIVE"
+   python3 "$RMP_RUNTIME" prepare-all --source "$SOURCE_REPO" --workspace "$EVIDENCE_WORKSPACE" \
+     --actor-trust-store "$ACTOR_TRUST_STORE" --target-objective "$TARGET_OBJECTIVE"
    ```
 
-3. Fill each generated `execution-plan.json` with exact argv-only steps and run it with `execute-plan`; import separately produced subject bytes with `ingest-artifact` before recording typed Evidence.
-4. Record and independently verify the exact output/test evidence requested by each Batch profile.
+3. Run the exact native domain toolchain, then pass its byte-bound result through the Batch's allowlisted handler in `domain_executors.py`; repository content cannot select an executable.
+4. Record the resulting Claim-specific Oracle subject with signed Executor and Oracle-Owner attestations, then verify it with a different signed Verifier. Close every required development, negative, holdout or production corpus independently.
 5. Evaluate every local gate in dependency order:
 
    ```bash
    python3 "$RMP_RUNTIME" gate-all --workspace "$EVIDENCE_WORKSPACE" --mode local
    ```
 
-6. Treat `LOCAL_TOOLKIT_PASS` as the absolute local ceiling. The distributed trust policy disables certificate requests/imports; production or certification states remain `NOT_RUN` until an independently governed distribution supplies a pinned trust root.
+6. Treat `LOCAL_TOOLKIT_PASS` as the absolute local ceiling. The workspace Actor Trust Store authenticates evidence roles but cannot replace the package-owned CA Trust Policy. Production or certification states remain `NOT_RUN` until real external execution and an independently governed certification trust root exist.
 ## Definition of Done
 
 All 38 Batch reports are present, all applicable gates pass, the final target owns the declared production scope, Source retirement is evidenced, and SA1–SA5 status is computed conservatively.

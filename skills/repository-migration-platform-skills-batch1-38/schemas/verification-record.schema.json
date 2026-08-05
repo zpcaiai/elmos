@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "VerificationRecord",
   "type": "object",
-  "required": ["schema_version", "verification_id", "verified_at", "batch", "evidence_id", "evidence_sha256", "verifier_id", "outcome", "record_sha256"],
+  "required": ["schema_version", "verification_id", "verified_at", "batch", "evidence_id", "evidence_sha256", "verifier_id", "outcome", "authentication", "record_sha256"],
   "properties": {
     "schema_version": {"const": "1.0"},
     "verification_id": {"type": "string", "pattern": "^verification-[a-f0-9]{24}$"},
@@ -12,6 +12,7 @@
     "evidence_sha256": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
     "verifier_id": {"type": "string", "minLength": 1},
     "outcome": {"enum": ["PASS", "FAIL", "INCONCLUSIVE"]},
+    "authentication": {"type": ["object", "null"]},
     "record_sha256": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}
   },
   "additionalProperties": false

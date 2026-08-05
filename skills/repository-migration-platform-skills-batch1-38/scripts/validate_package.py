@@ -222,6 +222,9 @@ def validate_json_assets(errors: list[str]) -> None:
         "batch-completion-report.schema.json", "invocation.schema.json", "evidence-record.schema.json",
         "verification-record.schema.json", "typed-evidence-envelope.schema.json", "execution-plan.schema.json",
         "gate-result.schema.json", "certificate.schema.json", "trust-policy.schema.json",
+        "actor-trust-store.schema.json", "oracle-registry.schema.json",
+        "domain-execution-result.schema.json",
+        "domain-executor-registry.schema.json",
     }
     if required_schemas - {path.name for path in schemas}:
         errors.append(f"schemas missing: {sorted(required_schemas - {path.name for path in schemas})}")
@@ -250,6 +253,9 @@ def validate_runtime(errors: list[str]) -> None:
     scripts = [
         ROOT / "scripts" / "migration_platform.py", ROOT / "scripts" / "transaction_store.py",
         ROOT / "scripts" / "sync_skill_interfaces.py", ROOT / "scripts" / "validate_package.py",
+        ROOT / "scripts" / "actor_trust.py", ROOT / "scripts" / "oracle_registry.py",
+        ROOT / "scripts" / "build_oracle_registry.py",
+        ROOT / "scripts" / "domain_executors.py", ROOT / "scripts" / "build_domain_executor_registry.py",
     ]
     for script in scripts:
         if not script.is_file():
@@ -259,6 +265,11 @@ def validate_runtime(errors: list[str]) -> None:
             compile(script.read_text(encoding="utf-8"), str(script), "exec")
         except SyntaxError as exc:
             errors.append(f"Python compile failed for {script.relative_to(ROOT)}: {exc}")
+    for builder in (ROOT / "scripts" / "build_oracle_registry.py", ROOT / "scripts" / "build_domain_executor_registry.py"):
+        if builder.is_file():
+            completed = subprocess.run([sys.executable, str(builder), "--check"], check=False, capture_output=True, text=True)
+            if completed.returncode:
+                errors.append(f"generated registry is stale: {builder.name}: {completed.stdout.strip()} {completed.stderr.strip()}")
     runtime = ROOT / "scripts" / "migration_platform.py"
     if runtime.is_file():
         completed = subprocess.run([sys.executable, str(runtime), "catalog"], check=False, capture_output=True, text=True)
@@ -270,6 +281,20 @@ def validate_runtime(errors: list[str]) -> None:
             errors.append("runtime catalog must expose exactly 38 executable Batch profiles")
         elif catalog.get("runtime_version") != "2.0.0" or any(item.get("maximum_local_decision") != "LOCAL_TOOLKIT_PASS" for item in catalog["batches"]):
             errors.append("runtime catalog version or local decision ceiling is invalid")
+    try:
+        oracle_module = __import__("oracle_registry")
+        oracle_registry = oracle_module.OracleRegistry.load()
+        if len(oracle_registry.by_claim) != 347:
+            errors.append("Claim Oracle registry coverage is incomplete")
+    except (ImportError, OSError, ValueError, json.JSONDecodeError) as exc:
+        errors.append(f"Claim Oracle registry is invalid: {exc}")
+    try:
+        domain_module = __import__("domain_executors")
+        executor_registry = domain_module.ExecutorRegistry.load()
+        if sorted(executor_registry.by_batch) != list(range(1, 39)):
+            errors.append("domain-executor registry coverage is incomplete")
+    except (ImportError, OSError, ValueError, json.JSONDecodeError) as exc:
+        errors.append(f"domain-executor registry is invalid: {exc}")
 
 
 def validate_secret_hygiene(errors: list[str]) -> None:

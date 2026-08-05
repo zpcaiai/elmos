@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "EvidenceRecord",
   "type": "object",
-  "required": ["schema_version", "evidence_id", "recorded_at", "batch", "claim_type", "claim_index", "claim", "kind", "producer_id", "producer_role", "environment", "outcome", "external", "object", "subject_sha256", "scope", "record_sha256"],
+  "required": ["schema_version", "evidence_id", "recorded_at", "batch", "claim_type", "claim_index", "claim", "kind", "producer_id", "producer_role", "environment", "outcome", "external", "object", "subject_sha256", "scope", "assurance", "record_sha256"],
   "properties": {
     "schema_version": {"const": "1.0"},
     "evidence_id": {"type": "string", "pattern": "^evidence-[a-f0-9]{24}$"},
@@ -19,6 +19,7 @@
     "external": {"type": "boolean"},
     "subject_sha256": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
     "record_sha256": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "assurance": {"type": ["object", "null"]},
     "scope": {
       "type": "object",
       "required": ["source_fingerprint", "target_objective", "assumptions"],
