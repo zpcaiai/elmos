@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -81,14 +82,22 @@ class OracleRegistry:
             raise ValueError("Claim has no registered Oracle") from exc
 
     def validate_subject(self, value: Any, obligation: OracleObligation, corpus_role: str, outcome: str) -> None:
-        required = {"schema_version", "oracle_id", "executor_id", "batch", "claim", "corpus_role", "decision", "checks", "limitations"}
+        required = {"schema_version", "oracle_id", "executor_id", "batch", "claim", "corpus", "decision", "checks", "limitations"}
         if not isinstance(value, dict) or set(value) != required:
             raise ValueError("Claim Oracle result fields are invalid")
         if value.get("batch") != obligation.batch or value.get("claim") != {"type": obligation.claim_type, "index": obligation.claim_index, "sha256": obligation.claim_sha256}:
             raise ValueError("Claim Oracle result is bound to another Claim")
         if value.get("schema_version") != "1.0" or value.get("oracle_id") != obligation.oracle_id or value.get("executor_id") != obligation.executor_id:
             raise ValueError("Claim Oracle/executor identity is invalid")
-        if corpus_role not in obligation.required_corpora or value.get("corpus_role") != corpus_role:
+        corpus = value.get("corpus")
+        if (not isinstance(corpus, dict) or set(corpus) != {"role", "id", "sha256", "independent"} or
+                corpus.get("role") != corpus_role or not isinstance(corpus.get("id"), str) or not corpus["id"] or
+                not isinstance(corpus.get("sha256"), str) or not re.fullmatch(r"sha256:[0-9a-f]{64}", corpus["sha256"]) or
+                not isinstance(corpus.get("independent"), bool)):
+            raise ValueError("Claim Oracle result corpus identity is invalid")
+        if corpus_role in {"holdout", "representative", "production"} and corpus["independent"] is not True:
+            raise ValueError(f"Claim Oracle {corpus_role} corpus is not independently owned")
+        if corpus_role not in obligation.required_corpora:
             raise ValueError("Claim Oracle result corpus is not eligible")
         if value.get("decision") != outcome or outcome not in {"PASS", "FAIL", "INCONCLUSIVE", "BLOCKED", "NOT_RUN"}:
             raise ValueError("Claim Oracle result decision is invalid")

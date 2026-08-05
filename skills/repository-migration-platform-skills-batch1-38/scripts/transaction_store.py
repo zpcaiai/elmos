@@ -455,6 +455,53 @@ class TransactionStore:
         finally:
             connection.close()
 
+    def transition_effect(
+        self,
+        idempotency_key: str,
+        identity_sha256: str,
+        expected_state: str,
+        state: str,
+        receipt: dict[str, Any],
+        created_at: str,
+        compensates_idempotency_key: str | None = None,
+    ) -> dict[str, Any]:
+        """Atomically fence and transition a side effect without an exactly-once claim."""
+        if expected_state not in {"PLANNED", "RUNNING"} or state not in {"RUNNING", "SUCCEEDED", "FAILED", "UNKNOWN", "COMPENSATED"}:
+            raise StoreConflict("effect state transition is invalid")
+        with self.transaction() as connection:
+            row = connection.execute(
+                "SELECT identity_sha256,record_json FROM effects WHERE idempotency_key=?", (idempotency_key,)
+            ).fetchone()
+            if row is None or row["identity_sha256"] != identity_sha256:
+                raise StoreConflict("effect identity is missing or stale")
+            current = decode_object(row["record_json"])
+            if current.get("state") != expected_state:
+                raise StoreConflict(f"effect state is {current.get('state')}, expected {expected_state}")
+            updated = {**current, "state": state, "executed": state in {"SUCCEEDED", "COMPENSATED"},
+                       "reconciled": state == "COMPENSATED", "receipt": receipt, "updated_at": created_at}
+            self._append_event(connection, f"EFFECT_{state}", current["effect_id"], updated, created_at)
+            connection.execute(
+                "UPDATE effects SET record_json=? WHERE idempotency_key=? AND identity_sha256=?",
+                (canonical_bytes(updated).decode("utf-8"), idempotency_key, identity_sha256),
+            )
+            if compensates_idempotency_key is not None and state == "SUCCEEDED":
+                original_row = connection.execute(
+                    "SELECT record_json FROM effects WHERE idempotency_key=?", (compensates_idempotency_key,)
+                ).fetchone()
+                if original_row is None:
+                    raise StoreConflict("compensated effect does not exist")
+                original = decode_object(original_row["record_json"])
+                original_receipt = original.get("receipt")
+                if (original.get("state") != "SUCCEEDED" or not isinstance(original_receipt, dict) or
+                        original_receipt.get("compensation_operation") != receipt.get("operation")):
+                    raise StoreConflict("compensated effect is not in a safely compensatable state")
+                compensated = {**original, "state": "COMPENSATED", "executed": True, "reconciled": True,
+                               "compensation_effect_id": updated["effect_id"], "compensated_at": created_at}
+                self._append_event(connection, "EFFECT_COMPENSATED", original["effect_id"], compensated, created_at)
+                connection.execute("UPDATE effects SET record_json=? WHERE idempotency_key=?",
+                                   (canonical_bytes(compensated).decode("utf-8"), compensates_idempotency_key))
+            return updated
+
     def gate_states(self) -> dict[int, str]:
         connection = self.connect()
         try:

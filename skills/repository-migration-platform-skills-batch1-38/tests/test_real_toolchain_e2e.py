@@ -47,7 +47,7 @@ class RealToolchainE2ETest(unittest.TestCase):
             subject = json.loads((output / "domain-result-oracle-subject.json").read_text(encoding="utf-8"))
             self.assertEqual(obligation["oracle_id"], subject["oracle_id"])
             self.assertEqual("PASS", subject["decision"])
-            self.assertEqual("development", subject["corpus_role"])
+            self.assertEqual("development", subject["corpus"]["role"])
 
     def test_migration_template_has_fail_closed_checksum_guard(self) -> None:
         template = (e2e.FIXTURES / "target-expand-contract.sql").read_text(encoding="utf-8")

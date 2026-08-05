@@ -1140,6 +1140,7 @@ def verified_claims(
         verifications_by_evidence.setdefault(verification["evidence_id"], []).append(verification)
     claims: dict[tuple[str, int], bool] = {}
     claim_corpora: dict[tuple[str, int], set[str]] = {}
+    claim_corpus_digests: dict[tuple[str, int], dict[str, set[str]]] = {}
     findings: list[str] = []
     external_seen = False
     subjects: dict[str, set[tuple[str, int]]] = {}
@@ -1172,10 +1173,16 @@ def verified_claims(
                 environment=evidence["environment"],
                 outcome=evidence["outcome"],
             )
+            subject_path = paths["objects"] / envelope["subject"]["sha256"].split(":", 1)[1]
+            if (not subject_path.is_file() or subject_path.stat().st_size != envelope["subject"]["bytes"] or
+                    sha256_file(subject_path) != envelope["subject"]["sha256"]):
+                raise RuntimeFailure("Claim Oracle subject bytes do not match the recorded digest and size")
+            oracle_subject = load_json(subject_path)
             assurance = evidence.get("assurance")
             if isinstance(assurance, dict):
                 obligation = registry.resolve(batch, evidence["claim_type"], evidence["claim_index"])
                 corpus_role = assurance.get("corpus_role")
+                registry.validate_subject(oracle_subject, obligation, str(corpus_role), evidence["outcome"])
                 executor_role = "holdout-executor" if corpus_role == "holdout" else ("production-executor" if corpus_role == "production" else "executor")
                 if assurance.get("oracle_id") != obligation.oracle_id or assurance.get("claim_sha256") != obligation.claim_sha256:
                     raise RuntimeFailure("assurance is bound to another Claim Oracle")
@@ -1226,7 +1233,11 @@ def verified_claims(
         eligible = evidence.get("outcome") == "PASS" and isinstance(assurance, dict) and bool(passes) and not adverse
         key = (evidence["claim_type"], evidence["claim_index"])
         if eligible:
-            claim_corpora.setdefault(key, set()).add(str(assurance.get("corpus_role")))
+            eligible_role = str(assurance.get("corpus_role"))
+            claim_corpora.setdefault(key, set()).add(eligible_role)
+            claim_corpus_digests.setdefault(key, {}).setdefault(eligible_role, set()).add(
+                str(oracle_subject["corpus"]["sha256"])
+            )
         elif evidence.get("outcome") == "PASS":
             findings.append(f"{evidence['evidence_id']}: PASS lacks authenticated Claim Oracle and Verifier assurance")
         subjects.setdefault(evidence["subject_sha256"], set()).add(key)
@@ -1240,6 +1251,11 @@ def verified_claims(
             findings.append(f"subject {subject} is reused across distinct claims: {sorted(claim_keys)}")
     for key, corpora in claim_corpora.items():
         obligation = registry.resolve(batch, key[0], key[1])
+        digests = claim_corpus_digests.get(key, {})
+        holdout = digests.get("holdout", set())
+        outside_holdout = set().union(*(digests.get(role, set()) for role in ("development", "negative", "representative", "production")))
+        if holdout & outside_holdout:
+            findings.append(f"{obligation.oracle_id}: Holdout corpus digest is reused outside Holdout")
         claims[key] = set(obligation.required_corpora).issubset(corpora)
     return claims, findings, external_seen
 

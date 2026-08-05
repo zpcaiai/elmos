@@ -241,7 +241,7 @@ def execute(result_file: Path, roots: tuple[Path, ...]) -> dict[str, Any]:
         "executor_id": obligation.executor_id,
         "batch": batch,
         "claim": claim,
-        "corpus_role": corpus_role,
+        "corpus": corpus,
         "decision": decision,
         "checks": all_checks,
         "limitations": limitations,

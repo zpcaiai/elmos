@@ -1,6 +1,6 @@
 # Repository Migration Platform — Batch 1–38 Skills Bag
 
-版本：`3.1.0`
+版本：`3.2.0`
 
 本包包含 **38个Batch级Codex Skills + 1个Master Skill**，覆盖：
 
@@ -23,6 +23,7 @@ Source冻结与语义恢复
 - 38个handler均为可调用、互异的Batch领域策略；每个策略固定operation、capabilities和safety controls，并由全覆盖测试执行。跨Batch合同替换、能力证据缺失和安全断言缺失都会fail closed。
 - Executor、Oracle Owner、Verifier使用Ed25519认证并强制角色冲突隔离；development、negative、holdout与production Corpus按Claim分别闭合，Holdout/Production使用独立角色。
 - 权威状态使用SQLite WAL、`BEGIN IMMEDIATE`、外键、唯一约束、整数Fencing Token和哈希链事件；JSON文件只是可重建镜像。
+- `trusted_adapters.py`只接受运维方Ed25519签名的Adapter Registry：可执行文件、SHA-256、版本、argv模板、参数类型、环境引用、超时、副作用等级与补偿操作均不可由仓库内容修改。变更操作要求独立Approver、幂等键和单调Fencing；超时造成的不确定副作用保持`UNKNOWN`并禁止自动重试。
 - 本地Gate最多返回`LOCAL_TOOLKIT_PASS`。随包Trust Policy不含信任密钥并禁用`CERTIFIED`；真实客户、生产、Provider、Kernel Proof、独立评审与CA证据保持`NOT_RUN`。
 
 ## 安装
@@ -98,6 +99,10 @@ python3 "$RMP_RUNTIME" execute-plan \
   --plan /absolute/path/to/evidence-workspace/batches/batch-01/execution-plan.json
 ```
 
+数据库、Cloud、SCM和迁移工具等Provider副作用应通过签名Adapter执行，而不是把仓库字符串直接当命令。安装后的入口为
+`.repository-migration-platform-runtime/trusted_adapters.py`；请求必须绑定当前Source指纹、精确Batch、签名Registry、
+幂等键和Fencing Token。成功Receipt仍需进入下面的Claim-Oracle与独立Verifier链，不能直接形成认证。
+
 真实领域工具链先生成`domain-execution-result`。包内dispatcher调用注册的唯一handler，要求其
 `domain_contract`与该Batch的operation、capabilities和safety controls完全一致；每项能力都必须
 同时绑定成功工具记录、原始证据字节角色和Claim专属Oracle断言。随后才会验证Claim、环境、
@@ -135,6 +140,8 @@ scripts/transaction_store.py
 scripts/actor_trust.py
 scripts/oracle_registry.py
 scripts/domain_executors.py
+scripts/domain_handlers.py
+scripts/trusted_adapters.py
 oracle-registry.json
 domain-executor-registry.json
 scripts/sync_skill_interfaces.py

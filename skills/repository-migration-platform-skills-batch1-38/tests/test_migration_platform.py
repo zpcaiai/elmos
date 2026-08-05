@@ -22,6 +22,7 @@ runtime = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(runtime)
 import domain_executors
 import domain_handlers
+import trusted_adapters
 
 
 class MigrationPlatformRuntimeTest(unittest.TestCase):
@@ -46,6 +47,8 @@ class MigrationPlatformRuntimeTest(unittest.TestCase):
             "verifier-dev": ["verifier"],
             "verifier-holdout": ["holdout-verifier"],
             "verifier-production": ["production-verifier"],
+            "adapter-admin": ["adapter-admin"],
+            "approver": ["approver"],
         }
         actors = []
         for actor_id, roles in actor_roles.items():
@@ -85,6 +88,36 @@ class MigrationPlatformRuntimeTest(unittest.TestCase):
         return runtime.prepare_batch(
             batch, self.source, self.workspace, "migrate safely", actor_trust_store=self.trust_store,
         )
+
+    def adapter_registry(self) -> Path:
+        executable = Path("/bin/echo").resolve(strict=True)
+        executable_bytes = trusted_adapters.read_regular(executable, trusted_adapters.MAX_FILE_BYTES, "fixture adapter")
+        source_fingerprint = runtime.state_store(self.workspace).metadata()["source_fingerprint"]
+        adapters = [{
+            "adapter_id": "fixture-provider", "capability": "provider-probe",
+            "executable": str(executable), "executable_sha256": trusted_adapters.digest_bytes(executable_bytes),
+            "version": "fixture-1.0", "environment_allowlist": [],
+            "operations": [{
+                "name": "inspect", "argv": ["provider-probe"],
+                "parameters": [{"name": "target", "flag": "--target", "type": "identifier", "required": True}],
+                "timeout_seconds": 10, "effect_class": "read-only", "compensation_operation": None,
+            }, {
+                "name": "apply", "argv": ["provider-apply"],
+                "parameters": [{"name": "target", "flag": "--target", "type": "identifier", "required": True}],
+                "timeout_seconds": 10, "effect_class": "reversible", "compensation_operation": "undo",
+            }, {
+                "name": "undo", "argv": ["provider-undo"],
+                "parameters": [{"name": "target", "flag": "--target", "type": "identifier", "required": True}],
+                "timeout_seconds": 10, "effect_class": "approval-required", "compensation_operation": None,
+            }],
+        }]
+        envelope = self.sign("adapter-admin", {
+            "schema_version": "1.0", "registry_id": "fixture-registry",
+            "source_fingerprint": source_fingerprint, "adapters": adapters,
+        }, suffix="adapter-registry")
+        path = self.root / "adapter-registry.json"
+        path.write_text(json.dumps(envelope), encoding="utf-8")
+        return path
 
     def sign(self, actor_id: str, bindings: dict, *, suffix: str) -> dict:
         payload = {
@@ -132,6 +165,7 @@ class MigrationPlatformRuntimeTest(unittest.TestCase):
         subject: dict | None = None,
         suffix: str = "",
         corpus_role: str = "development",
+        corpus_digest: str | None = None,
     ) -> Path:
         expected_producer, expected_role, _ = self.corpus_actors(corpus_role)
         producer = producer or expected_producer
@@ -145,7 +179,9 @@ class MigrationPlatformRuntimeTest(unittest.TestCase):
                 "executor_id": obligation.executor_id,
                 "batch": batch,
                 "claim": {"type": claim_type, "index": claim_index, "sha256": obligation.claim_sha256},
-                "corpus_role": corpus_role,
+                "corpus": {"role": corpus_role, "id": f"corpus-{corpus_role}",
+                           "sha256": corpus_digest or runtime.sha256_bytes(f"corpus-{corpus_role}".encode()),
+                           "independent": corpus_role in {"holdout", "representative", "production"}},
                 "decision": outcome,
                 "checks": [{
                     "name": f"claim-specific-{claim_type}-{claim_index}",
@@ -214,6 +250,7 @@ class MigrationPlatformRuntimeTest(unittest.TestCase):
         subject: dict | None = None,
         suffix: str = "",
         corpus_role: str = "development",
+        corpus_digest: str | None = None,
     ) -> dict:
         expected_producer, producer_role, expected_verifier = self.corpus_actors(corpus_role)
         producer = producer or expected_producer
@@ -223,7 +260,7 @@ class MigrationPlatformRuntimeTest(unittest.TestCase):
             batch,
             self.envelope_file(
                 batch, claim_type, claim_index, producer=producer, role=producer_role,
-                subject=subject, suffix=suffix, corpus_role=corpus_role,
+                subject=subject, suffix=suffix, corpus_role=corpus_role, corpus_digest=corpus_digest,
             ),
             kind="artifact" if claim_type == "output" else ("test" if claim_type == "test" else "external"),
             claim_type=claim_type,
@@ -377,6 +414,14 @@ class MigrationPlatformRuntimeTest(unittest.TestCase):
         )
         runtime.OracleRegistry.load().validate_subject(holdout, obligation, "holdout", "PASS")
 
+    def test_holdout_corpus_digest_cannot_reuse_development_bytes(self) -> None:
+        self.prepare(1)
+        shared = runtime.sha256_bytes(b"same-corpus-bytes")
+        self.record_claim(1, "output", 0, corpus_role="development", corpus_digest=shared, suffix="shared-development")
+        self.record_claim(1, "output", 0, corpus_role="holdout", corpus_digest=shared, suffix="shared-holdout")
+        _, findings, _ = runtime.verified_claims(self.workspace, 1)
+        self.assertTrue(any("Holdout corpus digest is reused" in finding for finding in findings))
+
     def test_production_evidence_ingress_requires_production_roles_but_does_not_certify(self) -> None:
         self.prepare(2)
         evidence = self.record_claim(2, "external", 0, corpus_role="production")
@@ -502,6 +547,78 @@ class MigrationPlatformRuntimeTest(unittest.TestCase):
             runtime.plan_effect(self.workspace, 17, "same-key", "destroy", "sandbox", "actor-a", "approval-a", 2, True)
         with self.assertRaisesRegex(runtime.RuntimeFailure, "fencing token must be greater"):
             runtime.plan_effect(self.workspace, 17, "new-key", "deploy", "sandbox", "actor-a", "approval-a", 1, True)
+
+    def test_signed_adapter_execution_is_digest_bound_and_idempotent(self) -> None:
+        self.prepare(1)
+        request = {
+            "schema_version": "1.0", "batch": 1, "adapter_id": "fixture-provider", "operation": "inspect",
+            "parameters": {"target": "fixture-target"}, "idempotency_key": "fixture-idempotency",
+            "fencing_token": 1, "source_fingerprint": runtime.state_store(self.workspace).metadata()["source_fingerprint"],
+            "approval": None, "compensates_idempotency_key": None,
+        }
+        request_path = self.root / "adapter-request.json"
+        request_path.write_text(json.dumps(request), encoding="utf-8")
+        first = trusted_adapters.execute(self.workspace, request_path, self.adapter_registry(), self.trust_store, (self.root.resolve(),))
+        second = trusted_adapters.execute(self.workspace, request_path, self.adapter_registry(), self.trust_store, (self.root.resolve(),))
+        self.assertEqual("SUCCEEDED", first["state"])
+        self.assertFalse(first["idempotent_replay"])
+        self.assertTrue(second["idempotent_replay"])
+        self.assertEqual(first["request_sha256"], second["request_sha256"])
+        request["parameters"]["target"] = "different-target"
+        request_path.write_text(json.dumps(request), encoding="utf-8")
+        with self.assertRaisesRegex(trusted_adapters.AdapterError, "binds a different effect"):
+            trusted_adapters.execute(self.workspace, request_path, self.adapter_registry(), self.trust_store, (self.root.resolve(),))
+
+    def test_mutating_adapter_compensation_is_approved_and_atomic(self) -> None:
+        self.prepare(1)
+        source_fingerprint = runtime.state_store(self.workspace).metadata()["source_fingerprint"]
+        registry_path = self.adapter_registry()
+        trust = trusted_adapters.ActorTrustStore.load(self.trust_store)
+        registry = trusted_adapters.Registry.load(registry_path, trust, source_fingerprint)
+
+        def signed_request(operation: str, key: str, fencing: int, compensates: str | None) -> dict:
+            parameters = {"target": "fixture-target"}
+            effect = registry.adapters["fixture-provider"].operations[operation].effect_class
+            identity = {
+                "batch": 1, "skill": runtime.profile(1)["skill"], "domain_contract": domain_handlers.contract_for_batch(1),
+                "adapter_id": "fixture-provider", "adapter_registry_sha256": registry.sha256, "operation": operation,
+                "parameters_sha256": trusted_adapters.digest(parameters), "source_fingerprint": source_fingerprint,
+                "effect_class": effect, "idempotency_key": key, "fencing_token": fencing,
+                "compensates_idempotency_key": compensates,
+            }
+            request_sha256 = trusted_adapters.digest(identity)
+            approval = self.sign("approver", {"request_sha256": request_sha256, "adapter_id": "fixture-provider",
+                                               "operation": operation, "source_fingerprint": source_fingerprint,
+                                               "effect_class": effect}, suffix=f"approval-{operation}")
+            return {"schema_version": "1.0", "batch": 1, "adapter_id": "fixture-provider", "operation": operation,
+                    "parameters": parameters, "idempotency_key": key, "fencing_token": fencing,
+                    "source_fingerprint": source_fingerprint, "approval": approval,
+                    "compensates_idempotency_key": compensates}
+
+        request_path = self.root / "mutating-adapter-request.json"
+        request_path.write_text(json.dumps(signed_request("apply", "apply-idempotency", 1, None)), encoding="utf-8")
+        applied = trusted_adapters.execute(self.workspace, request_path, registry_path, self.trust_store, (self.root.resolve(),))
+        self.assertEqual("SUCCEEDED", applied["state"])
+        request_path.write_text(json.dumps(signed_request("undo", "undo-idempotency", 2, "apply-idempotency")), encoding="utf-8")
+        undone = trusted_adapters.execute(self.workspace, request_path, registry_path, self.trust_store, (self.root.resolve(),))
+        self.assertEqual("SUCCEEDED", undone["state"])
+        effects = {item["idempotency_key"]: item for item in runtime.state_store(self.workspace).effects()}
+        self.assertEqual("COMPENSATED", effects["apply-idempotency"]["state"])
+        self.assertEqual(effects["undo-idempotency"]["effect_id"], effects["apply-idempotency"]["compensation_effect_id"])
+
+    def test_effect_transition_rolls_back_on_event_failure(self) -> None:
+        self.prepare(17)
+        planned = runtime.plan_effect(self.workspace, 17, "transition-key", "deploy", "sandbox", "actor-a", "approval-a", 1, True)
+        identity = {"batch": 17, "action": "deploy", "target": "sandbox", "actor_id": "actor-a",
+                    "approval_id": "approval-a", "fencing_token": 1, "reversible": True}
+        identity_sha256 = runtime.sha256_bytes(runtime.canonical_bytes({"idempotency_key": "transition-key", **identity}))
+        store = runtime.state_store(self.workspace)
+        with mock.patch.object(runtime.TransactionStore, "_append_event", side_effect=RuntimeError("injected effect crash")):
+            with self.assertRaisesRegex(RuntimeError, "injected effect crash"):
+                store.transition_effect("transition-key", identity_sha256, "PLANNED", "RUNNING",
+                                        {"request_sha256": "sha256:" + "1" * 64}, runtime.utc_now())
+        self.assertEqual("PLANNED", store.effects()[0]["state"])
+        self.assertEqual(planned["effect_id"], store.effects()[0]["effect_id"])
 
     def test_24_concurrent_commands_have_no_evidence_crosstalk(self) -> None:
         self.prepare(1)

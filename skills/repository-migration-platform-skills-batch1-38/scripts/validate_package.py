@@ -257,6 +257,7 @@ def validate_runtime(errors: list[str]) -> None:
         ROOT / "scripts" / "actor_trust.py", ROOT / "scripts" / "oracle_registry.py",
         ROOT / "scripts" / "build_oracle_registry.py",
         ROOT / "scripts" / "domain_executors.py", ROOT / "scripts" / "domain_handlers.py",
+        ROOT / "scripts" / "trusted_adapters.py",
         ROOT / "scripts" / "build_domain_executor_registry.py",
     ]
     for script in scripts:
