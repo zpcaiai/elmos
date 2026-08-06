@@ -56,6 +56,136 @@ def git_dirty() -> bool:
     return bool(result.stdout.strip())
 
 
+
+def observable_state(suite: Path, case_id: str) -> dict:
+    """State a case can legitimately observe before and after its run."""
+    route_path = REPO / "convergence-packs/reference-product/reference-route.json"
+    route_stages: dict[str, str] = {}
+    if route_path.is_file():
+        try:
+            route = load_json(route_path)
+            route_stages = {s["stage"]: s.get("status", "") for s in route.get("stage_results", [])}
+        except Exception:  # noqa: BLE001
+            route_stages = {}
+    result_path = suite / "results" / f"{case_id}.json"
+    previous = ""
+    if result_path.is_file():
+        try:
+            previous = load_json(result_path).get("status", "")
+        except Exception:  # noqa: BLE001
+            previous = ""
+    return {
+        "captured_at": now_iso(),
+        "recorded_case_status": previous,
+        "reference_route_stage_status": route_stages,
+    }
+
+
+def role_producers(
+    run_dir: Path,
+    *,
+    raw_log: Path,
+    artifact_file: Path,
+    environment_file: Path,
+    binding_file: Path,
+    case_result_file: Path,
+    gate_out: Path,
+    toolchain_file: Path,
+    input_manifest_file: Path,
+    state_file: Path,
+    replay_file: Path,
+    coverage_file: Path,
+) -> dict[str, Path]:
+    return {
+        "raw-log": raw_log,
+        "raw-execution-log": raw_log,
+        "artifact-digest": artifact_file,
+        "environment-manifest": environment_file,
+        "environment-binding": binding_file,
+        "toolchain-version": toolchain_file,
+        "input-manifest": input_manifest_file,
+        "state-before-after": state_file,
+        "replay-command": replay_file,
+        "coverage-link": coverage_file,
+        "case-result": case_result_file,
+        "gate-decision": gate_out,
+    }
+
+
+def toolchain_inventory() -> dict:
+    """Observed versions of every toolchain a case might bind to."""
+    probes = {
+        "python": [sys.executable, "--version"],
+        "java": ["java", "-version"],
+        "javac": ["javac", "-version"],
+        "dotnet": ["dotnet", "--version"],
+        "node": ["node", "--version"],
+        "go": ["go", "version"],
+        "git": ["git", "--version"],
+        "openssl": ["openssl", "version"],
+    }
+    observed = {}
+    for name, command in probes.items():
+        try:
+            completed = subprocess.run(command, capture_output=True, text=True, check=False, timeout=15)
+            observed[name] = ((completed.stdout + completed.stderr).strip().splitlines() or ["<no output>"])[0]
+        except (OSError, subprocess.TimeoutExpired):
+            observed[name] = "<not installed>"
+    pins = {}
+    global_json = REPO / "global.json"
+    if global_json.is_file():
+        try:
+            pins["dotnet_sdk"] = load_json(global_json).get("sdk", {})
+        except Exception:  # noqa: BLE001
+            pass
+    sdkmanrc = REPO / ".sdkmanrc"
+    if sdkmanrc.is_file():
+        pins["sdkman"] = [line for line in sdkmanrc.read_text(encoding="utf-8").splitlines() if line.strip()]
+    return {"toolchain_inventory_version": 1, "observed": observed, "repository_pins": pins}
+
+
+def coverage_links(suite: Path, case_id: str) -> dict:
+    matrix_path = suite / "coverage-matrix.json"
+    entries = []
+    if matrix_path.is_file():
+        blob = matrix_path.read_text(encoding="utf-8")
+        try:
+            matrix = json.loads(blob)
+        except Exception:  # noqa: BLE001
+            matrix = None
+
+        def walk(node, trail):
+            if isinstance(node, dict):
+                for key, value in node.items():
+                    walk(value, trail + [str(key)])
+            elif isinstance(node, list):
+                for index, value in enumerate(node):
+                    walk(value, trail + [str(index)])
+            elif node == case_id:
+                entries.append("/".join(trail))
+
+        if matrix is not None:
+            walk(matrix, [])
+    return {
+        "coverage_link_version": 1,
+        "case_id": case_id,
+        "coverage_matrix": matrix_path.relative_to(REPO).as_posix() if matrix_path.is_file() else "",
+        "coverage_matrix_sha256": sha256_file(matrix_path) if matrix_path.is_file() else "",
+        "referenced_at": entries,
+    }
+
+
+def input_manifest(binding: dict) -> dict:
+    entries = []
+    for reference in binding.get("inputs", []):
+        path = REPO / reference
+        if path.is_file():
+            entries.append({"path": reference, "sha256": sha256_file(path), "bytes": path.stat().st_size})
+        else:
+            entries.append({"path": reference, "sha256": "", "bytes": 0, "missing": True})
+    return {"input_manifest_version": 1, "declared_inputs": len(entries), "files": entries}
+
+
 def build_artifact_manifest(scope: list[str]) -> dict:
     entries = []
     for pattern in scope:
@@ -121,28 +251,46 @@ def run_case(
     started = now_iso()
 
     log_lines = [f"# case {case_id}", f"# started_at {started}", f"# run_id {args.run_id}", ""]
-    step_results = []
-    for step in binding["steps"]:
-        command = step["command"]
-        log_lines.append(f"$ {' '.join(command)}")
-        completed = subprocess.run(command, cwd=REPO, capture_output=True, text=True, check=False)
-        log_lines.append(completed.stdout.rstrip())
-        if completed.stderr.strip():
-            log_lines.append("--- stderr ---")
-            log_lines.append(completed.stderr.rstrip())
-        expect = step.get("expect", "exit-zero")
-        met = completed.returncode == 0 if expect == "exit-zero" else completed.returncode != 0
-        log_lines.append(f"# exit={completed.returncode} expect={expect} met={met}\n")
-        step_results.append(
-            {
-                "id": step["id"],
-                "command": command,
-                "expect": expect,
-                "exit_code": completed.returncode,
-                "met_expectation": met,
-            }
+
+    def execute(steps: list[dict], phase: str) -> list[dict]:
+        results = []
+        for step in steps:
+            command = step["command"]
+            log_lines.append(f"$ [{phase}] {' '.join(command)}")
+            completed = subprocess.run(command, cwd=REPO, capture_output=True, text=True, check=False)
+            log_lines.append(completed.stdout.rstrip())
+            if completed.stderr.strip():
+                log_lines.append("--- stderr ---")
+                log_lines.append(completed.stderr.rstrip())
+            expect = step.get("expect", "exit-zero")
+            met = completed.returncode == 0 if expect == "exit-zero" else completed.returncode != 0
+            log_lines.append(f"# exit={completed.returncode} expect={expect} met={met}\n")
+            results.append({
+                "id": step["id"], "phase": phase, "command": command, "expect": expect,
+                "exit_code": completed.returncode, "met_expectation": met,
+                "establishes": step.get("establishes", ""),
+            })
+        return results
+
+    state_before = observable_state(suite, case_id)
+    precondition_results = execute(binding.get("precondition_steps", []), "precondition")
+    unmet_preconditions = [s["id"] for s in precondition_results if not s["met_expectation"]]
+    if unmet_preconditions:
+        log_lines.append(
+            f"# preconditions unmet: {unmet_preconditions} -- the case body is not executed, "
+            "because the catalog lists these as preconditions rather than assertions\n"
         )
+        step_results = precondition_results + [
+            {"id": step["id"], "phase": "case", "command": step["command"],
+             "expect": step.get("expect", "exit-zero"), "exit_code": None,
+             "met_expectation": False, "not_executed": True,
+             "establishes": step.get("establishes", "")}
+            for step in binding["steps"]
+        ]
+    else:
+        step_results = precondition_results + execute(binding["steps"], "case")
     finished = now_iso()
+    state_after = observable_state(suite, case_id)
     all_met = all(step["met_expectation"] for step in step_results)
 
     raw_log = run_dir / "raw-log.txt"
@@ -201,15 +349,46 @@ def run_case(
         check=False,
     )
 
-    files = [
-        evidence_entry("raw-log", raw_log, run_dir),
-        evidence_entry("artifact-digest", artifact_file, run_dir),
-        evidence_entry("environment-manifest", environment_file, run_dir),
-        evidence_entry("environment-binding", binding_file, run_dir),
-        evidence_entry("case-result", case_result_file, run_dir),
-        evidence_entry("gate-decision", gate_out, run_dir),
-    ]
+    replay = (
+        f"python3 scripts/test-suite/run_case.py --suite {suite.relative_to(REPO).as_posix()} "
+        f"--run-id <new-run-id> --executor-id {args.executor_id} {case_id}"
+    )
+    toolchain_file = write_json(run_dir / "toolchain-versions.json", toolchain_inventory())
+    input_manifest_file = write_json(run_dir / "input-manifest.json", input_manifest(binding))
+    state_file = write_json(
+        run_dir / "state-before-after.json",
+        {"state_version": 1, "before": state_before, "after": state_after},
+    )
+    coverage_file = write_json(run_dir / "coverage-link.json", coverage_links(suite, case_id))
+    replay_file = run_dir / "replay-command.txt"
+    replay_file.write_text(replay + "\n", encoding="utf-8")
+
+    producers = role_producers(
+        run_dir,
+        raw_log=raw_log,
+        artifact_file=artifact_file,
+        environment_file=environment_file,
+        binding_file=binding_file,
+        case_result_file=case_result_file,
+        gate_out=gate_out,
+        toolchain_file=toolchain_file,
+        input_manifest_file=input_manifest_file,
+        state_file=state_file,
+        replay_file=replay_file,
+        coverage_file=coverage_file,
+    )
     required_roles = set(case.get("evidence_required", []))
+    emitted_roles = set(required_roles) | {"artifact-digest", "environment-binding"}
+    if not emitted_roles & {"raw-log", "raw-execution-log"}:
+        emitted_roles.add("raw-log")
+    files = []
+    seen_paths: set[Path] = set()
+    for role in sorted(emitted_roles):
+        path = producers.get(role)
+        if path is None or not path.is_file() or path in seen_paths:
+            continue
+        seen_paths.add(path)
+        files.append(evidence_entry(role, path, run_dir))
     present_roles = {entry["role"] for entry in files}
     trace_coverage = round(len(required_roles & present_roles) / len(required_roles), 4) if required_roles else 0.0
 
@@ -255,17 +434,15 @@ def run_case(
 
     manifest_file = write_json(run_dir / "manifest.json", manifest)
 
-    if not all_met:
+    if unmet_preconditions:
+        status = "blocked"
+    elif not all_met:
         status = "failed"
     elif not args.verifier_id:
         status = "blocked"
     else:
         status = "passed"
 
-    replay = (
-        f"python3 scripts/test-suite/run_case.py --suite {suite.relative_to(REPO).as_posix()} "
-        f"--run-id <new-run-id> --executor-id {args.executor_id} {case_id}"
-    )
     result = {
         "case_id": case_id,
         "status": status,
@@ -279,7 +456,13 @@ def run_case(
         "source_target_trace_coverage": source_target_trace_coverage,
         "evidence": [manifest_file.relative_to(suite).as_posix()],
     }
-    if status == "blocked":
+    if status == "blocked" and unmet_preconditions:
+        result["blocked_reason"] = (
+            f"declared preconditions not met: {unmet_preconditions}; the case body was not executed. "
+            "See the raw log and the probe report referenced by the input manifest."
+        )
+        result["unmet_preconditions"] = unmet_preconditions
+    elif status == "blocked":
         result["blocked_reason"] = (
             "execution complete and evidence collected; awaiting an independent verifier "
             "identity (rerun with --verifier-id) as required by the strict profile"

@@ -1,7 +1,7 @@
 {
   "bindings_version": 1,
   "suite_id": "batch1-37-strict",
-  "description": "Executable bindings for the strict suite's own governance cases. Every step is a real command; assertion_map records which step establishes each catalog assertion, and is the basis for source_target_trace_coverage.",
+  "description": "Executable bindings for strict-suite cases. Every step is a real command. precondition_steps establish the catalog's declared preconditions; when one fails the case is recorded as blocked and the body is not executed. assertion_map records which step establishes each catalog assertion and is the basis for source_target_trace_coverage.",
   "artifact_scope": [
     "scripts/test-suite/*.py",
     "schemas/test-suite/*.json",
@@ -632,6 +632,590 @@
         ],
         "4": [
           "not-run"
+        ]
+      }
+    },
+    "B23-001": {
+      "capability": "REST与Binding",
+      "note": "The catalog precondition for this case is 'Batch 23实现与契约可定位'. b23_route_readiness.py establishes that mechanically: reference-route stage status, source corpus, production spring->aspnet recipes, ASP.NET/EF code generation, and the exact toolchain pins. The case body is the real repository-level route invocation and stays unexecuted until the precondition holds.",
+      "inputs": [
+        "convergence-packs/reference-product/reference-route.json",
+        "test-suites/batch1-37-strict/cases/catalog.json",
+        "global.json",
+        ".sdkmanrc",
+        "contracts/framework-schema/framework-recipe.schema.json",
+        "engines/polyglot-route-engine/src/elmos_polyglot_route/toolchains.py",
+        "engines/dotnet-engine/src/Elmos.Dotnet.AspNet/AspNetMigrationAdvisor.cs",
+        "engines/dotnet-engine/src/Elmos.Dotnet.Ef/EfMigrationPlanner.cs"
+      ],
+      "precondition_steps": [
+        {
+          "id": "b23-route-readiness",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/b23_route_readiness.py",
+            "--report",
+            "test-suites/batch1-37-strict/evidence/_shared/b23-route-readiness.json"
+          ],
+          "establishes": "Batch 23实现与契约可定位"
+        }
+      ],
+      "steps": [
+        {
+          "id": "repository-route",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "-m",
+            "elmos_polyglot_route.cli",
+            "repository-pipeline",
+            "--repository",
+            "convergence-packs/reference-product/reference-repositories/spring-reference",
+            "--repository-ref",
+            "reference-product/spring-reference@pinned",
+            "--source-language",
+            "java",
+            "--target-language",
+            "csharp",
+            "--cases-directory",
+            "convergence-packs/reference-product/reference-repositories/spring-reference/behavior-cases",
+            "--output",
+            "test-suites/batch1-37-strict/evidence/_shared/b23-repository-pipeline/report.json"
+          ],
+          "establishes": "REST与Binding: 真实启动 / 受保护端点可用 / 框架运行时契约保持",
+          "working_directory": "engines/polyglot-route-engine"
+        }
+      ],
+      "assertion_map": {
+        "0": [
+          "repository-route"
+        ],
+        "1": [
+          "repository-route"
+        ],
+        "2": [
+          "repository-route"
+        ],
+        "3": [
+          "repository-route"
+        ],
+        "4": [
+          "repository-route"
+        ],
+        "5": [
+          "repository-route"
+        ]
+      }
+    },
+    "B23-002": {
+      "capability": "DI与Lifecycle",
+      "note": "The catalog precondition for this case is 'Batch 23实现与契约可定位'. b23_route_readiness.py establishes that mechanically: reference-route stage status, source corpus, production spring->aspnet recipes, ASP.NET/EF code generation, and the exact toolchain pins. The case body is the real repository-level route invocation and stays unexecuted until the precondition holds.",
+      "inputs": [
+        "convergence-packs/reference-product/reference-route.json",
+        "test-suites/batch1-37-strict/cases/catalog.json",
+        "global.json",
+        ".sdkmanrc",
+        "contracts/framework-schema/framework-recipe.schema.json",
+        "engines/polyglot-route-engine/src/elmos_polyglot_route/toolchains.py",
+        "engines/dotnet-engine/src/Elmos.Dotnet.AspNet/AspNetMigrationAdvisor.cs",
+        "engines/dotnet-engine/src/Elmos.Dotnet.Ef/EfMigrationPlanner.cs"
+      ],
+      "precondition_steps": [
+        {
+          "id": "b23-route-readiness",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/b23_route_readiness.py",
+            "--report",
+            "test-suites/batch1-37-strict/evidence/_shared/b23-route-readiness.json"
+          ],
+          "establishes": "Batch 23实现与契约可定位"
+        }
+      ],
+      "steps": [
+        {
+          "id": "repository-route",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "-m",
+            "elmos_polyglot_route.cli",
+            "repository-pipeline",
+            "--repository",
+            "convergence-packs/reference-product/reference-repositories/spring-reference",
+            "--repository-ref",
+            "reference-product/spring-reference@pinned",
+            "--source-language",
+            "java",
+            "--target-language",
+            "csharp",
+            "--cases-directory",
+            "convergence-packs/reference-product/reference-repositories/spring-reference/behavior-cases",
+            "--output",
+            "test-suites/batch1-37-strict/evidence/_shared/b23-repository-pipeline/report.json"
+          ],
+          "establishes": "DI与Lifecycle: 真实启动 / 受保护端点可用 / 框架运行时契约保持",
+          "working_directory": "engines/polyglot-route-engine"
+        }
+      ],
+      "assertion_map": {
+        "0": [
+          "repository-route"
+        ],
+        "1": [
+          "repository-route"
+        ],
+        "2": [
+          "repository-route"
+        ],
+        "3": [
+          "repository-route"
+        ],
+        "4": [
+          "repository-route"
+        ],
+        "5": [
+          "repository-route"
+        ]
+      }
+    },
+    "B23-003": {
+      "capability": "Configuration/Options",
+      "note": "The catalog precondition for this case is 'Batch 23实现与契约可定位'. b23_route_readiness.py establishes that mechanically: reference-route stage status, source corpus, production spring->aspnet recipes, ASP.NET/EF code generation, and the exact toolchain pins. The case body is the real repository-level route invocation and stays unexecuted until the precondition holds.",
+      "inputs": [
+        "convergence-packs/reference-product/reference-route.json",
+        "test-suites/batch1-37-strict/cases/catalog.json",
+        "global.json",
+        ".sdkmanrc",
+        "contracts/framework-schema/framework-recipe.schema.json",
+        "engines/polyglot-route-engine/src/elmos_polyglot_route/toolchains.py",
+        "engines/dotnet-engine/src/Elmos.Dotnet.AspNet/AspNetMigrationAdvisor.cs",
+        "engines/dotnet-engine/src/Elmos.Dotnet.Ef/EfMigrationPlanner.cs"
+      ],
+      "precondition_steps": [
+        {
+          "id": "b23-route-readiness",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/b23_route_readiness.py",
+            "--report",
+            "test-suites/batch1-37-strict/evidence/_shared/b23-route-readiness.json"
+          ],
+          "establishes": "Batch 23实现与契约可定位"
+        }
+      ],
+      "steps": [
+        {
+          "id": "repository-route",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "-m",
+            "elmos_polyglot_route.cli",
+            "repository-pipeline",
+            "--repository",
+            "convergence-packs/reference-product/reference-repositories/spring-reference",
+            "--repository-ref",
+            "reference-product/spring-reference@pinned",
+            "--source-language",
+            "java",
+            "--target-language",
+            "csharp",
+            "--cases-directory",
+            "convergence-packs/reference-product/reference-repositories/spring-reference/behavior-cases",
+            "--output",
+            "test-suites/batch1-37-strict/evidence/_shared/b23-repository-pipeline/report.json"
+          ],
+          "establishes": "Configuration/Options: 真实启动 / 受保护端点可用 / 框架运行时契约保持",
+          "working_directory": "engines/polyglot-route-engine"
+        }
+      ],
+      "assertion_map": {
+        "0": [
+          "repository-route"
+        ],
+        "1": [
+          "repository-route"
+        ],
+        "2": [
+          "repository-route"
+        ],
+        "3": [
+          "repository-route"
+        ],
+        "4": [
+          "repository-route"
+        ],
+        "5": [
+          "repository-route"
+        ]
+      }
+    },
+    "B23-004": {
+      "capability": "Validation",
+      "note": "The catalog precondition for this case is 'Batch 23实现与契约可定位'. b23_route_readiness.py establishes that mechanically: reference-route stage status, source corpus, production spring->aspnet recipes, ASP.NET/EF code generation, and the exact toolchain pins. The case body is the real repository-level route invocation and stays unexecuted until the precondition holds.",
+      "inputs": [
+        "convergence-packs/reference-product/reference-route.json",
+        "test-suites/batch1-37-strict/cases/catalog.json",
+        "global.json",
+        ".sdkmanrc",
+        "contracts/framework-schema/framework-recipe.schema.json",
+        "engines/polyglot-route-engine/src/elmos_polyglot_route/toolchains.py",
+        "engines/dotnet-engine/src/Elmos.Dotnet.AspNet/AspNetMigrationAdvisor.cs",
+        "engines/dotnet-engine/src/Elmos.Dotnet.Ef/EfMigrationPlanner.cs"
+      ],
+      "precondition_steps": [
+        {
+          "id": "b23-route-readiness",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/b23_route_readiness.py",
+            "--report",
+            "test-suites/batch1-37-strict/evidence/_shared/b23-route-readiness.json"
+          ],
+          "establishes": "Batch 23实现与契约可定位"
+        }
+      ],
+      "steps": [
+        {
+          "id": "repository-route",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "-m",
+            "elmos_polyglot_route.cli",
+            "repository-pipeline",
+            "--repository",
+            "convergence-packs/reference-product/reference-repositories/spring-reference",
+            "--repository-ref",
+            "reference-product/spring-reference@pinned",
+            "--source-language",
+            "java",
+            "--target-language",
+            "csharp",
+            "--cases-directory",
+            "convergence-packs/reference-product/reference-repositories/spring-reference/behavior-cases",
+            "--output",
+            "test-suites/batch1-37-strict/evidence/_shared/b23-repository-pipeline/report.json"
+          ],
+          "establishes": "Validation: 真实启动 / 受保护端点可用 / 框架运行时契约保持",
+          "working_directory": "engines/polyglot-route-engine"
+        }
+      ],
+      "assertion_map": {
+        "0": [
+          "repository-route"
+        ],
+        "1": [
+          "repository-route"
+        ],
+        "2": [
+          "repository-route"
+        ],
+        "3": [
+          "repository-route"
+        ],
+        "4": [
+          "repository-route"
+        ],
+        "5": [
+          "repository-route"
+        ]
+      }
+    },
+    "B23-005": {
+      "capability": "Security",
+      "note": "The catalog precondition for this case is 'Batch 23实现与契约可定位'. b23_route_readiness.py establishes that mechanically: reference-route stage status, source corpus, production spring->aspnet recipes, ASP.NET/EF code generation, and the exact toolchain pins. The case body is the real repository-level route invocation and stays unexecuted until the precondition holds.",
+      "inputs": [
+        "convergence-packs/reference-product/reference-route.json",
+        "test-suites/batch1-37-strict/cases/catalog.json",
+        "global.json",
+        ".sdkmanrc",
+        "contracts/framework-schema/framework-recipe.schema.json",
+        "engines/polyglot-route-engine/src/elmos_polyglot_route/toolchains.py",
+        "engines/dotnet-engine/src/Elmos.Dotnet.AspNet/AspNetMigrationAdvisor.cs",
+        "engines/dotnet-engine/src/Elmos.Dotnet.Ef/EfMigrationPlanner.cs"
+      ],
+      "precondition_steps": [
+        {
+          "id": "b23-route-readiness",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/b23_route_readiness.py",
+            "--report",
+            "test-suites/batch1-37-strict/evidence/_shared/b23-route-readiness.json"
+          ],
+          "establishes": "Batch 23实现与契约可定位"
+        }
+      ],
+      "steps": [
+        {
+          "id": "repository-route",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "-m",
+            "elmos_polyglot_route.cli",
+            "repository-pipeline",
+            "--repository",
+            "convergence-packs/reference-product/reference-repositories/spring-reference",
+            "--repository-ref",
+            "reference-product/spring-reference@pinned",
+            "--source-language",
+            "java",
+            "--target-language",
+            "csharp",
+            "--cases-directory",
+            "convergence-packs/reference-product/reference-repositories/spring-reference/behavior-cases",
+            "--output",
+            "test-suites/batch1-37-strict/evidence/_shared/b23-repository-pipeline/report.json"
+          ],
+          "establishes": "Security: 真实启动 / 受保护端点可用 / 框架运行时契约保持",
+          "working_directory": "engines/polyglot-route-engine"
+        }
+      ],
+      "assertion_map": {
+        "0": [
+          "repository-route"
+        ],
+        "1": [
+          "repository-route"
+        ],
+        "2": [
+          "repository-route"
+        ],
+        "3": [
+          "repository-route"
+        ],
+        "4": [
+          "repository-route"
+        ],
+        "5": [
+          "repository-route"
+        ]
+      }
+    },
+    "B23-006": {
+      "capability": "JPA到EF Core",
+      "note": "The catalog precondition for this case is 'Batch 23实现与契约可定位'. b23_route_readiness.py establishes that mechanically: reference-route stage status, source corpus, production spring->aspnet recipes, ASP.NET/EF code generation, and the exact toolchain pins. The case body is the real repository-level route invocation and stays unexecuted until the precondition holds.",
+      "inputs": [
+        "convergence-packs/reference-product/reference-route.json",
+        "test-suites/batch1-37-strict/cases/catalog.json",
+        "global.json",
+        ".sdkmanrc",
+        "contracts/framework-schema/framework-recipe.schema.json",
+        "engines/polyglot-route-engine/src/elmos_polyglot_route/toolchains.py",
+        "engines/dotnet-engine/src/Elmos.Dotnet.AspNet/AspNetMigrationAdvisor.cs",
+        "engines/dotnet-engine/src/Elmos.Dotnet.Ef/EfMigrationPlanner.cs"
+      ],
+      "precondition_steps": [
+        {
+          "id": "b23-route-readiness",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/b23_route_readiness.py",
+            "--report",
+            "test-suites/batch1-37-strict/evidence/_shared/b23-route-readiness.json"
+          ],
+          "establishes": "Batch 23实现与契约可定位"
+        }
+      ],
+      "steps": [
+        {
+          "id": "repository-route",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "-m",
+            "elmos_polyglot_route.cli",
+            "repository-pipeline",
+            "--repository",
+            "convergence-packs/reference-product/reference-repositories/spring-reference",
+            "--repository-ref",
+            "reference-product/spring-reference@pinned",
+            "--source-language",
+            "java",
+            "--target-language",
+            "csharp",
+            "--cases-directory",
+            "convergence-packs/reference-product/reference-repositories/spring-reference/behavior-cases",
+            "--output",
+            "test-suites/batch1-37-strict/evidence/_shared/b23-repository-pipeline/report.json"
+          ],
+          "establishes": "JPA到EF Core: 真实启动 / 受保护端点可用 / 框架运行时契约保持",
+          "working_directory": "engines/polyglot-route-engine"
+        }
+      ],
+      "assertion_map": {
+        "0": [
+          "repository-route"
+        ],
+        "1": [
+          "repository-route"
+        ],
+        "2": [
+          "repository-route"
+        ],
+        "3": [
+          "repository-route"
+        ],
+        "4": [
+          "repository-route"
+        ],
+        "5": [
+          "repository-route"
+        ]
+      }
+    },
+    "B23-007": {
+      "capability": "Transaction/AOP",
+      "note": "The catalog precondition for this case is 'Batch 23实现与契约可定位'. b23_route_readiness.py establishes that mechanically: reference-route stage status, source corpus, production spring->aspnet recipes, ASP.NET/EF code generation, and the exact toolchain pins. The case body is the real repository-level route invocation and stays unexecuted until the precondition holds.",
+      "inputs": [
+        "convergence-packs/reference-product/reference-route.json",
+        "test-suites/batch1-37-strict/cases/catalog.json",
+        "global.json",
+        ".sdkmanrc",
+        "contracts/framework-schema/framework-recipe.schema.json",
+        "engines/polyglot-route-engine/src/elmos_polyglot_route/toolchains.py",
+        "engines/dotnet-engine/src/Elmos.Dotnet.AspNet/AspNetMigrationAdvisor.cs",
+        "engines/dotnet-engine/src/Elmos.Dotnet.Ef/EfMigrationPlanner.cs"
+      ],
+      "precondition_steps": [
+        {
+          "id": "b23-route-readiness",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/b23_route_readiness.py",
+            "--report",
+            "test-suites/batch1-37-strict/evidence/_shared/b23-route-readiness.json"
+          ],
+          "establishes": "Batch 23实现与契约可定位"
+        }
+      ],
+      "steps": [
+        {
+          "id": "repository-route",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "-m",
+            "elmos_polyglot_route.cli",
+            "repository-pipeline",
+            "--repository",
+            "convergence-packs/reference-product/reference-repositories/spring-reference",
+            "--repository-ref",
+            "reference-product/spring-reference@pinned",
+            "--source-language",
+            "java",
+            "--target-language",
+            "csharp",
+            "--cases-directory",
+            "convergence-packs/reference-product/reference-repositories/spring-reference/behavior-cases",
+            "--output",
+            "test-suites/batch1-37-strict/evidence/_shared/b23-repository-pipeline/report.json"
+          ],
+          "establishes": "Transaction/AOP: 真实启动 / 受保护端点可用 / 框架运行时契约保持",
+          "working_directory": "engines/polyglot-route-engine"
+        }
+      ],
+      "assertion_map": {
+        "0": [
+          "repository-route"
+        ],
+        "1": [
+          "repository-route"
+        ],
+        "2": [
+          "repository-route"
+        ],
+        "3": [
+          "repository-route"
+        ],
+        "4": [
+          "repository-route"
+        ],
+        "5": [
+          "repository-route"
+        ]
+      }
+    },
+    "B23-008": {
+      "capability": "Messaging/Cache/Scheduler",
+      "note": "The catalog precondition for this case is 'Batch 23实现与契约可定位'. b23_route_readiness.py establishes that mechanically: reference-route stage status, source corpus, production spring->aspnet recipes, ASP.NET/EF code generation, and the exact toolchain pins. The case body is the real repository-level route invocation and stays unexecuted until the precondition holds.",
+      "inputs": [
+        "convergence-packs/reference-product/reference-route.json",
+        "test-suites/batch1-37-strict/cases/catalog.json",
+        "global.json",
+        ".sdkmanrc",
+        "contracts/framework-schema/framework-recipe.schema.json",
+        "engines/polyglot-route-engine/src/elmos_polyglot_route/toolchains.py",
+        "engines/dotnet-engine/src/Elmos.Dotnet.AspNet/AspNetMigrationAdvisor.cs",
+        "engines/dotnet-engine/src/Elmos.Dotnet.Ef/EfMigrationPlanner.cs"
+      ],
+      "precondition_steps": [
+        {
+          "id": "b23-route-readiness",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/b23_route_readiness.py",
+            "--report",
+            "test-suites/batch1-37-strict/evidence/_shared/b23-route-readiness.json"
+          ],
+          "establishes": "Batch 23实现与契约可定位"
+        }
+      ],
+      "steps": [
+        {
+          "id": "repository-route",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "-m",
+            "elmos_polyglot_route.cli",
+            "repository-pipeline",
+            "--repository",
+            "convergence-packs/reference-product/reference-repositories/spring-reference",
+            "--repository-ref",
+            "reference-product/spring-reference@pinned",
+            "--source-language",
+            "java",
+            "--target-language",
+            "csharp",
+            "--cases-directory",
+            "convergence-packs/reference-product/reference-repositories/spring-reference/behavior-cases",
+            "--output",
+            "test-suites/batch1-37-strict/evidence/_shared/b23-repository-pipeline/report.json"
+          ],
+          "establishes": "Messaging/Cache/Scheduler: 真实启动 / 受保护端点可用 / 框架运行时契约保持",
+          "working_directory": "engines/polyglot-route-engine"
+        }
+      ],
+      "assertion_map": {
+        "0": [
+          "repository-route"
+        ],
+        "1": [
+          "repository-route"
+        ],
+        "2": [
+          "repository-route"
+        ],
+        "3": [
+          "repository-route"
+        ],
+        "4": [
+          "repository-route"
+        ],
+        "5": [
+          "repository-route"
         ]
       }
     }

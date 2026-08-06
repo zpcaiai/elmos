@@ -14,9 +14,9 @@
     "result_placeholders": 408,
     "schemas": 9,
     "templates": 9,
-    "scripts": 22,
+    "scripts": 23,
     "toolkit_tests": 50,
-    "files": 584
+    "files": 585
   },
   "files": [
     {
@@ -685,6 +685,11 @@
       "bytes": 13542
     },
     {
+      "path": "scripts/test-suite/b23_route_readiness.py",
+      "sha256": "f99965e6a6e637924acb68f7786a4883cecb28a06b45de21e0e570d9b69705b2",
+      "bytes": 14421
+    },
+    {
       "path": "scripts/test-suite/cleanup_qualification_outputs.py",
       "sha256": "5dcc52f30f23c98e9191c0e2eefd65bef3596507b0259647bf17d22c8e7fe195",
       "bytes": 2538
@@ -726,8 +731,8 @@
     },
     {
       "path": "scripts/test-suite/run_case.py",
-      "sha256": "7eb4a4a4d7738585f2fc5f64436ae419eeb9b935b0a8719cb2de36c0342833b2",
-      "bytes": 12487
+      "sha256": "39312199332e7cbacde2bf3f7787d424b8b1d20ad2b41b242fa04cd90ee1e080",
+      "bytes": 19757
     },
     {
       "path": "scripts/test-suite/run_repository_qualification.py",
@@ -856,8 +861,8 @@
     },
     {
       "path": "test-suites/batch1-37-strict/execution-bindings.json",
-      "sha256": "803e5dff334e4625d7cb4e8d0cc5f10fc2b9bd032f1fb3776fdb219aa4f97b7d",
-      "bytes": 14056
+      "sha256": "580ec428fed5029d1219c7a2a8a9e699590cf932a98dee30d16dbad6ba48d91c",
+      "bytes": 36242
     },
     {
       "path": "test-suites/batch1-37-strict/repository-qualification-plan.json",
@@ -1746,43 +1751,43 @@
     },
     {
       "path": "test-suites/batch1-37-strict/results/B23-001.json",
-      "sha256": "b93e790b0b72a370b3fa8d50b3aaaab071d1277132a6dc047d8334eca14fb160",
-      "bytes": 304
+      "sha256": "27779a6ac6cfb3024926c011406297c64ca3b204c31e58cb706bf0e0711612b2",
+      "bytes": 909
     },
     {
       "path": "test-suites/batch1-37-strict/results/B23-002.json",
-      "sha256": "3e1b9460c5a3964db6ac1f37edcb25a5e3f18181a282682c89fe208f9a0e465a",
-      "bytes": 304
+      "sha256": "657fcf9c5441ea7d50ed2a37d9dd82a7c10bc2263120c76d93f55f4f061a477b",
+      "bytes": 909
     },
     {
       "path": "test-suites/batch1-37-strict/results/B23-003.json",
-      "sha256": "f7adc4a068a1436e4d0e85d16176ecdc8083211bdbfb5f7e21ebdbd6a41a10e7",
-      "bytes": 304
+      "sha256": "8df8d52622ec89a50196df1be6607a1acfd7c504aad83200a6422419fa1c72d0",
+      "bytes": 909
     },
     {
       "path": "test-suites/batch1-37-strict/results/B23-004.json",
-      "sha256": "636f5cc1a2c90161cea787ad113dc3d4c4a53d066c07fe5ef369ce8e1cf26e61",
-      "bytes": 304
+      "sha256": "87632a65d65f05b7deb504a9036c5ca807acd9d0087d11317effc1c40f701f05",
+      "bytes": 909
     },
     {
       "path": "test-suites/batch1-37-strict/results/B23-005.json",
-      "sha256": "64681e5f3b22dd7460553267f93e21d66a7138fe596916572aef3adcdbfb5e12",
-      "bytes": 304
+      "sha256": "17fa37699f152bf19fa5ee0f254129711f0617c58980937a55ca3044a038e7cc",
+      "bytes": 909
     },
     {
       "path": "test-suites/batch1-37-strict/results/B23-006.json",
-      "sha256": "dea6df3d650df23611f62e0131a26f820de7ea638882d70d86db1d595e6b4b91",
-      "bytes": 304
+      "sha256": "91b2d825c406901da56a890d0f1d8b6b12d8686d27d54d939d25378551f3e9f3",
+      "bytes": 909
     },
     {
       "path": "test-suites/batch1-37-strict/results/B23-007.json",
-      "sha256": "b78dd2b40d7edb3a26a1f5bf73a943221bb448c064cf6441fdd18fca5f9fde2c",
-      "bytes": 304
+      "sha256": "f47497a9c6ea3034197d2270bf7e643f42c7885ec33eaf59e3efd0a37296a48f",
+      "bytes": 909
     },
     {
       "path": "test-suites/batch1-37-strict/results/B23-008.json",
-      "sha256": "8e0155bc282f859d992ee6bf2c22e4ce3e1d0aa9fa5e06095fab2b559b463065",
-      "bytes": 304
+      "sha256": "ee9573a178a927fa0af7c1a38ad9d085c1dd5b4726d68e954d437a0862deb830",
+      "bytes": 909
     },
     {
       "path": "test-suites/batch1-37-strict/results/B24-001.json",
@@ -2940,5 +2945,5 @@
       "bytes": 25432
     }
   ],
-  "payload_digest": "sha256:47dfdd99f99500f7ad0cc2e8805ab6adf2bb1e9ea5caece85a8a9ba8ca2d75e4"
+  "payload_digest": "sha256:cbb8ede9ef2de1800b8680bf333055d1d4f3c4b92cd6fdc9ba88e3d3f3b780b7"
 }
