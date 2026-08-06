@@ -60,7 +60,7 @@ python3 scripts/product-convergence/validate_convergence_bundle.py product-conve
 python3 scripts/product-convergence/run_convergence_gate.py product-convergence
 ```
 
-## Stop / escalate
+## Stop and escalate when
 
 - 每个Batch继续自建任务引擎。
 - 无Checkpoint。

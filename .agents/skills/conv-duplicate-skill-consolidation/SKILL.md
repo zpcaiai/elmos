@@ -60,7 +60,7 @@ python3 scripts/product-convergence/validate_convergence_bundle.py product-conve
 python3 scripts/product-convergence/run_convergence_gate.py product-convergence
 ```
 
-## Stop / escalate
+## Stop and escalate when
 
 - 机械合并不同风险语义。
 - 无兼容迁移期。

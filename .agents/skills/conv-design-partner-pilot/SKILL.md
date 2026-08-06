@@ -60,7 +60,7 @@ python3 scripts/product-convergence/validate_convergence_bundle.py product-conve
 python3 scripts/product-convergence/run_convergence_gate.py product-convergence
 ```
 
-## Stop / escalate
+## Stop and escalate when
 
 - 同一客户两个项目冒充两家。
 - 平台团队代签客户验收。

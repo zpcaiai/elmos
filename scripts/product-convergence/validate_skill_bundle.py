@@ -26,7 +26,7 @@ from pathlib import Path
 REQUIRED_SECTIONS: tuple[tuple[str, ...], ...] = (
     ("## Workflow", "## 实施流程"),
     ("## Verification", "## 验证"),
-    ("## Stop / escalate", "## 停止与升级"),
+    ("## Stop and escalate when", "## Stop / escalate", "## 停止与升级"),
     ("## Definition of done", "## 完成定义"),
 )
 CONV_ID_RE = re.compile(r"^#\s+(CONV-\d{3})", re.M)

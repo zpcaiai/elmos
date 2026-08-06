@@ -61,7 +61,7 @@ python3 scripts/product-convergence/validate_convergence_bundle.py product-conve
 python3 scripts/product-convergence/run_convergence_gate.py product-convergence
 ```
 
-## Stop / escalate
+## Stop and escalate when
 
 - 以Skill数量作为进度。
 - 所有Edition同时实现。

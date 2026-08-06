@@ -81,7 +81,7 @@ python3 scripts/test-suite-b38-45/validate_coverage_matrix.py test-suites/batch3
 python3 scripts/test-suite-b38-45/run_strict_gate.py test-suites/batch38-45-strict
 ```
 
-## Stop / escalate
+## Stop and escalate when
 
 跨租户访问、数据丢失、签名绕过、未授权公网出口、Kill Switch失效、账单无法对账、P0未知、Evidence篡改时立即停止。
 

@@ -61,7 +61,7 @@ python3 scripts/product-convergence/validate_convergence_bundle.py product-conve
 python3 scripts/product-convergence/run_convergence_gate.py product-convergence
 ```
 
-## Stop / escalate
+## Stop and escalate when
 
 - 过早拆成大量微服务。
 - 业务模块直接共享数据库内部表。

@@ -61,7 +61,7 @@ python3 scripts/product-convergence/validate_convergence_bundle.py product-conve
 python3 scripts/product-convergence/run_convergence_gate.py product-convergence
 ```
 
-## Stop / escalate
+## Stop and escalate when
 
 - 只因Build Green即通过。
 - 大量dynamic/object或Wrapper隐藏语义。

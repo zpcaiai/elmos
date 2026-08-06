@@ -14,7 +14,7 @@ SECTIONS = (
     "## Workflow",
     "## Mandatory case set",
     "## Verification",
-    "## Stop / escalate",
+    "## Stop and escalate when",
     "## Definition of done",
 )
 
