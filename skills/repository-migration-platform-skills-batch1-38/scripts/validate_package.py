@@ -226,6 +226,7 @@ def validate_json_assets(errors: list[str]) -> None:
         "domain-execution-result.schema.json",
         "domain-executor-registry.schema.json",
         "real-toolchain-e2e-report.schema.json",
+        "production-closure-record.schema.json",
     }
     if required_schemas - {path.name for path in schemas}:
         errors.append(f"schemas missing: {sorted(required_schemas - {path.name for path in schemas})}")
@@ -258,6 +259,7 @@ def validate_runtime(errors: list[str]) -> None:
         ROOT / "scripts" / "build_oracle_registry.py",
         ROOT / "scripts" / "domain_executors.py", ROOT / "scripts" / "domain_handlers.py",
         ROOT / "scripts" / "trusted_adapters.py",
+        ROOT / "scripts" / "production_closure.py",
         ROOT / "scripts" / "build_domain_executor_registry.py",
     ]
     for script in scripts:

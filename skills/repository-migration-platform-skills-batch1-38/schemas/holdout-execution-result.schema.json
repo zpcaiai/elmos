@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/repository-migration/holdout-execution-result.schema.json",
+  "title": "Repository Migration Independent Holdout Execution Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "result_id", "holdout_id", "tenant_id", "target_release_sha256",
+               "provider_account_sha256", "execution_receipt", "decision", "claim_results",
+               "started_at", "finished_at"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "result_id": {"$ref": "#/$defs/identifier"},
+    "holdout_id": {"$ref": "#/$defs/identifier"},
+    "tenant_id": {"$ref": "#/$defs/identifier"},
+    "target_release_sha256": {"$ref": "#/$defs/digest"},
+    "provider_account_sha256": {"$ref": "#/$defs/digest"},
+    "execution_receipt": {"$ref": "#/$defs/artifact"},
+    "decision": {"enum": ["PASS", "FAIL", "INCONCLUSIVE"]},
+    "claim_results": {
+      "type": "array", "minItems": 1, "maxItems": 100000,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["claim_id", "outcome", "evidence"],
+        "properties": {
+          "claim_id": {"$ref": "#/$defs/identifier"},
+          "outcome": {"enum": ["PASS", "FAIL", "INCONCLUSIVE"]},
+          "evidence": {"$ref": "#/$defs/artifact"}
+        }
+      }
+    },
+    "started_at": {"type": "string", "format": "date-time"},
+    "finished_at": {"type": "string", "format": "date-time"}
+  },
+  "$defs": {
+    "identifier": {"type": "string", "minLength": 1, "maxLength": 256, "pattern": "^\\S+$"},
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "artifact": {
+      "type": "object", "additionalProperties": false,
+      "required": ["path", "sha256", "bytes"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/digest"},
+        "bytes": {"type": "integer", "minimum": 0}
+      }
+    }
+  }
+}

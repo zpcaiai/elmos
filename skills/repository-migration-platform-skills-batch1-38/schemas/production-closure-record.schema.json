@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/repository-migration/production-closure-record.schema.json",
+  "title": "Repository Migration Production Closure Record",
+  "type": "object",
+  "required": ["schema_version", "tenant_id"],
+  "properties": {
+    "schema_version": {"enum": ["1.0", "2.0"]},
+    "tenant_id": {"type": "string", "minLength": 1, "maxLength": 256, "pattern": "^\\S+$"},
+    "environment_class": {"enum": ["test", "sandbox", "production"]},
+    "snapshot_id": {"type": "string", "minLength": 1},
+    "holdout_id": {"type": "string", "minLength": 1},
+    "result_id": {"type": "string", "minLength": 1},
+    "cutover_id": {"type": "string", "minLength": 1},
+    "run_id": {"type": "string", "minLength": 1},
+    "assessment_id": {"type": "string", "minLength": 1},
+    "provider": {"$ref": "#/$defs/provider"},
+    "state": {
+      "enum": ["REGISTERED", "SEALED", "PLANNED", "PRECHECKED", "APPROVED", "EXECUTING",
+               "VERIFYING", "SUCCEEDED", "ROLLING_BACK", "ROLLED_BACK", "UNKNOWN", "CANCELLED",
+               "RUNNING", "PASSED", "FAILED", "IMPORTED"]
+    },
+    "certified": {"const": false},
+    "production_status": {"const": "NOT_CERTIFIED"}
+  },
+  "anyOf": [
+    {"required": ["snapshot_id"]}, {"required": ["holdout_id"]}, {"required": ["result_id"]}, {"required": ["cutover_id"]},
+    {"required": ["run_id"]}, {"required": ["assessment_id"]}
+  ],
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "provider": {
+      "type": "object", "additionalProperties": false,
+      "required": ["provider_id", "account_binding_sha256", "region", "adapter_id",
+                   "precheck_operation", "execute_operation", "verify_operation", "rollback_operation"],
+      "properties": {
+        "provider_id": {"type": "string", "minLength": 1},
+        "account_binding_sha256": {"$ref": "#/$defs/digest"},
+        "region": {"type": "string", "minLength": 1},
+        "adapter_id": {"type": "string", "minLength": 1},
+        "precheck_operation": {"type": "string", "minLength": 1},
+        "execute_operation": {"type": "string", "minLength": 1},
+        "verify_operation": {"type": "string", "minLength": 1},
+        "rollback_operation": {"type": "string", "minLength": 1}
+      }
+    }
+  },
+  "additionalProperties": true
+}

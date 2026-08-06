@@ -1,6 +1,6 @@
 # Repository Migration Platform — Batch 1–38 Skills Bag
 
-版本：`3.2.0`
+版本：`3.3.0`
 
 本包包含 **38个Batch级Codex Skills + 1个Master Skill**，覆盖：
 
@@ -24,6 +24,7 @@ Source冻结与语义恢复
 - Executor、Oracle Owner、Verifier使用Ed25519认证并强制角色冲突隔离；development、negative、holdout与production Corpus按Claim分别闭合，Holdout/Production使用独立角色。
 - 权威状态使用SQLite WAL、`BEGIN IMMEDIATE`、外键、唯一约束、整数Fencing Token和哈希链事件；JSON文件只是可重建镜像。
 - `trusted_adapters.py`只接受运维方Ed25519签名的Adapter Registry：可执行文件、SHA-256、版本、argv模板、参数类型、环境引用、超时、副作用等级与补偿操作均不可由仓库内容修改。变更操作要求独立Approver、幂等键和单调Fencing；超时造成的不确定副作用保持`UNKNOWN`并禁止自动重试。
+- `production_closure.py`实现客户快照只读摄取、内容摘要最小化、独立Holdout封存、切换/回滚状态机、并发版本与Fencing、七天生产长稳下限、心跳间隔和独立认证报告导入。测试或Sandbox结果只能到`LOCAL_TOOLKIT_PASS`，导入报告也不能在仓库内开启认证。
 - 本地Gate最多返回`LOCAL_TOOLKIT_PASS`。随包Trust Policy不含信任密钥并禁用`CERTIFIED`；真实客户、生产、Provider、Kernel Proof、独立评审与CA证据保持`NOT_RUN`。
 
 ## 安装
@@ -65,6 +66,16 @@ python3 scripts/real_toolchain_e2e.py \
 验证。这是真实的一次性development执行证据；独立Holdout、客户生产切换、破坏性Cloud apply
 和外部认证机构仍为`NOT_RUN` / `NOT_CERTIFIED`。
 
+生产闭环的 v2 切换计划必须绑定精确 Provider、账户摘要、Region、Adapter 以及 precheck / execute /
+verify / rollback 操作。每次 Provider 状态转换同时校验包装回执和原生 Adapter 回执的真实字节；
+生产 soak 只能在切换成功后近实时启动，至少运行七天，心跳间隔不超过六小时，并执行最低可用性、
+最高错误率、最少观察数和独立最终验证者门禁。生产独立评估还必须绑定精确 run、cutover、release
+及 Provider 账户；导入后依旧保持 `certified=false`。
+
+Holdout 的 `SEALED` 只表示语料保管完成，不表示测试通过。`record-holdout-result` 必须导入逐 Claim
+真实证据、Provider 执行回执，并由清单中预先声明且互不重叠的 Holdout Executor 与 Verifier 双签；
+生产 v2 切换和 soak 都必须引用与同一 release、账户和 tenant 匹配的 `PASS` 结果。
+
 ## 可执行运行时
 
 安装后设置共享运行时路径：
@@ -102,6 +113,11 @@ python3 "$RMP_RUNTIME" execute-plan \
 数据库、Cloud、SCM和迁移工具等Provider副作用应通过签名Adapter执行，而不是把仓库字符串直接当命令。安装后的入口为
 `.repository-migration-platform-runtime/trusted_adapters.py`；请求必须绑定当前Source指纹、精确Batch、签名Registry、
 幂等键和Fencing Token。成功Receipt仍需进入下面的Claim-Oracle与独立Verifier链，不能直接形成认证。
+
+客户生产闭环通过`.repository-migration-platform-runtime/production_closure.py`记录。它只摄取已授权、
+逐字节校验的Manifest和Provider Receipt，不保存客户文件内容；Snapshot、Holdout、Approver、Executor、
+Verifier与独立Certifier身份必须分离。切换只允许预定义状态转移，任何竞态只有一个版本可提交；
+生产长稳窗口少于七天、心跳断档、关键失败或证据摘要不一致均失败关闭。
 
 真实领域工具链先生成`domain-execution-result`。包内dispatcher调用注册的唯一handler，要求其
 `domain_contract`与该Batch的operation、capabilities和safety controls完全一致；每项能力都必须
@@ -142,6 +158,7 @@ scripts/oracle_registry.py
 scripts/domain_executors.py
 scripts/domain_handlers.py
 scripts/trusted_adapters.py
+scripts/production_closure.py
 oracle-registry.json
 domain-executor-registry.json
 scripts/sync_skill_interfaces.py
