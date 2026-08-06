@@ -43,3 +43,16 @@ test-results/
 build/
 # Scratch snapshot kept only for a single debugging session.
 _to_delete/
+
+# --- 打包产物（可重新生成，不入库） ---
+/elmos-*.tar.gz
+/elmos-*.skill
+/elmos-*.bundle
+/artifacts/batch105-108/
+/docs/migration-spec-source-batches.tar.gz
+/skills/*.zip
+/skills/batch_01_to_44_complete_skill_system/
+
+# --- 调试快照与临时探针 ---
+**/_snapshot-*/
+**/probe.tmp.*
