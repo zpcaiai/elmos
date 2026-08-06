@@ -1,0 +1,50 @@
+{
+  "artifacts": [
+    "Target Architecture",
+    "Repository Guide",
+    "Local Development Guide",
+    "Deployment Guide",
+    "Runbook",
+    "API Documentation",
+    "Data Model",
+    "Security Model",
+    "Known Differences",
+    "Compatibility Runtime",
+    "Technical Debt Register",
+    "Upgrade Plan",
+    "Support Boundary"
+  ],
+  "exercises": [
+    {
+      "name": "build",
+      "status": "not-run",
+      "evidence": []
+    },
+    {
+      "name": "local-run",
+      "status": "not-run",
+      "evidence": []
+    },
+    {
+      "name": "feature-change",
+      "status": "not-run",
+      "evidence": []
+    },
+    {
+      "name": "release",
+      "status": "not-run",
+      "evidence": []
+    },
+    {
+      "name": "incident",
+      "status": "not-run",
+      "evidence": []
+    },
+    {
+      "name": "dependency-upgrade",
+      "status": "not-run",
+      "evidence": []
+    }
+  ],
+  "accepted_by": []
+}

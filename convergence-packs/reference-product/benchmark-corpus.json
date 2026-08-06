@@ -1,0 +1,47 @@
+{
+  "corpora": [
+    {
+      "id": "synthetic",
+      "type": "synthetic",
+      "tenant_scope": "public",
+      "allowed_uses": [
+        "development",
+        "regression"
+      ],
+      "digest": "b3cc0475bb78a5026098858e9889acf666d31062d513d303314eca31d36e72f2"
+    },
+    {
+      "id": "open-source",
+      "type": "open-source-representative",
+      "tenant_scope": "public",
+      "allowed_uses": [
+        "development",
+        "benchmark"
+      ],
+      "digest": "2348f998744212575d85959674f9607ab26f67708a917157472832386337c904"
+    },
+    {
+      "id": "holdout",
+      "type": "internal-holdout",
+      "tenant_scope": "internal",
+      "allowed_uses": [
+        "certification"
+      ],
+      "digest": "d179b28cc8927b726d766bc0a22ed40ffc879d40f62a100e7d97dabb24253669"
+    },
+    {
+      "id": "customer-private",
+      "type": "customer-private",
+      "tenant_scope": "customer-a",
+      "allowed_uses": [
+        "customer-validation"
+      ],
+      "digest": "b6c45863875e34487ca3c155ed145efe12a74581e27befec5aa661b8ee8ca6dd"
+    }
+  ],
+  "contamination_rules": [
+    "development-not-in-holdout",
+    "customer-a-not-train-customer-b",
+    "target-output-not-auto-golden"
+  ]
+}

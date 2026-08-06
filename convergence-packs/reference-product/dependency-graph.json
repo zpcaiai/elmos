@@ -1,0 +1,46 @@
+{
+  "nodes": [
+    {
+      "id": "control-plane",
+      "status": "draft"
+    },
+    {
+      "id": "private-runner",
+      "status": "draft"
+    },
+    {
+      "id": "reference-route",
+      "status": "draft"
+    },
+    {
+      "id": "handoff",
+      "status": "draft"
+    }
+  ],
+  "edges": [
+    {
+      "consumer": "reference-route",
+      "provider": "control-plane",
+      "dependency_type": "runtime",
+      "required_status": "certified",
+      "optional": false,
+      "evidence_freshness": "P90D"
+    },
+    {
+      "consumer": "reference-route",
+      "provider": "private-runner",
+      "dependency_type": "runtime",
+      "required_status": "certified",
+      "optional": false,
+      "evidence_freshness": "P90D"
+    },
+    {
+      "consumer": "handoff",
+      "provider": "reference-route",
+      "dependency_type": "certification",
+      "required_status": "certified",
+      "optional": false,
+      "evidence_freshness": "P90D"
+    }
+  ]
+}

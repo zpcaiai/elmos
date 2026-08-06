@@ -1,0 +1,23 @@
+{
+  "primary_navigation": [
+    "Portfolio",
+    "Projects",
+    "Migration Studio",
+    "Validation",
+    "Releases",
+    "Runners",
+    "Evidence",
+    "Marketplace",
+    "Operations",
+    "Administration"
+  ],
+  "customer_journeys": [
+    "Assess",
+    "Plan",
+    "Migrate",
+    "Validate",
+    "Release",
+    "Operate",
+    "Retire"
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "status",
+    "owners",
+    "kernel",
+    "reference_route",
+    "private_runner",
+    "design_partners",
+    "handoff",
+    "verified_workloads",
+    "delivery_model",
+    "sla_proof",
+    "evidence_manifests",
+    "zero_tolerance_findings"
+  ],
+  "properties": {
+    "status": {
+      "enum": [
+        "not-run",
+        "passed",
+        "failed",
+        "blocked"
+      ]
+    },
+    "owners": {
+      "type": "object",
+      "required": [
+        "product",
+        "engineering",
+        "security",
+        "operations",
+        "commercial",
+        "customer_success"
+      ],
+      "properties": {
+        "product": {
+          "type": "string",
+          "minLength": 3
+        },
+        "engineering": {
+          "type": "string",
+          "minLength": 3
+        },
+        "security": {
+          "type": "string",
+          "minLength": 3
+        },
+        "operations": {
+          "type": "string",
+          "minLength": 3
+        },
+        "commercial": {
+          "type": "string",
+          "minLength": 3
+        },
+        "customer_success": {
+          "type": "string",
+          "minLength": 3
+        }
+      }
+    },
+    "kernel": {
+      "type": "object"
+    },
+    "reference_route": {
+      "type": "object"
+    },
+    "private_runner": {
+      "type": "object"
+    },
+    "design_partners": {
+      "type": "object"
+    },
+    "handoff": {
+      "type": "object"
+    },
+    "verified_workloads": {
+      "type": "array",
+      "minItems": 0
+    },
+    "delivery_model": {
+      "type": "object"
+    },
+    "sla_proof": {
+      "type": "object"
+    },
+    "evidence_manifests": {
+      "type": "array",
+      "minItems": 0
+    },
+    "zero_tolerance_findings": {
+      "type": "array"
+    }
+  },
+  "additionalProperties": false
+}

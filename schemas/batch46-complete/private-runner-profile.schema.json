@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "enrollment",
+    "attestation",
+    "identity",
+    "workspace",
+    "sandbox",
+    "egress",
+    "secret_broker",
+    "execution",
+    "evidence",
+    "cleanup"
+  ],
+  "properties": {
+    "enrollment": {
+      "type": "object"
+    },
+    "attestation": {
+      "type": "object"
+    },
+    "identity": {
+      "type": "object"
+    },
+    "workspace": {
+      "type": "object"
+    },
+    "sandbox": {
+      "type": "object"
+    },
+    "egress": {
+      "type": "object"
+    },
+    "secret_broker": {
+      "type": "object"
+    },
+    "execution": {
+      "type": "object"
+    },
+    "evidence": {
+      "type": "object"
+    },
+    "cleanup": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": false
+}

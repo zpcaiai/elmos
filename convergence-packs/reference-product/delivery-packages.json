@@ -1,0 +1,79 @@
+{
+  "packages": [
+    {
+      "name": "Assessment",
+      "inputs": [],
+      "outputs": [],
+      "scope": {},
+      "supported_routes": [
+        "java-spring-to-csharp-aspnet"
+      ],
+      "human_services": [],
+      "acceptance": [],
+      "duration": "TBD",
+      "pricing": {},
+      "customer_responsibilities": [],
+      "exclusions": []
+    },
+    {
+      "name": "POC",
+      "inputs": [],
+      "outputs": [],
+      "scope": {},
+      "supported_routes": [
+        "java-spring-to-csharp-aspnet"
+      ],
+      "human_services": [],
+      "acceptance": [],
+      "duration": "TBD",
+      "pricing": {},
+      "customer_responsibilities": [],
+      "exclusions": []
+    },
+    {
+      "name": "Migration Factory",
+      "inputs": [],
+      "outputs": [],
+      "scope": {},
+      "supported_routes": [
+        "java-spring-to-csharp-aspnet"
+      ],
+      "human_services": [],
+      "acceptance": [],
+      "duration": "TBD",
+      "pricing": {},
+      "customer_responsibilities": [],
+      "exclusions": []
+    },
+    {
+      "name": "Enterprise Platform",
+      "inputs": [],
+      "outputs": [],
+      "scope": {},
+      "supported_routes": [
+        "java-spring-to-csharp-aspnet"
+      ],
+      "human_services": [],
+      "acceptance": [],
+      "duration": "TBD",
+      "pricing": {},
+      "customer_responsibilities": [],
+      "exclusions": []
+    },
+    {
+      "name": "Managed Migration",
+      "inputs": [],
+      "outputs": [],
+      "scope": {},
+      "supported_routes": [
+        "java-spring-to-csharp-aspnet"
+      ],
+      "human_services": [],
+      "acceptance": [],
+      "duration": "TBD",
+      "pricing": {},
+      "customer_responsibilities": [],
+      "exclusions": []
+    }
+  ]
+}

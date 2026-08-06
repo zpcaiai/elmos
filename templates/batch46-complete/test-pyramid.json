@@ -1,0 +1,48 @@
+{
+  "levels": [
+    {
+      "id": "L1",
+      "name": "Schema/Contract",
+      "real_system_requirement": "mock allowed"
+    },
+    {
+      "id": "L2",
+      "name": "Component",
+      "real_system_requirement": "real library"
+    },
+    {
+      "id": "L3",
+      "name": "Integration",
+      "real_system_requirement": "real database/runtime where required"
+    },
+    {
+      "id": "L4",
+      "name": "End-to-End",
+      "real_system_requirement": "real toolchain"
+    },
+    {
+      "id": "L5",
+      "name": "Production-like",
+      "real_system_requirement": "real runner and isolated environment"
+    },
+    {
+      "id": "L6",
+      "name": "Customer Acceptance",
+      "real_system_requirement": "customer sign-off"
+    },
+    {
+      "id": "L7",
+      "name": "Continuous Certification",
+      "real_system_requirement": "scheduled real evidence"
+    }
+  ],
+  "environment_classes": [
+    "mock",
+    "local-real",
+    "containerized-real",
+    "cloud-sandbox",
+    "airgap",
+    "customer",
+    "third-party"
+  ]
+}

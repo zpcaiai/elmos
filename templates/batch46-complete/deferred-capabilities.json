@@ -1,0 +1,74 @@
+{
+  "capabilities": [
+    {
+      "capability_id": "twelve-direction-language-matrix",
+      "reason": "defer until reference product evidence",
+      "reentry_conditions": [
+        "reference-route-certified",
+        "two-design-partners"
+      ],
+      "owner": "product-platform",
+      "review_date": "2026-12-31"
+    },
+    {
+      "capability_id": "full-marketplace",
+      "reason": "defer until reference product evidence",
+      "reentry_conditions": [
+        "reference-route-certified",
+        "two-design-partners"
+      ],
+      "owner": "product-platform",
+      "review_date": "2026-12-31"
+    },
+    {
+      "capability_id": "complex-agent-autonomy",
+      "reason": "defer until reference product evidence",
+      "reentry_conditions": [
+        "reference-route-certified",
+        "two-design-partners"
+      ],
+      "owner": "product-platform",
+      "review_date": "2026-12-31"
+    },
+    {
+      "capability_id": "all-cloud-combinations",
+      "reason": "defer until reference product evidence",
+      "reentry_conditions": [
+        "reference-route-certified",
+        "two-design-partners"
+      ],
+      "owner": "product-platform",
+      "review_date": "2026-12-31"
+    },
+    {
+      "capability_id": "global-active-active",
+      "reason": "defer until reference product evidence",
+      "reentry_conditions": [
+        "reference-route-certified",
+        "two-design-partners"
+      ],
+      "owner": "product-platform",
+      "review_date": "2026-12-31"
+    },
+    {
+      "capability_id": "full-formal-verification",
+      "reason": "defer until reference product evidence",
+      "reentry_conditions": [
+        "reference-route-certified",
+        "two-design-partners"
+      ],
+      "owner": "product-platform",
+      "review_date": "2026-12-31"
+    },
+    {
+      "capability_id": "all-vertical-packs",
+      "reason": "defer until reference product evidence",
+      "reentry_conditions": [
+        "reference-route-certified",
+        "two-design-partners"
+      ],
+      "owner": "product-platform",
+      "review_date": "2026-12-31"
+    }
+  ]
+}
