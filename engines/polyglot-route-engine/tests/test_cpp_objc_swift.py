@@ -120,7 +120,7 @@ def test_number_maps_to_double_everywhere() -> None:
 def test_file_names_and_required_headers() -> None:
     cpp = emit(_ir(STRING_EQUALS), "cpp")
     assert cpp.relative_path == "migrated.cpp"
-    assert cpp.content.startswith("#include <cstdint>\n#include <string>\n")
+    assert cpp.content.startswith("#include <cstdint>\n#include <stdexcept>\n#include <string>\n")
     objc = emit(_ir(STRING_EQUALS), "objc")
     assert objc.relative_path == "migrated.m"
     assert objc.content.startswith("#import <Foundation/Foundation.h>\n")
@@ -135,11 +135,23 @@ def test_file_names_and_required_headers() -> None:
 
 
 @pytest.mark.parametrize("language", ["cpp", "objc", "swift"])
-def test_integer_division_and_remainder_need_no_rewrite(language: str) -> None:
-    # All three truncate toward zero, like Java/C#/TypeScript and unlike
-    # Python -- so the canonical operators map straight through.
-    assert "(a / b)" in emit(_ir(DIVIDE), language).content
-    assert "(a % b)" in emit(_ir(REMAINDER), language).content
+def test_integer_division_and_remainder_are_checked(language: str) -> None:
+    # All three truncate toward zero like Java/C#/TypeScript, so the *rounding*
+    # maps straight through -- but signed overflow and division by zero are
+    # undefined behaviour in C and C++, so R1/R2 have to be spelled out.
+    divide = emit(_ir(DIVIDE), language).content
+    remainder = emit(_ir(REMAINDER), language).content
+    if language == "cpp":
+        assert "return elmos_checked_div(a, b);" in divide
+        assert "return elmos_checked_mod(a, b);" in remainder
+    elif language == "objc":
+        assert "return ElmosCheckedDiv(a, b);" in divide
+        assert "return ElmosCheckedMod(a, b);" in remainder
+    else:
+        # Swift is the one target of the three that traps on both by itself:
+        # Int division by zero and Int.min / -1 are runtime errors already.
+        assert "return (a / b)" in divide
+        assert "return (a % b)" in remainder
 
 
 def test_objc_string_equality_becomes_a_value_comparison() -> None:

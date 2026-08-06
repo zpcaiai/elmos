@@ -91,13 +91,23 @@ _STRING_EQUALS = _function(
 # --------------------------------------------------------------------------
 
 
-def test_integer_division_stays_truncating_in_java_and_csharp() -> None:
-    for language in ("java", "csharp"):
-        assert "return (a / b);" in emit(_ir(_INTEGER_DIVIDE), language).content
+def test_integer_division_is_checked_in_java_and_csharp() -> None:
+    # Both truncate toward zero natively, but rule R2 also makes a zero divisor
+    # and Long.MIN_VALUE / -1 errors. C# throws on both without help; Java's
+    # `%` and `/` do not, so the emitted class carries its own guard.
+    assert "return Migrated.elmosCheckedDiv(a, b);" in emit(_ir(_INTEGER_DIVIDE), "java").content
+    assert "public static long elmosCheckedDiv(long left, long right)" in emit(
+        _ir(_INTEGER_DIVIDE), "java"
+    ).content
+    assert "return checked(a / b);" in emit(_ir(_INTEGER_DIVIDE), "csharp").content
 
 
-def test_integer_division_becomes_math_trunc_in_typescript() -> None:
-    assert "Math.trunc(a / b)" in emit(_ir(_INTEGER_DIVIDE), "typescript").content
+def test_integer_division_truncates_and_rejects_a_zero_divisor_in_typescript() -> None:
+    content = emit(_ir(_INTEGER_DIVIDE), "typescript").content
+    # Math.trunc alone answered Infinity for a zero divisor -- a silent wrong
+    # value where every other target failed.
+    assert "Math.trunc(a / _elmosRequireNonZero(b))" in content
+    assert "function _elmosRequireNonZero(value: number): number" in content
 
 
 @pytest.mark.parametrize(("a", "b", "expected"), [(7, 2, 3), (-7, 2, -3), (7, -2, -3), (-7, -2, 3), (6, 3, 2)])
@@ -128,9 +138,18 @@ def test_emitted_python_float_remainder_matches_java() -> None:
     assert _run_python(source, "rem", -7.5, 2.0) == -1.5
 
 
-@pytest.mark.parametrize("language", ["java", "csharp", "typescript"])
-def test_remainder_is_left_alone_in_the_truncating_targets(language: str) -> None:
-    assert "(a % b)" in emit(_ir(_INTEGER_REMAINDER), language).content
+@pytest.mark.parametrize(
+    ("language", "expected"),
+    [
+        ("java", "return Migrated.elmosCheckedMod(a, b);"),
+        ("csharp", "return checked(a % b);"),
+        ("typescript", "a % _elmosRequireNonZero(b)"),
+    ],
+)
+def test_remainder_keeps_the_dividend_sign_and_rejects_a_zero_divisor(
+    language: str, expected: str
+) -> None:
+    assert expected in emit(_ir(_INTEGER_REMAINDER), language).content
 
 
 # --------------------------------------------------------------------------
@@ -264,7 +283,10 @@ def test_typescript_number_only_functions_carry_no_guard() -> None:
     )
     content = emit(_ir(function), "typescript").content
     assert "_elmosRequireSafeInteger" not in content
-    assert content.strip().startswith("export function ratio")
+    # A float divisor still gets the R2 guard, so the helper precedes the
+    # function; the safe-integer guard is what stays out of a number-only unit.
+    assert "export function ratio" in content
+    assert "_elmosRequireNonZero(b)" in content
 
 
 @pytest.mark.parametrize("language", ["java", "python", "csharp"])
@@ -296,7 +318,9 @@ def test_python_true_division_on_integers_is_not_lifted_as_truncating_division(t
 def test_python_float_division_is_still_lifted(tmp_path: Path) -> None:
     source = _python_source(tmp_path, "def divide(a: float, b: float) -> float:\n    return a / b\n")
     semantic = analyze_python(source, "divide")
-    assert "(a / b)" in emit(semantic, "java").content
+    # Float division stays the plain operator; only the divisor is guarded,
+    # because Python raises on 0.0 where every other target answers Infinity.
+    assert "(a / Migrated.elmosNonZero(b))" in emit(semantic, "java").content
 
 
 def test_python_modulo_is_not_lifted(tmp_path: Path) -> None:
