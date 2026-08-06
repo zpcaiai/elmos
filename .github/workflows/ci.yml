@@ -347,6 +347,12 @@ jobs:
         run: |
           python scripts/batch32/validate_account_usage_corpora.py
           python scripts/batch32/run_client_gate.py client-packs/elmos-web-console-account-usage
+      - name: Set up Node.js 26.0.0 for exact Translation execution
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: "26.0.0"
+      - name: Install locked pnpm tool for Translation execution
+        run: npm install --global pnpm@10.12.4
       - name: Install Chromium for browser journeys
         run: pnpm --dir apps/web-console exec playwright install --with-deps chromium
       - name: Verify desktop and mobile browser journeys
