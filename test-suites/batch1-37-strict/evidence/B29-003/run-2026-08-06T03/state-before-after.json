@@ -1,0 +1,47 @@
+{
+  "state_version": 1,
+  "before": {
+    "captured_at": "2026-08-06T11:30:13Z",
+    "recorded_case_status": "not-run",
+    "reference_route_stage_status": {
+      "repository-intake": "not-run",
+      "semantic-model": "not-run",
+      "psp-uir": "not-run",
+      "framework-contract": "not-run",
+      "code-generation": "not-run",
+      "build": "not-run",
+      "test-migration": "not-run",
+      "repair": "not-run",
+      "behavior-verification": "not-run",
+      "database-migration": "not-run",
+      "pull-request": "not-run",
+      "private-runner": "not-run",
+      "canary": "not-run",
+      "cutover": "not-run",
+      "hypercare": "not-run",
+      "customer-handoff": "not-run"
+    }
+  },
+  "after": {
+    "captured_at": "2026-08-06T11:30:13Z",
+    "recorded_case_status": "not-run",
+    "reference_route_stage_status": {
+      "repository-intake": "not-run",
+      "semantic-model": "not-run",
+      "psp-uir": "not-run",
+      "framework-contract": "not-run",
+      "code-generation": "not-run",
+      "build": "not-run",
+      "test-migration": "not-run",
+      "repair": "not-run",
+      "behavior-verification": "not-run",
+      "database-migration": "not-run",
+      "pull-request": "not-run",
+      "private-runner": "not-run",
+      "canary": "not-run",
+      "cutover": "not-run",
+      "hypercare": "not-run",
+      "customer-handoff": "not-run"
+    }
+  }
+}

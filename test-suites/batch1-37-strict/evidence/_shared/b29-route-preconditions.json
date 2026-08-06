@@ -1,0 +1,41 @@
+{
+  "route": "routes/java-to-csharp",
+  "preconditions_met": false,
+  "checks_total": 6,
+  "blocked_by": [
+    "exact-toolchain::java",
+    "exact-toolchain::csharp"
+  ],
+  "checks": [
+    {
+      "check": "route-contract-present",
+      "ok": true,
+      "detail": "route_key=java-to-csharp status=limited profile=typed-pure-function-v1"
+    },
+    {
+      "check": "route-contract-validates",
+      "ok": true,
+      "detail": "OK: routes/java-to-csharp"
+    },
+    {
+      "check": "route-gate-runs",
+      "ok": true,
+      "detail": "GATE PASS: java-to-csharp status=limited decision=NOT_CERTIFIED"
+    },
+    {
+      "check": "route-corpora-present",
+      "ok": true,
+      "detail": "corpora on disk: ['development', 'holdout', 'real-repository']"
+    },
+    {
+      "check": "exact-toolchain::java",
+      "ok": false,
+      "detail": "REFUSED EXACT_TOOLCHAIN_MISMATCH:java:expected=21.0.11"
+    },
+    {
+      "check": "exact-toolchain::csharp",
+      "ok": false,
+      "detail": "REFUSED EXACT_TOOLCHAIN_UNAVAILABLE:dotnet"
+    }
+  ]
+}

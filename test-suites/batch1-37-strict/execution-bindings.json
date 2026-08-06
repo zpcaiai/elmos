@@ -1218,6 +1218,642 @@
           "repository-route"
         ]
       }
+    },
+    "B29-001": {
+      "capability": "Route Manifest",
+      "route": "routes/java-to-csharp",
+      "note": "Preconditions are the route contract plus the exact pinned toolchain (java 21.0.11 / dotnet 10.0.301, per routes/java-to-csharp/route.json and global.json). Without them 真实编译 and 版本精确 cannot be established, so the case blocks rather than fails.",
+      "inputs": [
+        "routes/java-to-csharp/route.json",
+        "routes/java-to-csharp/support-matrix.json",
+        "routes/java-to-csharp/certification/certification.json",
+        "routes/java-to-csharp/corpus/development/manifest.json",
+        "routes/java-to-csharp/corpus/holdout/manifest.json",
+        "routes/java-to-csharp/corpus/real-repository/manifest.json",
+        "routes/inventory.json",
+        "templates/batch29/route-candidates.json",
+        "engines/polyglot-route-engine/src/elmos_polyglot_route/emitter.py",
+        "engines/polyglot-route-engine/src/elmos_polyglot_route/toolchains.py"
+      ],
+      "corpora": {
+        "development": "routes/java-to-csharp/corpus/development",
+        "holdout": "routes/java-to-csharp/corpus/holdout",
+        "representative": "routes/java-to-csharp/corpus/real-repository",
+        "negative": "scripts/test-suite/probes.py"
+      },
+      "precondition_steps": [
+        {
+          "id": "b29-route-preconditions",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/b29_route_preconditions.py",
+            "--route",
+            "routes/java-to-csharp",
+            "--report",
+            "test-suites/batch1-37-strict/evidence/_shared/b29-route-preconditions.json"
+          ],
+          "establishes": "Batch 29实现与契约可定位 / 输入、版本、Owner和环境已锁定"
+        }
+      ],
+      "steps": [
+        {
+          "id": "validate-route",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/batch29/validate_route.py",
+            "routes/java-to-csharp"
+          ],
+          "establishes": "Route Manifest 契约一致"
+        },
+        {
+          "id": "migrate-development",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "-m",
+            "elmos_polyglot_route.cli",
+            "--source",
+            "../../routes/java-to-csharp/corpus/development/Pricing.java",
+            "--source-language",
+            "java",
+            "--target-language",
+            "csharp",
+            "--function",
+            "calculate",
+            "--cases",
+            "../../routes/java-to-csharp/corpus/development/cases.json",
+            "--output",
+            "../../test-suites/batch1-37-strict/evidence/_shared/b29-run/development/report.json"
+          ],
+          "working_directory": "engines/polyglot-route-engine",
+          "establishes": "真实编译 / 版本精确 / 方向独立"
+        }
+      ],
+      "assertion_map": {
+        "0": [
+          "validate-route",
+          "migrate-development"
+        ],
+        "1": [
+          "validate-route",
+          "migrate-development"
+        ],
+        "2": [
+          "validate-route",
+          "migrate-development"
+        ],
+        "3": [
+          "validate-route",
+          "migrate-development"
+        ],
+        "4": [
+          "validate-route",
+          "migrate-development"
+        ],
+        "5": [
+          "validate-route",
+          "migrate-development"
+        ]
+      }
+    },
+    "B29-002": {
+      "capability": "Language Support Matrix",
+      "route": "routes/java-to-csharp",
+      "note": "Preconditions are the route contract plus the exact pinned toolchain (java 21.0.11 / dotnet 10.0.301, per routes/java-to-csharp/route.json and global.json). Without them 真实编译 and 版本精确 cannot be established, so the case blocks rather than fails.",
+      "inputs": [
+        "routes/java-to-csharp/route.json",
+        "routes/java-to-csharp/support-matrix.json",
+        "routes/java-to-csharp/certification/certification.json",
+        "routes/java-to-csharp/corpus/development/manifest.json",
+        "routes/java-to-csharp/corpus/holdout/manifest.json",
+        "routes/java-to-csharp/corpus/real-repository/manifest.json",
+        "routes/inventory.json",
+        "templates/batch29/route-candidates.json",
+        "engines/polyglot-route-engine/src/elmos_polyglot_route/emitter.py",
+        "engines/polyglot-route-engine/src/elmos_polyglot_route/toolchains.py"
+      ],
+      "corpora": {
+        "development": "routes/java-to-csharp/corpus/development",
+        "holdout": "routes/java-to-csharp/corpus/holdout",
+        "representative": "routes/java-to-csharp/corpus/real-repository",
+        "negative": "scripts/test-suite/probes.py"
+      },
+      "precondition_steps": [
+        {
+          "id": "b29-route-preconditions",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/b29_route_preconditions.py",
+            "--route",
+            "routes/java-to-csharp",
+            "--report",
+            "test-suites/batch1-37-strict/evidence/_shared/b29-route-preconditions.json"
+          ],
+          "establishes": "Batch 29实现与契约可定位 / 输入、版本、Owner和环境已锁定"
+        }
+      ],
+      "steps": [
+        {
+          "id": "route-matrix-tests",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "engines/polyglot-route-engine/tests",
+            "-p",
+            "test_routes.py"
+          ],
+          "establishes": "Language Support Matrix 边界确定"
+        }
+      ],
+      "assertion_map": {
+        "0": [
+          "route-matrix-tests"
+        ],
+        "1": [
+          "route-matrix-tests"
+        ],
+        "2": [
+          "route-matrix-tests"
+        ],
+        "3": [
+          "route-matrix-tests"
+        ],
+        "4": [
+          "route-matrix-tests"
+        ],
+        "5": [
+          "route-matrix-tests"
+        ]
+      }
+    },
+    "B29-003": {
+      "capability": "Adapter/Emitter Conformance",
+      "route": "routes/java-to-csharp",
+      "note": "Preconditions are the route contract plus the exact pinned toolchain (java 21.0.11 / dotnet 10.0.301, per routes/java-to-csharp/route.json and global.json). Without them 真实编译 and 版本精确 cannot be established, so the case blocks rather than fails.",
+      "inputs": [
+        "routes/java-to-csharp/route.json",
+        "routes/java-to-csharp/support-matrix.json",
+        "routes/java-to-csharp/certification/certification.json",
+        "routes/java-to-csharp/corpus/development/manifest.json",
+        "routes/java-to-csharp/corpus/holdout/manifest.json",
+        "routes/java-to-csharp/corpus/real-repository/manifest.json",
+        "routes/inventory.json",
+        "templates/batch29/route-candidates.json",
+        "engines/polyglot-route-engine/src/elmos_polyglot_route/emitter.py",
+        "engines/polyglot-route-engine/src/elmos_polyglot_route/toolchains.py"
+      ],
+      "corpora": {
+        "development": "routes/java-to-csharp/corpus/development",
+        "holdout": "routes/java-to-csharp/corpus/holdout",
+        "representative": "routes/java-to-csharp/corpus/real-repository",
+        "negative": "scripts/test-suite/probes.py"
+      },
+      "precondition_steps": [
+        {
+          "id": "b29-route-preconditions",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/b29_route_preconditions.py",
+            "--route",
+            "routes/java-to-csharp",
+            "--report",
+            "test-suites/batch1-37-strict/evidence/_shared/b29-route-preconditions.json"
+          ],
+          "establishes": "Batch 29实现与契约可定位 / 输入、版本、Owner和环境已锁定"
+        }
+      ],
+      "steps": [
+        {
+          "id": "unknown-function-fails-closed",
+          "expect": "exit-nonzero",
+          "command": [
+            "python3",
+            "-m",
+            "elmos_polyglot_route.cli",
+            "--source",
+            "../../routes/java-to-csharp/corpus/development/Pricing.java",
+            "--source-language",
+            "java",
+            "--target-language",
+            "csharp",
+            "--function",
+            "doesNotExist",
+            "--cases",
+            "../../routes/java-to-csharp/corpus/development/cases.json",
+            "--output",
+            "../../test-suites/batch1-37-strict/evidence/_shared/b29-run/negative/report.json"
+          ],
+          "working_directory": "engines/polyglot-route-engine",
+          "establishes": "Fail Closed，不静默降级"
+        }
+      ],
+      "assertion_map": {
+        "0": [
+          "unknown-function-fails-closed"
+        ],
+        "1": [
+          "unknown-function-fails-closed"
+        ],
+        "2": [
+          "unknown-function-fails-closed"
+        ],
+        "3": [
+          "unknown-function-fails-closed"
+        ],
+        "4": [
+          "unknown-function-fails-closed"
+        ],
+        "5": [
+          "unknown-function-fails-closed"
+        ]
+      }
+    },
+    "B29-004": {
+      "capability": "Corpus/Holdout",
+      "route": "routes/java-to-csharp",
+      "note": "Preconditions are the route contract plus the exact pinned toolchain (java 21.0.11 / dotnet 10.0.301, per routes/java-to-csharp/route.json and global.json). Without them 真实编译 and 版本精确 cannot be established, so the case blocks rather than fails.",
+      "inputs": [
+        "routes/java-to-csharp/route.json",
+        "routes/java-to-csharp/support-matrix.json",
+        "routes/java-to-csharp/certification/certification.json",
+        "routes/java-to-csharp/corpus/development/manifest.json",
+        "routes/java-to-csharp/corpus/holdout/manifest.json",
+        "routes/java-to-csharp/corpus/real-repository/manifest.json",
+        "routes/inventory.json",
+        "templates/batch29/route-candidates.json",
+        "engines/polyglot-route-engine/src/elmos_polyglot_route/emitter.py",
+        "engines/polyglot-route-engine/src/elmos_polyglot_route/toolchains.py"
+      ],
+      "corpora": {
+        "development": "routes/java-to-csharp/corpus/development",
+        "holdout": "routes/java-to-csharp/corpus/holdout",
+        "representative": "routes/java-to-csharp/corpus/real-repository",
+        "negative": "scripts/test-suite/probes.py"
+      },
+      "precondition_steps": [
+        {
+          "id": "b29-route-preconditions",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/b29_route_preconditions.py",
+            "--route",
+            "routes/java-to-csharp",
+            "--report",
+            "test-suites/batch1-37-strict/evidence/_shared/b29-route-preconditions.json"
+          ],
+          "establishes": "Batch 29实现与契约可定位 / 输入、版本、Owner和环境已锁定"
+        }
+      ],
+      "steps": [
+        {
+          "id": "migrate-holdout",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "-m",
+            "elmos_polyglot_route.cli",
+            "--source",
+            "../../routes/java-to-csharp/corpus/holdout/Clamp.java",
+            "--source-language",
+            "java",
+            "--target-language",
+            "csharp",
+            "--function",
+            "clamp",
+            "--cases",
+            "../../routes/java-to-csharp/corpus/holdout/cases.json",
+            "--output",
+            "../../test-suites/batch1-37-strict/evidence/_shared/b29-run/holdout/report.json"
+          ],
+          "working_directory": "engines/polyglot-route-engine",
+          "establishes": "独立 Holdout 语料通过"
+        }
+      ],
+      "assertion_map": {
+        "0": [
+          "migrate-holdout"
+        ],
+        "1": [
+          "migrate-holdout"
+        ],
+        "2": [
+          "migrate-holdout"
+        ],
+        "3": [
+          "migrate-holdout"
+        ],
+        "4": [
+          "migrate-holdout"
+        ],
+        "5": [
+          "migrate-holdout"
+        ]
+      }
+    },
+    "B29-005": {
+      "capability": "Compatibility Runtime",
+      "route": "routes/java-to-csharp",
+      "note": "Preconditions are the route contract plus the exact pinned toolchain (java 21.0.11 / dotnet 10.0.301, per routes/java-to-csharp/route.json and global.json). Without them 真实编译 and 版本精确 cannot be established, so the case blocks rather than fails.",
+      "inputs": [
+        "routes/java-to-csharp/route.json",
+        "routes/java-to-csharp/support-matrix.json",
+        "routes/java-to-csharp/certification/certification.json",
+        "routes/java-to-csharp/corpus/development/manifest.json",
+        "routes/java-to-csharp/corpus/holdout/manifest.json",
+        "routes/java-to-csharp/corpus/real-repository/manifest.json",
+        "routes/inventory.json",
+        "templates/batch29/route-candidates.json",
+        "engines/polyglot-route-engine/src/elmos_polyglot_route/emitter.py",
+        "engines/polyglot-route-engine/src/elmos_polyglot_route/toolchains.py"
+      ],
+      "corpora": {
+        "development": "routes/java-to-csharp/corpus/development",
+        "holdout": "routes/java-to-csharp/corpus/holdout",
+        "representative": "routes/java-to-csharp/corpus/real-repository",
+        "negative": "scripts/test-suite/probes.py"
+      },
+      "precondition_steps": [
+        {
+          "id": "b29-route-preconditions",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/b29_route_preconditions.py",
+            "--route",
+            "routes/java-to-csharp",
+            "--report",
+            "test-suites/batch1-37-strict/evidence/_shared/b29-route-preconditions.json"
+          ],
+          "establishes": "Batch 29实现与契约可定位 / 输入、版本、Owner和环境已锁定"
+        }
+      ],
+      "steps": [
+        {
+          "id": "migrate-representative",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "-m",
+            "elmos_polyglot_route.cli",
+            "--source",
+            "../../routes/java-to-csharp/corpus/real-repository/Difference.java",
+            "--source-language",
+            "java",
+            "--target-language",
+            "csharp",
+            "--function",
+            "difference",
+            "--cases",
+            "../../routes/java-to-csharp/corpus/real-repository/cases.json",
+            "--output",
+            "../../test-suites/batch1-37-strict/evidence/_shared/b29-run/real-repository/report.json"
+          ],
+          "working_directory": "engines/polyglot-route-engine",
+          "establishes": "代表性工作负载在精确运行时通过"
+        }
+      ],
+      "assertion_map": {
+        "0": [
+          "migrate-representative"
+        ],
+        "1": [
+          "migrate-representative"
+        ],
+        "2": [
+          "migrate-representative"
+        ],
+        "3": [
+          "migrate-representative"
+        ],
+        "4": [
+          "migrate-representative"
+        ],
+        "5": [
+          "migrate-representative"
+        ]
+      }
+    },
+    "B29-006": {
+      "capability": "12条有向路线",
+      "route": "routes/java-to-csharp",
+      "note": "Preconditions are the route contract plus the exact pinned toolchain (java 21.0.11 / dotnet 10.0.301, per routes/java-to-csharp/route.json and global.json). Without them 真实编译 and 版本精确 cannot be established, so the case blocks rather than fails.",
+      "inputs": [
+        "routes/java-to-csharp/route.json",
+        "routes/java-to-csharp/support-matrix.json",
+        "routes/java-to-csharp/certification/certification.json",
+        "routes/java-to-csharp/corpus/development/manifest.json",
+        "routes/java-to-csharp/corpus/holdout/manifest.json",
+        "routes/java-to-csharp/corpus/real-repository/manifest.json",
+        "routes/inventory.json",
+        "templates/batch29/route-candidates.json",
+        "engines/polyglot-route-engine/src/elmos_polyglot_route/emitter.py",
+        "engines/polyglot-route-engine/src/elmos_polyglot_route/toolchains.py"
+      ],
+      "corpora": {
+        "development": "routes/java-to-csharp/corpus/development",
+        "holdout": "routes/java-to-csharp/corpus/holdout",
+        "representative": "routes/java-to-csharp/corpus/real-repository",
+        "negative": "scripts/test-suite/probes.py"
+      },
+      "precondition_steps": [
+        {
+          "id": "b29-route-preconditions",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/b29_route_preconditions.py",
+            "--route",
+            "routes/java-to-csharp",
+            "--report",
+            "test-suites/batch1-37-strict/evidence/_shared/b29-route-preconditions.json"
+          ],
+          "establishes": "Batch 29实现与契约可定位 / 输入、版本、Owner和环境已锁定"
+        }
+      ],
+      "steps": [
+        {
+          "id": "directed-routes",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/batch29/configure_research_routes.py",
+            "--routes-root",
+            "routes"
+          ],
+          "establishes": "12 条有向路线配置一致"
+        }
+      ],
+      "assertion_map": {
+        "0": [
+          "directed-routes"
+        ],
+        "1": [
+          "directed-routes"
+        ],
+        "2": [
+          "directed-routes"
+        ],
+        "3": [
+          "directed-routes"
+        ],
+        "4": [
+          "directed-routes"
+        ],
+        "5": [
+          "directed-routes"
+        ]
+      }
+    },
+    "B29-007": {
+      "capability": "路线经济性",
+      "route": "routes/java-to-csharp",
+      "note": "Preconditions are the route contract plus the exact pinned toolchain (java 21.0.11 / dotnet 10.0.301, per routes/java-to-csharp/route.json and global.json). Without them 真实编译 and 版本精确 cannot be established, so the case blocks rather than fails.",
+      "inputs": [
+        "routes/java-to-csharp/route.json",
+        "routes/java-to-csharp/support-matrix.json",
+        "routes/java-to-csharp/certification/certification.json",
+        "routes/java-to-csharp/corpus/development/manifest.json",
+        "routes/java-to-csharp/corpus/holdout/manifest.json",
+        "routes/java-to-csharp/corpus/real-repository/manifest.json",
+        "routes/inventory.json",
+        "templates/batch29/route-candidates.json",
+        "engines/polyglot-route-engine/src/elmos_polyglot_route/emitter.py",
+        "engines/polyglot-route-engine/src/elmos_polyglot_route/toolchains.py"
+      ],
+      "corpora": {
+        "development": "routes/java-to-csharp/corpus/development",
+        "holdout": "routes/java-to-csharp/corpus/holdout",
+        "representative": "routes/java-to-csharp/corpus/real-repository",
+        "negative": "scripts/test-suite/probes.py"
+      },
+      "precondition_steps": [
+        {
+          "id": "b29-route-preconditions",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/b29_route_preconditions.py",
+            "--route",
+            "routes/java-to-csharp",
+            "--report",
+            "test-suites/batch1-37-strict/evidence/_shared/b29-route-preconditions.json"
+          ],
+          "establishes": "Batch 29实现与契约可定位 / 输入、版本、Owner和环境已锁定"
+        }
+      ],
+      "steps": [
+        {
+          "id": "score-routes",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/batch29/score_routes.py",
+            "templates/batch29/route-candidates.json",
+            "--output",
+            "test-suites/batch1-37-strict/evidence/_shared/b29-run/route-scores.json"
+          ],
+          "establishes": "路线经济性评分可复算"
+        }
+      ],
+      "assertion_map": {
+        "0": [
+          "score-routes"
+        ],
+        "1": [
+          "score-routes"
+        ],
+        "2": [
+          "score-routes"
+        ],
+        "3": [
+          "score-routes"
+        ],
+        "4": [
+          "score-routes"
+        ],
+        "5": [
+          "score-routes"
+        ]
+      }
+    },
+    "B29-008": {
+      "capability": "Route Gate",
+      "route": "routes/java-to-csharp",
+      "note": "Preconditions are the route contract plus the exact pinned toolchain (java 21.0.11 / dotnet 10.0.301, per routes/java-to-csharp/route.json and global.json). Without them 真实编译 and 版本精确 cannot be established, so the case blocks rather than fails.",
+      "inputs": [
+        "routes/java-to-csharp/route.json",
+        "routes/java-to-csharp/support-matrix.json",
+        "routes/java-to-csharp/certification/certification.json",
+        "routes/java-to-csharp/corpus/development/manifest.json",
+        "routes/java-to-csharp/corpus/holdout/manifest.json",
+        "routes/java-to-csharp/corpus/real-repository/manifest.json",
+        "routes/inventory.json",
+        "templates/batch29/route-candidates.json",
+        "engines/polyglot-route-engine/src/elmos_polyglot_route/emitter.py",
+        "engines/polyglot-route-engine/src/elmos_polyglot_route/toolchains.py"
+      ],
+      "corpora": {
+        "development": "routes/java-to-csharp/corpus/development",
+        "holdout": "routes/java-to-csharp/corpus/holdout",
+        "representative": "routes/java-to-csharp/corpus/real-repository",
+        "negative": "scripts/test-suite/probes.py"
+      },
+      "precondition_steps": [
+        {
+          "id": "b29-route-preconditions",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/b29_route_preconditions.py",
+            "--route",
+            "routes/java-to-csharp",
+            "--report",
+            "test-suites/batch1-37-strict/evidence/_shared/b29-route-preconditions.json"
+          ],
+          "establishes": "Batch 29实现与契约可定位 / 输入、版本、Owner和环境已锁定"
+        }
+      ],
+      "steps": [
+        {
+          "id": "route-gate",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/batch29/run_route_gate.py",
+            "routes/java-to-csharp"
+          ],
+          "establishes": "Route Gate 在无独立验证时保持 NOT_CERTIFIED"
+        }
+      ],
+      "assertion_map": {
+        "0": [
+          "route-gate"
+        ],
+        "1": [
+          "route-gate"
+        ],
+        "2": [
+          "route-gate"
+        ],
+        "3": [
+          "route-gate"
+        ],
+        "4": [
+          "route-gate"
+        ],
+        "5": [
+          "route-gate"
+        ]
+      }
     }
   }
 }

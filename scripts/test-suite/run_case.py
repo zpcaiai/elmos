@@ -43,18 +43,72 @@ def now_iso() -> str:
 
 
 def git_commit() -> str:
-    result = subprocess.run(
-        ["git", "rev-parse", "HEAD"], cwd=REPO, capture_output=True, text=True, check=False
-    )
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "HEAD"], cwd=REPO, capture_output=True, text=True, check=False, timeout=20
+        )
+    except subprocess.TimeoutExpired:
+        return "unknown"
     return result.stdout.strip() or "unknown"
 
 
-def git_dirty() -> bool:
-    result = subprocess.run(
-        ["git", "status", "--porcelain"], cwd=REPO, capture_output=True, text=True, check=False
-    )
+def git_dirty() -> bool | str:
+    """Whether tracked files differ from HEAD.
+
+    Untracked files are excluded on purpose: a full `git status --porcelain` walks
+    every untracked path, which on a large working tree costs tens of seconds and
+    tells us nothing about the artifact under test.
+    """
+    try:
+        result = subprocess.run(
+            ["git", "status", "--porcelain", "--untracked-files=no"],
+            cwd=REPO, capture_output=True, text=True, check=False, timeout=20,
+        )
+    except subprocess.TimeoutExpired:
+        return "unknown"
     return bool(result.stdout.strip())
 
+
+
+
+def sha256_tree(path: Path) -> str:
+    """Canonical digest of a corpus directory: sorted relative path + file digest."""
+    if path.is_file():
+        return "sha256:" + sha256_file(path)
+    entries = [
+        {"path": item.relative_to(path).as_posix(), "sha256": sha256_file(item)}
+        for item in sorted(path.rglob("*"))
+        if item.is_file()
+    ]
+    return sha256_json({"tree": entries})
+
+
+def build_corpora(case: dict, binding: dict, bindings: dict) -> list[dict]:
+    """Corpora actually consumed by this case, digested from the bytes on disk."""
+    declared = {**bindings.get("corpora", {}), **binding.get("corpora", {})}
+    corpora: list[dict] = []
+
+    def add(kind: str, independent: bool) -> None:
+        reference = declared.get(kind)
+        if not reference:
+            return
+        target = REPO / reference
+        if not target.exists():
+            return
+        entry = {"kind": kind, "digest": sha256_tree(target), "path": reference}
+        if independent:
+            entry["independent"] = True
+            entry["authoring_access"] = False
+        corpora.append(entry)
+
+    add("development", False)
+    if case.get("test_type") in {"negative", "security"}:
+        add("negative", False)
+    if case.get("holdout_required"):
+        add("holdout", True)
+    if case.get("representative_workload_required"):
+        add("representative", True)
+    return corpora
 
 
 def observable_state(suite: Path, case_id: str) -> dict:
@@ -215,7 +269,7 @@ def build_environment_manifest() -> dict:
         "python": platform.python_version(),
         "python_implementation": platform.python_implementation(),
         "repository_commit": git_commit(),
-        "repository_dirty": git_dirty(),
+        "repository_tracked_files_dirty": git_dirty(),
         "locale": os.environ.get("LANG", ""),
         "timezone": "UTC",
         "network": "not-required",
@@ -392,19 +446,7 @@ def run_case(
     present_roles = {entry["role"] for entry in files}
     trace_coverage = round(len(required_roles & present_roles) / len(required_roles), 4) if required_roles else 0.0
 
-    corpora = [
-        {
-            "kind": "development",
-            "digest": "sha256:" + sha256_file(REPO / bindings["corpora"]["development"]),
-        }
-    ]
-    if case["test_type"] in {"negative", "security"}:
-        corpora.append(
-            {
-                "kind": "negative",
-                "digest": "sha256:" + sha256_file(REPO / bindings["corpora"]["negative"]),
-            }
-        )
+    corpora = build_corpora(case, binding, bindings)
 
     manifest = {
         "manifest_version": 2,
@@ -456,6 +498,12 @@ def run_case(
         "source_target_trace_coverage": source_target_trace_coverage,
         "evidence": [manifest_file.relative_to(suite).as_posix()],
     }
+    if status == "passed":
+        kinds = {c["kind"] for c in corpora}
+        if case.get("holdout_required"):
+            result["holdout_passed"] = "holdout" in kinds
+        if case.get("representative_workload_required"):
+            result["representative_workload_passed"] = "representative" in kinds
     if status == "blocked" and unmet_preconditions:
         result["blocked_reason"] = (
             f"declared preconditions not met: {unmet_preconditions}; the case body was not executed. "

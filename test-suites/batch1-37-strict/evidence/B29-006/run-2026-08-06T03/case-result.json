@@ -1,0 +1,71 @@
+{
+  "case_id": "B29-006",
+  "severity": "P0",
+  "test_type": "replay_idempotency",
+  "steps": [
+    {
+      "id": "b29-route-preconditions",
+      "phase": "precondition",
+      "command": [
+        "python3",
+        "scripts/test-suite/b29_route_preconditions.py",
+        "--route",
+        "routes/java-to-csharp",
+        "--report",
+        "test-suites/batch1-37-strict/evidence/_shared/b29-route-preconditions.json"
+      ],
+      "expect": "exit-zero",
+      "exit_code": 1,
+      "met_expectation": false,
+      "establishes": "Batch 29实现与契约可定位 / 输入、版本、Owner和环境已锁定"
+    },
+    {
+      "id": "directed-routes",
+      "phase": "case",
+      "command": [
+        "python3",
+        "scripts/batch29/configure_research_routes.py",
+        "--routes-root",
+        "routes"
+      ],
+      "expect": "exit-zero",
+      "exit_code": null,
+      "met_expectation": false,
+      "not_executed": true,
+      "establishes": "12 条有向路线配置一致"
+    }
+  ],
+  "assertion_trace": [
+    {
+      "index": 0,
+      "assertion": "最终状态必须幂等或完成补偿，外部副作用不重复",
+      "established_by": []
+    },
+    {
+      "index": 1,
+      "assertion": "方向独立",
+      "established_by": []
+    },
+    {
+      "index": 2,
+      "assertion": "版本精确",
+      "established_by": []
+    },
+    {
+      "index": 3,
+      "assertion": "真实编译",
+      "established_by": []
+    },
+    {
+      "index": 4,
+      "assertion": "“12条有向路线”不得通过以下捷径：反向路线复用认证; generic support; 伪certified",
+      "established_by": []
+    },
+    {
+      "index": 5,
+      "assertion": "失败时状态、数据、权限和外部副作用必须可解释",
+      "established_by": []
+    }
+  ],
+  "all_steps_met_expectation": false
+}

@@ -1,9 +1,19 @@
 {
   "case_id": "B29-003",
-  "status": "not-run",
-  "artifact_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
-  "environment_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
-  "started_at": "",
-  "finished_at": "",
-  "evidence": []
+  "status": "blocked",
+  "artifact_digest": "sha256:1ac0539494bed2b2e9a2da8f37d3bcda58af1c4defe916f6cbac78d17532a968",
+  "environment_digest": "sha256:87b30a9e0344122bd62a74a7126f07692bfede81d44d9abaafcc88db03767a3c",
+  "started_at": "2026-08-06T11:30:13Z",
+  "finished_at": "2026-08-06T11:30:13Z",
+  "execution_kind": "real",
+  "replay_command": "python3 scripts/test-suite/run_case.py --suite test-suites/batch1-37-strict --run-id <new-run-id> --executor-id elmos-strict-runner@automation B29-003",
+  "trace_coverage": 1.0,
+  "source_target_trace_coverage": 0.0,
+  "evidence": [
+    "evidence/B29-003/run-2026-08-06T03/manifest.json"
+  ],
+  "blocked_reason": "declared preconditions not met: ['b29-route-preconditions']; the case body was not executed. See the raw log and the probe report referenced by the input manifest.",
+  "unmet_preconditions": [
+    "b29-route-preconditions"
+  ]
 }
