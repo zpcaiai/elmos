@@ -1,0 +1,211 @@
+{
+  "route_id": "java-spring-to-csharp-aspnet",
+  "ready": false,
+  "checks_total": 22,
+  "gaps": 21,
+  "findings": [
+    {
+      "check": "reference-route-declared",
+      "ok": true,
+      "detail": "route_id=java-spring-to-csharp-aspnet source=['spring-boot-3.x'] target=['aspnet-core-8', 'ef-core-8']",
+      "looked_at": [
+        "convergence-packs/reference-product/reference-route.json"
+      ]
+    },
+    {
+      "check": "reference-route-stages-executed",
+      "ok": false,
+      "detail": "0/16 stages executed; not-run=['repository-intake', 'semantic-model', 'psp-uir', 'framework-contract', 'code-generation', 'build', 'test-migration', 'repair', 'behavior-verification', 'database-migration', 'pull-request', 'private-runner', 'canary', 'cutover', 'hypercare', 'customer-handoff']",
+      "looked_at": [
+        "convergence-packs/reference-product/reference-route.json"
+      ]
+    },
+    {
+      "check": "reference-route-stages-have-evidence",
+      "ok": false,
+      "detail": "0/16 stages carry evidence",
+      "looked_at": [
+        "convergence-packs/reference-product/reference-route.json"
+      ]
+    },
+    {
+      "check": "source-repository-corpus-present",
+      "ok": false,
+      "detail": "0 non-placeholder entr(ies), 0 containing Java sources (placeholders present: ['.gitkeep'])",
+      "looked_at": [
+        "convergence-packs/reference-product/reference-repositories"
+      ]
+    },
+    {
+      "check": "holdout-corpus-contains-spring-application",
+      "ok": false,
+      "detail": "1 java unit(s) present, 0 contain Spring constructs",
+      "looked_at": [
+        "engines/polyglot-route-engine/fixtures/holdout"
+      ]
+    },
+    {
+      "check": "representative-corpus-contains-spring-application",
+      "ok": false,
+      "detail": "1 java unit(s) present, 0 contain Spring constructs",
+      "looked_at": [
+        "engines/polyglot-route-engine/fixtures/representative"
+      ]
+    },
+    {
+      "check": "production-recipe-targets-aspnet",
+      "ok": false,
+      "detail": "2 recipe source(s) on disk, 0 target ASP.NET (RewriteSpringFoundationTest, RewriteSpringFoundation)",
+      "looked_at": [
+        "recipes"
+      ]
+    },
+    {
+      "check": "spring-to-aspnet-recipe-is-production-not-fixture",
+      "ok": false,
+      "detail": "'aspnet-core-controller' appears in 0 main source(s) and 1 test source(s); registry blocks with 'no-production-recipe' when nothing matches",
+      "looked_at": [
+        "modules/framework-migration/src/main/java",
+        "modules/framework-migration/src/test/java",
+        "modules/framework-migration/src/main/java/io/elmos/frameworkmigration/FrameworkRecipeRegistry.java"
+      ]
+    },
+    {
+      "check": "aspnet-code-generation-implemented",
+      "ok": false,
+      "detail": "13 lines; emits target source = False (advisor/planner returns a decision record only)",
+      "looked_at": [
+        "engines/dotnet-engine/src/Elmos.Dotnet.AspNet/AspNetMigrationAdvisor.cs"
+      ]
+    },
+    {
+      "check": "ef-core-code-generation-implemented",
+      "ok": false,
+      "detail": "13 lines; emits target source = False (advisor/planner returns a decision record only)",
+      "looked_at": [
+        "engines/dotnet-engine/src/Elmos.Dotnet.Ef/EfMigrationPlanner.cs"
+      ]
+    },
+    {
+      "check": "framework-recipe-documents-on-disk",
+      "ok": false,
+      "detail": "0 recipe-shaped document(s) found repository-wide, 0 of them spring-* -> aspnet-*",
+      "looked_at": [
+        "contracts/framework-schema/framework-recipe.schema.json",
+        "contracts",
+        "recipes",
+        "modules",
+        "engines",
+        "packages",
+        "convergence-packs",
+        "templates",
+        "schemas",
+        "config",
+        "product-convergence",
+        "client-packs",
+        "framework-packs",
+        "database-packs",
+        "cloud-packs",
+        "marketplace-packs",
+        "mature-product-packs",
+        "portfolio-packs",
+        "verification-packs",
+        "developer-experience-packs",
+        "quick-fix",
+        "routes",
+        "examples",
+        "artifacts",
+        "(excluded: ['.agents', 'agent-skills'])"
+      ]
+    },
+    {
+      "check": "capability-has-production-recipe::REST与Binding",
+      "ok": false,
+      "detail": "0 of 0 route recipes cover this capability",
+      "looked_at": [
+        "(spring-* -> aspnet-* framework recipes)"
+      ]
+    },
+    {
+      "check": "capability-has-production-recipe::DI与Lifecycle",
+      "ok": false,
+      "detail": "0 of 0 route recipes cover this capability",
+      "looked_at": [
+        "(spring-* -> aspnet-* framework recipes)"
+      ]
+    },
+    {
+      "check": "capability-has-production-recipe::Configuration/Options",
+      "ok": false,
+      "detail": "0 of 0 route recipes cover this capability",
+      "looked_at": [
+        "(spring-* -> aspnet-* framework recipes)"
+      ]
+    },
+    {
+      "check": "capability-has-production-recipe::Validation",
+      "ok": false,
+      "detail": "0 of 0 route recipes cover this capability",
+      "looked_at": [
+        "(spring-* -> aspnet-* framework recipes)"
+      ]
+    },
+    {
+      "check": "capability-has-production-recipe::Security",
+      "ok": false,
+      "detail": "0 of 0 route recipes cover this capability",
+      "looked_at": [
+        "(spring-* -> aspnet-* framework recipes)"
+      ]
+    },
+    {
+      "check": "capability-has-production-recipe::JPA到EF Core",
+      "ok": false,
+      "detail": "0 of 0 route recipes cover this capability",
+      "looked_at": [
+        "(spring-* -> aspnet-* framework recipes)"
+      ]
+    },
+    {
+      "check": "capability-has-production-recipe::Transaction/AOP",
+      "ok": false,
+      "detail": "0 of 0 route recipes cover this capability",
+      "looked_at": [
+        "(spring-* -> aspnet-* framework recipes)"
+      ]
+    },
+    {
+      "check": "capability-has-production-recipe::Messaging/Cache/Scheduler",
+      "ok": false,
+      "detail": "0 of 0 route recipes cover this capability",
+      "looked_at": [
+        "(spring-* -> aspnet-* framework recipes)"
+      ]
+    },
+    {
+      "check": "exact-toolchain::java",
+      "ok": false,
+      "detail": "required 21.0.11; engine says: REFUSED EXACT_TOOLCHAIN_MISMATCH:java:expected=21.0.11",
+      "looked_at": [
+        "engines/polyglot-route-engine/src/elmos_polyglot_route/toolchains.py"
+      ]
+    },
+    {
+      "check": "exact-toolchain::csharp",
+      "ok": false,
+      "detail": "required 10.0.301; engine says: REFUSED EXACT_TOOLCHAIN_UNAVAILABLE:dotnet",
+      "looked_at": [
+        "engines/polyglot-route-engine/src/elmos_polyglot_route/toolchains.py"
+      ]
+    },
+    {
+      "check": "unit-level-java-to-csharp-executes",
+      "ok": false,
+      "detail": "exit=2 response={\"status\": \"BLOCKED\", \"reason\": \"EXACT_TOOLCHAIN_MISMATCH:java:expected=21.0.11\"}",
+      "looked_at": [
+        "engines/polyglot-route-engine/fixtures/java/Pricing.java",
+        "engines/polyglot-route-engine/fixtures/behavior-cases.json"
+      ]
+    }
+  ]
+}

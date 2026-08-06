@@ -1,0 +1,9 @@
+{
+  "coverage_link_version": 1,
+  "case_id": "B23-001",
+  "coverage_matrix": "test-suites/batch1-37-strict/coverage-matrix.json",
+  "coverage_matrix_sha256": "4a9d8d4893d6e5ae8f0807d359bf47f2113c262cfc267eb759f490e22f5e682b",
+  "referenced_at": [
+    "batches/23/0"
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "case_id": "TS-GOV-04-001",
+  "severity": "P0",
+  "test_type": "happy_path",
+  "steps": [
+    {
+      "id": "evidence-valid",
+      "phase": "case",
+      "command": [
+        "python3",
+        "scripts/test-suite/probes.py",
+        "evidence-valid"
+      ],
+      "expect": "exit-zero",
+      "exit_code": 0,
+      "met_expectation": true,
+      "establishes": ""
+    },
+    {
+      "id": "identity",
+      "phase": "case",
+      "command": [
+        "python3",
+        "scripts/test-suite/probes.py",
+        "identity-separation"
+      ],
+      "expect": "exit-zero",
+      "exit_code": 0,
+      "met_expectation": true,
+      "establishes": ""
+    },
+    {
+      "id": "tamper",
+      "phase": "case",
+      "command": [
+        "python3",
+        "scripts/test-suite/probes.py",
+        "evidence-tamper"
+      ],
+      "expect": "exit-zero",
+      "exit_code": 0,
+      "met_expectation": true,
+      "establishes": ""
+    },
+    {
+      "id": "not-run",
+      "phase": "case",
+      "command": [
+        "python3",
+        "scripts/test-suite/probes.py",
+        "not-run-not-pass"
+      ],
+      "expect": "exit-zero",
+      "exit_code": 0,
+      "met_expectation": true,
+      "establishes": ""
+    }
+  ],
+  "assertion_trace": [
+    {
+      "index": 0,
+      "assertion": "功能结果、状态变化和Evidence必须与契约一致",
+      "established_by": [
+        "evidence-valid"
+      ]
+    },
+    {
+      "index": 1,
+      "assertion": "Raw evidence先于摘要",
+      "established_by": [
+        "tamper"
+      ]
+    },
+    {
+      "index": 2,
+      "assertion": "结果绑定精确Artifact",
+      "established_by": [
+        "tamper"
+      ]
+    },
+    {
+      "index": 3,
+      "assertion": "审批与执行职责分离",
+      "established_by": [
+        "identity"
+      ]
+    },
+    {
+      "index": 4,
+      "assertion": "任何失败均不可被摘要状态覆盖",
+      "established_by": [
+        "not-run"
+      ]
+    }
+  ],
+  "all_steps_met_expectation": true
+}
