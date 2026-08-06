@@ -29,6 +29,7 @@ TAG = re.compile(r"^[A-Za-z0-9_][A-Za-z0-9_.-]{0,127}$")
 EXPECTED_USER = "65532:65532"
 EXPECTED_ENTRYPOINT = ["java", "-jar", "/opt/elmos/modernization-proof-worker.jar"]
 EXPECTED_CAPABILITY = "modernization:proof-loop"
+VERIFIED_EXTERNAL_STATE = "INDEPENDENTLY_VERIFIED"
 RUNTIME_APKS = {
     "linux/arm64": [
         ("main", "ca-certificates-20260611-r0.apk", "6b491dcda951129c80e8d7b0f509253ab640b20653b208d3b0994d893189b3f5", 131113),
@@ -135,6 +136,111 @@ def select_repository_digest(inspect: dict[str, Any], repository: str) -> str:
     raise BuildFailure("registry push did not yield an immutable repository digest")
 
 
+def is_local_registry(repository: str) -> bool:
+    """Return whether an OCI repository is confined to the developer machine."""
+    first_component = repository.split("/", 1)[0].split(":", 1)[0].lower()
+    return first_component in {"localhost", "127.0.0.1", "host.docker.internal"}
+
+
+def source_worktree_is_clean(root: Path) -> bool:
+    """Include staged and untracked files when binding a release source tree."""
+    process = subprocess.run(
+        ["git", "status", "--porcelain=v1", "--untracked-files=all"],
+        cwd=root,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
+    if process.returncode != 0:
+        raise BuildFailure("could not determine source worktree state")
+    return not process.stdout.strip()
+
+
+def classify_scout_scan(return_code: int, report: Path) -> dict[str, Any]:
+    """Distinguish clean, vulnerable, and unavailable Docker Scout outcomes."""
+    if not report.is_file():
+        return {
+            "status": "BLOCKED",
+            "exit_code": return_code,
+            "finding_count": None,
+            "report_sha256": None,
+            "reason": "DOCKER_SCOUT_REPORT_MISSING",
+        }
+    try:
+        document = json.loads(report.read_text(encoding="utf-8"))
+        finding_count = sum(
+            len(run.get("results") or [])
+            for run in document.get("runs", [])
+            if isinstance(run, dict)
+        )
+    except (OSError, json.JSONDecodeError, AttributeError, TypeError):
+        return {
+            "status": "BLOCKED",
+            "exit_code": return_code,
+            "finding_count": None,
+            "report_sha256": sha256_file(report),
+            "reason": "DOCKER_SCOUT_REPORT_INVALID",
+        }
+    if finding_count > 0 or return_code == 2:
+        status = "FAILED"
+        reason = "HIGH_OR_CRITICAL_VULNERABILITIES_FOUND"
+    elif return_code == 0:
+        status = "PASSED"
+        reason = None
+    else:
+        status = "BLOCKED"
+        reason = "DOCKER_SCOUT_EXECUTION_UNAVAILABLE"
+    return {
+        "status": status,
+        "exit_code": return_code,
+        "finding_count": finding_count,
+        "report_sha256": sha256_file(report),
+        "reason": reason,
+    }
+
+
+def evaluate_readiness(
+    *,
+    repository: str,
+    immutable_reference: str | None,
+    source_clean: bool,
+    image_contract: dict[str, Any],
+    smoke: dict[str, Any],
+    scan: dict[str, Any],
+    external_boundaries: dict[str, str],
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Evaluate artifact readiness separately from production authorization."""
+    artifact_blockers: list[str] = []
+    if immutable_reference is None:
+        artifact_blockers.append("IMMUTABLE_REGISTRY_DIGEST_MISSING")
+    if not source_clean:
+        artifact_blockers.append("SOURCE_WORKTREE_NOT_CLEAN")
+    if image_contract.get("status") != "PASSED":
+        artifact_blockers.append("IMAGE_CONTRACT_NOT_PASSED")
+    if smoke.get("status") != "PASSED":
+        artifact_blockers.append("CONTAINER_SMOKE_NOT_PASSED")
+    if scan.get("status") != "PASSED":
+        artifact_blockers.append(f"VULNERABILITY_SCAN_{scan.get('status', 'UNKNOWN')}")
+    artifact = {
+        "status": "READY_FOR_EXTERNAL_GATE" if not artifact_blockers else "BLOCKED",
+        "blockers": artifact_blockers,
+    }
+
+    production_blockers = list(artifact_blockers)
+    if is_local_registry(repository):
+        production_blockers.append("EXTERNAL_REGISTRY_NOT_CONFIGURED")
+    for operation, state in sorted(external_boundaries.items()):
+        if state != VERIFIED_EXTERNAL_STATE:
+            production_blockers.append(f"{operation}_{state}")
+    production = {
+        "status": "READY" if not production_blockers else "NOT_READY",
+        "blockers": production_blockers,
+        "certification_authority": "EXTERNAL_INDEPENDENT_GATE",
+    }
+    return artifact, production
+
+
 def inspect_image(reference: str, *, root: Path, log_path: Path) -> dict[str, Any]:
     result = run_command(
         ["docker", "image", "inspect", reference], cwd=root, log_path=log_path
@@ -199,6 +305,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--platform", default="linux/arm64", choices=("linux/arm64", "linux/amd64"))
     parser.add_argument("--push", action="store_true")
     parser.add_argument("--scan", action="store_true")
+    parser.add_argument(
+        "--release-candidate",
+        action="store_true",
+        help="require clean source, external registry, push, scan, and a passing artifact gate",
+    )
     return parser.parse_args()
 
 
@@ -213,6 +324,14 @@ def main() -> int:
     output = args.output_dir.resolve()
     output.mkdir(parents=True, exist_ok=True)
     mutable_reference = f"{args.repository}:{args.tag}"
+    source_clean = source_worktree_is_clean(root)
+    if args.release_candidate:
+        if not source_clean:
+            raise SystemExit("release candidate source worktree is not clean")
+        if not args.push or not args.scan:
+            raise SystemExit("release candidate requires --push and --scan")
+        if is_local_registry(args.repository):
+            raise SystemExit("release candidate requires a non-local OCI registry")
 
     run_command(
         [
@@ -278,9 +397,16 @@ def main() -> int:
 
     scan = {"status": "NOT_RUN"}
     if args.scan:
+        scout_version = run_command(
+            ["docker", "scout", "version"],
+            cwd=root,
+            log_path=output / "docker-scout-version.log",
+            allow_failure=True,
+        )
+        version_match = re.search(r"version:\s*(v?[^\s]+)", scout_version.stdout)
         scan_result = run_command(
             [
-                "docker", "scout", "cves", "--format", "sarif", "--output",
+                "docker", "scout", "cves", "--exit-code", "--format", "sarif", "--output",
                 str(output / "vulnerabilities.sarif.json"),
                 "--only-severity", "critical,high", f"local://{mutable_reference}",
             ],
@@ -289,22 +415,44 @@ def main() -> int:
             allow_failure=True,
         )
         report = output / "vulnerabilities.sarif.json"
-        scan = {
-            "status": "PASSED" if scan_result.returncode == 0 and report.is_file() else "BLOCKED",
-            "exit_code": scan_result.returncode,
-            "report_sha256": sha256_file(report) if report.is_file() else None,
-        }
+        scan = classify_scout_scan(scan_result.returncode, report)
+        scan.update({
+            "provider": "docker-scout",
+            "tool_version": version_match.group(1) if version_match else None,
+            "severity_scope": ["critical", "high"],
+        })
 
     git_sha = run_command(
         ["git", "rev-parse", "HEAD"], cwd=root, log_path=output / "git-head.log"
     ).stdout.strip()
+    image_contract = {
+        "status": "PASSED",
+        "user": EXPECTED_USER,
+        "entrypoint": EXPECTED_ENTRYPOINT,
+        "capability": EXPECTED_CAPABILITY,
+    }
+    external_boundaries = {
+        "REAL_CLOUD_PROVIDER": "NOT_RUN",
+        "SCM_DRAFT_PULL_REQUEST": "NOT_RUN",
+        "CUSTOMER_ACCEPTANCE": "NOT_RUN",
+        "INDEPENDENT_REVIEW": "NOT_RUN",
+        "PRODUCTION_DEPLOYMENT": "NOT_RUN",
+        "EXTERNAL_CERTIFICATION": "NOT_RUN",
+    }
+    artifact_readiness, production_readiness = evaluate_readiness(
+        repository=args.repository,
+        immutable_reference=immutable_reference,
+        source_clean=source_clean,
+        image_contract=image_contract,
+        smoke=smoke,
+        scan=scan,
+        external_boundaries=external_boundaries,
+    )
     receipt = {
-        "schema_version": 1,
+        "schema_version": 2,
         "created_at": datetime.now(timezone.utc).isoformat(),
         "source_commit": git_sha,
-        "source_worktree_clean": subprocess.run(
-            ["git", "diff", "--quiet"], cwd=root, check=False
-        ).returncode == 0,
+        "source_worktree_clean": source_clean,
         "platform": args.platform,
         "jar_sha256": sha256_file(jar),
         "runtime_apks": [
@@ -324,23 +472,13 @@ def main() -> int:
             "mode": "0600" if immutable_reference is not None else None,
             "status": "CONFIGURED" if immutable_reference is not None else "NOT_CONFIGURED",
         },
-        "image_contract": {
-            "status": "PASSED",
-            "user": EXPECTED_USER,
-            "entrypoint": EXPECTED_ENTRYPOINT,
-            "capability": EXPECTED_CAPABILITY,
-        },
+        "image_contract": image_contract,
         "container_smoke": smoke,
         "vulnerability_scan": scan,
-        "external_boundaries": {
-            "REAL_CLOUD_PROVIDER": "NOT_RUN",
-            "SCM_DRAFT_PULL_REQUEST": "NOT_RUN",
-            "CUSTOMER_ACCEPTANCE": "NOT_RUN",
-            "INDEPENDENT_REVIEW": "NOT_RUN",
-            "PRODUCTION_DEPLOYMENT": "NOT_RUN",
-            "EXTERNAL_CERTIFICATION": "NOT_RUN",
-        },
-        "production_ready": False,
+        "artifact_readiness": artifact_readiness,
+        "external_boundaries": external_boundaries,
+        "production_readiness": production_readiness,
+        "production_ready": production_readiness["status"] == "READY",
         "certified": False,
     }
     receipt_path = output / "image-build-receipt.json"
@@ -351,10 +489,15 @@ def main() -> int:
         "immutable_reference": immutable_reference,
         "environment_assignment": receipt["environment_assignment"],
         "scan_status": scan["status"],
-        "production_ready": False,
+        "artifact_readiness": artifact_readiness["status"],
+        "production_ready": production_readiness["status"] == "READY",
         "certified": False,
     }, indent=2, sort_keys=True))
-    return 0 if immutable_reference is not None else 3
+    if immutable_reference is None:
+        return 3
+    if args.release_candidate and artifact_readiness["status"] != "READY_FOR_EXTERNAL_GATE":
+        return 4
+    return 0
 
 
 if __name__ == "__main__":

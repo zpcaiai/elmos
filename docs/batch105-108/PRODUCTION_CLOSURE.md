@@ -48,6 +48,33 @@ The control plane refuses job admission until
 containing `@sha256:<64 lowercase hex characters>`. The existing Runner Agent,
 object storage, OIDC and PostgreSQL/RLS configuration remain authoritative.
 
+The image builder distinguishes three decisions:
+
+- `artifact_readiness` covers a clean source tree, immutable digest, image
+  contract, restricted smoke execution and an authenticated Docker Scout scan.
+- `production_readiness` additionally requires a non-local registry and every
+  external boundary to be independently verified.
+- `certified` remains the decision of a separate external authority. Neither a
+  build nor a PR may set it to true.
+
+Use `--release-candidate` only with an external registry. It fails closed unless
+`--push` and `--scan` are supplied, the source tree is clean and the artifact
+gate passes. Docker Scout exit code 2 is recorded as `FAILED`; authentication,
+network or missing-report failures are `BLOCKED`, never a pass.
+
+After opening a real Draft PR, collect its exact read-only observation with:
+
+```text
+python3 scripts/operations/collect_modernization_proof_release_evidence.py \
+  --repository zpcaiai/elmos --pr <number> \
+  --image-receipt <image-build-receipt.json> \
+  --output <release-closure-receipt.json>
+```
+
+The PR head must equal the image source commit. This records the operation as
+executed but awaiting independent verification; it does not self-approve,
+deploy, merge or certify the candidate.
+
 ## Local qualification
 
 ```text
