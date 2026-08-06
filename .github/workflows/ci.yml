@@ -161,8 +161,11 @@ jobs:
 
   polyglot-routes:
     name: Directed language route contracts
-    runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    # Objective-C target execution requires the real Foundation framework.
+    # Linux clang can parse the bounded source subset, but cannot provide that
+    # runtime contract, so the complete 9-language matrix runs on macOS.
+    runs-on: macos-15
+    timeout-minutes: 60
     steps:
       - name: Check out repository
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
@@ -183,6 +186,14 @@ jobs:
         uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
           node-version: "26.0.0"
+      - name: Set up Go 1.25.0
+        uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # v5
+        with:
+          go-version: "1.25.0"
+      - name: Set up Rust 1.89.0
+        uses: dtolnay/rust-toolchain@451ce45ce31d200b52705aadd15ce75018b006de # 1.89.0
+        with:
+          toolchain: "1.89.0"
       - name: Install locked tools
         run: |
           python -m pip install --disable-pip-version-check uv==0.11.16
@@ -191,6 +202,12 @@ jobs:
       - name: Verify compiler-backed route engine
         run: |
           export ELMOS_JAVA21_HOME="$JAVA_HOME"
+          # The hosted Xcode image is the native toolchain artifact for this
+          # engineering run. Bind its exact observed identities into every
+          # report; this remains local evidence and never upgrades a route to
+          # externally certified status.
+          export ELMOS_CLANG_VERSION="$(clang --version | head -n 1)"
+          export ELMOS_SWIFT_VERSION="$(swiftc --version | head -n 1)"
           uv --directory engines/polyglot-route-engine sync --locked
           uv --directory engines/polyglot-route-engine run --locked pytest
           uv --directory engines/polyglot-route-engine run --locked ruff check src tests
@@ -538,6 +555,12 @@ jobs:
           --health-retries 10
     env:
       DATABASE_URL: postgresql://postgres:elmos@localhost:5432/elmos_ci
+      PGPASSWORD: elmos
+      ELMOS_PAYMENT_VERIFY_DSN: -h 127.0.0.1 -p 5432 -U postgres
+      ELMOS_PAYMENT_VERIFY_DISPOSABLE_CONFIRMED: "true"
+      ELMOS_ACTIVATION_VERIFY_DSN: -h 127.0.0.1 -p 5432 -U postgres
+      ELMOS_ACTIVATION_VERIFY_DB: elmos_ci
+      ELMOS_ACTIVATION_VERIFY_DISPOSABLE_CONFIRMED: "true"
     steps:
       - uses: actions/checkout@v4
 
@@ -553,5 +576,5 @@ jobs:
       - name: 订阅激活存储函数
         run: bash tooling/payment-db-verify/verify_subscription_activation.sh
 
-      - name: 订单目录与租户隔离（V55）
+      - name: 订单目录与租户隔离（V62）
         run: bash tooling/payment-db-verify/verify_order_directory.sh

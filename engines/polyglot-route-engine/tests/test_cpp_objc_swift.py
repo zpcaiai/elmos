@@ -425,4 +425,4 @@ def test_swift_is_both_a_source_and_a_target() -> None:
     assert "swift" in SUPPORTED_LANGUAGES
     assert "swift" in ANALYZABLE_LANGUAGES
     routes = [(s, t) for s in ANALYZABLE_LANGUAGES for t in SUPPORTED_LANGUAGES if s != t]
-    assert len(routes) == 42
+    assert len(routes) == len(ANALYZABLE_LANGUAGES) * (len(SUPPORTED_LANGUAGES) - 1)

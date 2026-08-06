@@ -22,6 +22,9 @@ class OperationsBusinessLineRegistryTest {
                 "ADMIN_OPERATIONS",
                 OperationsBusinessLineRegistry.classify("/api/v1/operations-observability/console"));
         assertEquals(
+                "MIGRATION_GOVERNANCE",
+                OperationsBusinessLineRegistry.classify("/api/v1/modernization-proof/jobs/123"));
+        assertEquals(
                 "PRODUCT_OVERVIEW",
                 OperationsBusinessLineRegistry.classify("/api/v1/future-capability"));
     }

@@ -43,6 +43,13 @@ trap cleanup EXIT
 
 psql $DSN -q -c "CREATE DATABASE $DB;"
 psql $DSN -d "$DB" -q <<'SQL'
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'elmos_billing_runtime') THEN
+        CREATE ROLE elmos_billing_runtime NOLOGIN;
+    END IF;
+END
+$$;
 CREATE TABLE organizations (organization_id varchar(96) PRIMARY KEY);
 CREATE TABLE payment_checkout_sessions (
     checkout_session_id varchar(96) PRIMARY KEY,
@@ -96,8 +103,8 @@ wait
 winners=$(grep -c WON /tmp/race.$$ || true)
 rows=$(q "SELECT count(*) FROM payment_callback_receipts WHERE provider_event_id='evt-race';")
 rm -f /tmp/race.$$
-[[ "$winners" == "1" ]] && ok "恰好 1 个会话赢得登记（实测 $winners）" \
-                        || bad "赢得登记的会话数为 $winners，应为 1"
+[[ "$winners" == "1" ]] && ok "恰好 1 个会话赢得登记（实测 ${winners}）" \
+                        || bad "赢得登记的会话数为 ${winners}，应为 1"
 [[ "$rows" == "1" ]] && ok "台账只有 1 行" || bad "台账行数为 $rows"
 
 echo "5. 反例：先查后插的两个会话都会看到 0 行"
@@ -164,16 +171,12 @@ matches "$(close_order ord-exp)" "UPDATE 0" && ok "EXPIRED 订单关单影响 0 
 [[ "$(lookup ord-open)" == "1" ]] && ok "关单后仍可查到（COMPLETED 在白名单内）" || bad "关单后查不到了"
 
 echo "8. 运行角色权限"
-if q "SELECT 1 FROM pg_roles WHERE rolname='elmos_billing_runtime';" | grep -q 1; then
-  privs=$(q "SELECT string_agg(DISTINCT privilege_type, ',' ORDER BY privilege_type)
-             FROM information_schema.table_privileges
-             WHERE grantee='elmos_billing_runtime'
-               AND table_name IN ('payment_callback_receipts','payment_unmatched_callbacks');")
-  [[ "$privs" == "INSERT,SELECT" ]] && ok "运行角色只有 INSERT,SELECT（无 UPDATE/DELETE）" \
-                                    || bad "运行角色权限为 $privs"
-else
-  echo "  [SKIP] 未创建 elmos_billing_runtime 角色，跳过权限断言"
-fi
+privs=$(q "SELECT string_agg(DISTINCT privilege_type, ',' ORDER BY privilege_type)
+           FROM information_schema.table_privileges
+           WHERE grantee='elmos_billing_runtime'
+             AND table_name IN ('payment_callback_receipts','payment_unmatched_callbacks');")
+[[ "$privs" == "INSERT,SELECT" ]] && ok "运行角色只有 INSERT,SELECT（无 UPDATE/DELETE）" \
+                                  || bad "运行角色权限为 $privs"
 
 echo
 if [[ "$FAIL" -gt 0 ]]; then

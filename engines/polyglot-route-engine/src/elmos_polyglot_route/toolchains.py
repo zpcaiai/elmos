@@ -108,8 +108,15 @@ def _go() -> ExactToolchain:
     if not executable:
         raise RouteError("EXACT_TOOLCHAIN_UNAVAILABLE:go")
     observed = _output([executable, "version"])
-    expected = "go version go1.25.0 darwin/arm64"
-    if observed != expected:
+    parts = observed.split()
+    supported_platforms = {"darwin/arm64", "linux/amd64"}
+    if (
+        len(parts) != 4
+        or parts[:2] != ["go", "version"]
+        or parts[2] != "go1.25.0"
+        or parts[3] not in supported_platforms
+    ):
+        expected = "go version go1.25.0 {darwin/arm64|linux/amd64}"
         raise RouteError(f"EXACT_TOOLCHAIN_MISMATCH:go:expected={expected}:observed={observed}")
     return ExactToolchain("go", "1.25.0", executable)
 
