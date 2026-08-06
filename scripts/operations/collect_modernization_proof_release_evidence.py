@@ -18,6 +18,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from modernization_proof_release_state import (
+    EXECUTED_AWAITING_VERIFICATION,
+    record_observed_execution,
+    validate_external_boundaries,
+)
+
 
 REPOSITORY = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
 COMMIT = re.compile(r"^[0-9a-f]{40}$")
@@ -45,13 +51,18 @@ def validate_pr(
     """Return a minimal normalized PR observation or fail closed."""
     head = document.get("head") or {}
     base = document.get("base") or {}
-    observed_repository = ((base.get("repo") or {}).get("full_name"))
+    observed_repository = (base.get("repo") or {}).get("full_name")
+    observed_head_repository = (head.get("repo") or {}).get("full_name")
     if document.get("state") != "open":
         raise EvidenceFailure("SCM PR is not open")
     if document.get("draft") is not True:
         raise EvidenceFailure("SCM PR is not a Draft PR")
     if observed_repository != repository:
-        raise EvidenceFailure("SCM PR repository does not match the requested repository")
+        raise EvidenceFailure(
+            "SCM PR repository does not match the requested repository"
+        )
+    if observed_head_repository != repository:
+        raise EvidenceFailure("SCM PR head must be hosted in the requested repository")
     if base.get("ref") != "main":
         raise EvidenceFailure("SCM PR base branch is not main")
     if head.get("sha") != expected_head_sha:
@@ -59,8 +70,8 @@ def validate_pr(
     if not COMMIT.fullmatch(str(head.get("sha", ""))):
         raise EvidenceFailure("SCM PR head is not an exact commit SHA")
     html_url = str(document.get("html_url", ""))
-    expected_prefix = f"https://github.com/{repository}/pull/"
-    if not html_url.startswith(expected_prefix):
+    expected_url = f"https://github.com/{repository}/pull/{int(document['number'])}"
+    if html_url != expected_url:
         raise EvidenceFailure("SCM PR URL is outside the expected repository")
     return {
         "provider": "github",
@@ -112,7 +123,10 @@ def main() -> int:
     if image_receipt.get("source_worktree_clean") is not True:
         raise EvidenceFailure("image receipt source worktree is not clean")
     immutable_reference = image_receipt.get("immutable_reference")
-    if not isinstance(immutable_reference, str) or "@sha256:" not in immutable_reference:
+    if (
+        not isinstance(immutable_reference, str)
+        or "@sha256:" not in immutable_reference
+    ):
         raise EvidenceFailure("image receipt lacks an immutable registry reference")
 
     process = subprocess.run(
@@ -131,11 +145,15 @@ def main() -> int:
     observation["observed_at"] = datetime.now(timezone.utc).isoformat()
     observation["observation_sha256"] = sha256_bytes(canonical_json(observation))
 
-    boundaries = dict(image_receipt.get("external_boundaries") or {})
-    boundaries["SCM_DRAFT_PULL_REQUEST"] = "EXECUTED_AWAITING_INDEPENDENT_VERIFICATION"
-    image_blockers = (
-        (image_receipt.get("production_readiness") or {}).get("blockers") or []
+    image_boundaries = validate_external_boundaries(
+        image_receipt.get("external_boundaries") or {}
     )
+    boundaries = record_observed_execution(
+        image_boundaries, boundary="SCM_DRAFT_PULL_REQUEST"
+    )
+    image_blockers = (image_receipt.get("production_readiness") or {}).get(
+        "blockers"
+    ) or []
     boundary_blockers = [
         f"{operation}_{state}"
         for operation, state in sorted(boundaries.items())
@@ -143,7 +161,7 @@ def main() -> int:
     ]
     blockers = merge_production_blockers(image_blockers, boundary_blockers)
     result = {
-        "schema_version": 1,
+        "schema_version": 2,
         "image_receipt": {
             "path": str(args.image_receipt.resolve()),
             "sha256": sha256_file(args.image_receipt),
@@ -151,6 +169,18 @@ def main() -> int:
             "immutable_reference": immutable_reference,
         },
         "scm_draft_pull_request": observation,
+        "external_evidence": {
+            "SCM_DRAFT_PULL_REQUEST": {
+                "state": EXECUTED_AWAITING_VERIFICATION,
+                "source_commit": source_commit,
+                "immutable_reference": immutable_reference,
+                "executor": observation["author"],
+                "observer": "github-rest-api",
+                "observation_sha256": observation["observation_sha256"],
+                "independent_verifier": None,
+                "authorization_reference": None,
+            }
+        },
         "external_boundaries": boundaries,
         "production_readiness": {
             "status": "NOT_READY",
@@ -161,14 +191,22 @@ def main() -> int:
         "independently_verified": False,
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    print(json.dumps({
-        "output": str(args.output.resolve()),
-        "sha256": sha256_file(args.output),
-        "scm_status": boundaries["SCM_DRAFT_PULL_REQUEST"],
-        "production_ready": False,
-        "certified": False,
-    }, indent=2, sort_keys=True))
+    args.output.write_text(
+        json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    print(
+        json.dumps(
+            {
+                "output": str(args.output.resolve()),
+                "sha256": sha256_file(args.output),
+                "scm_status": boundaries["SCM_DRAFT_PULL_REQUEST"],
+                "production_ready": False,
+                "certified": False,
+            },
+            indent=2,
+            sort_keys=True,
+        )
+    )
     return 0
 
 

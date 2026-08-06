@@ -20,6 +20,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Sequence
 
+from modernization_proof_release_state import (
+    INDEPENDENTLY_VERIFIED,
+    initial_external_boundaries,
+    validate_external_boundaries,
+)
+
 
 IMMUTABLE_REFERENCE = re.compile(
     r"^[a-z0-9][a-z0-9._/-]*(?::[0-9]+)?/?[a-z0-9._/-]*@sha256:[0-9a-f]{64}$"
@@ -29,27 +35,107 @@ TAG = re.compile(r"^[A-Za-z0-9_][A-Za-z0-9_.-]{0,127}$")
 EXPECTED_USER = "65532:65532"
 EXPECTED_ENTRYPOINT = ["java", "-jar", "/opt/elmos/modernization-proof-worker.jar"]
 EXPECTED_CAPABILITY = "modernization:proof-loop"
-VERIFIED_EXTERNAL_STATE = "INDEPENDENTLY_VERIFIED"
+GIT_COMMIT = re.compile(r"^[0-9a-f]{40}$")
 RUNTIME_APKS = {
     "linux/arm64": [
-        ("main", "ca-certificates-20260611-r0.apk", "6b491dcda951129c80e8d7b0f509253ab640b20653b208d3b0994d893189b3f5", 131113),
-        ("community", "java-cacerts-1.1-r0.apk", "5247f58a64cee47ab679fec7919ad1f8f58feae4b127ea2aba5f37d0fb4851f6", 1899),
-        ("community", "java-common-1.0-r0.apk", "9c8c93b3ebe61b4c223dbe04e1775e86335186d492509a684ff01ca9b436d1d6", 1992),
-        ("main", "libffi-3.4.8-r0.apk", "9391f60a14c146655deaf65115563bc8dcd749cf0f93ec567e6443f2ed7d3bfc", 17599),
-        ("main", "libtasn1-4.21.0-r0.apk", "c348eb9a293bbf1ff2d922fe200b525088e0038c0dd5154b68a4b22753e9385f", 34072),
-        ("community", "openjdk21-jre-headless-21.0.11_p10-r0.apk", "ac058a82b572309893238fa1780841e7aa03a777e11b62b9110f6d445edac24b", 64180174),
-        ("main", "p11-kit-0.26.2-r0.apk", "401078e81e024616fc61b7f631baeefe33b43865c638a12be5b8e9b20d1e1f88", 363721),
-        ("main", "p11-kit-trust-0.26.2-r0.apk", "99ab18df98cef4ba2de4b4813911e4bf4349370bd17aac64b83de62ab26a6a12", 149465),
+        (
+            "main",
+            "ca-certificates-20260611-r0.apk",
+            "6b491dcda951129c80e8d7b0f509253ab640b20653b208d3b0994d893189b3f5",
+            131113,
+        ),
+        (
+            "community",
+            "java-cacerts-1.1-r0.apk",
+            "5247f58a64cee47ab679fec7919ad1f8f58feae4b127ea2aba5f37d0fb4851f6",
+            1899,
+        ),
+        (
+            "community",
+            "java-common-1.0-r0.apk",
+            "9c8c93b3ebe61b4c223dbe04e1775e86335186d492509a684ff01ca9b436d1d6",
+            1992,
+        ),
+        (
+            "main",
+            "libffi-3.4.8-r0.apk",
+            "9391f60a14c146655deaf65115563bc8dcd749cf0f93ec567e6443f2ed7d3bfc",
+            17599,
+        ),
+        (
+            "main",
+            "libtasn1-4.21.0-r0.apk",
+            "c348eb9a293bbf1ff2d922fe200b525088e0038c0dd5154b68a4b22753e9385f",
+            34072,
+        ),
+        (
+            "community",
+            "openjdk21-jre-headless-21.0.11_p10-r0.apk",
+            "ac058a82b572309893238fa1780841e7aa03a777e11b62b9110f6d445edac24b",
+            64180174,
+        ),
+        (
+            "main",
+            "p11-kit-0.26.2-r0.apk",
+            "401078e81e024616fc61b7f631baeefe33b43865c638a12be5b8e9b20d1e1f88",
+            363721,
+        ),
+        (
+            "main",
+            "p11-kit-trust-0.26.2-r0.apk",
+            "99ab18df98cef4ba2de4b4813911e4bf4349370bd17aac64b83de62ab26a6a12",
+            149465,
+        ),
     ],
     "linux/amd64": [
-        ("main", "ca-certificates-20260611-r0.apk", "a8ad8f04dfba1a2897388c4b420b698bf1ecd870be10f0127134a567d5e59896", 129495),
-        ("community", "java-cacerts-1.1-r0.apk", "78e4c51f3baf82aa92bbf68e8bafedd24ca2c0ca284d333d3fa8f1d8a3e077ca", 1912),
-        ("community", "java-common-1.0-r0.apk", "623babb08fee70774f215aa9189672aa4b44d800149f83ccd33ec70598da1ae4", 2011),
-        ("main", "libffi-3.4.8-r0.apk", "9a75cb9024693c1e52c3d8d7c9afb7c79e6e20f6c08df28effdb8dd816095083", 18222),
-        ("main", "libtasn1-4.21.0-r0.apk", "ce3d6b63c8fd8c4248028740095c83a6291c334f5f260003c3adc12fb810404e", 33393),
-        ("community", "openjdk21-jre-headless-21.0.11_p10-r0.apk", "66487bbb57861b06482a53868c8c7a37ac7e838c748b2cf696f63df5154a6e09", 65261089),
-        ("main", "p11-kit-0.26.2-r0.apk", "3acc0d16e7e73ce32cdd12f58979809bbaf0ff88f6fff73883307233aab5ce70", 407247),
-        ("main", "p11-kit-trust-0.26.2-r0.apk", "c9979025e072bd4ca4c20a877022a506943ec35742a15f4222323af65077a5af", 145790),
+        (
+            "main",
+            "ca-certificates-20260611-r0.apk",
+            "a8ad8f04dfba1a2897388c4b420b698bf1ecd870be10f0127134a567d5e59896",
+            129495,
+        ),
+        (
+            "community",
+            "java-cacerts-1.1-r0.apk",
+            "78e4c51f3baf82aa92bbf68e8bafedd24ca2c0ca284d333d3fa8f1d8a3e077ca",
+            1912,
+        ),
+        (
+            "community",
+            "java-common-1.0-r0.apk",
+            "623babb08fee70774f215aa9189672aa4b44d800149f83ccd33ec70598da1ae4",
+            2011,
+        ),
+        (
+            "main",
+            "libffi-3.4.8-r0.apk",
+            "9a75cb9024693c1e52c3d8d7c9afb7c79e6e20f6c08df28effdb8dd816095083",
+            18222,
+        ),
+        (
+            "main",
+            "libtasn1-4.21.0-r0.apk",
+            "ce3d6b63c8fd8c4248028740095c83a6291c334f5f260003c3adc12fb810404e",
+            33393,
+        ),
+        (
+            "community",
+            "openjdk21-jre-headless-21.0.11_p10-r0.apk",
+            "66487bbb57861b06482a53868c8c7a37ac7e838c748b2cf696f63df5154a6e09",
+            65261089,
+        ),
+        (
+            "main",
+            "p11-kit-0.26.2-r0.apk",
+            "3acc0d16e7e73ce32cdd12f58979809bbaf0ff88f6fff73883307233aab5ce70",
+            407247,
+        ),
+        (
+            "main",
+            "p11-kit-trust-0.26.2-r0.apk",
+            "c9979025e072bd4ca4c20a877022a506943ec35742a15f4222323af65077a5af",
+            145790,
+        ),
     ],
 }
 
@@ -70,8 +156,12 @@ def run_command(
     command: Sequence[str], *, cwd: Path, log_path: Path, allow_failure: bool = False
 ) -> subprocess.CompletedProcess[str]:
     process = subprocess.run(
-        list(command), cwd=cwd, text=True, stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT, check=False,
+        list(command),
+        cwd=cwd,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        check=False,
     )
     log_path.write_text(process.stdout, encoding="utf-8")
     if process.returncode != 0 and not allow_failure:
@@ -92,17 +182,30 @@ def provision_runtime_apks(platform: str, *, root: Path, output: Path) -> list[P
     result: list[Path] = []
     for repository, name, expected_sha, expected_bytes in RUNTIME_APKS[platform]:
         apk = apk_dir / name
-        if not (apk.is_file() and apk.stat().st_size == expected_bytes
-                and sha256_file(apk) == expected_sha):
+        if not (
+            apk.is_file()
+            and apk.stat().st_size == expected_bytes
+            and sha256_file(apk) == expected_sha
+        ):
             url = (
                 f"https://dl-cdn.alpinelinux.org/alpine/v3.22/{repository}/"
                 f"{architecture}/{name}"
             )
             run_command(
                 [
-                    "curl", "--noproxy", "dl-cdn.alpinelinux.org", "--fail", "--location",
-                    "--retry", "5", "--retry-all-errors", "--continue-at", "-",
-                    "--output", str(apk), url,
+                    "curl",
+                    "--noproxy",
+                    "dl-cdn.alpinelinux.org",
+                    "--fail",
+                    "--location",
+                    "--retry",
+                    "5",
+                    "--retry-all-errors",
+                    "--continue-at",
+                    "-",
+                    "--output",
+                    str(apk),
+                    url,
                 ],
                 cwd=root,
                 log_path=output / f"runtime-apk-{name}.download.log",
@@ -118,7 +221,9 @@ def validate_image_config(inspect: dict[str, Any]) -> None:
     if config.get("User") != EXPECTED_USER:
         raise BuildFailure(f"worker image user must be {EXPECTED_USER}")
     if config.get("Entrypoint") != EXPECTED_ENTRYPOINT:
-        raise BuildFailure("worker image entrypoint does not match the reviewed contract")
+        raise BuildFailure(
+            "worker image entrypoint does not match the reviewed contract"
+        )
     labels = config.get("Labels") or {}
     if labels.get("io.elmos.runner.capability") != EXPECTED_CAPABILITY:
         raise BuildFailure("worker image capability label is absent or incorrect")
@@ -131,7 +236,9 @@ def validate_image_config(inspect: dict[str, Any]) -> None:
 def select_repository_digest(inspect: dict[str, Any], repository: str) -> str:
     candidates = inspect.get("RepoDigests") or []
     for candidate in candidates:
-        if candidate.startswith(repository + "@") and IMMUTABLE_REFERENCE.fullmatch(candidate):
+        if candidate.startswith(repository + "@") and IMMUTABLE_REFERENCE.fullmatch(
+            candidate
+        ):
             return candidate
     raise BuildFailure("registry push did not yield an immutable repository digest")
 
@@ -157,15 +264,23 @@ def source_worktree_is_clean(root: Path) -> bool:
     return not process.stdout.strip()
 
 
-def classify_scout_scan(return_code: int, report: Path) -> dict[str, Any]:
+def classify_scout_scan(
+    return_code: int, report: Path, command_output: str = ""
+) -> dict[str, Any]:
     """Distinguish clean, vulnerable, and unavailable Docker Scout outcomes."""
     if not report.is_file():
+        normalized_output = command_output.lower()
+        if "log in with your docker id" in normalized_output:
+            reason = "DOCKER_SCOUT_AUTHENTICATION_REQUIRED"
+        else:
+            reason = "DOCKER_SCOUT_REPORT_MISSING"
         return {
             "status": "BLOCKED",
             "exit_code": return_code,
             "finding_count": None,
             "report_sha256": None,
-            "reason": "DOCKER_SCOUT_REPORT_MISSING",
+            "report_path": str(report),
+            "reason": reason,
         }
     try:
         document = json.loads(report.read_text(encoding="utf-8"))
@@ -180,6 +295,7 @@ def classify_scout_scan(return_code: int, report: Path) -> dict[str, Any]:
             "exit_code": return_code,
             "finding_count": None,
             "report_sha256": sha256_file(report),
+            "report_path": str(report),
             "reason": "DOCKER_SCOUT_REPORT_INVALID",
         }
     if finding_count > 0 or return_code == 2:
@@ -196,6 +312,7 @@ def classify_scout_scan(return_code: int, report: Path) -> dict[str, Any]:
         "exit_code": return_code,
         "finding_count": finding_count,
         "report_sha256": sha256_file(report),
+        "report_path": str(report),
         "reason": reason,
     }
 
@@ -211,6 +328,7 @@ def evaluate_readiness(
     external_boundaries: dict[str, str],
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     """Evaluate artifact readiness separately from production authorization."""
+    external_boundaries = validate_external_boundaries(external_boundaries)
     artifact_blockers: list[str] = []
     if immutable_reference is None:
         artifact_blockers.append("IMMUTABLE_REGISTRY_DIGEST_MISSING")
@@ -231,7 +349,7 @@ def evaluate_readiness(
     if is_local_registry(repository):
         production_blockers.append("EXTERNAL_REGISTRY_NOT_CONFIGURED")
     for operation, state in sorted(external_boundaries.items()):
-        if state != VERIFIED_EXTERNAL_STATE:
+        if state != INDEPENDENTLY_VERIFIED:
             production_blockers.append(f"{operation}_{state}")
     production = {
         "status": "READY" if not production_blockers else "NOT_READY",
@@ -265,14 +383,29 @@ def smoke_test(reference: str, *, root: Path, evidence_dir: Path) -> dict[str, A
         os.chmod(input_dir / "request.json", 0o644)
         run_command(
             [
-                "docker", "run", "--rm", "--network=none", "--read-only",
-                "--cap-drop=ALL", "--security-opt=no-new-privileges",
-                "--user", EXPECTED_USER, "--pids-limit", "128", "--memory", "512m",
-                "--cpus", "1", "--tmpfs",
+                "docker",
+                "run",
+                "--rm",
+                "--network=none",
+                "--read-only",
+                "--cap-drop=ALL",
+                "--security-opt=no-new-privileges",
+                "--user",
+                EXPECTED_USER,
+                "--pids-limit",
+                "128",
+                "--memory",
+                "512m",
+                "--cpus",
+                "1",
+                "--tmpfs",
                 "/tmp:rw,noexec,nosuid,size=64m,uid=65532,gid=65532",
-                "--env", f"ELMOS_RUNNER_IMAGE_MODERNIZATION_PROOF={reference}",
-                "--mount", f"type=bind,src={input_dir},dst=/elmos/in,readonly",
-                "--mount", f"type=bind,src={output_dir},dst=/elmos/out",
+                "--env",
+                f"ELMOS_RUNNER_IMAGE_MODERNIZATION_PROOF={reference}",
+                "--mount",
+                f"type=bind,src={input_dir},dst=/elmos/in,readonly",
+                "--mount",
+                f"type=bind,src={output_dir},dst=/elmos/out",
                 reference,
             ],
             cwd=root,
@@ -284,10 +417,17 @@ def smoke_test(reference: str, *, root: Path, evidence_dir: Path) -> dict[str, A
         result = json.loads(result_path.read_text(encoding="utf-8"))
         if result.get("externalOperationExecuted") is not False:
             raise BuildFailure("worker falsely reported an external operation")
-        if result.get("productionApproved") is not False or result.get("certified") is not False:
-            raise BuildFailure("worker falsely reported production approval or certification")
+        if (
+            result.get("productionApproved") is not False
+            or result.get("certified") is not False
+        ):
+            raise BuildFailure(
+                "worker falsely reported production approval or certification"
+            )
         persisted = evidence_dir / "container-smoke-result.json"
-        persisted.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        persisted.write_text(
+            json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
         return {
             "status": "PASSED",
             "result_sha256": sha256_file(persisted),
@@ -302,7 +442,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--repository", required=True)
     parser.add_argument("--tag", required=True)
     parser.add_argument("--output-dir", required=True, type=Path)
-    parser.add_argument("--platform", default="linux/arm64", choices=("linux/arm64", "linux/amd64"))
+    parser.add_argument(
+        "--platform", default="linux/arm64", choices=("linux/arm64", "linux/amd64")
+    )
     parser.add_argument("--push", action="store_true")
     parser.add_argument("--scan", action="store_true")
     parser.add_argument(
@@ -324,9 +466,14 @@ def main() -> int:
     output = args.output_dir.resolve()
     output.mkdir(parents=True, exist_ok=True)
     mutable_reference = f"{args.repository}:{args.tag}"
-    source_clean = source_worktree_is_clean(root)
+    source_commit_before = run_command(
+        ["git", "rev-parse", "HEAD"], cwd=root, log_path=output / "git-head-before.log"
+    ).stdout.strip()
+    if not GIT_COMMIT.fullmatch(source_commit_before):
+        raise BuildFailure("source HEAD is not an exact Git commit")
+    source_clean_before = source_worktree_is_clean(root)
     if args.release_candidate:
-        if not source_clean:
+        if not source_clean_before:
             raise SystemExit("release candidate source worktree is not clean")
         if not args.push or not args.scan:
             raise SystemExit("release candidate requires --push and --scan")
@@ -335,8 +482,13 @@ def main() -> int:
 
     run_command(
         [
-            "mvn", "-B", "-pl", "apps/modernization-proof-worker", "-am",
-            "-DskipTests=false", "package",
+            "mvn",
+            "-B",
+            "-pl",
+            "apps/modernization-proof-worker",
+            "-am",
+            "-DskipTests=false",
+            "package",
         ],
         cwd=root,
         log_path=output / "maven-package.log",
@@ -353,10 +505,17 @@ def main() -> int:
 
     run_command(
         [
-            "docker", "buildx", "build", "--load", "--pull=false",
-            "--platform", args.platform,
-            "--tag", mutable_reference,
-            "--file", "apps/modernization-proof-worker/Dockerfile.runtime",
+            "docker",
+            "buildx",
+            "build",
+            "--load",
+            "--pull=false",
+            "--platform",
+            args.platform,
+            "--tag",
+            mutable_reference,
+            "--file",
+            "apps/modernization-proof-worker/Dockerfile.runtime",
             str(output),
         ],
         cwd=root,
@@ -404,41 +563,49 @@ def main() -> int:
             allow_failure=True,
         )
         version_match = re.search(r"version:\s*(v?[^\s]+)", scout_version.stdout)
+        scan_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
+        report = output / f"vulnerabilities-{scan_id}.sarif.json"
         scan_result = run_command(
             [
-                "docker", "scout", "cves", "--exit-code", "--format", "sarif", "--output",
-                str(output / "vulnerabilities.sarif.json"),
-                "--only-severity", "critical,high", f"local://{mutable_reference}",
+                "docker",
+                "scout",
+                "cves",
+                "--exit-code",
+                "--format",
+                "sarif",
+                "--output",
+                str(report),
+                "--only-severity",
+                "critical,high",
+                f"local://{mutable_reference}",
             ],
             cwd=root,
             log_path=output / "docker-scout.log",
             allow_failure=True,
         )
-        report = output / "vulnerabilities.sarif.json"
-        scan = classify_scout_scan(scan_result.returncode, report)
-        scan.update({
-            "provider": "docker-scout",
-            "tool_version": version_match.group(1) if version_match else None,
-            "severity_scope": ["critical", "high"],
-        })
+        scan = classify_scout_scan(scan_result.returncode, report, scan_result.stdout)
+        scan.update(
+            {
+                "provider": "docker-scout",
+                "tool_version": version_match.group(1) if version_match else None,
+                "severity_scope": ["critical", "high"],
+            }
+        )
 
-    git_sha = run_command(
-        ["git", "rev-parse", "HEAD"], cwd=root, log_path=output / "git-head.log"
+    source_commit_after = run_command(
+        ["git", "rev-parse", "HEAD"], cwd=root, log_path=output / "git-head-after.log"
     ).stdout.strip()
+    if source_commit_after != source_commit_before:
+        raise BuildFailure("source HEAD changed while the image was being built")
+    source_clean_after = source_worktree_is_clean(root)
+    source_clean = source_clean_before and source_clean_after
     image_contract = {
         "status": "PASSED",
         "user": EXPECTED_USER,
         "entrypoint": EXPECTED_ENTRYPOINT,
         "capability": EXPECTED_CAPABILITY,
     }
-    external_boundaries = {
-        "REAL_CLOUD_PROVIDER": "NOT_RUN",
-        "SCM_DRAFT_PULL_REQUEST": "NOT_RUN",
-        "CUSTOMER_ACCEPTANCE": "NOT_RUN",
-        "INDEPENDENT_REVIEW": "NOT_RUN",
-        "PRODUCTION_DEPLOYMENT": "NOT_RUN",
-        "EXTERNAL_CERTIFICATION": "NOT_RUN",
-    }
+    external_boundaries = initial_external_boundaries()
     artifact_readiness, production_readiness = evaluate_readiness(
         repository=args.repository,
         immutable_reference=immutable_reference,
@@ -451,12 +618,18 @@ def main() -> int:
     receipt = {
         "schema_version": 2,
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "source_commit": git_sha,
+        "source_commit": source_commit_before,
         "source_worktree_clean": source_clean,
+        "source_worktree_clean_before": source_clean_before,
+        "source_worktree_clean_after": source_clean_after,
         "platform": args.platform,
         "jar_sha256": sha256_file(jar),
         "runtime_apks": [
-            {"name": apk.name, "sha256": sha256_file(apk), "byte_count": apk.stat().st_size}
+            {
+                "name": apk.name,
+                "sha256": sha256_file(apk),
+                "byte_count": apk.stat().st_size,
+            }
             for apk in runtime_apks
         ],
         "local_image_id": local_inspect.get("Id"),
@@ -464,13 +637,20 @@ def main() -> int:
         "immutable_reference": immutable_reference,
         "environment_assignment": (
             f"ELMOS_RUNNER_IMAGE_MODERNIZATION_PROOF={immutable_reference}"
-            if immutable_reference else None
+            if immutable_reference
+            else None
         ),
         "runtime_environment": {
-            "path": str(runtime_environment) if immutable_reference is not None else None,
-            "sha256": sha256_file(runtime_environment) if immutable_reference is not None else None,
+            "path": str(runtime_environment)
+            if immutable_reference is not None
+            else None,
+            "sha256": sha256_file(runtime_environment)
+            if immutable_reference is not None
+            else None,
             "mode": "0600" if immutable_reference is not None else None,
-            "status": "CONFIGURED" if immutable_reference is not None else "NOT_CONFIGURED",
+            "status": "CONFIGURED"
+            if immutable_reference is not None
+            else "NOT_CONFIGURED",
         },
         "image_contract": image_contract,
         "container_smoke": smoke,
@@ -482,20 +662,31 @@ def main() -> int:
         "certified": False,
     }
     receipt_path = output / "image-build-receipt.json"
-    receipt_path.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    print(json.dumps({
-        "receipt": str(receipt_path),
-        "receipt_sha256": sha256_file(receipt_path),
-        "immutable_reference": immutable_reference,
-        "environment_assignment": receipt["environment_assignment"],
-        "scan_status": scan["status"],
-        "artifact_readiness": artifact_readiness["status"],
-        "production_ready": production_readiness["status"] == "READY",
-        "certified": False,
-    }, indent=2, sort_keys=True))
+    receipt_path.write_text(
+        json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    print(
+        json.dumps(
+            {
+                "receipt": str(receipt_path),
+                "receipt_sha256": sha256_file(receipt_path),
+                "immutable_reference": immutable_reference,
+                "environment_assignment": receipt["environment_assignment"],
+                "scan_status": scan["status"],
+                "artifact_readiness": artifact_readiness["status"],
+                "production_ready": production_readiness["status"] == "READY",
+                "certified": False,
+            },
+            indent=2,
+            sort_keys=True,
+        )
+    )
     if immutable_reference is None:
         return 3
-    if args.release_candidate and artifact_readiness["status"] != "READY_FOR_EXTERNAL_GATE":
+    if (
+        args.release_candidate
+        and artifact_readiness["status"] != "READY_FOR_EXTERNAL_GATE"
+    ):
         return 4
     return 0
 

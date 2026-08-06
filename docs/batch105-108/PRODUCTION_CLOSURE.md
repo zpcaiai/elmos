@@ -60,7 +60,10 @@ The image builder distinguishes three decisions:
 Use `--release-candidate` only with an external registry. It fails closed unless
 `--push` and `--scan` are supplied, the source tree is clean and the artifact
 gate passes. Docker Scout exit code 2 is recorded as `FAILED`; authentication,
-network or missing-report failures are `BLOCKED`, never a pass.
+network or missing-report failures are `BLOCKED`, never a pass. Every scan uses
+a new SARIF path so a failed invocation cannot reuse a previous clean report.
+The builder binds the image to the same exact Git commit and checks source
+cleanliness both before and after the build.
 
 After opening a real Draft PR, collect its exact read-only observation with:
 
@@ -74,6 +77,22 @@ python3 scripts/operations/collect_modernization_proof_release_evidence.py \
 The PR head must equal the image source commit. This records the operation as
 executed but awaiting independent verification; it does not self-approve,
 deploy, merge or certify the candidate.
+
+Re-evaluate both receipts without trusting their status fields:
+
+```text
+python3 scripts/operations/run_modernization_proof_release_gate.py \
+  --image-receipt <image-build-receipt.json> \
+  --release-closure <release-closure-receipt.json> \
+  --output <release-gate-result.json>
+```
+
+The gate verifies content bindings, exact external-boundary keys and allowed
+transitions, the immutable image/environment assignment, restricted smoke
+evidence, authenticated vulnerability evidence, distinct executor/verifier
+identities and required raw evidence roles. Its maximum local decision is
+`READY_FOR_EXTERNAL_GATE`; it always emits `production_ready=false` and
+`certified=false`.
 
 ## Local qualification
 
@@ -94,10 +113,13 @@ success.
 ## Evidence boundary
 
 Source validation, Java tests, TypeScript compilation, local browser tests and
-the packaged-worker smoke run are engineering evidence only. Provider
-provisioning, native language toolchains, real service/browser journeys,
-independent holdout, customer acceptance, SCM checks, commercial review and
-production deployment remain `NOT_RUN` until separately authorized and backed
-by exact immutable evidence. The highest certificate level is emitted only by
-B108-S16 after the ordered ladder and cleanup prerequisites are satisfied; the
-result still does not approve deployment or certify the product.
+the packaged-worker smoke run are engineering evidence only. Every image build
+starts all six external boundaries at `NOT_RUN`. A separate closure receipt may
+advance only a boundary that was really observed; for example, an existing
+Draft PR becomes `EXECUTED_AWAITING_INDEPENDENT_VERIFICATION` and must not be
+rewritten to `NOT_RUN`. Provider provisioning, native language toolchains, real
+service/browser journeys, independent holdout, customer acceptance, commercial
+review and production deployment remain `NOT_RUN` until separately authorized
+and backed by exact immutable evidence. The highest certificate level is
+emitted only by B108-S16 after the ordered ladder and cleanup prerequisites are
+satisfied; the result still does not approve deployment or certify the product.

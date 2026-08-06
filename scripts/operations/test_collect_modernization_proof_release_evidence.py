@@ -14,7 +14,11 @@ class CollectModernizationProofReleaseEvidenceTest(unittest.TestCase):
             "draft": True,
             "html_url": "https://github.com/zpcaiai/elmos/pull/42",
             "user": {"login": "release-engineer"},
-            "head": {"sha": "a" * 40, "ref": "codex/release"},
+            "head": {
+                "sha": "a" * 40,
+                "ref": "codex/release",
+                "repo": {"full_name": "zpcaiai/elmos"},
+            },
             "base": {"ref": "main", "repo": {"full_name": "zpcaiai/elmos"}},
         }
 
@@ -51,6 +55,20 @@ class CollectModernizationProofReleaseEvidenceTest(unittest.TestCase):
         with self.assertRaises(subject.EvidenceFailure):
             subject.validate_pr(
                 wrong_base, repository="zpcaiai/elmos", expected_head_sha="a" * 40
+            )
+
+    def test_rejects_fork_head_and_spoofed_url(self):
+        fork = self.pr()
+        fork["head"]["repo"]["full_name"] = "attacker/elmos"
+        with self.assertRaises(subject.EvidenceFailure):
+            subject.validate_pr(
+                fork, repository="zpcaiai/elmos", expected_head_sha="a" * 40
+            )
+        spoofed = self.pr()
+        spoofed["html_url"] = "https://github.com/zpcaiai/elmos/pull/42/files"
+        with self.assertRaises(subject.EvidenceFailure):
+            subject.validate_pr(
+                spoofed, repository="zpcaiai/elmos", expected_head_sha="a" * 40
             )
 
     def test_release_blockers_keep_image_failures_and_replace_stale_pr_state(self):
