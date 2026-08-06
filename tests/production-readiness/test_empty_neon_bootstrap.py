@@ -25,7 +25,7 @@ class EmptyNeonBootstrapTests(unittest.TestCase):
         expected = list(range(1, observed[-1] + 1))
         self.assertEqual(expected, observed)
         self.assertIn(52, observed)
-        self.assertGreaterEqual(observed[-1], 63)
+        self.assertGreaterEqual(observed[-1], 64)
         self.assertEqual(-1305174584, migrations[0].checksum)
         self.assertEqual(410399635, migrations[1].checksum)
         self.assertEqual(1595351014, migrations[2].checksum)

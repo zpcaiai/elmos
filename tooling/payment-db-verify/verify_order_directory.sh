@@ -30,6 +30,7 @@ DATABASE_URL="${DATABASE_URL:?DATABASE_URL 未设置}"
 # 按文件名而不是版本号定位：迁移编号会变（本文件最初编号 V55，与既有迁移撞号后改为 V62），
 # 把版本号写死等于让脚本随时可能指向一个不存在的文件。
 MIGRATION="${MIGRATION:-$(ls modules/persistence/src/main/resources/db/migration/V*__payment_order_directory.sql 2>/dev/null | head -1)}"
+HARDENING_MIGRATION="${HARDENING_MIGRATION:-$(ls modules/persistence/src/main/resources/db/migration/V*__payment_order_directory_trigger_security.sql 2>/dev/null | head -1)}"
 
 pass=0
 fail=0
@@ -92,8 +93,8 @@ ORD_A="checkout-$SUFFIX-a"
 ORD_B="checkout-$SUFFIX-b"
 
 if [ "$MODE" = fixture ]; then
-    if [ ! -f "$MIGRATION" ]; then
-        echo "NOT_RUN: 找不到迁移文件。请在仓库根目录运行，或设置 MIGRATION=。"
+    if [ ! -f "$MIGRATION" ] || [ ! -f "$HARDENING_MIGRATION" ]; then
+        echo "NOT_RUN: 找不到订单目录或触发器加固迁移。请在仓库根目录运行，或设置 MIGRATION=/HARDENING_MIGRATION=。"
         exit 3
     fi
     psql "$DATABASE_URL" -q >/dev/null <<SQL
@@ -142,6 +143,7 @@ SQL
     echo
     echo "== 应用订单目录迁移 =="
     psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -q -f "$MIGRATION" >/dev/null
+    psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -q -f "$HARDENING_MIGRATION" >/dev/null
 
     echo
     echo "== 回填 =="
@@ -184,6 +186,16 @@ fi
 # ---------------------------------------------------------------------------
 # 以下断言两种模式都跑
 # ---------------------------------------------------------------------------
+
+echo
+echo "== 触发器最小权限边界 =="
+check "同步函数以 SECURITY DEFINER 执行" \
+    "$(q "SELECT prosecdef FROM pg_proc WHERE oid='elmos_sync_payment_order_directory()'::regprocedure")" "t"
+check "同步函数 search_path 固定且 pg_temp 最后" \
+    "$(q "SELECT array_to_string(proconfig, ',') FROM pg_proc WHERE oid='elmos_sync_payment_order_directory()'::regprocedure")" \
+    "search_path=pg_catalog,public,pg_temp"
+check "运行角色不能直接执行同步函数" \
+    "$(q "SELECT has_function_privilege('elmos_billing_runtime', 'elmos_sync_payment_order_directory()', 'EXECUTE')")" "f"
 
 echo
 echo "== 租户隔离没有被削弱 =="

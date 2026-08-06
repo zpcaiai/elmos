@@ -39,9 +39,9 @@ public final class MigrationRuleSelfTest {
     }
 
     public static void main(String[] args) throws Exception {
-        int[] current = IntStream.rangeClosed(1, 63).toArray();
+        int[] current = IntStream.rangeClosed(1, 64).toArray();
 
-        check("当前真实版本集（V1–V63，严格连续）应通过",
+        check("当前真实版本集（V1–V64，严格连续）应通过",
                 evaluate(scenario("cur", current)) == null);
 
         int[] lowerContiguous = IntStream.rangeClosed(1, 54).toArray();
@@ -60,8 +60,8 @@ public final class MigrationRuleSelfTest {
         check("V52 被删除 -> 失败: " + r3, r3 != null && r3.contains("52"));
 
         int[] next = Arrays.copyOf(current, current.length + 1);
-        next[current.length] = 64;
-        check("正常新增 V64 -> 通过（不必再改测试）",
+        next[current.length] = 65;
+        check("正常新增 V65 -> 通过（不必再改测试）",
                 evaluate(scenario("next", next)) == null);
 
         int[] twoGaps = Arrays.stream(next).filter(v -> v != 40 && v != 41).toArray();
