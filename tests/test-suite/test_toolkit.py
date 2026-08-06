@@ -35,7 +35,9 @@ class ToolkitTests(unittest.TestCase):
         cls.fixture_temp = tempfile.TemporaryDirectory()
         cls.fixture_root = Path(cls.fixture_temp.name)
         cls.suite = cls.fixture_root / "suite"
-        shutil.copytree(SUITE_SOURCE, cls.suite)
+        # The live suite now carries real per-case evidence directories; the
+        # certification fixture builds its own from scratch, so start clean.
+        shutil.copytree(SUITE_SOURCE, cls.suite, ignore=shutil.ignore_patterns("evidence"))
         (cls.suite / "release-gate.json").unlink(missing_ok=True)
         cls.trust_root = cls.fixture_root / "trust"
         cls.trust_root.mkdir()
@@ -296,8 +298,28 @@ class ToolkitTests(unittest.TestCase):
     def test_gate_rejects_not_run(self):
         with tempfile.TemporaryDirectory() as directory:
             destination = Path(directory) / "suite"
-            shutil.copytree(SUITE_SOURCE, destination)
+            shutil.copytree(SUITE_SOURCE, destination, ignore=shutil.ignore_patterns("evidence"))
             (destination / "release-gate.json").unlink(missing_ok=True)
+            # Pin the fixture to a pristine never-run suite so the assertion below
+            # stays exact as real cases get executed against the live suite.
+            catalog = json.loads((destination / "cases/catalog.json").read_text())
+            for case in catalog["cases"]:
+                (destination / "results" / f"{case['id']}.json").write_text(
+                    json.dumps(
+                        {
+                            "case_id": case["id"],
+                            "status": "not-run",
+                            "artifact_digest": "sha256:" + "0" * 64,
+                            "environment_digest": "sha256:" + "0" * 64,
+                            "started_at": "",
+                            "finished_at": "",
+                            "evidence": [],
+                        },
+                        ensure_ascii=False,
+                    )
+                    + "\n",
+                    encoding="utf-8",
+                )
             result = self.run_gate(destination, signed=False)
             gate = json.loads((destination / "release-gate.json").read_text())
             self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
