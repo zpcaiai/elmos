@@ -85,20 +85,25 @@ test.describe("多语言项目生成 UI", () => {
   });
 
   test("错误凭证失败关闭且不能绕过需求审阅", async ({ page }) => {
-    let observedAuthorization = "";
-    await page.route("**/api/generation/analyze", async (route) => {
-      observedAuthorization = route.request().headers().authorization ?? "";
-      await route.fulfill({
-        status: 403,
-        json: { reason: "AUTHENTICATION_REQUIRED" },
-      });
-    });
     await page.goto("/generation");
     await page.getByLabel("本地 Runner 令牌").fill("incorrect-browser-token-000000");
     await page.getByRole("button", { name: "锁定生成计划" }).click();
+    const blockedAnalysis = page.waitForResponse((response) => {
+      const url = new URL(response.url());
+      return url.pathname === "/api/generation/analyze"
+        && response.request().method() === "POST";
+    });
     await page.getByRole("button", { name: "分析并整理需求" }).click();
+    const response = await blockedAnalysis;
+    expect(response.status()).toBe(401);
+    expect(await response.json()).toEqual({
+      status: "BLOCKED",
+      reason: "AUTHENTICATION_REQUIRED",
+    });
+    expect(response.request().headers().authorization).toBe(
+      "Bearer incorrect-browser-token-000000",
+    );
     await expect(page.getByText("需求分析被阻断：AUTHENTICATION_REQUIRED")).toBeVisible();
-    expect(observedAuthorization).toBe("Bearer incorrect-browser-token-000000");
     await expect(
       page.getByRole("checkbox", { name: /我已审阅结构化需求/ }),
     ).toBeDisabled();
