@@ -12,6 +12,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 IMPORTER = ROOT / "tooling" / "import_product_closure_convergence.py"
+INSTALLED_VALIDATOR = ROOT / "tooling" / "validate_product_closure_convergence_installed.py"
+BATCH56_SOURCE = ROOT / "elmos-codex-skills-batch56a-product-closure" / "manifest.json"
+CONVERGENCE_SOURCE = ROOT / "elmos-product-convergence-reference-skills" / "manifest.json"
 CLOSURE_GATE = ROOT / "scripts" / "product-closure-batch56a" / "run_product_closure_gate.py"
 CONVERGENCE_GATE = ROOT / "scripts" / "product-convergence" / "run_repository_convergence_gate.py"
 CONVERGENCE_VALIDATOR = (
@@ -220,9 +223,11 @@ class ProductClosureConvergenceIntegrationTest(unittest.TestCase):
             check=False,
         )
 
-    def test_importer_verifies_exact_installation(self) -> None:
+    def test_distribution_verifies_exact_installation(self) -> None:
+        complete_sources = BATCH56_SOURCE.is_file() and CONVERGENCE_SOURCE.is_file()
+        verifier = IMPORTER if complete_sources else INSTALLED_VALIDATOR
         result = subprocess.run(
-            [sys.executable, str(IMPORTER)],
+            [sys.executable, str(verifier)],
             cwd=ROOT,
             text=True,
             capture_output=True,
@@ -230,9 +235,16 @@ class ProductClosureConvergenceIntegrationTest(unittest.TestCase):
         )
         self.assertEqual(0, result.returncode, result.stderr + result.stdout)
         report = json.loads(result.stdout)
-        self.assertEqual(16, report["batch56a_runtime_skills"])
-        self.assertEqual(32, report["convergence_agent_skills"])
-        self.assertEqual(48, report["skill_creator_compatible_validation"])
+        if complete_sources:
+            self.assertEqual(16, report["batch56a_runtime_skills"])
+            self.assertEqual(32, report["convergence_agent_skills"])
+            self.assertEqual(48, report["skill_creator_compatible_validation"])
+        else:
+            self.assertEqual("INSTALLED_ARTIFACTS_VERIFIED", report["decision"])
+            self.assertEqual(16, report["batch56a_skills"])
+            self.assertEqual(32, report["convergence_skills"])
+            self.assertFalse(report["source_packages_validated"])
+            self.assertEqual("NOT_CERTIFIED", report["certification"])
         self.assertEqual("NOT_RUN", report["external_evidence"])
 
     def test_batch56_normalizes_provenance_without_invalid_frontmatter(self) -> None:

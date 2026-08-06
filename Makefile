@@ -112,11 +112,16 @@ product-batch56-skills:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml python tooling/import_product_batch56_closure.py
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml python -m unittest discover -s tests/product-closure-batch56 -p 'test_*.py'
 product-closure-convergence-skills:
-	cd elmos-codex-skills-batch56a-product-closure && ./validate.sh
-	cd elmos-product-convergence-reference-skills && PYTHONDONTWRITEBYTECODE=1 python3 scripts/product-convergence/validate_skill_bundle.py .
-	cd elmos-product-convergence-reference-skills && PYTHONDONTWRITEBYTECODE=1 python3 scripts/product-convergence/validate_convergence_bundle.py product-convergence
-	cd elmos-product-convergence-reference-skills && PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests/product-convergence/test_toolkit.py
-	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml python tooling/import_product_closure_convergence.py
+	@if test -f elmos-codex-skills-batch56a-product-closure/manifest.json && test -f elmos-product-convergence-reference-skills/manifest.json; then \
+		cd elmos-codex-skills-batch56a-product-closure && ./validate.sh && \
+		cd ../elmos-product-convergence-reference-skills && PYTHONDONTWRITEBYTECODE=1 python3 scripts/product-convergence/validate_skill_bundle.py . && \
+		PYTHONDONTWRITEBYTECODE=1 python3 scripts/product-convergence/validate_convergence_bundle.py product-convergence && \
+		PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests/product-convergence/test_toolkit.py && \
+		cd .. && PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml python tooling/import_product_closure_convergence.py; \
+	else \
+		PYTHONDONTWRITEBYTECODE=1 python3 tooling/validate_product_closure_convergence_installed.py && \
+		PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests.test_product_closure_convergence_installed; \
+	fi
 	cd batch46-product-convergence-complete-skills && PYTHONDONTWRITEBYTECODE=1 python3 scripts/batch46-complete/validate_skill_bundle.py .
 	cd batch46-product-convergence-complete-skills && PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with 'jsonschema>=4.23' python scripts/batch46-complete/validate_convergence_pack.py convergence-packs/reference-product
 	cd batch46-product-convergence-complete-skills && PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with 'jsonschema>=4.23' python -m unittest discover -s tests/batch46-complete -p 'test_toolkit.py'
