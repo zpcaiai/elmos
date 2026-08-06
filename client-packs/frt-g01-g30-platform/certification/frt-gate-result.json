@@ -1,5 +1,6 @@
 {
   "schema_version": 1,
+  "gate_request_sha256": "sha256:55613acd69a3ef232b989e42a0f889a5bd666c5c8812ca89ae1974b167a65e33",
   "package": "FRT_G01_G30_Complete_Skills_Pack",
   "batch_count": 30,
   "skill_count": 472,
@@ -23,5 +24,5 @@
   "production_certification": "NOT_CERTIFIED",
   "production_operation_authorized": false,
   "external_trust_store_sha256": null,
-  "result_digest": "sha256:d0e0397ac091fbe5288122f15c208f7f12e8b7202896374c08cda0b507f120a8"
+  "result_digest": "sha256:65ec67dce03e3cd78a96a90be28fd8ce35a163fa8eed63bfe9be5586d5e474da"
 }

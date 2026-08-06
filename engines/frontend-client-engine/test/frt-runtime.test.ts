@@ -219,6 +219,7 @@ function runnerCompletion(
   options: {
     readonly exitStatus?: FrtRunnerCompletion["exitStatus"];
     readonly customerCodeExecuted?: boolean;
+    readonly productionOperationExecuted?: boolean;
     readonly evidence?: readonly FrtEvidenceReference[];
     readonly artifacts?: FrtRunnerCompletion["artifacts"];
     readonly keyId?: string;
@@ -231,7 +232,7 @@ function runnerCompletion(
     startedAt: "2026-07-31T12:00:00Z",
     finishedAt: "2026-07-31T12:30:00Z",
     customerCodeExecuted: options.customerCodeExecuted ?? true,
-    productionOperationExecuted: false,
+    productionOperationExecuted: options.productionOperationExecuted ?? false,
     artifacts: options.artifacts ?? [{
       name: "target-workspace",
       uri: "file:///tmp/frt-runner/target-workspace.tar",
@@ -332,6 +333,13 @@ test("runtime contract rejects unknown actions and additional properties", () =>
   } as unknown as FrtSkillRunRequest);
   assert.equal(extraProperty.state, "FAILED");
   assert.ok(extraProperty.findings.some(item => item.message.includes("unexpectedCustomerField")));
+
+  const unknownSkill = runtime.run(request("FRT-9999", "PLAN", { key: "unknown-skill" }));
+  assert.equal(unknownSkill.state, "FAILED");
+  assert.equal(unknownSkill.capabilityKey, "frt.unknown.request-rejected");
+  assert.equal(unknownSkill.batch, "UNKNOWN");
+  assert.equal(unknownSkill.certificateFragment.batch, "UNKNOWN");
+  assert.equal(unknownSkill.certificateFragment.eligibleForBatchGate, false);
 });
 
 test("runtime action enum remains aligned with the checked-in JSON Schema", () => {
@@ -764,7 +772,7 @@ test("duplicate evidence roles and invalid attestations fail closed", () => {
   assert.ok(signatureResult.findings.some(item => item.code === "FRT_EVIDENCE_ATTESTATION_INVALID"));
 });
 
-test("idempotency is tenant scoped and rejects changed-input reuse", () => {
+test("idempotency is exact-resource scoped and rejects changed-input reuse", () => {
   const runtime = createRuntime();
   const first = runtime.run(request("FRT-0101", "PLAN", { key: "same-key" }));
   const replay = runtime.run(request("FRT-0101", "PLAN", { key: "same-key" }));
@@ -775,6 +783,15 @@ test("idempotency is tenant scoped and rejects changed-input reuse", () => {
   }));
   assert.equal(conflict.state, "FAILED");
   assert.ok(conflict.findings.some(item => item.message.includes("idempotency")));
+
+  const otherWorkspace = runtime.run({
+    ...request("FRT-0101", "PLAN", { key: "same-key" }),
+    context: { ...context, workspaceId: "workspace-other" },
+  });
+  assert.equal(otherWorkspace.state, "SUCCEEDED");
+  assert.notEqual(otherWorkspace.runId, first.runId);
+  assert.equal(runtime.getRun(scope, otherWorkspace.runId), undefined);
+  assert.equal(runtime.getRun(otherWorkspace.executionScope, otherWorkspace.runId)?.runId, otherWorkspace.runId);
 });
 
 test("batch plans are ordered and preserve the linear certificate dependency", () => {
@@ -912,6 +929,28 @@ test("an attested runner completion closes the EXECUTE lifecycle without certify
   const persisted = restarted.getRun(scope, queued.runId)!;
   assert.equal(persisted.state, "SUCCEEDED");
   assert.equal(persisted.version, completed.version);
+});
+
+test("a local runner cannot claim that it performed a production operation", () => {
+  const runtime = createRuntime();
+  const queued = runtime.run(request("FRT-0100", "EXECUTE", {
+    key: "runner-production-authority",
+    input: governanceExecuteInput,
+  }));
+  const running = runtime.claim(scope, queued.runId, queued.version, "runner-alpha")!;
+  const blocked = runtime.complete(
+    scope,
+    queued.runId,
+    running.version,
+    "runner-alpha",
+    runnerCompletion("runner-alpha", { productionOperationExecuted: true }),
+  )!;
+  assert.equal(blocked.state, "BLOCKED");
+  assert.equal(blocked.outcome, "BLOCKED_BY_PRODUCTION_AUTHORITY");
+  assert.equal(blocked.productionOperationExecuted, false);
+  assert.ok(blocked.findings.some(
+    item => item.code === "FRT_PRODUCTION_OPERATION_AUTHORITY_EXTERNAL" && item.blocking,
+  ));
 });
 
 test("runner completion rejects stale versions, unclaimed runs, and mismatched runner identity", () => {

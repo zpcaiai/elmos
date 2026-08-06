@@ -15,6 +15,7 @@ export * from "./frt-run-store.js";
 export * from "./frt-artifact-store.js";
 export * from "./frt-evidence.js";
 export * from "./frt-semantic-handlers.js";
+export * from "./frt-production-contract.js";
 export * from "./directional-route.js";
 export * from "./frt-route-ir.js";
 export * from "./frt-typed-gap-catalog.js";

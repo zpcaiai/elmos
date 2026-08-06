@@ -29,6 +29,15 @@
     },
     "prerequisiteCertificates": { "type": "array", "items": { "$ref": "#/$defs/certificate" } },
     "evidence": { "type": "array", "items": { "$ref": "#/$defs/evidence" } },
+    "verificationSubject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["runId", "resultDigest"],
+      "properties": {
+        "runId": { "type": "string", "pattern": "^[a-f0-9]{24}$" },
+        "resultDigest": { "$ref": "#/$defs/digest" }
+      }
+    },
     "input": { "type": "object" }
   },
   "$defs": {

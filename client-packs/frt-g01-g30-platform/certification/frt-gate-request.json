@@ -13,13 +13,13 @@
         },
         {
           "path": "scripts/batch32/run_client_gate.py",
-          "sha256": "sha256:9489498a2999e97066c2ed61ca3b59026f958667691db562bb683d6603991694",
-          "bytes": 9034
+          "sha256": "sha256:40935aee8aa75625b0ba85fe2f8b4b471840d81ca2d3db2ca0107aafbdbf42c5",
+          "bytes": 15410
         },
         {
           "path": "client-packs/frt-g01-g30-platform/certification/local-validation-evidence.json",
-          "sha256": "sha256:a1f6e000cc0573638a7977d0a299c0f8d6d5bdb434ed6d4d365b5696b0b2591e",
-          "bytes": 10932
+          "sha256": "sha256:00a1d6d52dd8503d8c8fcfa3941d360ebb9f50646438d10a06617c47e50deae6",
+          "bytes": 15654
         }
       ]
     },
@@ -28,18 +28,23 @@
       "evidence_refs": [
         {
           "path": "docs/frt-g01-g30/installed-manifest.json",
-          "sha256": "sha256:70e05fa804ab8de3df0c3dcf665f23fc06feb183611345e8ffd6240301a05e31",
-          "bytes": 1095342
+          "sha256": "sha256:a09f6fab75c3c050873a557ace309041a56d1443a3a825347ead9b36fb1a7658",
+          "bytes": 1202112
+        },
+        {
+          "path": "docs/frt-g01-g30/compiled-skill-contracts.json",
+          "sha256": "sha256:f757ac8014166a974f761793dbf8fb8dbcf37bdd4db77dfac21280d36aca3bf3",
+          "bytes": 1484495
         },
         {
           "path": "scripts/frt/validate_frt_platform.py",
-          "sha256": "sha256:9050636f93adb97edf0b6d35a7088fa6835f741ba70d7aab20c1833105bffb61",
-          "bytes": 8161
+          "sha256": "sha256:e05a35f318958fd3ba8d4544090a9062619bdb73bb247e18457b751f0ceb891f",
+          "bytes": 17538
         },
         {
           "path": "client-packs/frt-g01-g30-platform/certification/local-validation-evidence.json",
-          "sha256": "sha256:a1f6e000cc0573638a7977d0a299c0f8d6d5bdb434ed6d4d365b5696b0b2591e",
-          "bytes": 10932
+          "sha256": "sha256:00a1d6d52dd8503d8c8fcfa3941d360ebb9f50646438d10a06617c47e50deae6",
+          "bytes": 15654
         }
       ]
     },
@@ -48,18 +53,43 @@
       "evidence_refs": [
         {
           "path": "engines/frontend-client-engine/src/frt-contract-validation.ts",
-          "sha256": "sha256:ddb89a1191162e2ef06a814304cc9eede722fbffa1c69b10ba72efa6a6538a27",
-          "bytes": 12849
+          "sha256": "sha256:d49461c4157f9f92b89cf33338623fb3e49768d8cf825adc9949e37a73b66731",
+          "bytes": 13604
+        },
+        {
+          "path": "engines/frontend-client-engine/src/frt-production-contract.ts",
+          "sha256": "sha256:d00ebc0e310814d4399c27b9abecfe7ee1587533f9e565c399d60c0773c81733",
+          "bytes": 8714
         },
         {
           "path": "engines/frontend-client-engine/src/server.ts",
-          "sha256": "sha256:431f46560d72119619a1821f37f5d8f4b63d502d189ae48f228c6f257dd32a2f",
-          "bytes": 15603
+          "sha256": "sha256:6ea742f84b542aa55af6f3d2b1e0b50ad577308910aa036294309f809fe0a1c6",
+          "bytes": 17770
         },
         {
           "path": "engines/frontend-client-engine/test/server.test.ts",
-          "sha256": "sha256:f1c0873ad24dbe6fc25bf413816884fd51353856dad86bf5f44523f2222f4409",
-          "bytes": 21341
+          "sha256": "sha256:8b664ac42f23299121857bf294da8c89b8599108f2129044d22cfc9a746b8e9f",
+          "bytes": 25321
+        },
+        {
+          "path": "engines/frontend-client-engine/test/frt-production-contract.test.ts",
+          "sha256": "sha256:d17b0ee8b1e5ecdfd9975d08e78a4950f19b0b30abdfa57ee270a306edcca124",
+          "bytes": 5451
+        },
+        {
+          "path": "schemas/frt-g01-g30/skill-execution-contract.schema.json",
+          "sha256": "sha256:66bb24272431e007988fd48fde38bf86abf4fc7b0f67c8e2166e5533c3b5fcc6",
+          "bytes": 4538
+        },
+        {
+          "path": "schemas/frt-g01-g30/gate-result.schema.json",
+          "sha256": "sha256:fc5cb368e9ab90011ffef930b72cdeb614c777228497f9f3a3b546a7db333667",
+          "bytes": 2685
+        },
+        {
+          "path": "scripts/frt/run_frt_gate.py",
+          "sha256": "sha256:5c8e3c54abe13789a1436e597a8bb3d8d15a44525ff78f01a510aae529d73d18",
+          "bytes": 8181
         }
       ]
     },
@@ -73,18 +103,18 @@
         },
         {
           "path": "engines/frontend-client-engine/test/server.test.ts",
-          "sha256": "sha256:f1c0873ad24dbe6fc25bf413816884fd51353856dad86bf5f44523f2222f4409",
-          "bytes": 21341
+          "sha256": "sha256:8b664ac42f23299121857bf294da8c89b8599108f2129044d22cfc9a746b8e9f",
+          "bytes": 25321
         },
         {
           "path": "scripts/frt/external_evidence.py",
-          "sha256": "sha256:c6bc6b1f6e141be9bb3be65120514da678140ddec8d1320527edff25c7323cb7",
-          "bytes": 45708
+          "sha256": "sha256:1a871e3f8964e8722bbc437fb655ccdbd1579721b7efb94a6c3a24b6f1c49141",
+          "bytes": 46045
         },
         {
           "path": "scripts/frt/test_external_evidence.py",
-          "sha256": "sha256:dc61f3a9fc1b6ddc1fd96a07a4be14fcea08d10ad14eb2c52b5b0169c295baa1",
-          "bytes": 9976
+          "sha256": "sha256:be8a293e61c4656f72c9db736625c10e2ce984a29d0b9398f979ecca5707d821",
+          "bytes": 11941
         },
         {
           "path": "schemas/frt-g01-g30/external-evidence-trust-store.schema.json",
@@ -93,8 +123,8 @@
         },
         {
           "path": "schemas/frt-g01-g30/external-run-authorization.schema.json",
-          "sha256": "sha256:1e381cbd7412e8493fe5ca3218fd78e2d13ad5001d23ba893fbd279c84cb573c",
-          "bytes": 2337
+          "sha256": "sha256:660f686451550409166ca58582ea27d585344b973fe31b068a9dc79ecc5694c0",
+          "bytes": 4078
         },
         {
           "path": "schemas/frt-g01-g30/external-evidence-record.schema.json",
@@ -108,13 +138,18 @@
       "evidence_refs": [
         {
           "path": "engines/frontend-client-engine/src/frt-handler-registry.generated.ts",
-          "sha256": "sha256:a477f56444c1e3d41294a9197df7e114acc86bb869f6eadc3317be58f388d782",
-          "bytes": 519793
+          "sha256": "sha256:253c6de5efb0ad1e7aff1cbde872465c5a9610e282759290c125cc78fc714c13",
+          "bytes": 708882
         },
         {
           "path": "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
-          "sha256": "sha256:1269890d185f99d3a527902678e5cc63401a6c5e60ada0cf256ffcda663f3060",
-          "bytes": 43797
+          "sha256": "sha256:6bac6a8b2b3d4ef96d78aa9eb21909b065fec6d48553264226060fc709d24578",
+          "bytes": 45078
+        },
+        {
+          "path": "engines/frontend-client-engine/src/frt-production-contract.ts",
+          "sha256": "sha256:d00ebc0e310814d4399c27b9abecfe7ee1587533f9e565c399d60c0773c81733",
+          "bytes": 8714
         },
         {
           "path": "engines/frontend-client-engine/src/frt-typed-gap-catalog.ts",
@@ -123,13 +158,18 @@
         },
         {
           "path": "engines/frontend-client-engine/test/frt-runtime.test.ts",
-          "sha256": "sha256:886118de1002b898442813037ae1152da5515bfdeba243cdc3f0421855905e22",
-          "bytes": 50832
+          "sha256": "sha256:550e1bfed0ec01a4ccc2ddbf7ccad0c0fc3a4db411d075db026d5ee0050884d6",
+          "bytes": 52638
         },
         {
           "path": "engines/frontend-client-engine/test/frt-semantic-handlers.test.ts",
-          "sha256": "sha256:075c5160b7ffd08e4468c229d3b675737bf9c5d2c208a5d296da0fa97572c9e4",
-          "bytes": 9011
+          "sha256": "sha256:c6af11860b615107511d00044f412704f922c9f4351944ba74bef17be68c9766",
+          "bytes": 8952
+        },
+        {
+          "path": "engines/frontend-client-engine/test/frt-production-contract.test.ts",
+          "sha256": "sha256:d17b0ee8b1e5ecdfd9975d08e78a4950f19b0b30abdfa57ee270a306edcca124",
+          "bytes": 5451
         }
       ]
     },
@@ -138,8 +178,8 @@
       "evidence_refs": [
         {
           "path": "engines/frontend-client-engine/src/frt-run-store.ts",
-          "sha256": "sha256:d408ee8f27c2914d3130fa05c6caf3ffa7b519eefc51834bb4dd9990dc0419ba",
-          "bytes": 13832
+          "sha256": "sha256:d54bacdbef8ae33b4a12c58d39aa53cb822f4a32d91fb4ede1045a104c88d5d3",
+          "bytes": 14426
         },
         {
           "path": "engines/frontend-client-engine/src/frt-artifact-store.ts",
@@ -153,23 +193,28 @@
         },
         {
           "path": "engines/frontend-client-engine/src/server.ts",
-          "sha256": "sha256:431f46560d72119619a1821f37f5d8f4b63d502d189ae48f228c6f257dd32a2f",
-          "bytes": 15603
+          "sha256": "sha256:6ea742f84b542aa55af6f3d2b1e0b50ad577308910aa036294309f809fe0a1c6",
+          "bytes": 17770
         },
         {
           "path": "engines/frontend-client-engine/test/server.test.ts",
-          "sha256": "sha256:f1c0873ad24dbe6fc25bf413816884fd51353856dad86bf5f44523f2222f4409",
-          "bytes": 21341
+          "sha256": "sha256:8b664ac42f23299121857bf294da8c89b8599108f2129044d22cfc9a746b8e9f",
+          "bytes": 25321
         },
         {
           "path": "engines/frontend-client-engine/test/frt-runtime.test.ts",
-          "sha256": "sha256:886118de1002b898442813037ae1152da5515bfdeba243cdc3f0421855905e22",
-          "bytes": 50832
+          "sha256": "sha256:550e1bfed0ec01a4ccc2ddbf7ccad0c0fc3a4db411d075db026d5ee0050884d6",
+          "bytes": 52638
         },
         {
           "path": "engines/frontend-client-engine/test/frt-artifact-lifecycle.test.ts",
           "sha256": "sha256:8afc427ee4c884441d2334d48c4a1bc853e43a6a63cbf6894fdec54c62eec723",
           "bytes": 4779
+        },
+        {
+          "path": "engines/frontend-client-engine/test/frt-production-contract.test.ts",
+          "sha256": "sha256:d17b0ee8b1e5ecdfd9975d08e78a4950f19b0b30abdfa57ee270a306edcca124",
+          "bytes": 5451
         }
       ]
     },
@@ -180,6 +225,11 @@
           "path": "engines/frontend-client-engine/src/directional-route.ts",
           "sha256": "sha256:13c53626ea95596474a8dac54719b59254ec72ede74954270facb83fc7ba61ce",
           "bytes": 37828
+        },
+        {
+          "path": "engines/frontend-client-engine/src/frt-route-ir.ts",
+          "sha256": "sha256:c54f09de5972e6e8b83f64bd78604ef6a85cadf83bfe397a9f1cc6820665cc70",
+          "bytes": 5148
         },
         {
           "path": "engines/frontend-client-engine/src/additional-ui-ir.ts",
@@ -197,14 +247,34 @@
           "bytes": 23003
         },
         {
+          "path": "engines/frontend-client-engine/src/vue3-react-route.ts",
+          "sha256": "sha256:f13f93aba6c8b529788c8dfb7f2e0512e075cb34786faba49560412393533b98",
+          "bytes": 18172
+        },
+        {
           "path": "engines/frontend-client-engine/test/additional-ui-ir.test.ts",
           "sha256": "sha256:cc53325055e023cba71c25c27d1ca313300b29d88eb5c33310fdda80ca912bd7",
           "bytes": 7052
         },
         {
+          "path": "engines/frontend-client-engine/test/vue3-ui-ir.test.ts",
+          "sha256": "sha256:3c5410c2a5ddfb21a8286802ac91be3ab83569263da238fc7da7dc3ca57ff956",
+          "bytes": 12539
+        },
+        {
+          "path": "engines/frontend-client-engine/test/react-ui-ir.test.ts",
+          "sha256": "sha256:5b4bda99fcfe5ed3ee328ce3afefa1b5ba6a7d013ae16e19a66abe41166b9050",
+          "bytes": 9450
+        },
+        {
+          "path": "scripts/frt/run_frt_route_toolchains.mjs",
+          "sha256": "sha256:49a68b5e0fd6bf16f6e95aff86ede6232139e292f710cd564264f9221964c98b",
+          "bytes": 13532
+        },
+        {
           "path": "client-packs/frt-g01-g30-platform/certification/route-toolchain-evidence.json",
-          "sha256": "sha256:937b6ecd9de38f5f6c1c9b292bc4d6dd6b21560b1c50bfee9f3fedc50bc6742c",
-          "bytes": 38761
+          "sha256": "sha256:e8154f4e5cd3298c6253ace953329d4e506c9591d65162a384411f91207d7371",
+          "bytes": 38832
         }
       ]
     },
@@ -213,13 +283,13 @@
       "evidence_refs": [
         {
           "path": "engines/frontend-client-engine/test/frt-runtime.test.ts",
-          "sha256": "sha256:886118de1002b898442813037ae1152da5515bfdeba243cdc3f0421855905e22",
-          "bytes": 50832
+          "sha256": "sha256:550e1bfed0ec01a4ccc2ddbf7ccad0c0fc3a4db411d075db026d5ee0050884d6",
+          "bytes": 52638
         },
         {
           "path": "engines/frontend-client-engine/test/server.test.ts",
-          "sha256": "sha256:f1c0873ad24dbe6fc25bf413816884fd51353856dad86bf5f44523f2222f4409",
-          "bytes": 21341
+          "sha256": "sha256:8b664ac42f23299121857bf294da8c89b8599108f2129044d22cfc9a746b8e9f",
+          "bytes": 25321
         },
         {
           "path": "engines/frontend-client-engine/test/vue3-ui-ir.test.ts",
@@ -238,8 +308,8 @@
         },
         {
           "path": "engines/frontend-client-engine/test/frt-semantic-handlers.test.ts",
-          "sha256": "sha256:075c5160b7ffd08e4468c229d3b675737bf9c5d2c208a5d296da0fa97572c9e4",
-          "bytes": 9011
+          "sha256": "sha256:c6af11860b615107511d00044f412704f922c9f4351944ba74bef17be68c9766",
+          "bytes": 8952
         },
         {
           "path": "engines/frontend-client-engine/test/frt-artifact-lifecycle.test.ts",
@@ -248,8 +318,8 @@
         },
         {
           "path": "client-packs/frt-g01-g30-platform/certification/local-validation-evidence.json",
-          "sha256": "sha256:a1f6e000cc0573638a7977d0a299c0f8d6d5bdb434ed6d4d365b5696b0b2591e",
-          "bytes": 10932
+          "sha256": "sha256:00a1d6d52dd8503d8c8fcfa3941d360ebb9f50646438d10a06617c47e50deae6",
+          "bytes": 15654
         }
       ]
     },
@@ -258,8 +328,8 @@
       "evidence_refs": [
         {
           "path": "apps/web-console/package.json",
-          "sha256": "sha256:4ea4d2c76e7d838da82cfdbddc08634cd0f9e1fd9c5734e606ab04485083b1ad",
-          "bytes": 1103
+          "sha256": "sha256:9ea9a6ff22fefa6b64fbbef326decae44d75a9d544b694f37d6cf2d061bbd2b2",
+          "bytes": 1271
         },
         {
           "path": "apps/web-console/pnpm-lock.yaml",
@@ -268,18 +338,18 @@
         },
         {
           "path": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
-          "sha256": "sha256:6ca560f5268fa84cd8051e8571d57fd41ee20723a40b5b59cd70f8e0be1616be",
-          "bytes": 27738
+          "sha256": "sha256:126866bf86f448d72d33e60a716e95c6211cc883e5ca2e0a8bf27867cb4e2e23",
+          "bytes": 34575
         },
         {
           "path": "apps/web-console/app/lib/server/frtEngineProxy.ts",
-          "sha256": "sha256:d1fa24e22b1f6cc3c449cf74f028562e692da4d9b9b3b1c13ed4eb554983f868",
-          "bytes": 12269
+          "sha256": "sha256:69e2a1f547d60892cb447702b4e279ed3c6eca0618d8267a6c78196737e5d8c0",
+          "bytes": 17522
         },
         {
           "path": "client-packs/frt-g01-g30-platform/certification/local-validation-evidence.json",
-          "sha256": "sha256:a1f6e000cc0573638a7977d0a299c0f8d6d5bdb434ed6d4d365b5696b0b2591e",
-          "bytes": 10932
+          "sha256": "sha256:00a1d6d52dd8503d8c8fcfa3941d360ebb9f50646438d10a06617c47e50deae6",
+          "bytes": 15654
         }
       ]
     },
@@ -288,8 +358,8 @@
       "evidence_refs": [
         {
           "path": "apps/web-console/e2e/frt-frontend-transformation.spec.ts",
-          "sha256": "sha256:73e2a84207918d3e19d1c2d77fcd99120f817e5b1c4b0e381e7d4a190aecf160",
-          "bytes": 7508
+          "sha256": "sha256:c1cb6341b1d5297635ad65a11ec9cb06199952162a205b3bfcc911fbb659f5fd",
+          "bytes": 7893
         },
         {
           "path": "apps/web-console/e2e/frt-external-quality.spec.ts",
@@ -313,8 +383,8 @@
         },
         {
           "path": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
-          "sha256": "sha256:6ca560f5268fa84cd8051e8571d57fd41ee20723a40b5b59cd70f8e0be1616be",
-          "bytes": 27738
+          "sha256": "sha256:126866bf86f448d72d33e60a716e95c6211cc883e5ca2e0a8bf27867cb4e2e23",
+          "bytes": 34575
         },
         {
           "path": "client-packs/frt-g01-g30-platform/acceptance/quality-matrix.json",
@@ -323,8 +393,8 @@
         },
         {
           "path": "client-packs/frt-g01-g30-platform/certification/local-validation-evidence.json",
-          "sha256": "sha256:a1f6e000cc0573638a7977d0a299c0f8d6d5bdb434ed6d4d365b5696b0b2591e",
-          "bytes": 10932
+          "sha256": "sha256:00a1d6d52dd8503d8c8fcfa3941d360ebb9f50646438d10a06617c47e50deae6",
+          "bytes": 15654
         }
       ]
     },
@@ -333,13 +403,13 @@
       "evidence_refs": [
         {
           "path": "apps/web-console/e2e/frt-frontend-transformation.spec.ts",
-          "sha256": "sha256:73e2a84207918d3e19d1c2d77fcd99120f817e5b1c4b0e381e7d4a190aecf160",
-          "bytes": 7508
+          "sha256": "sha256:c1cb6341b1d5297635ad65a11ec9cb06199952162a205b3bfcc911fbb659f5fd",
+          "bytes": 7893
         },
         {
           "path": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
-          "sha256": "sha256:6ca560f5268fa84cd8051e8571d57fd41ee20723a40b5b59cd70f8e0be1616be",
-          "bytes": 27738
+          "sha256": "sha256:126866bf86f448d72d33e60a716e95c6211cc883e5ca2e0a8bf27867cb4e2e23",
+          "bytes": 34575
         }
       ]
     },
@@ -348,8 +418,8 @@
       "evidence_refs": [
         {
           "path": "apps/web-console/e2e/frt-frontend-transformation.spec.ts",
-          "sha256": "sha256:73e2a84207918d3e19d1c2d77fcd99120f817e5b1c4b0e381e7d4a190aecf160",
-          "bytes": 7508
+          "sha256": "sha256:c1cb6341b1d5297635ad65a11ec9cb06199952162a205b3bfcc911fbb659f5fd",
+          "bytes": 7893
         },
         {
           "path": "apps/web-console/e2e/frt-external-quality.spec.ts",
@@ -368,8 +438,8 @@
         },
         {
           "path": "client-packs/frt-g01-g30-platform/acceptance/EXTERNAL_EVIDENCE_RUNBOOK.md",
-          "sha256": "sha256:25c33a29d664916f252761325324f8e94b06732efec9aabc4b026257d43a5c46",
-          "bytes": 5057
+          "sha256": "sha256:078372429b77f850386d049a682e189039090183ce5007ea344c16c189312de0",
+          "bytes": 8815
         },
         {
           "path": "client-packs/frt-g01-g30-platform/baselines/manifest.json",
@@ -387,14 +457,99 @@
           "bytes": 6824
         },
         {
+          "path": "scripts/frt/record_frt_ios_device_evidence.mjs",
+          "sha256": "sha256:3757996081e115b1b6e9780e9c433786dc648f01e1cf92c0b39d361f47469911",
+          "bytes": 9029
+        },
+        {
+          "path": "scripts/frt/test_record_frt_ios_device_evidence.py",
+          "sha256": "sha256:0a0b0a5952164c7ce31cc24226c09033e8a242baf86a4cf0d36aa1c3b103e52e",
+          "bytes": 5198
+        },
+        {
           "path": "client-packs/frt-g01-g30-platform/certification/local-device-inventory-candidate.json",
-          "sha256": "sha256:ccd2bd4543ea426f58eb33faad5a61c4573e0c672acc45af11d9110567aad0c7",
-          "bytes": 1561
+          "sha256": "sha256:398d94e0c8014b181d705a93fdb446a4f3b4d1123caea24ec21675b798003daf",
+          "bytes": 1434
+        },
+        {
+          "path": "client-packs/frt-g01-g30-platform/certification/ios-physical-device-evidence.json",
+          "sha256": "sha256:e56d4698b57d428cd7def59756b332bad89c1408334c6b8e7c9e357c27266305",
+          "bytes": 1629
         },
         {
           "path": "client-packs/frt-g01-g30-platform/certification/local-validation-evidence.json",
-          "sha256": "sha256:a1f6e000cc0573638a7977d0a299c0f8d6d5bdb434ed6d4d365b5696b0b2591e",
-          "bytes": 10932
+          "sha256": "sha256:00a1d6d52dd8503d8c8fcfa3941d360ebb9f50646438d10a06617c47e50deae6",
+          "bytes": 15654
+        }
+      ]
+    },
+    "external_qualification_harness": {
+      "state": "PASSED",
+      "evidence_refs": [
+        {
+          "path": "scripts/frt/external_campaign_parameters.py",
+          "sha256": "sha256:291490ee61f1e74cc1bcbe682512025cf08f2499455309b55927a3cc36bf0ebc",
+          "bytes": 20161
+        },
+        {
+          "path": "scripts/frt/external_qualification.py",
+          "sha256": "sha256:b87b6310f795a74aa859bf9b23d4364cf24f555bfd1e8d9534e7f3fdc06ffdae",
+          "bytes": 59522
+        },
+        {
+          "path": "scripts/frt/probe_browser_runtimes.mjs",
+          "sha256": "sha256:126c421e8c251cba65728d41318ddd7146384525301bc7a515251e0ae52bcd87",
+          "bytes": 2486
+        },
+        {
+          "path": "scripts/frt/test_external_campaign_parameters.py",
+          "sha256": "sha256:b184f5604c5768bd22c3aa8b7b808a95fab1e33a755a3653d1749d73644d1200",
+          "bytes": 3273
+        },
+        {
+          "path": "scripts/frt/test_external_qualification.py",
+          "sha256": "sha256:252ef577230258fdbd64a406014699aaba84950fef1b53932ed680977037ee08",
+          "bytes": 9478
+        },
+        {
+          "path": "scripts/frt/test_external_evidence.py",
+          "sha256": "sha256:be8a293e61c4656f72c9db736625c10e2ce984a29d0b9398f979ecca5707d821",
+          "bytes": 11941
+        },
+        {
+          "path": "schemas/frt-g01-g30/external-qualification-plan.schema.json",
+          "sha256": "sha256:1d1c654d666a94280ae7056b769bac853db390fa9ca127cc1b2892e659114614",
+          "bytes": 4289
+        },
+        {
+          "path": "schemas/frt-g01-g30/external-qualification-preflight.schema.json",
+          "sha256": "sha256:cdcfe7c6df4d90209c918e14c4f6b91f9f85e41af3dea328b9292d61e6eec043",
+          "bytes": 8494
+        },
+        {
+          "path": "schemas/frt-g01-g30/external-qualification-local-execution.schema.json",
+          "sha256": "sha256:69286b9e4fade9b27ddf6e229e95b2ba82e292211e9d9b9a8a8668d741fd183d",
+          "bytes": 3535
+        },
+        {
+          "path": "client-packs/frt-g01-g30-platform/acceptance/external-qualification-plan.json",
+          "sha256": "sha256:bd2c87b6a593e717c48ed02aa80dc85fd794535d5050e4a5384edb1c7b3b6da0",
+          "bytes": 26471
+        },
+        {
+          "path": "client-packs/frt-g01-g30-platform/certification/external-qualification-preflight.json",
+          "sha256": "sha256:469f1ddb70e8f7c8d159f1e2caef9b876e28d7c9939b1b13dc7a6c06f5abc121",
+          "bytes": 8848
+        },
+        {
+          "path": "client-packs/frt-g01-g30-platform/certification/external-qualification-local-execution.json",
+          "sha256": "sha256:63f40dc2039405fdce44074c8bfba13559ee23520cf523caec83c20489700414",
+          "bytes": 14973
+        },
+        {
+          "path": "client-packs/frt-g01-g30-platform/certification/local-validation-evidence.json",
+          "sha256": "sha256:00a1d6d52dd8503d8c8fcfa3941d360ebb9f50646438d10a06617c47e50deae6",
+          "bytes": 15654
         }
       ]
     }

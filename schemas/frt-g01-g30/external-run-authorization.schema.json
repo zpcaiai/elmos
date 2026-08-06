@@ -14,13 +14,54 @@
     "environment": { "type": "string", "minLength": 1 },
     "evidence_root": { "type": "string", "minLength": 1 },
     "runner_capability": { "type": "string", "minLength": 1 },
-    "run_parameters": { "type": "object", "minProperties": 1 },
+    "run_parameters": {
+      "type": "object",
+      "required": ["schema_version", "qualification_plan_sha256", "case_ids", "adapter_ids", "authorization_scope", "secret_reference_ids"],
+      "properties": {
+        "schema_version": { "const": 1 },
+        "qualification_plan_sha256": { "$ref": "#/$defs/digest" },
+        "case_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^FRT-EXT-[0-9]{3}-[A-Z0-9-]+$" }
+        },
+        "adapter_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]+$" }
+        },
+        "authorization_scope": { "$ref": "#/$defs/authorizationScope" },
+        "secret_reference_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/identifier" }
+        }
+      }
+    },
     "valid_from": { "type": "string", "format": "date-time" },
     "expires_at": { "type": "string", "format": "date-time" },
     "approver": { "$ref": "#/$defs/actor" },
     "signature": { "$ref": "#/$defs/signature" }
   },
   "$defs": {
+    "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "identifier": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$" },
+    "authorizationScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tenant_id", "project_id", "environment_id", "region", "data_classification", "network_policy_id", "write_root_id"],
+      "properties": {
+        "tenant_id": { "$ref": "#/$defs/identifier" },
+        "project_id": { "$ref": "#/$defs/identifier" },
+        "environment_id": { "$ref": "#/$defs/identifier" },
+        "region": { "$ref": "#/$defs/identifier" },
+        "data_classification": { "enum": ["PUBLIC", "INTERNAL", "CONFIDENTIAL"] },
+        "network_policy_id": { "$ref": "#/$defs/identifier" },
+        "write_root_id": { "$ref": "#/$defs/identifier" }
+      }
+    },
     "checkId": {
       "enum": ["real_source_target_builds", "device_matrix", "independent_holdout", "formal_proof", "performance", "chaos_dr", "penetration_test", "production_observation", "customer_acceptance"]
     },

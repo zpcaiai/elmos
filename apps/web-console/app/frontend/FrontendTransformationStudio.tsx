@@ -13,6 +13,9 @@ type FrtRunView = {
   runId: string;
   version: number;
   skillId: string;
+  capabilityKey: string;
+  contractDigest: string;
+  sourceSnapshotDigest: string;
   action: string;
   state: "QUEUED" | "RUNNING" | "SUCCEEDED" | "BLOCKED" | "FAILED" | "CANCELLED";
   outcome: string;
@@ -38,6 +41,57 @@ function lower(value: string): string {
   return value.toLocaleLowerCase("zh-CN");
 }
 
+const contractExamples: Readonly<Record<string, unknown>> = {
+  invariants: [{ id: "tenant-scope", satisfied: true }],
+  inventory: { workspaceKind: "monorepo", packages: [], routes: [], components: [] },
+  target: { stack: "React", version: "19.2.7", language: "TypeScript" },
+  targetProfile: { stack: "React", version: "19.2.7" },
+  uiIr: { title: "Application", modules: ["app"] },
+  astNodes: [{ id: "app", name: "App", kind: "component" }],
+  components: [{ id: "app", props: [], events: [], slots: [], hooks: [] }],
+  states: [{ id: "draft" }, { id: "ready" }],
+  transitions: [{ id: "publish", from: "draft", to: "ready", sideEffect: false }],
+  routes: [{ id: "home", path: "/" }],
+  uiNodes: [{ id: "page-title", interactive: false }],
+  requiredCapabilities: ["storage"],
+  platformCapabilities: { web: ["storage"] },
+  corpus: [{ id: "case-1", sourceDigest: `sha256:${"1".repeat(64)}`, expectedIrDigest: `sha256:${"2".repeat(64)}` }],
+  packs: [{ id: "core", priority: 100, provides: ["ui"], requires: [] }],
+  properties: [{ id: "state-valid", expression: "state != null", kind: "invariant", assumptions: [] }],
+  resources: [{ id: "skill-registry", type: "registry", tenantBound: true, version: "1.0.0" }],
+  requirements: [{ id: "REQ-1" }],
+  capabilities: [{ id: "runs.read" }],
+  roles: [{ id: "operator", permissions: ["runs.read"] }],
+  operations: [{ id: "list-runs", roleId: "operator", permission: "runs.read", auditEvent: "runs.listed" }],
+  workload: { concurrency: 10, durationSeconds: 60 },
+  budgets: { p95LatencyMs: 500, maximumErrorRate: 0.01 },
+  scenarios: [{ id: "dependency-loss", rollback: "restore service", blastRadius: "isolated-test-tenant" }],
+  recoveryObjectives: { maximumRtoSeconds: 300, maximumRpoSeconds: 60 },
+  assets: [{ id: "frontend-api", classification: "confidential" }],
+  findings: [],
+  slos: [{ serviceId: "frontend", target: 0.999 }],
+  runbooks: [{ id: "frontend-errors", serviceId: "frontend" }],
+};
+
+function initialContractInput(skill: (typeof frtCatalog.skills)[number] | undefined): string {
+  if (!skill) return "{}";
+  const entries = skill.executionContract.inputContract.required
+    .filter(key => key !== "files")
+    .map(key => [key, contractExamples[key] ?? {}]);
+  return JSON.stringify(Object.fromEntries(entries), null, 2);
+}
+
+function canonicalInput(value: unknown): string {
+  if (Array.isArray(value)) return `[${value.map(canonicalInput).join(",")}]`;
+  if (value && typeof value === "object") {
+    return `{${Object.entries(value as Record<string, unknown>)
+      .sort(([left], [right]) => (left < right ? -1 : left > right ? 1 : 0))
+      .map(([key, item]) => `${JSON.stringify(key)}:${canonicalInput(item)}`)
+      .join(",")}}`;
+  }
+  return JSON.stringify(value);
+}
+
 export function FrontendTransformationStudio() {
   const preferences = useUiPreferences();
   const english = preferences.locale === "en";
@@ -57,6 +111,7 @@ export function FrontendTransformationStudio() {
   const [actorId, setActorId] = useState("");
   const [runnerToken, setRunnerToken] = useState("");
   const [sourceFiles, setSourceFiles] = useState<Record<string, string>>({});
+  const [inputJson, setInputJson] = useState("{}");
   const [run, setRun] = useState<FrtRunView | null>(null);
   const [audit, setAudit] = useState<FrtAuditView["audit"]>([]);
   const [operationError, setOperationError] = useState("");
@@ -74,6 +129,14 @@ export function FrontendTransformationStudio() {
     ?? (selectedRoute ? frtCatalog.skills.find((skill) => skill.id === selectedRoute.skillId) : undefined)
     ?? filteredSkills[0];
   const visibleSkills = filteredSkills.slice(0, 72);
+  const selectedInputContract = selectedSkill?.executionContract.inputContract;
+  const acceptsFiles = Boolean(selectedInputContract
+    && [...selectedInputContract.required, ...selectedInputContract.optional].includes("files"));
+
+  useEffect(() => {
+    setInputJson(initialContractInput(selectedSkill));
+    setOperationError("");
+  }, [selectedSkill?.id]);
 
   function requestHeaders(json = false): Record<string, string> {
     return {
@@ -86,12 +149,13 @@ export function FrontendTransformationStudio() {
     };
   }
 
-  async function sourceDigest(): Promise<string> {
-    const canonical = Object.entries(sourceFiles)
-      .sort(([left], [right]) => left.localeCompare(right))
-      .map(([path, content]) => `${path.length}:${path}${content.length}:${content}`)
-      .join("");
-    const bytes = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(canonical));
+  function scopedRunUrl(path: string): string {
+    const query = new URLSearchParams({ workspaceId, projectId, environmentId, releaseId });
+    return `${path}?${query.toString()}`;
+  }
+
+  async function sourceDigest(input: Readonly<Record<string, unknown>>): Promise<string> {
+    const bytes = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(canonicalInput(input)));
     return `sha256:${Array.from(new Uint8Array(bytes), value => value.toString(16).padStart(2, "0")).join("")}`;
   }
 
@@ -119,8 +183,8 @@ export function FrontendTransformationStudio() {
       signal: AbortSignal.timeout(8_000),
     };
     const [runResult, auditResult] = await Promise.allSettled([
-      fetch(`/api/frt/runs/${runId}`, options),
-      fetch(`/api/frt/runs/${runId}/audit`, options),
+      fetch(scopedRunUrl(`/api/frt/runs/${runId}`), options),
+      fetch(scopedRunUrl(`/api/frt/runs/${runId}/audit`), options),
     ]);
     if (runResult.status === "fulfilled" && runResult.value.ok) {
       setRun(await runResult.value.json() as FrtRunView);
@@ -134,17 +198,40 @@ export function FrontendTransformationStudio() {
     if (!run || !["QUEUED", "RUNNING"].includes(run.state)) return;
     const timer = window.setInterval(() => void refreshRun(run.runId), 1_500);
     return () => window.clearInterval(timer);
-  }, [run?.runId, run?.state, tenantId, actorId, runnerToken]);
+  }, [run?.runId, run?.state, tenantId, actorId, runnerToken, workspaceId, projectId, environmentId, releaseId]);
 
   async function startRun(action: "PLAN" | "ANALYZE" | "EXECUTE" | "VERIFY") {
     if (!selectedSkill) return;
-    if (!Object.keys(sourceFiles).length) {
-      setOperationError("请先选择仓库中的文本文件；操作必须绑定真实输入快照。");
-      return;
-    }
     setBusy(true);
     setOperationError("");
     try {
+      if (action === "VERIFY" && (!run || run.skillId !== selectedSkill.id
+        || ["QUEUED", "RUNNING"].includes(run.state))) {
+        throw new Error("VERIFY 需要当前 Skill 在同一资源作用域内已有终态 Run。");
+      }
+      let parsedInput: unknown;
+      try {
+        parsedInput = JSON.parse(inputJson) as unknown;
+      } catch {
+        throw new Error("Skill 输入必须是有效 JSON。");
+      }
+      if (!parsedInput || typeof parsedInput !== "object" || Array.isArray(parsedInput)) {
+        throw new Error("Skill 输入必须是 JSON object。");
+      }
+      const typedInput: Record<string, unknown> = { ...(parsedInput as Record<string, unknown>) };
+      if (acceptsFiles && Object.keys(sourceFiles).length) typedInput.files = sourceFiles;
+      const allowed = new Set<string>([
+        ...selectedSkill.executionContract.inputContract.required,
+        ...selectedSkill.executionContract.inputContract.optional,
+      ]);
+      const unknown = Object.keys(typedInput).filter(key => !allowed.has(key));
+      if (unknown.length) throw new Error(`未声明的输入字段：${unknown.join(", ")}`);
+      if (["ANALYZE", "EXECUTE"].includes(action)) {
+        const missing = selectedSkill.executionContract.inputContract.required
+          .filter(key => !Object.hasOwn(typedInput, key));
+        if (missing.length) throw new Error(`缺少必需输入：${missing.join(", ")}`);
+      }
+      const submittedInput = action === "VERIFY" ? {} : typedInput;
       const response = await fetch("/api/frt/runs", {
         method: "POST",
         headers: requestHeaders(true),
@@ -156,10 +243,13 @@ export function FrontendTransformationStudio() {
           projectId,
           environmentId,
           releaseId,
-          sourceSnapshotDigest: await sourceDigest(),
+          sourceSnapshotDigest: action === "VERIFY" ? run!.sourceSnapshotDigest : await sourceDigest(submittedInput),
           policyVersion,
           risk,
-          input: { files: sourceFiles },
+          ...(action === "VERIFY" ? {
+            verificationSubject: { runId: run!.runId, resultDigest: run!.resultDigest },
+          } : {}),
+          ...(action === "VERIFY" || Object.keys(submittedInput).length === 0 ? {} : { input: submittedInput }),
         }),
       });
       const payload = await response.json() as FrtRunView & { reason?: string; errorCode?: string };
@@ -174,12 +264,12 @@ export function FrontendTransformationStudio() {
     }
   }
 
-  async function transition(operation: "claim" | "cancel" | "retry") {
+  async function transition(operation: "claim" | "heartbeat" | "cancel" | "retry") {
     if (!run) return;
     setBusy(true);
     setOperationError("");
     try {
-      const response = await fetch(`/api/frt/runs/${run.runId}/${operation}`, {
+      const response = await fetch(scopedRunUrl(`/api/frt/runs/${run.runId}/${operation}`), {
         method: "POST",
         headers: requestHeaders(true),
         body: JSON.stringify({ expectedVersion: run.version }),
@@ -360,6 +450,8 @@ export function FrontendTransformationStudio() {
                 <p>{selectedSkill.description}</p>
                 <dl>
                   <div><dt>风险</dt><dd>{selectedSkill.risk}</dd></div>
+                  <div><dt>Capability</dt><dd>{selectedSkill.executionContract.capabilityKey}</dd></div>
+                  <div><dt>执行级别</dt><dd>{selectedSkill.executionContract.executionClass}</dd></div>
                   <div><dt>前置证书</dt><dd>{selectedSkill.requiresCertificate ?? "System charter inputs"}</dd></div>
                   <div><dt>版本</dt><dd>{selectedSkill.version}</dd></div>
                   <div><dt>生产认证</dt><dd className={styles.notCertified}>NOT_CERTIFIED</dd></div>
@@ -396,17 +488,45 @@ export function FrontendTransformationStudio() {
             </fieldset>
 
             <fieldset>
-              <legend>2. 仓库输入</legend>
-              <label className={styles.filePicker}>
-                <Icon name="repository" size={18} />
-                <span><strong>选择仓库文本文件</strong><small>最多 512 个；单文件 ≤ 1 MB；路径和内容共同计算 Snapshot Digest。</small></span>
-                <input aria-label="选择 FRT 仓库文件" type="file" multiple onChange={event => void chooseRepositoryFiles(event.target.files)} />
-              </label>
-              <div className={styles.fileSummary} aria-live="polite">
-                <strong>{Object.keys(sourceFiles).length}</strong> 个文件已绑定
-                {Object.keys(sourceFiles).slice(0, 5).map(path => <code key={path}>{path}</code>)}
-                {Object.keys(sourceFiles).length > 5 && <small>+{Object.keys(sourceFiles).length - 5} more</small>}
+              <legend>2. Skill 类型化输入</legend>
+              <div className={styles.contractSummary}>
+                <span>必需</span>
+                {selectedInputContract?.required.length
+                  ? selectedInputContract.required.map(key => <code key={`required-${key}`}>{key}</code>)
+                  : <small>无</small>}
+                <span>可选</span>
+                {selectedInputContract?.optional.length
+                  ? selectedInputContract.optional.map(key => <code key={`optional-${key}`}>{key}</code>)
+                  : <small>无</small>}
               </div>
+              {acceptsFiles && (
+                <>
+                  <label className={styles.filePicker}>
+                    <Icon name="repository" size={18} />
+                    <span><strong>选择仓库文本文件</strong><small>最多 512 个、总计 ≤ 16 MB、单字段 ≤ 1 MB；安全相对路径和内容共同计算 Snapshot Digest。</small></span>
+                    <input aria-label="选择 FRT 仓库文件" type="file" multiple onChange={event => void chooseRepositoryFiles(event.target.files)} />
+                  </label>
+                  <div className={styles.fileSummary} aria-live="polite">
+                    <strong>{Object.keys(sourceFiles).length}</strong> 个文件已绑定
+                    {Object.keys(sourceFiles).slice(0, 5).map(path => <code key={path}>{path}</code>)}
+                    {Object.keys(sourceFiles).length > 5 && <small>+{Object.keys(sourceFiles).length - 5} more</small>}
+                  </div>
+                </>
+              )}
+              <label className={styles.jsonInput}>
+                <span>输入 JSON（`files` 由上方选择器安全合并）</span>
+                <textarea
+                  aria-label="FRT Skill 类型化输入 JSON"
+                  spellCheck={false}
+                  value={inputJson}
+                  onChange={event => setInputJson(event.target.value)}
+                />
+              </label>
+              <button
+                className={styles.resetInput}
+                type="button"
+                onClick={() => setInputJson(initialContractInput(selectedSkill))}
+              >恢复契约示例</button>
             </fieldset>
 
             <details className={styles.localIdentity}>
@@ -434,6 +554,7 @@ export function FrontendTransformationStudio() {
               <div><span>版本</span><strong>{run?.version ?? 0}</strong></div>
               {run && <div className={styles.lifecycleActions}>
                 <button type="button" disabled={busy || run.state !== "QUEUED"} onClick={() => void transition("claim")}>Runner 领取</button>
+                <button type="button" disabled={busy || run.state !== "RUNNING"} onClick={() => void transition("heartbeat")}>续租</button>
                 <button type="button" disabled={busy || !["QUEUED", "RUNNING"].includes(run.state)} onClick={() => void transition("cancel")}>取消</button>
                 <button type="button" disabled={busy || !["BLOCKED", "FAILED", "CANCELLED"].includes(run.state) || run.action !== "EXECUTE"} onClick={() => void transition("retry")}>重试</button>
                 <button type="button" disabled={busy} onClick={() => void refreshRun()}>刷新</button>
@@ -443,7 +564,7 @@ export function FrontendTransformationStudio() {
             <div className={styles.resultPanels}>
               <article>
                 <h4>Findings <span>{run?.findings.length ?? 0}</span></h4>
-                {run?.findings.length ? <ul>{run.findings.map((item, index) => <li key={`${item.code}-${index}`} data-severity={item.severity}><strong>{item.code}</strong><p>{item.message}</p><small>{item.blocking ? "BLOCKING" : item.severity}</small></li>)}</ul> : <p>暂无 Finding。</p>}
+                {run?.findings.length ? <ul tabIndex={0} aria-label="FRT Findings 列表">{run.findings.map((item, index) => <li key={`${item.code}-${index}`} data-severity={item.severity}><strong>{item.code}</strong><p>{item.message}</p><small>{item.blocking ? "BLOCKING" : item.severity}</small></li>)}</ul> : <p>暂无 Finding。</p>}
               </article>
               <article>
                 <h4>Artifacts <button type="button" disabled={!run} onClick={downloadArtifacts}>下载 JSON</button></h4>
@@ -451,12 +572,12 @@ export function FrontendTransformationStudio() {
               </article>
               <article>
                 <h4>Evidence <span>{run?.evidence.length ?? 0}</span></h4>
-                {run?.evidence.length ? <ul>{run.evidence.map(item => <li key={`${item.role}-${item.uri}`}><strong>{item.role}</strong><code>{item.state}</code><small>{item.digest}</small></li>)}</ul> : <p>没有签名 Evidence；VERIFY 将 fail-closed。</p>}
+                {run?.evidence.length ? <ul tabIndex={0} aria-label="FRT Evidence 列表">{run.evidence.map(item => <li key={`${item.role}-${item.uri}`}><strong>{item.role}</strong><code>{item.state}</code><small>{item.digest}</small></li>)}</ul> : <p>没有签名 Evidence；VERIFY 将 fail-closed。</p>}
                 {run && <small>Gate eligible: {String(run.certificateFragment.eligibleForBatchGate)} · {run.certificateFragment.certification}</small>}
               </article>
               <article>
                 <h4>Audit trail <span>{audit.length}</span></h4>
-                {audit.length ? <ol>{audit.map(item => <li key={item.sequence}><strong>{item.event}</strong><span>{item.state} · v{item.version}</span><small>{item.actor} · {new Date(item.at).toLocaleString()}</small></li>)}</ol> : <p>运行创建后显示持久化审计事件。</p>}
+                {audit.length ? <ol tabIndex={0} aria-label="FRT Audit trail">{audit.map(item => <li key={item.sequence}><strong>{item.event}</strong><span>{item.state} · v{item.version}</span><small>{item.actor} · {new Date(item.at).toLocaleString()}</small></li>)}</ol> : <p>运行创建后显示持久化审计事件。</p>}
               </article>
             </div>
           </div>

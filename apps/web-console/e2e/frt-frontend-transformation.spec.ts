@@ -40,7 +40,7 @@ test("FRT 前端转换工厂在桌面与移动端可浏览、规划且无自动�
 });
 
 test("FRT 目录 API 保留完整计数并限制单次结果规模", async ({ request }, testInfo) => {
-  test.skip(testInfo.project.name === "mobile-chromium", "API 合同由桌面项目执行一次");
+  test.skip(testInfo.project.name.startsWith("mobile-"), "API 合同由桌面项目执行一次");
   const response = await request.get("/api/frt/catalog?batch=G13&limit=5");
   expect(response.ok()).toBe(true);
   const body = await response.json();
@@ -54,7 +54,7 @@ test("FRT 目录 API 保留完整计数并限制单次结果规模", async ({ re
 });
 
 test("FRT Web BFF 拒绝未认证请求和伪造的跨租户身份", async ({ request }, testInfo) => {
-  test.skip(testInfo.project.name === "mobile-chromium", "身份边界由桌面项目执行一次");
+  test.skip(testInfo.project.name.startsWith("mobile-"), "身份边界由桌面项目执行一次");
   const data = {
     skillId: "FRT-0100",
     action: "PLAN",
@@ -87,9 +87,23 @@ test("FRT Web BFF 拒绝未认证请求和伪造的跨租户身份", async ({ re
     status: "BLOCKED",
     reason: "TENANT_ID_NOT_BOUND_TO_CREDENTIAL",
   });
+
+  const forgedSnapshot = await request.post("/api/frt/runs", {
+    data,
+    headers: {
+      authorization: "Bearer elmos-e2e-local-token-32-characters",
+      "x-elmos-tenant": "local-e2e",
+      "x-elmos-actor": "user:e2e",
+    },
+  });
+  expect(forgedSnapshot.status()).toBe(400);
+  expect(await forgedSnapshot.json()).toEqual({
+    status: "BLOCKED",
+    reason: "FRT_SOURCE_SNAPSHOT_DIGEST_MISMATCH",
+  });
 });
 
-test("FRT 操作台通过真实 Engine 完成仓库、执行、进度、产物、Finding 与审计闭环", async ({ page }, testInfo) => {
+test("FRT 操作台通过真实 Engine 完成类型化输入、执行、进度、产物、Finding 与审计闭环", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "chromium", "持久化 Engine 生命周期由桌面 Chromium 串行执行一次");
   await page.goto("/frontend");
   await page.getByPlaceholder("搜索 ID、名称或能力…").fill("FRT-0100");
@@ -98,12 +112,7 @@ test("FRT 操作台通过真实 Engine 完成仓库、执行、进度、产物�
   await page.getByLabel("FRT 本地租户标识").fill("local-e2e");
   await page.getByLabel("FRT 本地执行者标识").fill("user:e2e");
   await page.getByLabel("FRT 本地 Runner 令牌").fill("elmos-e2e-local-token-32-characters");
-  await page.getByLabel("选择 FRT 仓库文件").setInputFiles({
-    name: "package.json",
-    mimeType: "application/json",
-    buffer: Buffer.from(JSON.stringify({ name: "frt-e2e-source", private: true })),
-  });
-  await expect(page.getByText("1 个文件已绑定")).toBeVisible();
+  await expect(page.getByLabel("FRT Skill 类型化输入 JSON")).toHaveValue(/tenant-scope/);
   await page.getByRole("button", { name: "EXECUTE", exact: true }).click();
 
   await expect(page.locator('strong[data-run-state="QUEUED"]')).toBeVisible();
@@ -113,6 +122,8 @@ test("FRT 操作台通过真实 Engine 完成仓库、执行、进度、产物�
 
   await page.getByRole("button", { name: "Runner 领取" }).click();
   await expect(page.locator('strong[data-run-state="RUNNING"]')).toBeVisible();
+  await page.getByRole("button", { name: "续租", exact: true }).click();
+  await expect(page.getByText("RUN_HEARTBEAT", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "取消", exact: true }).click();
   await expect(page.locator('strong[data-run-state="CANCELLED"]')).toBeVisible();
   await page.getByRole("button", { name: "重试", exact: true }).click();
@@ -139,11 +150,11 @@ test("FRT 关键路径支持键盘操作并随全局语言切换提供英文界�
   await skill.focus();
   await page.keyboard.press("Enter");
   await expect(skill).toHaveAttribute("aria-pressed", "true");
-  const plan = page.getByRole("button", { name: "PLAN", exact: true });
-  await plan.focus();
+  const analyze = page.getByRole("button", { name: "ANALYZE", exact: true });
+  await analyze.focus();
   await page.keyboard.press("Enter");
   await expect(
-    page.getByRole("alert").filter({ hasText: "请先选择仓库中的文本文件" }),
+    page.getByRole("alert").filter({ hasText: "缺少必需输入：files" }),
   ).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });

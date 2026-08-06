@@ -185,6 +185,49 @@ export function createFrontendClientServer(options: FrontendClientServerOptions 
       const result = frtRuntime.run(value);
       return send(response, result.state === "FAILED" ? 400 : 202, result);
     }
+    const scopedSkillRun = url.pathname.match(
+      /^\/engine\/v1\/frt\/skills\/([^/]+)\/runs\/([^/]+)(?:\/(findings|evidence))?$/,
+    );
+    if (request.method === "GET" && scopedSkillRun) {
+      const principal = authorizeFrt(request, security, "frt:read");
+      const skill = frtRuntime.skill(scopedSkillRun[1]!);
+      const result = frtRuntime.getRun(principal.scope, scopedSkillRun[2]!);
+      if (!skill || !result || result.skillId !== skill.id) {
+        return send(response, 404, { errorCode: "FRT_RUN_NOT_FOUND" });
+      }
+      if (scopedSkillRun[3] === "findings") {
+        return send(response, 200, { runId: result.runId, findings: result.findings });
+      }
+      if (scopedSkillRun[3] === "evidence") {
+        return send(response, 200, {
+          runId: result.runId,
+          inputDigest: result.inputDigest,
+          resultDigest: result.resultDigest,
+          evidence: result.evidence,
+          certificateFragment: result.certificateFragment,
+        });
+      }
+      return send(response, 200, result);
+    }
+    const scopedSkillVerify = url.pathname.match(
+      /^\/engine\/v1\/frt\/skills\/([^/]+)\/runs\/([^/]+)\/verify$/,
+    );
+    if (request.method === "POST" && scopedSkillVerify) {
+      authorizeFrt(request, security, "frt:run");
+      const principal = authorizeFrt(request, security, "frt:evidence");
+      const value = validateFrtSkillRunRequest(await body(request, maximumFrtRunBytes)) as FrtSkillRunRequest;
+      assertFrtScope(principal, value);
+      const skill = frtRuntime.skill(scopedSkillVerify[1]!);
+      const subject = frtRuntime.getRun(principal.scope, scopedSkillVerify[2]!);
+      if (value.action !== "VERIFY" || !skill || !subject || subject.skillId !== skill.id
+          || frtRuntime.skill(value.skillId)?.id !== skill.id
+          || value.verificationSubject?.runId !== subject.runId
+          || value.verificationSubject.resultDigest !== subject.resultDigest) {
+        return send(response, 400, { errorCode: "FRT_VERIFICATION_SUBJECT_MISMATCH" });
+      }
+      const result = frtRuntime.run(value);
+      return send(response, result.state === "FAILED" ? 400 : 202, result);
+    }
     const batchPlan = url.pathname.match(/^\/engine\/v1\/frt\/batches\/([^/]+)\/plans$/);
     if (request.method === "POST" && batchPlan) {
       const principal = authorizeFrt(request, security, "frt:plan");

@@ -98,9 +98,9 @@ html[data-theme="dark"] {
 .guardrail-card strong { font-size: 11px; letter-spacing: .03em; }
 .guardrail-card small { color: #8ca4a6; font-size: 10px; }
 .secondary-nav { display: flex; flex-direction: column; gap: 2px; padding: 4px 4px 14px; border-bottom: 1px solid rgba(255,255,255,.07); }
-.secondary-link { width: 100%; display: flex; align-items: center; gap: 10px; min-height: 38px; padding: 7px 9px; border: 0; border-radius: 8px; background: transparent; color: #8da2a5; font: inherit; font-size: 11px; text-align: left; cursor: pointer; }
+.secondary-link { width: 100%; display: flex; align-items: center; gap: 10px; min-height: 38px; padding: 7px 9px; border: 0; border-radius: 8px; background: #142528; color: #a7b9bc; font: inherit; font-size: 11px; text-align: left; cursor: pointer; }
 a.secondary-link:hover, button.secondary-link:hover { background: rgba(255,255,255,.05); color: white; }
-.secondary-link.muted { cursor: default; color: #8da2a5; opacity: 1; }
+.secondary-link.muted { cursor: default; color: #a7b9bc; opacity: 1; }
 .profile-area { position: relative; }
 .profile-row { width: 100%; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; padding: 16px 7px 0; border: 0; background: transparent; color: inherit; text-align: left; cursor: pointer; }
 .avatar, .top-avatar { display: grid; place-items: center; border-radius: 50%; background: #d1e8e5; color: #245e5d; font-weight: 750; }

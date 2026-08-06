@@ -42,6 +42,7 @@ export interface FrtStoredRun {
   readonly schemaVersion: "1.0";
   readonly organizationId: string;
   readonly tenantId: string;
+  readonly executionScope: FrtExecutionScope;
   readonly runId: string;
   readonly createdAt: string;
   readonly updatedAt: string;
@@ -72,11 +73,11 @@ export interface FrtRunStoreBackup {
 
 export interface FrtRunStore {
   getRun(
-    scope: Pick<FrtExecutionScope, "organizationId" | "tenantId">,
+    scope: FrtExecutionScope,
     runId: string,
   ): FrtStoredRun | undefined;
   saveRun(
-    scope: Pick<FrtExecutionScope, "organizationId" | "tenantId">,
+    scope: FrtExecutionScope,
     result: FrtSkillRunResult,
     options: {
       readonly actor: string;
@@ -117,6 +118,16 @@ function canonical(value: unknown): string {
       .join(",")}}`;
   }
   return JSON.stringify(value);
+}
+
+function sameScope(left: FrtExecutionScope, right: FrtExecutionScope): boolean {
+  return left.organizationId === right.organizationId
+    && left.tenantId === right.tenantId
+    && left.workspaceId === right.workspaceId
+    && left.projectId === right.projectId
+    && left.accountId === right.accountId
+    && left.environmentId === right.environmentId
+    && left.releaseId === right.releaseId;
 }
 
 const backupPathPattern = /^(?!\/)(?!.*(?:^|\/)\.\.(?:\/|$))[A-Za-z0-9._/-]{1,512}$/;
@@ -307,19 +318,21 @@ export class FileFrtRunStore implements FrtRunStore {
   }
 
   getRun(
-    scope: Pick<FrtExecutionScope, "organizationId" | "tenantId">,
+    scope: FrtExecutionScope,
     runId: string,
   ): FrtStoredRun | undefined {
     const stored = parseJson<FrtStoredRun>(this.#runPath(scope, runId));
     if (!stored || stored.schemaVersion !== "1.0" || stored.runId !== runId
-        || stored.organizationId !== scope.organizationId || stored.tenantId !== scope.tenantId) {
+        || stored.organizationId !== scope.organizationId || stored.tenantId !== scope.tenantId
+        || !stored.executionScope || !sameScope(stored.executionScope, scope)
+        || !sameScope(stored.result.executionScope, scope)) {
       return undefined;
     }
     return stored;
   }
 
   saveRun(
-    scope: Pick<FrtExecutionScope, "organizationId" | "tenantId">,
+    scope: FrtExecutionScope,
     result: FrtSkillRunResult,
     options: {
       readonly actor: string;
@@ -328,6 +341,9 @@ export class FileFrtRunStore implements FrtRunStore {
       readonly now: Date;
     },
   ): FrtStoredRun {
+    if (!sameScope(result.executionScope, scope)) {
+      throw new FrtRunStoreError("FRT_RUN_RESOURCE_SCOPE_MISMATCH");
+    }
     const path = this.#runPath(scope, result.runId);
     return withLock(`${path}.lock`, () => {
       const existing = this.getRun(scope, result.runId);
@@ -349,6 +365,7 @@ export class FileFrtRunStore implements FrtRunStore {
         schemaVersion: "1.0",
         organizationId: scope.organizationId,
         tenantId: scope.tenantId,
+        executionScope: scope,
         runId: result.runId,
         createdAt: existing?.createdAt ?? at,
         updatedAt: at,

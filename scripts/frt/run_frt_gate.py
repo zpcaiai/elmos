@@ -27,6 +27,7 @@ REQUIRED_LOCAL = (
     "browser_journey",
     "keyboard_i18n",
     "accessibility",
+    "external_qualification_harness",
 )
 REQUIRED_EXTERNAL = (
     "real_source_target_builds",
@@ -56,6 +57,19 @@ def digest(value: Any) -> str:
 
 def evidence_digest(path: Path) -> str:
     return "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def validate_result_binding(result: Any, request_path: Path) -> list[str]:
+    """Reject a copied, stale, or internally tampered gate result."""
+    if not isinstance(result, dict):
+        return ["gate result must be an object"]
+    failures: list[str] = []
+    if result.get("gate_request_sha256") != evidence_digest(request_path):
+        failures.append("gate result is not bound to the current request bytes")
+    unsigned = {key: value for key, value in result.items() if key != "result_digest"}
+    if result.get("result_digest") != digest(unsigned):
+        failures.append("gate result digest mismatch")
+    return failures
 
 
 def validate_evidence_ref(ref: Any, evidence_root: Path = ROOT) -> list[str]:
@@ -131,7 +145,8 @@ def main() -> int:
     parser.add_argument("--output")
     parser.add_argument("--external-trust-store", type=Path)
     args = parser.parse_args()
-    request = json.loads(Path(args.request).read_text(encoding="utf-8"))
+    request_path = Path(args.request).resolve()
+    request = json.loads(request_path.read_text(encoding="utf-8"))
     installed = json.loads(MANIFEST.read_text(encoding="utf-8"))
     failures: list[str] = []
     if not isinstance(request, dict):
@@ -175,6 +190,7 @@ def main() -> int:
         decision = "READY_FOR_EXTERNAL_GATE"
     result_without_digest = {
         "schema_version": 1,
+        "gate_request_sha256": evidence_digest(request_path),
         "package": installed.get("source_package"),
         "batch_count": 30,
         "skill_count": 472,

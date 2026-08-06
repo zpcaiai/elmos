@@ -9,7 +9,13 @@ import unittest
 from pathlib import Path
 
 from external_evidence import validate_external_check
-from run_frt_gate import check_group, validate_evidence_ref
+from run_frt_gate import (
+    check_group,
+    digest,
+    evidence_digest,
+    validate_evidence_ref,
+    validate_result_binding,
+)
 
 
 class EvidenceReferenceTests(unittest.TestCase):
@@ -66,6 +72,25 @@ class EvidenceReferenceTests(unittest.TestCase):
             ),
             ["external_checks.performance PASSED requires an external trust store"],
         )
+
+    def test_gate_result_is_bound_to_exact_request_bytes_and_its_own_digest(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            request = Path(directory) / "request.json"
+            request.write_text('{"state":"current"}\n', encoding="utf-8")
+            unsigned = {
+                "schema_version": 1,
+                "gate_request_sha256": evidence_digest(request),
+                "decision": "READY_FOR_EXTERNAL_GATE",
+            }
+            result = {**unsigned, "result_digest": digest(unsigned)}
+            self.assertEqual(validate_result_binding(result, request), [])
+            request.write_text('{"state":"changed"}\n', encoding="utf-8")
+            self.assertEqual(
+                validate_result_binding(result, request),
+                ["gate result is not bound to the current request bytes"],
+            )
+            result["decision"] = "CERTIFIED"
+            self.assertIn("gate result digest mismatch", validate_result_binding(result, request))
 
 
 if __name__ == "__main__":

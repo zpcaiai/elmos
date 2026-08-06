@@ -203,6 +203,15 @@
 .fileSummary { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin-top: 10px; color: var(--text-muted); font-size: 10px; }
 .fileSummary > strong { color: var(--accent-strong); font-size: 16px; }
 .fileSummary code { max-width: 220px; overflow: hidden; padding: 4px 6px; border-radius: 6px; background: var(--surface-muted); text-overflow: ellipsis; white-space: nowrap; }
+.contractSummary { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 11px; color: var(--text-muted); font-size: 9px; }
+.contractSummary > span { color: var(--text); font-weight: 760; text-transform: uppercase; }
+.contractSummary > span:not(:first-child) { margin-left: 8px; }
+.contractSummary code { padding: 4px 6px; border-radius: 6px; background: var(--surface-muted); color: var(--accent-strong); }
+.jsonInput { display: grid; gap: 6px; margin-top: 12px; }
+.jsonInput > span { color: var(--text-muted); font-size: 10px; font-weight: 720; }
+.jsonInput textarea { width: 100%; min-height: 210px; resize: vertical; padding: 11px; border: 1px solid var(--frt-line); border-radius: 9px; outline: 0; background: #13282b; color: #d8e4e5; font: 10px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace; tab-size: 2; }
+.jsonInput textarea:focus { border-color: var(--accent-strong); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent); }
+.resetInput { min-height: 31px; margin-top: 8px; padding: 0 9px; border: 1px solid var(--frt-line); border-radius: 8px; background: var(--surface); color: var(--text-muted); font: inherit; font-size: 9px; font-weight: 740; cursor: pointer; }
 .localIdentity { padding: 11px 15px; border: 1px solid var(--frt-line); border-radius: 12px; background: var(--surface); }
 .localIdentity summary { color: var(--text-muted); font-size: 11px; font-weight: 730; cursor: pointer; }
 .localIdentity .fieldGrid { margin-top: 12px; }

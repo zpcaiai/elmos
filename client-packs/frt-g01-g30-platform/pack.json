@@ -4,6 +4,8 @@
   "version": "1.0.0",
   "mode": "modernization",
   "status": "experimental",
+  "production_operation_authorized": false,
+  "production_certification": "NOT_CERTIFIED",
   "owner": "ELMOS Frontend Platform Product Owner",
   "maintenance_owner": "ELMOS Frontend Client Engine Maintainers",
   "ux_owner": "ELMOS Web Console UX Owner",

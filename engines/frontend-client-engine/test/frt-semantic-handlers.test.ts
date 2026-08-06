@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
+import { frtCatalog } from "../src/frt-catalog.generated.js";
 import { frtHandlerRegistry } from "../src/frt-handler-registry.generated.js";
 import {
   delegatedFrtSemanticHandlerKinds,
@@ -101,15 +102,12 @@ function context(
   handlerKind: DelegatedFrtSemanticHandlerKind,
   input: Readonly<Record<string, unknown>> = fixtures[handlerKind],
 ): FrtSemanticHandlerContext {
+  const skill = frtCatalog.skills.find(item => item.handlerKind === handlerKind);
+  assert.ok(skill, `catalog must contain ${handlerKind}`);
   return {
-    skill: {
-      id: `TEST-${handlerKind}`,
-      name: `frt-9999-${handlerKind.replaceAll("_", "-")}`,
-      title: handlerKind,
-      batch: handlerKind === "route_orchestration" ? "G13" : "G01",
-      sourceSha256: `sha256:${"3".repeat(64)}`,
-    },
+    skill,
     handler: { handlerKind, surfaceManifestPaths: {} },
+    contract: skill.executionContract,
     action: "ANALYZE",
     input,
     routes,
@@ -161,7 +159,6 @@ test("generated web skeletons escape source-controlled titles and use valid stat
 
 test("typed handlers fail closed on absent required input instead of emitting success-shaped metadata", () => {
   for (const handlerKind of delegatedFrtSemanticHandlerKinds) {
-    if (handlerKind === "route_orchestration") continue;
     const result = executeFrtSemanticHandler(context(handlerKind, {}));
     const contract = result.inputContract as { state: string; missing: string[] };
     assert.equal(contract.state, "INPUT_REQUIRED", handlerKind);

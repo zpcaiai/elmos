@@ -11,6 +11,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
+from external_campaign_parameters import test_parameters
 from external_evidence import (
     PROFILE,
     digest_file,
@@ -76,12 +77,10 @@ class ExternalEvidenceTests(unittest.TestCase):
             "package_manifest_sha256": "sha256:" + "1" * 64,
             "source_tree_sha256": "sha256:" + "2" * 64,
         }
-        self.authorization = self._authorization()
         self.authorization_path = self.run / "authorization.json"
-        write_json(self.authorization_path, self.authorization)
-        self.record = self._record()
         self.record_path = self.run / "record.json"
-        self._sign_record()
+        self.profile_value = json.loads(self.profile.read_text(encoding="utf-8"))
+        self._configure_check("performance")
 
     def tearDown(self) -> None:
         self.temporary.cleanup()
@@ -91,12 +90,12 @@ class ExternalEvidenceTests(unittest.TestCase):
             "schema_version": 1,
             "authorization_id": "auth-001",
             "pack_key": "frt-g01-g30-platform",
-            "check_id": "performance",
-            "purpose": "independent representative performance qualification",
-            "environment": "runner-performance-1",
+            "check_id": self.check_id,
+            "purpose": f"independent {self.check_id} qualification",
+            "environment": f"runner-{self.check_id.replace('_', '-')}-1",
             "evidence_root": "run-001",
-            "runner_capability": "FRT_REPRESENTATIVE_PERFORMANCE_CAMPAIGN",
-            "run_parameters": {"workload_manifest_sha256": "sha256:" + "3" * 64},
+            "runner_capability": self.spec["runner_capability"],
+            "run_parameters": test_parameters(self.check_id),
             "valid_from": (self.started - timedelta(minutes=5)).isoformat(),
             "expires_at": (self.completed + timedelta(minutes=5)).isoformat(),
             "approver": {
@@ -132,20 +131,12 @@ class ExternalEvidenceTests(unittest.TestCase):
         }
 
     def _record(self) -> dict[str, Any]:
-        roles = [
-            "authorization",
-            "workload_digest_manifest",
-            "environment_inventory",
-            "raw_performance_results",
-            "budget_comparison",
-            "resource_utilization",
-            "cleanup_receipt",
-        ]
+        roles = self.spec["required_evidence_roles"]
         return {
             "schema_version": 1,
             "record_type": "FRT_EXTERNAL_EVIDENCE",
             "pack_key": "frt-g01-g30-platform",
-            "check_id": "performance",
+            "check_id": self.check_id,
             "run_id": "run-001",
             "authorization_ref": {
                 "path": self.authorization_path.relative_to(self.root).as_posix(),
@@ -169,30 +160,45 @@ class ExternalEvidenceTests(unittest.TestCase):
                 "organization_id": "owner-org",
             },
             "environment": {
-                "runner_id": "runner-performance-1",
+                "runner_id": f"runner-{self.check_id.replace('_', '-')}-1",
                 "runner_version": "1.0.0",
                 "os": "linux-6.12",
                 "architecture": "x86_64",
-                "tool_versions": {"playwright": "1.61.1", "k6": "1.3.0"},
+                "tool_versions": {"external-evidence-protocol": "1.0.0", "openssl": "3"},
                 "region": "isolated-test-region",
                 "network_policy": "approved-targets-only",
             },
-            "metrics": {
-                "workloads_expected": 2,
-                "workloads_passed": 2,
-                "budget_breaches": 0,
-                "samples_per_workload": 5,
-            },
+            "metrics": self._valid_metrics(),
             "findings": {"critical": 0, "high": 0, "medium": 0, "low": 0, "unresolved": 0},
-            "claims": {
-                "representative_workload": True,
-                "warmup_separate": True,
-                "raw_samples_preserved": True,
-                "budgets_frozen_before_run": True,
-            },
+            "claims": {claim: True for claim in self.spec["required_claims"]},
             "evidence": [self._evidence(role) for role in roles],
             "signatures": [],
         }
+
+    def _valid_metrics(self) -> dict[str, int | float]:
+        metrics: dict[str, int | float] = {
+            metric: 1 for metric in self.spec["required_metrics"]
+        }
+        for metric, value in self.spec.get("exact_metrics", {}).items():
+            metrics[metric] = value
+        for metric, value in self.spec.get("minimum_metrics", {}).items():
+            metrics[metric] = max(metrics[metric], value)
+        for left, right in self.spec.get("equal_metric_pairs", []):
+            shared = max(metrics[left], metrics[right])
+            metrics[left] = shared
+            metrics[right] = shared
+        for actual, budget in self.spec.get("less_or_equal_metric_pairs", []):
+            metrics[budget] = max(metrics[budget], metrics[actual])
+            metrics[actual] = min(metrics[actual], metrics[budget])
+        return metrics
+
+    def _configure_check(self, check_id: str) -> None:
+        self.check_id = check_id
+        self.spec = self.profile_value["checks"][check_id]
+        self.authorization = self._authorization()
+        write_json(self.authorization_path, self.authorization)
+        self.record = self._record()
+        self._sign_record()
 
     def _sign_record(self) -> None:
         self.record["signatures"] = [
@@ -218,8 +224,30 @@ class ExternalEvidenceTests(unittest.TestCase):
             expected_scope=self.scope,
         )
 
-    def test_accepts_exact_independent_signed_record(self) -> None:
-        self.assertEqual(self.validate(), [])
+    def test_accepts_exact_independent_signed_record_for_every_external_check(self) -> None:
+        for check_id in self.profile_value["checks"]:
+            with self.subTest(check_id=check_id):
+                self._configure_check(check_id)
+                self.assertEqual(self.validate(), [])
+
+    def test_every_external_check_rejects_a_profile_metric_violation(self) -> None:
+        for check_id in self.profile_value["checks"]:
+            with self.subTest(check_id=check_id):
+                self._configure_check(check_id)
+                exact = self.spec.get("exact_metrics", {})
+                equal = self.spec.get("equal_metric_pairs", [])
+                minimum = self.spec.get("minimum_metrics", {})
+                if exact:
+                    metric, expected = next(iter(exact.items()))
+                    self.record["metrics"][metric] = expected + 1
+                elif equal:
+                    left, right = equal[0]
+                    self.record["metrics"][right] = self.record["metrics"][left] + 1
+                else:
+                    metric, threshold = next(iter(minimum.items()))
+                    self.record["metrics"][metric] = threshold - 1
+                self._sign_record()
+                self.assertTrue(any(item.startswith("metric") or item.startswith("metrics") for item in self.validate()))
 
     def test_rejects_self_verification_even_with_valid_evidence(self) -> None:
         self.record["verifier"]["organization_id"] = "executor-org"
@@ -232,7 +260,7 @@ class ExternalEvidenceTests(unittest.TestCase):
         self.assertIn("verifier and approver principals must differ", self.validate())
 
     def test_rejects_weakened_metric_and_missing_role(self) -> None:
-        self.record["metrics"]["workloads_passed"] = 1
+        self.record["metrics"]["workloads_passed"] = self.record["metrics"]["workloads_expected"] - 1
         self.record["evidence"] = self.record["evidence"][:-1]
         self._sign_record()
         failures = self.validate()

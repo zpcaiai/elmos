@@ -11,7 +11,7 @@
     "source_tree_sha256": { "$ref": "#/$defs/digest" },
     "local_checks": {
       "type": "object",
-      "required": ["package_integrity", "runtime_interfaces", "contract_validation", "trusted_identity_evidence", "semantic_skill_coverage", "durable_run_lifecycle", "real_route_build", "runtime_tests", "web_build", "browser_journey", "keyboard_i18n", "accessibility"],
+      "required": ["package_integrity", "runtime_interfaces", "contract_validation", "trusted_identity_evidence", "semantic_skill_coverage", "durable_run_lifecycle", "real_route_build", "runtime_tests", "web_build", "browser_journey", "keyboard_i18n", "accessibility", "external_qualification_harness"],
       "additionalProperties": false,
       "properties": {
         "package_integrity": { "$ref": "#/$defs/check" },
@@ -25,7 +25,8 @@
         "web_build": { "$ref": "#/$defs/check" },
         "browser_journey": { "$ref": "#/$defs/check" },
         "keyboard_i18n": { "$ref": "#/$defs/check" },
-        "accessibility": { "$ref": "#/$defs/check" }
+        "accessibility": { "$ref": "#/$defs/check" },
+        "external_qualification_harness": { "$ref": "#/$defs/check" }
       }
     },
     "external_checks": {

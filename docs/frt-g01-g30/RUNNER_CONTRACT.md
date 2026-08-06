@@ -35,6 +35,10 @@ run(EXECUTE)  ──►  QUEUED        outcome=PROPOSAL_READY_FOR_RUNNER
 | GET | `/engine/v1/frt/routes` | `frt:read` |
 | POST | `/engine/v1/frt/batches/{G01..G30}/plan` | `frt:plan` |
 | POST | `/engine/v1/frt/skills/{skillId}/runs` | `frt:run`（`VERIFY` 另需 `frt:evidence`） |
+| GET | `/engine/v1/frt/skills/{skillId}/runs/{runId}` | `frt:read` |
+| POST | `/engine/v1/frt/skills/{skillId}/runs/{runId}/verify` | `frt:run` + `frt:evidence` |
+| GET | `/engine/v1/frt/skills/{skillId}/runs/{runId}/findings` | `frt:read` |
+| GET | `/engine/v1/frt/skills/{skillId}/runs/{runId}/evidence` | `frt:read` |
 | GET | `/engine/v1/frt/runs/{runId}` | `frt:read` |
 | GET | `/engine/v1/frt/runs/{runId}/audit` | `frt:read` |
 | POST | `/engine/v1/frt/runs/{runId}/{claim\|heartbeat\|cancel\|retry}` | `frt:run` |
@@ -42,7 +46,7 @@ run(EXECUTE)  ──►  QUEUED        outcome=PROPOSAL_READY_FOR_RUNNER
 
 鉴权：`Authorization: Bearer <identity token>`，格式与 `verifyFrtIdentityToken` 一致（`base64url(envelope).base64url(ed25519 signature)`，`IDENTITY` 信任用途）。
 
-**令牌是租户的唯一权威来源。** 创建 run 时请求体 `context` 的 7 个 scope 字段必须与令牌 claims 逐一相等，且 `context.requestedBy` 必须等于 `claims.subject`；不符返回 `403 FRT_SCOPE_MISMATCH` / `403 FRT_ACTOR_MISMATCH`。读取与状态迁移一律以令牌里的 `organizationId`/`tenantId` 为准，请求体说什么都不算。
+**令牌是身份与授权的唯一权威来源。** 创建 run 时请求体 `context` 的 7 个 scope 字段必须与令牌 claims 逐一相等，且 `context.requestedBy` 必须等于 `claims.subject`；不符返回 `403 FRT_SCOPE_MISMATCH` / `403 FRT_ACTOR_MISMATCH`。读取与状态迁移必须同时匹配 `organizationId`、`tenantId`、`workspaceId`、`projectId`、`accountId`、`environmentId` 和 `releaseId`；同租户的另一个 Workspace 或 Release 也不可见。VERIFY 还必须绑定同一 scope、同一 Skill 的终态 subject run、它的 `resultDigest` 和 `sourceSnapshotDigest`，不能验证任意或已漂移的结果。
 
 体量上限：创建 run 16 MiB，其余 64 KiB。
 
@@ -59,7 +63,7 @@ run(EXECUTE)  ──►  QUEUED        outcome=PROPOSAL_READY_FOR_RUNNER
 
 见 `schemas/frt-g01-g30/runner-completion.schema.json` 与 `run-completion-request.schema.json`。
 
-签名：对本对象**去掉 `signature` 字段后**的规范化 JSON（`canonicalFrtJson`：对象键按 `localeCompare` 升序、无空白）做 Ed25519 签名，base64url 编码。校验用途是 `RUNNER`，因此信任库里对应的 key 必须在 `purposes` 里包含 `"RUNNER"`。
+签名：对本对象**去掉 `signature` 字段后**的规范化 JSON（`canonicalFrtJson`：对象键按 Unicode code-point 升序、无空白）做 Ed25519 签名，base64url 编码。校验用途是 `RUNNER`，因此信任库里对应的 key 必须在 `purposes` 里包含 `"RUNNER"`。
 
 会**阻断** run 的情况：
 
@@ -74,8 +78,9 @@ run(EXECUTE)  ──►  QUEUED        outcome=PROPOSAL_READY_FOR_RUNNER
 | 证据 `synthetic: true` | `FRT_SYNTHETIC_EVIDENCE_NON_AUTHORITATIVE` |
 | 证据无法按内容寻址解析或签名不符 | `FRT_EVIDENCE_ATTESTATION_INVALID` |
 | 同一 role 重复上报 | `FRT_EVIDENCE_ROLE_DUPLICATED` |
+| 本地 Runner 上报 `productionOperationExecuted: true` | `FRT_PRODUCTION_OPERATION_AUTHORITY_EXTERNAL` |
 
-**证明未通过时，`customerCodeExecuted` 与 `productionOperationExecuted` 会被强制写回 `false`**，且不采纳任何上报的证据——未经证明的"我执行过"不作数。
+证明未通过时，`customerCodeExecuted` 会被强制写回 `false`，且不采纳任何上报的证据——未经证明的“我执行过”不作数。`productionOperationExecuted` 在本地控制面中**始终为 `false`**；即使 Runner 签名有效也无权声明生产操作，必须走单独授权、独立取证的外部生产 authority。
 
 `exitStatus: "FAILED"` 本身不阻断：如实上报失败是一次合法的完成，run 进入 `FAILED`，`customerCodeExecuted` 仍可为 `true`（确实执行了，只是失败了）。
 
@@ -185,8 +190,12 @@ curl -sX POST "$FRT/engine/v1/frt/runs/$RUN/complete" \
 CLI 等价物（同一套校验，走本地 run store）：
 
 ```bash
-frt-cli claim    --organization ORG --tenant T --run $RUN --actor runner-1 --request transition.json
-frt-cli complete --organization ORG --tenant T --run $RUN --actor runner-1 --request completion-request.json
+frt-cli claim --organization ORG --tenant T --workspace W --project P --account A \
+  --environment E --release R --run $RUN --actor runner-1 --request transition.json
+frt-cli heartbeat --organization ORG --tenant T --workspace W --project P --account A \
+  --environment E --release R --run $RUN --actor runner-1 --request transition.json
+frt-cli complete --organization ORG --tenant T --workspace W --project P --account A \
+  --environment E --release R --run $RUN --actor runner-1 --request completion-request.json
 ```
 
 ## 7. Runner 侧代码与部署边界

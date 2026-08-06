@@ -110,6 +110,7 @@
     "scope, evidence role, certificate dependency, security, accessibility or route matrix change",
     "external evidence profile, visual baseline, device, performance, security, DR, production or customer acceptance change"
   ],
+  "production_operation_authorized": false,
   "production_certification": "NOT_CERTIFIED",
   "external_evidence": "NOT_RUN"
 }

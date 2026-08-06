@@ -32,6 +32,7 @@ ENGINE_HANDLER_REGISTRY = (
     / "src"
     / "frt-handler-registry.generated.ts"
 )
+COMPILED_CONTRACTS = ROOT / "docs" / "frt-g01-g30" / "compiled-skill-contracts.json"
 WEB_CATALOG = (
     ROOT / "apps" / "web-console" / "app" / "lib" / "frtCatalog.generated.ts"
 )
@@ -43,6 +44,18 @@ REQUIRED_SECTIONS = (
     "## Verification",
     "## Stop and Escalate When",
     "## Definition of Done",
+)
+CONTRACT_SECTIONS = (
+    "Objective",
+    "Inputs",
+    "Outputs",
+    "Required Implementation Surfaces",
+    "Workflow",
+    "Hard Rules",
+    "API Contract",
+    "Verification",
+    "Stop and Escalate When",
+    "Definition of Done",
 )
 STACK_NAMES = {
     "vue-2": "Vue 2",
@@ -68,11 +81,18 @@ SURFACE_IMPLEMENTATIONS = {
     "contract": [
         "schemas/frt-g01-g30/skill-run-request.schema.json",
         "schemas/frt-g01-g30/skill-run-result.schema.json",
+        "schemas/frt-g01-g30/skill-execution-contract.schema.json",
+        "schemas/frt-g01-g30/gate-result.schema.json",
+        "schemas/frt-g01-g30/external-qualification-plan.schema.json",
+        "schemas/frt-g01-g30/external-qualification-preflight.schema.json",
+        "schemas/frt-g01-g30/external-qualification-local-execution.schema.json",
         "engines/frontend-client-engine/src/frt-types.ts",
+        "engines/frontend-client-engine/src/frt-production-contract.ts",
     ],
     "runtime": [
         "engines/frontend-client-engine/src/frt-runtime.ts",
         "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+        "engines/frontend-client-engine/src/frt-production-contract.ts",
         "engines/frontend-client-engine/src/frt-handler-registry.generated.ts",
     ],
     "control_plane": ["engines/frontend-client-engine/src/server.ts"],
@@ -86,12 +106,167 @@ SURFACE_IMPLEMENTATIONS = {
     ],
     "tests": [
         "engines/frontend-client-engine/test/frt-artifact-lifecycle.test.ts",
+        "engines/frontend-client-engine/test/frt-production-contract.test.ts",
         "engines/frontend-client-engine/test/frt-runtime.test.ts",
         "engines/frontend-client-engine/test/frt-semantic-handlers.test.ts",
         "engines/frontend-client-engine/test/server.test.ts",
         "apps/web-console/e2e/frt-frontend-transformation.spec.ts",
+        "scripts/frt/external_qualification.py",
+        "scripts/frt/external_campaign_parameters.py",
+        "scripts/frt/test_external_qualification.py",
+        "scripts/frt/test_external_campaign_parameters.py",
+        "scripts/frt/record_frt_ios_device_evidence.mjs",
+        "scripts/frt/test_record_frt_ios_device_evidence.py",
     ],
 }
+
+HANDLER_INPUT_CONTRACTS: dict[str, dict[str, list[str]]] = {
+    "governance": {
+        "required": ["invariants"],
+        "optional": ["dependencies", "allowedDependencies", "artifacts"],
+    },
+    "estate_discovery": {"required": ["files"], "optional": []},
+    "semantic_ir": {"required": ["files"], "optional": []},
+    "typed_contract": {"required": ["files"], "optional": []},
+    "migration_planning": {
+        "required": ["inventory", "target"],
+        "optional": ["currentVersions"],
+    },
+    "source_generation": {
+        "required": ["targetProfile", "uiIr"],
+        "optional": [],
+    },
+    "build_toolchain": {
+        "required": ["astNodes"],
+        "optional": ["imports", "diagnostics", "unsupportedSemantics", "repairPasses"],
+    },
+    "test_automation": {"required": ["components"], "optional": []},
+    "delivery_pipeline": {
+        "required": ["states"],
+        "optional": ["effects", "asyncOperations"],
+    },
+    "design_system": {
+        "required": ["routes"],
+        "optional": ["forms", "apiCalls", "storage", "permissions"],
+    },
+    "mobile_client": {
+        "required": ["uiNodes"],
+        "optional": ["designTokens", "locales", "rtlLocales", "animations"],
+    },
+    "cross_platform": {
+        "required": ["requiredCapabilities", "platformCapabilities"],
+        "optional": ["bridges"],
+    },
+    "directional_route": {"required": ["files"], "optional": []},
+    "route_orchestration": {
+        "required": ["corpus"],
+        "optional": ["routeIds"],
+    },
+    "compatibility": {"required": ["packs"], "optional": []},
+    "advanced_verification": {
+        "required": ["properties"],
+        "optional": ["toolchains", "counterexamples"],
+    },
+    "runtime_operations": {
+        "required": ["resources"],
+        "optional": ["roles", "jobs", "quotas"],
+    },
+    "product_workflow": {
+        "required": ["requirements", "states", "transitions"],
+        "optional": ["initialState", "journeys", "artifacts"],
+    },
+    "administration": {
+        "required": ["capabilities", "roles", "operations"],
+        "optional": [],
+    },
+    "performance_capacity": {
+        "required": ["workload", "budgets"],
+        "optional": ["samples", "throughputPerSecond"],
+    },
+    "resilience_dr": {
+        "required": ["scenarios", "recoveryObjectives"],
+        "optional": ["observations"],
+    },
+    "security_privacy": {
+        "required": ["assets", "findings"],
+        "optional": ["dataFlows", "sbomComponents"],
+    },
+    "production_readiness": {
+        "required": ["slos", "runbooks"],
+        "optional": ["alerts", "releases"],
+    },
+}
+
+
+def required_evidence_roles(batch: str) -> list[str]:
+    number = int(batch[1:])
+    base = ["CONTRACT_VALIDATION", "SOURCE_LINEAGE", "INDEPENDENT_VERIFICATION"]
+    if number <= 3:
+        return base + ["SCHEMA_VALIDATION", "NEGATIVE_TEST"]
+    if number <= 7:
+        return base + ["SOURCE_BUILD", "TARGET_BUILD", "TYPECHECK", "NEGATIVE_TEST"]
+    if number <= 12:
+        return base + ["SOURCE_RUNTIME", "TARGET_RUNTIME", "JOURNEY", "ACCESSIBILITY"]
+    if number <= 17:
+        return base + ["SOURCE_BUILD", "TARGET_BUILD", "BROWSER_OR_DEVICE_JOURNEY", "HOLDOUT_CORPUS"]
+    if number == 18:
+        return base + ["PACK_SIGNATURE", "PACK_CONFORMANCE", "CONFLICT_RESOLUTION"]
+    if number == 19:
+        return base + ["PROOF_KERNEL", "COUNTEREXAMPLE_REPLAY", "HOLDOUT_CORPUS"]
+    if number == 20:
+        return base + ["DURABLE_RUNTIME", "TENANT_ISOLATION", "SECURITY_TEST", "OPERATOR_JOURNEY"]
+    if number <= 26:
+        return base + ["USER_JOURNEY", "ADMIN_JOURNEY", "HOLDOUT_CORPUS", "REPRESENTATIVE_JOURNEY"]
+    if number == 27:
+        return base + ["PERFORMANCE_RUN", "CONCURRENCY_RUN", "CAPACITY_RUN", "DEGRADATION_TEST"]
+    if number == 28:
+        return base + ["CHAOS_RUN", "FAILOVER_RUN", "RESTORE_RUN", "DR_EXERCISE"]
+    if number == 29:
+        return base + ["PENETRATION_TEST", "PRIVACY_REVIEW", "SUPPLY_CHAIN_ATTESTATION", "INCIDENT_DRILL"]
+    return base + ["PRODUCTION_OBSERVATION", "CANARY_OBSERVATION", "ROLLBACK_DRILL", "ON_CALL_REVIEW", "CUSTOMER_OUTCOME"]
+
+
+def skill_obligations(skill: dict[str, Any]) -> list[str]:
+    obligations = [
+        "PRESERVE_SOURCE_READ_ONLY",
+        "ENFORCE_EXACT_TENANT_AND_RESOURCE_SCOPE",
+        "BIND_INPUT_OUTPUT_AND_EVIDENCE_DIGESTS",
+        "KEEP_UNKNOWN_AND_UNSUPPORTED_SEMANTICS_EXPLICIT",
+        "REQUIRE_INDEPENDENT_GATE_FOR_CERTIFICATION",
+    ]
+    batch = int(skill["batch"][1:])
+    if 3 <= batch <= 19:
+        obligations.append("TRANSFORM_THROUGH_TYPED_SEMANTIC_IR")
+    if 4 <= batch <= 17:
+        obligations.append("USE_EXACT_DIRECTIONAL_SOURCE_AND_TARGET_PROFILES")
+    if skill.get("route") is not None:
+        source = skill["route"]["source"].upper().replace(" ", "_")
+        target = skill["route"]["target"].upper().replace(" ", "_")
+        obligations.extend([f"ROUTE_{source}_TO_{target}", "RUN_REAL_SOURCE_AND_TARGET_APPLICATIONS"])
+    if batch >= 19:
+        obligations.append("MODELS_MAY_PROPOSE_BUT_MAY_NOT_CERTIFY")
+    if batch >= 21:
+        obligations.append("REQUIRE_REPRESENTATIVE_BUSINESS_AND_ADMIN_JOURNEYS")
+    if batch >= 27:
+        obligations.append("REQUIRE_AUTHORIZED_EXTERNAL_OR_PRODUCTION_EQUIVALENT_EXECUTION")
+    if batch >= 29:
+        obligations.append("ZERO_TOLERANCE_FOR_CRITICAL_SECURITY_OR_PRIVACY_FINDINGS")
+    if batch == 30:
+        obligations.append("PRODUCTION_AUTHORITY_REMAINS_EXTERNAL")
+    return obligations
+
+
+def execution_class(skill: dict[str, Any]) -> str:
+    batch = int(skill["batch"][1:])
+    if skill.get("route") is not None or 6 <= batch <= 18:
+        return "SANDBOX_RUNNER"
+    if batch <= 5:
+        return "CONTROL_PLANE_ANALYSIS"
+    if batch <= 26:
+        return "GOVERNED_EXTERNAL_RUNNER"
+    if batch <= 29:
+        return "AUTHORIZED_EXTERNAL_ASSURANCE"
+    return "EXTERNAL_PRODUCTION_AUTHORITY"
 
 
 def handler_kind(skill: dict[str, Any]) -> str:
@@ -155,6 +330,10 @@ def surface_manifest(skill: dict[str, Any], surface: str) -> dict[str, Any]:
         "logical_path": logical_path,
         "status": "shared_implementation",
         "handler_kind": handler_kind(skill),
+        "capability_key": skill["executionContract"]["capabilityKey"],
+        "execution_contract_sha256": skill["executionContract"]["contractDigest"],
+        "execution_class": skill["executionContract"]["executionClass"],
+        "input_contract": skill["executionContract"]["inputContract"],
         "contract_version": skill["version"],
         "source_sha256": skill["sourceSha256"],
         "implementation_paths": SURFACE_IMPLEMENTATIONS[surface],
@@ -192,6 +371,105 @@ def parse_frontmatter(text: str, source: Path) -> tuple[dict[str, str], str]:
         key, value = line.split(":", 1)
         fields[key.strip()] = value.strip().strip('"')
     return fields, text[match.end() :].lstrip("\n")
+
+
+def markdown_section(body: str, heading: str, source: Path) -> str:
+    match = re.search(
+        rf"^## {re.escape(heading)}\s*$\n(.*?)(?=^##\s|\Z)",
+        body,
+        re.MULTILINE | re.DOTALL,
+    )
+    if match is None or not match.group(1).strip():
+        raise SystemExit(f"FRT Skill contract section is missing or empty: {source}: {heading}")
+    return match.group(1).strip()
+
+
+def markdown_bullets(section: str) -> list[str]:
+    return [
+        match.group(1).strip()
+        for match in re.finditer(r"^-\s+(.+)$", section, re.MULTILINE)
+    ]
+
+
+def compiled_execution_contract(
+    skill: dict[str, Any],
+    body: str,
+    source: Path,
+) -> dict[str, Any]:
+    sections = {heading: markdown_section(body, heading, source) for heading in CONTRACT_SECTIONS}
+    inputs = markdown_bullets(sections["Inputs"])
+    outputs = markdown_bullets(sections["Outputs"])
+    verification = markdown_bullets(sections["Verification"])
+    stop_conditions = markdown_bullets(sections["Stop and Escalate When"])
+    done = markdown_bullets(sections["Definition of Done"])
+    workflow_steps = re.findall(r"^\d+\.\s+(.+)$", sections["Workflow"], re.MULTILINE)
+    hard_rules = markdown_bullets(sections["Hard Rules"])
+    api_operations = re.findall(
+        r"^(GET|POST|PUT|PATCH|DELETE)\s+([^\s]+)$",
+        sections["API Contract"],
+        re.MULTILINE,
+    )
+    surface_block = re.search(
+        r"```(?:text)?\s*\n(.*?)```",
+        sections["Required Implementation Surfaces"],
+        re.DOTALL,
+    )
+    surfaces = [
+        line.strip()
+        for line in (surface_block.group(1).splitlines() if surface_block else [])
+        if line.strip()
+    ]
+    counts = {
+        "inputCount": len(inputs),
+        "outputCount": len(outputs),
+        "workflowStepCount": len(workflow_steps),
+        "hardRuleCount": len(hard_rules),
+        "verificationCount": len(verification),
+        "stopConditionCount": len(stop_conditions),
+        "definitionOfDoneCount": len(done),
+        "apiOperationCount": len(api_operations),
+        "surfaceCount": len(surfaces),
+    }
+    if any(value == 0 for value in counts.values()):
+        raise SystemExit(f"FRT Skill compiled contract is incomplete: {skill['id']}: {counts}")
+    handler_input = HANDLER_INPUT_CONTRACTS[skill["handlerKind"]]
+    capability_name = skill["name"].removeprefix(f"frt-{skill['id'][4:]}-")
+    capability_key = f"frt.{skill['batch'].lower()}.{capability_name}"
+    compiled = {
+        "schemaVersion": "1.0",
+        "skillId": skill["id"],
+        "skillName": skill["name"],
+        "batch": skill["batch"],
+        "capabilityKey": capability_key,
+        "handlerKind": skill["handlerKind"],
+        "risk": skill["risk"],
+        "executionClass": execution_class(skill),
+        "inputContract": {
+            "required": handler_input["required"],
+            "optional": handler_input["optional"],
+            "additionalProperties": False,
+        },
+        "outputContracts": [
+            match.group(1) if (match := re.search(r"`([^`]+)`", output)) else output
+            for output in outputs
+        ],
+        "requiredEvidenceRoles": required_evidence_roles(skill["batch"]),
+        "obligations": skill_obligations(skill),
+        "apiOperations": [
+            {"method": method, "path": path}
+            for method, path in api_operations
+        ],
+        "requiredSurfaces": surfaces,
+        "assuranceCounts": counts,
+        "sourcePath": skill["sourcePath"],
+        "sourceSha256": skill["sourceSha256"],
+        "productionOperationAuthority": "EXTERNAL_ONLY",
+        "certification": "NOT_CERTIFIED",
+    }
+    return {
+        **compiled,
+        "contractDigest": "sha256:" + canonical_digest(compiled),
+    }
 
 
 def validate_source() -> tuple[dict[str, Any], list[dict[str, Any]], list[dict[str, Any]]]:
@@ -323,8 +601,7 @@ def validate_source() -> tuple[dict[str, Any], list[dict[str, Any]], list[dict[s
         if title_match is None:
             raise SystemExit(f"FRT Skill title is missing: {skill_id}")
         route_match = ROUTE_PATTERN.match(name)
-        skills.append(
-            {
+        skill = {
                 "id": skill_id,
                 "name": name,
                 "title": title_match.group(1).strip(),
@@ -346,7 +623,9 @@ def validate_source() -> tuple[dict[str, Any], list[dict[str, Any]], list[dict[s
                     else None
                 ),
             }
-        )
+        skill["handlerKind"] = handler_kind(skill)
+        skill["executionContract"] = compiled_execution_contract(skill, body, skill_path)
+        skills.append(skill)
         seen_ids.add(skill_id)
         seen_names.add(name)
     skill_ids = [int(skill["id"].split("-")[1]) for skill in skills]
@@ -358,7 +637,6 @@ def validate_source() -> tuple[dict[str, Any], list[dict[str, Any]], list[dict[s
     for batch in batches:
         batch["skillCount"] = sum(skill["batch"] == batch["id"] for skill in skills)
     for skill in skills:
-        skill["handlerKind"] = handler_kind(skill)
         skill["surfaceManifestPaths"] = {
             surface: surface_manifest_path(skill, surface).relative_to(ROOT).as_posix()
             for surface in SURFACE_ROOTS
@@ -490,7 +768,52 @@ def typescript_catalog(catalog: dict[str, Any], export_name: str) -> str:
     rendered = json.dumps(catalog, ensure_ascii=False, indent=2, sort_keys=False)
     return (
         "// Generated by tooling/integrate_frt_g01_g30.py. Do not edit manually.\n"
-        f"export const {export_name} = {rendered} as const;\n"
+        "export interface FrtGeneratedInputContract {\n"
+        "  readonly required: readonly string[];\n"
+        "  readonly optional: readonly string[];\n"
+        "  readonly additionalProperties: false;\n"
+        "}\n"
+        "export interface FrtGeneratedExecutionContract {\n"
+        "  readonly schemaVersion: \"1.0\";\n"
+        "  readonly skillId: string; readonly skillName: string; readonly batch: string;\n"
+        "  readonly capabilityKey: string; readonly handlerKind: string; readonly risk: string;\n"
+        "  readonly executionClass: string; readonly inputContract: FrtGeneratedInputContract;\n"
+        "  readonly outputContracts: readonly string[]; readonly requiredEvidenceRoles: readonly string[];\n"
+        "  readonly obligations: readonly string[];\n"
+        "  readonly apiOperations: readonly { readonly method: string; readonly path: string }[];\n"
+        "  readonly requiredSurfaces: readonly string[]; readonly assuranceCounts: Readonly<Record<string, number>>;\n"
+        "  readonly sourcePath: string; readonly sourceSha256: string; readonly contractDigest: string;\n"
+        "  readonly productionOperationAuthority: \"EXTERNAL_ONLY\"; readonly certification: \"NOT_CERTIFIED\";\n"
+        "}\n"
+        "export interface FrtGeneratedBatch {\n"
+        "  readonly id: string; readonly number: number; readonly title: string; readonly path: string;\n"
+        "  readonly certificateFamily: string; readonly dependsOn: string | null;\n"
+        "  readonly sourceSha256: string; readonly skillCount: number;\n"
+        "}\n"
+        "export interface FrtGeneratedSkill {\n"
+        "  readonly id: string; readonly name: string; readonly title: string; readonly description: string;\n"
+        "  readonly version: string; readonly batch: string; readonly risk: string;\n"
+        "  readonly requiresCertificate: string | null; readonly foundationRequirement: string | null;\n"
+        "  readonly certificateFamily: string; readonly sourcePath: string; readonly sourceSha256: string;\n"
+        "  readonly route: { readonly source: string; readonly target: string } | null;\n"
+        "  readonly handlerKind: string; readonly executionContract: FrtGeneratedExecutionContract;\n"
+        "  readonly surfaceManifestPaths: Readonly<Record<string, string>>;\n"
+        "}\n"
+        "export interface FrtGeneratedRoute {\n"
+        "  readonly routeId: string; readonly skillId: string; readonly skillName: string; readonly batch: string;\n"
+        "  readonly source: string; readonly target: string; readonly staticRuntime: string;\n"
+        "  readonly sourceBuild: string; readonly targetBuild: string; readonly browserOrDeviceEvidence: string;\n"
+        "  readonly certification: \"NOT_CERTIFIED\";\n"
+        "}\n"
+        "export interface FrtGeneratedCatalog {\n"
+        "  readonly schemaVersion: \"1.0\"; readonly package: string; readonly packageVersion: string;\n"
+        "  readonly packageManifestSha256: string; readonly sourceTreeSha256: string;\n"
+        "  readonly batchCount: number; readonly skillCount: number; readonly directedRouteCount: number;\n"
+        "  readonly technologyStacks: readonly string[]; readonly batches: readonly FrtGeneratedBatch[];\n"
+        "  readonly skills: readonly FrtGeneratedSkill[]; readonly routes: readonly FrtGeneratedRoute[];\n"
+        "  readonly evidenceBoundary: Readonly<Record<string, string>>;\n"
+        "}\n"
+        f"export const {export_name}: FrtGeneratedCatalog = {rendered};\n"
     )
 
 
@@ -501,6 +824,10 @@ def typescript_handler_registry(skills: list[dict[str, Any]]) -> str:
             "skillName": skill["name"],
             "batch": skill["batch"],
             "handlerKind": skill["handlerKind"],
+            "capabilityKey": skill["executionContract"]["capabilityKey"],
+            "executionClass": skill["executionContract"]["executionClass"],
+            "contractDigest": skill["executionContract"]["contractDigest"],
+            "inputContract": skill["executionContract"]["inputContract"],
             "actions": ["PLAN", "ANALYZE", "EXECUTE", "VERIFY"],
             "surfaceManifestPaths": skill["surfaceManifestPaths"],
             "sourceSha256": skill["sourceSha256"],
@@ -548,6 +875,14 @@ def install(
             )
 
     catalog = generated_catalog(package_manifest, batches, skills)
+    compiled_contracts = {
+        "schemaVersion": "1.0",
+        "package": PACKAGE_NAME,
+        "skillCount": len(skills),
+        "productionOperationAuthorized": False,
+        "productionCertification": "NOT_CERTIFIED",
+        "contracts": [skill["executionContract"] for skill in skills],
+    }
     write_managed(
         ENGINE_CATALOG,
         typescript_catalog(catalog, "frtCatalog"),
@@ -562,6 +897,10 @@ def install(
         ENGINE_HANDLER_REGISTRY,
         typescript_handler_registry(skills),
         marker="Generated by tooling/integrate_frt_g01_g30.py",
+    )
+    write_managed(
+        COMPILED_CONTRACTS,
+        json.dumps(compiled_contracts, ensure_ascii=False, indent=2) + "\n",
     )
     installed_entries = []
     for skill in skills:
@@ -580,6 +919,9 @@ def install(
                 "interface_path": interface.relative_to(ROOT).as_posix(),
                 "interface_sha256": "sha256:" + sha256_file(interface),
                 "handler_kind": skill["handlerKind"],
+                "capability_key": skill["executionContract"]["capabilityKey"],
+                "execution_class": skill["executionContract"]["executionClass"],
+                "execution_contract_sha256": skill["executionContract"]["contractDigest"],
                 "surface_manifests": {
                     surface: {
                         "path": surface_manifest_path(skill, surface)
@@ -602,6 +944,7 @@ def install(
         "skill_count": len(skills),
         "directed_route_count": len(catalog["routes"]),
         "runtime_authority": "engines/frontend-client-engine",
+        "production_operation_authorized": False,
         "production_certification": "NOT_CERTIFIED",
         "skills": installed_entries,
     }
@@ -621,6 +964,18 @@ def verify(
     expected_engine = typescript_catalog(catalog, "frtCatalog")
     expected_web = typescript_catalog(catalog, "frtCatalog")
     expected_handlers = typescript_handler_registry(skills)
+    expected_contracts = json.dumps(
+        {
+            "schemaVersion": "1.0",
+            "package": PACKAGE_NAME,
+            "skillCount": len(skills),
+            "productionOperationAuthorized": False,
+            "productionCertification": "NOT_CERTIFIED",
+            "contracts": [skill["executionContract"] for skill in skills],
+        },
+        ensure_ascii=False,
+        indent=2,
+    ) + "\n"
     if not ENGINE_CATALOG.is_file() or ENGINE_CATALOG.read_text(encoding="utf-8") != expected_engine:
         raise SystemExit("FRT engine catalog is missing or stale")
     if not WEB_CATALOG.is_file() or WEB_CATALOG.read_text(encoding="utf-8") != expected_web:
@@ -630,6 +985,8 @@ def verify(
         or ENGINE_HANDLER_REGISTRY.read_text(encoding="utf-8") != expected_handlers
     ):
         raise SystemExit("FRT handler registry is missing or stale")
+    if not COMPILED_CONTRACTS.is_file() or COMPILED_CONTRACTS.read_text(encoding="utf-8") != expected_contracts:
+        raise SystemExit("FRT compiled Skill contracts are missing or stale")
     for skill in skills:
         destination = RUNTIME_ROOT / skill["name"]
         skill_file = destination / "SKILL.md"
@@ -663,6 +1020,8 @@ def verify(
         or installed_manifest.get("skill_count") != EXPECTED_SKILLS
         or installed_manifest.get("batch_count") != EXPECTED_BATCHES
         or installed_manifest.get("directed_route_count") != 30
+        or installed_manifest.get("production_operation_authorized") is not False
+        or installed_manifest.get("production_certification") != "NOT_CERTIFIED"
         or len(installed_manifest.get("skills", [])) != EXPECTED_SKILLS
     ):
         raise SystemExit("FRT installed manifest counts or source identity are stale")
@@ -676,6 +1035,9 @@ def verify(
             or entry.get("installed_sha256") != "sha256:" + sha256_file(installed)
             or entry.get("interface_sha256") != "sha256:" + sha256_file(interface)
             or entry.get("handler_kind") != skill["handlerKind"]
+            or entry.get("capability_key") != skill["executionContract"]["capabilityKey"]
+            or entry.get("execution_class") != skill["executionContract"]["executionClass"]
+            or entry.get("execution_contract_sha256") != skill["executionContract"]["contractDigest"]
             or set(surfaces) != set(SURFACE_ROOTS)
         ):
             raise SystemExit(f"FRT installed manifest entry is stale: {skill['id']}")
@@ -710,6 +1072,7 @@ def main() -> int:
                 "directed_routes": sum(skill["route"] is not None for skill in skills),
                 "runtime_interfaces": len(skills),
                 "status": "verified" if args.check else "integrated-and-verified",
+                "production_operation_authorized": False,
                 "production_certification": "NOT_CERTIFIED",
             },
             ensure_ascii=False,

@@ -1,0 +1,871 @@
+{
+  "schema_version": 1,
+  "plan_id": "frt-g01-g30-external-qualification-v1",
+  "pack_key": "frt-g01-g30-platform",
+  "profile_ref": {
+    "path": "client-packs/frt-g01-g30-platform/acceptance/external-evidence-profile.json",
+    "sha256": "sha256:43af54c45dbdf60c2e68b3acc0ff12d91564cb8419a05784d68bcedd4d33bbc9",
+    "bytes": 8409
+  },
+  "quality_matrix_ref": {
+    "path": "client-packs/frt-g01-g30-platform/acceptance/quality-matrix.json",
+    "sha256": "sha256:84a6b3e7ca55e7e625e37fb0b5250eb53c3ca0eccaf5e16d3c650e10a0fa191c",
+    "bytes": 1463
+  },
+  "package_manifest_sha256": "sha256:9d57afe44ca398b62ba24f4ec62fa5e78f50854b467ad2957d51381f48f50b52",
+  "source_tree_sha256": "sha256:dc69881e7e10d3c80159f8eaaf44a1ed13af1d9374275054742340e75f8a2d15",
+  "case_count": 15,
+  "cases": [
+    {
+      "case_id": "FRT-EXT-001-FIREFOX-DESKTOP",
+      "title": "Firefox desktop P0 browser journey",
+      "category": "BROWSER",
+      "external_check_id": "device_matrix",
+      "adapter_id": "PLAYWRIGHT_FIREFOX_DESKTOP",
+      "execution_authority": "LOCAL_EXACT_TOOLCHAIN",
+      "exact_target": {
+        "browser": "Firefox 151.0",
+        "viewport": "1440x900",
+        "locale": "zh-CN"
+      },
+      "required_tools": [
+        "playwright@1.61.1",
+        "firefox@151.0"
+      ],
+      "required_environment": [
+        "exact Playwright Firefox runtime"
+      ],
+      "local_assertions": [
+        "P0 journeys",
+        "keyboard and focus",
+        "Axe",
+        "responsive overflow",
+        "console and network"
+      ],
+      "required_evidence_roles": [
+        "authorization",
+        "physical_device_inventory",
+        "install_launch_log",
+        "p0_journey_log",
+        "approved_visual_baseline",
+        "visual_difference_report",
+        "assistive_technology_transcript",
+        "keyboard_focus_transcript",
+        "accessibility_findings",
+        "cleanup_receipt"
+      ],
+      "required_metrics": [
+        "devices_expected",
+        "devices_passed",
+        "journeys_expected",
+        "journeys_passed",
+        "visual_regressions",
+        "critical_accessibility_violations"
+      ],
+      "required_claims": [
+        "physical_devices_used",
+        "baselines_approved_before_comparison",
+        "no_baseline_auto_update",
+        "manual_assistive_technology_executed",
+        "privacy_reviewed"
+      ],
+      "external_state": "NOT_RUN",
+      "production_operation_authorized": false,
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "case_id": "FRT-EXT-002-WEBKIT-DESKTOP",
+      "title": "WebKit desktop P0 browser journey",
+      "category": "BROWSER",
+      "external_check_id": "device_matrix",
+      "adapter_id": "PLAYWRIGHT_WEBKIT_DESKTOP",
+      "execution_authority": "LOCAL_EXACT_TOOLCHAIN",
+      "exact_target": {
+        "browser": "WebKit 26.5",
+        "viewport": "1440x900",
+        "locale": "zh-CN"
+      },
+      "required_tools": [
+        "playwright@1.61.1",
+        "webkit@26.5"
+      ],
+      "required_environment": [
+        "exact Playwright WebKit runtime"
+      ],
+      "local_assertions": [
+        "P0 journeys",
+        "keyboard and focus",
+        "Axe",
+        "responsive overflow",
+        "console and network"
+      ],
+      "required_evidence_roles": [
+        "authorization",
+        "physical_device_inventory",
+        "install_launch_log",
+        "p0_journey_log",
+        "approved_visual_baseline",
+        "visual_difference_report",
+        "assistive_technology_transcript",
+        "keyboard_focus_transcript",
+        "accessibility_findings",
+        "cleanup_receipt"
+      ],
+      "required_metrics": [
+        "devices_expected",
+        "devices_passed",
+        "journeys_expected",
+        "journeys_passed",
+        "visual_regressions",
+        "critical_accessibility_violations"
+      ],
+      "required_claims": [
+        "physical_devices_used",
+        "baselines_approved_before_comparison",
+        "no_baseline_auto_update",
+        "manual_assistive_technology_executed",
+        "privacy_reviewed"
+      ],
+      "external_state": "NOT_RUN",
+      "production_operation_authorized": false,
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "case_id": "FRT-EXT-003-WEBKIT-IPHONE15",
+      "title": "WebKit iPhone 15 emulation P0 journey",
+      "category": "BROWSER",
+      "external_check_id": "device_matrix",
+      "adapter_id": "PLAYWRIGHT_WEBKIT_IPHONE15",
+      "execution_authority": "LOCAL_EXACT_TOOLCHAIN",
+      "exact_target": {
+        "browser": "WebKit 26.5",
+        "device": "iPhone 15",
+        "viewport": "393x852",
+        "locale": "zh-CN"
+      },
+      "required_tools": [
+        "playwright@1.61.1",
+        "webkit@26.5"
+      ],
+      "required_environment": [
+        "exact Playwright WebKit runtime"
+      ],
+      "local_assertions": [
+        "touch viewport",
+        "P0 journeys",
+        "Axe",
+        "responsive overflow",
+        "console and network"
+      ],
+      "required_evidence_roles": [
+        "authorization",
+        "physical_device_inventory",
+        "install_launch_log",
+        "p0_journey_log",
+        "approved_visual_baseline",
+        "visual_difference_report",
+        "assistive_technology_transcript",
+        "keyboard_focus_transcript",
+        "accessibility_findings",
+        "cleanup_receipt"
+      ],
+      "required_metrics": [
+        "devices_expected",
+        "devices_passed",
+        "journeys_expected",
+        "journeys_passed",
+        "visual_regressions",
+        "critical_accessibility_violations"
+      ],
+      "required_claims": [
+        "physical_devices_used",
+        "baselines_approved_before_comparison",
+        "no_baseline_auto_update",
+        "manual_assistive_technology_executed",
+        "privacy_reviewed"
+      ],
+      "external_state": "NOT_RUN",
+      "production_operation_authorized": false,
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "case_id": "FRT-EXT-004-ARKUI-HVIGOR",
+      "title": "ArkUI native hvigor target build",
+      "category": "TOOLCHAIN",
+      "external_check_id": "real_source_target_builds",
+      "adapter_id": "ARKUI_HVIGOR_BUILD",
+      "execution_authority": "LOCAL_EXACT_TOOLCHAIN",
+      "exact_target": {
+        "platform": "HarmonyOS ArkUI",
+        "build": "hvigor assembleHap",
+        "profile": "entry@default"
+      },
+      "required_tools": [
+        "DevEco Studio",
+        "hvigor or hvigorw"
+      ],
+      "required_environment": [
+        "ELMOS_HVIGORW or PATH hvigor",
+        "exact HarmonyOS SDK"
+      ],
+      "local_assertions": [
+        "generated project integrity",
+        "native build",
+        "artifact digest",
+        "typed gap preservation"
+      ],
+      "required_evidence_roles": [
+        "authorization",
+        "environment_inventory",
+        "customer_repository_digest_manifest",
+        "source_build_log",
+        "target_build_log",
+        "target_startup_probe",
+        "route_equivalence_report",
+        "cleanup_receipt"
+      ],
+      "required_metrics": [
+        "repositories_expected",
+        "repositories_passed",
+        "routes_expected",
+        "routes_passed",
+        "unexplained_differences"
+      ],
+      "required_claims": [
+        "exact_commits_pinned",
+        "customer_data_minimized",
+        "source_and_target_really_built",
+        "target_really_started",
+        "cleanup_verified"
+      ],
+      "external_state": "NOT_RUN",
+      "production_operation_authorized": false,
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "case_id": "FRT-EXT-005-INDEPENDENT-VISUAL",
+      "title": "Independent approved visual baseline comparison",
+      "category": "VISUAL",
+      "external_check_id": "device_matrix",
+      "adapter_id": "INDEPENDENT_VISUAL_BASELINE",
+      "execution_authority": "INDEPENDENT_HUMAN_AND_RUNNER",
+      "exact_target": {
+        "route": "/frontend",
+        "update_mode": "NONE",
+        "max_diff_pixels": 0,
+        "pixel_threshold": 0
+      },
+      "required_tools": [
+        "playwright@1.61.1",
+        "approved immutable baseline store"
+      ],
+      "required_environment": [
+        "baseline approved before comparison",
+        "independent visual reviewer"
+      ],
+      "local_assertions": [
+        "candidate stored outside approved root",
+        "no masks",
+        "no tolerance widening",
+        "semantic checks paired"
+      ],
+      "required_evidence_roles": [
+        "authorization",
+        "physical_device_inventory",
+        "install_launch_log",
+        "p0_journey_log",
+        "approved_visual_baseline",
+        "visual_difference_report",
+        "assistive_technology_transcript",
+        "keyboard_focus_transcript",
+        "accessibility_findings",
+        "cleanup_receipt"
+      ],
+      "required_metrics": [
+        "devices_expected",
+        "devices_passed",
+        "journeys_expected",
+        "journeys_passed",
+        "visual_regressions",
+        "critical_accessibility_violations"
+      ],
+      "required_claims": [
+        "physical_devices_used",
+        "baselines_approved_before_comparison",
+        "no_baseline_auto_update",
+        "manual_assistive_technology_executed",
+        "privacy_reviewed"
+      ],
+      "external_state": "NOT_RUN",
+      "production_operation_authorized": false,
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "case_id": "FRT-EXT-006-MANUAL-ASSISTIVE-TECHNOLOGY",
+      "title": "Independent manual assistive-technology sessions",
+      "category": "ASSISTIVE_TECHNOLOGY",
+      "external_check_id": "device_matrix",
+      "adapter_id": "MANUAL_ASSISTIVE_TECHNOLOGY",
+      "execution_authority": "INDEPENDENT_HUMAN",
+      "exact_target": {
+        "profiles": [
+          "VoiceOver+Safari/WebKit",
+          "NVDA+Firefox",
+          "JAWS+Chrome"
+        ],
+        "standard": "WCAG 2.2 AA"
+      },
+      "required_tools": [
+        "exact OS",
+        "exact assistive technology",
+        "exact browser"
+      ],
+      "required_environment": [
+        "trained human operator",
+        "signed session transcript"
+      ],
+      "local_assertions": [
+        "reading order",
+        "labels and descriptions",
+        "errors",
+        "live announcements",
+        "zoom",
+        "reduced motion"
+      ],
+      "required_evidence_roles": [
+        "authorization",
+        "physical_device_inventory",
+        "install_launch_log",
+        "p0_journey_log",
+        "approved_visual_baseline",
+        "visual_difference_report",
+        "assistive_technology_transcript",
+        "keyboard_focus_transcript",
+        "accessibility_findings",
+        "cleanup_receipt"
+      ],
+      "required_metrics": [
+        "devices_expected",
+        "devices_passed",
+        "journeys_expected",
+        "journeys_passed",
+        "visual_regressions",
+        "critical_accessibility_violations"
+      ],
+      "required_claims": [
+        "physical_devices_used",
+        "baselines_approved_before_comparison",
+        "no_baseline_auto_update",
+        "manual_assistive_technology_executed",
+        "privacy_reviewed"
+      ],
+      "external_state": "NOT_RUN",
+      "production_operation_authorized": false,
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "case_id": "FRT-EXT-007-PHYSICAL-DEVICE-ACCEPTANCE",
+      "title": "Physical-device manual P0 acceptance",
+      "category": "PHYSICAL_DEVICE",
+      "external_check_id": "device_matrix",
+      "adapter_id": "PHYSICAL_DEVICE_ACCEPTANCE",
+      "execution_authority": "INDEPENDENT_HUMAN_AND_RUNNER",
+      "exact_target": {
+        "matrix": "signed external device inventory",
+        "journeys": "acceptance profile P0"
+      },
+      "required_tools": [
+        "physical iOS or Android device",
+        "authorized install and launch tooling"
+      ],
+      "required_environment": [
+        "privacy-minimized inventory",
+        "manual P0 operator",
+        "cleanup authority"
+      ],
+      "local_assertions": [
+        "physical reality",
+        "install and launch",
+        "P0 journeys",
+        "privacy",
+        "cleanup receipt"
+      ],
+      "required_evidence_roles": [
+        "authorization",
+        "physical_device_inventory",
+        "install_launch_log",
+        "p0_journey_log",
+        "approved_visual_baseline",
+        "visual_difference_report",
+        "assistive_technology_transcript",
+        "keyboard_focus_transcript",
+        "accessibility_findings",
+        "cleanup_receipt"
+      ],
+      "required_metrics": [
+        "devices_expected",
+        "devices_passed",
+        "journeys_expected",
+        "journeys_passed",
+        "visual_regressions",
+        "critical_accessibility_violations"
+      ],
+      "required_claims": [
+        "physical_devices_used",
+        "baselines_approved_before_comparison",
+        "no_baseline_auto_update",
+        "manual_assistive_technology_executed",
+        "privacy_reviewed"
+      ],
+      "external_state": "NOT_RUN",
+      "production_operation_authorized": false,
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "case_id": "FRT-EXT-008-REAL-CUSTOMER-REPOSITORIES",
+      "title": "Real customer source and target repository campaign",
+      "category": "CUSTOMER_REPOSITORY",
+      "external_check_id": "real_source_target_builds",
+      "adapter_id": "REAL_CUSTOMER_REPOSITORY_CAMPAIGN",
+      "execution_authority": "AUTHORIZED_EXTERNAL_RUNNER",
+      "exact_target": {
+        "repositories": "exact commits",
+        "routes": "exact declared tuples",
+        "data_policy": "minimized"
+      },
+      "required_tools": [
+        "authorized external runner",
+        "real source and target toolchains"
+      ],
+      "required_environment": [
+        "customer authorization",
+        "exact commit digests",
+        "DLP-approved evidence root"
+      ],
+      "local_assertions": [
+        "source build",
+        "target build",
+        "target startup",
+        "route equivalence",
+        "cleanup receipt"
+      ],
+      "required_evidence_roles": [
+        "authorization",
+        "environment_inventory",
+        "customer_repository_digest_manifest",
+        "source_build_log",
+        "target_build_log",
+        "target_startup_probe",
+        "route_equivalence_report",
+        "cleanup_receipt"
+      ],
+      "required_metrics": [
+        "repositories_expected",
+        "repositories_passed",
+        "routes_expected",
+        "routes_passed",
+        "unexplained_differences"
+      ],
+      "required_claims": [
+        "exact_commits_pinned",
+        "customer_data_minimized",
+        "source_and_target_really_built",
+        "target_really_started",
+        "cleanup_verified"
+      ],
+      "external_state": "NOT_RUN",
+      "production_operation_authorized": false,
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "case_id": "FRT-EXT-009-INDEPENDENT-HOLDOUT",
+      "title": "Physically independent holdout campaign",
+      "category": "HOLDOUT",
+      "external_check_id": "independent_holdout",
+      "adapter_id": "INDEPENDENT_HOLDOUT_CAMPAIGN",
+      "execution_authority": "AUTHORIZED_EXTERNAL_RUNNER",
+      "exact_target": {
+        "corpus": "physically separate",
+        "development_overlap": 0,
+        "unexplained_differences": 0
+      },
+      "required_tools": [
+        "authorized external runner",
+        "independent corpus store"
+      ],
+      "required_environment": [
+        "corpus not used for implementation",
+        "independent executor"
+      ],
+      "local_assertions": [
+        "corpus digest",
+        "zero development overlap",
+        "equivalence",
+        "difference register",
+        "cleanup receipt"
+      ],
+      "required_evidence_roles": [
+        "authorization",
+        "corpus_digest_manifest",
+        "independence_attestation",
+        "execution_log",
+        "equivalence_report",
+        "difference_register",
+        "cleanup_receipt"
+      ],
+      "required_metrics": [
+        "cases_expected",
+        "cases_passed",
+        "development_overlap",
+        "unexplained_differences"
+      ],
+      "required_claims": [
+        "physically_separate_corpus",
+        "not_used_for_implementation",
+        "independent_executor",
+        "cleanup_verified"
+      ],
+      "external_state": "NOT_RUN",
+      "production_operation_authorized": false,
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "case_id": "FRT-EXT-010-BOUNDED-FORMAL-PROOF",
+      "title": "Bounded formal proof and counterexample replay",
+      "category": "FORMAL_PROOF",
+      "external_check_id": "formal_proof",
+      "adapter_id": "BOUNDED_FORMAL_PROOF",
+      "execution_authority": "AUTHORIZED_EXTERNAL_RUNNER",
+      "exact_target": {
+        "bounds": "explicit",
+        "solver": "exact version and options",
+        "counterexamples": "replayable"
+      },
+      "required_tools": [
+        "qualified solver",
+        "counterexample replay harness"
+      ],
+      "required_environment": [
+        "pinned solver inventory",
+        "independent proof review"
+      ],
+      "local_assertions": [
+        "obligation completeness",
+        "assumptions",
+        "bounds",
+        "proof artifact",
+        "counterexample replay"
+      ],
+      "required_evidence_roles": [
+        "authorization",
+        "proof_scope",
+        "solver_inventory",
+        "solver_transcript",
+        "proof_artifact",
+        "counterexample_replay"
+      ],
+      "required_metrics": [
+        "obligations_expected",
+        "obligations_proved",
+        "counterexamples_unresolved"
+      ],
+      "required_claims": [
+        "bounds_explicit",
+        "assumptions_explicit",
+        "solver_version_pinned",
+        "counterexamples_replayable"
+      ],
+      "external_state": "NOT_RUN",
+      "production_operation_authorized": false,
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "case_id": "FRT-EXT-011-REPRESENTATIVE-PERFORMANCE",
+      "title": "Representative performance and capacity campaign",
+      "category": "PERFORMANCE",
+      "external_check_id": "performance",
+      "adapter_id": "REPRESENTATIVE_PERFORMANCE_CAMPAIGN",
+      "execution_authority": "AUTHORIZED_EXTERNAL_RUNNER",
+      "exact_target": {
+        "samples_per_workload": 5,
+        "budgets": "frozen before execution",
+        "raw_samples": "preserved"
+      },
+      "required_tools": [
+        "authorized performance runner",
+        "resource telemetry"
+      ],
+      "required_environment": [
+        "representative workload",
+        "controlled warmup",
+        "frozen budgets"
+      ],
+      "local_assertions": [
+        "raw samples",
+        "p95 and p99",
+        "error rate",
+        "throughput",
+        "resource utilization"
+      ],
+      "required_evidence_roles": [
+        "authorization",
+        "workload_digest_manifest",
+        "environment_inventory",
+        "raw_performance_results",
+        "budget_comparison",
+        "resource_utilization",
+        "cleanup_receipt"
+      ],
+      "required_metrics": [
+        "workloads_expected",
+        "workloads_passed",
+        "budget_breaches",
+        "samples_per_workload"
+      ],
+      "required_claims": [
+        "representative_workload",
+        "warmup_separate",
+        "raw_samples_preserved",
+        "budgets_frozen_before_run"
+      ],
+      "external_state": "NOT_RUN",
+      "production_operation_authorized": false,
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "case_id": "FRT-EXT-012-AUTHORIZED-PENETRATION",
+      "title": "Authorized penetration assessment and retest",
+      "category": "PENETRATION",
+      "external_check_id": "penetration_test",
+      "adapter_id": "AUTHORIZED_PENETRATION_ASSESSMENT",
+      "execution_authority": "AUTHORIZED_EXTERNAL_RUNNER_AND_HUMAN",
+      "exact_target": {
+        "scope": "written exact targets",
+        "open_critical": 0,
+        "open_high": 0,
+        "unretested_findings": 0
+      },
+      "required_tools": [
+        "approved security tools",
+        "manual assessment workflow"
+      ],
+      "required_environment": [
+        "written authorization",
+        "isolated or approved target",
+        "retest authority"
+      ],
+      "local_assertions": [
+        "scope enforcement",
+        "automated scan",
+        "manual testing",
+        "finding register",
+        "retest"
+      ],
+      "required_evidence_roles": [
+        "authorization",
+        "assessment_scope",
+        "environment_inventory",
+        "tool_inventory",
+        "raw_scan_results",
+        "manual_test_log",
+        "finding_register",
+        "retest_report"
+      ],
+      "required_metrics": [
+        "scope_targets_expected",
+        "scope_targets_tested",
+        "open_critical",
+        "open_high",
+        "unretested_findings"
+      ],
+      "required_claims": [
+        "written_authorization",
+        "scope_respected",
+        "automated_and_manual_testing",
+        "remediations_retested",
+        "secrets_redacted"
+      ],
+      "external_state": "NOT_RUN",
+      "production_operation_authorized": false,
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "case_id": "FRT-EXT-013-CHAOS-DR",
+      "title": "Authorized Chaos, backup, restore and DR drill",
+      "category": "DISASTER_RECOVERY",
+      "external_check_id": "chaos_dr",
+      "adapter_id": "AUTHORIZED_CHAOS_DR_DRILL",
+      "execution_authority": "AUTHORIZED_EXTERNAL_RUNNER",
+      "exact_target": {
+        "environment": "isolated authorized",
+        "rpo": "at or below budget",
+        "rto": "at or below budget"
+      },
+      "required_tools": [
+        "fault-injection adapter",
+        "backup and restore tooling",
+        "reconciliation"
+      ],
+      "required_environment": [
+        "bounded blast radius",
+        "rollback",
+        "cleanup authority"
+      ],
+      "local_assertions": [
+        "fault injection",
+        "backup manifest",
+        "restore",
+        "integrity reconciliation",
+        "RTO and RPO"
+      ],
+      "required_evidence_roles": [
+        "authorization",
+        "drill_plan",
+        "environment_inventory",
+        "fault_injection_log",
+        "backup_manifest",
+        "restore_log",
+        "integrity_reconciliation",
+        "cleanup_receipt"
+      ],
+      "required_metrics": [
+        "scenarios_expected",
+        "scenarios_passed",
+        "rpo_budget_seconds",
+        "rpo_actual_seconds",
+        "rto_budget_seconds",
+        "rto_actual_seconds",
+        "unreconciled_records"
+      ],
+      "required_claims": [
+        "isolated_authorized_environment",
+        "rollback_tested",
+        "restore_integrity_verified",
+        "cleanup_verified"
+      ],
+      "external_state": "NOT_RUN",
+      "production_operation_authorized": false,
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "case_id": "FRT-EXT-014-PRODUCTION-OBSERVATION",
+      "title": "Authorized production observation window",
+      "category": "PRODUCTION_OBSERVATION",
+      "external_check_id": "production_observation",
+      "adapter_id": "AUTHORIZED_PRODUCTION_OBSERVATION",
+      "execution_authority": "AUTHORIZED_PRODUCTION_OBSERVER",
+      "exact_target": {
+        "minimum_minutes": 60,
+        "deployment": "exact artifact digest",
+        "telemetry": "privacy minimized"
+      },
+      "required_tools": [
+        "approved read-only observability connector",
+        "alert reconciliation"
+      ],
+      "required_environment": [
+        "production access authorization",
+        "exact deployment digest",
+        "privacy review"
+      ],
+      "local_assertions": [
+        "SLO raw export",
+        "alert delivery",
+        "privacy redaction",
+        "incident register",
+        "deployment binding"
+      ],
+      "required_evidence_roles": [
+        "authorization",
+        "deployment_digest_binding",
+        "observation_window",
+        "slo_raw_export",
+        "alert_delivery_log",
+        "privacy_redaction_report",
+        "incident_register"
+      ],
+      "required_metrics": [
+        "observation_minutes",
+        "slo_windows_expected",
+        "slo_windows_passed",
+        "critical_incidents",
+        "unreconciled_alerts"
+      ],
+      "required_claims": [
+        "exact_deployment_digest",
+        "production_access_authorized",
+        "telemetry_privacy_minimized",
+        "alerts_reconciled"
+      ],
+      "external_state": "NOT_RUN",
+      "production_operation_authorized": false,
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "case_id": "FRT-EXT-015-CUSTOMER-ACCEPTANCE",
+      "title": "Independent customer acceptance decision",
+      "category": "CUSTOMER_ACCEPTANCE",
+      "external_check_id": "customer_acceptance",
+      "adapter_id": "INDEPENDENT_CUSTOMER_ACCEPTANCE",
+      "execution_authority": "INDEPENDENT_CUSTOMER_AND_REVIEWER",
+      "exact_target": {
+        "organizations": 2,
+        "participants": 6,
+        "p0_pass_rate": 1.0,
+        "decision": "human authority only"
+      },
+      "required_tools": [
+        "consent workflow",
+        "privacy-minimized observation capture"
+      ],
+      "required_environment": [
+        "informed consent",
+        "independent review",
+        "accountable customer decision"
+      ],
+      "local_assertions": [
+        "participant roles",
+        "journey scope",
+        "task observation",
+        "finding register",
+        "customer decision"
+      ],
+      "required_evidence_roles": [
+        "authorization",
+        "consent_and_purpose",
+        "participant_role_matrix",
+        "journey_scope",
+        "task_observation_log",
+        "finding_register",
+        "customer_decision",
+        "independent_review"
+      ],
+      "required_metrics": [
+        "organizations_expected",
+        "organizations_accepted",
+        "participants_expected",
+        "participants_completed",
+        "p0_tasks_expected",
+        "p0_tasks_passed",
+        "open_critical",
+        "open_high"
+      ],
+      "required_claims": [
+        "informed_consent",
+        "customer_decision_not_agent_generated",
+        "no_facilitator_intervention_for_p0",
+        "independent_review_complete"
+      ],
+      "external_state": "NOT_RUN",
+      "production_operation_authorized": false,
+      "certification": "NOT_CERTIFIED"
+    }
+  ],
+  "boundaries": {
+    "local_harness_is_external_evidence": false,
+    "templates_are_evidence": false,
+    "preflight_can_upgrade_external_state": false,
+    "production_operation_authorized": false,
+    "production_certification": "NOT_CERTIFIED"
+  }
+}

@@ -299,7 +299,7 @@ test("HTTP FRT mutations require a trusted identity, permission, and exact body 
   }
 });
 
-test("HTTP FRT reads derive tenant scope from identity and ignore spoofed query scope", async () => {
+test("HTTP FRT reads derive exact resource scope from identity and ignore spoofed query scope", async () => {
   const response = await fetch(`${baseUrl}/engine/v1/frt/skills/FRT-0100/runs`, {
     method: "POST",
     headers: { "content-type": "application/json", ...frtAuthorization },
@@ -335,6 +335,102 @@ test("HTTP FRT reads derive tenant scope from identity and ignore spoofed query 
   });
   assert.equal(hidden.status, 404);
   assert.equal((await hidden.json() as { errorCode: string }).errorCode, "FRT_RUN_NOT_FOUND");
+
+  const crossWorkspaceToken = identityToken({ scope: { ...frtScope, workspaceId: "workspace-other" } });
+  const resourceHidden = await fetch(`${baseUrl}/engine/v1/frt/runs/${result.runId}`, {
+    headers: { authorization: `Bearer ${crossWorkspaceToken}` },
+  });
+  assert.equal(resourceHidden.status, 404);
+  assert.equal((await resourceHidden.json() as { errorCode: string }).errorCode, "FRT_RUN_NOT_FOUND");
+});
+
+test("HTTP FRT exposes all five exact Skill-scoped operations and binds VERIFY to its subject digest", async () => {
+  const createdResponse = await fetch(`${baseUrl}/engine/v1/frt/skills/FRT-0100/runs`, {
+    method: "POST",
+    headers: { "content-type": "application/json", ...frtAuthorization },
+    body: JSON.stringify({
+      schemaVersion: "1.0",
+      skillId: "FRT-0100",
+      action: "PLAN",
+      idempotencyKey: "http-frt-five-skill-operations-subject",
+      expectedVersion: 0,
+      context: {
+        ...frtScope,
+        sourceSnapshotDigest: `sha256:${"9".repeat(64)}`,
+        policyVersion: "frt-policy-1.0.0",
+        requestedBy: "operator-http-frt",
+        risk: "R4",
+      },
+      prerequisiteCertificates: [],
+      evidence: [],
+    }),
+  });
+  const created = await createdResponse.json() as {
+    runId: string; resultDigest: string; skillId: string; state: string;
+  };
+  assert.equal(createdResponse.status, 202);
+  assert.equal(created.state, "SUCCEEDED");
+
+  const scopedBase = `${baseUrl}/engine/v1/frt/skills/frt-0100-foundation-orchestrator/runs/${created.runId}`;
+  const exactRead = await fetch(scopedBase, { headers: frtAuthorization });
+  assert.equal(exactRead.status, 200);
+  assert.equal((await exactRead.json() as { skillId: string }).skillId, "FRT-0100");
+  const findings = await fetch(`${scopedBase}/findings`, { headers: frtAuthorization });
+  assert.equal(findings.status, 200);
+  assert.ok(Array.isArray((await findings.json() as { findings: unknown[] }).findings));
+  const evidence = await fetch(`${scopedBase}/evidence`, { headers: frtAuthorization });
+  assert.equal(evidence.status, 200);
+  assert.equal((await evidence.json() as { resultDigest: string }).resultDigest, created.resultDigest);
+
+  const verify = await fetch(`${scopedBase}/verify`, {
+    method: "POST",
+    headers: { "content-type": "application/json", ...frtAuthorization },
+    body: JSON.stringify({
+      schemaVersion: "1.0",
+      skillId: "FRT-0100",
+      action: "VERIFY",
+      idempotencyKey: "http-frt-five-skill-operations-verify",
+      expectedVersion: 0,
+      context: {
+        ...frtScope,
+        sourceSnapshotDigest: `sha256:${"9".repeat(64)}`,
+        policyVersion: "frt-policy-1.0.0",
+        requestedBy: "operator-http-frt",
+        risk: "R4",
+      },
+      prerequisiteCertificates: [],
+      evidence: [],
+      verificationSubject: { runId: created.runId, resultDigest: created.resultDigest },
+    }),
+  });
+  const verified = await verify.json() as { state: string; outcome: string };
+  assert.equal(verify.status, 202);
+  assert.equal(verified.state, "BLOCKED");
+  assert.equal(verified.outcome, "BLOCKED_BY_EVIDENCE");
+
+  const mismatch = await fetch(`${scopedBase}/verify`, {
+    method: "POST",
+    headers: { "content-type": "application/json", ...frtAuthorization },
+    body: JSON.stringify({
+      schemaVersion: "1.0",
+      skillId: "FRT-0100",
+      action: "VERIFY",
+      idempotencyKey: "http-frt-five-skill-operations-mismatch",
+      expectedVersion: 0,
+      context: {
+        ...frtScope,
+        sourceSnapshotDigest: `sha256:${"9".repeat(64)}`,
+        policyVersion: "frt-policy-1.0.0",
+        requestedBy: "operator-http-frt",
+        risk: "R4",
+      },
+      prerequisiteCertificates: [],
+      evidence: [],
+      verificationSubject: { runId: created.runId, resultDigest: `sha256:${"0".repeat(64)}` },
+    }),
+  });
+  assert.equal(mismatch.status, 400);
+  assert.equal((await mismatch.json() as { errorCode: string }).errorCode, "FRT_VERIFICATION_SUBJECT_MISMATCH");
 });
 
 test("HTTP FRT body limits differ by route so a control message cannot carry a payload", async () => {

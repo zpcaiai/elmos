@@ -7,6 +7,8 @@
 ## 结论
 
 - 472/472 Skills 已注册到 23 个明确的 typed handler kind。
+- 472/472 Skills 均有独立 capability key 与内容寻址 execution-contract digest；契约覆盖
+  精确输入/输出、五个 API、六个 Surface、证据角色、obligation 与外部权限边界。
 - 23/23 handler kind 均有可执行代码；旧的 metadata-only fallback 已删除，未知
   handler 直接失败。
 - 其中 18 个原缺失 kind 由 `frt-semantic-handlers.ts` 实现：输入契约、领域算法、
@@ -16,6 +18,8 @@
   必须以注册 typed gap 阻断。
 - 2,832 个 surface manifest 绑定到共享实现；这是共享 Runtime 架构，不是 2,832
   份重复代码。每个 runtime/test manifest 均指向实际 handler 与对应测试文件。
+- 所有 Run 按 organization/tenant/workspace/project/account/environment/release 精确隔离；
+  同租户跨 Workspace 读取、变更与幂等碰撞均失败关闭。
 - 本地代码门禁可达到 `READY_FOR_EXTERNAL_GATE`。生产仍为 `NOT_CERTIFIED`。
 
 ## 23 类 handler 的代码状态
@@ -53,6 +57,8 @@ blocking `FRT_HANDLER_INPUT_REQUIRED`；`EXECUTE` 不再把空输入排成 runne
 
 - `EXECUTE` 的 durable lifecycle、claim、lease、heartbeat、complete、retry、cancel、
   audit、restart recovery 已实现。
+- 每个原始 Skill 声明的 create/read/verify/findings/evidence 五个 Skill-scoped HTTP
+  操作已实现；VERIFY 绑定终态 subject run、result digest 与 source snapshot。
 - Runner completion、artifact reference、evidence candidate、独立 verifier 签名、记录级
   撤销、producer/verifier key-role separation 已实现。
 - Vue 2、Vue 3、React、小程序、ArkUI、Flutter source extractor 已接入所有 30 路；
@@ -62,8 +68,27 @@ blocking `FRT_HANDLER_INPUT_REQUIRED`；`EXECUTE` 不再把空输入排成 runne
 - Web Console 的 Next.js/PostCSS/Sharp 生产依赖漏洞已清零；413 请求体拒绝不再并发触发
   `EPIPE`。
 - JSON Schema 清单、gate evidence bytes/SHA-256、浏览器矩阵和支持矩阵已同步。
+- 当前修订的五类本地浏览器 profile 均通过适用旅程：桌面 Chrome 5/5，桌面 Firefox
+  4/4、桌面 WebKit 4/4（两者各有一个只在 Chromium 串行执行的 lifecycle skip），
+  Pixel 7 Chromium 2/2、iPhone 15 WebKit 2/2（移动端各有三个预期 desktop-only skip）。
+  Firefox 151.0 与 WebKit 26.5 已真实安装、launch，并通过联合非视觉质量检查。
 - 外部证据的 prepare、dispatch、collect、DLP、sign、verify、bind 与独立性约束已有
   可执行代码；仓库内容不能选择 shell 命令。
+- 外部资格生成器已经产出 15 个精确用例，并执行了严格 preflight：Firefox、WebKit
+  桌面/移动、ArkUI/hvigor、独立视觉、人工 AT、物理设备、客户仓库、独立 holdout、
+  bounded proof、正式性能、渗透、Chaos/DR、生产观测和客户验收均有固定 adapter、
+  证据角色、指标、声明与明确 blocker。当前 3/15 为
+  `READY_FOR_AUTHORIZED_EXECUTION`、12/15 为 `BLOCKED_PRECONDITION`；15/15 external
+  state 仍为 `NOT_RUN`。
+- 15/15 adapter ID 已通过无 fallback 的显式 allowlist 执行本地代码契约；报告与精确
+  plan/preflight SHA 绑定。当前环境结果为 3 个 `READY_FOR_LOCAL_EXECUTION`、1 个
+  `BLOCKED_TOOLCHAIN` 加 11 个 `REQUIRES_EXTERNAL_AUTHORITY`，不会提升任何 external state。
+- 9 类外部 campaign 均有 closed typed parameters：未知字段、任意命令、scope 扩大、
+  plan/case/adapter 漂移、secret value 和降低安全/独立性下限都会在授权准备前失败。
+- 28 个本地完整性测试已执行：typed parameters、全部 9 个外部检查的签名正/负记录、
+  15 用例计划/preflight/adapter 与 observation 重算防篡改、iOS 物理设备证据最小化，
+  以及 repository gate 的摘要、路径、字节数、签名和独立性约束。
+  这些是代码验证，不是外部执行证据。
 
 ## 仍然不能由本地代码伪造的状态
 
@@ -81,14 +106,22 @@ blocking `FRT_HANDLER_INPUT_REQUIRED`；`EXECUTE` 不再把空输入排成 runne
 roles、零容忍阈值、executor/verifier/approver 三方 Ed25519 签名、跨组织独立性、时序、
 有效期、撤销和 DLP 校验。
 
+全局生产边界同时固定为 `production_operation_authorized=false`；本地测试、候选截图、
+模拟浏览器、设备清单候选或签名测试 fixture 都不能改变该值。
+
 ## 验收命令
 
 ```bash
 cd engines/frontend-client-engine && pnpm test
 python3 tooling/integrate_frt_g01_g30.py --check
 python3 scripts/frt/validate_frt_platform.py
-python3 scripts/frt/test_external_evidence.py
-python3 scripts/frt/test_run_frt_gate.py
+python3 scripts/frt/external_qualification.py generate
+python3 scripts/frt/external_qualification.py preflight
+python3 scripts/frt/external_qualification.py exercise
+python3 scripts/frt/external_qualification.py check
+python3 scripts/frt/external_qualification.py check-preflight
+python3 scripts/frt/external_qualification.py check-execution
+(cd scripts/frt && python3 -m unittest test_external_campaign_parameters.py test_external_evidence.py test_external_qualification.py test_run_frt_gate.py -v)
 python3 scripts/batch32/run_client_gate.py client-packs/frt-g01-g30-platform
 ```
 

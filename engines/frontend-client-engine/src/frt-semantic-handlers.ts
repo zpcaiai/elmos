@@ -1,5 +1,7 @@
 import { createHash } from "node:crypto";
 
+import { canonicalFrtJson } from "./frt-security.js";
+
 type JsonRecord = Readonly<Record<string, unknown>>;
 
 export const delegatedFrtSemanticHandlerKinds = [
@@ -48,6 +50,22 @@ export interface FrtSemanticHandlerDescriptor {
   readonly surfaceManifestPaths: Readonly<Record<string, string>>;
 }
 
+export interface FrtSemanticExecutionContractDescriptor {
+  readonly skillId: string;
+  readonly capabilityKey: string;
+  readonly handlerKind: string;
+  readonly executionClass: string;
+  readonly contractDigest: string;
+  readonly inputContract: {
+    readonly required: readonly string[];
+    readonly optional: readonly string[];
+    readonly additionalProperties: false;
+  };
+  readonly outputContracts: readonly string[];
+  readonly productionOperationAuthority: "EXTERNAL_ONLY";
+  readonly certification: "NOT_CERTIFIED";
+}
+
 export interface FrtSemanticRouteDescriptor {
   readonly routeId: string;
   readonly skillId: string;
@@ -60,6 +78,7 @@ export interface FrtSemanticRouteDescriptor {
 export interface FrtSemanticHandlerContext {
   readonly skill: FrtSemanticSkillDescriptor;
   readonly handler: FrtSemanticHandlerDescriptor;
+  readonly contract: FrtSemanticExecutionContractDescriptor;
   readonly action: "PLAN" | "ANALYZE" | "EXECUTE" | "VERIFY";
   readonly input?: JsonRecord;
   readonly routes: readonly FrtSemanticRouteDescriptor[];
@@ -76,14 +95,7 @@ interface HandlerFinding {
 }
 
 function canonical(value: unknown): string {
-  if (Array.isArray(value)) return `[${value.map(canonical).join(",")}]`;
-  if (value && typeof value === "object") {
-    return `{${Object.entries(value as Record<string, unknown>)
-      .sort(([left], [right]) => left.localeCompare(right, "en-US"))
-      .map(([key, item]) => `${JSON.stringify(key)}:${canonical(item)}`)
-      .join(",")}}`;
-  }
-  return JSON.stringify(value);
+  return canonicalFrtJson(value);
 }
 
 function digest(value: unknown): string {
@@ -165,22 +177,41 @@ function envelope(
   semanticArtifact: JsonRecord,
   domainFindings: readonly HandlerFinding[] = [],
 ): Readonly<Record<string, unknown>> {
-  const missing = missingFields(context.input, required);
+  const declaredRequired = context.contract.inputContract.required;
+  const expected = [...required].sort((left, right) => left.localeCompare(right, "en-US"));
+  const declared = [...declaredRequired].sort((left, right) => left.localeCompare(right, "en-US"));
+  const contractDrift = canonical(expected) !== canonical(declared);
+  const missing = missingFields(context.input, declaredRequired);
   const handlerFindings = [
     ...missing.map(key => finding(
       "FRT_HANDLER_INPUT_REQUIRED",
       `${context.skill.id} requires input.${key} before ${context.action} can execute its typed handler.`,
       "request-owner",
     )),
+    ...(contractDrift ? [finding(
+      "FRT_HANDLER_CONTRACT_DRIFT",
+      `${context.skill.id} handler requirements differ from its compiled execution contract.`,
+      "platform-owner",
+      true,
+      "CRITICAL",
+    )] : []),
     ...domainFindings,
   ];
   return {
     handler: context.handler,
     handlerImplementation: "frt-semantic-handlers/v1",
+    skillContract: {
+      capabilityKey: context.contract.capabilityKey,
+      executionClass: context.contract.executionClass,
+      contractDigest: context.contract.contractDigest,
+      outputContracts: context.contract.outputContracts,
+      productionOperationAuthority: context.contract.productionOperationAuthority,
+      certification: context.contract.certification,
+    },
     operation: operationName(context.skill.name),
     inputDigest: digest(context.input ?? {}),
     inputContract: {
-      required,
+      required: declaredRequired,
       missing,
       state: missing.length === 0 ? "SATISFIED" : "INPUT_REQUIRED",
     },
@@ -505,7 +536,7 @@ function routeOrchestrationHandler(context: FrtSemanticHandlerContext): Readonly
   const unknown = requestedIds.filter(id => !context.routes.some(route => route.routeId === id || route.skillId === id));
   const corpus = optionalRecordsAt(context.input, "corpus");
   const findings = unknown.map(id => finding("FRT_ROUTE_REGISTRY_ENTRY_UNKNOWN", `Route ${id} is not registered.`, "route-owner"));
-  return envelope(context, [], {
+  return envelope(context, ["corpus"], {
     kind: "directed-route-orchestration",
     routeRegistry: selected,
     selectedRouteCount: selected.length,

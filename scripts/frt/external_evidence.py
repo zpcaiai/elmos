@@ -26,6 +26,8 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
+from external_campaign_parameters import validate_campaign_parameters
+
 
 ROOT = Path(__file__).resolve().parents[2]
 PACK = ROOT / "client-packs" / "frt-g01-g30-platform"
@@ -455,8 +457,10 @@ def validate_authorization(
             failures.append(f"authorization {field} must be non-empty")
     if not isinstance(value.get("run_parameters"), dict) or not value["run_parameters"]:
         failures.append("authorization run_parameters must be a non-empty object")
-    elif any(pattern.search(canonical_bytes(value["run_parameters"])) for pattern in DLP_PATTERNS):
-        failures.append("authorization run_parameters contain a forbidden secret pattern")
+    else:
+        failures.extend(validate_campaign_parameters(check_id, value["run_parameters"]))
+        if any(pattern.search(canonical_bytes(value["run_parameters"])) for pattern in DLP_PATTERNS):
+            failures.append("authorization run_parameters contain a forbidden secret pattern")
     failures.extend(validate_actor(value.get("approver"), "authorization approver"))
     valid_from = parse_time(value.get("valid_from"), "authorization.valid_from", failures)
     expires_at = parse_time(value.get("expires_at"), "authorization.expires_at", failures)
@@ -938,6 +942,9 @@ def prepare_authorization(args: argparse.Namespace) -> int:
     parameters = load_json(args.parameters)
     if not isinstance(parameters, dict) or not parameters:
         raise SystemExit("parameters must be a non-empty JSON object")
+    parameter_failures = validate_campaign_parameters(args.check, parameters)
+    if parameter_failures:
+        raise SystemExit("\n".join(parameter_failures))
     if any(pattern.search(canonical_bytes(parameters)) for pattern in DLP_PATTERNS):
         raise SystemExit("parameters contain a forbidden secret pattern")
     value = {

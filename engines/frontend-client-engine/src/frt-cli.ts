@@ -51,10 +51,15 @@ function main(): number {
     print(result);
     return result.state === "READY" ? 0 : 3;
   }
-  if (["claim", "cancel", "retry", "complete"].includes(command ?? "")) {
+  if (["claim", "heartbeat", "cancel", "retry", "complete"].includes(command ?? "")) {
     const scope = {
       organizationId: required("--organization"),
       tenantId: required("--tenant"),
+      workspaceId: required("--workspace"),
+      projectId: required("--project"),
+      accountId: required("--account"),
+      environmentId: required("--environment"),
+      releaseId: required("--release"),
     };
     const runId = required("--run");
     const actor = required("--actor");
@@ -68,6 +73,7 @@ function main(): number {
         const parsed = validateFrtRunTransitionRequest(body);
         const transition = command === "claim"
           ? frtRuntime.claim
+          : command === "heartbeat" ? frtRuntime.heartbeat
           : command === "cancel" ? frtRuntime.cancel : frtRuntime.retry;
         return transition.call(frtRuntime, scope, runId, parsed.expectedVersion, actor);
       })();
@@ -87,7 +93,7 @@ function main(): number {
     print(result);
     return result.state === "SUCCEEDED" ? 0 : result.state === "BLOCKED" ? 3 : 2;
   }
-  throw new Error("usage: frt-cli <catalog|routes|batch-plan|plan|analyze|execute|verify|claim|cancel|retry|complete> [--request file] [--batch G01] [--query text] [--organization id --tenant id --run id --actor id]");
+  throw new Error("usage: frt-cli <catalog|routes|batch-plan|plan|analyze|execute|verify|claim|heartbeat|cancel|retry|complete> [--request file] [--batch G01] [--query text] [--organization id --tenant id --workspace id --project id --account id --environment id --release id --run id --actor id]");
 }
 
 try {

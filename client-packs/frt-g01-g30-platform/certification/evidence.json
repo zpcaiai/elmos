@@ -4,8 +4,8 @@
   "metrics": {
     "source_fingerprint_coverage": 1.0,
     "ui_ir_source_map_coverage": 1.0,
-    "target_build_green_rate": 1.0,
-    "target_startup_or_launch_rate": 1.0,
+    "target_build_green_rate": 0.8333333333333334,
+    "target_startup_or_launch_rate": 0.8333333333333334,
     "p0_journey_pass_rate": 1.0,
     "route_contract_pass_rate": 1.0,
     "state_contract_pass_rate": 1.0,
@@ -17,6 +17,15 @@
     "browser_matrix_pass_rate": 1.0,
     "representative_workload_pass_rate": 0,
     "source_map_coverage": 1.0
+  },
+  "metric_denominators": {
+    "target_profiles_expected": 6,
+    "target_profiles_passed_locally": 5,
+    "browser_profiles_expected": 5,
+    "browser_profiles_passed_current_revision": 5,
+    "independent_visual_profiles_passed": 0,
+    "manual_assistive_technology_profiles_passed": 0,
+    "representative_external_workloads_passed": 0
   },
   "critical_unknowns": 9,
   "silent_ui_drops": 0,

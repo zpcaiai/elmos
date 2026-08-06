@@ -21,6 +21,7 @@ const certificateStates = ["ACTIVE", "STALE", "REVOKED", "RETEST_REQUIRED"] as c
 const riskLevels = ["R0", "R1", "R2", "R3", "R4", "R5"] as const;
 const scopedId = /^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,255}$/;
 const skillId = /^(?:FRT-[0-9]{4}|frt-[a-z0-9-]+)$/;
+const runId = /^[a-f0-9]{24}$/;
 const batchId = /^G(?:0[1-9]|[12][0-9]|30)$/;
 const sha256 = /^sha256:[a-f0-9]{64}$/;
 const isoTimestamp = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,9})?(?:Z|[+-]\d{2}:\d{2})$/;
@@ -231,13 +232,24 @@ export function validateFrtSkillRunRequest(value: unknown): FrtSkillRunRequest {
     "context",
     "prerequisiteCertificates",
     "evidence",
-  ], ["input"]);
+  ], ["verificationSubject", "input"]);
   if (candidate.schemaVersion !== "1.0") fail("request.schemaVersion", "must equal 1.0");
   const input = candidate.input === undefined ? undefined : object(candidate.input, "request.input");
+  const action = oneOf<FrtAction>(candidate.action, "request.action", frtActions);
+  let verificationSubject: FrtSkillRunRequest["verificationSubject"];
+  if (candidate.verificationSubject !== undefined) {
+    if (action !== "VERIFY") fail("request.verificationSubject", "is only allowed for VERIFY");
+    const subject = object(candidate.verificationSubject, "request.verificationSubject");
+    exactKeys(subject, "request.verificationSubject", ["runId", "resultDigest"]);
+    verificationSubject = {
+      runId: text(subject.runId, "request.verificationSubject.runId", runId),
+      resultDigest: text(subject.resultDigest, "request.verificationSubject.resultDigest", sha256),
+    };
+  }
   return {
     schemaVersion: "1.0",
     skillId: text(candidate.skillId, "request.skillId", skillId),
-    action: oneOf<FrtAction>(candidate.action, "request.action", frtActions),
+    action,
     idempotencyKey: text(candidate.idempotencyKey, "request.idempotencyKey", scopedId),
     expectedVersion: integer(candidate.expectedVersion, "request.expectedVersion"),
     context: context(candidate.context, "request.context"),
@@ -247,6 +259,7 @@ export function validateFrtSkillRunRequest(value: unknown): FrtSkillRunRequest {
       certificate,
     ),
     evidence: arrayOf(candidate.evidence, "request.evidence", evidence),
+    ...(verificationSubject === undefined ? {} : { verificationSubject }),
     ...(input === undefined ? {} : { input }),
   };
 }

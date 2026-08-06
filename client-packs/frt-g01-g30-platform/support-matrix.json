@@ -28,7 +28,7 @@
         "1.2.0"
       ],
       "evidence_refs": [],
-      "reason": "Local negative tests and the tenant-scoped atomic durable store pass; a production control-plane state authority remains external."
+      "reason": "Local negative tests and the exact organization/tenant/workspace/project/account/environment/release-scoped atomic durable store pass; a production control-plane state authority remains external."
     },
     {
       "id": "directed-route-registry",
@@ -56,7 +56,7 @@
         "1.2.0"
       ],
       "evidence_refs": [],
-      "reason": "Strict local API, signed identity, content-addressed evidence, CLI, durable run lifecycle, and authenticated Web BFF contracts pass; hosted production execution remains external."
+      "reason": "All five exact per-Skill operations, subject-bound verification, signed identity, content-addressed evidence, exact-resource CLI/run lifecycle, and authenticated Web BFF contracts pass locally; hosted production execution remains external."
     },
     {
       "id": "frt-web-console",
@@ -70,7 +70,7 @@
         "1.2.0"
       ],
       "evidence_refs": [],
-      "reason": "The local functional matrix and frozen non-visual quality rehearsal pass desktop Chromium, Firefox, WebKit, Pixel 7 Chromium, and iPhone 15 WebKit. Visual comparison fails closed without a pre-approved baseline; independent visual, manual assistive technology, physical journey, customer and production acceptance evidence remain NOT_RUN."
+      "reason": "All five current-revision local profiles pass their applicable P0, Axe, keyboard, i18n, network, overflow and local navigation-budget journeys using desktop Chrome, exact Firefox 151.0, exact WebKit 26.5, Pixel 7 Chromium and iPhone 15 WebKit emulation. Independent visual, manual assistive technology, physical journey, customer and production acceptance evidence remain NOT_RUN."
     },
     {
       "id": "external-certification-boundary",
@@ -84,7 +84,7 @@
         "1.2.0"
       ],
       "evidence_refs": [],
-      "reason": "A signed external-runner protocol now requires preauthorization, exact evidence roles and metrics, privacy minimization, content digests, and separate executor/verifier/approver Ed25519 identities. No real external campaign has yet supplied those records, so every external state remains NOT_RUN and production remains NOT_CERTIFIED."
+      "reason": "A signed external-runner protocol requires preauthorization, exact typed campaign parameters, evidence roles and metrics, privacy minimization, content digests, and separate executor/verifier/approver Ed25519 identities. All 15 explicit adapter code contracts pass locally and are bound to the exact plan/preflight; the current environment has 3 READY_FOR_LOCAL_EXECUTION, 1 BLOCKED_TOOLCHAIN and 11 REQUIRES_EXTERNAL_AUTHORITY, while all 15 external cases remain NOT_RUN; production_operation_authorized=false and production remains NOT_CERTIFIED."
     }
   ]
 }

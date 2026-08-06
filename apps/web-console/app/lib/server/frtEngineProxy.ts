@@ -1,8 +1,9 @@
-import { randomUUID, sign } from "node:crypto";
+import { createHash, randomUUID, sign } from "node:crypto";
 import { lstatSync, readFileSync } from "node:fs";
 import path from "node:path";
 
 import type { NextRequest } from "next/server";
+import { frtCatalog } from "../frtCatalog.generated";
 import { authorize, GenerationRunnerError } from "./generationRunner";
 
 const identifier = /^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,255}$/;
@@ -22,6 +23,7 @@ export type FrtConsoleRunRequest = {
   sourceSnapshotDigest: string;
   policyVersion: string;
   risk: "R0" | "R1" | "R2" | "R3" | "R4" | "R5";
+  verificationSubject?: { runId: string; resultDigest: string };
   input?: Record<string, unknown>;
 };
 
@@ -54,6 +56,10 @@ function canonical(value: unknown): string {
       .join(",")}}`;
   }
   return JSON.stringify(value);
+}
+
+function canonicalDigest(value: unknown): string {
+  return `sha256:${createHash("sha256").update(canonical(value)).digest("hex")}`;
 }
 
 function engineUrl(): string {
@@ -106,18 +112,87 @@ function exactObject(value: unknown, keys: readonly string[], optional: readonly
   return record;
 }
 
-function validateInput(input: unknown): Record<string, unknown> | undefined {
-  if (input === undefined) return undefined;
-  const value = exactObject(input, [], ["files", "inventory", "target", "currentVersions"]);
+function validateJsonStructure(value: unknown): void {
+  const pending: Array<{ value: unknown; depth: number }> = [{ value, depth: 0 }];
+  const unsafeKeys = new Set(["__proto__", "prototype", "constructor"]);
+  let nodes = 0;
+  while (pending.length) {
+    const current = pending.pop()!;
+    nodes += 1;
+    if (nodes > 200_000 || current.depth > 32) {
+      throw new FrtEngineProxyError(413, "FRT_INPUT_STRUCTURE_LIMIT_EXCEEDED");
+    }
+    if (typeof current.value === "string") {
+      if (Buffer.byteLength(current.value, "utf8") > 1_000_000) {
+        throw new FrtEngineProxyError(413, "FRT_INPUT_STRING_LIMIT_EXCEEDED");
+      }
+      continue;
+    }
+    if (typeof current.value === "number" && !Number.isFinite(current.value)) {
+      throw new FrtEngineProxyError(400, "FRT_INPUT_NUMBER_INVALID");
+    }
+    if (current.value === null || ["boolean", "number"].includes(typeof current.value)) continue;
+    if (Array.isArray(current.value)) {
+      if (current.value.length > 20_000) {
+        throw new FrtEngineProxyError(413, "FRT_INPUT_CONTAINER_LIMIT_EXCEEDED");
+      }
+      for (const item of current.value) pending.push({ value: item, depth: current.depth + 1 });
+      continue;
+    }
+    if (typeof current.value !== "object") {
+      throw new FrtEngineProxyError(400, "FRT_INPUT_JSON_TYPE_INVALID");
+    }
+    const entries = Object.entries(current.value as Record<string, unknown>);
+    if (entries.length > 20_000) {
+      throw new FrtEngineProxyError(413, "FRT_INPUT_CONTAINER_LIMIT_EXCEEDED");
+    }
+    for (const [key, item] of entries) {
+      if (!key || key.length > 256 || unsafeKeys.has(key)) {
+        throw new FrtEngineProxyError(400, "FRT_INPUT_KEY_REJECTED");
+      }
+      pending.push({ value: item, depth: current.depth + 1 });
+    }
+  }
+}
+
+function validateInput(
+  requestedSkillId: string,
+  action: FrtConsoleRunRequest["action"],
+  input: unknown,
+): Record<string, unknown> | undefined {
+  if (action === "VERIFY" && input !== undefined) {
+    throw new FrtEngineProxyError(400, "FRT_VERIFY_INPUT_NOT_ALLOWED");
+  }
+  const skill = frtCatalog.skills.find(item => item.id === requestedSkillId);
+  if (!skill) throw new FrtEngineProxyError(400, "FRT_SKILL_UNKNOWN");
+  const required = skill.executionContract.inputContract.required;
+  const optional = skill.executionContract.inputContract.optional;
+  if (input === undefined) {
+    if (["ANALYZE", "EXECUTE"].includes(action) && required.length) {
+      throw new FrtEngineProxyError(400, "FRT_HANDLER_INPUT_REQUIRED");
+    }
+    return undefined;
+  }
+  const value = exactObject(input, [], [...required, ...optional]);
+  validateJsonStructure(value);
+  if (["ANALYZE", "EXECUTE"].includes(action)
+    && required.some(key => !Object.hasOwn(value, key))) {
+    throw new FrtEngineProxyError(400, "FRT_HANDLER_INPUT_REQUIRED");
+  }
   if (value.files !== undefined) {
     if (!value.files || typeof value.files !== "object" || Array.isArray(value.files)) {
       throw new FrtEngineProxyError(400, "FRT_SOURCE_FILES_INVALID");
     }
     const files = value.files as Record<string, unknown>;
     const entries = Object.entries(files);
+    let totalBytes = 0;
     if (entries.length === 0 || entries.length > 512
-      || entries.some(([name, content]) => !name || name.length > 512 || name.startsWith("/")
-        || name.split("/").includes("..") || typeof content !== "string" || content.length > 1_000_000)) {
+      || entries.some(([name, content]) => {
+        if (typeof content === "string") totalBytes += Buffer.byteLength(content, "utf8");
+        return !name || name.length > 512 || name.startsWith("/") || name.includes("\\")
+          || name.split("/").some(segment => !segment || segment === "." || segment === "..")
+          || typeof content !== "string" || Buffer.byteLength(content, "utf8") > 1_000_000;
+      }) || totalBytes > 16 * 1024 * 1024) {
       throw new FrtEngineProxyError(400, "FRT_SOURCE_FILES_INVALID");
     }
   }
@@ -136,7 +211,7 @@ export function validateFrtConsoleRunRequest(value: unknown): FrtConsoleRunReque
     "sourceSnapshotDigest",
     "policyVersion",
     "risk",
-  ], ["input"]);
+  ], ["verificationSubject", "input"]);
   const texts = [
     body.idempotencyKey,
     body.workspaceId,
@@ -152,18 +227,40 @@ export function validateFrtConsoleRunRequest(value: unknown): FrtConsoleRunReque
     || typeof body.risk !== "string" || !risks.has(body.risk)) {
     throw new FrtEngineProxyError(400, "FRT_CONSOLE_REQUEST_INVALID");
   }
+  const requestedAction = body.action as FrtConsoleRunRequest["action"];
+  const validatedInput = validateInput(body.skillId, requestedAction, body.input);
+  let verificationSubject: FrtConsoleRunRequest["verificationSubject"];
+  if (body.verificationSubject !== undefined) {
+    const subject = exactObject(body.verificationSubject, ["runId", "resultDigest"]);
+    if (requestedAction !== "VERIFY" || typeof subject.runId !== "string"
+      || !/^[a-f0-9]{24}$/.test(subject.runId)
+      || typeof subject.resultDigest !== "string" || !digest.test(subject.resultDigest)) {
+      throw new FrtEngineProxyError(400, "FRT_VERIFICATION_SUBJECT_INVALID");
+    }
+    verificationSubject = { runId: subject.runId, resultDigest: subject.resultDigest };
+  }
+  if (requestedAction === "VERIFY" && verificationSubject === undefined) {
+    throw new FrtEngineProxyError(400, "FRT_VERIFICATION_SUBJECT_REQUIRED");
+  }
+  const authoritativeSourceSnapshotDigest = requestedAction === "VERIFY"
+    ? body.sourceSnapshotDigest
+    : canonicalDigest(validatedInput ?? {});
+  if (requestedAction !== "VERIFY" && body.sourceSnapshotDigest !== authoritativeSourceSnapshotDigest) {
+    throw new FrtEngineProxyError(400, "FRT_SOURCE_SNAPSHOT_DIGEST_MISMATCH");
+  }
   return {
     skillId: body.skillId,
-    action: body.action as FrtConsoleRunRequest["action"],
+    action: requestedAction,
     idempotencyKey: body.idempotencyKey as string,
     workspaceId: body.workspaceId as string,
     projectId: body.projectId as string,
     environmentId: body.environmentId as string,
     releaseId: body.releaseId as string,
-    sourceSnapshotDigest: body.sourceSnapshotDigest,
+    sourceSnapshotDigest: authoritativeSourceSnapshotDigest,
     policyVersion: body.policyVersion as string,
     risk: body.risk as FrtConsoleRunRequest["risk"],
-    ...(body.input === undefined ? {} : { input: validateInput(body.input) }),
+    ...(verificationSubject === undefined ? {} : { verificationSubject }),
+    ...(validatedInput === undefined ? {} : { input: validatedInput }),
   };
 }
 
@@ -228,7 +325,10 @@ export async function createFrtConsoleRun(request: NextRequest, rawBody: unknown
     environmentId: value.environmentId,
     releaseId: value.releaseId,
   };
-  return forward(context, scope, `/engine/v1/frt/skills/${value.skillId}/runs`,
+  const pathname = value.verificationSubject
+    ? `/engine/v1/frt/skills/${value.skillId}/runs/${value.verificationSubject.runId}/verify`
+    : `/engine/v1/frt/skills/${value.skillId}/runs`;
+  return forward(context, scope, pathname,
     value.action === "VERIFY" ? ["frt:run", "frt:evidence"] : ["frt:run"], {
       method: "POST",
       body: JSON.stringify({
@@ -246,6 +346,7 @@ export async function createFrtConsoleRun(request: NextRequest, rawBody: unknown
         },
         prerequisiteCertificates: [],
         evidence: [],
+        ...(value.verificationSubject ? { verificationSubject: value.verificationSubject } : {}),
         ...(value.input ? { input: value.input } : {}),
       }),
     });
@@ -257,18 +358,18 @@ export async function getFrtConsoleRun(
   resource = "",
 ) {
   const context = authorizedContext(request, "workspace:view");
-  const scope = consoleReadScope(context);
+  const scope = consoleResourceScope(request, context);
   return forward(context, scope, `/engine/v1/frt/runs/${runId}${resource}`, ["frt:read"]);
 }
 
 export async function transitionFrtConsoleRun(
   request: NextRequest,
   runId: string,
-  operation: "claim" | "cancel" | "retry",
+  operation: "claim" | "heartbeat" | "cancel" | "retry",
   expectedVersion: number,
 ) {
   const context = authorizedContext(request, "generation:execute");
-  const scope = consoleReadScope(context);
+  const scope = consoleResourceScope(request, context);
   return forward(context, scope, `/engine/v1/frt/runs/${runId}/${operation}`, ["frt:run"], {
     method: "POST",
     body: JSON.stringify({ schemaVersion: "1.0", expectedVersion }),
@@ -318,7 +419,7 @@ export async function completeFrtConsoleRun(
   completion: unknown,
 ) {
   const context = authorizedContext(request, "generation:execute");
-  const scope = consoleReadScope(context);
+  const scope = consoleResourceScope(request, context);
   const validated = validateFrtConsoleCompletion(completion);
   return forward(context, scope, `/engine/v1/frt/runs/${runId}/complete`, ["frt:run", "frt:evidence"], {
     method: "POST",
@@ -326,14 +427,27 @@ export async function completeFrtConsoleRun(
   });
 }
 
-function consoleReadScope(context: { tenantId: string; actor: string }): Record<string, string> {
+function consoleResourceScope(
+  request: NextRequest,
+  context: { tenantId: string; actor: string },
+): Record<string, string> {
+  const url = new URL(request.url);
+  const values = {
+    workspaceId: url.searchParams.get("workspaceId") ?? "",
+    projectId: url.searchParams.get("projectId") ?? "",
+    environmentId: url.searchParams.get("environmentId") ?? "",
+    releaseId: url.searchParams.get("releaseId") ?? "",
+  };
+  if (Object.values(values).some(value => !identifier.test(value))) {
+    throw new FrtEngineProxyError(400, "FRT_RESOURCE_SCOPE_INVALID");
+  }
   return {
     organizationId: context.tenantId,
     tenantId: context.tenantId,
-    workspaceId: "frt-console-read",
-    projectId: "frt-console-read",
+    workspaceId: values.workspaceId,
+    projectId: values.projectId,
     accountId: context.actor,
-    environmentId: "frt-console-read",
-    releaseId: "frt-console-read",
+    environmentId: values.environmentId,
+    releaseId: values.releaseId,
   };
 }

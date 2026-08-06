@@ -5,6 +5,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0100-foundation-orchestrator",
     "batch": "G01",
     "handlerKind": "governance",
+    "capabilityKey": "frt.g01.foundation-orchestrator",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:ee7d4b84eba05175d4a94cf45ce69658cc9a655b143a47d78cac35706393fc48",
+    "inputContract": {
+      "required": [
+        "invariants"
+      ],
+      "optional": [
+        "dependencies",
+        "allowedDependencies",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -28,6 +42,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0101-system-charter-and-non-negotiable-invariants",
     "batch": "G01",
     "handlerKind": "governance",
+    "capabilityKey": "frt.g01.system-charter-and-non-negotiable-invariants",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:26fab82f51a1b9b3982cb5a78cac3dafe03547ff557f56ab103265a9776c486c",
+    "inputContract": {
+      "required": [
+        "invariants"
+      ],
+      "optional": [
+        "dependencies",
+        "allowedDependencies",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -51,6 +79,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0102-monorepo-bootstrap-and-module-boundaries",
     "batch": "G01",
     "handlerKind": "governance",
+    "capabilityKey": "frt.g01.monorepo-bootstrap-and-module-boundaries",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:96e1e43318a7687ca49ece500ef97f16da9510472bfe178b550d3955eac83df7",
+    "inputContract": {
+      "required": [
+        "invariants"
+      ],
+      "optional": [
+        "dependencies",
+        "allowedDependencies",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -74,6 +116,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0103-skill-specification-standard",
     "batch": "G01",
     "handlerKind": "governance",
+    "capabilityKey": "frt.g01.skill-specification-standard",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:13dfc98da5c510a267abf3cbbe3cacfa682b838cadc55a8ace618162eff69627",
+    "inputContract": {
+      "required": [
+        "invariants"
+      ],
+      "optional": [
+        "dependencies",
+        "allowedDependencies",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -97,6 +153,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0104-plugin-and-extension-protocol",
     "batch": "G01",
     "handlerKind": "governance",
+    "capabilityKey": "frt.g01.plugin-and-extension-protocol",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:000069d5807ce087b4f1b0c4801cddca16c4b63a1e711bc6d40617067daeb403",
+    "inputContract": {
+      "required": [
+        "invariants"
+      ],
+      "optional": [
+        "dependencies",
+        "allowedDependencies",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -120,6 +190,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0105-skill-registry-foundation",
     "batch": "G01",
     "handlerKind": "governance",
+    "capabilityKey": "frt.g01.skill-registry-foundation",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:465713a1b1ecc5294fcf273019644d1171718cc79856c5a347136a8ab409b955",
+    "inputContract": {
+      "required": [
+        "invariants"
+      ],
+      "optional": [
+        "dependencies",
+        "allowedDependencies",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -143,6 +227,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0106-artifact-and-provenance-model",
     "batch": "G01",
     "handlerKind": "governance",
+    "capabilityKey": "frt.g01.artifact-and-provenance-model",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:ca1dbae5b6351fdb6ef80a836f36be280abb95287eb6cd64ef43fe66c6cb2664",
+    "inputContract": {
+      "required": [
+        "invariants"
+      ],
+      "optional": [
+        "dependencies",
+        "allowedDependencies",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -166,6 +264,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0107-configuration-and-versioning-foundation",
     "batch": "G01",
     "handlerKind": "governance",
+    "capabilityKey": "frt.g01.configuration-and-versioning-foundation",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:283cfaf0f987651ea7360a701098c0a4d22dd1a13a4af5eed6d8208171f1a05b",
+    "inputContract": {
+      "required": [
+        "invariants"
+      ],
+      "optional": [
+        "dependencies",
+        "allowedDependencies",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -189,6 +301,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0108-sandbox-and-worktree-isolation",
     "batch": "G01",
     "handlerKind": "governance",
+    "capabilityKey": "frt.g01.sandbox-and-worktree-isolation",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:747beea19fada666ab1d43cc2fa8cd14229f6b2769459cdfe67a3b2ad47a102b",
+    "inputContract": {
+      "required": [
+        "invariants"
+      ],
+      "optional": [
+        "dependencies",
+        "allowedDependencies",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -212,6 +338,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0109-fixture-golden-and-corpus-foundation",
     "batch": "G01",
     "handlerKind": "governance",
+    "capabilityKey": "frt.g01.fixture-golden-and-corpus-foundation",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:43c759aeb7a5efe6afe145a164ff65dc119bef210bdc60d60bd702dfd5e774d0",
+    "inputContract": {
+      "required": [
+        "invariants"
+      ],
+      "optional": [
+        "dependencies",
+        "allowedDependencies",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -235,6 +375,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0110-release-gate-foundation",
     "batch": "G01",
     "handlerKind": "governance",
+    "capabilityKey": "frt.g01.release-gate-foundation",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:f8ed537f12104d65c6ef2b9dc59e271dc679ff66ec9fa143412ba01ec406a52e",
+    "inputContract": {
+      "required": [
+        "invariants"
+      ],
+      "optional": [
+        "dependencies",
+        "allowedDependencies",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -258,6 +412,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0111-safety-constitution-and-trust-boundary",
     "batch": "G01",
     "handlerKind": "governance",
+    "capabilityKey": "frt.g01.safety-constitution-and-trust-boundary",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:fb056c2fc1333acb71ada24c38a18b5ca030abe28f851afaf2ad30be2167934e",
+    "inputContract": {
+      "required": [
+        "invariants"
+      ],
+      "optional": [
+        "dependencies",
+        "allowedDependencies",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -281,6 +449,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0200-repository-discovery-orchestrator",
     "batch": "G02",
     "handlerKind": "estate_discovery",
+    "capabilityKey": "frt.g02.repository-discovery-orchestrator",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:337782ca3883075f71d94443c76cd23b487c6e797983ec58067b518e6fd5c154",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -304,6 +482,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0201-workspace-and-package-detector",
     "batch": "G02",
     "handlerKind": "estate_discovery",
+    "capabilityKey": "frt.g02.workspace-and-package-detector",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:e60680117d41a4400a71b1ec46447a2d25f0fbb0128ff7e5c869e3e814130f95",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -327,6 +515,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0202-framework-and-version-detector",
     "batch": "G02",
     "handlerKind": "estate_discovery",
+    "capabilityKey": "frt.g02.framework-and-version-detector",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:4cafb8e206cd49262051617af75cd0753e4251d8f9642e6c92bd44f932d73ebf",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -350,6 +548,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0203-build-toolchain-detector",
     "batch": "G02",
     "handlerKind": "estate_discovery",
+    "capabilityKey": "frt.g02.build-toolchain-detector",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:39006b868081493384bf1de53859f86a3233e57d98ec422bb16482219374a965",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -373,6 +581,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0204-dependency-graph-builder",
     "batch": "G02",
     "handlerKind": "estate_discovery",
+    "capabilityKey": "frt.g02.dependency-graph-builder",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:bfaa889e5811558551adb2fe70780b1c6bf340a455575b75c2c2e602515fdbe3",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -396,6 +614,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0205-module-boundary-analyzer",
     "batch": "G02",
     "handlerKind": "estate_discovery",
+    "capabilityKey": "frt.g02.module-boundary-analyzer",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:94575697f124b3f16b80ffb3e7c6192d472c529e61e295a84a0b9e6754954388",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -419,6 +647,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0206-route-and-page-inventory",
     "batch": "G02",
     "handlerKind": "estate_discovery",
+    "capabilityKey": "frt.g02.route-and-page-inventory",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:a2e2cfa55e085be08bd785aa98be61f0f008f93ffb9a685503601b39d76dfba4",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -442,6 +680,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0207-component-inventory",
     "batch": "G02",
     "handlerKind": "estate_discovery",
+    "capabilityKey": "frt.g02.component-inventory",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:cab684073121ba00ebc9730ff080f231a8bff12246cc4563d459d700ae87c520",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -465,6 +713,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0208-state-and-store-inventory",
     "batch": "G02",
     "handlerKind": "estate_discovery",
+    "capabilityKey": "frt.g02.state-and-store-inventory",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:1db1a6f59398e4aaf2a2b4b018744703d4f524ecafd7e96cc0bee279b01ef657",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -488,6 +746,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0209-api-event-and-storage-inventory",
     "batch": "G02",
     "handlerKind": "estate_discovery",
+    "capabilityKey": "frt.g02.api-event-and-storage-inventory",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:9994dfa0b0b803d01b0b4e54156d136c3dfd77550d669f4df78e045f79010d5e",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -511,6 +779,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0210-asset-i18n-and-accessibility-inventory",
     "batch": "G02",
     "handlerKind": "estate_discovery",
+    "capabilityKey": "frt.g02.asset-i18n-and-accessibility-inventory",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:43a6b969c24a2d73b9a4bfd0b2efd3c92e7c3db29d54838c1a6de0dfca234856",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -534,6 +812,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0211-repository-risk-classifier",
     "batch": "G02",
     "handlerKind": "estate_discovery",
+    "capabilityKey": "frt.g02.repository-risk-classifier",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:802c1eb3bb2699954e1db000b0d2b375b3015b0837ea5ee805659be637a493d1",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -557,6 +845,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0212-repository-model-certification",
     "batch": "G02",
     "handlerKind": "estate_discovery",
+    "capabilityKey": "frt.g02.repository-model-certification",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:f5cd45af6dc0ffdb50b201d899f963a9f8a2f25afbaf907e4abfd4f79f46e347",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -580,6 +878,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0300-semantic-ir-orchestrator",
     "batch": "G03",
     "handlerKind": "semantic_ir",
+    "capabilityKey": "frt.g03.semantic-ir-orchestrator",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:5fc457d8357efc2355d040c052b2312ec3bd3cec23265c918ce4670d5f423623",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -603,6 +911,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0301-universal-semantic-type-system",
     "batch": "G03",
     "handlerKind": "semantic_ir",
+    "capabilityKey": "frt.g03.universal-semantic-type-system",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:eb2ce123b586f584d612c5d6efa2bab61647ae9b9c0c2901e88cbe30d9c8a32c",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -626,6 +944,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0302-symbol-scope-and-reference-graph",
     "batch": "G03",
     "handlerKind": "semantic_ir",
+    "capabilityKey": "frt.g03.symbol-scope-and-reference-graph",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:e5c99720d9aa6f8ff56e1331d52dd3bf92e0f8c136795d0e25868ae7f15fef1e",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -649,6 +977,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0303-component-semantic-ir",
     "batch": "G03",
     "handlerKind": "semantic_ir",
+    "capabilityKey": "frt.g03.component-semantic-ir",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:cc533d4daca820a497323423f275e1383bf5787684f94a491269ce85fa84f30a",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -672,6 +1010,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0304-state-effect-and-lifecycle-ir",
     "batch": "G03",
     "handlerKind": "semantic_ir",
+    "capabilityKey": "frt.g03.state-effect-and-lifecycle-ir",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:f3a3ed5f43a163a08dc7c715c0b53f3624cd3cfa7ca7f5584fd8bfe8cdc9de1d",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -695,6 +1043,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0305-navigation-semantic-ir",
     "batch": "G03",
     "handlerKind": "semantic_ir",
+    "capabilityKey": "frt.g03.navigation-semantic-ir",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:f5c701f89da4a6ac493e56df68da7e56712731dfb91220fbd87add7a906886f6",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -718,6 +1076,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0306-data-network-and-storage-ir",
     "batch": "G03",
     "handlerKind": "semantic_ir",
+    "capabilityKey": "frt.g03.data-network-and-storage-ir",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:dd6c9b935f22dd8b6565cc703b59f762e23b86ff3716e02512f7432d53f37eab",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -741,6 +1109,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0307-ui-layout-and-style-ir",
     "batch": "G03",
     "handlerKind": "semantic_ir",
+    "capabilityKey": "frt.g03.ui-layout-and-style-ir",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:d1ed77f13980f19dd78b244c93bb65bd230937c0d81a8464a20cf05e46241126",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -764,6 +1142,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0308-platform-capability-ir",
     "batch": "G03",
     "handlerKind": "semantic_ir",
+    "capabilityKey": "frt.g03.platform-capability-ir",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:ebcfd250ea48192d5b1690afbacb1fe43b8e959bdc1f25d2ca275176e526fe8d",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -787,6 +1175,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0309-source-location-and-provenance-ir",
     "batch": "G03",
     "handlerKind": "semantic_ir",
+    "capabilityKey": "frt.g03.source-location-and-provenance-ir",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:243be81ba0b331beb86822454edab33001c121946ad4e6c0df4152912b08af7d",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -810,6 +1208,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0310-semantic-invariant-registry",
     "batch": "G03",
     "handlerKind": "semantic_ir",
+    "capabilityKey": "frt.g03.semantic-invariant-registry",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:cd76407fcc69178238a8d505471fc5bae150d2f1adaf90f6cb41b7b56cb1c611",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -833,6 +1241,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0311-ir-versioning-and-migration",
     "batch": "G03",
     "handlerKind": "semantic_ir",
+    "capabilityKey": "frt.g03.ir-versioning-and-migration",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:70b9969a6a6f234b96121af3e8d68f3503cdcfa2fd7f52baa66a0d29e941e782",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -856,6 +1274,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0312-semantic-ir-validator",
     "batch": "G03",
     "handlerKind": "semantic_ir",
+    "capabilityKey": "frt.g03.semantic-ir-validator",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:3e2bcd9f6ac7d458ff2842082c7cb44e745fca89ca6a9e665cf4de094dfdcb97",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -879,6 +1307,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0400-source-adapter-orchestrator",
     "batch": "G04",
     "handlerKind": "typed_contract",
+    "capabilityKey": "frt.g04.source-adapter-orchestrator",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:4249c56ca3136f463caf844c9959c05ac1d81c7bee333195acf4e85a8b23c54b",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -902,6 +1340,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0401-vue-2-source-adapter",
     "batch": "G04",
     "handlerKind": "typed_contract",
+    "capabilityKey": "frt.g04.vue-2-source-adapter",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:897a4465d3143e6e8ed100ffb8c8c44b05f85466a4cf56351102ce479857b167",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -925,6 +1373,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0402-vue-3-source-adapter",
     "batch": "G04",
     "handlerKind": "typed_contract",
+    "capabilityKey": "frt.g04.vue-3-source-adapter",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:f62c14d6bd7fafc4c6fbda9622b1e773580dea4e01a568d6e2fb9c8281689dcd",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -948,6 +1406,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0403-react-source-adapter",
     "batch": "G04",
     "handlerKind": "typed_contract",
+    "capabilityKey": "frt.g04.react-source-adapter",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:c7350dcce0ceac2621b22291617346740f2782487958f0a06a10f3479334cfa5",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -971,6 +1439,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0404-wechat-mini-program-source-adapter",
     "batch": "G04",
     "handlerKind": "typed_contract",
+    "capabilityKey": "frt.g04.wechat-mini-program-source-adapter",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:ac572008cb8512cd9ba6847fb93291d39541faa1c739889d62b816c59b7b8d2d",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -994,6 +1472,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0405-arkui-source-adapter",
     "batch": "G04",
     "handlerKind": "typed_contract",
+    "capabilityKey": "frt.g04.arkui-source-adapter",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:a5e16f1978228f923f06059405d1ce5ae48c3b93ef4c0a2f38ac8c53e6019937",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1017,6 +1505,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0406-flutter-source-adapter",
     "batch": "G04",
     "handlerKind": "typed_contract",
+    "capabilityKey": "frt.g04.flutter-source-adapter",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:0c00b2356689ff309804e332fe139546394739a943c2b91a386998bf64cfb66f",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1040,6 +1538,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0407-source-ast-normalizer",
     "batch": "G04",
     "handlerKind": "typed_contract",
+    "capabilityKey": "frt.g04.source-ast-normalizer",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:7921846be7de73fd62ea6ad8c69928d22190fbfbe276c974b3e05bfe028482fd",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1063,6 +1571,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0408-template-jsx-and-widget-extractor",
     "batch": "G04",
     "handlerKind": "typed_contract",
+    "capabilityKey": "frt.g04.template-jsx-and-widget-extractor",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:7a4a7be68de1e2accafa2edd36f0d15f6cf2e29aebcf6203486ad987e1116d5f",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1086,6 +1604,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0409-reactive-state-extractor",
     "batch": "G04",
     "handlerKind": "typed_contract",
+    "capabilityKey": "frt.g04.reactive-state-extractor",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:9da797172055113315d2f9fa91201a7f9da6530a3a33e89b6c1ef81679af6ed4",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1109,6 +1637,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0410-lifecycle-and-effect-extractor",
     "batch": "G04",
     "handlerKind": "typed_contract",
+    "capabilityKey": "frt.g04.lifecycle-and-effect-extractor",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:2736ab7a1022e376c54f60a5727dfa2fa822d11189b3d5bbee4598d03baebb59",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1132,6 +1670,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0411-router-navigation-and-capability-extractor",
     "batch": "G04",
     "handlerKind": "typed_contract",
+    "capabilityKey": "frt.g04.router-navigation-and-capability-extractor",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:48ee9dc9ba0ce501811dd87ef33a246286999f28b7a9f654bfec073a97d431c3",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1155,6 +1703,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0412-source-adapter-conformance-certification",
     "batch": "G04",
     "handlerKind": "typed_contract",
+    "capabilityKey": "frt.g04.source-adapter-conformance-certification",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:500af6d3012f4314bcf29bea35e5e4928e8c91bc21df956d5e035d0eb420dfa0",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1178,6 +1736,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0500-migration-planning-orchestrator",
     "batch": "G05",
     "handlerKind": "migration_planning",
+    "capabilityKey": "frt.g05.migration-planning-orchestrator",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:1d9799818a1339dabe7b4605cb63bded784cbb918af9c4950b54ac32d5918c19",
+    "inputContract": {
+      "required": [
+        "inventory",
+        "target"
+      ],
+      "optional": [
+        "currentVersions"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1201,6 +1772,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0501-semantic-gap-detector",
     "batch": "G05",
     "handlerKind": "migration_planning",
+    "capabilityKey": "frt.g05.semantic-gap-detector",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:1992300b3ec6829b7a5c4ff67bf2d8798d7ef83067d76997b8fc08bee52ffe48",
+    "inputContract": {
+      "required": [
+        "inventory",
+        "target"
+      ],
+      "optional": [
+        "currentVersions"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1224,6 +1808,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0502-capability-compatibility-matrix",
     "batch": "G05",
     "handlerKind": "migration_planning",
+    "capabilityKey": "frt.g05.capability-compatibility-matrix",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:9245503c855d24241335cff7a246b0312afbbc4d8d1c97b8d8f25101f6b5e000",
+    "inputContract": {
+      "required": [
+        "inventory",
+        "target"
+      ],
+      "optional": [
+        "currentVersions"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1247,6 +1844,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0503-source-target-feature-mapper",
     "batch": "G05",
     "handlerKind": "migration_planning",
+    "capabilityKey": "frt.g05.source-target-feature-mapper",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:eeaa61a9db905ef3cb844819ca8bafa2fdba8593545f798d717fa5957bfef9fd",
+    "inputContract": {
+      "required": [
+        "inventory",
+        "target"
+      ],
+      "optional": [
+        "currentVersions"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1270,6 +1880,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0504-product-decision-generator",
     "batch": "G05",
     "handlerKind": "migration_planning",
+    "capabilityKey": "frt.g05.product-decision-generator",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:f04bc9c1a51f119716a7e46ded89871b1e37c8250c0f8390b96956bcfaff0cf1",
+    "inputContract": {
+      "required": [
+        "inventory",
+        "target"
+      ],
+      "optional": [
+        "currentVersions"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1293,6 +1916,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0505-shim-requirement-planner",
     "batch": "G05",
     "handlerKind": "migration_planning",
+    "capabilityKey": "frt.g05.shim-requirement-planner",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:b8c6f2cd7378e93ead672c43c7d1693e98e8ebc07a2487d0eae3782e7f03ae8c",
+    "inputContract": {
+      "required": [
+        "inventory",
+        "target"
+      ],
+      "optional": [
+        "currentVersions"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1316,6 +1952,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0506-manual-boundary-planner",
     "batch": "G05",
     "handlerKind": "migration_planning",
+    "capabilityKey": "frt.g05.manual-boundary-planner",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:51d4ce9fb35401012b20ba44376bd758f0f38cc11e97f21ea42071fcdb52d1e7",
+    "inputContract": {
+      "required": [
+        "inventory",
+        "target"
+      ],
+      "optional": [
+        "currentVersions"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1339,6 +1988,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0507-risk-confidence-and-criticality-scorer",
     "batch": "G05",
     "handlerKind": "migration_planning",
+    "capabilityKey": "frt.g05.risk-confidence-and-criticality-scorer",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:e29b9c8aeb49ec966274cb246acd6f2dcf87bd906352bbc89b4890af44b069bd",
+    "inputContract": {
+      "required": [
+        "inventory",
+        "target"
+      ],
+      "optional": [
+        "currentVersions"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1362,6 +2024,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0508-migration-effort-and-duration-estimator",
     "batch": "G05",
     "handlerKind": "migration_planning",
+    "capabilityKey": "frt.g05.migration-effort-and-duration-estimator",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:0c24247b531471986b7ec4d9e030e37c4b37631b0ed88e5dc518c9f8e0a4debe",
+    "inputContract": {
+      "required": [
+        "inventory",
+        "target"
+      ],
+      "optional": [
+        "currentVersions"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1385,6 +2060,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0509-multi-pass-migration-plan-generator",
     "batch": "G05",
     "handlerKind": "migration_planning",
+    "capabilityKey": "frt.g05.multi-pass-migration-plan-generator",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:0a896c99b534ab0288267fe82799127a8a792b92f2f1b65844b4ecc2e1e5ee66",
+    "inputContract": {
+      "required": [
+        "inventory",
+        "target"
+      ],
+      "optional": [
+        "currentVersions"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1408,6 +2096,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0510-migration-plan-freezer",
     "batch": "G05",
     "handlerKind": "migration_planning",
+    "capabilityKey": "frt.g05.migration-plan-freezer",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:3843018570adbb68841cb493da1efc3d5cda4e90490d8da3138796ba1c8a5986",
+    "inputContract": {
+      "required": [
+        "inventory",
+        "target"
+      ],
+      "optional": [
+        "currentVersions"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1431,6 +2132,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0511-plan-explainability-generator",
     "batch": "G05",
     "handlerKind": "migration_planning",
+    "capabilityKey": "frt.g05.plan-explainability-generator",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:ed75168956501f9f2477f5562d9c772e4aae0bb10e35d2a5aa78c12697528aca",
+    "inputContract": {
+      "required": [
+        "inventory",
+        "target"
+      ],
+      "optional": [
+        "currentVersions"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1454,6 +2168,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0512-migration-plan-certification",
     "batch": "G05",
     "handlerKind": "migration_planning",
+    "capabilityKey": "frt.g05.migration-plan-certification",
+    "executionClass": "CONTROL_PLANE_ANALYSIS",
+    "contractDigest": "sha256:daf139a23a17506436f6eafe5f7f48a38f6bc864e542028b277f18acfa3c3bc3",
+    "inputContract": {
+      "required": [
+        "inventory",
+        "target"
+      ],
+      "optional": [
+        "currentVersions"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1477,6 +2204,17 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0600-target-architecture-orchestrator",
     "batch": "G06",
     "handlerKind": "source_generation",
+    "capabilityKey": "frt.g06.target-architecture-orchestrator",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:e0a470df4335bdbeb0ccf12d83a72d6b4e41ecf9e3376f1b2b8d9d2eea5ec169",
+    "inputContract": {
+      "required": [
+        "targetProfile",
+        "uiIr"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1500,6 +2238,17 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0601-vue-2-architecture-synthesizer",
     "batch": "G06",
     "handlerKind": "source_generation",
+    "capabilityKey": "frt.g06.vue-2-architecture-synthesizer",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:7aafeeff72bdaa2dfdee5761d88542e124285d6be5ea1565526c42864eb2298b",
+    "inputContract": {
+      "required": [
+        "targetProfile",
+        "uiIr"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1523,6 +2272,17 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0602-vue-3-architecture-synthesizer",
     "batch": "G06",
     "handlerKind": "source_generation",
+    "capabilityKey": "frt.g06.vue-3-architecture-synthesizer",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:92241de57f49e27fdfe9ef401d363f1275713b7b781e9ae0e5b4ff7741a841ef",
+    "inputContract": {
+      "required": [
+        "targetProfile",
+        "uiIr"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1546,6 +2306,17 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0603-react-architecture-synthesizer",
     "batch": "G06",
     "handlerKind": "source_generation",
+    "capabilityKey": "frt.g06.react-architecture-synthesizer",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:0850df9bf292f4968fce16abca00d1c0e3d008c0343094dac7da4902bde6e3df",
+    "inputContract": {
+      "required": [
+        "targetProfile",
+        "uiIr"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1569,6 +2340,17 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0604-wechat-mini-program-architecture-synthesizer",
     "batch": "G06",
     "handlerKind": "source_generation",
+    "capabilityKey": "frt.g06.wechat-mini-program-architecture-synthesizer",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:831a7a4fb27005ccc780e906b87ddfed697bf3cf9bcca1f7f37ef919baf9abea",
+    "inputContract": {
+      "required": [
+        "targetProfile",
+        "uiIr"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1592,6 +2374,17 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0605-arkui-architecture-synthesizer",
     "batch": "G06",
     "handlerKind": "source_generation",
+    "capabilityKey": "frt.g06.arkui-architecture-synthesizer",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:e049ccc371484c59687cdfa3d2517c7a3d9d0f5dc382d5deaeffd94d6f1179cb",
+    "inputContract": {
+      "required": [
+        "targetProfile",
+        "uiIr"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1615,6 +2408,17 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0606-flutter-architecture-synthesizer",
     "batch": "G06",
     "handlerKind": "source_generation",
+    "capabilityKey": "frt.g06.flutter-architecture-synthesizer",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:aff95a7232ecec6245d8481c2b94284dbb88a937af8d84a5ad43a45462cea942",
+    "inputContract": {
+      "required": [
+        "targetProfile",
+        "uiIr"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1638,6 +2442,17 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0607-target-module-boundary-synthesizer",
     "batch": "G06",
     "handlerKind": "source_generation",
+    "capabilityKey": "frt.g06.target-module-boundary-synthesizer",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:046963b7a8d740ff4a8f3086f4baea80bb392a2e84ab0836f68d9ad4764578d6",
+    "inputContract": {
+      "required": [
+        "targetProfile",
+        "uiIr"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1661,6 +2476,17 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0608-dependency-and-toolchain-resolver",
     "batch": "G06",
     "handlerKind": "source_generation",
+    "capabilityKey": "frt.g06.dependency-and-toolchain-resolver",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:1a498b71fe88899918b5e4d658ada7c2c3bc2cd8321b7cf4535e99148ed066c7",
+    "inputContract": {
+      "required": [
+        "targetProfile",
+        "uiIr"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1684,6 +2510,17 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0609-project-layout-generator",
     "batch": "G06",
     "handlerKind": "source_generation",
+    "capabilityKey": "frt.g06.project-layout-generator",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:bf6eab831e98396a18f55670c1a3dd6f17fb0ccf8711df7160f4f1d3e0d94931",
+    "inputContract": {
+      "required": [
+        "targetProfile",
+        "uiIr"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1707,6 +2544,17 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0610-buildable-skeleton-generator",
     "batch": "G06",
     "handlerKind": "source_generation",
+    "capabilityKey": "frt.g06.buildable-skeleton-generator",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:046d227eb090854c3798755ca49a7f3ac834e19244cfd78b5c694fd4e01bfa97",
+    "inputContract": {
+      "required": [
+        "targetProfile",
+        "uiIr"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1730,6 +2578,17 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0611-bootstrap-and-smoke-validator",
     "batch": "G06",
     "handlerKind": "source_generation",
+    "capabilityKey": "frt.g06.bootstrap-and-smoke-validator",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:b456e2123637a55a07301997d04c508481d74bd620cb90821314520883290c5b",
+    "inputContract": {
+      "required": [
+        "targetProfile",
+        "uiIr"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1753,6 +2612,17 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0612-target-architecture-certification",
     "batch": "G06",
     "handlerKind": "source_generation",
+    "capabilityKey": "frt.g06.target-architecture-certification",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:16e36047c43a20337591baacfdf72c62ed79ecacb7820e727af6946dff35c3c3",
+    "inputContract": {
+      "required": [
+        "targetProfile",
+        "uiIr"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1776,6 +2646,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0700-code-generation-orchestrator",
     "batch": "G07",
     "handlerKind": "build_toolchain",
+    "capabilityKey": "frt.g07.code-generation-orchestrator",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:c2f8fe05ecc938dc590ed3cd49f7b495ee9a1312992c7721c37dff07532d35f1",
+    "inputContract": {
+      "required": [
+        "astNodes"
+      ],
+      "optional": [
+        "imports",
+        "diagnostics",
+        "unsupportedSemantics",
+        "repairPasses"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1799,6 +2684,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0701-typed-semantic-lowering-engine",
     "batch": "G07",
     "handlerKind": "build_toolchain",
+    "capabilityKey": "frt.g07.typed-semantic-lowering-engine",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:86bc460c7709d02bb115de9eb72bf41707e9136e704ab84eee3bff3249723445",
+    "inputContract": {
+      "required": [
+        "astNodes"
+      ],
+      "optional": [
+        "imports",
+        "diagnostics",
+        "unsupportedSemantics",
+        "repairPasses"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1822,6 +2722,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0702-rule-registry-and-pass-manager",
     "batch": "G07",
     "handlerKind": "build_toolchain",
+    "capabilityKey": "frt.g07.rule-registry-and-pass-manager",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:d4ce8e265834e523e47febdc55491e948e2f572e7da4486718d71d9900f3f607",
+    "inputContract": {
+      "required": [
+        "astNodes"
+      ],
+      "optional": [
+        "imports",
+        "diagnostics",
+        "unsupportedSemantics",
+        "repairPasses"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1845,6 +2760,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0703-target-native-ast-emitter",
     "batch": "G07",
     "handlerKind": "build_toolchain",
+    "capabilityKey": "frt.g07.target-native-ast-emitter",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:8e0ea8dd7fca641ae1afff0c3b69f144feada2df412d47cbc0adb2bfb3e7734f",
+    "inputContract": {
+      "required": [
+        "astNodes"
+      ],
+      "optional": [
+        "imports",
+        "diagnostics",
+        "unsupportedSemantics",
+        "repairPasses"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1868,6 +2798,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0704-template-jsx-and-widget-emitter",
     "batch": "G07",
     "handlerKind": "build_toolchain",
+    "capabilityKey": "frt.g07.template-jsx-and-widget-emitter",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:3529050aeff2c23d955df234ac65c874c72340879e1b41a6ac20e2b656a88726",
+    "inputContract": {
+      "required": [
+        "astNodes"
+      ],
+      "optional": [
+        "imports",
+        "diagnostics",
+        "unsupportedSemantics",
+        "repairPasses"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1891,6 +2836,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0705-import-and-dependency-resolver",
     "batch": "G07",
     "handlerKind": "build_toolchain",
+    "capabilityKey": "frt.g07.import-and-dependency-resolver",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:6342971b2eea58af30bd016505aa37ebf5684ad358193a317bd96bf29073afab",
+    "inputContract": {
+      "required": [
+        "astNodes"
+      ],
+      "optional": [
+        "imports",
+        "diagnostics",
+        "unsupportedSemantics",
+        "repairPasses"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1914,6 +2874,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0706-deterministic-naming-and-file-allocation",
     "batch": "G07",
     "handlerKind": "build_toolchain",
+    "capabilityKey": "frt.g07.deterministic-naming-and-file-allocation",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:c17b167c471d3fea6b661bb0cc3258ff138df4cf66d4dd58683882154f3d40a6",
+    "inputContract": {
+      "required": [
+        "astNodes"
+      ],
+      "optional": [
+        "imports",
+        "diagnostics",
+        "unsupportedSemantics",
+        "repairPasses"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1937,6 +2912,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0707-typed-hole-and-gap-emitter",
     "batch": "G07",
     "handlerKind": "build_toolchain",
+    "capabilityKey": "frt.g07.typed-hole-and-gap-emitter",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:892b03f3e09eeaebdfe23b407a7ddc37e44654a0cdfb5feae0c2317aef78a922",
+    "inputContract": {
+      "required": [
+        "astNodes"
+      ],
+      "optional": [
+        "imports",
+        "diagnostics",
+        "unsupportedSemantics",
+        "repairPasses"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1960,6 +2950,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0708-formatter-linter-and-analyzer-integration",
     "batch": "G07",
     "handlerKind": "build_toolchain",
+    "capabilityKey": "frt.g07.formatter-linter-and-analyzer-integration",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:ee91733fe4bd2c3f6edde0e5f32c177d027d290429b1e3309a3d7a433fb49e37",
+    "inputContract": {
+      "required": [
+        "astNodes"
+      ],
+      "optional": [
+        "imports",
+        "diagnostics",
+        "unsupportedSemantics",
+        "repairPasses"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -1983,6 +2988,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0709-build-and-diagnostic-adapter",
     "batch": "G07",
     "handlerKind": "build_toolchain",
+    "capabilityKey": "frt.g07.build-and-diagnostic-adapter",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:6dae144b22b2d3e3aaee2f0a5980cdeb4eeb38331f6b7d1911ee1c4c670cbe2e",
+    "inputContract": {
+      "required": [
+        "astNodes"
+      ],
+      "optional": [
+        "imports",
+        "diagnostics",
+        "unsupportedSemantics",
+        "repairPasses"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2006,6 +3026,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0710-deterministic-repair-loop",
     "batch": "G07",
     "handlerKind": "build_toolchain",
+    "capabilityKey": "frt.g07.deterministic-repair-loop",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:d2dcb6d85aa0ab3c301d6412c03b9898e180974b575d2454b6b23d90d60225e7",
+    "inputContract": {
+      "required": [
+        "astNodes"
+      ],
+      "optional": [
+        "imports",
+        "diagnostics",
+        "unsupportedSemantics",
+        "repairPasses"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2029,6 +3064,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0711-restricted-agent-repair-envelope",
     "batch": "G07",
     "handlerKind": "build_toolchain",
+    "capabilityKey": "frt.g07.restricted-agent-repair-envelope",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:f164a47829a273524daebd172e057e5d3ac1eb6be5f5211e3771e551a181c24f",
+    "inputContract": {
+      "required": [
+        "astNodes"
+      ],
+      "optional": [
+        "imports",
+        "diagnostics",
+        "unsupportedSemantics",
+        "repairPasses"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2052,6 +3102,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0712-incremental-regeneration-and-three-way-merge",
     "batch": "G07",
     "handlerKind": "build_toolchain",
+    "capabilityKey": "frt.g07.incremental-regeneration-and-three-way-merge",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:eea2f9e00cc6074c8030effdfa5034a44d303cbf85bdaedb94640e049cd61a14",
+    "inputContract": {
+      "required": [
+        "astNodes"
+      ],
+      "optional": [
+        "imports",
+        "diagnostics",
+        "unsupportedSemantics",
+        "repairPasses"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2075,6 +3140,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0713-source-target-map-generator",
     "batch": "G07",
     "handlerKind": "build_toolchain",
+    "capabilityKey": "frt.g07.source-target-map-generator",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:926b755d760c836a695a24a8e42659d33b023056ec72e41bd0730a9e22a3391d",
+    "inputContract": {
+      "required": [
+        "astNodes"
+      ],
+      "optional": [
+        "imports",
+        "diagnostics",
+        "unsupportedSemantics",
+        "repairPasses"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2098,6 +3178,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0714-code-generation-certification",
     "batch": "G07",
     "handlerKind": "build_toolchain",
+    "capabilityKey": "frt.g07.code-generation-certification",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:78cd023ab4eb579e302d6e72423201b9171ae32c4ecc0f93486302997b609ecf",
+    "inputContract": {
+      "required": [
+        "astNodes"
+      ],
+      "optional": [
+        "imports",
+        "diagnostics",
+        "unsupportedSemantics",
+        "repairPasses"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2121,6 +3216,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0800-component-semantics-orchestrator",
     "batch": "G08",
     "handlerKind": "test_automation",
+    "capabilityKey": "frt.g08.component-semantics-orchestrator",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:e7f06ef21f08dba6edd8956809997a0eb2ef8cfe42ec0168909b2a37933008b2",
+    "inputContract": {
+      "required": [
+        "components"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2144,6 +3249,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0801-component-boundary-mapper",
     "batch": "G08",
     "handlerKind": "test_automation",
+    "capabilityKey": "frt.g08.component-boundary-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:ea6661fc2474c234525f3feb4f21c1437a175f871a440974b6d7caf974419236",
+    "inputContract": {
+      "required": [
+        "components"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2167,6 +3282,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0802-props-and-input-contract-mapper",
     "batch": "G08",
     "handlerKind": "test_automation",
+    "capabilityKey": "frt.g08.props-and-input-contract-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:3e87559f5ffa828502e4dd5414f4e4960fb15be7a16aae365e9670c0878ad8e8",
+    "inputContract": {
+      "required": [
+        "components"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2190,6 +3315,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0803-events-callback-and-emit-mapper",
     "batch": "G08",
     "handlerKind": "test_automation",
+    "capabilityKey": "frt.g08.events-callback-and-emit-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:62fc0d1a583967b3e3927a18a812ae969485315e95f563203c970ba50970e926",
+    "inputContract": {
+      "required": [
+        "components"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2213,6 +3348,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0804-slots-children-and-builder-mapper",
     "batch": "G08",
     "handlerKind": "test_automation",
+    "capabilityKey": "frt.g08.slots-children-and-builder-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:1cb56a00e6718cadcec9ea04d96fed122ce4685bcc3b4034b976620fe4816f5f",
+    "inputContract": {
+      "required": [
+        "components"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2236,6 +3381,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0805-refs-keys-and-identity-mapper",
     "batch": "G08",
     "handlerKind": "test_automation",
+    "capabilityKey": "frt.g08.refs-keys-and-identity-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:a599da13dbd9c48bc5d9ad5cb5b124c6e773c850d92be24ff328c3905158cbbe",
+    "inputContract": {
+      "required": [
+        "components"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2259,6 +3414,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0806-hooks-composables-and-context-mapper",
     "batch": "G08",
     "handlerKind": "test_automation",
+    "capabilityKey": "frt.g08.hooks-composables-and-context-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:a8f5cb58699fc7ca1d31acb747a18c8fbdcf8c474ef4e788d94097fd1c3c195b",
+    "inputContract": {
+      "required": [
+        "components"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2282,6 +3447,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0807-controlled-and-uncontrolled-state-mapper",
     "batch": "G08",
     "handlerKind": "test_automation",
+    "capabilityKey": "frt.g08.controlled-and-uncontrolled-state-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:eb865c3da5eaff53f44518d106a15001fc35f1a0d3b1e3d5a6ec56da69bab4b5",
+    "inputContract": {
+      "required": [
+        "components"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2305,6 +3480,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0808-component-lifecycle-mapper",
     "batch": "G08",
     "handlerKind": "test_automation",
+    "capabilityKey": "frt.g08.component-lifecycle-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:a8e8dce8d4ec8e4dd997e6fde38d70bdf3b4b67113b46181abb71b3e41df0990",
+    "inputContract": {
+      "required": [
+        "components"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2328,6 +3513,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0809-portal-teleport-and-overlay-mapper",
     "batch": "G08",
     "handlerKind": "test_automation",
+    "capabilityKey": "frt.g08.portal-teleport-and-overlay-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:a4573f141a0ed4808f26b2b9413ea46624627366dc3b828513014a5444aa00ee",
+    "inputContract": {
+      "required": [
+        "components"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2351,6 +3546,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0810-dynamic-component-mapper",
     "batch": "G08",
     "handlerKind": "test_automation",
+    "capabilityKey": "frt.g08.dynamic-component-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:a6213c59d57a2d774e91941682b13523e176c8a236b2fdd3157e82f70d812d53",
+    "inputContract": {
+      "required": [
+        "components"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2374,6 +3579,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0811-component-test-generator",
     "batch": "G08",
     "handlerKind": "test_automation",
+    "capabilityKey": "frt.g08.component-test-generator",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:4d436b84737a9962502b483035562a5b8500377423173d0d62f83bf933e75010",
+    "inputContract": {
+      "required": [
+        "components"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2397,6 +3612,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0812-component-semantics-certification",
     "batch": "G08",
     "handlerKind": "test_automation",
+    "capabilityKey": "frt.g08.component-semantics-certification",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:31763cc4bfe4bae6eca670b5f8031b44ba0d3cb9fdb7c25374fad395807c190e",
+    "inputContract": {
+      "required": [
+        "components"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2420,6 +3645,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0900-runtime-semantics-orchestrator",
     "batch": "G09",
     "handlerKind": "delivery_pipeline",
+    "capabilityKey": "frt.g09.runtime-semantics-orchestrator",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:3daf9e0e7f189543673d79a2c128e3f895c68f8a113be521a0351ca196fd508e",
+    "inputContract": {
+      "required": [
+        "states"
+      ],
+      "optional": [
+        "effects",
+        "asyncOperations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2443,6 +3681,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0901-state-ownership-mapper",
     "batch": "G09",
     "handlerKind": "delivery_pipeline",
+    "capabilityKey": "frt.g09.state-ownership-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:4b2bf9abd0c31857867a74a70e03335b30b24c10e0b1a7cd3dbf5fedebf22c07",
+    "inputContract": {
+      "required": [
+        "states"
+      ],
+      "optional": [
+        "effects",
+        "asyncOperations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2466,6 +3717,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0902-derived-state-and-memoization-mapper",
     "batch": "G09",
     "handlerKind": "delivery_pipeline",
+    "capabilityKey": "frt.g09.derived-state-and-memoization-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:e09f33d4a964ef65d80ad92c111e9afe84228a29ddb413f1357523bb6dcb6124",
+    "inputContract": {
+      "required": [
+        "states"
+      ],
+      "optional": [
+        "effects",
+        "asyncOperations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2489,6 +3753,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0903-effect-semantics-mapper",
     "batch": "G09",
     "handlerKind": "delivery_pipeline",
+    "capabilityKey": "frt.g09.effect-semantics-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:3aa072df0469c3cc39acd069f58521117e805c876bbc9af72eb81020f27e98b6",
+    "inputContract": {
+      "required": [
+        "states"
+      ],
+      "optional": [
+        "effects",
+        "asyncOperations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2512,6 +3789,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0904-lifecycle-ordering-validator",
     "batch": "G09",
     "handlerKind": "delivery_pipeline",
+    "capabilityKey": "frt.g09.lifecycle-ordering-validator",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:28786740b09f66c430c3b64611d48ca298baa5ad05535462e771354143d5e84d",
+    "inputContract": {
+      "required": [
+        "states"
+      ],
+      "optional": [
+        "effects",
+        "asyncOperations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2535,6 +3825,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0905-async-and-concurrency-mapper",
     "batch": "G09",
     "handlerKind": "delivery_pipeline",
+    "capabilityKey": "frt.g09.async-and-concurrency-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:40d14b0f7952ffa170f817831562e32e6e91cbe38dbc86c577f866f4d4f1f090",
+    "inputContract": {
+      "required": [
+        "states"
+      ],
+      "optional": [
+        "effects",
+        "asyncOperations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2558,6 +3861,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0906-cancellation-propagation-mapper",
     "batch": "G09",
     "handlerKind": "delivery_pipeline",
+    "capabilityKey": "frt.g09.cancellation-propagation-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:9f69ae77e8a5db365845c464c7c386ade6e55f02ac4c1e6350df807f5fd85175",
+    "inputContract": {
+      "required": [
+        "states"
+      ],
+      "optional": [
+        "effects",
+        "asyncOperations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2581,6 +3897,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0907-resource-ownership-and-cleanup-mapper",
     "batch": "G09",
     "handlerKind": "delivery_pipeline",
+    "capabilityKey": "frt.g09.resource-ownership-and-cleanup-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:b1721e1ddc1e35fae822e7ddf72c612f71ae621138c70a0ac86558d7b529ffa4",
+    "inputContract": {
+      "required": [
+        "states"
+      ],
+      "optional": [
+        "effects",
+        "asyncOperations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2604,6 +3933,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0908-retry-backoff-and-idempotency-mapper",
     "batch": "G09",
     "handlerKind": "delivery_pipeline",
+    "capabilityKey": "frt.g09.retry-backoff-and-idempotency-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:35742f43656836fb6bfb511ee9119f49cc8dfdd5487040e9621408f575f1c78c",
+    "inputContract": {
+      "required": [
+        "states"
+      ],
+      "optional": [
+        "effects",
+        "asyncOperations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2627,6 +3969,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0909-persistence-and-hydration-mapper",
     "batch": "G09",
     "handlerKind": "delivery_pipeline",
+    "capabilityKey": "frt.g09.persistence-and-hydration-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:3f8eb77f3030b45b6ea1ade828ce716f30b0486bfd05eaede98bd33db5984c55",
+    "inputContract": {
+      "required": [
+        "states"
+      ],
+      "optional": [
+        "effects",
+        "asyncOperations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2650,6 +4005,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0910-offline-resume-and-checkpoint-mapper",
     "batch": "G09",
     "handlerKind": "delivery_pipeline",
+    "capabilityKey": "frt.g09.offline-resume-and-checkpoint-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:273924d4a9984e4f42840603baf27870965f116e07d1cd512da0802bcd8872bc",
+    "inputContract": {
+      "required": [
+        "states"
+      ],
+      "optional": [
+        "effects",
+        "asyncOperations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2673,6 +4041,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0911-runtime-race-detector",
     "batch": "G09",
     "handlerKind": "delivery_pipeline",
+    "capabilityKey": "frt.g09.runtime-race-detector",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:2ec60ef53ceaff1b817ce3351af7a84809db39db9c57f60767b8e65f1b6f04cf",
+    "inputContract": {
+      "required": [
+        "states"
+      ],
+      "optional": [
+        "effects",
+        "asyncOperations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2696,6 +4077,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0912-runtime-semantics-test-generator",
     "batch": "G09",
     "handlerKind": "delivery_pipeline",
+    "capabilityKey": "frt.g09.runtime-semantics-test-generator",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:71c6e496525337215d2379eb4ae3387100154c51eae5903344e85a2536b13894",
+    "inputContract": {
+      "required": [
+        "states"
+      ],
+      "optional": [
+        "effects",
+        "asyncOperations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2719,6 +4113,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-0913-runtime-semantics-certification",
     "batch": "G09",
     "handlerKind": "delivery_pipeline",
+    "capabilityKey": "frt.g09.runtime-semantics-certification",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:8b9b309a797d908c5c22e351100237ba80de1452c909274ad5288ca68854a9fb",
+    "inputContract": {
+      "required": [
+        "states"
+      ],
+      "optional": [
+        "effects",
+        "asyncOperations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2742,6 +4149,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1000-application-boundary-orchestrator",
     "batch": "G10",
     "handlerKind": "design_system",
+    "capabilityKey": "frt.g10.application-boundary-orchestrator",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:e035f19791abd9f9514116f0503f4d81b992f705ccdc854a6a8f6ef87241c736",
+    "inputContract": {
+      "required": [
+        "routes"
+      ],
+      "optional": [
+        "forms",
+        "apiCalls",
+        "storage",
+        "permissions"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2765,6 +4187,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1001-route-graph-generator",
     "batch": "G10",
     "handlerKind": "design_system",
+    "capabilityKey": "frt.g10.route-graph-generator",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:a608304330217ae6f5471c7e4d549a5c7e0381da945a1e8522809251cb6ad914",
+    "inputContract": {
+      "required": [
+        "routes"
+      ],
+      "optional": [
+        "forms",
+        "apiCalls",
+        "storage",
+        "permissions"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2788,6 +4225,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1002-navigation-and-history-mapper",
     "batch": "G10",
     "handlerKind": "design_system",
+    "capabilityKey": "frt.g10.navigation-and-history-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:8731ff90bda53ebca4ea119dd2658a755838e80b9dfa59e6dc311a99c9095972",
+    "inputContract": {
+      "required": [
+        "routes"
+      ],
+      "optional": [
+        "forms",
+        "apiCalls",
+        "storage",
+        "permissions"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2811,6 +4263,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1003-route-guard-mapper",
     "batch": "G10",
     "handlerKind": "design_system",
+    "capabilityKey": "frt.g10.route-guard-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:329268d33afbcc9bf3b363540f3b73b81144a2a07c57042d08c4768fb4e5feb3",
+    "inputContract": {
+      "required": [
+        "routes"
+      ],
+      "optional": [
+        "forms",
+        "apiCalls",
+        "storage",
+        "permissions"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2834,6 +4301,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1004-form-model-generator",
     "batch": "G10",
     "handlerKind": "design_system",
+    "capabilityKey": "frt.g10.form-model-generator",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:f5d051e60b244242f4efb2d4cfea5d0b9bbb66feeab5e8d11ade8cc2cbfd66c3",
+    "inputContract": {
+      "required": [
+        "routes"
+      ],
+      "optional": [
+        "forms",
+        "apiCalls",
+        "storage",
+        "permissions"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2857,6 +4339,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1005-validation-and-error-contract-mapper",
     "batch": "G10",
     "handlerKind": "design_system",
+    "capabilityKey": "frt.g10.validation-and-error-contract-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:11444b5bdb62fa326e695c54a5d5d3c9f73cb716451473227d962d837251e072",
+    "inputContract": {
+      "required": [
+        "routes"
+      ],
+      "optional": [
+        "forms",
+        "apiCalls",
+        "storage",
+        "permissions"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2880,6 +4377,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1006-network-client-generator",
     "batch": "G10",
     "handlerKind": "design_system",
+    "capabilityKey": "frt.g10.network-client-generator",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:da6bd07dc8be310128ec54c003cae9a2f5d8aba42823ed987351bb335d64289e",
+    "inputContract": {
+      "required": [
+        "routes"
+      ],
+      "optional": [
+        "forms",
+        "apiCalls",
+        "storage",
+        "permissions"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2903,6 +4415,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1007-api-contract-mapper",
     "batch": "G10",
     "handlerKind": "design_system",
+    "capabilityKey": "frt.g10.api-contract-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:1647c051a8db3c3d125ddc27b7f21a3561856ae7ecf409976880b6927c16fd62",
+    "inputContract": {
+      "required": [
+        "routes"
+      ],
+      "optional": [
+        "forms",
+        "apiCalls",
+        "storage",
+        "permissions"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2926,6 +4453,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1008-storage-adapter-generator",
     "batch": "G10",
     "handlerKind": "design_system",
+    "capabilityKey": "frt.g10.storage-adapter-generator",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:083f267c72c43f049496be272adba82af4cb26a532f7514fe5e55b41bd1aa08f",
+    "inputContract": {
+      "required": [
+        "routes"
+      ],
+      "optional": [
+        "forms",
+        "apiCalls",
+        "storage",
+        "permissions"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2949,6 +4491,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1009-identity-and-session-mapper",
     "batch": "G10",
     "handlerKind": "design_system",
+    "capabilityKey": "frt.g10.identity-and-session-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:015eb0b8fa3b86aa2c4348864b9bac613030e6fb3a49476e06740749bff87b03",
+    "inputContract": {
+      "required": [
+        "routes"
+      ],
+      "optional": [
+        "forms",
+        "apiCalls",
+        "storage",
+        "permissions"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2972,6 +4529,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1010-authorization-and-tenant-scope-mapper",
     "batch": "G10",
     "handlerKind": "design_system",
+    "capabilityKey": "frt.g10.authorization-and-tenant-scope-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:e73ec38c7959e6c5448330b685c2019ec28e2adfd7902896452d7d8d5b144a21",
+    "inputContract": {
+      "required": [
+        "routes"
+      ],
+      "optional": [
+        "forms",
+        "apiCalls",
+        "storage",
+        "permissions"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -2995,6 +4567,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1011-realtime-webhook-and-subscription-mapper",
     "batch": "G10",
     "handlerKind": "design_system",
+    "capabilityKey": "frt.g10.realtime-webhook-and-subscription-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:78ab63ecf5cfc22c56386f82c05b3534f059aff7a69cb4fd86afee8ec8831a79",
+    "inputContract": {
+      "required": [
+        "routes"
+      ],
+      "optional": [
+        "forms",
+        "apiCalls",
+        "storage",
+        "permissions"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3018,6 +4605,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1012-permission-and-capability-mapper",
     "batch": "G10",
     "handlerKind": "design_system",
+    "capabilityKey": "frt.g10.permission-and-capability-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:b1a362871699beb002dcb1d69e8069d598c564f5b2c406a0284595a1cf60a371",
+    "inputContract": {
+      "required": [
+        "routes"
+      ],
+      "optional": [
+        "forms",
+        "apiCalls",
+        "storage",
+        "permissions"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3041,6 +4643,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1013-application-boundary-certification",
     "batch": "G10",
     "handlerKind": "design_system",
+    "capabilityKey": "frt.g10.application-boundary-certification",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:37e704157dfef791baee9229fa97b683b876438a37cccfff28d34000b3abd311",
+    "inputContract": {
+      "required": [
+        "routes"
+      ],
+      "optional": [
+        "forms",
+        "apiCalls",
+        "storage",
+        "permissions"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3064,6 +4681,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1100-ui-fidelity-orchestrator",
     "batch": "G11",
     "handlerKind": "mobile_client",
+    "capabilityKey": "frt.g11.ui-fidelity-orchestrator",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:8ea1b350728c19327a68fbc8adca35a1b31f75e9c53955d1eb8ab798481dfe25",
+    "inputContract": {
+      "required": [
+        "uiNodes"
+      ],
+      "optional": [
+        "designTokens",
+        "locales",
+        "rtlLocales",
+        "animations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3087,6 +4719,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1101-layout-semantic-mapper",
     "batch": "G11",
     "handlerKind": "mobile_client",
+    "capabilityKey": "frt.g11.layout-semantic-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:fe2a1e3be2527542245d222aa9aed597881353e9158f0a8f1b2b1eafbf9b46a2",
+    "inputContract": {
+      "required": [
+        "uiNodes"
+      ],
+      "optional": [
+        "designTokens",
+        "locales",
+        "rtlLocales",
+        "animations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3110,6 +4757,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1102-style-and-design-token-mapper",
     "batch": "G11",
     "handlerKind": "mobile_client",
+    "capabilityKey": "frt.g11.style-and-design-token-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:55e190d8058d3aafe444ecace1435d25e8dc2c265eb972012323280c39ab0a22",
+    "inputContract": {
+      "required": [
+        "uiNodes"
+      ],
+      "optional": [
+        "designTokens",
+        "locales",
+        "rtlLocales",
+        "animations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3133,6 +4795,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1103-responsive-layout-mapper",
     "batch": "G11",
     "handlerKind": "mobile_client",
+    "capabilityKey": "frt.g11.responsive-layout-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:48b2a0cd683d3443ccc5d731fb2ef8048f306edad39e9b73a13aacc91f61fe64",
+    "inputContract": {
+      "required": [
+        "uiNodes"
+      ],
+      "optional": [
+        "designTokens",
+        "locales",
+        "rtlLocales",
+        "animations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3156,6 +4833,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1104-theme-and-appearance-mapper",
     "batch": "G11",
     "handlerKind": "mobile_client",
+    "capabilityKey": "frt.g11.theme-and-appearance-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:0927debe94686550c453f741421a657a7e4030ac58982f593122108b2e92c592",
+    "inputContract": {
+      "required": [
+        "uiNodes"
+      ],
+      "optional": [
+        "designTokens",
+        "locales",
+        "rtlLocales",
+        "animations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3179,6 +4871,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1105-asset-pipeline-mapper",
     "batch": "G11",
     "handlerKind": "mobile_client",
+    "capabilityKey": "frt.g11.asset-pipeline-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:d2ade1814f4d7db1eb9a714031f867fbfb2d4a9211dd0f7dbb4f89eb52c6456a",
+    "inputContract": {
+      "required": [
+        "uiNodes"
+      ],
+      "optional": [
+        "designTokens",
+        "locales",
+        "rtlLocales",
+        "animations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3202,6 +4909,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1106-font-icon-and-typography-mapper",
     "batch": "G11",
     "handlerKind": "mobile_client",
+    "capabilityKey": "frt.g11.font-icon-and-typography-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:c81ebfca39b82bcd61b5359516496532de1a6675986e01faa06c730a2f3caec0",
+    "inputContract": {
+      "required": [
+        "uiNodes"
+      ],
+      "optional": [
+        "designTokens",
+        "locales",
+        "rtlLocales",
+        "animations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3225,6 +4947,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1107-internationalization-mapper",
     "batch": "G11",
     "handlerKind": "mobile_client",
+    "capabilityKey": "frt.g11.internationalization-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:dcbb0fae3a3caccdc046594c3b68962d97f503519af7d8dcd78130ebac5c7b7e",
+    "inputContract": {
+      "required": [
+        "uiNodes"
+      ],
+      "optional": [
+        "designTokens",
+        "locales",
+        "rtlLocales",
+        "animations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3248,6 +4985,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1108-rtl-and-bidirectional-text-mapper",
     "batch": "G11",
     "handlerKind": "mobile_client",
+    "capabilityKey": "frt.g11.rtl-and-bidirectional-text-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:3f3417896af8597a3423da07da581cdafd074b05f7983cb63d36f5b18e2f67f5",
+    "inputContract": {
+      "required": [
+        "uiNodes"
+      ],
+      "optional": [
+        "designTokens",
+        "locales",
+        "rtlLocales",
+        "animations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3271,6 +5023,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1109-accessibility-semantic-mapper",
     "batch": "G11",
     "handlerKind": "mobile_client",
+    "capabilityKey": "frt.g11.accessibility-semantic-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:31ce8ac40322724d0b915227aec89e2ec642037e3ab9ed576f20c434ba708b20",
+    "inputContract": {
+      "required": [
+        "uiNodes"
+      ],
+      "optional": [
+        "designTokens",
+        "locales",
+        "rtlLocales",
+        "animations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3294,6 +5061,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1110-animation-and-transition-mapper",
     "batch": "G11",
     "handlerKind": "mobile_client",
+    "capabilityKey": "frt.g11.animation-and-transition-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:d85052ec871ec337cb6efc46a3cd48f77311a6b3df5e6a7f7f4d298f705e5d43",
+    "inputContract": {
+      "required": [
+        "uiNodes"
+      ],
+      "optional": [
+        "designTokens",
+        "locales",
+        "rtlLocales",
+        "animations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3317,6 +5099,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1111-visual-regression-generator",
     "batch": "G11",
     "handlerKind": "mobile_client",
+    "capabilityKey": "frt.g11.visual-regression-generator",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:66d0d04ea908ea9cb81102afe30516fcd1d0b521391f7fa97d01c2f2ae9f1faf",
+    "inputContract": {
+      "required": [
+        "uiNodes"
+      ],
+      "optional": [
+        "designTokens",
+        "locales",
+        "rtlLocales",
+        "animations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3340,6 +5137,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1112-semantic-ui-regression-generator",
     "batch": "G11",
     "handlerKind": "mobile_client",
+    "capabilityKey": "frt.g11.semantic-ui-regression-generator",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:fc13c636a4137505650f55860e7de5a04442843dd523975424a0d43663e0630e",
+    "inputContract": {
+      "required": [
+        "uiNodes"
+      ],
+      "optional": [
+        "designTokens",
+        "locales",
+        "rtlLocales",
+        "animations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3363,6 +5175,21 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1113-ui-fidelity-certification",
     "batch": "G11",
     "handlerKind": "mobile_client",
+    "capabilityKey": "frt.g11.ui-fidelity-certification",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:7e43ba6f421a5a7e5c1902bc0c36b8f4ecce9d3c3927f9b4a52e2b7b690d0d16",
+    "inputContract": {
+      "required": [
+        "uiNodes"
+      ],
+      "optional": [
+        "designTokens",
+        "locales",
+        "rtlLocales",
+        "animations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3386,6 +5213,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1200-platform-capability-orchestrator",
     "batch": "G12",
     "handlerKind": "cross_platform",
+    "capabilityKey": "frt.g12.platform-capability-orchestrator",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:482a66e6e8c17e5bb853227722d99a3499e835208b5251b341ea9275fe72b9ac",
+    "inputContract": {
+      "required": [
+        "requiredCapabilities",
+        "platformCapabilities"
+      ],
+      "optional": [
+        "bridges"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3409,6 +5249,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1201-platform-capability-registry",
     "batch": "G12",
     "handlerKind": "cross_platform",
+    "capabilityKey": "frt.g12.platform-capability-registry",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:0d4fa0ed51a8962401d2b31dc1f09bedd20aec615a5a206e3876b93ab237e3cb",
+    "inputContract": {
+      "required": [
+        "requiredCapabilities",
+        "platformCapabilities"
+      ],
+      "optional": [
+        "bridges"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3432,6 +5285,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1202-native-bridge-generator",
     "batch": "G12",
     "handlerKind": "cross_platform",
+    "capabilityKey": "frt.g12.native-bridge-generator",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:da94f0605eda5694eab9757e900017943b95f61e7f10d5986b6b82dc8b606872",
+    "inputContract": {
+      "required": [
+        "requiredCapabilities",
+        "platformCapabilities"
+      ],
+      "optional": [
+        "bridges"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3455,6 +5321,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1203-file-clipboard-and-share-capability",
     "batch": "G12",
     "handlerKind": "cross_platform",
+    "capabilityKey": "frt.g12.file-clipboard-and-share-capability",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:5160bd9e7cee38369035e4145914f875e57234523f3fe42a8e13353834a86148",
+    "inputContract": {
+      "required": [
+        "requiredCapabilities",
+        "platformCapabilities"
+      ],
+      "optional": [
+        "bridges"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3478,6 +5357,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1204-camera-media-and-picker-capability",
     "batch": "G12",
     "handlerKind": "cross_platform",
+    "capabilityKey": "frt.g12.camera-media-and-picker-capability",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:c9c2ce8a4a17ab0dc9b7f2939ea4c96b466813d9bd19d453ec1939b1f4d37586",
+    "inputContract": {
+      "required": [
+        "requiredCapabilities",
+        "platformCapabilities"
+      ],
+      "optional": [
+        "bridges"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3501,6 +5393,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1205-location-bluetooth-and-device-capability",
     "batch": "G12",
     "handlerKind": "cross_platform",
+    "capabilityKey": "frt.g12.location-bluetooth-and-device-capability",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:54361629699bb0a06cfb96fe51e3623e19bcb47489c6a9efd56facbdd4346ff7",
+    "inputContract": {
+      "required": [
+        "requiredCapabilities",
+        "platformCapabilities"
+      ],
+      "optional": [
+        "bridges"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3524,6 +5429,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1206-notification-capability",
     "batch": "G12",
     "handlerKind": "cross_platform",
+    "capabilityKey": "frt.g12.notification-capability",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:2699467a8003f2ea3df8e1188f746965a23d60a71602499c4b688bc737f3240c",
+    "inputContract": {
+      "required": [
+        "requiredCapabilities",
+        "platformCapabilities"
+      ],
+      "optional": [
+        "bridges"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3547,6 +5465,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1207-payment-capability",
     "batch": "G12",
     "handlerKind": "cross_platform",
+    "capabilityKey": "frt.g12.payment-capability",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:3b6cb8b9b79876949ada61a1f49b3b7a9d30a5afbb591c56eaccc344e871710d",
+    "inputContract": {
+      "required": [
+        "requiredCapabilities",
+        "platformCapabilities"
+      ],
+      "optional": [
+        "bridges"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3570,6 +5501,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1208-permission-state-machine-generator",
     "batch": "G12",
     "handlerKind": "cross_platform",
+    "capabilityKey": "frt.g12.permission-state-machine-generator",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:3ef69be2d353ed10ffc453747fcbd75baa8ae63ff9157493fffae0eb375aebf4",
+    "inputContract": {
+      "required": [
+        "requiredCapabilities",
+        "platformCapabilities"
+      ],
+      "optional": [
+        "bridges"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3593,6 +5537,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1209-app-lifecycle-and-background-capability",
     "batch": "G12",
     "handlerKind": "cross_platform",
+    "capabilityKey": "frt.g12.app-lifecycle-and-background-capability",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:5f54511a90acc368f46b38781c919a7cae22ba21014bbc39ce253af5682e33c0",
+    "inputContract": {
+      "required": [
+        "requiredCapabilities",
+        "platformCapabilities"
+      ],
+      "optional": [
+        "bridges"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3616,6 +5573,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1210-device-fake-and-simulator-generator",
     "batch": "G12",
     "handlerKind": "cross_platform",
+    "capabilityKey": "frt.g12.device-fake-and-simulator-generator",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:2cd4c8b73c419c757550da2ab32c597da858818bdad87f1beb8efde11223c741",
+    "inputContract": {
+      "required": [
+        "requiredCapabilities",
+        "platformCapabilities"
+      ],
+      "optional": [
+        "bridges"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3639,6 +5609,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1211-unsupported-capability-ux-generator",
     "batch": "G12",
     "handlerKind": "cross_platform",
+    "capabilityKey": "frt.g12.unsupported-capability-ux-generator",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:91a10dfd42e80d24ba6e7a45e839128ee3c0e5cfd224ec21605a23fd4c7aadfc",
+    "inputContract": {
+      "required": [
+        "requiredCapabilities",
+        "platformCapabilities"
+      ],
+      "optional": [
+        "bridges"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3662,6 +5645,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1212-platform-safety-validator",
     "batch": "G12",
     "handlerKind": "cross_platform",
+    "capabilityKey": "frt.g12.platform-safety-validator",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:96560f07937e2321004c0363d390dc5174cb298ee51db8152547a921cd4a68f5",
+    "inputContract": {
+      "required": [
+        "requiredCapabilities",
+        "platformCapabilities"
+      ],
+      "optional": [
+        "bridges"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3685,6 +5681,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1213-platform-capability-certification",
     "batch": "G12",
     "handlerKind": "cross_platform",
+    "capabilityKey": "frt.g12.platform-capability-certification",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:004cbe38799c3bed4defbb443209f02ac79fe405d749c37351d408cc00480cc9",
+    "inputContract": {
+      "required": [
+        "requiredCapabilities",
+        "platformCapabilities"
+      ],
+      "optional": [
+        "bridges"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3708,6 +5717,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1300-web-triangle-route-orchestrator",
     "batch": "G13",
     "handlerKind": "route_orchestration",
+    "capabilityKey": "frt.g13.web-triangle-route-orchestrator",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:3425a4ec46d62d73f7e0ede59e49a028d385d3cd18617027943015cb84c29841",
+    "inputContract": {
+      "required": [
+        "corpus"
+      ],
+      "optional": [
+        "routeIds"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3731,6 +5752,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1301-vue-2-to-vue-3-route-pack",
     "batch": "G13",
     "handlerKind": "directional_route",
+    "capabilityKey": "frt.g13.vue-2-to-vue-3-route-pack",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:29a5e37c6d5d783f78be38686448dd58067e61d7f374d3b9fbea5ae414b01669",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3754,6 +5785,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1302-vue-3-to-vue-2-route-pack",
     "batch": "G13",
     "handlerKind": "directional_route",
+    "capabilityKey": "frt.g13.vue-3-to-vue-2-route-pack",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:fecad816019dd9a506605f4c0af4dffdb04db49f1c2fa7aee5a1306dd559d853",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3777,6 +5818,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1303-vue-2-to-react-route-pack",
     "batch": "G13",
     "handlerKind": "directional_route",
+    "capabilityKey": "frt.g13.vue-2-to-react-route-pack",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:b0185fb286e6e3fcb362f91c3d93ad9777a875ed1ca4151d73f4ddf230461456",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3800,6 +5851,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1304-react-to-vue-2-route-pack",
     "batch": "G13",
     "handlerKind": "directional_route",
+    "capabilityKey": "frt.g13.react-to-vue-2-route-pack",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:9ab42ba62fc0b54dd5794d4e4f1b2088dd82b41111eac7489052b445d89bd148",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3823,6 +5884,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1305-vue-3-to-react-route-pack",
     "batch": "G13",
     "handlerKind": "directional_route",
+    "capabilityKey": "frt.g13.vue-3-to-react-route-pack",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:4e66ab5dab021e22a314c00f740771f81a842a27df1d8a1960c7f3e178fcd8a8",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3846,6 +5917,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1306-react-to-vue-3-route-pack",
     "batch": "G13",
     "handlerKind": "directional_route",
+    "capabilityKey": "frt.g13.react-to-vue-3-route-pack",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:cb31c6f8b6fe20b15dd6f892fa66c5569412eabfa8be700e068834db5ec5f2cd",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3869,6 +5950,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1307-web-direction-pack-registry",
     "batch": "G13",
     "handlerKind": "route_orchestration",
+    "capabilityKey": "frt.g13.web-direction-pack-registry",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:af550a82558c830a301181ffdc088d8b37822c709adfcaee5cb23706478f07b7",
+    "inputContract": {
+      "required": [
+        "corpus"
+      ],
+      "optional": [
+        "routeIds"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3892,6 +5985,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1308-web-state-router-and-ui-mapping",
     "batch": "G13",
     "handlerKind": "route_orchestration",
+    "capabilityKey": "frt.g13.web-state-router-and-ui-mapping",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:9fc82ed49b446d51bf6668df0a100675efd2efad48111d6da077868903b3a02c",
+    "inputContract": {
+      "required": [
+        "corpus"
+      ],
+      "optional": [
+        "routeIds"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3915,6 +6020,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1309-web-differential-corpus",
     "batch": "G13",
     "handlerKind": "route_orchestration",
+    "capabilityKey": "frt.g13.web-differential-corpus",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:fd897d985002a15fa1f4e6a239c1102a86c13617d06cb81e09ab9a3006b8488b",
+    "inputContract": {
+      "required": [
+        "corpus"
+      ],
+      "optional": [
+        "routeIds"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3938,6 +6055,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1310-web-route-certification",
     "batch": "G13",
     "handlerKind": "route_orchestration",
+    "capabilityKey": "frt.g13.web-route-certification",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:f2b8400326bb272be9df11b9e97233e12b3a175b3212dc475e76697388e4c4a5",
+    "inputContract": {
+      "required": [
+        "corpus"
+      ],
+      "optional": [
+        "routeIds"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3961,6 +6090,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1400-web-mini-program-route-orchestrator",
     "batch": "G14",
     "handlerKind": "route_orchestration",
+    "capabilityKey": "frt.g14.web-mini-program-route-orchestrator",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:5b5528813924e72511b37cf8625a69bbef5b3998fd78e59c45616d4c9f4bd4ea",
+    "inputContract": {
+      "required": [
+        "corpus"
+      ],
+      "optional": [
+        "routeIds"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -3984,6 +6125,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1401-vue-2-to-mini-program-route-pack",
     "batch": "G14",
     "handlerKind": "directional_route",
+    "capabilityKey": "frt.g14.vue-2-to-mini-program-route-pack",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:7b0a02887dba4cbaebb8b04d18d8869a1b8daafe9b1087ab06622582e93df96e",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4007,6 +6158,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1402-mini-program-to-vue-2-route-pack",
     "batch": "G14",
     "handlerKind": "directional_route",
+    "capabilityKey": "frt.g14.mini-program-to-vue-2-route-pack",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:64a74bf937519e5167cdeb083afc37e172c40c40eb9b79bceb1fb94d9d08c891",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4030,6 +6191,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1403-vue-3-to-mini-program-route-pack",
     "batch": "G14",
     "handlerKind": "directional_route",
+    "capabilityKey": "frt.g14.vue-3-to-mini-program-route-pack",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:2a985a87331dd1209b29a21f5516fed4dee095b0c2486bb6a310e0cda3bc71ab",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4053,6 +6224,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1404-mini-program-to-vue-3-route-pack",
     "batch": "G14",
     "handlerKind": "directional_route",
+    "capabilityKey": "frt.g14.mini-program-to-vue-3-route-pack",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:a77cb109d2fe9fae34c7f8f8ae094ed294d29e29d9d7d31738b7c0545879816d",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4076,6 +6257,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1405-react-to-mini-program-route-pack",
     "batch": "G14",
     "handlerKind": "directional_route",
+    "capabilityKey": "frt.g14.react-to-mini-program-route-pack",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:23a90b4dd5dedc712c88548a50f8faa182aac004d21476086d18ceb9a7a4f274",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4099,6 +6290,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1406-mini-program-to-react-route-pack",
     "batch": "G14",
     "handlerKind": "directional_route",
+    "capabilityKey": "frt.g14.mini-program-to-react-route-pack",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:035c4d688f52e6381b5345cc5fec9f4ddce53d25d3ea9c22250f70a0c6a2f813",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4122,6 +6323,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1407-mini-program-capability-gap-planner",
     "batch": "G14",
     "handlerKind": "route_orchestration",
+    "capabilityKey": "frt.g14.mini-program-capability-gap-planner",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:fc58bbf5fc19f5d3055826be4756037dca3e0da2d7da062f1a07993c6ccff999",
+    "inputContract": {
+      "required": [
+        "corpus"
+      ],
+      "optional": [
+        "routeIds"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4145,6 +6358,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1408-mini-program-route-form-and-storage-mapper",
     "batch": "G14",
     "handlerKind": "route_orchestration",
+    "capabilityKey": "frt.g14.mini-program-route-form-and-storage-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:4489f052ce0a84386639c3fb3a518826e5e9b1b4dec2e876f29bb47b6ba31b05",
+    "inputContract": {
+      "required": [
+        "corpus"
+      ],
+      "optional": [
+        "routeIds"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4168,6 +6393,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1409-mini-program-identity-payment-and-permission-mapper",
     "batch": "G14",
     "handlerKind": "route_orchestration",
+    "capabilityKey": "frt.g14.mini-program-identity-payment-and-permission-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:2136deb5e7646452983caa13917674b82769358af52f2b881fb430dbf36e1c2e",
+    "inputContract": {
+      "required": [
+        "corpus"
+      ],
+      "optional": [
+        "routeIds"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4191,6 +6428,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1410-web-mini-program-differential-corpus",
     "batch": "G14",
     "handlerKind": "route_orchestration",
+    "capabilityKey": "frt.g14.web-mini-program-differential-corpus",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:2d063e43521794a34b2fb7c4d8e6d5e4c7b36b58730d0afad8835dccc44a9df7",
+    "inputContract": {
+      "required": [
+        "corpus"
+      ],
+      "optional": [
+        "routeIds"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4214,6 +6463,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1411-web-mini-program-route-certification",
     "batch": "G14",
     "handlerKind": "route_orchestration",
+    "capabilityKey": "frt.g14.web-mini-program-route-certification",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:4ae820157056897350c1913af1b5e88e1c05cea1f4e2eee0be799b73cf41cb4e",
+    "inputContract": {
+      "required": [
+        "corpus"
+      ],
+      "optional": [
+        "routeIds"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4237,6 +6498,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1500-web-arkui-route-orchestrator",
     "batch": "G15",
     "handlerKind": "route_orchestration",
+    "capabilityKey": "frt.g15.web-arkui-route-orchestrator",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:2f8f74abf652cb3a72cf12c0866abdc806ae92dffb8dc2ba4d0606c314a67d10",
+    "inputContract": {
+      "required": [
+        "corpus"
+      ],
+      "optional": [
+        "routeIds"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4260,6 +6533,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1501-vue-2-to-arkui-route-pack",
     "batch": "G15",
     "handlerKind": "directional_route",
+    "capabilityKey": "frt.g15.vue-2-to-arkui-route-pack",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:dc4ae003bae01e5a7d60434c90081574f6071bc2d26710434eba9e65cf05f2f7",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4283,6 +6566,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1502-arkui-to-vue-2-route-pack",
     "batch": "G15",
     "handlerKind": "directional_route",
+    "capabilityKey": "frt.g15.arkui-to-vue-2-route-pack",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:7a325321098c639c1c70f36b40698ba4d53badfe4e29967c1c22af286f5c42e1",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4306,6 +6599,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1503-vue-3-to-arkui-route-pack",
     "batch": "G15",
     "handlerKind": "directional_route",
+    "capabilityKey": "frt.g15.vue-3-to-arkui-route-pack",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:36ece3180bbc9620d1be96f52833f95e1a4f8974b3c8b12ed18d35b7dd6d6971",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4329,6 +6632,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1504-arkui-to-vue-3-route-pack",
     "batch": "G15",
     "handlerKind": "directional_route",
+    "capabilityKey": "frt.g15.arkui-to-vue-3-route-pack",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:891c6629895d2adee03b00434773e930b75ec8c80fd95476a4e38a56bf15c697",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4352,6 +6665,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1505-react-to-arkui-route-pack",
     "batch": "G15",
     "handlerKind": "directional_route",
+    "capabilityKey": "frt.g15.react-to-arkui-route-pack",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:3caec75c32fb0f028ae8171f51bd04ec8b749f77b6a246f1e6f86c916364f9d4",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4375,6 +6698,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1506-arkui-to-react-route-pack",
     "batch": "G15",
     "handlerKind": "directional_route",
+    "capabilityKey": "frt.g15.arkui-to-react-route-pack",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:eb1830995cb15f45853826dfac2d72b36c665ed4d6138981c4663b7a18feb59e",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4398,6 +6731,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1507-arkui-capability-gap-planner",
     "batch": "G15",
     "handlerKind": "route_orchestration",
+    "capabilityKey": "frt.g15.arkui-capability-gap-planner",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:4316fc72ad603d29ee0ad9d92398a395e265875678b6da356aee3c2ec690fdc7",
+    "inputContract": {
+      "required": [
+        "corpus"
+      ],
+      "optional": [
+        "routeIds"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4421,6 +6766,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1508-arkui-state-navigation-and-lifecycle-mapper",
     "batch": "G15",
     "handlerKind": "route_orchestration",
+    "capabilityKey": "frt.g15.arkui-state-navigation-and-lifecycle-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:61f15c977aaf07c2e08e40a18637214bccb1f7af1d5405eec6f881c4e53d9bcb",
+    "inputContract": {
+      "required": [
+        "corpus"
+      ],
+      "optional": [
+        "routeIds"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4444,6 +6801,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1509-arkui-native-capability-mapper",
     "batch": "G15",
     "handlerKind": "route_orchestration",
+    "capabilityKey": "frt.g15.arkui-native-capability-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:4e558f5169adb6c3f9e83945277b10a738b5e35a9a3ca2b289edf9dbe936ff8d",
+    "inputContract": {
+      "required": [
+        "corpus"
+      ],
+      "optional": [
+        "routeIds"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4467,6 +6836,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1510-web-arkui-device-differential-corpus",
     "batch": "G15",
     "handlerKind": "route_orchestration",
+    "capabilityKey": "frt.g15.web-arkui-device-differential-corpus",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:54bef20450fe372609f0515f1175a613136e46f45aed8ef123f0d7d188763661",
+    "inputContract": {
+      "required": [
+        "corpus"
+      ],
+      "optional": [
+        "routeIds"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4490,6 +6871,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1511-web-arkui-route-certification",
     "batch": "G15",
     "handlerKind": "route_orchestration",
+    "capabilityKey": "frt.g15.web-arkui-route-certification",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:d5d1095831d87a501fab5b91c0f14e7ea77cf21273023d499857602ca15aab24",
+    "inputContract": {
+      "required": [
+        "corpus"
+      ],
+      "optional": [
+        "routeIds"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4513,6 +6906,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1600-web-flutter-route-orchestrator",
     "batch": "G16",
     "handlerKind": "route_orchestration",
+    "capabilityKey": "frt.g16.web-flutter-route-orchestrator",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:73744c78e60b46662b76668e83812154163afb6b582548b5fc4e0b44ccf28ba1",
+    "inputContract": {
+      "required": [
+        "corpus"
+      ],
+      "optional": [
+        "routeIds"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4536,6 +6941,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1601-vue-2-to-flutter-route-pack",
     "batch": "G16",
     "handlerKind": "directional_route",
+    "capabilityKey": "frt.g16.vue-2-to-flutter-route-pack",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:27ef6517df83aa3fa4e56969552ae6436afa2bde38f4a18df4ad1ba14d4fd8d2",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4559,6 +6974,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1602-flutter-to-vue-2-route-pack",
     "batch": "G16",
     "handlerKind": "directional_route",
+    "capabilityKey": "frt.g16.flutter-to-vue-2-route-pack",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:6458c69a62255edc9528366e0f8e90fea9eb60007acaac63224792b517c34b04",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4582,6 +7007,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1603-vue-3-to-flutter-route-pack",
     "batch": "G16",
     "handlerKind": "directional_route",
+    "capabilityKey": "frt.g16.vue-3-to-flutter-route-pack",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:30b7cb575183956e3e71cd51a787a48ce0c509905d4449b666bbedfc4c403006",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4605,6 +7040,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1604-flutter-to-vue-3-route-pack",
     "batch": "G16",
     "handlerKind": "directional_route",
+    "capabilityKey": "frt.g16.flutter-to-vue-3-route-pack",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:cd7686bcda1a091fa9369d5b8fd55b6b16e70357dff591f5131c25561e8c7a5c",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4628,6 +7073,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1605-react-to-flutter-route-pack",
     "batch": "G16",
     "handlerKind": "directional_route",
+    "capabilityKey": "frt.g16.react-to-flutter-route-pack",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:738474ebd7ebcb953c984779577de447b250cdd65dad21921ff46906c527de86",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4651,6 +7106,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1606-flutter-to-react-route-pack",
     "batch": "G16",
     "handlerKind": "directional_route",
+    "capabilityKey": "frt.g16.flutter-to-react-route-pack",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:2041aa951de14e3ae975891bcb6fdacb59ef4f0b21d8a6816fb04d3f03158f1a",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4674,6 +7139,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1607-flutter-capability-gap-planner",
     "batch": "G16",
     "handlerKind": "route_orchestration",
+    "capabilityKey": "frt.g16.flutter-capability-gap-planner",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:6f82bf88b7bdff954e6843dab3f96ba5f2c421089d2698c059aabc10e882d237",
+    "inputContract": {
+      "required": [
+        "corpus"
+      ],
+      "optional": [
+        "routeIds"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4697,6 +7174,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1608-flutter-widget-state-and-navigation-mapper",
     "batch": "G16",
     "handlerKind": "route_orchestration",
+    "capabilityKey": "frt.g16.flutter-widget-state-and-navigation-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:842ca9f6deabb0f4a840bbc1b43f11ddc89a8bb534f321d1f0fda3329b5c0be1",
+    "inputContract": {
+      "required": [
+        "corpus"
+      ],
+      "optional": [
+        "routeIds"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4720,6 +7209,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1609-flutter-plugin-and-platform-channel-mapper",
     "batch": "G16",
     "handlerKind": "route_orchestration",
+    "capabilityKey": "frt.g16.flutter-plugin-and-platform-channel-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:faa72d82fa34959be24a01547d91d4b75d575ee156df823af58a2854cddad217",
+    "inputContract": {
+      "required": [
+        "corpus"
+      ],
+      "optional": [
+        "routeIds"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4743,6 +7244,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1610-web-flutter-differential-corpus",
     "batch": "G16",
     "handlerKind": "route_orchestration",
+    "capabilityKey": "frt.g16.web-flutter-differential-corpus",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:54bccddc114bf765cc4cdc5ca60649c4f6565941cc1037ce2b6c2229eab85ebf",
+    "inputContract": {
+      "required": [
+        "corpus"
+      ],
+      "optional": [
+        "routeIds"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4766,6 +7279,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1611-web-flutter-route-certification",
     "batch": "G16",
     "handlerKind": "route_orchestration",
+    "capabilityKey": "frt.g16.web-flutter-route-certification",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:0698cd9da4bdc4d9c8f7f1a30d6f33a22e1d39d73ef5c6e52cc8aec3353bac68",
+    "inputContract": {
+      "required": [
+        "corpus"
+      ],
+      "optional": [
+        "routeIds"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4789,6 +7314,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1700-mobile-triangle-route-orchestrator",
     "batch": "G17",
     "handlerKind": "route_orchestration",
+    "capabilityKey": "frt.g17.mobile-triangle-route-orchestrator",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:913fbffb9d758db5fbe396b02934c19b99a288974beff2696b5782ec7998c482",
+    "inputContract": {
+      "required": [
+        "corpus"
+      ],
+      "optional": [
+        "routeIds"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4812,6 +7349,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1701-mini-program-to-arkui-route-pack",
     "batch": "G17",
     "handlerKind": "directional_route",
+    "capabilityKey": "frt.g17.mini-program-to-arkui-route-pack",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:613113eca98e281858ddd9e1041322f08b44ab7fe1be3b573b0097fc2fd2b08c",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4835,6 +7382,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1702-arkui-to-mini-program-route-pack",
     "batch": "G17",
     "handlerKind": "directional_route",
+    "capabilityKey": "frt.g17.arkui-to-mini-program-route-pack",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:9a86c3622c64cbde82319dd335ed8c3a8a65480d3b91c27f73178c06b02fabdd",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4858,6 +7415,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1703-mini-program-to-flutter-route-pack",
     "batch": "G17",
     "handlerKind": "directional_route",
+    "capabilityKey": "frt.g17.mini-program-to-flutter-route-pack",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:45fd74f78324deb86ef6c739c315e2c561f6c2ff849edaa1112978e3d2f1691a",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4881,6 +7448,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1704-flutter-to-mini-program-route-pack",
     "batch": "G17",
     "handlerKind": "directional_route",
+    "capabilityKey": "frt.g17.flutter-to-mini-program-route-pack",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:2fe06381300acfee8e679ae94f44fe866e0168a4008412c13e697c3a15eec883",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4904,6 +7481,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1705-arkui-to-flutter-route-pack",
     "batch": "G17",
     "handlerKind": "directional_route",
+    "capabilityKey": "frt.g17.arkui-to-flutter-route-pack",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:b893b400d94397e140a4b71605df075189303331a481076c84fe3f72f9eec48c",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4927,6 +7514,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1706-flutter-to-arkui-route-pack",
     "batch": "G17",
     "handlerKind": "directional_route",
+    "capabilityKey": "frt.g17.flutter-to-arkui-route-pack",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:1f6188cd30457c6eb8f94f4af79153e1ffd29d66acd733ec2f215dffc9153027",
+    "inputContract": {
+      "required": [
+        "files"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4950,6 +7547,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1707-mobile-capability-normalizer",
     "batch": "G17",
     "handlerKind": "route_orchestration",
+    "capabilityKey": "frt.g17.mobile-capability-normalizer",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:f12c2d46607854daf0235631cfc782815104a33f6988e47b36492f0084a16478",
+    "inputContract": {
+      "required": [
+        "corpus"
+      ],
+      "optional": [
+        "routeIds"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4973,6 +7582,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1708-mobile-navigation-and-lifecycle-mapper",
     "batch": "G17",
     "handlerKind": "route_orchestration",
+    "capabilityKey": "frt.g17.mobile-navigation-and-lifecycle-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:5543507ce3cc37027ff2ddcc8804eddc1ff97c04aee830d325a3d1f3055779e6",
+    "inputContract": {
+      "required": [
+        "corpus"
+      ],
+      "optional": [
+        "routeIds"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -4996,6 +7617,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1709-native-bridge-and-device-mapper",
     "batch": "G17",
     "handlerKind": "route_orchestration",
+    "capabilityKey": "frt.g17.native-bridge-and-device-mapper",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:e80a1c5b11494bd0cc3253a02be2d82d94830019767bbd15370dfcc3616ea4b7",
+    "inputContract": {
+      "required": [
+        "corpus"
+      ],
+      "optional": [
+        "routeIds"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5019,6 +7652,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1710-mobile-device-matrix-validator",
     "batch": "G17",
     "handlerKind": "route_orchestration",
+    "capabilityKey": "frt.g17.mobile-device-matrix-validator",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:04228982a09f515bd72ee81def7e72242a8ac997fe997a679394ae78a15e1bf1",
+    "inputContract": {
+      "required": [
+        "corpus"
+      ],
+      "optional": [
+        "routeIds"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5042,6 +7687,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1711-triangle-path-equivalence-validator",
     "batch": "G17",
     "handlerKind": "route_orchestration",
+    "capabilityKey": "frt.g17.triangle-path-equivalence-validator",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:87ae45d89eb361116de1f5442ae020e513150cd0a62d66ad53e71a76eb6fb28a",
+    "inputContract": {
+      "required": [
+        "corpus"
+      ],
+      "optional": [
+        "routeIds"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5065,6 +7722,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1712-thirty-path-coverage-registry",
     "batch": "G17",
     "handlerKind": "route_orchestration",
+    "capabilityKey": "frt.g17.thirty-path-coverage-registry",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:7330e5c39beba347e853e4dc85313a43d78de52872d1f80c143e2eac2c1bd787",
+    "inputContract": {
+      "required": [
+        "corpus"
+      ],
+      "optional": [
+        "routeIds"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5088,6 +7757,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1713-thirty-path-certification",
     "batch": "G17",
     "handlerKind": "route_orchestration",
+    "capabilityKey": "frt.g17.thirty-path-certification",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:a184ab56577957766cd8f6ccc28e653df5d2cabb1f26ee28932eb65caa4db409",
+    "inputContract": {
+      "required": [
+        "corpus"
+      ],
+      "optional": [
+        "routeIds"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5111,6 +7792,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1800-pack-composition-orchestrator",
     "batch": "G18",
     "handlerKind": "compatibility",
+    "capabilityKey": "frt.g18.pack-composition-orchestrator",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:8b25c5df513df3fd7b5e7d33df3966e784441f8b8962b7984664a8f42bed4903",
+    "inputContract": {
+      "required": [
+        "packs"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5134,6 +7825,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1801-domain-pack-framework",
     "batch": "G18",
     "handlerKind": "compatibility",
+    "capabilityKey": "frt.g18.domain-pack-framework",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:8899d74190c4f87a2303752585eee4d438788f5849426c5e101591ce7793244a",
+    "inputContract": {
+      "required": [
+        "packs"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5157,6 +7858,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1802-framework-pack-framework",
     "batch": "G18",
     "handlerKind": "compatibility",
+    "capabilityKey": "frt.g18.framework-pack-framework",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:1e96178a702b713b8542cccf6293730f4a696001e79f02750ac96c121a5df708",
+    "inputContract": {
+      "required": [
+        "packs"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5180,6 +7891,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1803-ui-library-pack-framework",
     "batch": "G18",
     "handlerKind": "compatibility",
+    "capabilityKey": "frt.g18.ui-library-pack-framework",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:4788af7d2c21727d6f803d1a165ea8244a3fd47d812ece0d18fde908dfcdd921",
+    "inputContract": {
+      "required": [
+        "packs"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5203,6 +7924,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1804-state-management-pack-framework",
     "batch": "G18",
     "handlerKind": "compatibility",
+    "capabilityKey": "frt.g18.state-management-pack-framework",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:e42a137e9d04b26cea467cd9cdba4a0b0259e935ecb7302a5b4f376032ee894f",
+    "inputContract": {
+      "required": [
+        "packs"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5226,6 +7957,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1805-router-pack-framework",
     "batch": "G18",
     "handlerKind": "compatibility",
+    "capabilityKey": "frt.g18.router-pack-framework",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:087f1531a2ed909591a8cbb0b59321c17af7f01f5a3b6d8bbb23fea49b516e49",
+    "inputContract": {
+      "required": [
+        "packs"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5249,6 +7990,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1806-build-tool-pack-framework",
     "batch": "G18",
     "handlerKind": "compatibility",
+    "capabilityKey": "frt.g18.build-tool-pack-framework",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:5f26f1b4ee4da68132f164ad6c0e84dc8d92ebc6b3ff882bd29fd5dc20356bc5",
+    "inputContract": {
+      "required": [
+        "packs"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5272,6 +8023,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1807-version-compatibility-pack",
     "batch": "G18",
     "handlerKind": "compatibility",
+    "capabilityKey": "frt.g18.version-compatibility-pack",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:a62debc357ecbb7dc5494aaa1f9cdf00653b30bc5a4beeaa07f1bde86a9dec08",
+    "inputContract": {
+      "required": [
+        "packs"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5295,6 +8056,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1808-enterprise-pack-framework",
     "batch": "G18",
     "handlerKind": "compatibility",
+    "capabilityKey": "frt.g18.enterprise-pack-framework",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:e6e9e3ad5022438f63030d9cf26b8eb2add1c6bd5180677db4d6010efa092785",
+    "inputContract": {
+      "required": [
+        "packs"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5318,6 +8089,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1809-industry-pack-framework",
     "batch": "G18",
     "handlerKind": "compatibility",
+    "capabilityKey": "frt.g18.industry-pack-framework",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:79cad392cf90a7b6a13a49118208b2705693af12ab94c811186716467b706fdf",
+    "inputContract": {
+      "required": [
+        "packs"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5341,6 +8122,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1810-pack-dependency-resolver",
     "batch": "G18",
     "handlerKind": "compatibility",
+    "capabilityKey": "frt.g18.pack-dependency-resolver",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:1a2d970c93294f8fdc5d118f3dc280a3cad433229214e4ca0f8840253b42ab29",
+    "inputContract": {
+      "required": [
+        "packs"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5364,6 +8155,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1811-pack-conflict-and-precedence-resolver",
     "batch": "G18",
     "handlerKind": "compatibility",
+    "capabilityKey": "frt.g18.pack-conflict-and-precedence-resolver",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:85fca7a88ea57a9e6313b504250a125b9d19eb22fc32055736932d7156621417",
+    "inputContract": {
+      "required": [
+        "packs"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5387,6 +8188,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1812-pack-signature-and-permission-validator",
     "batch": "G18",
     "handlerKind": "compatibility",
+    "capabilityKey": "frt.g18.pack-signature-and-permission-validator",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:6cf92bd473ecc8fbe91ee4b6075ed47f11e18040ad61d145b5883db90be126c3",
+    "inputContract": {
+      "required": [
+        "packs"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5410,6 +8221,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1813-pack-conformance-test-generator",
     "batch": "G18",
     "handlerKind": "compatibility",
+    "capabilityKey": "frt.g18.pack-conformance-test-generator",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:b24deab496786d64361f0ec10c97a494e006976814500385587d4c55042a76dd",
+    "inputContract": {
+      "required": [
+        "packs"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5433,6 +8254,16 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1814-pack-composition-certification",
     "batch": "G18",
     "handlerKind": "compatibility",
+    "capabilityKey": "frt.g18.pack-composition-certification",
+    "executionClass": "SANDBOX_RUNNER",
+    "contractDigest": "sha256:3a7642e93edb6b9349587573c69cd2b57361e680ad5cf09493d064946ea9c063",
+    "inputContract": {
+      "required": [
+        "packs"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5456,6 +8287,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1900-proof-assurance-orchestrator",
     "batch": "G19",
     "handlerKind": "advanced_verification",
+    "capabilityKey": "frt.g19.proof-assurance-orchestrator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:d404d9aa44cb6cf4a39bb39ec3bf478c5a906d80870e9abd0e1cf134d80c6559",
+    "inputContract": {
+      "required": [
+        "properties"
+      ],
+      "optional": [
+        "toolchains",
+        "counterexamples"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5479,6 +8323,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1901-proof-obligation-ir",
     "batch": "G19",
     "handlerKind": "advanced_verification",
+    "capabilityKey": "frt.g19.proof-obligation-ir",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:b9a6eff7b252ba830c5581456688bd10d7e2b9ef21f3b731f70c77188fd35c81",
+    "inputContract": {
+      "required": [
+        "properties"
+      ],
+      "optional": [
+        "toolchains",
+        "counterexamples"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5502,6 +8359,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1902-lean-specification-generator",
     "batch": "G19",
     "handlerKind": "advanced_verification",
+    "capabilityKey": "frt.g19.lean-specification-generator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:1548ebc7fdfc60b547c8e417ece67b19b070cc9a6fb2627589752eb52553fde8",
+    "inputContract": {
+      "required": [
+        "properties"
+      ],
+      "optional": [
+        "toolchains",
+        "counterexamples"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5525,6 +8395,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1903-leanstral-candidate-adapter",
     "batch": "G19",
     "handlerKind": "advanced_verification",
+    "capabilityKey": "frt.g19.leanstral-candidate-adapter",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:c7caa0add4f2660968a74a17cd501b356caef7a2f01c080356d22aaeed546a84",
+    "inputContract": {
+      "required": [
+        "properties"
+      ],
+      "optional": [
+        "toolchains",
+        "counterexamples"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5548,6 +8431,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1904-lean-kernel-verifier",
     "batch": "G19",
     "handlerKind": "advanced_verification",
+    "capabilityKey": "frt.g19.lean-kernel-verifier",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:2e2a167034590ce620d241a385323f624839b621c4001e97587cd43f7a7ff73a",
+    "inputContract": {
+      "required": [
+        "properties"
+      ],
+      "optional": [
+        "toolchains",
+        "counterexamples"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5571,6 +8467,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1905-smt-solver-adapter",
     "batch": "G19",
     "handlerKind": "advanced_verification",
+    "capabilityKey": "frt.g19.smt-solver-adapter",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:35a1553df6cb1b8371000c9287145b99a6ac4b65477c19955d74a68b231132d9",
+    "inputContract": {
+      "required": [
+        "properties"
+      ],
+      "optional": [
+        "toolchains",
+        "counterexamples"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5594,6 +8503,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1906-model-checker-adapter",
     "batch": "G19",
     "handlerKind": "advanced_verification",
+    "capabilityKey": "frt.g19.model-checker-adapter",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:6efd035f68f103a193415bedbe8eb6ba7f0ee9c5186a602f4193d10ad9cb1548",
+    "inputContract": {
+      "required": [
+        "properties"
+      ],
+      "optional": [
+        "toolchains",
+        "counterexamples"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5617,6 +8539,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1907-symbolic-execution-adapter",
     "batch": "G19",
     "handlerKind": "advanced_verification",
+    "capabilityKey": "frt.g19.symbolic-execution-adapter",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:eafb0dd0b15c6fe1b2fa83a31146dc12f10d3cac49cbb5b3e70909e37458c4d6",
+    "inputContract": {
+      "required": [
+        "properties"
+      ],
+      "optional": [
+        "toolchains",
+        "counterexamples"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5640,6 +8575,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1908-temporal-typestate-and-refinement-verifier",
     "batch": "G19",
     "handlerKind": "advanced_verification",
+    "capabilityKey": "frt.g19.temporal-typestate-and-refinement-verifier",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:73c23a492bce556dfc5c2d8bb27ff507d73628cda77553bc9f4543961193e7cb",
+    "inputContract": {
+      "required": [
+        "properties"
+      ],
+      "optional": [
+        "toolchains",
+        "counterexamples"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5663,6 +8611,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1909-noninterference-proof-generator",
     "batch": "G19",
     "handlerKind": "advanced_verification",
+    "capabilityKey": "frt.g19.noninterference-proof-generator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:02ad7722479739b928071b9845f47138ae3e0684ac766c8f4dbce7651c8de591",
+    "inputContract": {
+      "required": [
+        "properties"
+      ],
+      "optional": [
+        "toolchains",
+        "counterexamples"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5686,6 +8647,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1910-counterexample-ir",
     "batch": "G19",
     "handlerKind": "advanced_verification",
+    "capabilityKey": "frt.g19.counterexample-ir",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:be3d41b18b0bc68988ebc784ae26f692d3b91a3f01430b1ed35bfbbe17cab224",
+    "inputContract": {
+      "required": [
+        "properties"
+      ],
+      "optional": [
+        "toolchains",
+        "counterexamples"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5709,6 +8683,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1911-cegar-loop",
     "batch": "G19",
     "handlerKind": "advanced_verification",
+    "capabilityKey": "frt.g19.cegar-loop",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:394b3c4bfdb728734bf378d0b8410c87a615febc44349b9050b515a466cdea5b",
+    "inputContract": {
+      "required": [
+        "properties"
+      ],
+      "optional": [
+        "toolchains",
+        "counterexamples"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5732,6 +8719,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1912-cegis-loop",
     "batch": "G19",
     "handlerKind": "advanced_verification",
+    "capabilityKey": "frt.g19.cegis-loop",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:9cc63eb2c63a32bcce1cfb418e3750c44280cafa89013b52bbd167c25d8c1922",
+    "inputContract": {
+      "required": [
+        "properties"
+      ],
+      "optional": [
+        "toolchains",
+        "counterexamples"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5755,6 +8755,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1913-counterexample-guided-repair",
     "batch": "G19",
     "handlerKind": "advanced_verification",
+    "capabilityKey": "frt.g19.counterexample-guided-repair",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:9ef2831f818c428f9cd142a7f591a4f417846718fa6d6523f31343f36e97affa",
+    "inputContract": {
+      "required": [
+        "properties"
+      ],
+      "optional": [
+        "toolchains",
+        "counterexamples"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5778,6 +8791,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1914-proof-carrying-pack",
     "batch": "G19",
     "handlerKind": "advanced_verification",
+    "capabilityKey": "frt.g19.proof-carrying-pack",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:00e9b6cd3bcb9338783d3ce996c411781fcbf627e6cfa621c745d8637115be74",
+    "inputContract": {
+      "required": [
+        "properties"
+      ],
+      "optional": [
+        "toolchains",
+        "counterexamples"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5801,6 +8827,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1915-hidden-golden-mutation-and-adversarial-bank",
     "batch": "G19",
     "handlerKind": "advanced_verification",
+    "capabilityKey": "frt.g19.hidden-golden-mutation-and-adversarial-bank",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:de01939155eb63a247b737eae3ba41fa3c77a4dccbd917f896bd5df8c45e0fda",
+    "inputContract": {
+      "required": [
+        "properties"
+      ],
+      "optional": [
+        "toolchains",
+        "counterexamples"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5824,6 +8863,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1916-semantic-drift-detector",
     "batch": "G19",
     "handlerKind": "advanced_verification",
+    "capabilityKey": "frt.g19.semantic-drift-detector",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:697ddc0975d78600b9473541241023658d068b7af7d1a7184c982b850e6ca202",
+    "inputContract": {
+      "required": [
+        "properties"
+      ],
+      "optional": [
+        "toolchains",
+        "counterexamples"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5847,6 +8899,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1917-proof-evidence-graph",
     "batch": "G19",
     "handlerKind": "advanced_verification",
+    "capabilityKey": "frt.g19.proof-evidence-graph",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:2a97e8e78403ffba43f0b6c51e4ce19b5181e863bb03ac24aacaa94be5880907",
+    "inputContract": {
+      "required": [
+        "properties"
+      ],
+      "optional": [
+        "toolchains",
+        "counterexamples"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5870,6 +8935,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-1918-formal-assurance-certification",
     "batch": "G19",
     "handlerKind": "advanced_verification",
+    "capabilityKey": "frt.g19.formal-assurance-certification",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:23ea0582e168af09a662d9f4a195342f7e60b7d17c50b3a5240c32bf6b58b601",
+    "inputContract": {
+      "required": [
+        "properties"
+      ],
+      "optional": [
+        "toolchains",
+        "counterexamples"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5893,6 +8971,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2000-productization-orchestrator",
     "batch": "G20",
     "handlerKind": "runtime_operations",
+    "capabilityKey": "frt.g20.productization-orchestrator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:755901e352e95febf435888ef743f8292e5602d430feefecf0d92a461d4cb4c7",
+    "inputContract": {
+      "required": [
+        "resources"
+      ],
+      "optional": [
+        "roles",
+        "jobs",
+        "quotas"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5916,6 +9008,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2001-skill-sdk",
     "batch": "G20",
     "handlerKind": "runtime_operations",
+    "capabilityKey": "frt.g20.skill-sdk",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:4ff580b5967eecc4c1bf020695adee4c8cf3645c25e9d2528a16779dbbf7df07",
+    "inputContract": {
+      "required": [
+        "resources"
+      ],
+      "optional": [
+        "roles",
+        "jobs",
+        "quotas"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5939,6 +9045,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2002-skill-runtime",
     "batch": "G20",
     "handlerKind": "runtime_operations",
+    "capabilityKey": "frt.g20.skill-runtime",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:f4b26b2c04259a62570ed1f618e3af60752592411897bf63bff0c484ec05c585",
+    "inputContract": {
+      "required": [
+        "resources"
+      ],
+      "optional": [
+        "roles",
+        "jobs",
+        "quotas"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5962,6 +9082,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2003-skill-registry",
     "batch": "G20",
     "handlerKind": "runtime_operations",
+    "capabilityKey": "frt.g20.skill-registry",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:4f853ccc08c419efbdd2f4441caba43dc3ac19feb12eb4074945121171674f92",
+    "inputContract": {
+      "required": [
+        "resources"
+      ],
+      "optional": [
+        "roles",
+        "jobs",
+        "quotas"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -5985,6 +9119,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2004-pack-marketplace",
     "batch": "G20",
     "handlerKind": "runtime_operations",
+    "capabilityKey": "frt.g20.pack-marketplace",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:99de0e24c96b64394d074a3ea15611ec0069366d2264bb7ffe1d8f294d03070c",
+    "inputContract": {
+      "required": [
+        "resources"
+      ],
+      "optional": [
+        "roles",
+        "jobs",
+        "quotas"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6008,6 +9156,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2005-signing-permission-and-trust-framework",
     "batch": "G20",
     "handlerKind": "runtime_operations",
+    "capabilityKey": "frt.g20.signing-permission-and-trust-framework",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:fb6e7abb046cb5937f7e957c0ec7028ee230afbdb147c2ab47777e2d7ada03b1",
+    "inputContract": {
+      "required": [
+        "resources"
+      ],
+      "optional": [
+        "roles",
+        "jobs",
+        "quotas"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6031,6 +9193,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2006-frt-cli",
     "batch": "G20",
     "handlerKind": "runtime_operations",
+    "capabilityKey": "frt.g20.frt-cli",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:8b6053c9273535d12c8391be932970a16ad07938329e8480e65b0dc1de492f6b",
+    "inputContract": {
+      "required": [
+        "resources"
+      ],
+      "optional": [
+        "roles",
+        "jobs",
+        "quotas"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6054,6 +9230,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2007-frt-api",
     "batch": "G20",
     "handlerKind": "runtime_operations",
+    "capabilityKey": "frt.g20.frt-api",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:ce64039096d77268ceea83a2436ef4232df005c3838c78b3b0dbaccf748445a7",
+    "inputContract": {
+      "required": [
+        "resources"
+      ],
+      "optional": [
+        "roles",
+        "jobs",
+        "quotas"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6077,6 +9267,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2008-ide-integration",
     "batch": "G20",
     "handlerKind": "runtime_operations",
+    "capabilityKey": "frt.g20.ide-integration",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:7c29c7843bf3885f361413111f771af30956f6cdccf00cbb1595a43eb1fed2c2",
+    "inputContract": {
+      "required": [
+        "resources"
+      ],
+      "optional": [
+        "roles",
+        "jobs",
+        "quotas"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6100,6 +9304,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2009-web-console",
     "batch": "G20",
     "handlerKind": "runtime_operations",
+    "capabilityKey": "frt.g20.web-console",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:e5cc34afd40b1a86a81ad4e7f57f93fee99f8791c472bed399c24793be541ab1",
+    "inputContract": {
+      "required": [
+        "resources"
+      ],
+      "optional": [
+        "roles",
+        "jobs",
+        "quotas"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6123,6 +9341,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2010-workspace-multi-tenant-platform",
     "batch": "G20",
     "handlerKind": "runtime_operations",
+    "capabilityKey": "frt.g20.workspace-multi-tenant-platform",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:0d96c46c9ee4d4a5110530196b3cfdceb2d4d5edc4abf1a6543537d6271c0449",
+    "inputContract": {
+      "required": [
+        "resources"
+      ],
+      "optional": [
+        "roles",
+        "jobs",
+        "quotas"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6146,6 +9378,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2011-durable-job-orchestration",
     "batch": "G20",
     "handlerKind": "runtime_operations",
+    "capabilityKey": "frt.g20.durable-job-orchestration",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:76c69ff693d059f55aa0f2f79bdaeb64d0ce224e62cc613269669a01f4f95044",
+    "inputContract": {
+      "required": [
+        "resources"
+      ],
+      "optional": [
+        "roles",
+        "jobs",
+        "quotas"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6169,6 +9415,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2012-distributed-worker-runtime",
     "batch": "G20",
     "handlerKind": "runtime_operations",
+    "capabilityKey": "frt.g20.distributed-worker-runtime",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:870f55768ab40216bb4994697c236c32fb54e1f695af3d7188254f1317a95d8e",
+    "inputContract": {
+      "required": [
+        "resources"
+      ],
+      "optional": [
+        "roles",
+        "jobs",
+        "quotas"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6192,6 +9452,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2013-model-router-and-cost-governor",
     "batch": "G20",
     "handlerKind": "runtime_operations",
+    "capabilityKey": "frt.g20.model-router-and-cost-governor",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:debb1e7d424a8afcc9a089e76bb80672691dc9c343fedabfbc8945d3e0dcab54",
+    "inputContract": {
+      "required": [
+        "resources"
+      ],
+      "optional": [
+        "roles",
+        "jobs",
+        "quotas"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6215,6 +9489,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2014-artifact-and-evidence-store",
     "batch": "G20",
     "handlerKind": "runtime_operations",
+    "capabilityKey": "frt.g20.artifact-and-evidence-store",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:5213e6de6b957aa695cf802d2adfd6140ea2610c4cc1acf17f53acdb97d7ee00",
+    "inputContract": {
+      "required": [
+        "resources"
+      ],
+      "optional": [
+        "roles",
+        "jobs",
+        "quotas"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6238,6 +9526,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2015-approval-policy-rbac-and-audit",
     "batch": "G20",
     "handlerKind": "runtime_operations",
+    "capabilityKey": "frt.g20.approval-policy-rbac-and-audit",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:12f0cb9d6a2000f65b90beb5ff31376473e0582509fc7d5753a16ff7b5f62086",
+    "inputContract": {
+      "required": [
+        "resources"
+      ],
+      "optional": [
+        "roles",
+        "jobs",
+        "quotas"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6261,6 +9563,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2016-enterprise-deployment-pack",
     "batch": "G20",
     "handlerKind": "runtime_operations",
+    "capabilityKey": "frt.g20.enterprise-deployment-pack",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:b27943e1497bb018238917a071284a10e602e00b30c59b88e134a53195ac2161",
+    "inputContract": {
+      "required": [
+        "resources"
+      ],
+      "optional": [
+        "roles",
+        "jobs",
+        "quotas"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6284,6 +9600,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2017-kubernetes-single-node-and-air-gapped-deployment",
     "batch": "G20",
     "handlerKind": "runtime_operations",
+    "capabilityKey": "frt.g20.kubernetes-single-node-and-air-gapped-deployment",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:f9f93f605417f894b2e13ae570a768dc0ac4fb6da2b64a308c370fc17ef00a10",
+    "inputContract": {
+      "required": [
+        "resources"
+      ],
+      "optional": [
+        "roles",
+        "jobs",
+        "quotas"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6307,6 +9637,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2018-one-click-migration",
     "batch": "G20",
     "handlerKind": "runtime_operations",
+    "capabilityKey": "frt.g20.one-click-migration",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:80b5b378b4a5b50a267e0949a50b1bcb5879103f4949d96d07d373360a3c35bd",
+    "inputContract": {
+      "required": [
+        "resources"
+      ],
+      "optional": [
+        "roles",
+        "jobs",
+        "quotas"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6330,6 +9674,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2019-one-click-verification",
     "batch": "G20",
     "handlerKind": "runtime_operations",
+    "capabilityKey": "frt.g20.one-click-verification",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:c32cd86b00ec879f1782f7d7cfb4d6822a4e3b6c11810c184db0dbf2d898f035",
+    "inputContract": {
+      "required": [
+        "resources"
+      ],
+      "optional": [
+        "roles",
+        "jobs",
+        "quotas"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6353,6 +9711,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2020-one-click-delivery",
     "batch": "G20",
     "handlerKind": "runtime_operations",
+    "capabilityKey": "frt.g20.one-click-delivery",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:9eda1c2e69f5aa6607351456721f40ab87dbade4e89f660bfb45c5810f94d078",
+    "inputContract": {
+      "required": [
+        "resources"
+      ],
+      "optional": [
+        "roles",
+        "jobs",
+        "quotas"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6376,6 +9748,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2021-billing-slo-and-observability",
     "batch": "G20",
     "handlerKind": "runtime_operations",
+    "capabilityKey": "frt.g20.billing-slo-and-observability",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:6a2285f9ca2869794e7f6403d8835c271069a71bef455c1af751dfb3847d6b32",
+    "inputContract": {
+      "required": [
+        "resources"
+      ],
+      "optional": [
+        "roles",
+        "jobs",
+        "quotas"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6399,6 +9785,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2022-security-red-team-harness",
     "batch": "G20",
     "handlerKind": "runtime_operations",
+    "capabilityKey": "frt.g20.security-red-team-harness",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:6fb97be374218f4ec15380dc577a0e09de965babfe89789e5ec58e20b3146464",
+    "inputContract": {
+      "required": [
+        "resources"
+      ],
+      "optional": [
+        "roles",
+        "jobs",
+        "quotas"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6422,6 +9822,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2023-productization-certification",
     "batch": "G20",
     "handlerKind": "runtime_operations",
+    "capabilityKey": "frt.g20.productization-certification",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:909c9c23bcb588209129d24e7e96ab85c6f2aa6c62c566dfd56c7237bae73f87",
+    "inputContract": {
+      "required": [
+        "resources"
+      ],
+      "optional": [
+        "roles",
+        "jobs",
+        "quotas"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6445,6 +9859,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2100-product-closure-orchestrator",
     "batch": "G21",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g21.product-closure-orchestrator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:3344d2a49787ea1095c52ec9f4341b726c9d467f66ff70fd2e5525399f65940e",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6468,6 +9898,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2101-requirement-registry",
     "batch": "G21",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g21.requirement-registry",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:12b3c0891a8cf672379470e577e9e5a4389d7955db9b2b2f742379c4b81f5956",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6491,6 +9937,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2102-business-capability-map-generator",
     "batch": "G21",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g21.business-capability-map-generator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:1fad0f33e708b40e6644b9a0a569fd70d04e127dbe235719c7dd662bc20cf541",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6514,6 +9976,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2103-requirement-to-artifact-traceability",
     "batch": "G21",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g21.requirement-to-artifact-traceability",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:eba5ad1df3eaf895b4ba705cb8217dd9b01079f40f9496214c34a6b1a0353fbc",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6537,6 +10015,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2104-acceptance-criteria-compiler",
     "batch": "G21",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g21.acceptance-criteria-compiler",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:0a3647a75c122c053e113ada7a6f7165e478b643af42407d133296f4e64d060c",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6560,6 +10054,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2105-feature-completeness-matrix",
     "batch": "G21",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g21.feature-completeness-matrix",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:8bc74d87a607b76dbe35cb59a2d3f043c03f2d3588726544cb918d494d24a8a6",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6583,6 +10093,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2106-critical-user-journey-registry",
     "batch": "G21",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g21.critical-user-journey-registry",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:71c7db61634a095fc2fdfd80d090c805b8df427eb8d4d2d5ed5c7302b3a8f3bd",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6606,6 +10132,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2107-critical-admin-journey-registry",
     "batch": "G21",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g21.critical-admin-journey-registry",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:5780b413cff4aa976162f7ac6e72aa90d0ea131efd760902532e2a2a690307c4",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6629,6 +10171,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2108-orphan-feature-and-dead-flow-detector",
     "batch": "G21",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g21.orphan-feature-and-dead-flow-detector",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:5afa5f2e887cf42205f107f4dd0dcc39d651e81ebd3ee1aa8c1655fd347e1667",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6652,6 +10210,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2109-missing-implementation-link-detector",
     "batch": "G21",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g21.missing-implementation-link-detector",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:0a0473f9d1abbb65f5d990eb323d192c690491c587527f8614bf4f80bee6dd1e",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6675,6 +10249,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2110-release-scope-closure-manager",
     "batch": "G21",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g21.release-scope-closure-manager",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:50b0f90068d2922b8975a61c36a2664b19d014660db201b83436c5df04670898",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6698,6 +10288,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2111-functional-coverage-certification",
     "batch": "G21",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g21.functional-coverage-certification",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:9041a05f28e6b04f3fa43eb3434eafe058c3a6f75eb2974c546215805bf1c921",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6721,6 +10327,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2200-business-line-closure-orchestrator",
     "batch": "G22",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g22.business-line-closure-orchestrator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:90167d376dfe28ea0bc7eaee311162e42d9ed9b9357b9a4e44f5894cb0952bf8",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6744,6 +10366,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2201-end-to-end-value-stream-compiler",
     "batch": "G22",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g22.end-to-end-value-stream-compiler",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:8dd1fb86368f4fd2e1c2a668c6c2a5d39d029970230d223b5accc6c37b6fda9e",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6767,6 +10405,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2202-business-state-machine-completeness-checker",
     "batch": "G22",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g22.business-state-machine-completeness-checker",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:fbab9a78594c2f28a8ee36dc06fb4b46f889064e921243a3a21ef6a7c8ab0daa",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6790,6 +10444,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2203-cross-domain-saga-generator",
     "batch": "G22",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g22.cross-domain-saga-generator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:da9c1579ddc671cdcfafe4356905b0afabaedf3d6b37ced180e966ecc8392a58",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6813,6 +10483,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2204-compensation-and-reconciliation-generator",
     "batch": "G22",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g22.compensation-and-reconciliation-generator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:a1ef0fafad01639501c7a650394f70a799b3cc5e4a15e108523eec9e504d3f48",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6836,6 +10522,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2205-business-exception-taxonomy",
     "batch": "G22",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g22.business-exception-taxonomy",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:a7023839d55d417822ea34db0ab4f3461c2a84abced8167494f5a4964e00929d",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6859,6 +10561,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2206-manual-intervention-workflow-generator",
     "batch": "G22",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g22.manual-intervention-workflow-generator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:a75b3f53549b66d2bb4a3aa6410ffd74163e97ef822f5569f1acb2d382852d35",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6882,6 +10600,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2207-business-deadline-and-timeout-generator",
     "batch": "G22",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g22.business-deadline-and-timeout-generator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:f5a8c093880b12608f6ac86ae761b49538ae6d6a2bd350eff15927e4a5b4bdeb",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6905,6 +10639,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2208-business-audit-trail-generator",
     "batch": "G22",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g22.business-audit-trail-generator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:4dc0ff75b7ad656c8076945deaa07f36b1f32c671f8ec960720a664af68c6a49",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6928,6 +10678,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2209-business-journey-replay-generator",
     "batch": "G22",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g22.business-journey-replay-generator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:121a49d3f6532ab712ae724b9a79eec2463231fae2769bf11848950710a3bec8",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6951,6 +10717,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2210-commerce-order-to-cash-closure-pack",
     "batch": "G22",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g22.commerce-order-to-cash-closure-pack",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:eb6d7fdd780e49bf33804d885d828dcac22063a7b27489c71106c521116e7b91",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6974,6 +10756,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2211-inventory-procure-to-availability-closure-pack",
     "batch": "G22",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g22.inventory-procure-to-availability-closure-pack",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:2492d296697c5ba038b30a8dcf9e1a09d39a0947c7fb8242ca8e8fdae6aecb30",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -6997,6 +10795,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2212-payment-to-settlement-closure-pack",
     "batch": "G22",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g22.payment-to-settlement-closure-pack",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:c1697ccf55880d8b816ba3aeef35b15130cbd6afa8b39b5308b3a0ed43cae679",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7020,6 +10834,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2213-identity-to-account-closure-pack",
     "batch": "G22",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g22.identity-to-account-closure-pack",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:b625412d3d33e4d1d2729ab00c7341cde89de52fcc38a3489105dd37dc90afc5",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7043,6 +10873,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2214-healthcare-encounter-closure-pack",
     "batch": "G22",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g22.healthcare-encounter-closure-pack",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:ba1e70faf1c06d9bf06378e7de028631225450d847d176bb880d45576e7e650a",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7066,6 +10912,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2215-industrial-command-to-acknowledgement-closure-pack",
     "batch": "G22",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g22.industrial-command-to-acknowledgement-closure-pack",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:043154978acb4d08a4f18fc4cef9340a8dd1423a07b556240fc16f9379559c04",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7089,6 +10951,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2216-logistics-order-to-delivery-closure-pack",
     "batch": "G22",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g22.logistics-order-to-delivery-closure-pack",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:8bece3d516cfbc0f922d8909d7312072fe65558b76c3ab0fe114718d0475d655",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7112,6 +10990,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2217-energy-dispatch-to-reconciliation-closure-pack",
     "batch": "G22",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g22.energy-dispatch-to-reconciliation-closure-pack",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:4ca01d15f26afdf282f69190dcbff18c19eb705ffb5b98defd6c222d463c1cdf",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7135,6 +11029,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2218-agent-run-to-human-approval-closure-pack",
     "batch": "G22",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g22.agent-run-to-human-approval-closure-pack",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:3ec70c938debf8a015a7b4e42f275692849120ea01a10e5bf834e76d57c3da48",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7158,6 +11068,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2300-data-integrity-orchestrator",
     "batch": "G23",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g23.data-integrity-orchestrator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:87bf5b545f8a3e03fa81a1a03f5e585127c62e21009dc778c1f194030e177157",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7181,6 +11107,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2301-data-contract-registry",
     "batch": "G23",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g23.data-contract-registry",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:3e34dfbd9c7649f375e9df4d52f4ef81d635125c3b1b7355c04eef8293681db2",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7204,6 +11146,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2302-end-to-end-data-lineage-generator",
     "batch": "G23",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g23.end-to-end-data-lineage-generator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:fd70f094c4ab33ceb2f5b2d610933f78b45661229536b7c15e763f8e4a8cf5be",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7227,6 +11185,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2303-write-to-read-path-validator",
     "batch": "G23",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g23.write-to-read-path-validator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:840c4dd8d45dad1fc9d4718ec37652910f80f4fe9c789cac2fe4a39b1260c724",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7250,6 +11224,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2304-data-ownership-and-authority-registry",
     "batch": "G23",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g23.data-ownership-and-authority-registry",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:0aa70a2fce011a95bd6fdfd103d0df9709e826d4f78c76ce057472bae7178311",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7273,6 +11263,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2305-schema-evolution-and-compatibility-manager",
     "batch": "G23",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g23.schema-evolution-and-compatibility-manager",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:d694a01d7e269d98f3add658deb169bc4baf5244a24af3f53da8098537c485b2",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7296,6 +11302,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2306-event-ordering-and-deduplication-generator",
     "batch": "G23",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g23.event-ordering-and-deduplication-generator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:81a46714401ce92ef21a2643a7b6e10cc5d3eb0eaf15e0f4f7313d48cb5cd9d3",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7319,6 +11341,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2307-cache-coherence-validator",
     "batch": "G23",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g23.cache-coherence-validator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:28fa9fc48ad7abaef83e3ffcc0b2d16678dfa3b6c31f9c2481b6eb7f68330abf",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7342,6 +11380,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2308-offline-synchronization-validator",
     "batch": "G23",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g23.offline-synchronization-validator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:0dcc01dc615453c72a1b2e0f0a5ae65e503c163834d54ccb2f86691938508a8f",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7365,6 +11419,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2309-data-reconciliation-engine",
     "batch": "G23",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g23.data-reconciliation-engine",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:b9e27bcfb477a8b05d1e8e6ad9f6fb5e34ec9f02b9248883fbb1da7cc720ddd2",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7388,6 +11458,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2310-data-quality-rule-engine",
     "batch": "G23",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g23.data-quality-rule-engine",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:8ccfd96bdef0eed8a9bbe76d9109e49704f119f97542fbe6daa35962012203ef",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7411,6 +11497,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2311-data-repair-workflow",
     "batch": "G23",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g23.data-repair-workflow",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:3df271750d057c447acc5e6c52e258ab150764329e9cc6e956734d3f4d8500db",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7434,6 +11536,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2312-sensitive-data-label-propagator",
     "batch": "G23",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g23.sensitive-data-label-propagator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:10fa8e0e2cb93d8a76b833447dcbe8951c9314bab52b4efc6b44f9696443065f",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7457,6 +11575,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2313-data-retention-and-deletion-validator",
     "batch": "G23",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g23.data-retention-and-deletion-validator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:862a3d10d5b419bf0fa64065391d1daa39ef6fbbf195c54aea8eeb143c204b45",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7480,6 +11614,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2314-cross-tenant-data-isolation-validator",
     "batch": "G23",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g23.cross-tenant-data-isolation-validator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:a4eca8a6d268e7077d6ccd25b1d35d895dc91c5fea1c7eec3976bdb7d03a59b3",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7503,6 +11653,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2315-migration-data-verification-generator",
     "batch": "G23",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g23.migration-data-verification-generator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:fcc856cc1c7690ca62b27aaeb680d36e5c97f6e290d578ebf071851f59220db6",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7526,6 +11692,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2400-admin-console-completeness-orchestrator",
     "batch": "G24",
     "handlerKind": "administration",
+    "capabilityKey": "frt.g24.admin-console-completeness-orchestrator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:7a611f5a6967236b104ab94b7e344ad7b1f0b8112f567f327b11beb3578a62a6",
+    "inputContract": {
+      "required": [
+        "capabilities",
+        "roles",
+        "operations"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7549,6 +11727,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2401-admin-capability-matrix",
     "batch": "G24",
     "handlerKind": "administration",
+    "capabilityKey": "frt.g24.admin-capability-matrix",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:915f0bec7dc04ce88621685f923ffafc8168572be3b91bf5b421e1d027c006e4",
+    "inputContract": {
+      "required": [
+        "capabilities",
+        "roles",
+        "operations"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7572,6 +11762,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2402-organization-and-tenant-administration",
     "batch": "G24",
     "handlerKind": "administration",
+    "capabilityKey": "frt.g24.organization-and-tenant-administration",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:8bddeb7389f9135be2d6a45f5b961e29ce1f8d0e786990d227acb7a9ceb4a1aa",
+    "inputContract": {
+      "required": [
+        "capabilities",
+        "roles",
+        "operations"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7595,6 +11797,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2403-user-role-and-permission-administration",
     "batch": "G24",
     "handlerKind": "administration",
+    "capabilityKey": "frt.g24.user-role-and-permission-administration",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:b020e68c774df46614885b0cf89fe7e1ac3f0a56832af9b3be734d55b9981304",
+    "inputContract": {
+      "required": [
+        "capabilities",
+        "roles",
+        "operations"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7618,6 +11832,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2404-business-operations-administration",
     "batch": "G24",
     "handlerKind": "administration",
+    "capabilityKey": "frt.g24.business-operations-administration",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:1f86644cd626e35bcaec727cd92259fab7bc7b9c84b9cdc591c91347621a05f1",
+    "inputContract": {
+      "required": [
+        "capabilities",
+        "roles",
+        "operations"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7641,6 +11867,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2405-order-payment-and-refund-administration",
     "batch": "G24",
     "handlerKind": "administration",
+    "capabilityKey": "frt.g24.order-payment-and-refund-administration",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:785515c5eae485e78bad395b334b071f523753e81a9ebe98321ef4be80248c92",
+    "inputContract": {
+      "required": [
+        "capabilities",
+        "roles",
+        "operations"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7664,6 +11902,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2406-inventory-and-resource-administration",
     "batch": "G24",
     "handlerKind": "administration",
+    "capabilityKey": "frt.g24.inventory-and-resource-administration",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:c96299d97bd75d4781c12ea06d7a772927ddd67f698f11762e09dbcb53a6eb1b",
+    "inputContract": {
+      "required": [
+        "capabilities",
+        "roles",
+        "operations"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7687,6 +11937,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2407-content-and-configuration-administration",
     "batch": "G24",
     "handlerKind": "administration",
+    "capabilityKey": "frt.g24.content-and-configuration-administration",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:a4835af3595e1c59366b56fd718f192ad2d3053113474ec7b374086c10a6ba82",
+    "inputContract": {
+      "required": [
+        "capabilities",
+        "roles",
+        "operations"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7710,6 +11972,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2408-notification-and-message-administration",
     "batch": "G24",
     "handlerKind": "administration",
+    "capabilityKey": "frt.g24.notification-and-message-administration",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:4525af7522eab16ad98d792ca594c83d8c4e819d74a82be0c568aecea113cf7a",
+    "inputContract": {
+      "required": [
+        "capabilities",
+        "roles",
+        "operations"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7733,6 +12007,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2409-workflow-and-approval-administration",
     "batch": "G24",
     "handlerKind": "administration",
+    "capabilityKey": "frt.g24.workflow-and-approval-administration",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:16c5d48eb9d11ac95e0cdd03b0e41434bbcb7e31b317684af93e075a99f83084",
+    "inputContract": {
+      "required": [
+        "capabilities",
+        "roles",
+        "operations"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7756,6 +12042,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2410-exception-and-manual-intervention-console",
     "batch": "G24",
     "handlerKind": "administration",
+    "capabilityKey": "frt.g24.exception-and-manual-intervention-console",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:aa12f47a15d5c056b3b17614c729c058aff68e9ec8ffa3ab93adc8016ed43050",
+    "inputContract": {
+      "required": [
+        "capabilities",
+        "roles",
+        "operations"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7779,6 +12077,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2411-data-correction-and-reconciliation-console",
     "batch": "G24",
     "handlerKind": "administration",
+    "capabilityKey": "frt.g24.data-correction-and-reconciliation-console",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:57f5b8c4fafe3e96db3628b0815091006c2c9e3200c313d72ce8f327c7793df0",
+    "inputContract": {
+      "required": [
+        "capabilities",
+        "roles",
+        "operations"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7802,6 +12112,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2412-job-and-worker-administration",
     "batch": "G24",
     "handlerKind": "administration",
+    "capabilityKey": "frt.g24.job-and-worker-administration",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:f4ad43d5ec3fd3ef56cd1404bbb82989d4a42dcab56ef9a7604562e8dbe9b16a",
+    "inputContract": {
+      "required": [
+        "capabilities",
+        "roles",
+        "operations"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7825,6 +12147,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2413-skill-pack-and-model-administration",
     "batch": "G24",
     "handlerKind": "administration",
+    "capabilityKey": "frt.g24.skill-pack-and-model-administration",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:8d1beec4ba74e0334f1434a4aa3dcdffe910b019df2c4c8eef6acdea596e62e4",
+    "inputContract": {
+      "required": [
+        "capabilities",
+        "roles",
+        "operations"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7848,6 +12182,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2414-artifact-evidence-and-certificate-administration",
     "batch": "G24",
     "handlerKind": "administration",
+    "capabilityKey": "frt.g24.artifact-evidence-and-certificate-administration",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:cc5c030de666a436f6cddae6cae7ff8a0af7c6e8956686e80cca8f678b22caf2",
+    "inputContract": {
+      "required": [
+        "capabilities",
+        "roles",
+        "operations"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7871,6 +12217,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2415-audit-and-security-administration",
     "batch": "G24",
     "handlerKind": "administration",
+    "capabilityKey": "frt.g24.audit-and-security-administration",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:934970b7e04c8cafcf2d2cf36d0a331a26c8adac5cee70fc806ba31f1777177d",
+    "inputContract": {
+      "required": [
+        "capabilities",
+        "roles",
+        "operations"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7894,6 +12252,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2416-bulk-operation-and-import-export-generator",
     "batch": "G24",
     "handlerKind": "administration",
+    "capabilityKey": "frt.g24.bulk-operation-and-import-export-generator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:1196071b364afcded3fc83777a2ea09210a8e5b8b8458d0795c467ef1cefea6a",
+    "inputContract": {
+      "required": [
+        "capabilities",
+        "roles",
+        "operations"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7917,6 +12287,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2417-admin-search-and-advanced-filtering",
     "batch": "G24",
     "handlerKind": "administration",
+    "capabilityKey": "frt.g24.admin-search-and-advanced-filtering",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:4879a0ac8828a68104a3a8aea01a62d0c751d7cbbd1b0952c03a30ed8904cc27",
+    "inputContract": {
+      "required": [
+        "capabilities",
+        "roles",
+        "operations"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7940,6 +12322,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2418-admin-dashboard-and-kpi-pack",
     "batch": "G24",
     "handlerKind": "administration",
+    "capabilityKey": "frt.g24.admin-dashboard-and-kpi-pack",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:c4f8a9cd67888a20cf43719ece5f7890f0065e59f3d61e442bc7d8f80e6a0ced",
+    "inputContract": {
+      "required": [
+        "capabilities",
+        "roles",
+        "operations"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7963,6 +12357,18 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2419-admin-end-to-end-test-generator",
     "batch": "G24",
     "handlerKind": "administration",
+    "capabilityKey": "frt.g24.admin-end-to-end-test-generator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:a83ba56d3eae3eb3917cb51b1d344699ee926f2937eeb5735b00621003a48091",
+    "inputContract": {
+      "required": [
+        "capabilities",
+        "roles",
+        "operations"
+      ],
+      "optional": [],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -7986,6 +12392,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2500-functional-usability-orchestrator",
     "batch": "G25",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g25.functional-usability-orchestrator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:15a42dfda0311c1c7202e05f7036cc9d69873453adfdd290358810642e1516cc",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8009,6 +12431,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2501-task-completion-test-generator",
     "batch": "G25",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g25.task-completion-test-generator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:de55a2faebfe353025b7c6714a3b417ccd96ca12d17fe9ba04952d58a94d55e4",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8032,6 +12470,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2502-user-journey-usability-validator",
     "batch": "G25",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g25.user-journey-usability-validator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:02c57effb623d3654496a44e794a080aa5562dc9d73619823813a1c7482a2c01",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8055,6 +12509,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2503-admin-journey-usability-validator",
     "batch": "G25",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g25.admin-journey-usability-validator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:5cf55b586672a7b2cc0142ad2a75d2c352ed7240d327744267dcb03b82108988",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8078,6 +12548,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2504-form-and-validation-usability-validator",
     "batch": "G25",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g25.form-and-validation-usability-validator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:c159b4951cbbd9680baa8e9480ab523e50beeb1b86c264b4455ee0804254c894",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8101,6 +12587,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2505-loading-empty-error-and-retry-state-validator",
     "batch": "G25",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g25.loading-empty-error-and-retry-state-validator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:b06b32b22adc0281323f8d260c73b3ba8cb65f64179f84864c34c491c02f4c91",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8124,6 +12626,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2506-navigation-discoverability-validator",
     "batch": "G25",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g25.navigation-discoverability-validator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:f2ec1a95ca5f28a08a5fda314bf2b86703c60293466fe1b0ca0203c9a826d8e1",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8147,6 +12665,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2507-user-guidance-and-recovery-generator",
     "batch": "G25",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g25.user-guidance-and-recovery-generator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:6c6432144511b846e365267db7e5a58a6ac07cb2d05815a0451ec9f8133c8c2d",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8170,6 +12704,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2508-accessibility-acceptance-suite",
     "batch": "G25",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g25.accessibility-acceptance-suite",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:fb6a1feb50edd29b36084b92e6e4c83ce5647eb9a0b8808be69c2ca6af00b92d",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8193,6 +12743,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2509-keyboard-pointer-touch-and-gesture-matrix",
     "batch": "G25",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g25.keyboard-pointer-touch-and-gesture-matrix",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:79ae62a4ef41520a6832768819444fb10526a9a17f542153334939e48dd9fd89",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8216,6 +12782,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2510-ime-and-international-input-validator",
     "batch": "G25",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g25.ime-and-international-input-validator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:fe13c9d769fce175e8d798ed9059dcdf99ee9d7830168df863072151f2e3cab0",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8239,6 +12821,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2511-internationalization-and-rtl-acceptance",
     "batch": "G25",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g25.internationalization-and-rtl-acceptance",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:ede98b01ff3ebf3e705a7ddae1b79a73d0ce4f70df96b2ac4f746db110ee1784",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8262,6 +12860,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2512-browser-and-device-compatibility-matrix",
     "batch": "G25",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g25.browser-and-device-compatibility-matrix",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:88411bd527c659f9e42a84861f0998fc042c65ad6e88db4705fd3606a441c135",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8285,6 +12899,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2513-responsive-and-adaptive-acceptance",
     "batch": "G25",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g25.responsive-and-adaptive-acceptance",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:8e52f222e4074bbb622b3f9d3be406790eabfe9b18c34e705de4240ae251ce5b",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8308,6 +12938,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2514-visual-consistency-validator",
     "batch": "G25",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g25.visual-consistency-validator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:3c65345a5fd78a899f293d1cfcdaf29483ab2f8ea46e9af02c7b2034acb38d34",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8331,6 +12977,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2515-perceived-performance-validator",
     "batch": "G25",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g25.perceived-performance-validator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:b01b80129c0e10b57d5321737ccbaa39c9e5c23bc0330c143aef001324eab312",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8354,6 +13016,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2516-feature-availability-and-unsupported-state-ux",
     "batch": "G25",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g25.feature-availability-and-unsupported-state-ux",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:fe7dfd0aca979b24fd2791baba5459ffd891793294c38f6adce5dc5d8a19bd51",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8377,6 +13055,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2517-usability-evidence-generator",
     "batch": "G25",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g25.usability-evidence-generator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:91e84bf6e8ae32aea533bd1bd684e38c762e3925610c3ad66d3a13c824741cbb",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8400,6 +13094,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2600-regression-assurance-orchestrator",
     "batch": "G26",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g26.regression-assurance-orchestrator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:c6b088efcb5139147e7e85661328702e992dfa04b4878e4b63febc30283d8698",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8423,6 +13133,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2601-requirement-derived-test-generator",
     "batch": "G26",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g26.requirement-derived-test-generator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:c43263d7050d0e093a28bc5b78acd18f6627de938e33b21a2495dc93ca414f26",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8446,6 +13172,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2602-model-based-business-test-generator",
     "batch": "G26",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g26.model-based-business-test-generator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:829b895d4993b687e872310e8678231b7a6136c10d95435f8d8cd905fb558163",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8469,6 +13211,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2603-unit-and-component-test-coordinator",
     "batch": "G26",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g26.unit-and-component-test-coordinator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:db84b08d18795d89f612d3256bd5b4f0a78321745736c6f30577e688119b9eb5",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8492,6 +13250,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2604-api-and-event-contract-test-coordinator",
     "batch": "G26",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g26.api-and-event-contract-test-coordinator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:c41b913b8e344e11c224f3b6350462791cb00ab149e16a2fc565a3330b70756c",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8515,6 +13289,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2605-end-to-end-journey-test-coordinator",
     "batch": "G26",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g26.end-to-end-journey-test-coordinator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:39e5adde2f03908fce799552bd60ef59d9ef9f9cb73279ccbaddfde5b1459359",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8538,6 +13328,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2606-differential-test-coordinator",
     "batch": "G26",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g26.differential-test-coordinator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:171c610edd10aae9b226e350bb28fccf0cdb142e531f26f4c0d468a0e39d03ca",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8561,6 +13367,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2607-mutation-test-coordinator",
     "batch": "G26",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g26.mutation-test-coordinator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:67795ecadab11308350b09d11d6e9fcfd6761c4db8e6ab3fcef8d839b8cf59fe",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8584,6 +13406,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2608-visual-and-semantic-regression-coordinator",
     "batch": "G26",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g26.visual-and-semantic-regression-coordinator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:3f312251bc7d7c9591aca9368ce5ae16fac4c2ba9b0e6b30ba0a975b93fb8e33",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8607,6 +13445,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2609-security-regression-coordinator",
     "batch": "G26",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g26.security-regression-coordinator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:2daf7d37c3cf82253367ea829e13ce17bdd211fc202ad895c8db93936caa1af9",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8630,6 +13484,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2610-performance-regression-coordinator",
     "batch": "G26",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g26.performance-regression-coordinator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:45e2c0901292028c228bf2c47fe332e37266348b39885fe28adf1435a328b1bc",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8653,6 +13523,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2611-test-data-management",
     "batch": "G26",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g26.test-data-management",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:162c27e380e56d7d03656e110f4dac2f33fdf371e335f52d33db271e8d9c2498",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8676,6 +13562,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2612-synthetic-tenant-and-account-generator",
     "batch": "G26",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g26.synthetic-tenant-and-account-generator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:286fe8b85dc1b6a3133148f05f89bfb55de06e197c8fe095a6b8b36d29a52139",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8699,6 +13601,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2613-environment-parity-validator",
     "batch": "G26",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g26.environment-parity-validator",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:12774c27b86b0d3d84455fb663df882d9682c54a55f6887459de76958fff3531",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8722,6 +13640,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2614-flaky-test-detection-and-quarantine",
     "batch": "G26",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g26.flaky-test-detection-and-quarantine",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:5ceddd4a58e2048a9d7c870118bce735ad8f6d8ac93f7c8011b86c0c720111b5",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8745,6 +13679,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2615-impacted-test-selection",
     "batch": "G26",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g26.impacted-test-selection",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:ddb8c477de9402cec41b8585dd3fec460fd6f5b7118b958d76050ca6b6fe3ec2",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8768,6 +13718,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2616-parallel-test-grid",
     "batch": "G26",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g26.parallel-test-grid",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:321ae3240c5853fcc0a37c0129bc7cc714f0aa781e5ebadd8c2b7964565b0882",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8791,6 +13757,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2617-test-worker-failover",
     "batch": "G26",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g26.test-worker-failover",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:0cb23279f8cafe58cfb08c7edc974d777380cfa97a89e10168200ef0d960c4d5",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8814,6 +13796,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2618-release-qualification-engine",
     "batch": "G26",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g26.release-qualification-engine",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:ad20ee4314e2c4c40baf961791713a810660ecb414a7a92a5db454e165136b27",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8837,6 +13835,22 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2619-regression-evidence-certificate",
     "batch": "G26",
     "handlerKind": "product_workflow",
+    "capabilityKey": "frt.g26.regression-evidence-certificate",
+    "executionClass": "GOVERNED_EXTERNAL_RUNNER",
+    "contractDigest": "sha256:8bfc62f1416338b999173caa6f7113b541efa7a17d6aa2eacb332055c5ea994c",
+    "inputContract": {
+      "required": [
+        "requirements",
+        "states",
+        "transitions"
+      ],
+      "optional": [
+        "initialState",
+        "journeys",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8860,6 +13874,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2700-performance-and-capacity-orchestrator",
     "batch": "G27",
     "handlerKind": "performance_capacity",
+    "capabilityKey": "frt.g27.performance-and-capacity-orchestrator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:3d0aea1ffc055ef24bfbfa7e21dfbe4b3109b0c57ee1b4ffab188dadc0cb50a4",
+    "inputContract": {
+      "required": [
+        "workload",
+        "budgets"
+      ],
+      "optional": [
+        "samples",
+        "throughputPerSecond"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8883,6 +13911,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2701-workload-model-registry",
     "batch": "G27",
     "handlerKind": "performance_capacity",
+    "capabilityKey": "frt.g27.workload-model-registry",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:5421641fc1d908447f4c0670a43bf626a5910ea79f3761bf2c4574be7702428b",
+    "inputContract": {
+      "required": [
+        "workload",
+        "budgets"
+      ],
+      "optional": [
+        "samples",
+        "throughputPerSecond"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8906,6 +13948,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2702-concurrency-correctness-validator",
     "batch": "G27",
     "handlerKind": "performance_capacity",
+    "capabilityKey": "frt.g27.concurrency-correctness-validator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:5af53b49500c12e960529624191b47da07e146204233fe446c2ac3aa8e50f1c7",
+    "inputContract": {
+      "required": [
+        "workload",
+        "budgets"
+      ],
+      "optional": [
+        "samples",
+        "throughputPerSecond"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8929,6 +13985,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2703-race-and-lost-update-detector",
     "batch": "G27",
     "handlerKind": "performance_capacity",
+    "capabilityKey": "frt.g27.race-and-lost-update-detector",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:73589a2a6fccbc0f2b397bf490c5c329b8e24d545f4d0306c1974e47149847a4",
+    "inputContract": {
+      "required": [
+        "workload",
+        "budgets"
+      ],
+      "optional": [
+        "samples",
+        "throughputPerSecond"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8952,6 +14022,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2704-idempotency-under-load-validator",
     "batch": "G27",
     "handlerKind": "performance_capacity",
+    "capabilityKey": "frt.g27.idempotency-under-load-validator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:b90e2d90e8cd04c356959bdc36e91c32bc243bc7f749560b7a560f84ddee4759",
+    "inputContract": {
+      "required": [
+        "workload",
+        "budgets"
+      ],
+      "optional": [
+        "samples",
+        "throughputPerSecond"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8975,6 +14059,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2705-throughput-and-latency-test-generator",
     "batch": "G27",
     "handlerKind": "performance_capacity",
+    "capabilityKey": "frt.g27.throughput-and-latency-test-generator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:445700a99b99df8801ecc6c1f245dd995efca10263c495fd46cea2ee3d9fba1f",
+    "inputContract": {
+      "required": [
+        "workload",
+        "budgets"
+      ],
+      "optional": [
+        "samples",
+        "throughputPerSecond"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -8998,6 +14096,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2706-load-test-coordinator",
     "batch": "G27",
     "handlerKind": "performance_capacity",
+    "capabilityKey": "frt.g27.load-test-coordinator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:80199d14ab0bafa36ba572bb6a800bd169bbfe70e13cdd0cd1b76bfa4ac2c7bd",
+    "inputContract": {
+      "required": [
+        "workload",
+        "budgets"
+      ],
+      "optional": [
+        "samples",
+        "throughputPerSecond"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9021,6 +14133,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2707-stress-test-coordinator",
     "batch": "G27",
     "handlerKind": "performance_capacity",
+    "capabilityKey": "frt.g27.stress-test-coordinator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:d8a5d31a7c3cfc3eaa0482666f9edf16307d5f198ea42bfb735ad72c898a763d",
+    "inputContract": {
+      "required": [
+        "workload",
+        "budgets"
+      ],
+      "optional": [
+        "samples",
+        "throughputPerSecond"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9044,6 +14170,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2708-spike-test-coordinator",
     "batch": "G27",
     "handlerKind": "performance_capacity",
+    "capabilityKey": "frt.g27.spike-test-coordinator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:e0a0ecb58867027977fdb9822743fd2a157f847388888ca7464d01e77736db46",
+    "inputContract": {
+      "required": [
+        "workload",
+        "budgets"
+      ],
+      "optional": [
+        "samples",
+        "throughputPerSecond"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9067,6 +14207,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2709-soak-and-memory-leak-test-coordinator",
     "batch": "G27",
     "handlerKind": "performance_capacity",
+    "capabilityKey": "frt.g27.soak-and-memory-leak-test-coordinator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:6fd8ba1c2b506224a7546b324916bbc698f600f3407d4b1b8dc28cd15d192f0a",
+    "inputContract": {
+      "required": [
+        "workload",
+        "budgets"
+      ],
+      "optional": [
+        "samples",
+        "throughputPerSecond"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9090,6 +14244,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2710-queue-and-backpressure-validator",
     "batch": "G27",
     "handlerKind": "performance_capacity",
+    "capabilityKey": "frt.g27.queue-and-backpressure-validator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:608956277c865ee2bd7da8f76a7face0d0a7704a00b0a06296b1b01641cb1814",
+    "inputContract": {
+      "required": [
+        "workload",
+        "budgets"
+      ],
+      "optional": [
+        "samples",
+        "throughputPerSecond"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9113,6 +14281,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2711-rate-limit-and-quota-validator",
     "batch": "G27",
     "handlerKind": "performance_capacity",
+    "capabilityKey": "frt.g27.rate-limit-and-quota-validator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:b4a9cdec3939f8851bd93bcf4026104c37ca54a1e6da38f2a2d5579915ea285d",
+    "inputContract": {
+      "required": [
+        "workload",
+        "budgets"
+      ],
+      "optional": [
+        "samples",
+        "throughputPerSecond"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9136,6 +14318,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2712-cache-performance-and-stampede-validator",
     "batch": "G27",
     "handlerKind": "performance_capacity",
+    "capabilityKey": "frt.g27.cache-performance-and-stampede-validator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:cb59977e27fd63b097781ab6b79c19720b20bcfca3f2e771cad5140861f83e1b",
+    "inputContract": {
+      "required": [
+        "workload",
+        "budgets"
+      ],
+      "optional": [
+        "samples",
+        "throughputPerSecond"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9159,6 +14355,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2713-database-hotspot-and-query-validator",
     "batch": "G27",
     "handlerKind": "performance_capacity",
+    "capabilityKey": "frt.g27.database-hotspot-and-query-validator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:dd73f35b9023b39596f6df11bc13c761ef382172eb646b549fde05a46d757899",
+    "inputContract": {
+      "required": [
+        "workload",
+        "budgets"
+      ],
+      "optional": [
+        "samples",
+        "throughputPerSecond"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9182,6 +14392,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2714-connection-pool-and-resource-validator",
     "batch": "G27",
     "handlerKind": "performance_capacity",
+    "capabilityKey": "frt.g27.connection-pool-and-resource-validator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:babc8f14e575691b685e4783ce3958c271e8aa1b4932a8f9d06b3d240ab80ac1",
+    "inputContract": {
+      "required": [
+        "workload",
+        "budgets"
+      ],
+      "optional": [
+        "samples",
+        "throughputPerSecond"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9205,6 +14429,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2715-capacity-planning-generator",
     "batch": "G27",
     "handlerKind": "performance_capacity",
+    "capabilityKey": "frt.g27.capacity-planning-generator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:2de9b49aff7e51fdfcdeffb829f96618cc5de8b586379bee9ab9f778dea6df61",
+    "inputContract": {
+      "required": [
+        "workload",
+        "budgets"
+      ],
+      "optional": [
+        "samples",
+        "throughputPerSecond"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9228,6 +14466,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2716-autoscaling-policy-validator",
     "batch": "G27",
     "handlerKind": "performance_capacity",
+    "capabilityKey": "frt.g27.autoscaling-policy-validator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:7c417f055a833e0b9c3afba4416ee9625ffdfd7d9b8f882fd74f857061d13393",
+    "inputContract": {
+      "required": [
+        "workload",
+        "budgets"
+      ],
+      "optional": [
+        "samples",
+        "throughputPerSecond"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9251,6 +14503,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2717-graceful-degradation-validator",
     "batch": "G27",
     "handlerKind": "performance_capacity",
+    "capabilityKey": "frt.g27.graceful-degradation-validator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:9de617354ff100bab94722e1cca9d5f21f6673af425679f0ec5cbe89a8fb9d89",
+    "inputContract": {
+      "required": [
+        "workload",
+        "budgets"
+      ],
+      "optional": [
+        "samples",
+        "throughputPerSecond"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9274,6 +14540,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2718-performance-budget-governor",
     "batch": "G27",
     "handlerKind": "performance_capacity",
+    "capabilityKey": "frt.g27.performance-budget-governor",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:0a8a31cfd0b1f709428fb17a74d530384af72003c424a293c07a21e2f38e26c6",
+    "inputContract": {
+      "required": [
+        "workload",
+        "budgets"
+      ],
+      "optional": [
+        "samples",
+        "throughputPerSecond"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9297,6 +14577,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2719-performance-and-capacity-certificate",
     "batch": "G27",
     "handlerKind": "performance_capacity",
+    "capabilityKey": "frt.g27.performance-and-capacity-certificate",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:61e565ca8e83beb129980db237dd023c85b16162c28437b9f832e6ddbf0c8e9f",
+    "inputContract": {
+      "required": [
+        "workload",
+        "budgets"
+      ],
+      "optional": [
+        "samples",
+        "throughputPerSecond"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9320,6 +14614,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2800-resilience-orchestrator",
     "batch": "G28",
     "handlerKind": "resilience_dr",
+    "capabilityKey": "frt.g28.resilience-orchestrator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:660a49055f53fdc3ff7dd0b983da97c50b121f99ca20b609459b009830e3f4ac",
+    "inputContract": {
+      "required": [
+        "scenarios",
+        "recoveryObjectives"
+      ],
+      "optional": [
+        "observations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9343,6 +14650,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2801-dependency-failure-model-registry",
     "batch": "G28",
     "handlerKind": "resilience_dr",
+    "capabilityKey": "frt.g28.dependency-failure-model-registry",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:68944864d6e6e6e356eaf4a31db8be1b2df7042327e4c2b8f83a1df386e3fa2b",
+    "inputContract": {
+      "required": [
+        "scenarios",
+        "recoveryObjectives"
+      ],
+      "optional": [
+        "observations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9366,6 +14686,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2802-timeout-retry-and-circuit-breaker-validator",
     "batch": "G28",
     "handlerKind": "resilience_dr",
+    "capabilityKey": "frt.g28.timeout-retry-and-circuit-breaker-validator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:dabc682646b0233827e5f25dd77ecb387cd2d58818ef8331e367383ff3f56d37",
+    "inputContract": {
+      "required": [
+        "scenarios",
+        "recoveryObjectives"
+      ],
+      "optional": [
+        "observations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9389,6 +14722,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2803-bulkhead-and-failure-isolation-validator",
     "batch": "G28",
     "handlerKind": "resilience_dr",
+    "capabilityKey": "frt.g28.bulkhead-and-failure-isolation-validator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:a7fa2df03339c7f5be69870516e2983019e7e7502aef4bc3260ef5d7ca08c0f4",
+    "inputContract": {
+      "required": [
+        "scenarios",
+        "recoveryObjectives"
+      ],
+      "optional": [
+        "observations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9412,6 +14758,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2804-graceful-degradation-runtime",
     "batch": "G28",
     "handlerKind": "resilience_dr",
+    "capabilityKey": "frt.g28.graceful-degradation-runtime",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:bd2f2088b56d74260595223d29108d56bf2190d8db39ba40fd849a8abb8177de",
+    "inputContract": {
+      "required": [
+        "scenarios",
+        "recoveryObjectives"
+      ],
+      "optional": [
+        "observations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9435,6 +14794,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2805-queue-durability-and-replay-validator",
     "batch": "G28",
     "handlerKind": "resilience_dr",
+    "capabilityKey": "frt.g28.queue-durability-and-replay-validator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:aee75140610baade6f025950939754e302a7322de9371c1d5505d24bbc7e962d",
+    "inputContract": {
+      "required": [
+        "scenarios",
+        "recoveryObjectives"
+      ],
+      "optional": [
+        "observations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9458,6 +14830,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2806-stateful-failover-validator",
     "batch": "G28",
     "handlerKind": "resilience_dr",
+    "capabilityKey": "frt.g28.stateful-failover-validator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:bb79cf733cb908959c997e92509f30776db466441c75c46a6d4ed27d2cd388b9",
+    "inputContract": {
+      "required": [
+        "scenarios",
+        "recoveryObjectives"
+      ],
+      "optional": [
+        "observations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9481,6 +14866,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2807-control-plane-high-availability",
     "batch": "G28",
     "handlerKind": "resilience_dr",
+    "capabilityKey": "frt.g28.control-plane-high-availability",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:14a0068427f87021336154ffbef6f91c7de49aac37069811c765b1b0412e6c24",
+    "inputContract": {
+      "required": [
+        "scenarios",
+        "recoveryObjectives"
+      ],
+      "optional": [
+        "observations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9504,6 +14902,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2808-worker-pool-high-availability",
     "batch": "G28",
     "handlerKind": "resilience_dr",
+    "capabilityKey": "frt.g28.worker-pool-high-availability",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:8c65ef99293d95c82e82251b21f2eddc543d64136796042de92046b6a9b3d529",
+    "inputContract": {
+      "required": [
+        "scenarios",
+        "recoveryObjectives"
+      ],
+      "optional": [
+        "observations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9527,6 +14938,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2809-artifact-and-evidence-store-resilience",
     "batch": "G28",
     "handlerKind": "resilience_dr",
+    "capabilityKey": "frt.g28.artifact-and-evidence-store-resilience",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:c4c7fd5ba69e9e8e84c6f38e470f4f9884ec6589fcf9c774e35a2c11835640f3",
+    "inputContract": {
+      "required": [
+        "scenarios",
+        "recoveryObjectives"
+      ],
+      "optional": [
+        "observations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9550,6 +14974,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2810-database-failover-validator",
     "batch": "G28",
     "handlerKind": "resilience_dr",
+    "capabilityKey": "frt.g28.database-failover-validator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:1bcbdffba35eaa5d8c74abeed3c3a10b0ea44b1f80934c2ea70ef81bb163b750",
+    "inputContract": {
+      "required": [
+        "scenarios",
+        "recoveryObjectives"
+      ],
+      "optional": [
+        "observations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9573,6 +15010,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2811-region-failure-validator",
     "batch": "G28",
     "handlerKind": "resilience_dr",
+    "capabilityKey": "frt.g28.region-failure-validator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:2d6e0bdc831e0a39e4a11b0a96599daea4df3ff3d580853493ed82bc6e507b95",
+    "inputContract": {
+      "required": [
+        "scenarios",
+        "recoveryObjectives"
+      ],
+      "optional": [
+        "observations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9596,6 +15046,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2812-chaos-experiment-generator",
     "batch": "G28",
     "handlerKind": "resilience_dr",
+    "capabilityKey": "frt.g28.chaos-experiment-generator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:cbaeb30033aafd0e48b6c2496a4388e07e7f46f73345b727217089af8177fb8d",
+    "inputContract": {
+      "required": [
+        "scenarios",
+        "recoveryObjectives"
+      ],
+      "optional": [
+        "observations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9619,6 +15082,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2813-backup-and-restore-validator",
     "batch": "G28",
     "handlerKind": "resilience_dr",
+    "capabilityKey": "frt.g28.backup-and-restore-validator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:e4068bfb9deadc3a5d17c16091c3b9f56d2a450394fa602c66ae059d9eb83188",
+    "inputContract": {
+      "required": [
+        "scenarios",
+        "recoveryObjectives"
+      ],
+      "optional": [
+        "observations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9642,6 +15118,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2814-disaster-recovery-drill-generator",
     "batch": "G28",
     "handlerKind": "resilience_dr",
+    "capabilityKey": "frt.g28.disaster-recovery-drill-generator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:3ad9fac6a6e7bba4fd767200a25f903c075662e8baf3fbf261a2b2cde678b67f",
+    "inputContract": {
+      "required": [
+        "scenarios",
+        "recoveryObjectives"
+      ],
+      "optional": [
+        "observations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9665,6 +15154,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2815-rto-and-rpo-compliance-validator",
     "batch": "G28",
     "handlerKind": "resilience_dr",
+    "capabilityKey": "frt.g28.rto-and-rpo-compliance-validator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:777b12a40927a9a344251c31f49addc12b34619141b5f827c853de6607f17c18",
+    "inputContract": {
+      "required": [
+        "scenarios",
+        "recoveryObjectives"
+      ],
+      "optional": [
+        "observations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9688,6 +15190,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2816-safe-mode-and-read-only-mode-generator",
     "batch": "G28",
     "handlerKind": "resilience_dr",
+    "capabilityKey": "frt.g28.safe-mode-and-read-only-mode-generator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:b81c7e4334c7161c22887bc95d85a1c0d2aa13ae3db1caa15f5e3d2b92555ab5",
+    "inputContract": {
+      "required": [
+        "scenarios",
+        "recoveryObjectives"
+      ],
+      "optional": [
+        "observations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9711,6 +15226,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2817-partial-service-availability-validator",
     "batch": "G28",
     "handlerKind": "resilience_dr",
+    "capabilityKey": "frt.g28.partial-service-availability-validator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:ade8f0d112f51f0444712f0e47fd1a60af54e971d27f0e356ef81f8d3b2a6e43",
+    "inputContract": {
+      "required": [
+        "scenarios",
+        "recoveryObjectives"
+      ],
+      "optional": [
+        "observations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9734,6 +15262,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2818-resilience-runbook-generator",
     "batch": "G28",
     "handlerKind": "resilience_dr",
+    "capabilityKey": "frt.g28.resilience-runbook-generator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:2445bf5aad1b6828e50312bb42918cbde66f58601c539dbd092b9a4bb7baf454",
+    "inputContract": {
+      "required": [
+        "scenarios",
+        "recoveryObjectives"
+      ],
+      "optional": [
+        "observations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9757,6 +15298,19 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2819-resilience-certification",
     "batch": "G28",
     "handlerKind": "resilience_dr",
+    "capabilityKey": "frt.g28.resilience-certification",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:f411268311ae0a2671ff0c066219c716162db22103172d2bb47654a693f261e2",
+    "inputContract": {
+      "required": [
+        "scenarios",
+        "recoveryObjectives"
+      ],
+      "optional": [
+        "observations"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9780,6 +15334,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2900-security-assurance-orchestrator",
     "batch": "G29",
     "handlerKind": "security_privacy",
+    "capabilityKey": "frt.g29.security-assurance-orchestrator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:5be4e48e2d97b3892d322b5e384f47af8003a67a6138ec24617bbca9c8c4394a",
+    "inputContract": {
+      "required": [
+        "assets",
+        "findings"
+      ],
+      "optional": [
+        "dataFlows",
+        "sbomComponents"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9803,6 +15371,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2901-threat-model-generator",
     "batch": "G29",
     "handlerKind": "security_privacy",
+    "capabilityKey": "frt.g29.threat-model-generator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:0d66dceb71e72e641478318a8b8e899d77ad8a85223ef2410d4de708640487ca",
+    "inputContract": {
+      "required": [
+        "assets",
+        "findings"
+      ],
+      "optional": [
+        "dataFlows",
+        "sbomComponents"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9826,6 +15408,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2902-attack-surface-inventory",
     "batch": "G29",
     "handlerKind": "security_privacy",
+    "capabilityKey": "frt.g29.attack-surface-inventory",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:b56f7f278d4db64abe3867f07fbafdfd086ded270c90bccc4cb7a05a27e4ca4d",
+    "inputContract": {
+      "required": [
+        "assets",
+        "findings"
+      ],
+      "optional": [
+        "dataFlows",
+        "sbomComponents"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9849,6 +15445,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2903-authentication-security-validator",
     "batch": "G29",
     "handlerKind": "security_privacy",
+    "capabilityKey": "frt.g29.authentication-security-validator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:a1c36214a2d6a060720bd9333358c945d986619748df53055ba2038ef18e1cfe",
+    "inputContract": {
+      "required": [
+        "assets",
+        "findings"
+      ],
+      "optional": [
+        "dataFlows",
+        "sbomComponents"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9872,6 +15482,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2904-authorization-and-policy-validator",
     "batch": "G29",
     "handlerKind": "security_privacy",
+    "capabilityKey": "frt.g29.authorization-and-policy-validator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:7757493635cbc652778ea3b676458d3f1d896c0838e65d23fd6023e56cc2de10",
+    "inputContract": {
+      "required": [
+        "assets",
+        "findings"
+      ],
+      "optional": [
+        "dataFlows",
+        "sbomComponents"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9895,6 +15519,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2905-tenant-isolation-security-validator",
     "batch": "G29",
     "handlerKind": "security_privacy",
+    "capabilityKey": "frt.g29.tenant-isolation-security-validator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:3b16527eecae783cb9d6c263b29c903503659a5c84c0d353aaefb6f87e9bd3fd",
+    "inputContract": {
+      "required": [
+        "assets",
+        "findings"
+      ],
+      "optional": [
+        "dataFlows",
+        "sbomComponents"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9918,6 +15556,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2906-session-and-token-security-validator",
     "batch": "G29",
     "handlerKind": "security_privacy",
+    "capabilityKey": "frt.g29.session-and-token-security-validator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:d405cd223e7b46eb5bf7ca6cc7a5ba641b5c217c344f422bd1a9aac30b650889",
+    "inputContract": {
+      "required": [
+        "assets",
+        "findings"
+      ],
+      "optional": [
+        "dataFlows",
+        "sbomComponents"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9941,6 +15593,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2907-api-security-validator",
     "batch": "G29",
     "handlerKind": "security_privacy",
+    "capabilityKey": "frt.g29.api-security-validator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:8957efbffa338cb416bedcb745b33d061f0fbc82ee3f1a3d72b94a054e75ae93",
+    "inputContract": {
+      "required": [
+        "assets",
+        "findings"
+      ],
+      "optional": [
+        "dataFlows",
+        "sbomComponents"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9964,6 +15630,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2908-input-validation-and-injection-validator",
     "batch": "G29",
     "handlerKind": "security_privacy",
+    "capabilityKey": "frt.g29.input-validation-and-injection-validator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:e837ff836698d640b3f23b76e9e92387591883cfb269dc7621396353e9216934",
+    "inputContract": {
+      "required": [
+        "assets",
+        "findings"
+      ],
+      "optional": [
+        "dataFlows",
+        "sbomComponents"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -9987,6 +15667,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2909-file-upload-and-content-security-validator",
     "batch": "G29",
     "handlerKind": "security_privacy",
+    "capabilityKey": "frt.g29.file-upload-and-content-security-validator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:57bca875aa21ab87f093347483a33cee496ca51488122526f85baaf27f41c7fb",
+    "inputContract": {
+      "required": [
+        "assets",
+        "findings"
+      ],
+      "optional": [
+        "dataFlows",
+        "sbomComponents"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -10010,6 +15704,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2910-secrets-and-key-management-validator",
     "batch": "G29",
     "handlerKind": "security_privacy",
+    "capabilityKey": "frt.g29.secrets-and-key-management-validator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:913f9e3fb084fda04cf65ae219b92b8651ce695de6c73c2593ec7651c342bb99",
+    "inputContract": {
+      "required": [
+        "assets",
+        "findings"
+      ],
+      "optional": [
+        "dataFlows",
+        "sbomComponents"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -10033,6 +15741,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2911-supply-chain-security-validator",
     "batch": "G29",
     "handlerKind": "security_privacy",
+    "capabilityKey": "frt.g29.supply-chain-security-validator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:9fd20775e6e6dfcc5621f5a305755541366b969bd46ef7ac812a939edfdf51cd",
+    "inputContract": {
+      "required": [
+        "assets",
+        "findings"
+      ],
+      "optional": [
+        "dataFlows",
+        "sbomComponents"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -10056,6 +15778,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2912-sbom-and-vulnerability-governance",
     "batch": "G29",
     "handlerKind": "security_privacy",
+    "capabilityKey": "frt.g29.sbom-and-vulnerability-governance",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:937730450ea9813ede1bdb5114fc5af44b8bff8157268f070061a0dc4b02927e",
+    "inputContract": {
+      "required": [
+        "assets",
+        "findings"
+      ],
+      "optional": [
+        "dataFlows",
+        "sbomComponents"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -10079,6 +15815,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2913-sast-coordinator",
     "batch": "G29",
     "handlerKind": "security_privacy",
+    "capabilityKey": "frt.g29.sast-coordinator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:af98d74a2bb9e31239253a69ffcab8fb4a97662b6d1b33cec377270bad9add19",
+    "inputContract": {
+      "required": [
+        "assets",
+        "findings"
+      ],
+      "optional": [
+        "dataFlows",
+        "sbomComponents"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -10102,6 +15852,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2914-dast-coordinator",
     "batch": "G29",
     "handlerKind": "security_privacy",
+    "capabilityKey": "frt.g29.dast-coordinator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:a772c691d6245fe1fe1d36973d575f04e8acacbfb3571c2b86c8a6959e717e2d",
+    "inputContract": {
+      "required": [
+        "assets",
+        "findings"
+      ],
+      "optional": [
+        "dataFlows",
+        "sbomComponents"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -10125,6 +15889,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2915-fuzzing-and-protocol-abuse-generator",
     "batch": "G29",
     "handlerKind": "security_privacy",
+    "capabilityKey": "frt.g29.fuzzing-and-protocol-abuse-generator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:9e3e31038f682a4bae37b0cd44d704d4f21b7542876a39533e4dc7b618606e97",
+    "inputContract": {
+      "required": [
+        "assets",
+        "findings"
+      ],
+      "optional": [
+        "dataFlows",
+        "sbomComponents"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -10148,6 +15926,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2916-rate-abuse-and-bot-protection-validator",
     "batch": "G29",
     "handlerKind": "security_privacy",
+    "capabilityKey": "frt.g29.rate-abuse-and-bot-protection-validator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:2a51203ad5a79eed709985dc2affd0ed2873d0904e092e627ffb169c8856cb4d",
+    "inputContract": {
+      "required": [
+        "assets",
+        "findings"
+      ],
+      "optional": [
+        "dataFlows",
+        "sbomComponents"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -10171,6 +15963,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2917-privacy-and-consent-validator",
     "batch": "G29",
     "handlerKind": "security_privacy",
+    "capabilityKey": "frt.g29.privacy-and-consent-validator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:77e5a1fb760e101b719611eb5dfcf34727f110e28e9944eeaab3e4101f893663",
+    "inputContract": {
+      "required": [
+        "assets",
+        "findings"
+      ],
+      "optional": [
+        "dataFlows",
+        "sbomComponents"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -10194,6 +16000,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2918-retention-and-deletion-compliance",
     "batch": "G29",
     "handlerKind": "security_privacy",
+    "capabilityKey": "frt.g29.retention-and-deletion-compliance",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:8639764bac5defd83e04158d01902a372770f7073667195ee666fb3cac1879eb",
+    "inputContract": {
+      "required": [
+        "assets",
+        "findings"
+      ],
+      "optional": [
+        "dataFlows",
+        "sbomComponents"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -10217,6 +16037,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2919-security-incident-response-generator",
     "batch": "G29",
     "handlerKind": "security_privacy",
+    "capabilityKey": "frt.g29.security-incident-response-generator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:9453c2b0edb61cbd46db50634e204dc6728d9ab12f97ea275f3e3b4caa6a7e7d",
+    "inputContract": {
+      "required": [
+        "assets",
+        "findings"
+      ],
+      "optional": [
+        "dataFlows",
+        "sbomComponents"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -10240,6 +16074,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2920-penetration-test-evidence-manager",
     "batch": "G29",
     "handlerKind": "security_privacy",
+    "capabilityKey": "frt.g29.penetration-test-evidence-manager",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:5be4cd6a55b3c2cd496f292c45c163e2f948127b499e600657a54879e4ec2a49",
+    "inputContract": {
+      "required": [
+        "assets",
+        "findings"
+      ],
+      "optional": [
+        "dataFlows",
+        "sbomComponents"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -10263,6 +16111,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2921-secure-admin-console-validator",
     "batch": "G29",
     "handlerKind": "security_privacy",
+    "capabilityKey": "frt.g29.secure-admin-console-validator",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:247e54c7c22dcba3219d8166604d4b636f619ce5b1d70a85ce9c3d03161f7d69",
+    "inputContract": {
+      "required": [
+        "assets",
+        "findings"
+      ],
+      "optional": [
+        "dataFlows",
+        "sbomComponents"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -10286,6 +16148,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-2922-security-regression-and-recertification",
     "batch": "G29",
     "handlerKind": "security_privacy",
+    "capabilityKey": "frt.g29.security-regression-and-recertification",
+    "executionClass": "AUTHORIZED_EXTERNAL_ASSURANCE",
+    "contractDigest": "sha256:6d4bc1947b5b494da40dd4bab6381c1aecd7ce4ac965139528d0c17d7d0fea8a",
+    "inputContract": {
+      "required": [
+        "assets",
+        "findings"
+      ],
+      "optional": [
+        "dataFlows",
+        "sbomComponents"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -10309,6 +16185,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-3000-production-readiness-orchestrator",
     "batch": "G30",
     "handlerKind": "production_readiness",
+    "capabilityKey": "frt.g30.production-readiness-orchestrator",
+    "executionClass": "EXTERNAL_PRODUCTION_AUTHORITY",
+    "contractDigest": "sha256:4d5ed0b3a9cfa32a34502606c95e4be32d79d66d957714327ae6c9ccc08953b6",
+    "inputContract": {
+      "required": [
+        "slos",
+        "runbooks"
+      ],
+      "optional": [
+        "alerts",
+        "releases"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -10332,6 +16222,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-3001-production-readiness-checklist-compiler",
     "batch": "G30",
     "handlerKind": "production_readiness",
+    "capabilityKey": "frt.g30.production-readiness-checklist-compiler",
+    "executionClass": "EXTERNAL_PRODUCTION_AUTHORITY",
+    "contractDigest": "sha256:63fa7e0567c3a68b26a257e4b291409151d29cae70d3e7895d3eb3483b69819f",
+    "inputContract": {
+      "required": [
+        "slos",
+        "runbooks"
+      ],
+      "optional": [
+        "alerts",
+        "releases"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -10355,6 +16259,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-3002-service-catalog-generator",
     "batch": "G30",
     "handlerKind": "production_readiness",
+    "capabilityKey": "frt.g30.service-catalog-generator",
+    "executionClass": "EXTERNAL_PRODUCTION_AUTHORITY",
+    "contractDigest": "sha256:5b9e6cd7c138ebc9b71cdf2c6cd09a0928341229c02fc0448f31afe384ecc864",
+    "inputContract": {
+      "required": [
+        "slos",
+        "runbooks"
+      ],
+      "optional": [
+        "alerts",
+        "releases"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -10378,6 +16296,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-3003-sli-and-slo-generator",
     "batch": "G30",
     "handlerKind": "production_readiness",
+    "capabilityKey": "frt.g30.sli-and-slo-generator",
+    "executionClass": "EXTERNAL_PRODUCTION_AUTHORITY",
+    "contractDigest": "sha256:453056e053be1ef75ae8020cb23ec85e502826715d29c54dbbe804b36512f4e6",
+    "inputContract": {
+      "required": [
+        "slos",
+        "runbooks"
+      ],
+      "optional": [
+        "alerts",
+        "releases"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -10401,6 +16333,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-3004-business-sli-generator",
     "batch": "G30",
     "handlerKind": "production_readiness",
+    "capabilityKey": "frt.g30.business-sli-generator",
+    "executionClass": "EXTERNAL_PRODUCTION_AUTHORITY",
+    "contractDigest": "sha256:60dc90f4bd615671e06899d160b10175122aee3a091f31e6118918da0f573bb7",
+    "inputContract": {
+      "required": [
+        "slos",
+        "runbooks"
+      ],
+      "optional": [
+        "alerts",
+        "releases"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -10424,6 +16370,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-3005-observability-coverage-validator",
     "batch": "G30",
     "handlerKind": "production_readiness",
+    "capabilityKey": "frt.g30.observability-coverage-validator",
+    "executionClass": "EXTERNAL_PRODUCTION_AUTHORITY",
+    "contractDigest": "sha256:0da6a3c36811b4c0a7c152f86fdae46e197199988fd4edf56bff168da0d49b16",
+    "inputContract": {
+      "required": [
+        "slos",
+        "runbooks"
+      ],
+      "optional": [
+        "alerts",
+        "releases"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -10447,6 +16407,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-3006-alert-quality-validator",
     "batch": "G30",
     "handlerKind": "production_readiness",
+    "capabilityKey": "frt.g30.alert-quality-validator",
+    "executionClass": "EXTERNAL_PRODUCTION_AUTHORITY",
+    "contractDigest": "sha256:cfc036c07ec4f55e4744e819b491b54be5c54d54e70ba90d1db5d1af4821cc82",
+    "inputContract": {
+      "required": [
+        "slos",
+        "runbooks"
+      ],
+      "optional": [
+        "alerts",
+        "releases"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -10470,6 +16444,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-3007-runbook-completeness-validator",
     "batch": "G30",
     "handlerKind": "production_readiness",
+    "capabilityKey": "frt.g30.runbook-completeness-validator",
+    "executionClass": "EXTERNAL_PRODUCTION_AUTHORITY",
+    "contractDigest": "sha256:a86c8de6de6c29d57533cc4b42a0ff37615c2c7f408177bd3e735412b3668dd3",
+    "inputContract": {
+      "required": [
+        "slos",
+        "runbooks"
+      ],
+      "optional": [
+        "alerts",
+        "releases"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -10493,6 +16481,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-3008-on-call-readiness-generator",
     "batch": "G30",
     "handlerKind": "production_readiness",
+    "capabilityKey": "frt.g30.on-call-readiness-generator",
+    "executionClass": "EXTERNAL_PRODUCTION_AUTHORITY",
+    "contractDigest": "sha256:bf3145a729720a46e71a608f4925c9f58a8a481ae1eeecac7a72ba51885340ff",
+    "inputContract": {
+      "required": [
+        "slos",
+        "runbooks"
+      ],
+      "optional": [
+        "alerts",
+        "releases"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -10516,6 +16518,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-3009-incident-management-workflow",
     "batch": "G30",
     "handlerKind": "production_readiness",
+    "capabilityKey": "frt.g30.incident-management-workflow",
+    "executionClass": "EXTERNAL_PRODUCTION_AUTHORITY",
+    "contractDigest": "sha256:2efd1cd3ab2eaffc8042dda85198f84711a4d55bb4e257b4985f571c11d6b83d",
+    "inputContract": {
+      "required": [
+        "slos",
+        "runbooks"
+      ],
+      "optional": [
+        "alerts",
+        "releases"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -10539,6 +16555,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-3010-release-train-orchestrator",
     "batch": "G30",
     "handlerKind": "production_readiness",
+    "capabilityKey": "frt.g30.release-train-orchestrator",
+    "executionClass": "EXTERNAL_PRODUCTION_AUTHORITY",
+    "contractDigest": "sha256:c3e2eabddce98483ea872b1aef4223b5282ba3b211c62a5639561030b360f736",
+    "inputContract": {
+      "required": [
+        "slos",
+        "runbooks"
+      ],
+      "optional": [
+        "alerts",
+        "releases"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -10562,6 +16592,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-3011-canary-and-progressive-delivery",
     "batch": "G30",
     "handlerKind": "production_readiness",
+    "capabilityKey": "frt.g30.canary-and-progressive-delivery",
+    "executionClass": "EXTERNAL_PRODUCTION_AUTHORITY",
+    "contractDigest": "sha256:1daea7f6f8333ceb6c4faf73a65dd37fef52ded47f20f6eb05a32a75299abfbb",
+    "inputContract": {
+      "required": [
+        "slos",
+        "runbooks"
+      ],
+      "optional": [
+        "alerts",
+        "releases"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -10585,6 +16629,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-3012-feature-flag-safety-validator",
     "batch": "G30",
     "handlerKind": "production_readiness",
+    "capabilityKey": "frt.g30.feature-flag-safety-validator",
+    "executionClass": "EXTERNAL_PRODUCTION_AUTHORITY",
+    "contractDigest": "sha256:af690c38fb89960fb18ab67d2e49567a3ab34b536d595ce7cfbf0cb329f8f022",
+    "inputContract": {
+      "required": [
+        "slos",
+        "runbooks"
+      ],
+      "optional": [
+        "alerts",
+        "releases"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -10608,6 +16666,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-3013-automated-rollback-generator",
     "batch": "G30",
     "handlerKind": "production_readiness",
+    "capabilityKey": "frt.g30.automated-rollback-generator",
+    "executionClass": "EXTERNAL_PRODUCTION_AUTHORITY",
+    "contractDigest": "sha256:9a933339f82bd8a5b64eb561b71f98545d3ea21fd336ebc1ec3573836bb892de",
+    "inputContract": {
+      "required": [
+        "slos",
+        "runbooks"
+      ],
+      "optional": [
+        "alerts",
+        "releases"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -10631,6 +16703,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-3014-database-and-data-cutover-manager",
     "batch": "G30",
     "handlerKind": "production_readiness",
+    "capabilityKey": "frt.g30.database-and-data-cutover-manager",
+    "executionClass": "EXTERNAL_PRODUCTION_AUTHORITY",
+    "contractDigest": "sha256:25c3d1bf5b9727b80d3e9c66610fdd9c679af8eee843c46181439173374688de",
+    "inputContract": {
+      "required": [
+        "slos",
+        "runbooks"
+      ],
+      "optional": [
+        "alerts",
+        "releases"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -10654,6 +16740,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-3015-legacy-coexistence-and-cutover-validator",
     "batch": "G30",
     "handlerKind": "production_readiness",
+    "capabilityKey": "frt.g30.legacy-coexistence-and-cutover-validator",
+    "executionClass": "EXTERNAL_PRODUCTION_AUTHORITY",
+    "contractDigest": "sha256:a9c12dc391accd6a2a7074320c665bc194e4d8dd9235f5f9b3364487c6323117",
+    "inputContract": {
+      "required": [
+        "slos",
+        "runbooks"
+      ],
+      "optional": [
+        "alerts",
+        "releases"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -10677,6 +16777,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-3016-customer-support-readiness",
     "batch": "G30",
     "handlerKind": "production_readiness",
+    "capabilityKey": "frt.g30.customer-support-readiness",
+    "executionClass": "EXTERNAL_PRODUCTION_AUTHORITY",
+    "contractDigest": "sha256:f9ed438ed3af5bcd537c92b8e4aaf2a827c503d7aa08aa5b47121758892fd969",
+    "inputContract": {
+      "required": [
+        "slos",
+        "runbooks"
+      ],
+      "optional": [
+        "alerts",
+        "releases"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -10700,6 +16814,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-3017-operational-dashboard-generator",
     "batch": "G30",
     "handlerKind": "production_readiness",
+    "capabilityKey": "frt.g30.operational-dashboard-generator",
+    "executionClass": "EXTERNAL_PRODUCTION_AUTHORITY",
+    "contractDigest": "sha256:850654f9d0bfeb11830ef396f5a71e99363bb4904b534081e12c5530bb36f72d",
+    "inputContract": {
+      "required": [
+        "slos",
+        "runbooks"
+      ],
+      "optional": [
+        "alerts",
+        "releases"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -10723,6 +16851,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-3018-continuous-verification-scheduler",
     "batch": "G30",
     "handlerKind": "production_readiness",
+    "capabilityKey": "frt.g30.continuous-verification-scheduler",
+    "executionClass": "EXTERNAL_PRODUCTION_AUTHORITY",
+    "contractDigest": "sha256:cebbe019be944aeb29f334e3c6ad6cd2b762822f2cab8d1ff8f925b7ea241c52",
+    "inputContract": {
+      "required": [
+        "slos",
+        "runbooks"
+      ],
+      "optional": [
+        "alerts",
+        "releases"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -10746,6 +16888,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-3019-continuous-security-recertification",
     "batch": "G30",
     "handlerKind": "production_readiness",
+    "capabilityKey": "frt.g30.continuous-security-recertification",
+    "executionClass": "EXTERNAL_PRODUCTION_AUTHORITY",
+    "contractDigest": "sha256:65b28bad19bd4d1f4ad009addc54131f85d1ceecba5e63855a688c68f2787140",
+    "inputContract": {
+      "required": [
+        "slos",
+        "runbooks"
+      ],
+      "optional": [
+        "alerts",
+        "releases"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -10769,6 +16925,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-3020-continuous-performance-recertification",
     "batch": "G30",
     "handlerKind": "production_readiness",
+    "capabilityKey": "frt.g30.continuous-performance-recertification",
+    "executionClass": "EXTERNAL_PRODUCTION_AUTHORITY",
+    "contractDigest": "sha256:f87014daaec7bf2aee1aec460aaed7705627ec2ee772672a966de6020869bbb9",
+    "inputContract": {
+      "required": [
+        "slos",
+        "runbooks"
+      ],
+      "optional": [
+        "alerts",
+        "releases"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -10792,6 +16962,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-3021-production-closure-certificate",
     "batch": "G30",
     "handlerKind": "production_readiness",
+    "capabilityKey": "frt.g30.production-closure-certificate",
+    "executionClass": "EXTERNAL_PRODUCTION_AUTHORITY",
+    "contractDigest": "sha256:544cb96b9e7330f8bdcede5d72b05d2a3e8257f09537f4be3c1a6fd92be0b292",
+    "inputContract": {
+      "required": [
+        "slos",
+        "runbooks"
+      ],
+      "optional": [
+        "alerts",
+        "releases"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -10815,6 +16999,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-3022-post-release-verification",
     "batch": "G30",
     "handlerKind": "production_readiness",
+    "capabilityKey": "frt.g30.post-release-verification",
+    "executionClass": "EXTERNAL_PRODUCTION_AUTHORITY",
+    "contractDigest": "sha256:f7c3c950ff85da88c5bf51826a2cd48939070e3f4da7cab47c4dee999bfcd437",
+    "inputContract": {
+      "required": [
+        "slos",
+        "runbooks"
+      ],
+      "optional": [
+        "alerts",
+        "releases"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",
@@ -10838,6 +17036,20 @@ export const frtHandlerRegistry = [
     "skillName": "frt-3023-production-incident-learning-pack",
     "batch": "G30",
     "handlerKind": "production_readiness",
+    "capabilityKey": "frt.g30.production-incident-learning-pack",
+    "executionClass": "EXTERNAL_PRODUCTION_AUTHORITY",
+    "contractDigest": "sha256:8761443eaf4ee4121a50895705c1cb447a55d33464de81ec9ba6bb1c561106e6",
+    "inputContract": {
+      "required": [
+        "slos",
+        "runbooks"
+      ],
+      "optional": [
+        "alerts",
+        "releases"
+      ],
+      "additionalProperties": false
+    },
     "actions": [
       "PLAN",
       "ANALYZE",

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "FRT_PHYSICAL_DEVICE_INVENTORY_CANDIDATE",
-  "generated_at": "2026-08-05T11:00:00.233174Z",
+  "generated_at": "2026-08-06T02:52:12.936986Z",
   "state": "CANDIDATE_NOT_EXTERNALLY_VERIFIED",
   "physical_device_count": 1,
   "devices": [
@@ -16,7 +16,7 @@
       "developer_mode": "enabled",
       "pairing_state": "paired",
       "tunnel_state": "unavailable",
-      "device_pseudonym": "hmac-sha256:18ae1779d401ca270a0bb6b80f4eaa5a8ff631615edb7bed11e47eb18208f957",
+      "device_pseudonym": "hmac-sha256:dca5a506bf1612d91a8f5e7e01e5c97dc81f42f9b178403c9e92ae51e64bf42d",
       "reality": "physical"
     }
   ],
@@ -24,14 +24,12 @@
     "ios": {
       "state": "COLLECTED",
       "tool": "518.33",
-      "raw_output_sha256": "sha256:ac0e1a11c9cf04abe171f353ba52a2d959d3e887459542d1a86406974d151417",
+      "raw_output_sha256": "sha256:3414500b2f45dd6e074325a0e8e8528d172db27e5483dea6b68bfcef449f8271",
       "raw_output_persisted": false
     },
     "android": {
-      "state": "COLLECTED",
-      "tool": "adb",
-      "raw_output_sha256": "sha256:36f15c2fe32964a6fbe902e914a47739d4e6304b0d3e812bf08096ff0419b7ae",
-      "raw_output_persisted": false
+      "state": "NOT_RUN",
+      "reason": "ADB_UNAVAILABLE"
     }
   },
   "privacy": {

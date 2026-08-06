@@ -1,14 +1,13 @@
 {
-  "schemaVersion": "1.0",
-  "kind": "FRT_IOS_PHYSICAL_DEVICE_EXECUTION",
+  "schemaVersion": "1.0-redacted",
+  "kind": "FRT_IOS_PHYSICAL_DEVICE_LEGACY_REDACTED_EVIDENCE",
   "generatedAt": "2026-08-01T09:32:50.625Z",
   "routeScope": "bounded-single-public-counter-route-v1",
   "device": {
-    "alias": "Ethan",
     "platform": "ios",
     "osVersion": "27.0",
     "connection": "wireless",
-    "identifierSha256": "sha256:4d764b6cc3b267793c1d9518a6dd9d8a51a2ed1ee4645b3f87d04584dc3b5141"
+    "legacyIdentifierDigest": "sha256:4d764b6cc3b267793c1d9518a6dd9d8a51a2ed1ee4645b3f87d04584dc3b5141"
   },
   "application": {
     "bundleIdentifier": "io.elmos.frtFlutterRoute",
@@ -21,7 +20,7 @@
     "installOutcome": "success",
     "launchOutcome": "success",
     "processConfirmedAfterSeconds": 3,
-    "processIdentifier": 61785,
+    "processConfirmed": true,
     "executable": "Runner"
   },
   "rawEvidenceDigests": {
@@ -29,7 +28,13 @@
     "launch": "sha256:f7e25c82d899631b833379bde2da1fcfa4ab585c8703c6c9d77c74d319a9abbb",
     "runningProcesses": "sha256:3c07e7c0d60575b1fe42e385bd1104da4bcdf4e85a26d0b62156cde863d2aa0b"
   },
-  "status": "PASSED",
+  "privacy": {
+    "deviceNameOrAliasPersisted": false,
+    "rawProcessIdentifierPersisted": false,
+    "rawCommandOutputPersisted": false,
+    "note": "Legacy local evidence was privacy-redacted; use the v2 recorder for a current rerun."
+  },
+  "status": "LEGACY_REDACTED_LOCAL_EVIDENCE_ONLY",
   "boundaries": {
     "manualVisualInspection": "NOT_RUN",
     "manualAssistiveTechnology": "NOT_RUN",

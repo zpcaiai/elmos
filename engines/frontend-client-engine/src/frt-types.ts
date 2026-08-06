@@ -59,6 +59,11 @@ export interface FrtSkillRunRequest {
   readonly context: FrtExecutionContext;
   readonly prerequisiteCertificates: readonly FrtPrerequisiteCertificate[];
   readonly evidence: readonly FrtEvidenceReference[];
+  /** Optional immutable run that this VERIFY request evaluates. */
+  readonly verificationSubject?: {
+    readonly runId: string;
+    readonly resultDigest: string;
+  };
   readonly input?: Readonly<Record<string, unknown>>;
 }
 
@@ -130,6 +135,14 @@ export interface FrtSkillRunResult {
   readonly skillId: string;
   readonly skillName: string;
   readonly batch: string;
+  /** Stable, per-Skill capability identity compiled from the canonical Skill source. */
+  readonly capabilityKey: string;
+  /** Digest of the exact compiled execution contract used for this run. */
+  readonly contractDigest: string;
+  /** Exact resource scope; every read and lifecycle transition must match all fields. */
+  readonly executionScope: FrtExecutionScope;
+  readonly sourceSnapshotDigest: string;
+  readonly policyVersion: string;
   readonly action: FrtAction;
   readonly state: FrtRunState;
   readonly outcome:
@@ -146,6 +159,7 @@ export interface FrtSkillRunResult {
     | "RUNNER_EXECUTION_FAILED"
     | "BLOCKED_BY_RUNNER_ATTESTATION"
     | "BLOCKED_BY_RUNNER_EVIDENCE"
+    | "BLOCKED_BY_PRODUCTION_AUTHORITY"
     | "BLOCKED_BY_LEASE_EXPIRED"
     | "REQUEST_REJECTED"
     | "CANCELLED";
@@ -165,8 +179,8 @@ export interface FrtSkillRunResult {
    */
   readonly customerCodeExecuted: boolean;
   /**
-   * Stays false until a trust-store-verified runner attestation reports a real
-   * production operation. This control plane never sets it itself.
+   * Always false in this control plane. A production operation requires an
+   * independently authorized external production authority and evidence path.
    */
   readonly productionOperationExecuted: boolean;
 }
@@ -200,6 +214,8 @@ export interface FrtBatchPlan {
   readonly skillIds: readonly string[];
   readonly stages: readonly {
     readonly skillId: string;
+    readonly capabilityKey: string;
+    readonly contractDigest: string;
     readonly dependsOn: readonly string[];
     readonly action: "PLAN";
   }[];

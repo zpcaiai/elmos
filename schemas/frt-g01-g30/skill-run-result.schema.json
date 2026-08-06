@@ -11,6 +11,11 @@
     "skillId",
     "skillName",
     "batch",
+    "capabilityKey",
+    "contractDigest",
+    "executionScope",
+    "sourceSnapshotDigest",
+    "policyVersion",
     "action",
     "state",
     "outcome",
@@ -47,6 +52,23 @@
     "batch": {
       "pattern": "^(G(?:0[1-9]|[12][0-9]|30)|UNKNOWN)$"
     },
+    "capabilityKey": {
+      "type": "string",
+      "pattern": "^frt\\.(?:g(?:0[1-9]|[12][0-9]|30)|unknown)\\.[a-z0-9-]+$"
+    },
+    "contractDigest": {
+      "$ref": "#/$defs/digest"
+    },
+    "executionScope": {
+      "$ref": "#/$defs/scope"
+    },
+    "sourceSnapshotDigest": {
+      "$ref": "#/$defs/digest"
+    },
+    "policyVersion": {
+      "type": "string",
+      "minLength": 1
+    },
     "action": {
       "enum": [
         "PLAN",
@@ -80,6 +102,7 @@
         "RUNNER_EXECUTION_FAILED",
         "BLOCKED_BY_RUNNER_ATTESTATION",
         "BLOCKED_BY_RUNNER_EVIDENCE",
+        "BLOCKED_BY_PRODUCTION_AUTHORITY",
         "BLOCKED_BY_LEASE_EXPIRED",
         "REQUEST_REJECTED",
         "CANCELLED"
@@ -169,7 +192,7 @@
       ],
       "properties": {
         "batch": {
-          "pattern": "^G(?:0[1-9]|[12][0-9]|30)$"
+          "pattern": "^(?:G(?:0[1-9]|[12][0-9]|30)|UNKNOWN)$"
         },
         "family": {
           "type": "string",
@@ -198,7 +221,8 @@
     },
     "productionOperationExecuted": {
       "type": "boolean",
-      "description": "True only when a trust-store-verified runner attestation reported a production operation."
+      "const": false,
+      "description": "Always false in the local control plane. Production operations require a separately authorized external production authority."
     }
   },
   "$defs": {
@@ -213,6 +237,28 @@
         "minLength": 1
       },
       "uniqueItems": true
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizationId",
+        "tenantId",
+        "workspaceId",
+        "projectId",
+        "accountId",
+        "environmentId",
+        "releaseId"
+      ],
+      "properties": {
+        "organizationId": { "type": "string", "minLength": 1 },
+        "tenantId": { "type": "string", "minLength": 1 },
+        "workspaceId": { "type": "string", "minLength": 1 },
+        "projectId": { "type": "string", "minLength": 1 },
+        "accountId": { "type": "string", "minLength": 1 },
+        "environmentId": { "type": "string", "minLength": 1 },
+        "releaseId": { "type": "string", "minLength": 1 }
+      }
     },
     "lease": {
       "type": "object",

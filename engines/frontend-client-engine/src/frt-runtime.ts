@@ -47,6 +47,10 @@ import {
   type FrtArtifactStore,
 } from "./frt-artifact-store.js";
 import { executeFrtSemanticHandler } from "./frt-semantic-handlers.js";
+import {
+  assertFRTContractRegistry,
+  validateFrtProductionInput,
+} from "./frt-production-contract.js";
 
 type FrtSkill = (typeof frtCatalog.skills)[number];
 type FrtBatch = (typeof frtCatalog.batches)[number];
@@ -94,6 +98,28 @@ function sameScope(left: FrtExecutionScope, right: FrtExecutionScope): boolean {
     && left.releaseId === right.releaseId;
 }
 
+function executionScope(context: FrtExecutionContext): FrtExecutionScope {
+  return {
+    organizationId: context.organizationId,
+    tenantId: context.tenantId,
+    workspaceId: context.workspaceId,
+    projectId: context.projectId,
+    accountId: context.accountId,
+    environmentId: context.environmentId,
+    releaseId: context.releaseId,
+  };
+}
+
+const unknownExecutionScope: FrtExecutionScope = {
+  organizationId: "unknown",
+  tenantId: "unknown",
+  workspaceId: "unknown",
+  projectId: "unknown",
+  accountId: "unknown",
+  environmentId: "unknown",
+  releaseId: "unknown",
+};
+
 function finding(
   code: string,
   severity: FrtFinding["severity"],
@@ -120,6 +146,12 @@ function batchByKey(key: string): FrtBatch | undefined {
 function handlerBySkillId(skillId: string): FrtHandlerDescriptor {
   const handler = frtHandlerRegistry.find(item => item.skillId === skillId);
   if (!handler) throw new Error(`No registered semantic handler exists for ${skillId}`);
+  const skill = skillByKey(skillId);
+  if (!skill || handler.contractDigest !== skill.executionContract.contractDigest
+      || handler.capabilityKey !== skill.executionContract.capabilityKey
+      || handler.executionClass !== skill.executionContract.executionClass) {
+    throw new Error(`The compiled execution contract is stale for ${skillId}`);
+  }
   return handler;
 }
 
@@ -207,43 +239,11 @@ function prerequisiteFindings(
 }
 
 function requiredEvidenceRoles(skill: FrtSkill): readonly string[] {
-  const batch = Number.parseInt(skill.batch.slice(1), 10);
-  const base = ["CONTRACT_VALIDATION", "SOURCE_LINEAGE", "INDEPENDENT_VERIFICATION"];
-  if (batch <= 3) return [...base, "SCHEMA_VALIDATION", "NEGATIVE_TEST"];
-  if (batch <= 7) return [...base, "SOURCE_BUILD", "TARGET_BUILD", "TYPECHECK", "NEGATIVE_TEST"];
-  if (batch <= 12) return [...base, "SOURCE_RUNTIME", "TARGET_RUNTIME", "JOURNEY", "ACCESSIBILITY"];
-  if (batch <= 17) return [...base, "SOURCE_BUILD", "TARGET_BUILD", "BROWSER_OR_DEVICE_JOURNEY", "HOLDOUT_CORPUS"];
-  if (batch === 18) return [...base, "PACK_SIGNATURE", "PACK_CONFORMANCE", "CONFLICT_RESOLUTION"];
-  if (batch === 19) return [...base, "PROOF_KERNEL", "COUNTEREXAMPLE_REPLAY", "HOLDOUT_CORPUS"];
-  if (batch === 20) return [...base, "DURABLE_RUNTIME", "TENANT_ISOLATION", "SECURITY_TEST", "OPERATOR_JOURNEY"];
-  if (batch <= 26) return [...base, "USER_JOURNEY", "ADMIN_JOURNEY", "HOLDOUT_CORPUS", "REPRESENTATIVE_JOURNEY"];
-  if (batch === 27) return [...base, "PERFORMANCE_RUN", "CONCURRENCY_RUN", "CAPACITY_RUN", "DEGRADATION_TEST"];
-  if (batch === 28) return [...base, "CHAOS_RUN", "FAILOVER_RUN", "RESTORE_RUN", "DR_EXERCISE"];
-  if (batch === 29) return [...base, "PENETRATION_TEST", "PRIVACY_REVIEW", "SUPPLY_CHAIN_ATTESTATION", "INCIDENT_DRILL"];
-  return [...base, "PRODUCTION_OBSERVATION", "CANARY_OBSERVATION", "ROLLBACK_DRILL", "ON_CALL_REVIEW", "CUSTOMER_OUTCOME"];
+  return skill.executionContract.requiredEvidenceRoles;
 }
 
 function skillObligations(skill: FrtSkill): readonly string[] {
-  const obligations = new Set<string>([
-    "PRESERVE_SOURCE_READ_ONLY",
-    "ENFORCE_EXACT_TENANT_AND_RESOURCE_SCOPE",
-    "BIND_INPUT_OUTPUT_AND_EVIDENCE_DIGESTS",
-    "KEEP_UNKNOWN_AND_UNSUPPORTED_SEMANTICS_EXPLICIT",
-    "REQUIRE_INDEPENDENT_GATE_FOR_CERTIFICATION",
-  ]);
-  const batch = Number.parseInt(skill.batch.slice(1), 10);
-  if (batch >= 3 && batch <= 19) obligations.add("TRANSFORM_THROUGH_TYPED_SEMANTIC_IR");
-  if (batch >= 4 && batch <= 17) obligations.add("USE_EXACT_DIRECTIONAL_SOURCE_AND_TARGET_PROFILES");
-  if (skill.route !== null) {
-    obligations.add(`ROUTE_${skill.route.source.toLocaleUpperCase("en-US").replaceAll(" ", "_")}_TO_${skill.route.target.toLocaleUpperCase("en-US").replaceAll(" ", "_")}`);
-    obligations.add("RUN_REAL_SOURCE_AND_TARGET_APPLICATIONS");
-  }
-  if (batch >= 19) obligations.add("MODELS_MAY_PROPOSE_BUT_MAY_NOT_CERTIFY");
-  if (batch >= 21) obligations.add("REQUIRE_REPRESENTATIVE_BUSINESS_AND_ADMIN_JOURNEYS");
-  if (batch >= 27) obligations.add("REQUIRE_AUTHORIZED_EXTERNAL_OR_PRODUCTION_EQUIVALENT_EXECUTION");
-  if (batch >= 29) obligations.add("ZERO_TOLERANCE_FOR_CRITICAL_SECURITY_OR_PRIVACY_FINDINGS");
-  if (batch === 30) obligations.add("PRODUCTION_AUTHORITY_REMAINS_EXTERNAL");
-  return [...obligations];
+  return skill.executionContract.obligations;
 }
 
 function validateEvidence(
@@ -567,6 +567,7 @@ function analysisArtifacts(
   return executeFrtSemanticHandler({
     skill,
     handler,
+    contract: skill.executionContract,
     action: request.action,
     ...(request.input === undefined ? {} : { input: request.input }),
     routes: frtCatalog.routes,
@@ -645,6 +646,7 @@ export class FrtRuntime {
     this.#security = options.security ?? frtSecurityFromEnvironment();
     this.#store = options.store ?? frtRunStoreFromEnvironment();
     this.#artifacts = options.artifacts ?? frtArtifactStoreFromEnvironment();
+    assertFRTContractRegistry();
     this.#recoverInterruptedRuns();
   }
 
@@ -709,7 +711,7 @@ export class FrtRuntime {
             ),
         ],
       });
-      this.#store.saveRun(stored, result, {
+      this.#store.saveRun(previous.executionScope, result, {
         actor: "frt-lease-controller",
         event: lease ? "RUN_LEASE_EXPIRED" : "RUN_RECOVERY_BLOCKED",
         expectedStoredVersion: previous.version,
@@ -730,7 +732,7 @@ export class FrtRuntime {
    * next call.
    */
   heartbeat(
-    scope: Pick<FrtExecutionScope, "organizationId" | "tenantId">,
+    scope: FrtExecutionScope,
     runId: string,
     expectedVersion: number,
     actor: string,
@@ -821,6 +823,8 @@ export class FrtRuntime {
       skillIds,
       stages: skillIds.map((skillId, index) => ({
         skillId,
+        contractDigest: skillByKey(skillId)!.executionContract.contractDigest,
+        capabilityKey: skillByKey(skillId)!.executionContract.capabilityKey,
         dependsOn: index === 0 ? [] : [skillIds[index - 1]!],
         action: "PLAN",
       })),
@@ -831,9 +835,11 @@ export class FrtRuntime {
 
   run(request: FrtSkillRunRequest): FrtSkillRunResult {
     let skill: FrtSkill | undefined;
+    let runContext: FrtExecutionContext | undefined;
     let runId = createHash("sha256").update(canonical(request)).digest("hex").slice(0, 24);
     try {
       request = validateFrtSkillRunRequest(request);
+      runContext = request.context;
       validateContext(request.context);
       requireSafeText(request.idempotencyKey, "idempotencyKey");
       if (!Number.isInteger(request.expectedVersion) || request.expectedVersion < 0) {
@@ -841,7 +847,7 @@ export class FrtRuntime {
       }
       skill = skillByKey(request.skillId);
       if (!skill) throw new Error("skillId is unknown");
-      const idempotencyScope = `${request.context.organizationId}:${request.context.tenantId}:${skill.id}:${request.action}:${request.idempotencyKey}`;
+      const idempotencyScope = `${digest(executionScope(request.context))}:${skill.id}:${request.action}:${request.idempotencyKey}`;
       const fingerprint = digest(request);
       const existing = this.#store.getIdempotency(idempotencyScope);
       if (existing) {
@@ -862,6 +868,7 @@ export class FrtRuntime {
       const roles = requiredEvidenceRoles(skill);
       const obligations = skillObligations(skill);
       const handler = handlerBySkillId(skill.id);
+      const contract = skill.executionContract;
       const inputDigest = digest(request);
       let state: FrtSkillRunResult["state"] = "SUCCEEDED";
       let outcome: FrtSkillRunResult["outcome"] = "PLAN_READY";
@@ -874,13 +881,57 @@ export class FrtRuntime {
           requiredEvidenceRoles: roles,
           obligations,
           handlerKind: handler.handlerKind,
+          capabilityKey: contract.capabilityKey,
+          executionClass: contract.executionClass,
+          contractDigest: contract.contractDigest,
+          inputContract: contract.inputContract,
+          outputContracts: contract.outputContracts,
           surfaceManifestPaths: handler.surfaceManifestPaths,
         },
       };
-      let findings = prerequisites;
+      const inputFindings = validateFrtProductionInput(contract, request.action, request.input);
+      const verificationSubjectFindings: FrtFinding[] = [];
+      let verificationSubject: FrtSkillRunResult | undefined;
+      if (request.action === "VERIFY" && request.verificationSubject) {
+        verificationSubject = this.getRun(request.context, request.verificationSubject.runId);
+        if (!verificationSubject) {
+          verificationSubjectFindings.push(finding(
+            "FRT_VERIFICATION_SUBJECT_NOT_FOUND",
+            "CRITICAL",
+            "The verification subject does not exist in the exact authorized resource scope.",
+            "evidence-owner",
+            true,
+          ));
+        } else {
+          if (verificationSubject.skillId !== skill.id
+              || verificationSubject.resultDigest !== request.verificationSubject.resultDigest
+              || verificationSubject.sourceSnapshotDigest !== request.context.sourceSnapshotDigest) {
+            verificationSubjectFindings.push(finding(
+              "FRT_VERIFICATION_SUBJECT_MISMATCH",
+              "CRITICAL",
+              "The verification subject does not match the exact Skill, result digest, and source snapshot.",
+              "evidence-owner",
+              true,
+            ));
+          }
+          if (["QUEUED", "RUNNING"].includes(verificationSubject.state)) {
+            verificationSubjectFindings.push(finding(
+              "FRT_VERIFICATION_SUBJECT_NOT_TERMINAL",
+              "CRITICAL",
+              "A queued or running subject cannot be verified.",
+              "evidence-owner",
+              true,
+            ));
+          }
+        }
+      }
+      let findings = [...prerequisites, ...inputFindings, ...verificationSubjectFindings];
       if (prerequisites.some(item => item.blocking)) {
         state = "BLOCKED";
         outcome = "BLOCKED_BY_PREREQUISITE";
+      } else if (inputFindings.some(item => item.blocking)) {
+        state = "BLOCKED";
+        outcome = "BLOCKED_BY_INPUT_CONTRACT";
       } else if (request.action === "ANALYZE") {
         artifacts = analysisArtifacts(skill, request, this.#artifacts);
         const handlerFindings = (artifacts.handlerFindings ?? []) as readonly FrtFinding[];
@@ -933,7 +984,7 @@ export class FrtRuntime {
       } else if (request.action === "VERIFY") {
         const evidenceFindings = validateEvidence(roles, request.evidence, this.#security);
         findings = [...findings, ...evidenceFindings];
-        if (evidenceFindings.some(item => item.blocking)) {
+        if (findings.some(item => item.blocking)) {
           state = "BLOCKED";
           outcome = "BLOCKED_BY_EVIDENCE";
         } else {
@@ -943,6 +994,8 @@ export class FrtRuntime {
               passedEvidenceRoles: roles,
               independentEvidence: true,
               certificationAuthorityInvoked: false,
+              contractDigest: contract.contractDigest,
+              verificationSubject: request.verificationSubject ?? null,
             },
           };
         }
@@ -955,6 +1008,11 @@ export class FrtRuntime {
         skillId: skill.id,
         skillName: skill.name,
         batch: skill.batch,
+        capabilityKey: contract.capabilityKey,
+        contractDigest: contract.contractDigest,
+        executionScope: executionScope(request.context),
+        sourceSnapshotDigest: request.context.sourceSnapshotDigest,
+        policyVersion: request.context.policyVersion,
         action: request.action,
         state,
         outcome,
@@ -983,7 +1041,6 @@ export class FrtRuntime {
       });
       return result;
     } catch (error) {
-      const fallbackSkill = skill ?? frtCatalog.skills[0];
       const findings = [requestFinding(error)];
       const unsigned = {
         schemaVersion: "1.0" as const,
@@ -992,6 +1049,11 @@ export class FrtRuntime {
         skillId: skill?.id ?? request.skillId,
         skillName: skill?.name ?? "unknown",
         batch: skill?.batch ?? "UNKNOWN",
+        capabilityKey: skill?.executionContract.capabilityKey ?? "frt.unknown.request-rejected",
+        contractDigest: skill?.executionContract.contractDigest ?? `sha256:${"0".repeat(64)}`,
+        executionScope: runContext ? executionScope(runContext) : unknownExecutionScope,
+        sourceSnapshotDigest: runContext?.sourceSnapshotDigest ?? `sha256:${"0".repeat(64)}`,
+        policyVersion: runContext?.policyVersion ?? "unknown",
         action: request.action,
         state: "FAILED" as const,
         outcome: "REQUEST_REJECTED" as const,
@@ -1001,7 +1063,14 @@ export class FrtRuntime {
         findings,
         evidence: request.evidence ?? [],
         artifacts: {},
-        certificateFragment: certificateFragment(fallbackSkill, false, request.evidence ?? []),
+        certificateFragment: skill ? certificateFragment(skill, false, request.evidence ?? []) : {
+          batch: "UNKNOWN",
+          family: "UNKNOWN",
+          eligibleForBatchGate: false,
+          certification: "NOT_CERTIFIED" as const,
+          externalAuthorityRequired: true as const,
+          evidenceRefs: [],
+        },
         lease: null,
         customerCodeExecuted: false as const,
         productionOperationExecuted: false as const,
@@ -1010,7 +1079,7 @@ export class FrtRuntime {
     }
   }
 
-  getRun(scope: Pick<FrtExecutionScope, "organizationId" | "tenantId">, runId: string): FrtSkillRunResult | undefined {
+  getRun(scope: FrtExecutionScope, runId: string): FrtSkillRunResult | undefined {
     requireSafeText(scope.organizationId, "organizationId");
     requireSafeText(scope.tenantId, "tenantId");
     requireSafeText(runId, "runId");
@@ -1018,14 +1087,14 @@ export class FrtRuntime {
   }
 
   audit(
-    scope: Pick<FrtExecutionScope, "organizationId" | "tenantId">,
+    scope: FrtExecutionScope,
     runId: string,
   ): readonly FrtAuditEvent[] | undefined {
     return this.#store.getRun(scope, runId)?.audit;
   }
 
   claim(
-    scope: Pick<FrtExecutionScope, "organizationId" | "tenantId">,
+    scope: FrtExecutionScope,
     runId: string,
     expectedVersion: number,
     actor: string,
@@ -1051,7 +1120,7 @@ export class FrtRuntime {
   }
 
   cancel(
-    scope: Pick<FrtExecutionScope, "organizationId" | "tenantId">,
+    scope: FrtExecutionScope,
     runId: string,
     expectedVersion: number,
     actor: string,
@@ -1081,7 +1150,7 @@ export class FrtRuntime {
    * separate VERIFY run with independently verified evidence remains mandatory.
    */
   complete(
-    scope: Pick<FrtExecutionScope, "organizationId" | "tenantId">,
+    scope: FrtExecutionScope,
     runId: string,
     expectedVersion: number,
     actor: string,
@@ -1142,6 +1211,15 @@ export class FrtRuntime {
       findings.push(...runnerArtifactFindings(report));
       findings.push(...runnerEvidenceFindings(report, this.#security));
     }
+    if (report.productionOperationExecuted) {
+      findings.push(finding(
+        "FRT_PRODUCTION_OPERATION_AUTHORITY_EXTERNAL",
+        "CRITICAL",
+        "A local runner cannot attest a production operation; production execution requires a separately authorized external production authority and evidence path.",
+        "production-authority",
+        true,
+      ));
+    }
 
     const blocked = findings.some(item => item.blocking);
     const state: FrtSkillRunResult["state"] = blocked
@@ -1149,6 +1227,7 @@ export class FrtRuntime {
       : report.exitStatus === "FAILED" ? "FAILED" : "SUCCEEDED";
     const outcome: FrtSkillRunResult["outcome"] = !attested
       ? "BLOCKED_BY_RUNNER_ATTESTATION"
+      : report.productionOperationExecuted ? "BLOCKED_BY_PRODUCTION_AUTHORITY"
       : blocked ? "BLOCKED_BY_RUNNER_EVIDENCE"
         : report.exitStatus === "FAILED" ? "RUNNER_EXECUTION_FAILED"
           : "RUNNER_EXECUTION_RECORDED";
@@ -1181,7 +1260,7 @@ export class FrtRuntime {
           .sort(),
       },
       customerCodeExecuted: attested && report.customerCodeExecuted,
-      productionOperationExecuted: attested && report.productionOperationExecuted,
+      productionOperationExecuted: false,
       lease: null,
     });
     this.#store.saveRun(scope, completed, {
@@ -1194,7 +1273,7 @@ export class FrtRuntime {
   }
 
   retry(
-    scope: Pick<FrtExecutionScope, "organizationId" | "tenantId">,
+    scope: FrtExecutionScope,
     runId: string,
     expectedVersion: number,
     actor: string,

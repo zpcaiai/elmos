@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import argparse, json, subprocess, sys
+import argparse, hashlib, json, subprocess, sys
 from pathlib import Path
 
 FRT_EXTERNAL_CHECKS = {
@@ -17,6 +17,13 @@ def has_real_file(path: Path) -> bool:
         if item.is_file() and item.name.lower() not in {'readme.md', '.gitkeep'} and item.stat().st_size > 0:
             return True
     return False
+
+def sha256_file(path: Path) -> str:
+    return 'sha256:' + hashlib.sha256(path.read_bytes()).hexdigest()
+
+def canonical_digest(value) -> str:
+    encoded = json.dumps(value, sort_keys=True, separators=(',', ':')).encode('utf-8')
+    return 'sha256:' + hashlib.sha256(encoded).hexdigest()
 
 def main() -> int:
     parser = argparse.ArgumentParser()
@@ -41,9 +48,13 @@ def main() -> int:
 
     if manifest.get('pack_key') == 'frt-g01-g30-platform':
         profile_path = pack / 'acceptance' / 'external-evidence-profile.json'
+        qualification_plan_path = pack / 'acceptance' / 'external-qualification-plan.json'
         baseline_path = pack / 'baselines' / 'manifest.json'
+        qualification_preflight_path = pack / 'certification' / 'external-qualification-preflight.json'
+        qualification_execution_path = pack / 'certification' / 'external-qualification-local-execution.json'
+        frt_request_path = pack / 'certification' / 'frt-gate-request.json'
         frt_result_path = pack / 'certification' / 'frt-gate-result.json'
-        for path in (profile_path, baseline_path, frt_result_path):
+        for path in (profile_path, qualification_plan_path, baseline_path, qualification_preflight_path, qualification_execution_path, frt_request_path, frt_result_path):
             if not path.is_file():
                 failures.append(f'missing FRT evidence-governance contract: {path.relative_to(pack)}')
         if profile_path.is_file():
@@ -65,8 +76,85 @@ def main() -> int:
                 failures.append('FRT baseline automatic updates must be disabled')
             if baseline.get('candidate_and_approved_roots_are_distinct') is not True:
                 failures.append('FRT baseline candidate and approved roots must remain distinct')
+        if qualification_plan_path.is_file() and qualification_preflight_path.is_file():
+            qualification_plan = load(qualification_plan_path)
+            qualification_preflight = load(qualification_preflight_path)
+            encoded_plan = json.dumps(
+                qualification_plan,
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(',', ':'),
+            ).encode('utf-8')
+            plan_digest = 'sha256:' + hashlib.sha256(encoded_plan).hexdigest()
+            plan_cases = qualification_plan.get('cases')
+            preflight_cases = qualification_preflight.get('cases')
+            if qualification_plan.get('case_count') != 15 or not isinstance(plan_cases, list) or len(plan_cases) != 15:
+                failures.append('FRT external qualification plan must contain exactly 15 cases')
+            if qualification_preflight.get('plan_sha256') != plan_digest:
+                failures.append('FRT external qualification preflight is stale')
+            if qualification_preflight.get('case_count') != 15 or not isinstance(preflight_cases, list) or len(preflight_cases) != 15:
+                failures.append('FRT external qualification preflight case inventory is incomplete')
+            elif any(
+                not isinstance(case, dict)
+                or case.get('external_state') != 'NOT_RUN'
+                or case.get('production_operation_authorized') is not False
+                or case.get('certification') != 'NOT_CERTIFIED'
+                for case in preflight_cases
+            ):
+                failures.append('FRT external qualification preflight exceeds local authority')
+            boundaries = qualification_plan.get('boundaries', {})
+            if boundaries.get('local_harness_is_external_evidence') is not False or boundaries.get('preflight_can_upgrade_external_state') is not False:
+                failures.append('FRT external qualification plan weakens the external evidence boundary')
+        if qualification_plan_path.is_file() and qualification_preflight_path.is_file() and qualification_execution_path.is_file():
+            qualification_validator = here.parent / 'frt' / 'external_qualification.py'
+            if not qualification_validator.is_file():
+                failures.append('missing FRT local qualification execution validator')
+            elif subprocess.run([
+                sys.executable,
+                str(qualification_validator),
+                'check-execution',
+                '--plan', str(qualification_plan_path),
+                '--preflight', str(qualification_preflight_path),
+                '--execution', str(qualification_execution_path),
+            ]).returncode:
+                failures.append('FRT local qualification execution failed strict validation')
+            qualification_plan = load(qualification_plan_path)
+            qualification_execution = load(qualification_execution_path)
+            execution_cases = qualification_execution.get('cases')
+            execution_counts = qualification_execution.get('local_execution_counts')
+            if qualification_execution.get('plan_sha256') != canonical_digest(qualification_plan):
+                failures.append('FRT local qualification execution is stale against its plan')
+            if qualification_execution.get('preflight_sha256') != sha256_file(qualification_preflight_path):
+                failures.append('FRT local qualification execution is stale against its preflight')
+            if qualification_execution.get('case_count') != 15 or not isinstance(execution_cases, list) or len(execution_cases) != 15:
+                failures.append('FRT local qualification execution must contain exactly 15 cases')
+            elif any(
+                not isinstance(case, dict)
+                or case.get('code_contract_state') != 'PASSED_LOCAL_TOOLING'
+                or case.get('external_state') != 'NOT_RUN'
+                or case.get('production_operation_authorized') is not False
+                or case.get('certification') != 'NOT_CERTIFIED'
+                for case in execution_cases
+            ):
+                failures.append('FRT local qualification execution exceeds local authority')
+            if (
+                qualification_execution.get('code_contract_counts') != {'PASSED_LOCAL_TOOLING': 15}
+                or not isinstance(execution_counts, dict)
+                or set(execution_counts) - {'BLOCKED_TOOLCHAIN', 'READY_FOR_LOCAL_EXECUTION', 'REQUIRES_EXTERNAL_AUTHORITY'}
+                or execution_counts.get('REQUIRES_EXTERNAL_AUTHORITY') != 11
+                or execution_counts.get('BLOCKED_TOOLCHAIN', 0) + execution_counts.get('READY_FOR_LOCAL_EXECUTION', 0) != 4
+                or qualification_execution.get('external_state_counts') != {'NOT_RUN': 15}
+                or qualification_execution.get('production_operation_authorized') is not False
+                or qualification_execution.get('production_certification') != 'NOT_CERTIFIED'
+            ):
+                failures.append('FRT local qualification execution state inventory is invalid')
         if frt_result_path.is_file():
             frt_result = load(frt_result_path)
+            if not frt_request_path.is_file() or frt_result.get('gate_request_sha256') != sha256_file(frt_request_path):
+                failures.append('FRT gate result is stale or not bound to the current request')
+            unsigned_result = {key: value for key, value in frt_result.items() if key != 'result_digest'}
+            if frt_result.get('result_digest') != canonical_digest(unsigned_result):
+                failures.append('FRT gate result digest mismatch')
             if frt_result.get('local_ready') is not True or frt_result.get('failures') != []:
                 failures.append('FRT repository gate is not locally ready')
             if manifest.get('status') == 'certified' or certification.get('status') == 'certified':

@@ -22,11 +22,92 @@ credentials stay outside the repository.
   verifier must be different people and organizations; the approver cannot be
   the executor.
 
+## Generate and preflight the exact cases
+
+The checked-in generator owns 15 exact cases and maps them to the nine
+authoritative external checks. Adapter IDs are allowlisted identities, not
+commands. Generation and preflight do not download browsers, run customer code,
+authorize production, or upgrade evidence state.
+
+```sh
+python3 scripts/frt/external_qualification.py generate
+python3 scripts/frt/external_qualification.py preflight
+python3 scripts/frt/external_qualification.py exercise
+python3 scripts/frt/external_qualification.py check
+python3 scripts/frt/external_qualification.py check-preflight
+python3 scripts/frt/external_qualification.py check-execution
+```
+
+`preflight` launches Firefox/WebKit only when their exact managed executable is
+already installed, probes hvigor without invoking a build, counts only
+non-placeholder approved/holdout files, and records the availability of the
+external Runner and privacy-minimized device candidate. Missing prerequisites
+become typed blockers. Every case remains `NOT_RUN`,
+`production_operation_authorized=false`, and `NOT_CERTIFIED` even when its local
+toolchain is available.
+
+`exercise` dispatches all 15 case IDs through an explicit allowlisted Python
+adapter registry. It checks the managed-browser launch boundary, hvigor
+evidence boundary, immutable visual-baseline policy, manual AT and physical
+device templates, and the nine typed external-campaign contracts. The emitted
+local-execution report is SHA-bound to the exact plan and preflight. A passed
+adapter code contract is not an external execution result.
+
+Run the repository-side integrity suite separately:
+
+```sh
+cd scripts/frt
+python3 -m unittest \
+  test_external_campaign_parameters.py \
+  test_external_evidence.py \
+  test_external_qualification.py \
+  test_run_frt_gate.py -v
+```
+
+Those signed fixtures prove that the protocol accepts exact records and rejects
+tampering for all nine checks. They are local tests and must never be installed
+under `certification/external-evidence/` as real campaign results.
+
+## Privacy-minimized local iOS execution candidate
+
+An authorized local install/launch rehearsal may be normalized only with the v2
+recorder. Keep the raw `devicectl` device list, install, launch and process JSON
+plus the device-ID file under a disposable temporary root; never place them in
+the repository. Supply an external, non-persisted HMAC key:
+
+```sh
+ELMOS_FRT_DEVICE_ID_HMAC_KEY="$EPHEMERAL_DEVICE_KEY" \
+node scripts/frt/record_frt_ios_device_evidence.mjs \
+  --project /private/.../disposable-flutter-project \
+  --devices-json /private/.../devices.json \
+  --device-id-file /private/.../device-id.txt \
+  --install-json /private/.../install.json \
+  --launch-json /private/.../launch.json \
+  --processes-json /private/.../processes.json
+```
+
+The recorder verifies physical-device reality, a signed `Runner.app`, the exact
+bundle identifier and a live launched process. It persists no device name,
+alias, raw identifier, raw process ID or command output. Its maximum state is
+`PASSED_LOCAL_EVIDENCE_ONLY`; P0 journeys, manual visual/AT review, the signed
+device matrix and customer acceptance remain `NOT_RUN`.
+
 ## One-by-one workflow
 
 1. Create an approved check-specific parameters JSON outside customer source.
    It contains exact commits, targets, devices, workloads, scopes or journeys
    and secret reference names, never secret values.
+   Inspect and validate the exact closed contract before requesting a signature:
+
+   ```sh
+   python3 scripts/frt/external_campaign_parameters.py contract --check performance
+   python3 scripts/frt/external_campaign_parameters.py validate \
+     --check performance --parameters /approved/parameters.json
+   ```
+
+   Unknown fields, raw commands, scope widening, stale plan/case/adapter
+   bindings, arbitrary secret values and weakened check-specific minimums are
+   rejected before authorization can be prepared.
 2. Prepare an unsigned authorization under the run evidence directory:
 
    ```sh
@@ -99,4 +180,6 @@ credentials stay outside the repository.
 | `production_observation` | `FRT_AUTHORIZED_PRODUCTION_OBSERVATION` | local logs or synthetic telemetry |
 | `customer_acceptance` | `FRT_INDEPENDENT_CUSTOMER_ACCEPTANCE` | agent, developer, or synthetic approval |
 
-Until a real record completes this workflow, its check remains `NOT_RUN`.
+Until a real record completes this workflow, its check remains `NOT_RUN`;
+production operations remain unauthorized and production remains
+`NOT_CERTIFIED`.
