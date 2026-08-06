@@ -148,12 +148,14 @@ test.describe("多语言项目生成 UI", () => {
     await page.getByRole("button", { name: "锁定生成计划" }).click();
     const analyze = page.getByRole("button", { name: "分析并整理需求" });
     await expect(analyze).toBeEnabled();
-    await analyze.click();
-    await expect(page.getByText("需求分析被阻断：AUTHENTICATION_REQUIRED")).toBeVisible();
+    await analyze.focus();
+    await expect(analyze).toBeFocused();
+    await analyze.press("Enter");
     await expect.poll(() => page.evaluate(() =>
       (window as Window & { __generationAuthorization?: string })
         .__generationAuthorization ?? "",
     )).toBe("Bearer incorrect-browser-token-000000");
+    await expect(page.getByText("需求分析被阻断：AUTHENTICATION_REQUIRED")).toBeVisible();
     await expect(
       page.getByRole("checkbox", { name: /我已审阅结构化需求/ }),
     ).toBeDisabled();
