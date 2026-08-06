@@ -11,9 +11,6 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
-ROOT = Path(__file__).resolve().parents[2]
-OUTPUT = ROOT / "verification-packs" / "precision-migration-b01-44-runtime" / "b41-qualification" / "results.json"
-
 from scripts.precision_migration.adapters import (
     AdapterRegistry,
     execute,
@@ -22,6 +19,8 @@ from scripts.precision_migration.adapters import (
 from scripts.precision_migration.runtime import Registry, canonical_digest
 from scripts.precision_migration.trust import TrustStore
 
+ROOT = Path(__file__).resolve().parents[2]
+OUTPUT = ROOT / "verification-packs" / "precision-migration-b01-44-runtime" / "b41-qualification" / "results.json"
 TEST_TYPES = ("positive", "negative", "integration", "holdout", "representative")
 
 
@@ -96,7 +95,7 @@ def build() -> dict[str, Any]:
         }, sort_keys=True), encoding="utf-8")
         trust = TrustStore.load(trust_path)
         references = {}
-        for role in ("development", "holdout", "representative"):
+        for role in ("development", "integration", "holdout", "representative"):
             path = root / f"{role}.json"
             path.write_text(json.dumps({"fixture_role": role, "evidence": "bounded-local"}, sort_keys=True) + "\n", encoding="utf-8")
             references[role] = content_ref(path)
@@ -105,8 +104,12 @@ def build() -> dict[str, Any]:
             handler = resolve_handler(entry)
             if handler is None or not callable(handler):
                 raise ValueError(f"B41 handler did not resolve: {skill}")
-            results.append(result(skill, "integration", {"handler_id": entry["handler_id"], "entrypoint": entry["handler_entrypoint"]}))
-            for role, test_type in (("development", "positive"), ("holdout", "holdout"), ("representative", "representative")):
+            for role, test_type in (
+                ("development", "positive"),
+                ("integration", "integration"),
+                ("holdout", "holdout"),
+                ("representative", "representative"),
+            ):
                 output = root / "outputs" / skill / role
                 response = execute(
                     request(skill, references[role], role, private),

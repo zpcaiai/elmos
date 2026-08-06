@@ -28,10 +28,11 @@
     },
     {
       "evidence": {
-        "entrypoint": "scripts.precision_migration.b41:execute_certificate_signing",
-        "handler_id": "b41-certificate-signing-v1"
+        "bounded_local": true,
+        "execution_state": "LOCAL_EXECUTED",
+        "exit_code": 0
       },
-      "result_digest": "sha256:f14c2f5abca82f7487996c69f38f965c13ce05195bfbb17f003ca2cb61cdefbd",
+      "result_digest": "sha256:f0813681614d2886c740bc2b0d27a835209be1a2f0f313f3ed8bce2dad69609f",
       "skill": "pm-b41-certificate-signing",
       "state": "PASS",
       "test_type": "integration"
@@ -80,10 +81,11 @@
     },
     {
       "evidence": {
-        "entrypoint": "scripts.precision_migration.b41:execute_conversion_provenance",
-        "handler_id": "b41-conversion-provenance-v1"
+        "bounded_local": true,
+        "execution_state": "LOCAL_EXECUTED",
+        "exit_code": 0
       },
-      "result_digest": "sha256:ac8c4117e6fe2c49babe5a5d4bad3425f96b99fae3bc2efb39cde4f601082d48",
+      "result_digest": "sha256:1b5db70c6e98f94afcc4f65290d445be9637935db10de43b3b32ef6944f6edf4",
       "skill": "pm-b41-conversion-provenance",
       "state": "PASS",
       "test_type": "integration"
@@ -132,10 +134,11 @@
     },
     {
       "evidence": {
-        "entrypoint": "scripts.precision_migration.b41:execute_correctness_classifier",
-        "handler_id": "b41-correctness-level-classifier-v1"
+        "bounded_local": true,
+        "execution_state": "LOCAL_EXECUTED",
+        "exit_code": 0
       },
-      "result_digest": "sha256:0a91f48d61d408c49e2d7227d2661e92fa7770339fa1e4b51b88d2da41534ca4",
+      "result_digest": "sha256:0c5ffc74eeb114cf5e1911e699141bc939edf0cd5ab3500b59400c606be4f9f8",
       "skill": "pm-b41-correctness-level-classifier",
       "state": "PASS",
       "test_type": "integration"
@@ -184,10 +187,11 @@
     },
     {
       "evidence": {
-        "entrypoint": "scripts.precision_migration.b41:execute_evidence_manifest",
-        "handler_id": "b41-evidence-manifest-v1"
+        "bounded_local": true,
+        "execution_state": "LOCAL_EXECUTED",
+        "exit_code": 0
       },
-      "result_digest": "sha256:2e58c86f2177efb3171da14ab342beb803e87266932d59bd6d60503224c26948",
+      "result_digest": "sha256:264c0f06fd165c2a3a18a864e0fb604b0c39256b481a88e087ac129583c41eb6",
       "skill": "pm-b41-evidence-manifest",
       "state": "PASS",
       "test_type": "integration"
@@ -236,10 +240,11 @@
     },
     {
       "evidence": {
-        "entrypoint": "scripts.precision_migration.b41:execute_module_equivalence_certificate",
-        "handler_id": "b41-module-equivalence-certificate-v1"
+        "bounded_local": true,
+        "execution_state": "CONDITIONALLY_VERIFIED",
+        "exit_code": 4
       },
-      "result_digest": "sha256:55ca5461fa554ed36e0eeb2265887b7e9521f3cdabb3ffd5583ca98f4761f946",
+      "result_digest": "sha256:85b430042d6ef29694c3a2766b88c08c14ea0b2657e181ccd7e392987554e7db",
       "skill": "pm-b41-module-equivalence-certificate",
       "state": "PASS",
       "test_type": "integration"
@@ -288,10 +293,11 @@
     },
     {
       "evidence": {
-        "entrypoint": "scripts.precision_migration.b41:execute_release_gate",
-        "handler_id": "b41-release-gate-engine-v1"
+        "bounded_local": true,
+        "execution_state": "CONDITIONALLY_VERIFIED",
+        "exit_code": 4
       },
-      "result_digest": "sha256:35bd6a2f9260c44663b95a961f713ffc4bc6a1ccad20cac932eb7be741028750",
+      "result_digest": "sha256:cf500d83fe6d489eaf63bbcaaceddefd374baee1af7d01d940ba46f31c7f7a46",
       "skill": "pm-b41-release-gate-engine",
       "state": "PASS",
       "test_type": "integration"
@@ -340,10 +346,11 @@
     },
     {
       "evidence": {
-        "entrypoint": "scripts.precision_migration.b41:execute_rule_proof_certificate",
-        "handler_id": "b41-rule-proof-certificate-v1"
+        "bounded_local": true,
+        "execution_state": "CONDITIONALLY_VERIFIED",
+        "exit_code": 4
       },
-      "result_digest": "sha256:6ceab974f83d8f2200e4a6a9034660405644abf6bae62f01003c02eb95bfc32c",
+      "result_digest": "sha256:14ae27862b8c450279823f5edeffa7c85ee70221e63d231d7e855c35a2e6be94",
       "skill": "pm-b41-rule-proof-certificate",
       "state": "PASS",
       "test_type": "integration"
@@ -392,10 +399,11 @@
     },
     {
       "evidence": {
-        "entrypoint": "scripts.precision_migration.b41:execute_runtime_evidence_package",
-        "handler_id": "b41-runtime-evidence-package-v1"
+        "bounded_local": true,
+        "execution_state": "LOCAL_EXECUTED",
+        "exit_code": 0
       },
-      "result_digest": "sha256:8ddbd3ee244e28e94aa4c9f76ffb21aa963beaecbb30b3958d7259ac26566515",
+      "result_digest": "sha256:4f78e8b2ea943da3cd8677a6d6654d5feaa54dc3922ab2c186beac35b447cf97",
       "skill": "pm-b41-runtime-evidence-package",
       "state": "PASS",
       "test_type": "integration"
@@ -444,10 +452,11 @@
     },
     {
       "evidence": {
-        "entrypoint": "scripts.precision_migration.b41:execute_semantic_loss_report",
-        "handler_id": "b41-semantic-loss-report-v1"
+        "bounded_local": true,
+        "execution_state": "LOCAL_EXECUTED",
+        "exit_code": 0
       },
-      "result_digest": "sha256:b12e1cf4bdb429b2d8663d94db2ff6667c220f04f96f090f87b20cb890d7cd11",
+      "result_digest": "sha256:d829a9ea32f9e06c3f3471481da2178cd1676ef736e79ff4bc188d3dd13100c0",
       "skill": "pm-b41-semantic-loss-report",
       "state": "PASS",
       "test_type": "integration"
@@ -496,10 +505,11 @@
     },
     {
       "evidence": {
-        "entrypoint": "scripts.precision_migration.b41:execute_unresolved_obligation_report",
-        "handler_id": "b41-unresolved-obligation-report-v1"
+        "bounded_local": true,
+        "execution_state": "LOCAL_EXECUTED",
+        "exit_code": 0
       },
-      "result_digest": "sha256:ee8793c0b23a55886eb1b6bbc34bb8335b17d494b553d86e35f5aa4244d4a8bc",
+      "result_digest": "sha256:ac9acc04bd3d5c83adc5d6427db4a3c04823a52208f29b87a5ae52304c847a63",
       "skill": "pm-b41-unresolved-obligation-report",
       "state": "PASS",
       "test_type": "integration"

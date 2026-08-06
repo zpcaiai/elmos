@@ -17,6 +17,7 @@ from typing import Any
 
 from scripts.precision_migration.adapters import AdapterRegistry
 from scripts.precision_migration.exact import ExactImplementationRegistry, PROGRAM_OPERATIONS
+from scripts.precision_migration.external import ExternalProfileRegistry, scaffold as external_scaffold
 from scripts.precision_migration.native import EXTERNAL_NATIVE_ADAPTERS, NATIVE_ADAPTERS
 from scripts.precision_migration.orchestration import OrchestratorRegistry, _topological
 
@@ -49,6 +50,11 @@ def build() -> dict[str, Any]:
     adapters = AdapterRegistry.load()
     exact = ExactImplementationRegistry.load()
     orchestrators = OrchestratorRegistry.load()
+    external_profiles = ExternalProfileRegistry.load()
+    external_readiness_path = PACK / "external-readiness" / "current.json"
+    require(external_readiness_path.is_file(), "checked-in external readiness state is missing", failures)
+    if external_readiness_path.is_file():
+        require(load(external_readiness_path) == external_scaffold(), "checked-in external readiness state must remain exact NOT_RUN scaffold", failures)
 
     require(manifest.get("runtime_skill_count") == 632, "installed manifest must contain 632 Runtime Skills", failures)
     require(manifest.get("workspace_skill_count") == 632, "workspace mirror must contain 632 Skills", failures)
@@ -80,6 +86,18 @@ def build() -> dict[str, Any]:
         exact_programs.add(str(profile.get("implementation_digest")))
     require(len(exact_entrypoints) == 536, "exact handler entrypoints must be unique", failures)
     require(len(exact_programs) == 536, "exact Skill programs must have unique implementation digests", failures)
+    require(len(external_profiles.by_skill) == 557, "external execution profiles must cover 557 non-B16 Skills", failures)
+    b16_skills = {
+        skill for skill, entry in adapters.by_skill.items()
+        if str(entry.get("handler_id", "")).startswith("batch29-route-executor-v1:")
+    }
+    require(
+        set(external_profiles.by_skill).isdisjoint(b16_skills)
+        and set(external_profiles.by_skill) | b16_skills
+        == {skill for skill, entry in adapters.by_skill.items() if entry.get("kind") == "skill"},
+        "external profiles and B16 routes must partition all 587 child Skills",
+        failures,
+    )
 
     for profile in orchestrators.by_handler.values():
         order = _topological(list(profile["nodes"]), list(profile["edges"]))
@@ -114,6 +132,37 @@ def build() -> dict[str, Any]:
         require(passed_flag is True, f"{key} qualification is not fully passed", failures)
         qualification_evidence[key] = {"digest": digest(path), "skills": skill_count, "results": result_count}
 
+    external_engineering_path = PACK / "external-engineering-qualification" / "results.json"
+    external_engineering = load(external_engineering_path)
+    require(external_engineering.get("skill_count") == 557, "external engineering Skill count drifted", failures)
+    require(external_engineering.get("case_count") == 2785, "external engineering case count drifted", failures)
+    require(external_engineering.get("result_count") == 2785, "external engineering result count drifted", failures)
+    require(external_engineering.get("actual_handler_invocation_count") == 2785, "external engineering handler invocation count drifted", failures)
+    require(external_engineering.get("all_engineering_tests_passed") is True, "external engineering suite is not fully passed", failures)
+    require(external_engineering.get("evidence_class") == "LOCAL_ENGINEERING_SIMULATION", "external engineering evidence class is invalid", failures)
+    require(external_engineering.get("production_eligible") is False, "external engineering evidence must not be production eligible", failures)
+    require(
+        external_engineering.get("release_engineering_drill", {}).get("state") == "PASS"
+        and external_engineering.get("release_engineering_drill", {}).get("test_count") == 8,
+        "external release engineering drill is incomplete",
+        failures,
+    )
+    require(
+        external_engineering.get("real_external_state", {}).get("decision") == "NOT_READY"
+        and external_engineering.get("real_external_state", {}).get("verified_skill_count") == 0
+        and external_engineering.get("real_external_state", {}).get("production_operation_authorized") is False
+        and external_engineering.get("real_external_state", {}).get("production_certification") == "NOT_CERTIFIED",
+        "external engineering result must preserve the real NOT_READY boundary",
+        failures,
+    )
+    qualification_evidence["external_engineering"] = {
+        "digest": digest(external_engineering_path),
+        "skills": 557,
+        "results": 2785,
+        "evidence_class": "LOCAL_ENGINEERING_SIMULATION",
+        "production_eligible": False,
+    }
+
     coverage_path = PACK / "coverage" / "coverage-matrix.json"
     coverage = load(coverage_path)
     summaries = coverage.get("summaries", {})
@@ -122,6 +171,20 @@ def build() -> dict[str, Any]:
         "bounded_domain_holdout", "bounded_domain_representative", "local_execution",
     ):
         require(summaries.get(dimension) == {"PASSED": 587}, f"coverage dimension is incomplete: {dimension}", failures)
+    require(summaries.get("external_execution_profile") == {"DECLARED": 557, "NOT_APPLICABLE": 30}, "external execution profile coverage is incomplete", failures)
+    require(summaries.get("production_workflow_code") == {"PASSED": 587}, "production workflow code coverage is incomplete", failures)
+    for dimension in (
+        "external_engineering_positive",
+        "external_engineering_negative",
+        "external_engineering_integration",
+        "external_engineering_holdout_fixture",
+        "external_engineering_representative_fixture",
+    ):
+        require(
+            summaries.get(dimension) == {"NOT_APPLICABLE": 30, "PASSED": 557},
+            f"external engineering coverage is incomplete: {dimension}",
+            failures,
+        )
     require(summaries.get("external_evidence") == {"NOT_RUN": 587}, "external evidence boundary must remain NOT_RUN", failures)
     require(summaries.get("independent_verification") == {"NOT_RUN": 587}, "independent verification boundary must remain NOT_RUN", failures)
 
@@ -131,13 +194,18 @@ def build() -> dict[str, Any]:
         for path in (
             "scripts/precision_migration/adapters.py",
             "scripts/precision_migration/exact.py",
+            "scripts/precision_migration/external.py",
             "scripts/precision_migration/generated_handlers.py",
             "scripts/precision_migration/generated_orchestrators.py",
             "scripts/precision_migration/native.py",
             "scripts/precision_migration/orchestration.py",
+            "scripts/precision_migration/production_runtime.py",
+            "scripts/precision_migration/qualify_external_engineering.py",
             "scripts/precision_migration/runtime.py",
             "scripts/precision_migration/trust.py",
             "tooling/generate_precision_migration_handlers.py",
+            "tooling/generate_precision_migration_external_profiles.py",
+            "tooling/generate_precision_migration_external_engineering_cases.py",
             "tooling/integrate_precision_migration_batch1_44.py",
         )
     }
@@ -157,12 +225,30 @@ def build() -> dict[str, Any]:
         },
         "handler_families": dict(sorted(families.items())),
         "qualification": qualification_evidence,
+        "external_workflow_code": {
+            "profile_registry_digest": external_profiles.digest,
+            "profile_count": len(external_profiles.by_skill),
+            "required_skill_stages": list(external_profiles.payload["required_stages"]),
+            "required_release_stages": list(external_profiles.payload["release_stages"]),
+            "current_evidence_state": external_scaffold()["stage_states"],
+            "engineering_simulation": {
+                "case_count": 2785,
+                "actual_handler_invocation_count": 2785,
+                "release_drill_test_count": 8,
+                "decision": "PASSED_LOCAL_ENGINEERING_SIMULATION",
+                "production_eligible": False,
+            },
+        },
         "bindings": {
             "installed_manifest": digest(manifest_path),
             "adapter_registry": digest(ROOT / "docs" / "precision-migration-b01-44" / "adapter-registry.json"),
             "exact_registry": digest(ROOT / "docs" / "precision-migration-b01-44" / "handler-implementations.json"),
             "orchestrator_registry": digest(ROOT / "docs" / "precision-migration-b01-44" / "orchestrator-implementations.json"),
             "coverage_matrix": digest(coverage_path),
+            "external_execution_profiles": digest(ROOT / "docs" / "precision-migration-b01-44" / "external-execution-profiles.json"),
+            "external_engineering_cases": digest(PACK / "external-engineering-qualification" / "cases.json"),
+            "external_engineering_results": digest(external_engineering_path),
+            "external_readiness": digest(external_readiness_path) if external_readiness_path.is_file() else None,
             "runtime_code": runtime_code,
         },
         "external_boundaries": {

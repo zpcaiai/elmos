@@ -54,6 +54,29 @@ command. Each generated program pins its algorithm, workflow, native-tool plan,
 gate policy, artifact name, media type, and write-once policy at generation
 time; runtime Batch/name inference is forbidden.
 
+The remaining 557 non-B16 child Skills also have immutable external execution
+profiles in `external-execution-profiles.json`. Profiles distinguish real
+compiler/database/device toolchains from domain, repository, evidence, and
+cutover runtimes; they never label an inapplicable compiler build as a pass.
+Every profile requires native source and target execution, an independently
+partitioned holdout, and an authorized representative customer workload before
+external verification. The production operation runtime accepts only an
+externally signed adapter registry, digest-pinned executable, typed argv,
+content-addressed inputs, and scoped authorization. Mutating Canary operations
+add idempotency, monotonic fencing, a registered rollback adapter, independent
+approval, and `UNKNOWN` reconciliation for ambiguous outcomes.
+
+The repository also generates an exact 2,785-case engineering suite for those
+557 profiles: five actual handler invocations per Skill for positive source
+fixture, target integration fixture, fail-closed negative, locally partitioned
+holdout, and engineering representative fixture behavior. A separate release
+drill executes disposable Ed25519 signing and verification, digest-pinned
+adapter execution, injection rejection, signed Canary and registered rollback,
+and an ephemeral external-certificate chain. Results are explicitly
+`LOCAL_ENGINEERING_SIMULATION`, `production_eligible=false`; they never replace
+native toolchain, independent-party, customer, HSM, production, or certification
+evidence.
+
 The authenticated Web Console API exposes durable tenant-isolated jobs:
 
 - `POST/GET /api/precision-migration/jobs`
@@ -78,6 +101,33 @@ Current external source/target, independent holdout, representative workload,
 shadow/canary, security review, customer acceptance, and production evidence is
 `NOT_RUN`. Production certification is `NOT_CERTIFIED`.
 
+Code-owned external workflow validation is available without promoting those
+states:
+
+```bash
+python3 scripts/precision_migration/external.py validate-profiles
+python3 tooling/generate_precision_migration_external_engineering_cases.py --check
+python3 scripts/precision_migration/qualify_external_engineering.py --check
+python3 scripts/precision_migration/production_runtime.py \
+  --request /authorized/operation.json \
+  --adapter-registry /authorized/signed-adapters.json \
+  --trust-store /authorized/trust-store.json \
+  --evidence-root /approved/evidence \
+  --ledger /durable/precision-operations.sqlite3 \
+  --output-dir /write-once/raw-receipts
+python3 scripts/precision_migration/external.py evaluate \
+  --campaign /authorized/external-campaign.json \
+  --trust-store /authorized/trust-store.json \
+  --evidence-root /approved/evidence
+```
+
+The external gate validates exact 557-Skill aggregate manifests, disjoint
+development/holdout/representative corpora, source and target receipts,
+executor/verifier separation, customer consent and purpose binding, production
+HSM attestations, approved Canary evidence, exercised or actual rollback, and
+an independently signed certificate. Only a complete real chain can return
+`CERTIFIED`; the checked-in state remains `NOT_READY / NOT_CERTIFIED`.
+
 ## Validate
 
 ```bash
@@ -94,5 +144,9 @@ has run.
 The installed identities and evidence boundary are recorded in
 `installed-manifest.json`; handler declarations are in `adapter-registry.json`,
 exact implementation profiles are in `handler-implementations.json` and
-`orchestrator-implementations.json`, and the multidimensional 587-Skill report
-is in the Batch 35 verification pack.
+`orchestrator-implementations.json`, external production profiles are in
+`external-execution-profiles.json`, and the multidimensional 587-Skill report is
+in the Batch 35 verification pack. Generated engineering cases and fresh
+execution bindings are in `external-engineering-qualification/cases.json` and
+`external-engineering-qualification/results.json`; authoritative external state
+remains separately isolated in `external-readiness/current.json`.

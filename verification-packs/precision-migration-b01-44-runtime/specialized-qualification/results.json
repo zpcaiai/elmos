@@ -30,10 +30,13 @@
     },
     {
       "evidence": {
-        "handler_id": "repository-assessment-v1",
-        "inventory_created": true
+        "detected_manifests": [
+          "pyproject.toml"
+        ],
+        "file_count": 4,
+        "truncated": false
       },
-      "result_digest": "sha256:7de2b595950f8346c9a04db87de501439fe15d0a35a7b1b89aba0129e08411a5",
+      "result_digest": "sha256:2b1318fc19c841b7b7075b6737c145d5f345563fcd7b96703177f7d714420b1c",
       "skill": "pm-b02-repository-modernization-assessment",
       "state": "PASS",
       "test_type": "integration"
@@ -86,10 +89,11 @@
     },
     {
       "evidence": {
-        "entrypoint": "scripts.precision_migration.b42:execute_automatic_rollback",
-        "handler_id": "b42-automatic-rollback-v1"
+        "decision_state": "CONTINUE",
+        "input_digest": "sha256:00e1a85454f1544a8fe8c8d87053847b6aaa9db8ebfe02f5f1acaf851cd5836e",
+        "production_side_effects_executed": false
       },
-      "result_digest": "sha256:b1eaf3b86a984ecf8244a8904ad4d994b1543cd55e0c36d7946a1ee3065b3c46",
+      "result_digest": "sha256:d6de7b8405d5de6e9fdf407b6d22ba6620431f452e868c19cebbda078d472644",
       "skill": "pm-b42-automatic-rollback",
       "state": "PASS",
       "test_type": "integration"
@@ -138,10 +142,11 @@
     },
     {
       "evidence": {
-        "entrypoint": "scripts.precision_migration.b42:execute_canary_traffic_planner",
-        "handler_id": "b42-canary-traffic-planner-v1"
+        "decision_state": "PASS",
+        "input_digest": "sha256:f28bc1cdd133ef53ba5db7e61c36961d46d1d621fd6d02ac63c1681fa640ad5f",
+        "production_side_effects_executed": false
       },
-      "result_digest": "sha256:9e0b4e6f02c5fc2f3430f6c92567ed6a4de088732b3c71ec2b95c36664524a4b",
+      "result_digest": "sha256:ecbb8fae690e5d5d5e54d9a47f55576529152a04f4eb5dc417de1bfc470f08f9",
       "skill": "pm-b42-canary-traffic-planner",
       "state": "PASS",
       "test_type": "integration"
@@ -190,10 +195,11 @@
     },
     {
       "evidence": {
-        "entrypoint": "scripts.precision_migration.b42:execute_dual_write_validation",
-        "handler_id": "b42-dual-write-validation-v1"
+        "decision_state": "PASS",
+        "input_digest": "sha256:f582a70a7280318d6b38162aa32515ad961b51ece21edb7e4b254fc82e0a8e11",
+        "production_side_effects_executed": false
       },
-      "result_digest": "sha256:55e9393ae209866e79f9ca571530144bf1ffde2f21830bd6963e22baa33804ec",
+      "result_digest": "sha256:8d3638ad8a82999fd330256acc3553abf433aed62db2c1c0c14b5d594d97e93a",
       "skill": "pm-b42-dual-write-validation",
       "state": "PASS",
       "test_type": "integration"
@@ -242,10 +248,11 @@
     },
     {
       "evidence": {
-        "entrypoint": "scripts.precision_migration.b42:execute_live_event_replay",
-        "handler_id": "b42-live-event-replay-v1"
+        "decision_state": "PASS",
+        "input_digest": "sha256:eecaa5a0e03ba208be189e0411078d97f2cb09633b49dca4cdf1753e9a922929",
+        "production_side_effects_executed": false
       },
-      "result_digest": "sha256:2594baa06b0507917bdd267d7633eac2fe10fdbdce6c536c4b4f0857d0610efb",
+      "result_digest": "sha256:642c83d4da7ee806dab5d328623903bc2e0fbebbafb3d1c08b055331e7c7faa1",
       "skill": "pm-b42-live-event-replay",
       "state": "PASS",
       "test_type": "integration"
@@ -294,10 +301,11 @@
     },
     {
       "evidence": {
-        "entrypoint": "scripts.precision_migration.b42:execute_migration_wave_planner",
-        "handler_id": "b42-migration-wave-planner-v1"
+        "decision_state": "PASS",
+        "input_digest": "sha256:c711d1cc63781e0990b5caa3b0f3cea12bfeb4ce9f38a953e54223da79b4bd44",
+        "production_side_effects_executed": false
       },
-      "result_digest": "sha256:036b619cb689714b6a14fc92c96c0290e6ce0687880c00a88dbf9be45efeed60",
+      "result_digest": "sha256:49b8aacbdc12088cbd878ae9d5e04f0b3c27e426088a16ca96b6b88e53c66765",
       "skill": "pm-b42-migration-wave-planner",
       "state": "PASS",
       "test_type": "integration"
@@ -346,10 +354,11 @@
     },
     {
       "evidence": {
-        "entrypoint": "scripts.precision_migration.b42:execute_post_cutover_monitoring",
-        "handler_id": "b42-post-cutover-monitoring-v1"
+        "decision_state": "PASS",
+        "input_digest": "sha256:617d0aa7e67e57ae9d7bec671475a568c974fa3b287ee4d1ea8d5c624cc78ae1",
+        "production_side_effects_executed": false
       },
-      "result_digest": "sha256:a26197762f4c18ad6cc6bc1a1bcebadece1ee64f6b5c24319a974b8c68dbeed0",
+      "result_digest": "sha256:334b0dabe7b2a66a0cfed6d528eb0112d9ae1ec7043d9be0cd2c935c6f26746e",
       "skill": "pm-b42-post-cutover-monitoring",
       "state": "PASS",
       "test_type": "integration"
@@ -398,10 +407,11 @@
     },
     {
       "evidence": {
-        "entrypoint": "scripts.precision_migration.b42:execute_production_shadow_run",
-        "handler_id": "b42-production-shadow-run-v1"
+        "decision_state": "PASS",
+        "input_digest": "sha256:0c69c76f86d3e03663713c8783d5f7248273709a44e1e2e3fe8033ea73444cb2",
+        "production_side_effects_executed": false
       },
-      "result_digest": "sha256:b7838e05a745f20a0640a355c5a0094e1450b264569906837f5e49c3f768f097",
+      "result_digest": "sha256:c4328eeed010fc3ad06f1740fa904c953d5460254ed15d907e55473477497e41",
       "skill": "pm-b42-production-shadow-run",
       "state": "PASS",
       "test_type": "integration"
@@ -450,10 +460,11 @@
     },
     {
       "evidence": {
-        "entrypoint": "scripts.precision_migration.b42:execute_progressive_cutover",
-        "handler_id": "b42-progressive-cutover-v1"
+        "decision_state": "PASS",
+        "input_digest": "sha256:95bba0d3b843faf0eea0fe60eb609f15b314ab990892bcb9544577f2d26c178c",
+        "production_side_effects_executed": false
       },
-      "result_digest": "sha256:c00056af7b84a2f099a56b5180d4683780c22e708060d1273fbf94aea7d6b649",
+      "result_digest": "sha256:3b49cfc888cdab880a3fd12397785c381988001969b43f0fe5beaf7a8cabbcd1",
       "skill": "pm-b42-progressive-cutover",
       "state": "PASS",
       "test_type": "integration"
@@ -502,10 +513,11 @@
     },
     {
       "evidence": {
-        "entrypoint": "scripts.precision_migration.b42:execute_side_effect_suppression",
-        "handler_id": "b42-side-effect-suppression-v1"
+        "decision_state": "PASS",
+        "input_digest": "sha256:f84c7afd8674e1c6c539a77c8433c738bea8154dd9c80105146fdedca86c86ed",
+        "production_side_effects_executed": false
       },
-      "result_digest": "sha256:581a6d919d0a1fc1e33ed35bf8ef725126d112a6fa92443231da192425926ac7",
+      "result_digest": "sha256:2a16f2e8a12953d3a94605d97c612640640cf8c92ce139e741f2d247634270bf",
       "skill": "pm-b42-side-effect-suppression",
       "state": "PASS",
       "test_type": "integration"
@@ -554,10 +566,11 @@
     },
     {
       "evidence": {
-        "entrypoint": "scripts.precision_migration.b42:execute_strangler_routing",
-        "handler_id": "b42-strangler-routing-v1"
+        "decision_state": "PASS",
+        "input_digest": "sha256:596e2df45809fc36c19c2ebdc6bafedec509e20a1e53279dec08fec925618b2d",
+        "production_side_effects_executed": false
       },
-      "result_digest": "sha256:374c2853a031142b8a10183b12318520d7d4993faccd687e1df733a5382c2eb7",
+      "result_digest": "sha256:15001bd4923178cd86a1ae948bdfb9048383fdca1420bf9913bbb3a4976e25ca",
       "skill": "pm-b42-strangler-routing",
       "state": "PASS",
       "test_type": "integration"

@@ -1,0 +1,24 @@
+{
+  "decision": "NOT_READY",
+  "external_skill_evidence_complete": false,
+  "failures": [],
+  "namespace": "precision-migration-b01-44",
+  "production_certification": "NOT_CERTIFIED",
+  "production_evidence_complete": false,
+  "production_operation_authorized": false,
+  "profile_count": 557,
+  "profile_registry_digest": "sha256:5645fedd1b927cab109d66a548a87f8ef4ebe76247c1e0165e1141f98edae067",
+  "result_digest": "sha256:042c9be6ba5dfaf8a18d1b465cc718cf1f82cbd5b6a38e3ae468570ab6a3bf86",
+  "schema_version": 1,
+  "stage_states": {
+    "authorized_canary": "NOT_RUN",
+    "external_certification": "NOT_RUN",
+    "independent_holdout": "NOT_RUN",
+    "native_source_execution": "NOT_RUN",
+    "native_target_execution": "NOT_RUN",
+    "production_hsm": "NOT_RUN",
+    "representative_customer_workload": "NOT_RUN",
+    "verified_rollback": "NOT_RUN"
+  },
+  "verified_skill_count": 0
+}

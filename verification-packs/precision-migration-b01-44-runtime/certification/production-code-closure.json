@@ -1,19 +1,28 @@
 {
   "bindings": {
     "adapter_registry": "sha256:3f654604105712a6063187e1f857c1ce7a4a4e850b52523a0a728882b5e172c7",
-    "coverage_matrix": "sha256:cb802c436122401c211d191b104e33214e753396d3309b1534bcef82dcc5fa40",
+    "coverage_matrix": "sha256:65b21b1a684364db1f4ccb142bd29c6cecc2c6545d787251411c40ce98a5de6f",
     "exact_registry": "sha256:67d55900bf24740359b3f7720c41d47d8592cc14a53f1bb99481054f0cd99745",
+    "external_engineering_cases": "sha256:9b80069bfdae5ba9f9cfcf597c7344ae58e81878a3be4b0f10e7c50e4592b7d4",
+    "external_engineering_results": "sha256:103612c105ca73997e2e6c71b14433d23b1701b536397589128d2cbe47b7c4c7",
+    "external_execution_profiles": "sha256:8477cc7798c8fc0c0e21967511d895f908c57d4ebe40ab65cacc3a86df418078",
+    "external_readiness": "sha256:dad6aa5e6483234f4e79104136d6a290e076f49cfdf5b62f6ab5ce0968577916",
     "installed_manifest": "sha256:be67c0853fed09a30b9a7e218462e1e1dfb3eaead32b191d9e91c030a00f9c6b",
     "orchestrator_registry": "sha256:212a88ffcecbbc334ca9cf7f42bba4d27cec2778067fe5d9840f708630755860",
     "runtime_code": {
       "scripts/precision_migration/adapters.py": "sha256:68cf5a14d7471bce155d153576fcf36675d182b2786ec707fb1f952aa4e96438",
       "scripts/precision_migration/exact.py": "sha256:92bd9633b742ff6d45a69aa9022be8dfeaeacb0dd8a496a458fddab709f612aa",
+      "scripts/precision_migration/external.py": "sha256:f0aa085c4269f6cce955a1d8b85e08bb175eea29dcf6a9ddb1ecb903a7c6a9f2",
       "scripts/precision_migration/generated_handlers.py": "sha256:5d6b45d6988eb117e9990a62004732ebd9ff5466b0c8cbfe1afe8763a73d25f4",
       "scripts/precision_migration/generated_orchestrators.py": "sha256:dab95722c479ab0c49d5a82863a8d2fe3b8f5ab6a4873b27050a2a4888a5ab18",
       "scripts/precision_migration/native.py": "sha256:bebcdb1e0ae308561089838d4d4eab8d08680be9a37f06009a83f6197b1be051",
       "scripts/precision_migration/orchestration.py": "sha256:ee5986a555c64ffb9a4ec4835d71f5985d54910874ae10fdb969d61b99c49a09",
+      "scripts/precision_migration/production_runtime.py": "sha256:e15571a1e176929e5eb018b9eec2da98ef507317349f8c4349e50d157e0d64af",
+      "scripts/precision_migration/qualify_external_engineering.py": "sha256:ec7d23a2a05da15fe457e407553270f169d03a3e1b5a3df2cdc5569f87ab7d27",
       "scripts/precision_migration/runtime.py": "sha256:8e317bf912517cc65e029ee8d1fbdb8d580d563c1bbbd77bda4628d2b540cd16",
       "scripts/precision_migration/trust.py": "sha256:e0fc4864973491051e6b2c1360c4b7a2a06cbf8547a7a3a984ed67e9edb7762a",
+      "tooling/generate_precision_migration_external_engineering_cases.py": "sha256:20c565b2d36903c2f66dee42f770a38b2afebcb829fa59ee2fa121d50c4bab30",
+      "tooling/generate_precision_migration_external_profiles.py": "sha256:d9eb25b6acf3ca5c007f96852a5ab0d9b052c344a8c71a9f8925b99adaaa42f6",
       "tooling/generate_precision_migration_handlers.py": "sha256:cf130cb6b2688f0725bc3fb98bcfb7a8183afc581960d4eb24dd5a1f85529875",
       "tooling/integrate_precision_migration_batch1_44.py": "sha256:2a5fd5b551b9829caf7dfc979013ec7ec0cebc94a87193731e8d4b2aa48d3077"
     }
@@ -27,6 +36,39 @@
     "native_toolchain_outside_local_evidence": "NOT_RUN",
     "production_evidence": "NOT_RUN",
     "production_hsm": "NOT_RUN"
+  },
+  "external_workflow_code": {
+    "current_evidence_state": {
+      "authorized_canary": "NOT_RUN",
+      "external_certification": "NOT_RUN",
+      "independent_holdout": "NOT_RUN",
+      "native_source_execution": "NOT_RUN",
+      "native_target_execution": "NOT_RUN",
+      "production_hsm": "NOT_RUN",
+      "representative_customer_workload": "NOT_RUN",
+      "verified_rollback": "NOT_RUN"
+    },
+    "engineering_simulation": {
+      "actual_handler_invocation_count": 2785,
+      "case_count": 2785,
+      "decision": "PASSED_LOCAL_ENGINEERING_SIMULATION",
+      "production_eligible": false,
+      "release_drill_test_count": 8
+    },
+    "profile_count": 557,
+    "profile_registry_digest": "sha256:5645fedd1b927cab109d66a548a87f8ef4ebe76247c1e0165e1141f98edae067",
+    "required_release_stages": [
+      "production_hsm",
+      "authorized_canary",
+      "verified_rollback",
+      "external_certification"
+    ],
+    "required_skill_stages": [
+      "native_source_execution",
+      "native_target_execution",
+      "independent_holdout",
+      "representative_customer_workload"
+    ]
   },
   "failures": [],
   "gate": "precision-migration-b01-44-production-code-closure",
@@ -65,7 +107,7 @@
       "skills": 30
     },
     "b41": {
-      "digest": "sha256:74edc8582146bd1f5f44bd85d78fae373748add8d1e4a84b692a2e5fcad94a51",
+      "digest": "sha256:31b285ec97de8efb3378350b8ffb04c838b793b3a5ad5fb0a7abbd758da97bdd",
       "results": 50,
       "skills": 10
     },
@@ -75,9 +117,16 @@
       "skills": 587
     },
     "exact": {
-      "digest": "sha256:05c820f9558e63ab52e5249f44c2587c9b2c3768998d0a0a1e34be57e5c3e585",
+      "digest": "sha256:806d3e04221a5849b38cddc06c7977a9138e8e924f9d12e470b8aca95c3cda65",
       "results": 2680,
       "skills": 536
+    },
+    "external_engineering": {
+      "digest": "sha256:103612c105ca73997e2e6c71b14433d23b1701b536397589128d2cbe47b7c4c7",
+      "evidence_class": "LOCAL_ENGINEERING_SIMULATION",
+      "production_eligible": false,
+      "results": 2785,
+      "skills": 557
     },
     "orchestrator": {
       "digest": "sha256:f3c8107a3208f6d3f886b6a4e2add48403825a97681d3ab0d8d856f59a848031",
@@ -85,7 +134,7 @@
       "skills": 45
     },
     "specialized": {
-      "digest": "sha256:701cff6f28df1642bebe12f1b298deb44ebedd2d5351ae44287d65e3f3dc59cd",
+      "digest": "sha256:619cd62fcb9630c16bf9dee25d194e58b7f567dbc798206dea702614843c7e2a",
       "results": 55,
       "skills": 11
     }

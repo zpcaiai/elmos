@@ -1,0 +1,2 @@
+$ /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/precision_migration/qualify_external_engineering.py --check
+{"actual_handler_invocations": 2785, "cases": 2785, "decision": "PASSED_LOCAL_ENGINEERING_SIMULATION", "production_certification": "NOT_CERTIFIED", "skills": 557, "status": "PASS"}

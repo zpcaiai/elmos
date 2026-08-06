@@ -10,9 +10,6 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
-ROOT = Path(__file__).resolve().parents[2]
-OUTPUT = ROOT / "verification-packs" / "precision-migration-b01-44-runtime" / "domain-qualification" / "results.json"
-
 from scripts.precision_migration.adapters import (
     AdapterRegistry,
     resolve_handler,
@@ -21,11 +18,13 @@ from scripts.precision_migration.domain import DomainExecutionError
 from scripts.precision_migration.exact import ExactImplementationRegistry
 from scripts.precision_migration.runtime import Registry, canonical_digest
 
+ROOT = Path(__file__).resolve().parents[2]
+OUTPUT = ROOT / "verification-packs" / "precision-migration-b01-44-runtime" / "domain-qualification" / "results.json"
 TEST_TYPES = ("positive", "negative", "integration", "holdout", "representative")
 
 
 def fixture(role: str) -> dict[str, Any]:
-    value = {"development": 1, "holdout": 2, "representative": 3}.get(role, 1)
+    value = {"development": 1, "holdout": 2, "representative": 3, "integration": 4}.get(role, 1)
     return {
         "fixture_role": role,
         "candidates": [
@@ -100,7 +99,7 @@ def build() -> dict[str, Any]:
     with tempfile.TemporaryDirectory(prefix="precision-domain-qualification-") as temporary:
         root = Path(temporary).resolve()
         references = {}
-        for role in ("development", "holdout", "representative"):
+        for role in ("development", "integration", "holdout", "representative"):
             path = root / f"{role}.json"
             path.write_text(json.dumps(fixture(role), ensure_ascii=False, sort_keys=True) + "\n", encoding="utf-8")
             references[role] = content_ref(path)
@@ -115,16 +114,18 @@ def build() -> dict[str, Any]:
             handler = resolve_handler(entry)
             if handler is None:
                 raise ValueError(f"domain handler did not resolve: {skill}")
-            outputs = {}
-            for role, test_type in (("development", "positive"), ("holdout", "holdout"), ("representative", "representative")):
+            for role, test_type in (
+                ("development", "positive"),
+                ("integration", "integration"),
+                ("holdout", "holdout"),
+                ("representative", "representative"),
+            ):
                 result = handler(request(skill, references[role], role, mode), entry, output_dir, evidence_roots=(root,), skill_registry=registry, trust_store=None)
                 if result.get("execution_state") != "LOCAL_EXECUTED" or result.get("exit_code") != 0:
                     raise ValueError(f"domain execution did not pass: {skill}/{role}")
                 artifact = result["artifacts"][0]
-                outputs[role] = artifact["digest"]
                 results.append(passed(skill, test_type, {"artifact_digest": artifact["digest"], "fixture_digest": references[role]["digest"], "scope": "BOUNDED_STRUCTURED_LOCAL"}))
                 (output_dir / implementations.by_skill[skill]["artifact_name"]).unlink()
-            results.append(passed(skill, "integration", {"handler_id": entry["handler_id"], "entrypoint": entry["handler_entrypoint"], "development_artifact": outputs["development"]}))
             rejected = False
             try:
                 handler(request(skill, {**references["development"], "digest": "sha256:" + "0" * 64}, "negative", mode), entry, output_dir, evidence_roots=(root,), skill_registry=registry, trust_store=None)

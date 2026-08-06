@@ -18,7 +18,13 @@
     "b16_qualification_results": 150,
     "b41_qualification_results": 50,
     "b42_independent_handlers": 10,
-    "runtime_tests": 49,
+    "runtime_tests": 60,
+    "external_execution_profiles": 557,
+    "external_engineering_cases": 2785,
+    "external_engineering_handler_invocations": 2785,
+    "external_engineering_release_drills": 8,
+    "production_workflow_code_skills": 587,
+    "external_campaign_gate_tests": 8,
     "browser_api_e2e": 2,
     "b16_native_routes_passed": 30,
     "b16_negative_routes_passed": 30,
@@ -37,8 +43,14 @@
     "accepted_tampered_audit_chain": 0,
     "accepted_mutable_or_symlinked_trust_key": 0,
     "accepted_requester_self_approval": 0,
-    "accepted_weakened_job_policy": 0
+    "accepted_weakened_job_policy": 0,
+    "accepted_overlapping_corpora": 0,
+    "accepted_unsigned_external_adapter": 0,
+    "accepted_external_command_injection": 0,
+    "accepted_canary_without_rollback": 0,
+    "accepted_unverified_hsm_signature": 0,
+    "accepted_self_certification": 0
   },
-  "evidence_refs": ["certification/local-test-result.json", "certification/production-code-closure.json", "certification/raw/browser-e2e-observation.json", "coverage/coverage-matrix.json", "contract-qualification/results.json", "domain-qualification/results.json", "orchestrator-qualification/results.json", "specialized-qualification/results.json", "b16-qualification/results.json", "b41-qualification/results.json", "corpus/negative/cases.json"],
-  "notes": ["Local engineering qualification only.", "All 587 child Skills have exact typed execution programs and all 45 orchestrators have executable DAGs with full-child preflight.", "The production-code closure decision is READY_FOR_EXTERNAL_GATE, never production authorization or certification.", "Thirty B16 routes have local native, negative, holdout, and bounded representative evidence.", "Native breadth outside B16, independent, customer, real HSM, authorized Canary/rollback, production, and certification evidence remain NOT_RUN."]
+  "evidence_refs": ["certification/local-test-result.json", "certification/production-code-closure.json", "external-readiness/current.json", "certification/raw/browser-e2e-observation.json", "coverage/coverage-matrix.json", "contract-qualification/results.json", "domain-qualification/results.json", "orchestrator-qualification/results.json", "specialized-qualification/results.json", "b16-qualification/results.json", "b41-qualification/results.json", "external-engineering-qualification/cases.json", "external-engineering-qualification/results.json", "corpus/negative/cases.json"],
+  "notes": ["Local engineering qualification only.", "All 587 child Skills have exact typed execution programs and all 45 orchestrators have executable DAGs with full-child preflight.", "The 557 non-B16 Skills have immutable external execution profiles; the other 30 use the native B16 route runner.", "All 557 external profiles have five freshly executed local engineering cases, for 2,785 handler invocations; the result is explicitly non-production-eligible.", "Eight disposable-trust release drills cover ephemeral Ed25519 HSM verification, signed adapter dispatch, injection rejection, Canary, rollback, and certificate validation.", "The signed adapter runtime and external campaign gate cover native/domain execution, independent holdout, customer authorization, cryptographically verified HSM signing, authorized Canary, rollback, and external certification.", "The production-code closure decision is READY_FOR_EXTERNAL_GATE, never production authorization or certification.", "Thirty B16 routes have local native, negative, holdout, and bounded representative evidence.", "The positive external-chain test uses disposable synthetic fixtures only. Native breadth outside B16, independent, customer, real HSM, authorized Canary/rollback, production, and certification evidence remain NOT_RUN."]
 }

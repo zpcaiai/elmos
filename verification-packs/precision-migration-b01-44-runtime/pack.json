@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "pack_key": "precision-migration-b01-44-runtime",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "status": "experimental",
   "owner": "elmos-migration-platform-engineering",
   "maintenance_owner": "elmos-verification-engineering",

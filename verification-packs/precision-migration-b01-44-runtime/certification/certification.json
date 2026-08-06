@@ -17,6 +17,9 @@
     "All 587 child handlers have exact typed local programs and all 45 orchestrator DAGs support full-child preflight and isolated child execution; five-role engineering qualification does not substitute for native toolchains or external evidence.",
     "The production-code closure gate may return READY_FOR_EXTERNAL_GATE but never authorizes a production operation or certification.",
     "Thirty B16 routes pass bounded local native builds, negative cases, holdout, and representative fixtures.",
+    "The external execution runtime and gate are code-complete for all remaining 557 Skills, but their checked-in evidence is NOT_RUN.",
+    "The 2,785 external-workflow handler executions and eight release drills use bounded fixtures and disposable trust, are production_eligible=false, and do not change external readiness.",
+    "Synthetic positive gate fixtures prove validation logic only and cannot become customer, HSM, Canary, production, or certification evidence.",
     "Independent verification, real customer workloads, production HSM, Canary/rollback, production evidence, and external review remain NOT_RUN."
   ],
   "approved_at": null

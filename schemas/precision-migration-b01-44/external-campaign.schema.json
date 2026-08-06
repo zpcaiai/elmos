@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/precision-migration-b01-44/external-campaign.schema.json",
+  "title": "Precision Migration External Qualification Campaign",
+  "type": "object",
+  "required": ["schema_version", "namespace", "campaign_id", "profile_registry_digest", "package_identity", "environment", "tenant_id", "purpose", "corpora", "plans", "campaign_authorization", "stage_receipts"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "namespace": { "const": "precision-migration-b01-44" },
+    "campaign_id": { "$ref": "#/$defs/id" },
+    "profile_registry_digest": { "$ref": "#/$defs/digest" },
+    "package_identity": {
+      "type": "object",
+      "required": ["source_package_manifest_sha256", "source_tree_sha256", "installed_manifest_digest"],
+      "properties": {
+        "source_package_manifest_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "source_tree_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "installed_manifest_digest": { "$ref": "#/$defs/digest" }
+      },
+      "additionalProperties": false
+    },
+    "environment": { "type": "string", "minLength": 1, "maxLength": 1000 },
+    "tenant_id": { "type": "string", "minLength": 1, "maxLength": 1000 },
+    "purpose": { "type": "string", "minLength": 1, "maxLength": 1000 },
+    "corpora": {
+      "type": "object",
+      "required": ["development", "holdout", "representative"],
+      "properties": {
+        "development": { "$ref": "#/$defs/contentRef" },
+        "holdout": { "$ref": "#/$defs/contentRef" },
+        "representative": { "$ref": "#/$defs/contentRef" }
+      },
+      "additionalProperties": false
+    },
+    "plans": {
+      "type": "object",
+      "required": ["canary", "rollback"],
+      "properties": {
+        "canary": { "$ref": "#/$defs/contentRef" },
+        "rollback": { "$ref": "#/$defs/contentRef" }
+      },
+      "additionalProperties": false
+    },
+    "campaign_authorization": { "$ref": "#/$defs/envelope" },
+    "stage_receipts": { "type": "object" },
+    "customer_authorization": { "$ref": "#/$defs/envelope" },
+    "production_authorization": { "$ref": "#/$defs/envelope" },
+    "hsm_receipt": { "$ref": "#/$defs/envelope" },
+    "canary_receipt": { "$ref": "#/$defs/envelope" },
+    "rollback_receipt": { "$ref": "#/$defs/envelope" },
+    "external_certificate": { "$ref": "#/$defs/envelope" },
+    "production_artifacts": {
+      "type": "object",
+      "required": ["hsm_payload", "hsm_signature", "hsm_public_key", "canary_metrics", "rollback_recovery"],
+      "properties": {
+        "hsm_payload": { "$ref": "#/$defs/contentRef" },
+        "hsm_signature": { "$ref": "#/$defs/contentRef" },
+        "hsm_public_key": { "$ref": "#/$defs/contentRef" },
+        "canary_metrics": { "$ref": "#/$defs/contentRef" },
+        "rollback_recovery": { "$ref": "#/$defs/contentRef" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]{1,199}$" },
+    "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "contentRef": {
+      "type": "object",
+      "required": ["uri", "digest", "size_bytes", "media_type"],
+      "properties": {
+        "uri": { "type": "string", "minLength": 1 },
+        "digest": { "$ref": "#/$defs/digest" },
+        "size_bytes": { "type": "integer", "minimum": 0 },
+        "media_type": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "envelope": {
+      "type": "object",
+      "required": ["algorithm", "key_id", "payload", "signature"],
+      "properties": {
+        "algorithm": { "const": "ed25519" },
+        "key_id": { "type": "string", "minLength": 1 },
+        "payload": { "type": "object", "minProperties": 1 },
+        "signature": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    }
+  }
+}

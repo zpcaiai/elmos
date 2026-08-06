@@ -18,11 +18,23 @@ DOMAIN_RESULTS = ROOT / "verification-packs" / "precision-migration-b01-44-runti
 B41_RESULTS = ROOT / "verification-packs" / "precision-migration-b01-44-runtime" / "b41-qualification" / "results.json"
 B16_RESULTS = ROOT / "verification-packs" / "precision-migration-b01-44-runtime" / "b16-qualification" / "results.json"
 SPECIALIZED_RESULTS = ROOT / "verification-packs" / "precision-migration-b01-44-runtime" / "specialized-qualification" / "results.json"
+EXTERNAL_PROFILES = ROOT / "docs" / "precision-migration-b01-44" / "external-execution-profiles.json"
+EXTERNAL_ENGINEERING_RESULTS = (
+    ROOT
+    / "verification-packs"
+    / "precision-migration-b01-44-runtime"
+    / "external-engineering-qualification"
+    / "results.json"
+)
 
 
 def build() -> dict[str, Any]:
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
     adapters = json.loads(ADAPTERS.read_text(encoding="utf-8"))
+    external_profiles = json.loads(EXTERNAL_PROFILES.read_text(encoding="utf-8"))
+    externally_profiled = {item["skill"] for item in external_profiles["profiles"]}
+    if len(externally_profiled) != 557:
+        raise ValueError("external execution profile coverage must contain 557 Skills")
     by_skill = {item["skill"]: item for item in adapters["entries"]}
     locally_exercised = {
         "pm-b02-repository-modernization-assessment",
@@ -51,6 +63,23 @@ def build() -> dict[str, Any]:
             for item in specialized_qualification["results"]
             if item["state"] == "PASS"
         )
+    external_engineering = json.loads(EXTERNAL_ENGINEERING_RESULTS.read_text(encoding="utf-8"))
+    if (
+        external_engineering.get("decision") != "PASSED_LOCAL_ENGINEERING_SIMULATION"
+        or external_engineering.get("production_eligible") is not False
+        or external_engineering.get("actual_handler_invocation_count") != 2785
+    ):
+        raise ValueError("external engineering qualification is incomplete or overclaims production eligibility")
+    passed_external_engineering = {
+        (item["skill"], item["test_type"])
+        for item in external_engineering["results"]
+        if item["engineering_state"] == "PASS"
+        and item["handler_invoked"] is True
+        and item["external_stage_state"] in {"NOT_RUN", "NOT_APPLICABLE"}
+        and item["production_eligible"] is False
+    }
+    if len(passed_external_engineering) != 2785:
+        raise ValueError("external engineering qualification must contain 2,785 exact PASS bindings")
     rows = []
     for record in manifest["skills"]:
         if record["kind"] != "skill":
@@ -82,6 +111,13 @@ def build() -> dict[str, Any]:
                     "bounded_domain_holdout": "PASSED" if (record["name"], "holdout") in passed_domain_tests else "NOT_RUN",
                     "bounded_domain_representative": "PASSED" if (record["name"], "representative") in passed_domain_tests else "NOT_RUN",
                     "local_execution": "PASSED" if locally_executed else "NOT_RUN",
+                    "external_execution_profile": "NOT_APPLICABLE" if exact_route else "DECLARED" if record["name"] in externally_profiled else "NOT_AVAILABLE",
+                    "production_workflow_code": "PASSED" if exact_route or record["name"] in externally_profiled else "NOT_AVAILABLE",
+                    "external_engineering_positive": "NOT_APPLICABLE" if exact_route else "PASSED" if (record["name"], "positive") in passed_external_engineering else "NOT_RUN",
+                    "external_engineering_negative": "NOT_APPLICABLE" if exact_route else "PASSED" if (record["name"], "negative") in passed_external_engineering else "NOT_RUN",
+                    "external_engineering_integration": "NOT_APPLICABLE" if exact_route else "PASSED" if (record["name"], "integration") in passed_external_engineering else "NOT_RUN",
+                    "external_engineering_holdout_fixture": "NOT_APPLICABLE" if exact_route else "PASSED" if (record["name"], "holdout") in passed_external_engineering else "NOT_RUN",
+                    "external_engineering_representative_fixture": "NOT_APPLICABLE" if exact_route else "PASSED" if (record["name"], "representative") in passed_external_engineering else "NOT_RUN",
                     "negative": "PASSED" if (record["name"], "negative") in passed_domain_tests else "NOT_RUN",
                     "integration": "PASSED" if (record["name"], "integration") in passed_domain_tests else "NOT_RUN",
                     "native_source_build": "PASSED" if exact_route else "NOT_RUN",
@@ -105,6 +141,10 @@ def build() -> dict[str, Any]:
         "contract_negative", "contract_integration", "contract_holdout", "contract_representative",
         "bounded_domain_positive", "bounded_domain_negative", "bounded_domain_integration",
         "bounded_domain_holdout", "bounded_domain_representative", "local_execution",
+        "external_execution_profile", "production_workflow_code",
+        "external_engineering_positive", "external_engineering_negative",
+        "external_engineering_integration", "external_engineering_holdout_fixture",
+        "external_engineering_representative_fixture",
         "negative", "integration", "native_source_build", "native_target_build", "holdout",
         "representative_workload", "independent_verification", "external_evidence",
     ]

@@ -12,7 +12,7 @@ from typing import Any
 
 from scripts.precision_migration.adapters import AdapterRegistry, resolve_handler
 from scripts.precision_migration.b42 import CutoverError
-from scripts.precision_migration.runtime import Registry, canonical_digest
+from scripts.precision_migration.runtime import canonical_digest
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -95,7 +95,6 @@ def b42_payloads(value: int) -> dict[str, dict[str, Any]]:
 
 
 def build() -> dict[str, Any]:
-    skills = Registry.load()
     adapters = AdapterRegistry.load()
     entries = [
         entry for entry in adapters.payload["entries"]
@@ -110,7 +109,7 @@ def build() -> dict[str, Any]:
         if assessment_handler is None:
             raise ValueError("repository assessment handler did not resolve")
         workspaces: dict[str, Path] = {}
-        for role, count in (("development", 1), ("holdout", 2), ("representative", 4)):
+        for role, count in (("development", 1), ("integration", 3), ("holdout", 2), ("representative", 4)):
             workspace = root / f"assessment-{role}"
             workspace.mkdir()
             for index in range(count):
@@ -118,7 +117,12 @@ def build() -> dict[str, Any]:
             (workspace / "pyproject.toml").write_text("[project]\nname='fixture'\nversion='1.0.0'\n", encoding="utf-8")
             workspaces[role] = workspace
         assessment_outputs: dict[str, dict[str, Any]] = {}
-        for role, test_type in (("development", "positive"), ("holdout", "holdout"), ("representative", "representative")):
+        for role, test_type in (
+            ("development", "positive"),
+            ("integration", "integration"),
+            ("holdout", "holdout"),
+            ("representative", "representative"),
+        ):
             output = root / "outputs" / assessment["skill"] / role
             output.mkdir(parents=True)
             response = assessment_handler(
@@ -134,7 +138,6 @@ def build() -> dict[str, Any]:
                 "truncated": report["truncated"],
             }
             results.append(passed(assessment["skill"], test_type, assessment_outputs[role]))
-        results.append(passed(assessment["skill"], "integration", {"handler_id": assessment["handler_id"], "inventory_created": True}))
         rejected = False
         try:
             assessment_handler(
@@ -155,7 +158,12 @@ def build() -> dict[str, Any]:
                 raise ValueError(f"B42 handler did not resolve: {entry['skill']}")
             source_skill = entry["source_skill"]
             outputs: dict[str, dict[str, Any]] = {}
-            for role, test_type, value in (("development", "positive", 1), ("holdout", "holdout", 2), ("representative", "representative", 3)):
+            for role, test_type, value in (
+                ("development", "positive", 1),
+                ("integration", "integration", 4),
+                ("holdout", "holdout", 2),
+                ("representative", "representative", 3),
+            ):
                 path = root / f"{source_skill}-{role}.json"
                 path.write_text(json.dumps(b42_payloads(value)[source_skill], sort_keys=True) + "\n", encoding="utf-8")
                 output = root / "outputs" / entry["skill"] / role
@@ -175,7 +183,6 @@ def build() -> dict[str, Any]:
                     "production_side_effects_executed": artifact["production_side_effects_executed"],
                 }
                 results.append(passed(entry["skill"], test_type, outputs[role]))
-            results.append(passed(entry["skill"], "integration", {"handler_id": entry["handler_id"], "entrypoint": entry["handler_entrypoint"]}))
             negative_path = root / f"{source_skill}-negative.json"
             negative_path.write_text(json.dumps(b42_payloads(1)[source_skill], sort_keys=True) + "\n", encoding="utf-8")
             rejected = False

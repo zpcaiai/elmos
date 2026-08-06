@@ -27,15 +27,24 @@ SCHEMA_ROOT = ROOT / "schemas" / "precision-migration-b01-44"
 WEB_CATALOG = ROOT / "apps" / "web-console" / "app" / "lib" / "precisionMigrationCatalog.generated.ts"
 ADAPTER_REGISTRY = ROOT / "docs" / "precision-migration-b01-44" / "adapter-registry.json"
 EXECUTABLE_CONTRACTS = ROOT / "docs" / "precision-migration-b01-44" / "executable-contracts.json"
+EXTERNAL_PROFILES = ROOT / "docs" / "precision-migration-b01-44" / "external-execution-profiles.json"
+VERIFICATION_PACK = ROOT / "verification-packs" / "precision-migration-b01-44-runtime"
+EXTERNAL_ENGINEERING_CASES = VERIFICATION_PACK / "external-engineering-qualification" / "cases.json"
+EXTERNAL_ENGINEERING_RESULTS = VERIFICATION_PACK / "external-engineering-qualification" / "results.json"
 TRUST_STORE_EXAMPLE = ROOT / "config" / "precision-migration" / "trust-store.example.json"
 TEMPLATE_ROOT = ROOT / "templates" / "precision-migration-b01-44"
-VERIFICATION_PACK = ROOT / "verification-packs" / "precision-migration-b01-44-runtime"
 OFFICIAL_VALIDATOR = Path(
     "/Users/stephen/.codex/skills/.system/skill-creator/scripts/quick_validate.py"
 )
 EXPECTED_SCHEMAS = {
     "adapter-registry.schema.json",
     "catalog.schema.json",
+    "external-adapter-registry.schema.json",
+    "external-campaign.schema.json",
+    "external-engineering-cases.schema.json",
+    "external-engineering-results.schema.json",
+    "external-execution-profiles.schema.json",
+    "external-operation-request.schema.json",
     "gate-request.schema.json",
     "gate-result.schema.json",
     "job.schema.json",
@@ -213,6 +222,16 @@ def main() -> int:
     ).validate(adapter_registry)
     if len(adapter_registry["entries"]) != 632:
         fail("adapter registry coverage is incomplete")
+    external_profiles = json.loads(EXTERNAL_PROFILES.read_text(encoding="utf-8"))
+    jsonschema.Draft202012Validator(
+        json.loads((SCHEMA_ROOT / "external-execution-profiles.schema.json").read_text(encoding="utf-8"))
+    ).validate(external_profiles)
+    jsonschema.Draft202012Validator(
+        json.loads((SCHEMA_ROOT / "external-engineering-cases.schema.json").read_text(encoding="utf-8"))
+    ).validate(json.loads(EXTERNAL_ENGINEERING_CASES.read_text(encoding="utf-8")))
+    jsonschema.Draft202012Validator(
+        json.loads((SCHEMA_ROOT / "external-engineering-results.schema.json").read_text(encoding="utf-8"))
+    ).validate(json.loads(EXTERNAL_ENGINEERING_RESULTS.read_text(encoding="utf-8")))
     jsonschema.Draft202012Validator(
         json.loads((SCHEMA_ROOT / "trust-store.schema.json").read_text(encoding="utf-8"))
     ).validate(json.loads(TRUST_STORE_EXAMPLE.read_text(encoding="utf-8")))
@@ -224,6 +243,7 @@ def main() -> int:
 
     from scripts.precision_migration.contracts import ContractRegistry
     from scripts.precision_migration.exact import ExactImplementationRegistry
+    from scripts.precision_migration.external import ExternalProfileRegistry
     from scripts.precision_migration.orchestration import OrchestratorRegistry
     from scripts.precision_migration.runtime import Registry, evaluate
 
@@ -235,6 +255,9 @@ def main() -> int:
     orchestrator_implementations = OrchestratorRegistry.load()
     if len(exact_implementations.by_handler) != 536:
         fail("exact per-Skill implementation coverage is incomplete")
+    external_execution_profiles = ExternalProfileRegistry.load()
+    if len(external_execution_profiles.by_skill) != 557:
+        fail("external execution profile coverage is incomplete")
     if len(orchestrator_implementations.by_handler) != 45:
         fail("executable orchestrator DAG coverage is incomplete")
     for record in manifest["skills"]:

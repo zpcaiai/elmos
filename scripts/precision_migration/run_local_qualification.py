@@ -102,6 +102,14 @@ def main() -> int:
             [sys.executable, "scripts/precision_migration/qualify_specialized.py", "--check"],
             raw / "specialized-qualification.txt",
         ),
+        "external_execution_profiles": run(
+            [sys.executable, "scripts/precision_migration/external.py", "validate-profiles"],
+            raw / "external-execution-profiles.txt",
+        ),
+        "external_engineering_qualification": run(
+            [sys.executable, "scripts/precision_migration/qualify_external_engineering.py", "--check"],
+            raw / "external-engineering-qualification.txt",
+        ),
         "coverage_matrix": run(
             [sys.executable, "scripts/precision_migration/build_coverage.py", "--check"],
             raw / "coverage-matrix.txt",
@@ -129,7 +137,8 @@ def main() -> int:
         "checks": checks,
         "test_count": int(match.group(1)) if match else None,
         "negative_corpus": "corpus/negative/cases.json",
-        "local_execution_status": "PASSED_PRODUCTION_CODE_CLOSURE_FOR_587_OF_587_AND_EXECUTABLE_DAG_FOR_45_OF_45",
+        "local_execution_status": "PASSED_PRODUCTION_CODE_CLOSURE_FOR_587_OF_587_EXECUTABLE_DAG_FOR_45_OF_45_EXTERNAL_WORKFLOW_CODE_FOR_557_OF_557_AND_2785_OF_2785_ENGINEERING_CASES",
+        "external_engineering_status": "PASSED_LOCAL_ENGINEERING_SIMULATION_FOR_557_OF_557_WITH_2785_HANDLER_INVOCATIONS_AND_8_RELEASE_DRILLS; PRODUCTION_ELIGIBLE_FALSE",
         "holdout_status": "PASSED_ENGINEERING_FIXTURE_FOR_557_AND_NATIVE_LOCAL_B16_FOR_30; INDEPENDENT_EXTERNAL_HOLDOUT_NOT_RUN",
         "representative_workload_status": "PASSED_ENGINEERING_FIXTURE_FOR_557_AND_NATIVE_LOCAL_B16_FOR_30; CUSTOMER_WORKLOAD_NOT_RUN",
         "external_evidence_status": "NOT_RUN",
