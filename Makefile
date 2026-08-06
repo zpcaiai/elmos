@@ -85,31 +85,69 @@ frt-g01-g30-skills:
 frt-g01-g30-check: frt-g01-g30-skills frontend
 	CI=true PATH="$(NODE_RUNTIME_BIN):$$PATH" $(PNPM) --dir apps/web-console install --frozen-lockfile
 	PATH="$(NODE_RUNTIME_BIN):$$PATH" $(PNPM) --dir apps/web-console check
+# Optional canonical Skill import bundles.
+#
+# A normal source checkout intentionally does not contain them; the rule is
+# stated in tooling/validate_batch97_104_installed.py.  Their byte identities
+# live in the tracked installed manifests under docs/*/installed-manifest.json,
+# so a checkout validates the installed distribution, not the absent bundle.
+#
+# Every guarded step below therefore runs only when its bundle is present.  When
+# it is absent, tooling/source_package_guard.py prints one loud, greppable
+# SOURCE_PACKAGE_ABSENT= line and the target continues with whatever real gate
+# does not need the bundle.  A skipped bundle-integrity check must never be
+# readable as a passed one, which is why the marker is printed rather than
+# swallowed.  Use `make <target> REQUIRE_SOURCE_PACKAGES=1` to demand the
+# bundles instead (release and bundle-publishing runs should).
+SOURCE_PACKAGE_GUARD := python3 tooling/source_package_guard.py
+REQUIRE_SOURCE_PACKAGES ?=
+ifeq ($(REQUIRE_SOURCE_PACKAGES),)
+PROJECT_SYNTHESIS_INTEGRATION_FLAGS :=
+else
+PROJECT_SYNTHESIS_INTEGRATION_FLAGS := --require-packages
+endif
+
+# $(call guarded,<package dir>,<manifest file>,<shell command run when present>)
+ifeq ($(REQUIRE_SOURCE_PACKAGES),)
+guarded = @if $(SOURCE_PACKAGE_GUARD) $(1) --manifest $(2); then set -e; $(3); fi
+else
+guarded = @$(SOURCE_PACKAGE_GUARD) $(1) --manifest $(2) && set -e && $(3)
+endif
+
 batch1-55-skills:
-	$(UV) run --quiet --with pyyaml python tooling/validate_batch1_55_skill_pack.py
+	$(call guarded,elmos-codex-skills-batch1-55-complete,manifest.json,\
+		$(UV) run --quiet --with pyyaml python tooling/validate_batch1_55_skill_pack.py)
 	$(UV) run --quiet --with pyyaml python tooling/ensure_runtime_skill_interfaces.py --check --root .agents/skills
 	$(UV) run --quiet --with pyyaml python tooling/ensure_runtime_skill_interfaces.py --check --root agent-skills/runtime
 batch66-80-skills:
-	python3 tooling/import_batch66_80_assets.py --check
-	cd elmos-codex-skills-batch66-80-complete && ./validate.sh
-	python3 tooling/validate_project_synthesis_integration.py
+	$(call guarded,elmos-codex-skills-batch66-80-complete,manifest.json,\
+		python3 tooling/import_batch66_80_assets.py --check; \
+		cd elmos-codex-skills-batch66-80-complete && ./validate.sh)
+	python3 tooling/validate_project_synthesis_integration.py $(PROJECT_SYNTHESIS_INTEGRATION_FLAGS)
 batch66-80-test-skills:
-	python3 tooling/import_batch66_80_strict_test_assets.py --check
-	cd elmos-codex-skills-batch66-80-slightly-strict-tests && ./validate.sh
+	$(call guarded,elmos-codex-skills-batch66-80-slightly-strict-tests,manifest.json,\
+		python3 tooling/import_batch66_80_strict_test_assets.py --check; \
+		cd elmos-codex-skills-batch66-80-slightly-strict-tests && ./validate.sh)
 language-packs-batch81-95:
-	python3 tooling/import_batch81_95_language_packs.py --check
-	cd elmos-language-packs-batch81-95-complete && ./validate.sh
-	python3 tooling/validate_project_synthesis_integration.py
+	$(call guarded,elmos-language-packs-batch81-95-complete,package-manifest.json,\
+		python3 tooling/import_batch81_95_language_packs.py --check; \
+		cd elmos-language-packs-batch81-95-complete && ./validate.sh)
+	python3 tooling/validate_project_synthesis_integration.py $(PROJECT_SYNTHESIS_INTEGRATION_FLAGS)
 batch81-95-test-skills:
-	python3 tooling/import_batch81_95_strict_test_assets.py --check
-	cd elmos-batch81-95-slightly-strict-test-skills && ./validate.sh
+	$(call guarded,elmos-batch81-95-slightly-strict-test-skills,manifest.json,\
+		python3 tooling/import_batch81_95_strict_test_assets.py --check; \
+		cd elmos-batch81-95-slightly-strict-test-skills && ./validate.sh)
 batch97-104-skills:
-	python3 tooling/import_batch97_104_assets.py --check
-	cd elmos-codex-skills-batch97-104-complete && ./validate.sh
-	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p 'test_batch97_104_skills.py'
+	$(call guarded,elmos-codex-skills-batch97-104-complete,manifest.json,\
+		python3 tooling/import_batch97_104_assets.py --check; \
+		cd elmos-codex-skills-batch97-104-complete && ./validate.sh; \
+		cd .. && PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p 'test_batch97_104_skills.py')
+	PYTHONDONTWRITEBYTECODE=1 python3 tooling/validate_batch97_104_installed.py
+	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests.test_batch97_104_installed
 product-batch56-skills:
-	cd elmos-codex-skills-batch56-product-closure && ./validate.sh
-	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml python tooling/import_product_batch56_closure.py
+	$(call guarded,elmos-codex-skills-batch56-product-closure,manifest.json,\
+		cd elmos-codex-skills-batch56-product-closure && ./validate.sh; \
+		cd .. && PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml python tooling/import_product_batch56_closure.py)
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml python -m unittest discover -s tests/product-closure-batch56 -p 'test_*.py'
 product-closure-convergence-skills:
 	@if test -f elmos-codex-skills-batch56a-product-closure/manifest.json && test -f elmos-product-convergence-reference-skills/manifest.json; then \
@@ -152,13 +190,16 @@ test-suite-validate:
 	$(UV) run --quiet --with 'jsonschema>=4.23' python scripts/test-suite/validate_schema_bundle.py
 	python3 scripts/test-suite/generate_integration_manifest.py --check
 	python3 scripts/test-suite/validate_batch1_55_slightly_strict.py
-	python3 scripts/test-suite/validate_batch1_65_slightly_strict.py
-	python3 tooling/import_batch66_80_strict_test_assets.py --check
-	cd elmos-codex-skills-batch66-80-slightly-strict-tests && ./validate.sh
-	python3 scripts/test-suite/validate_batch66_80_slightly_strict.py
-	python3 tooling/import_batch81_95_strict_test_assets.py --check
-	cd elmos-batch81-95-slightly-strict-test-skills && ./validate.sh
-	python3 scripts/test-suite/validate_batch81_95_language_packs.py
+	$(call guarded,elmos-project-synthesis-batch61-65,package-manifest.json,\
+		python3 scripts/test-suite/validate_batch1_65_slightly_strict.py)
+	$(call guarded,elmos-codex-skills-batch66-80-slightly-strict-tests,manifest.json,\
+		python3 tooling/import_batch66_80_strict_test_assets.py --check; \
+		cd elmos-codex-skills-batch66-80-slightly-strict-tests && ./validate.sh; \
+		cd .. && python3 scripts/test-suite/validate_batch66_80_slightly_strict.py)
+	$(call guarded,elmos-batch81-95-slightly-strict-test-skills,package-manifest.json,\
+		python3 tooling/import_batch81_95_strict_test_assets.py --check; \
+		cd elmos-batch81-95-slightly-strict-test-skills && ./validate.sh; \
+		cd .. && python3 scripts/test-suite/validate_batch81_95_language_packs.py)
 test-suite-test:
 	python3 -m unittest discover -s tests/test-suite -p 'test_*.py'
 test-suite-check: test-suite-validate test-suite-test test-suite-b38-45-check
@@ -170,17 +211,20 @@ test-suite-1-55-check:
 test-suite-1-55-gate:
 	python3 scripts/test-suite/run_batch1_55_slightly_strict_gate.py test-suites/batch1-55-slightly-strict
 test-suite-1-65-check:
-	python3 scripts/test-suite/validate_batch1_65_slightly_strict.py
+	$(call guarded,elmos-project-synthesis-batch61-65,package-manifest.json,\
+		python3 scripts/test-suite/validate_batch1_65_slightly_strict.py)
 	python3 -m unittest tests/test-suite/test_batch1_65_supplemental.py
 test-suite-1-65-gate:
 	python3 scripts/test-suite/run_batch1_65_slightly_strict_gate.py test-suites/batch1-65-slightly-strict
 test-suite-66-80-check: batch66-80-test-skills
-	python3 scripts/test-suite/validate_batch66_80_slightly_strict.py
+	$(call guarded,elmos-codex-skills-batch66-80-slightly-strict-tests,manifest.json,\
+		python3 scripts/test-suite/validate_batch66_80_slightly_strict.py)
 	python3 -m unittest tests/test-suite/test_batch66_80_supplemental.py
 test-suite-66-80-gate:
 	python3 scripts/test-suite/run_batch66_80_slightly_strict_gate.py test-suites/batch66-80-slightly-strict
 test-suite-81-95-check: batch81-95-test-skills
-	python3 scripts/test-suite/validate_batch81_95_language_packs.py
+	$(call guarded,elmos-batch81-95-slightly-strict-test-skills,package-manifest.json,\
+		python3 scripts/test-suite/validate_batch81_95_language_packs.py)
 	python3 -m unittest tests/test-suite/test_batch81_95_language_packs.py
 test-suite-81-95-gate: batch81-95-test-skills
 	python3 scripts/test-suite/run_batch81_95_language_pack_gate.py test-suites/batch81-95-language-packs-slightly-strict
@@ -205,9 +249,10 @@ python:
 	$(UV) --directory engines/python-engine run --locked ruff check src tests
 	$(UV) --directory engines/python-engine run --locked mypy src
 project-synthesis:
-	python3 tooling/validate_project_synthesis_integration.py
+	python3 tooling/validate_project_synthesis_integration.py $(PROJECT_SYNTHESIS_INTEGRATION_FLAGS)
 	$(UV) --directory engines/project-synthesis-engine run --locked python ../../scripts/operations/validate_generation_support_matrix.py
-	$(UV) run --quiet --with 'jsonschema>=4.23' python tooling/validate_project_synthesis_batch61_65_schemas.py
+	$(call guarded,elmos-project-synthesis-batch61-65,package-manifest.json,\
+		$(UV) run --quiet --with 'jsonschema>=4.23' python tooling/validate_project_synthesis_batch61_65_schemas.py)
 	$(UV) --directory engines/project-synthesis-engine run --locked pytest
 	$(UV) --directory engines/project-synthesis-engine run --locked ruff check src tests scripts
 	$(UV) --directory engines/project-synthesis-engine run --locked mypy src

@@ -33,14 +33,74 @@ def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+REQUIRED_RUNTIME_FILES = [
+    ".agents/skills/elmos-project-synthesis/SKILL.md",
+    ".agents/skills/elmos-project-synthesis/agents/openai.yaml",
+    ".agents/skills/elmos-project-synthesis/scripts/synthesize.py",
+    "contracts/project-synthesis-schema/synthesis-request-v1.schema.json",
+    "engines/project-synthesis-engine/pyproject.toml",
+    "engines/project-synthesis-engine/uv.lock",
+    "engines/project-synthesis-engine/scripts/run_acceptance.py",
+]
+
+
+def check_runtime_files() -> None:
+    """Validate the tracked repository-side files, which no source package gates."""
+    for relative in REQUIRED_RUNTIME_FILES:
+        require((ROOT / relative).is_file(), f"required integration file is missing: {relative}")
+
+
+def fail_on_errors() -> None:
+    if errors:
+        print("\n".join(f"ERROR: {error}" for error in errors), file=sys.stderr)
+        raise SystemExit(1)
+
+
 manifest_path = BASE_PACKAGE / "manifest.json"
 extension_manifest_path = EXTENSION_PACKAGE / "package-manifest.json"
 polyglot_manifest_path = POLYGLOT_PACKAGE / "manifest.json"
 language_manifest_path = LANGUAGE_PACKAGE / "package-manifest.json"
+
+# The four canonical import bundles are optional in a normal source checkout —
+# the same rule tooling/validate_batch97_104_installed.py documents.  Unlike
+# Batch 97-104 these three Project Synthesis bundles have no tracked installed
+# manifest, so there is nothing to validate in their place.  Rather than crash
+# with a traceback (which read as a broken repository) or pass quietly (which
+# would read as a validated one), announce every absent bundle with the loud
+# SOURCE_PACKAGE_ABSENT marker, validate the repository-side files that do not
+# depend on them, and stop.  Pass --require-packages to restore the strict
+# behaviour for release or bundle-publishing runs.
+REQUIRE_PACKAGES = "--require-packages" in sys.argv[1:]
+OPTIONAL_PACKAGES = [
+    ("Batch 46-60 Project Synthesis", BASE_PACKAGE, manifest_path),
+    ("Batch 61-65 Project Synthesis", EXTENSION_PACKAGE, extension_manifest_path),
+    ("Batch 66-80 Polyglot", POLYGLOT_PACKAGE, polyglot_manifest_path),
+    ("Batch 81-95 Language Pack", LANGUAGE_PACKAGE, language_manifest_path),
+]
+absent_packages = [entry for entry in OPTIONAL_PACKAGES if not entry[2].is_file()]
+
+if absent_packages and not REQUIRE_PACKAGES:
+    for label, package, path in absent_packages:
+        print(
+            f"SOURCE_PACKAGE_ABSENT={package.name} "
+            f"reason=missing:{path.relative_to(ROOT)} "
+            f"({label} bundle-integrity checks skipped)",
+            flush=True,
+        )
+    check_runtime_files()
+    fail_on_errors()
+    print(
+        f"PROJECT_SYNTHESIS_INTEGRATION=SKIPPED absent_packages={len(absent_packages)}/4 "
+        "runtime_integration=OK — bundle integrity NOT validated; "
+        "re-run with --require-packages once the canonical bundles are materialised"
+    )
+    raise SystemExit(0)
+
 require(manifest_path.is_file(), "canonical Batch 46-60 project-synthesis manifest is missing")
 require(extension_manifest_path.is_file(), "canonical Batch 61-65 project-synthesis manifest is missing")
 require(polyglot_manifest_path.is_file(), "canonical Batch 66-80 project-synthesis manifest is missing")
 require(language_manifest_path.is_file(), "canonical Batch 81-95 Language Pack manifest is missing")
+fail_on_errors()
 manifest = load_json(manifest_path) if manifest_path.is_file() else {}
 extension_manifest = load_json(extension_manifest_path) if extension_manifest_path.is_file() else {}
 polyglot_manifest = load_json(polyglot_manifest_path) if polyglot_manifest_path.is_file() else {}
@@ -324,21 +384,9 @@ for schema in schemas:
     except (OSError, json.JSONDecodeError) as exc:
         errors.append(f"invalid Project Synthesis schema {schema.relative_to(ROOT)}: {exc}")
 
-runtime_files = [
-    ROOT / ".agents/skills/elmos-project-synthesis/SKILL.md",
-    ROOT / ".agents/skills/elmos-project-synthesis/agents/openai.yaml",
-    ROOT / ".agents/skills/elmos-project-synthesis/scripts/synthesize.py",
-    ROOT / "contracts/project-synthesis-schema/synthesis-request-v1.schema.json",
-    ROOT / "engines/project-synthesis-engine/pyproject.toml",
-    ROOT / "engines/project-synthesis-engine/uv.lock",
-    ROOT / "engines/project-synthesis-engine/scripts/run_acceptance.py",
-]
-for path in runtime_files:
-    require(path.is_file(), f"required integration file is missing: {path.relative_to(ROOT)}")
+check_runtime_files()
 
-if errors:
-    print("\n".join(f"ERROR: {error}" for error in errors), file=sys.stderr)
-    raise SystemExit(1)
+fail_on_errors()
 print(
     f"OK: {len(skills)} global Project Synthesis skills + {len(language_skills)} "
     f"package-local Language Pack skills, {len(schemas) + 1} schemas, Batch 46-95 runtime integration"
