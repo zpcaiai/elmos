@@ -19,7 +19,7 @@ NODE_RUNTIME_BIN := $(if $(NODE_EXECUTABLE),$(dir $(NODE_EXECUTABLE)),/nonexiste
 PNPM_VERSION ?= $(shell sed -n 's/.*"packageManager": "pnpm@\([^"]*\)".*/\1/p' apps/web-console/package.json)
 PNPM ?= pnpm dlx pnpm@$(PNPM_VERSION)
 
-.PHONY: verify backend-fast business-line-contracts makefile-portability-check model-catalog-check backend database-data infrastructure security-compliance test-quality mainframe enterprise-integration enterprise-suite mature-product-skills mature-product-packages product-roadmap production-readiness-check precision-migration-b01-44-skills precision-migration-b01-44-check precision-migration-b01-44-qualification batch1-55-skills batch66-80-skills batch66-80-test-skills language-packs-batch81-95 batch81-95-test-skills batch97-104-skills product-batch56-skills product-closure-convergence-skills product-closure-gate product-convergence-gate product-batch33-38-skills product-batch33-39-skills product-batch33-55-skills product-batch40-55-skills product-batch35-38 migration-pack-admission batch27-34-skills test-suite-validate test-suite-test test-suite-check test-suite-gate test-suite-1-55-check test-suite-1-55-gate test-suite-1-65-check test-suite-1-65-gate test-suite-66-80-check test-suite-66-80-gate test-suite-81-95-check test-suite-81-95-gate test-suite-b38-45-validate test-suite-b38-45-test test-suite-b38-45-check test-suite-b38-45-gate test-suite-local-qualification dotnet python project-synthesis project-synthesis-toolchains frontend sql-dialect component-dialect web up down
+.PHONY: verify backend-fast business-line-contracts makefile-portability-check model-catalog-check backend database-data infrastructure security-compliance test-quality mainframe enterprise-integration enterprise-suite mature-product-skills mature-product-packages product-roadmap production-readiness-check precision-migration-b01-44-skills precision-migration-b01-44-check precision-migration-b01-44-qualification batch1-55-skills batch66-80-skills batch66-80-test-skills language-packs-batch81-95 batch81-95-test-skills batch97-104-skills product-batch56-skills product-closure-convergence-skills product-closure-gate product-convergence-gate product-batch33-38-skills product-batch33-39-skills product-batch33-55-skills product-batch40-55-skills product-batch35-38 migration-pack-admission batch27-34-skills test-suite-validate test-suite-test test-suite-check test-suite-gate test-suite-certification-rehearsal test-suite-1-55-check test-suite-1-55-gate test-suite-1-65-check test-suite-1-65-gate test-suite-66-80-check test-suite-66-80-gate test-suite-81-95-check test-suite-81-95-gate test-suite-b38-45-validate test-suite-b38-45-test test-suite-b38-45-check test-suite-b38-45-gate test-suite-local-qualification dotnet python project-synthesis project-synthesis-toolchains frontend sql-dialect component-dialect web up down
 
 .PHONY: frt-g01-g30-skills frt-g01-g30-check
 
@@ -234,9 +234,15 @@ test-suite-validate:
 		cd .. && python3 scripts/test-suite/validate_batch81_95_language_packs.py)
 test-suite-test:
 	python3 -m unittest discover -s tests/test-suite -p 'test_*.py'
-test-suite-check: test-suite-validate test-suite-test test-suite-b38-45-check
+test-suite-check: test-suite-validate test-suite-test test-suite-b38-45-check test-suite-certification-rehearsal
 test-suite-gate:
 	python3 scripts/test-suite/run_strict_test_gate.py test-suites/batch1-37-strict
+# Covers the trust-anchor validity branches of verify_certification_request --
+# revoked, wrong role, wrong algorithm, outside validity window, key digest
+# mismatch, missing anchor -- which tests/test-suite/test_toolkit.py does not
+# reach. Uses a throwaway key in a temporary directory and grants nothing.
+test-suite-certification-rehearsal:
+	python3 scripts/test-suite/rehearse_certification_path.py
 test-suite-1-55-check:
 	python3 scripts/test-suite/validate_batch1_55_slightly_strict.py
 	python3 -m unittest tests/test-suite/test_batch1_55_supplemental.py

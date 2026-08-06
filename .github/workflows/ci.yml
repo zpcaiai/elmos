@@ -619,6 +619,11 @@ jobs:
           npm install --global pnpm@10.12.4
       - name: No Makefile may bake in a machine-specific tool path
         run: make makefile-portability-check
+      - name: Certification path is traversable and fail-closed
+        # The one function that can grant certification had never been executed,
+        # because every passed case is still NOT_RUN. Rehearsing it with a
+        # throwaway key keeps that code from rotting unnoticed; it grants nothing.
+        run: make test-suite-certification-rehearsal
       - name: Business line contracts resolve on a clean non-macOS checkout
         run: make business-line-contracts
       - name: Every composite target graph resolves
