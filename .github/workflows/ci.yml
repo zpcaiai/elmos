@@ -169,10 +169,14 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
-      - name: Set up Python 3.12.12
+      - name: Set up bootstrap Python 3.12.10
         uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
         with:
-          python-version: "3.12.12"
+          # CPython stopped publishing the macOS installers consumed by
+          # setup-python after 3.12.10.  This interpreter only bootstraps uv;
+          # route execution uses uv's separately pinned CPython 3.12.12 below.
+          python-version: "3.12.10"
+          architecture: arm64
       - name: Set up Java 21.0.11
         uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
         with:
@@ -197,6 +201,7 @@ jobs:
       - name: Install locked tools
         run: |
           python -m pip install --disable-pip-version-check uv==0.11.16
+          uv python install 3.12.12
           npm install --global pnpm@10.12.4
           pnpm --dir engines/frontend-client-engine install --frozen-lockfile
       - name: Verify compiler-backed route engine
@@ -271,7 +276,13 @@ jobs:
           uv run --with 'jsonschema>=4.23' --with pyyaml python scripts/mature_product_toolkit.py validate --batch 45
           uv run --with 'jsonschema>=4.23' --with pyyaml python -m unittest discover -s tests/batch45 -p 'test_*.py'
       - name: Verify Batch 97-104 Skill distribution
-        run: make batch97-104-skills
+        run: |
+          if [[ -f elmos-codex-skills-batch97-104-complete/manifest.json ]]; then
+            make batch97-104-skills
+          else
+            python tooling/validate_batch97_104_installed.py
+            python -m unittest tests.test_batch97_104_installed
+          fi
       - name: Verify Product closure and convergence distributions
         run: make product-closure-convergence-skills
 

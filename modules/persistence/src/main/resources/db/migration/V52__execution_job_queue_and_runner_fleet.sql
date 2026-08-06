@@ -1,58 +1,314 @@
--- ELMOS V57: runner enrollment and tenant-safe execution function upgrade.
+-- ELMOS V52: durable execution job queue and typed runner fleet.
 --
--- V52 is an immutable, applied migration that created the durable execution
--- queue, dispatch projection, typed Runner fleet, row-level-security policies,
--- and initial SECURITY DEFINER functions. V57 was introduced later and must be
--- a strict forward-only delta: replaying the V52 DDL here would fail on every
--- database whose Flyway history correctly contains V52.
+-- Why this migration exists
+-- -------------------------
+-- Before V52 the generation and translation business lines executed inside the
+-- Next.js BFF process. Concurrency was an in-memory Set, tenancy came from
+-- ELMOS_LOCAL_RUNNER_TENANT_ID, and a process restart lost every running job.
+-- V52 makes the job the authoritative durable record and turns the V9 runner
+-- placeholder tables into a typed fleet.
 --
--- This migration adds only the short-lived Runner enrollment/authentication
--- projection and replaces the execution functions whose bodies must bind the
--- tenant context before touching FORCE ROW LEVEL SECURITY tables. Missing
--- enrollment still fails closed. No provider role is created here; deployment
--- provisioning owns database roles on managed PostgreSQL.
+-- Boundary preserved from V9/B36: the control plane schedules, it does not
+-- execute. A runner may only be leased work after it has attested rootless,
+-- read-only root, dropped capabilities and default-deny network. Missing
+-- attestation fails closed; it is never inferred.
+--
+-- Tenancy model
+-- -------------
+-- execution_jobs / execution_job_events carry customer content and are tenant
+-- isolated with FORCE ROW LEVEL SECURITY, exactly like V49/V51.
+-- execution_job_dispatch and execution_dispatch_org_counters carry NO customer
+-- content (identifiers, capability, priority, lease timing only). They are
+-- deliberately NOT tenant isolated because cross-tenant fair scheduling is
+-- impossible under a per-transaction app.organization_id. Access is restricted
+-- to the elmos_scheduler role and the SECURITY DEFINER functions below.
 
+-- ---------------------------------------------------------------------------
+-- 1. Scheduler role
+-- ---------------------------------------------------------------------------
 
--- Enrollment credentials are short-lived, revocable, pool-bound and stored only
--- as SHA-256. The node authentication projection carries no customer payload; it
--- exists so a runner can be authenticated before any tenant RLS context exists.
-CREATE TABLE runner_enrollment_credentials (
-    enrollment_credential_id varchar(96) PRIMARY KEY,
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'elmos_scheduler') THEN
+        CREATE ROLE elmos_scheduler NOLOGIN;
+    END IF;
+END;
+$$;
+
+COMMENT ON ROLE elmos_scheduler IS
+    'Non-login role owning cross-tenant dispatch. Granted to the control-plane application role only. It can never read execution_jobs payloads directly; it reaches them through SECURITY DEFINER functions that bind an explicit organization.';
+
+-- ---------------------------------------------------------------------------
+-- 2. Typed runner fleet (ALTER of the V9 placeholder tables)
+-- ---------------------------------------------------------------------------
+-- V9 created runner_nodes/runner_job_leases as generic payload-jsonb rows.
+-- The V49 convention for turning a placeholder into a typed table is
+-- ADD COLUMN + a shape CHECK that only applies once the discriminator is set,
+-- so historical rows stay valid. The same convention is used here.
+
+ALTER TABLE runner_nodes
+    ADD COLUMN runner_pool_ref varchar(96) REFERENCES runner_pools(runner_pool_id),
+    ADD COLUMN agent_version varchar(64),
+    ADD COLUMN fleet_status varchar(24),
+    ADD COLUMN capabilities text[],
+    ADD COLUMN max_concurrency smallint,
+    ADD COLUMN rootless_attested boolean NOT NULL DEFAULT false,
+    ADD COLUMN readonly_root_attested boolean NOT NULL DEFAULT false,
+    ADD COLUMN capability_drop_attested boolean NOT NULL DEFAULT false,
+    ADD COLUMN network_default_deny_attested boolean NOT NULL DEFAULT false,
+    ADD COLUMN attestation_verified_at timestamptz,
+    ADD COLUMN attestation_verifier_actor_id varchar(128),
+    ADD COLUMN image_allowlist_version varchar(64),
+    ADD COLUMN last_heartbeat_at timestamptz,
+    ADD COLUMN drain_requested_at timestamptz,
+    ADD COLUMN quarantined_at timestamptz,
+    ADD COLUMN quarantine_code varchar(96),
+    ADD CONSTRAINT runner_nodes_fleet_shape CHECK (
+        fleet_status IS NULL OR (
+            fleet_status IN ('REGISTERED', 'READY', 'DRAINING', 'QUARANTINED', 'LOST', 'RETIRED')
+            AND agent_version IS NOT NULL
+            AND capabilities IS NOT NULL
+            AND array_length(capabilities, 1) BETWEEN 1 AND 32
+            AND max_concurrency BETWEEN 1 AND 16
+            AND runner_pool_ref IS NOT NULL
+        )
+    ),
+    ADD CONSTRAINT runner_nodes_ready_requires_attestation CHECK (
+        fleet_status IS DISTINCT FROM 'READY' OR (
+            rootless_attested
+            AND readonly_root_attested
+            AND capability_drop_attested
+            AND network_default_deny_attested
+            AND attestation_verified_at IS NOT NULL
+            AND attestation_verifier_actor_id IS NOT NULL
+            AND image_allowlist_version IS NOT NULL
+        )
+    );
+
+CREATE INDEX idx_runner_nodes_fleet_status
+    ON runner_nodes (fleet_status, last_heartbeat_at DESC)
+    WHERE fleet_status IS NOT NULL;
+
+COMMENT ON CONSTRAINT runner_nodes_ready_requires_attestation ON runner_nodes IS
+    'A node cannot reach READY without four independently verified sandbox attestations and a named verifier. The scheduler refuses to lease work to anything else.';
+
+ALTER TABLE runner_job_leases
+    ADD COLUMN job_ref varchar(96),
+    ADD COLUMN runner_node_ref varchar(96) REFERENCES runner_nodes(runner_node_id),
+    ADD COLUMN actor_id varchar(128),
+    ADD COLUMN lease_state varchar(24),
+    ADD COLUMN token_sha256 varchar(64) CHECK (token_sha256 IS NULL OR token_sha256 ~ '^[0-9a-f]{64}$'),
+    ADD COLUMN issued_at timestamptz,
+    ADD COLUMN expires_at timestamptz,
+    ADD COLUMN last_heartbeat_at timestamptz,
+    ADD COLUMN released_at timestamptz,
+    ADD COLUMN revocation_code varchar(96),
+    ADD CONSTRAINT runner_job_leases_shape CHECK (
+        lease_state IS NULL OR (
+            lease_state IN ('ISSUED', 'ACTIVE', 'RELEASED', 'EXPIRED', 'REVOKED')
+            AND job_ref IS NOT NULL
+            AND runner_node_ref IS NOT NULL
+            AND actor_id IS NOT NULL
+            AND token_sha256 IS NOT NULL
+            AND issued_at IS NOT NULL
+            AND expires_at > issued_at
+        )
+    );
+
+CREATE INDEX idx_runner_job_leases_job ON runner_job_leases (job_ref) WHERE job_ref IS NOT NULL;
+CREATE INDEX idx_runner_job_leases_expiry
+    ON runner_job_leases (expires_at)
+    WHERE lease_state IN ('ISSUED', 'ACTIVE');
+
+COMMENT ON COLUMN runner_job_leases.token_sha256 IS
+    'SHA-256 of the one-time execution credential. The credential itself is returned once at claim time and is never stored, logged or recoverable.';
+
+-- ---------------------------------------------------------------------------
+-- 3. Authoritative job record (tenant isolated)
+-- ---------------------------------------------------------------------------
+
+CREATE TABLE execution_jobs (
+    job_id varchar(96) PRIMARY KEY,
     organization_id varchar(96) NOT NULL REFERENCES organizations(organization_id),
-    runner_pool_id varchar(96) NOT NULL,
-    token_sha256 varchar(64) NOT NULL UNIQUE
-        CHECK (token_sha256 ~ '^[0-9a-f]{64}$'),
-    credential_state varchar(16) NOT NULL DEFAULT 'ACTIVE'
-        CHECK (credential_state IN ('ACTIVE', 'REVOKED', 'EXPIRED')),
-    not_before timestamptz NOT NULL DEFAULT now(),
-    expires_at timestamptz NOT NULL,
-    issued_by_actor_id varchar(128) NOT NULL,
-    revoked_at timestamptz,
-    revoked_by_actor_id varchar(128),
+    actor_id varchar(128) NOT NULL,
+    business_line varchar(32) NOT NULL,
+    job_kind varchar(64) NOT NULL,
+    idempotency_key varchar(160) NOT NULL,
+    request_digest varchar(64) NOT NULL CHECK (request_digest ~ '^[0-9a-f]{64}$'),
+    request_payload jsonb NOT NULL DEFAULT '{}'::jsonb,
+    required_capability varchar(96) NOT NULL,
+    runner_image varchar(255),
+    priority smallint NOT NULL DEFAULT 100,
+    status varchar(24) NOT NULL DEFAULT 'QUEUED',
+    stage varchar(64) NOT NULL DEFAULT 'queued',
+    progress smallint NOT NULL DEFAULT 0,
+    result_status varchar(24) NOT NULL DEFAULT 'NOT_RUN',
+    failure_code varchar(96),
+    attempt smallint NOT NULL DEFAULT 0,
+    max_attempts smallint NOT NULL DEFAULT 1,
+    budget_wall_seconds integer NOT NULL DEFAULT 3600,
+    budget_cpu_millis integer NOT NULL DEFAULT 4000,
+    budget_memory_mib integer NOT NULL DEFAULT 8192,
+    checkpoint_cursor jsonb NOT NULL DEFAULT '{}'::jsonb,
+    cancel_requested_at timestamptz,
+    cancel_requested_by varchar(128),
     created_at timestamptz NOT NULL DEFAULT now(),
-    CHECK (expires_at > not_before),
-    CHECK (
-        credential_state <> 'REVOKED'
-        OR (revoked_at IS NOT NULL AND revoked_by_actor_id IS NOT NULL)
+    updated_at timestamptz NOT NULL DEFAULT now(),
+    started_at timestamptz,
+    finished_at timestamptz,
+    state_version bigint NOT NULL DEFAULT 0,
+    UNIQUE (organization_id, idempotency_key),
+    CONSTRAINT execution_jobs_business_line CHECK (
+        business_line IN ('GENERATION', 'TRANSLATION', 'SPRING_UPGRADE', 'REPOSITORY_WORKSPACE')
+    ),
+    CONSTRAINT execution_jobs_status CHECK (
+        status IN ('QUEUED', 'CLAIMED', 'RUNNING', 'SUCCEEDED', 'PARTIAL', 'FAILED', 'CANCELLED', 'LOST')
+    ),
+    CONSTRAINT execution_jobs_result_status CHECK (
+        result_status IN ('NOT_RUN', 'PASSED', 'PARTIAL', 'FAILED', 'BLOCKED')
+    ),
+    CONSTRAINT execution_jobs_progress_range CHECK (progress BETWEEN 0 AND 100),
+    CONSTRAINT execution_jobs_priority_range CHECK (priority BETWEEN 1 AND 1000),
+    CONSTRAINT execution_jobs_attempt_range CHECK (attempt >= 0 AND attempt <= max_attempts AND max_attempts BETWEEN 1 AND 5),
+    CONSTRAINT execution_jobs_budget_range CHECK (
+        budget_wall_seconds BETWEEN 60 AND 43200
+        AND budget_cpu_millis BETWEEN 500 AND 32000
+        AND budget_memory_mib BETWEEN 512 AND 65536
+    ),
+    CONSTRAINT execution_jobs_payload_object CHECK (jsonb_typeof(request_payload) = 'object'),
+    CONSTRAINT execution_jobs_checkpoint_object CHECK (jsonb_typeof(checkpoint_cursor) = 'object'),
+    CONSTRAINT execution_jobs_terminal_shape CHECK (
+        status NOT IN ('SUCCEEDED', 'PARTIAL', 'FAILED', 'CANCELLED', 'LOST') OR finished_at IS NOT NULL
+    ),
+    CONSTRAINT execution_jobs_failure_shape CHECK (
+        status <> 'FAILED' OR failure_code IS NOT NULL
+    ),
+    -- Production runner images must be immutable digests. A mutable tag is a
+    -- supply-chain hole and is rejected at the storage layer, not only in code.
+    CONSTRAINT execution_jobs_runner_image_digest CHECK (
+        runner_image IS NULL OR runner_image ~ '^[a-z0-9][a-z0-9._/-]*(:[0-9]+)?/?[a-z0-9._/-]*@sha256:[0-9a-f]{64}$'
     )
 );
 
-CREATE INDEX runner_enrollment_credentials_pool_active
-    ON runner_enrollment_credentials (runner_pool_id, expires_at)
-    WHERE credential_state = 'ACTIVE';
+CREATE INDEX idx_execution_jobs_org_created ON execution_jobs (organization_id, created_at DESC);
+CREATE INDEX idx_execution_jobs_org_status ON execution_jobs (organization_id, status, created_at DESC);
+CREATE INDEX idx_execution_jobs_org_line ON execution_jobs (organization_id, business_line, created_at DESC);
 
-CREATE TABLE runner_node_authentication (
-    runner_node_id varchar(96) PRIMARY KEY,
+COMMENT ON TABLE execution_jobs IS
+    'Authoritative durable record for every long-running business-line job. Replaces the in-memory job table that the web BFF and the language workers previously kept (capability EPHEMERAL_PROCESS_LOCAL).';
+COMMENT ON COLUMN execution_jobs.request_payload IS
+    'Approved, validated request intent only. Credentials, tokens, raw source code and provider secrets are prohibited; use secret references and content-addressed inputs.';
+COMMENT ON COLUMN execution_jobs.failure_code IS
+    'Stable machine-readable code. Raw exception text, stack traces and provider messages are prohibited here and belong in evidence artifacts.';
+
+CREATE TABLE execution_job_events (
+    job_event_id varchar(96) PRIMARY KEY,
     organization_id varchar(96) NOT NULL REFERENCES organizations(organization_id),
-    runner_pool_id varchar(96) NOT NULL,
-    enrollment_credential_id varchar(96) NOT NULL
-        REFERENCES runner_enrollment_credentials(enrollment_credential_id),
-    bound_at timestamptz NOT NULL DEFAULT now(),
-    revoked_at timestamptz
+    job_id varchar(96) NOT NULL REFERENCES execution_jobs(job_id),
+    sequence_no integer NOT NULL,
+    event_type varchar(48) NOT NULL,
+    from_status varchar(24),
+    to_status varchar(24),
+    stage varchar(64),
+    progress smallint,
+    runner_node_ref varchar(96),
+    lease_ref varchar(96),
+    actor_id varchar(128),
+    failure_code varchar(96),
+    occurred_at timestamptz NOT NULL DEFAULT now(),
+    metadata jsonb NOT NULL DEFAULT '{}'::jsonb,
+    UNIQUE (job_id, sequence_no),
+    CONSTRAINT execution_job_events_type CHECK (
+        event_type IN (
+            'ENQUEUED', 'CLAIMED', 'HEARTBEAT', 'STAGE_CHANGED', 'CHECKPOINT',
+            'COMPLETED', 'FAILED', 'CANCEL_REQUESTED', 'CANCELLED',
+            'LEASE_EXPIRED', 'REQUEUED', 'ARTIFACT_PUBLISHED'
+        )
+    ),
+    CONSTRAINT execution_job_events_progress_range CHECK (progress IS NULL OR progress BETWEEN 0 AND 100),
+    CONSTRAINT execution_job_events_metadata_object CHECK (jsonb_typeof(metadata) = 'object')
 );
 
-REVOKE ALL ON runner_enrollment_credentials FROM PUBLIC;
-REVOKE ALL ON runner_node_authentication FROM PUBLIC;
+CREATE INDEX idx_execution_job_events_job ON execution_job_events (job_id, sequence_no);
+CREATE INDEX idx_execution_job_events_org_time ON execution_job_events (organization_id, occurred_at DESC);
+
+CREATE TRIGGER execution_job_events_append_only
+BEFORE UPDATE OR DELETE ON execution_job_events
+FOR EACH ROW EXECUTE FUNCTION elmos_forbid_append_only_mutation();
+
+-- Terminal states are immutable. This mirrors the invariant the Java and .NET
+-- workers already enforce in memory ("终态统一不可改写"), but puts it where it
+-- cannot be bypassed by a new caller.
+CREATE OR REPLACE FUNCTION elmos_guard_execution_job_transition()
+RETURNS trigger
+LANGUAGE plpgsql AS $$
+BEGIN
+    IF OLD.status IN ('SUCCEEDED', 'PARTIAL', 'FAILED', 'CANCELLED', 'LOST')
+       AND NEW.status IS DISTINCT FROM OLD.status THEN
+        RAISE EXCEPTION 'ELMOS_EXECUTION_JOB_TERMINAL_IMMUTABLE';
+    END IF;
+    IF NEW.organization_id IS DISTINCT FROM OLD.organization_id THEN
+        RAISE EXCEPTION 'ELMOS_EXECUTION_JOB_TENANT_IMMUTABLE';
+    END IF;
+    IF NEW.request_digest IS DISTINCT FROM OLD.request_digest THEN
+        RAISE EXCEPTION 'ELMOS_EXECUTION_JOB_REQUEST_IMMUTABLE';
+    END IF;
+    NEW.updated_at := now();
+    NEW.state_version := OLD.state_version + 1;
+    RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER execution_jobs_transition_guard
+BEFORE UPDATE ON execution_jobs
+FOR EACH ROW EXECUTE FUNCTION elmos_guard_execution_job_transition();
+
+-- ---------------------------------------------------------------------------
+-- 4. Cross-tenant dispatch projection (NOT tenant isolated, by design)
+-- ---------------------------------------------------------------------------
+
+CREATE TABLE execution_job_dispatch (
+    job_id varchar(96) PRIMARY KEY REFERENCES execution_jobs(job_id),
+    organization_id varchar(96) NOT NULL REFERENCES organizations(organization_id),
+    required_capability varchar(96) NOT NULL,
+    priority smallint NOT NULL DEFAULT 100,
+    dispatch_state varchar(16) NOT NULL DEFAULT 'READY',
+    attempt smallint NOT NULL DEFAULT 0,
+    enqueued_at timestamptz NOT NULL DEFAULT now(),
+    visible_at timestamptz NOT NULL DEFAULT now(),
+    lease_ref varchar(96),
+    runner_node_ref varchar(96),
+    lease_expires_at timestamptz,
+    CONSTRAINT execution_job_dispatch_state CHECK (
+        dispatch_state IN ('READY', 'LEASED', 'DONE', 'DEAD')
+    ),
+    CONSTRAINT execution_job_dispatch_lease_shape CHECK (
+        dispatch_state <> 'LEASED' OR (lease_ref IS NOT NULL AND runner_node_ref IS NOT NULL AND lease_expires_at IS NOT NULL)
+    )
+);
+
+-- The single index the claim query rides on.
+CREATE INDEX idx_execution_job_dispatch_ready
+    ON execution_job_dispatch (required_capability, priority DESC, enqueued_at)
+    WHERE dispatch_state = 'READY';
+CREATE INDEX idx_execution_job_dispatch_lease_expiry
+    ON execution_job_dispatch (lease_expires_at)
+    WHERE dispatch_state = 'LEASED';
+CREATE INDEX idx_execution_job_dispatch_org ON execution_job_dispatch (organization_id, dispatch_state);
+
+COMMENT ON TABLE execution_job_dispatch IS
+    'Cross-tenant scheduling projection. Intentionally NOT row-level-security isolated: fair scheduling must see every tenant at once, which a per-transaction app.organization_id forbids. It therefore carries no customer content - only identifiers, capability, priority and lease timing. Direct access is revoked from PUBLIC and granted to elmos_scheduler.';
+
+CREATE TABLE execution_dispatch_org_counters (
+    organization_id varchar(96) PRIMARY KEY REFERENCES organizations(organization_id),
+    leased_count integer NOT NULL DEFAULT 0,
+    queued_count integer NOT NULL DEFAULT 0,
+    updated_at timestamptz NOT NULL DEFAULT now(),
+    CONSTRAINT execution_dispatch_counters_non_negative CHECK (leased_count >= 0 AND queued_count >= 0)
+);
+
+COMMENT ON TABLE execution_dispatch_org_counters IS
+    'O(1) fairness and concurrency counters maintained by the dispatch functions. Reconciled by elmos_reconcile_dispatch_counters() on every reaper pass so drift can never silently starve or over-admit a tenant.';
 
 -- ---------------------------------------------------------------------------
 -- 5. Effective concurrency limit, derived from the CNY self-service catalog
@@ -62,13 +318,11 @@ REVOKE ALL ON runner_node_authentication FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION elmos_execution_concurrency_limit(p_organization_id varchar)
 RETURNS integer
-LANGUAGE plpgsql
+LANGUAGE sql
+STABLE
 SECURITY DEFINER
 SET search_path = public
 AS $$
-BEGIN
-    PERFORM set_config('app.organization_id', p_organization_id, true);
-    RETURN (
     SELECT coalesce(
         (SELECT p.concurrent_job_limit
            FROM subscriptions s
@@ -80,8 +334,7 @@ BEGIN
             AND s.current_period_end > now()
           ORDER BY p.concurrent_job_limit DESC
           LIMIT 1),
-        0));
-END;
+        0);
 $$;
 
 COMMENT ON FUNCTION elmos_execution_concurrency_limit(varchar) IS
@@ -115,7 +368,6 @@ DECLARE
     v_queued integer;
     v_limit integer;
 BEGIN
-    PERFORM set_config('app.organization_id', p_organization_id, true);
     SELECT * INTO v_existing FROM execution_jobs
      WHERE organization_id = p_organization_id AND idempotency_key = p_idempotency_key;
     IF FOUND THEN
@@ -203,7 +455,6 @@ SET search_path = public
 AS $$
 DECLARE
     v_node runner_nodes%ROWTYPE;
-    v_runner_organization_id varchar(96);
     v_candidate record;
     v_job execution_jobs%ROWTYPE;
     v_active integer;
@@ -224,15 +475,6 @@ BEGIN
        OR coalesce(array_length(p_token_hashes, 1), 0) <> p_limit THEN
         RAISE EXCEPTION 'ELMOS_CLAIM_CREDENTIAL_COUNT_MISMATCH';
     END IF;
-
-    SELECT organization_id INTO v_runner_organization_id
-      FROM runner_node_authentication
-     WHERE runner_node_id = p_runner_node_id AND revoked_at IS NULL;
-    IF NOT FOUND THEN
-        RAISE EXCEPTION 'ELMOS_RUNNER_UNKNOWN';
-    END IF;
-    PERFORM set_config(
-        'app.organization_id', v_runner_organization_id, true);
 
     SELECT * INTO v_node FROM runner_nodes
      WHERE runner_node_id = p_runner_node_id FOR UPDATE;
@@ -273,10 +515,7 @@ BEGIN
          WHERE c.organization_id = v_candidate.d_org;
         CONTINUE WHEN coalesce(v_org_active, 0) >= v_org_limit;
 
-        PERFORM set_config(
-            'app.organization_id', v_candidate.d_org, true);
-        SELECT * INTO v_job FROM execution_jobs
-         WHERE execution_jobs.job_id = v_candidate.d_job_id FOR UPDATE;
+        SELECT * INTO v_job FROM execution_jobs WHERE execution_jobs.job_id = v_candidate.d_job_id FOR UPDATE;
 
         -- A cancel that arrived while the job was still queued never reaches a runner.
         IF v_job.cancel_requested_at IS NOT NULL THEN
@@ -375,15 +614,9 @@ SET search_path = public
 AS $$
 DECLARE
     v_lease runner_job_leases%ROWTYPE;
-    v_organization_id varchar(96);
     v_expires timestamptz;
     v_cancelled boolean;
 BEGIN
-    SELECT organization_id INTO v_organization_id
-      FROM execution_job_dispatch WHERE lease_ref = p_lease_id;
-    IF NOT FOUND THEN RAISE EXCEPTION 'ELMOS_LEASE_UNKNOWN'; END IF;
-    PERFORM set_config('app.organization_id', v_organization_id, true);
-
     SELECT * INTO v_lease FROM runner_job_leases
      WHERE runner_job_lease_id = p_lease_id FOR UPDATE;
     IF NOT FOUND THEN RAISE EXCEPTION 'ELMOS_LEASE_UNKNOWN'; END IF;
@@ -438,7 +671,6 @@ SET search_path = public
 AS $$
 DECLARE
     v_lease runner_job_leases%ROWTYPE;
-    v_organization_id varchar(96);
     v_job execution_jobs%ROWTYPE;
     v_seq integer;
     v_requeue boolean := false;
@@ -446,11 +678,6 @@ BEGIN
     IF p_status NOT IN ('SUCCEEDED', 'PARTIAL', 'FAILED', 'CANCELLED') THEN
         RAISE EXCEPTION 'ELMOS_COMPLETION_STATUS_INVALID';
     END IF;
-
-    SELECT organization_id INTO v_organization_id
-      FROM execution_job_dispatch WHERE lease_ref = p_lease_id;
-    IF NOT FOUND THEN RAISE EXCEPTION 'ELMOS_LEASE_UNKNOWN'; END IF;
-    PERFORM set_config('app.organization_id', v_organization_id, true);
 
     SELECT * INTO v_lease FROM runner_job_leases
      WHERE runner_job_lease_id = p_lease_id FOR UPDATE;
@@ -541,7 +768,6 @@ DECLARE
     v_job execution_jobs%ROWTYPE;
     v_seq integer;
 BEGIN
-    PERFORM set_config('app.organization_id', p_organization_id, true);
     SELECT * INTO v_job FROM execution_jobs
      WHERE job_id = p_job_id AND organization_id = p_organization_id FOR UPDATE;
     IF NOT FOUND THEN RAISE EXCEPTION 'ELMOS_EXECUTION_JOB_UNKNOWN'; END IF;
@@ -575,7 +801,6 @@ SET search_path = public
 AS $$
 DECLARE
     v_row record;
-    v_node record;
     v_job execution_jobs%ROWTYPE;
     v_seq integer;
     v_count integer := 0;
@@ -586,7 +811,6 @@ BEGIN
          WHERE d.dispatch_state = 'LEASED' AND d.lease_expires_at < now()
          FOR UPDATE SKIP LOCKED
     LOOP
-        PERFORM set_config('app.organization_id', v_row.organization_id, true);
         UPDATE runner_job_leases
            SET lease_state = 'EXPIRED', released_at = now(), revocation_code = 'LEASE_EXPIRED'
          WHERE runner_job_lease_id = v_row.lease_ref;
@@ -628,19 +852,10 @@ BEGIN
         v_count := v_count + 1;
     END LOOP;
 
-    FOR v_node IN
-        SELECT runner_node_id, organization_id
-          FROM runner_node_authentication
-         WHERE revoked_at IS NULL
-    LOOP
-        PERFORM set_config('app.organization_id', v_node.organization_id, true);
-        UPDATE runner_nodes
-           SET fleet_status = 'LOST'
-         WHERE runner_node_id = v_node.runner_node_id
-           AND fleet_status IN ('READY', 'DRAINING')
-           AND (last_heartbeat_at IS NULL
-                OR last_heartbeat_at < now() - interval '120 seconds');
-    END LOOP;
+    UPDATE runner_nodes
+       SET fleet_status = 'LOST'
+     WHERE fleet_status IN ('READY', 'DRAINING')
+       AND (last_heartbeat_at IS NULL OR last_heartbeat_at < now() - interval '120 seconds');
 
     PERFORM elmos_reconcile_dispatch_counters();
     RETURN v_count;
@@ -676,9 +891,31 @@ END;
 $$;
 
 -- ---------------------------------------------------------------------------
+-- 10. Row level security and grants
+-- ---------------------------------------------------------------------------
+
+DO $$
+DECLARE table_name text;
+BEGIN
+    FOREACH table_name IN ARRAY ARRAY[
+        'execution_jobs',
+        'execution_job_events'
+    ]
+    LOOP
+        EXECUTE format('ALTER TABLE %I ENABLE ROW LEVEL SECURITY', table_name);
+        EXECUTE format('ALTER TABLE %I FORCE ROW LEVEL SECURITY', table_name);
+        EXECUTE format(
+            'CREATE POLICY tenant_isolation ON %I USING (organization_id = current_setting(''app.organization_id'', true)) WITH CHECK (organization_id = current_setting(''app.organization_id'', true))',
+            table_name
+        );
+    END LOOP;
+END;
+$$;
 
 REVOKE ALL ON execution_job_dispatch FROM PUBLIC;
 REVOKE ALL ON execution_dispatch_org_counters FROM PUBLIC;
+GRANT SELECT, INSERT, UPDATE ON execution_job_dispatch TO elmos_scheduler;
+GRANT SELECT, INSERT, UPDATE ON execution_dispatch_org_counters TO elmos_scheduler;
 
 DO $$
 DECLARE v_function record;
