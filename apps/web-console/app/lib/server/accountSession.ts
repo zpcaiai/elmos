@@ -34,6 +34,7 @@ export type AccountPermission =
   | "spring:execute"
   | "translation:execute"
   | "generation:execute"
+  | "modernization:execute"
   | "repository:read"
   | "repository:write"
   | "repository:commit"
@@ -51,6 +52,7 @@ const knownPermissions = new Set<AccountPermission>([
   "spring:execute",
   "translation:execute",
   "generation:execute",
+  "modernization:execute",
   "repository:read",
   "repository:write",
   "repository:commit",
@@ -71,6 +73,7 @@ const rolePermissions: Record<AccountRole, AccountPermission[]> = {
     "spring:execute",
     "translation:execute",
     "generation:execute",
+    "modernization:execute",
     "repository:read",
     "repository:write",
     "repository:commit",
@@ -81,6 +84,7 @@ const rolePermissions: Record<AccountRole, AccountPermission[]> = {
     "spring:execute",
     "translation:execute",
     "generation:execute",
+    "modernization:execute",
     "repository:read",
     "repository:write",
     "repository:commit",
@@ -94,6 +98,7 @@ const rolePermissions: Record<AccountRole, AccountPermission[]> = {
     "spring:execute",
     "translation:execute",
     "generation:execute",
+    "modernization:execute",
     "repository:read",
     "repository:write",
     "repository:commit",
@@ -109,6 +114,7 @@ const rolePermissions: Record<AccountRole, AccountPermission[]> = {
     "spring:execute",
     "translation:execute",
     "generation:execute",
+    "modernization:execute",
     "repository:read",
     "repository:write",
     "repository:commit",
