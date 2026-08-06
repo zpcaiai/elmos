@@ -24,6 +24,31 @@ SUPPORTED_LANGUAGES: tuple[Language, ...] = (
 #: callers that enumerate sources should say so explicitly.
 ANALYZABLE_LANGUAGES: tuple[Language, ...] = SUPPORTED_LANGUAGES
 
+#: Languages carrying a directed route pack under `routes/`: a support matrix,
+#: three independent behaviour corpora, and recorded certification evidence.
+#: Six languages, so thirty ordered pairs -- which is what `routes/inventory.json`
+#: declares.
+ROUTED_LANGUAGES: tuple[Language, ...] = (
+    "java",
+    "python",
+    "csharp",
+    "typescript",
+    "go",
+    "rust",
+)
+
+#: Languages the engine can analyse and emit, but which have **no** route pack,
+#: no corpus and no certification evidence of any kind.
+#:
+#: The distinction was previously implicit: `SUPPORTED_LANGUAGES` listed nine,
+#: `routes/` held thirty pairs over six, and nothing reconciled the two. Read
+#: from the engine the platform appeared to support seventy-two directed pairs;
+#: read from `routes/` it supported thirty. Naming the gap is not the same as
+#: closing it -- these three remain engine-only until they carry the same
+#: evidence the other six do -- but a boundary that is written down can be
+#: checked, and `tests/test_language_set.py` checks it.
+ENGINE_ONLY_LANGUAGES: tuple[Language, ...] = ("cpp", "objc", "swift")
+
 
 class RouteError(ValueError):
     """Raised when a route cannot preserve the declared semantic subset."""

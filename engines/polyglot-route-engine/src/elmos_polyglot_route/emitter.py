@@ -907,6 +907,17 @@ def _function(context: _Context, function: Function) -> str:
             if parameter.type == "integer":
                 _require_helper(context, "safe_integer")
                 lines.append(f"    _elmosRequireSafeInteger({parameter.name});")
+    if language == "python":
+        # Python and TypeScript are the two targets whose parameter type can
+        # physically hold a value outside the canonical `integer` range --
+        # every other target's `long`/`int64`/`i64` cannot represent one, so
+        # the range is enforced by the type. Python's int is unbounded, so
+        # without this an out-of-range argument would compute silently and
+        # answer something no other target could have produced.
+        for parameter in function.parameters:
+            if parameter.type == "integer":
+                _require_helper(context, "integer_range")
+                lines.append(f"    _elmos_in_range({parameter.name})")
     body_indent = 2 if language in _WRAPPED_IN_TYPE else 1
     lines.extend(
         _statements(context, function.body, environment, body_indent, function.return_type)

@@ -375,3 +375,51 @@ def test_the_most_negative_literal_uses_the_macro_in_c_and_objective_c(
     # not fit a signed 64-bit type; GCC and Clang reject it under -Werror.
     unit = _function("least", [], "integer", {"kind": "literal", "value": INTEGER_MIN})
     assert expected in emit(_ir(unit), language).content
+
+
+# --------------------------------------------------------------------------
+# Grouping of the *non-arithmetic* operators
+#
+# The checked-arithmetic calls carry their own parentheses, so the Rust
+# grouping defect no longer shows up in `(a + b) * c` even without `_group`.
+# It still shows up wherever an operator is emitted infix -- which is every
+# comparison and both boolean connectives. A mutation campaign found this gap:
+# removing the grouping rule entirely left the suite green.
+# --------------------------------------------------------------------------
+
+_OR_THEN_AND = _function(
+    "either",
+    [("a", "boolean"), ("b", "boolean"), ("c", "boolean")],
+    "boolean",
+    _binary("&&", _binary("||", _name("a"), _name("b")), _name("c")),
+)
+
+
+def test_rust_groups_boolean_connectives() -> None:
+    # `&&` binds tighter than `||` in Rust, so the ungrouped rendering of
+    # (a || b) && c is `a || b && c`, which means a || (b && c):
+    #     a=true b=false c=false   grouped -> false   ungrouped -> true
+    content = emit(_ir(_OR_THEN_AND), "rust").content
+    assert "a || b && c" not in content, "the reassociation defect is back for connectives"
+    assert "(a || b) && c" in content
+
+
+@pytest.mark.parametrize("language", ALL_TARGETS)
+def test_every_target_groups_boolean_connectives(language: str) -> None:
+    content = emit(_ir(_OR_THEN_AND), language).content
+    spelling = {"python": "(a or b) and c"}.get(language, "(a || b) && c")
+    assert spelling in content
+
+
+def test_python_rejects_arguments_outside_the_canonical_range() -> None:
+    # Python and TypeScript are the only targets whose parameter type can hold
+    # a value outside [-2^63, 2^63-1] at all; every other target's int64
+    # cannot represent one. Without a guard the emitted Python would compute
+    # happily on an argument no other target could have received.
+    identity = _function("pass_through", [("a", "integer")], "integer", _name("a"))
+    source = emit(_ir(identity), "python").content
+    assert "_elmos_in_range(a)" in source
+    function = _load_python(source, "pass_through")
+    assert function(INTEGER_MAX) == INTEGER_MAX
+    with pytest.raises(OverflowError, match="ELMOS_INTEGER_OVERFLOW"):
+        function(INTEGER_MAX + 1)
