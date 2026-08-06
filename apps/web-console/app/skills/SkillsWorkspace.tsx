@@ -12,6 +12,9 @@ type Namespace = "migration" | "precision" | "product";
 type RangeItem = { range: string; title: string; count: number; source: string; status: string; icon: IconName; note: string };
 
 const precisionIcons: IconName[] = ["route", "layers", "code", "workflow", "database", "test", "shield", "spark"];
+const precisionMaturityCounts = precisionMigrationSummary.maturityCounts as Readonly<Record<string, number>>;
+const precisionExecutableCount = (precisionMaturityCounts.LOCAL_EXECUTED ?? 0)
+  + (precisionMaturityCounts.ADAPTER_DECLARED ?? 0);
 const precisionRanges: RangeItem[] = precisionMigrationPhases.map((phase, index) => ({
   range: phase.batchRange.replace("-", "–"),
   title: phase.phase.replace(/^[A-L]\s+/, ""),
@@ -54,7 +57,7 @@ export function SkillsWorkspace() {
     </section>
 
     <section className="metric-grid metric-grid-four" aria-label="Skills 资格摘要">
-      <article className="metric-card metric-card-accent"><span>精密迁移成熟度</span><strong>{precisionMigrationSummary.maturityCounts.ADAPTER_DECLARED} / {precisionMigrationSummary.runtimeSkillCount}</strong><small>{precisionMigrationSummary.workspaceSkillCount} 个均可由 Codex 发现；其余仅安装、未声明适配器</small></article>
+      <article className="metric-card metric-card-accent"><span>精密迁移成熟度</span><strong>{precisionExecutableCount} / {precisionMigrationSummary.runtimeSkillCount}</strong><small>{precisionMigrationSummary.workspaceSkillCount} 个均可由 Codex 发现；本地执行不等于外部认证</small></article>
       <article className="metric-card"><span>Codex / Runtime</span><strong className="metric-pair">{installedSkillInventory.codexSkillCount.toLocaleString("en-US")} <i>/</i> {installedSkillInventory.runtimeSkillCount.toLocaleString("en-US")}</strong><small>按含 SKILL.md 的可调用目录统计</small></article>
       <article className="metric-card"><span>严格用例目录</span><strong>408</strong><small>Batch 1–37 · 八类变体</small></article>
       <article className="metric-card"><span>外部认证用例</span><strong className="warning-text">0 / 408</strong><small>全部保持 NOT_RUN</small></article>
