@@ -1,6 +1,6 @@
 # Repository Migration Platform — Batch 1–38 Skills Bag
 
-版本：`3.3.0`
+版本：`3.5.0`
 
 本包包含 **38个Batch级Codex Skills + 1个Master Skill**，覆盖：
 
@@ -24,7 +24,7 @@ Source冻结与语义恢复
 - Executor、Oracle Owner、Verifier使用Ed25519认证并强制角色冲突隔离；development、negative、holdout与production Corpus按Claim分别闭合，Holdout/Production使用独立角色。
 - 权威状态使用SQLite WAL、`BEGIN IMMEDIATE`、外键、唯一约束、整数Fencing Token和哈希链事件；JSON文件只是可重建镜像。
 - `trusted_adapters.py`只接受运维方Ed25519签名的Adapter Registry：可执行文件、SHA-256、版本、argv模板、参数类型、环境引用、超时、副作用等级与补偿操作均不可由仓库内容修改。变更操作要求独立Approver、幂等键和单调Fencing；超时造成的不确定副作用保持`UNKNOWN`并禁止自动重试。
-- `production_closure.py`实现客户快照只读摄取、内容摘要最小化、独立Holdout封存、切换/回滚状态机、并发版本与Fencing、七天生产长稳下限、心跳间隔和独立认证报告导入。测试或Sandbox结果只能到`LOCAL_TOOLKIT_PASS`，导入报告也不能在仓库内开启认证。
+- `production_closure.py`实现客户快照只读摄取、内容摘要最小化、Claim专属Oracle Holdout、切换/回滚状态机、并发版本与Fencing、七天生产长稳下限、心跳间隔和独立认证报告导入。生产Provider Profile还必须绑定API/Adapter/IaC精确版本、账户模型、身份、最小权限、状态后端及回滚计划摘要；当前记录必须与哈希链末事件一致。受控测试时钟始终产生`engineering-only`证据且`real_seven_day_elapsed=false`，测试或Sandbox结果只能到`LOCAL_TOOLKIT_PASS`，导入报告也不能在仓库内开启认证。
 - 本地Gate最多返回`LOCAL_TOOLKIT_PASS`。随包Trust Policy不含信任密钥并禁用`CERTIFIED`；真实客户、生产、Provider、Kernel Proof、独立评审与CA证据保持`NOT_RUN`。
 
 ## 安装
@@ -66,15 +66,17 @@ python3 scripts/real_toolchain_e2e.py \
 验证。这是真实的一次性development执行证据；独立Holdout、客户生产切换、破坏性Cloud apply
 和外部认证机构仍为`NOT_RUN` / `NOT_CERTIFIED`。
 
-生产闭环的 v2 切换计划必须绑定精确 Provider、账户摘要、Region、Adapter 以及 precheck / execute /
-verify / rollback 操作。每次 Provider 状态转换同时校验包装回执和原生 Adapter 回执的真实字节；
+生产闭环的 v2 切换计划必须绑定精确 Provider API、账户模型与摘要、Region、Adapter/IaC版本、
+身份、最小权限、状态后端、回滚计划以及 precheck / execute / verify / rollback 操作。每次 Provider
+状态转换同时校验包装回执、原生 Adapter 回执和四类控制证据的真实字节；
 生产 soak 只能在切换成功后近实时启动，至少运行七天，心跳间隔不超过六小时，并执行最低可用性、
 最高错误率、最少观察数和独立最终验证者门禁。生产独立评估还必须绑定精确 run、cutover、release
 及 Provider 账户；导入后依旧保持 `certified=false`。
 
-Holdout 的 `SEALED` 只表示语料保管完成，不表示测试通过。`record-holdout-result` 必须导入逐 Claim
-真实证据、Provider 执行回执，并由清单中预先声明且互不重叠的 Holdout Executor 与 Verifier 双签；
-生产 v2 切换和 soak 都必须引用与同一 release、账户和 tenant 匹配的 `PASS` 结果。
+Holdout 的 `SEALED` 只表示语料保管完成，不表示测试通过。生产Holdout必须使用与development不同的
+分区标识、不可变Oracle Registry摘要和完整Claim→Oracle/version映射；每个Claim由预声明且独立的
+Oracle Owner签名，再由互不重叠的Holdout Executor与Verifier双签。生产 v2 切换和 soak 都必须引用
+与同一 release、账户和 tenant 匹配且`oracle_bound=true`的`PASS`结果。
 
 ## 可执行运行时
 

@@ -156,19 +156,45 @@ class MigrationPlatformRuntimeTest(unittest.TestCase):
         native.write_text(json.dumps({"state": effect_state, "operation": operation}), encoding="utf-8")
         native_ref = {"path": str(native), "sha256": production_closure.sha256_bytes(native.read_bytes()),
                       "bytes": native.stat().st_size}
+        effective_provider = provider or cutover["provider"]
         wrapper = {
-            "schema_version": "1.0", "receipt_id": f"receipt-{suffix}",
+            "schema_version": "2.0" if effective_provider.get("profile_version") == "2.0" else "1.0",
+            "receipt_id": f"receipt-{suffix}",
             "cutover_id": cutover["cutover_id"], "tenant_id": cutover["tenant_id"],
             "target_key": cutover["target_key"], "target_state": target_state,
-            "provider": provider or cutover["provider"], "operation": operation,
+            "provider": effective_provider, "operation": operation,
             "adapter_receipt": native_ref, "effect_state": effect_state,
             "request_sha256": production_closure.sha256_bytes(f"request-{suffix}".encode()),
             "issued_at": production_closure.now_text(),
         }
+        if effective_provider.get("profile_version") == "2.0":
+            control_bytes = {"identity": b"fixture-identity-binding", "least_privilege": b"fixture-least-privilege-policy",
+                             "state_backend": b"fixture-state-backend", "rollback": b"fixture-rollback-plan"}
+            controls = {}
+            for name, content in control_bytes.items():
+                control_path = self.root / f"provider-control-{name}-{suffix}.json"
+                control_path.write_bytes(content)
+                controls[name] = {"path": str(control_path),
+                    "sha256": production_closure.sha256_bytes(content), "bytes": len(content)}
+            wrapper.update({"control_evidence": controls,
+                            "control_decisions": {name: "PASS" for name in control_bytes}})
         path = self.root / f"provider-wrapper-{suffix}.json"
         path.write_text(json.dumps(wrapper), encoding="utf-8")
         return {"path": str(path), "sha256": production_closure.sha256_bytes(path.read_bytes()),
                 "bytes": path.stat().st_size}
+
+    @staticmethod
+    def exact_provider_profile(account: bytes) -> dict:
+        return {"profile_version": "2.0", "provider_id": "fixture-cloud", "provider_api_version": "2026-01-01",
+            "account_binding_sha256": production_closure.sha256_bytes(account), "account_model": "isolated-test-account",
+            "region": "test-region-1", "adapter_id": "fixture-provider", "adapter_version": "1.0.0",
+            "iac_tool": "fixture-iac", "iac_tool_version": "1.0.0",
+            "state_backend_sha256": production_closure.sha256_bytes(b"fixture-state-backend"),
+            "identity_binding_sha256": production_closure.sha256_bytes(b"fixture-identity-binding"),
+            "least_privilege_policy_sha256": production_closure.sha256_bytes(b"fixture-least-privilege-policy"),
+            "rollback_plan_sha256": production_closure.sha256_bytes(b"fixture-rollback-plan"),
+            "precheck_operation": "inspect", "execute_operation": "apply",
+            "verify_operation": "inspect", "rollback_operation": "undo"}
 
     @staticmethod
     def corpus_actors(corpus_role: str) -> tuple[str, str, str]:
@@ -889,21 +915,107 @@ class MigrationPlatformRuntimeTest(unittest.TestCase):
         self.assertEqual("PRECHECKED", store.row("cutovers", "cutover-race")["state"])
         self.assertEqual([], store.verify_event_chain())
 
+    def test_closure_event_chain_detects_current_record_and_metadata_tampering(self) -> None:
+        store = production_closure.ClosureStore(self.workspace)
+        record = {"schema_version": "1.0", "snapshot_id": "tamper-snapshot",
+                  "tenant_id": "tenant-001", "environment_class": "test"}
+        store.insert("snapshots", "tamper-snapshot", ("tamper-snapshot", "tenant-001", "test",
+                     production_closure.sha256_bytes(b"tamper-manifest")), record, "SNAPSHOT_REGISTERED")
+        connection = store.connect()
+        try:
+            changed = {**record, "environment_class": "production"}
+            connection.execute("UPDATE snapshots SET record_json=? WHERE snapshot_id=?",
+                               (production_closure.canonical_bytes(changed).decode(), "tamper-snapshot"))
+        finally:
+            connection.close()
+        findings = store.verify_event_chain()
+        self.assertTrue(any("current record differs from latest event" in item for item in findings))
+        self.assertTrue(any("environment metadata mismatch" in item for item in findings))
+
+    def test_production_holdout_binds_exact_claim_oracle_and_independent_roles(self) -> None:
+        corpus = self.root / "production-holdout.bin"
+        corpus.write_bytes(b"sealed-production-holdout")
+        oracle_registry_sha = production_closure.sha256_bytes(b"oracle-registry-v1")
+        mapping = [{"claim_id": "claim-route-equivalence", "oracle_id": "oracle-route-v1",
+                    "oracle_version": "1.0.0"}]
+        manifest = {"schema_version": "2.0", "holdout_id": "production-holdout-v2",
+            "tenant_id": "tenant-001", "environment_class": "production",
+            "corpus": {"path": str(corpus), "sha256": production_closure.sha256_bytes(corpus.read_bytes()),
+                       "bytes": corpus.stat().st_size},
+            "development_corpus_sha256": production_closure.sha256_bytes(b"development-corpus"),
+            "transformation_author_ids": ["author-a"], "executor_ids": ["executor-holdout"],
+            "verifier_ids": ["verifier-holdout"], "oracle_owner_ids": ["oracle-owner"],
+            "oracle_registry_sha256": oracle_registry_sha, "claim_oracle_map": mapping,
+            "development_partition_id": "development-partition", "holdout_partition_id": "holdout-partition"}
+        manifest_path = self.root / "production-holdout-v2.json"
+        manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+        manifest_sha = production_closure.sha256_bytes(production_closure.canonical_bytes(manifest))
+        custodian = self.sign("holdout-custodian", {"holdout_id": "production-holdout-v2",
+            "tenant_id": "tenant-001", "manifest_sha256": manifest_sha,
+            "corpus_sha256": manifest["corpus"]["sha256"], "environment_class": "production",
+            "oracle_registry_sha256": oracle_registry_sha,
+            "claim_oracle_root": production_closure.canonical_digest(mapping),
+            "development_partition_id": "development-partition", "holdout_partition_id": "holdout-partition"},
+            suffix="production-holdout-v2")
+        holdout = production_closure.register_holdout(
+            self.workspace, manifest_path, custodian, self.trust_store, (self.root.resolve(),))
+        execution = self.root / "production-holdout-execution.json"
+        evidence = self.root / "production-holdout-claim.json"
+        execution.write_text('{"state":"SUCCEEDED"}', encoding="utf-8")
+        evidence.write_text('{"outcome":"PASS"}', encoding="utf-8")
+        release = production_closure.sha256_bytes(b"release-v2")
+        account = production_closure.sha256_bytes(b"account-v2")
+        evidence_ref = {"path": str(evidence), "sha256": production_closure.sha256_bytes(evidence.read_bytes()),
+                        "bytes": evidence.stat().st_size}
+        oracle_bindings = {"result_id": "production-holdout-result-v2", "holdout_id": "production-holdout-v2",
+            "tenant_id": "tenant-001", "claim_id": mapping[0]["claim_id"], "oracle_id": mapping[0]["oracle_id"],
+            "oracle_version": mapping[0]["oracle_version"], "outcome": "PASS",
+            "evidence_sha256": evidence_ref["sha256"], "target_release_sha256": release,
+            "provider_account_sha256": account, "oracle_registry_sha256": oracle_registry_sha}
+        oracle_attestation = self.sign("oracle-owner", oracle_bindings, suffix="production-holdout-oracle")
+        result = {"schema_version": "2.0", "result_id": "production-holdout-result-v2",
+            "holdout_id": "production-holdout-v2", "tenant_id": "tenant-001",
+            "target_release_sha256": release, "provider_account_sha256": account,
+            "execution_receipt": {"path": str(execution),
+                "sha256": production_closure.sha256_bytes(execution.read_bytes()), "bytes": execution.stat().st_size},
+            "decision": "PASS", "claim_results": [{**mapping[0], "outcome": "PASS", "evidence": evidence_ref,
+                "oracle_attestation": oracle_attestation}],
+            "started_at": "2026-01-01T00:00:00Z", "finished_at": "2026-01-01T00:01:00Z"}
+        result_path = self.root / "production-holdout-result-v2.json"
+        result_path.write_text(json.dumps(result), encoding="utf-8")
+        oracle_actor = production_closure.ActorTrustStore.load(self.trust_store).verify(
+            oracle_attestation, "oracle-owner", oracle_bindings)
+        normalized = [{"claim_id": mapping[0]["claim_id"], "outcome": "PASS",
+                       "evidence": {"sha256": evidence_ref["sha256"], "bytes": evidence_ref["bytes"]},
+                       "oracle_id": mapping[0]["oracle_id"], "oracle_version": mapping[0]["oracle_version"],
+                       "oracle": oracle_actor}]
+        root = production_closure.canonical_digest({"holdout_corpus_sha256": holdout["corpus"]["sha256"],
+            "execution_receipt_sha256": result["execution_receipt"]["sha256"], "claim_results": normalized})
+        bindings = {"result_id": result["result_id"], "holdout_id": result["holdout_id"],
+            "tenant_id": result["tenant_id"],
+            "manifest_sha256": production_closure.sha256_bytes(production_closure.canonical_bytes(result)),
+            "evidence_root": root, "target_release_sha256": release,
+            "provider_account_sha256": account, "decision": "PASS"}
+        executor = self.sign("executor-holdout", bindings, suffix="production-holdout-executor")
+        verifier = self.sign("verifier-holdout", {**bindings, "executor_id": "executor-holdout"},
+                             suffix="production-holdout-verifier")
+        recorded = production_closure.record_holdout_result(
+            self.workspace, result_path, executor, verifier, self.trust_store, (self.root.resolve(),))
+        self.assertTrue(recorded["oracle_bound"])
+        self.assertEqual("oracle-owner", recorded["claim_results"][0]["oracle"]["actor_id"])
+
     def test_provider_receipt_is_bound_to_exact_account_region_adapter_and_operation(self) -> None:
-        profile = {
-            "provider_id": "fixture-cloud", "account_binding_sha256": production_closure.sha256_bytes(b"account-a"),
-            "region": "test-region-1", "adapter_id": "fixture-provider", "precheck_operation": "inspect",
-            "execute_operation": "apply", "verify_operation": "inspect", "rollback_operation": "undo",
-        }
+        profile = self.exact_provider_profile(b"account-a")
         store = production_closure.ClosureStore(self.workspace)
         snapshot = {"schema_version": "1.0", "snapshot_id": "provider-snapshot", "tenant_id": "tenant-001",
                     "environment_class": "production"}
         store.insert("snapshots", "provider-snapshot", ("provider-snapshot", "tenant-001", "production",
                      production_closure.sha256_bytes(b"provider-snapshot-manifest")), snapshot, "SNAPSHOT_REGISTERED")
         release = production_closure.sha256_bytes(b"release")
-        holdout_result = {"schema_version": "1.0", "result_id": "provider-holdout-result",
+        holdout_result = {"schema_version": "2.0", "result_id": "provider-holdout-result",
             "holdout_id": "provider-holdout", "tenant_id": "tenant-001", "decision": "PASS",
-            "target_release_sha256": release, "provider_account_sha256": profile["account_binding_sha256"]}
+            "target_release_sha256": release, "provider_account_sha256": profile["account_binding_sha256"],
+            "independent": True, "oracle_bound": True}
         store.insert("holdout_results", "provider-holdout-result",
             ("provider-holdout-result", "tenant-001", "provider-holdout", "PASS"),
             holdout_result, "HOLDOUT_RESULT_RECORDED")
@@ -926,6 +1038,14 @@ class MigrationPlatformRuntimeTest(unittest.TestCase):
         with self.assertRaisesRegex(production_closure.ClosureError, "differs from the approved plan"):
             production_closure.transition_cutover(self.workspace, "provider-cutover", "PLANNED", "PRECHECKED", 1,
                 wrong, wrong_auth, self.trust_store, (self.root.resolve(),))
+        bad_control = self.provider_receipt(cutover, "PRECHECKED", "inspect", "bad-control")
+        (self.root / "provider-control-least_privilege-bad-control.json").write_bytes(b"broadened-policy")
+        bad_control_auth = self.sign("operations-owner", {"cutover_id": "provider-cutover",
+            "tenant_id": "tenant-001", "expected_state": "PLANNED", "target_state": "PRECHECKED",
+            "fencing_token": 1, "receipt_sha256": bad_control["sha256"]}, suffix="bad-provider-control")
+        with self.assertRaisesRegex(production_closure.ClosureError, "byte/digest mismatch"):
+            production_closure.transition_cutover(self.workspace, "provider-cutover", "PLANNED", "PRECHECKED", 1,
+                bad_control, bad_control_auth, self.trust_store, (self.root.resolve(),))
         correct = self.provider_receipt(cutover, "PRECHECKED", "inspect", "correct-provider")
         correct_auth = self.sign("operations-owner", {"cutover_id": "provider-cutover", "tenant_id": "tenant-001",
             "expected_state": "PLANNED", "target_state": "PRECHECKED", "fencing_token": 1,
@@ -937,11 +1057,7 @@ class MigrationPlatformRuntimeTest(unittest.TestCase):
 
     def test_production_soak_requires_realtime_seven_day_thresholded_independent_evidence(self) -> None:
         start = datetime.now(timezone.utc).replace(microsecond=0)
-        profile = {
-            "provider_id": "fixture-cloud", "account_binding_sha256": production_closure.sha256_bytes(b"account-b"),
-            "region": "test-region-1", "adapter_id": "fixture-provider", "precheck_operation": "inspect",
-            "execute_operation": "apply", "verify_operation": "inspect", "rollback_operation": "undo",
-        }
+        profile = self.exact_provider_profile(b"account-b")
         cutover = {"schema_version": "2.0", "cutover_id": "soak-cutover", "tenant_id": "tenant-001",
                    "target_key": "target", "target_release_sha256": production_closure.sha256_bytes(b"release-b"),
                    "rollback_adapter_id": "fixture-provider", "rollback_operation": "undo",
@@ -950,23 +1066,24 @@ class MigrationPlatformRuntimeTest(unittest.TestCase):
                    "plan_sha256": production_closure.sha256_bytes(b"soak-plan"), "approval": {"actor_id": "approver"},
                    "transitions": [{"to": "SUCCEEDED", "recorded_at": start.isoformat().replace("+00:00", "Z")} ]}
         store = production_closure.ClosureStore(self.workspace)
-        holdout_result = {"schema_version": "1.0", "result_id": "production-holdout-result",
+        holdout_result = {"schema_version": "2.0", "result_id": "production-holdout-result",
             "holdout_id": "production-holdout", "tenant_id": "tenant-001", "decision": "PASS",
             "target_release_sha256": cutover["target_release_sha256"],
-            "provider_account_sha256": profile["account_binding_sha256"]}
+            "provider_account_sha256": profile["account_binding_sha256"],
+            "independent": True, "oracle_bound": True}
         store.insert("holdout_results", "production-holdout-result",
             ("production-holdout-result", "tenant-001", "production-holdout", "PASS"),
             holdout_result, "HOLDOUT_RESULT_RECORDED")
         store.insert("cutovers", "soak-cutover", ("soak-cutover", "tenant-001", "target", "SUCCEEDED", 5,
                      cutover["plan_sha256"]), cutover, "CUTOVER_SUCCEEDED")
-        with mock.patch.object(production_closure, "utc_now", return_value=start + timedelta(seconds=1)):
-            with self.assertRaisesRegex(production_closure.ClosureError, "conservative telemetry policy"):
-                production_closure.start_soak(self.workspace, "soak-cutover", "weak-soak", "production",
-                    (start + timedelta(seconds=1)).isoformat(), production_closure.PRODUCTION_MIN_SOAK_SECONDS,
-                    production_closure.PRODUCTION_MIN_SOAK_SECONDS, 0.99, 0.01, 1)
-            production_closure.start_soak(self.workspace, "soak-cutover", "production-soak", "production",
+        clock = production_closure.ControlledTestClock(start + timedelta(seconds=1))
+        with self.assertRaisesRegex(production_closure.ClosureError, "conservative telemetry policy"):
+            production_closure.start_soak(self.workspace, "soak-cutover", "weak-soak", "production",
                 (start + timedelta(seconds=1)).isoformat(), production_closure.PRODUCTION_MIN_SOAK_SECONDS,
-                production_closure.PRODUCTION_MAX_GAP_SECONDS, 0.999, 0.001, 28)
+                production_closure.PRODUCTION_MIN_SOAK_SECONDS, 0.99, 0.01, 1, clock=clock)
+        production_closure.start_soak(self.workspace, "soak-cutover", "production-soak", "production",
+            (start + timedelta(seconds=1)).isoformat(), production_closure.PRODUCTION_MIN_SOAK_SECONDS,
+            production_closure.PRODUCTION_MAX_GAP_SECONDS, 0.999, 0.001, 28, clock=clock)
         for sequence in range(1, 29):
             observed = start + timedelta(seconds=1 + sequence * production_closure.PRODUCTION_MAX_GAP_SECONDS)
             observed_text = observed.isoformat().replace("+00:00", "Z")
@@ -974,9 +1091,9 @@ class MigrationPlatformRuntimeTest(unittest.TestCase):
             heartbeat = self.sign("operations-owner", {"run_id": "production-soak", "sequence": sequence,
                 "observed_at": observed_text, "metrics_sha256": production_closure.canonical_digest(metrics)},
                 suffix=f"production-soak-{sequence}")
-            with mock.patch.object(production_closure, "utc_now", return_value=observed):
-                production_closure.observe_soak(self.workspace, "production-soak", sequence, observed_text,
-                                                metrics, heartbeat, self.trust_store)
+            clock.set(observed)
+            production_closure.observe_soak(self.workspace, "production-soak", sequence, observed_text,
+                                            metrics, heartbeat, self.trust_store, clock=clock)
         running = store.row("soak_runs", "production-soak")
         root = production_closure.soak_evidence_root(running)
         finished = start + timedelta(seconds=2 + production_closure.PRODUCTION_MIN_SOAK_SECONDS)
@@ -984,11 +1101,13 @@ class MigrationPlatformRuntimeTest(unittest.TestCase):
         final = self.sign("verifier-production", {"run_id": "production-soak", "sequence": 29,
             "observed_at": finished_text, "target_state": "PASSED", "evidence_root": root},
             suffix="production-soak-final")
-        with mock.patch.object(production_closure, "utc_now", return_value=finished):
-            result = production_closure.finish_soak(self.workspace, "production-soak", 29, finished_text,
-                                                    final, self.trust_store)
+        clock.set(finished)
+        result = production_closure.finish_soak(self.workspace, "production-soak", 29, finished_text,
+                                                final, self.trust_store, clock=clock)
         self.assertEqual("PASSED", result["state"])
-        self.assertEqual("production", result["evidence_class"])
+        self.assertEqual("engineering-only", result["evidence_class"])
+        self.assertTrue(result["production_protocol_simulated"])
+        self.assertFalse(result["real_seven_day_elapsed"])
         legacy_report = {"schema_version": "1.0", "assessment_id": "legacy-production-assessment",
             "tenant_id": "tenant-001", "scope": "synthetic-production-protocol-test", "decision": "CERTIFIED",
             "evidence_root": result["evidence_root"], "limitations": ["local synthetic clock"],
@@ -1015,7 +1134,9 @@ class MigrationPlatformRuntimeTest(unittest.TestCase):
         imported = production_closure.import_assessment(self.workspace, exact_path, exact_auth, self.trust_store,
                                                         (self.root.resolve(),))
         self.assertFalse(imported["certified"])
-        self.assertFalse(production_closure.readiness(self.workspace, "tenant-001")["certified"])
+        readiness = production_closure.readiness(self.workspace, "tenant-001")
+        self.assertFalse(readiness["certified"])
+        self.assertEqual("NOT_RUN", readiness["external_runtime_status"])
     def test_24_concurrent_commands_have_no_evidence_crosstalk(self) -> None:
         self.prepare(1)
 

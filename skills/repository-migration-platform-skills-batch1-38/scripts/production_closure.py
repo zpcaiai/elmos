@@ -30,6 +30,15 @@ PRODUCTION_MAX_GAP_SECONDS = 6 * 60 * 60
 PRODUCTION_OBSERVATION_SKEW_SECONDS = 15 * 60
 MAX_CLOCK_SKEW_SECONDS = 5 * 60
 MAX_SOAK_OBSERVATIONS = 100_000
+LEGACY_PROVIDER_FIELDS = {
+    "provider_id", "account_binding_sha256", "region", "adapter_id",
+    "precheck_operation", "execute_operation", "verify_operation", "rollback_operation",
+}
+EXACT_PROVIDER_FIELDS = LEGACY_PROVIDER_FIELDS | {
+    "profile_version", "provider_api_version", "account_model", "adapter_version",
+    "iac_tool", "iac_tool_version", "state_backend_sha256", "identity_binding_sha256",
+    "least_privilege_policy_sha256", "rollback_plan_sha256",
+}
 CUTOVER_TRANSITIONS = {
     "PLANNED": {"PRECHECKED", "CANCELLED"},
     "PRECHECKED": {"APPROVED", "CANCELLED"},
@@ -56,6 +65,44 @@ class ClosureError(ValueError):
     pass
 
 
+class SystemEvidenceClock:
+    """Non-injectable wall clock used by the CLI and real runtime paths."""
+
+    mode = "system"
+
+    @staticmethod
+    def now() -> datetime:
+        return datetime.now(timezone.utc)
+
+
+class ControlledTestClock:
+    """Explicit engineering clock; its output can never become production evidence."""
+
+    mode = "controlled-test"
+
+    def __init__(self, current: datetime):
+        self.set(current)
+
+    def set(self, current: datetime) -> None:
+        if not isinstance(current, datetime) or current.tzinfo is None:
+            raise ClosureError("controlled test clock must be timezone-aware")
+        self._current = current.astimezone(timezone.utc)
+
+    def now(self) -> datetime:
+        return self._current
+
+
+SYSTEM_EVIDENCE_CLOCK = SystemEvidenceClock()
+
+
+def evidence_clock(clock: SystemEvidenceClock | ControlledTestClock | None = None) -> SystemEvidenceClock | ControlledTestClock:
+    if clock is None or clock is SYSTEM_EVIDENCE_CLOCK:
+        return SYSTEM_EVIDENCE_CLOCK
+    if isinstance(clock, ControlledTestClock):
+        return clock
+    raise ClosureError("unsupported evidence clock")
+
+
 def canonical_bytes(value: Any) -> bytes:
     return (json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":")) + "\n").encode("utf-8")
 
@@ -69,8 +116,8 @@ def now_text() -> str:
 
 
 def utc_now() -> datetime:
-    """Single patchable UTC clock; production callers never provide the clock."""
-    return datetime.now(timezone.utc)
+    """Compatibility wall clock; production evidence uses SYSTEM_EVIDENCE_CLOCK directly."""
+    return SYSTEM_EVIDENCE_CLOCK.now()
 
 
 def identifier(value: Any, label: str) -> str:
@@ -289,16 +336,59 @@ class ClosureStore:
         connection = self.connect()
         try:
             rows = connection.execute("SELECT * FROM events ORDER BY sequence").fetchall()
+            records = {
+                "snapshots": connection.execute("SELECT snapshot_id AS identity,tenant_id,environment_class,record_json FROM snapshots").fetchall(),
+                "holdouts": connection.execute("SELECT holdout_id AS identity,tenant_id,record_json FROM holdouts").fetchall(),
+                "holdout_results": connection.execute("SELECT result_id AS identity,tenant_id,decision,record_json FROM holdout_results").fetchall(),
+                "cutovers": connection.execute("SELECT cutover_id AS identity,tenant_id,state,fencing_token,record_json FROM cutovers").fetchall(),
+                "soak_runs": connection.execute("SELECT run_id AS identity,state,last_sequence,last_observed_at,record_json FROM soak_runs").fetchall(),
+                "assessments": connection.execute("SELECT assessment_id AS identity,tenant_id,record_json FROM assessments").fetchall(),
+            }
         finally:
             connection.close()
-        findings, previous = [], "GENESIS"
+        findings, previous, latest = [], "GENESIS", {}
         for row in rows:
             expected = canonical_digest({"event_type": row["event_type"], "aggregate_id": row["aggregate_id"],
                                          "record_sha256": row["record_sha256"], "previous_hash": previous,
                                          "created_at": row["created_at"]})
             if row["previous_hash"] != previous or row["event_hash"] != expected:
                 findings.append(f"event {row['sequence']} hash-chain mismatch")
+            event_type = row["event_type"]
+            table = ("holdout_results" if event_type.startswith("HOLDOUT_RESULT") else
+                     "holdouts" if event_type.startswith("HOLDOUT") else
+                     "snapshots" if event_type.startswith("SNAPSHOT") else
+                     "cutovers" if event_type.startswith("CUTOVER") else
+                     "soak_runs" if event_type.startswith("SOAK") else
+                     "assessments" if event_type.startswith("ASSESSMENT") else None)
+            if table is None:
+                findings.append(f"event {row['sequence']} has unknown aggregate kind")
+            else:
+                latest[(table, row["aggregate_id"])] = row["record_sha256"]
             previous = row["event_hash"]
+        for table, table_rows in records.items():
+            for row in table_rows:
+                identity = row["identity"]
+                try:
+                    record = json.loads(row["record_json"])
+                except json.JSONDecodeError:
+                    findings.append(f"{table}:{identity} record JSON is invalid")
+                    continue
+                observed_sha = sha256_bytes(canonical_bytes(record))
+                if latest.get((table, identity)) != observed_sha:
+                    findings.append(f"{table}:{identity} current record differs from latest event")
+                if "tenant_id" in row.keys() and record.get("tenant_id") != row["tenant_id"]:
+                    findings.append(f"{table}:{identity} tenant metadata mismatch")
+                if table == "snapshots" and record.get("environment_class") != row["environment_class"]:
+                    findings.append(f"{table}:{identity} environment metadata mismatch")
+                if table == "holdout_results" and record.get("decision") != row["decision"]:
+                    findings.append(f"{table}:{identity} decision metadata mismatch")
+                if table == "cutovers" and (record.get("state") != row["state"] or
+                        record.get("fencing_token") != row["fencing_token"]):
+                    findings.append(f"{table}:{identity} state/fencing metadata mismatch")
+                if table == "soak_runs" and (record.get("state") != row["state"] or
+                        record.get("last_sequence") != row["last_sequence"] or
+                        record.get("last_observed_at") != row["last_observed_at"]):
+                    findings.append(f"{table}:{identity} state/sequence metadata mismatch")
         return findings
 
 
@@ -313,14 +403,22 @@ def load_manifest(path: Path, roots: tuple[Path, ...], label: str) -> tuple[dict
     return value, sha256_bytes(canonical_bytes(value))
 
 
-def provider_profile(value: Any) -> dict[str, str]:
-    fields = {"provider_id", "account_binding_sha256", "region", "adapter_id",
-              "precheck_operation", "execute_operation", "verify_operation", "rollback_operation"}
-    if not isinstance(value, dict) or set(value) != fields:
+def provider_profile(value: Any, *, require_exact: bool = False) -> dict[str, str]:
+    if not isinstance(value, dict) or frozenset(value) not in {frozenset(LEGACY_PROVIDER_FIELDS), frozenset(EXACT_PROVIDER_FIELDS)}:
         raise ClosureError("cutover provider profile fields are invalid")
-    result = {field: identifier(value.get(field), f"provider.{field}") for field in fields if field != "account_binding_sha256"}
-    result["account_binding_sha256"] = require_digest(value.get("account_binding_sha256"),
-                                                        "provider.account_binding_sha256")
+    exact = set(value) == EXACT_PROVIDER_FIELDS
+    if require_exact and not exact:
+        raise ClosureError("production cutover requires an exact versioned Provider/IaC profile")
+    if exact and value.get("profile_version") != "2.0":
+        raise ClosureError("exact provider profile_version must be 2.0")
+    digest_fields = {"account_binding_sha256"}
+    if exact:
+        digest_fields |= {"state_backend_sha256", "identity_binding_sha256",
+                          "least_privilege_policy_sha256", "rollback_plan_sha256"}
+    result: dict[str, str] = {}
+    for field in value:
+        result[field] = (require_digest(value.get(field), f"provider.{field}") if field in digest_fields
+                         else identifier(value.get(field), f"provider.{field}"))
     return result
 
 
@@ -333,17 +431,21 @@ def provider_transition_receipt(value: Any, roots: tuple[Path, ...], cutover: di
         payload = json.loads(read_regular(path, MAX_MANIFEST_BYTES, "cutover receipt"))
     except json.JSONDecodeError as exc:
         raise ClosureError("provider transition receipt is invalid JSON") from exc
-    required = {"schema_version", "receipt_id", "cutover_id", "tenant_id", "target_key",
-                "target_state", "provider", "operation", "adapter_receipt", "effect_state",
-                "request_sha256", "issued_at"}
-    if not isinstance(payload, dict) or set(payload) != required or payload.get("schema_version") != "1.0":
+    base = {"schema_version", "receipt_id", "cutover_id", "tenant_id", "target_key",
+            "target_state", "provider", "operation", "adapter_receipt", "effect_state",
+            "request_sha256", "issued_at"}
+    exact_profile = isinstance(payload, dict) and isinstance(payload.get("provider"), dict) and \
+        payload["provider"].get("profile_version") == "2.0"
+    required = base | ({"control_evidence", "control_decisions"} if exact_profile else set())
+    expected_schema = "2.0" if exact_profile else "1.0"
+    if not isinstance(payload, dict) or set(payload) != required or payload.get("schema_version") != expected_schema:
         raise ClosureError("provider transition receipt fields are invalid")
     if (identifier(payload.get("receipt_id"), "receipt_id") == cutover.get("cutover_id") or
             payload.get("cutover_id") != cutover.get("cutover_id") or
             payload.get("tenant_id") != cutover.get("tenant_id") or
             payload.get("target_key") != cutover.get("target_key") or payload.get("target_state") != target_state):
         raise ClosureError("provider transition receipt binding is invalid")
-    profile = provider_profile(payload.get("provider"))
+    profile = provider_profile(payload.get("provider"), require_exact=bool(cutover.get("environment_class") == "production"))
     expected_profile = cutover.get("provider")
     if not isinstance(expected_profile, dict) or profile != expected_profile:
         raise ClosureError("provider transition receipt tuple differs from the approved plan")
@@ -366,10 +468,30 @@ def provider_transition_receipt(value: Any, roots: tuple[Path, ...], cutover: di
     if issued > utc_now() + timedelta(seconds=MAX_CLOCK_SKEW_SECONDS):
         raise ClosureError("provider receipt is future-dated")
     native = artifact_ref(payload.get("adapter_receipt"), roots, "native adapter receipt")
+    controls: dict[str, Any] | None = None
+    if exact_profile:
+        decisions = payload.get("control_decisions")
+        evidence = payload.get("control_evidence")
+        control_keys = {"identity", "least_privilege", "state_backend", "rollback"}
+        if (not isinstance(decisions, dict) or set(decisions) != control_keys or
+                any(decisions[key] != "PASS" for key in control_keys) or
+                not isinstance(evidence, dict) or set(evidence) != control_keys):
+            raise ClosureError("provider control decisions/evidence are incomplete or non-passing")
+        refs = {key: artifact_ref(evidence[key], roots, f"provider {key} evidence") for key in control_keys}
+        expected_digests = {
+            "identity": profile["identity_binding_sha256"],
+            "least_privilege": profile["least_privilege_policy_sha256"],
+            "state_backend": profile["state_backend_sha256"],
+            "rollback": profile["rollback_plan_sha256"],
+        }
+        if any(refs[key]["sha256"] != expected_digests[key] for key in control_keys):
+            raise ClosureError("provider control evidence differs from the approved exact profile")
+        controls = {"decisions": decisions, "evidence": refs}
     return {**outer, "receipt_id": payload["receipt_id"], "provider": profile,
             "operation": payload.get("operation"),
             "effect_state": expected_effect, "request_sha256": request_sha,
-            "adapter_receipt": native, "issued_at": payload["issued_at"]}
+            "adapter_receipt": native, "issued_at": payload["issued_at"],
+            **({"controls": controls} if controls is not None else {})}
 
 
 def register_snapshot(workspace: Path, manifest_path: Path, authorization: dict[str, Any],
@@ -414,39 +536,79 @@ def register_snapshot(workspace: Path, manifest_path: Path, authorization: dict[
 def register_holdout(workspace: Path, manifest_path: Path, authorization: dict[str, Any],
                      trust_path: Path, roots: tuple[Path, ...]) -> dict[str, Any]:
     manifest, manifest_sha = load_manifest(manifest_path, roots, "holdout manifest")
-    required = {"schema_version", "holdout_id", "tenant_id", "environment_class", "corpus",
-                "development_corpus_sha256", "transformation_author_ids", "executor_ids", "verifier_ids"}
-    if set(manifest) != required or manifest.get("schema_version") != "1.0":
+    base = {"schema_version", "holdout_id", "tenant_id", "environment_class", "corpus",
+            "development_corpus_sha256", "transformation_author_ids", "executor_ids", "verifier_ids"}
+    version = manifest.get("schema_version")
+    required = base | ({"oracle_owner_ids", "oracle_registry_sha256", "claim_oracle_map",
+                        "development_partition_id", "holdout_partition_id"} if version == "2.0" else set())
+    if set(manifest) != required or version not in {"1.0", "2.0"}:
         raise ClosureError("holdout manifest fields are invalid")
     holdout_id = identifier(manifest.get("holdout_id"), "holdout_id")
     tenant_id = identifier(manifest.get("tenant_id"), "tenant_id")
     environment = manifest.get("environment_class")
     if environment not in {"test", "sandbox", "production"}:
         raise ClosureError("holdout environment is invalid")
+    if environment == "production" and version != "2.0":
+        raise ClosureError("production Holdout requires Claim-specific Oracle and partition bindings")
     corpus = artifact_ref(manifest.get("corpus"), roots, "holdout corpus")
     development = require_digest(manifest.get("development_corpus_sha256"), "development_corpus_sha256")
     if corpus["sha256"] == development:
         raise ClosureError("Holdout corpus reuses development content")
     actor_sets = []
-    for field in ("transformation_author_ids", "executor_ids", "verifier_ids"):
+    actor_fields = ["transformation_author_ids", "executor_ids", "verifier_ids"]
+    if version == "2.0":
+        actor_fields.append("oracle_owner_ids")
+    for field in actor_fields:
         values = manifest.get(field)
-        if not isinstance(values, list) or not values or len(values) != len(set(values)) or any(not isinstance(v, str) or not v for v in values):
+        if (not isinstance(values, list) or not values or len(values) != len(set(values)) or
+                any(not isinstance(v, str) or not v for v in values)):
             raise ClosureError(f"{field} is invalid")
         actor_sets.append(set(values))
-    if actor_sets[0] & (actor_sets[1] | actor_sets[2]) or actor_sets[1] & actor_sets[2]:
-        raise ClosureError("Holdout authors, executors, and verifiers must be separate")
+    if any(actor_sets[left] & actor_sets[right] for left in range(len(actor_sets)) for right in range(left + 1, len(actor_sets))):
+        raise ClosureError("Holdout authors, executors, verifiers, and Oracle owners must be separate")
+    oracle_registry_sha = None
+    claim_oracle_map: list[dict[str, str]] = []
+    claim_oracle_root = None
+    if version == "2.0":
+        development_partition = identifier(manifest.get("development_partition_id"), "development_partition_id")
+        holdout_partition = identifier(manifest.get("holdout_partition_id"), "holdout_partition_id")
+        if development_partition == holdout_partition:
+            raise ClosureError("Holdout and development partitions must be physically distinct")
+        oracle_registry_sha = require_digest(manifest.get("oracle_registry_sha256"), "oracle_registry_sha256")
+        mappings = manifest.get("claim_oracle_map")
+        if not isinstance(mappings, list) or not mappings or len(mappings) > 100_000:
+            raise ClosureError("claim_oracle_map is invalid")
+        seen_claims = set()
+        for index, mapping in enumerate(mappings):
+            if not isinstance(mapping, dict) or set(mapping) != {"claim_id", "oracle_id", "oracle_version"}:
+                raise ClosureError("claim_oracle_map fields are invalid")
+            normalized_mapping = {key: identifier(mapping.get(key), f"claim_oracle_map[{index}].{key}")
+                                  for key in ("claim_id", "oracle_id", "oracle_version")}
+            if normalized_mapping["claim_id"] in seen_claims:
+                raise ClosureError("claim_oracle_map contains duplicate claims")
+            seen_claims.add(normalized_mapping["claim_id"])
+            claim_oracle_map.append(normalized_mapping)
+        claim_oracle_root = canonical_digest(claim_oracle_map)
     trust = ActorTrustStore.load(trust_path)
     payload = authorization.get("payload") if isinstance(authorization, dict) else None
     custodian_id = payload.get("actor_id") if isinstance(payload, dict) else None
     if custodian_id in set().union(*actor_sets):
         raise ClosureError("Holdout custodian conflicts with author/executor/verifier")
-    actor = trust.verify(authorization, "holdout-custodian", {"holdout_id": holdout_id, "tenant_id": tenant_id,
-                         "manifest_sha256": manifest_sha, "corpus_sha256": corpus["sha256"],
-                         "environment_class": environment})
-    record = {"schema_version": "1.0", "holdout_id": holdout_id, "tenant_id": tenant_id,
+    bindings = {"holdout_id": holdout_id, "tenant_id": tenant_id, "manifest_sha256": manifest_sha,
+                "corpus_sha256": corpus["sha256"], "environment_class": environment}
+    if version == "2.0":
+        bindings.update({"oracle_registry_sha256": oracle_registry_sha, "claim_oracle_root": claim_oracle_root,
+                         "development_partition_id": manifest["development_partition_id"],
+                         "holdout_partition_id": manifest["holdout_partition_id"]})
+    actor = trust.verify(authorization, "holdout-custodian", bindings)
+    record = {"schema_version": version, "holdout_id": holdout_id, "tenant_id": tenant_id,
               "environment_class": environment, "manifest_sha256": manifest_sha, "corpus": corpus,
               "sealed": True, "custodian": actor, "transformation_author_ids": manifest["transformation_author_ids"],
-              "executor_ids": manifest["executor_ids"], "verifier_ids": manifest["verifier_ids"]}
+              "executor_ids": manifest["executor_ids"], "verifier_ids": manifest["verifier_ids"],
+              **({"oracle_owner_ids": manifest["oracle_owner_ids"], "oracle_registry_sha256": oracle_registry_sha,
+                  "claim_oracle_map": claim_oracle_map, "claim_oracle_root": claim_oracle_root,
+                  "development_partition_id": manifest["development_partition_id"],
+                  "holdout_partition_id": manifest["holdout_partition_id"]} if version == "2.0" else {})}
     return ClosureStore(workspace).insert("holdouts", holdout_id,
         (holdout_id, tenant_id, corpus["sha256"]), record, "HOLDOUT_SEALED")
 
@@ -458,7 +620,7 @@ def record_holdout_result(workspace: Path, manifest_path: Path, executor_attesta
     required = {"schema_version", "result_id", "holdout_id", "tenant_id", "target_release_sha256",
                 "provider_account_sha256", "execution_receipt", "decision", "claim_results",
                 "started_at", "finished_at"}
-    if not isinstance(value, dict) or set(value) != required or value.get("schema_version") != "1.0":
+    if not isinstance(value, dict) or set(value) != required or value.get("schema_version") not in {"1.0", "2.0"}:
         raise ClosureError("holdout result fields are invalid")
     result_id = identifier(value.get("result_id"), "result_id")
     holdout_id = identifier(value.get("holdout_id"), "holdout_id")
@@ -466,6 +628,8 @@ def record_holdout_result(workspace: Path, manifest_path: Path, executor_attesta
     holdout = ClosureStore(workspace).row("holdouts", holdout_id)
     if holdout["tenant_id"] != tenant_id:
         raise ClosureError("holdout result crosses tenant boundary")
+    if value["schema_version"] != holdout.get("schema_version"):
+        raise ClosureError("holdout result schema does not match the sealed Holdout contract")
     target_release = require_digest(value.get("target_release_sha256"), "target_release_sha256")
     provider_account = require_digest(value.get("provider_account_sha256"), "provider_account_sha256")
     execution_receipt = artifact_ref(value.get("execution_receipt"), roots, "holdout execution receipt")
@@ -475,9 +639,13 @@ def record_holdout_result(workspace: Path, manifest_path: Path, executor_attesta
     claim_results = value.get("claim_results")
     if not isinstance(claim_results, list) or not claim_results or len(claim_results) > 100_000:
         raise ClosureError("holdout claim results are invalid")
-    normalized, claim_ids, outcomes = [], set(), []
+    normalized, claim_ids, outcomes, oracle_actor_ids = [], set(), [], set()
+    expected_oracles = {item["claim_id"]: item for item in holdout.get("claim_oracle_map", [])}
+    trust = ActorTrustStore.load(trust_path)
     for index, item in enumerate(claim_results):
-        if not isinstance(item, dict) or set(item) != {"claim_id", "outcome", "evidence"}:
+        expected_fields = ({"claim_id", "outcome", "evidence", "oracle_id", "oracle_version", "oracle_attestation"}
+                           if value["schema_version"] == "2.0" else {"claim_id", "outcome", "evidence"})
+        if not isinstance(item, dict) or set(item) != expected_fields:
             raise ClosureError("holdout claim result fields are invalid")
         claim_id = identifier(item.get("claim_id"), f"claim_results[{index}].claim_id")
         if claim_id in claim_ids or item.get("outcome") not in {"PASS", "FAIL", "INCONCLUSIVE"}:
@@ -485,7 +653,27 @@ def record_holdout_result(workspace: Path, manifest_path: Path, executor_attesta
         evidence = artifact_ref(item.get("evidence"), roots, f"holdout claim evidence {index}")
         claim_ids.add(claim_id)
         outcomes.append(item["outcome"])
-        normalized.append({"claim_id": claim_id, "outcome": item["outcome"], "evidence": evidence})
+        normalized_item: dict[str, Any] = {"claim_id": claim_id, "outcome": item["outcome"], "evidence": evidence}
+        if value["schema_version"] == "2.0":
+            mapping = expected_oracles.get(claim_id)
+            oracle_id = identifier(item.get("oracle_id"), f"claim_results[{index}].oracle_id")
+            oracle_version = identifier(item.get("oracle_version"), f"claim_results[{index}].oracle_version")
+            if mapping is None or oracle_id != mapping["oracle_id"] or oracle_version != mapping["oracle_version"]:
+                raise ClosureError("holdout Claim differs from the sealed Claim-specific Oracle map")
+            oracle_bindings = {"result_id": result_id, "holdout_id": holdout_id, "tenant_id": tenant_id,
+                "claim_id": claim_id, "oracle_id": oracle_id, "oracle_version": oracle_version,
+                "outcome": item["outcome"], "evidence_sha256": evidence["sha256"],
+                "target_release_sha256": target_release, "provider_account_sha256": provider_account,
+                "oracle_registry_sha256": holdout["oracle_registry_sha256"]}
+            oracle_actor = trust.verify(item.get("oracle_attestation"), "oracle-owner", oracle_bindings)
+            if oracle_actor["actor_id"] not in holdout["oracle_owner_ids"]:
+                raise ClosureError("Claim Oracle attestation is not owned by the sealed Holdout Oracle set")
+            oracle_actor_ids.add(oracle_actor["actor_id"])
+            normalized_item.update({"oracle_id": oracle_id, "oracle_version": oracle_version,
+                                    "oracle": oracle_actor})
+        normalized.append(normalized_item)
+    if value["schema_version"] == "2.0" and claim_ids != set(expected_oracles):
+        raise ClosureError("holdout result does not cover the exact sealed Claim set")
     derived = "FAIL" if "FAIL" in outcomes else ("INCONCLUSIVE" if "INCONCLUSIVE" in outcomes else "PASS")
     if value.get("decision") != derived:
         raise ClosureError("holdout decision differs from claim outcomes")
@@ -495,18 +683,20 @@ def record_holdout_result(workspace: Path, manifest_path: Path, executor_attesta
                 "manifest_sha256": manifest_sha, "evidence_root": evidence_root,
                 "target_release_sha256": target_release, "provider_account_sha256": provider_account,
                 "decision": derived}
-    trust = ActorTrustStore.load(trust_path)
     executor = trust.verify(executor_attestation, "holdout-executor", bindings)
     verifier = trust.verify(verifier_attestation, "holdout-verifier", {**bindings, "executor_id": executor["actor_id"]})
     if (executor["actor_id"] not in holdout["executor_ids"] or verifier["actor_id"] not in holdout["verifier_ids"] or
             executor["actor_id"] == verifier["actor_id"] or
             {executor["actor_id"], verifier["actor_id"]} &
-            ({holdout["custodian"]["actor_id"]} | set(holdout["transformation_author_ids"]))):
+            ({holdout["custodian"]["actor_id"]} | set(holdout["transformation_author_ids"]) |
+             set(holdout.get("oracle_owner_ids", []))) or
+            oracle_actor_ids & {executor["actor_id"], verifier["actor_id"]}):
         raise ClosureError("holdout execution actors violate the sealed custody roles")
     record = {**value, "corpus_sha256": holdout["corpus"]["sha256"], "manifest_sha256": manifest_sha,
               "execution_receipt": execution_receipt, "claim_results": normalized,
               "evidence_root": evidence_root, "executor": executor, "verifier": verifier,
-              "independent": True, "sealed_holdout_consumed": True}
+              "independent": True, "sealed_holdout_consumed": True,
+              "oracle_bound": value["schema_version"] == "2.0"}
     return ClosureStore(workspace).insert("holdout_results", result_id,
         (result_id, tenant_id, holdout_id, derived), record, "HOLDOUT_RESULT_RECORDED")
 
@@ -529,7 +719,7 @@ def plan_cutover(workspace: Path, plan_path: Path, approval: dict[str, Any], tru
     if snapshot["tenant_id"] != tenant_id:
         raise ClosureError("cutover snapshot crosses tenant boundary")
     require_digest(plan.get("target_release_sha256"), "target_release_sha256")
-    provider = provider_profile(plan.get("provider")) if schema_version == "2.0" else None
+    provider = provider_profile(plan.get("provider"), require_exact=snapshot["environment_class"] == "production") if schema_version == "2.0" else None
     if snapshot["environment_class"] == "production" and provider is None:
         raise ClosureError("production cutover requires an exact provider/account profile")
     if provider and (provider["adapter_id"] != plan["rollback_adapter_id"] or
@@ -542,6 +732,10 @@ def plan_cutover(workspace: Path, plan_path: Path, approval: dict[str, Any], tru
                 holdout_result["target_release_sha256"] != plan["target_release_sha256"] or
                 holdout_result["provider_account_sha256"] != provider["account_binding_sha256"]):
             raise ClosureError("production cutover is not bound to a passing exact Holdout result")
+        if (snapshot["environment_class"] == "production" and
+                (holdout_result.get("schema_version") != "2.0" or
+                 holdout_result.get("independent") is not True or holdout_result.get("oracle_bound") is not True)):
+            raise ClosureError("production cutover requires independently verified Claim-specific Oracle Holdout evidence")
     if (not isinstance(plan.get("preconditions"), list) or not plan["preconditions"] or
             len(plan["preconditions"]) != len(set(plan["preconditions"])) or
             any(not isinstance(item, str) or not item for item in plan["preconditions"])):
@@ -550,7 +744,7 @@ def plan_cutover(workspace: Path, plan_path: Path, approval: dict[str, Any], tru
     actor = trust.verify(approval, "production-approver", {"cutover_id": cutover_id, "tenant_id": tenant_id,
                          "plan_sha256": plan_sha, "snapshot_id": snapshot["snapshot_id"],
                          "target_key": plan["target_key"]})
-    record = {**plan, "plan_sha256": plan_sha, "environment_class": snapshot["environment_class"],
+    record = {**plan, "provider": provider, "plan_sha256": plan_sha, "environment_class": snapshot["environment_class"],
               "state": "PLANNED", "fencing_token": 0,
               "approval": actor, "transitions": []}
     return ClosureStore(workspace).insert("cutovers", cutover_id,
@@ -593,14 +787,16 @@ def transition_cutover(workspace: Path, cutover_id: str, expected_state: str, ta
 def start_soak(workspace: Path, cutover_id: str, run_id: str, environment_class: str,
                started_at: str, required_seconds: int, max_gap_seconds: int,
                minimum_availability: float = 0.0, maximum_error_rate: float = 1.0,
-               minimum_observations: int = 1) -> dict[str, Any]:
+               minimum_observations: int = 1,
+               clock: SystemEvidenceClock | ControlledTestClock | None = None) -> dict[str, Any]:
+    selected_clock = evidence_clock(clock)
     cutover = ClosureStore(workspace).row("cutovers", cutover_id)
     if cutover["state"] != "SUCCEEDED":
         raise ClosureError("soak run requires a successfully verified cutover")
     if environment_class not in {"test", "sandbox", "production"}:
         raise ClosureError("soak environment is invalid")
     started = parse_time(started_at, "started_at")
-    if started > utc_now() + timedelta(seconds=MAX_CLOCK_SKEW_SECONDS):
+    if started > selected_clock.now() + timedelta(seconds=MAX_CLOCK_SKEW_SECONDS):
         raise ClosureError("soak start is future-dated")
     if cutover.get("environment_class", environment_class) != environment_class:
         raise ClosureError("soak environment differs from the cutover snapshot")
@@ -629,6 +825,10 @@ def start_soak(workspace: Path, cutover_id: str, run_id: str, environment_class:
                 holdout_result.get("target_release_sha256") != cutover.get("target_release_sha256") or
                 holdout_result.get("provider_account_sha256") != provider.get("account_binding_sha256")):
             raise ClosureError("production soak Holdout result differs from the cutover tuple")
+        provider_profile(provider, require_exact=True)
+        if (holdout_result.get("schema_version") != "2.0" or holdout_result.get("independent") is not True or
+                holdout_result.get("oracle_bound") is not True):
+            raise ClosureError("production soak requires independent Claim-specific Oracle Holdout evidence")
         if (max_gap_seconds > PRODUCTION_MAX_GAP_SECONDS or
                 minimum_observations < required_observations or minimum_availability < 0.99 or
                 maximum_error_rate > 0.01):
@@ -636,8 +836,11 @@ def start_soak(workspace: Path, cutover_id: str, run_id: str, environment_class:
         last_transition = cutover.get("transitions", [])[-1] if cutover.get("transitions") else None
         if (not isinstance(last_transition, dict) or last_transition.get("to") != "SUCCEEDED" or
                 started < parse_time(last_transition.get("recorded_at"), "cutover succeeded_at") or
-                (utc_now() - started).total_seconds() > PRODUCTION_OBSERVATION_SKEW_SECONDS):
+                (selected_clock.now() - started).total_seconds() > PRODUCTION_OBSERVATION_SKEW_SECONDS):
             raise ClosureError("production soak must start after cutover and near real time")
+    clock_mode = selected_clock.mode
+    evidence_class = ("production-pending" if environment_class == "production" and clock_mode == "system"
+                      else "engineering-only")
     record = {"schema_version": "1.0", "run_id": identifier(run_id, "run_id"), "cutover_id": cutover_id,
               "tenant_id": cutover["tenant_id"], "environment_class": environment_class, "state": "RUNNING",
               "started_at": started_at, "required_seconds": required_seconds, "max_gap_seconds": max_gap_seconds,
@@ -645,15 +848,21 @@ def start_soak(workspace: Path, cutover_id: str, run_id: str, environment_class:
               "maximum_error_rate": float(maximum_error_rate), "minimum_observations": minimum_observations,
               "last_sequence": 0, "last_observed_at": None, "observations": [], "critical_failures": 0,
               "total_requests": 0, "total_errors": 0, "minimum_observed_availability": 1.0,
-              "observer_ids": []}
+              "observer_ids": [], "clock_mode": clock_mode, "evidence_class": evidence_class,
+              "production_protocol_simulated": environment_class == "production" and clock_mode != "system",
+              "real_seven_day_elapsed": False}
     return ClosureStore(workspace).insert("soak_runs", run_id,
         (run_id, cutover_id, environment_class, "RUNNING", 0, None), record, "SOAK_STARTED")
 
 
 def observe_soak(workspace: Path, run_id: str, sequence: int, observed_at: str,
-                 metrics: dict[str, Any], attestation: dict[str, Any], trust_path: Path) -> dict[str, Any]:
+                 metrics: dict[str, Any], attestation: dict[str, Any], trust_path: Path,
+                 clock: SystemEvidenceClock | ControlledTestClock | None = None) -> dict[str, Any]:
+    selected_clock = evidence_clock(clock)
     store = ClosureStore(workspace)
     current = store.row("soak_runs", run_id)
+    if current.get("clock_mode", "system") != selected_clock.mode:
+        raise ClosureError("soak evidence clock mode cannot change during a run")
     if len(current.get("observations", [])) >= MAX_SOAK_OBSERVATIONS:
         raise ClosureError("soak observation budget is exhausted")
     if set(metrics) != {"requests", "errors", "critical_failures", "availability"}:
@@ -666,7 +875,7 @@ def observe_soak(workspace: Path, run_id: str, sequence: int, observed_at: str,
     previous = parse_time(current["last_observed_at"] or current["started_at"], "previous observation")
     if observed <= previous or (observed - previous).total_seconds() > current["max_gap_seconds"]:
         raise ClosureError("soak observation time is non-monotonic or exceeds policy")
-    now = utc_now()
+    now = selected_clock.now()
     if observed > now + timedelta(seconds=MAX_CLOCK_SKEW_SECONDS):
         raise ClosureError("soak observation is future-dated")
     if (current["environment_class"] == "production" and
@@ -701,20 +910,27 @@ def soak_evidence_root(record: dict[str, Any]) -> str:
         "max_gap_seconds": record["max_gap_seconds"],
         "minimum_availability": record.get("minimum_availability", 0.0),
         "maximum_error_rate": record.get("maximum_error_rate", 1.0),
-        "minimum_observations": record.get("minimum_observations", 1), "observations": observations})
+        "minimum_observations": record.get("minimum_observations", 1),
+        "clock_mode": record.get("clock_mode", "system"),
+        "production_protocol_simulated": record.get("production_protocol_simulated", False),
+        "observations": observations})
 
 
 def finish_soak(workspace: Path, run_id: str, sequence: int, observed_at: str,
-                attestation: dict[str, Any], trust_path: Path) -> dict[str, Any]:
+                attestation: dict[str, Any], trust_path: Path,
+                clock: SystemEvidenceClock | ControlledTestClock | None = None) -> dict[str, Any]:
+    selected_clock = evidence_clock(clock)
     store = ClosureStore(workspace)
     current = store.row("soak_runs", run_id)
+    if current.get("clock_mode", "system") != selected_clock.mode:
+        raise ClosureError("soak evidence clock mode cannot change during a run")
     observed = parse_time(observed_at, "observed_at")
     if current["last_observed_at"] is None:
         raise ClosureError("soak run has no observations")
     last_observed = parse_time(current["last_observed_at"], "last_observed_at")
     if observed <= last_observed or (observed - last_observed).total_seconds() > current["max_gap_seconds"]:
         raise ClosureError("final soak observation is non-monotonic or exceeds gap policy")
-    now = utc_now()
+    now = selected_clock.now()
     if observed > now + timedelta(seconds=MAX_CLOCK_SKEW_SECONDS):
         raise ClosureError("final soak observation is future-dated")
     if (current["environment_class"] == "production" and
@@ -738,7 +954,11 @@ def finish_soak(workspace: Path, run_id: str, sequence: int, observed_at: str,
     record = {**current, "state": target, "last_sequence": sequence, "last_observed_at": observed_at,
               "duration_seconds": duration, "error_rate": error_rate, "evidence_root": evidence_root,
               "final_verifier": actor,
-              "evidence_class": "production" if current["environment_class"] == "production" else "engineering-only"}
+              "real_seven_day_elapsed": bool(current["environment_class"] == "production" and
+                                               selected_clock.mode == "system" and
+                                               duration >= PRODUCTION_MIN_SOAK_SECONDS),
+              "evidence_class": ("production" if current["environment_class"] == "production" and
+                                  selected_clock.mode == "system" else "engineering-only")}
     return store.update_soak(run_id, sequence, observed_at, record, target)
 
 
@@ -785,6 +1005,7 @@ def import_assessment(workspace: Path, report_path: Path, attestation: dict[str,
                 if table == "holdouts":
                     conflicts.extend(value.get("executor_ids", []))
                     conflicts.extend(value.get("verifier_ids", []))
+                    conflicts.extend(value.get("oracle_owner_ids", []))
                 if table == "cutovers":
                     conflicts.extend(item.get("actor", {}).get("actor_id") for item in value.get("transitions", []))
                 if table == "soak_runs":
@@ -831,8 +1052,13 @@ def readiness(workspace: Path, tenant_id: str) -> dict[str, Any]:
             if table == "soak_runs":
                 rows = [row for row in rows if row.get("tenant_id") == tenant_id]
             counts[table] = len(rows)
-            if table in {"snapshots", "holdouts", "soak_runs"}:
+            if table in {"snapshots", "holdouts"}:
                 production = production and bool(rows) and all(row.get("environment_class") == "production" for row in rows)
+            if table == "soak_runs":
+                production = production and bool(rows) and all(
+                    row.get("environment_class") == "production" and row.get("clock_mode") == "system" and
+                    row.get("real_seven_day_elapsed") is True and row.get("evidence_class") == "production"
+                    for row in rows)
             if table == "cutovers" and any(row.get("state") != "SUCCEEDED" for row in rows):
                 state_findings.append("cutover has not reached SUCCEEDED")
             if table == "holdout_results" and any(row.get("decision") != "PASS" for row in rows):

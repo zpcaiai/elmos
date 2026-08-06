@@ -15,6 +15,10 @@
     "run_id": {"type": "string", "minLength": 1},
     "assessment_id": {"type": "string", "minLength": 1},
     "provider": {"$ref": "#/$defs/provider"},
+    "clock_mode": {"enum": ["system", "controlled-test"]},
+    "evidence_class": {"enum": ["engineering-only", "production-pending", "production"]},
+    "production_protocol_simulated": {"type": "boolean"},
+    "real_seven_day_elapsed": {"type": "boolean"},
     "state": {
       "enum": ["REGISTERED", "SEALED", "PLANNED", "PRECHECKED", "APPROVED", "EXECUTING",
                "VERIFYING", "SUCCEEDED", "ROLLING_BACK", "ROLLED_BACK", "UNKNOWN", "CANCELLED",
@@ -31,13 +35,35 @@
     "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
     "provider": {
       "type": "object", "additionalProperties": false,
-      "required": ["provider_id", "account_binding_sha256", "region", "adapter_id",
-                   "precheck_operation", "execute_operation", "verify_operation", "rollback_operation"],
+      "oneOf": [
+        {
+          "required": ["provider_id", "account_binding_sha256", "region", "adapter_id",
+                       "precheck_operation", "execute_operation", "verify_operation", "rollback_operation"],
+          "not": {"required": ["profile_version"]}
+        },
+        {
+          "required": ["profile_version", "provider_id", "provider_api_version", "account_binding_sha256",
+                       "account_model", "region", "adapter_id", "adapter_version", "iac_tool",
+                       "iac_tool_version", "state_backend_sha256", "identity_binding_sha256",
+                       "least_privilege_policy_sha256", "rollback_plan_sha256", "precheck_operation",
+                       "execute_operation", "verify_operation", "rollback_operation"]
+        }
+      ],
       "properties": {
+        "profile_version": {"const": "2.0"},
         "provider_id": {"type": "string", "minLength": 1},
+        "provider_api_version": {"type": "string", "minLength": 1},
         "account_binding_sha256": {"$ref": "#/$defs/digest"},
+        "account_model": {"type": "string", "minLength": 1},
         "region": {"type": "string", "minLength": 1},
         "adapter_id": {"type": "string", "minLength": 1},
+        "adapter_version": {"type": "string", "minLength": 1},
+        "iac_tool": {"type": "string", "minLength": 1},
+        "iac_tool_version": {"type": "string", "minLength": 1},
+        "state_backend_sha256": {"$ref": "#/$defs/digest"},
+        "identity_binding_sha256": {"$ref": "#/$defs/digest"},
+        "least_privilege_policy_sha256": {"$ref": "#/$defs/digest"},
+        "rollback_plan_sha256": {"$ref": "#/$defs/digest"},
         "precheck_operation": {"type": "string", "minLength": 1},
         "execute_operation": {"type": "string", "minLength": 1},
         "verify_operation": {"type": "string", "minLength": 1},

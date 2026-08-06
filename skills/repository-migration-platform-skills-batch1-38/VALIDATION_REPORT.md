@@ -26,15 +26,18 @@ PASS: production-role evidence ingress without certification escalation
 PASS: signed customer snapshot intake stores only metadata and content digests
 PASS: sealed Holdout rejects corpus reuse and actor-role overlap
 PASS: sealed Holdout requires byte-bound per-Claim execution plus independent executor/verifier signatures
+PASS: production Holdout requires exact Claim-to-Oracle/version mapping and independent Oracle owners
 PASS: cutover/rollback state machine uses monotonic fencing and one-winner concurrent transitions
-PASS: Provider receipts bind exact account, region, adapter, operation and native receipt bytes
-PASS: production soak enforces seven days, near-real-time telemetry, six-hour gaps, availability/error thresholds and verifier separation
+PASS: Provider receipts bind exact API/account/region/Adapter/IaC tuple, least privilege, state and rollback evidence
+PASS: controlled-clock seven-day protocol remains engineering-only and cannot claim real elapsed production time
+PASS: production soak enforces seven real days, near-real-time telemetry, six-hour gaps, thresholds and verifier separation
+PASS: current SQLite records must match their latest hash-chain event and relational metadata
 PASS: production assessment binds exact run/cutover/release/account and remains certified=false
 PASS: PostgreSQL 16.10 to 17.5 pg_dump/pg_restore detail reconciliation and rollback restore
 PASS: checksum-bound idempotent target migration and duplicate/transaction negative tests
 PASS: isolated MinIO S3 put/get/delete/cleanup and authenticated read-only GitHub exact-commit check
 PASS: Batch 07 and Batch 34 real-toolchain results accepted by their exact Claim dispatchers
-PASS: 39 runtime, transaction, concurrency, installation, closure, adapter and negative behavior tests
+PASS: 41 runtime, transaction, concurrency, installation, closure, adapter and negative behavior tests
 ```
 
 ## Implemented Runtime Surface

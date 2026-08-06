@@ -8,7 +8,7 @@
                "provider_account_sha256", "execution_receipt", "decision", "claim_results",
                "started_at", "finished_at"],
   "properties": {
-    "schema_version": {"const": "1.0"},
+    "schema_version": {"enum": ["1.0", "2.0"]},
     "result_id": {"$ref": "#/$defs/identifier"},
     "holdout_id": {"$ref": "#/$defs/identifier"},
     "tenant_id": {"$ref": "#/$defs/identifier"},
@@ -24,16 +24,35 @@
         "properties": {
           "claim_id": {"$ref": "#/$defs/identifier"},
           "outcome": {"enum": ["PASS", "FAIL", "INCONCLUSIVE"]},
-          "evidence": {"$ref": "#/$defs/artifact"}
+          "evidence": {"$ref": "#/$defs/artifact"},
+          "oracle_id": {"$ref": "#/$defs/identifier"},
+          "oracle_version": {"$ref": "#/$defs/identifier"},
+          "oracle_attestation": {"$ref": "#/$defs/attestation"}
         }
       }
     },
     "started_at": {"type": "string", "format": "date-time"},
     "finished_at": {"type": "string", "format": "date-time"}
   },
+  "allOf": [{
+    "if": {"properties": {"schema_version": {"const": "2.0"}}},
+    "then": {"properties": {"claim_results": {"items": {
+      "required": ["claim_id", "outcome", "evidence", "oracle_id", "oracle_version", "oracle_attestation"]
+    }}}}
+  }],
   "$defs": {
     "identifier": {"type": "string", "minLength": 1, "maxLength": 256, "pattern": "^\\S+$"},
     "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "attestation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["algorithm", "key_id", "payload", "signature"],
+      "properties": {
+        "algorithm": {"const": "ed25519"},
+        "key_id": {"$ref": "#/$defs/identifier"},
+        "payload": {"type": "object"},
+        "signature": {"type": "string", "minLength": 40}
+      }
+    },
     "artifact": {
       "type": "object", "additionalProperties": false,
       "required": ["path", "sha256", "bytes"],
