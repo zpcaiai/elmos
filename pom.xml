@@ -100,7 +100,7 @@
         <maven.enforcer.version>3.6.1</maven.enforcer.version>
         <commons-compress.version>1.27.1</commons-compress.version>
         <zstd-jni.version>1.5.7-3</zstd-jni.version>
-        <docker-java.version>3.4.2</docker-java.version>
+        <docker-java.version>3.7.1</docker-java.version>
         <!-- Overridable per environment: mvn test -Ddocker.api.version=1.51 -->
         <docker.api.version>1.44</docker.api.version>
         <jgit.version>7.7.0.202606012155-r</jgit.version>
