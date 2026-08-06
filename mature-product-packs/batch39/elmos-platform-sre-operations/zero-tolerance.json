@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "id": "elmos-platform-sre-operations-zero-tolerance",
+  "batch": 39,
+  "version": "0.1.0",
+  "owner": "elmos-platform-maintainers",
+  "status": "NOT_RUN",
+  "flags": [
+    {
+      "name": "crossTenantObservabilityLeaks",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "missingCriticalRunbooks",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "rpoBreaches",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "rtoBreaches",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "tenantStarvationEvents",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "testIntegrityViolations",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "unownedCriticalAlerts",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "unresolvedSev1Incidents",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    }
+  ],
+  "packKey": "elmos-platform-sre-operations"
+}

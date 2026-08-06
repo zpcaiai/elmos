@@ -1,0 +1,56 @@
+{
+  "schema": "elmos.batch46.project-profile/1",
+  "generated_at": "<utc-timestamp>",
+  "project_root": "<absolute-path>",
+  "stacks": [
+    {
+      "id": "<stack-id>",
+      "language": "python|typescript|javascript|java|csharp",
+      "family": "b29|b30|b31|b32",
+      "framework": "<framework or null>",
+      "build_tool": "pip|npm|maven|gradle|dotnet",
+      "install_command": "<real install command>",
+      "start_command": "<real start command, may use ${SMOKE_PORT}>",
+      "entrypoint": "<file or null>",
+      "default_port": 0,
+      "readiness_path": "<framework readiness path>",
+      "confidence": "high|medium|low",
+      "evidence": [
+        "<file>: <marker>"
+      ],
+      "role": "primary|secondary"
+    }
+  ],
+  "datastores": [
+    {
+      "engine": "postgres|mysql|sqlserver|oracle|sqlite|mongodb|redis|kafka|rabbitmq",
+      "role": "primary|supporting",
+      "schema_files": [
+        "<path>"
+      ],
+      "migration_dirs": [
+        "<dir>"
+      ],
+      "embedded_substitute": "sqlite|h2|null",
+      "embedded_substitute_status": "available|unavailable",
+      "evidence": [
+        "<file>: <marker>"
+      ]
+    }
+  ],
+  "env_contract_files": [
+    "<path>"
+  ],
+  "api_contract_files": [
+    "<path>"
+  ],
+  "unsupported": [],
+  "unknown": [
+    {
+      "item": "<what>",
+      "reason": "<why it blocks certification>"
+    }
+  ],
+  "polyglot": false,
+  "profile_digest": "sha256:<digest>"
+}

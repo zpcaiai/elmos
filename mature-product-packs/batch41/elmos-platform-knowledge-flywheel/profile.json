@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "elmos-platform-knowledge-flywheel",
+  "batch": 41,
+  "riskTier": "P0",
+  "requiredHoldout": true,
+  "requiredRepresentativeWorkloads": true,
+  "minimumEvidenceTraceCoverage": 0.99,
+  "metricThresholds": {
+    "ontologyCoverage": 1.0,
+    "knowledgeLineageCoverage": 1.0,
+    "privateKnowledgeIsolationPassRate": 1.0,
+    "recommendationPrecisionAtK": 0.9,
+    "riskCalibrationScore": 0.9,
+    "forecastIntervalCoverage": 0.9,
+    "holdoutPassRate": 1.0,
+    "humanReviewClosureRate": 1.0,
+    "evidenceTraceCoverage": 0.98
+  },
+  "zeroTolerance": [
+    "privateKnowledgeLeaks",
+    "targetLeakageFindings",
+    "unattributedKnowledgeItems",
+    "uncalibratedP0Predictions",
+    "unsafeRecommendations",
+    "expiredCertifiedAssetsUsed",
+    "crossTenantReconstructionFindings",
+    "testIntegrityViolations"
+  ],
+  "metadata": {},
+  "packKey": "elmos-platform-knowledge-flywheel"
+}

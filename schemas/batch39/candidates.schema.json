@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.invalid/schemas/batch39/candidates.schema.json",
+  "title": "Batch 39 candidates",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schemaVersion",
+    "id",
+    "batch",
+    "candidates"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "batch": {
+      "const": 39
+    },
+    "packKey": {
+      "type": "string",
+      "minLength": 3
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidenceRefs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "scoringDimensions": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "customerDemand",
+          "riskReduction",
+          "reuse",
+          "readiness",
+          "margin"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "candidates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "id",
+          "score",
+          "customerDemand",
+          "riskReduction",
+          "reuse",
+          "readiness",
+          "margin"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "score": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "owner": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "evidenceRefs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "customerDemand": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "riskReduction": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "reuse": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "readiness": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "margin": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
+      }
+    }
+  }
+}

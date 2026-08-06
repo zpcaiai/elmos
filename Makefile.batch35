@@ -1,4 +1,5 @@
-BATCH35_PYTHON ?= /opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python
+UV ?= uv
+BATCH35_PYTHON ?= $(UV) run --quiet --with jsonschema --with pyyaml python
 .PHONY: batch35-validate batch35-test batch35-check batch35-scaffold batch35-gate batch35-local-rehearsal
 batch35-validate:
 	$(BATCH35_PYTHON) scripts/batch35/validate_skill_bundle.py .agents/skills

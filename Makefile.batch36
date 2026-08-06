@@ -1,4 +1,5 @@
-BATCH36_PYTHON ?= /opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python
+UV ?= uv
+BATCH36_PYTHON ?= $(UV) run --quiet --with jsonschema --with pyyaml python
 .PHONY: batch36-validate batch36-test batch36-check batch36-scaffold batch36-gate batch36-local-rehearsal
 batch36-validate:
 	$(BATCH36_PYTHON) scripts/batch36/validate_skill_bundle.py .agents/skills

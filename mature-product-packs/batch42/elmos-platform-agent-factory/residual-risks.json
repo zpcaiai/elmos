@@ -1,0 +1,26 @@
+{
+  "packKey": "elmos-platform-agent-factory",
+  "batch": 42,
+  "status": "OPEN",
+  "owner": "elmos-platform-maintainers",
+  "risks": [
+    {
+      "id": "RISK-B42-KILLSWITCH-001",
+      "severity": "critical",
+      "status": "OPEN",
+      "statement": "The agent kill switch and rollback path are untested, so no autonomy level above supervised can be claimed."
+    },
+    {
+      "id": "RISK-B42-PERMISSION-001",
+      "severity": "high",
+      "status": "OPEN",
+      "statement": "Tool permissions are declared but not enforced against an adversarial evaluation."
+    },
+    {
+      "id": "RISK-B42-ROUTING-001",
+      "severity": "high",
+      "status": "OPEN",
+      "statement": "Model routing and provider failover have not been exercised under provider degradation."
+    }
+  ]
+}

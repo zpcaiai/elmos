@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.invalid/schemas/batch41/support-matrix.schema.json",
+  "title": "Batch 41 support-matrix",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schemaVersion",
+    "id",
+    "batch",
+    "capabilities"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "batch": {
+      "const": 41
+    },
+    "packKey": {
+      "type": "string",
+      "minLength": 3
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidenceRefs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "capabilities": {
+      "type": "array",
+      "minItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "capabilityId",
+          "status",
+          "owner",
+          "evidenceRefs"
+        ],
+        "properties": {
+          "capabilityId": {
+            "enum": [
+              "b41-automation-buildgreen-prediction",
+              "b41-diagnostic-root-cause-recommendation",
+              "b41-effort-duration-cost-prediction",
+              "b41-holdout-feedback-calibration",
+              "b41-human-curation-governance",
+              "b41-knowledge-confidence-provenance",
+              "b41-knowledge-flywheel-gate",
+              "b41-knowledge-freshness-versioning",
+              "b41-knowledge-graph-ontology",
+              "b41-knowledge-isolation",
+              "b41-knowledge-marketplace-sharing",
+              "b41-migration-entity-relations",
+              "b41-migration-knowledge-factory",
+              "b41-migration-risk-prediction",
+              "b41-migration-run-ingestion",
+              "b41-pattern-antipattern-extraction",
+              "b41-privacy-preserving-learning",
+              "b41-recipe-mapping-recommendation",
+              "b41-similar-project-retrieval",
+              "b41-target-stack-recommendation"
+            ]
+          },
+          "status": {
+            "enum": [
+              "research",
+              "experimental",
+              "limited",
+              "certified",
+              "deprecated",
+              "blocked"
+            ]
+          },
+          "owner": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evidenceRefs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

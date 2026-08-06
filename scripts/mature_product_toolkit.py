@@ -37,6 +37,34 @@ REQUIRED_SECTIONS = (
 )
 COMMON_SCHEMA_ROOT = ROOT / "schemas" / "mature-product"
 MAX_EVIDENCE_AGE = timedelta(days=30)
+# Artifacts every batch must declare. CORE drives the fail-closed gate; CONTRACT
+# carries the scope, ownership and candidate-selection contracts.
+CORE_ARTIFACTS = ["program", "evidence", "certification", "gate-result"]
+CONTRACT_ARTIFACTS = [
+    "pack",
+    "profile",
+    "support-matrix",
+    "candidates",
+    # certification.json and evidence.json are closed objects. These three carry
+    # what will not fit inside them: the full measured threshold set, the
+    # zero-tolerance evaluations, and the human-readable claim statements.
+    "metrics",
+    "zero-tolerance",
+    "claims",
+]
+SCORING_DIMENSIONS = ("customerDemand", "riskReduction", "reuse", "readiness", "margin")
+EVIDENCE_ROLES = (
+    "execution",
+    "provenance",
+    "verification",
+    "customer",
+    "independent-review",
+    "authorization",
+    "recovery",
+    "financial-reconciliation",
+)
+PLACEHOLDER_OWNERS = {"", "REPLACE_ME", "TBD", "unknown"}
+ZERO_DIGEST = "sha256:" + "0" * 64
 
 
 def load_json(path: Path) -> dict:
@@ -248,7 +276,11 @@ def validate_batch(batch: int) -> list[str]:
 
     schema_dir = ROOT / "schemas" / f"batch{batch}"
     template_dir = ROOT / "templates" / f"batch{batch}"
-    for name in ("program", "evidence", "certification", "gate-result"):
+    declared = {path.name[: -len(".schema.json")] for path in schema_dir.glob("*.schema.json")}
+    for name in CORE_ARTIFACTS + CONTRACT_ARTIFACTS:
+        if name not in declared:
+            errors.append(f"{schema_dir}/{name}.schema.json: missing")
+    for name in sorted(declared):
         schema_path = schema_dir / f"{name}.schema.json"
         template_path = template_dir / f"{name}.json"
         try:
@@ -257,6 +289,20 @@ def validate_batch(batch: int) -> list[str]:
             jsonschema.validate(load_json(template_path), schema)
         except (OSError, ValueError, json.JSONDecodeError, jsonschema.exceptions.ValidationError, jsonschema.exceptions.SchemaError) as exc:
             errors.append(f"{name}: {exc}")
+    for template_path in sorted(template_dir.glob("*.json")):
+        if template_path.stem not in declared:
+            errors.append(f"{template_path}: has no matching schema")
+    try:
+        support_matrix = load_json(template_dir / "support-matrix.json")
+        declared_capabilities = {
+            entry.get("capabilityId")
+            for entry in support_matrix.get("capabilities", [])
+            if isinstance(entry, dict)
+        }
+        if declared_capabilities != names:
+            errors.append("support-matrix template does not cover exactly the batch Skills")
+    except (OSError, ValueError, json.JSONDecodeError) as exc:
+        errors.append(f"support-matrix template: {exc}")
     for required in (
         ROOT / "docs" / f"batch{batch}" / "AUTHORITY.md",
         ROOT / "docs" / f"batch{batch}" / "IMPLEMENTATION_CONTRACT.md",
@@ -285,10 +331,14 @@ def scaffold(batch: int, key: str, owner: str, output_root: Path) -> Path:
     destination = output_root / f"batch{batch}" / key
     destination.mkdir(parents=True, exist_ok=False)
     source = ROOT / "templates" / f"batch{batch}"
+    example_prefix = f"example-{load_json(source / 'pack.json')['packType']}"
     for template in source.glob("*.json"):
         payload = load_json(template)
         payload["batch"] = batch
         payload["packKey"] = key
+        identifier = payload.get("id")
+        if isinstance(identifier, str) and identifier.startswith(example_prefix):
+            payload["id"] = key + identifier[len(example_prefix):]
         if "owner" in payload:
             payload["owner"] = owner
         (destination / template.name).write_text(
@@ -298,6 +348,381 @@ def scaffold(batch: int, key: str, owner: str, output_root: Path) -> Path:
     (destination / "holdout").mkdir()
     (destination / "representative").mkdir()
     return destination
+
+
+def relative_to_pack(pack: Path, path: Path) -> str:
+    return path.resolve().relative_to(pack.resolve()).as_posix()
+
+
+def file_reference(pack: Path, path: Path) -> dict:
+    return {
+        "path": relative_to_pack(pack, path),
+        "sha256": sha256_file(path),
+        "bytes": path.stat().st_size,
+    }
+
+
+def single_corpus_file(pack: Path, kind: str) -> Path:
+    directory = pack / kind
+    files = sorted(item for item in directory.rglob("*") if item.is_file() and item.stat().st_size > 0)
+    if len(files) != 1:
+        raise ValueError(
+            f"{kind}/ must hold exactly one non-empty corpus file, found {len(files)}"
+        )
+    return files[0]
+
+
+def build_manifest(
+    batch: int,
+    pack: Path,
+    *,
+    artifact: Path,
+    environment: Path,
+    executor: str,
+    verifier: str,
+    authorization_refs: list[str],
+    replay_command: str,
+    started_at: str,
+    finished_at: str,
+    attest_verifier_independent: bool,
+    attest_corpus_independence: bool,
+) -> dict:
+    """Derive the evidence manifest from what is actually on disk.
+
+    Everything machine-derivable (paths, digests, byte counts, claim bindings)
+    is computed here. The two facts a filesystem cannot establish — that the
+    verifier is independent of the executor, and that the corpora were not
+    available while authoring — must be attested explicitly by the caller.
+    """
+    if executor == verifier:
+        raise ValueError("executor and verifier must be different identities")
+    if not attest_verifier_independent:
+        raise ValueError(
+            "verifier independence must be attested with --attest-verifier-independent"
+        )
+    if not attest_corpus_independence:
+        raise ValueError(
+            "corpus authoring independence must be attested with --attest-corpus-independence"
+        )
+    if not authorization_refs:
+        raise ValueError("at least one authorization reference is required")
+
+    program = load_json(pack / "program.json")
+    certification = load_json(pack / "certification.json")
+    evidence_document = load_json(pack / "evidence.json")
+
+    # Evidence layout is a convention, not a guess: evidence/<role>/<id>.<ext>.
+    claims_by_reference: dict[str, list[str]] = {}
+    for claim in evidence_document.get("claims", []):
+        for reference in claim.get("evidenceRefs", []) + claim.get("provenanceRefs", []):
+            claims_by_reference.setdefault(reference, []).append(claim.get("claimId"))
+
+    roles = {role for role in EVIDENCE_ROLES}
+    entries: list[dict] = []
+    for path in sorted((pack / "evidence").rglob("*")):
+        if not path.is_file() or path.stat().st_size == 0:
+            continue
+        relative = Path(relative_to_pack(pack, path))
+        if len(relative.parts) < 3 or relative.parts[1] not in roles:
+            raise ValueError(
+                f"{relative} must live under evidence/<role>/ with role in {sorted(roles)}"
+            )
+        identifier = relative.stem
+        bound = sorted(set(claims_by_reference.get(identifier, [])))
+        if not bound:
+            raise ValueError(f"evidence {identifier} is not referenced by any claim")
+        entries.append({**file_reference(pack, path), "id": identifier, "role": relative.parts[1], "claimIds": bound})
+
+    corpora = []
+    for kind in ("holdout", "representative"):
+        corpora.append({**file_reference(pack, single_corpus_file(pack, kind)), "kind": kind, "authoringAccess": False})
+
+    domain_gates = []
+    if batch == 45:
+        for lower in range(38, 45):
+            source = sorted((pack / "domain-gates").glob(f"batch{lower}*.json"))
+            if len(source) != 1:
+                raise ValueError(f"domain-gates/ must hold exactly one Batch {lower} gate result")
+            domain_gates.append({**file_reference(pack, source[0]), "batch": lower})
+
+    approvals = sorted(set(certification.get("approvedBy", [])))
+    if not approvals:
+        raise ValueError("certification.approvedBy must name at least one accountable approver")
+    if program.get("owner") not in approvals:
+        raise ValueError("the program owner must appear in certification.approvedBy")
+
+    manifest = {
+        "manifestVersion": 1,
+        "batch": batch,
+        "packKey": program["packKey"],
+        "generatedAt": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+        "artifact": file_reference(pack, artifact),
+        "environment": file_reference(pack, environment),
+        "execution": {
+            "startedAt": started_at,
+            "finishedAt": finished_at,
+            "replayCommand": replay_command,
+            "executorId": executor,
+            "verifierId": verifier,
+            "verifierIndependent": True,
+            "authorizationRefs": sorted(set(authorization_refs)),
+        },
+        "evidence": entries,
+        "corpora": corpora,
+        "approvals": approvals,
+        "domainGates": domain_gates,
+    }
+    validate_document(manifest, COMMON_SCHEMA_ROOT / "evidence-manifest.schema.json")
+    return manifest
+
+
+def build_certification_request(batch: int, pack: Path, key_id: str) -> dict:
+    """Bind a certification request to the exact bytes it is asking to certify."""
+    manifest = load_json(pack / "evidence-manifest.json")
+    program = load_json(pack / "program.json")
+    if manifest.get("execution", {}).get("executorId") == key_id:
+        raise ValueError("the certification authority must differ from the executor")
+    approvals = manifest.get("approvals", [])
+    if program.get("owner") not in approvals:
+        raise ValueError("the program owner must approve the certification request")
+    request = {
+        "requestVersion": 1,
+        "batch": batch,
+        "packKey": program["packKey"],
+        "requestedAt": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+        "keyId": key_id,
+        "approvedBy": sorted(set(approvals)),
+        "programDigest": sha256_file(pack / "program.json"),
+        "evidenceDigest": sha256_file(pack / "evidence.json"),
+        "certificationDigest": sha256_file(pack / "certification.json"),
+        "evidenceManifestDigest": sha256_file(pack / "evidence-manifest.json"),
+    }
+    validate_document(request, COMMON_SCHEMA_ROOT / "certification-request.schema.json")
+    return request
+
+
+def score_candidates(batch: int, path: Path, write: bool) -> dict:
+    """Rank pack candidates by the unweighted mean of the five scoring dimensions.
+
+    Deterministic and evidence-neutral: scoring only orders work, it never
+    grants a status. A candidate with no evidence reference is reported as
+    unevidenced so it cannot be promoted on score alone.
+    """
+    payload = load_json(path)
+    validate_document(payload, ROOT / "schemas" / f"batch{batch}" / "candidates.schema.json")
+    rows = payload.get("candidates", [])
+    for row in rows:
+        values = [float(row.get(dimension, 0.0)) for dimension in SCORING_DIMENSIONS]
+        row["score"] = round(sum(values) / len(SCORING_DIMENSIONS), 4)
+        row["unevidenced"] = not row.get("evidenceRefs")
+    rows.sort(key=lambda row: (-row.get("score", 0.0), row.get("id", "")))
+    payload["candidates"] = rows
+    validate_document(payload, ROOT / "schemas" / f"batch{batch}" / "candidates.schema.json")
+    if write:
+        path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    return payload
+
+
+def collect_gaps(batch: int, pack: Path) -> dict:
+    """Enumerate every unmet obligation for a pack without granting any status.
+
+    The fail-closed gate stops at the first structural problem, which makes it a
+    poor inventory. This walks the whole contract surface instead so the output
+    can be used as a work list.
+    """
+    template_dir = ROOT / "templates" / f"batch{batch}"
+    schema_dir = ROOT / "schemas" / f"batch{batch}"
+    expected = sorted(path.name[: -len(".schema.json")] for path in schema_dir.glob("*.schema.json"))
+    skills = sorted(path.name for path in (ROOT / ".agents" / "skills").glob(f"b{batch}-*") if path.is_dir())
+    gaps: list[dict] = []
+
+    def add(category: str, severity: str, detail: str) -> None:
+        gaps.append({"category": category, "severity": severity, "detail": detail})
+
+    documents: dict[str, dict] = {}
+    for name in expected:
+        path = pack / f"{name}.json"
+        if not path.is_file():
+            add("artifact", "blocking", f"{name}.json is missing from the pack")
+            continue
+        try:
+            payload = load_json(path)
+        except (OSError, ValueError, json.JSONDecodeError) as exc:
+            add("artifact", "blocking", f"{name}.json is unreadable: {exc}")
+            continue
+        documents[name] = payload
+        try:
+            validate_document(payload, schema_dir / f"{name}.schema.json")
+        except (OSError, ValueError, json.JSONDecodeError, jsonschema.exceptions.ValidationError, jsonschema.exceptions.SchemaError) as exc:
+            add("artifact", "blocking", f"{name}.json fails its schema: {exc}")
+
+    for name in ("evidence-manifest.json", "certification-request.json", "certification-request.sig"):
+        if not (pack / name).is_file():
+            add("evidence", "blocking", f"{name} has not been produced")
+
+    for name, payload in documents.items():
+        owner = payload.get("owner")
+        if owner is not None and str(owner).strip() in PLACEHOLDER_OWNERS:
+            add("ownership", "blocking", f"{name}.json still carries a placeholder owner")
+
+    pack_doc = documents.get("pack", {})
+    for field in ("artifactDigest", "environmentDigest"):
+        if pack_doc.get(field, ZERO_DIGEST) == ZERO_DIGEST:
+            add("provenance", "blocking", f"pack.json {field} is still the zero digest")
+    template_pack = load_json(template_dir / "pack.json")
+    missing_batches = sorted(set(template_pack.get("requiredBatches", [])) - set(pack_doc.get("requiredBatches", [])))
+    if missing_batches:
+        add("scope", "blocking", f"pack.json does not bind required batches {missing_batches}")
+
+    matrix = documents.get("support-matrix", {})
+    covered = {
+        entry.get("capabilityId"): entry
+        for entry in matrix.get("capabilities", [])
+        if isinstance(entry, dict)
+    }
+    for skill in skills:
+        entry = covered.get(skill)
+        if entry is None:
+            add("coverage", "blocking", f"support matrix does not cover {skill}")
+        elif entry.get("status") in (None, "research", "experimental", "blocked"):
+            add("coverage", "open", f"{skill} is only {entry.get('status')} in the support matrix")
+        elif not entry.get("evidenceRefs"):
+            add("coverage", "blocking", f"{skill} claims {entry.get('status')} with no evidence reference")
+
+    profile = documents.get("profile", {})
+    template_profile = load_json(template_dir / "profile.json")
+    thresholds = profile.get("metricThresholds", template_profile["metricThresholds"])
+    certification = documents.get("certification", {})
+
+    # certification.json is a closed object carrying only the gate-enforced
+    # numbers, so the declared threshold set is tracked in metrics.json where a
+    # never-measured metric is distinguishable from one that measured zero.
+    recorded = {
+        entry.get("name"): entry
+        for entry in documents.get("metrics", {}).get("metrics", [])
+        if isinstance(entry, dict)
+    }
+    for metric, threshold in sorted(thresholds.items()):
+        entry = recorded.get(metric)
+        if entry is None:
+            add("metric", "blocking", f"{metric} is absent from metrics.json (threshold {threshold})")
+            continue
+        if not entry.get("measured") or entry.get("value") is None:
+            add("metric", "blocking", f"{metric} has not been measured (threshold {threshold})")
+            continue
+        if not entry.get("evidenceRefs"):
+            add("metric", "blocking", f"{metric} reports {entry.get('value')} with no evidence reference")
+        value, comparator = entry.get("value"), entry.get("comparator", "min")
+        if comparator == "min" and value < threshold:
+            add("metric", "open", f"{metric} is {value}, below the required {threshold}")
+        elif comparator == "max" and value > threshold:
+            add("metric", "open", f"{metric} is {value}, above the permitted {threshold}")
+
+    evaluated = {
+        entry.get("name"): entry
+        for entry in documents.get("zero-tolerance", {}).get("flags", [])
+        if isinstance(entry, dict)
+    }
+    for flag in profile.get("zeroTolerance", template_profile["zeroTolerance"]):
+        entry = evaluated.get(flag)
+        if entry is None or not entry.get("evaluated") or entry.get("observed") is None:
+            add("zero-tolerance", "blocking", f"{flag} has not been evaluated")
+        elif entry.get("observed") != 0:
+            add("zero-tolerance", "blocking", f"{flag} observed {entry.get('observed')}, must be zero")
+        elif not entry.get("evidenceRefs"):
+            add("zero-tolerance", "blocking", f"{flag} reports zero with no evidence reference")
+
+    for corpus in ("holdout", "representative"):
+        directory = pack / corpus
+        populated = [item for item in directory.rglob("*") if item.is_file() and item.stat().st_size > 0] if directory.is_dir() else []
+        if not populated:
+            add("corpus", "blocking", f"{corpus} corpus is empty")
+    evidence_dir = pack / "evidence"
+    if not evidence_dir.is_dir() or not any(item.is_file() for item in evidence_dir.rglob("*")):
+        add("evidence", "blocking", "evidence directory holds no artefacts")
+
+    if not certification.get("approvedBy"):
+        add("approval", "blocking", "no accountable approver is recorded on the certification")
+    if certification.get("status") != "CERTIFIED":
+        add("status", "open", f"certification status is {certification.get('status')}")
+
+    claims = documents.get("evidence", {}).get("claims", [])
+    narratives = {
+        entry.get("claimId"): entry
+        for entry in documents.get("claims", {}).get("claims", [])
+        if isinstance(entry, dict)
+    }
+    if not claims:
+        add("evidence", "blocking", "evidence.json declares no claims")
+    for claim in claims:
+        claim_id = claim.get("claimId")
+        if claim.get("status") != "PASS":
+            add("evidence", "open", f"claim {claim_id} is {claim.get('status')}")
+        if claim.get("externalOperationExecuted") and not claim.get("authorizationRefs"):
+            add("authorization", "blocking", f"claim {claim_id} performed an external operation without authorization")
+        # A passing claim with no stated limitations reads as universal. Almost
+        # none are: say what the run did not cover.
+        if claim.get("status") == "PASS":
+            narrative = narratives.get(claim_id)
+            if narrative is None:
+                add("claim-scope", "blocking", f"claim {claim_id} passes with no statement in claims.json")
+            elif not narrative.get("limitations"):
+                add("claim-scope", "blocking", f"claim {claim_id} passes with no stated limitations")
+    for claim_id in sorted(set(narratives) - {claim.get("claimId") for claim in claims}):
+        add("claim-scope", "open", f"claims.json describes {claim_id}, which evidence.json does not declare")
+
+    if batch == 45:
+        for lower in range(38, 45):
+            certified = list((ROOT / "mature-product-packs" / f"batch{lower}").glob("*/gate-result.json"))
+            passing = []
+            for path in certified:
+                try:
+                    result = load_json(path)
+                except (OSError, ValueError, json.JSONDecodeError):
+                    continue
+                if result.get("status") == "CERTIFIED" and result.get("eligible") is True:
+                    passing.append(path)
+            if not passing:
+                add("aggregate", "blocking", f"Batch {lower} has no certified domain gate to aggregate")
+
+    blocking = sum(1 for gap in gaps if gap["severity"] == "blocking")
+    return {
+        "batch": batch,
+        "packKey": documents.get("program", {}).get("packKey", pack.name),
+        "generatedBy": "scripts/mature_product_toolkit.py gaps",
+        "expectedArtifacts": expected,
+        "skillCount": len(skills),
+        "blockingCount": blocking,
+        "openCount": len(gaps) - blocking,
+        "certifiable": False if gaps else None,
+        "gaps": gaps,
+    }
+
+
+def write_gap_report(pack: Path, inventory: dict) -> None:
+    (pack / "gap-inventory.json").write_text(
+        json.dumps(inventory, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
+    lines = [
+        f"# Batch {inventory['batch']} gap inventory",
+        "",
+        f"- Pack: `{inventory['packKey']}`",
+        f"- Skills in scope: {inventory['skillCount']}",
+        f"- Blocking gaps: {inventory['blockingCount']}",
+        f"- Open gaps: {inventory['openCount']}",
+        "",
+        "This inventory is a work list. It grants no status and is not evidence.",
+        "",
+    ]
+    for severity in ("blocking", "open"):
+        selected = [gap for gap in inventory["gaps"] if gap["severity"] == severity]
+        if not selected:
+            continue
+        lines.extend([f"## {severity.title()}", ""])
+        for gap in selected:
+            lines.append(f"- [{gap['category']}] {gap['detail']}")
+        lines.append("")
+    (pack / "gap-report.md").write_text("\n".join(lines), encoding="utf-8")
 
 
 def evaluate_gate(
@@ -498,6 +923,34 @@ def main() -> int:
     gate_parser.add_argument("--batch", type=int, choices=BATCHES, required=True)
     gate_parser.add_argument("pack", type=Path)
     gate_parser.add_argument("--trust-store", type=Path)
+    score_parser = sub.add_parser("score")
+    score_parser.add_argument("--batch", type=int, choices=BATCHES, required=True)
+    score_parser.add_argument("candidates", type=Path)
+    score_parser.add_argument("--write", action="store_true")
+    gaps_parser = sub.add_parser("gaps")
+    gaps_parser.add_argument("--batch", type=int, choices=BATCHES, required=True)
+    gaps_parser.add_argument("pack", type=Path)
+    gaps_parser.add_argument(
+        "--allow-blocking", action="store_true",
+        help="refresh the inventory without failing; for scheduled refreshes, never for a release decision",
+    )
+    manifest_parser = sub.add_parser("manifest")
+    manifest_parser.add_argument("--batch", type=int, choices=BATCHES, required=True)
+    manifest_parser.add_argument("pack", type=Path)
+    manifest_parser.add_argument("--artifact", type=Path, required=True)
+    manifest_parser.add_argument("--environment", type=Path, required=True)
+    manifest_parser.add_argument("--executor", required=True)
+    manifest_parser.add_argument("--verifier", required=True)
+    manifest_parser.add_argument("--authorization", action="append", default=[])
+    manifest_parser.add_argument("--replay-command", required=True)
+    manifest_parser.add_argument("--started-at", required=True)
+    manifest_parser.add_argument("--finished-at", required=True)
+    manifest_parser.add_argument("--attest-verifier-independent", action="store_true")
+    manifest_parser.add_argument("--attest-corpus-independence", action="store_true")
+    request_parser = sub.add_parser("request")
+    request_parser.add_argument("--batch", type=int, choices=BATCHES, required=True)
+    request_parser.add_argument("pack", type=Path)
+    request_parser.add_argument("--key-id", required=True)
     args = parser.parse_args()
 
     if args.command == "validate":
@@ -511,6 +964,55 @@ def main() -> int:
     if args.command == "scaffold":
         print(scaffold(args.batch, args.key, args.owner, args.output_root))
         return 0
+    if args.command == "score":
+        payload = score_candidates(args.batch, args.candidates, args.write)
+        print(json.dumps(payload["candidates"], indent=2, ensure_ascii=False))
+        return 0
+    if args.command == "manifest":
+        try:
+            manifest = build_manifest(
+                args.batch,
+                args.pack,
+                artifact=args.artifact,
+                environment=args.environment,
+                executor=args.executor,
+                verifier=args.verifier,
+                authorization_refs=args.authorization,
+                replay_command=args.replay_command,
+                started_at=args.started_at,
+                finished_at=args.finished_at,
+                attest_verifier_independent=args.attest_verifier_independent,
+                attest_corpus_independence=args.attest_corpus_independence,
+            )
+        except (OSError, ValueError, json.JSONDecodeError, jsonschema.exceptions.ValidationError) as exc:
+            print(f"ERROR: {exc}")
+            return 2
+        (args.pack / "evidence-manifest.json").write_text(
+            json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+        )
+        print(f"wrote {args.pack / 'evidence-manifest.json'}")
+        return 0
+    if args.command == "request":
+        try:
+            request = build_certification_request(args.batch, args.pack, args.key_id)
+        except (OSError, ValueError, json.JSONDecodeError, jsonschema.exceptions.ValidationError) as exc:
+            print(f"ERROR: {exc}")
+            return 2
+        request_path = args.pack / "certification-request.json"
+        request_path.write_text(json.dumps(request, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        print(f"wrote {request_path}")
+        print("sign it with the offline certification key, then place the detached signature next to it:")
+        print(f"  openssl dgst -sha256 -sign <private-key.pem> -out {args.pack / 'certification-request.sig'} {request_path}")
+        return 0
+    if args.command == "gaps":
+        inventory = collect_gaps(args.batch, args.pack)
+        write_gap_report(args.pack, inventory)
+        for gap in inventory["gaps"]:
+            print(f"GAP [{gap['severity']}/{gap['category']}] {gap['detail']}")
+        print(f"blocking={inventory['blockingCount']} open={inventory['openCount']}")
+        if args.allow_blocking:
+            return 0
+        return 1 if inventory["blockingCount"] else 0
     eligible, failures, status = evaluate_gate(args.batch, args.pack, args.trust_store)
     write_gate_result(args.batch, args.pack, eligible, failures, status)
     for failure in failures:

@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "id": "elmos-platform-finops",
+  "batch": 44,
+  "capabilities": [
+    {
+      "capabilityId": "b44-artifact-retention-egress-economics",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b44-assessment-poc-project-quote",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b44-budget-quota-cost-guardrail",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b44-cache-incremental-cost-optimization",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b44-cost-scenario-forecast",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b44-cost-taxonomy-economic-model",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b44-customer-roi-tco-value",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b44-customer-route-edition-margin",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b44-economics-maturity-gate",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b44-human-expert-cost",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b44-migration-finops-factory",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b44-model-agent-economics",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b44-packaging-pricing-model",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b44-provider-resource-routing",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b44-resource-metering",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b44-runner-fleet-economics",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b44-showback-chargeback",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b44-support-hypercare-operations-cost",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b44-usage-billing-reconciliation",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b44-verified-workload-unit-cost",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    }
+  ],
+  "packKey": "elmos-platform-finops"
+}

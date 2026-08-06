@@ -1,4 +1,5 @@
-BATCH37_PYTHON ?= /opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python
+UV ?= uv
+BATCH37_PYTHON ?= $(UV) run --quiet --with jsonschema --with pyyaml python
 .PHONY: batch37-validate batch37-test batch37-check batch37-scaffold batch37-local-rehearsal batch37-core-gate batch37-closure-gate validate-b37 test-b37
 batch37-validate:
 	$(BATCH37_PYTHON) scripts/batch37/validate_skill_bundle.py .agents/skills

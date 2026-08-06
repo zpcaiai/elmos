@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "elmos-platform-agent-factory-tool-registry",
+  "batch": 42,
+  "version": "0.1.0",
+  "owner": "elmos-platform-maintainers",
+  "status": "NOT_RUN",
+  "evidenceRefs": [],
+  "records": [],
+  "metadata": {},
+  "packKey": "elmos-platform-agent-factory"
+}

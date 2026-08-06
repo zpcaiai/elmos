@@ -1,0 +1,31 @@
+BATCH46_PYTHON ?= python3
+BATCH46_TTL ?= 600
+
+.PHONY: batch46-check batch46-scaffold batch46-run batch46-validate batch46-gate batch46-lease-status batch46-lease-stop
+
+batch46-check:
+	$(BATCH46_PYTHON) -m unittest discover -s tests/batch46 -p 'test_*.py'
+
+batch46-scaffold:
+	@test -n "$(PROJECT)" || (echo "PROJECT=<path-to-generated-project> required" && exit 2)
+	$(BATCH46_PYTHON) scripts/batch46/scaffold_smoke_pack.py $(PROJECT) --write
+
+batch46-run:
+	@test -n "$(PROJECT)" || (echo "PROJECT=<path-to-generated-project> required" && exit 2)
+	$(BATCH46_PYTHON) $(PROJECT)/smoke/tools/run_smoke.py --project $(PROJECT) --ttl $(BATCH46_TTL) $(ENTRY_ARG)
+
+batch46-validate:
+	@test -n "$(PROJECT)" || (echo "PROJECT=<path-to-generated-project> required" && exit 2)
+	$(BATCH46_PYTHON) scripts/batch46/validate_smoke_pack.py $(PROJECT)
+
+batch46-gate:
+	@test -n "$(PROJECT)" || (echo "PROJECT=<path-to-generated-project> required" && exit 2)
+	$(BATCH46_PYTHON) scripts/batch46/run_smoke_gate.py $(PROJECT)
+
+batch46-lease-status:
+	@test -n "$(PROJECT)" || (echo "PROJECT=<path-to-generated-project> required" && exit 2)
+	$(BATCH46_PYTHON) scripts/batch46/smoke_lease.py status --project $(PROJECT)
+
+batch46-lease-stop:
+	@test -n "$(PROJECT)" || (echo "PROJECT=<path-to-generated-project> required" && exit 2)
+	$(BATCH46_PYTHON) scripts/batch46/smoke_lease.py stop --project $(PROJECT) --reason manual

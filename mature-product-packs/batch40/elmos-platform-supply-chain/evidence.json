@@ -1,0 +1,30 @@
+{
+  "batch": 40,
+  "packKey": "elmos-platform-supply-chain",
+  "claims": [
+    {
+      "claimId": "b40-declared-dependency-inventory",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-dependency-inventory"
+      ],
+      "provenanceRefs": [
+        "batch40-dependency-inventory-provenance"
+      ],
+      "externalOperationExecuted": false,
+      "authorizationRefs": []
+    },
+    {
+      "claimId": "b40-credential-scan-triage",
+      "status": "INCONCLUSIVE",
+      "evidenceRefs": [
+        "b40-secret-scan"
+      ],
+      "provenanceRefs": [
+        "batch40-dependency-inventory-provenance"
+      ],
+      "externalOperationExecuted": false,
+      "authorizationRefs": []
+    }
+  ]
+}

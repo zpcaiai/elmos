@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "id": "example-finops-economics-claims",
+  "batch": 44,
+  "version": "0.1.0",
+  "owner": "REPLACE_ME",
+  "status": "NOT_RUN",
+  "claims": []
+}

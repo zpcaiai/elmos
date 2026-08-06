@@ -1,0 +1,279 @@
+{
+  "batch": 39,
+  "packKey": "elmos-platform-sre-operations",
+  "generatedBy": "scripts/mature_product_toolkit.py gaps",
+  "expectedArtifacts": [
+    "candidates",
+    "capacity-plan",
+    "certification",
+    "claims",
+    "dr-exercise",
+    "evidence",
+    "gate-result",
+    "incident-plan",
+    "metrics",
+    "pack",
+    "profile",
+    "program",
+    "service-catalog",
+    "slo-profile",
+    "support-matrix",
+    "zero-tolerance"
+  ],
+  "skillCount": 22,
+  "blockingCount": 27,
+  "openCount": 23,
+  "certifiable": false,
+  "gaps": [
+    {
+      "category": "evidence",
+      "severity": "blocking",
+      "detail": "evidence-manifest.json has not been produced"
+    },
+    {
+      "category": "evidence",
+      "severity": "blocking",
+      "detail": "certification-request.json has not been produced"
+    },
+    {
+      "category": "evidence",
+      "severity": "blocking",
+      "detail": "certification-request.sig has not been produced"
+    },
+    {
+      "category": "provenance",
+      "severity": "blocking",
+      "detail": "pack.json artifactDigest is still the zero digest"
+    },
+    {
+      "category": "provenance",
+      "severity": "blocking",
+      "detail": "pack.json environmentDigest is still the zero digest"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b39-autoscaling-capacity-control is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b39-backup-restore-recovery is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b39-change-management-freeze is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b39-chaos-resilience-fault-injection is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b39-customer-status-communication is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b39-enterprise-support-sla is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b39-error-budget-governance is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b39-global-observability-telemetry is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b39-global-operations-gate is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b39-global-sre-operations-factory is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b39-incident-command is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b39-job-fairness-tenant-isolation is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b39-multiregion-failover is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b39-oncall-follow-the-sun is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b39-operations-evidence-reporting is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b39-platform-cost-anomaly-monitoring is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b39-problem-root-cause-loop is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b39-production-readiness-review is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b39-scheduled-restore-dr-exercise is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b39-service-catalog-sli-slo is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b39-sla-service-credit-governance is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b39-tenant-project-migration-health is only experimental in the support matrix"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "evidenceTraceCoverage has not been measured (threshold 0.98)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "fairSchedulingPassRate has not been measured (threshold 1.0)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "incidentResponseExercisePassRate has not been measured (threshold 1.0)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "multiregionFailoverPassRate has not been measured (threshold 1.0)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "productionReadinessPassRate has not been measured (threshold 1.0)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "restorePassRate has not been measured (threshold 1.0)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "serviceCatalogCoverage has not been measured (threshold 1.0)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "sloComplianceRate has not been measured (threshold 0.999)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "supportSlaPassRate has not been measured (threshold 1.0)"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "detail": "unresolvedSev1Incidents has not been evaluated"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "detail": "rpoBreaches has not been evaluated"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "detail": "rtoBreaches has not been evaluated"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "detail": "tenantStarvationEvents has not been evaluated"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "detail": "unownedCriticalAlerts has not been evaluated"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "detail": "missingCriticalRunbooks has not been evaluated"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "detail": "crossTenantObservabilityLeaks has not been evaluated"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "detail": "testIntegrityViolations has not been evaluated"
+    },
+    {
+      "category": "corpus",
+      "severity": "blocking",
+      "detail": "holdout corpus is empty"
+    },
+    {
+      "category": "corpus",
+      "severity": "blocking",
+      "detail": "representative corpus is empty"
+    },
+    {
+      "category": "evidence",
+      "severity": "blocking",
+      "detail": "evidence directory holds no artefacts"
+    },
+    {
+      "category": "approval",
+      "severity": "blocking",
+      "detail": "no accountable approver is recorded on the certification"
+    },
+    {
+      "category": "status",
+      "severity": "open",
+      "detail": "certification status is NOT_RUN"
+    },
+    {
+      "category": "evidence",
+      "severity": "blocking",
+      "detail": "evidence.json declares no claims"
+    }
+  ]
+}

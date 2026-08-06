@@ -1,5 +1,6 @@
-BATCH40_PYTHON ?= /opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python
-.PHONY: batch40-check batch40-scaffold batch40-gate
+UV ?= uv
+BATCH40_PYTHON ?= $(UV) run --quiet --with jsonschema --with pyyaml python
+.PHONY: batch40-evidence batch40-secret-scan batch40-check batch40-scaffold batch40-gate batch40-gaps batch40-score batch40-manifest batch40-request
 batch40-check:
 	$(BATCH40_PYTHON) scripts/mature_product_toolkit.py validate --batch 40
 	$(BATCH40_PYTHON) -m unittest discover -s tests/batch40 -p 'test_*.py'
@@ -11,3 +12,47 @@ batch40-gate:
 	@test -n "$(PACK)" || (echo "PACK=<pack-key> required" && exit 2)
 	@test -n "$(TRUST_STORE)" || (echo "TRUST_STORE=<external-trust-store.json> required" && exit 2)
 	$(BATCH40_PYTHON) scripts/mature_product_toolkit.py gate --batch 40 mature-product-packs/batch40/$(PACK) --trust-store $(TRUST_STORE)
+batch40-gaps:
+	@test -n "$(PACK)" || (echo "PACK=<pack-key> required" && exit 2)
+	$(BATCH40_PYTHON) scripts/mature_product_toolkit.py gaps --batch 40 mature-product-packs/batch40/$(PACK)
+batch40-score:
+	@test -n "$(PACK)" || (echo "PACK=<pack-key> required" && exit 2)
+	$(BATCH40_PYTHON) scripts/mature_product_toolkit.py score --batch 40 mature-product-packs/batch40/$(PACK)/candidates.json $(if $(WRITE),--write,)
+batch40-manifest:
+	@test -n "$(PACK)" || (echo "PACK=<pack-key> required" && exit 2)
+	@test -n "$(EXECUTOR)" || (echo "EXECUTOR=<identity> required" && exit 2)
+	@test -n "$(VERIFIER)" || (echo "VERIFIER=<independent identity> required" && exit 2)
+	@test -n "$(AUTHORIZATION)" || (echo "AUTHORIZATION=<ref> required" && exit 2)
+	@test -n "$(REPLAY)" || (echo "REPLAY=<command> required" && exit 2)
+	@test -n "$(STARTED_AT)" || (echo "STARTED_AT=<ISO-8601> required" && exit 2)
+	@test -n "$(FINISHED_AT)" || (echo "FINISHED_AT=<ISO-8601> required" && exit 2)
+	$(BATCH40_PYTHON) scripts/mature_product_toolkit.py manifest --batch 40 mature-product-packs/batch40/$(PACK) \
+		--artifact mature-product-packs/batch40/$(PACK)/$(ARTIFACT) \
+		--environment mature-product-packs/batch40/$(PACK)/$(ENVIRONMENT) \
+		--executor $(EXECUTOR) --verifier $(VERIFIER) --authorization $(AUTHORIZATION) \
+		--replay-command "$(REPLAY)" --started-at $(STARTED_AT) --finished-at $(FINISHED_AT) \
+		--attest-verifier-independent --attest-corpus-independence
+batch40-request:
+	@test -n "$(PACK)" || (echo "PACK=<pack-key> required" && exit 2)
+	@test -n "$(KEY_ID)" || (echo "KEY_ID=<certification key id> required" && exit 2)
+	$(BATCH40_PYTHON) scripts/mature_product_toolkit.py request --batch 40 mature-product-packs/batch40/$(PACK) --key-id $(KEY_ID)
+batch40-evidence:
+	@test -n "$(PACK)" || (echo "PACK=<pack-key> required" && exit 2)
+	python3 scripts/batch40_dependency_inventory.py \
+		--output mature-product-packs/batch40/$(PACK)/evidence/execution/b40-dependency-inventory.json
+	$(MAKE) batch40-secret-scan PACK=$(PACK)
+	python3 scripts/batch40_record_results.py mature-product-packs/batch40/$(PACK)
+# The tree is large enough that a single scan can outlive a session timeout, so
+# each root is scanned separately and the parts are merged into one report.
+BATCH40_SCAN_ROOTS ?= apps services engines modules packages contracts config deploy scripts tooling telemetry routes .github
+batch40-secret-scan:
+	@test -n "$(PACK)" || (echo "PACK=<pack-key> required" && exit 2)
+	@mkdir -p mature-product-packs/batch40/$(PACK)/evidence/execution/scan-parts
+	@for root in $(BATCH40_SCAN_ROOTS); do \
+		python3 scripts/batch40_secret_scan.py --jobs 32 --root $$root \
+			--allowlist config/secret-scan-allowlist.json \
+			--output mature-product-packs/batch40/$(PACK)/evidence/execution/scan-parts/$$(echo $$root | tr -d '.' | tr '/' '-').json || true; \
+	done
+	python3 scripts/batch40_secret_scan.py \
+		--merge mature-product-packs/batch40/$(PACK)/evidence/execution/scan-parts \
+		--output mature-product-packs/batch40/$(PACK)/evidence/execution/b40-secret-scan.json

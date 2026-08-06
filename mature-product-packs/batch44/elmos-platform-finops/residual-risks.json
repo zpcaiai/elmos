@@ -1,0 +1,26 @@
+{
+  "packKey": "elmos-platform-finops",
+  "batch": 44,
+  "status": "OPEN",
+  "owner": "elmos-platform-maintainers",
+  "risks": [
+    {
+      "id": "RISK-B44-RECONCILE-001",
+      "severity": "critical",
+      "status": "OPEN",
+      "statement": "Metered usage has not been reconciled against billing; any difference is currently unknown, not zero."
+    },
+    {
+      "id": "RISK-B44-UNITCOST-001",
+      "severity": "high",
+      "status": "OPEN",
+      "statement": "Verified workload unit cost is unmeasured, so margin and pricing statements are unsupported."
+    },
+    {
+      "id": "RISK-B44-GUARDRAIL-001",
+      "severity": "high",
+      "status": "OPEN",
+      "statement": "Budget and quota guardrails have not been shown to stop an over-budget run."
+    }
+  ]
+}

@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 1,
+  "id": "elmos-platform-agent-factory",
+  "batch": 42,
+  "capabilities": [
+    {
+      "capabilityId": "b42-agent-autonomy-levels",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b42-agent-budget-resource-limits",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b42-agent-eval-benchmark",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b42-agent-factory-gate",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b42-agent-incident-killswitch-rollback",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b42-agent-memory-state-governance",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b42-agent-migration-factory",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b42-agent-red-team",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b42-agent-shadow-canary",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b42-agent-team-topology",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b42-agent-tool-permissions",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b42-deterministic-execution-agent",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b42-human-approval-takeover",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b42-language-framework-specialist-agent",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b42-migration-planner-agent",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b42-minimal-context-evidence",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b42-model-routing-provider-failover",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b42-multiagent-consensus-arbitration",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b42-policy-enforcement-agent",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b42-recipe-candidate-agent",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b42-supervisor-coordination-agent",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b42-verification-agent",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    }
+  ],
+  "packKey": "elmos-platform-agent-factory"
+}

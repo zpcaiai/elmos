@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "id": "elmos-platform-supply-chain-metrics",
+  "batch": 40,
+  "version": "0.1.0",
+  "owner": "elmos-platform-maintainers",
+  "status": "PARTIAL",
+  "metrics": [
+    {
+      "name": "auditEvidenceFreshnessRate",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "criticalVulnerabilityCount",
+      "threshold": 0.0,
+      "comparator": "max",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "evidenceTraceCoverage",
+      "threshold": 0.98,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "independentAssessmentClosureRate",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "provenanceCoverage",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "sbomCoverage",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": true,
+      "value": 0.9199,
+      "evidenceRefs": [
+        "b40-dependency-inventory"
+      ],
+      "note": "direct declared dependencies only; the transitive Maven graph is not expanded"
+    },
+    {
+      "name": "secureSdlcControlCoverage",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "signaturePassRate",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "signatureVerificationRate",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "supplyChainCoverageRate",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "threatModelCoverage",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "vulnerabilitySlaCompliance",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    }
+  ],
+  "packKey": "elmos-platform-supply-chain"
+}

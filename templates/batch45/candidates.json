@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "example-mature-product-certification-candidates",
+  "batch": 45,
+  "scoringDimensions": [
+    "customerDemand",
+    "riskReduction",
+    "reuse",
+    "readiness",
+    "margin"
+  ],
+  "candidates": [
+    {
+      "id": "candidate-a",
+      "customerDemand": 0.0,
+      "riskReduction": 0.0,
+      "reuse": 0.0,
+      "readiness": 0.0,
+      "margin": 0.0,
+      "score": 0.0,
+      "owner": "REPLACE_ME",
+      "status": "NOT_RUN",
+      "evidenceRefs": []
+    }
+  ]
+}

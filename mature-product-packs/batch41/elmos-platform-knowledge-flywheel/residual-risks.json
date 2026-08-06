@@ -1,0 +1,26 @@
+{
+  "packKey": "elmos-platform-knowledge-flywheel",
+  "batch": 41,
+  "status": "OPEN",
+  "owner": "elmos-platform-maintainers",
+  "risks": [
+    {
+      "id": "RISK-B41-ISOLATION-001",
+      "severity": "critical",
+      "status": "OPEN",
+      "statement": "Public, certified and private knowledge isolation has not been proven; a leak would be unrecoverable."
+    },
+    {
+      "id": "RISK-B41-CALIBRATION-001",
+      "severity": "high",
+      "status": "OPEN",
+      "statement": "Prediction calibration has never been measured against an untouched holdout."
+    },
+    {
+      "id": "RISK-B41-PRIVACY-001",
+      "severity": "high",
+      "status": "OPEN",
+      "statement": "Cross-project aggregation runs without a demonstrated privacy-preserving boundary."
+    }
+  ]
+}

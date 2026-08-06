@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 1,
+  "id": "elmos-platform-deployment-matrix",
+  "batch": 38,
+  "capabilities": [
+    {
+      "capabilityId": "b38-air-gapped-edition",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b38-customer-vpc-edition",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b38-database-expand-contract-upgrade",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b38-dedicated-saas-edition",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b38-deployment-upgrade-gate",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b38-edge-plant-restricted-edition",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b38-edition-responsibility-matrix",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b38-enterprise-deployment-upgrade-factory",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b38-multiregion-active-active-edition",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b38-multitenant-saas-edition",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b38-offline-signed-update-bundle",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b38-plane-topology-governance",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b38-platform-version-compatibility",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b38-portable-control-plane",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b38-private-sovereign-cloud-edition",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b38-recipe-pack-extension-upgrade",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b38-runner-version-compatibility",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b38-self-hosted-edition",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b38-tenant-edition-migration",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b38-upgrade-rollback-disaster-recovery",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b38-workflow-version-long-run-recovery",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b38-zero-downtime-upgrade",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    }
+  ],
+  "packKey": "elmos-platform-deployment-matrix"
+}

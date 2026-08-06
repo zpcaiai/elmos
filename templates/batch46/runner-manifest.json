@@ -1,0 +1,46 @@
+{
+  "schema": "elmos.batch46.runner-manifest/1",
+  "generated_at": "<utc-timestamp>",
+  "profile_digest": "sha256:<digest>",
+  "requirements_digest": "sha256:<digest>",
+  "entries": {
+    "script": {
+      "status": "available",
+      "command": "./run-smoke.sh"
+    },
+    "compose": {
+      "status": "available",
+      "command": "./run-smoke.sh --entry compose",
+      "requires": [
+        "docker",
+        "docker compose"
+      ],
+      "app_runs_in_container": true,
+      "note": null
+    },
+    "make": {
+      "status": "available",
+      "command": "make -f Makefile.smoke smoke"
+    },
+    "zero-dep": {
+      "status": "unavailable",
+      "reason": "no approved embedded substitute for <engine>; an engine swap that the project does not declare support for would change semantics"
+    }
+  },
+  "default_entry": "script",
+  "lease_policy": {
+    "free_quota_seconds": 600,
+    "grace_seconds": 30,
+    "auto_renew": false,
+    "extend_policy": "explicit-only",
+    "on_expiry": "stop every started service, remove containers and volumes, delete ephemeral smoke data"
+  },
+  "written_files": [
+    "run-smoke.sh",
+    "run-smoke.ps1",
+    "Makefile.smoke",
+    "docker-compose.smoke.yml"
+  ],
+  "unknown": [],
+  "runner_manifest_digest": "sha256:<digest>"
+}

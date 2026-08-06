@@ -1,4 +1,5 @@
-BATCH34_PYTHON ?= /opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python
+UV ?= uv
+BATCH34_PYTHON ?= $(UV) run --quiet --with jsonschema --with pyyaml python
 .PHONY: batch34-validate batch34-test batch34-check batch34-score batch34-local-rehearsal
 batch34-validate:
 	$(BATCH34_PYTHON) scripts/batch34/validate_skill_bundle.py .agents/skills

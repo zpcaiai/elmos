@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "id": "elmos-platform-supply-chain-claims",
+  "batch": 40,
+  "version": "0.1.0",
+  "owner": "elmos-platform-maintainers",
+  "status": "PARTIAL",
+  "claims": [
+    {
+      "claimId": "b40-declared-dependency-inventory",
+      "statement": "The declared dependency surface is enumerated: 493 components from 86 Maven POMs and 3 npm lockfiles; 402 of 437 external components have a resolved version.",
+      "scope": {
+        "mavenPomCount": 86,
+        "npmLockCount": 3,
+        "versionResolution": {
+          "literal": 7,
+          "lockfile": 384,
+          "managed-by-bom": 34,
+          "project-version": 57,
+          "property": 11
+        }
+      },
+      "limitations": [
+        "Static declaration parse only: transitive Maven dependencies are not expanded, so this is a direct-dependency inventory rather than a full build graph.",
+        "Versions supplied by an imported BOM are recorded as managed-by-bom, not resolved; running Maven is required to pin them.",
+        "Properties are flattened across the reactor; a property redefined with different values in different modules is dropped rather than guessed.",
+        "No vulnerability lookup is performed, so this inventory alone does not establish CVE exposure."
+      ],
+      "evidenceRefs": [
+        "b40-dependency-inventory"
+      ]
+    },
+    {
+      "claimId": "b40-credential-scan-triage",
+      "statement": "A credential scan over 7800 files across 33 declared roots produced 11 actionable findings and 2615 advisory high-entropy hits. The actionable findings are untriaged: none has been confirmed as a live credential or dismissed as a fixture.",
+      "scope": {
+        "roots": [
+          ".github",
+          "apps/admin-console",
+          "apps/agent-gateway",
+          "apps/commercial-api",
+          "apps/control-plane",
+          "apps/egress-proxy",
+          "apps/elmosctl",
+          "apps/enterprise-control",
+          "apps/java-engine-transformer",
+          "apps/java-engine-verifier",
+          "apps/java-engine-worker",
+          "apps/java-runtime-runner",
+          "apps/modernization-proof-worker",
+          "apps/runner-agent",
+          "apps/web-console/acceptance",
+          "apps/web-console/app",
+          "apps/web-console/baselines",
+          "apps/web-console/e2e",
+          "apps/web-console/public",
+          "apps/web-console/scripts",
+          "apps/web-console/src",
+          "apps/workspace-service",
+          "config",
+          "contracts",
+          "deploy",
+          "engines",
+          "modules",
+          "packages",
+          "routes",
+          "scripts",
+          "services",
+          "telemetry",
+          "tooling"
+        ],
+        "filesScanned": 7800,
+        "bySeverity": {
+          "advisory": 2615,
+          "high": 7,
+          "medium": 4
+        },
+        "actionablePaths": [
+          "apps/control-plane/src/test/java/io/elmos/controlplane/OperationsNotificationDispatcherTest.java",
+          "apps/java-engine-worker/src/test/java/io/elmos/worker/EphemeralSpringTransformationExecutionPortTest.java",
+          "apps/web-console/e2e/generation-source-ingestion.spec.ts",
+          "apps/web-console/e2e/usage-meter-ui.spec.ts",
+          "apps/workspace-service/src/test/java/io/elmos/workspaceservice/WorkspaceSecretRegistryTest.java",
+          "engines/project-synthesis-engine/src/elmos_project_synthesis/python_production_target.py",
+          "engines/project-synthesis-engine/tests/test_synthesis.py",
+          "engines/python-engine/tests/test_batch12.py",
+          "scripts/batch46/synthesize_seed_data.py",
+          "scripts/operations/rootless_project_runner.py"
+        ]
+      },
+      "limitations": [
+        "secretLeakCount counts actionable findings only; high-entropy strings are advisory and require triage without gating.",
+        "Merged from chunked runs; only the roots listed under coverage were scanned and anything outside them was not examined.",
+        "Scans the working tree only; git history is not examined.",
+        "Detection is rule and entropy based; a zero result bounds risk, it does not eliminate it.",
+        "No secret is validated against its provider, so a finding may be an already-revoked credential.",
+        "Triage is outstanding. Every actionable finding must be either fixed or added to config/secret-scan-allowlist.json with a reason, an owner and an expiry before this claim can pass."
+      ],
+      "evidenceRefs": [
+        "b40-secret-scan"
+      ]
+    }
+  ],
+  "packKey": "elmos-platform-supply-chain"
+}

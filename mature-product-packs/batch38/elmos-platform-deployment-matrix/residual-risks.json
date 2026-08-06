@@ -1,0 +1,26 @@
+{
+  "packKey": "elmos-platform-deployment-matrix",
+  "batch": 38,
+  "status": "OPEN",
+  "owner": "elmos-platform-maintainers",
+  "risks": [
+    {
+      "id": "RISK-B38-EDITION-001",
+      "severity": "critical",
+      "status": "OPEN",
+      "statement": "No declared deployment edition has been installed, upgraded and rolled back end to end in a representative environment."
+    },
+    {
+      "id": "RISK-B38-DATA-001",
+      "severity": "critical",
+      "status": "OPEN",
+      "statement": "Expand-contract database upgrades have not been exercised against production-shaped data volumes."
+    },
+    {
+      "id": "RISK-B38-AIRGAP-001",
+      "severity": "high",
+      "status": "OPEN",
+      "statement": "Offline signed update bundles have not been verified on a genuinely disconnected host."
+    }
+  ]
+}

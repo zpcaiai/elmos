@@ -19,6 +19,22 @@ sys.path.insert(0, str(SCRIPTS))
 from validate_batch81_95_language_packs import validate_suite  # noqa: E402
 
 
+def setUpModule() -> None:
+    """Skip loudly when the optional source bundle is absent.
+
+    Every assertion in this module validates the Batch 81-95 Language Pack
+    source bundle or its anti-tamper behaviour, and a normal source checkout
+    intentionally does not contain that bundle.  Skipping with an explicit
+    SOURCE_PACKAGE_ABSENT reason keeps an absent bundle from being reported
+    either as a repository defect or as a validated suite.
+    """
+    if not (SOURCE / "package-manifest.json").is_file():
+        raise unittest.SkipTest(
+            f"SOURCE_PACKAGE_ABSENT={SOURCE.name} "
+            "reason=missing:package-manifest.json — Batch 81-95 suite validation skipped"
+        )
+
+
 def digest(path: Path) -> str:
     return "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
 

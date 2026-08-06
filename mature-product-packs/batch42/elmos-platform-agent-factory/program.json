@@ -1,0 +1,38 @@
+{
+  "batch": 42,
+  "packKey": "elmos-platform-agent-factory",
+  "owner": "elmos-platform-maintainers",
+  "scope": [
+    "apps/agent-gateway as the agent execution and tool-invocation boundary",
+    "contracts/agent-tool-permission-schema and contracts/agent-workforce-schema as the permission and topology contracts",
+    "engines/ai-platform-engine as the model routing and evaluation surface",
+    "contracts/ai-evaluation-decision-schema as the eval and promotion gate contract"
+  ],
+  "skillIds": [
+    1413,
+    1414,
+    1415,
+    1416,
+    1417,
+    1418,
+    1419,
+    1420,
+    1421,
+    1422,
+    1423,
+    1424,
+    1425,
+    1426,
+    1427,
+    1428,
+    1429,
+    1430,
+    1431,
+    1432,
+    1433,
+    1434
+  ],
+  "status": "IN_PROGRESS",
+  "evidenceRefs": [],
+  "externalOperationExecuted": false
+}

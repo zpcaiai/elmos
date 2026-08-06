@@ -1,0 +1,26 @@
+{
+  "packKey": "elmos-platform-sre-operations",
+  "batch": 39,
+  "status": "OPEN",
+  "owner": "elmos-platform-maintainers",
+  "risks": [
+    {
+      "id": "RISK-B39-DR-001",
+      "severity": "critical",
+      "status": "OPEN",
+      "statement": "Restore and disaster-recovery objectives are unmeasured; recovery time and point objectives are claims, not observations."
+    },
+    {
+      "id": "RISK-B39-SLO-001",
+      "severity": "high",
+      "status": "OPEN",
+      "statement": "Service level objectives have no error budget history because no SLI has been collected over a full window."
+    },
+    {
+      "id": "RISK-B39-ONCALL-001",
+      "severity": "high",
+      "status": "OPEN",
+      "statement": "The follow-the-sun rotation and escalation path have never been exercised under a real incident."
+    }
+  ]
+}

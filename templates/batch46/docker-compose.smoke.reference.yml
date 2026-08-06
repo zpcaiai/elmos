@@ -1,0 +1,21 @@
+# ELMOS Batch 46 smoke topology. Ephemeral by design:
+# `docker compose -f docker-compose.smoke.yml down -v` removes every volume.
+name: smoke-run
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: "no"
+    environment:
+      POSTGRES_PASSWORD: "smoke-local-only"
+      POSTGRES_USER: "smoke"
+      POSTGRES_DB: "smoke"
+    ports:
+      - "127.0.0.1:${SMOKE_POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - ./smoke/seed/seed.sql:/docker-entrypoint-initdb.d/00-smoke-seed.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U smoke"]
+      interval: 3s
+      retries: 20
+    tmpfs:
+      - /var/lib/smoke-scratch

@@ -1,0 +1,151 @@
+{
+  "schemaVersion": 1,
+  "id": "example-supply-chain-compliance",
+  "batch": 40,
+  "capabilities": [
+    {
+      "capabilityId": "b40-ai-model-supply-chain",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b40-artifact-container-signing",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b40-compliance-control-crosswalk",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b40-container-kubernetes-iac-scanning",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b40-customer-audit-evidence",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b40-dast-iast-integration",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b40-dependency-sca-governance",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b40-independent-security-assessment",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b40-isolated-trusted-builder",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b40-license-ip-provenance",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b40-psirt-security-incident",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b40-runner-update-supply-chain",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b40-sast-integration",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b40-sbom-component-identity",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b40-secret-credential-scanning",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b40-secure-code-review-approval",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b40-secure-sdlc-ssdf",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b40-security-architecture-review",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b40-security-supply-chain-gate",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b40-slsa-provenance",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b40-supply-chain-compliance-factory",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b40-threat-modeling",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b40-vex-applicability",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b40-vulnerability-patch-sla",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "batch": 38,
+  "packKey": "elmos-platform-deployment-matrix",
+  "owner": "elmos-platform-maintainers",
+  "scope": [
+    "deploy/air-gap, deploy/compose, deploy/production, deploy/rootless-docker, deploy/local-runner and deploy/release-bundle as the declared edition surface",
+    "apps/control-plane, apps/enterprise-control and services/control-plane as the portable control plane",
+    "apps/runner-agent and apps/elmosctl as the runner and operator entry points for upgrade and rollback",
+    "database schema migration assets reachable from the Java reactor (pom.xml modules) for expand-contract upgrades"
+  ],
+  "skillIds": [
+    1325,
+    1326,
+    1327,
+    1328,
+    1329,
+    1330,
+    1331,
+    1332,
+    1333,
+    1334,
+    1335,
+    1336,
+    1337,
+    1338,
+    1339,
+    1340,
+    1341,
+    1342,
+    1343,
+    1344,
+    1345,
+    1346
+  ],
+  "status": "IN_PROGRESS",
+  "evidenceRefs": [],
+  "externalOperationExecuted": false
+}

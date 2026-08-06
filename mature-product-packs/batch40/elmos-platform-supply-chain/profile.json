@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "elmos-platform-supply-chain",
+  "batch": 40,
+  "riskTier": "P0",
+  "requiredHoldout": true,
+  "requiredRepresentativeWorkloads": true,
+  "minimumEvidenceTraceCoverage": 0.99,
+  "metricThresholds": {
+    "secureSdlcControlCoverage": 1.0,
+    "threatModelCoverage": 1.0,
+    "sbomCoverage": 1.0,
+    "signatureVerificationRate": 1.0,
+    "provenanceCoverage": 1.0,
+    "vulnerabilitySlaCompliance": 1.0,
+    "auditEvidenceFreshnessRate": 1.0,
+    "independentAssessmentClosureRate": 1.0,
+    "evidenceTraceCoverage": 0.98
+  },
+  "zeroTolerance": [
+    "criticalOpenVulnerabilities",
+    "secretLeaks",
+    "unsignedProductionArtifacts",
+    "tamperedArtifactsAccepted",
+    "unresolvedLicenseBlocks",
+    "builderAttestationFailures",
+    "runnerDowngradeAcceptances",
+    "crossTenantEvidenceLeaks",
+    "testIntegrityViolations"
+  ],
+  "metadata": {},
+  "packKey": "elmos-platform-supply-chain"
+}

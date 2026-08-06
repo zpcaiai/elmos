@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "elmos-platform-production-readiness-product-certificate",
+  "batch": 45,
+  "version": "0.1.0",
+  "owner": "elmos-platform-maintainers",
+  "status": "NOT_RUN",
+  "evidenceRefs": [],
+  "records": [],
+  "metadata": {},
+  "packKey": "elmos-platform-production-readiness"
+}

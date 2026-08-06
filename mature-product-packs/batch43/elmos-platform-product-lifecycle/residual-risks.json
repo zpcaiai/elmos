@@ -1,0 +1,26 @@
+{
+  "packKey": "elmos-platform-product-lifecycle",
+  "batch": 43,
+  "status": "OPEN",
+  "owner": "elmos-platform-maintainers",
+  "risks": [
+    {
+      "id": "RISK-B43-COMPAT-001",
+      "severity": "high",
+      "status": "OPEN",
+      "statement": "The full version compatibility matrix has not been executed, so mixed-version upgrades are unproven."
+    },
+    {
+      "id": "RISK-B43-DEPRECATION-001",
+      "severity": "high",
+      "status": "OPEN",
+      "statement": "No deprecation and removal process has been applied to a real public surface."
+    },
+    {
+      "id": "RISK-B43-BACKPORT-001",
+      "severity": "high",
+      "status": "OPEN",
+      "statement": "Security fix backports to supported versions have never been rehearsed."
+    }
+  ]
+}

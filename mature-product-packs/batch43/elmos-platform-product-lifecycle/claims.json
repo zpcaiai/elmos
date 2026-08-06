@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "id": "elmos-platform-product-lifecycle-claims",
+  "batch": 43,
+  "version": "0.1.0",
+  "owner": "elmos-platform-maintainers",
+  "status": "PARTIAL",
+  "claims": [
+    {
+      "claimId": "b43-schema-surface-compatibility",
+      "statement": "No breaking change was introduced to the versioned JSON Schema surface under schemas/, contracts/ and telemetry/ relative to the recorded baseline revision.",
+      "scope": {
+        "roots": [
+          "schemas",
+          "contracts",
+          "telemetry"
+        ],
+        "baselineRevision": "HEAD",
+        "repositoryRevision": "d98c8c83528a79a4d875b29ad6195cb03f26875b",
+        "schemasInspected": 606,
+        "schemasCompared": 527
+      },
+      "limitations": [
+        "Covers the declarative schema surface only; runtime API, SDK, runner protocol and database migration compatibility are NOT_RUN.",
+        "No independent verifier has reproduced this run, so it is execution and provenance evidence only.",
+        "79 schemas are newly added and therefore have no baseline to compare against."
+      ],
+      "evidenceRefs": [
+        "b43-schema-compatibility-run"
+      ]
+    }
+  ],
+  "packKey": "elmos-platform-product-lifecycle"
+}

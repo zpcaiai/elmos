@@ -1,0 +1,15 @@
+# Batch 38 gate
+
+Status: `BLOCKED`
+
+## Failures
+
+- certification status is not CERTIFIED
+- certification evidenceRefs are empty
+- holdoutPassRate below 1.0
+- representativePassRate below 1.0
+- metric editionConformanceRate below 1.0
+- metric upgradeRollbackPassRate below 1.0
+- metric recoveryPassRate below 1.0
+- evidence claims are empty
+- evidence manifest is invalid: [Errno 2] No such file or directory: 'mature-product-packs/batch38/elmos-platform-deployment-matrix/evidence-manifest.json'

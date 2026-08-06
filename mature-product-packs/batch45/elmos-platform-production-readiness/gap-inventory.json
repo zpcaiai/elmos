@@ -1,0 +1,351 @@
+{
+  "batch": 45,
+  "packKey": "elmos-platform-production-readiness",
+  "generatedBy": "scripts/mature_product_toolkit.py gaps",
+  "expectedArtifacts": [
+    "candidates",
+    "certification",
+    "claims",
+    "customer-validation",
+    "dimension-assessment",
+    "evidence",
+    "gate-result",
+    "independent-review",
+    "maturity-model",
+    "metrics",
+    "pack",
+    "product-certificate",
+    "profile",
+    "program",
+    "release-review",
+    "risk-register",
+    "support-matrix",
+    "zero-tolerance"
+  ],
+  "skillCount": 22,
+  "blockingCount": 40,
+  "openCount": 24,
+  "certifiable": false,
+  "gaps": [
+    {
+      "category": "evidence",
+      "severity": "blocking",
+      "detail": "evidence-manifest.json has not been produced"
+    },
+    {
+      "category": "evidence",
+      "severity": "blocking",
+      "detail": "certification-request.json has not been produced"
+    },
+    {
+      "category": "evidence",
+      "severity": "blocking",
+      "detail": "certification-request.sig has not been produced"
+    },
+    {
+      "category": "provenance",
+      "severity": "blocking",
+      "detail": "pack.json artifactDigest is still the zero digest"
+    },
+    {
+      "category": "provenance",
+      "severity": "blocking",
+      "detail": "pack.json environmentDigest is still the zero digest"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b45-customer-value-certification is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b45-deployment-matrix-certification is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b45-design-partner-reference-validation is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b45-developer-experience-certification is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b45-economics-profitability-certification is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b45-ecosystem-certification is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b45-edition-route-vertical-certification is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b45-functional-depth-certification is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b45-independent-expert-validation is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b45-mature-product-certification is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b45-mature-product-evidence-pack is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b45-mature-product-final-gate is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b45-mature-release-readiness is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b45-maturity-model-editions is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b45-product-governance-accountability is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b45-residual-risk-register is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b45-route-breadth-certification is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b45-scale-performance-certification is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b45-security-data-certification is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b45-semantic-behavior-certification is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b45-sre-reliability-dr-certification is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b45-target-maintainability-certification is only experimental in the support matrix"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "certifiedRouteClaimAccuracy has not been measured (threshold 1.0)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "customerOutcomePassRate has not been measured (threshold 1.0)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "deploymentMatrixPassRate has not been measured (threshold 1.0)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "developerExperiencePassRate has not been measured (threshold 1.0)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "economicsPassRate has not been measured (threshold 1.0)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "ecosystemPassRate has not been measured (threshold 1.0)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "evidenceTraceCoverage has not been measured (threshold 0.99)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "functionalDepthPassRate has not been measured (threshold 1.0)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "maintainabilityPassRate has not been measured (threshold 1.0)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "scaleSloPassRate has not been measured (threshold 1.0)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "securityGovernancePassRate has not been measured (threshold 1.0)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "semanticBehaviorPassRate has not been measured (threshold 1.0)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "sreDrPassRate has not been measured (threshold 1.0)"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "detail": "criticalOpenProductRisks has not been evaluated"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "detail": "unsupportedMarketingClaims has not been evaluated"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "detail": "unknownP0Correctness has not been evaluated"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "detail": "criticalSecurityFindings has not been evaluated"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "detail": "unrecoveredDrFailures has not been evaluated"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "detail": "unacceptedCustomerP0Differences has not been evaluated"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "detail": "nonzeroFinancialReconciliationDifference has not been evaluated"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "detail": "conflictedIndependentReviews has not been evaluated"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "detail": "expiredMandatoryEvidence has not been evaluated"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "detail": "testIntegrityViolations has not been evaluated"
+    },
+    {
+      "category": "corpus",
+      "severity": "blocking",
+      "detail": "holdout corpus is empty"
+    },
+    {
+      "category": "corpus",
+      "severity": "blocking",
+      "detail": "representative corpus is empty"
+    },
+    {
+      "category": "evidence",
+      "severity": "blocking",
+      "detail": "evidence directory holds no artefacts"
+    },
+    {
+      "category": "approval",
+      "severity": "blocking",
+      "detail": "no accountable approver is recorded on the certification"
+    },
+    {
+      "category": "status",
+      "severity": "open",
+      "detail": "certification status is NOT_RUN"
+    },
+    {
+      "category": "claim-scope",
+      "severity": "blocking",
+      "detail": "claim local-engineering-runtime-operability passes with no statement in claims.json"
+    },
+    {
+      "category": "evidence",
+      "severity": "open",
+      "detail": "claim field-production-maturity is NOT_RUN"
+    },
+    {
+      "category": "aggregate",
+      "severity": "blocking",
+      "detail": "Batch 38 has no certified domain gate to aggregate"
+    },
+    {
+      "category": "aggregate",
+      "severity": "blocking",
+      "detail": "Batch 39 has no certified domain gate to aggregate"
+    },
+    {
+      "category": "aggregate",
+      "severity": "blocking",
+      "detail": "Batch 40 has no certified domain gate to aggregate"
+    },
+    {
+      "category": "aggregate",
+      "severity": "blocking",
+      "detail": "Batch 41 has no certified domain gate to aggregate"
+    },
+    {
+      "category": "aggregate",
+      "severity": "blocking",
+      "detail": "Batch 42 has no certified domain gate to aggregate"
+    },
+    {
+      "category": "aggregate",
+      "severity": "blocking",
+      "detail": "Batch 43 has no certified domain gate to aggregate"
+    },
+    {
+      "category": "aggregate",
+      "severity": "blocking",
+      "detail": "Batch 44 has no certified domain gate to aggregate"
+    }
+  ]
+}

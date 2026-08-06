@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "id": "elmos-platform-supply-chain-zero-tolerance",
+  "batch": 40,
+  "version": "0.1.0",
+  "owner": "elmos-platform-maintainers",
+  "status": "PARTIAL",
+  "flags": [
+    {
+      "name": "builderAttestationFailures",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "criticalOpenVulnerabilities",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "crossTenantEvidenceLeaks",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "runnerDowngradeAcceptances",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "secretLeaks",
+      "evaluated": true,
+      "observed": 11,
+      "evidenceRefs": [
+        "b40-secret-scan"
+      ],
+      "note": "11 actionable findings await triage across 33 scanned roots; working tree only, git history not examined"
+    },
+    {
+      "name": "tamperedArtifactsAccepted",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "testIntegrityViolations",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "unresolvedLicenseBlocks",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "unsignedProductionArtifacts",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    }
+  ],
+  "packKey": "elmos-platform-supply-chain"
+}

@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "elmos-platform-knowledge-flywheel",
+  "batch": 41,
+  "packKey": "elmos-platform-knowledge-flywheel",
+  "packType": "knowledge-flywheel",
+  "version": "0.1.0",
+  "owner": "elmos-platform-maintainers",
+  "status": "experimental",
+  "artifactDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "environmentDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "requiredBatches": [
+    21,
+    24,
+    25,
+    29,
+    30,
+    31,
+    32,
+    33,
+    35,
+    37
+  ],
+  "supportMatrix": "support-matrix.json",
+  "profile": "profile.json",
+  "certification": "certification.json",
+  "evidenceRefs": [],
+  "metadata": {}
+}

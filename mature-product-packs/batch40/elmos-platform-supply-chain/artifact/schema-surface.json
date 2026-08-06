@@ -1,0 +1,21 @@
+{
+  "artifactType": "schema-surface",
+  "roots": [
+    "pom.xml",
+    "contracts"
+  ],
+  "memberCount": 2,
+  "compositeDigest": "sha256:f43197d5b8cec074b11ed22700be9f715f7f80d0c388563ce0e72e4ee10d8d28",
+  "members": [
+    {
+      "path": "contracts/engine-api/pom.xml",
+      "sha256": "sha256:41c3418656a1b2a302ffe84d266aa4a2d811fc31872db24be381434cf0a89ca9",
+      "bytes": 835
+    },
+    {
+      "path": "contracts/engine-api/target/surefire-reports/TEST-io.elmos.engine.api.EngineApiContractTest.xml",
+      "sha256": "sha256:aef0f8de2ad21b9e3f4d6506e472aaa40bd8ffcecc7317c277333a5a66895194",
+      "bytes": 9176
+    }
+  ]
+}

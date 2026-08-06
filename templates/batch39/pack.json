@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "example-sre-operations",
+  "batch": 39,
+  "packKey": "example-sre-operations",
+  "packType": "sre-operations",
+  "version": "0.1.0",
+  "owner": "REPLACE_ME",
+  "status": "experimental",
+  "artifactDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "environmentDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "requiredBatches": [
+    27,
+    38
+  ],
+  "supportMatrix": "support-matrix.json",
+  "profile": "profile.json",
+  "certification": "certification.json",
+  "evidenceRefs": [],
+  "metadata": {}
+}

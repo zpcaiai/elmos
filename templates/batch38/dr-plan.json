@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "example-deployment-lifecycle-dr-plan",
+  "batch": 38,
+  "version": "0.1.0",
+  "owner": "REPLACE_ME",
+  "status": "NOT_RUN",
+  "evidenceRefs": [],
+  "records": [],
+  "metadata": {}
+}
