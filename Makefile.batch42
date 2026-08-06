@@ -1,4 +1,5 @@
-BATCH42_PYTHON ?= /opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python
+UV ?= uv
+BATCH42_PYTHON ?= $(UV) run --quiet --with jsonschema --with pyyaml python
 .PHONY: batch42-check batch42-scaffold batch42-gate
 batch42-check:
 	$(BATCH42_PYTHON) scripts/mature_product_toolkit.py validate --batch 42

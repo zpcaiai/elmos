@@ -1,4 +1,5 @@
-BATCH29_PYTHON ?= /opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python
+UV ?= uv
+BATCH29_PYTHON ?= $(UV) run --quiet --with jsonschema --with pyyaml python
 .PHONY: b29-skills-test b29-route-validate b29-route-gate
 b29-skills-test:
 	$(BATCH29_PYTHON) scripts/batch29/validate_skill_bundle.py

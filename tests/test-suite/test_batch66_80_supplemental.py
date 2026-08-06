@@ -12,9 +12,26 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPTS = ROOT / "scripts" / "test-suite"
 SUITE = ROOT / "test-suites" / "batch66-80-slightly-strict"
+SOURCE_PACKAGE = ROOT / "elmos-codex-skills-batch66-80-slightly-strict-tests"
 sys.path.insert(0, str(SCRIPTS))
 
 from validate_batch66_80_slightly_strict import validate_suite  # noqa: E402
+
+
+def setUpModule() -> None:
+    """Skip loudly when the optional source bundle is absent.
+
+    Every assertion in this module validates the Batch 66-80 slightly-strict
+    source bundle or its anti-tamper behaviour, and a normal source checkout
+    intentionally does not contain that bundle.  Skipping with an explicit
+    SOURCE_PACKAGE_ABSENT reason keeps an absent bundle from being reported
+    either as a repository defect or as a validated suite.
+    """
+    if not (SOURCE_PACKAGE / "manifest.json").is_file():
+        raise unittest.SkipTest(
+            f"SOURCE_PACKAGE_ABSENT={SOURCE_PACKAGE.name} "
+            "reason=missing:manifest.json — Batch 66-80 suite validation skipped"
+        )
 
 
 class Batch66To80SupplementalTest(unittest.TestCase):

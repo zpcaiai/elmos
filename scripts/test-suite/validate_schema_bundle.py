@@ -44,6 +44,13 @@ def main() -> int:
             errors.append(f"{path}: invalid schema: {exc}")
 
     expected = {
+        # The certification submission artifacts the strict gate consumes via
+        # --certification-request / --trust-store. They were the only inputs of
+        # run_strict_test_gate.py without a published schema, which left an
+        # independent verifier unable to validate a submission before presenting
+        # it. See docs/INDEPENDENT_VERIFICATION.md.
+        "certification-request.schema.json",
+        "trust-store.schema.json",
         "coverage-matrix.schema.json",
         "evidence-manifest.schema.json",
         "release-gate.schema.json",
@@ -93,7 +100,9 @@ def main() -> int:
         print("FAIL")
         print("\n".join(errors))
         return 1
-    print("PASS: 9 Draft 2020-12 schemas, 408 cases, 408 results, and templates")
+    # Computed, not a literal: the previous hard-coded "9" silently went stale
+    # the moment the schema set changed.
+    print(f"PASS: {len(schemas)} Draft 2020-12 schemas, 408 cases, 408 results, and templates")
     return 0
 
 
