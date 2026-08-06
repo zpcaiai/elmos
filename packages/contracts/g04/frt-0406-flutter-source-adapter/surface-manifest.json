@@ -8,12 +8,28 @@
   "logical_path": "packages/contracts/g04/frt-0406-flutter-source-adapter/",
   "status": "shared_implementation",
   "handler_kind": "typed_contract",
+  "capability_key": "frt.g04.flutter-source-adapter",
+  "execution_contract_sha256": "sha256:0c00b2356689ff309804e332fe139546394739a943c2b91a386998bf64cfb66f",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:aee0f37e290b9609fd0561ca758d2d528861d7072d62fbf5cefd31581a3a3a3c",
   "implementation_paths": [
     "schemas/frt-g01-g30/skill-run-request.schema.json",
     "schemas/frt-g01-g30/skill-run-result.schema.json",
-    "engines/frontend-client-engine/src/frt-types.ts"
+    "schemas/frt-g01-g30/skill-execution-contract.schema.json",
+    "schemas/frt-g01-g30/gate-result.schema.json",
+    "schemas/frt-g01-g30/external-qualification-plan.schema.json",
+    "schemas/frt-g01-g30/external-qualification-preflight.schema.json",
+    "schemas/frt-g01-g30/external-qualification-local-execution.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts"
   ],
   "not_applicable": false,
   "approval_evidence": [],

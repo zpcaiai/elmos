@@ -8,11 +8,24 @@
   "logical_path": "packages/runtime/g17/frt-1713-thirty-path-certification/",
   "status": "shared_implementation",
   "handler_kind": "route_orchestration",
+  "capability_key": "frt.g17.thirty-path-certification",
+  "execution_contract_sha256": "sha256:a184ab56577957766cd8f6ccc28e653df5d2cabb1f26ee28932eb65caa4db409",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "corpus"
+    ],
+    "optional": [
+      "routeIds"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:0e117d6a549c737fa611246046658dcc1f93e2d349cfb39c2f4742a02721c197",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

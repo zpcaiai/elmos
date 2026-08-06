@@ -8,6 +8,16 @@
   "logical_path": "services/control-plane/g04/frt-0403-react-source-adapter/",
   "status": "shared_implementation",
   "handler_kind": "typed_contract",
+  "capability_key": "frt.g04.react-source-adapter",
+  "execution_contract_sha256": "sha256:c7350dcce0ceac2621b22291617346740f2782487958f0a06a10f3479334cfa5",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:7639e4e21aaecb1beea6695b51bce907de6a3dd758672a995bf9d91b8a484f93",
   "implementation_paths": [

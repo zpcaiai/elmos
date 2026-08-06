@@ -8,6 +8,21 @@
   "logical_path": "services/control-plane/g11/frt-1101-layout-semantic-mapper/",
   "status": "shared_implementation",
   "handler_kind": "mobile_client",
+  "capability_key": "frt.g11.layout-semantic-mapper",
+  "execution_contract_sha256": "sha256:fe2a1e3be2527542245d222aa9aed597881353e9158f0a8f1b2b1eafbf9b46a2",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "uiNodes"
+    ],
+    "optional": [
+      "designTokens",
+      "locales",
+      "rtlLocales",
+      "animations"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:4c7f7c9532152778cbcd98ce6a4b1f5c20baacea5ef10ac9268cc6a6b0223b06",
   "implementation_paths": [

@@ -8,6 +8,21 @@
   "logical_path": "services/control-plane/g11/frt-1105-asset-pipeline-mapper/",
   "status": "shared_implementation",
   "handler_kind": "mobile_client",
+  "capability_key": "frt.g11.asset-pipeline-mapper",
+  "execution_contract_sha256": "sha256:d2ade1814f4d7db1eb9a714031f867fbfb2d4a9211dd0f7dbb4f89eb52c6456a",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "uiNodes"
+    ],
+    "optional": [
+      "designTokens",
+      "locales",
+      "rtlLocales",
+      "animations"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:d2c06fbb47bd63e39a07746f4dab536925f179cb87f69988ea24dc0a13ec0014",
   "implementation_paths": [

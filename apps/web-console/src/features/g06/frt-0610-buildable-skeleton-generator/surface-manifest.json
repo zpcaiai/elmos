@@ -8,6 +8,17 @@
   "logical_path": "apps/web-console/src/features/g06/frt-0610-buildable-skeleton-generator/",
   "status": "shared_implementation",
   "handler_kind": "source_generation",
+  "capability_key": "frt.g06.buildable-skeleton-generator",
+  "execution_contract_sha256": "sha256:046d227eb090854c3798755ca49a7f3ac834e19244cfd78b5c694fd4e01bfa97",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "targetProfile",
+      "uiIr"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:f5b5f3b2928bc6e801a9fbde48823b2b4b5683798934764a972163d1880e59d8",
   "implementation_paths": [

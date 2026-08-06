@@ -8,14 +8,34 @@
   "logical_path": "tests/g09/frt-0902-derived-state-and-memoization-mapper/",
   "status": "shared_implementation",
   "handler_kind": "delivery_pipeline",
+  "capability_key": "frt.g09.derived-state-and-memoization-mapper",
+  "execution_contract_sha256": "sha256:e09f33d4a964ef65d80ad92c111e9afe84228a29ddb413f1357523bb6dcb6124",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "states"
+    ],
+    "optional": [
+      "effects",
+      "asyncOperations"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:618d990c20853c9d703cb176ba76cef75c0be0e926d03d8c9a4dcadf5cd7d3c7",
   "implementation_paths": [
     "engines/frontend-client-engine/test/frt-artifact-lifecycle.test.ts",
+    "engines/frontend-client-engine/test/frt-production-contract.test.ts",
     "engines/frontend-client-engine/test/frt-runtime.test.ts",
     "engines/frontend-client-engine/test/frt-semantic-handlers.test.ts",
     "engines/frontend-client-engine/test/server.test.ts",
-    "apps/web-console/e2e/frt-frontend-transformation.spec.ts"
+    "apps/web-console/e2e/frt-frontend-transformation.spec.ts",
+    "scripts/frt/external_qualification.py",
+    "scripts/frt/external_campaign_parameters.py",
+    "scripts/frt/test_external_qualification.py",
+    "scripts/frt/test_external_campaign_parameters.py",
+    "scripts/frt/record_frt_ios_device_evidence.mjs",
+    "scripts/frt/test_record_frt_ios_device_evidence.py"
   ],
   "not_applicable": false,
   "approval_evidence": [],

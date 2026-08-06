@@ -8,11 +8,22 @@
   "logical_path": "packages/runtime/g03/frt-0309-source-location-and-provenance-ir/",
   "status": "shared_implementation",
   "handler_kind": "semantic_ir",
+  "capability_key": "frt.g03.source-location-and-provenance-ir",
+  "execution_contract_sha256": "sha256:243be81ba0b331beb86822454edab33001c121946ad4e6c0df4152912b08af7d",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:bac1b44473ca9f4abc321a01932ff5b9fc77486f99c13b27d13c289d51b62fc7",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

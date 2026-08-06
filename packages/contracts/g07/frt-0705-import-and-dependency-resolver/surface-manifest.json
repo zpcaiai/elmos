@@ -8,12 +8,33 @@
   "logical_path": "packages/contracts/g07/frt-0705-import-and-dependency-resolver/",
   "status": "shared_implementation",
   "handler_kind": "build_toolchain",
+  "capability_key": "frt.g07.import-and-dependency-resolver",
+  "execution_contract_sha256": "sha256:6342971b2eea58af30bd016505aa37ebf5684ad358193a317bd96bf29073afab",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "astNodes"
+    ],
+    "optional": [
+      "imports",
+      "diagnostics",
+      "unsupportedSemantics",
+      "repairPasses"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:04e803af671f8ac1b09ba09d11a823648a26e2e31b7edc268f85154f33af73e4",
   "implementation_paths": [
     "schemas/frt-g01-g30/skill-run-request.schema.json",
     "schemas/frt-g01-g30/skill-run-result.schema.json",
-    "engines/frontend-client-engine/src/frt-types.ts"
+    "schemas/frt-g01-g30/skill-execution-contract.schema.json",
+    "schemas/frt-g01-g30/gate-result.schema.json",
+    "schemas/frt-g01-g30/external-qualification-plan.schema.json",
+    "schemas/frt-g01-g30/external-qualification-preflight.schema.json",
+    "schemas/frt-g01-g30/external-qualification-local-execution.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts"
   ],
   "not_applicable": false,
   "approval_evidence": [],

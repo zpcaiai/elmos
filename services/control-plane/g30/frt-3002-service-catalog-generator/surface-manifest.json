@@ -8,6 +8,20 @@
   "logical_path": "services/control-plane/g30/frt-3002-service-catalog-generator/",
   "status": "shared_implementation",
   "handler_kind": "production_readiness",
+  "capability_key": "frt.g30.service-catalog-generator",
+  "execution_contract_sha256": "sha256:5b9e6cd7c138ebc9b71cdf2c6cd09a0928341229c02fc0448f31afe384ecc864",
+  "execution_class": "EXTERNAL_PRODUCTION_AUTHORITY",
+  "input_contract": {
+    "required": [
+      "slos",
+      "runbooks"
+    ],
+    "optional": [
+      "alerts",
+      "releases"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:d791ec1e675f524576e816892c994668e74017981210160d9a44bfa71a172488",
   "implementation_paths": [

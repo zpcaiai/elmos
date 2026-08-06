@@ -8,6 +8,19 @@
   "logical_path": "apps/web-console/src/features/g05/frt-0506-manual-boundary-planner/",
   "status": "shared_implementation",
   "handler_kind": "migration_planning",
+  "capability_key": "frt.g05.manual-boundary-planner",
+  "execution_contract_sha256": "sha256:51d4ce9fb35401012b20ba44376bd758f0f38cc11e97f21ea42071fcdb52d1e7",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "inventory",
+      "target"
+    ],
+    "optional": [
+      "currentVersions"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:b43a2f5902169c18db472803d7bf8a9e32eddf8be1db34f49a3d8b3aea5c4afc",
   "implementation_paths": [

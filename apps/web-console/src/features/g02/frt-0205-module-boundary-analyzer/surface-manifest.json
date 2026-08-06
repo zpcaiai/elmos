@@ -8,6 +8,16 @@
   "logical_path": "apps/web-console/src/features/g02/frt-0205-module-boundary-analyzer/",
   "status": "shared_implementation",
   "handler_kind": "estate_discovery",
+  "capability_key": "frt.g02.module-boundary-analyzer",
+  "execution_contract_sha256": "sha256:94575697f124b3f16b80ffb3e7c6192d472c529e61e295a84a0b9e6754954388",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:a5ad176dcd67df6b008e80cea8e6e96ef6c8c9a66bb0015bfce21a5f2ed4b4ec",
   "implementation_paths": [

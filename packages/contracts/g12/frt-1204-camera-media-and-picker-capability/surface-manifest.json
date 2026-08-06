@@ -8,12 +8,31 @@
   "logical_path": "packages/contracts/g12/frt-1204-camera-media-and-picker-capability/",
   "status": "shared_implementation",
   "handler_kind": "cross_platform",
+  "capability_key": "frt.g12.camera-media-and-picker-capability",
+  "execution_contract_sha256": "sha256:c9c2ce8a4a17ab0dc9b7f2939ea4c96b466813d9bd19d453ec1939b1f4d37586",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "requiredCapabilities",
+      "platformCapabilities"
+    ],
+    "optional": [
+      "bridges"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:f8b9f9c11ce59d81099f6b589b6654b9f4e8dbb62b45f4c4ba3e603a41c2d4b1",
   "implementation_paths": [
     "schemas/frt-g01-g30/skill-run-request.schema.json",
     "schemas/frt-g01-g30/skill-run-result.schema.json",
-    "engines/frontend-client-engine/src/frt-types.ts"
+    "schemas/frt-g01-g30/skill-execution-contract.schema.json",
+    "schemas/frt-g01-g30/gate-result.schema.json",
+    "schemas/frt-g01-g30/external-qualification-plan.schema.json",
+    "schemas/frt-g01-g30/external-qualification-preflight.schema.json",
+    "schemas/frt-g01-g30/external-qualification-local-execution.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts"
   ],
   "not_applicable": false,
   "approval_evidence": [],

@@ -8,6 +8,22 @@
   "logical_path": "apps/web-console/src/features/g25/frt-2507-user-guidance-and-recovery-generator/",
   "status": "shared_implementation",
   "handler_kind": "product_workflow",
+  "capability_key": "frt.g25.user-guidance-and-recovery-generator",
+  "execution_contract_sha256": "sha256:6c6432144511b846e365267db7e5a58a6ac07cb2d05815a0451ec9f8133c8c2d",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:f6f6ae7210efcf0e0e8fa5013bb4fb0cdab2aceeac7b7916eca0eb42a0ca52d3",
   "implementation_paths": [

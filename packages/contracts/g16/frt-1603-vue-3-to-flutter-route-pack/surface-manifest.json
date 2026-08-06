@@ -8,12 +8,28 @@
   "logical_path": "packages/contracts/g16/frt-1603-vue-3-to-flutter-route-pack/",
   "status": "shared_implementation",
   "handler_kind": "directional_route",
+  "capability_key": "frt.g16.vue-3-to-flutter-route-pack",
+  "execution_contract_sha256": "sha256:30b7cb575183956e3e71cd51a787a48ce0c509905d4449b666bbedfc4c403006",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:feb46d580ed5202cc6ca009b0328f4e219966a85a2de6e87dcc18c02733b0af0",
   "implementation_paths": [
     "schemas/frt-g01-g30/skill-run-request.schema.json",
     "schemas/frt-g01-g30/skill-run-result.schema.json",
-    "engines/frontend-client-engine/src/frt-types.ts"
+    "schemas/frt-g01-g30/skill-execution-contract.schema.json",
+    "schemas/frt-g01-g30/gate-result.schema.json",
+    "schemas/frt-g01-g30/external-qualification-plan.schema.json",
+    "schemas/frt-g01-g30/external-qualification-preflight.schema.json",
+    "schemas/frt-g01-g30/external-qualification-local-execution.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts"
   ],
   "not_applicable": false,
   "approval_evidence": [],

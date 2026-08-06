@@ -8,6 +8,20 @@
   "logical_path": "services/control-plane/g29/frt-2901-threat-model-generator/",
   "status": "shared_implementation",
   "handler_kind": "security_privacy",
+  "capability_key": "frt.g29.threat-model-generator",
+  "execution_contract_sha256": "sha256:0d66dceb71e72e641478318a8b8e899d77ad8a85223ef2410d4de708640487ca",
+  "execution_class": "AUTHORIZED_EXTERNAL_ASSURANCE",
+  "input_contract": {
+    "required": [
+      "assets",
+      "findings"
+    ],
+    "optional": [
+      "dataFlows",
+      "sbomComponents"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:c21104197c82839a5fc9a589c2b02a6cc75abd4f8fad2a13f64fc615a71937f2",
   "implementation_paths": [

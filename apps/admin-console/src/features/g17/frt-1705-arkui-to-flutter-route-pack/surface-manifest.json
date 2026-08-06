@@ -8,6 +8,16 @@
   "logical_path": "apps/admin-console/src/features/g17/frt-1705-arkui-to-flutter-route-pack/",
   "status": "shared_implementation",
   "handler_kind": "directional_route",
+  "capability_key": "frt.g17.arkui-to-flutter-route-pack",
+  "execution_contract_sha256": "sha256:b893b400d94397e140a4b71605df075189303331a481076c84fe3f72f9eec48c",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:3a4d748fbe32100259fd2e970a21aeea382f4c177dcce90e916b53a04feeb8b5",
   "implementation_paths": [

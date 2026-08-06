@@ -8,6 +8,20 @@
   "logical_path": "apps/admin-console/src/features/g30/frt-3022-post-release-verification/",
   "status": "shared_implementation",
   "handler_kind": "production_readiness",
+  "capability_key": "frt.g30.post-release-verification",
+  "execution_contract_sha256": "sha256:f7c3c950ff85da88c5bf51826a2cd48939070e3f4da7cab47c4dee999bfcd437",
+  "execution_class": "EXTERNAL_PRODUCTION_AUTHORITY",
+  "input_contract": {
+    "required": [
+      "slos",
+      "runbooks"
+    ],
+    "optional": [
+      "alerts",
+      "releases"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:ffb9e2743b4df655a81faeafa74be4b6f4e812a1dcd8ffb0efd902c15bb6af11",
   "implementation_paths": [

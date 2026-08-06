@@ -8,14 +8,34 @@
   "logical_path": "tests/g28/frt-2801-dependency-failure-model-registry/",
   "status": "shared_implementation",
   "handler_kind": "resilience_dr",
+  "capability_key": "frt.g28.dependency-failure-model-registry",
+  "execution_contract_sha256": "sha256:68944864d6e6e6e356eaf4a31db8be1b2df7042327e4c2b8f83a1df386e3fa2b",
+  "execution_class": "AUTHORIZED_EXTERNAL_ASSURANCE",
+  "input_contract": {
+    "required": [
+      "scenarios",
+      "recoveryObjectives"
+    ],
+    "optional": [
+      "observations"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:571dfc276913ee2e8d7d428e963a7f0f519e2880e4f3deea79f97c155cbb36cf",
   "implementation_paths": [
     "engines/frontend-client-engine/test/frt-artifact-lifecycle.test.ts",
+    "engines/frontend-client-engine/test/frt-production-contract.test.ts",
     "engines/frontend-client-engine/test/frt-runtime.test.ts",
     "engines/frontend-client-engine/test/frt-semantic-handlers.test.ts",
     "engines/frontend-client-engine/test/server.test.ts",
-    "apps/web-console/e2e/frt-frontend-transformation.spec.ts"
+    "apps/web-console/e2e/frt-frontend-transformation.spec.ts",
+    "scripts/frt/external_qualification.py",
+    "scripts/frt/external_campaign_parameters.py",
+    "scripts/frt/test_external_qualification.py",
+    "scripts/frt/test_external_campaign_parameters.py",
+    "scripts/frt/record_frt_ios_device_evidence.mjs",
+    "scripts/frt/test_record_frt_ios_device_evidence.py"
   ],
   "not_applicable": false,
   "approval_evidence": [],

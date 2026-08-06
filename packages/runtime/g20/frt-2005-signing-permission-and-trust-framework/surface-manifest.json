@@ -8,11 +8,26 @@
   "logical_path": "packages/runtime/g20/frt-2005-signing-permission-and-trust-framework/",
   "status": "shared_implementation",
   "handler_kind": "runtime_operations",
+  "capability_key": "frt.g20.signing-permission-and-trust-framework",
+  "execution_contract_sha256": "sha256:fb6e7abb046cb5937f7e957c0ec7028ee230afbdb147c2ab47777e2d7ada03b1",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "resources"
+    ],
+    "optional": [
+      "roles",
+      "jobs",
+      "quotas"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:eafb24722301b4e86111166680941da6718e585c04762a302e1ae7d7bc5b99af",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

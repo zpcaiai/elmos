@@ -8,11 +8,24 @@
   "logical_path": "packages/runtime/g15/frt-1507-arkui-capability-gap-planner/",
   "status": "shared_implementation",
   "handler_kind": "route_orchestration",
+  "capability_key": "frt.g15.arkui-capability-gap-planner",
+  "execution_contract_sha256": "sha256:4316fc72ad603d29ee0ad9d92398a395e265875678b6da356aee3c2ec690fdc7",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "corpus"
+    ],
+    "optional": [
+      "routeIds"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:562662fe1c0b7100c57ece55316c7992285065864b41ad8bcb3772f6da379a1e",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

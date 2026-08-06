@@ -8,12 +8,34 @@
   "logical_path": "packages/contracts/g22/frt-2210-commerce-order-to-cash-closure-pack/",
   "status": "shared_implementation",
   "handler_kind": "product_workflow",
+  "capability_key": "frt.g22.commerce-order-to-cash-closure-pack",
+  "execution_contract_sha256": "sha256:eb6d7fdd780e49bf33804d885d828dcac22063a7b27489c71106c521116e7b91",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:bc34577f673a6977e1e8403915b8c1c63dfaeedba758c8e931502d07813f718b",
   "implementation_paths": [
     "schemas/frt-g01-g30/skill-run-request.schema.json",
     "schemas/frt-g01-g30/skill-run-result.schema.json",
-    "engines/frontend-client-engine/src/frt-types.ts"
+    "schemas/frt-g01-g30/skill-execution-contract.schema.json",
+    "schemas/frt-g01-g30/gate-result.schema.json",
+    "schemas/frt-g01-g30/external-qualification-plan.schema.json",
+    "schemas/frt-g01-g30/external-qualification-preflight.schema.json",
+    "schemas/frt-g01-g30/external-qualification-local-execution.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts"
   ],
   "not_applicable": false,
   "approval_evidence": [],

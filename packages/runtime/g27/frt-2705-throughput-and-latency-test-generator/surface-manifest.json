@@ -8,11 +8,26 @@
   "logical_path": "packages/runtime/g27/frt-2705-throughput-and-latency-test-generator/",
   "status": "shared_implementation",
   "handler_kind": "performance_capacity",
+  "capability_key": "frt.g27.throughput-and-latency-test-generator",
+  "execution_contract_sha256": "sha256:445700a99b99df8801ecc6c1f245dd995efca10263c495fd46cea2ee3d9fba1f",
+  "execution_class": "AUTHORIZED_EXTERNAL_ASSURANCE",
+  "input_contract": {
+    "required": [
+      "workload",
+      "budgets"
+    ],
+    "optional": [
+      "samples",
+      "throughputPerSecond"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:f673f9d4d7d44aa2e24653aefaf82c35d64a977f4639227af4d4a9136f6f66c3",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

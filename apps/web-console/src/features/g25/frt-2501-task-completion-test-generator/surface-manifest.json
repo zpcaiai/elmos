@@ -8,6 +8,22 @@
   "logical_path": "apps/web-console/src/features/g25/frt-2501-task-completion-test-generator/",
   "status": "shared_implementation",
   "handler_kind": "product_workflow",
+  "capability_key": "frt.g25.task-completion-test-generator",
+  "execution_contract_sha256": "sha256:de55a2faebfe353025b7c6714a3b417ccd96ca12d17fe9ba04952d58a94d55e4",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:8dab7438b8031ae81d983730030d60ef5911a5152aa3bf77203103378610e046",
   "implementation_paths": [

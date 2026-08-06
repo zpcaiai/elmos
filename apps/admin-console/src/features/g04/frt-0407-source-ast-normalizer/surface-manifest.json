@@ -8,6 +8,16 @@
   "logical_path": "apps/admin-console/src/features/g04/frt-0407-source-ast-normalizer/",
   "status": "shared_implementation",
   "handler_kind": "typed_contract",
+  "capability_key": "frt.g04.source-ast-normalizer",
+  "execution_contract_sha256": "sha256:7921846be7de73fd62ea6ad8c69928d22190fbfbe276c974b3e05bfe028482fd",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:2de12d432147ab1455c5a8302e6e546ce6e3e2e5c16e401bb2aeadf7274ea0f3",
   "implementation_paths": [

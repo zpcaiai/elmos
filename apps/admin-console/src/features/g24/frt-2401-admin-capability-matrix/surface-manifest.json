@@ -8,6 +8,18 @@
   "logical_path": "apps/admin-console/src/features/g24/frt-2401-admin-capability-matrix/",
   "status": "shared_implementation",
   "handler_kind": "administration",
+  "capability_key": "frt.g24.admin-capability-matrix",
+  "execution_contract_sha256": "sha256:915f0bec7dc04ce88621685f923ffafc8168572be3b91bf5b421e1d027c006e4",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "capabilities",
+      "roles",
+      "operations"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:5986b931debdc5b59b3449107140e82d021d044eb888de5f110f848aed169fa7",
   "implementation_paths": [

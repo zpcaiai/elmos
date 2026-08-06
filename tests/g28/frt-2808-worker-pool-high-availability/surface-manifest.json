@@ -8,14 +8,34 @@
   "logical_path": "tests/g28/frt-2808-worker-pool-high-availability/",
   "status": "shared_implementation",
   "handler_kind": "resilience_dr",
+  "capability_key": "frt.g28.worker-pool-high-availability",
+  "execution_contract_sha256": "sha256:8c65ef99293d95c82e82251b21f2eddc543d64136796042de92046b6a9b3d529",
+  "execution_class": "AUTHORIZED_EXTERNAL_ASSURANCE",
+  "input_contract": {
+    "required": [
+      "scenarios",
+      "recoveryObjectives"
+    ],
+    "optional": [
+      "observations"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:d91cda4a2eeceb668b24ca952ba981405896478a1ddedbe9cdb50adc55134aab",
   "implementation_paths": [
     "engines/frontend-client-engine/test/frt-artifact-lifecycle.test.ts",
+    "engines/frontend-client-engine/test/frt-production-contract.test.ts",
     "engines/frontend-client-engine/test/frt-runtime.test.ts",
     "engines/frontend-client-engine/test/frt-semantic-handlers.test.ts",
     "engines/frontend-client-engine/test/server.test.ts",
-    "apps/web-console/e2e/frt-frontend-transformation.spec.ts"
+    "apps/web-console/e2e/frt-frontend-transformation.spec.ts",
+    "scripts/frt/external_qualification.py",
+    "scripts/frt/external_campaign_parameters.py",
+    "scripts/frt/test_external_qualification.py",
+    "scripts/frt/test_external_campaign_parameters.py",
+    "scripts/frt/record_frt_ios_device_evidence.mjs",
+    "scripts/frt/test_record_frt_ios_device_evidence.py"
   ],
   "not_applicable": false,
   "approval_evidence": [],

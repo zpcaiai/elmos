@@ -8,6 +8,18 @@
   "logical_path": "apps/admin-console/src/features/g24/frt-2408-notification-and-message-administration/",
   "status": "shared_implementation",
   "handler_kind": "administration",
+  "capability_key": "frt.g24.notification-and-message-administration",
+  "execution_contract_sha256": "sha256:4525af7522eab16ad98d792ca594c83d8c4e819d74a82be0c568aecea113cf7a",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "capabilities",
+      "roles",
+      "operations"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:243ced8cc17449288448df527ad6cd2e8665736f044aded07308a005bb8448ee",
   "implementation_paths": [

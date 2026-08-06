@@ -8,14 +8,33 @@
   "logical_path": "tests/g15/frt-1508-arkui-state-navigation-and-lifecycle-mapper/",
   "status": "shared_implementation",
   "handler_kind": "route_orchestration",
+  "capability_key": "frt.g15.arkui-state-navigation-and-lifecycle-mapper",
+  "execution_contract_sha256": "sha256:61f15c977aaf07c2e08e40a18637214bccb1f7af1d5405eec6f881c4e53d9bcb",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "corpus"
+    ],
+    "optional": [
+      "routeIds"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:43b1d30b2b6859634b424ba57e8e55d27d1c0eb00a6b157fd7d4330a0f599f68",
   "implementation_paths": [
     "engines/frontend-client-engine/test/frt-artifact-lifecycle.test.ts",
+    "engines/frontend-client-engine/test/frt-production-contract.test.ts",
     "engines/frontend-client-engine/test/frt-runtime.test.ts",
     "engines/frontend-client-engine/test/frt-semantic-handlers.test.ts",
     "engines/frontend-client-engine/test/server.test.ts",
-    "apps/web-console/e2e/frt-frontend-transformation.spec.ts"
+    "apps/web-console/e2e/frt-frontend-transformation.spec.ts",
+    "scripts/frt/external_qualification.py",
+    "scripts/frt/external_campaign_parameters.py",
+    "scripts/frt/test_external_qualification.py",
+    "scripts/frt/test_external_campaign_parameters.py",
+    "scripts/frt/record_frt_ios_device_evidence.mjs",
+    "scripts/frt/test_record_frt_ios_device_evidence.py"
   ],
   "not_applicable": false,
   "approval_evidence": [],

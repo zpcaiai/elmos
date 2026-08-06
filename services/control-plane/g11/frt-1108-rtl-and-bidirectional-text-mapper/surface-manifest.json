@@ -8,6 +8,21 @@
   "logical_path": "services/control-plane/g11/frt-1108-rtl-and-bidirectional-text-mapper/",
   "status": "shared_implementation",
   "handler_kind": "mobile_client",
+  "capability_key": "frt.g11.rtl-and-bidirectional-text-mapper",
+  "execution_contract_sha256": "sha256:3f3417896af8597a3423da07da581cdafd074b05f7983cb63d36f5b18e2f67f5",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "uiNodes"
+    ],
+    "optional": [
+      "designTokens",
+      "locales",
+      "rtlLocales",
+      "animations"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:4f19bf229e70f54457eb3fecc1ad675a9ca42fed67c5ac12d0d181ec9b79b1ce",
   "implementation_paths": [

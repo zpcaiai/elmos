@@ -8,11 +8,22 @@
   "logical_path": "packages/runtime/g14/frt-1405-react-to-mini-program-route-pack/",
   "status": "shared_implementation",
   "handler_kind": "directional_route",
+  "capability_key": "frt.g14.react-to-mini-program-route-pack",
+  "execution_contract_sha256": "sha256:23a90b4dd5dedc712c88548a50f8faa182aac004d21476086d18ceb9a7a4f274",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:2776896947ed2a8bdeaf5e401daf28c2b5fc38a24e47ef8de91b9cdcf35b24d8",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

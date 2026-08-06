@@ -8,12 +8,30 @@
   "logical_path": "packages/contracts/g16/frt-1609-flutter-plugin-and-platform-channel-mapper/",
   "status": "shared_implementation",
   "handler_kind": "route_orchestration",
+  "capability_key": "frt.g16.flutter-plugin-and-platform-channel-mapper",
+  "execution_contract_sha256": "sha256:faa72d82fa34959be24a01547d91d4b75d575ee156df823af58a2854cddad217",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "corpus"
+    ],
+    "optional": [
+      "routeIds"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:5478efd80c28694f7b3ab8f9ba441d42fedd9f5706a794cc7b633a72c1804969",
   "implementation_paths": [
     "schemas/frt-g01-g30/skill-run-request.schema.json",
     "schemas/frt-g01-g30/skill-run-result.schema.json",
-    "engines/frontend-client-engine/src/frt-types.ts"
+    "schemas/frt-g01-g30/skill-execution-contract.schema.json",
+    "schemas/frt-g01-g30/gate-result.schema.json",
+    "schemas/frt-g01-g30/external-qualification-plan.schema.json",
+    "schemas/frt-g01-g30/external-qualification-preflight.schema.json",
+    "schemas/frt-g01-g30/external-qualification-local-execution.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts"
   ],
   "not_applicable": false,
   "approval_evidence": [],

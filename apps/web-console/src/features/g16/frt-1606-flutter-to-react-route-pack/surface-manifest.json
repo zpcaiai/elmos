@@ -8,6 +8,16 @@
   "logical_path": "apps/web-console/src/features/g16/frt-1606-flutter-to-react-route-pack/",
   "status": "shared_implementation",
   "handler_kind": "directional_route",
+  "capability_key": "frt.g16.flutter-to-react-route-pack",
+  "execution_contract_sha256": "sha256:2041aa951de14e3ae975891bcb6fdacb59ef4f0b21d8a6816fb04d3f03158f1a",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:6814610aa3e895aa3682398c6b8c78f52f3a4599c3ff3e4a597f9c5828f174f5",
   "implementation_paths": [

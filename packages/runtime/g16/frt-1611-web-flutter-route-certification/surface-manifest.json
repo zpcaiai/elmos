@@ -8,11 +8,24 @@
   "logical_path": "packages/runtime/g16/frt-1611-web-flutter-route-certification/",
   "status": "shared_implementation",
   "handler_kind": "route_orchestration",
+  "capability_key": "frt.g16.web-flutter-route-certification",
+  "execution_contract_sha256": "sha256:0698cd9da4bdc4d9c8f7f1a30d6f33a22e1d39d73ef5c6e52cc8aec3353bac68",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "corpus"
+    ],
+    "optional": [
+      "routeIds"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:54ac802cb30e76e7cbe23274f6aa6e4a71a025b7a17285061a20ceaebecc2d7f",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

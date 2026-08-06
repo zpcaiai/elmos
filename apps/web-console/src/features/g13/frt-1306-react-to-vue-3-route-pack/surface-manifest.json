@@ -8,6 +8,16 @@
   "logical_path": "apps/web-console/src/features/g13/frt-1306-react-to-vue-3-route-pack/",
   "status": "shared_implementation",
   "handler_kind": "directional_route",
+  "capability_key": "frt.g13.react-to-vue-3-route-pack",
+  "execution_contract_sha256": "sha256:cb31c6f8b6fe20b15dd6f892fa66c5569412eabfa8be700e068834db5ec5f2cd",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:93051ddb1354f763ef3fa78f360ca3211323f1528bad01e9234e97606c066aa5",
   "implementation_paths": [

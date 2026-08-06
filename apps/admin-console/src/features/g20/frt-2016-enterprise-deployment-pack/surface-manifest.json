@@ -8,6 +8,20 @@
   "logical_path": "apps/admin-console/src/features/g20/frt-2016-enterprise-deployment-pack/",
   "status": "shared_implementation",
   "handler_kind": "runtime_operations",
+  "capability_key": "frt.g20.enterprise-deployment-pack",
+  "execution_contract_sha256": "sha256:b27943e1497bb018238917a071284a10e602e00b30c59b88e134a53195ac2161",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "resources"
+    ],
+    "optional": [
+      "roles",
+      "jobs",
+      "quotas"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:a245829c23505faf90eda17079eec5afcd156b7371072c98faba71f6bd6d94f1",
   "implementation_paths": [

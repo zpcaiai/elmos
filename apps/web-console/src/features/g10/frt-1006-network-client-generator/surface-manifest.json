@@ -8,6 +8,21 @@
   "logical_path": "apps/web-console/src/features/g10/frt-1006-network-client-generator/",
   "status": "shared_implementation",
   "handler_kind": "design_system",
+  "capability_key": "frt.g10.network-client-generator",
+  "execution_contract_sha256": "sha256:da6bd07dc8be310128ec54c003cae9a2f5d8aba42823ed987351bb335d64289e",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "routes"
+    ],
+    "optional": [
+      "forms",
+      "apiCalls",
+      "storage",
+      "permissions"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:028293387e13b191f5a6e862b6b9f5a9387b4ab08bf81201c0fffaf9511b0fa2",
   "implementation_paths": [

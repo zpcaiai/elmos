@@ -8,6 +8,20 @@
   "logical_path": "apps/web-console/src/features/g27/frt-2708-spike-test-coordinator/",
   "status": "shared_implementation",
   "handler_kind": "performance_capacity",
+  "capability_key": "frt.g27.spike-test-coordinator",
+  "execution_contract_sha256": "sha256:e0a0ecb58867027977fdb9822743fd2a157f847388888ca7464d01e77736db46",
+  "execution_class": "AUTHORIZED_EXTERNAL_ASSURANCE",
+  "input_contract": {
+    "required": [
+      "workload",
+      "budgets"
+    ],
+    "optional": [
+      "samples",
+      "throughputPerSecond"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:684cc2473dec3f775b8a1966727c6516080f4a19edd4e830ad5ea952aadc0add",
   "implementation_paths": [

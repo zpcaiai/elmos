@@ -8,11 +8,28 @@
   "logical_path": "packages/runtime/g23/frt-2305-schema-evolution-and-compatibility-manager/",
   "status": "shared_implementation",
   "handler_kind": "product_workflow",
+  "capability_key": "frt.g23.schema-evolution-and-compatibility-manager",
+  "execution_contract_sha256": "sha256:d694a01d7e269d98f3add658deb169bc4baf5244a24af3f53da8098537c485b2",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:d6269865ad81eae92ce767d6fdd16f0ed25b6a9fb4a5cc344f2ad8251c8f47f3",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

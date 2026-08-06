@@ -8,6 +8,22 @@
   "logical_path": "services/control-plane/g23/frt-2308-offline-synchronization-validator/",
   "status": "shared_implementation",
   "handler_kind": "product_workflow",
+  "capability_key": "frt.g23.offline-synchronization-validator",
+  "execution_contract_sha256": "sha256:0dcc01dc615453c72a1b2e0f0a5ae65e503c163834d54ccb2f86691938508a8f",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:3633cdca7ab5a560ed1cab92eca613b968cda9ee78f30e63241cb4e70df890ec",
   "implementation_paths": [

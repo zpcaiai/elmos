@@ -8,12 +8,31 @@
   "logical_path": "packages/contracts/g09/frt-0906-cancellation-propagation-mapper/",
   "status": "shared_implementation",
   "handler_kind": "delivery_pipeline",
+  "capability_key": "frt.g09.cancellation-propagation-mapper",
+  "execution_contract_sha256": "sha256:9f69ae77e8a5db365845c464c7c386ade6e55f02ac4c1e6350df807f5fd85175",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "states"
+    ],
+    "optional": [
+      "effects",
+      "asyncOperations"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:b28734e0757889ec2669a2f5689314945c53656aed7c972eef99dd08cacc5112",
   "implementation_paths": [
     "schemas/frt-g01-g30/skill-run-request.schema.json",
     "schemas/frt-g01-g30/skill-run-result.schema.json",
-    "engines/frontend-client-engine/src/frt-types.ts"
+    "schemas/frt-g01-g30/skill-execution-contract.schema.json",
+    "schemas/frt-g01-g30/gate-result.schema.json",
+    "schemas/frt-g01-g30/external-qualification-plan.schema.json",
+    "schemas/frt-g01-g30/external-qualification-preflight.schema.json",
+    "schemas/frt-g01-g30/external-qualification-local-execution.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts"
   ],
   "not_applicable": false,
   "approval_evidence": [],

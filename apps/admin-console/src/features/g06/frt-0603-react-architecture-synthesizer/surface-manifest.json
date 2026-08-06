@@ -8,6 +8,17 @@
   "logical_path": "apps/admin-console/src/features/g06/frt-0603-react-architecture-synthesizer/",
   "status": "shared_implementation",
   "handler_kind": "source_generation",
+  "capability_key": "frt.g06.react-architecture-synthesizer",
+  "execution_contract_sha256": "sha256:0850df9bf292f4968fce16abca00d1c0e3d008c0343094dac7da4902bde6e3df",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "targetProfile",
+      "uiIr"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:faa0b672870ff211a39fc3ae7e9a24e142db4571f9a0a7608f5ae3432a7c96a3",
   "implementation_paths": [

@@ -8,6 +8,19 @@
   "logical_path": "apps/admin-console/src/features/g19/frt-1911-cegar-loop/",
   "status": "shared_implementation",
   "handler_kind": "advanced_verification",
+  "capability_key": "frt.g19.cegar-loop",
+  "execution_contract_sha256": "sha256:394b3c4bfdb728734bf378d0b8410c87a615febc44349b9050b515a466cdea5b",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "properties"
+    ],
+    "optional": [
+      "toolchains",
+      "counterexamples"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:11056e53f8c47c40ee67916baa99e0c60fe44794246b6734a2a7b6714193478d",
   "implementation_paths": [

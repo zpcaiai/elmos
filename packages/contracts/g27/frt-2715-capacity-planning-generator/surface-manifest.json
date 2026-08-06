@@ -8,12 +8,32 @@
   "logical_path": "packages/contracts/g27/frt-2715-capacity-planning-generator/",
   "status": "shared_implementation",
   "handler_kind": "performance_capacity",
+  "capability_key": "frt.g27.capacity-planning-generator",
+  "execution_contract_sha256": "sha256:2de9b49aff7e51fdfcdeffb829f96618cc5de8b586379bee9ab9f778dea6df61",
+  "execution_class": "AUTHORIZED_EXTERNAL_ASSURANCE",
+  "input_contract": {
+    "required": [
+      "workload",
+      "budgets"
+    ],
+    "optional": [
+      "samples",
+      "throughputPerSecond"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:b99ea9e9c5f459cd737877f3e0ddae666e61f6ed0dec24d03211e196527edb32",
   "implementation_paths": [
     "schemas/frt-g01-g30/skill-run-request.schema.json",
     "schemas/frt-g01-g30/skill-run-result.schema.json",
-    "engines/frontend-client-engine/src/frt-types.ts"
+    "schemas/frt-g01-g30/skill-execution-contract.schema.json",
+    "schemas/frt-g01-g30/gate-result.schema.json",
+    "schemas/frt-g01-g30/external-qualification-plan.schema.json",
+    "schemas/frt-g01-g30/external-qualification-preflight.schema.json",
+    "schemas/frt-g01-g30/external-qualification-local-execution.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts"
   ],
   "not_applicable": false,
   "approval_evidence": [],

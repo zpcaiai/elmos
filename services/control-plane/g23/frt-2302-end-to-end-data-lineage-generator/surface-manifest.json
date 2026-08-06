@@ -8,6 +8,22 @@
   "logical_path": "services/control-plane/g23/frt-2302-end-to-end-data-lineage-generator/",
   "status": "shared_implementation",
   "handler_kind": "product_workflow",
+  "capability_key": "frt.g23.end-to-end-data-lineage-generator",
+  "execution_contract_sha256": "sha256:fd70f094c4ab33ceb2f5b2d610933f78b45661229536b7c15e763f8e4a8cf5be",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:5e502528315d6a27862ad5a130d8a786fc72ca47d730a88a3afad37c94359374",
   "implementation_paths": [

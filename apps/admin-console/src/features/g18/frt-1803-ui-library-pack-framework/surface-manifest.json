@@ -8,6 +8,16 @@
   "logical_path": "apps/admin-console/src/features/g18/frt-1803-ui-library-pack-framework/",
   "status": "shared_implementation",
   "handler_kind": "compatibility",
+  "capability_key": "frt.g18.ui-library-pack-framework",
+  "execution_contract_sha256": "sha256:4788af7d2c21727d6f803d1a165ea8244a3fd47d812ece0d18fde908dfcdd921",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "packs"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:b65fafe0646e2e3919e688d0dd6af20c014f10e7454471f9bb6a15bf9bb4f5c1",
   "implementation_paths": [

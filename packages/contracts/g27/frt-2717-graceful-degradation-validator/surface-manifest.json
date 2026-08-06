@@ -8,12 +8,32 @@
   "logical_path": "packages/contracts/g27/frt-2717-graceful-degradation-validator/",
   "status": "shared_implementation",
   "handler_kind": "performance_capacity",
+  "capability_key": "frt.g27.graceful-degradation-validator",
+  "execution_contract_sha256": "sha256:9de617354ff100bab94722e1cca9d5f21f6673af425679f0ec5cbe89a8fb9d89",
+  "execution_class": "AUTHORIZED_EXTERNAL_ASSURANCE",
+  "input_contract": {
+    "required": [
+      "workload",
+      "budgets"
+    ],
+    "optional": [
+      "samples",
+      "throughputPerSecond"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:618c6cb3a1668adcee3594d28d74827f78be83b53ce0b105faa3ecb59649d43f",
   "implementation_paths": [
     "schemas/frt-g01-g30/skill-run-request.schema.json",
     "schemas/frt-g01-g30/skill-run-result.schema.json",
-    "engines/frontend-client-engine/src/frt-types.ts"
+    "schemas/frt-g01-g30/skill-execution-contract.schema.json",
+    "schemas/frt-g01-g30/gate-result.schema.json",
+    "schemas/frt-g01-g30/external-qualification-plan.schema.json",
+    "schemas/frt-g01-g30/external-qualification-preflight.schema.json",
+    "schemas/frt-g01-g30/external-qualification-local-execution.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts"
   ],
   "not_applicable": false,
   "approval_evidence": [],

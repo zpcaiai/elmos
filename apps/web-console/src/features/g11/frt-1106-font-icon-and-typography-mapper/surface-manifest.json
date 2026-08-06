@@ -8,6 +8,21 @@
   "logical_path": "apps/web-console/src/features/g11/frt-1106-font-icon-and-typography-mapper/",
   "status": "shared_implementation",
   "handler_kind": "mobile_client",
+  "capability_key": "frt.g11.font-icon-and-typography-mapper",
+  "execution_contract_sha256": "sha256:c81ebfca39b82bcd61b5359516496532de1a6675986e01faa06c730a2f3caec0",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "uiNodes"
+    ],
+    "optional": [
+      "designTokens",
+      "locales",
+      "rtlLocales",
+      "animations"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:5f5cab79039cb61b7d2df7a214ef4fff1f7dfda6c4ad2835b818eb4849d9e908",
   "implementation_paths": [

@@ -8,6 +8,20 @@
   "logical_path": "services/control-plane/g20/frt-2020-one-click-delivery/",
   "status": "shared_implementation",
   "handler_kind": "runtime_operations",
+  "capability_key": "frt.g20.one-click-delivery",
+  "execution_contract_sha256": "sha256:9eda1c2e69f5aa6607351456721f40ab87dbade4e89f660bfb45c5810f94d078",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "resources"
+    ],
+    "optional": [
+      "roles",
+      "jobs",
+      "quotas"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:7bfcb475eeecb765a5834030e504938470e0dc3919aa3b145d7d15f0d11f34dd",
   "implementation_paths": [

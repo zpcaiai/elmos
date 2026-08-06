@@ -8,6 +8,20 @@
   "logical_path": "apps/admin-console/src/features/g30/frt-3020-continuous-performance-recertification/",
   "status": "shared_implementation",
   "handler_kind": "production_readiness",
+  "capability_key": "frt.g30.continuous-performance-recertification",
+  "execution_contract_sha256": "sha256:f87014daaec7bf2aee1aec460aaed7705627ec2ee772672a966de6020869bbb9",
+  "execution_class": "EXTERNAL_PRODUCTION_AUTHORITY",
+  "input_contract": {
+    "required": [
+      "slos",
+      "runbooks"
+    ],
+    "optional": [
+      "alerts",
+      "releases"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:65a67a70d122070387448c26b821af3635b94d5ca8b25c2f116a642e91924b17",
   "implementation_paths": [

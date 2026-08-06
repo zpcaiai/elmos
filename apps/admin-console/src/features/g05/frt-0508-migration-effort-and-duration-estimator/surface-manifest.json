@@ -8,6 +8,19 @@
   "logical_path": "apps/admin-console/src/features/g05/frt-0508-migration-effort-and-duration-estimator/",
   "status": "shared_implementation",
   "handler_kind": "migration_planning",
+  "capability_key": "frt.g05.migration-effort-and-duration-estimator",
+  "execution_contract_sha256": "sha256:0c24247b531471986b7ec4d9e030e37c4b37631b0ed88e5dc518c9f8e0a4debe",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "inventory",
+      "target"
+    ],
+    "optional": [
+      "currentVersions"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:a006132d05f2128e9905b1eb4f50ecc3365f1ed43c6e1a00e77fd866ec703359",
   "implementation_paths": [

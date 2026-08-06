@@ -8,6 +8,21 @@
   "logical_path": "apps/web-console/src/features/g07/frt-0703-target-native-ast-emitter/",
   "status": "shared_implementation",
   "handler_kind": "build_toolchain",
+  "capability_key": "frt.g07.target-native-ast-emitter",
+  "execution_contract_sha256": "sha256:8e0ea8dd7fca641ae1afff0c3b69f144feada2df412d47cbc0adb2bfb3e7734f",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "astNodes"
+    ],
+    "optional": [
+      "imports",
+      "diagnostics",
+      "unsupportedSemantics",
+      "repairPasses"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:a6a7b53bbd8ff47f4a37d7d63f428784e8383d74616a683cb3b0e58fc99ce23b",
   "implementation_paths": [

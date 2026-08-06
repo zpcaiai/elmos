@@ -8,12 +8,28 @@
   "logical_path": "packages/contracts/g04/frt-0410-lifecycle-and-effect-extractor/",
   "status": "shared_implementation",
   "handler_kind": "typed_contract",
+  "capability_key": "frt.g04.lifecycle-and-effect-extractor",
+  "execution_contract_sha256": "sha256:2736ab7a1022e376c54f60a5727dfa2fa822d11189b3d5bbee4598d03baebb59",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:94b6e46e54d1af7460365b515a92575e5bee0f7a787adcad3174e002358d0120",
   "implementation_paths": [
     "schemas/frt-g01-g30/skill-run-request.schema.json",
     "schemas/frt-g01-g30/skill-run-result.schema.json",
-    "engines/frontend-client-engine/src/frt-types.ts"
+    "schemas/frt-g01-g30/skill-execution-contract.schema.json",
+    "schemas/frt-g01-g30/gate-result.schema.json",
+    "schemas/frt-g01-g30/external-qualification-plan.schema.json",
+    "schemas/frt-g01-g30/external-qualification-preflight.schema.json",
+    "schemas/frt-g01-g30/external-qualification-local-execution.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts"
   ],
   "not_applicable": false,
   "approval_evidence": [],

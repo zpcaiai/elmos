@@ -8,6 +8,19 @@
   "logical_path": "apps/admin-console/src/features/g12/frt-1210-device-fake-and-simulator-generator/",
   "status": "shared_implementation",
   "handler_kind": "cross_platform",
+  "capability_key": "frt.g12.device-fake-and-simulator-generator",
+  "execution_contract_sha256": "sha256:2cd4c8b73c419c757550da2ab32c597da858818bdad87f1beb8efde11223c741",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "requiredCapabilities",
+      "platformCapabilities"
+    ],
+    "optional": [
+      "bridges"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:101beff3c5292a379ad08bcb2d89c21dd0a75d8cf7b31cd4235c54433bd7459a",
   "implementation_paths": [

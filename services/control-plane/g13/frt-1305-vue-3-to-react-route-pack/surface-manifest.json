@@ -8,6 +8,16 @@
   "logical_path": "services/control-plane/g13/frt-1305-vue-3-to-react-route-pack/",
   "status": "shared_implementation",
   "handler_kind": "directional_route",
+  "capability_key": "frt.g13.vue-3-to-react-route-pack",
+  "execution_contract_sha256": "sha256:4e66ab5dab021e22a314c00f740771f81a842a27df1d8a1960c7f3e178fcd8a8",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:e2d18b051d0e5b149657bb4a4404d3fc04cd4f049eac9f7ee23d86b9f0d07136",
   "implementation_paths": [

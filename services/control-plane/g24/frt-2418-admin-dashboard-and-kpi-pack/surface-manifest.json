@@ -8,6 +8,18 @@
   "logical_path": "services/control-plane/g24/frt-2418-admin-dashboard-and-kpi-pack/",
   "status": "shared_implementation",
   "handler_kind": "administration",
+  "capability_key": "frt.g24.admin-dashboard-and-kpi-pack",
+  "execution_contract_sha256": "sha256:c4f8a9cd67888a20cf43719ece5f7890f0065e59f3d61e442bc7d8f80e6a0ced",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "capabilities",
+      "roles",
+      "operations"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:b6381a5567c9b351a762c61c26afc87c3f35b11a3d0d1dcbcc9f9fc6b76f9431",
   "implementation_paths": [

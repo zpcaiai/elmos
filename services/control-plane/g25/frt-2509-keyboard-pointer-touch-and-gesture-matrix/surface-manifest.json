@@ -8,6 +8,22 @@
   "logical_path": "services/control-plane/g25/frt-2509-keyboard-pointer-touch-and-gesture-matrix/",
   "status": "shared_implementation",
   "handler_kind": "product_workflow",
+  "capability_key": "frt.g25.keyboard-pointer-touch-and-gesture-matrix",
+  "execution_contract_sha256": "sha256:79ae62a4ef41520a6832768819444fb10526a9a17f542153334939e48dd9fd89",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:9a06d8ff3535c3a96af9e95511e7cf88f912676f36cfd07b41fc000882e5cdfa",
   "implementation_paths": [

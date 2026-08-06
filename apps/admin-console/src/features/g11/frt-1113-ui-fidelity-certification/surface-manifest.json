@@ -8,6 +8,21 @@
   "logical_path": "apps/admin-console/src/features/g11/frt-1113-ui-fidelity-certification/",
   "status": "shared_implementation",
   "handler_kind": "mobile_client",
+  "capability_key": "frt.g11.ui-fidelity-certification",
+  "execution_contract_sha256": "sha256:7e43ba6f421a5a7e5c1902bc0c36b8f4ecce9d3c3927f9b4a52e2b7b690d0d16",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "uiNodes"
+    ],
+    "optional": [
+      "designTokens",
+      "locales",
+      "rtlLocales",
+      "animations"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:16e4d5e10c2f36f7d44959525eedac2c1ecf5ec37b6e30b47531d82c8b722bc5",
   "implementation_paths": [

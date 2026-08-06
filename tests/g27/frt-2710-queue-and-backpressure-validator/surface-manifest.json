@@ -8,14 +8,35 @@
   "logical_path": "tests/g27/frt-2710-queue-and-backpressure-validator/",
   "status": "shared_implementation",
   "handler_kind": "performance_capacity",
+  "capability_key": "frt.g27.queue-and-backpressure-validator",
+  "execution_contract_sha256": "sha256:608956277c865ee2bd7da8f76a7face0d0a7704a00b0a06296b1b01641cb1814",
+  "execution_class": "AUTHORIZED_EXTERNAL_ASSURANCE",
+  "input_contract": {
+    "required": [
+      "workload",
+      "budgets"
+    ],
+    "optional": [
+      "samples",
+      "throughputPerSecond"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:a27bd3e78ef42ffe6b69e1e5ec571337f2789a24d5d47ab5ce8ce12e3fd8d912",
   "implementation_paths": [
     "engines/frontend-client-engine/test/frt-artifact-lifecycle.test.ts",
+    "engines/frontend-client-engine/test/frt-production-contract.test.ts",
     "engines/frontend-client-engine/test/frt-runtime.test.ts",
     "engines/frontend-client-engine/test/frt-semantic-handlers.test.ts",
     "engines/frontend-client-engine/test/server.test.ts",
-    "apps/web-console/e2e/frt-frontend-transformation.spec.ts"
+    "apps/web-console/e2e/frt-frontend-transformation.spec.ts",
+    "scripts/frt/external_qualification.py",
+    "scripts/frt/external_campaign_parameters.py",
+    "scripts/frt/test_external_qualification.py",
+    "scripts/frt/test_external_campaign_parameters.py",
+    "scripts/frt/record_frt_ios_device_evidence.mjs",
+    "scripts/frt/test_record_frt_ios_device_evidence.py"
   ],
   "not_applicable": false,
   "approval_evidence": [],

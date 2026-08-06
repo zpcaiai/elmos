@@ -8,6 +8,22 @@
   "logical_path": "services/control-plane/g22/frt-2205-business-exception-taxonomy/",
   "status": "shared_implementation",
   "handler_kind": "product_workflow",
+  "capability_key": "frt.g22.business-exception-taxonomy",
+  "execution_contract_sha256": "sha256:a7023839d55d417822ea34db0ab4f3461c2a84abced8167494f5a4964e00929d",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:198fb77c0aab58c00cad71f4be8ffdbffd9af30160fb8630be807e16f0498232",
   "implementation_paths": [

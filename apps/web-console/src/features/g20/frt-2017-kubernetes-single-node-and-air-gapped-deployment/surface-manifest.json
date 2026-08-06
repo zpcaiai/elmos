@@ -8,6 +8,20 @@
   "logical_path": "apps/web-console/src/features/g20/frt-2017-kubernetes-single-node-and-air-gapped-deployment/",
   "status": "shared_implementation",
   "handler_kind": "runtime_operations",
+  "capability_key": "frt.g20.kubernetes-single-node-and-air-gapped-deployment",
+  "execution_contract_sha256": "sha256:f9f93f605417f894b2e13ae570a768dc0ac4fb6da2b64a308c370fc17ef00a10",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "resources"
+    ],
+    "optional": [
+      "roles",
+      "jobs",
+      "quotas"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:227ffd7ab444416cccabb9b95303eddb37b620cf403326eca4b54011b4b769a1",
   "implementation_paths": [

@@ -8,6 +8,16 @@
   "logical_path": "services/control-plane/g13/frt-1302-vue-3-to-vue-2-route-pack/",
   "status": "shared_implementation",
   "handler_kind": "directional_route",
+  "capability_key": "frt.g13.vue-3-to-vue-2-route-pack",
+  "execution_contract_sha256": "sha256:fecad816019dd9a506605f4c0af4dffdb04db49f1c2fa7aee5a1306dd559d853",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:1aaa6b471cd034889988d96737305de3f840107c36393ddd8ecded52e3e8f25d",
   "implementation_paths": [

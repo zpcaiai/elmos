@@ -8,6 +8,21 @@
   "logical_path": "services/control-plane/g11/frt-1104-theme-and-appearance-mapper/",
   "status": "shared_implementation",
   "handler_kind": "mobile_client",
+  "capability_key": "frt.g11.theme-and-appearance-mapper",
+  "execution_contract_sha256": "sha256:0927debe94686550c453f741421a657a7e4030ac58982f593122108b2e92c592",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "uiNodes"
+    ],
+    "optional": [
+      "designTokens",
+      "locales",
+      "rtlLocales",
+      "animations"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:6efceaea02990450d65052ce31b2d2c5979b7328cf0f66531a06fb2ecc4b08fa",
   "implementation_paths": [

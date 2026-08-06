@@ -8,11 +8,27 @@
   "logical_path": "packages/runtime/g07/frt-0711-restricted-agent-repair-envelope/",
   "status": "shared_implementation",
   "handler_kind": "build_toolchain",
+  "capability_key": "frt.g07.restricted-agent-repair-envelope",
+  "execution_contract_sha256": "sha256:f164a47829a273524daebd172e057e5d3ac1eb6be5f5211e3771e551a181c24f",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "astNodes"
+    ],
+    "optional": [
+      "imports",
+      "diagnostics",
+      "unsupportedSemantics",
+      "repairPasses"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:3db5919c769eda0702be45ff80884a984f9596408811942ab6ea49c32ce9ec0f",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

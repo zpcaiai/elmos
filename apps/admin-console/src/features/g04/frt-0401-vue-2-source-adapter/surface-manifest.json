@@ -8,6 +8,16 @@
   "logical_path": "apps/admin-console/src/features/g04/frt-0401-vue-2-source-adapter/",
   "status": "shared_implementation",
   "handler_kind": "typed_contract",
+  "capability_key": "frt.g04.vue-2-source-adapter",
+  "execution_contract_sha256": "sha256:897a4465d3143e6e8ed100ffb8c8c44b05f85466a4cf56351102ce479857b167",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:4e6778ff523eae77a1174e86e5b9d4a4c385ce9978aac31830b18a12a0879a18",
   "implementation_paths": [

@@ -8,11 +8,26 @@
   "logical_path": "packages/runtime/g20/frt-2022-security-red-team-harness/",
   "status": "shared_implementation",
   "handler_kind": "runtime_operations",
+  "capability_key": "frt.g20.security-red-team-harness",
+  "execution_contract_sha256": "sha256:6fb97be374218f4ec15380dc577a0e09de965babfe89789e5ec58e20b3146464",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "resources"
+    ],
+    "optional": [
+      "roles",
+      "jobs",
+      "quotas"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:e026d79fc523eba3ade65799db0e39b2dc12a53ac9e46da9e9031b607b45c776",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

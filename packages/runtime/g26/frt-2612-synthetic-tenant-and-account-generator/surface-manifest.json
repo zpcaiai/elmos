@@ -8,11 +8,28 @@
   "logical_path": "packages/runtime/g26/frt-2612-synthetic-tenant-and-account-generator/",
   "status": "shared_implementation",
   "handler_kind": "product_workflow",
+  "capability_key": "frt.g26.synthetic-tenant-and-account-generator",
+  "execution_contract_sha256": "sha256:286fe8b85dc1b6a3133148f05f89bfb55de06e197c8fe095a6b8b36d29a52139",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:5799c7b3a01308640347d43b4fabf97b5fc2b1502d48c5d2b6afc051a74e9be2",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

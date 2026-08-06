@@ -8,6 +8,16 @@
   "logical_path": "apps/web-console/src/features/g04/frt-0411-router-navigation-and-capability-extractor/",
   "status": "shared_implementation",
   "handler_kind": "typed_contract",
+  "capability_key": "frt.g04.router-navigation-and-capability-extractor",
+  "execution_contract_sha256": "sha256:48ee9dc9ba0ce501811dd87ef33a246286999f28b7a9f654bfec073a97d431c3",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:8630dcfb48946f46eeb85d3224f852087261e21ac119136e6cb0054afcfc6e3c",
   "implementation_paths": [

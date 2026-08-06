@@ -8,11 +8,26 @@
   "logical_path": "packages/runtime/g01/frt-0102-monorepo-bootstrap-and-module-boundaries/",
   "status": "shared_implementation",
   "handler_kind": "governance",
+  "capability_key": "frt.g01.monorepo-bootstrap-and-module-boundaries",
+  "execution_contract_sha256": "sha256:96e1e43318a7687ca49ece500ef97f16da9510472bfe178b550d3955eac83df7",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "invariants"
+    ],
+    "optional": [
+      "dependencies",
+      "allowedDependencies",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:e03ce6ee87d739ed593d99c84f015d1259ae594f7f629a0d20e967490cab74ae",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

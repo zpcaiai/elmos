@@ -8,12 +8,28 @@
   "logical_path": "packages/contracts/g18/frt-1813-pack-conformance-test-generator/",
   "status": "shared_implementation",
   "handler_kind": "compatibility",
+  "capability_key": "frt.g18.pack-conformance-test-generator",
+  "execution_contract_sha256": "sha256:b24deab496786d64361f0ec10c97a494e006976814500385587d4c55042a76dd",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "packs"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:8850e03cc55943c10ceb876fda12a2a42b5608bdf341f092a6fe24ca3eb73eb6",
   "implementation_paths": [
     "schemas/frt-g01-g30/skill-run-request.schema.json",
     "schemas/frt-g01-g30/skill-run-result.schema.json",
-    "engines/frontend-client-engine/src/frt-types.ts"
+    "schemas/frt-g01-g30/skill-execution-contract.schema.json",
+    "schemas/frt-g01-g30/gate-result.schema.json",
+    "schemas/frt-g01-g30/external-qualification-plan.schema.json",
+    "schemas/frt-g01-g30/external-qualification-preflight.schema.json",
+    "schemas/frt-g01-g30/external-qualification-local-execution.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts"
   ],
   "not_applicable": false,
   "approval_evidence": [],

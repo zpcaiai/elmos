@@ -8,12 +8,28 @@
   "logical_path": "packages/contracts/g03/frt-0302-symbol-scope-and-reference-graph/",
   "status": "shared_implementation",
   "handler_kind": "semantic_ir",
+  "capability_key": "frt.g03.symbol-scope-and-reference-graph",
+  "execution_contract_sha256": "sha256:e5c99720d9aa6f8ff56e1331d52dd3bf92e0f8c136795d0e25868ae7f15fef1e",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:c2bd344b111c207ce87f7e1fa393ba1d454a338b021ef3fa5410751803bc0913",
   "implementation_paths": [
     "schemas/frt-g01-g30/skill-run-request.schema.json",
     "schemas/frt-g01-g30/skill-run-result.schema.json",
-    "engines/frontend-client-engine/src/frt-types.ts"
+    "schemas/frt-g01-g30/skill-execution-contract.schema.json",
+    "schemas/frt-g01-g30/gate-result.schema.json",
+    "schemas/frt-g01-g30/external-qualification-plan.schema.json",
+    "schemas/frt-g01-g30/external-qualification-preflight.schema.json",
+    "schemas/frt-g01-g30/external-qualification-local-execution.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts"
   ],
   "not_applicable": false,
   "approval_evidence": [],

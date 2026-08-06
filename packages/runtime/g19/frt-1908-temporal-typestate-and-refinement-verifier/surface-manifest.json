@@ -8,11 +8,25 @@
   "logical_path": "packages/runtime/g19/frt-1908-temporal-typestate-and-refinement-verifier/",
   "status": "shared_implementation",
   "handler_kind": "advanced_verification",
+  "capability_key": "frt.g19.temporal-typestate-and-refinement-verifier",
+  "execution_contract_sha256": "sha256:73c23a492bce556dfc5c2d8bb27ff507d73628cda77553bc9f4543961193e7cb",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "properties"
+    ],
+    "optional": [
+      "toolchains",
+      "counterexamples"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:1e0c404e26e9c7d627d35bfac19073c9102a6520eb3404acf57cc43701a38006",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

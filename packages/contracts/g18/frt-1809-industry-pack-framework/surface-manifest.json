@@ -8,12 +8,28 @@
   "logical_path": "packages/contracts/g18/frt-1809-industry-pack-framework/",
   "status": "shared_implementation",
   "handler_kind": "compatibility",
+  "capability_key": "frt.g18.industry-pack-framework",
+  "execution_contract_sha256": "sha256:79cad392cf90a7b6a13a49118208b2705693af12ab94c811186716467b706fdf",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "packs"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:86c79cd16a705e4107c5fbbe769234c98b2dd24f70ecfb5de3e361222abc7ad9",
   "implementation_paths": [
     "schemas/frt-g01-g30/skill-run-request.schema.json",
     "schemas/frt-g01-g30/skill-run-result.schema.json",
-    "engines/frontend-client-engine/src/frt-types.ts"
+    "schemas/frt-g01-g30/skill-execution-contract.schema.json",
+    "schemas/frt-g01-g30/gate-result.schema.json",
+    "schemas/frt-g01-g30/external-qualification-plan.schema.json",
+    "schemas/frt-g01-g30/external-qualification-preflight.schema.json",
+    "schemas/frt-g01-g30/external-qualification-local-execution.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts"
   ],
   "not_applicable": false,
   "approval_evidence": [],

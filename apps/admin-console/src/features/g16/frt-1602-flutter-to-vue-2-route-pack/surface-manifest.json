@@ -8,6 +8,16 @@
   "logical_path": "apps/admin-console/src/features/g16/frt-1602-flutter-to-vue-2-route-pack/",
   "status": "shared_implementation",
   "handler_kind": "directional_route",
+  "capability_key": "frt.g16.flutter-to-vue-2-route-pack",
+  "execution_contract_sha256": "sha256:6458c69a62255edc9528366e0f8e90fea9eb60007acaac63224792b517c34b04",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:8320d940928383605d1a4d3130527822d66fa52044519393c1b1a1720abe4062",
   "implementation_paths": [

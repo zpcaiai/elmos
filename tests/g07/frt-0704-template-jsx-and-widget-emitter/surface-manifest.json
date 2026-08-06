@@ -8,14 +8,36 @@
   "logical_path": "tests/g07/frt-0704-template-jsx-and-widget-emitter/",
   "status": "shared_implementation",
   "handler_kind": "build_toolchain",
+  "capability_key": "frt.g07.template-jsx-and-widget-emitter",
+  "execution_contract_sha256": "sha256:3529050aeff2c23d955df234ac65c874c72340879e1b41a6ac20e2b656a88726",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "astNodes"
+    ],
+    "optional": [
+      "imports",
+      "diagnostics",
+      "unsupportedSemantics",
+      "repairPasses"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:a3ead9c5230b62f90d6a41fc829303b6dadc77e1b5a2cd58f866c84fc2e4a617",
   "implementation_paths": [
     "engines/frontend-client-engine/test/frt-artifact-lifecycle.test.ts",
+    "engines/frontend-client-engine/test/frt-production-contract.test.ts",
     "engines/frontend-client-engine/test/frt-runtime.test.ts",
     "engines/frontend-client-engine/test/frt-semantic-handlers.test.ts",
     "engines/frontend-client-engine/test/server.test.ts",
-    "apps/web-console/e2e/frt-frontend-transformation.spec.ts"
+    "apps/web-console/e2e/frt-frontend-transformation.spec.ts",
+    "scripts/frt/external_qualification.py",
+    "scripts/frt/external_campaign_parameters.py",
+    "scripts/frt/test_external_qualification.py",
+    "scripts/frt/test_external_campaign_parameters.py",
+    "scripts/frt/record_frt_ios_device_evidence.mjs",
+    "scripts/frt/test_record_frt_ios_device_evidence.py"
   ],
   "not_applicable": false,
   "approval_evidence": [],

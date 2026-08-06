@@ -8,11 +8,25 @@
   "logical_path": "packages/runtime/g12/frt-1208-permission-state-machine-generator/",
   "status": "shared_implementation",
   "handler_kind": "cross_platform",
+  "capability_key": "frt.g12.permission-state-machine-generator",
+  "execution_contract_sha256": "sha256:3ef69be2d353ed10ffc453747fcbd75baa8ae63ff9157493fffae0eb375aebf4",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "requiredCapabilities",
+      "platformCapabilities"
+    ],
+    "optional": [
+      "bridges"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:5e6438e8638eac1a380c3c2433ea1e5e002fdcf14e2c3fa21404e7d3d2a82222",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

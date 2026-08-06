@@ -8,6 +8,17 @@
   "logical_path": "apps/web-console/src/features/g06/frt-0605-arkui-architecture-synthesizer/",
   "status": "shared_implementation",
   "handler_kind": "source_generation",
+  "capability_key": "frt.g06.arkui-architecture-synthesizer",
+  "execution_contract_sha256": "sha256:e049ccc371484c59687cdfa3d2517c7a3d9d0f5dc382d5deaeffd94d6f1179cb",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "targetProfile",
+      "uiIr"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:5a1160478743484919478792bdf2a4cb839913e11162fc48341e49babc36fde7",
   "implementation_paths": [

@@ -8,6 +8,19 @@
   "logical_path": "services/control-plane/g09/frt-0908-retry-backoff-and-idempotency-mapper/",
   "status": "shared_implementation",
   "handler_kind": "delivery_pipeline",
+  "capability_key": "frt.g09.retry-backoff-and-idempotency-mapper",
+  "execution_contract_sha256": "sha256:35742f43656836fb6bfb511ee9119f49cc8dfdd5487040e9621408f575f1c78c",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "states"
+    ],
+    "optional": [
+      "effects",
+      "asyncOperations"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:8ca7103d899590e3e6280d5372674a6f8a6b16e48c8505ff3559165ab19b62f2",
   "implementation_paths": [

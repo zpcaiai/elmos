@@ -8,6 +8,22 @@
   "logical_path": "services/control-plane/g26/frt-2615-impacted-test-selection/",
   "status": "shared_implementation",
   "handler_kind": "product_workflow",
+  "capability_key": "frt.g26.impacted-test-selection",
+  "execution_contract_sha256": "sha256:ddb8c477de9402cec41b8585dd3fec460fd6f5b7118b958d76050ca6b6fe3ec2",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:d45ed2db547c0fe93a4afca8d97d34e65541da0b56b6df1e0eb12bd771bac3a8",
   "implementation_paths": [

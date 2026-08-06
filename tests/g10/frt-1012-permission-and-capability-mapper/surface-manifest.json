@@ -8,14 +8,36 @@
   "logical_path": "tests/g10/frt-1012-permission-and-capability-mapper/",
   "status": "shared_implementation",
   "handler_kind": "design_system",
+  "capability_key": "frt.g10.permission-and-capability-mapper",
+  "execution_contract_sha256": "sha256:b1a362871699beb002dcb1d69e8069d598c564f5b2c406a0284595a1cf60a371",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "routes"
+    ],
+    "optional": [
+      "forms",
+      "apiCalls",
+      "storage",
+      "permissions"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:2b1b54104d91f22ed965a60feb3315e10baa5aed07f2bedbb8e11fbb1dc0fa4d",
   "implementation_paths": [
     "engines/frontend-client-engine/test/frt-artifact-lifecycle.test.ts",
+    "engines/frontend-client-engine/test/frt-production-contract.test.ts",
     "engines/frontend-client-engine/test/frt-runtime.test.ts",
     "engines/frontend-client-engine/test/frt-semantic-handlers.test.ts",
     "engines/frontend-client-engine/test/server.test.ts",
-    "apps/web-console/e2e/frt-frontend-transformation.spec.ts"
+    "apps/web-console/e2e/frt-frontend-transformation.spec.ts",
+    "scripts/frt/external_qualification.py",
+    "scripts/frt/external_campaign_parameters.py",
+    "scripts/frt/test_external_qualification.py",
+    "scripts/frt/test_external_campaign_parameters.py",
+    "scripts/frt/record_frt_ios_device_evidence.mjs",
+    "scripts/frt/test_record_frt_ios_device_evidence.py"
   ],
   "not_applicable": false,
   "approval_evidence": [],

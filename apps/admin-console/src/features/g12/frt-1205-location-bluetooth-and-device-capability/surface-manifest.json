@@ -8,6 +8,19 @@
   "logical_path": "apps/admin-console/src/features/g12/frt-1205-location-bluetooth-and-device-capability/",
   "status": "shared_implementation",
   "handler_kind": "cross_platform",
+  "capability_key": "frt.g12.location-bluetooth-and-device-capability",
+  "execution_contract_sha256": "sha256:54361629699bb0a06cfb96fe51e3623e19bcb47489c6a9efd56facbdd4346ff7",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "requiredCapabilities",
+      "platformCapabilities"
+    ],
+    "optional": [
+      "bridges"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:3e2a43620c450edccf613a8d9a8e0c191d04f673337e14fb1d9948ed624b5de3",
   "implementation_paths": [

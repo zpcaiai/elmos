@@ -8,11 +8,28 @@
   "logical_path": "packages/runtime/g21/frt-2108-orphan-feature-and-dead-flow-detector/",
   "status": "shared_implementation",
   "handler_kind": "product_workflow",
+  "capability_key": "frt.g21.orphan-feature-and-dead-flow-detector",
+  "execution_contract_sha256": "sha256:5afa5f2e887cf42205f107f4dd0dcc39d651e81ebd3ee1aa8c1655fd347e1667",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:de7b4c30d3c0869da7d7c19fe309625184cf9186490a7e098131ed3f525449fc",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

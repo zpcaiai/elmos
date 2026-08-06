@@ -8,11 +8,22 @@
   "logical_path": "packages/runtime/g08/frt-0812-component-semantics-certification/",
   "status": "shared_implementation",
   "handler_kind": "test_automation",
+  "capability_key": "frt.g08.component-semantics-certification",
+  "execution_contract_sha256": "sha256:31763cc4bfe4bae6eca670b5f8031b44ba0d3cb9fdb7c25374fad395807c190e",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "components"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:3c825f171ff8086e20a46891e3b1381b6b6124e0de59a91cc8346e43d25fc954",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

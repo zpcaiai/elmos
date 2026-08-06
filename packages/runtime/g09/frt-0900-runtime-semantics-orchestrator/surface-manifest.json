@@ -8,11 +8,25 @@
   "logical_path": "packages/runtime/g09/frt-0900-runtime-semantics-orchestrator/",
   "status": "shared_implementation",
   "handler_kind": "delivery_pipeline",
+  "capability_key": "frt.g09.runtime-semantics-orchestrator",
+  "execution_contract_sha256": "sha256:3daf9e0e7f189543673d79a2c128e3f895c68f8a113be521a0351ca196fd508e",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "states"
+    ],
+    "optional": [
+      "effects",
+      "asyncOperations"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:d0189053a64d9ce16bcdd806427a9c6da64b76c5030a9452e87e14eeb617806b",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

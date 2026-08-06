@@ -8,6 +8,18 @@
   "logical_path": "apps/web-console/src/features/g17/frt-1700-mobile-triangle-route-orchestrator/",
   "status": "shared_implementation",
   "handler_kind": "route_orchestration",
+  "capability_key": "frt.g17.mobile-triangle-route-orchestrator",
+  "execution_contract_sha256": "sha256:913fbffb9d758db5fbe396b02934c19b99a288974beff2696b5782ec7998c482",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "corpus"
+    ],
+    "optional": [
+      "routeIds"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:4978267144c6e9f5065f5dd582b3cd2bede70614b91c51cfb7cff0cf9f4d4864",
   "implementation_paths": [

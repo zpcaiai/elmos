@@ -8,6 +8,20 @@
   "logical_path": "apps/admin-console/src/features/g27/frt-2709-soak-and-memory-leak-test-coordinator/",
   "status": "shared_implementation",
   "handler_kind": "performance_capacity",
+  "capability_key": "frt.g27.soak-and-memory-leak-test-coordinator",
+  "execution_contract_sha256": "sha256:6fd8ba1c2b506224a7546b324916bbc698f600f3407d4b1b8dc28cd15d192f0a",
+  "execution_class": "AUTHORIZED_EXTERNAL_ASSURANCE",
+  "input_contract": {
+    "required": [
+      "workload",
+      "budgets"
+    ],
+    "optional": [
+      "samples",
+      "throughputPerSecond"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:af716acae43be71f653938c322372b8a5514ef0ca0e7d0ec2a9ff3bc8b387b7b",
   "implementation_paths": [

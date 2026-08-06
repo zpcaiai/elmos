@@ -8,12 +8,31 @@
   "logical_path": "packages/contracts/g28/frt-2801-dependency-failure-model-registry/",
   "status": "shared_implementation",
   "handler_kind": "resilience_dr",
+  "capability_key": "frt.g28.dependency-failure-model-registry",
+  "execution_contract_sha256": "sha256:68944864d6e6e6e356eaf4a31db8be1b2df7042327e4c2b8f83a1df386e3fa2b",
+  "execution_class": "AUTHORIZED_EXTERNAL_ASSURANCE",
+  "input_contract": {
+    "required": [
+      "scenarios",
+      "recoveryObjectives"
+    ],
+    "optional": [
+      "observations"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:571dfc276913ee2e8d7d428e963a7f0f519e2880e4f3deea79f97c155cbb36cf",
   "implementation_paths": [
     "schemas/frt-g01-g30/skill-run-request.schema.json",
     "schemas/frt-g01-g30/skill-run-result.schema.json",
-    "engines/frontend-client-engine/src/frt-types.ts"
+    "schemas/frt-g01-g30/skill-execution-contract.schema.json",
+    "schemas/frt-g01-g30/gate-result.schema.json",
+    "schemas/frt-g01-g30/external-qualification-plan.schema.json",
+    "schemas/frt-g01-g30/external-qualification-preflight.schema.json",
+    "schemas/frt-g01-g30/external-qualification-local-execution.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts"
   ],
   "not_applicable": false,
   "approval_evidence": [],

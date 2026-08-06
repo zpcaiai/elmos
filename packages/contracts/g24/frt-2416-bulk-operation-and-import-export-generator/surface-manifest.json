@@ -8,12 +8,30 @@
   "logical_path": "packages/contracts/g24/frt-2416-bulk-operation-and-import-export-generator/",
   "status": "shared_implementation",
   "handler_kind": "administration",
+  "capability_key": "frt.g24.bulk-operation-and-import-export-generator",
+  "execution_contract_sha256": "sha256:1196071b364afcded3fc83777a2ea09210a8e5b8b8458d0795c467ef1cefea6a",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "capabilities",
+      "roles",
+      "operations"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:e31637cb9b191bb5ae3f6c2ec244543be590618f40bdcf0bcb178148034fb805",
   "implementation_paths": [
     "schemas/frt-g01-g30/skill-run-request.schema.json",
     "schemas/frt-g01-g30/skill-run-result.schema.json",
-    "engines/frontend-client-engine/src/frt-types.ts"
+    "schemas/frt-g01-g30/skill-execution-contract.schema.json",
+    "schemas/frt-g01-g30/gate-result.schema.json",
+    "schemas/frt-g01-g30/external-qualification-plan.schema.json",
+    "schemas/frt-g01-g30/external-qualification-preflight.schema.json",
+    "schemas/frt-g01-g30/external-qualification-local-execution.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts"
   ],
   "not_applicable": false,
   "approval_evidence": [],

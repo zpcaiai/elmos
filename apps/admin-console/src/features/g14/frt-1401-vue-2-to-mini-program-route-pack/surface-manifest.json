@@ -8,6 +8,16 @@
   "logical_path": "apps/admin-console/src/features/g14/frt-1401-vue-2-to-mini-program-route-pack/",
   "status": "shared_implementation",
   "handler_kind": "directional_route",
+  "capability_key": "frt.g14.vue-2-to-mini-program-route-pack",
+  "execution_contract_sha256": "sha256:7b0a02887dba4cbaebb8b04d18d8869a1b8daafe9b1087ab06622582e93df96e",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:dff623e3def0e9a8da8f82e27b0a026e78c43619bc85590be9f27715e56d251e",
   "implementation_paths": [

@@ -8,11 +8,26 @@
   "logical_path": "packages/runtime/g20/frt-2013-model-router-and-cost-governor/",
   "status": "shared_implementation",
   "handler_kind": "runtime_operations",
+  "capability_key": "frt.g20.model-router-and-cost-governor",
+  "execution_contract_sha256": "sha256:debb1e7d424a8afcc9a089e76bb80672691dc9c343fedabfbc8945d3e0dcab54",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "resources"
+    ],
+    "optional": [
+      "roles",
+      "jobs",
+      "quotas"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:0126f91ce44e908f32eaec4b2680726e9d1d699a13e28b2c927c117b9429a14d",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

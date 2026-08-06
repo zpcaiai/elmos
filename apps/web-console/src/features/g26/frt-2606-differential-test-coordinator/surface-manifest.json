@@ -8,6 +8,22 @@
   "logical_path": "apps/web-console/src/features/g26/frt-2606-differential-test-coordinator/",
   "status": "shared_implementation",
   "handler_kind": "product_workflow",
+  "capability_key": "frt.g26.differential-test-coordinator",
+  "execution_contract_sha256": "sha256:171c610edd10aae9b226e350bb28fccf0cdb142e531f26f4c0d468a0e39d03ca",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:f2beaa1f6519d5e89fee9247fa4676de2c45489ea6420c5dc0b1aaee26af6c0a",
   "implementation_paths": [

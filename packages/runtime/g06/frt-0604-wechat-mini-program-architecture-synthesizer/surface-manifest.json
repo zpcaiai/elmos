@@ -8,11 +8,23 @@
   "logical_path": "packages/runtime/g06/frt-0604-wechat-mini-program-architecture-synthesizer/",
   "status": "shared_implementation",
   "handler_kind": "source_generation",
+  "capability_key": "frt.g06.wechat-mini-program-architecture-synthesizer",
+  "execution_contract_sha256": "sha256:831a7a4fb27005ccc780e906b87ddfed697bf3cf9bcca1f7f37ef919baf9abea",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "targetProfile",
+      "uiIr"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:ab4ada21baa48868e2b5fe4947e58f88e222f3d9912ae2a442b685f5c4234d5a",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

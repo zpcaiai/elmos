@@ -8,6 +8,18 @@
   "logical_path": "services/control-plane/g24/frt-2405-order-payment-and-refund-administration/",
   "status": "shared_implementation",
   "handler_kind": "administration",
+  "capability_key": "frt.g24.order-payment-and-refund-administration",
+  "execution_contract_sha256": "sha256:785515c5eae485e78bad395b334b071f523753e81a9ebe98321ef4be80248c92",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "capabilities",
+      "roles",
+      "operations"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:1c69747f4c3a224f85b9ac180c32db4b75792a2cf289988efa5126324ed035d2",
   "implementation_paths": [

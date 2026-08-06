@@ -8,6 +8,20 @@
   "logical_path": "apps/web-console/src/features/g20/frt-2000-productization-orchestrator/",
   "status": "shared_implementation",
   "handler_kind": "runtime_operations",
+  "capability_key": "frt.g20.productization-orchestrator",
+  "execution_contract_sha256": "sha256:755901e352e95febf435888ef743f8292e5602d430feefecf0d92a461d4cb4c7",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "resources"
+    ],
+    "optional": [
+      "roles",
+      "jobs",
+      "quotas"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:348d1b7309bacea77321ecc8eaee5f7395933c41047034270a4534fc44315ae9",
   "implementation_paths": [

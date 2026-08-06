@@ -8,6 +8,19 @@
   "logical_path": "apps/web-console/src/features/g28/frt-2812-chaos-experiment-generator/",
   "status": "shared_implementation",
   "handler_kind": "resilience_dr",
+  "capability_key": "frt.g28.chaos-experiment-generator",
+  "execution_contract_sha256": "sha256:cbaeb30033aafd0e48b6c2496a4388e07e7f46f73345b727217089af8177fb8d",
+  "execution_class": "AUTHORIZED_EXTERNAL_ASSURANCE",
+  "input_contract": {
+    "required": [
+      "scenarios",
+      "recoveryObjectives"
+    ],
+    "optional": [
+      "observations"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:a30ac20a8c0daf9bf21619acf7d83d5ec13c7b98b2c09eba142576cab3c92b5c",
   "implementation_paths": [

@@ -8,12 +8,28 @@
   "logical_path": "packages/contracts/g08/frt-0808-component-lifecycle-mapper/",
   "status": "shared_implementation",
   "handler_kind": "test_automation",
+  "capability_key": "frt.g08.component-lifecycle-mapper",
+  "execution_contract_sha256": "sha256:a8e8dce8d4ec8e4dd997e6fde38d70bdf3b4b67113b46181abb71b3e41df0990",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "components"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:5f56781c56c73717c1ef8ea76e608fce352a8f7fab56eca79645168494c4879f",
   "implementation_paths": [
     "schemas/frt-g01-g30/skill-run-request.schema.json",
     "schemas/frt-g01-g30/skill-run-result.schema.json",
-    "engines/frontend-client-engine/src/frt-types.ts"
+    "schemas/frt-g01-g30/skill-execution-contract.schema.json",
+    "schemas/frt-g01-g30/gate-result.schema.json",
+    "schemas/frt-g01-g30/external-qualification-plan.schema.json",
+    "schemas/frt-g01-g30/external-qualification-preflight.schema.json",
+    "schemas/frt-g01-g30/external-qualification-local-execution.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts"
   ],
   "not_applicable": false,
   "approval_evidence": [],

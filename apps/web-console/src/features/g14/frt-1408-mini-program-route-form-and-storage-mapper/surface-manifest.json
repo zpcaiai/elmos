@@ -8,6 +8,18 @@
   "logical_path": "apps/web-console/src/features/g14/frt-1408-mini-program-route-form-and-storage-mapper/",
   "status": "shared_implementation",
   "handler_kind": "route_orchestration",
+  "capability_key": "frt.g14.mini-program-route-form-and-storage-mapper",
+  "execution_contract_sha256": "sha256:4489f052ce0a84386639c3fb3a518826e5e9b1b4dec2e876f29bb47b6ba31b05",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "corpus"
+    ],
+    "optional": [
+      "routeIds"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:975ff35b405884bc67de8cb4188cfd683fb70e1fe533f7020e459354d3423a0d",
   "implementation_paths": [

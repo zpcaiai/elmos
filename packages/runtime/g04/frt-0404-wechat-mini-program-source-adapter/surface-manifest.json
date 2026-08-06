@@ -8,11 +8,22 @@
   "logical_path": "packages/runtime/g04/frt-0404-wechat-mini-program-source-adapter/",
   "status": "shared_implementation",
   "handler_kind": "typed_contract",
+  "capability_key": "frt.g04.wechat-mini-program-source-adapter",
+  "execution_contract_sha256": "sha256:ac572008cb8512cd9ba6847fb93291d39541faa1c739889d62b816c59b7b8d2d",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:30fcd8a810e11488e698cd4866dc5fd6f4526a6d3885b06b8a2a82a462c8c4e5",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

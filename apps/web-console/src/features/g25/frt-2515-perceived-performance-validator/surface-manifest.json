@@ -8,6 +8,22 @@
   "logical_path": "apps/web-console/src/features/g25/frt-2515-perceived-performance-validator/",
   "status": "shared_implementation",
   "handler_kind": "product_workflow",
+  "capability_key": "frt.g25.perceived-performance-validator",
+  "execution_contract_sha256": "sha256:b01b80129c0e10b57d5321737ccbaa39c9e5c23bc0330c143aef001324eab312",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:93bc7e6ff51dc97aa60316c9894ad5c1e638e61a638ae37c233f0e424501e3c4",
   "implementation_paths": [

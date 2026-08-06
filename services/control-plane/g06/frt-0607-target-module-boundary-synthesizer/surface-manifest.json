@@ -8,6 +8,17 @@
   "logical_path": "services/control-plane/g06/frt-0607-target-module-boundary-synthesizer/",
   "status": "shared_implementation",
   "handler_kind": "source_generation",
+  "capability_key": "frt.g06.target-module-boundary-synthesizer",
+  "execution_contract_sha256": "sha256:046963b7a8d740ff4a8f3086f4baea80bb392a2e84ab0836f68d9ad4764578d6",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "targetProfile",
+      "uiIr"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:d0e327ad7cddcf475bcc3bd8e719fec85681f8cbfcf93cb84d3c4e40d4e18adb",
   "implementation_paths": [

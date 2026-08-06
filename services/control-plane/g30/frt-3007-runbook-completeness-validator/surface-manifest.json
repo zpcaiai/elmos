@@ -8,6 +8,20 @@
   "logical_path": "services/control-plane/g30/frt-3007-runbook-completeness-validator/",
   "status": "shared_implementation",
   "handler_kind": "production_readiness",
+  "capability_key": "frt.g30.runbook-completeness-validator",
+  "execution_contract_sha256": "sha256:a86c8de6de6c29d57533cc4b42a0ff37615c2c7f408177bd3e735412b3668dd3",
+  "execution_class": "EXTERNAL_PRODUCTION_AUTHORITY",
+  "input_contract": {
+    "required": [
+      "slos",
+      "runbooks"
+    ],
+    "optional": [
+      "alerts",
+      "releases"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:965f2ab10cf30bbcfe6ab04558e38af6fe3192798079adc458f2fb0bff476276",
   "implementation_paths": [

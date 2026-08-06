@@ -8,11 +8,25 @@
   "logical_path": "packages/runtime/g28/frt-2813-backup-and-restore-validator/",
   "status": "shared_implementation",
   "handler_kind": "resilience_dr",
+  "capability_key": "frt.g28.backup-and-restore-validator",
+  "execution_contract_sha256": "sha256:e4068bfb9deadc3a5d17c16091c3b9f56d2a450394fa602c66ae059d9eb83188",
+  "execution_class": "AUTHORIZED_EXTERNAL_ASSURANCE",
+  "input_contract": {
+    "required": [
+      "scenarios",
+      "recoveryObjectives"
+    ],
+    "optional": [
+      "observations"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:34a740d6284019f5150eac835dac9bc09ce7923b48a6277e12278f128f4f8045",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

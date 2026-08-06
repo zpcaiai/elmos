@@ -8,6 +8,19 @@
   "logical_path": "services/control-plane/g09/frt-0903-effect-semantics-mapper/",
   "status": "shared_implementation",
   "handler_kind": "delivery_pipeline",
+  "capability_key": "frt.g09.effect-semantics-mapper",
+  "execution_contract_sha256": "sha256:3aa072df0469c3cc39acd069f58521117e805c876bbc9af72eb81020f27e98b6",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "states"
+    ],
+    "optional": [
+      "effects",
+      "asyncOperations"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:44d1ad7bcfedb59fcac6f877b77c37c73b3895d882cc4c0a49c4756c9450267f",
   "implementation_paths": [

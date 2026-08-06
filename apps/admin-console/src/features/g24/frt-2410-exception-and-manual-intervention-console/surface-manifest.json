@@ -8,6 +8,18 @@
   "logical_path": "apps/admin-console/src/features/g24/frt-2410-exception-and-manual-intervention-console/",
   "status": "shared_implementation",
   "handler_kind": "administration",
+  "capability_key": "frt.g24.exception-and-manual-intervention-console",
+  "execution_contract_sha256": "sha256:aa12f47a15d5c056b3b17614c729c058aff68e9ec8ffa3ab93adc8016ed43050",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "capabilities",
+      "roles",
+      "operations"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:9ca0a723e7423d8e6856b4290772799a954588d4d9facfa3f7bff0c423b620e4",
   "implementation_paths": [

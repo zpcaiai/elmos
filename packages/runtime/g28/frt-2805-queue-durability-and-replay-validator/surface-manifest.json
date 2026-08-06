@@ -8,11 +8,25 @@
   "logical_path": "packages/runtime/g28/frt-2805-queue-durability-and-replay-validator/",
   "status": "shared_implementation",
   "handler_kind": "resilience_dr",
+  "capability_key": "frt.g28.queue-durability-and-replay-validator",
+  "execution_contract_sha256": "sha256:aee75140610baade6f025950939754e302a7322de9371c1d5505d24bbc7e962d",
+  "execution_class": "AUTHORIZED_EXTERNAL_ASSURANCE",
+  "input_contract": {
+    "required": [
+      "scenarios",
+      "recoveryObjectives"
+    ],
+    "optional": [
+      "observations"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:b0ef22f4e7681b971d75e332e9e0aa20d52444d233b14192d53db87c618efb49",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

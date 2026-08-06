@@ -8,6 +8,20 @@
   "logical_path": "services/control-plane/g01/frt-0106-artifact-and-provenance-model/",
   "status": "shared_implementation",
   "handler_kind": "governance",
+  "capability_key": "frt.g01.artifact-and-provenance-model",
+  "execution_contract_sha256": "sha256:ca1dbae5b6351fdb6ef80a836f36be280abb95287eb6cd64ef43fe66c6cb2664",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "invariants"
+    ],
+    "optional": [
+      "dependencies",
+      "allowedDependencies",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:0ee585474ed7309918a1b5adbdf503224e10ebc39fe41dfb141d634aa243984d",
   "implementation_paths": [

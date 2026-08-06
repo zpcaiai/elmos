@@ -8,6 +8,19 @@
   "logical_path": "services/control-plane/g12/frt-1203-file-clipboard-and-share-capability/",
   "status": "shared_implementation",
   "handler_kind": "cross_platform",
+  "capability_key": "frt.g12.file-clipboard-and-share-capability",
+  "execution_contract_sha256": "sha256:5160bd9e7cee38369035e4145914f875e57234523f3fe42a8e13353834a86148",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "requiredCapabilities",
+      "platformCapabilities"
+    ],
+    "optional": [
+      "bridges"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:a7693b63e286a028b027792d28f5a3cded923b63770d11eedf19a6b281cdbdd7",
   "implementation_paths": [

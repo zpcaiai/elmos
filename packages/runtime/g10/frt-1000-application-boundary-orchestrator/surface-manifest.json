@@ -8,11 +8,27 @@
   "logical_path": "packages/runtime/g10/frt-1000-application-boundary-orchestrator/",
   "status": "shared_implementation",
   "handler_kind": "design_system",
+  "capability_key": "frt.g10.application-boundary-orchestrator",
+  "execution_contract_sha256": "sha256:e035f19791abd9f9514116f0503f4d81b992f705ccdc854a6a8f6ef87241c736",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "routes"
+    ],
+    "optional": [
+      "forms",
+      "apiCalls",
+      "storage",
+      "permissions"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:12e88c054ab2e64e774e02f2391c88ea219f5917516362a9f2595208e31a1b22",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

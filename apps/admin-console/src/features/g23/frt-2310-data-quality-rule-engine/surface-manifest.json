@@ -8,6 +8,22 @@
   "logical_path": "apps/admin-console/src/features/g23/frt-2310-data-quality-rule-engine/",
   "status": "shared_implementation",
   "handler_kind": "product_workflow",
+  "capability_key": "frt.g23.data-quality-rule-engine",
+  "execution_contract_sha256": "sha256:8ccfd96bdef0eed8a9bbe76d9109e49704f119f97542fbe6daa35962012203ef",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:ba2896b0db323005349d40c5ee395626cbd54571d19c209f933fb7dbd5843f75",
   "implementation_paths": [

@@ -8,6 +8,22 @@
   "logical_path": "apps/web-console/src/features/g22/frt-2203-cross-domain-saga-generator/",
   "status": "shared_implementation",
   "handler_kind": "product_workflow",
+  "capability_key": "frt.g22.cross-domain-saga-generator",
+  "execution_contract_sha256": "sha256:da9c1579ddc671cdcfafe4356905b0afabaedf3d6b37ced180e966ecc8392a58",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:1299ed878b87179b0da44737bcb806063fb61257f9aba6154debe4356edeb24e",
   "implementation_paths": [

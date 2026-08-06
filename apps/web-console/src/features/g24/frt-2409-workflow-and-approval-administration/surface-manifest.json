@@ -8,6 +8,18 @@
   "logical_path": "apps/web-console/src/features/g24/frt-2409-workflow-and-approval-administration/",
   "status": "shared_implementation",
   "handler_kind": "administration",
+  "capability_key": "frt.g24.workflow-and-approval-administration",
+  "execution_contract_sha256": "sha256:16c5d48eb9d11ac95e0cdd03b0e41434bbcb7e31b317684af93e075a99f83084",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "capabilities",
+      "roles",
+      "operations"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:29c09a873aaa9d5c2e0e9a32344b1de90284a5b34782b47192b67ad39c1d495d",
   "implementation_paths": [

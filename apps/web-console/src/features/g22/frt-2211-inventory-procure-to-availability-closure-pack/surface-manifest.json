@@ -8,6 +8,22 @@
   "logical_path": "apps/web-console/src/features/g22/frt-2211-inventory-procure-to-availability-closure-pack/",
   "status": "shared_implementation",
   "handler_kind": "product_workflow",
+  "capability_key": "frt.g22.inventory-procure-to-availability-closure-pack",
+  "execution_contract_sha256": "sha256:2492d296697c5ba038b30a8dcf9e1a09d39a0947c7fb8242ca8e8fdae6aecb30",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:2d8aa85814c39c1f2d391168c3024a458e7b930017e6fffa4dd34e6edbc0dcca",
   "implementation_paths": [

@@ -8,6 +8,19 @@
   "logical_path": "services/control-plane/g05/frt-0509-multi-pass-migration-plan-generator/",
   "status": "shared_implementation",
   "handler_kind": "migration_planning",
+  "capability_key": "frt.g05.multi-pass-migration-plan-generator",
+  "execution_contract_sha256": "sha256:0a896c99b534ab0288267fe82799127a8a792b92f2f1b65844b4ecc2e1e5ee66",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "inventory",
+      "target"
+    ],
+    "optional": [
+      "currentVersions"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:680e1037d9691d2c0c2c427a8e20cf70ffa3aa2edc25add11a9e7046ccb4ea2f",
   "implementation_paths": [

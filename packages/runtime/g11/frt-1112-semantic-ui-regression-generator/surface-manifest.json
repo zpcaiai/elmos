@@ -8,11 +8,27 @@
   "logical_path": "packages/runtime/g11/frt-1112-semantic-ui-regression-generator/",
   "status": "shared_implementation",
   "handler_kind": "mobile_client",
+  "capability_key": "frt.g11.semantic-ui-regression-generator",
+  "execution_contract_sha256": "sha256:fc13c636a4137505650f55860e7de5a04442843dd523975424a0d43663e0630e",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "uiNodes"
+    ],
+    "optional": [
+      "designTokens",
+      "locales",
+      "rtlLocales",
+      "animations"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:1a0aa0b022a7e049a58c7a2401394466ab4c8bc3d3b4942e7b65ccf7a0413db0",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

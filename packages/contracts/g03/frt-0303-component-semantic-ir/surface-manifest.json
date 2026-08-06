@@ -8,12 +8,28 @@
   "logical_path": "packages/contracts/g03/frt-0303-component-semantic-ir/",
   "status": "shared_implementation",
   "handler_kind": "semantic_ir",
+  "capability_key": "frt.g03.component-semantic-ir",
+  "execution_contract_sha256": "sha256:cc533d4daca820a497323423f275e1383bf5787684f94a491269ce85fa84f30a",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:d199962a412faf5e9be5d13fae6fc217c1db6e02463be1e92cf3e2ff2443eed2",
   "implementation_paths": [
     "schemas/frt-g01-g30/skill-run-request.schema.json",
     "schemas/frt-g01-g30/skill-run-result.schema.json",
-    "engines/frontend-client-engine/src/frt-types.ts"
+    "schemas/frt-g01-g30/skill-execution-contract.schema.json",
+    "schemas/frt-g01-g30/gate-result.schema.json",
+    "schemas/frt-g01-g30/external-qualification-plan.schema.json",
+    "schemas/frt-g01-g30/external-qualification-preflight.schema.json",
+    "schemas/frt-g01-g30/external-qualification-local-execution.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts"
   ],
   "not_applicable": false,
   "approval_evidence": [],

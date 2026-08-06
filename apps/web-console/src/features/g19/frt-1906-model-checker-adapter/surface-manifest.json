@@ -8,6 +8,19 @@
   "logical_path": "apps/web-console/src/features/g19/frt-1906-model-checker-adapter/",
   "status": "shared_implementation",
   "handler_kind": "advanced_verification",
+  "capability_key": "frt.g19.model-checker-adapter",
+  "execution_contract_sha256": "sha256:6efd035f68f103a193415bedbe8eb6ba7f0ee9c5186a602f4193d10ad9cb1548",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "properties"
+    ],
+    "optional": [
+      "toolchains",
+      "counterexamples"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:12494a3039daf96760e33e6094c7dd871f57b8226285f90a0c6901ad0c38e1dd",
   "implementation_paths": [

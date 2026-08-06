@@ -8,12 +8,30 @@
   "logical_path": "packages/contracts/g24/frt-2406-inventory-and-resource-administration/",
   "status": "shared_implementation",
   "handler_kind": "administration",
+  "capability_key": "frt.g24.inventory-and-resource-administration",
+  "execution_contract_sha256": "sha256:c96299d97bd75d4781c12ea06d7a772927ddd67f698f11762e09dbcb53a6eb1b",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "capabilities",
+      "roles",
+      "operations"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:a37c3e758889bf3bebfb87b08dbb3fff4a68ce385934cc17a6a1d58af486b07d",
   "implementation_paths": [
     "schemas/frt-g01-g30/skill-run-request.schema.json",
     "schemas/frt-g01-g30/skill-run-result.schema.json",
-    "engines/frontend-client-engine/src/frt-types.ts"
+    "schemas/frt-g01-g30/skill-execution-contract.schema.json",
+    "schemas/frt-g01-g30/gate-result.schema.json",
+    "schemas/frt-g01-g30/external-qualification-plan.schema.json",
+    "schemas/frt-g01-g30/external-qualification-preflight.schema.json",
+    "schemas/frt-g01-g30/external-qualification-local-execution.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts"
   ],
   "not_applicable": false,
   "approval_evidence": [],

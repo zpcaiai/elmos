@@ -8,11 +8,28 @@
   "logical_path": "packages/runtime/g21/frt-2101-requirement-registry/",
   "status": "shared_implementation",
   "handler_kind": "product_workflow",
+  "capability_key": "frt.g21.requirement-registry",
+  "execution_contract_sha256": "sha256:12b3c0891a8cf672379470e577e9e5a4389d7955db9b2b2f742379c4b81f5956",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:7569d159a7a543fdeae84779003d5d4b1f1c596beb054ef523f525d699836bd9",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

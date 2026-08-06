@@ -8,6 +8,20 @@
   "logical_path": "apps/admin-console/src/features/g20/frt-2004-pack-marketplace/",
   "status": "shared_implementation",
   "handler_kind": "runtime_operations",
+  "capability_key": "frt.g20.pack-marketplace",
+  "execution_contract_sha256": "sha256:99de0e24c96b64394d074a3ea15611ec0069366d2264bb7ffe1d8f294d03070c",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "resources"
+    ],
+    "optional": [
+      "roles",
+      "jobs",
+      "quotas"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:35124c2d17518aba41b1595064c94739f78e76a1dd9a1483d6bf288a4c9c444d",
   "implementation_paths": [

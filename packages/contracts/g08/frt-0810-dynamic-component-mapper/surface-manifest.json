@@ -8,12 +8,28 @@
   "logical_path": "packages/contracts/g08/frt-0810-dynamic-component-mapper/",
   "status": "shared_implementation",
   "handler_kind": "test_automation",
+  "capability_key": "frt.g08.dynamic-component-mapper",
+  "execution_contract_sha256": "sha256:a6213c59d57a2d774e91941682b13523e176c8a236b2fdd3157e82f70d812d53",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "components"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:4a92546e0213a0cde74162d7f926abf30e834db2dd50ed89372cbcae9222b195",
   "implementation_paths": [
     "schemas/frt-g01-g30/skill-run-request.schema.json",
     "schemas/frt-g01-g30/skill-run-result.schema.json",
-    "engines/frontend-client-engine/src/frt-types.ts"
+    "schemas/frt-g01-g30/skill-execution-contract.schema.json",
+    "schemas/frt-g01-g30/gate-result.schema.json",
+    "schemas/frt-g01-g30/external-qualification-plan.schema.json",
+    "schemas/frt-g01-g30/external-qualification-preflight.schema.json",
+    "schemas/frt-g01-g30/external-qualification-local-execution.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts"
   ],
   "not_applicable": false,
   "approval_evidence": [],

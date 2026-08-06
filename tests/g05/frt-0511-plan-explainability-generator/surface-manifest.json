@@ -8,14 +8,34 @@
   "logical_path": "tests/g05/frt-0511-plan-explainability-generator/",
   "status": "shared_implementation",
   "handler_kind": "migration_planning",
+  "capability_key": "frt.g05.plan-explainability-generator",
+  "execution_contract_sha256": "sha256:ed75168956501f9f2477f5562d9c772e4aae0bb10e35d2a5aa78c12697528aca",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "inventory",
+      "target"
+    ],
+    "optional": [
+      "currentVersions"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:b3c5ad5ef4fa3788ecdebdefaadf66d8710b094a6e3f316cecc2f8c363f3ee25",
   "implementation_paths": [
     "engines/frontend-client-engine/test/frt-artifact-lifecycle.test.ts",
+    "engines/frontend-client-engine/test/frt-production-contract.test.ts",
     "engines/frontend-client-engine/test/frt-runtime.test.ts",
     "engines/frontend-client-engine/test/frt-semantic-handlers.test.ts",
     "engines/frontend-client-engine/test/server.test.ts",
-    "apps/web-console/e2e/frt-frontend-transformation.spec.ts"
+    "apps/web-console/e2e/frt-frontend-transformation.spec.ts",
+    "scripts/frt/external_qualification.py",
+    "scripts/frt/external_campaign_parameters.py",
+    "scripts/frt/test_external_qualification.py",
+    "scripts/frt/test_external_campaign_parameters.py",
+    "scripts/frt/record_frt_ios_device_evidence.mjs",
+    "scripts/frt/test_record_frt_ios_device_evidence.py"
   ],
   "not_applicable": false,
   "approval_evidence": [],

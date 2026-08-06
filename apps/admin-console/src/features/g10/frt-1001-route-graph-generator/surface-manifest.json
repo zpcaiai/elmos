@@ -8,6 +8,21 @@
   "logical_path": "apps/admin-console/src/features/g10/frt-1001-route-graph-generator/",
   "status": "shared_implementation",
   "handler_kind": "design_system",
+  "capability_key": "frt.g10.route-graph-generator",
+  "execution_contract_sha256": "sha256:a608304330217ae6f5471c7e4d549a5c7e0381da945a1e8522809251cb6ad914",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "routes"
+    ],
+    "optional": [
+      "forms",
+      "apiCalls",
+      "storage",
+      "permissions"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:3deb199457b8ef3723a1de40c307c47ad4e382b6c3d2cba5c398ad05312f9fcb",
   "implementation_paths": [

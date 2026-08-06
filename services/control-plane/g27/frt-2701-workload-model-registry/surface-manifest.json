@@ -8,6 +8,20 @@
   "logical_path": "services/control-plane/g27/frt-2701-workload-model-registry/",
   "status": "shared_implementation",
   "handler_kind": "performance_capacity",
+  "capability_key": "frt.g27.workload-model-registry",
+  "execution_contract_sha256": "sha256:5421641fc1d908447f4c0670a43bf626a5910ea79f3761bf2c4574be7702428b",
+  "execution_class": "AUTHORIZED_EXTERNAL_ASSURANCE",
+  "input_contract": {
+    "required": [
+      "workload",
+      "budgets"
+    ],
+    "optional": [
+      "samples",
+      "throughputPerSecond"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:da51b7f71469e700270d60c517acebdc50ff23761fca619739b0935ee5161d55",
   "implementation_paths": [

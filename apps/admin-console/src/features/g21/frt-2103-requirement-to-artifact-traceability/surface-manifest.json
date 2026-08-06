@@ -8,6 +8,22 @@
   "logical_path": "apps/admin-console/src/features/g21/frt-2103-requirement-to-artifact-traceability/",
   "status": "shared_implementation",
   "handler_kind": "product_workflow",
+  "capability_key": "frt.g21.requirement-to-artifact-traceability",
+  "execution_contract_sha256": "sha256:eba5ad1df3eaf895b4ba705cb8217dd9b01079f40f9496214c34a6b1a0353fbc",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:f1ce7be92ec405b82f16f5d16cfee1357a836756c7f1254cf64cbdda9b6bb911",
   "implementation_paths": [

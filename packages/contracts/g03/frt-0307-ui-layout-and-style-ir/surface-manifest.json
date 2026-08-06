@@ -8,12 +8,28 @@
   "logical_path": "packages/contracts/g03/frt-0307-ui-layout-and-style-ir/",
   "status": "shared_implementation",
   "handler_kind": "semantic_ir",
+  "capability_key": "frt.g03.ui-layout-and-style-ir",
+  "execution_contract_sha256": "sha256:d1ed77f13980f19dd78b244c93bb65bd230937c0d81a8464a20cf05e46241126",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:d922cc4d1d0200d63c2cc3fc8e8a36f07d0ba5e3f2aef146ed1ea1aa107608f7",
   "implementation_paths": [
     "schemas/frt-g01-g30/skill-run-request.schema.json",
     "schemas/frt-g01-g30/skill-run-result.schema.json",
-    "engines/frontend-client-engine/src/frt-types.ts"
+    "schemas/frt-g01-g30/skill-execution-contract.schema.json",
+    "schemas/frt-g01-g30/gate-result.schema.json",
+    "schemas/frt-g01-g30/external-qualification-plan.schema.json",
+    "schemas/frt-g01-g30/external-qualification-preflight.schema.json",
+    "schemas/frt-g01-g30/external-qualification-local-execution.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts"
   ],
   "not_applicable": false,
   "approval_evidence": [],

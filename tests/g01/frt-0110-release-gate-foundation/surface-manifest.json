@@ -8,14 +8,35 @@
   "logical_path": "tests/g01/frt-0110-release-gate-foundation/",
   "status": "shared_implementation",
   "handler_kind": "governance",
+  "capability_key": "frt.g01.release-gate-foundation",
+  "execution_contract_sha256": "sha256:f8ed537f12104d65c6ef2b9dc59e271dc679ff66ec9fa143412ba01ec406a52e",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "invariants"
+    ],
+    "optional": [
+      "dependencies",
+      "allowedDependencies",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:19fc7411af178d705f2523fa6e378241f7028a279c54941e6b8a5942ec153888",
   "implementation_paths": [
     "engines/frontend-client-engine/test/frt-artifact-lifecycle.test.ts",
+    "engines/frontend-client-engine/test/frt-production-contract.test.ts",
     "engines/frontend-client-engine/test/frt-runtime.test.ts",
     "engines/frontend-client-engine/test/frt-semantic-handlers.test.ts",
     "engines/frontend-client-engine/test/server.test.ts",
-    "apps/web-console/e2e/frt-frontend-transformation.spec.ts"
+    "apps/web-console/e2e/frt-frontend-transformation.spec.ts",
+    "scripts/frt/external_qualification.py",
+    "scripts/frt/external_campaign_parameters.py",
+    "scripts/frt/test_external_qualification.py",
+    "scripts/frt/test_external_campaign_parameters.py",
+    "scripts/frt/record_frt_ios_device_evidence.mjs",
+    "scripts/frt/test_record_frt_ios_device_evidence.py"
   ],
   "not_applicable": false,
   "approval_evidence": [],

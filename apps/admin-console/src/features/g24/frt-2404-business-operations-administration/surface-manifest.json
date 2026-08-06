@@ -8,6 +8,18 @@
   "logical_path": "apps/admin-console/src/features/g24/frt-2404-business-operations-administration/",
   "status": "shared_implementation",
   "handler_kind": "administration",
+  "capability_key": "frt.g24.business-operations-administration",
+  "execution_contract_sha256": "sha256:1f86644cd626e35bcaec727cd92259fab7bc7b9c84b9cdc591c91347621a05f1",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "capabilities",
+      "roles",
+      "operations"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:8c491eabcccc0f560d2706d74b6c344b87606a3e3d4184e32bc8236ce4c0d638",
   "implementation_paths": [

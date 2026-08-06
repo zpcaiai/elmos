@@ -8,12 +8,31 @@
   "logical_path": "packages/contracts/g19/frt-1916-semantic-drift-detector/",
   "status": "shared_implementation",
   "handler_kind": "advanced_verification",
+  "capability_key": "frt.g19.semantic-drift-detector",
+  "execution_contract_sha256": "sha256:697ddc0975d78600b9473541241023658d068b7af7d1a7184c982b850e6ca202",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "properties"
+    ],
+    "optional": [
+      "toolchains",
+      "counterexamples"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:40d035ad576cac155b52d4deb89a10d00bb834fb20ab999d9543859e54eebf2a",
   "implementation_paths": [
     "schemas/frt-g01-g30/skill-run-request.schema.json",
     "schemas/frt-g01-g30/skill-run-result.schema.json",
-    "engines/frontend-client-engine/src/frt-types.ts"
+    "schemas/frt-g01-g30/skill-execution-contract.schema.json",
+    "schemas/frt-g01-g30/gate-result.schema.json",
+    "schemas/frt-g01-g30/external-qualification-plan.schema.json",
+    "schemas/frt-g01-g30/external-qualification-preflight.schema.json",
+    "schemas/frt-g01-g30/external-qualification-local-execution.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts"
   ],
   "not_applicable": false,
   "approval_evidence": [],

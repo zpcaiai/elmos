@@ -8,6 +8,22 @@
   "logical_path": "apps/admin-console/src/features/g22/frt-2218-agent-run-to-human-approval-closure-pack/",
   "status": "shared_implementation",
   "handler_kind": "product_workflow",
+  "capability_key": "frt.g22.agent-run-to-human-approval-closure-pack",
+  "execution_contract_sha256": "sha256:3ec70c938debf8a015a7b4e42f275692849120ea01a10e5bf834e76d57c3da48",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:9fb6caca3597ca37e41fa4593c7f8218abc2cc29290ad988cd271f254afcbbe6",
   "implementation_paths": [

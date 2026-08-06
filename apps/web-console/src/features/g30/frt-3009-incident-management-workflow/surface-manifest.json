@@ -8,6 +8,20 @@
   "logical_path": "apps/web-console/src/features/g30/frt-3009-incident-management-workflow/",
   "status": "shared_implementation",
   "handler_kind": "production_readiness",
+  "capability_key": "frt.g30.incident-management-workflow",
+  "execution_contract_sha256": "sha256:2efd1cd3ab2eaffc8042dda85198f84711a4d55bb4e257b4985f571c11d6b83d",
+  "execution_class": "EXTERNAL_PRODUCTION_AUTHORITY",
+  "input_contract": {
+    "required": [
+      "slos",
+      "runbooks"
+    ],
+    "optional": [
+      "alerts",
+      "releases"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:0a22248c4af07d47a4212f19d6ca4f7b50389e44dc29a395c27827763a0a1a22",
   "implementation_paths": [

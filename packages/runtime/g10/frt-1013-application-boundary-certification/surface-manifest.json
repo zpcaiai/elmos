@@ -8,11 +8,27 @@
   "logical_path": "packages/runtime/g10/frt-1013-application-boundary-certification/",
   "status": "shared_implementation",
   "handler_kind": "design_system",
+  "capability_key": "frt.g10.application-boundary-certification",
+  "execution_contract_sha256": "sha256:37e704157dfef791baee9229fa97b683b876438a37cccfff28d34000b3abd311",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "routes"
+    ],
+    "optional": [
+      "forms",
+      "apiCalls",
+      "storage",
+      "permissions"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:2daad579c6bccc99a80a80bcea8f580e51e0d163fefc6c47a4a8fcee063d5519",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

@@ -8,11 +8,26 @@
   "logical_path": "packages/runtime/g30/frt-3015-legacy-coexistence-and-cutover-validator/",
   "status": "shared_implementation",
   "handler_kind": "production_readiness",
+  "capability_key": "frt.g30.legacy-coexistence-and-cutover-validator",
+  "execution_contract_sha256": "sha256:a9c12dc391accd6a2a7074320c665bc194e4d8dd9235f5f9b3364487c6323117",
+  "execution_class": "EXTERNAL_PRODUCTION_AUTHORITY",
+  "input_contract": {
+    "required": [
+      "slos",
+      "runbooks"
+    ],
+    "optional": [
+      "alerts",
+      "releases"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:c81ae4c479c14ebb83be57b3ad1cc7d1c46a2e1ff0a089bab0cfcd1097e21ec6",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

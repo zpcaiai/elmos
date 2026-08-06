@@ -8,11 +8,25 @@
   "logical_path": "packages/runtime/g28/frt-2806-stateful-failover-validator/",
   "status": "shared_implementation",
   "handler_kind": "resilience_dr",
+  "capability_key": "frt.g28.stateful-failover-validator",
+  "execution_contract_sha256": "sha256:bb79cf733cb908959c997e92509f30776db466441c75c46a6d4ed27d2cd388b9",
+  "execution_class": "AUTHORIZED_EXTERNAL_ASSURANCE",
+  "input_contract": {
+    "required": [
+      "scenarios",
+      "recoveryObjectives"
+    ],
+    "optional": [
+      "observations"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:f416b36270ac65defc273d1df1b67efd7d004a6cd76afa556599a9fa7a1e2fb7",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

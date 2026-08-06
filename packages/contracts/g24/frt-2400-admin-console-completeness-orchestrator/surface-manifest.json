@@ -8,12 +8,30 @@
   "logical_path": "packages/contracts/g24/frt-2400-admin-console-completeness-orchestrator/",
   "status": "shared_implementation",
   "handler_kind": "administration",
+  "capability_key": "frt.g24.admin-console-completeness-orchestrator",
+  "execution_contract_sha256": "sha256:7a611f5a6967236b104ab94b7e344ad7b1f0b8112f567f327b11beb3578a62a6",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "capabilities",
+      "roles",
+      "operations"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:cef408c1dd6bc0c5a0ee528b509e11e543b27a3e6e5a0733106aeda13517c863",
   "implementation_paths": [
     "schemas/frt-g01-g30/skill-run-request.schema.json",
     "schemas/frt-g01-g30/skill-run-result.schema.json",
-    "engines/frontend-client-engine/src/frt-types.ts"
+    "schemas/frt-g01-g30/skill-execution-contract.schema.json",
+    "schemas/frt-g01-g30/gate-result.schema.json",
+    "schemas/frt-g01-g30/external-qualification-plan.schema.json",
+    "schemas/frt-g01-g30/external-qualification-preflight.schema.json",
+    "schemas/frt-g01-g30/external-qualification-local-execution.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts"
   ],
   "not_applicable": false,
   "approval_evidence": [],

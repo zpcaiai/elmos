@@ -8,6 +8,20 @@
   "logical_path": "apps/web-console/src/features/g30/frt-3018-continuous-verification-scheduler/",
   "status": "shared_implementation",
   "handler_kind": "production_readiness",
+  "capability_key": "frt.g30.continuous-verification-scheduler",
+  "execution_contract_sha256": "sha256:cebbe019be944aeb29f334e3c6ad6cd2b762822f2cab8d1ff8f925b7ea241c52",
+  "execution_class": "EXTERNAL_PRODUCTION_AUTHORITY",
+  "input_contract": {
+    "required": [
+      "slos",
+      "runbooks"
+    ],
+    "optional": [
+      "alerts",
+      "releases"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:3e567a9d8d7b0401012b3db0b3254829b915ee8870a942d7ce2a1fb0bca8b8a5",
   "implementation_paths": [

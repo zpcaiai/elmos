@@ -8,6 +8,20 @@
   "logical_path": "apps/web-console/src/features/g01/frt-0105-skill-registry-foundation/",
   "status": "shared_implementation",
   "handler_kind": "governance",
+  "capability_key": "frt.g01.skill-registry-foundation",
+  "execution_contract_sha256": "sha256:465713a1b1ecc5294fcf273019644d1171718cc79856c5a347136a8ab409b955",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "invariants"
+    ],
+    "optional": [
+      "dependencies",
+      "allowedDependencies",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:df2a5fc0bab9edd9767d57cf4fcbb99adf3b1bf355a8ee0464f17e902a4b87f5",
   "implementation_paths": [

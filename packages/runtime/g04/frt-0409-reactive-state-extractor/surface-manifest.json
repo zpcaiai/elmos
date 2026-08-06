@@ -8,11 +8,22 @@
   "logical_path": "packages/runtime/g04/frt-0409-reactive-state-extractor/",
   "status": "shared_implementation",
   "handler_kind": "typed_contract",
+  "capability_key": "frt.g04.reactive-state-extractor",
+  "execution_contract_sha256": "sha256:9da797172055113315d2f9fa91201a7f9da6530a3a33e89b6c1ef81679af6ed4",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:59a5448788df9137b13cd349f70c1925f6b23e8043e05f1b075f6c212d98b935",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

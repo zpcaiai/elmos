@@ -8,11 +8,25 @@
   "logical_path": "packages/runtime/g28/frt-2819-resilience-certification/",
   "status": "shared_implementation",
   "handler_kind": "resilience_dr",
+  "capability_key": "frt.g28.resilience-certification",
+  "execution_contract_sha256": "sha256:f411268311ae0a2671ff0c066219c716162db22103172d2bb47654a693f261e2",
+  "execution_class": "AUTHORIZED_EXTERNAL_ASSURANCE",
+  "input_contract": {
+    "required": [
+      "scenarios",
+      "recoveryObjectives"
+    ],
+    "optional": [
+      "observations"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:86f9d8476ed60808fb86b090328d5b53a2b279141f805d23ccf35d68dc763682",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

@@ -8,6 +8,21 @@
   "logical_path": "apps/web-console/src/features/g10/frt-1009-identity-and-session-mapper/",
   "status": "shared_implementation",
   "handler_kind": "design_system",
+  "capability_key": "frt.g10.identity-and-session-mapper",
+  "execution_contract_sha256": "sha256:015eb0b8fa3b86aa2c4348864b9bac613030e6fb3a49476e06740749bff87b03",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "routes"
+    ],
+    "optional": [
+      "forms",
+      "apiCalls",
+      "storage",
+      "permissions"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:8722337b184e95943265ed5cf4acee6a24ea7386165563d1270560f2f628594d",
   "implementation_paths": [

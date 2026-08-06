@@ -8,6 +8,22 @@
   "logical_path": "apps/admin-console/src/features/g23/frt-2315-migration-data-verification-generator/",
   "status": "shared_implementation",
   "handler_kind": "product_workflow",
+  "capability_key": "frt.g23.migration-data-verification-generator",
+  "execution_contract_sha256": "sha256:fcc856cc1c7690ca62b27aaeb680d36e5c97f6e290d578ebf071851f59220db6",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:28fa3507535eafa9f86390399a17d6366960ebcfe9847b00bc34988951aeef06",
   "implementation_paths": [

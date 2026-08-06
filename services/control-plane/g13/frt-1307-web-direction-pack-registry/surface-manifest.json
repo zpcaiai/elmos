@@ -8,6 +8,18 @@
   "logical_path": "services/control-plane/g13/frt-1307-web-direction-pack-registry/",
   "status": "shared_implementation",
   "handler_kind": "route_orchestration",
+  "capability_key": "frt.g13.web-direction-pack-registry",
+  "execution_contract_sha256": "sha256:af550a82558c830a301181ffdc088d8b37822c709adfcaee5cb23706478f07b7",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "corpus"
+    ],
+    "optional": [
+      "routeIds"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:9a26a2896227d9b5d219ac8430e9bc5ebc60339618f8e867004069fe3cb44133",
   "implementation_paths": [

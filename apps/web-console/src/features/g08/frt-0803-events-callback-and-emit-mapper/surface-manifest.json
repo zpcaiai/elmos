@@ -8,6 +8,16 @@
   "logical_path": "apps/web-console/src/features/g08/frt-0803-events-callback-and-emit-mapper/",
   "status": "shared_implementation",
   "handler_kind": "test_automation",
+  "capability_key": "frt.g08.events-callback-and-emit-mapper",
+  "execution_contract_sha256": "sha256:62fc0d1a583967b3e3927a18a812ae969485315e95f563203c970ba50970e926",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "components"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:4fe4f6266947ebcb090b31e3c7ee16be3cd9e48efe4a5363421b3f5d43dc2d73",
   "implementation_paths": [

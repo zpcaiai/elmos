@@ -8,6 +8,19 @@
   "logical_path": "services/control-plane/g28/frt-2811-region-failure-validator/",
   "status": "shared_implementation",
   "handler_kind": "resilience_dr",
+  "capability_key": "frt.g28.region-failure-validator",
+  "execution_contract_sha256": "sha256:2d6e0bdc831e0a39e4a11b0a96599daea4df3ff3d580853493ed82bc6e507b95",
+  "execution_class": "AUTHORIZED_EXTERNAL_ASSURANCE",
+  "input_contract": {
+    "required": [
+      "scenarios",
+      "recoveryObjectives"
+    ],
+    "optional": [
+      "observations"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:69aafd9bdb072d9bc304c3e96af7fa1a7a91b51abaf9a6416018b233aafb29c2",
   "implementation_paths": [

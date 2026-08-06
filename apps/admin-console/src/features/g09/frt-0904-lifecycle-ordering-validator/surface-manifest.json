@@ -8,6 +8,19 @@
   "logical_path": "apps/admin-console/src/features/g09/frt-0904-lifecycle-ordering-validator/",
   "status": "shared_implementation",
   "handler_kind": "delivery_pipeline",
+  "capability_key": "frt.g09.lifecycle-ordering-validator",
+  "execution_contract_sha256": "sha256:28786740b09f66c430c3b64611d48ca298baa5ad05535462e771354143d5e84d",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "states"
+    ],
+    "optional": [
+      "effects",
+      "asyncOperations"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:55a2af9c41e098b32b0be63b639068fd432a1dd5d9bc129bba0c7f922af59640",
   "implementation_paths": [

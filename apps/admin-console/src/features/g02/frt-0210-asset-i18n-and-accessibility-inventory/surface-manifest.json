@@ -8,6 +8,16 @@
   "logical_path": "apps/admin-console/src/features/g02/frt-0210-asset-i18n-and-accessibility-inventory/",
   "status": "shared_implementation",
   "handler_kind": "estate_discovery",
+  "capability_key": "frt.g02.asset-i18n-and-accessibility-inventory",
+  "execution_contract_sha256": "sha256:43a6b969c24a2d73b9a4bfd0b2efd3c92e7c3db29d54838c1a6de0dfca234856",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:72de563ff375d521e7018ad1850fed5918dd6beb77af6495b3a81f11d26d84a8",
   "implementation_paths": [

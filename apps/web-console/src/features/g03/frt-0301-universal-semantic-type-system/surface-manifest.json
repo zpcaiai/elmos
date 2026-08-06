@@ -8,6 +8,16 @@
   "logical_path": "apps/web-console/src/features/g03/frt-0301-universal-semantic-type-system/",
   "status": "shared_implementation",
   "handler_kind": "semantic_ir",
+  "capability_key": "frt.g03.universal-semantic-type-system",
+  "execution_contract_sha256": "sha256:eb2ce123b586f584d612c5d6efa2bab61647ae9b9c0c2901e88cbe30d9c8a32c",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:0e0a8177f6a1a626617220ae4c38c71df4ad12e349b290c42cf9da0d7db2f3bf",
   "implementation_paths": [

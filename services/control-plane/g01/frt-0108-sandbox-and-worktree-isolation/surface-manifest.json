@@ -8,6 +8,20 @@
   "logical_path": "services/control-plane/g01/frt-0108-sandbox-and-worktree-isolation/",
   "status": "shared_implementation",
   "handler_kind": "governance",
+  "capability_key": "frt.g01.sandbox-and-worktree-isolation",
+  "execution_contract_sha256": "sha256:747beea19fada666ab1d43cc2fa8cd14229f6b2769459cdfe67a3b2ad47a102b",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "invariants"
+    ],
+    "optional": [
+      "dependencies",
+      "allowedDependencies",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:cb08673b571aa68f37a4c416db70b8823efcaf5d51c624f3e08fe38c38f73837",
   "implementation_paths": [

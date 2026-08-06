@@ -8,12 +8,31 @@
   "logical_path": "packages/contracts/g19/frt-1903-leanstral-candidate-adapter/",
   "status": "shared_implementation",
   "handler_kind": "advanced_verification",
+  "capability_key": "frt.g19.leanstral-candidate-adapter",
+  "execution_contract_sha256": "sha256:c7caa0add4f2660968a74a17cd501b356caef7a2f01c080356d22aaeed546a84",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "properties"
+    ],
+    "optional": [
+      "toolchains",
+      "counterexamples"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:3e57fc01ca8a592406af3fb0bd826c87d8b9b4ed09f648a2e3ebbf38055a9edd",
   "implementation_paths": [
     "schemas/frt-g01-g30/skill-run-request.schema.json",
     "schemas/frt-g01-g30/skill-run-result.schema.json",
-    "engines/frontend-client-engine/src/frt-types.ts"
+    "schemas/frt-g01-g30/skill-execution-contract.schema.json",
+    "schemas/frt-g01-g30/gate-result.schema.json",
+    "schemas/frt-g01-g30/external-qualification-plan.schema.json",
+    "schemas/frt-g01-g30/external-qualification-preflight.schema.json",
+    "schemas/frt-g01-g30/external-qualification-local-execution.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts"
   ],
   "not_applicable": false,
   "approval_evidence": [],

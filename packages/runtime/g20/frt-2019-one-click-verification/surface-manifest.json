@@ -8,11 +8,26 @@
   "logical_path": "packages/runtime/g20/frt-2019-one-click-verification/",
   "status": "shared_implementation",
   "handler_kind": "runtime_operations",
+  "capability_key": "frt.g20.one-click-verification",
+  "execution_contract_sha256": "sha256:c32cd86b00ec879f1782f7d7cfb4d6822a4e3b6c11810c184db0dbf2d898f035",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "resources"
+    ],
+    "optional": [
+      "roles",
+      "jobs",
+      "quotas"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:a611d51a367f168727fefda33ee2742c31e843ac110e502f5955e4c962c3f8f7",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

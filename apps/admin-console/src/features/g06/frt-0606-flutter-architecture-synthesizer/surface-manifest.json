@@ -8,6 +8,17 @@
   "logical_path": "apps/admin-console/src/features/g06/frt-0606-flutter-architecture-synthesizer/",
   "status": "shared_implementation",
   "handler_kind": "source_generation",
+  "capability_key": "frt.g06.flutter-architecture-synthesizer",
+  "execution_contract_sha256": "sha256:aff95a7232ecec6245d8481c2b94284dbb88a937af8d84a5ad43a45462cea942",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "targetProfile",
+      "uiIr"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:3b0e4756ba5cc63520354471638f579cee2202788c0d68433b3f52e513a3a365",
   "implementation_paths": [

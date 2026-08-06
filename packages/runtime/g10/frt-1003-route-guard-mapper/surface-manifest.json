@@ -8,11 +8,27 @@
   "logical_path": "packages/runtime/g10/frt-1003-route-guard-mapper/",
   "status": "shared_implementation",
   "handler_kind": "design_system",
+  "capability_key": "frt.g10.route-guard-mapper",
+  "execution_contract_sha256": "sha256:329268d33afbcc9bf3b363540f3b73b81144a2a07c57042d08c4768fb4e5feb3",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "routes"
+    ],
+    "optional": [
+      "forms",
+      "apiCalls",
+      "storage",
+      "permissions"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:be06f41b6581101f162994f52cccaa85d0200d684717fda75f28f747a6288a3e",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

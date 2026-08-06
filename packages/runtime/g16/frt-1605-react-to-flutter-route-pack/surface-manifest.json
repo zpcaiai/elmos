@@ -8,11 +8,22 @@
   "logical_path": "packages/runtime/g16/frt-1605-react-to-flutter-route-pack/",
   "status": "shared_implementation",
   "handler_kind": "directional_route",
+  "capability_key": "frt.g16.react-to-flutter-route-pack",
+  "execution_contract_sha256": "sha256:738474ebd7ebcb953c984779577de447b250cdd65dad21921ff46906c527de86",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:38240b688effe716ea31fbeec2441ac3937dc86ca0a8c92299d7b055f38857e3",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

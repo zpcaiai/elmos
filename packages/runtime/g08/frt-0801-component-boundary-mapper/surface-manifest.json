@@ -8,11 +8,22 @@
   "logical_path": "packages/runtime/g08/frt-0801-component-boundary-mapper/",
   "status": "shared_implementation",
   "handler_kind": "test_automation",
+  "capability_key": "frt.g08.component-boundary-mapper",
+  "execution_contract_sha256": "sha256:ea6661fc2474c234525f3feb4f21c1437a175f871a440974b6d7caf974419236",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "components"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:10c42fcb3970e66e80404b6b4b67cd70fd6903a32967caa480f7b3bdf22c4db2",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

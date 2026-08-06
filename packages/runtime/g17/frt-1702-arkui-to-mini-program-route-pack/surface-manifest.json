@@ -8,11 +8,22 @@
   "logical_path": "packages/runtime/g17/frt-1702-arkui-to-mini-program-route-pack/",
   "status": "shared_implementation",
   "handler_kind": "directional_route",
+  "capability_key": "frt.g17.arkui-to-mini-program-route-pack",
+  "execution_contract_sha256": "sha256:9a86c3622c64cbde82319dd335ed8c3a8a65480d3b91c27f73178c06b02fabdd",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:7c13ed7b4dbda08a3cb4fa5ba36401ee26d44a6bc28624d9388b300001ac502e",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

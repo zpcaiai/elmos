@@ -8,11 +8,22 @@
   "logical_path": "packages/runtime/g18/frt-1810-pack-dependency-resolver/",
   "status": "shared_implementation",
   "handler_kind": "compatibility",
+  "capability_key": "frt.g18.pack-dependency-resolver",
+  "execution_contract_sha256": "sha256:1a2d970c93294f8fdc5d118f3dc280a3cad433229214e4ca0f8840253b42ab29",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "packs"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:0daa8216d92b2068bda7d4965e565e11ab167cb11919a0a18ee4e418ff1abf07",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

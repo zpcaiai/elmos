@@ -8,6 +8,19 @@
   "logical_path": "services/control-plane/g12/frt-1201-platform-capability-registry/",
   "status": "shared_implementation",
   "handler_kind": "cross_platform",
+  "capability_key": "frt.g12.platform-capability-registry",
+  "execution_contract_sha256": "sha256:0d4fa0ed51a8962401d2b31dc1f09bedd20aec615a5a206e3876b93ab237e3cb",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "requiredCapabilities",
+      "platformCapabilities"
+    ],
+    "optional": [
+      "bridges"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:7d38904f953d9920116bcb2548543838b8a20e185f08f66b32c0c048aeeb0d35",
   "implementation_paths": [

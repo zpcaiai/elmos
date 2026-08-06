@@ -8,11 +8,23 @@
   "logical_path": "packages/runtime/g06/frt-0611-bootstrap-and-smoke-validator/",
   "status": "shared_implementation",
   "handler_kind": "source_generation",
+  "capability_key": "frt.g06.bootstrap-and-smoke-validator",
+  "execution_contract_sha256": "sha256:b456e2123637a55a07301997d04c508481d74bd620cb90821314520883290c5b",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "targetProfile",
+      "uiIr"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:52585074067213086a81672144bd34ca71dab2259fe4869ca51e04715b7e78bd",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

@@ -8,6 +8,22 @@
   "logical_path": "apps/admin-console/src/features/g25/frt-2504-form-and-validation-usability-validator/",
   "status": "shared_implementation",
   "handler_kind": "product_workflow",
+  "capability_key": "frt.g25.form-and-validation-usability-validator",
+  "execution_contract_sha256": "sha256:c159b4951cbbd9680baa8e9480ab523e50beeb1b86c264b4455ee0804254c894",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:fe0541bda3142f2959c196614a3bbae829a778115246b352ecb94090f518cb6a",
   "implementation_paths": [

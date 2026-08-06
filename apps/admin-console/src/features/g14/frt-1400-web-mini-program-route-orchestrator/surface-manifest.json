@@ -8,6 +8,18 @@
   "logical_path": "apps/admin-console/src/features/g14/frt-1400-web-mini-program-route-orchestrator/",
   "status": "shared_implementation",
   "handler_kind": "route_orchestration",
+  "capability_key": "frt.g14.web-mini-program-route-orchestrator",
+  "execution_contract_sha256": "sha256:5b5528813924e72511b37cf8625a69bbef5b3998fd78e59c45616d4c9f4bd4ea",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "corpus"
+    ],
+    "optional": [
+      "routeIds"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:3e18b58d1ab9693a36016af02fef0d3d5b4c0e320134122ab4468c69cfce520c",
   "implementation_paths": [

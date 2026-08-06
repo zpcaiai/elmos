@@ -8,11 +8,24 @@
   "logical_path": "packages/runtime/g24/frt-2417-admin-search-and-advanced-filtering/",
   "status": "shared_implementation",
   "handler_kind": "administration",
+  "capability_key": "frt.g24.admin-search-and-advanced-filtering",
+  "execution_contract_sha256": "sha256:4879a0ac8828a68104a3a8aea01a62d0c751d7cbbd1b0952c03a30ed8904cc27",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "capabilities",
+      "roles",
+      "operations"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:8868719367538b87166832003f4b013a9ae4719cbfef250d80ae3e28f4edb0c5",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

@@ -8,6 +8,20 @@
   "logical_path": "apps/web-console/src/features/g27/frt-2718-performance-budget-governor/",
   "status": "shared_implementation",
   "handler_kind": "performance_capacity",
+  "capability_key": "frt.g27.performance-budget-governor",
+  "execution_contract_sha256": "sha256:0a8a31cfd0b1f709428fb17a74d530384af72003c424a293c07a21e2f38e26c6",
+  "execution_class": "AUTHORIZED_EXTERNAL_ASSURANCE",
+  "input_contract": {
+    "required": [
+      "workload",
+      "budgets"
+    ],
+    "optional": [
+      "samples",
+      "throughputPerSecond"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:90e233683d83284ab2eabce1eff617b39ed45a29eed3a8b06cd216f1fb1a492e",
   "implementation_paths": [

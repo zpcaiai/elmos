@@ -8,6 +8,19 @@
   "logical_path": "apps/web-console/src/features/g09/frt-0905-async-and-concurrency-mapper/",
   "status": "shared_implementation",
   "handler_kind": "delivery_pipeline",
+  "capability_key": "frt.g09.async-and-concurrency-mapper",
+  "execution_contract_sha256": "sha256:40d14b0f7952ffa170f817831562e32e6e91cbe38dbc86c577f866f4d4f1f090",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "states"
+    ],
+    "optional": [
+      "effects",
+      "asyncOperations"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:6553bcc6b4321ffcbd254805f63a9c8fcbb406a9d2d11db60bd297d5bfccba46",
   "implementation_paths": [

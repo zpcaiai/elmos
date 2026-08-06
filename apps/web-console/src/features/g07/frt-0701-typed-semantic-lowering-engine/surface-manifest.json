@@ -8,6 +8,21 @@
   "logical_path": "apps/web-console/src/features/g07/frt-0701-typed-semantic-lowering-engine/",
   "status": "shared_implementation",
   "handler_kind": "build_toolchain",
+  "capability_key": "frt.g07.typed-semantic-lowering-engine",
+  "execution_contract_sha256": "sha256:86bc460c7709d02bb115de9eb72bf41707e9136e704ab84eee3bff3249723445",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "astNodes"
+    ],
+    "optional": [
+      "imports",
+      "diagnostics",
+      "unsupportedSemantics",
+      "repairPasses"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:faff44c3be5725a6764b796253b3652e5ecec58ec7b0e61674f7662b04528fba",
   "implementation_paths": [

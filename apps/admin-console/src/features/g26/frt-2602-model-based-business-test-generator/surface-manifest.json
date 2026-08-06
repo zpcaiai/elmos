@@ -8,6 +8,22 @@
   "logical_path": "apps/admin-console/src/features/g26/frt-2602-model-based-business-test-generator/",
   "status": "shared_implementation",
   "handler_kind": "product_workflow",
+  "capability_key": "frt.g26.model-based-business-test-generator",
+  "execution_contract_sha256": "sha256:829b895d4993b687e872310e8678231b7a6136c10d95435f8d8cd905fb558163",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:ee6a980d145295a33323e8b3e5d7d7b16da4e8d5a74093ae4b259153a34876fb",
   "implementation_paths": [

@@ -8,6 +8,18 @@
   "logical_path": "services/control-plane/g14/frt-1410-web-mini-program-differential-corpus/",
   "status": "shared_implementation",
   "handler_kind": "route_orchestration",
+  "capability_key": "frt.g14.web-mini-program-differential-corpus",
+  "execution_contract_sha256": "sha256:2d063e43521794a34b2fb7c4d8e6d5e4c7b36b58730d0afad8835dccc44a9df7",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "corpus"
+    ],
+    "optional": [
+      "routeIds"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:964f49b6487533b5dc405861859da8422824303c8086e62b7a7ecb37e2da22d5",
   "implementation_paths": [

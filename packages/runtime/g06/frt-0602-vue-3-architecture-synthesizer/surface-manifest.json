@@ -8,11 +8,23 @@
   "logical_path": "packages/runtime/g06/frt-0602-vue-3-architecture-synthesizer/",
   "status": "shared_implementation",
   "handler_kind": "source_generation",
+  "capability_key": "frt.g06.vue-3-architecture-synthesizer",
+  "execution_contract_sha256": "sha256:92241de57f49e27fdfe9ef401d363f1275713b7b781e9ae0e5b4ff7741a841ef",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "targetProfile",
+      "uiIr"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:eb6aa8e85fa63e4b01e18e32fc2abaa7d066249f57fddd7ef85071a1a2574cd5",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

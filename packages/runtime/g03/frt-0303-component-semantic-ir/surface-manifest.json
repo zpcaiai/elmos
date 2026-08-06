@@ -8,11 +8,22 @@
   "logical_path": "packages/runtime/g03/frt-0303-component-semantic-ir/",
   "status": "shared_implementation",
   "handler_kind": "semantic_ir",
+  "capability_key": "frt.g03.component-semantic-ir",
+  "execution_contract_sha256": "sha256:cc533d4daca820a497323423f275e1383bf5787684f94a491269ce85fa84f30a",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:d199962a412faf5e9be5d13fae6fc217c1db6e02463be1e92cf3e2ff2443eed2",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

@@ -8,6 +8,19 @@
   "logical_path": "services/control-plane/g28/frt-2800-resilience-orchestrator/",
   "status": "shared_implementation",
   "handler_kind": "resilience_dr",
+  "capability_key": "frt.g28.resilience-orchestrator",
+  "execution_contract_sha256": "sha256:660a49055f53fdc3ff7dd0b983da97c50b121f99ca20b609459b009830e3f4ac",
+  "execution_class": "AUTHORIZED_EXTERNAL_ASSURANCE",
+  "input_contract": {
+    "required": [
+      "scenarios",
+      "recoveryObjectives"
+    ],
+    "optional": [
+      "observations"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:44a15c2e7b69da4b6639f38d6ed61d4759816f6bd2368ca1012ccf24ed433336",
   "implementation_paths": [

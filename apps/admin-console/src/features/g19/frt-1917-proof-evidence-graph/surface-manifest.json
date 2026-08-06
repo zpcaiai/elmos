@@ -8,6 +8,19 @@
   "logical_path": "apps/admin-console/src/features/g19/frt-1917-proof-evidence-graph/",
   "status": "shared_implementation",
   "handler_kind": "advanced_verification",
+  "capability_key": "frt.g19.proof-evidence-graph",
+  "execution_contract_sha256": "sha256:2a97e8e78403ffba43f0b6c51e4ce19b5181e863bb03ac24aacaa94be5880907",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "properties"
+    ],
+    "optional": [
+      "toolchains",
+      "counterexamples"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:ddb9aedd44a683cc60d274ed25d973b28cd36161d3e6ec7b33e3e694b4886488",
   "implementation_paths": [

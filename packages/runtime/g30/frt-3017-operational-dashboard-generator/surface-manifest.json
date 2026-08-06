@@ -8,11 +8,26 @@
   "logical_path": "packages/runtime/g30/frt-3017-operational-dashboard-generator/",
   "status": "shared_implementation",
   "handler_kind": "production_readiness",
+  "capability_key": "frt.g30.operational-dashboard-generator",
+  "execution_contract_sha256": "sha256:850654f9d0bfeb11830ef396f5a71e99363bb4904b534081e12c5530bb36f72d",
+  "execution_class": "EXTERNAL_PRODUCTION_AUTHORITY",
+  "input_contract": {
+    "required": [
+      "slos",
+      "runbooks"
+    ],
+    "optional": [
+      "alerts",
+      "releases"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:4a40419f1b9e014687acf7a0332a2bafb127d3d2986ccd3d78b87c395a575b6e",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

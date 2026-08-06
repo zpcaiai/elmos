@@ -8,6 +8,19 @@
   "logical_path": "services/control-plane/g05/frt-0502-capability-compatibility-matrix/",
   "status": "shared_implementation",
   "handler_kind": "migration_planning",
+  "capability_key": "frt.g05.capability-compatibility-matrix",
+  "execution_contract_sha256": "sha256:9245503c855d24241335cff7a246b0312afbbc4d8d1c97b8d8f25101f6b5e000",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "inventory",
+      "target"
+    ],
+    "optional": [
+      "currentVersions"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:9b536dcbf93b7a235d2fd1f1d6e898f216e32e81e3389ad11fc3781e84bc97f6",
   "implementation_paths": [

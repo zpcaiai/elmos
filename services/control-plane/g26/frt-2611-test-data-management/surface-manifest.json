@@ -8,6 +8,22 @@
   "logical_path": "services/control-plane/g26/frt-2611-test-data-management/",
   "status": "shared_implementation",
   "handler_kind": "product_workflow",
+  "capability_key": "frt.g26.test-data-management",
+  "execution_contract_sha256": "sha256:162c27e380e56d7d03656e110f4dac2f33fdf371e335f52d33db271e8d9c2498",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:d6aa3fd1eb2ee01d64115f78c21fce29320c6a4b485837133750cf2bbc88ec51",
   "implementation_paths": [

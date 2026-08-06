@@ -8,6 +8,16 @@
   "logical_path": "services/control-plane/g15/frt-1503-vue-3-to-arkui-route-pack/",
   "status": "shared_implementation",
   "handler_kind": "directional_route",
+  "capability_key": "frt.g15.vue-3-to-arkui-route-pack",
+  "execution_contract_sha256": "sha256:36ece3180bbc9620d1be96f52833f95e1a4f8974b3c8b12ed18d35b7dd6d6971",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:34078eddaea3dada2bf6e6ecc3f99f17e01fc4a8411d29cb9b2fbe73fed82f90",
   "implementation_paths": [

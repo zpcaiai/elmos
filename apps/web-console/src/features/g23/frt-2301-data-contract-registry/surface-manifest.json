@@ -8,6 +8,22 @@
   "logical_path": "apps/web-console/src/features/g23/frt-2301-data-contract-registry/",
   "status": "shared_implementation",
   "handler_kind": "product_workflow",
+  "capability_key": "frt.g23.data-contract-registry",
+  "execution_contract_sha256": "sha256:3e34dfbd9c7649f375e9df4d52f4ef81d635125c3b1b7355c04eef8293681db2",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:18d7654cf666f0d0da636ea1ea2aeef2157f921442d644fe4056b4e31e5500d4",
   "implementation_paths": [

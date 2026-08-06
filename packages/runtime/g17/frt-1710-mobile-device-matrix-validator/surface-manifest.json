@@ -8,11 +8,24 @@
   "logical_path": "packages/runtime/g17/frt-1710-mobile-device-matrix-validator/",
   "status": "shared_implementation",
   "handler_kind": "route_orchestration",
+  "capability_key": "frt.g17.mobile-device-matrix-validator",
+  "execution_contract_sha256": "sha256:04228982a09f515bd72ee81def7e72242a8ac997fe997a679394ae78a15e1bf1",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "corpus"
+    ],
+    "optional": [
+      "routeIds"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:963c9327bf812c65a13798f10f486d20cc4489214a0e81c4ceccb99da5c15fd6",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

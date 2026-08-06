@@ -8,6 +8,18 @@
   "logical_path": "services/control-plane/g15/frt-1511-web-arkui-route-certification/",
   "status": "shared_implementation",
   "handler_kind": "route_orchestration",
+  "capability_key": "frt.g15.web-arkui-route-certification",
+  "execution_contract_sha256": "sha256:d5d1095831d87a501fab5b91c0f14e7ea77cf21273023d499857602ca15aab24",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "corpus"
+    ],
+    "optional": [
+      "routeIds"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:b95b6d3d31e52933d4b12dd8d7755ecb0ce0d8253de19f8898f00f7fb697c482",
   "implementation_paths": [

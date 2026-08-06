@@ -8,6 +8,20 @@
   "logical_path": "apps/admin-console/src/features/g20/frt-2015-approval-policy-rbac-and-audit/",
   "status": "shared_implementation",
   "handler_kind": "runtime_operations",
+  "capability_key": "frt.g20.approval-policy-rbac-and-audit",
+  "execution_contract_sha256": "sha256:12f0cb9d6a2000f65b90beb5ff31376473e0582509fc7d5753a16ff7b5f62086",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "resources"
+    ],
+    "optional": [
+      "roles",
+      "jobs",
+      "quotas"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:274668faf743b42fc9a964aa55b1b2b184aa447be9982f6ce2eded4d2ec2dce6",
   "implementation_paths": [

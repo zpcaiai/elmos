@@ -8,6 +8,19 @@
   "logical_path": "apps/admin-console/src/features/g09/frt-0909-persistence-and-hydration-mapper/",
   "status": "shared_implementation",
   "handler_kind": "delivery_pipeline",
+  "capability_key": "frt.g09.persistence-and-hydration-mapper",
+  "execution_contract_sha256": "sha256:3f8eb77f3030b45b6ea1ade828ce716f30b0486bfd05eaede98bd33db5984c55",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "states"
+    ],
+    "optional": [
+      "effects",
+      "asyncOperations"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:00a69ab7b0b51884cc893ccfddd6e0f8e9a39d514cc3cfb151dcd137251eca71",
   "implementation_paths": [

@@ -8,6 +8,16 @@
   "logical_path": "apps/admin-console/src/features/g08/frt-0805-refs-keys-and-identity-mapper/",
   "status": "shared_implementation",
   "handler_kind": "test_automation",
+  "capability_key": "frt.g08.refs-keys-and-identity-mapper",
+  "execution_contract_sha256": "sha256:a599da13dbd9c48bc5d9ad5cb5b124c6e773c850d92be24ff328c3905158cbbe",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "components"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:d92a539e09437305f781e53b4ca71851596eb889443e1bd791e5f818771197ff",
   "implementation_paths": [

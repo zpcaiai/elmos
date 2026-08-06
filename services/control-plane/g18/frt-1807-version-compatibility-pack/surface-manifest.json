@@ -8,6 +8,16 @@
   "logical_path": "services/control-plane/g18/frt-1807-version-compatibility-pack/",
   "status": "shared_implementation",
   "handler_kind": "compatibility",
+  "capability_key": "frt.g18.version-compatibility-pack",
+  "execution_contract_sha256": "sha256:a62debc357ecbb7dc5494aaa1f9cdf00653b30bc5a4beeaa07f1bde86a9dec08",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "packs"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:171f6afc3f8d54c44b815a4d30d2db513be864902ea03a2443a7e78697a59ff8",
   "implementation_paths": [

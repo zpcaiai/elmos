@@ -8,6 +8,22 @@
   "logical_path": "apps/web-console/src/features/g26/frt-2604-api-and-event-contract-test-coordinator/",
   "status": "shared_implementation",
   "handler_kind": "product_workflow",
+  "capability_key": "frt.g26.api-and-event-contract-test-coordinator",
+  "execution_contract_sha256": "sha256:c41b913b8e344e11c224f3b6350462791cb00ab149e16a2fc565a3330b70756c",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:71087963b0f6e695e2a7164a90f1136154d9a695e7cecfa3d1587eb6ec77f2c1",
   "implementation_paths": [

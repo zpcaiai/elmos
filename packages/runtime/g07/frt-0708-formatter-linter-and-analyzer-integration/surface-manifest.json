@@ -8,11 +8,27 @@
   "logical_path": "packages/runtime/g07/frt-0708-formatter-linter-and-analyzer-integration/",
   "status": "shared_implementation",
   "handler_kind": "build_toolchain",
+  "capability_key": "frt.g07.formatter-linter-and-analyzer-integration",
+  "execution_contract_sha256": "sha256:ee91733fe4bd2c3f6edde0e5f32c177d027d290429b1e3309a3d7a433fb49e37",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "astNodes"
+    ],
+    "optional": [
+      "imports",
+      "diagnostics",
+      "unsupportedSemantics",
+      "repairPasses"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:faff3ac2623000f739d166dd1e8d6ca5c7c27ebb0bbf2f40872e670181f97539",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

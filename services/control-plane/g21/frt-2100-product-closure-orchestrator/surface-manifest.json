@@ -8,6 +8,22 @@
   "logical_path": "services/control-plane/g21/frt-2100-product-closure-orchestrator/",
   "status": "shared_implementation",
   "handler_kind": "product_workflow",
+  "capability_key": "frt.g21.product-closure-orchestrator",
+  "execution_contract_sha256": "sha256:3344d2a49787ea1095c52ec9f4341b726c9d467f66ff70fd2e5525399f65940e",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:ca55624d43274ebce217501f0d8c1cfac0cc05918b3ad85386f9abab8b1e7ad9",
   "implementation_paths": [

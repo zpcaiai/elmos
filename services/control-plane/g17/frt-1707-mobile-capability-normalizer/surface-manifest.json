@@ -8,6 +8,18 @@
   "logical_path": "services/control-plane/g17/frt-1707-mobile-capability-normalizer/",
   "status": "shared_implementation",
   "handler_kind": "route_orchestration",
+  "capability_key": "frt.g17.mobile-capability-normalizer",
+  "execution_contract_sha256": "sha256:f12c2d46607854daf0235631cfc782815104a33f6988e47b36492f0084a16478",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "corpus"
+    ],
+    "optional": [
+      "routeIds"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:07d0e91b6eb73dc8968e673780ee1d2105a0a3fa47b08da3196b95e162fcbffc",
   "implementation_paths": [

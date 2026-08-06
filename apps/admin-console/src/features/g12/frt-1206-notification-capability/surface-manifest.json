@@ -8,6 +8,19 @@
   "logical_path": "apps/admin-console/src/features/g12/frt-1206-notification-capability/",
   "status": "shared_implementation",
   "handler_kind": "cross_platform",
+  "capability_key": "frt.g12.notification-capability",
+  "execution_contract_sha256": "sha256:2699467a8003f2ea3df8e1188f746965a23d60a71602499c4b688bc737f3240c",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "requiredCapabilities",
+      "platformCapabilities"
+    ],
+    "optional": [
+      "bridges"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:a9145c49dee7dba88e9037d7c9ed7f9cf8244f82fe2a72ee2d0236dd44cbb3a2",
   "implementation_paths": [

@@ -8,6 +8,18 @@
   "logical_path": "services/control-plane/g15/frt-1510-web-arkui-device-differential-corpus/",
   "status": "shared_implementation",
   "handler_kind": "route_orchestration",
+  "capability_key": "frt.g15.web-arkui-device-differential-corpus",
+  "execution_contract_sha256": "sha256:54bef20450fe372609f0515f1175a613136e46f45aed8ef123f0d7d188763661",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "corpus"
+    ],
+    "optional": [
+      "routeIds"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:b9c04379fa79cbabdcac7082615c061f5db0b976089f839b2f7a5936b4c67eb1",
   "implementation_paths": [

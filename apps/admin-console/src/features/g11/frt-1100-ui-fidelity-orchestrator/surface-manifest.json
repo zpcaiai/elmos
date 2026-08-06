@@ -8,6 +8,21 @@
   "logical_path": "apps/admin-console/src/features/g11/frt-1100-ui-fidelity-orchestrator/",
   "status": "shared_implementation",
   "handler_kind": "mobile_client",
+  "capability_key": "frt.g11.ui-fidelity-orchestrator",
+  "execution_contract_sha256": "sha256:8ea1b350728c19327a68fbc8adca35a1b31f75e9c53955d1eb8ab798481dfe25",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "uiNodes"
+    ],
+    "optional": [
+      "designTokens",
+      "locales",
+      "rtlLocales",
+      "animations"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:c0ef751f061dfcce039302e076b87a71ad47714d2f7d39ed9f54c0cacdcf19fe",
   "implementation_paths": [

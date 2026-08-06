@@ -8,11 +8,22 @@
   "logical_path": "packages/runtime/g15/frt-1502-arkui-to-vue-2-route-pack/",
   "status": "shared_implementation",
   "handler_kind": "directional_route",
+  "capability_key": "frt.g15.arkui-to-vue-2-route-pack",
+  "execution_contract_sha256": "sha256:7a325321098c639c1c70f36b40698ba4d53badfe4e29967c1c22af286f5c42e1",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:ddda5c0dd44ce3c5e54c9071ba4a2d0de5287318dd4e430d7cba6a1c93e60998",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

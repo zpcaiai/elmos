@@ -8,6 +8,16 @@
   "logical_path": "services/control-plane/g15/frt-1505-react-to-arkui-route-pack/",
   "status": "shared_implementation",
   "handler_kind": "directional_route",
+  "capability_key": "frt.g15.react-to-arkui-route-pack",
+  "execution_contract_sha256": "sha256:3caec75c32fb0f028ae8171f51bd04ec8b749f77b6a246f1e6f86c916364f9d4",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:b173ceee004f6c957cb25e97597f2fc1fbf00f87fc8289e647905ec3189e8543",
   "implementation_paths": [

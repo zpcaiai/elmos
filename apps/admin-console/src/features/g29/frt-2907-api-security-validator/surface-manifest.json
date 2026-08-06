@@ -8,6 +8,20 @@
   "logical_path": "apps/admin-console/src/features/g29/frt-2907-api-security-validator/",
   "status": "shared_implementation",
   "handler_kind": "security_privacy",
+  "capability_key": "frt.g29.api-security-validator",
+  "execution_contract_sha256": "sha256:8957efbffa338cb416bedcb745b33d061f0fbc82ee3f1a3d72b94a054e75ae93",
+  "execution_class": "AUTHORIZED_EXTERNAL_ASSURANCE",
+  "input_contract": {
+    "required": [
+      "assets",
+      "findings"
+    ],
+    "optional": [
+      "dataFlows",
+      "sbomComponents"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:55f5c03775d3b43ff8221a0903c17c588ce804c80de451e4e16c3f2502259e09",
   "implementation_paths": [

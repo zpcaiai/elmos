@@ -8,12 +8,32 @@
   "logical_path": "packages/contracts/g29/frt-2902-attack-surface-inventory/",
   "status": "shared_implementation",
   "handler_kind": "security_privacy",
+  "capability_key": "frt.g29.attack-surface-inventory",
+  "execution_contract_sha256": "sha256:b56f7f278d4db64abe3867f07fbafdfd086ded270c90bccc4cb7a05a27e4ca4d",
+  "execution_class": "AUTHORIZED_EXTERNAL_ASSURANCE",
+  "input_contract": {
+    "required": [
+      "assets",
+      "findings"
+    ],
+    "optional": [
+      "dataFlows",
+      "sbomComponents"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:6e35dbd376b63875203b298a8a7483c0cd0ae3ff594403bbcab352c58cbbd7bc",
   "implementation_paths": [
     "schemas/frt-g01-g30/skill-run-request.schema.json",
     "schemas/frt-g01-g30/skill-run-result.schema.json",
-    "engines/frontend-client-engine/src/frt-types.ts"
+    "schemas/frt-g01-g30/skill-execution-contract.schema.json",
+    "schemas/frt-g01-g30/gate-result.schema.json",
+    "schemas/frt-g01-g30/external-qualification-plan.schema.json",
+    "schemas/frt-g01-g30/external-qualification-preflight.schema.json",
+    "schemas/frt-g01-g30/external-qualification-local-execution.schema.json",
+    "engines/frontend-client-engine/src/frt-types.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts"
   ],
   "not_applicable": false,
   "approval_evidence": [],

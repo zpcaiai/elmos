@@ -8,6 +8,19 @@
   "logical_path": "apps/web-console/src/features/g28/frt-2804-graceful-degradation-runtime/",
   "status": "shared_implementation",
   "handler_kind": "resilience_dr",
+  "capability_key": "frt.g28.graceful-degradation-runtime",
+  "execution_contract_sha256": "sha256:bd2f2088b56d74260595223d29108d56bf2190d8db39ba40fd849a8abb8177de",
+  "execution_class": "AUTHORIZED_EXTERNAL_ASSURANCE",
+  "input_contract": {
+    "required": [
+      "scenarios",
+      "recoveryObjectives"
+    ],
+    "optional": [
+      "observations"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:a968b1549d43b8e9f6b6ac825a06da197b4363e625a624469ba9179b177395b6",
   "implementation_paths": [

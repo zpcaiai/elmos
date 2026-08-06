@@ -8,11 +8,22 @@
   "logical_path": "packages/runtime/g02/frt-0207-component-inventory/",
   "status": "shared_implementation",
   "handler_kind": "estate_discovery",
+  "capability_key": "frt.g02.component-inventory",
+  "execution_contract_sha256": "sha256:cab684073121ba00ebc9730ff080f231a8bff12246cc4563d459d700ae87c520",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:45320d9fbaf34c66aa4647ed67a444ef0f24818da58860c19486bb5bc1295370",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

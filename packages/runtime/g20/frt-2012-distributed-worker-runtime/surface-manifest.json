@@ -8,11 +8,26 @@
   "logical_path": "packages/runtime/g20/frt-2012-distributed-worker-runtime/",
   "status": "shared_implementation",
   "handler_kind": "runtime_operations",
+  "capability_key": "frt.g20.distributed-worker-runtime",
+  "execution_contract_sha256": "sha256:870f55768ab40216bb4994697c236c32fb54e1f695af3d7188254f1317a95d8e",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "resources"
+    ],
+    "optional": [
+      "roles",
+      "jobs",
+      "quotas"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:2935a5f733e8f1620e0c29539b1254a791943005d2c1f13e09211485ddda5151",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

@@ -8,6 +8,22 @@
   "logical_path": "services/control-plane/g25/frt-2516-feature-availability-and-unsupported-state-ux/",
   "status": "shared_implementation",
   "handler_kind": "product_workflow",
+  "capability_key": "frt.g25.feature-availability-and-unsupported-state-ux",
+  "execution_contract_sha256": "sha256:fe7dfd0aca979b24fd2791baba5459ffd891793294c38f6adce5dc5d8a19bd51",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:ea56ac8d91f66a1bd77d9f96f13c7a59cc21309f19f3da44b48bbd08a236adf3",
   "implementation_paths": [

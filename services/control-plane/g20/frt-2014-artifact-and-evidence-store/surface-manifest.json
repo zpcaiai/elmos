@@ -8,6 +8,20 @@
   "logical_path": "services/control-plane/g20/frt-2014-artifact-and-evidence-store/",
   "status": "shared_implementation",
   "handler_kind": "runtime_operations",
+  "capability_key": "frt.g20.artifact-and-evidence-store",
+  "execution_contract_sha256": "sha256:5213e6de6b957aa695cf802d2adfd6140ea2610c4cc1acf17f53acdb97d7ee00",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "resources"
+    ],
+    "optional": [
+      "roles",
+      "jobs",
+      "quotas"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:7d890f0e9dd83b656cf89c4680807c21d9ca4d3ec82a752b2b966f4809407ed2",
   "implementation_paths": [

@@ -8,6 +8,18 @@
   "logical_path": "apps/web-console/src/features/g24/frt-2419-admin-end-to-end-test-generator/",
   "status": "shared_implementation",
   "handler_kind": "administration",
+  "capability_key": "frt.g24.admin-end-to-end-test-generator",
+  "execution_contract_sha256": "sha256:a83ba56d3eae3eb3917cb51b1d344699ee926f2937eeb5735b00621003a48091",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "capabilities",
+      "roles",
+      "operations"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:c0c67d6b147252b49f1d3d426aca56f9dc0f7ed0d30cf60b0591779ca1fc7fe6",
   "implementation_paths": [

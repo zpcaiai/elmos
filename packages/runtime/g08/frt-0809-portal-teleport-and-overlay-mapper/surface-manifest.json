@@ -8,11 +8,22 @@
   "logical_path": "packages/runtime/g08/frt-0809-portal-teleport-and-overlay-mapper/",
   "status": "shared_implementation",
   "handler_kind": "test_automation",
+  "capability_key": "frt.g08.portal-teleport-and-overlay-mapper",
+  "execution_contract_sha256": "sha256:a4573f141a0ed4808f26b2b9413ea46624627366dc3b828513014a5444aa00ee",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "components"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:1e8af722ece8a734cd8a484bd990a1672ff413c7267ac7486c0323059fd71aa1",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

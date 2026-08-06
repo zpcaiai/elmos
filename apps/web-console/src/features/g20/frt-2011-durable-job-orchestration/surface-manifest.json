@@ -8,6 +8,20 @@
   "logical_path": "apps/web-console/src/features/g20/frt-2011-durable-job-orchestration/",
   "status": "shared_implementation",
   "handler_kind": "runtime_operations",
+  "capability_key": "frt.g20.durable-job-orchestration",
+  "execution_contract_sha256": "sha256:76c69ff693d059f55aa0f2f79bdaeb64d0ce224e62cc613269669a01f4f95044",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "resources"
+    ],
+    "optional": [
+      "roles",
+      "jobs",
+      "quotas"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:b4a6e50b2530e6afb7eb14b1c8b0a554972e15aaf486efbb7adb5baf0db3ace1",
   "implementation_paths": [

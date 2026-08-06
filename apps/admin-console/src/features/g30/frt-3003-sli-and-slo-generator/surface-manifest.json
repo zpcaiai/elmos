@@ -8,6 +8,20 @@
   "logical_path": "apps/admin-console/src/features/g30/frt-3003-sli-and-slo-generator/",
   "status": "shared_implementation",
   "handler_kind": "production_readiness",
+  "capability_key": "frt.g30.sli-and-slo-generator",
+  "execution_contract_sha256": "sha256:453056e053be1ef75ae8020cb23ec85e502826715d29c54dbbe804b36512f4e6",
+  "execution_class": "EXTERNAL_PRODUCTION_AUTHORITY",
+  "input_contract": {
+    "required": [
+      "slos",
+      "runbooks"
+    ],
+    "optional": [
+      "alerts",
+      "releases"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:871be87edf544e725a4f765d125b078294e3d6e5fbcdb873fb808e24a2c76683",
   "implementation_paths": [

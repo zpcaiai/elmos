@@ -8,6 +8,20 @@
   "logical_path": "services/control-plane/g20/frt-2003-skill-registry/",
   "status": "shared_implementation",
   "handler_kind": "runtime_operations",
+  "capability_key": "frt.g20.skill-registry",
+  "execution_contract_sha256": "sha256:4f853ccc08c419efbdd2f4441caba43dc3ac19feb12eb4074945121171674f92",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "resources"
+    ],
+    "optional": [
+      "roles",
+      "jobs",
+      "quotas"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:f6d36ebdb9b044ce4d4375a84b04f7100c33225627b2b0862c605e2a97054f23",
   "implementation_paths": [

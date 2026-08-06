@@ -8,6 +8,16 @@
   "logical_path": "apps/admin-console/src/features/g04/frt-0405-arkui-source-adapter/",
   "status": "shared_implementation",
   "handler_kind": "typed_contract",
+  "capability_key": "frt.g04.arkui-source-adapter",
+  "execution_contract_sha256": "sha256:a5e16f1978228f923f06059405d1ce5ae48c3b93ef4c0a2f38ac8c53e6019937",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:adef185b6174cfeb478d5570277fe7c2fbcfb91443c33c42dcc678e4140dc7e7",
   "implementation_paths": [

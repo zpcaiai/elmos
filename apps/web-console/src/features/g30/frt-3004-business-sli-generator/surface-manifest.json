@@ -8,6 +8,20 @@
   "logical_path": "apps/web-console/src/features/g30/frt-3004-business-sli-generator/",
   "status": "shared_implementation",
   "handler_kind": "production_readiness",
+  "capability_key": "frt.g30.business-sli-generator",
+  "execution_contract_sha256": "sha256:60dc90f4bd615671e06899d160b10175122aee3a091f31e6118918da0f573bb7",
+  "execution_class": "EXTERNAL_PRODUCTION_AUTHORITY",
+  "input_contract": {
+    "required": [
+      "slos",
+      "runbooks"
+    ],
+    "optional": [
+      "alerts",
+      "releases"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:67da13b3caa8ab3b9d25e645f9c7cbd6d8137461eb73f7e3a62b4746a755fcd4",
   "implementation_paths": [

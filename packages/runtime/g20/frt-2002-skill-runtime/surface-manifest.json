@@ -8,11 +8,26 @@
   "logical_path": "packages/runtime/g20/frt-2002-skill-runtime/",
   "status": "shared_implementation",
   "handler_kind": "runtime_operations",
+  "capability_key": "frt.g20.skill-runtime",
+  "execution_contract_sha256": "sha256:f4b26b2c04259a62570ed1f618e3af60752592411897bf63bff0c484ec05c585",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "resources"
+    ],
+    "optional": [
+      "roles",
+      "jobs",
+      "quotas"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:9cc65e9bb5d608b69e150b401382c9d5be60ea28b7bc328b0ffbded935c0a2a9",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

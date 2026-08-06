@@ -8,6 +8,17 @@
   "logical_path": "services/control-plane/g06/frt-0601-vue-2-architecture-synthesizer/",
   "status": "shared_implementation",
   "handler_kind": "source_generation",
+  "capability_key": "frt.g06.vue-2-architecture-synthesizer",
+  "execution_contract_sha256": "sha256:7aafeeff72bdaa2dfdee5761d88542e124285d6be5ea1565526c42864eb2298b",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "targetProfile",
+      "uiIr"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:8956c765085ff523938e3fb77a1cc5401eb7f20e48a34d1fc4d1e51ae977bc95",
   "implementation_paths": [

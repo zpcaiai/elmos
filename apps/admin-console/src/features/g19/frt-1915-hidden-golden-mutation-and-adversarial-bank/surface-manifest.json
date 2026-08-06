@@ -8,6 +8,19 @@
   "logical_path": "apps/admin-console/src/features/g19/frt-1915-hidden-golden-mutation-and-adversarial-bank/",
   "status": "shared_implementation",
   "handler_kind": "advanced_verification",
+  "capability_key": "frt.g19.hidden-golden-mutation-and-adversarial-bank",
+  "execution_contract_sha256": "sha256:de01939155eb63a247b737eae3ba41fa3c77a4dccbd917f896bd5df8c45e0fda",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "properties"
+    ],
+    "optional": [
+      "toolchains",
+      "counterexamples"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:4416454c868136bfed2ddb5bc93fc6421a458af4514159f2b4b92493f9e9065c",
   "implementation_paths": [

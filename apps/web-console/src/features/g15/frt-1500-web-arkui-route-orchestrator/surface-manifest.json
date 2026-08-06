@@ -8,6 +8,18 @@
   "logical_path": "apps/web-console/src/features/g15/frt-1500-web-arkui-route-orchestrator/",
   "status": "shared_implementation",
   "handler_kind": "route_orchestration",
+  "capability_key": "frt.g15.web-arkui-route-orchestrator",
+  "execution_contract_sha256": "sha256:2f8f74abf652cb3a72cf12c0866abdc806ae92dffb8dc2ba4d0606c314a67d10",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "corpus"
+    ],
+    "optional": [
+      "routeIds"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:76a14af4b109b85cb1b4d5cbc43deb0c91ca0c637651a2f40646ccdd6313d68f",
   "implementation_paths": [

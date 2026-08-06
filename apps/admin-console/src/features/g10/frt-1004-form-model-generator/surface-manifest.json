@@ -8,6 +8,21 @@
   "logical_path": "apps/admin-console/src/features/g10/frt-1004-form-model-generator/",
   "status": "shared_implementation",
   "handler_kind": "design_system",
+  "capability_key": "frt.g10.form-model-generator",
+  "execution_contract_sha256": "sha256:f5d051e60b244242f4efb2d4cfea5d0b9bbb66feeab5e8d11ade8cc2cbfd66c3",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "routes"
+    ],
+    "optional": [
+      "forms",
+      "apiCalls",
+      "storage",
+      "permissions"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:ac73080e1e2684a1c8b5105f9d8d0f1cc58c1523587a302254b8fa7dd97b3785",
   "implementation_paths": [

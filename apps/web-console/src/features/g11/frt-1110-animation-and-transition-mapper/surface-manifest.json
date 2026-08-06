@@ -8,6 +8,21 @@
   "logical_path": "apps/web-console/src/features/g11/frt-1110-animation-and-transition-mapper/",
   "status": "shared_implementation",
   "handler_kind": "mobile_client",
+  "capability_key": "frt.g11.animation-and-transition-mapper",
+  "execution_contract_sha256": "sha256:d85052ec871ec337cb6efc46a3cd48f77311a6b3df5e6a7f7f4d298f705e5d43",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "uiNodes"
+    ],
+    "optional": [
+      "designTokens",
+      "locales",
+      "rtlLocales",
+      "animations"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:869e2370f38c012fb307ba421a72799d0a70c725c624d9fc098a8bab185fab28",
   "implementation_paths": [

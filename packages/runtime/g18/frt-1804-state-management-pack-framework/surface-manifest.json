@@ -8,11 +8,22 @@
   "logical_path": "packages/runtime/g18/frt-1804-state-management-pack-framework/",
   "status": "shared_implementation",
   "handler_kind": "compatibility",
+  "capability_key": "frt.g18.state-management-pack-framework",
+  "execution_contract_sha256": "sha256:e42a137e9d04b26cea467cd9cdba4a0b0259e935ecb7302a5b4f376032ee894f",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "packs"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:1b3f36fdcb80ad18eb3d0fbd0c9c918a8b00f0f43aa84ec3a5007956a52f451c",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

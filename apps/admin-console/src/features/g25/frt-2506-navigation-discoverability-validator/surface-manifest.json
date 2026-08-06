@@ -8,6 +8,22 @@
   "logical_path": "apps/admin-console/src/features/g25/frt-2506-navigation-discoverability-validator/",
   "status": "shared_implementation",
   "handler_kind": "product_workflow",
+  "capability_key": "frt.g25.navigation-discoverability-validator",
+  "execution_contract_sha256": "sha256:f2ec1a95ca5f28a08a5fda314bf2b86703c60293466fe1b0ca0203c9a826d8e1",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:1ec9564cc24e22d81a684ef0e0f2adcee4889be29b2c27aa92377d40a1fbc976",
   "implementation_paths": [

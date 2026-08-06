@@ -8,11 +8,27 @@
   "logical_path": "packages/runtime/g10/frt-1011-realtime-webhook-and-subscription-mapper/",
   "status": "shared_implementation",
   "handler_kind": "design_system",
+  "capability_key": "frt.g10.realtime-webhook-and-subscription-mapper",
+  "execution_contract_sha256": "sha256:78ab63ecf5cfc22c56386f82c05b3534f059aff7a69cb4fd86afee8ec8831a79",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "routes"
+    ],
+    "optional": [
+      "forms",
+      "apiCalls",
+      "storage",
+      "permissions"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:7244c83d903f7863de6c2df55de4aa7715d251d0fed93e2a9d64eb3dea1c8eeb",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

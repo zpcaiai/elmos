@@ -8,6 +8,19 @@
   "logical_path": "apps/admin-console/src/features/g05/frt-0505-shim-requirement-planner/",
   "status": "shared_implementation",
   "handler_kind": "migration_planning",
+  "capability_key": "frt.g05.shim-requirement-planner",
+  "execution_contract_sha256": "sha256:b8c6f2cd7378e93ead672c43c7d1693e98e8ebc07a2487d0eae3782e7f03ae8c",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "inventory",
+      "target"
+    ],
+    "optional": [
+      "currentVersions"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:52e30a54fe19df0979ed469d373c8af5e0e9bb63c0cbc8c774db26036eff19f4",
   "implementation_paths": [

@@ -8,11 +8,27 @@
   "logical_path": "packages/runtime/g07/frt-0702-rule-registry-and-pass-manager/",
   "status": "shared_implementation",
   "handler_kind": "build_toolchain",
+  "capability_key": "frt.g07.rule-registry-and-pass-manager",
+  "execution_contract_sha256": "sha256:d4ce8e265834e523e47febdc55491e948e2f572e7da4486718d71d9900f3f607",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "astNodes"
+    ],
+    "optional": [
+      "imports",
+      "diagnostics",
+      "unsupportedSemantics",
+      "repairPasses"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:0378c28dd18c7fc555f297fab9e7a7149b6b93d0edfd93647934d3afd986410f",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

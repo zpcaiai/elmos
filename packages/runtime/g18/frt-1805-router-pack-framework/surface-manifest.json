@@ -8,11 +8,22 @@
   "logical_path": "packages/runtime/g18/frt-1805-router-pack-framework/",
   "status": "shared_implementation",
   "handler_kind": "compatibility",
+  "capability_key": "frt.g18.router-pack-framework",
+  "execution_contract_sha256": "sha256:087f1531a2ed909591a8cbb0b59321c17af7f01f5a3b6d8bbb23fea49b516e49",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "packs"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:4bbb51facba162935157678dd8e359aa680fc183b898ebe2d2eeb680b5c93f3d",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

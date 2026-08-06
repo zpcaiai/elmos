@@ -8,11 +8,24 @@
   "logical_path": "packages/runtime/g24/frt-2402-organization-and-tenant-administration/",
   "status": "shared_implementation",
   "handler_kind": "administration",
+  "capability_key": "frt.g24.organization-and-tenant-administration",
+  "execution_contract_sha256": "sha256:8bddeb7389f9135be2d6a45f5b961e29ce1f8d0e786990d227acb7a9ceb4a1aa",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "capabilities",
+      "roles",
+      "operations"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:7dd3899db9b24e34eb2aecac659561f1b5d1aec97a1f291011b94fcb7af45d99",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

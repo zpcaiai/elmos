@@ -8,6 +8,19 @@
   "logical_path": "apps/web-console/src/features/g28/frt-2815-rto-and-rpo-compliance-validator/",
   "status": "shared_implementation",
   "handler_kind": "resilience_dr",
+  "capability_key": "frt.g28.rto-and-rpo-compliance-validator",
+  "execution_contract_sha256": "sha256:777b12a40927a9a344251c31f49addc12b34619141b5f827c853de6607f17c18",
+  "execution_class": "AUTHORIZED_EXTERNAL_ASSURANCE",
+  "input_contract": {
+    "required": [
+      "scenarios",
+      "recoveryObjectives"
+    ],
+    "optional": [
+      "observations"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:f5fbdc1b9ac1d10ed90d98474b2faf0f81d038290e7c75fb05891e3c12603592",
   "implementation_paths": [

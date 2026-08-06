@@ -8,6 +8,18 @@
   "logical_path": "apps/web-console/src/features/g16/frt-1608-flutter-widget-state-and-navigation-mapper/",
   "status": "shared_implementation",
   "handler_kind": "route_orchestration",
+  "capability_key": "frt.g16.flutter-widget-state-and-navigation-mapper",
+  "execution_contract_sha256": "sha256:842ca9f6deabb0f4a840bbc1b43f11ddc89a8bb534f321d1f0fda3329b5c0be1",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "corpus"
+    ],
+    "optional": [
+      "routeIds"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:3887f06a43155a01f37780649775a66c8b03436263d6083efc8310461d967276",
   "implementation_paths": [

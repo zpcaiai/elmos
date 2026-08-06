@@ -8,6 +8,18 @@
   "logical_path": "apps/web-console/src/features/g17/frt-1709-native-bridge-and-device-mapper/",
   "status": "shared_implementation",
   "handler_kind": "route_orchestration",
+  "capability_key": "frt.g17.native-bridge-and-device-mapper",
+  "execution_contract_sha256": "sha256:e80a1c5b11494bd0cc3253a02be2d82d94830019767bbd15370dfcc3616ea4b7",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "corpus"
+    ],
+    "optional": [
+      "routeIds"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:bed5a6cf9a4e58f5dfec93dcf6d5d9b6edbec251e2cdc3ea9bc2927f7ebb1d16",
   "implementation_paths": [

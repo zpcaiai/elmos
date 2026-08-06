@@ -8,11 +8,23 @@
   "logical_path": "packages/runtime/g06/frt-0609-project-layout-generator/",
   "status": "shared_implementation",
   "handler_kind": "source_generation",
+  "capability_key": "frt.g06.project-layout-generator",
+  "execution_contract_sha256": "sha256:bf6eab831e98396a18f55670c1a3dd6f17fb0ccf8711df7160f4f1d3e0d94931",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "targetProfile",
+      "uiIr"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:799cc8a978bfd416224ea292a8e63d379ab0f7d71b90e82e845340ef475248b7",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

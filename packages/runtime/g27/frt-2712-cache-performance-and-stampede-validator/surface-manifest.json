@@ -8,11 +8,26 @@
   "logical_path": "packages/runtime/g27/frt-2712-cache-performance-and-stampede-validator/",
   "status": "shared_implementation",
   "handler_kind": "performance_capacity",
+  "capability_key": "frt.g27.cache-performance-and-stampede-validator",
+  "execution_contract_sha256": "sha256:cb59977e27fd63b097781ab6b79c19720b20bcfca3f2e771cad5140861f83e1b",
+  "execution_class": "AUTHORIZED_EXTERNAL_ASSURANCE",
+  "input_contract": {
+    "required": [
+      "workload",
+      "budgets"
+    ],
+    "optional": [
+      "samples",
+      "throughputPerSecond"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:efd5b55831237ae4da57de5f03306ec2bdb29ea984d15ff5c788e42938caef4c",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

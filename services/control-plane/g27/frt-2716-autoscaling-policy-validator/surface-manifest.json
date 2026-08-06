@@ -8,6 +8,20 @@
   "logical_path": "services/control-plane/g27/frt-2716-autoscaling-policy-validator/",
   "status": "shared_implementation",
   "handler_kind": "performance_capacity",
+  "capability_key": "frt.g27.autoscaling-policy-validator",
+  "execution_contract_sha256": "sha256:7c417f055a833e0b9c3afba4416ee9625ffdfd7d9b8f882fd74f857061d13393",
+  "execution_class": "AUTHORIZED_EXTERNAL_ASSURANCE",
+  "input_contract": {
+    "required": [
+      "workload",
+      "budgets"
+    ],
+    "optional": [
+      "samples",
+      "throughputPerSecond"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:cba58e9b30113dd1aaaf063e46296e0b7b0eccb6688e0a9d0610465fec1a4e31",
   "implementation_paths": [

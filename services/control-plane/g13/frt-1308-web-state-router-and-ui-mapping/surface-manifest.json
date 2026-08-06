@@ -8,6 +8,18 @@
   "logical_path": "services/control-plane/g13/frt-1308-web-state-router-and-ui-mapping/",
   "status": "shared_implementation",
   "handler_kind": "route_orchestration",
+  "capability_key": "frt.g13.web-state-router-and-ui-mapping",
+  "execution_contract_sha256": "sha256:9fc82ed49b446d51bf6668df0a100675efd2efad48111d6da077868903b3a02c",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "corpus"
+    ],
+    "optional": [
+      "routeIds"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:40cac7b6ae274e88c6791199f7be26b88f9855b916ee08fb8491561ed675a6ad",
   "implementation_paths": [

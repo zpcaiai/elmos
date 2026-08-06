@@ -8,6 +8,16 @@
   "logical_path": "services/control-plane/g03/frt-0304-state-effect-and-lifecycle-ir/",
   "status": "shared_implementation",
   "handler_kind": "semantic_ir",
+  "capability_key": "frt.g03.state-effect-and-lifecycle-ir",
+  "execution_contract_sha256": "sha256:f3a3ed5f43a163a08dc7c715c0b53f3624cd3cfa7ca7f5584fd8bfe8cdc9de1d",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:a48740639cca9f6f2354bafa60b6007863782fc83c014a653220aa41e8608eb9",
   "implementation_paths": [

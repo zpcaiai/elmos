@@ -8,11 +8,25 @@
   "logical_path": "packages/runtime/g28/frt-2810-database-failover-validator/",
   "status": "shared_implementation",
   "handler_kind": "resilience_dr",
+  "capability_key": "frt.g28.database-failover-validator",
+  "execution_contract_sha256": "sha256:1bcbdffba35eaa5d8c74abeed3c3a10b0ea44b1f80934c2ea70ef81bb163b750",
+  "execution_class": "AUTHORIZED_EXTERNAL_ASSURANCE",
+  "input_contract": {
+    "required": [
+      "scenarios",
+      "recoveryObjectives"
+    ],
+    "optional": [
+      "observations"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:2968007ebbdf51cf28dcd6af5f38d755d393afa0ee4b44c51304ccccb3286507",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

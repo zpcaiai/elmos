@@ -8,11 +8,26 @@
   "logical_path": "packages/runtime/g27/frt-2706-load-test-coordinator/",
   "status": "shared_implementation",
   "handler_kind": "performance_capacity",
+  "capability_key": "frt.g27.load-test-coordinator",
+  "execution_contract_sha256": "sha256:80199d14ab0bafa36ba572bb6a800bd169bbfe70e13cdd0cd1b76bfa4ac2c7bd",
+  "execution_class": "AUTHORIZED_EXTERNAL_ASSURANCE",
+  "input_contract": {
+    "required": [
+      "workload",
+      "budgets"
+    ],
+    "optional": [
+      "samples",
+      "throughputPerSecond"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:0cd957a43803ae50d10472c1636789520f165baf462f2baa768bf64be08c6cf5",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

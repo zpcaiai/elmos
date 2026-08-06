@@ -8,11 +8,25 @@
   "logical_path": "packages/runtime/g05/frt-0500-migration-planning-orchestrator/",
   "status": "shared_implementation",
   "handler_kind": "migration_planning",
+  "capability_key": "frt.g05.migration-planning-orchestrator",
+  "execution_contract_sha256": "sha256:1d9799818a1339dabe7b4605cb63bded784cbb918af9c4950b54ac32d5918c19",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "inventory",
+      "target"
+    ],
+    "optional": [
+      "currentVersions"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:6029d4b2ed7bfa592574567b72cd22647741201ff09638b91bbcd5c6ea8e380e",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

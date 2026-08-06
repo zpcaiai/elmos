@@ -8,6 +8,20 @@
   "logical_path": "services/control-plane/g01/frt-0101-system-charter-and-non-negotiable-invariants/",
   "status": "shared_implementation",
   "handler_kind": "governance",
+  "capability_key": "frt.g01.system-charter-and-non-negotiable-invariants",
+  "execution_contract_sha256": "sha256:26fab82f51a1b9b3982cb5a78cac3dafe03547ff557f56ab103265a9776c486c",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "invariants"
+    ],
+    "optional": [
+      "dependencies",
+      "allowedDependencies",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:471e9b276ce6f99f3a57e00fc084f7dc0de47ff61abfb7abba09c0f8eb5539ca",
   "implementation_paths": [

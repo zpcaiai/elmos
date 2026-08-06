@@ -8,6 +8,16 @@
   "logical_path": "services/control-plane/g02/frt-0203-build-toolchain-detector/",
   "status": "shared_implementation",
   "handler_kind": "estate_discovery",
+  "capability_key": "frt.g02.build-toolchain-detector",
+  "execution_contract_sha256": "sha256:39006b868081493384bf1de53859f86a3233e57d98ec422bb16482219374a965",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:b996447a803f4bb805883d729f7be8a6fcd37da4f7334103ea3b818fd12a4dca",
   "implementation_paths": [

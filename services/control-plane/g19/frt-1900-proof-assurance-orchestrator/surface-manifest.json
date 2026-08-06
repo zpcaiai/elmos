@@ -8,6 +8,19 @@
   "logical_path": "services/control-plane/g19/frt-1900-proof-assurance-orchestrator/",
   "status": "shared_implementation",
   "handler_kind": "advanced_verification",
+  "capability_key": "frt.g19.proof-assurance-orchestrator",
+  "execution_contract_sha256": "sha256:d404d9aa44cb6cf4a39bb39ec3bf478c5a906d80870e9abd0e1cf134d80c6559",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "properties"
+    ],
+    "optional": [
+      "toolchains",
+      "counterexamples"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:c824ee59fafcd259c977d86623d3f001c9045e35a522cccedc7c8c2ecf46587d",
   "implementation_paths": [

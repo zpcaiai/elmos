@@ -8,11 +8,26 @@
   "logical_path": "packages/runtime/g01/frt-0103-skill-specification-standard/",
   "status": "shared_implementation",
   "handler_kind": "governance",
+  "capability_key": "frt.g01.skill-specification-standard",
+  "execution_contract_sha256": "sha256:13dfc98da5c510a267abf3cbbe3cacfa682b838cadc55a8ace618162eff69627",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "invariants"
+    ],
+    "optional": [
+      "dependencies",
+      "allowedDependencies",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:1544f7266820c71f36d0278e1df116ef6736636130210f8d9fe731219dd8affe",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

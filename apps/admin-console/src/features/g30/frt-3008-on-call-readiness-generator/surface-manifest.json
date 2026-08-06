@@ -8,6 +8,20 @@
   "logical_path": "apps/admin-console/src/features/g30/frt-3008-on-call-readiness-generator/",
   "status": "shared_implementation",
   "handler_kind": "production_readiness",
+  "capability_key": "frt.g30.on-call-readiness-generator",
+  "execution_contract_sha256": "sha256:bf3145a729720a46e71a608f4925c9f58a8a481ae1eeecac7a72ba51885340ff",
+  "execution_class": "EXTERNAL_PRODUCTION_AUTHORITY",
+  "input_contract": {
+    "required": [
+      "slos",
+      "runbooks"
+    ],
+    "optional": [
+      "alerts",
+      "releases"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:ec197aa33a78fdeb2c1d7724363e3070a80ca47ab1cc42951e9760345c16bf0a",
   "implementation_paths": [

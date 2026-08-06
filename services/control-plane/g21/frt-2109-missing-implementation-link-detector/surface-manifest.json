@@ -8,6 +8,22 @@
   "logical_path": "services/control-plane/g21/frt-2109-missing-implementation-link-detector/",
   "status": "shared_implementation",
   "handler_kind": "product_workflow",
+  "capability_key": "frt.g21.missing-implementation-link-detector",
+  "execution_contract_sha256": "sha256:0a0473f9d1abbb65f5d990eb323d192c690491c587527f8614bf4f80bee6dd1e",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:8480f218bcde54171aff747ec26cdde4eb720c0f34d93a34ebaee6ff53b3229a",
   "implementation_paths": [

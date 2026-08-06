@@ -8,11 +8,26 @@
   "logical_path": "packages/runtime/g20/frt-2021-billing-slo-and-observability/",
   "status": "shared_implementation",
   "handler_kind": "runtime_operations",
+  "capability_key": "frt.g20.billing-slo-and-observability",
+  "execution_contract_sha256": "sha256:6a2285f9ca2869794e7f6403d8835c271069a71bef455c1af751dfb3847d6b32",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "resources"
+    ],
+    "optional": [
+      "roles",
+      "jobs",
+      "quotas"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:bd50ca9a681313728580d824185ddab04e5585780a3ca42e7140a4d61918d939",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

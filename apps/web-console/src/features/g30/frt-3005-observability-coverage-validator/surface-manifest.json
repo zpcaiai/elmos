@@ -8,6 +8,20 @@
   "logical_path": "apps/web-console/src/features/g30/frt-3005-observability-coverage-validator/",
   "status": "shared_implementation",
   "handler_kind": "production_readiness",
+  "capability_key": "frt.g30.observability-coverage-validator",
+  "execution_contract_sha256": "sha256:0da6a3c36811b4c0a7c152f86fdae46e197199988fd4edf56bff168da0d49b16",
+  "execution_class": "EXTERNAL_PRODUCTION_AUTHORITY",
+  "input_contract": {
+    "required": [
+      "slos",
+      "runbooks"
+    ],
+    "optional": [
+      "alerts",
+      "releases"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:600d4d5c06eac23fd2bd98dcc6a1df2d2ad541f08d0ad56312931d8622993649",
   "implementation_paths": [

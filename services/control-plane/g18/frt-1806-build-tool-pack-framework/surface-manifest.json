@@ -8,6 +8,16 @@
   "logical_path": "services/control-plane/g18/frt-1806-build-tool-pack-framework/",
   "status": "shared_implementation",
   "handler_kind": "compatibility",
+  "capability_key": "frt.g18.build-tool-pack-framework",
+  "execution_contract_sha256": "sha256:5f26f1b4ee4da68132f164ad6c0e84dc8d92ebc6b3ff882bd29fd5dc20356bc5",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "packs"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:1552c1581a5b1023f94a42a67e5b7de5b1a07eabd28f76afce52128f76227cd1",
   "implementation_paths": [

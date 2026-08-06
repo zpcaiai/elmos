@@ -8,6 +8,20 @@
   "logical_path": "services/control-plane/g01/frt-0111-safety-constitution-and-trust-boundary/",
   "status": "shared_implementation",
   "handler_kind": "governance",
+  "capability_key": "frt.g01.safety-constitution-and-trust-boundary",
+  "execution_contract_sha256": "sha256:fb056c2fc1333acb71ada24c38a18b5ca030abe28f851afaf2ad30be2167934e",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "invariants"
+    ],
+    "optional": [
+      "dependencies",
+      "allowedDependencies",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:06865a8b8042364fdf58abcde71bc11e3c8459bc935288a3e127b5f8b8d970da",
   "implementation_paths": [

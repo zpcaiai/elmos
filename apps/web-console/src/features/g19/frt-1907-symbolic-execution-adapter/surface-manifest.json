@@ -8,6 +8,19 @@
   "logical_path": "apps/web-console/src/features/g19/frt-1907-symbolic-execution-adapter/",
   "status": "shared_implementation",
   "handler_kind": "advanced_verification",
+  "capability_key": "frt.g19.symbolic-execution-adapter",
+  "execution_contract_sha256": "sha256:eafb0dd0b15c6fe1b2fa83a31146dc12f10d3cac49cbb5b3e70909e37458c4d6",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "properties"
+    ],
+    "optional": [
+      "toolchains",
+      "counterexamples"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:5f21a99ec141682d67af11afcd7b06f9ec64f30673cd344ac3a495d2504a0c46",
   "implementation_paths": [

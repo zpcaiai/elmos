@@ -8,6 +8,22 @@
   "logical_path": "services/control-plane/g22/frt-2201-end-to-end-value-stream-compiler/",
   "status": "shared_implementation",
   "handler_kind": "product_workflow",
+  "capability_key": "frt.g22.end-to-end-value-stream-compiler",
+  "execution_contract_sha256": "sha256:8dd1fb86368f4fd2e1c2a668c6c2a5d39d029970230d223b5accc6c37b6fda9e",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:35be3ecb83bf1ecdff8dbcf51165858fe06f504227313b6080961fa5226281fb",
   "implementation_paths": [

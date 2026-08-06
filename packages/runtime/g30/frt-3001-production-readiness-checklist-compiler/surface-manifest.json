@@ -8,11 +8,26 @@
   "logical_path": "packages/runtime/g30/frt-3001-production-readiness-checklist-compiler/",
   "status": "shared_implementation",
   "handler_kind": "production_readiness",
+  "capability_key": "frt.g30.production-readiness-checklist-compiler",
+  "execution_contract_sha256": "sha256:63fa7e0567c3a68b26a257e4b291409151d29cae70d3e7895d3eb3483b69819f",
+  "execution_class": "EXTERNAL_PRODUCTION_AUTHORITY",
+  "input_contract": {
+    "required": [
+      "slos",
+      "runbooks"
+    ],
+    "optional": [
+      "alerts",
+      "releases"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:93a98bd430eccf1482a564ad076965a1c1c9606d5f90c3c2153fcb83c7a14721",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

@@ -8,6 +8,20 @@
   "logical_path": "apps/web-console/src/features/g29/frt-2900-security-assurance-orchestrator/",
   "status": "shared_implementation",
   "handler_kind": "security_privacy",
+  "capability_key": "frt.g29.security-assurance-orchestrator",
+  "execution_contract_sha256": "sha256:5be4e48e2d97b3892d322b5e384f47af8003a67a6138ec24617bbca9c8c4394a",
+  "execution_class": "AUTHORIZED_EXTERNAL_ASSURANCE",
+  "input_contract": {
+    "required": [
+      "assets",
+      "findings"
+    ],
+    "optional": [
+      "dataFlows",
+      "sbomComponents"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:90dc7d9a7bc3956741438794cc09b4afb81070e939b164ab7d946549f0c1af93",
   "implementation_paths": [

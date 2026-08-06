@@ -8,6 +8,20 @@
   "logical_path": "apps/web-console/src/features/g27/frt-2703-race-and-lost-update-detector/",
   "status": "shared_implementation",
   "handler_kind": "performance_capacity",
+  "capability_key": "frt.g27.race-and-lost-update-detector",
+  "execution_contract_sha256": "sha256:73589a2a6fccbc0f2b397bf490c5c329b8e24d545f4d0306c1974e47149847a4",
+  "execution_class": "AUTHORIZED_EXTERNAL_ASSURANCE",
+  "input_contract": {
+    "required": [
+      "workload",
+      "budgets"
+    ],
+    "optional": [
+      "samples",
+      "throughputPerSecond"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:6d9dc191aff3f1091bc7bc60f6f1ced6398ff25816c28a112d223e3501a4c2e4",
   "implementation_paths": [

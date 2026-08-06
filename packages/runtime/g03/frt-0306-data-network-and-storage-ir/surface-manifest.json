@@ -8,11 +8,22 @@
   "logical_path": "packages/runtime/g03/frt-0306-data-network-and-storage-ir/",
   "status": "shared_implementation",
   "handler_kind": "semantic_ir",
+  "capability_key": "frt.g03.data-network-and-storage-ir",
+  "execution_contract_sha256": "sha256:dd6c9b935f22dd8b6565cc703b59f762e23b86ff3716e02512f7432d53f37eab",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:7168828a196cee2598c100c8f5bb9dbeef2a1f1669085bd877f32af588f04cab",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

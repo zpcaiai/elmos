@@ -8,6 +8,17 @@
   "logical_path": "apps/web-console/src/features/g06/frt-0612-target-architecture-certification/",
   "status": "shared_implementation",
   "handler_kind": "source_generation",
+  "capability_key": "frt.g06.target-architecture-certification",
+  "execution_contract_sha256": "sha256:16e36047c43a20337591baacfdf72c62ed79ecacb7820e727af6946dff35c3c3",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "targetProfile",
+      "uiIr"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:4a516599efe8eac5e2a31f8db8bb99ad840745d5d7cf91e6a1d28641582bf99d",
   "implementation_paths": [

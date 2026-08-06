@@ -8,11 +8,27 @@
   "logical_path": "packages/runtime/g07/frt-0709-build-and-diagnostic-adapter/",
   "status": "shared_implementation",
   "handler_kind": "build_toolchain",
+  "capability_key": "frt.g07.build-and-diagnostic-adapter",
+  "execution_contract_sha256": "sha256:6dae144b22b2d3e3aaee2f0a5980cdeb4eeb38331f6b7d1911ee1c4c670cbe2e",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "astNodes"
+    ],
+    "optional": [
+      "imports",
+      "diagnostics",
+      "unsupportedSemantics",
+      "repairPasses"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:d29075cb5e7efdaabebefc927483796411a26a4fe9d0cc644af7ae83c752b372",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

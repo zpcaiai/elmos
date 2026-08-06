@@ -8,6 +8,21 @@
   "logical_path": "apps/web-console/src/features/g07/frt-0707-typed-hole-and-gap-emitter/",
   "status": "shared_implementation",
   "handler_kind": "build_toolchain",
+  "capability_key": "frt.g07.typed-hole-and-gap-emitter",
+  "execution_contract_sha256": "sha256:892b03f3e09eeaebdfe23b407a7ddc37e44654a0cdfb5feae0c2317aef78a922",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "astNodes"
+    ],
+    "optional": [
+      "imports",
+      "diagnostics",
+      "unsupportedSemantics",
+      "repairPasses"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:f1302308d19b7123e3656be07042abe73be4f412e2c5d7a51e69e79b660bd0e9",
   "implementation_paths": [

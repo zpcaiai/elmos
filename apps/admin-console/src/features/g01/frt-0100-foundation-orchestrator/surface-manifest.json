@@ -8,6 +8,20 @@
   "logical_path": "apps/admin-console/src/features/g01/frt-0100-foundation-orchestrator/",
   "status": "shared_implementation",
   "handler_kind": "governance",
+  "capability_key": "frt.g01.foundation-orchestrator",
+  "execution_contract_sha256": "sha256:ee7d4b84eba05175d4a94cf45ce69658cc9a655b143a47d78cac35706393fc48",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "invariants"
+    ],
+    "optional": [
+      "dependencies",
+      "allowedDependencies",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:4001d4c4d59d10443f8b2355bdb2fe085a1e56e82af01461efd7b9ec03d0414f",
   "implementation_paths": [

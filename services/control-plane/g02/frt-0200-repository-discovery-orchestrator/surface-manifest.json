@@ -8,6 +8,16 @@
   "logical_path": "services/control-plane/g02/frt-0200-repository-discovery-orchestrator/",
   "status": "shared_implementation",
   "handler_kind": "estate_discovery",
+  "capability_key": "frt.g02.repository-discovery-orchestrator",
+  "execution_contract_sha256": "sha256:337782ca3883075f71d94443c76cd23b487c6e797983ec58067b518e6fd5c154",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:636284f4a3e20f1070776d1f7a2a255a82067508bc0d4aa4760ee8202d6ea944",
   "implementation_paths": [

@@ -8,6 +8,19 @@
   "logical_path": "services/control-plane/g05/frt-0503-source-target-feature-mapper/",
   "status": "shared_implementation",
   "handler_kind": "migration_planning",
+  "capability_key": "frt.g05.source-target-feature-mapper",
+  "execution_contract_sha256": "sha256:eeaa61a9db905ef3cb844819ca8bafa2fdba8593545f798d717fa5957bfef9fd",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "inventory",
+      "target"
+    ],
+    "optional": [
+      "currentVersions"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:3156767b24e3d590e45be082d2cc5ef78ecef16060104f5d1b70e77f5911c870",
   "implementation_paths": [

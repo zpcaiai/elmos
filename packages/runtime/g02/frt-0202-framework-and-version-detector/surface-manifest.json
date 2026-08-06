@@ -8,11 +8,22 @@
   "logical_path": "packages/runtime/g02/frt-0202-framework-and-version-detector/",
   "status": "shared_implementation",
   "handler_kind": "estate_discovery",
+  "capability_key": "frt.g02.framework-and-version-detector",
+  "execution_contract_sha256": "sha256:4cafb8e206cd49262051617af75cd0753e4251d8f9642e6c92bd44f932d73ebf",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:6f8426047c39870ea90dc479e7ea21997bf1d21204ea0c9c5d04dfb3d89d4547",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

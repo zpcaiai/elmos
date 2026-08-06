@@ -8,6 +8,22 @@
   "logical_path": "apps/web-console/src/features/g25/frt-2513-responsive-and-adaptive-acceptance/",
   "status": "shared_implementation",
   "handler_kind": "product_workflow",
+  "capability_key": "frt.g25.responsive-and-adaptive-acceptance",
+  "execution_contract_sha256": "sha256:8e52f222e4074bbb622b3f9d3be406790eabfe9b18c34e705de4240ae251ce5b",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:13879f41d7471b9a61a0a8e58abe82b99464439fe310940a321a62a3e761bb1f",
   "implementation_paths": [

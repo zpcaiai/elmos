@@ -8,6 +8,19 @@
   "logical_path": "apps/admin-console/src/features/g12/frt-1212-platform-safety-validator/",
   "status": "shared_implementation",
   "handler_kind": "cross_platform",
+  "capability_key": "frt.g12.platform-safety-validator",
+  "execution_contract_sha256": "sha256:96560f07937e2321004c0363d390dc5174cb298ee51db8152547a921cd4a68f5",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "requiredCapabilities",
+      "platformCapabilities"
+    ],
+    "optional": [
+      "bridges"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:23353a17afb194c46f269c0b48ce3b8a42bb8e8e066f8b27eb60562caa23f7d0",
   "implementation_paths": [

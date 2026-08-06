@@ -8,6 +8,19 @@
   "logical_path": "services/control-plane/g19/frt-1905-smt-solver-adapter/",
   "status": "shared_implementation",
   "handler_kind": "advanced_verification",
+  "capability_key": "frt.g19.smt-solver-adapter",
+  "execution_contract_sha256": "sha256:35a1553df6cb1b8371000c9287145b99a6ac4b65477c19955d74a68b231132d9",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "properties"
+    ],
+    "optional": [
+      "toolchains",
+      "counterexamples"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:19339e2ff43bf7e6ead460464fac3edb8d4bc51a31ec2bfbc16f4022abdc7976",
   "implementation_paths": [

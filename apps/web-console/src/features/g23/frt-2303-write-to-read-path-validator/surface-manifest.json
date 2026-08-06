@@ -8,6 +8,22 @@
   "logical_path": "apps/web-console/src/features/g23/frt-2303-write-to-read-path-validator/",
   "status": "shared_implementation",
   "handler_kind": "product_workflow",
+  "capability_key": "frt.g23.write-to-read-path-validator",
+  "execution_contract_sha256": "sha256:840c4dd8d45dad1fc9d4718ec37652910f80f4fe9c789cac2fe4a39b1260c724",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:666fe10a32da1345ec5f07ff71b886ec4d8e9e0775f1b4843a9e74408827c5d5",
   "implementation_paths": [

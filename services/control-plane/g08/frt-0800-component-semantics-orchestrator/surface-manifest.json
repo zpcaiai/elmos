@@ -8,6 +8,16 @@
   "logical_path": "services/control-plane/g08/frt-0800-component-semantics-orchestrator/",
   "status": "shared_implementation",
   "handler_kind": "test_automation",
+  "capability_key": "frt.g08.component-semantics-orchestrator",
+  "execution_contract_sha256": "sha256:e7f06ef21f08dba6edd8956809997a0eb2ef8cfe42ec0168909b2a37933008b2",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "components"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:fe62bab5652ae05559fd1ed2398eaa3fdaca035e83688b978a773cdb5d224736",
   "implementation_paths": [

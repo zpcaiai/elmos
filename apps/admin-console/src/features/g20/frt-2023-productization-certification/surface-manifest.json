@@ -8,6 +8,20 @@
   "logical_path": "apps/admin-console/src/features/g20/frt-2023-productization-certification/",
   "status": "shared_implementation",
   "handler_kind": "runtime_operations",
+  "capability_key": "frt.g20.productization-certification",
+  "execution_contract_sha256": "sha256:909c9c23bcb588209129d24e7e96ab85c6f2aa6c62c566dfd56c7237bae73f87",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "resources"
+    ],
+    "optional": [
+      "roles",
+      "jobs",
+      "quotas"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:1b569cf61aa38e795aee2c7ca31a45a3d2b8f32d6ea67ffa0fa8a715ce8d36f0",
   "implementation_paths": [

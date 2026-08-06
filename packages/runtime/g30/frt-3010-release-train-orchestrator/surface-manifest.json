@@ -8,11 +8,26 @@
   "logical_path": "packages/runtime/g30/frt-3010-release-train-orchestrator/",
   "status": "shared_implementation",
   "handler_kind": "production_readiness",
+  "capability_key": "frt.g30.release-train-orchestrator",
+  "execution_contract_sha256": "sha256:c3e2eabddce98483ea872b1aef4223b5282ba3b211c62a5639561030b360f736",
+  "execution_class": "EXTERNAL_PRODUCTION_AUTHORITY",
+  "input_contract": {
+    "required": [
+      "slos",
+      "runbooks"
+    ],
+    "optional": [
+      "alerts",
+      "releases"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:958761bae58e48d934d7b9867b5b65428dc5c99763c58253e509bc2045c09230",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

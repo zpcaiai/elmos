@@ -8,6 +8,16 @@
   "logical_path": "apps/web-console/src/features/g03/frt-0310-semantic-invariant-registry/",
   "status": "shared_implementation",
   "handler_kind": "semantic_ir",
+  "capability_key": "frt.g03.semantic-invariant-registry",
+  "execution_contract_sha256": "sha256:cd76407fcc69178238a8d505471fc5bae150d2f1adaf90f6cb41b7b56cb1c611",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:bdd10dcec6e603b73358753977ed4cd6ea2b130f1bef1f3e2fe34d7077a5aaae",
   "implementation_paths": [

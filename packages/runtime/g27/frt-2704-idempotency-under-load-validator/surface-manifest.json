@@ -8,11 +8,26 @@
   "logical_path": "packages/runtime/g27/frt-2704-idempotency-under-load-validator/",
   "status": "shared_implementation",
   "handler_kind": "performance_capacity",
+  "capability_key": "frt.g27.idempotency-under-load-validator",
+  "execution_contract_sha256": "sha256:b90e2d90e8cd04c356959bdc36e91c32bc243bc7f749560b7a560f84ddee4759",
+  "execution_class": "AUTHORIZED_EXTERNAL_ASSURANCE",
+  "input_contract": {
+    "required": [
+      "workload",
+      "budgets"
+    ],
+    "optional": [
+      "samples",
+      "throughputPerSecond"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:6e2cb1df99193eaa96663309058b8b5e9000fb83b5a8e6e448e25eb6cd05be86",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

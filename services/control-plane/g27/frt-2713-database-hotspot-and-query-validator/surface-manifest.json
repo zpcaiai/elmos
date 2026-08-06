@@ -8,6 +8,20 @@
   "logical_path": "services/control-plane/g27/frt-2713-database-hotspot-and-query-validator/",
   "status": "shared_implementation",
   "handler_kind": "performance_capacity",
+  "capability_key": "frt.g27.database-hotspot-and-query-validator",
+  "execution_contract_sha256": "sha256:dd73f35b9023b39596f6df11bc13c761ef382172eb646b549fde05a46d757899",
+  "execution_class": "AUTHORIZED_EXTERNAL_ASSURANCE",
+  "input_contract": {
+    "required": [
+      "workload",
+      "budgets"
+    ],
+    "optional": [
+      "samples",
+      "throughputPerSecond"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:2816931b99817f61cb44a664e341ace3d5dd6c9a9ad6dc734ac30bfe53e28292",
   "implementation_paths": [

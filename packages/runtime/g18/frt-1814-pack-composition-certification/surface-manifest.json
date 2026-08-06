@@ -8,11 +8,22 @@
   "logical_path": "packages/runtime/g18/frt-1814-pack-composition-certification/",
   "status": "shared_implementation",
   "handler_kind": "compatibility",
+  "capability_key": "frt.g18.pack-composition-certification",
+  "execution_contract_sha256": "sha256:3a7642e93edb6b9349587573c69cd2b57361e680ad5cf09493d064946ea9c063",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "packs"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:40a2e03b76a9131dc9c3a304224187b6c53ab0710cc68f64205a67b980ad4446",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

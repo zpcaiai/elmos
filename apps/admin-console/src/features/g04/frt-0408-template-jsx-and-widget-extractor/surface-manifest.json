@@ -8,6 +8,16 @@
   "logical_path": "apps/admin-console/src/features/g04/frt-0408-template-jsx-and-widget-extractor/",
   "status": "shared_implementation",
   "handler_kind": "typed_contract",
+  "capability_key": "frt.g04.template-jsx-and-widget-extractor",
+  "execution_contract_sha256": "sha256:7a4a7be68de1e2accafa2edd36f0d15f6cf2e29aebcf6203486ad987e1116d5f",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:16baee3c578fa33a32c54a194008c4140dea90e6198da6f30edfafbf6d061a3b",
   "implementation_paths": [

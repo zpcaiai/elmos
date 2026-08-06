@@ -8,11 +8,25 @@
   "logical_path": "packages/runtime/g19/frt-1912-cegis-loop/",
   "status": "shared_implementation",
   "handler_kind": "advanced_verification",
+  "capability_key": "frt.g19.cegis-loop",
+  "execution_contract_sha256": "sha256:9cc63eb2c63a32bcce1cfb418e3750c44280cafa89013b52bbd167c25d8c1922",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "properties"
+    ],
+    "optional": [
+      "toolchains",
+      "counterexamples"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:2350bb9137ef7366484f8e9dac8df1284b41122f08325cabac264acc72fcacd9",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
+    "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"
   ],
   "not_applicable": false,

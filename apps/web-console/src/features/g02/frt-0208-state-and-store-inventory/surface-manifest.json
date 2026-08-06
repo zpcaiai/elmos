@@ -8,6 +8,16 @@
   "logical_path": "apps/web-console/src/features/g02/frt-0208-state-and-store-inventory/",
   "status": "shared_implementation",
   "handler_kind": "estate_discovery",
+  "capability_key": "frt.g02.state-and-store-inventory",
+  "execution_contract_sha256": "sha256:1db1a6f59398e4aaf2a2b4b018744703d4f524ecafd7e96cc0bee279b01ef657",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:0fd53bc0decc700840e07805da4e43ab02539e3ea401703ea01bd49d8ba06c29",
   "implementation_paths": [

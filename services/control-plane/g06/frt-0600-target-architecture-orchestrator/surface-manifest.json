@@ -8,6 +8,17 @@
   "logical_path": "services/control-plane/g06/frt-0600-target-architecture-orchestrator/",
   "status": "shared_implementation",
   "handler_kind": "source_generation",
+  "capability_key": "frt.g06.target-architecture-orchestrator",
+  "execution_contract_sha256": "sha256:e0a470df4335bdbeb0ccf12d83a72d6b4e41ecf9e3376f1b2b8d9d2eea5ec169",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "targetProfile",
+      "uiIr"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:4d4a44d99ebe9678d45b8d31a6ae571dac6356f7d3e7294e5b47d40e54765f22",
   "implementation_paths": [

@@ -8,6 +8,19 @@
   "logical_path": "apps/web-console/src/features/g05/frt-0501-semantic-gap-detector/",
   "status": "shared_implementation",
   "handler_kind": "migration_planning",
+  "capability_key": "frt.g05.semantic-gap-detector",
+  "execution_contract_sha256": "sha256:1992300b3ec6829b7a5c4ff67bf2d8798d7ef83067d76997b8fc08bee52ffe48",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "inventory",
+      "target"
+    ],
+    "optional": [
+      "currentVersions"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:584d39e843062a30c6e137520f36e5f662931a1f88d5ffdd502774c0852c090d",
   "implementation_paths": [

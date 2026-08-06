@@ -8,6 +8,20 @@
   "logical_path": "services/control-plane/g27/frt-2702-concurrency-correctness-validator/",
   "status": "shared_implementation",
   "handler_kind": "performance_capacity",
+  "capability_key": "frt.g27.concurrency-correctness-validator",
+  "execution_contract_sha256": "sha256:5af53b49500c12e960529624191b47da07e146204233fe446c2ac3aa8e50f1c7",
+  "execution_class": "AUTHORIZED_EXTERNAL_ASSURANCE",
+  "input_contract": {
+    "required": [
+      "workload",
+      "budgets"
+    ],
+    "optional": [
+      "samples",
+      "throughputPerSecond"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:58b3c3a608c78e9149890ecac9c9e681dc583003840c709db4f12f15115dd5a4",
   "implementation_paths": [

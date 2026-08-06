@@ -8,6 +8,21 @@
   "logical_path": "services/control-plane/g11/frt-1111-visual-regression-generator/",
   "status": "shared_implementation",
   "handler_kind": "mobile_client",
+  "capability_key": "frt.g11.visual-regression-generator",
+  "execution_contract_sha256": "sha256:66d0d04ea908ea9cb81102afe30516fcd1d0b521391f7fa97d01c2f2ae9f1faf",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "uiNodes"
+    ],
+    "optional": [
+      "designTokens",
+      "locales",
+      "rtlLocales",
+      "animations"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:cbc51bfd161cfb440007c79735b04ac6aebfc567c94fcd6b8e2fcd35d4e3aa97",
   "implementation_paths": [

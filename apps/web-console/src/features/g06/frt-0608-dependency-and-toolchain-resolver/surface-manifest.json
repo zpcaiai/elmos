@@ -8,6 +8,17 @@
   "logical_path": "apps/web-console/src/features/g06/frt-0608-dependency-and-toolchain-resolver/",
   "status": "shared_implementation",
   "handler_kind": "source_generation",
+  "capability_key": "frt.g06.dependency-and-toolchain-resolver",
+  "execution_contract_sha256": "sha256:1a498b71fe88899918b5e4d658ada7c2c3bc2cd8321b7cf4535e99148ed066c7",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "targetProfile",
+      "uiIr"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:8b17d8aa5c29e3e82320e6c96ea69cde0d6bcbb7d4dcc4dcc5c443f953067fa0",
   "implementation_paths": [

@@ -8,6 +8,21 @@
   "logical_path": "services/control-plane/g10/frt-1002-navigation-and-history-mapper/",
   "status": "shared_implementation",
   "handler_kind": "design_system",
+  "capability_key": "frt.g10.navigation-and-history-mapper",
+  "execution_contract_sha256": "sha256:8731ff90bda53ebca4ea119dd2658a755838e80b9dfa59e6dc311a99c9095972",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "routes"
+    ],
+    "optional": [
+      "forms",
+      "apiCalls",
+      "storage",
+      "permissions"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:f983c95592bbcc63bd92d4ac3d2017c86773937f74debe18f1b15888c10060be",
   "implementation_paths": [

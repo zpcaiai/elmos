@@ -8,6 +8,19 @@
   "logical_path": "services/control-plane/g12/frt-1213-platform-capability-certification/",
   "status": "shared_implementation",
   "handler_kind": "cross_platform",
+  "capability_key": "frt.g12.platform-capability-certification",
+  "execution_contract_sha256": "sha256:004cbe38799c3bed4defbb443209f02ac79fe405d749c37351d408cc00480cc9",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "requiredCapabilities",
+      "platformCapabilities"
+    ],
+    "optional": [
+      "bridges"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:94a246c0d9b2da7d7dbf628086c0c7101dab3f5de3ddcf40d0e1aadb493ad231",
   "implementation_paths": [

@@ -8,6 +8,21 @@
   "logical_path": "apps/admin-console/src/features/g10/frt-1007-api-contract-mapper/",
   "status": "shared_implementation",
   "handler_kind": "design_system",
+  "capability_key": "frt.g10.api-contract-mapper",
+  "execution_contract_sha256": "sha256:1647c051a8db3c3d125ddc27b7f21a3561856ae7ecf409976880b6927c16fd62",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "routes"
+    ],
+    "optional": [
+      "forms",
+      "apiCalls",
+      "storage",
+      "permissions"
+    ],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:754eb25b653d887b25130614dc33119c59565f3a96c92aa6c870a57583afd0b7",
   "implementation_paths": [

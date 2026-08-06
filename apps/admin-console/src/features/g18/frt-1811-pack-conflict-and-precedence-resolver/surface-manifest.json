@@ -8,6 +8,16 @@
   "logical_path": "apps/admin-console/src/features/g18/frt-1811-pack-conflict-and-precedence-resolver/",
   "status": "shared_implementation",
   "handler_kind": "compatibility",
+  "capability_key": "frt.g18.pack-conflict-and-precedence-resolver",
+  "execution_contract_sha256": "sha256:85fca7a88ea57a9e6313b504250a125b9d19eb22fc32055736932d7156621417",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "packs"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:cfdf4445ce7b5052cb8ad6ebe83c4eed732c24653b99d07608d4c9f262227066",
   "implementation_paths": [

@@ -8,6 +8,16 @@
   "logical_path": "services/control-plane/g03/frt-0305-navigation-semantic-ir/",
   "status": "shared_implementation",
   "handler_kind": "semantic_ir",
+  "capability_key": "frt.g03.navigation-semantic-ir",
+  "execution_contract_sha256": "sha256:f5c701f89da4a6ac493e56df68da7e56712731dfb91220fbd87add7a906886f6",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
   "contract_version": "1.0.0",
   "source_sha256": "sha256:2c21b367cce43ec4db1c3e865df269d2f7644dc43a417d1afe8c93ac5a9ecf12",
   "implementation_paths": [
