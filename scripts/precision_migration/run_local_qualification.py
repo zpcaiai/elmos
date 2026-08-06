@@ -66,7 +66,7 @@ def main() -> int:
     started = datetime.now(timezone.utc)
     checks = {
         "adapter_registry": run(
-            [sys.executable, "scripts/precision_migration/adapters.py", "validate-registry"],
+            [sys.executable, "-m", "scripts.precision_migration.adapters", "validate-registry"],
             raw / "adapter-registry.txt",
         ),
         "runtime_tests": run(
@@ -74,48 +74,48 @@ def main() -> int:
             raw / "runtime-tests.txt",
         ),
         "contract_qualification": run(
-            [sys.executable, "scripts/precision_migration/qualify_contracts.py", "--check"],
+            [sys.executable, "-m", "scripts.precision_migration.qualify_contracts", "--check"],
             raw / "contract-qualification.txt",
         ),
         "exact_handler_qualification": run(
-            [sys.executable, "scripts/precision_migration/qualify_domains.py", "--check"],
+            [sys.executable, "-m", "scripts.precision_migration.qualify_domains", "--check"],
             raw / "exact-handler-qualification.txt",
         ),
         "orchestrator_qualification": run(
-            [sys.executable, "scripts/precision_migration/qualify_orchestrators.py", "--check"],
+            [sys.executable, "-m", "scripts.precision_migration.qualify_orchestrators", "--check"],
             raw / "orchestrator-qualification.txt",
         ),
         "batch41_qualification": run(
-            [sys.executable, "scripts/precision_migration/qualify_b41.py", "--check"],
+            [sys.executable, "-m", "scripts.precision_migration.qualify_b41", "--check"],
             raw / "batch41-qualification.txt",
         ),
         "batch16_routes": run(
-            [sys.executable, "scripts/precision_migration/validate_b16_routes.py"],
+            [sys.executable, "-m", "scripts.precision_migration.validate_b16_routes"],
             raw / "batch16-routes.txt",
             timeout_seconds=900,
         ),
         "batch16_qualification": run(
-            [sys.executable, "scripts/precision_migration/qualify_b16.py", "--check"],
+            [sys.executable, "-m", "scripts.precision_migration.qualify_b16", "--check"],
             raw / "batch16-qualification.txt",
         ),
         "specialized_qualification": run(
-            [sys.executable, "scripts/precision_migration/qualify_specialized.py", "--check"],
+            [sys.executable, "-m", "scripts.precision_migration.qualify_specialized", "--check"],
             raw / "specialized-qualification.txt",
         ),
         "external_execution_profiles": run(
-            [sys.executable, "scripts/precision_migration/external.py", "validate-profiles"],
+            [sys.executable, "-m", "scripts.precision_migration.external", "validate-profiles"],
             raw / "external-execution-profiles.txt",
         ),
         "external_engineering_qualification": run(
-            [sys.executable, "scripts/precision_migration/qualify_external_engineering.py", "--check"],
+            [sys.executable, "-m", "scripts.precision_migration.qualify_external_engineering", "--check"],
             raw / "external-engineering-qualification.txt",
         ),
         "coverage_matrix": run(
-            [sys.executable, "scripts/precision_migration/build_coverage.py", "--check"],
+            [sys.executable, "-m", "scripts.precision_migration.build_coverage", "--check"],
             raw / "coverage-matrix.txt",
         ),
         "production_code_gate": run(
-            [sys.executable, "scripts/precision_migration/run_production_code_gate.py", "--check"],
+            [sys.executable, "-m", "scripts.precision_migration.run_production_code_gate", "--check"],
             raw / "production-code-gate.txt",
         ),
     }

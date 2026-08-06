@@ -49,21 +49,21 @@ precision-migration-b01-44-skills:
 	$(UV) run --quiet --with pyyaml --with jsonschema python scripts/precision_migration/validate_platform.py
 precision-migration-b01-44-check: precision-migration-b01-44-skills
 	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests/precision-migration -p 'test_*.py'
-	python3 scripts/precision_migration/qualify_contracts.py --check
-	python3 scripts/precision_migration/qualify_domains.py --check
-	python3 scripts/precision_migration/qualify_orchestrators.py --check
-	python3 scripts/precision_migration/qualify_b41.py --check
-	python3 scripts/precision_migration/qualify_specialized.py --check
-	python3 scripts/precision_migration/qualify_external_engineering.py --check
-	python3 scripts/precision_migration/validate_b16_routes.py
-	python3 scripts/precision_migration/qualify_b16.py --check
-	python3 scripts/precision_migration/build_coverage.py --check
-	python3 scripts/precision_migration/external.py validate-profiles
-	python3 scripts/precision_migration/run_production_code_gate.py --check
+	python3 -m scripts.precision_migration.qualify_contracts --check
+	python3 -m scripts.precision_migration.qualify_domains --check
+	python3 -m scripts.precision_migration.qualify_orchestrators --check
+	python3 -m scripts.precision_migration.qualify_b41 --check
+	python3 -m scripts.precision_migration.qualify_specialized --check
+	python3 -m scripts.precision_migration.qualify_external_engineering --check
+	python3 -m scripts.precision_migration.validate_b16_routes
+	python3 -m scripts.precision_migration.qualify_b16 --check
+	python3 -m scripts.precision_migration.build_coverage --check
+	python3 -m scripts.precision_migration.external validate-profiles
+	python3 -m scripts.precision_migration.run_production_code_gate --check
 	$(UV) run --quiet --with jsonschema python scripts/batch35/validate_verification_pack.py verification-packs/precision-migration-b01-44-runtime
 	$(UV) run --quiet --with jsonschema python scripts/batch35/run_verification_gate.py verification-packs/precision-migration-b01-44-runtime
 precision-migration-b01-44-qualification: precision-migration-b01-44-check
-	python3 scripts/precision_migration/run_local_qualification.py
+	python3 -m scripts.precision_migration.run_local_qualification
 modernization-b01-44-packages:
 	PYTHONDONTWRITEBYTECODE=1 python3 -m scripts.modernization_b01_44.cli packages --summary
 modernization-b01-44-foundation:
