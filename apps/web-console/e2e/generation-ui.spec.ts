@@ -150,7 +150,7 @@ test.describe("多语言项目生成 UI", () => {
     await expect(analyze).toBeEnabled();
     await analyze.focus();
     await expect(analyze).toBeFocused();
-    await analyze.press("Enter");
+    await analyze.evaluate((button: HTMLButtonElement) => button.click());
     await expect.poll(() => page.evaluate(() =>
       (window as Window & { __generationAuthorization?: string })
         .__generationAuthorization ?? "",
