@@ -25,6 +25,7 @@ from modernization_proof_release_state import (
     EXECUTED_AWAITING_VERIFICATION,
     EXTERNAL_BOUNDARIES,
     INDEPENDENTLY_VERIFIED,
+    NOT_RUN,
     ReleaseStateFailure,
     validate_external_boundaries,
     validate_observation_transition,
@@ -306,6 +307,8 @@ def evaluate_release_gate(
         effective_boundaries = validate_external_boundaries(
             image_receipt.get("external_boundaries") or {}
         )
+        if any(state != NOT_RUN for state in effective_boundaries.values()):
+            add_blocker(blockers, "IMAGE_BUILD_BOUNDARIES_NOT_ALL_NOT_RUN")
     except ReleaseStateFailure:
         add_blocker(blockers, "IMAGE_EXTERNAL_BOUNDARIES_INVALID")
         effective_boundaries = {boundary: "INVALID" for boundary in EXTERNAL_BOUNDARIES}

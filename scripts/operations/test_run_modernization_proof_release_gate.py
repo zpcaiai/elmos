@@ -195,6 +195,17 @@ class ModernizationProofReleaseGateTest(unittest.TestCase):
         self.assertIn("IMAGE_EXTERNAL_BOUNDARIES_INVALID", result["blockers"])
         self.assertIn("CUSTOMER_ACCEPTANCE_INVALID", result["blockers"])
 
+    def test_image_receipt_cannot_claim_an_external_operation(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            image = self.image_fixture(root)
+            image["external_boundaries"]["SCM_DRAFT_PULL_REQUEST"] = (
+                release_state.EXECUTED_AWAITING_VERIFICATION
+            )
+            image_path = self.write_image(root, image)
+            result = subject.evaluate_release_gate(image, image_receipt_path=image_path)
+        self.assertIn("IMAGE_BUILD_BOUNDARIES_NOT_ALL_NOT_RUN", result["blockers"])
+
     def test_tampered_closure_receipt_binding_is_rejected(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

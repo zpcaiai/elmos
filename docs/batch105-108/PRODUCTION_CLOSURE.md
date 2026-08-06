@@ -94,6 +94,33 @@ identities and required raw evidence roles. Its maximum local decision is
 `READY_FOR_EXTERNAL_GATE`; it always emits `production_ready=false` and
 `certified=false`.
 
+Collect the final conservative status only after the real Draft PR and local
+Flyway run exist:
+
+```text
+python3 scripts/operations/collect_modernization_proof_conservative_status.py \
+  --image-receipt <image-build-receipt.json> \
+  --release-closure <release-closure-receipt.json> \
+  --primary-worktree <developer-worktree> \
+  --source-worktree <clean-image-source-worktree> \
+  --repository zpcaiai/elmos --pr <number> \
+  --v63-surefire-xml <TEST-io.elmos.persistence.FlywayMigrationTest.xml> \
+  --v63-surefire-text <io.elmos.persistence.FlywayMigrationTest.txt> \
+  --v63-migration <V63__modernization_proof_execution_jobs.sql> \
+  --v63-test-source <FlywayMigrationTest.java> \
+  --evidence-directory <artifact-directory> \
+  --output <release-gate-result.json>
+```
+
+The collector re-runs the gate instead of trusting the previous result. It
+records the primary and isolated worktrees separately, binds the V63 report to
+the migration, test source and exact PostgreSQL image digest, and observes the
+current PR checks. A CI result is `PASSED` only when the rollup is non-empty and
+every check succeeded. Failures and still-running checks are counted
+separately. V63 success is explicitly scoped to `LOCAL_ENGINEERING_INTEGRATION`
+with `production_equivalent=false`, `promotes_external_boundary=false` and
+`certifies_release=false`.
+
 ## Local qualification
 
 ```text
