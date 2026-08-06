@@ -1,5 +1,25 @@
 # ELMOS
 
+## 能力边界速览
+
+三条业务线在**各自精确支持子集内**已跑通，并有可复现的本地工程证据；**没有任何一条达到认证**。
+所有 gate 一律 `NOT_CERTIFIED`，独立验证与外部证据一律 `NOT_RUN` —— 这是设计的失败关闭行为。
+先读这张表再读下面的能力叙述，可以避免把「广度」误读成「深度」。
+
+| 业务线 | 已跑通的范围 | 明确**不**支持 | 最高本地结论 |
+| --- | --- | --- | --- |
+| Spring 老项目现代化 | 4 条 Maven 路线，各绑定**一个精确元组**（Boot 1.5.22/Java 8、2.3.12/Java 11、2.7.18/Java 17、3.4.1/Java 17）→ Boot 3.5.3/Java 21，端到端源构建 + OpenRewrite + 目标构建 + 行为探针 | 元组以外的区间版本（需显式 experimental 开关）；Gradle 全部路线（`NOT_IMPLEMENTED`） | `PASSED_LOCAL` |
+| 跨语言转换 | 6 语言两两成对共 30 条有向路线，语义 Profile 为 **`typed-pure-function-v1`**：有类型、无副作用、由 return/if/字面量/名字/白名单二元运算构成的函数 | **对象图、异常、async、I/O、框架、数据库、并发全部在范围外**。30 条路线是广度，不是深度 | `PASSED_LOCAL` / `limited` |
+| 多语言项目生成 | 8 个目标真实生成 + 精确工具链构建 + 启动探针；16 个 PostgreSQL 17.5 JWT/OIDC 生产 Profile 全通过 | **仅 Java/Python 支持多实体与关系**；Go/TypeScript/C#/Kotlin/Rust/PHP 为单实体边界，多实体请求失败关闭 | `PASSED_LOCAL` / `limited` |
+
+附属能力的实测覆盖率同样是子集而非全集：SQL 方言转写对本仓库 64 个真实迁移文件实测 **174/1015 = 17.1%**，
+大前端组件转写对 `apps/web-console` 实测 **8/33 = 24.2%**。两者的缺口都是结构性的，不是增量的。
+
+完整边界与外部证据清单见 [`docs/BUSINESS_LINE_CLOSURE_MATRIX.md`](docs/BUSINESS_LINE_CLOSURE_MATRIX.md)。
+全部 98 个 `NOT_CERTIFIED` 的共同前置是**独立验证**，其具体产出要求（从 gate 代码反推）见
+[`docs/INDEPENDENT_VERIFICATION.md`](docs/INDEPENDENT_VERIFICATION.md)。
+
+
 ELMOS（Enterprise Legacy Modernization Operating System）是证据驱动的企业代码库现代化与跨语言迁移平台。跨语言路线采用“源语言语义适配器 → 统一语义中间表示（UIR）→ 目标语言生成器 → 框架 Recipe/Agent 修复/验证门禁”，避免维护 30 条相互独立的语言对翻译链路。
 
 Polyglot Repository Intake 支持 Java、Python、C#、JavaScript/TypeScript。`modules/semantic` 实现 PSP v1；`modules/uir` 实现多视图 UIR、Dialect、Effect/Obligation/Provenance 与模块门禁；`modules/skeleton` 实现四语言目标 Profile、模块/命名/构建规划和 Skeleton-first 契约仓库；`modules/lowering` 实现 Faithful-first 方法体计划、规则/能力治理、静态验证后惯用化、安全 Patch 与 L-A 至 L-D 门禁；`modules/dependency-migration` 实现实际 API 使用驱动的候选映射、供应链/构建验证、Adapter/Runtime/Boundary 策略与 D-A 至 D-D 门禁。每批都 fail-closed：缺少权威分析器、UIR 资格、隔离构建证据、原生 Emitter/Compiler、依赖解析或差分验证后端时不会推进。

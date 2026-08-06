@@ -99,8 +99,16 @@ frontend-client engine、30 条有向语言路线、project-synthesis engine、�
 ## 备注：`modules/lowering` 链与本矩阵的关系
 
 `modules/intake` → `modules/semantic` → `modules/uir` → `modules/skeleton` →
-`modules/lowering`（另见 `docs/adr/ADR-0023-faithful-first-core-language-lowering.md`）
-是一条独立、真实、有测试覆盖，但**已明确被产品执行路径取代，且未被 `apps/` 下任何控制器、CLI 或 Worker 调用**的历史参考架构；
+`modules/lowering` → `modules/dependency-migration` → `modules/framework-migration`
+（另见 `docs/adr/ADR-0023-faithful-first-core-language-lowering.md`）
+是一条独立、真实、有测试覆盖，但**已明确被产品执行路径取代，且未被 `apps/` 下任何控制器、CLI 或 Worker 调用**的历史参考架构。
+本条此前只列出前五个模块；实测 `dependency-migration` 与 `framework-migration`
+同样零 `apps/` 引用，且只被该链自身和 `modules/architecture-tests` 依赖，属于同一个死簇，共 7 个模块。
+这 7 个模块目前仍在每次 `make backend` 中编译并执行测试。**不能直接从 `<modules>` 删除**：
+`ArchitectureRulesTest` 对 `io.elmos.intake..` 至 `io.elmos.frameworkmigration..`
+施加 ArchUnit 边界规则，模块消失后这些规则会对空类集静默通过。
+退役必须在同一次变更里同时下线对应规则，并由真实 `make backend` 验证；
+在此之前 `make backend-fast` 仅供本地迭代跳过该簇，`make verify` 与 CI 仍构建全部模块。
 "全库跨语言转换 M29" 一行描述的能力完全建立在 `engines/polyglot-route-engine` 之上，与该链无关。
 这不是本矩阵的遗漏——该链本就不在任何已发布业务线的请求路径上，也不得作为产品回退。
 五个模块各自的 `README.md` 和 ADR-0023 的闭环决定（2026-07-28）记录了这一事实；

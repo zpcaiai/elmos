@@ -589,3 +589,76 @@ jobs:
 
       - name: 订单目录与租户隔离（V62）
         run: bash tooling/payment-db-verify/verify_order_directory.sh
+
+  # Build-entry-point portability and composite Makefile targets.
+  #
+  # Every other job invokes the underlying scripts directly, so for a long time
+  # no job executed the repository's own `make` targets end to end. Seventeen
+  # included Makefiles could therefore hard-code /opt/homebrew/bin/uv, and
+  # `make production-readiness-check` could stay broken on every non-macOS
+  # machine, while CI reported green. This job closes that gap: it runs on
+  # ubuntu precisely because a macOS-only assumption must fail here.
+  makefile-portability:
+    name: Makefile portability and composite targets
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - name: Set up Python 3.12.12
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.12.12"
+      - name: Set up Node.js 22
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: "22"
+      - name: Install locked tools
+        run: |
+          python -m pip install --disable-pip-version-check uv==0.11.16
+          npm install --global pnpm@10.12.4
+      - name: No Makefile may bake in a machine-specific tool path
+        run: make makefile-portability-check
+      - name: Business line contracts resolve on a clean non-macOS checkout
+        run: make business-line-contracts
+      - name: Every composite target graph resolves
+        # -n expands the full prerequisite graph without running the heavyweight
+        # toolchain legs, so a missing target or unresolvable path fails here
+        # rather than hours into a release run.
+        run: |
+          for target in verify production-readiness-check project-synthesis \
+                        mature-product-skills test-suite-check frt-g01-g30-check; do
+            echo "::group::make -n $target"
+            make -n "$target" > /dev/null
+            echo "::endgroup::"
+          done
+      - name: Batch 29-45 check targets run through make
+        run: |
+          make b29-skills-test b30-skills-test b31-skills-test
+          for batch in 32 33 34 35 36 37 38 39 40 41 42 43 44 45; do
+            make "batch${batch}-check"
+          done
+      - name: Optional-source-package guard holds in both directions
+        run: |
+          make batch97-104-skills product-batch56-skills batch66-80-skills
+          # A bundle that is present must still be validated, not skipped.
+          mkdir -p elmos-codex-skills-batch66-80-slightly-strict-tests
+          echo '{"stub":true}' > elmos-codex-skills-batch66-80-slightly-strict-tests/manifest.json
+          if make batch66-80-test-skills; then
+            echo "::error::a stub source bundle was accepted; the guard must validate a present bundle"
+            exit 1
+          fi
+          rm -rf elmos-codex-skills-batch66-80-slightly-strict-tests
+          # And REQUIRE_SOURCE_PACKAGES=1 must still fail closed.
+          if make batch97-104-skills REQUIRE_SOURCE_PACKAGES=1; then
+            echo "::error::REQUIRE_SOURCE_PACKAGES=1 did not fail closed on an absent bundle"
+            exit 1
+          fi
+      - name: Portable half of production-readiness-check
+        # The Project Synthesis acceptance and production matrix legs already run
+        # in `project-synthesis-acceptance`; this covers everything else the
+        # composite target pulls in.
+        run: |
+          make batch45-check product-closure-convergence-skills
+          uv run --with pyyaml python tooling/validate_runtime_operability.py
+          uv run --with pyyaml python -m unittest discover -s tests/production-readiness -p 'test_*.py'
