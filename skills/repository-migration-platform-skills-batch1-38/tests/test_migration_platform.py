@@ -53,8 +53,27 @@ class MigrationPlatformRuntimeTest(unittest.TestCase):
             "approver": ["approver", "production-approver"],
             "data-owner": ["data-owner"],
             "holdout-custodian": ["holdout-custodian"],
+            "transformation-author": ["transformation-author"],
             "operations-owner": ["operations-owner"],
             "independent-certifier": ["independent-certifier"],
+            "external-trust-approver": ["external-trust-approver"],
+        }
+        organizations = {
+            "executor-dev": ("development-org", "implementation-provider"),
+            "executor-holdout": ("holdout-executor-org", "holdout-lab"),
+            "executor-production": ("production-executor-org", "operations"),
+            "oracle-owner": ("oracle-org", "oracle-authority"),
+            "verifier-dev": ("development-verifier-org", "independent-verifier"),
+            "verifier-holdout": ("holdout-verifier-org", "independent-verifier"),
+            "verifier-production": ("production-verifier-org", "independent-verifier"),
+            "adapter-admin": ("platform-admin-org", "operations"),
+            "approver": ("customer-approval-org", "customer"),
+            "data-owner": ("customer-data-org", "customer"),
+            "holdout-custodian": ("holdout-custodian-org", "customer"),
+            "transformation-author": ("implementation-author-org", "implementation-provider"),
+            "operations-owner": ("production-operations-org", "operations"),
+            "independent-certifier": ("local-assurance-org", "independent-verifier"),
+            "external-trust-approver": ("customer-governance-org", "customer"),
         }
         actors = []
         for actor_id, roles in actor_roles.items():
@@ -77,10 +96,12 @@ class MigrationPlatformRuntimeTest(unittest.TestCase):
                 "not_before": "2020-01-01T00:00:00Z",
                 "not_after": "2099-01-01T00:00:00Z",
                 "revoked": False,
+                "organization_id": organizations[actor_id][0],
+                "authority_class": organizations[actor_id][1],
             })
         self.trust_store = self.actor_directory / "trust-store.json"
         self.trust_store.write_text(json.dumps({
-            "schema_version": "1.0",
+            "schema_version": "2.0", "store_id": "workspace-test-actors", "purpose": "workspace-actors",
             "actors": actors,
             "revoked_record_ids": [],
         }), encoding="utf-8")
@@ -149,6 +170,39 @@ class MigrationPlatformRuntimeTest(unittest.TestCase):
             "payload": payload,
             "signature": base64.urlsafe_b64encode(signature_path.read_bytes()).decode("ascii").rstrip("="),
         }
+
+    def external_certification_authority(self, tenant_id: str) -> tuple[Path, Path, dict]:
+        directory = self.root / "external-certification-authority"
+        directory.mkdir(exist_ok=True)
+        actor_id = "external-certifier"
+        private_key = directory / f"{actor_id}.private.pem"
+        public_key = directory / f"{actor_id}.public.pem"
+        subprocess.run(["openssl", "genpkey", "-algorithm", "ED25519", "-out", str(private_key)],
+                       check=True, capture_output=True)
+        subprocess.run(["openssl", "pkey", "-in", str(private_key), "-pubout", "-out", str(public_key)],
+                       check=True, capture_output=True)
+        self.actor_keys[actor_id] = private_key
+        store_path = directory / "trust-store.json"
+        store_path.write_text(json.dumps({"schema_version": "2.0", "store_id": "external-ca-fixture",
+            "purpose": "external-certification", "actors": [{"actor_id": actor_id,
+                "key_id": f"key-{actor_id}", "roles": ["independent-certifier"],
+                "public_key_path": public_key.name, "not_before": "2020-01-01T00:00:00Z",
+                "not_after": "2099-01-01T00:00:00Z", "revoked": False,
+                "organization_id": "external-certification-org", "authority_class": "certification-body"}],
+            "revoked_record_ids": []}), encoding="utf-8")
+        store = production_closure.ActorTrustStore.load(store_path)
+        policy = {"schema_version": "1.0", "policy_id": "external-ca-policy", "tenant_id": tenant_id,
+            "external_store_id": store.store_id, "external_store_sha256": store.digest,
+            "authority_organization_id": "external-certification-org", "authority_class": "certification-body",
+            "purposes": ["independent-certification"], "issued_at": "2020-01-01T00:00:00Z",
+            "expires_at": "2099-01-01T00:00:00Z", "revoked": False}
+        policy_path = directory / "policy.json"
+        policy_path.write_text(json.dumps(policy), encoding="utf-8")
+        approval = self.sign("external-trust-approver", {"policy_id": policy["policy_id"],
+            "tenant_id": tenant_id, "policy_sha256": production_closure.canonical_digest(policy),
+            "external_store_sha256": store.digest, "purpose": "independent-certification"},
+            suffix="external-ca-policy")
+        return store_path, policy_path, approval
 
     def provider_receipt(self, cutover: dict, target_state: str, operation: str, suffix: str,
                          *, provider: dict | None = None, effect_state: str = "SUCCEEDED") -> dict:
@@ -700,7 +754,7 @@ class MigrationPlatformRuntimeTest(unittest.TestCase):
             "environment_class": "test", "corpus": {"path": str(holdout_file),
                 "sha256": production_closure.sha256_bytes(holdout_file.read_bytes()), "bytes": holdout_file.stat().st_size},
             "development_corpus_sha256": production_closure.sha256_bytes(b"development-corpus"),
-            "transformation_author_ids": ["author-a"], "executor_ids": ["executor-holdout"],
+            "transformation_author_ids": ["transformation-author"], "executor_ids": ["executor-holdout"],
             "verifier_ids": ["verifier-holdout"],
         }
         holdout_manifest_path = self.root / "holdout-manifest.json"
@@ -845,6 +899,36 @@ class MigrationPlatformRuntimeTest(unittest.TestCase):
         self.assertEqual("LOCAL_TOOLKIT_PASS", ready["decision"])
         self.assertEqual("NOT_CERTIFIED", ready["production_status"])
         self.assertEqual([], ready["findings"])
+        self.assertEqual("soak-001", ready["selected_chain"]["run_id"])
+
+        # A failed historical attempt must remain auditable without poisoning a
+        # later complete evidence chain for the same tenant.
+        historical_cutover = {"schema_version": "1.0", "cutover_id": "cutover-historical",
+            "tenant_id": "tenant-001", "snapshot_id": "snapshot-001", "target_key": "old-target",
+            "target_release_sha256": production_closure.sha256_bytes(b"old-release"),
+            "state": "CANCELLED", "fencing_token": 1,
+            "plan_sha256": production_closure.sha256_bytes(b"old-plan"),
+            "approval": {"actor_id": "approver"}, "transitions": []}
+        store = production_closure.ClosureStore(self.workspace)
+        store.insert("cutovers", "cutover-historical",
+            ("cutover-historical", "tenant-001", "old-target", "CANCELLED", 1,
+             historical_cutover["plan_sha256"]), historical_cutover, "CUTOVER_CANCELLED")
+        historical_soak = {"schema_version": "1.0", "run_id": "soak-historical",
+            "cutover_id": "cutover-historical", "tenant_id": "tenant-001",
+            "environment_class": "test", "state": "FAILED", "started_at": "2025-01-01T00:00:00Z",
+            "required_seconds": 60, "max_gap_seconds": 40, "last_sequence": 0,
+            "last_observed_at": "2025-01-01T00:01:00Z", "observations": [],
+            "critical_failures": 1, "clock_mode": "system", "evidence_class": "engineering-only",
+            "real_seven_day_elapsed": False}
+        store.insert("soak_runs", "soak-historical",
+            ("soak-historical", "cutover-historical", "test", "FAILED", 0,
+             "2025-01-01T00:01:00Z"), historical_soak, "SOAK_FAILED")
+        ready_with_history = production_closure.readiness(self.workspace, "tenant-001")
+        self.assertEqual("LOCAL_TOOLKIT_PASS", ready_with_history["decision"])
+        self.assertEqual("soak-001", ready_with_history["selected_chain"]["run_id"])
+        self.assertEqual(2, ready_with_history["evaluated_chains"])
+        self.assertEqual(1, ready_with_history["ignored_historical_chains"])
+        self.assertEqual([], ready_with_history["findings"])
 
     def test_production_closure_rejects_holdout_reuse_and_short_production_soak(self) -> None:
         holdout_file = self.root / "reused.bin"
@@ -854,7 +938,7 @@ class MigrationPlatformRuntimeTest(unittest.TestCase):
             "schema_version": "1.0", "holdout_id": "holdout-reused", "tenant_id": "tenant-001",
             "environment_class": "test", "corpus": {"path": str(holdout_file), "sha256": corpus_sha,
                 "bytes": holdout_file.stat().st_size}, "development_corpus_sha256": corpus_sha,
-            "transformation_author_ids": ["author-a"], "executor_ids": ["executor-holdout"],
+            "transformation_author_ids": ["transformation-author"], "executor_ids": ["executor-holdout"],
             "verifier_ids": ["verifier-holdout"],
         }
         path = self.root / "reused-manifest.json"
@@ -943,7 +1027,7 @@ class MigrationPlatformRuntimeTest(unittest.TestCase):
             "corpus": {"path": str(corpus), "sha256": production_closure.sha256_bytes(corpus.read_bytes()),
                        "bytes": corpus.stat().st_size},
             "development_corpus_sha256": production_closure.sha256_bytes(b"development-corpus"),
-            "transformation_author_ids": ["author-a"], "executor_ids": ["executor-holdout"],
+            "transformation_author_ids": ["transformation-author"], "executor_ids": ["executor-holdout"],
             "verifier_ids": ["verifier-holdout"], "oracle_owner_ids": ["oracle-owner"],
             "oracle_registry_sha256": oracle_registry_sha, "claim_oracle_map": mapping,
             "development_partition_id": "development-partition", "holdout_partition_id": "holdout-partition"}
@@ -957,6 +1041,15 @@ class MigrationPlatformRuntimeTest(unittest.TestCase):
             "claim_oracle_root": production_closure.canonical_digest(mapping),
             "development_partition_id": "development-partition", "holdout_partition_id": "holdout-partition"},
             suffix="production-holdout-v2")
+        overlapping_payload = json.loads(self.trust_store.read_text(encoding="utf-8"))
+        for actor in overlapping_payload["actors"]:
+            if actor["actor_id"] == "verifier-holdout":
+                actor["organization_id"] = "holdout-executor-org"
+        overlapping_trust = self.trust_store.parent / "overlapping-production-trust-store.json"
+        overlapping_trust.write_text(json.dumps(overlapping_payload), encoding="utf-8")
+        with self.assertRaisesRegex(production_closure.ClosureError, "organizations overlap"):
+            production_closure.register_holdout(
+                self.workspace, manifest_path, custodian, overlapping_trust, (self.root.resolve(),))
         holdout = production_closure.register_holdout(
             self.workspace, manifest_path, custodian, self.trust_store, (self.root.resolve(),))
         execution = self.root / "production-holdout-execution.json"
@@ -1007,11 +1100,22 @@ class MigrationPlatformRuntimeTest(unittest.TestCase):
     def test_provider_receipt_is_bound_to_exact_account_region_adapter_and_operation(self) -> None:
         profile = self.exact_provider_profile(b"account-a")
         store = production_closure.ClosureStore(self.workspace)
+        trust = production_closure.ActorTrustStore.load(self.trust_store)
         snapshot = {"schema_version": "1.0", "snapshot_id": "provider-snapshot", "tenant_id": "tenant-001",
-                    "environment_class": "production"}
+                    "environment_class": "production", "authorization": {"actor_id": "data-owner",
+                    "organization_id": "customer-data-org", "trust_store_sha256": trust.digest}}
         store.insert("snapshots", "provider-snapshot", ("provider-snapshot", "tenant-001", "production",
                      production_closure.sha256_bytes(b"provider-snapshot-manifest")), snapshot, "SNAPSHOT_REGISTERED")
         release = production_closure.sha256_bytes(b"release")
+        holdout = {"schema_version": "2.0", "holdout_id": "provider-holdout",
+            "tenant_id": "tenant-001", "environment_class": "production", "organization_bound": True,
+            "actor_trust_store_sha256": trust.digest, "independence_organizations": {
+                "transformation_authors": ["implementation-author-org"],
+                "custodian": ["holdout-custodian-org"], "executors": ["holdout-executor-org"],
+                "verifiers": ["holdout-verifier-org"], "oracle_owners": ["oracle-org"]}}
+        store.insert("holdouts", "provider-holdout",
+            ("provider-holdout", "tenant-001", production_closure.sha256_bytes(b"provider-holdout")),
+            holdout, "HOLDOUT_SEALED")
         holdout_result = {"schema_version": "2.0", "result_id": "provider-holdout-result",
             "holdout_id": "provider-holdout", "tenant_id": "tenant-001", "decision": "PASS",
             "target_release_sha256": release, "provider_account_sha256": profile["account_binding_sha256"],
@@ -1058,14 +1162,26 @@ class MigrationPlatformRuntimeTest(unittest.TestCase):
     def test_production_soak_requires_realtime_seven_day_thresholded_independent_evidence(self) -> None:
         start = datetime.now(timezone.utc).replace(microsecond=0)
         profile = self.exact_provider_profile(b"account-b")
+        trust = production_closure.ActorTrustStore.load(self.trust_store)
         cutover = {"schema_version": "2.0", "cutover_id": "soak-cutover", "tenant_id": "tenant-001",
                    "target_key": "target", "target_release_sha256": production_closure.sha256_bytes(b"release-b"),
                    "rollback_adapter_id": "fixture-provider", "rollback_operation": "undo",
                    "holdout_result_id": "production-holdout-result",
                    "environment_class": "production", "provider": profile, "state": "SUCCEEDED", "fencing_token": 5,
-                   "plan_sha256": production_closure.sha256_bytes(b"soak-plan"), "approval": {"actor_id": "approver"},
+                   "plan_sha256": production_closure.sha256_bytes(b"soak-plan"),
+                   "approval": {"actor_id": "approver", "organization_id": "customer-approval-org",
+                                "trust_store_sha256": trust.digest},
                    "transitions": [{"to": "SUCCEEDED", "recorded_at": start.isoformat().replace("+00:00", "Z")} ]}
         store = production_closure.ClosureStore(self.workspace)
+        holdout = {"schema_version": "2.0", "holdout_id": "production-holdout",
+            "tenant_id": "tenant-001", "environment_class": "production", "organization_bound": True,
+            "actor_trust_store_sha256": trust.digest, "independence_organizations": {
+                "transformation_authors": ["implementation-author-org"],
+                "custodian": ["holdout-custodian-org"], "executors": ["holdout-executor-org"],
+                "verifiers": ["holdout-verifier-org"], "oracle_owners": ["oracle-org"]}}
+        store.insert("holdouts", "production-holdout",
+            ("production-holdout", "tenant-001", production_closure.sha256_bytes(b"production-holdout")),
+            holdout, "HOLDOUT_SEALED")
         holdout_result = {"schema_version": "2.0", "result_id": "production-holdout-result",
             "holdout_id": "production-holdout", "tenant_id": "tenant-001", "decision": "PASS",
             "target_release_sha256": cutover["target_release_sha256"],
@@ -1081,19 +1197,43 @@ class MigrationPlatformRuntimeTest(unittest.TestCase):
             production_closure.start_soak(self.workspace, "soak-cutover", "weak-soak", "production",
                 (start + timedelta(seconds=1)).isoformat(), production_closure.PRODUCTION_MIN_SOAK_SECONDS,
                 production_closure.PRODUCTION_MIN_SOAK_SECONDS, 0.99, 0.01, 1, clock=clock)
+        telemetry_profile = {"schema_version": "1.0", "monitor_id": "fixture-monitor",
+            "provider_account_sha256": profile["account_binding_sha256"],
+            "metrics_source_sha256": production_closure.sha256_bytes(b"fixture-metrics-source"),
+            "collection_interval_seconds": production_closure.PRODUCTION_MAX_GAP_SECONDS,
+            "raw_evidence_required": True}
         production_closure.start_soak(self.workspace, "soak-cutover", "production-soak", "production",
             (start + timedelta(seconds=1)).isoformat(), production_closure.PRODUCTION_MIN_SOAK_SECONDS,
-            production_closure.PRODUCTION_MAX_GAP_SECONDS, 0.999, 0.001, 28, clock=clock)
+            production_closure.PRODUCTION_MAX_GAP_SECONDS, 0.999, 0.001, 28, clock=clock,
+            telemetry_profile=telemetry_profile)
         for sequence in range(1, 29):
             observed = start + timedelta(seconds=1 + sequence * production_closure.PRODUCTION_MAX_GAP_SECONDS)
             observed_text = observed.isoformat().replace("+00:00", "Z")
             metrics = {"requests": 10_000, "errors": 1, "critical_failures": 0, "availability": 0.9999}
+            telemetry = {"schema_version": "1.0", "monitor_id": "fixture-monitor",
+                "run_id": "production-soak", "sequence": sequence, "observed_at": observed_text,
+                "provider_account_sha256": profile["account_binding_sha256"],
+                "metrics_source_sha256": telemetry_profile["metrics_source_sha256"],
+                "source_event_id": f"fixture-event-{sequence}", "metrics": metrics}
+            telemetry_path = self.root / f"telemetry-production-soak-{sequence}.json"
+            telemetry_path.write_text(json.dumps(telemetry), encoding="utf-8")
+            telemetry_ref = {"path": str(telemetry_path),
+                "sha256": production_closure.sha256_bytes(telemetry_path.read_bytes()),
+                "bytes": telemetry_path.stat().st_size}
+            metrics_sha = production_closure.canonical_digest({"metrics": metrics,
+                "telemetry_receipt_sha256": telemetry_ref["sha256"],
+                "telemetry_profile_sha256": production_closure.canonical_digest(telemetry_profile)})
             heartbeat = self.sign("operations-owner", {"run_id": "production-soak", "sequence": sequence,
-                "observed_at": observed_text, "metrics_sha256": production_closure.canonical_digest(metrics)},
+                "observed_at": observed_text, "metrics_sha256": metrics_sha},
                 suffix=f"production-soak-{sequence}")
             clock.set(observed)
+            if sequence == 1:
+                with self.assertRaisesRegex(production_closure.ClosureError, "raw telemetry receipt"):
+                    production_closure.observe_soak(self.workspace, "production-soak", sequence, observed_text,
+                                                    metrics, heartbeat, self.trust_store, clock=clock)
             production_closure.observe_soak(self.workspace, "production-soak", sequence, observed_text,
-                                            metrics, heartbeat, self.trust_store, clock=clock)
+                                            metrics, heartbeat, self.trust_store, clock=clock,
+                                            telemetry_receipt=telemetry_ref, roots=(self.root.resolve(),))
         running = store.row("soak_runs", "production-soak")
         root = production_closure.soak_evidence_root(running)
         finished = start + timedelta(seconds=2 + production_closure.PRODUCTION_MIN_SOAK_SECONDS)
@@ -1127,16 +1267,59 @@ class MigrationPlatformRuntimeTest(unittest.TestCase):
             "provider_account_sha256": profile["account_binding_sha256"]}
         exact_path = self.root / "exact-production-assessment.json"
         exact_path.write_text(json.dumps(exact_report), encoding="utf-8")
-        exact_auth = self.sign("independent-certifier", {"assessment_id": "exact-production-assessment",
+        external_store, authority_policy, authority_approval = self.external_certification_authority("tenant-001")
+        exact_auth = self.sign("external-certifier", {"assessment_id": "exact-production-assessment",
             "tenant_id": "tenant-001", "report_sha256": production_closure.sha256_bytes(
                 production_closure.canonical_bytes(exact_report)), "evidence_root": result["evidence_root"],
             "decision": "CERTIFIED"}, suffix="exact-production-assessment")
-        imported = production_closure.import_assessment(self.workspace, exact_path, exact_auth, self.trust_store,
-                                                        (self.root.resolve(),))
+        revoked_policy = json.loads(authority_policy.read_text(encoding="utf-8"))
+        revoked_policy["revoked"] = True
+        revoked_policy_path = authority_policy.parent / "revoked-policy.json"
+        revoked_policy_path.write_text(json.dumps(revoked_policy), encoding="utf-8")
+        with self.assertRaisesRegex(production_closure.ClosureError, "revocation state"):
+            production_closure.import_assessment(self.workspace, exact_path, exact_auth, external_store,
+                (self.root.resolve(),), authority_policy_path=revoked_policy_path,
+                authority_approval=authority_approval, internal_trust_path=self.trust_store)
+        imported = production_closure.import_assessment(self.workspace, exact_path, exact_auth, external_store,
+            (self.root.resolve(),), authority_policy_path=authority_policy,
+            authority_approval=authority_approval, internal_trust_path=self.trust_store)
         self.assertFalse(imported["certified"])
+        self.assertTrue(imported["external_authority_authorized"])
         readiness = production_closure.readiness(self.workspace, "tenant-001")
         self.assertFalse(readiness["certified"])
         self.assertEqual("NOT_RUN", readiness["external_runtime_status"])
+
+        expired_started = finished + timedelta(seconds=1)
+        expired_started_text = expired_started.isoformat().replace("+00:00", "Z")
+        clock.set(expired_started)
+        production_closure.start_soak(self.workspace, "soak-cutover", "expired-production-soak", "production",
+            expired_started_text, production_closure.PRODUCTION_MIN_SOAK_SECONDS,
+            production_closure.PRODUCTION_MAX_GAP_SECONDS, 0.999, 0.001, 28, clock=clock,
+            telemetry_profile=telemetry_profile)
+        expired_at = expired_started + timedelta(seconds=production_closure.PRODUCTION_MAX_GAP_SECONDS + 1)
+        expired_at_text = expired_at.isoformat().replace("+00:00", "Z")
+        clock.set(expired_at)
+        watchdog = production_closure.soak_status(self.workspace, "expired-production-soak", clock)
+        self.assertTrue(watchdog["heartbeat_overdue"])
+        timeout_payload = {"run_id": "expired-production-soak", "sequence": 1,
+            "observed_at": expired_at_text, "target_state": "FAILED",
+            "evidence_root": production_closure.soak_evidence_root(
+                store.row("soak_runs", "expired-production-soak")),
+            "heartbeat_deadline": watchdog["heartbeat_deadline"], "reason": "HEARTBEAT_TIMEOUT"}
+        timeout_attestation = self.sign("verifier-production", timeout_payload, suffix="expired-soak")
+        expired = production_closure.expire_soak(self.workspace, "expired-production-soak", expired_at_text,
+                                                  timeout_attestation, self.trust_store, clock=clock)
+        self.assertEqual("FAILED", expired["state"])
+        self.assertEqual("HEARTBEAT_TIMEOUT", expired["terminal_reason"])
+        revival_at = expired_at + timedelta(seconds=1)
+        revival_text = revival_at.isoformat().replace("+00:00", "Z")
+        clock.set(revival_at)
+        revival = self.sign("verifier-production", {"run_id": "expired-production-soak", "sequence": 2,
+            "observed_at": revival_text, "target_state": "FAILED",
+            "evidence_root": production_closure.soak_evidence_root(expired)}, suffix="expired-soak-revival")
+        with self.assertRaisesRegex(production_closure.ClosureError, "sequence/state conflict"):
+            production_closure.finish_soak(self.workspace, "expired-production-soak", 2, revival_text,
+                                           revival, self.trust_store, clock=clock)
     def test_24_concurrent_commands_have_no_evidence_crosstalk(self) -> None:
         self.prepare(1)
 

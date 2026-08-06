@@ -17,6 +17,7 @@ if [ -e "$RUNTIME_DEST" ] && [ "$MODE" != "--overwrite" ]; then
      ! cmp -s "$ROOT/scripts/domain_handlers.py" "$RUNTIME_DEST/domain_handlers.py" || \
      ! cmp -s "$ROOT/scripts/trusted_adapters.py" "$RUNTIME_DEST/trusted_adapters.py" || \
      ! cmp -s "$ROOT/scripts/production_closure.py" "$RUNTIME_DEST/production_closure.py" || \
+     ! cmp -s "$ROOT/scripts/external_authority.py" "$RUNTIME_DEST/external_authority.py" || \
      ! cmp -s "$ROOT/domain-executor-registry.json" "$RUNTIME_DEST/domain-executor-registry.json" || \
      ! cmp -s "$ROOT/trust-policy.json" "$RUNTIME_DEST/trust-policy.json" || \
      ! cmp -s "$ROOT/manifest.json" "$RUNTIME_DEST/manifest.json" || \
@@ -37,6 +38,7 @@ else
   cp "$ROOT/scripts/domain_handlers.py" "$staging/domain_handlers.py"
   cp "$ROOT/scripts/trusted_adapters.py" "$staging/trusted_adapters.py"
   cp "$ROOT/scripts/production_closure.py" "$staging/production_closure.py"
+  cp "$ROOT/scripts/external_authority.py" "$staging/external_authority.py"
   cp "$ROOT/domain-executor-registry.json" "$staging/domain-executor-registry.json"
   cp "$ROOT/manifest.json" "$staging/manifest.json"
   cp "$ROOT/trust-policy.json" "$staging/trust-policy.json"

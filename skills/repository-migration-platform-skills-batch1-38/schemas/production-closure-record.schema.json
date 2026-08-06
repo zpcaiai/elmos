@@ -19,6 +19,10 @@
     "evidence_class": {"enum": ["engineering-only", "production-pending", "production"]},
     "production_protocol_simulated": {"type": "boolean"},
     "real_seven_day_elapsed": {"type": "boolean"},
+    "telemetry_profile_sha256": {"$ref": "#/$defs/digest"},
+    "telemetry_profile": {"$ref": "#/$defs/telemetryProfile"},
+    "terminal_reason": {"enum": ["HEARTBEAT_TIMEOUT"]},
+    "external_authority_authorized": {"type": "boolean"},
     "state": {
       "enum": ["REGISTERED", "SEALED", "PLANNED", "PRECHECKED", "APPROVED", "EXECUTING",
                "VERIFYING", "SUCCEEDED", "ROLLING_BACK", "ROLLED_BACK", "UNKNOWN", "CANCELLED",
@@ -33,6 +37,19 @@
   ],
   "$defs": {
     "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "telemetryProfile": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "monitor_id", "provider_account_sha256", "metrics_source_sha256",
+                   "collection_interval_seconds", "raw_evidence_required"],
+      "properties": {
+        "schema_version": {"const": "1.0"},
+        "monitor_id": {"type": "string", "minLength": 1},
+        "provider_account_sha256": {"$ref": "#/$defs/digest"},
+        "metrics_source_sha256": {"$ref": "#/$defs/digest"},
+        "collection_interval_seconds": {"type": "integer", "minimum": 1, "maximum": 21600},
+        "raw_evidence_required": {"const": true}
+      }
+    },
     "provider": {
       "type": "object", "additionalProperties": false,
       "oneOf": [

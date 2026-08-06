@@ -64,6 +64,8 @@ class TrustedActor:
     public_key: bytes
     not_before: datetime
     not_after: datetime
+    organization_id: str | None
+    authority_class: str | None
 
 
 @dataclass(frozen=True)
@@ -72,14 +74,23 @@ class ActorTrustStore:
     actors: dict[str, TrustedActor]
     revoked_records: frozenset[str]
     digest: str
+    schema_version: str
+    store_id: str | None
+    purpose: str | None
 
     @classmethod
     def load(cls, path: Path) -> "ActorTrustStore":
         resolved = path.expanduser().resolve(strict=True)
         raw = read_regular(resolved, 1024 * 1024, "actor trust store")
         payload = json.loads(raw.decode("utf-8"))
-        if payload.get("schema_version") != "1.0":
-            raise ValueError("actor trust store schema_version must be 1.0")
+        schema_version = payload.get("schema_version")
+        if schema_version not in {"1.0", "2.0"}:
+            raise ValueError("actor trust store schema_version must be 1.0 or 2.0")
+        store_id = payload.get("store_id") if schema_version == "2.0" else None
+        purpose = payload.get("purpose") if schema_version == "2.0" else None
+        if schema_version == "2.0" and (not isinstance(store_id, str) or not store_id or
+                purpose not in {"workspace-actors", "external-certification", "source-provenance"}):
+            raise ValueError("version 2 trust store identity/purpose is invalid")
         entries = payload.get("actors")
         if not isinstance(entries, list):
             raise ValueError("actor trust store actors must be an array")
@@ -94,6 +105,8 @@ class ActorTrustStore:
             key_id = entry.get("key_id")
             roles = entry.get("roles")
             relative = entry.get("public_key_path")
+            organization_id = entry.get("organization_id") if schema_version == "2.0" else None
+            authority_class = entry.get("authority_class") if schema_version == "2.0" else None
             if not isinstance(actor_id, str) or not actor_id or actor_id in actor_ids:
                 raise ValueError(f"actors[{index}].actor_id is invalid")
             if not isinstance(key_id, str) or not key_id or key_id in key_ids:
@@ -102,6 +115,9 @@ class ActorTrustStore:
                 raise ValueError(f"actors[{index}].roles is invalid")
             if not isinstance(relative, str) or not relative:
                 raise ValueError(f"actors[{index}].public_key_path is invalid")
+            if schema_version == "2.0" and (not isinstance(organization_id, str) or not organization_id or
+                    not isinstance(authority_class, str) or not authority_class):
+                raise ValueError(f"actors[{index}] organization/authority class is invalid")
             key_path = (resolved.parent / relative).resolve(strict=True)
             if resolved.parent not in key_path.parents or not key_path.is_file():
                 raise ValueError(f"actors[{index}] public key escapes the trust-store directory")
@@ -118,6 +134,8 @@ class ActorTrustStore:
                 public_key=public_key,
                 not_before=parse_time(entry.get("not_before"), f"actors[{index}].not_before"),
                 not_after=parse_time(entry.get("not_after"), f"actors[{index}].not_after"),
+                organization_id=organization_id,
+                authority_class=authority_class,
             )
         revoked = payload.get("revoked_record_ids", [])
         if not isinstance(revoked, list) or any(not isinstance(item, str) or not item for item in revoked):
@@ -127,6 +145,9 @@ class ActorTrustStore:
             actors=actors,
             revoked_records=frozenset(revoked),
             digest=canonical_digest({"store": hashlib.sha256(raw).hexdigest(), "keys": key_digests}),
+            schema_version=schema_version,
+            store_id=store_id,
+            purpose=purpose,
         )
 
     def verify(self, envelope: Any, required_role: str, bindings: dict[str, Any], now: datetime | None = None) -> dict[str, Any]:
@@ -183,4 +204,7 @@ class ActorTrustStore:
             "record_id": record_id,
             "payload_sha256": canonical_digest(payload),
             "trust_store_sha256": self.digest,
+            "trust_store_id": self.store_id,
+            "organization_id": actor.organization_id,
+            "authority_class": actor.authority_class,
         }
