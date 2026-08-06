@@ -336,6 +336,7 @@ jobs:
           npm install --global pnpm@10.12.4
       - name: Install dependencies
         run: |
+          uv --directory engines/polyglot-route-engine sync --locked --no-dev
           pnpm --dir engines/frontend-client-engine install --frozen-lockfile
           pnpm --dir apps/web-console install --frozen-lockfile
       - name: Verify WeChat Native QR encoder

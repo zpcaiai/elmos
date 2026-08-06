@@ -12,7 +12,23 @@ const repositoryRoot = path.resolve(__dirname, "../..");
 const translationSourceRoot = path.resolve(__dirname, "e2e/fixtures/translation-sources");
 const translationCasesRoot = path.resolve(__dirname, "e2e/fixtures/translation-cases");
 const runnerToken = "elmos-e2e-local-token-32-characters";
-const uvPath = process.env.ELMOS_UV_PATH ?? "/opt/homebrew/bin/uv";
+
+function resolveExecutableOnPath(name: string): string | null {
+  for (const directory of (process.env.PATH ?? "").split(path.delimiter)) {
+    if (!directory) continue;
+    const candidate = path.resolve(directory, name);
+    if (existsSync(candidate)) return candidate;
+  }
+  return null;
+}
+
+const configuredUvPath = process.env.ELMOS_UV_PATH?.trim();
+const uvPath = configuredUvPath
+  ? path.resolve(configuredUvPath)
+  : resolveExecutableOnPath(process.platform === "win32" ? "uv.exe" : "uv");
+if (!uvPath || !existsSync(uvPath)) {
+  throw new Error("ELMOS_UV_PATH_REQUIRED");
+}
 const webPort = Number.parseInt(process.env.ELMOS_E2E_PORT ?? "3200", 10);
 const webServerMode = process.env.ELMOS_E2E_WEB_SERVER_MODE ?? "development";
 const webServerTimeout = webServerMode === "production" ? 300_000 : 120_000;
