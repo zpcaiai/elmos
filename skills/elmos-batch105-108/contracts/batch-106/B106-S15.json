@@ -1,0 +1,69 @@
+{
+  "id": "B106-S15",
+  "batch": 106,
+  "name": "ttl-reaper-and-resource-cleaner",
+  "dependencies": [
+    "B106-S13",
+    "B106-S14"
+  ],
+  "inputs": [
+    "runtime run registry",
+    "provider inventory",
+    "TTL leases"
+  ],
+  "outputs": [
+    "CleanupReceipt",
+    "orphan report",
+    "cost finalization"
+  ],
+  "implementation": {
+    "modules": [
+      "runtime/lifecycle/RuntimeReaper.java",
+      "private-runner/internal/reaper/",
+      "infra/jobs/runtime-reaper/"
+    ],
+    "interfaces": [
+      "POST /internal/runtime-reaper:scan",
+      "event runtime-run.destroyed"
+    ],
+    "data": [
+      "cleanup_attempt",
+      "cleanup_receipt",
+      "orphan_instance"
+    ]
+  },
+  "workflow": [
+    "扫描已到期和无心跳Run",
+    "先撤销公网Endpoint",
+    "停止/销毁沙箱并等待Provider确认",
+    "删除临时卷和撤销短期Secret",
+    "核对Provider inventory发现孤儿",
+    "以幂等步骤记录重试、最终成本和CLEANUP_FAILED升级"
+  ],
+  "tests": [
+    "路由撤销失败仍不标DESTROYED",
+    "Provider超时可重试",
+    "重复清理无副作用",
+    "孤儿实例可发现并隔离",
+    "Secret撤销证据缺失导致CLEANUP_FAILED"
+  ],
+  "evidence": [
+    "cleanup-receipt.json",
+    "provider-destroy-receipt.json",
+    "secret-revocation.json",
+    "orphan-report.json",
+    "cost-finalization.json"
+  ],
+  "definition_of_done": [
+    "路由先撤销",
+    "所有资源有终态",
+    "清理幂等",
+    "孤儿率可观测",
+    "失败进入人工升级队列"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

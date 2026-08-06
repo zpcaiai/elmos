@@ -1,0 +1,75 @@
+{
+  "contract": {
+    "id": "B106-S08",
+    "batch": 106,
+    "name": "oci-build-artifact-normalizer",
+    "dependencies": [
+      "B106-S04",
+      "B106-S05",
+      "B106-S06",
+      "B106-S07"
+    ],
+    "inputs": [
+      "validated manifest",
+      "language adapter spec",
+      "source snapshot"
+    ],
+    "outputs": [
+      "OCIImageRef",
+      "SBOM",
+      "BuildProvenance"
+    ],
+    "implementation": {
+      "modules": [
+        "runtime/build/OciBuildService.java",
+        "private-runner/internal/buildkit/client.go",
+        "infra/buildkit/"
+      ],
+      "interfaces": [
+        "POST /api/runtime-images:build",
+        "event runtime-image.built"
+      ],
+      "data": [
+        "runtime_image",
+        "build_provenance",
+        "sbom_artifact"
+      ]
+    },
+    "workflow": [
+      "\u751f\u6210\u591a\u9636\u6bb5Dockerfile/LLB\u8ba1\u5212",
+      "\u4f7f\u7528\u56fa\u5b9adigest builder/runtime\u57fa\u7840\u955c\u50cf",
+      "\u4ee5BuildKit\u9694\u79bb\u6784\u5efa\u5e76\u5e94\u7528\u7f13\u5b58",
+      "\u626b\u63cfSecret\u6cc4\u9732\u548c\u5371\u9669\u5c42",
+      "\u751f\u6210CycloneDX/SPDX\u4e0eSLSA\u98ce\u683cProvenance",
+      "\u63a8\u9001\u955c\u50cf\u5e76\u53ea\u8fd4\u56dedigest\u5f15\u7528"
+    ],
+    "tests": [
+      "\u6d6e\u52a8latest\u57fa\u7840\u955c\u50cf\u751f\u4ea7\u6a21\u5f0f\u62d2\u7edd",
+      "Secret\u4e0d\u8fdb\u5165layer/history",
+      "\u76f8\u540c\u8f93\u5165\u547d\u4e2d\u7f13\u5b58\u4e14digest\u7a33\u5b9a",
+      "\u9ad8\u5371\u6076\u610fDocker\u6307\u4ee4\u6309Policy\u963b\u65ad",
+      "SBOM\u4e0e\u955c\u50cf\u5185\u5bb9\u5339\u914d"
+    ],
+    "evidence": [
+      "oci-image.json",
+      "sbom.cdx.json",
+      "provenance.json",
+      "build.log",
+      "image-scan.json"
+    ],
+    "definition_of_done": [
+      "\u955c\u50cf\u4ec5\u4ee5digest\u5f15\u7528",
+      "Provenance\u7ed1\u5b9a\u6e90SHA",
+      "SBOM\u5b58\u5728",
+      "Secret\u626b\u63cf\u901a\u8fc7",
+      "\u6784\u5efa\u53ef\u91cd\u653e"
+    ],
+    "risk_controls": [
+      "\u9ed8\u8ba4\u62d2\u7edd\u4e0d\u5b8c\u6574\u8f93\u5165",
+      "\u6240\u6709\u8de8\u79df\u6237\u8bbf\u95ee\u5fc5\u987b\u7531\u670d\u52a1\u7aef\u8eab\u4efd\u89e3\u6790",
+      "\u5931\u8d25\u4e0d\u5f97\u901a\u8fc7\u5220\u9664\u6d4b\u8bd5\u3001\u8df3\u8fc7\u95e8\u7981\u6216\u4f2a\u9020\u8bc1\u636e\u4fee\u590d"
+    ]
+  },
+  "canonicalSha256": "sha256:eb7c07937302191532e30e40d8291f387cd756afe1f07dbd970ea8b408c192c3",
+  "compiledVersion": 1
+}

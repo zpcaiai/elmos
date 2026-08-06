@@ -1,0 +1,68 @@
+{
+  "id": "B108-S15",
+  "batch": 108,
+  "name": "commercial-demo-package-builder",
+  "dependencies": [
+    "B108-S11",
+    "B108-S12",
+    "B108-S14"
+  ],
+  "inputs": [
+    "ExecutiveReport",
+    "PR",
+    "evidence bundle",
+    "customer packaging policy"
+  ],
+  "outputs": [
+    "CommercialDemoPackage",
+    "customer portal entry"
+  ],
+  "implementation": {
+    "modules": [
+      "commercial/demo/CommercialDemoPackageService.java",
+      "templates/customer-demo/",
+      "apps/web/src/features/customer-delivery/"
+    ],
+    "interfaces": [
+      "POST /api/projects/{id}/commercial-demo-packages",
+      "event commercial-demo-package.created"
+    ],
+    "data": [
+      "commercial_demo_package",
+      "customer_delivery_item"
+    ]
+  },
+  "workflow": [
+    "选择客户可见证据并脱敏",
+    "生成Executive与Technical两个视图",
+    "嵌入截图、PR和API diff索引",
+    "Preview已过期时提供重启入口而非死链接",
+    "加入范围、假设、价格/下一步占位",
+    "签名打包并发布到客户Portal"
+  ],
+  "tests": [
+    "私有源码不进入可下载包",
+    "过期URL不直接暴露",
+    "数字与权威报告一致",
+    "客户A不能访问客户B包",
+    "打包后完整性校验"
+  ],
+  "evidence": [
+    "commercial-demo-package.zip",
+    "customer-index.json",
+    "sanitization-report.json",
+    "package.sha256"
+  ],
+  "definition_of_done": [
+    "客户可理解",
+    "技术可下钻",
+    "无敏感数据",
+    "完整性可验",
+    "有下一步行动"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

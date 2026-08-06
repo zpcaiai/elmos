@@ -1,0 +1,72 @@
+{
+  "id": "B108-S12",
+  "batch": 108,
+  "name": "evidence-rich-pull-request-generator",
+  "dependencies": [
+    "B108-S02",
+    "B108-S03",
+    "B108-S04",
+    "B108-S05",
+    "B108-S06",
+    "B108-S07",
+    "B108-S11"
+  ],
+  "inputs": [
+    "candidate branch",
+    "all evidence/report artifacts",
+    "SCM target"
+  ],
+  "outputs": [
+    "PullRequestDraft",
+    "PR evidence index",
+    "review checklist"
+  ],
+  "implementation": {
+    "modules": [
+      "integrations/github/EvidencePullRequestService.java",
+      "integrations/gitlab/",
+      "templates/migration-pr.md"
+    ],
+    "interfaces": [
+      "POST /api/projects/{id}/pull-requests",
+      "event pull-request.created"
+    ],
+    "data": [
+      "evidence_pull_request",
+      "pr_checklist"
+    ]
+  },
+  "workflow": [
+    "验证目标/源分支和Commit",
+    "生成分层PR正文与折叠技术细节",
+    "添加Required Check引用和证据链接",
+    "嵌入安全截图缩略图而非敏感URL",
+    "创建Draft PR并设置labels/reviewers",
+    "回读PR确认正文和head SHA一致"
+  ],
+  "tests": [
+    "head SHA变化需要重生成证据",
+    "敏感Preview URL不入PR",
+    "缺Required Check时保持Draft",
+    "重复请求不创建重复PR",
+    "正文长度超限使用证据索引"
+  ],
+  "evidence": [
+    "pull-request.json",
+    "pr-body.md",
+    "pr-evidence-index.json",
+    "review-checklist.json"
+  ],
+  "definition_of_done": [
+    "PR绑定精确head SHA",
+    "证据完整",
+    "敏感信息受控",
+    "默认Draft",
+    "可由Reviewer一眼判断"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

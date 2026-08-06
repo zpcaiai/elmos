@@ -1,0 +1,67 @@
+{
+  "id": "B105-S02",
+  "batch": 105,
+  "name": "immutable-baseline-commit-freezer",
+  "dependencies": [
+    "B105-S01"
+  ],
+  "inputs": [
+    "selected candidate",
+    "repository credentials ref",
+    "ref/branch/tag"
+  ],
+  "outputs": [
+    "BaselineManifest",
+    "immutable tag",
+    "snapshot digest"
+  ],
+  "implementation": {
+    "modules": [
+      "services/control-plane/.../baseline/BaselineFreezeService.java",
+      "private-runner/internal/git/freeze.go",
+      "contracts/baseline-manifest.schema.json"
+    ],
+    "interfaces": [
+      "POST /api/projects/{id}/baseline:freeze",
+      "event baseline.frozen"
+    ],
+    "data": [
+      "baseline_manifest",
+      "repository_snapshot",
+      "git_lease"
+    ]
+  },
+  "workflow": [
+    "解析用户ref到完整SHA",
+    "创建只读clone lease并校验对象存在",
+    "记录submodule/LFS/large-file状态",
+    "生成文件清单、Git tree和内容摘要",
+    "可选创建受控命名Tag但不得修改上游",
+    "将BaselineManifest签名后持久化"
+  ],
+  "tests": [
+    "同一ref重复冻结得到相同SHA和摘要",
+    "branch移动后旧Manifest不变化",
+    "不存在SHA失败且不创建半成品",
+    "submodule缺失被明确标为BLOCKED",
+    "并发冻结幂等"
+  ],
+  "evidence": [
+    "baseline-manifest.json",
+    "git-tree.sha256",
+    "freeze-receipt.json",
+    "audit-event.json"
+  ],
+  "definition_of_done": [
+    "后续流程只接受Manifest ID",
+    "Manifest包含完整SHA",
+    "内容摘要可复算",
+    "凭证不进入证据",
+    "幂等键覆盖重复请求"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

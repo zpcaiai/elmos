@@ -1,0 +1,423 @@
+{
+  "package": "elmos-batch105-108",
+  "version": "1.0.0",
+  "generatedAt": "2026-08-05",
+  "batches": [
+    {
+      "batch": 105,
+      "title": "Modernization Demonstration Golden Routes",
+      "description": "将现代化评估、规则迁移、Agent语义修复、测试保护和可销售Demo收敛为可重放的Golden Route。",
+      "skills": [
+        {
+          "id": "B105-S01",
+          "name": "modernization-demo-project-selector",
+          "path": "agent-skills/runtime/modernization-demo-project-selector/SKILL.md",
+          "contract": "contracts/batch-105/B105-S01.json"
+        },
+        {
+          "id": "B105-S02",
+          "name": "immutable-baseline-commit-freezer",
+          "path": "agent-skills/runtime/immutable-baseline-commit-freezer/SKILL.md",
+          "contract": "contracts/batch-105/B105-S02.json"
+        },
+        {
+          "id": "B105-S03",
+          "name": "baseline-reproducibility-capture",
+          "path": "agent-skills/runtime/baseline-reproducibility-capture/SKILL.md",
+          "contract": "contracts/batch-105/B105-S03.json"
+        },
+        {
+          "id": "B105-S04",
+          "name": "java-runtime-upgrade-analyzer",
+          "path": "agent-skills/runtime/java-runtime-upgrade-analyzer/SKILL.md",
+          "contract": "contracts/batch-105/B105-S04.json"
+        },
+        {
+          "id": "B105-S05",
+          "name": "spring-boot-staged-upgrade-planner",
+          "path": "agent-skills/runtime/spring-boot-staged-upgrade-planner/SKILL.md",
+          "contract": "contracts/batch-105/B105-S05.json"
+        },
+        {
+          "id": "B105-S06",
+          "name": "openrewrite-phase-boundary-enforcer",
+          "path": "agent-skills/runtime/openrewrite-phase-boundary-enforcer/SKILL.md",
+          "contract": "contracts/batch-105/B105-S06.json"
+        },
+        {
+          "id": "B105-S07",
+          "name": "automated-vs-agent-change-attribution",
+          "path": "agent-skills/runtime/automated-vs-agent-change-attribution/SKILL.md",
+          "contract": "contracts/batch-105/B105-S07.json"
+        },
+        {
+          "id": "B105-S08",
+          "name": "migration-failure-taxonomy-generator",
+          "path": "agent-skills/runtime/migration-failure-taxonomy-generator/SKILL.md",
+          "contract": "contracts/batch-105/B105-S08.json"
+        },
+        {
+          "id": "B105-S09",
+          "name": "codex-diagnostic-only-pass",
+          "path": "agent-skills/runtime/codex-diagnostic-only-pass/SKILL.md",
+          "contract": "contracts/batch-105/B105-S09.json"
+        },
+        {
+          "id": "B105-S10",
+          "name": "codex-minimal-semantic-repair",
+          "path": "agent-skills/runtime/codex-minimal-semantic-repair/SKILL.md",
+          "contract": "contracts/batch-105/B105-S10.json"
+        },
+        {
+          "id": "B105-S11",
+          "name": "manual-fix-regression-obligation",
+          "path": "agent-skills/runtime/manual-fix-regression-obligation/SKILL.md",
+          "contract": "contracts/batch-105/B105-S11.json"
+        },
+        {
+          "id": "B105-S12",
+          "name": "test-estate-preservation-gate",
+          "path": "agent-skills/runtime/test-estate-preservation-gate/SKILL.md",
+          "contract": "contracts/batch-105/B105-S12.json"
+        },
+        {
+          "id": "B105-S13",
+          "name": "profile-and-database-matrix-verifier",
+          "path": "agent-skills/runtime/profile-and-database-matrix-verifier/SKILL.md",
+          "contract": "contracts/batch-105/B105-S13.json"
+        },
+        {
+          "id": "B105-S14",
+          "name": "modernization-demo-success-gate",
+          "path": "agent-skills/runtime/modernization-demo-success-gate/SKILL.md",
+          "contract": "contracts/batch-105/B105-S14.json"
+        },
+        {
+          "id": "B105-S15",
+          "name": "sales-demo-golden-journey-publisher",
+          "path": "agent-skills/runtime/sales-demo-golden-journey-publisher/SKILL.md",
+          "contract": "contracts/batch-105/B105-S15.json"
+        },
+        {
+          "id": "B105-S16",
+          "name": "modernization-demo-route-certifier",
+          "path": "agent-skills/runtime/modernization-demo-route-certifier/SKILL.md",
+          "contract": "contracts/batch-105/B105-S16.json"
+        }
+      ]
+    },
+    {
+      "batch": 106,
+      "title": "Polyglot Ephemeral Preview Runtime",
+      "description": "将Java、Python、.NET和Go项目统一包装为OCI工作负载，在隔离沙箱中提供限时HTTP/页面预览并可靠销毁。",
+      "skills": [
+        {
+          "id": "B106-S01",
+          "name": "polyglot-project-runtime-detector",
+          "path": "agent-skills/runtime/polyglot-project-runtime-detector/SKILL.md",
+          "contract": "contracts/batch-106/B106-S01.json"
+        },
+        {
+          "id": "B106-S02",
+          "name": "runtime-manifest-generator",
+          "path": "agent-skills/runtime/runtime-manifest-generator/SKILL.md",
+          "contract": "contracts/batch-106/B106-S02.json"
+        },
+        {
+          "id": "B106-S03",
+          "name": "runtime-manifest-schema-validator",
+          "path": "agent-skills/runtime/runtime-manifest-schema-validator/SKILL.md",
+          "contract": "contracts/batch-106/B106-S03.json"
+        },
+        {
+          "id": "B106-S04",
+          "name": "java-preview-runtime-adapter",
+          "path": "agent-skills/runtime/java-preview-runtime-adapter/SKILL.md",
+          "contract": "contracts/batch-106/B106-S04.json"
+        },
+        {
+          "id": "B106-S05",
+          "name": "python-preview-runtime-adapter",
+          "path": "agent-skills/runtime/python-preview-runtime-adapter/SKILL.md",
+          "contract": "contracts/batch-106/B106-S05.json"
+        },
+        {
+          "id": "B106-S06",
+          "name": "dotnet-preview-runtime-adapter",
+          "path": "agent-skills/runtime/dotnet-preview-runtime-adapter/SKILL.md",
+          "contract": "contracts/batch-106/B106-S06.json"
+        },
+        {
+          "id": "B106-S07",
+          "name": "go-preview-runtime-adapter",
+          "path": "agent-skills/runtime/go-preview-runtime-adapter/SKILL.md",
+          "contract": "contracts/batch-106/B106-S07.json"
+        },
+        {
+          "id": "B106-S08",
+          "name": "oci-build-artifact-normalizer",
+          "path": "agent-skills/runtime/oci-build-artifact-normalizer/SKILL.md",
+          "contract": "contracts/batch-106/B106-S08.json"
+        },
+        {
+          "id": "B106-S09",
+          "name": "preview-image-cache-and-snapshot-manager",
+          "path": "agent-skills/runtime/preview-image-cache-and-snapshot-manager/SKILL.md",
+          "contract": "contracts/batch-106/B106-S09.json"
+        },
+        {
+          "id": "B106-S10",
+          "name": "ephemeral-sandbox-instance-provisioner",
+          "path": "agent-skills/runtime/ephemeral-sandbox-instance-provisioner/SKILL.md",
+          "contract": "contracts/batch-106/B106-S10.json"
+        },
+        {
+          "id": "B106-S11",
+          "name": "preview-port-exposure-controller",
+          "path": "agent-skills/runtime/preview-port-exposure-controller/SKILL.md",
+          "contract": "contracts/batch-106/B106-S11.json"
+        },
+        {
+          "id": "B106-S12",
+          "name": "readiness-and-startup-state-machine",
+          "path": "agent-skills/runtime/readiness-and-startup-state-machine/SKILL.md",
+          "contract": "contracts/batch-106/B106-S12.json"
+        },
+        {
+          "id": "B106-S13",
+          "name": "ready-triggered-ttl-controller",
+          "path": "agent-skills/runtime/ready-triggered-ttl-controller/SKILL.md",
+          "contract": "contracts/batch-106/B106-S13.json"
+        },
+        {
+          "id": "B106-S14",
+          "name": "runtime-log-and-event-stream",
+          "path": "agent-skills/runtime/runtime-log-and-event-stream/SKILL.md",
+          "contract": "contracts/batch-106/B106-S14.json"
+        },
+        {
+          "id": "B106-S15",
+          "name": "ttl-reaper-and-resource-cleaner",
+          "path": "agent-skills/runtime/ttl-reaper-and-resource-cleaner/SKILL.md",
+          "contract": "contracts/batch-106/B106-S15.json"
+        },
+        {
+          "id": "B106-S16",
+          "name": "preview-runtime-provider-abstraction",
+          "path": "agent-skills/runtime/preview-runtime-provider-abstraction/SKILL.md",
+          "contract": "contracts/batch-106/B106-S16.json"
+        }
+      ]
+    },
+    {
+      "batch": 107,
+      "title": "Live API, Browser and Service Validation",
+      "description": "在真实运行实例上执行健康、OpenAPI、双版本HTTP、浏览器、截图、WebSocket和SSE验证。",
+      "skills": [
+        {
+          "id": "B107-S01",
+          "name": "runtime-health-probe-runner",
+          "path": "agent-skills/runtime/runtime-health-probe-runner/SKILL.md",
+          "contract": "contracts/batch-107/B107-S01.json"
+        },
+        {
+          "id": "B107-S02",
+          "name": "openapi-runtime-discovery",
+          "path": "agent-skills/runtime/openapi-runtime-discovery/SKILL.md",
+          "contract": "contracts/batch-107/B107-S02.json"
+        },
+        {
+          "id": "B107-S03",
+          "name": "openapi-breaking-change-gate",
+          "path": "agent-skills/runtime/openapi-breaking-change-gate/SKILL.md",
+          "contract": "contracts/batch-107/B107-S03.json"
+        },
+        {
+          "id": "B107-S04",
+          "name": "dual-version-api-replay",
+          "path": "agent-skills/runtime/dual-version-api-replay/SKILL.md",
+          "contract": "contracts/batch-107/B107-S04.json"
+        },
+        {
+          "id": "B107-S05",
+          "name": "http-scenario-suite-generator",
+          "path": "agent-skills/runtime/http-scenario-suite-generator/SKILL.md",
+          "contract": "contracts/batch-107/B107-S05.json"
+        },
+        {
+          "id": "B107-S06",
+          "name": "newman-runtime-regression-runner",
+          "path": "agent-skills/runtime/newman-runtime-regression-runner/SKILL.md",
+          "contract": "contracts/batch-107/B107-S06.json"
+        },
+        {
+          "id": "B107-S07",
+          "name": "business-api-invariant-oracle",
+          "path": "agent-skills/runtime/business-api-invariant-oracle/SKILL.md",
+          "contract": "contracts/batch-107/B107-S07.json"
+        },
+        {
+          "id": "B107-S08",
+          "name": "routing-and-trailing-slash-compatibility",
+          "path": "agent-skills/runtime/routing-and-trailing-slash-compatibility/SKILL.md",
+          "contract": "contracts/batch-107/B107-S08.json"
+        },
+        {
+          "id": "B107-S09",
+          "name": "browser-preview-launcher",
+          "path": "agent-skills/runtime/browser-preview-launcher/SKILL.md",
+          "contract": "contracts/batch-107/B107-S09.json"
+        },
+        {
+          "id": "B107-S10",
+          "name": "browser-console-and-network-gate",
+          "path": "agent-skills/runtime/browser-console-and-network-gate/SKILL.md",
+          "contract": "contracts/batch-107/B107-S10.json"
+        },
+        {
+          "id": "B107-S11",
+          "name": "page-semantic-assertion-runner",
+          "path": "agent-skills/runtime/page-semantic-assertion-runner/SKILL.md",
+          "contract": "contracts/batch-107/B107-S11.json"
+        },
+        {
+          "id": "B107-S12",
+          "name": "desktop-and-mobile-screenshot-capture",
+          "path": "agent-skills/runtime/desktop-and-mobile-screenshot-capture/SKILL.md",
+          "contract": "contracts/batch-107/B107-S12.json"
+        },
+        {
+          "id": "B107-S13",
+          "name": "frontend-runtime-differential-verifier",
+          "path": "agent-skills/runtime/frontend-runtime-differential-verifier/SKILL.md",
+          "contract": "contracts/batch-107/B107-S13.json"
+        },
+        {
+          "id": "B107-S14",
+          "name": "websocket-sse-and-streaming-verifier",
+          "path": "agent-skills/runtime/websocket-sse-and-streaming-verifier/SKILL.md",
+          "contract": "contracts/batch-107/B107-S14.json"
+        },
+        {
+          "id": "B107-S15",
+          "name": "runtime-service-validation-evidence-assembler",
+          "path": "agent-skills/runtime/runtime-service-validation-evidence-assembler/SKILL.md",
+          "contract": "contracts/batch-107/B107-S15.json"
+        },
+        {
+          "id": "B107-S16",
+          "name": "live-service-equivalence-gate",
+          "path": "agent-skills/runtime/live-service-equivalence-gate/SKILL.md",
+          "contract": "contracts/batch-107/B107-S16.json"
+        }
+      ]
+    },
+    {
+      "batch": 108,
+      "title": "Evidence PR, Executive Report and Commercial Closure",
+      "description": "把规则变更、Agent修复、运行验证和销毁证明转化为不可伪造证据、PR、管理报告与客户交付。",
+      "skills": [
+        {
+          "id": "B108-S01",
+          "name": "migration-evidence-directory-scaffolder",
+          "path": "agent-skills/runtime/migration-evidence-directory-scaffolder/SKILL.md",
+          "contract": "contracts/batch-108/B108-S01.json"
+        },
+        {
+          "id": "B108-S02",
+          "name": "baseline-candidate-evidence-linker",
+          "path": "agent-skills/runtime/baseline-candidate-evidence-linker/SKILL.md",
+          "contract": "contracts/batch-108/B108-S02.json"
+        },
+        {
+          "id": "B108-S03",
+          "name": "rewrite-datatable-evidence-collector",
+          "path": "agent-skills/runtime/rewrite-datatable-evidence-collector/SKILL.md",
+          "contract": "contracts/batch-108/B108-S03.json"
+        },
+        {
+          "id": "B108-S04",
+          "name": "coding-agent-change-ledger",
+          "path": "agent-skills/runtime/coding-agent-change-ledger/SKILL.md",
+          "contract": "contracts/batch-108/B108-S04.json"
+        },
+        {
+          "id": "B108-S05",
+          "name": "manual-intervention-ledger",
+          "path": "agent-skills/runtime/manual-intervention-ledger/SKILL.md",
+          "contract": "contracts/batch-108/B108-S05.json"
+        },
+        {
+          "id": "B108-S06",
+          "name": "runtime-preview-evidence-schema",
+          "path": "agent-skills/runtime/runtime-preview-evidence-schema/SKILL.md",
+          "contract": "contracts/batch-108/B108-S06.json"
+        },
+        {
+          "id": "B108-S07",
+          "name": "preview-expiration-attestation",
+          "path": "agent-skills/runtime/preview-expiration-attestation/SKILL.md",
+          "contract": "contracts/batch-108/B108-S07.json"
+        },
+        {
+          "id": "B108-S08",
+          "name": "test-and-coverage-before-after-summarizer",
+          "path": "agent-skills/runtime/test-and-coverage-before-after-summarizer/SKILL.md",
+          "contract": "contracts/batch-108/B108-S08.json"
+        },
+        {
+          "id": "B108-S09",
+          "name": "automation-ratio-calculator",
+          "path": "agent-skills/runtime/automation-ratio-calculator/SKILL.md",
+          "contract": "contracts/batch-108/B108-S09.json"
+        },
+        {
+          "id": "B108-S10",
+          "name": "migration-risk-register-generator",
+          "path": "agent-skills/runtime/migration-risk-register-generator/SKILL.md",
+          "contract": "contracts/batch-108/B108-S10.json"
+        },
+        {
+          "id": "B108-S11",
+          "name": "executive-modernization-report-generator",
+          "path": "agent-skills/runtime/executive-modernization-report-generator/SKILL.md",
+          "contract": "contracts/batch-108/B108-S11.json"
+        },
+        {
+          "id": "B108-S12",
+          "name": "evidence-rich-pull-request-generator",
+          "path": "agent-skills/runtime/evidence-rich-pull-request-generator/SKILL.md",
+          "contract": "contracts/batch-108/B108-S12.json"
+        },
+        {
+          "id": "B108-S13",
+          "name": "required-check-policy-generator",
+          "path": "agent-skills/runtime/required-check-policy-generator/SKILL.md",
+          "contract": "contracts/batch-108/B108-S13.json"
+        },
+        {
+          "id": "B108-S14",
+          "name": "temporary-preview-access-governor",
+          "path": "agent-skills/runtime/temporary-preview-access-governor/SKILL.md",
+          "contract": "contracts/batch-108/B108-S14.json"
+        },
+        {
+          "id": "B108-S15",
+          "name": "commercial-demo-package-builder",
+          "path": "agent-skills/runtime/commercial-demo-package-builder/SKILL.md",
+          "contract": "contracts/batch-108/B108-S15.json"
+        },
+        {
+          "id": "B108-S16",
+          "name": "customer-ready-modernization-certificate",
+          "path": "agent-skills/runtime/customer-ready-modernization-certificate/SKILL.md",
+          "contract": "contracts/batch-108/B108-S16.json"
+        }
+      ]
+    }
+  ],
+  "externalDependencies": [
+    "B104-S16"
+  ],
+  "skillCount": 64
+}

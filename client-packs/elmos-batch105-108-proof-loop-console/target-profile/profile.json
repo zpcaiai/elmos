@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "framework": "nextjs-app-router",
+  "framework_version": "16.3.0",
+  "react_version": "19.2.7",
+  "typescript_version": "5.9.2",
+  "package_manager": "npm-lockfile-v3",
+  "api_client": "web-fetch",
+  "cache_policy": "no tenant server-state cache",
+  "retry_policy": "GET polling by bounded UI timer; no automatic mutation retry",
+  "supported_browsers": ["chromium-playwright-1.61.1"],
+  "maintenance_owner": "elmos-web-console-maintainers",
+  "dependency_lock_policy": "exact versions only",
+  "deprecation_path": "remove proof BFF only after a typed first-party console SDK replaces it"
+}

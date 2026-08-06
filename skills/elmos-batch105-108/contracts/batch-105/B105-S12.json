@@ -1,0 +1,69 @@
+{
+  "id": "B105-S12",
+  "batch": 105,
+  "name": "test-estate-preservation-gate",
+  "dependencies": [
+    "B105-S03",
+    "B105-S11"
+  ],
+  "inputs": [
+    "baseline test inventory",
+    "candidate test reports",
+    "coverage/mutation results"
+  ],
+  "outputs": [
+    "TestPreservationDecision",
+    "before-after metrics",
+    "missing-test list"
+  ],
+  "implementation": {
+    "modules": [
+      "quality/test-preservation/TestEstateComparator.java",
+      "adapters/test-reports/",
+      "policies/test-preservation.yaml"
+    ],
+    "interfaces": [
+      "POST /api/projects/{id}/gates/test-preservation",
+      "event gate.test-preservation.decided"
+    ],
+    "data": [
+      "test_inventory",
+      "test_delta",
+      "test_gate_decision"
+    ]
+  },
+  "workflow": [
+    "标准化JUnit/NUnit/pytest/go test等报告",
+    "比较发现/执行/跳过/失败数量",
+    "按测试ID追踪消失、重命名和新测试",
+    "比较行/分支/Mutation覆盖",
+    "允许经审批的删除但要求替代证据",
+    "保守签发PASS/WARN/FAIL"
+  ],
+  "tests": [
+    "1200→430测试即使全绿也FAIL",
+    "跳过数增加被拦截",
+    "测试重命名可通过映射识别",
+    "覆盖率小幅波动按政策判断",
+    "报告缺失不得PASS"
+  ],
+  "evidence": [
+    "test-inventory-before.json",
+    "test-inventory-after.json",
+    "test-delta.json",
+    "coverage-delta.json",
+    "gate-decision.json"
+  ],
+  "definition_of_done": [
+    "无未解释测试消失",
+    "跳过未增加或有批准",
+    "覆盖率不低于政策",
+    "报告来源可信",
+    "Gate结果进入PR检查"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

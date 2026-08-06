@@ -1,0 +1,68 @@
+{
+  "contract": {
+    "id": "B106-S03",
+    "batch": 106,
+    "name": "runtime-manifest-schema-validator",
+    "dependencies": [
+      "B106-S02"
+    ],
+    "inputs": [
+      "RuntimeManifest",
+      "provider capabilities",
+      "tenant policy"
+    ],
+    "outputs": [
+      "ManifestValidationResult",
+      "normalized manifest"
+    ],
+    "implementation": {
+      "modules": [
+        "runtime/manifest/RuntimeManifestValidator.java",
+        "schemas/runtime-manifest.schema.json",
+        "policies/runtime-manifest.rego"
+      ],
+      "interfaces": [
+        "POST /api/runtime-manifests:validate",
+        "event runtime-manifest.validated"
+      ],
+      "data": [
+        "manifest_validation",
+        "manifest_violation"
+      ]
+    },
+    "workflow": [
+      "\u6267\u884cJSON Schema\u9a8c\u8bc1",
+      "\u68c0\u67e5build/runtime\u547d\u4ee4\u3001\u5de5\u4f5c\u76ee\u5f55\u548cartifact\u8def\u5f84",
+      "\u68c0\u67e5\u7aef\u53e3\u3001\u534f\u8bae\u3001\u5065\u5eb7\u548cpreview\u5165\u53e3\u4e00\u81f4\u6027",
+      "\u68c0\u67e5\u8d44\u6e90\u3001\u7f51\u7edc\u3001Secret\u548c\u6587\u4ef6\u7cfb\u7edfPolicy",
+      "\u68c0\u67e5Provider\u662f\u5426\u652f\u6301\u6240\u9700\u80fd\u529b",
+      "\u8fd4\u56de\u5b57\u6bb5\u7ea7\u8fdd\u89c4\u548c\u89c4\u8303\u5316Manifest"
+    ],
+    "tests": [
+      "\u7f3astart command\u5931\u8d25",
+      "public ingress\u4f46\u65e0\u7aef\u53e3\u5931\u8d25",
+      "\u901a\u914degress\u9ed8\u8ba4\u5931\u8d25",
+      "Provider\u4e0d\u652f\u6301gRPC\u65f6\u663e\u5f0fUNSUPPORTED",
+      "\u9519\u8bef\u5305\u542bJSON Pointer"
+    ],
+    "evidence": [
+      "manifest-validation.json",
+      "normalized-runtime-manifest.json",
+      "policy-trace.json"
+    ],
+    "definition_of_done": [
+      "\u7ed3\u6784\u548c\u8bed\u4e49\u5747\u901a\u8fc7",
+      "Policy\u8fdd\u89c4\u4e0d\u53ef\u5ffd\u7565",
+      "Provider\u80fd\u529b\u5339\u914d",
+      "\u9519\u8bef\u53ef\u5b9a\u4f4d",
+      "\u89c4\u8303\u5316\u4e0d\u6539\u53d8\u610f\u56fe"
+    ],
+    "risk_controls": [
+      "\u9ed8\u8ba4\u62d2\u7edd\u4e0d\u5b8c\u6574\u8f93\u5165",
+      "\u6240\u6709\u8de8\u79df\u6237\u8bbf\u95ee\u5fc5\u987b\u7531\u670d\u52a1\u7aef\u8eab\u4efd\u89e3\u6790",
+      "\u5931\u8d25\u4e0d\u5f97\u901a\u8fc7\u5220\u9664\u6d4b\u8bd5\u3001\u8df3\u8fc7\u95e8\u7981\u6216\u4f2a\u9020\u8bc1\u636e\u4fee\u590d"
+    ]
+  },
+  "canonicalSha256": "sha256:b06f38be6eb65c57c8db401da3565c12dc51385380dae59c8fb5ef29fec1ea4e",
+  "compiledVersion": 1
+}

@@ -21,7 +21,9 @@ import java.util.Optional;
  */
 public interface ExecutionJobPort {
 
-    enum BusinessLine { GENERATION, TRANSLATION, SPRING_UPGRADE, REPOSITORY_WORKSPACE }
+    enum BusinessLine {
+        GENERATION, TRANSLATION, SPRING_UPGRADE, REPOSITORY_WORKSPACE, MODERNIZATION_PROOF
+    }
 
     enum Status { QUEUED, CLAIMED, RUNNING, SUCCEEDED, PARTIAL, FAILED, CANCELLED, LOST }
 

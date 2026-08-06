@@ -1,0 +1,68 @@
+{
+  "id": "B105-S11",
+  "batch": 105,
+  "name": "manual-fix-regression-obligation",
+  "dependencies": [
+    "B105-S10"
+  ],
+  "inputs": [
+    "repair commits",
+    "human edits",
+    "policy exceptions"
+  ],
+  "outputs": [
+    "MANUAL_FIXES.md",
+    "ManualInterventionLedger",
+    "approval tasks"
+  ],
+  "implementation": {
+    "modules": [
+      "services/control-plane/.../governance/ManualFixService.java",
+      "apps/web/src/features/manual-fixes/",
+      "templates/MANUAL_FIXES.md"
+    ],
+    "interfaces": [
+      "POST /api/projects/{id}/manual-fixes",
+      "POST /api/manual-fixes/{id}:approve",
+      "event manual-fix.approved"
+    ],
+    "data": [
+      "manual_fix",
+      "manual_fix_approval",
+      "regression_obligation"
+    ]
+  },
+  "workflow": [
+    "检测非规则/非Agent actor的变更",
+    "要求填写根因、影响、Owner和风险",
+    "关联新增或更新测试",
+    "执行指定Gate并保存结果",
+    "高风险修复要求双人复核",
+    "生成MANUAL_FIXES.md和机器ledger"
+  ],
+  "tests": [
+    "缺根因不能批准",
+    "没有测试且无豁免不能批准",
+    "同一人不能完成高风险双人复核",
+    "批准后代码变化使批准失效",
+    "测试被删除时Gate失败"
+  ],
+  "evidence": [
+    "manual-fixes.json",
+    "MANUAL_FIXES.md",
+    "approval-receipts.json",
+    "regression-test-links.json"
+  ],
+  "definition_of_done": [
+    "所有人工差异有归属",
+    "高风险双人审批",
+    "测试义务满足",
+    "批准绑定patch摘要",
+    "豁免有到期时间"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

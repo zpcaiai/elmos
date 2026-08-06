@@ -1,0 +1,69 @@
+{
+  "id": "B105-S01",
+  "batch": 105,
+  "name": "modernization-demo-project-selector",
+  "dependencies": [
+    "B104-S16"
+  ],
+  "inputs": [
+    "RepositoryRef",
+    "license policy",
+    "target audience",
+    "time/cost budget"
+  ],
+  "outputs": [
+    "DemoCandidateScorecard",
+    "selection decision",
+    "rejection reasons"
+  ],
+  "implementation": {
+    "modules": [
+      "services/control-plane/.../demo/ProjectSelectorService.java",
+      "services/control-plane/.../demo/DemoCandidateRepository.java",
+      "apps/web/src/features/demo-candidates/"
+    ],
+    "interfaces": [
+      "POST /api/demo-candidates/score",
+      "GET /api/demo-candidates/{id}",
+      "event demo.candidate.scored"
+    ],
+    "data": [
+      "demo_candidate",
+      "candidate_signal",
+      "candidate_decision"
+    ]
+  },
+  "workflow": [
+    "读取仓库元数据并固定默认分支SHA",
+    "检测语言、框架、构建、测试、API、页面和数据库",
+    "检查许可证、活跃度、规模和敏感内容",
+    "运行轻量静态探测，不执行不可信代码",
+    "按真实性、可构建性、可见接口、迁移差距、演示价值评分",
+    "生成选择/拒绝决定并保留可解释特征"
+  ],
+  "tests": [
+    "公开Spring Boot 2项目获得可解释高分",
+    "无许可证项目被拒绝",
+    "无测试且无可见服务的仓库不得进入Golden Route",
+    "伪造语言信号不覆盖构建文件证据",
+    "租户A不能读取租户B候选"
+  ],
+  "evidence": [
+    "candidate-scorecard.json",
+    "repository-fingerprint.json",
+    "license-decision.json",
+    "selection-decision.json"
+  ],
+  "definition_of_done": [
+    "评分规则版本化",
+    "每个分值可追溯到证据",
+    "拒绝原因机器可读",
+    "未执行仓库代码",
+    "至少3类候选fixture通过"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

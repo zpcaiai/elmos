@@ -1,0 +1,66 @@
+{
+  "contract": {
+    "id": "B108-S05",
+    "batch": 108,
+    "name": "manual-intervention-ledger",
+    "dependencies": [
+      "B105-S11",
+      "B108-S01"
+    ],
+    "inputs": [
+      "ManualInterventionLedger source",
+      "approvals",
+      "patches"
+    ],
+    "outputs": [
+      "SignedManualLedger"
+    ],
+    "implementation": {
+      "modules": [
+        "evidence/manual/ManualInterventionEvidenceService.java"
+      ],
+      "interfaces": [
+        "POST /api/evidence/manual-ledgers",
+        "event evidence.manual-ledger.completed"
+      ],
+      "data": [
+        "manual_intervention_evidence",
+        "manual_approval_evidence"
+      ]
+    },
+    "workflow": [
+      "\u9a8c\u8bc1\u4eba\u5de5patch\u6458\u8981",
+      "\u5173\u8054\u6839\u56e0\u3001Owner\u548c\u6d4b\u8bd5",
+      "\u9a8c\u8bc1\u9ad8\u98ce\u9669\u53cc\u4eba\u5ba1\u6279",
+      "\u8bb0\u5f55\u8c41\u514d\u548c\u5230\u671f\u65e5",
+      "\u68c0\u6d4b\u540e\u7eed\u4ee3\u7801\u53d8\u5316\u4f7f\u5ba1\u6279\u5931\u6548",
+      "\u7b7e\u540d\u5e76\u5199\u5165EvidenceWorkspace"
+    ],
+    "tests": [
+      "\u81ea\u6211\u5ba1\u6279\u9ad8\u98ce\u9669\u9879\u62d2\u7edd",
+      "\u8fc7\u671f\u8c41\u514d\u5931\u8d25",
+      "Patch\u6539\u53d8\u5ba1\u6279\u5931\u6548",
+      "\u7f3a\u6d4b\u8bd5/\u8c41\u514d\u62d2\u7edd",
+      "\u533f\u540d\u4fee\u6539\u8fdb\u5165UNKNOWN"
+    ],
+    "evidence": [
+      "manual-intervention-ledger.json",
+      "approval-signatures.json",
+      "exception-register.json"
+    ],
+    "definition_of_done": [
+      "\u4eba\u5de5\u5dee\u5f02100%\u8986\u76d6",
+      "\u5ba1\u6279\u6709\u6548",
+      "\u8c41\u514d\u6709\u671f\u9650",
+      "\u6d4b\u8bd5\u4e49\u52a1\u6ee1\u8db3",
+      "\u8d26\u672c\u4e0d\u53ef\u53d8"
+    ],
+    "risk_controls": [
+      "\u9ed8\u8ba4\u62d2\u7edd\u4e0d\u5b8c\u6574\u8f93\u5165",
+      "\u6240\u6709\u8de8\u79df\u6237\u8bbf\u95ee\u5fc5\u987b\u7531\u670d\u52a1\u7aef\u8eab\u4efd\u89e3\u6790",
+      "\u5931\u8d25\u4e0d\u5f97\u901a\u8fc7\u5220\u9664\u6d4b\u8bd5\u3001\u8df3\u8fc7\u95e8\u7981\u6216\u4f2a\u9020\u8bc1\u636e\u4fee\u590d"
+    ]
+  },
+  "canonicalSha256": "sha256:7c3e74120ab9bdfc699c42299a6755701f1b2c4bcf1b88af84b0dcaed61799d8",
+  "compiledVersion": 1
+}

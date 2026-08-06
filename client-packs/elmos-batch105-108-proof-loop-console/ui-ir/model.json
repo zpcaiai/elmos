@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-batch105-108-proof-loop-console",
+  "nodes": [
+    {"id":"route-proof-loop","kind":"route","path":"/proof-loop","rendering":"client-interactive","source_trace":"apps/web-console/app/proof-loop/page.tsx"},
+    {"id":"operation-contracts","kind":"api-operation","method":"GET","path":"/api/modernization-proof/contracts","cache":"private-no-store","retry":"none"},
+    {"id":"operation-subject","kind":"api-operation","method":"POST","path":"/api/modernization-proof/subject-digest","mutation":"pure-server-derivation","retry":"none"},
+    {"id":"operation-create","kind":"api-operation","method":"POST","path":"/api/modernization-proof/jobs","mutation":"durable-idempotent","retry":"manual-only"},
+    {"id":"operation-status","kind":"api-operation","method":"GET","path":"/api/modernization-proof/jobs/{jobId}","cache":"private-no-store","cancellation":"AbortController"},
+    {"id":"operation-cancel","kind":"api-operation","method":"DELETE","path":"/api/modernization-proof/jobs/{jobId}","mutation":"idempotent-cancel-intent","retry":"manual-only"},
+    {"id":"cache-proof-job","kind":"server-state","key_dimensions":["authenticated-tenant","actor","jobId"],"persistence":"component-memory-only","invalidation":["terminal-state","cancel-response"]},
+    {"id":"error-proof-job","kind":"error-contract","states":["authentication","authorization","validation","configuration","timeout","unreachable","business-blocked"]},
+    {"id":"consistency-proof-job","kind":"consistency","rules":["no-create-auto-retry","single-inflight-poll","terminal-stops-poll","tenant-state-never-shared"]}
+  ],
+  "unknowns": ["production browser network behavior", "external IdP refresh behavior", "real Runner artifact publication latency"]
+}

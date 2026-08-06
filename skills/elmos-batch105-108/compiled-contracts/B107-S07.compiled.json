@@ -1,0 +1,71 @@
+{
+  "contract": {
+    "id": "B107-S07",
+    "batch": 107,
+    "name": "business-api-invariant-oracle",
+    "dependencies": [
+      "B107-S04",
+      "B107-S06"
+    ],
+    "inputs": [
+      "domain model hints",
+      "HTTP scenarios",
+      "state observation adapters"
+    ],
+    "outputs": [
+      "InvariantSuite",
+      "InvariantResults"
+    ],
+    "implementation": {
+      "modules": [
+        "validation/oracles/BusinessInvariantService.java",
+        "contracts/business-invariant.schema.json",
+        "registry/domain-oracles/"
+      ],
+      "interfaces": [
+        "POST /api/validations/invariants",
+        "event invariants.completed"
+      ],
+      "data": [
+        "business_invariant",
+        "invariant_observation",
+        "invariant_result"
+      ]
+    },
+    "workflow": [
+      "\u4ece\u9886\u57df\u5b9e\u4f53\u548c\u6d4b\u8bd5\u63d0\u53d6\u5019\u9009\u4e0d\u53d8\u91cf",
+      "\u5b9a\u4e49\u524d\u7f6e\u3001\u52a8\u4f5c\u3001\u89c2\u5bdf\u548c\u6e05\u7406",
+      "\u5bf9\u4e24\u7248\u672c\u8fd0\u884c\u540c\u4e00\u4e0d\u53d8\u91cf",
+      "\u6bd4\u8f83\u903b\u8f91\u7ed3\u679c\u800c\u975e\u4ec5JSON\u6587\u672c",
+      "\u68c0\u6d4b\u5e42\u7b49\u3001\u6392\u5e8f\u3001\u5206\u9875\u548c\u6743\u9650\u8fb9\u754c",
+      "\u5931\u8d25\u751f\u6210\u6700\u5c0f\u53cd\u4f8b\u548c\u76f8\u5173\u8bf7\u6c42\u94fe"
+    ],
+    "tests": [
+      "\u91cd\u590dPOST\u5e42\u7b49\u6027\u6309\u5951\u7ea6\u5224\u65ad",
+      "\u5220\u9664\u88ab\u5f15\u7528\u5b9e\u4f53\u7684\u884c\u4e3a\u4e00\u81f4",
+      "\u5206\u9875\u65e0\u4e22/\u91cd\u590d",
+      "\u8d8a\u6743\u59cb\u7ec8\u62d2\u7edd",
+      "\u4e8b\u52a1\u5931\u8d25\u65e0\u90e8\u5206\u5199\u5165"
+    ],
+    "evidence": [
+      "invariant-suite.json",
+      "invariant-results.json",
+      "counterexamples.json",
+      "state-observations.json"
+    ],
+    "definition_of_done": [
+      "\u9ad8\u98ce\u9669\u4e1a\u52a1\u81f3\u5c11\u4e00\u4e2a\u4e0d\u53d8\u91cf",
+      "\u89c2\u5bdf\u70b9\u72ec\u7acb",
+      "\u5931\u8d25\u6709\u53cd\u4f8b",
+      "\u6e05\u7406\u5b8c\u6210",
+      "\u7ed3\u679c\u8fdb\u5165\u8bed\u4e49Gate"
+    ],
+    "risk_controls": [
+      "\u9ed8\u8ba4\u62d2\u7edd\u4e0d\u5b8c\u6574\u8f93\u5165",
+      "\u6240\u6709\u8de8\u79df\u6237\u8bbf\u95ee\u5fc5\u987b\u7531\u670d\u52a1\u7aef\u8eab\u4efd\u89e3\u6790",
+      "\u5931\u8d25\u4e0d\u5f97\u901a\u8fc7\u5220\u9664\u6d4b\u8bd5\u3001\u8df3\u8fc7\u95e8\u7981\u6216\u4f2a\u9020\u8bc1\u636e\u4fee\u590d"
+    ]
+  },
+  "canonicalSha256": "sha256:ada03efc0d03218b3573b1267d89dc630dc68d2c2e1a541a35a1e3a14c19b0c2",
+  "compiledVersion": 1
+}

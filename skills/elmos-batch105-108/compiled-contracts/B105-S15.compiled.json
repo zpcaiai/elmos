@@ -1,0 +1,72 @@
+{
+  "contract": {
+    "id": "B105-S15",
+    "batch": 105,
+    "name": "sales-demo-golden-journey-publisher",
+    "dependencies": [
+      "B105-S14"
+    ],
+    "inputs": [
+      "DEMO_READY decision",
+      "sanitized evidence",
+      "demo metadata"
+    ],
+    "outputs": [
+      "GoldenJourneyPackage",
+      "catalog entry",
+      "replay instructions"
+    ],
+    "implementation": {
+      "modules": [
+        "services/control-plane/.../catalog/GoldenJourneyPublisher.java",
+        "catalog/golden-journeys/",
+        "apps/web/src/features/golden-journeys/"
+      ],
+      "interfaces": [
+        "POST /api/golden-journeys",
+        "GET /api/golden-journeys/{id}",
+        "event golden-journey.published"
+      ],
+      "data": [
+        "golden_journey",
+        "journey_version",
+        "journey_artifact"
+      ]
+    },
+    "workflow": [
+      "\u6e05\u7406\u5ba2\u6237Secret\u548c\u654f\u611f\u8def\u5f84",
+      "\u56fa\u5b9a\u6e90\u4e0e\u76ee\u6807Commit/\u955c\u50cf\u6458\u8981",
+      "\u6253\u5305\u8f93\u5165\u3001\u6b65\u9aa4\u3001\u9884\u671f\u7ed3\u679c\u548c\u8bc1\u636e",
+      "\u751f\u6210\u4e00\u952e\u91cd\u653e\u8bf4\u660e\u548c\u6210\u672c\u57fa\u7ebf",
+      "\u53d1\u5e03\u5230\u53d7\u63a7Catalog\u5e76\u8bbe\u7f6e\u53ef\u89c1\u6027",
+      "\u6267\u884c\u91cd\u653e\u9a8c\u8bc1\u540e\u6807\u8bb0ACTIVE"
+    ],
+    "tests": [
+      "\u672a\u8131\u654f\u8bc1\u636e\u7981\u6b62\u53d1\u5e03",
+      "\u6e90\u4ed3\u8bb8\u53ef\u8bc1\u4e0d\u5141\u8bb8\u518d\u5206\u53d1\u65f6\u4ec5\u53d1\u5e03\u5143\u6570\u636e",
+      "\u91cd\u653e\u5931\u8d25\u4e0d\u80fdACTIVE",
+      "\u7248\u672c\u66f4\u65b0\u4e0d\u8986\u76d6\u65e7\u7248\u672c",
+      "\u5ba2\u6237\u79c1\u6709Journey\u9ed8\u8ba4\u79c1\u6709"
+    ],
+    "evidence": [
+      "golden-journey.json",
+      "replay-plan.json",
+      "sanitization-report.json",
+      "catalog-publication.json"
+    ],
+    "definition_of_done": [
+      "\u53ef\u91cd\u653e",
+      "\u65e0\u654f\u611f\u6570\u636e",
+      "\u8bb8\u53ef\u8bc1\u7b56\u7565\u901a\u8fc7",
+      "\u7248\u672c\u4e0d\u53ef\u53d8",
+      "Catalog\u6761\u76ee\u4e0e\u8bc1\u636e\u4e00\u81f4"
+    ],
+    "risk_controls": [
+      "\u9ed8\u8ba4\u62d2\u7edd\u4e0d\u5b8c\u6574\u8f93\u5165",
+      "\u6240\u6709\u8de8\u79df\u6237\u8bbf\u95ee\u5fc5\u987b\u7531\u670d\u52a1\u7aef\u8eab\u4efd\u89e3\u6790",
+      "\u5931\u8d25\u4e0d\u5f97\u901a\u8fc7\u5220\u9664\u6d4b\u8bd5\u3001\u8df3\u8fc7\u95e8\u7981\u6216\u4f2a\u9020\u8bc1\u636e\u4fee\u590d"
+    ]
+  },
+  "canonicalSha256": "sha256:ce08e8438932bd9e9d8e3b637ea43890a04a10154b76ef309303531142031db8",
+  "compiledVersion": 1
+}

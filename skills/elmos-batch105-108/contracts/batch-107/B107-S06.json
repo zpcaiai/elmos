@@ -1,0 +1,66 @@
+{
+  "id": "B107-S06",
+  "batch": 107,
+  "name": "newman-runtime-regression-runner",
+  "dependencies": [
+    "B107-S05"
+  ],
+  "inputs": [
+    "Postman collection/environment",
+    "baseline/candidate endpoints"
+  ],
+  "outputs": [
+    "NewmanBeforeAfter",
+    "assertion delta",
+    "HTML/JSON reports"
+  ],
+  "implementation": {
+    "modules": [
+      "validation/postman/NewmanRunnerService.java",
+      "private-runner/internal/newman/",
+      "images/newman/"
+    ],
+    "interfaces": [
+      "POST /api/validations/newman",
+      "event newman.completed"
+    ],
+    "data": [
+      "newman_run",
+      "newman_assertion",
+      "newman_delta"
+    ]
+  },
+  "workflow": [
+    "验证集合脚本Policy和Secret引用",
+    "分别注入基线/候选base URL",
+    "运行固定版本Newman",
+    "保存CLI/JSON/JUnit报告",
+    "比较请求、断言、失败和P95",
+    "生成失败定位和重放命令"
+  ],
+  "tests": [
+    "恶意pre-request脚本按Policy阻断",
+    "候选新增失败被发现",
+    "环境Secret不进入报告",
+    "随机数据通过seed控制",
+    "超时/网络失败分类"
+  ],
+  "evidence": [
+    "newman-before.json",
+    "newman-after.json",
+    "newman-delta.json",
+    "newman-report.html"
+  ],
+  "definition_of_done": [
+    "固定Newman版本",
+    "同一Collection和seed",
+    "0新增失败",
+    "Secret脱敏",
+    "报告进入证据"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

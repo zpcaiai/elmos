@@ -1,0 +1,69 @@
+{
+  "id": "B105-S06",
+  "batch": 105,
+  "name": "openrewrite-phase-boundary-enforcer",
+  "dependencies": [
+    "B105-S05"
+  ],
+  "inputs": [
+    "approved MigrationPlanDAG",
+    "recipe catalog",
+    "frozen baseline"
+  ],
+  "outputs": [
+    "RewriteStageResult",
+    "stage commit",
+    "datatable bundle"
+  ],
+  "implementation": {
+    "modules": [
+      "engines/java/.../rewrite/RewriteStageExecutor.java",
+      "private-runner/internal/rewrite/openrewrite.go",
+      "registry/rewrite-recipes/"
+    ],
+    "interfaces": [
+      "POST /api/plans/{id}/stages/{stage}:execute",
+      "event rewrite.stage.completed"
+    ],
+    "data": [
+      "rewrite_stage_run",
+      "recipe_lock",
+      "stage_commit"
+    ]
+  },
+  "workflow": [
+    "解析阶段允许的Recipe白名单",
+    "锁定plugin/recipe坐标和摘要",
+    "在新工作树执行dry-run并保存预计差异",
+    "执行recipe并生成DataTable",
+    "运行阶段Gate并创建单一职责Commit",
+    "再次执行验证幂等或记录非幂等风险"
+  ],
+  "tests": [
+    "浮动RELEASE版本在生产模式被拒绝",
+    "Recipe越权修改非目标模块被阻断",
+    "第二次执行无差异通过幂等Gate",
+    "测试失败不创建成功Commit",
+    "DataTable缺失导致证据失败"
+  ],
+  "evidence": [
+    "recipe-lock.json",
+    "rewrite.log",
+    "datatables.zip",
+    "stage.patch",
+    "stage-gate.json",
+    "idempotency-result.json"
+  ],
+  "definition_of_done": [
+    "每阶段独立Commit",
+    "Recipe版本固定",
+    "变更范围符合计划",
+    "Gate通过才推进",
+    "幂等性结果可审计"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

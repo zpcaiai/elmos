@@ -1,0 +1,76 @@
+{
+  "contract": {
+    "id": "B108-S12",
+    "batch": 108,
+    "name": "evidence-rich-pull-request-generator",
+    "dependencies": [
+      "B108-S02",
+      "B108-S03",
+      "B108-S04",
+      "B108-S05",
+      "B108-S06",
+      "B108-S07",
+      "B108-S11"
+    ],
+    "inputs": [
+      "candidate branch",
+      "all evidence/report artifacts",
+      "SCM target"
+    ],
+    "outputs": [
+      "PullRequestDraft",
+      "PR evidence index",
+      "review checklist"
+    ],
+    "implementation": {
+      "modules": [
+        "integrations/github/EvidencePullRequestService.java",
+        "integrations/gitlab/",
+        "templates/migration-pr.md"
+      ],
+      "interfaces": [
+        "POST /api/projects/{id}/pull-requests",
+        "event pull-request.created"
+      ],
+      "data": [
+        "evidence_pull_request",
+        "pr_checklist"
+      ]
+    },
+    "workflow": [
+      "\u9a8c\u8bc1\u76ee\u6807/\u6e90\u5206\u652f\u548cCommit",
+      "\u751f\u6210\u5206\u5c42PR\u6b63\u6587\u4e0e\u6298\u53e0\u6280\u672f\u7ec6\u8282",
+      "\u6dfb\u52a0Required Check\u5f15\u7528\u548c\u8bc1\u636e\u94fe\u63a5",
+      "\u5d4c\u5165\u5b89\u5168\u622a\u56fe\u7f29\u7565\u56fe\u800c\u975e\u654f\u611fURL",
+      "\u521b\u5efaDraft PR\u5e76\u8bbe\u7f6elabels/reviewers",
+      "\u56de\u8bfbPR\u786e\u8ba4\u6b63\u6587\u548chead SHA\u4e00\u81f4"
+    ],
+    "tests": [
+      "head SHA\u53d8\u5316\u9700\u8981\u91cd\u751f\u6210\u8bc1\u636e",
+      "\u654f\u611fPreview URL\u4e0d\u5165PR",
+      "\u7f3aRequired Check\u65f6\u4fdd\u6301Draft",
+      "\u91cd\u590d\u8bf7\u6c42\u4e0d\u521b\u5efa\u91cd\u590dPR",
+      "\u6b63\u6587\u957f\u5ea6\u8d85\u9650\u4f7f\u7528\u8bc1\u636e\u7d22\u5f15"
+    ],
+    "evidence": [
+      "pull-request.json",
+      "pr-body.md",
+      "pr-evidence-index.json",
+      "review-checklist.json"
+    ],
+    "definition_of_done": [
+      "PR\u7ed1\u5b9a\u7cbe\u786ehead SHA",
+      "\u8bc1\u636e\u5b8c\u6574",
+      "\u654f\u611f\u4fe1\u606f\u53d7\u63a7",
+      "\u9ed8\u8ba4Draft",
+      "\u53ef\u7531Reviewer\u4e00\u773c\u5224\u65ad"
+    ],
+    "risk_controls": [
+      "\u9ed8\u8ba4\u62d2\u7edd\u4e0d\u5b8c\u6574\u8f93\u5165",
+      "\u6240\u6709\u8de8\u79df\u6237\u8bbf\u95ee\u5fc5\u987b\u7531\u670d\u52a1\u7aef\u8eab\u4efd\u89e3\u6790",
+      "\u5931\u8d25\u4e0d\u5f97\u901a\u8fc7\u5220\u9664\u6d4b\u8bd5\u3001\u8df3\u8fc7\u95e8\u7981\u6216\u4f2a\u9020\u8bc1\u636e\u4fee\u590d"
+    ]
+  },
+  "canonicalSha256": "sha256:368b8ee2794284351e5c6a9ba6c342ec9d12c42d39a009a8b234f35c6a0adc9b",
+  "compiledVersion": 1
+}

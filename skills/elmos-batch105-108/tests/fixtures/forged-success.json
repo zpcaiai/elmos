@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "runId": "run_demo_001",
+  "repository": "example/petclinic",
+  "baselineCommit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "candidateCommit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "imageDigest": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "readyAt": "2026-08-05T10:00:00Z",
+  "expiresAt": "2026-08-05T10:10:00Z",
+  "destroyedAt": "2026-08-05T10:10:05Z",
+  "health": "PASS",
+  "apiValidation": "PASS",
+  "browserValidation": "PASS",
+  "cleanupAttestation": "UNKNOWN",
+  "artifactDigests": {
+    "health": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "api": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+  },
+  "claimedCertificate": "PRODUCTION_CANDIDATE"
+}

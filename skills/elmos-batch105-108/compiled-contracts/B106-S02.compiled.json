@@ -1,0 +1,71 @@
+{
+  "contract": {
+    "id": "B106-S02",
+    "batch": 106,
+    "name": "runtime-manifest-generator",
+    "dependencies": [
+      "B106-S01"
+    ],
+    "inputs": [
+      "RuntimeDetectionResult",
+      "selected service",
+      "tenant policy"
+    ],
+    "outputs": [
+      "RuntimeManifest",
+      "manifest digest",
+      "human preview"
+    ],
+    "implementation": {
+      "modules": [
+        "runtime/manifest/RuntimeManifestService.java",
+        "contracts/runtime-manifest.schema.json",
+        "apps/web/src/features/runtime-manifest/"
+      ],
+      "interfaces": [
+        "POST /api/projects/{id}/runtime-manifests",
+        "event runtime-manifest.generated"
+      ],
+      "data": [
+        "runtime_manifest",
+        "runtime_command",
+        "runtime_resource_policy"
+      ]
+    },
+    "workflow": [
+      "\u9009\u62e9\u68c0\u6d4b\u5019\u9009\u548c\u9002\u914d\u5668",
+      "\u89c4\u8303\u5316build/start\u547d\u4ee4\u4e3aargv",
+      "\u6ce8\u5165PORT/host\u800c\u4e0d\u8986\u76d6\u7528\u6237Secret",
+      "\u914d\u7f6ehealth\u3001homepage\u3001OpenAPI\u548c\u534f\u8bae",
+      "\u5e94\u7528CPU/\u5185\u5b58/\u78c1\u76d8/TTL/\u7f51\u7edc\u653f\u7b56",
+      "\u9a8c\u8bc1Schema\u5e76\u8ba1\u7b97\u4e0d\u53ef\u53d8\u6458\u8981"
+    ],
+    "tests": [
+      "shell\u6ce8\u5165\u5b57\u7b26\u4ee5argv\u5b89\u5168\u5904\u7406",
+      "\u7aef\u53e3\u8d8a\u754c\u62d2\u7edd",
+      "TTL\u8d85\u8fc7\u7b56\u7565\u62d2\u7edd",
+      "\u672a\u58f0\u660eSecret\u4e0d\u80fd\u5f15\u7528",
+      "manifest\u91cd\u590d\u751f\u6210\u7a33\u5b9a"
+    ],
+    "evidence": [
+      "runtime.yaml",
+      "runtime-manifest.json",
+      "manifest.sha256",
+      "policy-application.json"
+    ],
+    "definition_of_done": [
+      "Schema\u6709\u6548",
+      "\u547d\u4ee4\u65e0\u9690\u5f0fshell\u6ce8\u5165",
+      "\u8d44\u6e90\u4e0d\u8d85\u79df\u6237\u914d\u989d",
+      "TTL\u660e\u786e",
+      "\u6458\u8981\u53ef\u590d\u7b97"
+    ],
+    "risk_controls": [
+      "\u9ed8\u8ba4\u62d2\u7edd\u4e0d\u5b8c\u6574\u8f93\u5165",
+      "\u6240\u6709\u8de8\u79df\u6237\u8bbf\u95ee\u5fc5\u987b\u7531\u670d\u52a1\u7aef\u8eab\u4efd\u89e3\u6790",
+      "\u5931\u8d25\u4e0d\u5f97\u901a\u8fc7\u5220\u9664\u6d4b\u8bd5\u3001\u8df3\u8fc7\u95e8\u7981\u6216\u4f2a\u9020\u8bc1\u636e\u4fee\u590d"
+    ]
+  },
+  "canonicalSha256": "sha256:d542fe3fbca578162be47658a2219cccff3ab3e0a4fcd97497e41f084749d3b8",
+  "compiledVersion": 1
+}

@@ -1,0 +1,72 @@
+{
+  "contract": {
+    "id": "B106-S10",
+    "batch": 106,
+    "name": "ephemeral-sandbox-instance-provisioner",
+    "dependencies": [
+      "B106-S08",
+      "B106-S09"
+    ],
+    "inputs": [
+      "OCIImageRef",
+      "RuntimeManifest",
+      "tenant/run identity"
+    ],
+    "outputs": [
+      "SandboxInstance",
+      "lease token",
+      "provisioning receipt"
+    ],
+    "implementation": {
+      "modules": [
+        "runtime/sandbox/SandboxProvisioningService.java",
+        "private-runner/internal/sandbox/provider.go",
+        "infra/sandbox/"
+      ],
+      "interfaces": [
+        "POST /api/runtime-runs",
+        "event sandbox.provisioned"
+      ],
+      "data": [
+        "runtime_run",
+        "sandbox_instance",
+        "sandbox_lease"
+      ]
+    },
+    "workflow": [
+      "\u5206\u914d\u5168\u5c40Run ID\u548c\u5e42\u7b49\u952e",
+      "\u6821\u9a8c\u955c\u50cf\u7b7e\u540d\u3001\u79df\u6237\u914d\u989d\u548cPolicy",
+      "\u521b\u5efa\u6bcf\u4efb\u52a1\u9694\u79bb\u5b9e\u4f8b\u4e0e\u53ea\u8bfb\u6839\u6587\u4ef6\u7cfb\u7edf",
+      "\u6302\u8f7d\u6700\u5c0f\u4e34\u65f6\u5377\u5e76\u6ce8\u5165\u77ed\u671f\u8eab\u4efd",
+      "\u5e94\u7528CPU/\u5185\u5b58/PID/\u78c1\u76d8\u548cegress\u9650\u5236",
+      "\u542f\u52a8\u8fdb\u7a0b\u5e76\u8fd4\u56de\u79df\u7ea6/Provider\u5b9e\u4f8b\u6620\u5c04"
+    ],
+    "tests": [
+      "\u540c\u4e00\u5e42\u7b49\u952e\u4e0d\u521b\u5efa\u91cd\u590d\u5b9e\u4f8b",
+      "\u914d\u989d\u8d85\u9650\u62d2\u7edd",
+      "\u955c\u50cf\u7b7e\u540d\u65e0\u6548\u62d2\u7edd",
+      "\u5b9e\u4f8b\u4e0d\u80fd\u8bbf\u95ee\u4e91metadata",
+      "\u79df\u6237\u9694\u79bb\u7f51\u7edc\u6d4b\u8bd5\u901a\u8fc7"
+    ],
+    "evidence": [
+      "provisioning-receipt.json",
+      "sandbox-policy.json",
+      "instance-identity.json",
+      "resource-allocation.json"
+    ],
+    "definition_of_done": [
+      "\u6bcfRun\u72ec\u7acb\u9694\u79bb",
+      "\u8eab\u4efd\u77ed\u671f\u4e14\u6700\u5c0f\u6743\u9650",
+      "\u8d44\u6e90\u9650\u5236\u751f\u6548",
+      "\u65e0\u88f8Provider\u51ed\u8bc1",
+      "\u5b9e\u4f8b\u53ef\u88abReaper\u5b9a\u4f4d"
+    ],
+    "risk_controls": [
+      "\u9ed8\u8ba4\u62d2\u7edd\u4e0d\u5b8c\u6574\u8f93\u5165",
+      "\u6240\u6709\u8de8\u79df\u6237\u8bbf\u95ee\u5fc5\u987b\u7531\u670d\u52a1\u7aef\u8eab\u4efd\u89e3\u6790",
+      "\u5931\u8d25\u4e0d\u5f97\u901a\u8fc7\u5220\u9664\u6d4b\u8bd5\u3001\u8df3\u8fc7\u95e8\u7981\u6216\u4f2a\u9020\u8bc1\u636e\u4fee\u590d"
+    ]
+  },
+  "canonicalSha256": "sha256:5c1cdea58f209acf45e507b1301def766497d170bfcd14d819bade1fc29b5580",
+  "compiledVersion": 1
+}

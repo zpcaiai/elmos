@@ -1,0 +1,71 @@
+{
+  "id": "B106-S08",
+  "batch": 106,
+  "name": "oci-build-artifact-normalizer",
+  "dependencies": [
+    "B106-S04",
+    "B106-S05",
+    "B106-S06",
+    "B106-S07"
+  ],
+  "inputs": [
+    "validated manifest",
+    "language adapter spec",
+    "source snapshot"
+  ],
+  "outputs": [
+    "OCIImageRef",
+    "SBOM",
+    "BuildProvenance"
+  ],
+  "implementation": {
+    "modules": [
+      "runtime/build/OciBuildService.java",
+      "private-runner/internal/buildkit/client.go",
+      "infra/buildkit/"
+    ],
+    "interfaces": [
+      "POST /api/runtime-images:build",
+      "event runtime-image.built"
+    ],
+    "data": [
+      "runtime_image",
+      "build_provenance",
+      "sbom_artifact"
+    ]
+  },
+  "workflow": [
+    "生成多阶段Dockerfile/LLB计划",
+    "使用固定digest builder/runtime基础镜像",
+    "以BuildKit隔离构建并应用缓存",
+    "扫描Secret泄露和危险层",
+    "生成CycloneDX/SPDX与SLSA风格Provenance",
+    "推送镜像并只返回digest引用"
+  ],
+  "tests": [
+    "浮动latest基础镜像生产模式拒绝",
+    "Secret不进入layer/history",
+    "相同输入命中缓存且digest稳定",
+    "高危恶意Docker指令按Policy阻断",
+    "SBOM与镜像内容匹配"
+  ],
+  "evidence": [
+    "oci-image.json",
+    "sbom.cdx.json",
+    "provenance.json",
+    "build.log",
+    "image-scan.json"
+  ],
+  "definition_of_done": [
+    "镜像仅以digest引用",
+    "Provenance绑定源SHA",
+    "SBOM存在",
+    "Secret扫描通过",
+    "构建可重放"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

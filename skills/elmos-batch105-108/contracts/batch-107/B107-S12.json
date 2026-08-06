@@ -1,0 +1,62 @@
+{
+  "id": "B107-S12",
+  "batch": 107,
+  "name": "desktop-and-mobile-screenshot-capture",
+  "dependencies": [
+    "B107-S09"
+  ],
+  "inputs": [
+    "BrowserSession",
+    "screenshot plan"
+  ],
+  "outputs": [
+    "ScreenshotArtifacts",
+    "visual metadata"
+  ],
+  "implementation": {
+    "modules": [
+      "validation/browser/ScreenshotService.java",
+      "private-runner/internal/browser/screenshot.go"
+    ],
+    "interfaces": [
+      "POST /api/browser-sessions/{id}/screenshots",
+      "event screenshots.captured"
+    ],
+    "data": [
+      "screenshot_artifact",
+      "visual_capture_metadata"
+    ]
+  },
+  "workflow": [
+    "固定viewport/DPR/locale/timezone/animation策略",
+    "等待字体和网络稳定",
+    "捕获桌面/移动/全页/元素截图",
+    "失败时捕获当前页面和Console摘要",
+    "压缩并计算SHA256",
+    "关联Run、Commit、Journey step和URL hash"
+  ],
+  "tests": [
+    "动画冻结降低漂移",
+    "敏感字段自动遮罩",
+    "跨viewport截图完整",
+    "截图空白检测",
+    "哈希篡改可发现"
+  ],
+  "evidence": [
+    "screenshots/*.png",
+    "screenshot-index.json",
+    "masking-report.json"
+  ],
+  "definition_of_done": [
+    "至少桌面和移动",
+    "敏感信息已遮罩",
+    "元数据完整",
+    "截图非空",
+    "摘要进入证据"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

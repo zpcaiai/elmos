@@ -1,0 +1,67 @@
+{
+  "id": "B105-S04",
+  "batch": 105,
+  "name": "java-runtime-upgrade-analyzer",
+  "dependencies": [
+    "B105-S03"
+  ],
+  "inputs": [
+    "BaselineEvidenceBundle",
+    "target JDK set"
+  ],
+  "outputs": [
+    "JavaUpgradeAnalysis",
+    "JDK build matrix",
+    "risk register"
+  ],
+  "implementation": {
+    "modules": [
+      "engines/java/src/main/java/.../analysis/JavaRuntimeUpgradeAnalyzer.java",
+      "private-runner/internal/java/jdk_matrix.go",
+      "rules/java-runtime/"
+    ],
+    "interfaces": [
+      "POST /api/analyses/java-runtime",
+      "event analysis.java-runtime.completed"
+    ],
+    "data": [
+      "java_runtime_analysis",
+      "jdk_matrix_result",
+      "java_risk"
+    ]
+  },
+  "workflow": [
+    "解析source/target/release/toolchain配置",
+    "在允许的JDK矩阵执行compile/test",
+    "运行jdeps、jdeprscan和内部API扫描",
+    "分类javax包为必须迁移与必须保留",
+    "检查Maven/Gradle插件和processor兼容性",
+    "输出P0-P4风险、证据和迁移建议"
+  ],
+  "tests": [
+    "JDK11成功/JDK17失败被正确分类",
+    "javax.sql不得误改为jakarta.sql",
+    "sun.misc使用产生高风险",
+    "插件与processor不兼容有定位",
+    "矩阵超时被记录为UNKNOWN而非PASS"
+  ],
+  "evidence": [
+    "jdk-matrix.json",
+    "jdeps.txt",
+    "jdeprscan.txt",
+    "javax-classification.json",
+    "java-upgrade-analysis.md"
+  ],
+  "definition_of_done": [
+    "至少覆盖Java8/11/17信号",
+    "风险关联文件和依赖",
+    "不做代码修改",
+    "UNKNOWN不会降级为PASS",
+    "分析可驱动后续计划"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

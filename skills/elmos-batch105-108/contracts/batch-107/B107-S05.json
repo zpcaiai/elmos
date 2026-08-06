@@ -1,0 +1,67 @@
+{
+  "id": "B107-S05",
+  "batch": 107,
+  "name": "http-scenario-suite-generator",
+  "dependencies": [
+    "B107-S02"
+  ],
+  "inputs": [
+    "OpenAPI",
+    "source/test index",
+    "optional traffic/collections"
+  ],
+  "outputs": [
+    "HTTPScenarioSuite",
+    "coverage map",
+    "data requirements"
+  ],
+  "implementation": {
+    "modules": [
+      "validation/http/ScenarioGenerator.java",
+      "contracts/http-scenario.schema.json",
+      "apps/web/src/features/scenario-review/"
+    ],
+    "interfaces": [
+      "POST /api/scenario-suites/http:generate",
+      "event scenario-suite.generated"
+    ],
+    "data": [
+      "http_scenario_suite",
+      "http_scenario",
+      "scenario_coverage"
+    ]
+  },
+  "workflow": [
+    "枚举操作和认证方案",
+    "提取现有测试与集合中的合法样例",
+    "生成CRUD、错误、边界和权限场景",
+    "推导场景依赖与数据种子",
+    "去重并按风险排序",
+    "要求人工审查高风险写操作"
+  ],
+  "tests": [
+    "每个高风险写endpoint至少正反场景",
+    "无示例Schema生成保守合成值",
+    "Recorded Traffic先脱敏",
+    "DELETE场景需要隔离数据",
+    "场景依赖DAG无环"
+  ],
+  "evidence": [
+    "http-scenarios.json",
+    "coverage-map.json",
+    "data-seed-plan.json",
+    "review-decision.json"
+  ],
+  "definition_of_done": [
+    "关键endpoint覆盖",
+    "认证场景覆盖",
+    "数据可隔离",
+    "无敏感traffic",
+    "场景可被Runner执行"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

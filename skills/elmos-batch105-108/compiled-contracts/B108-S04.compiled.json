@@ -1,0 +1,70 @@
+{
+  "contract": {
+    "id": "B108-S04",
+    "batch": 108,
+    "name": "coding-agent-change-ledger",
+    "dependencies": [
+      "B105-S10",
+      "B108-S01"
+    ],
+    "inputs": [
+      "agent runs",
+      "repair commits",
+      "EvidenceWorkspace"
+    ],
+    "outputs": [
+      "AgentChangeLedger",
+      "cost summary"
+    ],
+    "implementation": {
+      "modules": [
+        "evidence/agent/AgentChangeLedgerService.java",
+        "analytics/agent-cost/"
+      ],
+      "interfaces": [
+        "POST /api/evidence/agent-ledgers",
+        "event evidence.agent-ledger.completed"
+      ],
+      "data": [
+        "agent_change_entry",
+        "agent_tool_call",
+        "agent_cost"
+      ]
+    },
+    "workflow": [
+      "\u5173\u8054AgentRun\u4e0eCommit",
+      "\u8bb0\u5f55\u6a21\u578b/\u914d\u7f6e/Prompt\u6458\u8981",
+      "\u91c7\u96c6\u5de5\u5177\u8c03\u7528\u548c\u547d\u4ee4\u7ed3\u679c\u6458\u8981",
+      "\u5173\u8054\u6bcf\u4e2aPatch\u5230\u6839\u56e0\u548c\u6d4b\u8bd5",
+      "\u8ba1\u7b97token/\u65f6\u95f4/\u57fa\u7840\u8bbe\u65bd\u6210\u672c",
+      "\u8bb0\u5f55Reviewer\u4e0e\u6700\u7ec8\u63a5\u53d7/\u62d2\u7edd"
+    ],
+    "tests": [
+      "\u672a\u843d\u76d8Agent\u58f0\u660e\u4e0d\u7b97\u5b9e\u73b0",
+      "Patch\u4e0eCommit\u4e0d\u5339\u914d\u62d2\u7edd",
+      "\u654f\u611fPrompt\u5185\u5bb9\u4ec5\u4fdd\u5b58\u6458\u8981",
+      "\u9884\u7b97\u8d85\u9650\u8bb0\u5f55",
+      "\u62d2\u7edd\u7684Patch\u4e0d\u8ba1\u5b8c\u6210"
+    ],
+    "evidence": [
+      "agent-change-ledger.json",
+      "tool-transcript.digest",
+      "agent-cost.json",
+      "review-status.json"
+    ],
+    "definition_of_done": [
+      "\u6240\u6709Agent\u5dee\u5f02\u6709\u6839\u56e0",
+      "\u547d\u4ee4/\u6d4b\u8bd5\u53ef\u8ffd\u8e2a",
+      "\u6210\u672c\u53ef\u6c47\u603b",
+      "\u654f\u611f\u5185\u5bb9\u53d7\u63a7",
+      "\u63a5\u53d7\u72b6\u6001\u660e\u786e"
+    ],
+    "risk_controls": [
+      "\u9ed8\u8ba4\u62d2\u7edd\u4e0d\u5b8c\u6574\u8f93\u5165",
+      "\u6240\u6709\u8de8\u79df\u6237\u8bbf\u95ee\u5fc5\u987b\u7531\u670d\u52a1\u7aef\u8eab\u4efd\u89e3\u6790",
+      "\u5931\u8d25\u4e0d\u5f97\u901a\u8fc7\u5220\u9664\u6d4b\u8bd5\u3001\u8df3\u8fc7\u95e8\u7981\u6216\u4f2a\u9020\u8bc1\u636e\u4fee\u590d"
+    ]
+  },
+  "canonicalSha256": "sha256:8e941e76e25299b8bc91472ca58607a8a08c97ab6b93756e810f951c85758d49",
+  "compiledVersion": 1
+}

@@ -1,0 +1,64 @@
+{
+  "version": 1,
+  "project": {
+    "name": "java-demo",
+    "language": "java",
+    "framework": "spring-boot"
+  },
+  "build": {
+    "image": "example/java-builder@sha256:1111111111111111111111111111111111111111111111111111111111111111",
+    "command": [
+      "./mvnw",
+      "-B",
+      "-ntp",
+      "clean",
+      "package"
+    ],
+    "workingDirectory": "/workspace"
+  },
+  "runtime": {
+    "image": "example/java-runtime@sha256:2222222222222222222222222222222222222222222222222222222222222222",
+    "command": [
+      "java",
+      "-jar",
+      "target/app.jar"
+    ],
+    "environment": {
+      "PORT": "8080"
+    }
+  },
+  "service": {
+    "protocol": "http",
+    "port": 8080,
+    "health": {
+      "path": "/actuator/health",
+      "expectedStatus": 200,
+      "timeoutSeconds": 120
+    }
+  },
+  "preview": {
+    "homepage": "/",
+    "apiDocs": "/swagger-ui/index.html",
+    "openapi": "/v3/api-docs",
+    "screenshot": true
+  },
+  "lifecycle": {
+    "ttlSeconds": 600,
+    "startTtlAfterReady": true,
+    "idleTimeoutSeconds": 300
+  },
+  "resources": {
+    "cpu": 2,
+    "memoryMb": 2048,
+    "diskMb": 4096
+  },
+  "network": {
+    "publicIngress": true,
+    "outboundPolicy": "restricted"
+  },
+  "security": {
+    "authenticatedPreview": true,
+    "readOnlyRootFilesystem": true,
+    "blockCloudMetadata": true
+  }
+}

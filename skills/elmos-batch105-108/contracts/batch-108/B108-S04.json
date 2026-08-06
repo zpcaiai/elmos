@@ -1,0 +1,66 @@
+{
+  "id": "B108-S04",
+  "batch": 108,
+  "name": "coding-agent-change-ledger",
+  "dependencies": [
+    "B105-S10",
+    "B108-S01"
+  ],
+  "inputs": [
+    "agent runs",
+    "repair commits",
+    "EvidenceWorkspace"
+  ],
+  "outputs": [
+    "AgentChangeLedger",
+    "cost summary"
+  ],
+  "implementation": {
+    "modules": [
+      "evidence/agent/AgentChangeLedgerService.java",
+      "analytics/agent-cost/"
+    ],
+    "interfaces": [
+      "POST /api/evidence/agent-ledgers",
+      "event evidence.agent-ledger.completed"
+    ],
+    "data": [
+      "agent_change_entry",
+      "agent_tool_call",
+      "agent_cost"
+    ]
+  },
+  "workflow": [
+    "关联AgentRun与Commit",
+    "记录模型/配置/Prompt摘要",
+    "采集工具调用和命令结果摘要",
+    "关联每个Patch到根因和测试",
+    "计算token/时间/基础设施成本",
+    "记录Reviewer与最终接受/拒绝"
+  ],
+  "tests": [
+    "未落盘Agent声明不算实现",
+    "Patch与Commit不匹配拒绝",
+    "敏感Prompt内容仅保存摘要",
+    "预算超限记录",
+    "拒绝的Patch不计完成"
+  ],
+  "evidence": [
+    "agent-change-ledger.json",
+    "tool-transcript.digest",
+    "agent-cost.json",
+    "review-status.json"
+  ],
+  "definition_of_done": [
+    "所有Agent差异有根因",
+    "命令/测试可追踪",
+    "成本可汇总",
+    "敏感内容受控",
+    "接受状态明确"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

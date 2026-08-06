@@ -1,0 +1,64 @@
+{
+  "id": "B106-S03",
+  "batch": 106,
+  "name": "runtime-manifest-schema-validator",
+  "dependencies": [
+    "B106-S02"
+  ],
+  "inputs": [
+    "RuntimeManifest",
+    "provider capabilities",
+    "tenant policy"
+  ],
+  "outputs": [
+    "ManifestValidationResult",
+    "normalized manifest"
+  ],
+  "implementation": {
+    "modules": [
+      "runtime/manifest/RuntimeManifestValidator.java",
+      "schemas/runtime-manifest.schema.json",
+      "policies/runtime-manifest.rego"
+    ],
+    "interfaces": [
+      "POST /api/runtime-manifests:validate",
+      "event runtime-manifest.validated"
+    ],
+    "data": [
+      "manifest_validation",
+      "manifest_violation"
+    ]
+  },
+  "workflow": [
+    "执行JSON Schema验证",
+    "检查build/runtime命令、工作目录和artifact路径",
+    "检查端口、协议、健康和preview入口一致性",
+    "检查资源、网络、Secret和文件系统Policy",
+    "检查Provider是否支持所需能力",
+    "返回字段级违规和规范化Manifest"
+  ],
+  "tests": [
+    "缺start command失败",
+    "public ingress但无端口失败",
+    "通配egress默认失败",
+    "Provider不支持gRPC时显式UNSUPPORTED",
+    "错误包含JSON Pointer"
+  ],
+  "evidence": [
+    "manifest-validation.json",
+    "normalized-runtime-manifest.json",
+    "policy-trace.json"
+  ],
+  "definition_of_done": [
+    "结构和语义均通过",
+    "Policy违规不可忽略",
+    "Provider能力匹配",
+    "错误可定位",
+    "规范化不改变意图"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

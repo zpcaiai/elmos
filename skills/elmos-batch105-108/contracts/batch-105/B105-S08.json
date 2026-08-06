@@ -1,0 +1,67 @@
+{
+  "id": "B105-S08",
+  "batch": 105,
+  "name": "migration-failure-taxonomy-generator",
+  "dependencies": [
+    "B105-S03"
+  ],
+  "inputs": [
+    "compiler/test/runtime logs",
+    "migration plan",
+    "source index"
+  ],
+  "outputs": [
+    "MigrationFailures",
+    "failure clusters",
+    "repair routing hints"
+  ],
+  "implementation": {
+    "modules": [
+      "services/control-plane/.../diagnostics/FailureClassifier.java",
+      "engines/common/failure-taxonomy/",
+      "apps/web/src/features/failures/"
+    ],
+    "interfaces": [
+      "POST /api/runs/{id}/failures:classify",
+      "event failures.classified"
+    ],
+    "data": [
+      "migration_failure",
+      "failure_cluster",
+      "repair_hint"
+    ]
+  },
+  "workflow": [
+    "解析结构化与非结构化日志",
+    "通过文件、符号、依赖和阶段上下文去重",
+    "分类为Build/Dependency/Runtime/Framework/Jakarta/Security/ORM/API/Database/Test/Infrastructure",
+    "估计根因置信度并保留替代解释",
+    "关联建议Tool、Owner、修复Gate",
+    "生成Codex诊断输入但不自动修改"
+  ],
+  "tests": [
+    "同一根因的100条编译错误聚合",
+    "低置信度不得伪装确定根因",
+    "Security错误不路由到格式化工具",
+    "日志中的Secret被脱敏",
+    "未知错误保留原始证据摘要"
+  ],
+  "evidence": [
+    "migration-failures.json",
+    "failure-clusters.json",
+    "routing-hints.json",
+    "redaction-report.json"
+  ],
+  "definition_of_done": [
+    "分类覆盖全部失败",
+    "每项有原始证据引用",
+    "置信度可见",
+    "Secret已脱敏",
+    "UNKNOWN可被人工升级"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

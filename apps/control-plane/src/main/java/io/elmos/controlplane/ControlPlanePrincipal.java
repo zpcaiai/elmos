@@ -37,6 +37,7 @@ record ControlPlanePrincipal(
             "workspace:view", "spring:execute", "translation:execute",
             "generation:execute", "repository:read", "repository:write",
             "repository:commit", "repository:push", "repository:pr",
+            "modernization:execute",
             "usage:read", "billing:write", "admin:read", "admin:operate",
             "admin:approve", "configuration:manage");
     private static final Map<String, Set<String>> ROLE_PERMISSIONS = Map.of(
@@ -44,22 +45,22 @@ record ControlPlanePrincipal(
             "DEVELOPER", Set.of(
                     "workspace:view", "spring:execute", "translation:execute",
                     "generation:execute", "repository:read", "repository:write",
-                    "repository:commit", "usage:read"),
+                    "repository:commit", "modernization:execute", "usage:read"),
             "MAINTAINER", Set.of(
                     "workspace:view", "spring:execute", "translation:execute",
                     "generation:execute", "repository:read", "repository:write",
                     "repository:commit", "repository:push", "repository:pr",
-                    "usage:read", "billing:write"),
+                    "modernization:execute", "usage:read", "billing:write"),
             "OPERATOR", Set.of(
                     "workspace:view", "spring:execute", "translation:execute",
                     "generation:execute", "repository:read", "repository:write",
                     "repository:commit", "repository:push", "repository:pr",
-                    "usage:read", "billing:write", "admin:read", "admin:operate"),
+                    "modernization:execute", "usage:read", "billing:write", "admin:read", "admin:operate"),
             "APPROVER", Set.of(
                     "workspace:view", "spring:execute", "translation:execute",
                     "generation:execute", "repository:read", "repository:write",
                     "repository:commit", "repository:push", "repository:pr",
-                    "usage:read", "billing:write", "admin:read", "admin:operate",
+                    "modernization:execute", "usage:read", "billing:write", "admin:read", "admin:operate",
                     "admin:approve"),
             "TENANT_ADMIN", KNOWN_PERMISSIONS);
 

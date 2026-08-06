@@ -90,7 +90,8 @@ Agent 启动作业时强制：
 
 ## 操作步骤
 
-1. 对 PostgreSQL 执行至 V61。
+1. 对 PostgreSQL 执行至 V63，并确认 `V63__modernization_proof_execution_jobs.sql`
+   在目标数据库的 Flyway 历史中成功；仅有本地 Testcontainers 记录不能替代目标库记录。
 2. 用 `scripts/operations/configure_control_plane_runtime_role.sh` 给
    `LOGIN NOSUPERUSER NOBYPASSRLS` 运行角色授予精确权限。
 3. 用 `deploy/production/postgres/configure_hosted_runtime.sql` 写入经人工验证的
@@ -101,6 +102,15 @@ Agent 启动作业时强制：
    网络策略。
 6. 独立验证隔离声明后再把节点转为 `READY`。
 7. 执行真实作业、取消、节点丢失、对象删除和恢复演练，保存原始证据。
+
+Batch 105-108 证明闭环还必须先构建并发布 Worker，再把不可变仓库引用写入：
+
+```text
+ELMOS_RUNNER_IMAGE_MODERNIZATION_PROOF=<registry>/<repository>@sha256:<64 hex>
+ELMOS_RUNNER_CAPABILITIES=...,modernization:proof-loop
+```
+
+可变 tag、本地 image ID、未推送的 OCI 摘要和占位值都不能作为生产配置。
 
 ## 当前证据边界
 

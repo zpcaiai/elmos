@@ -1,0 +1,66 @@
+{
+  "contract": {
+    "id": "B108-S02",
+    "batch": 108,
+    "name": "baseline-candidate-evidence-linker",
+    "dependencies": [
+      "B108-S01"
+    ],
+    "inputs": [
+      "EvidenceWorkspace",
+      "all artifact metadata"
+    ],
+    "outputs": [
+      "EvidenceLineageGraph",
+      "link validation result"
+    ],
+    "implementation": {
+      "modules": [
+        "evidence/lineage/EvidenceLinker.java",
+        "graph/evidence-lineage/"
+      ],
+      "interfaces": [
+        "POST /api/evidence-workspaces/{id}:link",
+        "event evidence.lineage.completed"
+      ],
+      "data": [
+        "evidence_lineage_node",
+        "evidence_lineage_edge"
+      ]
+    },
+    "workflow": [
+      "\u8bfb\u53d6\u6bcf\u4e2a\u5de5\u4ef6\u7684subject\u548cproducer",
+      "\u6807\u51c6\u5316Repo/Commit/Image/Run\u6807\u8bc6",
+      "\u5efa\u7acbproducedBy/derivedFrom/validatedBy\u8fb9",
+      "\u62d2\u7edd\u4e3b\u4f53\u4e0d\u4e00\u81f4\u6216\u7f3a\u6458\u8981\u5de5\u4ef6",
+      "\u68c0\u6d4b\u73af\u548c\u65ad\u94fe",
+      "\u7b7e\u53d1LineageGraph\u6458\u8981"
+    ],
+    "tests": [
+      "\u5019\u9009\u65e5\u5fd7\u5192\u5145\u57fa\u7ebf\u88ab\u62d2\u7edd",
+      "\u4e0d\u540cImage\u8bc1\u636e\u6df7\u7528\u88ab\u62d2\u7edd",
+      "\u56fe\u73af\u88ab\u62d2\u7edd",
+      "\u5916\u90e8\u5de5\u5177\u7248\u672c\u7f3a\u5931\u5931\u8d25",
+      "\u5b8c\u6574\u56fe\u53ef\u904d\u5386\u5230Baseline"
+    ],
+    "evidence": [
+      "evidence-lineage.json",
+      "lineage-validation.json",
+      "lineage.sha256"
+    ],
+    "definition_of_done": [
+      "\u6bcf\u4e2a\u5de5\u4ef6\u6709\u4e3b\u4f53",
+      "\u56fe\u65e0\u73af",
+      "\u65e0\u65ad\u94fe",
+      "\u5de5\u5177\u7248\u672c\u53ef\u8ffd\u8e2a",
+      "\u6458\u8981\u53ef\u9a8c\u8bc1"
+    ],
+    "risk_controls": [
+      "\u9ed8\u8ba4\u62d2\u7edd\u4e0d\u5b8c\u6574\u8f93\u5165",
+      "\u6240\u6709\u8de8\u79df\u6237\u8bbf\u95ee\u5fc5\u987b\u7531\u670d\u52a1\u7aef\u8eab\u4efd\u89e3\u6790",
+      "\u5931\u8d25\u4e0d\u5f97\u901a\u8fc7\u5220\u9664\u6d4b\u8bd5\u3001\u8df3\u8fc7\u95e8\u7981\u6216\u4f2a\u9020\u8bc1\u636e\u4fee\u590d"
+    ]
+  },
+  "canonicalSha256": "sha256:2b120d63b293c8601b912bb3dea96668d913d378d5fe93baad16600af6b7cc71",
+  "compiledVersion": 1
+}

@@ -1,0 +1,64 @@
+{
+  "id": "B107-S09",
+  "batch": 107,
+  "name": "browser-preview-launcher",
+  "dependencies": [
+    "B107-S01"
+  ],
+  "inputs": [
+    "PublicEndpoint",
+    "page journey definition",
+    "browser profile"
+  ],
+  "outputs": [
+    "BrowserSession",
+    "page navigation trace"
+  ],
+  "implementation": {
+    "modules": [
+      "validation/browser/BrowserLauncherService.java",
+      "private-runner/internal/browser/",
+      "images/browser/"
+    ],
+    "interfaces": [
+      "POST /api/runtime-runs/{id}/browser-sessions",
+      "event browser.session.started"
+    ],
+    "data": [
+      "browser_session",
+      "browser_navigation"
+    ]
+  },
+  "workflow": [
+    "创建隔离无持久用户Profile",
+    "注入短期Preview访问令牌",
+    "按Journey打开页面并等待可配置稳定条件",
+    "记录导航、Title、URL和主要frame",
+    "处理登录fixture但禁止真实外部账户",
+    "终态关闭浏览器并清理cookie/storage"
+  ],
+  "tests": [
+    "认证Preview可打开",
+    "重定向循环失败",
+    "跨域弹窗受Policy限制",
+    "浏览器崩溃可诊断",
+    "会话结束后存储清理"
+  ],
+  "evidence": [
+    "browser-session.json",
+    "navigation-trace.json",
+    "storage-cleanup.json"
+  ],
+  "definition_of_done": [
+    "浏览器隔离",
+    "令牌短期",
+    "页面可达",
+    "会话可重放",
+    "本地状态已清理"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

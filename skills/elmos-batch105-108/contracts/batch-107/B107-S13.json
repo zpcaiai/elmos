@@ -1,0 +1,68 @@
+{
+  "id": "B107-S13",
+  "batch": 107,
+  "name": "frontend-runtime-differential-verifier",
+  "dependencies": [
+    "B107-S10",
+    "B107-S11",
+    "B107-S12"
+  ],
+  "inputs": [
+    "baseline browser evidence",
+    "candidate browser evidence",
+    "diff policy"
+  ],
+  "outputs": [
+    "FrontendRuntimeDiff",
+    "semantic/visual deltas"
+  ],
+  "implementation": {
+    "modules": [
+      "validation/frontend/RuntimeDifferentialService.java",
+      "adapters/visual-diff/",
+      "policies/frontend-equivalence.yaml"
+    ],
+    "interfaces": [
+      "POST /api/validations/frontend-diff",
+      "event frontend-diff.completed"
+    ],
+    "data": [
+      "frontend_diff",
+      "semantic_delta",
+      "visual_delta"
+    ]
+  },
+  "workflow": [
+    "对齐相同Journey和数据种子",
+    "比较URL/route和导航结果",
+    "比较可访问性树与表单行为",
+    "比较网络调用集合和响应类别",
+    "执行可选像素/布局差异并过滤允许动态区",
+    "综合为功能等价/可接受变化/破坏变化"
+  ],
+  "tests": [
+    "文本/按钮消失被语义diff发现",
+    "仅反锯齿变化不阻断",
+    "API调用减少导致功能缺失被发现",
+    "允许动态时间区域屏蔽",
+    "基线自身错误单独标记"
+  ],
+  "evidence": [
+    "frontend-runtime-diff.json",
+    "semantic-deltas.json",
+    "visual-diff-images/",
+    "network-deltas.json"
+  ],
+  "definition_of_done": [
+    "Journey对齐",
+    "语义优先于像素",
+    "允许区显式",
+    "破坏变化可定位",
+    "结果进入Live Gate"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

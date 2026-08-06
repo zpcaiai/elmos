@@ -1,0 +1,63 @@
+{
+  "id": "B107-S01",
+  "batch": 107,
+  "name": "runtime-health-probe-runner",
+  "dependencies": [
+    "B106-S16"
+  ],
+  "inputs": [
+    "READY candidate instance",
+    "health probe spec"
+  ],
+  "outputs": [
+    "HealthProbeResult",
+    "readiness evidence"
+  ],
+  "implementation": {
+    "modules": [
+      "validation/runtime/HealthProbeService.java",
+      "private-runner/internal/probes/",
+      "policies/health-probes.yaml"
+    ],
+    "interfaces": [
+      "POST /api/runtime-runs/{id}/probes",
+      "event probe.completed"
+    ],
+    "data": [
+      "health_probe_run",
+      "health_probe_attempt"
+    ]
+  },
+  "workflow": [
+    "解析协议与断言",
+    "从沙箱内外两个视角探测",
+    "应用退避、总超时和最大响应大小",
+    "验证状态码/JSON字段/gRPC serving",
+    "记录DNS/TLS/连接/首字节时间",
+    "聚合为PASS/FAIL/UNKNOWN"
+  ],
+  "tests": [
+    "连接拒绝",
+    "200但JSON unhealthy",
+    "TLS错误",
+    "超大响应截断",
+    "UNKNOWN不算PASS"
+  ],
+  "evidence": [
+    "health-probe-result.json",
+    "probe-attempts.json",
+    "latency-summary.json"
+  ],
+  "definition_of_done": [
+    "内外探针可区分",
+    "超时受控",
+    "断言明确",
+    "结果绑定Run",
+    "失败可定位"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

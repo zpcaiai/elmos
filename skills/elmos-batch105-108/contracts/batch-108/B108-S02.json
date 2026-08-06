@@ -1,0 +1,62 @@
+{
+  "id": "B108-S02",
+  "batch": 108,
+  "name": "baseline-candidate-evidence-linker",
+  "dependencies": [
+    "B108-S01"
+  ],
+  "inputs": [
+    "EvidenceWorkspace",
+    "all artifact metadata"
+  ],
+  "outputs": [
+    "EvidenceLineageGraph",
+    "link validation result"
+  ],
+  "implementation": {
+    "modules": [
+      "evidence/lineage/EvidenceLinker.java",
+      "graph/evidence-lineage/"
+    ],
+    "interfaces": [
+      "POST /api/evidence-workspaces/{id}:link",
+      "event evidence.lineage.completed"
+    ],
+    "data": [
+      "evidence_lineage_node",
+      "evidence_lineage_edge"
+    ]
+  },
+  "workflow": [
+    "读取每个工件的subject和producer",
+    "标准化Repo/Commit/Image/Run标识",
+    "建立producedBy/derivedFrom/validatedBy边",
+    "拒绝主体不一致或缺摘要工件",
+    "检测环和断链",
+    "签发LineageGraph摘要"
+  ],
+  "tests": [
+    "候选日志冒充基线被拒绝",
+    "不同Image证据混用被拒绝",
+    "图环被拒绝",
+    "外部工具版本缺失失败",
+    "完整图可遍历到Baseline"
+  ],
+  "evidence": [
+    "evidence-lineage.json",
+    "lineage-validation.json",
+    "lineage.sha256"
+  ],
+  "definition_of_done": [
+    "每个工件有主体",
+    "图无环",
+    "无断链",
+    "工具版本可追踪",
+    "摘要可验证"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

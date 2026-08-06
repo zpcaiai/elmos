@@ -1,0 +1,70 @@
+{
+  "id": "B105-S03",
+  "batch": 105,
+  "name": "baseline-reproducibility-capture",
+  "dependencies": [
+    "B105-S02"
+  ],
+  "inputs": [
+    "BaselineManifest",
+    "approved runner profile",
+    "secret references"
+  ],
+  "outputs": [
+    "BaselineEvidenceBundle",
+    "reproducibility decision",
+    "known-failure ledger"
+  ],
+  "implementation": {
+    "modules": [
+      "services/workflow/.../BaselineCaptureWorkflow.java",
+      "private-runner/internal/baseline/capture.go",
+      "evidence/baseline/"
+    ],
+    "interfaces": [
+      "POST /api/projects/{id}/baseline:capture",
+      "GET /api/evidence/{bundleId}",
+      "event baseline.capture.completed"
+    ],
+    "data": [
+      "baseline_run",
+      "evidence_artifact",
+      "known_failure"
+    ]
+  },
+  "workflow": [
+    "选择与原项目匹配的Runner镜像",
+    "记录OS/架构/语言/构建器版本",
+    "恢复锁文件和依赖但禁止隐式升级",
+    "执行clean build与测试发现",
+    "采集依赖树、覆盖率、OpenAPI、页面入口和Profile",
+    "对原有失败建立known-failure ledger并签发可复现/不可复现决定"
+  ],
+  "tests": [
+    "绿色基线产生PASS",
+    "原有失败被记录而非误归因到迁移",
+    "依赖解析漂移导致FAIL",
+    "跳过测试数量被捕获",
+    "证据缺一项时保守拒绝"
+  ],
+  "evidence": [
+    "environment.json",
+    "dependency-tree.txt",
+    "test-inventory.json",
+    "coverage-summary.json",
+    "baseline-openapi.yaml",
+    "reproducibility-decision.json"
+  ],
+  "definition_of_done": [
+    "基线命令可重放",
+    "原有失败与迁移失败可区分",
+    "测试发现数已记录",
+    "证据绑定Commit与Runner摘要",
+    "不可复现项目不得进入自动迁移"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

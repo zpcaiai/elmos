@@ -1,0 +1,40 @@
+version: 1
+project:
+  name: ${PROJECT_NAME}
+  language: ${LANGUAGE}
+  framework: ${FRAMEWORK}
+build:
+  image: ${BUILDER_IMAGE_DIGEST}
+  command: [${BUILD_ARGV}]
+runtime:
+  image: ${RUNTIME_IMAGE_DIGEST}
+  command: [${RUN_ARGV}]
+  environment:
+    PORT: "8080"
+service:
+  protocol: http
+  port: 8080
+  health:
+    path: /health
+    expectedStatus: 200
+    timeoutSeconds: 120
+preview:
+  homepage: /
+  apiDocs: /docs
+  openapi: /openapi.json
+  screenshot: true
+lifecycle:
+  ttlSeconds: 600
+  startTtlAfterReady: true
+  idleTimeoutSeconds: 300
+resources:
+  cpu: 2
+  memoryMb: 2048
+  diskMb: 4096
+network:
+  publicIngress: true
+  outboundPolicy: restricted
+security:
+  authenticatedPreview: true
+  readOnlyRootFilesystem: true
+  blockCloudMetadata: true

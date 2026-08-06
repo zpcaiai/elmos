@@ -1,0 +1,67 @@
+{
+  "id": "B107-S07",
+  "batch": 107,
+  "name": "business-api-invariant-oracle",
+  "dependencies": [
+    "B107-S04",
+    "B107-S06"
+  ],
+  "inputs": [
+    "domain model hints",
+    "HTTP scenarios",
+    "state observation adapters"
+  ],
+  "outputs": [
+    "InvariantSuite",
+    "InvariantResults"
+  ],
+  "implementation": {
+    "modules": [
+      "validation/oracles/BusinessInvariantService.java",
+      "contracts/business-invariant.schema.json",
+      "registry/domain-oracles/"
+    ],
+    "interfaces": [
+      "POST /api/validations/invariants",
+      "event invariants.completed"
+    ],
+    "data": [
+      "business_invariant",
+      "invariant_observation",
+      "invariant_result"
+    ]
+  },
+  "workflow": [
+    "从领域实体和测试提取候选不变量",
+    "定义前置、动作、观察和清理",
+    "对两版本运行同一不变量",
+    "比较逻辑结果而非仅JSON文本",
+    "检测幂等、排序、分页和权限边界",
+    "失败生成最小反例和相关请求链"
+  ],
+  "tests": [
+    "重复POST幂等性按契约判断",
+    "删除被引用实体的行为一致",
+    "分页无丢/重复",
+    "越权始终拒绝",
+    "事务失败无部分写入"
+  ],
+  "evidence": [
+    "invariant-suite.json",
+    "invariant-results.json",
+    "counterexamples.json",
+    "state-observations.json"
+  ],
+  "definition_of_done": [
+    "高风险业务至少一个不变量",
+    "观察点独立",
+    "失败有反例",
+    "清理完成",
+    "结果进入语义Gate"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

@@ -777,6 +777,23 @@ kbd { min-width: 22px; display: inline-grid; place-items: center; padding: 3px 6
 .concern-fieldset input:checked + span svg { border-color: var(--cyan); background: var(--cyan); color: white; }
 .concern-fieldset input:focus-visible + span { outline: 3px solid rgba(22,123,123,.28); outline-offset: 2px; }
 .business-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
+.proof-loop-page { display: grid; gap: 18px; }
+.proof-loop-layout { grid-template-columns: minmax(0,1.55fr) minmax(310px,.75fr); }
+.business-form-grid .proof-wide { grid-column: 1 / -1; }
+.business-form-grid textarea { width: 100%; resize: vertical; min-height: 120px; padding: 11px 12px; border: 1px solid var(--line-strong); border-radius: 9px; background: var(--surface); color: var(--ink); font: 11px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace; }
+.business-form-grid textarea:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(22,123,123,.1); outline: 0; }
+.proof-loop-summary dl, .proof-job dl { display: grid; gap: 0; margin: 0; }
+.proof-loop-summary dl > div, .proof-job dl > div { display: grid; grid-template-columns: 96px minmax(0,1fr); gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.proof-loop-summary dt, .proof-subject > span { color: var(--muted); font-size: 10px; font-weight: 750; text-transform: uppercase; letter-spacing: .04em; }
+.proof-loop-summary dd { min-width: 0; margin: 0; overflow-wrap: anywhere; font-size: 11px; }
+.proof-subject { display: grid; gap: 6px; margin: 16px 0; padding: 12px; border-radius: 9px; background: var(--surface-soft); }
+.proof-subject code { overflow-wrap: anywhere; font-size: 10px; }
+.proof-loop-summary details { margin-top: 16px; }
+.proof-loop-summary details ul { display: grid; gap: 5px; padding-left: 20px; }
+.proof-loop-summary details code { overflow-wrap: anywhere; font-size: 10px; }
+.proof-job { display: grid; gap: 12px; margin-top: 18px; }
+.proof-artifacts { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.proof-artifacts li { display: grid; gap: 3px; padding: 10px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface-soft); font-size: 10px; }
 .business-summary { position: sticky; top: 88px; }
 .blocker-list, .hazard-list { display: flex; flex-direction: column; gap: 8px; margin: 17px 0 0; padding: 0; list-style: none; }
 .blocker-list li { display: flex; align-items: flex-start; gap: 8px; padding: 10px; border: 1px solid #ead9c5; border-radius: 9px; background: #fff9f0; color: var(--ink-soft); font-size: 9px; line-height: 1.5; }

@@ -1,0 +1,68 @@
+{
+  "id": "B107-S04",
+  "batch": 107,
+  "name": "dual-version-api-replay",
+  "dependencies": [
+    "B107-S01",
+    "B107-S03"
+  ],
+  "inputs": [
+    "baseline endpoint",
+    "candidate endpoint",
+    "scenario corpus"
+  ],
+  "outputs": [
+    "DualReplayResult",
+    "response deltas",
+    "state deltas"
+  ],
+  "implementation": {
+    "modules": [
+      "validation/http/DualReplayService.java",
+      "private-runner/internal/replay/",
+      "fixtures/http-scenarios/"
+    ],
+    "interfaces": [
+      "POST /api/validations/dual-replay",
+      "event dual-replay.completed"
+    ],
+    "data": [
+      "replay_scenario",
+      "replay_observation",
+      "response_delta"
+    ]
+  },
+  "workflow": [
+    "为两端创建等价隔离数据集",
+    "标准化时间、随机ID等可变字段",
+    "按相同顺序发送请求",
+    "比较状态码、Header、Body Schema和错误语义",
+    "查询或调用观察点比较副作用",
+    "对不可比较项标UNKNOWN并保留证据"
+  ],
+  "tests": [
+    "相同业务但随机ID可通过标准化",
+    "状态码变化被发现",
+    "错误Body字段丢失被发现",
+    "顺序相关场景可复现",
+    "基线失败按known-failure处理"
+  ],
+  "evidence": [
+    "dual-replay-result.json",
+    "response-deltas.json",
+    "state-deltas.json",
+    "scenario-transcript.json"
+  ],
+  "definition_of_done": [
+    "请求输入相同",
+    "可变字段规则显式",
+    "副作用有Oracle",
+    "UNKNOWN不隐藏",
+    "结果可重放"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

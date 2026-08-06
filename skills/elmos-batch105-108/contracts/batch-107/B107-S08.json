@@ -1,0 +1,63 @@
+{
+  "id": "B107-S08",
+  "batch": 107,
+  "name": "routing-and-trailing-slash-compatibility",
+  "dependencies": [
+    "B107-S04"
+  ],
+  "inputs": [
+    "route inventory",
+    "baseline/candidate endpoints"
+  ],
+  "outputs": [
+    "RoutingCompatibilityResult",
+    "route deltas"
+  ],
+  "implementation": {
+    "modules": [
+      "validation/http/RoutingCompatibilityService.java",
+      "fixtures/routing/"
+    ],
+    "interfaces": [
+      "POST /api/validations/routing",
+      "event routing-validation.completed"
+    ],
+    "data": [
+      "route_variant",
+      "routing_observation",
+      "routing_delta"
+    ]
+  },
+  "workflow": [
+    "从OpenAPI和Controller构建路由清单",
+    "生成/path与/path/等变体",
+    "测试context path、proxy prefix和redirect",
+    "比较状态、Location、CORS和Body",
+    "识别刻意安全收紧与意外破坏",
+    "输出修复建议或显式兼容决定"
+  ],
+  "tests": [
+    "尾斜杠200→404被发现",
+    "redirect循环被发现",
+    "CORS header变化被发现",
+    "大小写行为记录",
+    "允许的安全收紧需审批"
+  ],
+  "evidence": [
+    "routing-compatibility.json",
+    "route-variants.json",
+    "routing-deltas.json"
+  ],
+  "definition_of_done": [
+    "全部公共路由被测",
+    "变体明确",
+    "代理上下文可复现",
+    "变化分类",
+    "阻断项进入API Gate"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

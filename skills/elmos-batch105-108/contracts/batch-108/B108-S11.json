@@ -1,0 +1,66 @@
+{
+  "id": "B108-S11",
+  "batch": 108,
+  "name": "executive-modernization-report-generator",
+  "dependencies": [
+    "B108-S08",
+    "B108-S09",
+    "B108-S10"
+  ],
+  "inputs": [
+    "BeforeAfterSummary",
+    "AutomationRatioReport",
+    "RiskRegister",
+    "gate decisions"
+  ],
+  "outputs": [
+    "ExecutiveReport.md/json",
+    "decision recommendation"
+  ],
+  "implementation": {
+    "modules": [
+      "reporting/executive/ExecutiveReportService.java",
+      "templates/executive-modernization-report.md"
+    ],
+    "interfaces": [
+      "POST /api/projects/{id}/reports/executive",
+      "event executive-report.generated"
+    ],
+    "data": [
+      "executive_report",
+      "executive_recommendation"
+    ]
+  },
+  "workflow": [
+    "读取唯一可信指标和Gate",
+    "首屏给出合并/上线建议",
+    "摘要范围、版本、成本和结果",
+    "呈现测试/API/运行/自动化前后对比",
+    "列出剩余风险和下一步",
+    "所有数字附证据引用并防止模型编造"
+  ],
+  "tests": [
+    "证据缺失时报告UNKNOWN",
+    "P0风险不能推荐上线",
+    "自动化率口径脚注",
+    "数字与JSON一致",
+    "报告模板注入防护"
+  ],
+  "evidence": [
+    "executive-report.md",
+    "executive-report.json",
+    "report-evidence-map.json"
+  ],
+  "definition_of_done": [
+    "结论明确",
+    "不超过证据",
+    "关键指标可追溯",
+    "风险醒目",
+    "机器/人类版本一致"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

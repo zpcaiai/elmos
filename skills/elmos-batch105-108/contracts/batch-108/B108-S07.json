@@ -1,0 +1,64 @@
+{
+  "id": "B108-S07",
+  "batch": 108,
+  "name": "preview-expiration-attestation",
+  "dependencies": [
+    "B106-S15",
+    "B108-S06"
+  ],
+  "inputs": [
+    "RuntimePreviewEvidence",
+    "CleanupReceipt",
+    "provider inventory"
+  ],
+  "outputs": [
+    "ExpirationAttestation",
+    "cleanup certification"
+  ],
+  "implementation": {
+    "modules": [
+      "evidence/runtime/ExpirationAttestationService.java",
+      "certification/cleanup/"
+    ],
+    "interfaces": [
+      "POST /api/runtime-runs/{id}/attest-expiration",
+      "event expiration.attested"
+    ],
+    "data": [
+      "expiration_attestation",
+      "cleanup_check"
+    ]
+  },
+  "workflow": [
+    "验证Endpoint revocation receipt",
+    "查询Provider确认实例不存在/终止",
+    "验证临时卷与Secret撤销",
+    "在允许窗口后复查孤儿inventory",
+    "核对最终成本停止增长",
+    "签发PASS/FAIL和缺失项"
+  ],
+  "tests": [
+    "仅应用标DESTROYED但Provider仍运行时FAIL",
+    "路由仍可访问FAIL",
+    "重复Attest幂等",
+    "Provider不可达标UNKNOWN",
+    "成本继续增长FAIL"
+  ],
+  "evidence": [
+    "expiration-attestation.json",
+    "provider-inventory-check.json",
+    "route-recheck.json"
+  ],
+  "definition_of_done": [
+    "路由不可访问",
+    "实例终止",
+    "Secret/卷清理",
+    "无孤儿",
+    "独立签名"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

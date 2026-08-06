@@ -63,6 +63,7 @@
         <module>modules/company-series</module>
         <module>modules/product-roadmap-governance</module>
         <module>modules/migration-pack-certification</module>
+        <module>modules/modernization-proof-loop</module>
         <module>modules/validation</module>
         <module>modules/delivery</module>
         <module>modules/enterprise-governance</module>
@@ -82,6 +83,7 @@
         <module>apps/enterprise-control</module>
         <module>apps/commercial-api</module>
         <module>apps/elmosctl</module>
+        <module>apps/modernization-proof-worker</module>
         <module>modules/architecture-tests</module>
     </modules>
 

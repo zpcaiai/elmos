@@ -1,0 +1,69 @@
+{
+  "id": "B105-S13",
+  "batch": 105,
+  "name": "profile-and-database-matrix-verifier",
+  "dependencies": [
+    "B105-S12"
+  ],
+  "inputs": [
+    "project profile inventory",
+    "approved matrix",
+    "candidate commit"
+  ],
+  "outputs": [
+    "MatrixRunResults",
+    "coverage map",
+    "unverified-scope register"
+  ],
+  "implementation": {
+    "modules": [
+      "quality/matrix/ProfileDatabaseMatrixService.java",
+      "private-runner/internal/matrix/executor.go",
+      "adapters/databases/"
+    ],
+    "interfaces": [
+      "POST /api/projects/{id}/matrix-runs",
+      "GET /api/matrix-runs/{id}",
+      "event matrix.completed"
+    ],
+    "data": [
+      "matrix_definition",
+      "matrix_cell_run",
+      "unverified_scope"
+    ]
+  },
+  "workflow": [
+    "发现Maven/Gradle/Spring/.NET/Python/Go环境变体",
+    "根据风险选择最小覆盖矩阵",
+    "为每个单元配置临时数据库和Secret",
+    "并行执行构建、测试、启动和迁移",
+    "聚合单元结果并区分NOT_RUN/UNSUPPORTED/FAIL",
+    "生成已验证范围和剩余风险"
+  ],
+  "tests": [
+    "默认Profile通过不代表全部通过",
+    "数据库初始化失败精确归单元",
+    "未运行单元显示NOT_RUN",
+    "跨租户数据库凭证隔离",
+    "矩阵取消后清理所有资源"
+  ],
+  "evidence": [
+    "matrix-definition.json",
+    "matrix-results.json",
+    "database-logs/",
+    "unverified-scope.json",
+    "cleanup-receipts.json"
+  ],
+  "definition_of_done": [
+    "每个声明单元有终态",
+    "NOT_RUN不计PASS",
+    "临时资源已清理",
+    "失败可重放",
+    "报告明确验证边界"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

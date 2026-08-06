@@ -1,0 +1,62 @@
+{
+  "id": "B108-S03",
+  "batch": 108,
+  "name": "rewrite-datatable-evidence-collector",
+  "dependencies": [
+    "B105-S06",
+    "B108-S01"
+  ],
+  "inputs": [
+    "RewriteStageResults",
+    "EvidenceWorkspace"
+  ],
+  "outputs": [
+    "RewriteEvidenceBundle"
+  ],
+  "implementation": {
+    "modules": [
+      "evidence/rewrite/RewriteEvidenceCollector.java"
+    ],
+    "interfaces": [
+      "POST /api/evidence/rewrite:collect",
+      "event evidence.rewrite.collected"
+    ],
+    "data": [
+      "rewrite_evidence",
+      "rewrite_recipe_execution"
+    ]
+  },
+  "workflow": [
+    "验证stage commit和Recipe lock",
+    "采集DataTable和日志",
+    "计算文件/行/AST单元变更",
+    "记录警告和未解决项",
+    "关联幂等第二次运行",
+    "写入内容寻址Bundle"
+  ],
+  "tests": [
+    "缺DataTable不伪造成功",
+    "浮动版本标风险",
+    "stage commit不匹配拒绝",
+    "幂等失败显示",
+    "日志Secret脱敏"
+  ],
+  "evidence": [
+    "rewrite-evidence.json",
+    "datatables.zip",
+    "rewrite-metrics.json",
+    "idempotency.json"
+  ],
+  "definition_of_done": [
+    "阶段全覆盖",
+    "版本固定",
+    "差异可复算",
+    "未解决项显式",
+    "Bundle有摘要"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

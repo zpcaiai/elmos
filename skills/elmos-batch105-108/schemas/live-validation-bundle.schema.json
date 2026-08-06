@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Live Validation Bundle",
+  "type": "object",
+  "required": [
+    "runId",
+    "candidateCommit",
+    "imageDigest",
+    "artifacts",
+    "claims"
+  ],
+  "additionalProperties": true
+}

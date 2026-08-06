@@ -2,6 +2,7 @@ package io.elmos.controlplane;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.elmos.persistence.JdbcObjectStorageStore;
+import io.elmos.proofloop.ProofLoopModels;
 import io.elmos.workflow.ExecutionJobPort;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -43,7 +44,8 @@ public class ExecutionJobController {
             @Value("${elmos.execution.images.generation:}") String generationImage,
             @Value("${elmos.execution.images.translation:}") String translationImage,
             @Value("${elmos.execution.images.spring-upgrade:}") String springImage,
-            @Value("${elmos.execution.images.repository-workspace:}") String repositoryImage
+            @Value("${elmos.execution.images.repository-workspace:}") String repositoryImage,
+            @Value("${elmos.execution.images.modernization-proof:}") String modernizationProofImage
     ) {
         this.jobs = jobs;
         this.artifacts = artifacts;
@@ -56,7 +58,9 @@ public class ExecutionJobController {
                 ExecutionJobPort.BusinessLine.SPRING_UPGRADE,
                 new RuntimeProfile("spring:execute", "spring:upgrade", springImage),
                 ExecutionJobPort.BusinessLine.REPOSITORY_WORKSPACE,
-                new RuntimeProfile("repository:write", "repository:workspace", repositoryImage));
+                new RuntimeProfile("repository:write", "repository:workspace", repositoryImage),
+                ExecutionJobPort.BusinessLine.MODERNIZATION_PROOF,
+                new RuntimeProfile("modernization:execute", "modernization:proof-loop", modernizationProofImage));
     }
 
     public record EnqueueRequest(
@@ -82,8 +86,13 @@ public class ExecutionJobController {
         Map<String, Object> payload = request.payload() == null ? Map.of() : request.payload();
         rejectSensitivePayload(payload);
         String idempotencyKey = require(request.idempotencyKey(), 160, "ELMOS_IDEMPOTENCY_KEY_INVALID");
-        String jobKind = require(request.jobKind(), 64, "ELMOS_JOB_KIND_INVALID");
+        String jobKind = line == ExecutionJobPort.BusinessLine.MODERNIZATION_PROOF
+                ? "batch105-108-proof-loop"
+                : require(request.jobKind(), 64, "ELMOS_JOB_KIND_INVALID");
         String jobId = "job-" + UUID.randomUUID();
+        if (line == ExecutionJobPort.BusinessLine.MODERNIZATION_PROOF) {
+            payload = modernizationProofPayload(payload, principal, jobId);
+        }
         String digest = digest(payload);
         String persisted = jobs.enqueue(new ExecutionJobPort.EnqueueCommand(
                 jobId,
@@ -188,6 +197,66 @@ public class ExecutionJobController {
             throw new ExecutionJobPort.ExecutionStateException(
                     "ELMOS_EXECUTION_PAYLOAD_UNSERIALIZABLE");
         }
+    }
+
+    private Map<String, Object> modernizationProofPayload(
+            Map<String, Object> payload,
+            ControlPlanePrincipal principal,
+            String jobId
+    ) {
+        try {
+            String targetSkillId = requiredPayloadString(payload, "targetSkillId", 8,
+                    "ELMOS_PROOF_TARGET_SKILL_INVALID");
+            ProofLoopModels.Subject subject = new ProofLoopModels.Subject(
+                    principal.organizationId(),
+                    requiredPayloadString(payload, "projectId", 160, "ELMOS_PROOF_PROJECT_INVALID"),
+                    requiredPayloadString(payload, "repositoryId", 160, "ELMOS_PROOF_REPOSITORY_INVALID"),
+                    stringOrNull(payload.get("baselineCommit")),
+                    stringOrNull(payload.get("candidateCommit")),
+                    stringOrNull(payload.get("imageDigest")),
+                    requiredPayloadString(payload, "policyDigest", 80, "ELMOS_PROOF_POLICY_DIGEST_INVALID"));
+            Map<String, Object> inputs = map(payload.get("inputs"));
+            Map<String, ProofLoopModels.EvidenceAssertion> evidence = evidence(payload.get("evidence"));
+            ProofLoopModels.ExecutionRequest execution = new ProofLoopModels.ExecutionRequest(
+                    jobId, jobId + ":" + targetSkillId, targetSkillId, principal.actorId(), subject,
+                    java.time.Instant.now(), inputs, evidence);
+            return Map.of(
+                    "schemaVersion", 1,
+                    "targetSkillId", targetSkillId,
+                    "execution", json.convertValue(execution,
+                            new com.fasterxml.jackson.core.type.TypeReference<Map<String, Object>>() {}));
+        } catch (ExecutionJobPort.ExecutionStateException exception) {
+            throw exception;
+        } catch (RuntimeException exception) {
+            throw new ExecutionJobPort.ExecutionStateException("ELMOS_PROOF_REQUEST_INVALID");
+        }
+    }
+
+    private Map<String, ProofLoopModels.EvidenceAssertion> evidence(Object raw) {
+        if (raw == null) return Map.of();
+        return json.convertValue(raw, new com.fasterxml.jackson.core.type.TypeReference<>() {});
+    }
+
+    private static Map<String, Object> map(Object raw) {
+        if (raw == null) return Map.of();
+        if (!(raw instanceof Map<?, ?> values)) {
+            throw new ExecutionJobPort.ExecutionStateException("ELMOS_PROOF_INPUTS_INVALID");
+        }
+        Map<String, Object> result = new java.util.LinkedHashMap<>();
+        values.forEach((key, value) -> result.put(String.valueOf(key), value));
+        return Map.copyOf(result);
+    }
+
+    private static String stringOrNull(Object value) {
+        return value == null || String.valueOf(value).isBlank() ? null : String.valueOf(value);
+    }
+
+    private static String requiredPayloadString(Map<String, Object> payload, String key, int max, String code) {
+        Object value = payload.get(key);
+        if (!(value instanceof String stringValue)) {
+            throw new ExecutionJobPort.ExecutionStateException(code);
+        }
+        return require(stringValue, max, code);
     }
 
     private static void rejectSensitivePayload(Object value) {

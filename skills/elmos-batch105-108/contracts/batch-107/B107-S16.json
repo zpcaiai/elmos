@@ -1,0 +1,65 @@
+{
+  "id": "B107-S16",
+  "batch": 107,
+  "name": "live-service-equivalence-gate",
+  "dependencies": [
+    "B107-S15"
+  ],
+  "inputs": [
+    "LiveValidationBundle",
+    "live service policy"
+  ],
+  "outputs": [
+    "LiveServiceDecision",
+    "capability claims",
+    "blocking findings"
+  ],
+  "implementation": {
+    "modules": [
+      "certification/live/LiveServiceGate.java",
+      "policies/live-service-gate.yaml"
+    ],
+    "interfaces": [
+      "POST /api/runtime-runs/{id}/gates/live-service",
+      "event gate.live-service.decided"
+    ],
+    "data": [
+      "live_service_decision",
+      "capability_claim",
+      "live_blocking_finding"
+    ]
+  },
+  "workflow": [
+    "独立读取Bundle而非信任上游状态字段",
+    "验证健康和启动证据",
+    "验证API兼容及业务不变量",
+    "验证页面、Console、交互和截图",
+    "按服务声明决定是否要求Streaming",
+    "签发细粒度Claims和总结果"
+  ],
+  "tests": [
+    "伪造PASS字段被忽略",
+    "无页面项目不强制PAGE_RENDERED",
+    "有页面声明但未验证则FAIL",
+    "API ERROR阻断",
+    "销毁前证据才有效"
+  ],
+  "evidence": [
+    "live-service-decision.json",
+    "capability-claims.json",
+    "blocking-findings.json",
+    "gate-trace.json"
+  ],
+  "definition_of_done": [
+    "判定独立",
+    "Claims细粒度",
+    "默认保守",
+    "Policy版本固定",
+    "可作为Batch108输入"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

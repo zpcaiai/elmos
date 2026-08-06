@@ -1,0 +1,71 @@
+{
+  "contract": {
+    "id": "B107-S05",
+    "batch": 107,
+    "name": "http-scenario-suite-generator",
+    "dependencies": [
+      "B107-S02"
+    ],
+    "inputs": [
+      "OpenAPI",
+      "source/test index",
+      "optional traffic/collections"
+    ],
+    "outputs": [
+      "HTTPScenarioSuite",
+      "coverage map",
+      "data requirements"
+    ],
+    "implementation": {
+      "modules": [
+        "validation/http/ScenarioGenerator.java",
+        "contracts/http-scenario.schema.json",
+        "apps/web/src/features/scenario-review/"
+      ],
+      "interfaces": [
+        "POST /api/scenario-suites/http:generate",
+        "event scenario-suite.generated"
+      ],
+      "data": [
+        "http_scenario_suite",
+        "http_scenario",
+        "scenario_coverage"
+      ]
+    },
+    "workflow": [
+      "\u679a\u4e3e\u64cd\u4f5c\u548c\u8ba4\u8bc1\u65b9\u6848",
+      "\u63d0\u53d6\u73b0\u6709\u6d4b\u8bd5\u4e0e\u96c6\u5408\u4e2d\u7684\u5408\u6cd5\u6837\u4f8b",
+      "\u751f\u6210CRUD\u3001\u9519\u8bef\u3001\u8fb9\u754c\u548c\u6743\u9650\u573a\u666f",
+      "\u63a8\u5bfc\u573a\u666f\u4f9d\u8d56\u4e0e\u6570\u636e\u79cd\u5b50",
+      "\u53bb\u91cd\u5e76\u6309\u98ce\u9669\u6392\u5e8f",
+      "\u8981\u6c42\u4eba\u5de5\u5ba1\u67e5\u9ad8\u98ce\u9669\u5199\u64cd\u4f5c"
+    ],
+    "tests": [
+      "\u6bcf\u4e2a\u9ad8\u98ce\u9669\u5199endpoint\u81f3\u5c11\u6b63\u53cd\u573a\u666f",
+      "\u65e0\u793a\u4f8bSchema\u751f\u6210\u4fdd\u5b88\u5408\u6210\u503c",
+      "Recorded Traffic\u5148\u8131\u654f",
+      "DELETE\u573a\u666f\u9700\u8981\u9694\u79bb\u6570\u636e",
+      "\u573a\u666f\u4f9d\u8d56DAG\u65e0\u73af"
+    ],
+    "evidence": [
+      "http-scenarios.json",
+      "coverage-map.json",
+      "data-seed-plan.json",
+      "review-decision.json"
+    ],
+    "definition_of_done": [
+      "\u5173\u952eendpoint\u8986\u76d6",
+      "\u8ba4\u8bc1\u573a\u666f\u8986\u76d6",
+      "\u6570\u636e\u53ef\u9694\u79bb",
+      "\u65e0\u654f\u611ftraffic",
+      "\u573a\u666f\u53ef\u88abRunner\u6267\u884c"
+    ],
+    "risk_controls": [
+      "\u9ed8\u8ba4\u62d2\u7edd\u4e0d\u5b8c\u6574\u8f93\u5165",
+      "\u6240\u6709\u8de8\u79df\u6237\u8bbf\u95ee\u5fc5\u987b\u7531\u670d\u52a1\u7aef\u8eab\u4efd\u89e3\u6790",
+      "\u5931\u8d25\u4e0d\u5f97\u901a\u8fc7\u5220\u9664\u6d4b\u8bd5\u3001\u8df3\u8fc7\u95e8\u7981\u6216\u4f2a\u9020\u8bc1\u636e\u4fee\u590d"
+    ]
+  },
+  "canonicalSha256": "sha256:fbd6cfb44c291b31c32a95baefd1bb4db85d067d3457f36f7a54c51dd494956b",
+  "compiledVersion": 1
+}

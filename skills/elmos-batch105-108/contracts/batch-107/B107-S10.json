@@ -1,0 +1,64 @@
+{
+  "id": "B107-S10",
+  "batch": 107,
+  "name": "browser-console-and-network-gate",
+  "dependencies": [
+    "B107-S09"
+  ],
+  "inputs": [
+    "BrowserSession",
+    "console/network policy"
+  ],
+  "outputs": [
+    "BrowserErrorReport",
+    "browser gate decision"
+  ],
+  "implementation": {
+    "modules": [
+      "validation/browser/ConsoleNetworkGate.java",
+      "adapters/playwright/"
+    ],
+    "interfaces": [
+      "POST /api/browser-sessions/{id}:inspect",
+      "event gate.browser-console.decided"
+    ],
+    "data": [
+      "browser_console_event",
+      "browser_network_event",
+      "browser_gate_decision"
+    ]
+  },
+  "workflow": [
+    "订阅console/pageerror/requestfailed/response",
+    "过滤已知第三方噪声但保留原始事件",
+    "分类资源、API、CORS、CSP、TLS和脚本错误",
+    "关联页面步骤和请求",
+    "应用ERROR/WARN允许列表",
+    "生成门禁决定和故障截图触发"
+  ],
+  "tests": [
+    "JS异常阻断",
+    "404关键JS阻断",
+    "favicon 404按Policy警告",
+    "CORS失败定位请求",
+    "过期allowlist无效"
+  ],
+  "evidence": [
+    "browser-errors.json",
+    "network-events.json",
+    "browser-gate.json",
+    "failure-context.json"
+  ],
+  "definition_of_done": [
+    "0阻断Console错误",
+    "0关键资源失败",
+    "allowlist可审计",
+    "事件关联Journey步骤",
+    "证据完整"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

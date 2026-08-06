@@ -1,0 +1,72 @@
+{
+  "contract": {
+    "id": "B106-S12",
+    "batch": 106,
+    "name": "readiness-and-startup-state-machine",
+    "dependencies": [
+      "B106-S10",
+      "B106-S11"
+    ],
+    "inputs": [
+      "runtime run",
+      "health policy",
+      "workflow engine"
+    ],
+    "outputs": [
+      "RunStateTransitions",
+      "ready decision",
+      "failure reason"
+    ],
+    "implementation": {
+      "modules": [
+        "runtime/workflow/PreviewRunWorkflow.java",
+        "runtime/state/RuntimeRunStateMachine.java",
+        "apps/web/src/features/runtime-run/"
+      ],
+      "interfaces": [
+        "GET /api/runtime-runs/{id}",
+        "event runtime-run.state-changed"
+      ],
+      "data": [
+        "runtime_run_state",
+        "runtime_event",
+        "readiness_probe"
+      ]
+    },
+    "workflow": [
+      "\u521b\u5efa\u5e26\u7248\u672c\u53f7\u7684\u72b6\u6001\u8bb0\u5f55",
+      "\u6d41\u8f6cBUILDING/IMAGE_READY/STARTING",
+      "\u6309\u7b56\u7565\u6267\u884creadiness\u63a2\u9488\u4e0e\u9000\u907f",
+      "READY\u540e\u521b\u5efa\u6216\u786e\u8ba4Endpoint",
+      "\u5931\u8d25\u8fdb\u5165BUILD_FAILED/START_FAILED/HEALTH_FAILED/POLICY_BLOCKED",
+      "\u91cd\u653e\u65f6\u4ee5\u4e8b\u4ef6\u548c\u5e42\u7b49receipt\u6062\u590d"
+    ],
+    "tests": [
+      "\u975e\u6cd5\u72b6\u6001\u8df3\u8f6c\u62d2\u7edd",
+      "\u91cd\u590d\u4e8b\u4ef6\u4e0d\u91cd\u590d\u526f\u4f5c\u7528",
+      "\u5de5\u4f5c\u6d41\u91cd\u653e\u4fdd\u6301\u7ec8\u6001",
+      "\u63a2\u9488\u8d85\u65f6\u8fdb\u5165HEALTH_FAILED",
+      "\u53d6\u6d88\u5728\u4efb\u610f\u975e\u7ec8\u6001\u53ef\u8865\u507f"
+    ],
+    "evidence": [
+      "state-history.json",
+      "readiness-probes.json",
+      "workflow-replay-test.json",
+      "failure-reason.json"
+    ],
+    "definition_of_done": [
+      "\u72b6\u6001\u673a\u5c01\u95ed",
+      "\u6240\u6709\u526f\u4f5c\u7528\u5e42\u7b49",
+      "\u5931\u8d25\u539f\u56e0\u7ed3\u6784\u5316",
+      "\u53ef\u53d6\u6d88/\u6062\u590d/\u91cd\u653e",
+      "READY\u5fc5\u987b\u6709\u5065\u5eb7\u8bc1\u636e"
+    ],
+    "risk_controls": [
+      "\u9ed8\u8ba4\u62d2\u7edd\u4e0d\u5b8c\u6574\u8f93\u5165",
+      "\u6240\u6709\u8de8\u79df\u6237\u8bbf\u95ee\u5fc5\u987b\u7531\u670d\u52a1\u7aef\u8eab\u4efd\u89e3\u6790",
+      "\u5931\u8d25\u4e0d\u5f97\u901a\u8fc7\u5220\u9664\u6d4b\u8bd5\u3001\u8df3\u8fc7\u95e8\u7981\u6216\u4f2a\u9020\u8bc1\u636e\u4fee\u590d"
+    ]
+  },
+  "canonicalSha256": "sha256:cd767c474ef5953e1e6b9e7c00310c18c97cde15fc1fb8266ae3de0b2ab36ebc",
+  "compiledVersion": 1
+}

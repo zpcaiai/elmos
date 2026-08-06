@@ -1,0 +1,71 @@
+{
+  "contract": {
+    "id": "B108-S16",
+    "batch": 108,
+    "name": "customer-ready-modernization-certificate",
+    "dependencies": [
+      "B108-S13",
+      "B108-S15"
+    ],
+    "inputs": [
+      "all final gates",
+      "CommercialDemoPackage",
+      "certification policy"
+    ],
+    "outputs": [
+      "ModernizationCertificate",
+      "level claims",
+      "recertification schedule"
+    ],
+    "implementation": {
+      "modules": [
+        "certification/customer/CustomerModernizationCertifier.java",
+        "policies/customer-certification.yaml"
+      ],
+      "interfaces": [
+        "POST /api/projects/{id}/certificates/modernization",
+        "event modernization.certified"
+      ],
+      "data": [
+        "modernization_certificate",
+        "certificate_claim",
+        "certificate_revocation"
+      ]
+    },
+    "workflow": [
+      "\u72ec\u7acb\u8bfb\u53d6\u5168\u90e8Gate\u548c\u8bc1\u636e",
+      "\u6309CODE_MODIFIED/BUILD_VERIFIED/TEST_VERIFIED/API_VERIFIED/RUNTIME_VERIFIED/DEMO_READY/CUSTOMER_REVIEW_READY/PRODUCTION_CANDIDATE\u9010\u7ea7\u5224\u65ad",
+      "\u8981\u6c42\u6bcf\u7ea7\u524d\u7f6eClaim\u6210\u7acb",
+      "\u9a8c\u8bc1\u8bc1\u636e\u65b0\u9c9c\u5ea6\u3001\u7b7e\u540d\u548chead SHA",
+      "\u8bbe\u7f6e\u6709\u6548\u671f\u3001\u64a4\u9500\u6761\u4ef6\u548c\u518d\u8ba4\u8bc1",
+      "\u7b7e\u53d1\u53ef\u9a8c\u8bc1\u8bc1\u4e66\u6216\u5217\u51fa\u7f3a\u5931Claim"
+    ],
+    "tests": [
+      "\u53ea\u6709\u4ee3\u7801Commit\u6700\u591aCODE_MODIFIED",
+      "\u65e0\u9500\u6bc1\u8bc1\u660e\u4e0d\u80fdRUNTIME_VERIFIED\u5b8c\u6210",
+      "\u6d4b\u8bd5\u51cf\u5c11\u4e0d\u80fdTEST_VERIFIED",
+      "\u8bc1\u636e\u8fc7\u671f\u964d\u7ea7/\u64a4\u9500",
+      "\u4f2a\u9020\u4e0a\u7ea7Claim\u62d2\u7edd"
+    ],
+    "evidence": [
+      "modernization-certificate.json",
+      "certificate-signature.json",
+      "claim-evaluation.json",
+      "recertification.json"
+    ],
+    "definition_of_done": [
+      "\u9010\u7ea7\u65e0\u8df3\u8dc3",
+      "\u8bc1\u636e\u72ec\u7acb\u9a8c\u8bc1",
+      "\u6709\u6709\u6548\u671f/\u64a4\u9500",
+      "\u8bc1\u4e66\u53ef\u673a\u5668\u9a8c\u8bc1",
+      "PRODUCTION_CANDIDATE\u4ecd\u660e\u786e\u975e\u81ea\u52a8\u4e0a\u7ebf\u6279\u51c6"
+    ],
+    "risk_controls": [
+      "\u9ed8\u8ba4\u62d2\u7edd\u4e0d\u5b8c\u6574\u8f93\u5165",
+      "\u6240\u6709\u8de8\u79df\u6237\u8bbf\u95ee\u5fc5\u987b\u7531\u670d\u52a1\u7aef\u8eab\u4efd\u89e3\u6790",
+      "\u5931\u8d25\u4e0d\u5f97\u901a\u8fc7\u5220\u9664\u6d4b\u8bd5\u3001\u8df3\u8fc7\u95e8\u7981\u6216\u4f2a\u9020\u8bc1\u636e\u4fee\u590d"
+    ]
+  },
+  "canonicalSha256": "sha256:8f4439a55e4d6802e4aed742bd4ff91f8f5048f110aa69e8e0f3cd72a9e08885",
+  "compiledVersion": 1
+}

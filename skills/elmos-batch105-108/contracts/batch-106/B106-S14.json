@@ -1,0 +1,68 @@
+{
+  "id": "B106-S14",
+  "batch": 106,
+  "name": "runtime-log-and-event-stream",
+  "dependencies": [
+    "B106-S12"
+  ],
+  "inputs": [
+    "runtime events",
+    "stdout/stderr streams",
+    "redaction policy"
+  ],
+  "outputs": [
+    "LiveEventStream",
+    "log artifact",
+    "stream digest"
+  ],
+  "implementation": {
+    "modules": [
+      "runtime/logging/RuntimeLogService.java",
+      "private-runner/internal/logstream/",
+      "apps/web/src/features/runtime-logs/"
+    ],
+    "interfaces": [
+      "GET /api/runtime-runs/{id}/events",
+      "GET /api/runtime-runs/{id}/logs",
+      "event runtime-log.segment.closed"
+    ],
+    "data": [
+      "runtime_log_segment",
+      "runtime_event_cursor",
+      "redaction_finding"
+    ]
+  },
+  "workflow": [
+    "接入BuildKit和沙箱stdout/stderr",
+    "统一时间、来源、序号和Run ID",
+    "实时Secret/PII脱敏",
+    "按段压缩存储并计算哈希链",
+    "支持断线后从cursor续传",
+    "终态关闭流并生成完整性摘要"
+  ],
+  "tests": [
+    "Secret模式被脱敏",
+    "断线重连不丢不重关键事件",
+    "大日志触发截断策略但保留摘要",
+    "跨租户订阅拒绝",
+    "哈希链篡改可检测"
+  ],
+  "evidence": [
+    "runtime.log.zst",
+    "log-index.json",
+    "redaction-report.json",
+    "stream-digest.json"
+  ],
+  "definition_of_done": [
+    "实时可读",
+    "可续传",
+    "脱敏有效",
+    "完整性可验证",
+    "终态日志可归档"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

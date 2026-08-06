@@ -1,0 +1,70 @@
+{
+  "contract": {
+    "id": "B106-S13",
+    "batch": 106,
+    "name": "ready-triggered-ttl-controller",
+    "dependencies": [
+      "B106-S12"
+    ],
+    "inputs": [
+      "READY runtime run",
+      "tenant TTL policy",
+      "extension request"
+    ],
+    "outputs": [
+      "TTLLease",
+      "expiration events",
+      "extension decision"
+    ],
+    "implementation": {
+      "modules": [
+        "runtime/lifecycle/TtlLeaseService.java",
+        "runtime/workflow/PreviewTtlWorkflow.java",
+        "apps/web/src/features/runtime-timer/"
+      ],
+      "interfaces": [
+        "POST /api/runtime-runs/{id}:extend",
+        "event runtime-run.expiring"
+      ],
+      "data": [
+        "ttl_lease",
+        "ttl_extension",
+        "expiration_notice"
+      ]
+    },
+    "workflow": [
+      "\u5728READY\u4e8b\u52a1\u5185\u8bb0\u5f55ready_at\u548cexpires_at",
+      "\u8c03\u5ea6\u53ef\u91cd\u653edurable timer",
+      "\u57285\u5206\u949f/1\u5206\u949f\u7b49\u9608\u503c\u53d1\u5e03\u8b66\u544a",
+      "\u6309\u79df\u6237\u7b56\u7565\u5ba1\u6279\u5ef6\u671f\u5e76\u66f4\u65b0\u7248\u672c",
+      "\u5230\u671f\u89e6\u53d1\u5148\u64a4\u8def\u7531\u540e\u9500\u6bc1",
+      "\u8bb0\u5f55\u65f6\u949f\u6e90\u548c\u6240\u6709\u5ef6\u671f\u5386\u53f2"
+    ],
+    "tests": [
+      "\u6784\u5efa\u65f6\u95f4\u4e0d\u6d88\u8017\u9884\u89c8TTL",
+      "\u91cd\u590d\u5ef6\u671f\u8bf7\u6c42\u5e42\u7b49",
+      "\u8d85\u6700\u5927TTL\u62d2\u7edd",
+      "\u5de5\u4f5c\u6d41\u91cd\u542f\u540eTimer\u6062\u590d",
+      "\u65f6\u949f\u504f\u5dee\u6d4b\u8bd5\u4fdd\u5b88\u5230\u671f"
+    ],
+    "evidence": [
+      "ttl-lease.json",
+      "extension-decisions.json",
+      "expiration-events.json"
+    ],
+    "definition_of_done": [
+      "TTL\u4eceREADY\u8ba1\u7b97",
+      "\u6700\u5927\u503c\u53d7Policy\u9650\u5236",
+      "\u5ef6\u671f\u53ef\u5ba1\u8ba1",
+      "Timer\u53ef\u6062\u590d",
+      "\u5230\u671f\u89e6\u53d1\u6e05\u7406"
+    ],
+    "risk_controls": [
+      "\u9ed8\u8ba4\u62d2\u7edd\u4e0d\u5b8c\u6574\u8f93\u5165",
+      "\u6240\u6709\u8de8\u79df\u6237\u8bbf\u95ee\u5fc5\u987b\u7531\u670d\u52a1\u7aef\u8eab\u4efd\u89e3\u6790",
+      "\u5931\u8d25\u4e0d\u5f97\u901a\u8fc7\u5220\u9664\u6d4b\u8bd5\u3001\u8df3\u8fc7\u95e8\u7981\u6216\u4f2a\u9020\u8bc1\u636e\u4fee\u590d"
+    ]
+  },
+  "canonicalSha256": "sha256:cdcde963c53ef78e09fb3a0c7a86cd77a655a50914f1d573f0b63744ac957725",
+  "compiledVersion": 1
+}

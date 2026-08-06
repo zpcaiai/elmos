@@ -33,6 +33,7 @@ elmos:
       translation: ${ELMOS_RUNNER_IMAGE_TRANSLATION:}
       spring-upgrade: ${ELMOS_RUNNER_IMAGE_SPRING_UPGRADE:}
       repository-workspace: ${ELMOS_RUNNER_IMAGE_REPOSITORY_WORKSPACE:}
+      modernization-proof: ${ELMOS_RUNNER_IMAGE_MODERNIZATION_PROOF:}
     reaper-interval-ms: ${ELMOS_EXECUTION_REAPER_INTERVAL_MS:15000}
   object-storage:
     credential-reference: ${ELMOS_OBJECT_STORAGE_CREDENTIAL_REFERENCE:}

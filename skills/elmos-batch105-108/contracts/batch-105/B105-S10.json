@@ -1,0 +1,69 @@
+{
+  "id": "B105-S10",
+  "batch": 105,
+  "name": "codex-minimal-semantic-repair",
+  "dependencies": [
+    "B105-S06",
+    "B105-S09"
+  ],
+  "inputs": [
+    "approved diagnostic plan",
+    "writable candidate branch",
+    "repair budget"
+  ],
+  "outputs": [
+    "SemanticRepairCommits",
+    "updated failure ledger",
+    "test additions"
+  ],
+  "implementation": {
+    "modules": [
+      "services/agent-gateway/.../SemanticRepairService.java",
+      "private-runner/internal/agent/patch_workspace.go",
+      "prompts/codex-repair/"
+    ],
+    "interfaces": [
+      "POST /api/agent-runs/repair",
+      "event agent.repair.completed"
+    ],
+    "data": [
+      "semantic_repair",
+      "repair_commit",
+      "repair_validation"
+    ]
+  },
+  "workflow": [
+    "按根因簇一次处理一个修复单元",
+    "限制可改目录和最大patch",
+    "先补或锁定失败回归测试",
+    "修改Security/ORM/Mapper/DTO/Query等语义代码",
+    "运行局部测试再运行阶段Gate",
+    "创建带provenance的独立Commit并更新失败ledger"
+  ],
+  "tests": [
+    "禁止删除测试和降低覆盖率",
+    "超出目录范围修改被拒绝",
+    "修复一个根因不得掩盖其他失败",
+    "局部测试绿但全量失败不签发完成",
+    "无新增测试的行为修复需要显式豁免"
+  ],
+  "evidence": [
+    "repair-plan.json",
+    "agent.patch",
+    "repair-commit.json",
+    "test-results.json",
+    "updated-failure-ledger.json"
+  ],
+  "definition_of_done": [
+    "最小差异",
+    "每项修复对应根因",
+    "回归测试存在或有审批豁免",
+    "全量Gate通过",
+    "Commit可独立回滚"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

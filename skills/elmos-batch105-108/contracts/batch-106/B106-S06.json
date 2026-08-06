@@ -1,0 +1,65 @@
+{
+  "id": "B106-S06",
+  "batch": 106,
+  "name": "dotnet-preview-runtime-adapter",
+  "dependencies": [
+    "B106-S03"
+  ],
+  "inputs": [
+    "validated RuntimeManifest",
+    ".NET repository snapshot"
+  ],
+  "outputs": [
+    "DotnetBuildSpec",
+    "DotnetRunSpec",
+    "publish artifact manifest"
+  ],
+  "implementation": {
+    "modules": [
+      "runtime/adapters/dotnet/DotnetPreviewAdapter.java",
+      "private-runner/internal/runtime/dotnet.go",
+      "images/dotnet/"
+    ],
+    "interfaces": [
+      "adapter runtime.dotnet.compile",
+      "event runtime.adapter.dotnet.ready"
+    ],
+    "data": [
+      "dotnet_runtime_spec",
+      "dotnet_publish_artifact"
+    ]
+  },
+  "workflow": [
+    "解析global.json、sln和csproj",
+    "选择目标SDK/runtime固定镜像",
+    "执行restore与publish而非dev run",
+    "定位唯一入口DLL",
+    "设置ASPNETCORE_URLS和环境",
+    "发现HealthChecks、Swagger和Razor入口"
+  ],
+  "tests": [
+    "多个web csproj要求选择",
+    "SDK不匹配失败",
+    "publish目录完整",
+    "localhost绑定被覆盖",
+    "Blazor WebSocket能力声明"
+  ],
+  "evidence": [
+    "dotnet-build-spec.json",
+    "dotnet-run-spec.json",
+    "publish-manifest.json",
+    "adapter-test-results.json"
+  ],
+  "definition_of_done": [
+    "restore/publish可重放",
+    "入口DLL明确",
+    "URL绑定正确",
+    "Swagger/health提示准确",
+    ".NET fixture通过"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

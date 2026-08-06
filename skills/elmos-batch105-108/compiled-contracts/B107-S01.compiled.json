@@ -1,0 +1,67 @@
+{
+  "contract": {
+    "id": "B107-S01",
+    "batch": 107,
+    "name": "runtime-health-probe-runner",
+    "dependencies": [
+      "B106-S16"
+    ],
+    "inputs": [
+      "READY candidate instance",
+      "health probe spec"
+    ],
+    "outputs": [
+      "HealthProbeResult",
+      "readiness evidence"
+    ],
+    "implementation": {
+      "modules": [
+        "validation/runtime/HealthProbeService.java",
+        "private-runner/internal/probes/",
+        "policies/health-probes.yaml"
+      ],
+      "interfaces": [
+        "POST /api/runtime-runs/{id}/probes",
+        "event probe.completed"
+      ],
+      "data": [
+        "health_probe_run",
+        "health_probe_attempt"
+      ]
+    },
+    "workflow": [
+      "\u89e3\u6790\u534f\u8bae\u4e0e\u65ad\u8a00",
+      "\u4ece\u6c99\u7bb1\u5185\u5916\u4e24\u4e2a\u89c6\u89d2\u63a2\u6d4b",
+      "\u5e94\u7528\u9000\u907f\u3001\u603b\u8d85\u65f6\u548c\u6700\u5927\u54cd\u5e94\u5927\u5c0f",
+      "\u9a8c\u8bc1\u72b6\u6001\u7801/JSON\u5b57\u6bb5/gRPC serving",
+      "\u8bb0\u5f55DNS/TLS/\u8fde\u63a5/\u9996\u5b57\u8282\u65f6\u95f4",
+      "\u805a\u5408\u4e3aPASS/FAIL/UNKNOWN"
+    ],
+    "tests": [
+      "\u8fde\u63a5\u62d2\u7edd",
+      "200\u4f46JSON unhealthy",
+      "TLS\u9519\u8bef",
+      "\u8d85\u5927\u54cd\u5e94\u622a\u65ad",
+      "UNKNOWN\u4e0d\u7b97PASS"
+    ],
+    "evidence": [
+      "health-probe-result.json",
+      "probe-attempts.json",
+      "latency-summary.json"
+    ],
+    "definition_of_done": [
+      "\u5185\u5916\u63a2\u9488\u53ef\u533a\u5206",
+      "\u8d85\u65f6\u53d7\u63a7",
+      "\u65ad\u8a00\u660e\u786e",
+      "\u7ed3\u679c\u7ed1\u5b9aRun",
+      "\u5931\u8d25\u53ef\u5b9a\u4f4d"
+    ],
+    "risk_controls": [
+      "\u9ed8\u8ba4\u62d2\u7edd\u4e0d\u5b8c\u6574\u8f93\u5165",
+      "\u6240\u6709\u8de8\u79df\u6237\u8bbf\u95ee\u5fc5\u987b\u7531\u670d\u52a1\u7aef\u8eab\u4efd\u89e3\u6790",
+      "\u5931\u8d25\u4e0d\u5f97\u901a\u8fc7\u5220\u9664\u6d4b\u8bd5\u3001\u8df3\u8fc7\u95e8\u7981\u6216\u4f2a\u9020\u8bc1\u636e\u4fee\u590d"
+    ]
+  },
+  "canonicalSha256": "sha256:2e375c58a894cec6d58fa07c3ae95bbe540cb4a602a6b95beaabe2cbff52b68c",
+  "compiledVersion": 1
+}

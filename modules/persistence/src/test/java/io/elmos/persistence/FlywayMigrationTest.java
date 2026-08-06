@@ -62,6 +62,27 @@ class FlywayMigrationTest {
         var dataSource = new org.springframework.jdbc.datasource.DriverManagerDataSource(
                 POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword());
         var jdbc=org.springframework.jdbc.core.simple.JdbcClient.create(dataSource);
+        assertEquals(1, jdbc.sql("""
+                SELECT count(*) FROM flyway_schema_history
+                 WHERE version = '63' AND success
+                """).query(Integer.class).single(),
+                "V63 must be recorded as successfully executed by Flyway");
+        String executionBusinessLineConstraint = jdbc.sql("""
+                SELECT pg_get_constraintdef(c.oid)
+                  FROM pg_constraint c
+                  JOIN pg_class t ON t.oid = c.conrelid
+                  JOIN pg_namespace n ON n.oid = t.relnamespace
+                 WHERE n.nspname = 'public'
+                   AND t.relname = 'execution_jobs'
+                   AND c.conname = 'execution_jobs_business_line'
+                """).query(String.class).single();
+        assertTrue(executionBusinessLineConstraint.contains("MODERNIZATION_PROOF"),
+                "V63 must admit the modernization proof business line");
+        assertTrue(executionBusinessLineConstraint.contains("GENERATION")
+                        && executionBusinessLineConstraint.contains("TRANSLATION")
+                        && executionBusinessLineConstraint.contains("SPRING_UPGRADE")
+                        && executionBusinessLineConstraint.contains("REPOSITORY_WORKSPACE"),
+                "V63 must preserve every business line admitted before V63");
         assertTrue(jdbc.sql("select count(*) from information_schema.tables where table_schema='public'").query(Integer.class).single() >= 1240);
         assertEquals(1, jdbc.sql("select count(*) from information_schema.tables where table_schema='public' and table_name='github_app_onboarding_states'").query(Integer.class).single());
         assertEquals(1, jdbc.sql("select count(*) from pg_policies where schemaname='public' and tablename='github_app_onboarding_states' and policyname='github_app_onboarding_tenant_isolation'").query(Integer.class).single());
@@ -128,6 +149,67 @@ class FlywayMigrationTest {
                 .param("account", ownerAccount)
                 .param("organization", organization)
                 .query(String.class).single());
+
+        String proofImage = "registry.example.test/elmos/modernization-proof-worker@sha256:"
+                + "9".repeat(64);
+        assertEquals(1, jdbc.sql("""
+                INSERT INTO execution_jobs (
+                    job_id, organization_id, actor_id, business_line, job_kind,
+                    idempotency_key, request_digest, request_payload,
+                    required_capability, runner_image)
+                VALUES (
+                    'job-v63-modernization-proof', :organization, :actor,
+                    'MODERNIZATION_PROOF', 'batch105-108-proof-loop',
+                    'idem-v63-modernization-proof', :digest, '{}'::jsonb,
+                    'modernization:proof-loop', :image)
+                RETURNING 1
+                """)
+                .param("organization", organization)
+                .param("actor", ownerActor)
+                .param("digest", "8".repeat(64))
+                .param("image", proofImage)
+                .query(Integer.class).single(),
+                "the real V63 constraint must accept a digest-pinned modernization proof job");
+        assertEquals("MODERNIZATION_PROOF", jdbc.sql("""
+                SELECT business_line FROM execution_jobs
+                 WHERE job_id = 'job-v63-modernization-proof'
+                """).query(String.class).single());
+        assertEquals(proofImage, jdbc.sql("""
+                SELECT runner_image FROM execution_jobs
+                 WHERE job_id = 'job-v63-modernization-proof'
+                """).query(String.class).single());
+        assertThrows(RuntimeException.class, () -> jdbc.sql("""
+                INSERT INTO execution_jobs (
+                    job_id, organization_id, actor_id, business_line, job_kind,
+                    idempotency_key, request_digest, request_payload,
+                    required_capability, runner_image)
+                VALUES (
+                    'job-v63-unknown-line', :organization, :actor,
+                    'UNKNOWN_PROOF_LINE', 'must-fail', 'idem-v63-unknown-line',
+                    :digest, '{}'::jsonb, 'modernization:proof-loop', :image)
+                """)
+                .param("organization", organization)
+                .param("actor", ownerActor)
+                .param("digest", "7".repeat(64))
+                .param("image", proofImage)
+                .update(),
+                "V63 must continue to fail closed for unknown business lines");
+        assertThrows(RuntimeException.class, () -> jdbc.sql("""
+                INSERT INTO execution_jobs (
+                    job_id, organization_id, actor_id, business_line, job_kind,
+                    idempotency_key, request_digest, request_payload,
+                    required_capability, runner_image)
+                VALUES (
+                    'job-v63-mutable-image', :organization, :actor,
+                    'MODERNIZATION_PROOF', 'must-fail', 'idem-v63-mutable-image',
+                    :digest, '{}'::jsonb, 'modernization:proof-loop',
+                    'registry.example.test/elmos/modernization-proof-worker:latest')
+                """)
+                .param("organization", organization)
+                .param("actor", ownerActor)
+                .param("digest", "6".repeat(64))
+                .update(),
+                "a V63 modernization proof job must not weaken the immutable-image constraint");
 
         String firstRefresh = "a".repeat(64);
         String secondRefresh = "b".repeat(64);

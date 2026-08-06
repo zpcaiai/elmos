@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-batch105-108-proof-loop-console",
+  "capabilities": [
+    {
+      "id": "tenant-scoped-proof-bff",
+      "domain": "identity-api",
+      "status": "experimental",
+      "owner": "elmos-control-plane-security",
+      "evidence_refs": ["apps/web-console/app/lib/server/modernizationProofClient.ts"],
+      "reason": "Permission binding and bearer forwarding are implemented; production OIDC is NOT_RUN."
+    },
+    {
+      "id": "idempotent-proof-submission",
+      "domain": "mutation",
+      "status": "experimental",
+      "owner": "elmos-web-console",
+      "evidence_refs": ["apps/web-console/app/api/modernization-proof/jobs/route.ts"],
+      "reason": "Create is not automatically retried and the server key binds tenant, actor and canonical request; browser replay remains NOT_RUN."
+    },
+    {
+      "id": "abortable-no-store-status-polling",
+      "domain": "api-cache",
+      "status": "experimental",
+      "owner": "elmos-web-console",
+      "evidence_refs": ["apps/web-console/app/proof-loop/ModernizationProofStudio.tsx"],
+      "reason": "Polling cancellation and tenant-private no-store responses are implemented; cross-browser holdout remains NOT_RUN."
+    }
+  ]
+}

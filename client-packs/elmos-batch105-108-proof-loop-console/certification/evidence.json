@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "status": "NOT_RUN",
+  "local_build": {
+    "status": "PASSED_LOCAL_ENGINEERING",
+    "command": "npm run build",
+    "framework": "next-16.3.0",
+    "observed_at": "2026-08-05T23:55:00+08:00"
+  },
+  "local_browser_replay": {
+    "status": "PASSED_LOCAL_ENGINEERING",
+    "command": "npx playwright test e2e/modernization-proof.spec.ts --config=playwright.proof-loop.config.ts",
+    "profiles": ["desktop-google-chrome", "pixel-7-emulation-google-chrome"],
+    "result": "2 passed",
+    "api_environment": "deterministic-route-replay",
+    "observed_at": "2026-08-06T00:03:00+08:00"
+  },
+  "production_browser": "NOT_RUN",
+  "accessibility_review": "NOT_RUN",
+  "holdout": "NOT_RUN",
+  "representative_journeys": "NOT_RUN",
+  "certified": false
+}

@@ -1,0 +1,72 @@
+{
+  "contract": {
+    "id": "B108-S10",
+    "batch": 108,
+    "name": "migration-risk-register-generator",
+    "dependencies": [
+      "B105-S14",
+      "B107-S16",
+      "B108-S02"
+    ],
+    "inputs": [
+      "all gate decisions",
+      "unverified scope",
+      "known failures"
+    ],
+    "outputs": [
+      "MigrationRiskRegister",
+      "risk heatmap",
+      "mitigation plan"
+    ],
+    "implementation": {
+      "modules": [
+        "reporting/risk/MigrationRiskService.java",
+        "apps/web/src/features/risk-register/"
+      ],
+      "interfaces": [
+        "GET /api/projects/{id}/risk-register",
+        "event risk-register.generated"
+      ],
+      "data": [
+        "migration_risk",
+        "risk_mitigation",
+        "risk_acceptance"
+      ]
+    },
+    "workflow": [
+      "\u4ece\u963b\u65ad/\u8b66\u544a/UNKNOWN\u63d0\u53d6\u98ce\u9669",
+      "\u6309\u5f71\u54cd\u3001\u53ef\u80fd\u6027\u3001\u53ef\u68c0\u6d4b\u6027\u8bc4\u5206",
+      "\u533a\u5206\u5df2\u9a8c\u8bc1\u4e0e\u672a\u9a8c\u8bc1\u8303\u56f4",
+      "\u6307\u5b9aOwner\u3001\u7f13\u89e3\u3001\u622a\u6b62\u548c\u8bc1\u636e",
+      "\u98ce\u9669\u63a5\u53d7\u9700\u5ba1\u6279\u4e14\u6709\u671f\u9650",
+      "\u751f\u6210\u70ed\u56fe\u548c\u4e0a\u7ebf\u524d\u6e05\u5355"
+    ],
+    "tests": [
+      "\u672a\u9a8c\u8bc1\u6570\u636e\u5e93\u5f62\u6210\u98ce\u9669",
+      "API WARN\u4e0d\u80fd\u6d88\u5931",
+      "\u5df2\u7f13\u89e3\u98ce\u9669\u9700\u8bc1\u636e",
+      "\u8fc7\u671f\u63a5\u53d7\u91cd\u65b0\u6253\u5f00",
+      "P0\u98ce\u9669\u963b\u6b62\u751f\u4ea7\u5efa\u8bae"
+    ],
+    "evidence": [
+      "risk-register.json",
+      "risk-register.md",
+      "risk-heatmap.json",
+      "mitigation-plan.json"
+    ],
+    "definition_of_done": [
+      "\u98ce\u9669\u65e0\u9759\u9ed8\u4e22\u5931",
+      "Owner/\u671f\u9650\u5b8c\u6574",
+      "\u63a5\u53d7\u53ef\u5ba1\u8ba1",
+      "P0/P1\u89c4\u5219\u660e\u786e",
+      "\u94fe\u63a5\u539f\u59cbGate"
+    ],
+    "risk_controls": [
+      "\u9ed8\u8ba4\u62d2\u7edd\u4e0d\u5b8c\u6574\u8f93\u5165",
+      "\u6240\u6709\u8de8\u79df\u6237\u8bbf\u95ee\u5fc5\u987b\u7531\u670d\u52a1\u7aef\u8eab\u4efd\u89e3\u6790",
+      "\u5931\u8d25\u4e0d\u5f97\u901a\u8fc7\u5220\u9664\u6d4b\u8bd5\u3001\u8df3\u8fc7\u95e8\u7981\u6216\u4f2a\u9020\u8bc1\u636e\u4fee\u590d"
+    ]
+  },
+  "canonicalSha256": "sha256:34d4ec7f4e8028fb370b448cfdbe8d0186a7a6c74a8d8ab0e67c4c2c46e31323",
+  "compiledVersion": 1
+}

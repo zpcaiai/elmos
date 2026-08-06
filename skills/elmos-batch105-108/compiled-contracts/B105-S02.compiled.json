@@ -1,0 +1,71 @@
+{
+  "contract": {
+    "id": "B105-S02",
+    "batch": 105,
+    "name": "immutable-baseline-commit-freezer",
+    "dependencies": [
+      "B105-S01"
+    ],
+    "inputs": [
+      "selected candidate",
+      "repository credentials ref",
+      "ref/branch/tag"
+    ],
+    "outputs": [
+      "BaselineManifest",
+      "immutable tag",
+      "snapshot digest"
+    ],
+    "implementation": {
+      "modules": [
+        "services/control-plane/.../baseline/BaselineFreezeService.java",
+        "private-runner/internal/git/freeze.go",
+        "contracts/baseline-manifest.schema.json"
+      ],
+      "interfaces": [
+        "POST /api/projects/{id}/baseline:freeze",
+        "event baseline.frozen"
+      ],
+      "data": [
+        "baseline_manifest",
+        "repository_snapshot",
+        "git_lease"
+      ]
+    },
+    "workflow": [
+      "\u89e3\u6790\u7528\u6237ref\u5230\u5b8c\u6574SHA",
+      "\u521b\u5efa\u53ea\u8bfbclone lease\u5e76\u6821\u9a8c\u5bf9\u8c61\u5b58\u5728",
+      "\u8bb0\u5f55submodule/LFS/large-file\u72b6\u6001",
+      "\u751f\u6210\u6587\u4ef6\u6e05\u5355\u3001Git tree\u548c\u5185\u5bb9\u6458\u8981",
+      "\u53ef\u9009\u521b\u5efa\u53d7\u63a7\u547d\u540dTag\u4f46\u4e0d\u5f97\u4fee\u6539\u4e0a\u6e38",
+      "\u5c06BaselineManifest\u7b7e\u540d\u540e\u6301\u4e45\u5316"
+    ],
+    "tests": [
+      "\u540c\u4e00ref\u91cd\u590d\u51bb\u7ed3\u5f97\u5230\u76f8\u540cSHA\u548c\u6458\u8981",
+      "branch\u79fb\u52a8\u540e\u65e7Manifest\u4e0d\u53d8\u5316",
+      "\u4e0d\u5b58\u5728SHA\u5931\u8d25\u4e14\u4e0d\u521b\u5efa\u534a\u6210\u54c1",
+      "submodule\u7f3a\u5931\u88ab\u660e\u786e\u6807\u4e3aBLOCKED",
+      "\u5e76\u53d1\u51bb\u7ed3\u5e42\u7b49"
+    ],
+    "evidence": [
+      "baseline-manifest.json",
+      "git-tree.sha256",
+      "freeze-receipt.json",
+      "audit-event.json"
+    ],
+    "definition_of_done": [
+      "\u540e\u7eed\u6d41\u7a0b\u53ea\u63a5\u53d7Manifest ID",
+      "Manifest\u5305\u542b\u5b8c\u6574SHA",
+      "\u5185\u5bb9\u6458\u8981\u53ef\u590d\u7b97",
+      "\u51ed\u8bc1\u4e0d\u8fdb\u5165\u8bc1\u636e",
+      "\u5e42\u7b49\u952e\u8986\u76d6\u91cd\u590d\u8bf7\u6c42"
+    ],
+    "risk_controls": [
+      "\u9ed8\u8ba4\u62d2\u7edd\u4e0d\u5b8c\u6574\u8f93\u5165",
+      "\u6240\u6709\u8de8\u79df\u6237\u8bbf\u95ee\u5fc5\u987b\u7531\u670d\u52a1\u7aef\u8eab\u4efd\u89e3\u6790",
+      "\u5931\u8d25\u4e0d\u5f97\u901a\u8fc7\u5220\u9664\u6d4b\u8bd5\u3001\u8df3\u8fc7\u95e8\u7981\u6216\u4f2a\u9020\u8bc1\u636e\u4fee\u590d"
+    ]
+  },
+  "canonicalSha256": "sha256:e633a1f211e0c5e6204a4e495bf4864567dc523959ec650f52a429fb2b1c4101",
+  "compiledVersion": 1
+}

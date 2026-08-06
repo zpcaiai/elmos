@@ -1,0 +1,69 @@
+{
+  "id": "B107-S15",
+  "batch": 107,
+  "name": "runtime-service-validation-evidence-assembler",
+  "dependencies": [
+    "B107-S03",
+    "B107-S07",
+    "B107-S08",
+    "B107-S13",
+    "B107-S14"
+  ],
+  "inputs": [
+    "all Batch107 evidence",
+    "run/source/image lineage"
+  ],
+  "outputs": [
+    "LiveValidationBundle",
+    "evidence index",
+    "freshness status"
+  ],
+  "implementation": {
+    "modules": [
+      "evidence/live/LiveValidationAssembler.java",
+      "schemas/live-validation-bundle.schema.json"
+    ],
+    "interfaces": [
+      "POST /api/runtime-runs/{id}/evidence:assemble",
+      "event live-evidence.assembled"
+    ],
+    "data": [
+      "live_validation_bundle",
+      "evidence_link",
+      "evidence_freshness"
+    ]
+  },
+  "workflow": [
+    "校验所有证据绑定同一Run/Commit/Image",
+    "验证哈希、签名和时间窗口",
+    "建立证据索引与依赖关系",
+    "对缺失/失败/UNKNOWN生成阻断项",
+    "压缩大工件并保留内容寻址",
+    "签名Bundle并写入不可变存储"
+  ],
+  "tests": [
+    "混入其他Run证据被拒绝",
+    "截图篡改被拒绝",
+    "过期证据标STALE",
+    "缺OpenAPI时不伪造兼容PASS",
+    "大日志索引可读取"
+  ],
+  "evidence": [
+    "live-validation-bundle.json",
+    "evidence-index.json",
+    "integrity-report.json",
+    "bundle-signature.json"
+  ],
+  "definition_of_done": [
+    "血缘一致",
+    "完整性通过",
+    "缺失显式",
+    "内容寻址",
+    "可供独立Gate验证"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

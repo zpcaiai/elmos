@@ -1,0 +1,69 @@
+{
+  "contract": {
+    "id": "B107-S16",
+    "batch": 107,
+    "name": "live-service-equivalence-gate",
+    "dependencies": [
+      "B107-S15"
+    ],
+    "inputs": [
+      "LiveValidationBundle",
+      "live service policy"
+    ],
+    "outputs": [
+      "LiveServiceDecision",
+      "capability claims",
+      "blocking findings"
+    ],
+    "implementation": {
+      "modules": [
+        "certification/live/LiveServiceGate.java",
+        "policies/live-service-gate.yaml"
+      ],
+      "interfaces": [
+        "POST /api/runtime-runs/{id}/gates/live-service",
+        "event gate.live-service.decided"
+      ],
+      "data": [
+        "live_service_decision",
+        "capability_claim",
+        "live_blocking_finding"
+      ]
+    },
+    "workflow": [
+      "\u72ec\u7acb\u8bfb\u53d6Bundle\u800c\u975e\u4fe1\u4efb\u4e0a\u6e38\u72b6\u6001\u5b57\u6bb5",
+      "\u9a8c\u8bc1\u5065\u5eb7\u548c\u542f\u52a8\u8bc1\u636e",
+      "\u9a8c\u8bc1API\u517c\u5bb9\u53ca\u4e1a\u52a1\u4e0d\u53d8\u91cf",
+      "\u9a8c\u8bc1\u9875\u9762\u3001Console\u3001\u4ea4\u4e92\u548c\u622a\u56fe",
+      "\u6309\u670d\u52a1\u58f0\u660e\u51b3\u5b9a\u662f\u5426\u8981\u6c42Streaming",
+      "\u7b7e\u53d1\u7ec6\u7c92\u5ea6Claims\u548c\u603b\u7ed3\u679c"
+    ],
+    "tests": [
+      "\u4f2a\u9020PASS\u5b57\u6bb5\u88ab\u5ffd\u7565",
+      "\u65e0\u9875\u9762\u9879\u76ee\u4e0d\u5f3a\u5236PAGE_RENDERED",
+      "\u6709\u9875\u9762\u58f0\u660e\u4f46\u672a\u9a8c\u8bc1\u5219FAIL",
+      "API ERROR\u963b\u65ad",
+      "\u9500\u6bc1\u524d\u8bc1\u636e\u624d\u6709\u6548"
+    ],
+    "evidence": [
+      "live-service-decision.json",
+      "capability-claims.json",
+      "blocking-findings.json",
+      "gate-trace.json"
+    ],
+    "definition_of_done": [
+      "\u5224\u5b9a\u72ec\u7acb",
+      "Claims\u7ec6\u7c92\u5ea6",
+      "\u9ed8\u8ba4\u4fdd\u5b88",
+      "Policy\u7248\u672c\u56fa\u5b9a",
+      "\u53ef\u4f5c\u4e3aBatch108\u8f93\u5165"
+    ],
+    "risk_controls": [
+      "\u9ed8\u8ba4\u62d2\u7edd\u4e0d\u5b8c\u6574\u8f93\u5165",
+      "\u6240\u6709\u8de8\u79df\u6237\u8bbf\u95ee\u5fc5\u987b\u7531\u670d\u52a1\u7aef\u8eab\u4efd\u89e3\u6790",
+      "\u5931\u8d25\u4e0d\u5f97\u901a\u8fc7\u5220\u9664\u6d4b\u8bd5\u3001\u8df3\u8fc7\u95e8\u7981\u6216\u4f2a\u9020\u8bc1\u636e\u4fee\u590d"
+    ]
+  },
+  "canonicalSha256": "sha256:34d8196b3407fe63b635da6a92a80840cf76ecea4f5fd003779cb5578b0b794f",
+  "compiledVersion": 1
+}

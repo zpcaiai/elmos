@@ -1,0 +1,65 @@
+{
+  "id": "B107-S02",
+  "batch": 107,
+  "name": "openapi-runtime-discovery",
+  "dependencies": [
+    "B107-S01"
+  ],
+  "inputs": [
+    "healthy PublicEndpoint",
+    "candidate paths",
+    "auth policy"
+  ],
+  "outputs": [
+    "RuntimeOpenAPI",
+    "discovery trace",
+    "spec digest"
+  ],
+  "implementation": {
+    "modules": [
+      "validation/openapi/OpenApiDiscoveryService.java",
+      "adapters/openapi/normalizer/"
+    ],
+    "interfaces": [
+      "POST /api/runtime-runs/{id}/openapi:discover",
+      "event openapi.discovered"
+    ],
+    "data": [
+      "runtime_openapi",
+      "openapi_discovery_attempt"
+    ]
+  },
+  "workflow": [
+    "尝试声明路径和常见OpenAPI路径",
+    "使用临时认证请求",
+    "限制响应大小和重定向",
+    "解析JSON/YAML并执行规范校验",
+    "规范化server URL和无关生成顺序",
+    "保存原始与规范化摘要"
+  ],
+  "tests": [
+    "HTML错误页不得误认OpenAPI",
+    "无认证返回401给出明确阻断",
+    "坏规范失败",
+    "重定向循环受限",
+    "静态与运行规范不同时保留两者"
+  ],
+  "evidence": [
+    "openapi-raw.json",
+    "openapi-normalized.json",
+    "discovery-trace.json",
+    "spec.sha256"
+  ],
+  "definition_of_done": [
+    "来自真实Run",
+    "规范有效",
+    "认证不泄露",
+    "原始与规范化都保存",
+    "摘要可复算"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

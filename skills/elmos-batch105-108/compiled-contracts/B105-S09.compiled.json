@@ -1,0 +1,71 @@
+{
+  "contract": {
+    "id": "B105-S09",
+    "batch": 105,
+    "name": "codex-diagnostic-only-pass",
+    "dependencies": [
+      "B105-S08"
+    ],
+    "inputs": [
+      "MigrationFailures",
+      "read-only repository snapshot",
+      "AGENTS.md"
+    ],
+    "outputs": [
+      "MIGRATION_FAILURES.md",
+      "diagnostic plan",
+      "tool budget report"
+    ],
+    "implementation": {
+      "modules": [
+        "services/agent-gateway/.../DiagnosticRunService.java",
+        "private-runner/internal/agent/readonly_workspace.go",
+        "prompts/codex-diagnostic/"
+      ],
+      "interfaces": [
+        "POST /api/agent-runs/diagnose",
+        "event agent.diagnostic.completed"
+      ],
+      "data": [
+        "agent_run",
+        "diagnostic_finding",
+        "tool_budget"
+      ]
+    },
+    "workflow": [
+      "\u521b\u5efa\u53ea\u8bfb\u6216discardable workspace",
+      "\u6ce8\u5165\u5931\u8d25\u5206\u7c7b\u3001\u4ed3\u5e93\u89c4\u5219\u548c\u9884\u7b97",
+      "\u4ec5\u5141\u8bb8read/search/build-diagnostic\u5de5\u5177",
+      "\u8981\u6c42\u6309\u6839\u56e0\u800c\u975e\u9519\u8bef\u6570\u91cf\u5206\u7ec4",
+      "\u751f\u6210\u4fee\u590d\u987a\u5e8f\u3001\u76ee\u6807\u6587\u4ef6\u548c\u9a8c\u8bc1\u547d\u4ee4",
+      "\u6821\u9a8c\u5de5\u4f5c\u6811\u65e0\u4fee\u6539\u540e\u7b7e\u53d1\u8bca\u65ad\u7ed3\u679c"
+    ],
+    "tests": [
+      "\u5c1d\u8bd5\u5199\u6587\u4ef6\u65f6Policy\u62d2\u7edd",
+      "\u8bca\u65ad\u540egit diff\u5fc5\u987b\u4e3a\u7a7a",
+      "\u9884\u7b97\u8017\u5c3d\u8fd4\u56dePARTIAL",
+      "\u6ca1\u6709\u8bc1\u636e\u7684\u65ad\u8a00\u88ab\u6807\u4e3a\u5047\u8bbe",
+      "\u8f93\u51fa\u8986\u76d6\u6240\u6709P0/P1\u5931\u8d25"
+    ],
+    "evidence": [
+      "agent-diagnostic.json",
+      "MIGRATION_FAILURES.md",
+      "tool-transcript.digest",
+      "workspace-diff.txt"
+    ],
+    "definition_of_done": [
+      "\u5de5\u4f5c\u6811\u96f6\u4fee\u6539",
+      "\u6bcf\u4e2a\u7ed3\u8bba\u6709\u8bc1\u636e",
+      "\u5305\u542b\u6700\u5c0f\u4fee\u590d\u987a\u5e8f",
+      "\u9884\u7b97\u548c\u6a21\u578b\u7248\u672c\u8bb0\u5f55",
+      "\u7ed3\u679c\u53ef\u4f5c\u4e3a\u4e0b\u4e00Skill\u8f93\u5165"
+    ],
+    "risk_controls": [
+      "\u9ed8\u8ba4\u62d2\u7edd\u4e0d\u5b8c\u6574\u8f93\u5165",
+      "\u6240\u6709\u8de8\u79df\u6237\u8bbf\u95ee\u5fc5\u987b\u7531\u670d\u52a1\u7aef\u8eab\u4efd\u89e3\u6790",
+      "\u5931\u8d25\u4e0d\u5f97\u901a\u8fc7\u5220\u9664\u6d4b\u8bd5\u3001\u8df3\u8fc7\u95e8\u7981\u6216\u4f2a\u9020\u8bc1\u636e\u4fee\u590d"
+    ]
+  },
+  "canonicalSha256": "sha256:34346c304fdce626ad82a11d08b9864fbdc3612c906dfb808860ba3b832d8578",
+  "compiledVersion": 1
+}

@@ -1,0 +1,67 @@
+{
+  "id": "B108-S16",
+  "batch": 108,
+  "name": "customer-ready-modernization-certificate",
+  "dependencies": [
+    "B108-S13",
+    "B108-S15"
+  ],
+  "inputs": [
+    "all final gates",
+    "CommercialDemoPackage",
+    "certification policy"
+  ],
+  "outputs": [
+    "ModernizationCertificate",
+    "level claims",
+    "recertification schedule"
+  ],
+  "implementation": {
+    "modules": [
+      "certification/customer/CustomerModernizationCertifier.java",
+      "policies/customer-certification.yaml"
+    ],
+    "interfaces": [
+      "POST /api/projects/{id}/certificates/modernization",
+      "event modernization.certified"
+    ],
+    "data": [
+      "modernization_certificate",
+      "certificate_claim",
+      "certificate_revocation"
+    ]
+  },
+  "workflow": [
+    "独立读取全部Gate和证据",
+    "按CODE_MODIFIED/BUILD_VERIFIED/TEST_VERIFIED/API_VERIFIED/RUNTIME_VERIFIED/DEMO_READY/CUSTOMER_REVIEW_READY/PRODUCTION_CANDIDATE逐级判断",
+    "要求每级前置Claim成立",
+    "验证证据新鲜度、签名和head SHA",
+    "设置有效期、撤销条件和再认证",
+    "签发可验证证书或列出缺失Claim"
+  ],
+  "tests": [
+    "只有代码Commit最多CODE_MODIFIED",
+    "无销毁证明不能RUNTIME_VERIFIED完成",
+    "测试减少不能TEST_VERIFIED",
+    "证据过期降级/撤销",
+    "伪造上级Claim拒绝"
+  ],
+  "evidence": [
+    "modernization-certificate.json",
+    "certificate-signature.json",
+    "claim-evaluation.json",
+    "recertification.json"
+  ],
+  "definition_of_done": [
+    "逐级无跳跃",
+    "证据独立验证",
+    "有有效期/撤销",
+    "证书可机器验证",
+    "PRODUCTION_CANDIDATE仍明确非自动上线批准"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

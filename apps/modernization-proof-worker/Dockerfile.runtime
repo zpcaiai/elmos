@@ -1,0 +1,30 @@
+# The executable JAR is built and tested on the host by
+# scripts/operations/build_modernization_proof_image.py before this Dockerfile
+# is evaluated. The base image is immutable and the JRE package version is
+# exact; neither a floating base tag nor an unbounded apk upgrade is allowed.
+FROM alpine:3.22@sha256:14358309a308569c32bdc37e2e0e9694be33a9d99e68afb0f5ff33cc1f695dce
+COPY runtime-apks/ /tmp/runtime-apks/
+RUN apk add --no-network \
+        /tmp/runtime-apks/java-common-1.0-r0.apk \
+        /tmp/runtime-apks/libffi-3.4.8-r0.apk \
+        /tmp/runtime-apks/libtasn1-4.21.0-r0.apk \
+        /tmp/runtime-apks/p11-kit-0.26.2-r0.apk \
+        /tmp/runtime-apks/p11-kit-trust-0.26.2-r0.apk \
+        /tmp/runtime-apks/ca-certificates-20260611-r0.apk \
+        /tmp/runtime-apks/java-cacerts-1.1-r0.apk \
+        /tmp/runtime-apks/openjdk21-jre-headless-21.0.11_p10-r0.apk \
+    && rm -rf /tmp/runtime-apks \
+    && addgroup -S -g 65532 elmos \
+    && adduser -S -D -H -h /nonexistent -s /sbin/nologin -u 65532 -G elmos elmos \
+    && mkdir -p /opt/elmos \
+    && chown -R 65532:65532 /opt/elmos
+LABEL org.opencontainers.image.title="ELMOS Modernization Proof Worker" \
+      org.opencontainers.image.description="Fail-closed Batch 105-108 proof-loop worker" \
+      org.opencontainers.image.source="https://github.com/zpcaiai/elmos" \
+      io.elmos.runner.capability="modernization:proof-loop"
+COPY --chown=65532:65532 modernization-proof-worker-0.1.0-SNAPSHOT-exec.jar \
+    /opt/elmos/modernization-proof-worker.jar
+WORKDIR /opt/elmos
+USER 65532:65532
+ENV JAVA_TOOL_OPTIONS="-XX:MaxRAMPercentage=75 -XX:+ExitOnOutOfMemoryError"
+ENTRYPOINT ["java", "-jar", "/opt/elmos/modernization-proof-worker.jar"]

@@ -1,0 +1,67 @@
+{
+  "id": "B105-S09",
+  "batch": 105,
+  "name": "codex-diagnostic-only-pass",
+  "dependencies": [
+    "B105-S08"
+  ],
+  "inputs": [
+    "MigrationFailures",
+    "read-only repository snapshot",
+    "AGENTS.md"
+  ],
+  "outputs": [
+    "MIGRATION_FAILURES.md",
+    "diagnostic plan",
+    "tool budget report"
+  ],
+  "implementation": {
+    "modules": [
+      "services/agent-gateway/.../DiagnosticRunService.java",
+      "private-runner/internal/agent/readonly_workspace.go",
+      "prompts/codex-diagnostic/"
+    ],
+    "interfaces": [
+      "POST /api/agent-runs/diagnose",
+      "event agent.diagnostic.completed"
+    ],
+    "data": [
+      "agent_run",
+      "diagnostic_finding",
+      "tool_budget"
+    ]
+  },
+  "workflow": [
+    "创建只读或discardable workspace",
+    "注入失败分类、仓库规则和预算",
+    "仅允许read/search/build-diagnostic工具",
+    "要求按根因而非错误数量分组",
+    "生成修复顺序、目标文件和验证命令",
+    "校验工作树无修改后签发诊断结果"
+  ],
+  "tests": [
+    "尝试写文件时Policy拒绝",
+    "诊断后git diff必须为空",
+    "预算耗尽返回PARTIAL",
+    "没有证据的断言被标为假设",
+    "输出覆盖所有P0/P1失败"
+  ],
+  "evidence": [
+    "agent-diagnostic.json",
+    "MIGRATION_FAILURES.md",
+    "tool-transcript.digest",
+    "workspace-diff.txt"
+  ],
+  "definition_of_done": [
+    "工作树零修改",
+    "每个结论有证据",
+    "包含最小修复顺序",
+    "预算和模型版本记录",
+    "结果可作为下一Skill输入"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "contract": {
+    "id": "B108-S07",
+    "batch": 108,
+    "name": "preview-expiration-attestation",
+    "dependencies": [
+      "B106-S15",
+      "B108-S06"
+    ],
+    "inputs": [
+      "RuntimePreviewEvidence",
+      "CleanupReceipt",
+      "provider inventory"
+    ],
+    "outputs": [
+      "ExpirationAttestation",
+      "cleanup certification"
+    ],
+    "implementation": {
+      "modules": [
+        "evidence/runtime/ExpirationAttestationService.java",
+        "certification/cleanup/"
+      ],
+      "interfaces": [
+        "POST /api/runtime-runs/{id}/attest-expiration",
+        "event expiration.attested"
+      ],
+      "data": [
+        "expiration_attestation",
+        "cleanup_check"
+      ]
+    },
+    "workflow": [
+      "\u9a8c\u8bc1Endpoint revocation receipt",
+      "\u67e5\u8be2Provider\u786e\u8ba4\u5b9e\u4f8b\u4e0d\u5b58\u5728/\u7ec8\u6b62",
+      "\u9a8c\u8bc1\u4e34\u65f6\u5377\u4e0eSecret\u64a4\u9500",
+      "\u5728\u5141\u8bb8\u7a97\u53e3\u540e\u590d\u67e5\u5b64\u513finventory",
+      "\u6838\u5bf9\u6700\u7ec8\u6210\u672c\u505c\u6b62\u589e\u957f",
+      "\u7b7e\u53d1PASS/FAIL\u548c\u7f3a\u5931\u9879"
+    ],
+    "tests": [
+      "\u4ec5\u5e94\u7528\u6807DESTROYED\u4f46Provider\u4ecd\u8fd0\u884c\u65f6FAIL",
+      "\u8def\u7531\u4ecd\u53ef\u8bbf\u95eeFAIL",
+      "\u91cd\u590dAttest\u5e42\u7b49",
+      "Provider\u4e0d\u53ef\u8fbe\u6807UNKNOWN",
+      "\u6210\u672c\u7ee7\u7eed\u589e\u957fFAIL"
+    ],
+    "evidence": [
+      "expiration-attestation.json",
+      "provider-inventory-check.json",
+      "route-recheck.json"
+    ],
+    "definition_of_done": [
+      "\u8def\u7531\u4e0d\u53ef\u8bbf\u95ee",
+      "\u5b9e\u4f8b\u7ec8\u6b62",
+      "Secret/\u5377\u6e05\u7406",
+      "\u65e0\u5b64\u513f",
+      "\u72ec\u7acb\u7b7e\u540d"
+    ],
+    "risk_controls": [
+      "\u9ed8\u8ba4\u62d2\u7edd\u4e0d\u5b8c\u6574\u8f93\u5165",
+      "\u6240\u6709\u8de8\u79df\u6237\u8bbf\u95ee\u5fc5\u987b\u7531\u670d\u52a1\u7aef\u8eab\u4efd\u89e3\u6790",
+      "\u5931\u8d25\u4e0d\u5f97\u901a\u8fc7\u5220\u9664\u6d4b\u8bd5\u3001\u8df3\u8fc7\u95e8\u7981\u6216\u4f2a\u9020\u8bc1\u636e\u4fee\u590d"
+    ]
+  },
+  "canonicalSha256": "sha256:5bd3ffa0b564f508953405b54be8300c92cb61bdf8ae03833d5d1e0bdc173b8d",
+  "compiledVersion": 1
+}

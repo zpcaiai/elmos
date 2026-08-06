@@ -1,0 +1,66 @@
+{
+  "contract": {
+    "id": "B108-S01",
+    "batch": 108,
+    "name": "migration-evidence-directory-scaffolder",
+    "dependencies": [
+      "B107-S16"
+    ],
+    "inputs": [
+      "project/run IDs",
+      "evidence policy"
+    ],
+    "outputs": [
+      "EvidenceWorkspace",
+      "artifact index template"
+    ],
+    "implementation": {
+      "modules": [
+        "evidence/scaffold/EvidenceWorkspaceService.java",
+        "templates/evidence-layout/"
+      ],
+      "interfaces": [
+        "POST /api/projects/{id}/evidence-workspaces",
+        "event evidence.workspace.created"
+      ],
+      "data": [
+        "evidence_workspace",
+        "evidence_slot"
+      ]
+    },
+    "workflow": [
+      "\u521b\u5efa\u5185\u5bb9\u5bfb\u5740\u5de5\u4f5c\u533a",
+      "\u751f\u6210\u6807\u51c6\u76ee\u5f55\u548cslot\u5b9a\u4e49",
+      "\u7ed1\u5b9a\u79df\u6237/\u9879\u76ee/Baseline/Candidate",
+      "\u8bbe\u7f6e\u5199\u5165\u8005\u6743\u9650\u548c\u4fdd\u7559\u7b56\u7565",
+      "\u521d\u59cb\u5316\u7d22\u5f15\u4e0e\u54c8\u5e0c\u94fe",
+      "\u63d0\u4f9b\u672c\u5730/\u5bf9\u8c61\u5b58\u50a8\u6620\u5c04"
+    ],
+    "tests": [
+      "\u8de8\u79df\u6237\u8def\u5f84\u62d2\u7edd",
+      "\u91cd\u590d\u521b\u5efa\u5e42\u7b49",
+      "\u975e\u6cd5\u6587\u4ef6\u540d\u89c4\u8303\u5316",
+      "\u672a\u58f0\u660eslot\u5199\u5165\u62d2\u7edd",
+      "\u4fdd\u7559\u7b56\u7565\u751f\u6548"
+    ],
+    "evidence": [
+      "evidence-workspace.json",
+      "artifact-index.json",
+      "retention-policy.json"
+    ],
+    "definition_of_done": [
+      "\u6807\u51c6\u5e03\u5c40\u5b8c\u6574",
+      "\u8eab\u4efd\u7ed1\u5b9a",
+      "\u5199\u6743\u9650\u6700\u5c0f\u5316",
+      "\u7d22\u5f15\u53ef\u66f4\u65b0",
+      "\u4e0d\u542b\u7edd\u5bf9\u5ba2\u6237\u8def\u5f84"
+    ],
+    "risk_controls": [
+      "\u9ed8\u8ba4\u62d2\u7edd\u4e0d\u5b8c\u6574\u8f93\u5165",
+      "\u6240\u6709\u8de8\u79df\u6237\u8bbf\u95ee\u5fc5\u987b\u7531\u670d\u52a1\u7aef\u8eab\u4efd\u89e3\u6790",
+      "\u5931\u8d25\u4e0d\u5f97\u901a\u8fc7\u5220\u9664\u6d4b\u8bd5\u3001\u8df3\u8fc7\u95e8\u7981\u6216\u4f2a\u9020\u8bc1\u636e\u4fee\u590d"
+    ]
+  },
+  "canonicalSha256": "sha256:7f141e1e3dedd03a46dba6fb6d1a1351eb45ff32353434496bcead21edd1e7d0",
+  "compiledVersion": 1
+}
