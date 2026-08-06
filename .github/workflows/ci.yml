@@ -342,6 +342,10 @@ jobs:
         run: pnpm --dir apps/web-console test:qr-code
       - name: Type-check and build
         run: pnpm --dir apps/web-console check
+      - name: Verify Batch 32 account usage pack
+        run: |
+          python scripts/batch32/validate_account_usage_corpora.py
+          python scripts/batch32/run_client_gate.py client-packs/elmos-web-console-account-usage
       - name: Install Chromium for browser journeys
         run: pnpm --dir apps/web-console exec playwright install --with-deps chromium
       - name: Verify desktop and mobile browser journeys

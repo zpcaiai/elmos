@@ -1,12 +1,12 @@
 import { expect, test } from "@playwright/test";
 
-test("Spring 与 12 条语言路线只提升为受限支持并保留未认证边界", async ({
+test("Spring 与 30 条语言路线只提升为受限支持并保留未认证边界", async ({
   page,
 }) => {
   const translation = await page.request.get("/api/capabilities/translation");
   expect(translation.status()).toBe(200);
   const translationBody = await translation.json();
-  expect(translationBody.routes).toHaveLength(12);
+  expect(translationBody.routes).toHaveLength(30);
   expect(
     translationBody.routes.every(
       (route: { status: string }) => route.status === "LIMITED",

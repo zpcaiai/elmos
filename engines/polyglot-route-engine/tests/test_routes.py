@@ -131,6 +131,14 @@ def test_repository_inventory_is_content_addressed_and_decomposes_work_units(tmp
     (repository / "src" / "helper.py").write_text(
         "def helper(value: int) -> int:\n    return value\n", encoding="utf-8"
     )
+    (repository / "src" / "pricing.go").write_text(
+        "package pricing\nfunc Calculate(value int64) int64 { return value }\n",
+        encoding="utf-8",
+    )
+    (repository / "src" / "pricing.rs").write_text(
+        "fn calculate(value: i64) -> i64 { return value }\n",
+        encoding="utf-8",
+    )
     (repository / "node_modules").mkdir()
     (repository / "node_modules" / "ignored.ts").write_text("export const ignored = true;\n", encoding="utf-8")
 
@@ -138,10 +146,12 @@ def test_repository_inventory_is_content_addressed_and_decomposes_work_units(tmp
 
     assert plan["status"] == "PLANNED"
     assert plan["route_id"] == "java-to-python"
-    assert plan["file_count"] == 2
+    assert plan["file_count"] == 4
     assert plan["source_file_count"] == 1
     assert plan["language_counts"]["java"] == 1
     assert plan["language_counts"]["python"] == 1
+    assert plan["language_counts"]["go"] == 1
+    assert plan["language_counts"]["rust"] == 1
     assert plan["work_units"][0]["source_path"] == "src/Price.java"
     assert plan["work_units"][0]["execution_status"] == "NOT_RUN"
     assert plan["certification_status"] == "NOT_CERTIFIED"

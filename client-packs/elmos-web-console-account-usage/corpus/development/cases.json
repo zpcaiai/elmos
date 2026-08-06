@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "corpus": "development",
+  "may_author_rules": true,
+  "contains_customer_data": false,
+  "cases": [
+    {"id":"DEV-CURRENT-001","journey":"current-usage","fixture":"synthetic-current-with-reservation","expected":"current"},
+    {"id":"DEV-STALE-001","journey":"stale-snapshot-recovery","fixture":"synthetic-retryable-transport-error","expected":"stale"},
+    {"id":"DEV-AUTH-001","journey":"authorization-denial","fixture":"missing-session","expected":"denied"}
+  ]
+}

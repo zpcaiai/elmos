@@ -1,4 +1,4 @@
-import { appendFile, mkdir, rename, writeFile } from "node:fs/promises";
+import { appendFile, mkdir, rename, rmdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { expect, test } from "@playwright/test";
 
@@ -36,10 +36,26 @@ function event(
 
 test.describe.serial("实时账户用量", () => {
   let ledgerPath = "";
+  let suiteLockPath = "";
+  let suiteLockAcquired = false;
 
   test.beforeAll(async () => {
     const runnerRoot = process.env.ELMOS_E2E_EFFECTIVE_RUNNER_ROOT;
     if (!runnerRoot) throw new Error("ELMOS_E2E_EFFECTIVE_RUNNER_ROOT_REQUIRED");
+    suiteLockPath = path.join(runnerRoot, "usage-meter-serial.lock");
+    const deadline = Date.now() + 55_000;
+    while (!suiteLockAcquired) {
+      try {
+        await mkdir(suiteLockPath);
+        suiteLockAcquired = true;
+      } catch (error) {
+        if (!(error instanceof Error) || !("code" in error) || error.code !== "EEXIST") {
+          throw error;
+        }
+        if (Date.now() >= deadline) throw new Error("USAGE_METER_SUITE_LOCK_TIMEOUT");
+        await new Promise((resolve) => setTimeout(resolve, 50));
+      }
+    }
     const usageRoot = path.join(runnerRoot, "tenants", tenantId, "usage");
     ledgerPath = path.join(usageRoot, "ledger.jsonl");
     await mkdir(usageRoot, { recursive: true });
@@ -52,6 +68,10 @@ test.describe.serial("实时账户用量", () => {
       ].map((value) => JSON.stringify(value)).join("\n") + "\n",
       "utf8",
     );
+  });
+
+  test.afterAll(async () => {
+    if (suiteLockAcquired) await rmdir(suiteLockPath);
   });
 
   test("用量 API 要求精确身份并只聚合已对账事件", async ({ request }) => {
@@ -184,5 +204,35 @@ test.describe.serial("实时账户用量", () => {
     await expect(
       page.getByRole("progressbar", { name: "模型 Token消耗进度" }),
     ).toHaveAttribute("aria-valuetext", /6,000,000.*30\.00%/, { timeout: 12_000 });
+  });
+
+  test("独立边界用例验证硬停止并拒绝非法账本数量", async ({ request }) => {
+    await writeFile(
+      ledgerPath,
+      [
+        event("holdout-token-limit", "model-token-v1", 20_000_000),
+        event("holdout-credit-limit", "platform-credit-v1", 600),
+      ].map((value) => JSON.stringify(value)).join("\n") + "\n",
+      "utf8",
+    );
+
+    const hardStop = await request.get("/api/usage/current", { headers });
+    expect(hardStop.ok()).toBe(true);
+    await expect(hardStop.json()).resolves.toMatchObject({
+      tokens: { consumed: 20_000_000, remaining: 0, usageBps: 10_000, hardStop: true },
+      credits: { consumed: 600, remaining: 0, usageBps: 10_000, hardStop: true },
+    });
+
+    await appendFile(
+      ledgerPath,
+      `${JSON.stringify(event("holdout-negative-quantity", "model-token-v1", -1))}\n`,
+      "utf8",
+    );
+    const invalid = await request.get("/api/usage/current", { headers });
+    expect(invalid.status()).toBe(503);
+    await expect(invalid.json()).resolves.toMatchObject({
+      code: "USAGE_LEDGER_QUANTITY_INVALID",
+      retryable: false,
+    });
   });
 });

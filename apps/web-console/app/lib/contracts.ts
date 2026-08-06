@@ -384,7 +384,13 @@ export type SpringRouteDescriptor = {
   notes?: string;
 };
 
-export type TranslationLanguageId = "java" | "csharp" | "python" | "typescript";
+export type TranslationLanguageId =
+  | "java"
+  | "csharp"
+  | "go"
+  | "rust"
+  | "python"
+  | "typescript";
 
 export type TranslationLanguage = {
   id: TranslationLanguageId;

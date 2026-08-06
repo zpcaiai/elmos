@@ -1,4 +1,5 @@
 import json
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -99,6 +100,40 @@ def complete_pack(pack: Path) -> None:
 
 
 class ToolkitTests(unittest.TestCase):
+    def test_account_usage_corpora_are_independent_and_fail_closed(self):
+        pack = ROOT / 'client-packs' / 'elmos-web-console-account-usage'
+        subprocess.run([
+            sys.executable, str(SCRIPTS / 'validate_account_usage_corpora.py'),
+            str(pack),
+        ], check=True)
+
+        with tempfile.TemporaryDirectory() as directory:
+            copied = Path(directory) / pack.name
+            shutil.copytree(pack, copied)
+            holdout_path = copied / 'corpus' / 'holdout' / 'cases.json'
+            holdout = json.loads(holdout_path.read_text())
+            holdout['cases'][0]['id'] = 'DEV-CURRENT-001'
+            holdout_path.write_text(json.dumps(holdout, indent=2) + '\n')
+            rejected = subprocess.run([
+                sys.executable, str(SCRIPTS / 'validate_account_usage_corpora.py'),
+                str(copied),
+            ])
+            self.assertEqual(rejected.returncode, 1)
+
+        with tempfile.TemporaryDirectory() as directory:
+            copied = Path(directory) / pack.name
+            shutil.copytree(pack, copied)
+            certification_path = copied / 'certification' / 'certification.json'
+            certification = json.loads(certification_path.read_text())
+            certification['production_operation_authorized'] = True
+            certification['production_certification'] = 'CERTIFIED'
+            certification_path.write_text(json.dumps(certification, indent=2) + '\n')
+            rejected = subprocess.run([
+                sys.executable, str(SCRIPTS / 'validate_account_usage_corpora.py'),
+                str(copied),
+            ])
+            self.assertEqual(rejected.returncode, 1)
+
     def test_skill_bundle(self):
         subprocess.run([
             sys.executable, str(SCRIPTS / 'validate_skill_bundle.py'),

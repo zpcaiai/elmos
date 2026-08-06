@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-web-console-account-usage",
+  "runs": [
+    {
+      "kind": "source-file-digest",
+      "status": "PASSED",
+      "digest": "cb280a7fd05dccb8df1eef95d07944c0412c2c36e64b7087f499f88bb9cb5ffb",
+      "command": "shasum -a 256 apps/web-console/app/pricing/UsageDashboard.tsx apps/web-console/app/lib/server/commercialBillingProxy.ts apps/web-console/e2e/pricing-ui.spec.ts apps/web-console/e2e/usage-meter-ui.spec.ts | shasum -a 256"
+    }
+  ],
+  "coverage": 1.0,
+  "evidence_refs": []
+}
