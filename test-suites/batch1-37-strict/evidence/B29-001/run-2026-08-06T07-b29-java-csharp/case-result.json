@@ -1,0 +1,172 @@
+{
+  "case_id": "B29-001",
+  "severity": "P0",
+  "test_type": "happy_path",
+  "steps": [
+    {
+      "id": "b29-route-preconditions",
+      "phase": "precondition",
+      "command": [
+        "python3",
+        "scripts/test-suite/b29_route_preconditions.py",
+        "--route",
+        "routes/java-to-csharp",
+        "--report",
+        "test-suites/batch1-37-strict/evidence/_shared/b29-route-preconditions.json"
+      ],
+      "expect": "exit-zero",
+      "exit_code": 0,
+      "met_expectation": true,
+      "establishes": "Batch 29实现与契约可定位 / 输入、版本、Owner和环境已锁定",
+      "corpus": ""
+    },
+    {
+      "id": "validate-route",
+      "phase": "case",
+      "command": [
+        "python3",
+        "scripts/batch29/validate_route.py",
+        "routes/java-to-csharp"
+      ],
+      "expect": "exit-zero",
+      "exit_code": 0,
+      "met_expectation": true,
+      "establishes": "Route Manifest 契约一致",
+      "corpus": ""
+    },
+    {
+      "id": "migrate-development",
+      "phase": "case",
+      "command": [
+        "python3",
+        "-m",
+        "elmos_polyglot_route.cli",
+        "--source",
+        "../../routes/java-to-csharp/corpus/development/Pricing.java",
+        "--source-language",
+        "java",
+        "--target-language",
+        "csharp",
+        "--function",
+        "calculate",
+        "--cases",
+        "../../routes/java-to-csharp/corpus/development/cases.json",
+        "--output",
+        "../../test-suites/batch1-37-strict/evidence/_shared/b29-run/B29-001/development"
+      ],
+      "expect": "exit-zero",
+      "exit_code": 0,
+      "met_expectation": true,
+      "establishes": "真实编译 / 版本精确（development 语料）",
+      "corpus": "development"
+    },
+    {
+      "id": "migrate-holdout",
+      "phase": "case",
+      "command": [
+        "python3",
+        "-m",
+        "elmos_polyglot_route.cli",
+        "--source",
+        "../../routes/java-to-csharp/corpus/holdout/Clamp.java",
+        "--source-language",
+        "java",
+        "--target-language",
+        "csharp",
+        "--function",
+        "clamp",
+        "--cases",
+        "../../routes/java-to-csharp/corpus/holdout/cases.json",
+        "--output",
+        "../../test-suites/batch1-37-strict/evidence/_shared/b29-run/B29-001/holdout"
+      ],
+      "expect": "exit-zero",
+      "exit_code": 0,
+      "met_expectation": true,
+      "establishes": "真实编译 / 版本精确（holdout 语料）",
+      "corpus": "holdout"
+    },
+    {
+      "id": "migrate-representative",
+      "phase": "case",
+      "command": [
+        "python3",
+        "-m",
+        "elmos_polyglot_route.cli",
+        "--source",
+        "../../routes/java-to-csharp/corpus/real-repository/Difference.java",
+        "--source-language",
+        "java",
+        "--target-language",
+        "csharp",
+        "--function",
+        "difference",
+        "--cases",
+        "../../routes/java-to-csharp/corpus/real-repository/cases.json",
+        "--output",
+        "../../test-suites/batch1-37-strict/evidence/_shared/b29-run/B29-001/representative"
+      ],
+      "expect": "exit-zero",
+      "exit_code": 0,
+      "met_expectation": true,
+      "establishes": "真实编译 / 版本精确（representative 语料）",
+      "corpus": "representative"
+    }
+  ],
+  "assertion_trace": [
+    {
+      "index": 0,
+      "assertion": "功能结果、状态变化和Evidence必须与契约一致",
+      "established_by": [
+        "validate-route"
+      ]
+    },
+    {
+      "index": 1,
+      "assertion": "方向独立",
+      "established_by": [
+        "validate-route",
+        "migrate-development",
+        "migrate-holdout",
+        "migrate-representative"
+      ]
+    },
+    {
+      "index": 2,
+      "assertion": "版本精确",
+      "established_by": [
+        "b29-route-preconditions"
+      ]
+    },
+    {
+      "index": 3,
+      "assertion": "真实编译",
+      "established_by": [
+        "migrate-development",
+        "migrate-holdout",
+        "migrate-representative"
+      ]
+    },
+    {
+      "index": 4,
+      "assertion": "“Route Manifest”不得通过以下捷径：反向路线复用认证; generic support; 伪certified",
+      "established_by": [
+        "validate-route",
+        "migrate-development",
+        "migrate-holdout",
+        "migrate-representative"
+      ]
+    },
+    {
+      "index": 5,
+      "assertion": "失败时状态、数据、权限和外部副作用必须可解释",
+      "established_by": [
+        "validate-route",
+        "migrate-development",
+        "migrate-holdout",
+        "migrate-representative"
+      ]
+    }
+  ],
+  "all_steps_met_expectation": true
+}

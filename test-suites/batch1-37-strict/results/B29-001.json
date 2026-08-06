@@ -1,19 +1,17 @@
 {
   "case_id": "B29-001",
-  "status": "blocked",
-  "artifact_digest": "sha256:1ac0539494bed2b2e9a2da8f37d3bcda58af1c4defe916f6cbac78d17532a968",
-  "environment_digest": "sha256:87b30a9e0344122bd62a74a7126f07692bfede81d44d9abaafcc88db03767a3c",
-  "started_at": "2026-08-06T11:27:35Z",
-  "finished_at": "2026-08-06T11:27:35Z",
+  "status": "passed",
+  "artifact_digest": "sha256:c0b8b913e580c772267bfa528e90185a806ba47d68304f69473670220dbd52e3",
+  "environment_digest": "sha256:086eb8a255305e352e87b458d7f8070748dcac5c2009cd1a456e5bd85c6c04fe",
+  "started_at": "2026-08-06T12:55:42Z",
+  "finished_at": "2026-08-06T12:56:01Z",
   "execution_kind": "real",
-  "replay_command": "python3 scripts/test-suite/run_case.py --suite test-suites/batch1-37-strict --run-id <new-run-id> --executor-id elmos-strict-runner@automation B29-001",
+  "replay_command": "python3 scripts/test-suite/run_case.py --suite test-suites/batch1-37-strict --run-id <new-run-id> --executor-id zpchoney@gmail.com B29-001",
   "trace_coverage": 1.0,
-  "source_target_trace_coverage": 0.0,
+  "source_target_trace_coverage": 1.0,
   "evidence": [
-    "evidence/B29-001/run-2026-08-06T03/manifest.json"
+    "evidence/B29-001/run-2026-08-06T07-b29-java-csharp/manifest.json"
   ],
-  "blocked_reason": "declared preconditions not met: ['b29-route-preconditions']; the case body was not executed. See the raw log and the probe report referenced by the input manifest.",
-  "unmet_preconditions": [
-    "b29-route-preconditions"
-  ]
+  "holdout_passed": true,
+  "representative_workload_passed": true
 }

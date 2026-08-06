@@ -1,0 +1,60 @@
+{
+  "behavior_case_count": 3,
+  "behavior_pass_rate": 1.0,
+  "certification_status": "EXPERIMENTAL",
+  "critical_unknown_semantics": 0,
+  "external_certification_status": "NOT_RUN",
+  "limitations": [
+    "Only typed, side-effect-free functions using return, if, literals, names, and supported binary operators are in scope.",
+    "Object graphs, exceptions, async, reflection, I/O, framework, database, and concurrency semantics remain outside this route profile."
+  ],
+  "route": "java-to-csharp",
+  "schema_version": "1.0.0",
+  "scope": "typed-pure-function-v1",
+  "semantic_ir_sha256": "sha256:787f65e720e721fe8cc4bc061168f714e558b5079a7aaf0550c776c5cbdd8fd1",
+  "source": {
+    "analyzer": "JDK JavacTask Tree API",
+    "analyzer_version": "21.0.11",
+    "language": "java",
+    "path": "Pricing.java",
+    "sha256": "sha256:9c5363d41c0b9b93508b5d9888e75afd26fced14b74ece68d6d7280a2b0a718f"
+  },
+  "source_map_coverage": 1.0,
+  "status": "PASSED",
+  "target": {
+    "language": "csharp",
+    "path": "Migrated.cs",
+    "sha256": "sha256:2896064edaaaffbc1b94d04ef087d84b2ff894bfe32749821476f8d580d0563e"
+  },
+  "validation": {
+    "case_count": 3,
+    "commands": [
+      {
+        "command": [
+          "/opt/homebrew/bin/dotnet",
+          "build",
+          "RouteHarness.csproj",
+          "-c",
+          "Release"
+        ],
+        "stderr": "",
+        "stdout": "  Determining projects to restore...\n  Restored /Users/stephen/DevProjects/AIProjects/elmos/test-suites/batch1-37-strict/evidence/_shared/b29-run/B29-001/development/RouteHarness.csproj (in 86 ms).\n  RouteHarness -> /Users/stephen/DevProjects/AIProjects/elmos/test-suites/batch1-37-strict/evidence/_shared/b29-run/B29-001/development/bin/Release/net10.0/RouteHarness.dll\n\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:01.69\n"
+      },
+      {
+        "command": [
+          "/opt/homebrew/bin/dotnet",
+          "run",
+          "--project",
+          "RouteHarness.csproj",
+          "-c",
+          "Release",
+          "--no-build"
+        ],
+        "stderr": "",
+        "stdout": ""
+      }
+    ],
+    "language": "csharp",
+    "status": "PASSED"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "environment_manifest_version": 1,
+  "os": "Darwin",
+  "os_release": "25.6.0",
+  "machine": "arm64",
+  "python": "3.14.6",
+  "python_implementation": "CPython",
+  "repository_commit": "d67a0f918eee215c44dde749d72a114e57e9a22a",
+  "repository_tracked_files_dirty": true,
+  "locale": "en_US.UTF-8",
+  "timezone": "UTC",
+  "network": "not-required"
+}

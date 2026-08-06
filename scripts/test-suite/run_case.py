@@ -83,14 +83,20 @@ def sha256_tree(path: Path) -> str:
     return sha256_json({"tree": entries})
 
 
-def build_corpora(case: dict, binding: dict, bindings: dict) -> list[dict]:
-    """Corpora actually consumed by this case, digested from the bytes on disk."""
+def build_corpora(case: dict, binding: dict, bindings: dict, exercised: set[str]) -> list[dict]:
+    """Corpora a met step actually consumed, digested from the bytes on disk.
+
+    Presence of a corpus on disk is not evidence that it was exercised. Only a
+    step that declared `corpus: <kind>` and met its expectation counts, otherwise
+    a case that ran the development corpus alone would be able to claim a holdout
+    pass it never earned.
+    """
     declared = {**bindings.get("corpora", {}), **binding.get("corpora", {})}
     corpora: list[dict] = []
 
     def add(kind: str, independent: bool) -> None:
         reference = declared.get(kind)
-        if not reference:
+        if not reference or kind not in exercised:
             return
         target = REPO / reference
         if not target.exists():
@@ -102,12 +108,9 @@ def build_corpora(case: dict, binding: dict, bindings: dict) -> list[dict]:
         corpora.append(entry)
 
     add("development", False)
-    if case.get("test_type") in {"negative", "security"}:
-        add("negative", False)
-    if case.get("holdout_required"):
-        add("holdout", True)
-    if case.get("representative_workload_required"):
-        add("representative", True)
+    add("negative", False)
+    add("holdout", True)
+    add("representative", True)
     return corpora
 
 
@@ -310,8 +313,21 @@ def run_case(
         results = []
         for step in steps:
             command = step["command"]
-            log_lines.append(f"$ [{phase}] {' '.join(command)}")
-            completed = subprocess.run(command, cwd=REPO, capture_output=True, text=True, check=False)
+            # A step may declare the directory it must run from (repo-relative) and
+            # extra environment. The polyglot route engine, for example, is a src/
+            # layout invoked as a module from its own package root.
+            cwd = REPO / step["working_directory"] if step.get("working_directory") else REPO
+            env = None
+            if step.get("env"):
+                env = {**os.environ, **step["env"]}
+            log_lines.append(
+                f"$ [{phase}] (cwd={cwd.relative_to(REPO) if cwd != REPO else '.'}"
+                + (f", env={step['env']}" if step.get("env") else "")
+                + f") {' '.join(command)}"
+            )
+            completed = subprocess.run(
+                command, cwd=cwd, env=env, capture_output=True, text=True, check=False
+            )
             log_lines.append(completed.stdout.rstrip())
             if completed.stderr.strip():
                 log_lines.append("--- stderr ---")
@@ -322,7 +338,7 @@ def run_case(
             results.append({
                 "id": step["id"], "phase": phase, "command": command, "expect": expect,
                 "exit_code": completed.returncode, "met_expectation": met,
-                "establishes": step.get("establishes", ""),
+                "establishes": step.get("establishes", ""), "corpus": step.get("corpus", ""),
             })
         return results
 
@@ -338,7 +354,7 @@ def run_case(
             {"id": step["id"], "phase": "case", "command": step["command"],
              "expect": step.get("expect", "exit-zero"), "exit_code": None,
              "met_expectation": False, "not_executed": True,
-             "establishes": step.get("establishes", "")}
+             "establishes": step.get("establishes", ""), "corpus": step.get("corpus", "")}
             for step in binding["steps"]
         ]
     else:
@@ -446,7 +462,11 @@ def run_case(
     present_roles = {entry["role"] for entry in files}
     trace_coverage = round(len(required_roles & present_roles) / len(required_roles), 4) if required_roles else 0.0
 
-    corpora = build_corpora(case, binding, bindings)
+    exercised = {
+        step["corpus"] for step in step_results
+        if step.get("corpus") and step["met_expectation"]
+    }
+    corpora = build_corpora(case, binding, bindings, exercised)
 
     manifest = {
         "manifest_version": 2,
@@ -476,10 +496,20 @@ def run_case(
 
     manifest_file = write_json(run_dir / "manifest.json", manifest)
 
+    required_corpora = {
+        kind for kind, needed in (
+            ("holdout", case.get("holdout_required")),
+            ("representative", case.get("representative_workload_required")),
+        ) if needed
+    }
+    unexercised = sorted(required_corpora - {c["kind"] for c in corpora})
+
     if unmet_preconditions:
         status = "blocked"
     elif not all_met:
         status = "failed"
+    elif unexercised:
+        status = "blocked"
     elif not args.verifier_id:
         status = "blocked"
     else:
@@ -499,12 +529,19 @@ def run_case(
         "evidence": [manifest_file.relative_to(suite).as_posix()],
     }
     if status == "passed":
-        kinds = {c["kind"] for c in corpora}
+        # Only claimable because a step declared the corpus and met its expectation.
         if case.get("holdout_required"):
-            result["holdout_passed"] = "holdout" in kinds
+            result["holdout_passed"] = "holdout" in exercised
         if case.get("representative_workload_required"):
-            result["representative_workload_passed"] = "representative" in kinds
-    if status == "blocked" and unmet_preconditions:
+            result["representative_workload_passed"] = "representative" in exercised
+    if status == "blocked" and unexercised and not unmet_preconditions:
+        result["blocked_reason"] = (
+            f"the case declares {unexercised} as required, but no step exercised "
+            f"{'that corpus' if len(unexercised) == 1 else 'those corpora'}; "
+            "a corpus present on disk is not evidence that it ran"
+        )
+        result["unexercised_required_corpora"] = unexercised
+    elif status == "blocked" and unmet_preconditions:
         result["blocked_reason"] = (
             f"declared preconditions not met: {unmet_preconditions}; the case body was not executed. "
             "See the raw log and the probe report referenced by the input manifest."

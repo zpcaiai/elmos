@@ -1270,6 +1270,12 @@
         {
           "id": "migrate-development",
           "expect": "exit-zero",
+          "corpus": "development",
+          "working_directory": "engines/polyglot-route-engine",
+          "env": {
+            "PYTHONPATH": "src"
+          },
+          "establishes": "真实编译 / 版本精确（development 语料）",
           "command": [
             "python3",
             "-m",
@@ -1285,36 +1291,93 @@
             "--cases",
             "../../routes/java-to-csharp/corpus/development/cases.json",
             "--output",
-            "../../test-suites/batch1-37-strict/evidence/_shared/b29-run/development/report.json"
-          ],
+            "../../test-suites/batch1-37-strict/evidence/_shared/b29-run/B29-001/development"
+          ]
+        },
+        {
+          "id": "migrate-holdout",
+          "expect": "exit-zero",
+          "corpus": "holdout",
           "working_directory": "engines/polyglot-route-engine",
-          "establishes": "真实编译 / 版本精确 / 方向独立"
+          "env": {
+            "PYTHONPATH": "src"
+          },
+          "establishes": "真实编译 / 版本精确（holdout 语料）",
+          "command": [
+            "python3",
+            "-m",
+            "elmos_polyglot_route.cli",
+            "--source",
+            "../../routes/java-to-csharp/corpus/holdout/Clamp.java",
+            "--source-language",
+            "java",
+            "--target-language",
+            "csharp",
+            "--function",
+            "clamp",
+            "--cases",
+            "../../routes/java-to-csharp/corpus/holdout/cases.json",
+            "--output",
+            "../../test-suites/batch1-37-strict/evidence/_shared/b29-run/B29-001/holdout"
+          ]
+        },
+        {
+          "id": "migrate-representative",
+          "expect": "exit-zero",
+          "corpus": "representative",
+          "working_directory": "engines/polyglot-route-engine",
+          "env": {
+            "PYTHONPATH": "src"
+          },
+          "establishes": "真实编译 / 版本精确（representative 语料）",
+          "command": [
+            "python3",
+            "-m",
+            "elmos_polyglot_route.cli",
+            "--source",
+            "../../routes/java-to-csharp/corpus/real-repository/Difference.java",
+            "--source-language",
+            "java",
+            "--target-language",
+            "csharp",
+            "--function",
+            "difference",
+            "--cases",
+            "../../routes/java-to-csharp/corpus/real-repository/cases.json",
+            "--output",
+            "../../test-suites/batch1-37-strict/evidence/_shared/b29-run/B29-001/representative"
+          ]
         }
       ],
       "assertion_map": {
         "0": [
-          "validate-route",
-          "migrate-development"
+          "validate-route"
         ],
         "1": [
           "validate-route",
-          "migrate-development"
+          "migrate-development",
+          "migrate-holdout",
+          "migrate-representative"
         ],
         "2": [
-          "validate-route",
-          "migrate-development"
+          "b29-route-preconditions"
         ],
         "3": [
-          "validate-route",
-          "migrate-development"
+          "migrate-development",
+          "migrate-holdout",
+          "migrate-representative"
         ],
         "4": [
           "validate-route",
-          "migrate-development"
+          "migrate-development",
+          "migrate-holdout",
+          "migrate-representative"
         ],
         "5": [
           "validate-route",
-          "migrate-development"
+          "migrate-development",
+          "migrate-holdout",
+          "migrate-representative"
         ]
       }
     },
@@ -1370,6 +1433,87 @@
             "test_routes.py"
           ],
           "establishes": "Language Support Matrix 边界确定"
+        },
+        {
+          "id": "migrate-development",
+          "expect": "exit-zero",
+          "corpus": "development",
+          "working_directory": "engines/polyglot-route-engine",
+          "env": {
+            "PYTHONPATH": "src"
+          },
+          "establishes": "真实编译 / 版本精确（development 语料）",
+          "command": [
+            "python3",
+            "-m",
+            "elmos_polyglot_route.cli",
+            "--source",
+            "../../routes/java-to-csharp/corpus/development/Pricing.java",
+            "--source-language",
+            "java",
+            "--target-language",
+            "csharp",
+            "--function",
+            "calculate",
+            "--cases",
+            "../../routes/java-to-csharp/corpus/development/cases.json",
+            "--output",
+            "../../test-suites/batch1-37-strict/evidence/_shared/b29-run/B29-002/development"
+          ]
+        },
+        {
+          "id": "migrate-holdout",
+          "expect": "exit-zero",
+          "corpus": "holdout",
+          "working_directory": "engines/polyglot-route-engine",
+          "env": {
+            "PYTHONPATH": "src"
+          },
+          "establishes": "真实编译 / 版本精确（holdout 语料）",
+          "command": [
+            "python3",
+            "-m",
+            "elmos_polyglot_route.cli",
+            "--source",
+            "../../routes/java-to-csharp/corpus/holdout/Clamp.java",
+            "--source-language",
+            "java",
+            "--target-language",
+            "csharp",
+            "--function",
+            "clamp",
+            "--cases",
+            "../../routes/java-to-csharp/corpus/holdout/cases.json",
+            "--output",
+            "../../test-suites/batch1-37-strict/evidence/_shared/b29-run/B29-002/holdout"
+          ]
+        },
+        {
+          "id": "migrate-representative",
+          "expect": "exit-zero",
+          "corpus": "representative",
+          "working_directory": "engines/polyglot-route-engine",
+          "env": {
+            "PYTHONPATH": "src"
+          },
+          "establishes": "真实编译 / 版本精确（representative 语料）",
+          "command": [
+            "python3",
+            "-m",
+            "elmos_polyglot_route.cli",
+            "--source",
+            "../../routes/java-to-csharp/corpus/real-repository/Difference.java",
+            "--source-language",
+            "java",
+            "--target-language",
+            "csharp",
+            "--function",
+            "difference",
+            "--cases",
+            "../../routes/java-to-csharp/corpus/real-repository/cases.json",
+            "--output",
+            "../../test-suites/batch1-37-strict/evidence/_shared/b29-run/B29-002/representative"
+          ]
         }
       ],
       "assertion_map": {
@@ -1377,19 +1521,30 @@
           "route-matrix-tests"
         ],
         "1": [
-          "route-matrix-tests"
+          "route-matrix-tests",
+          "migrate-development",
+          "migrate-holdout",
+          "migrate-representative"
         ],
         "2": [
-          "route-matrix-tests"
+          "b29-route-preconditions"
         ],
         "3": [
-          "route-matrix-tests"
+          "migrate-development",
+          "migrate-holdout",
+          "migrate-representative"
         ],
         "4": [
-          "route-matrix-tests"
+          "route-matrix-tests",
+          "migrate-development",
+          "migrate-holdout",
+          "migrate-representative"
         ],
         "5": [
-          "route-matrix-tests"
+          "route-matrix-tests",
+          "migrate-development",
+          "migrate-holdout",
+          "migrate-representative"
         ]
       }
     },
@@ -1434,6 +1589,12 @@
         {
           "id": "unknown-function-fails-closed",
           "expect": "exit-nonzero",
+          "corpus": "negative",
+          "working_directory": "engines/polyglot-route-engine",
+          "env": {
+            "PYTHONPATH": "src"
+          },
+          "establishes": "Fail Closed，不静默降级",
           "command": [
             "python3",
             "-m",
@@ -1449,10 +1610,89 @@
             "--cases",
             "../../routes/java-to-csharp/corpus/development/cases.json",
             "--output",
-            "../../test-suites/batch1-37-strict/evidence/_shared/b29-run/negative/report.json"
-          ],
+            "../../test-suites/batch1-37-strict/evidence/_shared/b29-run/B29-003/negative"
+          ]
+        },
+        {
+          "id": "migrate-development",
+          "expect": "exit-zero",
+          "corpus": "development",
           "working_directory": "engines/polyglot-route-engine",
-          "establishes": "Fail Closed，不静默降级"
+          "env": {
+            "PYTHONPATH": "src"
+          },
+          "establishes": "真实编译 / 版本精确（development 语料）",
+          "command": [
+            "python3",
+            "-m",
+            "elmos_polyglot_route.cli",
+            "--source",
+            "../../routes/java-to-csharp/corpus/development/Pricing.java",
+            "--source-language",
+            "java",
+            "--target-language",
+            "csharp",
+            "--function",
+            "calculate",
+            "--cases",
+            "../../routes/java-to-csharp/corpus/development/cases.json",
+            "--output",
+            "../../test-suites/batch1-37-strict/evidence/_shared/b29-run/B29-003/development"
+          ]
+        },
+        {
+          "id": "migrate-holdout",
+          "expect": "exit-zero",
+          "corpus": "holdout",
+          "working_directory": "engines/polyglot-route-engine",
+          "env": {
+            "PYTHONPATH": "src"
+          },
+          "establishes": "真实编译 / 版本精确（holdout 语料）",
+          "command": [
+            "python3",
+            "-m",
+            "elmos_polyglot_route.cli",
+            "--source",
+            "../../routes/java-to-csharp/corpus/holdout/Clamp.java",
+            "--source-language",
+            "java",
+            "--target-language",
+            "csharp",
+            "--function",
+            "clamp",
+            "--cases",
+            "../../routes/java-to-csharp/corpus/holdout/cases.json",
+            "--output",
+            "../../test-suites/batch1-37-strict/evidence/_shared/b29-run/B29-003/holdout"
+          ]
+        },
+        {
+          "id": "migrate-representative",
+          "expect": "exit-zero",
+          "corpus": "representative",
+          "working_directory": "engines/polyglot-route-engine",
+          "env": {
+            "PYTHONPATH": "src"
+          },
+          "establishes": "真实编译 / 版本精确（representative 语料）",
+          "command": [
+            "python3",
+            "-m",
+            "elmos_polyglot_route.cli",
+            "--source",
+            "../../routes/java-to-csharp/corpus/real-repository/Difference.java",
+            "--source-language",
+            "java",
+            "--target-language",
+            "csharp",
+            "--function",
+            "difference",
+            "--cases",
+            "../../routes/java-to-csharp/corpus/real-repository/cases.json",
+            "--output",
+            "../../test-suites/batch1-37-strict/evidence/_shared/b29-run/B29-003/representative"
+          ]
         }
       ],
       "assertion_map": {
@@ -1460,19 +1700,30 @@
           "unknown-function-fails-closed"
         ],
         "1": [
-          "unknown-function-fails-closed"
+          "unknown-function-fails-closed",
+          "migrate-development",
+          "migrate-holdout",
+          "migrate-representative"
         ],
         "2": [
-          "unknown-function-fails-closed"
+          "b29-route-preconditions"
         ],
         "3": [
-          "unknown-function-fails-closed"
+          "migrate-development",
+          "migrate-holdout",
+          "migrate-representative"
         ],
         "4": [
-          "unknown-function-fails-closed"
+          "unknown-function-fails-closed",
+          "migrate-development",
+          "migrate-holdout",
+          "migrate-representative"
         ],
         "5": [
-          "unknown-function-fails-closed"
+          "unknown-function-fails-closed",
+          "migrate-development",
+          "migrate-holdout",
+          "migrate-representative"
         ]
       }
     },
@@ -1515,8 +1766,41 @@
       ],
       "steps": [
         {
+          "id": "migrate-development",
+          "expect": "exit-zero",
+          "corpus": "development",
+          "working_directory": "engines/polyglot-route-engine",
+          "env": {
+            "PYTHONPATH": "src"
+          },
+          "establishes": "真实编译 / 版本精确（development 语料）",
+          "command": [
+            "python3",
+            "-m",
+            "elmos_polyglot_route.cli",
+            "--source",
+            "../../routes/java-to-csharp/corpus/development/Pricing.java",
+            "--source-language",
+            "java",
+            "--target-language",
+            "csharp",
+            "--function",
+            "calculate",
+            "--cases",
+            "../../routes/java-to-csharp/corpus/development/cases.json",
+            "--output",
+            "../../test-suites/batch1-37-strict/evidence/_shared/b29-run/B29-004/development"
+          ]
+        },
+        {
           "id": "migrate-holdout",
           "expect": "exit-zero",
+          "corpus": "holdout",
+          "working_directory": "engines/polyglot-route-engine",
+          "env": {
+            "PYTHONPATH": "src"
+          },
+          "establishes": "真实编译 / 版本精确（holdout 语料）",
           "command": [
             "python3",
             "-m",
@@ -1532,30 +1816,65 @@
             "--cases",
             "../../routes/java-to-csharp/corpus/holdout/cases.json",
             "--output",
-            "../../test-suites/batch1-37-strict/evidence/_shared/b29-run/holdout/report.json"
-          ],
+            "../../test-suites/batch1-37-strict/evidence/_shared/b29-run/B29-004/holdout"
+          ]
+        },
+        {
+          "id": "migrate-representative",
+          "expect": "exit-zero",
+          "corpus": "representative",
           "working_directory": "engines/polyglot-route-engine",
-          "establishes": "独立 Holdout 语料通过"
+          "env": {
+            "PYTHONPATH": "src"
+          },
+          "establishes": "真实编译 / 版本精确（representative 语料）",
+          "command": [
+            "python3",
+            "-m",
+            "elmos_polyglot_route.cli",
+            "--source",
+            "../../routes/java-to-csharp/corpus/real-repository/Difference.java",
+            "--source-language",
+            "java",
+            "--target-language",
+            "csharp",
+            "--function",
+            "difference",
+            "--cases",
+            "../../routes/java-to-csharp/corpus/real-repository/cases.json",
+            "--output",
+            "../../test-suites/batch1-37-strict/evidence/_shared/b29-run/B29-004/representative"
+          ]
         }
       ],
       "assertion_map": {
         "0": [
-          "migrate-holdout"
+          "migrate-development",
+          "migrate-holdout",
+          "migrate-representative"
         ],
         "1": [
-          "migrate-holdout"
+          "migrate-development",
+          "migrate-holdout",
+          "migrate-representative"
         ],
         "2": [
-          "migrate-holdout"
+          "b29-route-preconditions"
         ],
         "3": [
-          "migrate-holdout"
+          "migrate-development",
+          "migrate-holdout",
+          "migrate-representative"
         ],
         "4": [
-          "migrate-holdout"
+          "migrate-development",
+          "migrate-holdout",
+          "migrate-representative"
         ],
         "5": [
-          "migrate-holdout"
+          "migrate-development",
+          "migrate-holdout",
+          "migrate-representative"
         ]
       }
     },
@@ -1598,8 +1917,68 @@
       ],
       "steps": [
         {
+          "id": "migrate-development",
+          "expect": "exit-zero",
+          "corpus": "development",
+          "working_directory": "engines/polyglot-route-engine",
+          "env": {
+            "PYTHONPATH": "src"
+          },
+          "establishes": "真实编译 / 版本精确（development 语料）",
+          "command": [
+            "python3",
+            "-m",
+            "elmos_polyglot_route.cli",
+            "--source",
+            "../../routes/java-to-csharp/corpus/development/Pricing.java",
+            "--source-language",
+            "java",
+            "--target-language",
+            "csharp",
+            "--function",
+            "calculate",
+            "--cases",
+            "../../routes/java-to-csharp/corpus/development/cases.json",
+            "--output",
+            "../../test-suites/batch1-37-strict/evidence/_shared/b29-run/B29-005/development"
+          ]
+        },
+        {
+          "id": "migrate-holdout",
+          "expect": "exit-zero",
+          "corpus": "holdout",
+          "working_directory": "engines/polyglot-route-engine",
+          "env": {
+            "PYTHONPATH": "src"
+          },
+          "establishes": "真实编译 / 版本精确（holdout 语料）",
+          "command": [
+            "python3",
+            "-m",
+            "elmos_polyglot_route.cli",
+            "--source",
+            "../../routes/java-to-csharp/corpus/holdout/Clamp.java",
+            "--source-language",
+            "java",
+            "--target-language",
+            "csharp",
+            "--function",
+            "clamp",
+            "--cases",
+            "../../routes/java-to-csharp/corpus/holdout/cases.json",
+            "--output",
+            "../../test-suites/batch1-37-strict/evidence/_shared/b29-run/B29-005/holdout"
+          ]
+        },
+        {
           "id": "migrate-representative",
           "expect": "exit-zero",
+          "corpus": "representative",
+          "working_directory": "engines/polyglot-route-engine",
+          "env": {
+            "PYTHONPATH": "src"
+          },
+          "establishes": "真实编译 / 版本精确（representative 语料）",
           "command": [
             "python3",
             "-m",
@@ -1615,29 +1994,37 @@
             "--cases",
             "../../routes/java-to-csharp/corpus/real-repository/cases.json",
             "--output",
-            "../../test-suites/batch1-37-strict/evidence/_shared/b29-run/real-repository/report.json"
-          ],
-          "working_directory": "engines/polyglot-route-engine",
-          "establishes": "代表性工作负载在精确运行时通过"
+            "../../test-suites/batch1-37-strict/evidence/_shared/b29-run/B29-005/representative"
+          ]
         }
       ],
       "assertion_map": {
         "0": [
+          "migrate-development",
+          "migrate-holdout",
           "migrate-representative"
         ],
         "1": [
+          "migrate-development",
+          "migrate-holdout",
           "migrate-representative"
         ],
         "2": [
-          "migrate-representative"
+          "b29-route-preconditions"
         ],
         "3": [
+          "migrate-development",
+          "migrate-holdout",
           "migrate-representative"
         ],
         "4": [
+          "migrate-development",
+          "migrate-holdout",
           "migrate-representative"
         ],
         "5": [
+          "migrate-development",
+          "migrate-holdout",
           "migrate-representative"
         ]
       }
@@ -1690,6 +2077,87 @@
             "routes"
           ],
           "establishes": "12 条有向路线配置一致"
+        },
+        {
+          "id": "migrate-development",
+          "expect": "exit-zero",
+          "corpus": "development",
+          "working_directory": "engines/polyglot-route-engine",
+          "env": {
+            "PYTHONPATH": "src"
+          },
+          "establishes": "真实编译 / 版本精确（development 语料）",
+          "command": [
+            "python3",
+            "-m",
+            "elmos_polyglot_route.cli",
+            "--source",
+            "../../routes/java-to-csharp/corpus/development/Pricing.java",
+            "--source-language",
+            "java",
+            "--target-language",
+            "csharp",
+            "--function",
+            "calculate",
+            "--cases",
+            "../../routes/java-to-csharp/corpus/development/cases.json",
+            "--output",
+            "../../test-suites/batch1-37-strict/evidence/_shared/b29-run/B29-006/development"
+          ]
+        },
+        {
+          "id": "migrate-holdout",
+          "expect": "exit-zero",
+          "corpus": "holdout",
+          "working_directory": "engines/polyglot-route-engine",
+          "env": {
+            "PYTHONPATH": "src"
+          },
+          "establishes": "真实编译 / 版本精确（holdout 语料）",
+          "command": [
+            "python3",
+            "-m",
+            "elmos_polyglot_route.cli",
+            "--source",
+            "../../routes/java-to-csharp/corpus/holdout/Clamp.java",
+            "--source-language",
+            "java",
+            "--target-language",
+            "csharp",
+            "--function",
+            "clamp",
+            "--cases",
+            "../../routes/java-to-csharp/corpus/holdout/cases.json",
+            "--output",
+            "../../test-suites/batch1-37-strict/evidence/_shared/b29-run/B29-006/holdout"
+          ]
+        },
+        {
+          "id": "migrate-representative",
+          "expect": "exit-zero",
+          "corpus": "representative",
+          "working_directory": "engines/polyglot-route-engine",
+          "env": {
+            "PYTHONPATH": "src"
+          },
+          "establishes": "真实编译 / 版本精确（representative 语料）",
+          "command": [
+            "python3",
+            "-m",
+            "elmos_polyglot_route.cli",
+            "--source",
+            "../../routes/java-to-csharp/corpus/real-repository/Difference.java",
+            "--source-language",
+            "java",
+            "--target-language",
+            "csharp",
+            "--function",
+            "difference",
+            "--cases",
+            "../../routes/java-to-csharp/corpus/real-repository/cases.json",
+            "--output",
+            "../../test-suites/batch1-37-strict/evidence/_shared/b29-run/B29-006/representative"
+          ]
         }
       ],
       "assertion_map": {
@@ -1697,19 +2165,30 @@
           "directed-routes"
         ],
         "1": [
-          "directed-routes"
+          "directed-routes",
+          "migrate-development",
+          "migrate-holdout",
+          "migrate-representative"
         ],
         "2": [
-          "directed-routes"
+          "b29-route-preconditions"
         ],
         "3": [
-          "directed-routes"
+          "migrate-development",
+          "migrate-holdout",
+          "migrate-representative"
         ],
         "4": [
-          "directed-routes"
+          "directed-routes",
+          "migrate-development",
+          "migrate-holdout",
+          "migrate-representative"
         ],
         "5": [
-          "directed-routes"
+          "directed-routes",
+          "migrate-development",
+          "migrate-holdout",
+          "migrate-representative"
         ]
       }
     },
@@ -1762,6 +2241,87 @@
             "test-suites/batch1-37-strict/evidence/_shared/b29-run/route-scores.json"
           ],
           "establishes": "路线经济性评分可复算"
+        },
+        {
+          "id": "migrate-development",
+          "expect": "exit-zero",
+          "corpus": "development",
+          "working_directory": "engines/polyglot-route-engine",
+          "env": {
+            "PYTHONPATH": "src"
+          },
+          "establishes": "真实编译 / 版本精确（development 语料）",
+          "command": [
+            "python3",
+            "-m",
+            "elmos_polyglot_route.cli",
+            "--source",
+            "../../routes/java-to-csharp/corpus/development/Pricing.java",
+            "--source-language",
+            "java",
+            "--target-language",
+            "csharp",
+            "--function",
+            "calculate",
+            "--cases",
+            "../../routes/java-to-csharp/corpus/development/cases.json",
+            "--output",
+            "../../test-suites/batch1-37-strict/evidence/_shared/b29-run/B29-007/development"
+          ]
+        },
+        {
+          "id": "migrate-holdout",
+          "expect": "exit-zero",
+          "corpus": "holdout",
+          "working_directory": "engines/polyglot-route-engine",
+          "env": {
+            "PYTHONPATH": "src"
+          },
+          "establishes": "真实编译 / 版本精确（holdout 语料）",
+          "command": [
+            "python3",
+            "-m",
+            "elmos_polyglot_route.cli",
+            "--source",
+            "../../routes/java-to-csharp/corpus/holdout/Clamp.java",
+            "--source-language",
+            "java",
+            "--target-language",
+            "csharp",
+            "--function",
+            "clamp",
+            "--cases",
+            "../../routes/java-to-csharp/corpus/holdout/cases.json",
+            "--output",
+            "../../test-suites/batch1-37-strict/evidence/_shared/b29-run/B29-007/holdout"
+          ]
+        },
+        {
+          "id": "migrate-representative",
+          "expect": "exit-zero",
+          "corpus": "representative",
+          "working_directory": "engines/polyglot-route-engine",
+          "env": {
+            "PYTHONPATH": "src"
+          },
+          "establishes": "真实编译 / 版本精确（representative 语料）",
+          "command": [
+            "python3",
+            "-m",
+            "elmos_polyglot_route.cli",
+            "--source",
+            "../../routes/java-to-csharp/corpus/real-repository/Difference.java",
+            "--source-language",
+            "java",
+            "--target-language",
+            "csharp",
+            "--function",
+            "difference",
+            "--cases",
+            "../../routes/java-to-csharp/corpus/real-repository/cases.json",
+            "--output",
+            "../../test-suites/batch1-37-strict/evidence/_shared/b29-run/B29-007/representative"
+          ]
         }
       ],
       "assertion_map": {
@@ -1769,19 +2329,30 @@
           "score-routes"
         ],
         "1": [
-          "score-routes"
+          "score-routes",
+          "migrate-development",
+          "migrate-holdout",
+          "migrate-representative"
         ],
         "2": [
-          "score-routes"
+          "b29-route-preconditions"
         ],
         "3": [
-          "score-routes"
+          "migrate-development",
+          "migrate-holdout",
+          "migrate-representative"
         ],
         "4": [
-          "score-routes"
+          "score-routes",
+          "migrate-development",
+          "migrate-holdout",
+          "migrate-representative"
         ],
         "5": [
-          "score-routes"
+          "score-routes",
+          "migrate-development",
+          "migrate-holdout",
+          "migrate-representative"
         ]
       }
     },
@@ -1832,6 +2403,87 @@
             "routes/java-to-csharp"
           ],
           "establishes": "Route Gate 在无独立验证时保持 NOT_CERTIFIED"
+        },
+        {
+          "id": "migrate-development",
+          "expect": "exit-zero",
+          "corpus": "development",
+          "working_directory": "engines/polyglot-route-engine",
+          "env": {
+            "PYTHONPATH": "src"
+          },
+          "establishes": "真实编译 / 版本精确（development 语料）",
+          "command": [
+            "python3",
+            "-m",
+            "elmos_polyglot_route.cli",
+            "--source",
+            "../../routes/java-to-csharp/corpus/development/Pricing.java",
+            "--source-language",
+            "java",
+            "--target-language",
+            "csharp",
+            "--function",
+            "calculate",
+            "--cases",
+            "../../routes/java-to-csharp/corpus/development/cases.json",
+            "--output",
+            "../../test-suites/batch1-37-strict/evidence/_shared/b29-run/B29-008/development"
+          ]
+        },
+        {
+          "id": "migrate-holdout",
+          "expect": "exit-zero",
+          "corpus": "holdout",
+          "working_directory": "engines/polyglot-route-engine",
+          "env": {
+            "PYTHONPATH": "src"
+          },
+          "establishes": "真实编译 / 版本精确（holdout 语料）",
+          "command": [
+            "python3",
+            "-m",
+            "elmos_polyglot_route.cli",
+            "--source",
+            "../../routes/java-to-csharp/corpus/holdout/Clamp.java",
+            "--source-language",
+            "java",
+            "--target-language",
+            "csharp",
+            "--function",
+            "clamp",
+            "--cases",
+            "../../routes/java-to-csharp/corpus/holdout/cases.json",
+            "--output",
+            "../../test-suites/batch1-37-strict/evidence/_shared/b29-run/B29-008/holdout"
+          ]
+        },
+        {
+          "id": "migrate-representative",
+          "expect": "exit-zero",
+          "corpus": "representative",
+          "working_directory": "engines/polyglot-route-engine",
+          "env": {
+            "PYTHONPATH": "src"
+          },
+          "establishes": "真实编译 / 版本精确（representative 语料）",
+          "command": [
+            "python3",
+            "-m",
+            "elmos_polyglot_route.cli",
+            "--source",
+            "../../routes/java-to-csharp/corpus/real-repository/Difference.java",
+            "--source-language",
+            "java",
+            "--target-language",
+            "csharp",
+            "--function",
+            "difference",
+            "--cases",
+            "../../routes/java-to-csharp/corpus/real-repository/cases.json",
+            "--output",
+            "../../test-suites/batch1-37-strict/evidence/_shared/b29-run/B29-008/representative"
+          ]
         }
       ],
       "assertion_map": {
@@ -1839,19 +2491,30 @@
           "route-gate"
         ],
         "1": [
-          "route-gate"
+          "route-gate",
+          "migrate-development",
+          "migrate-holdout",
+          "migrate-representative"
         ],
         "2": [
-          "route-gate"
+          "b29-route-preconditions"
         ],
         "3": [
-          "route-gate"
+          "migrate-development",
+          "migrate-holdout",
+          "migrate-representative"
         ],
         "4": [
-          "route-gate"
+          "route-gate",
+          "migrate-development",
+          "migrate-holdout",
+          "migrate-representative"
         ],
         "5": [
-          "route-gate"
+          "route-gate",
+          "migrate-development",
+          "migrate-holdout",
+          "migrate-representative"
         ]
       }
     }

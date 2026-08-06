@@ -1,11 +1,8 @@
 {
   "route": "routes/java-to-csharp",
-  "preconditions_met": false,
+  "preconditions_met": true,
   "checks_total": 6,
-  "blocked_by": [
-    "exact-toolchain::java",
-    "exact-toolchain::csharp"
-  ],
+  "blocked_by": [],
   "checks": [
     {
       "check": "route-contract-present",
@@ -29,13 +26,13 @@
     },
     {
       "check": "exact-toolchain::java",
-      "ok": false,
-      "detail": "REFUSED EXACT_TOOLCHAIN_MISMATCH:java:expected=21.0.11"
+      "ok": true,
+      "detail": "OK 21.0.11"
     },
     {
       "check": "exact-toolchain::csharp",
-      "ok": false,
-      "detail": "REFUSED EXACT_TOOLCHAIN_UNAVAILABLE:dotnet"
+      "ok": true,
+      "detail": "OK 10.0.301"
     }
   ]
 }

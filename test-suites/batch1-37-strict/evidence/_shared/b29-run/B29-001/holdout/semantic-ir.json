@@ -1,0 +1,83 @@
+{
+  "analyzer": "JDK JavacTask Tree API",
+  "analyzer_version": "21.0.11",
+  "diagnostics": [],
+  "functions": [
+    {
+      "body": [
+        {
+          "condition": {
+            "kind": "binary",
+            "left": {
+              "kind": "name",
+              "value": "value"
+            },
+            "operator": ">",
+            "right": {
+              "kind": "name",
+              "value": "upper"
+            }
+          },
+          "else": [],
+          "kind": "if",
+          "then": [
+            {
+              "expression": {
+                "kind": "name",
+                "value": "upper"
+              },
+              "kind": "return"
+            }
+          ]
+        },
+        {
+          "condition": {
+            "kind": "binary",
+            "left": {
+              "kind": "name",
+              "value": "value"
+            },
+            "operator": "<",
+            "right": {
+              "kind": "literal",
+              "value": 0
+            }
+          },
+          "else": [],
+          "kind": "if",
+          "then": [
+            {
+              "expression": {
+                "kind": "literal",
+                "value": 0
+              },
+              "kind": "return"
+            }
+          ]
+        },
+        {
+          "expression": {
+            "kind": "name",
+            "value": "value"
+          },
+          "kind": "return"
+        }
+      ],
+      "name": "clamp",
+      "parameters": [
+        {
+          "name": "value",
+          "type": "integer"
+        },
+        {
+          "name": "upper",
+          "type": "integer"
+        }
+      ],
+      "return_type": "integer"
+    }
+  ],
+  "schema_version": "1.0.0",
+  "source_file": "Clamp.java",
+  "source_language": "java"
+}

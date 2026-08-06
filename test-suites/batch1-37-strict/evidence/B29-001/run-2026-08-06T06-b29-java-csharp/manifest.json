@@ -1,0 +1,104 @@
+{
+  "manifest_version": 2,
+  "manifest_id": "B29-001-run-2026-08-06T06-b29-java-csharp",
+  "case_id": "B29-001",
+  "case_digest": "sha256:5ff418bfdfe5870e2f08b7959d44777cab054d017156c899c7fd1f1797ece265",
+  "catalog_digest": "sha256:1b73b935f8ef2c15c1e0c2fcf2416a45eb076bca910ac8ee1d8363907312d6e5",
+  "artifact_digest": "sha256:f79f54b327f42d5a17200852f9efbb1f87050554bbe1e322320b0a1e9bf408c8",
+  "environment_digest": "sha256:086eb8a255305e352e87b458d7f8070748dcac5c2009cd1a456e5bd85c6c04fe",
+  "execution_kind": "real",
+  "started_at": "2026-08-06T12:52:15Z",
+  "finished_at": "2026-08-06T12:52:24Z",
+  "executor": {
+    "id": "zpchoney@gmail.com",
+    "role": "executor"
+  },
+  "authorization_refs": [
+    "CHG-2026-08-06-B29"
+  ],
+  "files": [
+    {
+      "role": "artifact-digest",
+      "path": "artifact-manifest.json",
+      "sha256": "f79f54b327f42d5a17200852f9efbb1f87050554bbe1e322320b0a1e9bf408c8",
+      "bytes": 7314,
+      "immutable": true
+    },
+    {
+      "role": "coverage-link",
+      "path": "coverage-link.json",
+      "sha256": "9eb9501bc475a6960179564ae11c7845346a5760eb18444044a216863d562de1",
+      "bytes": 272,
+      "immutable": true
+    },
+    {
+      "role": "environment-binding",
+      "path": "environment-binding.json",
+      "sha256": "086eb8a255305e352e87b458d7f8070748dcac5c2009cd1a456e5bd85c6c04fe",
+      "bytes": 195,
+      "immutable": true
+    },
+    {
+      "role": "input-manifest",
+      "path": "input-manifest.json",
+      "sha256": "33739b99da3f116286f92ec0ddd7c2fc8f4bc78a43c4776bde1b211550294500",
+      "bytes": 1905,
+      "immutable": true
+    },
+    {
+      "role": "raw-execution-log",
+      "path": "raw-log.txt",
+      "sha256": "6c09e729392fd9dd8d8719c063887f1fc0b3790902b3f294b751a9cde2344f3a",
+      "bytes": 3687,
+      "immutable": true
+    },
+    {
+      "role": "replay-command",
+      "path": "replay-command.txt",
+      "sha256": "3ed0c39dde99bcc5ce2a45414e662a4551572b70049aacc2b907751401694956",
+      "bytes": 139,
+      "immutable": true
+    },
+    {
+      "role": "state-before-after",
+      "path": "state-before-after.json",
+      "sha256": "e9d3c4a809ddff28f0e04c89784a9c29db6c8b31531368e56a604cd72c7856d5",
+      "bytes": 1380,
+      "immutable": true
+    },
+    {
+      "role": "toolchain-version",
+      "path": "toolchain-versions.json",
+      "sha256": "d7e3d23b281f250737e4829779fa53d813ed15aa35404f6d5b9149330bf56c82",
+      "bytes": 585,
+      "immutable": true
+    }
+  ],
+  "corpora": [
+    {
+      "kind": "development",
+      "digest": "sha256:7ea052bf88314fd98b69312ae398560f2fb932d58dde3790d3a05e70b08df49c",
+      "path": "routes/java-to-csharp/corpus/development"
+    },
+    {
+      "kind": "holdout",
+      "digest": "sha256:e559fae998365f7e4df7cb00462e5141d963f48434c3197c37f121e8a1046932",
+      "path": "routes/java-to-csharp/corpus/holdout",
+      "independent": true,
+      "authoring_access": false
+    },
+    {
+      "kind": "representative",
+      "digest": "sha256:c931174c6251ce09410010b3d2b2488882e74857193f7e135727d7cc55c8b604",
+      "path": "routes/java-to-csharp/corpus/real-repository",
+      "independent": true,
+      "authoring_access": false
+    }
+  ],
+  "verifier": {
+    "id": "zpclord@sina.com",
+    "role": "independent-verifier",
+    "independent": true,
+    "note": "独立复核 java-to-csharp 路线 typed-pure-function-v1 作用域的执行与证据"
+  }
+}
