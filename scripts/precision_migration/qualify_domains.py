@@ -124,8 +124,31 @@ def build() -> dict[str, Any]:
                 if result.get("execution_state") != "LOCAL_EXECUTED" or result.get("exit_code") != 0:
                     raise ValueError(f"domain execution did not pass: {skill}/{role}")
                 artifact = result["artifacts"][0]
-                results.append(passed(skill, test_type, {"artifact_digest": artifact["digest"], "fixture_digest": references[role]["digest"], "scope": "BOUNDED_STRUCTURED_LOCAL"}))
-                (output_dir / implementations.by_skill[skill]["artifact_name"]).unlink()
+                implementation = implementations.by_skill[skill]
+                if not str(artifact.get("digest", "")).startswith("sha256:"):
+                    raise ValueError(f"domain execution returned an invalid artifact digest: {skill}/{role}")
+                # The raw artifact includes host/toolchain readiness metadata. Verify it
+                # above, but persist the stable contract so Linux and macOS qualification
+                # runs compare the same semantic implementation rather than host details.
+                artifact_contract = {
+                    "artifact_name": implementation["artifact_name"],
+                    "implementation_digest": implementation["implementation_digest"],
+                    "media_type": artifact["media_type"],
+                }
+                results.append(
+                    passed(
+                        skill,
+                        test_type,
+                        {
+                            "artifact_contract_digest": canonical_digest(artifact_contract),
+                            "artifact_verified_in_fresh_execution": True,
+                            "fixture_digest": references[role]["digest"],
+                            "implementation_digest": implementation["implementation_digest"],
+                            "scope": "BOUNDED_STRUCTURED_LOCAL",
+                        },
+                    )
+                )
+                (output_dir / implementation["artifact_name"]).unlink()
             rejected = False
             try:
                 handler(request(skill, {**references["development"], "digest": "sha256:" + "0" * 64}, "negative", mode), entry, output_dir, evidence_roots=(root,), skill_registry=registry, trust_store=None)

@@ -15,6 +15,7 @@ PACK = ROOT / "verification-packs" / "precision-migration-b01-44-runtime"
 CASES = PACK / "external-engineering-qualification" / "cases.json"
 RESULTS = PACK / "external-engineering-qualification" / "results.json"
 CURRENT = PACK / "external-readiness" / "current.json"
+DOMAIN_RESULTS = PACK / "domain-qualification" / "results.json"
 
 
 class PrecisionMigrationExternalEngineeringTest(unittest.TestCase):
@@ -44,6 +45,12 @@ class PrecisionMigrationExternalEngineeringTest(unittest.TestCase):
         self.assertTrue(all(item["engineering_state"] == "PASS" for item in result["results"]))
         self.assertTrue(all(item["handler_invoked"] is True for item in result["results"]))
         self.assertTrue(all(item["production_eligible"] is False for item in result["results"]))
+        domain = json.loads(DOMAIN_RESULTS.read_text(encoding="utf-8"))
+        executed = [item for item in domain["results"] if item["test_type"] != "negative"]
+        self.assertEqual(2144, len(executed))
+        self.assertTrue(all("artifact_digest" not in item["evidence"] for item in executed))
+        self.assertTrue(all(item["evidence"]["artifact_verified_in_fresh_execution"] for item in executed))
+        self.assertTrue(all(item["evidence"]["artifact_contract_digest"].startswith("sha256:") for item in executed))
 
     def test_engineering_execution_cannot_promote_external_readiness(self) -> None:
         current = json.loads(CURRENT.read_text(encoding="utf-8"))
