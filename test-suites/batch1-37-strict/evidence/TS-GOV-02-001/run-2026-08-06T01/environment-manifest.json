@@ -1,0 +1,13 @@
+{
+  "environment_manifest_version": 1,
+  "os": "Linux",
+  "os_release": "6.8.0-124-generic",
+  "machine": "aarch64",
+  "python": "3.10.12",
+  "python_implementation": "CPython",
+  "repository_commit": "1e4dfb94b3b5a1acb72630284ac94955ab3283fe",
+  "repository_dirty": true,
+  "locale": "C.UTF-8",
+  "timezone": "UTC",
+  "network": "not-required"
+}

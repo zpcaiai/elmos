@@ -1,0 +1,102 @@
+{
+  "case_id": "TS-GOV-01-001",
+  "severity": "P0",
+  "test_type": "happy_path",
+  "steps": [
+    {
+      "id": "catalog",
+      "command": [
+        "python3",
+        "scripts/test-suite/validate_test_catalog.py",
+        "test-suites/batch1-37-strict/cases/catalog.json"
+      ],
+      "expect": "exit-zero",
+      "exit_code": 0,
+      "met_expectation": true
+    },
+    {
+      "id": "coverage",
+      "command": [
+        "python3",
+        "scripts/test-suite/validate_coverage_matrix.py",
+        "test-suites/batch1-37-strict/coverage-matrix.json"
+      ],
+      "expect": "exit-zero",
+      "exit_code": 0,
+      "met_expectation": true
+    },
+    {
+      "id": "skills",
+      "command": [
+        "python3",
+        "scripts/test-suite/validate_skill_bundle.py",
+        "."
+      ],
+      "expect": "exit-zero",
+      "exit_code": 0,
+      "met_expectation": true
+    },
+    {
+      "id": "controls",
+      "command": [
+        "python3",
+        "scripts/test-suite/probes.py",
+        "control-manifest"
+      ],
+      "expect": "exit-zero",
+      "exit_code": 0,
+      "met_expectation": true
+    },
+    {
+      "id": "gate-refuses",
+      "command": [
+        "python3",
+        "scripts/test-suite/probes.py",
+        "not-run-not-pass"
+      ],
+      "expect": "exit-zero",
+      "exit_code": 0,
+      "met_expectation": true
+    }
+  ],
+  "assertion_trace": [
+    {
+      "index": 0,
+      "assertion": "功能结果、状态变化和Evidence必须与契约一致",
+      "established_by": [
+        "catalog",
+        "coverage",
+        "skills"
+      ]
+    },
+    {
+      "index": 1,
+      "assertion": "任何Release都可追溯到原始Evidence",
+      "established_by": [
+        "controls"
+      ]
+    },
+    {
+      "index": 2,
+      "assertion": "P0/P1覆盖完整",
+      "established_by": [
+        "coverage"
+      ]
+    },
+    {
+      "index": 3,
+      "assertion": "未执行不等于通过",
+      "established_by": [
+        "gate-refuses"
+      ]
+    },
+    {
+      "index": 4,
+      "assertion": "任何失败均不可被摘要状态覆盖",
+      "established_by": [
+        "gate-refuses"
+      ]
+    }
+  ],
+  "all_steps_met_expectation": true
+}

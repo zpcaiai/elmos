@@ -1,0 +1,40 @@
+# case TS-GOV-02-003
+# started_at 2026-08-06T10:00:15Z
+# run_id run-2026-08-06T01
+
+$ python3 scripts/test-suite/probes.py coverage-gap
+=== probe: coverage-gap ===
+[PASS] pristine-coverage-accepted
+[PASS] dropped-coverage-entry-rejected
+[PASS] unknown-case-reference-rejected
+[PASS] catalog-still-authoritative
+
+4/4 controls held
+# exit=0 expect=exit-zero met=True
+
+$ python3 scripts/test-suite/probes.py traceability
+=== probe: traceability ===
+[PASS] catalog-count-matches-declaration :: 408 vs 408
+[PASS] every-batch-has-a-P0-positive-case :: missing=[]
+[PASS] every-batch-has-a-P0-negative-case :: missing=[]
+[PASS] every-case-declares-required-evidence :: []
+[PASS] every-case-binds-an-implemented-skill :: []
+[PASS] append-only-case-history-exists
+[PASS] history-covers-every-live-case :: []
+[PASS] history-is-never-truncated :: 408 >= 408
+
+8/8 controls held
+# exit=0 expect=exit-zero met=True
+
+$ python3 scripts/test-suite/probes.py not-run-not-pass
+=== probe: not-run-not-pass ===
+[PASS] gate-exits-non-zero-when-nothing-ran
+[PASS] decision-is-blocked
+[PASS] field-evidence-status-is-not-run
+[PASS] every-p0-p1-not-run-is-a-blocker
+[PASS] zero-cases-counted-as-passed
+[PASS] unsigned-self-declared-pass-blocked :: ['passed results lack an externally trusted signed certification request']
+
+6/6 controls held
+# exit=0 expect=exit-zero met=True
+

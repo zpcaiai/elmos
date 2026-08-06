@@ -1,0 +1,91 @@
+{
+  "case_id": "TS-GOV-01-005",
+  "severity": "P0",
+  "test_type": "security",
+  "steps": [
+    {
+      "id": "path-escape",
+      "command": [
+        "python3",
+        "scripts/test-suite/probes.py",
+        "path-escape"
+      ],
+      "expect": "exit-zero",
+      "exit_code": 0,
+      "met_expectation": true
+    },
+    {
+      "id": "identity",
+      "command": [
+        "python3",
+        "scripts/test-suite/probes.py",
+        "identity-separation"
+      ],
+      "expect": "exit-zero",
+      "exit_code": 0,
+      "met_expectation": true
+    },
+    {
+      "id": "secrets",
+      "command": [
+        "python3",
+        "scripts/test-suite/probes.py",
+        "fixture-factory"
+      ],
+      "expect": "exit-zero",
+      "exit_code": 0,
+      "met_expectation": true
+    },
+    {
+      "id": "not-run",
+      "command": [
+        "python3",
+        "scripts/test-suite/probes.py",
+        "not-run-not-pass"
+      ],
+      "expect": "exit-zero",
+      "exit_code": 0,
+      "met_expectation": true
+    }
+  ],
+  "assertion_trace": [
+    {
+      "index": 0,
+      "assertion": "必须拒绝并产生不可抵赖审计，且无数据和Secret泄漏",
+      "established_by": [
+        "path-escape",
+        "identity",
+        "secrets"
+      ]
+    },
+    {
+      "index": 1,
+      "assertion": "任何Release都可追溯到原始Evidence",
+      "established_by": [
+        "path-escape"
+      ]
+    },
+    {
+      "index": 2,
+      "assertion": "P0/P1覆盖完整",
+      "established_by": [
+        "not-run"
+      ]
+    },
+    {
+      "index": 3,
+      "assertion": "未执行不等于通过",
+      "established_by": [
+        "not-run"
+      ]
+    },
+    {
+      "index": 4,
+      "assertion": "任何失败均不可被摘要状态覆盖",
+      "established_by": [
+        "not-run"
+      ]
+    }
+  ],
+  "all_steps_met_expectation": true
+}

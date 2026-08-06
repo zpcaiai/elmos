@@ -1,0 +1,639 @@
+{
+  "bindings_version": 1,
+  "suite_id": "batch1-37-strict",
+  "description": "Executable bindings for the strict suite's own governance cases. Every step is a real command; assertion_map records which step establishes each catalog assertion, and is the basis for source_target_trace_coverage.",
+  "artifact_scope": [
+    "scripts/test-suite/*.py",
+    "schemas/test-suite/*.json",
+    "test-suites/batch1-37-strict/suite.json",
+    "test-suites/batch1-37-strict/strict-profile.json",
+    "test-suites/batch1-37-strict/coverage-matrix.json",
+    "test-suites/batch1-37-strict/cases/catalog.json",
+    "test-suites/batch1-37-strict/cases/manifest.json"
+  ],
+  "corpora": {
+    "development": "test-suites/batch1-37-strict/cases/catalog.json",
+    "negative": "scripts/test-suite/probes.py"
+  },
+  "cases": {
+    "TS-GOV-01-001": {
+      "steps": [
+        {
+          "id": "catalog",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/validate_test_catalog.py",
+            "test-suites/batch1-37-strict/cases/catalog.json"
+          ]
+        },
+        {
+          "id": "coverage",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/validate_coverage_matrix.py",
+            "test-suites/batch1-37-strict/coverage-matrix.json"
+          ]
+        },
+        {
+          "id": "skills",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/validate_skill_bundle.py",
+            "."
+          ]
+        },
+        {
+          "id": "controls",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/probes.py",
+            "control-manifest"
+          ]
+        },
+        {
+          "id": "gate-refuses",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/probes.py",
+            "not-run-not-pass"
+          ],
+          "note": "the orchestrator's success path ends in a correct refusal; this probe asserts the refusal machinery and exits zero only when every control holds"
+        }
+      ],
+      "assertion_map": {
+        "0": [
+          "catalog",
+          "coverage",
+          "skills"
+        ],
+        "1": [
+          "controls"
+        ],
+        "2": [
+          "coverage"
+        ],
+        "3": [
+          "gate-refuses"
+        ],
+        "4": [
+          "gate-refuses"
+        ]
+      }
+    },
+    "TS-GOV-01-003": {
+      "steps": [
+        {
+          "id": "negative-inputs",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/probes.py",
+            "negative-inputs"
+          ]
+        },
+        {
+          "id": "result-shape",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/probes.py",
+            "environment-invalid"
+          ]
+        },
+        {
+          "id": "controls",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/probes.py",
+            "control-manifest"
+          ]
+        },
+        {
+          "id": "not-run",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/probes.py",
+            "not-run-not-pass"
+          ]
+        }
+      ],
+      "assertion_map": {
+        "0": [
+          "negative-inputs",
+          "result-shape"
+        ],
+        "1": [
+          "controls"
+        ],
+        "2": [
+          "controls"
+        ],
+        "3": [
+          "not-run"
+        ],
+        "4": [
+          "not-run"
+        ]
+      }
+    },
+    "TS-GOV-01-005": {
+      "steps": [
+        {
+          "id": "path-escape",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/probes.py",
+            "path-escape"
+          ]
+        },
+        {
+          "id": "identity",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/probes.py",
+            "identity-separation"
+          ]
+        },
+        {
+          "id": "secrets",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/probes.py",
+            "fixture-factory"
+          ]
+        },
+        {
+          "id": "not-run",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/probes.py",
+            "not-run-not-pass"
+          ]
+        }
+      ],
+      "assertion_map": {
+        "0": [
+          "path-escape",
+          "identity",
+          "secrets"
+        ],
+        "1": [
+          "path-escape"
+        ],
+        "2": [
+          "not-run"
+        ],
+        "3": [
+          "not-run"
+        ],
+        "4": [
+          "not-run"
+        ]
+      }
+    },
+    "TS-GOV-02-001": {
+      "steps": [
+        {
+          "id": "traceability",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/probes.py",
+            "traceability"
+          ]
+        },
+        {
+          "id": "coverage",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/validate_coverage_matrix.py",
+            "test-suites/batch1-37-strict/coverage-matrix.json"
+          ]
+        },
+        {
+          "id": "controls",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/probes.py",
+            "control-manifest"
+          ]
+        },
+        {
+          "id": "not-run",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/probes.py",
+            "not-run-not-pass"
+          ]
+        }
+      ],
+      "assertion_map": {
+        "0": [
+          "coverage",
+          "controls"
+        ],
+        "1": [
+          "traceability"
+        ],
+        "2": [
+          "traceability"
+        ],
+        "3": [
+          "traceability"
+        ],
+        "4": [
+          "not-run"
+        ]
+      }
+    },
+    "TS-GOV-02-003": {
+      "steps": [
+        {
+          "id": "coverage-gap",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/probes.py",
+            "coverage-gap"
+          ]
+        },
+        {
+          "id": "traceability",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/probes.py",
+            "traceability"
+          ]
+        },
+        {
+          "id": "not-run",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/probes.py",
+            "not-run-not-pass"
+          ]
+        }
+      ],
+      "assertion_map": {
+        "0": [
+          "coverage-gap"
+        ],
+        "1": [
+          "traceability"
+        ],
+        "2": [
+          "traceability"
+        ],
+        "3": [
+          "traceability"
+        ],
+        "4": [
+          "not-run"
+        ]
+      }
+    },
+    "TS-GOV-02-005": {
+      "steps": [
+        {
+          "id": "skill-binding",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/probes.py",
+            "skill-binding"
+          ]
+        },
+        {
+          "id": "path-escape",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/probes.py",
+            "path-escape"
+          ]
+        },
+        {
+          "id": "traceability",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/probes.py",
+            "traceability"
+          ]
+        },
+        {
+          "id": "not-run",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/probes.py",
+            "not-run-not-pass"
+          ]
+        }
+      ],
+      "assertion_map": {
+        "0": [
+          "skill-binding",
+          "path-escape"
+        ],
+        "1": [
+          "traceability"
+        ],
+        "2": [
+          "traceability"
+        ],
+        "3": [
+          "traceability"
+        ],
+        "4": [
+          "not-run"
+        ]
+      }
+    },
+    "TS-GOV-03-001": {
+      "steps": [
+        {
+          "id": "fixture-factory",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/probes.py",
+            "fixture-factory"
+          ]
+        },
+        {
+          "id": "controls",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/probes.py",
+            "control-manifest"
+          ]
+        },
+        {
+          "id": "not-run",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/probes.py",
+            "not-run-not-pass"
+          ]
+        }
+      ],
+      "assertion_map": {
+        "0": [
+          "controls"
+        ],
+        "1": [
+          "fixture-factory"
+        ],
+        "2": [
+          "fixture-factory"
+        ],
+        "3": [
+          "fixture-factory"
+        ],
+        "4": [
+          "not-run"
+        ]
+      }
+    },
+    "TS-GOV-03-003": {
+      "steps": [
+        {
+          "id": "environment-invalid",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/probes.py",
+            "environment-invalid"
+          ]
+        },
+        {
+          "id": "fixture-factory",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/probes.py",
+            "fixture-factory"
+          ]
+        },
+        {
+          "id": "not-run",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/probes.py",
+            "not-run-not-pass"
+          ]
+        }
+      ],
+      "assertion_map": {
+        "0": [
+          "environment-invalid"
+        ],
+        "1": [
+          "fixture-factory"
+        ],
+        "2": [
+          "fixture-factory"
+        ],
+        "3": [
+          "fixture-factory"
+        ],
+        "4": [
+          "not-run"
+        ]
+      }
+    },
+    "TS-GOV-04-001": {
+      "steps": [
+        {
+          "id": "evidence-valid",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/probes.py",
+            "evidence-valid"
+          ]
+        },
+        {
+          "id": "identity",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/probes.py",
+            "identity-separation"
+          ]
+        },
+        {
+          "id": "tamper",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/probes.py",
+            "evidence-tamper"
+          ]
+        },
+        {
+          "id": "not-run",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/probes.py",
+            "not-run-not-pass"
+          ]
+        }
+      ],
+      "assertion_map": {
+        "0": [
+          "evidence-valid"
+        ],
+        "1": [
+          "tamper"
+        ],
+        "2": [
+          "tamper"
+        ],
+        "3": [
+          "identity"
+        ],
+        "4": [
+          "not-run"
+        ]
+      }
+    },
+    "TS-GOV-04-003": {
+      "steps": [
+        {
+          "id": "tamper",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/probes.py",
+            "evidence-tamper"
+          ]
+        },
+        {
+          "id": "environment-invalid",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/probes.py",
+            "environment-invalid"
+          ]
+        },
+        {
+          "id": "identity",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/probes.py",
+            "identity-separation"
+          ]
+        },
+        {
+          "id": "not-run",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/probes.py",
+            "not-run-not-pass"
+          ]
+        }
+      ],
+      "assertion_map": {
+        "0": [
+          "tamper",
+          "environment-invalid"
+        ],
+        "1": [
+          "tamper"
+        ],
+        "2": [
+          "tamper"
+        ],
+        "3": [
+          "identity"
+        ],
+        "4": [
+          "not-run"
+        ]
+      }
+    },
+    "TS-GOV-04-005": {
+      "steps": [
+        {
+          "id": "identity",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/probes.py",
+            "identity-separation"
+          ]
+        },
+        {
+          "id": "not-run",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/probes.py",
+            "not-run-not-pass"
+          ]
+        },
+        {
+          "id": "path-escape",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/probes.py",
+            "path-escape"
+          ]
+        },
+        {
+          "id": "tamper",
+          "expect": "exit-zero",
+          "command": [
+            "python3",
+            "scripts/test-suite/probes.py",
+            "evidence-tamper"
+          ]
+        }
+      ],
+      "assertion_map": {
+        "0": [
+          "path-escape",
+          "identity"
+        ],
+        "1": [
+          "tamper"
+        ],
+        "2": [
+          "tamper"
+        ],
+        "3": [
+          "identity"
+        ],
+        "4": [
+          "not-run"
+        ]
+      }
+    }
+  }
+}

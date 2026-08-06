@@ -1,0 +1,74 @@
+{
+  "manifest_version": 2,
+  "manifest_id": "TS-GOV-01-005-run-2026-08-06T01",
+  "case_id": "TS-GOV-01-005",
+  "case_digest": "sha256:3e325a052b03ae2c3cf68268e2f521ec345752cccdd967cbb42aabcb374ec8f7",
+  "catalog_digest": "sha256:1b73b935f8ef2c15c1e0c2fcf2416a45eb076bca910ac8ee1d8363907312d6e5",
+  "artifact_digest": "sha256:22b9b85afe61db23d2023f4aa4c5c28c5ca4d2f1a7182065785991d71844adff",
+  "environment_digest": "sha256:d443b81a270258901a61d22bbaedb24b96efa461c5305e761a7649d839400c0d",
+  "execution_kind": "real",
+  "started_at": "2026-08-06T09:57:02Z",
+  "finished_at": "2026-08-06T09:57:03Z",
+  "executor": {
+    "id": "elmos-strict-runner@automation",
+    "role": "executor"
+  },
+  "authorization_refs": [
+    "LOCAL-DEV-2026-08-06"
+  ],
+  "files": [
+    {
+      "role": "raw-log",
+      "path": "raw-log.txt",
+      "sha256": "eeff02186f2feb578ee04cefe872fdbc97fe93e7684345315897c1dcce3cf96a",
+      "bytes": 2030,
+      "immutable": true
+    },
+    {
+      "role": "artifact-digest",
+      "path": "artifact-manifest.json",
+      "sha256": "22b9b85afe61db23d2023f4aa4c5c28c5ca4d2f1a7182065785991d71844adff",
+      "bytes": 6957,
+      "immutable": true
+    },
+    {
+      "role": "environment-manifest",
+      "path": "environment-manifest.json",
+      "sha256": "57ccf221c1eb00031101a2b2310ce115d2309a149bd48d05aa89b011e75a3d5f",
+      "bytes": 347,
+      "immutable": true
+    },
+    {
+      "role": "environment-binding",
+      "path": "environment-binding.json",
+      "sha256": "d443b81a270258901a61d22bbaedb24b96efa461c5305e761a7649d839400c0d",
+      "bytes": 195,
+      "immutable": true
+    },
+    {
+      "role": "case-result",
+      "path": "case-result.json",
+      "sha256": "c9dd5f6fcc1555911ba35af76eaf888c4e48f5e30e405cbee0d7aeee367792f7",
+      "bytes": 1858,
+      "immutable": true
+    },
+    {
+      "role": "gate-decision",
+      "path": "gate-decision.json",
+      "sha256": "89ce63c9c2f3315a2ecd9288afae70068629c5654ce9eabf5f7f5d50a15eb97c",
+      "bytes": 13586,
+      "immutable": true
+    }
+  ],
+  "corpora": [
+    {
+      "kind": "development",
+      "digest": "sha256:1b73b935f8ef2c15c1e0c2fcf2416a45eb076bca910ac8ee1d8363907312d6e5"
+    },
+    {
+      "kind": "negative",
+      "digest": "sha256:c5c7e11c7755e75b044736ec8b79d9ad315ddf69f87e5a57a701af0586443711"
+    }
+  ],
+  "verification_status": "pending-independent-verifier"
+}
