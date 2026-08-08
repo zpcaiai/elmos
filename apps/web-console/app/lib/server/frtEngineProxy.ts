@@ -313,6 +313,35 @@ async function forward(
   }
 }
 
+async function attachPersistedAudit(
+  context: { tenantId: string; actor: string },
+  scope: Record<string, string>,
+  result: { status: number; body: unknown },
+): Promise<{ status: number; body: unknown }> {
+  if (result.status < 200 || result.status >= 300 || !result.body
+    || typeof result.body !== "object" || Array.isArray(result.body)) return result;
+  const body = result.body as Record<string, unknown>;
+  if (typeof body.runId !== "string" || !/^[a-f0-9]{24}$/.test(body.runId)) return result;
+  try {
+    const audit = await forward(
+      context,
+      scope,
+      `/engine/v1/frt/runs/${body.runId}/audit`,
+      ["frt:read"],
+    );
+    if (audit.status !== 200 || !audit.body || typeof audit.body !== "object"
+      || Array.isArray(audit.body)) return result;
+    const events = (audit.body as Record<string, unknown>).audit;
+    return Array.isArray(events)
+      ? { ...result, body: { ...body, audit: events } }
+      : result;
+  } catch {
+    // The mutation is already durable. A transient read failure must not turn
+    // success into an ambiguous retry; client polling remains the fallback.
+    return result;
+  }
+}
+
 export async function createFrtConsoleRun(request: NextRequest, rawBody: unknown) {
   const context = authorizedContext(request, "generation:execute");
   const value = validateFrtConsoleRunRequest(rawBody);
@@ -328,7 +357,7 @@ export async function createFrtConsoleRun(request: NextRequest, rawBody: unknown
   const pathname = value.verificationSubject
     ? `/engine/v1/frt/skills/${value.skillId}/runs/${value.verificationSubject.runId}/verify`
     : `/engine/v1/frt/skills/${value.skillId}/runs`;
-  return forward(context, scope, pathname,
+  const result = await forward(context, scope, pathname,
     value.action === "VERIFY" ? ["frt:run", "frt:evidence"] : ["frt:run"], {
       method: "POST",
       body: JSON.stringify({
@@ -350,6 +379,7 @@ export async function createFrtConsoleRun(request: NextRequest, rawBody: unknown
         ...(value.input ? { input: value.input } : {}),
       }),
     });
+  return attachPersistedAudit(context, scope, result);
 }
 
 export async function getFrtConsoleRun(
@@ -370,10 +400,11 @@ export async function transitionFrtConsoleRun(
 ) {
   const context = authorizedContext(request, "generation:execute");
   const scope = consoleResourceScope(request, context);
-  return forward(context, scope, `/engine/v1/frt/runs/${runId}/${operation}`, ["frt:run"], {
+  const result = await forward(context, scope, `/engine/v1/frt/runs/${runId}/${operation}`, ["frt:run"], {
     method: "POST",
     body: JSON.stringify({ schemaVersion: "1.0", expectedVersion }),
   });
+  return attachPersistedAudit(context, scope, result);
 }
 
 /**

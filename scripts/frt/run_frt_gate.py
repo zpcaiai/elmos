@@ -22,6 +22,7 @@ REQUIRED_LOCAL = (
     "semantic_skill_coverage",
     "durable_run_lifecycle",
     "real_route_build",
+    "runnable_route_smoke",
     "runtime_tests",
     "web_build",
     "browser_journey",

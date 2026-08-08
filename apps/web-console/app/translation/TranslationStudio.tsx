@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { Icon } from "../components/Icon";
 import { StatusChip } from "../components/StatusChip";
 import { useAccountSession } from "../components/AccountSessionProvider";
+import { SmokeRunButton } from "../components/SmokeRunButton";
 import { directedLanguageRoutes, translationLanguages } from "../lib/businessLines";
 import type {
   DirectedLanguageRoute,
@@ -872,6 +873,12 @@ export function TranslationStudio() {
             {job.reason && <p className="warning-text">{job.reason}</p>}
             <pre aria-label="跨语言任务日志">{job.logs.map((entry) => `[${entry.stream}] ${entry.message}`).join("\n") || "日志尚未产生。"}</pre>
           </div>
+        )}
+        {job?.artifactReady && (
+          // 转换完成后的一键运行入口。projectRef 约定为任务 ID：转换产物需落在
+          // ${ELMOS_SMOKE_PROJECTS_ROOT}/<jobId> 且已挂载 Batch 46 冒烟包，
+          // 否则面板会如实显示 SMOKE_PACK_NOT_FOUND，而不是假装可以运行。
+          <SmokeRunButton projectRef={job.id} />
         )}
       </section>
 

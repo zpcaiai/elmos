@@ -149,3 +149,29 @@ test("each added target emitter round-trips through its source extractor", () =>
     assert.deepEqual(ir.accessibility, expected.accessibility, target);
   }
 });
+
+test("WeChat Mini Program extraction ignores project bootstrap while requiring the Page script", () => {
+  const files = withoutDeclaredIr(createDirectionalRouteFixture("WeChat Mini Program"));
+  const derived = derive("WeChat Mini Program", files);
+  assert.deepEqual(derived.gaps, []);
+  assert.ok(derived.ir);
+
+  delete files["pages/index/index.js"];
+  const missingPageScript = derive("WeChat Mini Program", files);
+  assert.equal(missingPageScript.ir, undefined);
+  assert.ok(missingPageScript.gaps.some(gap =>
+    gap.code === "FRT_MINIPROGRAM_PAGE_CARDINALITY_UNSUPPORTED" && gap.blocking));
+});
+
+test("ArkUI extraction ignores EntryAbility bootstrap while requiring the page component", () => {
+  const files = withoutDeclaredIr(createDirectionalRouteFixture("ArkUI"));
+  const derived = derive("ArkUI", files);
+  assert.deepEqual(derived.gaps, []);
+  assert.ok(derived.ir);
+
+  delete files["entry/src/main/ets/pages/Index.ets"];
+  const missingPage = derive("ArkUI", files);
+  assert.equal(missingPage.ir, undefined);
+  assert.ok(missingPage.gaps.some(gap =>
+    gap.code === "FRT_ARKUI_MODULE_CARDINALITY_UNSUPPORTED" && gap.blocking));
+});

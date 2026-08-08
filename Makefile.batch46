@@ -4,6 +4,7 @@ BATCH46_TTL ?= 600
 .PHONY: batch46-check batch46-scaffold batch46-run batch46-validate batch46-gate batch46-lease-status batch46-lease-stop
 
 batch46-check:
+	$(BATCH46_PYTHON) scripts/batch46/validate_skill_bundle.py
 	$(BATCH46_PYTHON) -m unittest discover -s tests/batch46 -p 'test_*.py'
 
 batch46-scaffold:

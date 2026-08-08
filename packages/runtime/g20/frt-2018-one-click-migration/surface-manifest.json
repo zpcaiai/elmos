@@ -26,6 +26,7 @@
   "source_sha256": "sha256:7b03c8a224470e78f4a66a44bd1fcf4063561b2e658d93ec620a1be2ebdeea32",
   "implementation_paths": [
     "engines/frontend-client-engine/src/frt-runtime.ts",
+    "engines/frontend-client-engine/src/frt-runnable-target.ts",
     "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
     "engines/frontend-client-engine/src/frt-production-contract.ts",
     "engines/frontend-client-engine/src/frt-handler-registry.generated.ts"

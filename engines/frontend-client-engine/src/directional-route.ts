@@ -21,6 +21,7 @@ import {
   deriveMiniProgramPortableUiIr,
   deriveVue2PortableUiIr,
 } from "./additional-ui-ir.js";
+import { attachRunnableTarget } from "./frt-runnable-target.js";
 
 export {
   frtRouteStacks,
@@ -584,7 +585,10 @@ function emitTarget(ir: PortableUiIr, target: FrtRouteStack): Record<string, str
         : target === "WeChat Mini Program" ? emitMiniProgram(ir)
           : target === "ArkUI" ? emitArkUi(ir)
             : emitFlutter(ir);
-  return { ...files, "frt-route.json": routeMetadata(ir, target) };
+  return {
+    ...attachRunnableTarget(files, ir, target),
+    "frt-route.json": routeMetadata(ir, target),
+  };
 }
 
 function validateGeneratedTarget(target: FrtRouteStack, files: Readonly<Record<string, string>>): void {

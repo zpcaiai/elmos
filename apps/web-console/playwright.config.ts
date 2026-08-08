@@ -31,7 +31,10 @@ if (!uvPath || !existsSync(uvPath)) {
 }
 const webPort = Number.parseInt(process.env.ELMOS_E2E_PORT ?? "3200", 10);
 const webServerMode = process.env.ELMOS_E2E_WEB_SERVER_MODE ?? "development";
-const webServerTimeout = webServerMode === "production" ? 300_000 : 120_000;
+// Cold Webpack/Turbopack compilation on a clean CI runner can exceed two minutes.
+// Keep a bounded timeout, but give both modes the same production-sized budget so
+// infrastructure startup is not misreported as a browser assertion failure.
+const webServerTimeout = 300_000;
 const webServerBundler = process.env.ELMOS_E2E_WEB_BUNDLER ?? "turbopack";
 const chromiumChannel = process.env.ELMOS_E2E_CHROMIUM_CHANNEL?.trim();
 if (!["development", "production"].includes(webServerMode)) {
@@ -49,9 +52,19 @@ const auditFixtureKey = "elmos-frt-local-audit-fixture-key";
 const auditFixtureTenant = "frt-local-qualification";
 const auditFixtureActor = "playwright-qualification";
 const engineRoot = path.resolve(repositoryRoot, "engines/frontend-client-engine");
+const engineServer = path.join(engineRoot, "dist/src/server.js");
+const skipEngineBuild = process.env.ELMOS_E2E_ENGINE_SKIP_BUILD === "true";
+if (skipEngineBuild && !existsSync(engineServer)) {
+  throw new Error("ELMOS_E2E_ENGINE_BUILD_REQUIRED");
+}
 const frtSecurityRoot = path.join(runnerRoot, "frt-security");
 const frtEvidenceRoot = path.join(runnerRoot, "frt-evidence");
 const frtRunStoreRoot = path.join(runnerRoot, "frt-runs");
+const smokeProjectsRoot = path.join(runnerRoot, "smoke-projects");
+const smokeRuntimeStateRoot = path.join(runnerRoot, "smoke-runtime-state");
+mkdirSync(smokeProjectsRoot, { recursive: true, mode: 0o700 });
+mkdirSync(smokeRuntimeStateRoot, { recursive: true, mode: 0o700 });
+process.env.ELMOS_E2E_SMOKE_PROJECTS_ROOT = smokeProjectsRoot;
 const frtPrivateKeyPath = path.join(frtSecurityRoot, "identity-private.pem");
 const frtTrustStorePath = path.join(frtSecurityRoot, "trust-store.json");
 mkdirSync(frtSecurityRoot, { recursive: true, mode: 0o700 });
@@ -119,7 +132,9 @@ export default defineConfig({
       },
     }] : []),
     {
-      command: `pnpm --dir ${engineRoot} run build && node ${path.join(engineRoot, "dist/src/server.js")}`,
+      command: skipEngineBuild
+        ? `node ${engineServer}`
+        : `pnpm --dir ${engineRoot} run build && node ${engineServer}`,
       url: `http://127.0.0.1:${enginePort}/health`,
       reuseExistingServer: false,
       timeout: webServerTimeout,
@@ -161,6 +176,11 @@ export default defineConfig({
         ELMOS_FRT_IDENTITY_AUTHORITY: "frt-e2e-web-console",
         ELMOS_FRT_IDENTITY_KEY_ID: "frt-e2e-identity-key",
         ELMOS_NEXT_DIST_DIR: nextDistDir,
+        ELMOS_SMOKE_PROJECTS_ROOT: smokeProjectsRoot,
+        ELMOS_RUNTIME_STATE_DIR: smokeRuntimeStateRoot,
+        // 冒烟 fixture 只用标准库；e2e 不依赖网络安装依赖。
+        ELMOS_SMOKE_SKIP_INSTALL: "true",
+        ELMOS_SMOKE_MAX_ACTIVE_SESSIONS: "2",
         ...(webServerMode === "production" ? {
           ELMOS_CONTROL_PLANE_BASE_URL: `http://127.0.0.1:${auditPort}`,
           ELMOS_OPERATIONS_API_KEY: auditFixtureKey,

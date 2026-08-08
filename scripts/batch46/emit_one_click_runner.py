@@ -39,7 +39,13 @@ from smoke_common import (
     write_json,
 )
 
-VENDORED_TOOLS = ("smoke_common.py", "smoke_lease.py", "run_smoke.py")
+VENDORED_TOOLS = (
+    "smoke_common.py",
+    "smoke_lease.py",
+    "validate_smoke_pack.py",
+    "run_smoke_gate.py",
+    "run_smoke.py",
+)
 
 DB_IMAGES = {
     "postgres": {

@@ -515,6 +515,18 @@ test("development, negative, holdout, and synthetic representative corpora stay 
 
 test("all 30 exact directional routes transform the bounded typed UI IR slice", () => {
   assert.equal(frtCatalog.routes.length, 30);
+  const runnableFiles: Record<FrtRouteStack, readonly string[]> = {
+    React: ["package.json", "server.mjs", "openapi.json"],
+    "Vue 2": ["package.json", "server.mjs", "openapi.json"],
+    "Vue 3": ["package.json", "server.mjs", "openapi.json"],
+    "WeChat Mini Program": ["app.js", "scripts/frt-smoke-start.mjs", "openapi.json"],
+    ArkUI: [
+      "entry/src/main/ets/entryability/EntryAbility.ets",
+      "scripts/frt-smoke-start.mjs",
+      "openapi.json",
+    ],
+    Flutter: [".metadata", "web/index.html", "openapi.json"],
+  };
   for (const route of frtCatalog.routes) {
     assert.ok(frtRouteStacks.includes(route.source as FrtRouteStack));
     assert.ok(frtRouteStacks.includes(route.target as FrtRouteStack));
@@ -528,6 +540,13 @@ test("all 30 exact directional routes transform the bounded typed UI IR slice", 
     assert.equal(migration.targetValidation, "PASSED", route.routeId);
     assert.deepEqual(migration.typedGaps, [], route.routeId);
     assert.ok(Object.keys(migration.generatedFiles).length >= 2, route.routeId);
+    for (const required of runnableFiles[route.target as FrtRouteStack]) {
+      assert.ok(migration.generatedFiles[required], `${route.routeId}: ${required}`);
+    }
+    if (["React", "Vue 2", "Vue 3"].includes(route.target)) {
+      const manifest = JSON.parse(migration.generatedFiles["package.json"]!);
+      assert.equal(manifest.scripts["start:smoke"], "node server.mjs", route.routeId);
+    }
     assert.equal(migration.certification, "NOT_CERTIFIED", route.routeId);
   }
 });

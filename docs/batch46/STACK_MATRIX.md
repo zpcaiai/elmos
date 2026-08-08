@@ -8,6 +8,18 @@
 | TypeScript / JavaScript | `package.json` (+ `tsconfig.json`) | NestJS, Express, Fastify, Next, React, Vue, Angular, Svelte | 3000 / 5173 / 4200 | `/health`, `/` |
 | Java | `pom.xml`, `build.gradle[.kts]` | Spring Boot, Quarkus, Micronaut, Jakarta | 8080 | `/actuator/health`, `/q/health/ready`, `/health` |
 | C# | `*.csproj`, `*.fsproj` | ASP.NET Core | 5000 | `/health` |
+| Dart | Flutter `pubspec.yaml`, `lib/main.dart`, `web/index.html` | Flutter web-server | 5173 | `/` |
+| JavaScript | WeChat `project.config.json`, `app.json`, generated bounded runner | WeChat Mini Program | allocated | `/health`, `/counter` |
+| ArkTS | ArkUI build/module profiles, generated bounded runner | HarmonyOS ArkUI | allocated | `/health`, `/counter` |
+
+The listed ports are discovery defaults, not shared runtime allocations. Each
+run receives an ephemeral loopback port through `SMOKE_PORT`, `PORT`, and the
+applicable framework variables (`SERVER_PORT`, `QUARKUS_HTTP_PORT`,
+`MICRONAUT_SERVER_PORT`, `ASPNETCORE_URLS`, or `FLASK_RUN_PORT`). This prevents
+parallel projects from racing for ports such as 5000/8080. A legacy application
+that cannot consume a runtime port may explicitly set
+`ELMOS_SMOKE_PREFER_DEFAULT_PORT=true`; the normal fail-closed readiness gate
+still applies.
 
 Datastores are detected from connection markers in env, YAML, JSON, properties
 and XML files, plus any `*.sql` schema and migration directories: PostgreSQL,
@@ -62,7 +74,9 @@ are only read from the ephemeral zero-dep datastore, never from a shared engine.
 **B32 client packs.** A client cannot render seeded data without an upstream, so
 the pack includes a deterministic in-process API stub built from the project's
 own API contract. The readiness check targets the dev server root; a functional
-check requires a declared route.
+check requires a declared route. Flutter uses the real web-server device. WeChat
+and ArkUI are only considered runnable when the generator supplies the bounded
+DevTools or hvigor/hdc launcher; missing native tooling remains `NOT_RUN`.
 
 **Polyglot repositories.** One lease covers the whole run. Secondary stacks are
 declared and their absence from the assertions is explicit — a polyglot pack that

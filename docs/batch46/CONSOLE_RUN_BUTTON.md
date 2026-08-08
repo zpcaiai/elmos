@@ -66,7 +66,20 @@ GET  /smoke-runs/{runId}/evidence     → { result, gate, lease, logs[] }
   即使运行本身没离开本机。
 - **回收报告**：到期后展示停了几个进程、是否有进程未在宽限期内响应 SIGTERM、
   容器与卷的处理结果、删除了多少临时数据、有无残留。
-- **证据保留**：服务被回收，`result.json`、门禁结论与未裁剪日志仍可在界面上查看。
+- **证据保留**：服务被回收，`result.json`、门禁结论及带原始字节数的有界日志尾部仍可
+  在界面上查看；Console 不把任意长度日志装入 API 响应。
+
+## 并发与证据隔离
+
+- 会话创建先拿租户锁，再拿由真实项目路径摘要得到的项目锁；同一个项目不能被两个
+  本机会话同时启动，跨租户竞争同样失败关闭。
+- 运行租约写入 `console_session_id`。续期和停止前必须同时匹配租户、会话记录、真实
+  项目路径和当前租约；旧会话句柄不能操作同项目的新租约。
+- 同项目重跑前，上一会话必须已经生成 `result.json`、`lease-result.json` 和
+  `gate-result.json`。随后这些 JSON 与有界日志会复制到
+  `smoke-sessions/evidence/<sessionId>/`，每个文件绑定真实字节数和 SHA-256；最后才清空
+  项目的当前运行目录。最终化尚未完成、快照被篡改或存在不归 Console 管理的 CLI
+  运行产物时，重跑都会被阻断。
 
 ## 与 CLI 的关系
 
@@ -92,8 +105,8 @@ GET  /smoke-runs/{runId}/evidence     → { result, gate, lease, logs[] }
 
 - **真实会话旅程**（chromium 串行执行一次）：真的 scaffold `e2e/fixtures/smoke-projects/demo-service`，
   真的通过按钮的 API 起服务、跑断言、显式续期、停止回收，并断言门禁给出 `limited`
-  与保留下来的证据。fixture 只用 Python 标准库，配合 `ELMOS_SMOKE_SKIP_INSTALL=true`
-  所以不依赖网络。
+  与保留下来的证据；随后重跑同一项目，验证旧证据摘要不变且旧会话不能停止新租约。
+  fixture 只用 Python 标准库，配合 `ELMOS_SMOKE_SKIP_INSTALL=true` 所以不依赖网络。
 - **界面桩测试**（沿用仓库既有 `page.route` 约定）：倒计时与服务地址、NOT_RUN 照实显示、
   续期未填理由时无法提交、到期后按钮变「重新运行」并展示回收报告与门禁结论、
   没有可用执行位置时按钮禁用并说明原因。

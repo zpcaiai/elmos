@@ -483,9 +483,13 @@ export function deriveMiniProgramPortableUiIr(
     gap(gaps, "FRT_MINIPROGRAM_PROJECT_PROFILE_INVALID", "project.config.json",
       "project.config.json is required and must be valid JSON.");
   }
-  const wxmls = Object.keys(files).filter(path => path.endsWith(".wxml")).sort();
-  const scripts = Object.keys(files).filter(path => path.endsWith(".js")).sort();
-  const styles = Object.keys(files).filter(path => path.endsWith(".wxss")).sort();
+  // app.js is a project-level bootstrap file, not a Page script.  Count only
+  // the bounded page asset shape supported by this extractor so the required
+  // page cardinality remains strict without rejecting a valid app scaffold.
+  const pageAsset = (extension: string) => new RegExp(`^pages/[^/]+/[^/]+\\${extension}$`);
+  const wxmls = Object.keys(files).filter(path => pageAsset(".wxml").test(path)).sort();
+  const scripts = Object.keys(files).filter(path => pageAsset(".js").test(path)).sort();
+  const styles = Object.keys(files).filter(path => pageAsset(".wxss").test(path)).sort();
   const sourcePath = wxmls[0] ?? "<missing-wxml>";
   if (wxmls.length !== 1 || scripts.length !== 1 || styles.length !== 1) {
     gap(gaps, "FRT_MINIPROGRAM_PAGE_CARDINALITY_UNSUPPORTED", sourcePath,
@@ -677,7 +681,10 @@ export function deriveArkUiPortableUiIr(
     gap(gaps, "FRT_ARKUI_PROFILE_INVALID", "build-profile.json5",
       "build-profile.json5 is required and must be parseable JSON5-compatible JSON.");
   }
-  const modules = Object.keys(files).filter(path => path.endsWith(".ets")).sort();
+  // EntryAbility.ets is the project bootstrap; the bounded grammar is for one
+  // @Entry page component under the pages directory.
+  const modules = Object.keys(files).filter(path =>
+    /^entry\/src\/main\/ets\/pages\/[^/]+\.ets$/.test(path)).sort();
   const sourcePath = modules[0] ?? "<missing-arkts-module>";
   if (modules.length !== 1) {
     gap(gaps, "FRT_ARKUI_MODULE_CARDINALITY_UNSUPPORTED", sourcePath,

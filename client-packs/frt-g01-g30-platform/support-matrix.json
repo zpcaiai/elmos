@@ -42,7 +42,7 @@
         "1.2.0"
       ],
       "evidence_refs": [],
-      "reason": "All 30 bounded directed pairs generate through typed UI IR. All six source stacks now have source-derived extractors with blocking typed gaps for unsupported semantics; five target toolchains pass locally, while ArkUI hvigor and external representative repositories remain NOT_RUN."
+      "reason": "All 30 bounded directed pairs generate through typed UI IR and include a portable Batch 46 runnable contract. All six source stacks have source-derived extractors with blocking typed gaps for unsupported semantics; React, Vue 2, Vue 3, Flutter web and WeChat DevTools pass real local target and 6/6 runnable smoke checks, while ArkUI hvigor/hdc and external representative repositories remain NOT_RUN."
     },
     {
       "id": "frt-http-api-and-cli",

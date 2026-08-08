@@ -105,8 +105,15 @@ def rel(root: Path, path: Path) -> str:
 def free_port(preferred: int | None = None) -> int:
     """Return a bindable localhost port, preferring `preferred` when free."""
     if preferred:
+        # On macOS a wildcard listener may coexist with a loopback bind when
+        # SO_REUSEADDR is enabled.  That makes bind-only probing report a port
+        # as free even though the application will fail to start on it.  A
+        # successful connect is authoritative for an already-listening port;
+        # the bind probe below is only used to reserve the port briefly.
+        if port_open("127.0.0.1", preferred, timeout=0.1):
+            preferred = None
+    if preferred:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
-            probe.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             try:
                 probe.bind(("127.0.0.1", preferred))
                 return preferred

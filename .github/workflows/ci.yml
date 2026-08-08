@@ -547,6 +547,8 @@ jobs:
           pnpm --dir engines/frontend-client-engine install --frozen-lockfile
           pnpm --dir apps/web-console install --frozen-lockfile
           pnpm --dir apps/web-console exec playwright install --with-deps chromium
+      - name: Verify Batch 46 runnable smoke toolkit
+        run: make batch46-check
       - name: Verify real Spring and generation Runner journeys once
         env:
           ELMOS_E2E_PORT: "3211"
@@ -559,6 +561,7 @@ jobs:
               --project=chromium \
               e2e/generation-runner.spec.ts \
               e2e/precision-migration-jobs.spec.ts \
+              e2e/smoke-run-button.spec.ts \
               e2e/spring-real-journey-ui.spec.ts
 
   commercial-gates:

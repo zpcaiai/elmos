@@ -23,6 +23,9 @@ const defaultOutput = path.join(
   repositoryRoot,
   "client-packs/frt-g01-g30-platform/certification/route-toolchain-evidence.json",
 );
+const batch46Scaffold = path.join(repositoryRoot, "scripts/batch46/scaffold_smoke_pack.py");
+const batch46Validate = path.join(repositoryRoot, "scripts/batch46/validate_smoke_pack.py");
+const batch46Python = process.env.ELMOS_BATCH46_PYTHON ?? "python3";
 const outputIndex = process.argv.indexOf("--output");
 const outputPath = outputIndex >= 0
   ? path.resolve(process.argv[outputIndex + 1] ?? "")
@@ -96,6 +99,57 @@ function materialize(root, files) {
   }
 }
 
+function readJsonIfPresent(file) {
+  return existsSync(file) ? JSON.parse(readFileSync(file, "utf8")) : null;
+}
+
+function attachSmokePack(targetRoot) {
+  const scaffold = run(batch46Python, [batch46Scaffold, targetRoot, "--write"], {
+    cwd: repositoryRoot,
+    timeoutMs: 120_000,
+  });
+  const validation = scaffold.status === "PASSED"
+    ? run(batch46Python, [batch46Validate, targetRoot], {
+      cwd: repositoryRoot,
+      timeoutMs: 120_000,
+    })
+    : null;
+  if (scaffold.status !== "PASSED" || validation?.status !== "PASSED") {
+    throw new Error(`Batch 46 smoke pack did not validate for ${targetRoot}: ${scaffold.stderr}${validation?.stderr ?? ""}`);
+  }
+  const profile = readJsonIfPresent(path.join(targetRoot, "smoke/profile.json"));
+  return {
+    state: "ATTACHED_VALIDATED",
+    profileDigest: profile?.profile_digest ?? null,
+    unknown: profile?.unknown ?? [],
+    scaffold,
+    validation,
+  };
+}
+
+function executeSmokePack(targetRoot, target, structural) {
+  const args = ["--entry", "script", "--ttl", "600", "--no-hold"];
+  if (target !== "Vue 2" && target !== "Vue 3") args.push("--no-install");
+  const execution = run(path.join(targetRoot, "run-smoke.sh"), args, {
+    cwd: targetRoot,
+    timeoutMs: 660_000,
+    env: {
+      npm_config_registry: process.env.ELMOS_FRT_NPM_REGISTRY ?? "https://registry.npmjs.org",
+    },
+  });
+  const result = readJsonIfPresent(path.join(targetRoot, "smoke/runtime/result.json"));
+  const gate = readJsonIfPresent(path.join(targetRoot, "smoke/runtime/gate-result.json"));
+  return {
+    ...structural,
+    state: result?.overall === "PASS" && gate?.status === "runnable"
+      ? "PASSED"
+      : result?.overall === "NOT_RUN" ? "NOT_RUN" : "FAILED",
+    execution,
+    result,
+    gate,
+  };
+}
+
 function commandAvailable(command) {
   return run("/usr/bin/which", [command], { timeoutMs: 10_000 }).status === "PASSED";
 }
@@ -147,6 +201,7 @@ try {
     const targetRoot = path.join(workspace, target.toLowerCase().replaceAll(/[^a-z0-9]+/g, "-"));
     mkdirSync(targetRoot, { recursive: true });
     materialize(targetRoot, result.generatedFiles);
+    const structuralSmokePack = attachSmokePack(targetRoot);
     const generatedDigest = sha256(canonical(
       Object.entries(result.generatedFiles)
         .sort(([left], [right]) => left.localeCompare(right))
@@ -160,7 +215,8 @@ try {
         ["-p", path.join(targetRoot, "tsconfig.json")],
         { cwd: targetRoot, timeoutMs: 120_000 },
       );
-      targetEvidence.push({ target, sourceRoute: result.route, generatedDigest, evidenceType: "REAL_TYPESCRIPT_BUILD", execution });
+      const runnableSmoke = executeSmokePack(targetRoot, target, structuralSmokePack);
+      targetEvidence.push({ target, sourceRoute: result.route, generatedDigest, evidenceType: "REAL_TYPESCRIPT_BUILD", execution, runnableSmoke });
       continue;
     }
 
@@ -179,7 +235,8 @@ try {
         cwd: engineRoot,
         timeoutMs: 120_000,
       });
-      targetEvidence.push({ target, sourceRoute: result.route, generatedDigest, evidenceType: "REAL_VUE3_TEMPLATE_BUILD", execution });
+      const runnableSmoke = executeSmokePack(targetRoot, target, structuralSmokePack);
+      targetEvidence.push({ target, sourceRoute: result.route, generatedDigest, evidenceType: "REAL_VUE3_TEMPLATE_BUILD", execution, runnableSmoke });
       continue;
     }
 
@@ -200,13 +257,15 @@ try {
         cwd: engineRoot,
         timeoutMs: 120_000,
       });
-      targetEvidence.push({ target, sourceRoute: result.route, generatedDigest, evidenceType: "REAL_VUE2_TEMPLATE_BUILD", execution });
+      const runnableSmoke = executeSmokePack(targetRoot, target, structuralSmokePack);
+      targetEvidence.push({ target, sourceRoute: result.route, generatedDigest, evidenceType: "REAL_VUE2_TEMPLATE_BUILD", execution, runnableSmoke });
       continue;
     }
 
     if (target === "Flutter") {
       if (!commandAvailable("flutter")) {
-        targetEvidence.push({ target, sourceRoute: result.route, generatedDigest, evidenceType: "FLUTTER_BUILD", status: "NOT_RUN", reason: "FLUTTER_TOOLCHAIN_UNAVAILABLE" });
+        const runnableSmoke = executeSmokePack(targetRoot, target, structuralSmokePack);
+        targetEvidence.push({ target, sourceRoute: result.route, generatedDigest, evidenceType: "FLUTTER_BUILD", status: "NOT_RUN", reason: "FLUTTER_TOOLCHAIN_UNAVAILABLE", runnableSmoke });
         continue;
       }
       // Prefer the hermetic cache, but a clean machine must be able to resolve
@@ -230,6 +289,7 @@ try {
       const test = analyze?.status === "PASSED"
         ? run("flutter", ["test", "--no-pub"], { cwd: targetRoot, timeoutMs: 300_000 })
         : null;
+      const runnableSmoke = executeSmokePack(targetRoot, target, structuralSmokePack);
       targetEvidence.push({
         target,
         sourceRoute: result.route,
@@ -243,6 +303,7 @@ try {
             : null,
         },
         executions: { offlinePubGet, onlinePubGet, analyze, test },
+        runnableSmoke,
       });
       continue;
     }
@@ -250,7 +311,8 @@ try {
     if (target === "WeChat Mini Program") {
       const cli = "/Applications/wechatwebdevtools.app/Contents/MacOS/cli";
       if (!existsSync(cli)) {
-        targetEvidence.push({ target, sourceRoute: result.route, generatedDigest, evidenceType: "WECHAT_DEVTOOLS_PROJECT_OPEN", status: "NOT_RUN", reason: "WECHAT_DEVTOOLS_UNAVAILABLE" });
+        const runnableSmoke = executeSmokePack(targetRoot, target, structuralSmokePack);
+        targetEvidence.push({ target, sourceRoute: result.route, generatedDigest, evidenceType: "WECHAT_DEVTOOLS_PROJECT_OPEN", status: "NOT_RUN", reason: "WECHAT_DEVTOOLS_UNAVAILABLE", runnableSmoke });
         continue;
       }
       const execution = run(cli, ["open", "--project", targetRoot, "--port", "19420", "--lang", "en", "--disable-gpu"], {
@@ -262,7 +324,8 @@ try {
         cwd: targetRoot,
         timeoutMs: 30_000,
       });
-      targetEvidence.push({ target, sourceRoute: result.route, generatedDigest, evidenceType: "REAL_WECHAT_DEVTOOLS_PROJECT_OPEN", execution, close });
+      const runnableSmoke = executeSmokePack(targetRoot, target, structuralSmokePack);
+      targetEvidence.push({ target, sourceRoute: result.route, generatedDigest, evidenceType: "REAL_WECHAT_DEVTOOLS_PROJECT_OPEN", execution, close, runnableSmoke });
       continue;
     }
 
@@ -278,6 +341,7 @@ try {
         "-p", "product=default",
         "-p", "module=entry@default",
       ], { cwd: targetRoot, timeoutMs: 600_000 });
+      const runnableSmoke = executeSmokePack(targetRoot, target, structuralSmokePack);
       targetEvidence.push({
         target,
         sourceRoute: result.route,
@@ -286,9 +350,11 @@ try {
         status: execution.status,
         toolSource: configuredHvigor ? "ELMOS_HVIGORW" : "PATH",
         execution,
+        runnableSmoke,
       });
       continue;
     }
+    const runnableSmoke = executeSmokePack(targetRoot, target, structuralSmokePack);
     targetEvidence.push({
       target,
       sourceRoute: result.route,
@@ -297,6 +363,7 @@ try {
       status: "NOT_RUN",
       reason: "DEVECO_HVIGOR_TOOLCHAIN_UNAVAILABLE",
       remediation: "Install DevEco Studio/hvigor or set ELMOS_HVIGORW to the exact executable path, then rerun this script.",
+      runnableSmoke,
     });
   }
 

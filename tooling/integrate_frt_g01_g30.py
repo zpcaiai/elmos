@@ -91,6 +91,7 @@ SURFACE_IMPLEMENTATIONS = {
     ],
     "runtime": [
         "engines/frontend-client-engine/src/frt-runtime.ts",
+        "engines/frontend-client-engine/src/frt-runnable-target.ts",
         "engines/frontend-client-engine/src/frt-semantic-handlers.ts",
         "engines/frontend-client-engine/src/frt-production-contract.ts",
         "engines/frontend-client-engine/src/frt-handler-registry.generated.ts",
@@ -117,6 +118,11 @@ SURFACE_IMPLEMENTATIONS = {
         "scripts/frt/test_external_campaign_parameters.py",
         "scripts/frt/record_frt_ios_device_evidence.mjs",
         "scripts/frt/test_record_frt_ios_device_evidence.py",
+        "scripts/frt/materialize_frt_route.mjs",
+        "scripts/frt/test_frt_route_smoke.py",
+        "scripts/batch46/detect_project_profile.py",
+        "scripts/batch46/run_smoke.py",
+        "tests/batch46/test_smoke_pack.py",
     ],
 }
 

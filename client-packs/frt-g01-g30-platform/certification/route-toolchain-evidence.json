@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0",
   "evidenceKind": "FRT_DIRECTIONAL_ROUTE_LOCAL_TOOLCHAIN_EXECUTION",
-  "generatedAt": "2026-08-05T23:50:32.981Z",
+  "generatedAt": "2026-08-08T06:25:10.822Z",
   "repositoryRoot": "/Users/stephen/DevProjects/AIProjects/elmos",
   "workspacePolicy": "REMOVED_AFTER_HASHING",
   "scope": "bounded-single-public-counter-route-v1",
@@ -16,7 +16,9 @@
       "sourceSnapshotDigest": "sha256:8c2d613f0f7e9107c1b32a8da168aa46e48d0d467d1f23ea9af00b1a7fd90416",
       "generatedFiles": {
         "frt-route.json": "sha256:4244c64df258890393319afacb00347f8dcf816c02ea648f1572956db3706f83",
-        "package.json": "sha256:516e603b77f415977f270bceeeb01b5b23efb2022d93da516f9e5893f195db1b",
+        "openapi.json": "sha256:cb9df8f337ae397026023b6566a049c81f7e8220cb6a48609ca95a5fda526f42",
+        "package.json": "sha256:da9a2a3471bdbc889015f832679fb560fccc1c920d746eec06a2b8419f9a1876",
+        "server.mjs": "sha256:77bb234861dae5044efaa790bf7786257ec4dfc13ab7187a4f896461e580f46a",
         "src/App.vue": "sha256:e50eb1d32677884c3f9ceb6636ab75190b6fda343bbe8bf21ac63a1c49062a89"
       },
       "typedGaps": []
@@ -29,7 +31,9 @@
       "sourceSnapshotDigest": "sha256:8c2d613f0f7e9107c1b32a8da168aa46e48d0d467d1f23ea9af00b1a7fd90416",
       "generatedFiles": {
         "frt-route.json": "sha256:c713b7556ae421d16f893663f8ecd3b5241f45a0c503e452ff381e78f9c10ebc",
-        "package.json": "sha256:1cb209cd5eca01044025934235d31279ae8e169cb2d23cc8afce8398fca8feff",
+        "openapi.json": "sha256:c5c3209eb4d092bc57dcc612a13168b24877e5b7983ef6a21fd5d0c8f1421d78",
+        "package.json": "sha256:31e0319d4b3a31c78c6bb531d4c7d6553fd47cf4db0aee3dc0c3281420dd23fe",
+        "server.mjs": "sha256:4fb0dec072f570ce6e3c2aafec4605219c92297ab0f0404e6669534ecd1b5d0c",
         "src/App.css": "sha256:63ed60c1d9d98dc07880cfe689bea7867c933e0336eac47553b6361775d7efe2",
         "src/App.tsx": "sha256:6e43fb59e8a8c320a51bf72b8fc9219153b2fa7b28595b0d9e7f5ca742451ad0",
         "tsconfig.json": "sha256:f0d2901347e1404b5d011eac8a630aefd0961cb20cc92f7261c50b5e37ddc231"
@@ -43,13 +47,16 @@
       "targetValidation": "PASSED",
       "sourceSnapshotDigest": "sha256:8c2d613f0f7e9107c1b32a8da168aa46e48d0d467d1f23ea9af00b1a7fd90416",
       "generatedFiles": {
+        "app.js": "sha256:1ab645c73bcea61604f9cc4805a752ab9ba8fb66813d8c57cad34328c0ce4109",
         "app.json": "sha256:a8227a46813a049ec7adc2bba8af8ae96e6c20636dc96bf32a0414c674086cfb",
         "frt-route.json": "sha256:00ef5ce2f3c8594993dcfbba8623b0774950e1246441cd70fd6cbb9b7541b666",
+        "openapi.json": "sha256:dbedf7033c5a55d9a0e04b8f81c9b19d888ed4fad80613b5cd62d135cad38408",
         "pages/index/index.js": "sha256:e8ea3aaae87a53e83424c3ce967a881a61f161c156a0f2d200f5eb911ce1306f",
         "pages/index/index.json": "sha256:6b4f592fb4f1ec858c23eab97c213dc131c256074c85c223594f7863c51e9ce1",
         "pages/index/index.wxml": "sha256:9b107cf04b3bfa35be20ba550cdefe227bd7df693e4d29175992dd105e23032c",
         "pages/index/index.wxss": "sha256:63ed60c1d9d98dc07880cfe689bea7867c933e0336eac47553b6361775d7efe2",
-        "project.config.json": "sha256:5529c5741b7e74cbf1216809df4ce3d1940862db9299dae1f3fd03aaac60f120"
+        "project.config.json": "sha256:5529c5741b7e74cbf1216809df4ce3d1940862db9299dae1f3fd03aaac60f120",
+        "scripts/frt-smoke-start.mjs": "sha256:d5ab0426b2752661820baa88d739c8f7ac842cdb9a5f2addc409b18fdc1b6f6a"
       },
       "typedGaps": []
     },
@@ -64,13 +71,18 @@
         "build-profile.json5": "sha256:ef04a2f2d12540c3942e7b05cecf37bf181a0cf3d9e0d9e7cdd3cbc2375baeec",
         "entry/hvigorfile.ts": "sha256:f547983dcab9c8fff87cc3ddedb22bb98063663c5b8afe18bb32e131311ec289",
         "entry/oh-package.json5": "sha256:48f45a9a056591c10618432a29fa61a4143990237daadb0874fae18ec747906c",
+        "entry/src/main/ets/entryability/EntryAbility.ets": "sha256:cb294aabc0ba9486be0a0c5a36310905a92a9bd013366d87de186b37da00dcfa",
         "entry/src/main/ets/pages/Index.ets": "sha256:b9898ab08401f3a8f23e6ec365eda286a5445cff3a166fe7a9269ae588edb516",
-        "entry/src/main/module.json5": "sha256:c35c25affe1258e5848744c6c2f5a9ae0324eaf54eaf5862469b6c411b75906f",
+        "entry/src/main/module.json5": "sha256:005bb6cdbe07ee2a0a78dfbdc4fceae3487d3e7107e111c212ebc7a5cc608d7c",
+        "entry/src/main/resources/base/element/color.json": "sha256:26f6e195ab88786f18e15ea7a9769faaf968c0a631192ed8100fd2cf17d87d97",
+        "entry/src/main/resources/base/element/string.json": "sha256:26af2b77a1c43368c90352792d4ca41fc5784a6ae97666c2c553fe6627714cce",
         "entry/src/main/resources/base/profile/main_pages.json": "sha256:f21984fb1d5096f0db41314da0bb94c573e7ad018e5afae3044f8d5ff71b0bfc",
         "frt-route.json": "sha256:0fefbab282e69f2effe2ebe64101b2f8b636878af2a3be4fde0e2efac084a67b",
         "hvigor-config.json5": "sha256:c24b1704e827e0ff49d3a2acd013a97de53b05bef0e47b62931df1f121aa5398",
         "hvigorfile.ts": "sha256:2378c5e0c5246005ada73a67e8c9834fa08adb9ffd6fb6c219051456753bed5a",
-        "oh-package.json5": "sha256:11c46ae73ed2defc4294479ef01f2559f2a480a5fda32cd84a7703829bd56bcf"
+        "oh-package.json5": "sha256:11c46ae73ed2defc4294479ef01f2559f2a480a5fda32cd84a7703829bd56bcf",
+        "openapi.json": "sha256:cfc5c3b01275455069e32991d8c18bd27d66290306bc11b19c7ba3d1cb135e95",
+        "scripts/frt-smoke-start.mjs": "sha256:1253eafe1afa1cce052a7c6eeb467ec7b8c7516eb6be31b4dda900feeb9bda3d"
       },
       "typedGaps": []
     },
@@ -82,11 +94,15 @@
       "sourceSnapshotDigest": "sha256:8c2d613f0f7e9107c1b32a8da168aa46e48d0d467d1f23ea9af00b1a7fd90416",
       "generatedFiles": {
         ".fvmrc": "sha256:6748d55c6cc27876867415cd3ec374460c11bdefc03cc6e53bebeaa9b9a44147",
+        ".metadata": "sha256:8c9b1b5876c8bd02845c261b3afbc96059b457b7104eaf00f06824235bc6d1e4",
         "analysis_options.yaml": "sha256:6dae439bab95cb2a1536bb4f90c3b751f855544ab2cc37ef7f6df234805aefea",
         "frt-route.json": "sha256:1bc9d30b74bf7f5d1c80b8215dea719f0835cca5916ccabab11c7c3191dfa824",
         "lib/main.dart": "sha256:c7a468e8f112cadba87c6b599a08485a6a591cfb227d332a0047150dfb9bfdfd",
+        "openapi.json": "sha256:96647afb920f8b19a60915cf8d537e4e33508f20bc54b0089462d648b3f44c9c",
         "pubspec.yaml": "sha256:25357d2b876c1baab8761b18d0863c1e31127d0cd74972e3814bacb5aba89212",
-        "test/widget_test.dart": "sha256:6cc6458759538c88439efbf68831128c7c06e7fe001076693741a50f7d3d3e8c"
+        "test/widget_test.dart": "sha256:6cc6458759538c88439efbf68831128c7c06e7fe001076693741a50f7d3d3e8c",
+        "web/index.html": "sha256:10c7c2a3c86e7a7026a3d7d773cf21e344a0cb39fcc7e6fcb4ee1c9e26fac047",
+        "web/manifest.json": "sha256:bdb1c4f84920e7fdaf007e8f6d3b636bd5e87a3f95f74759f47b0d3ba7249d47"
       },
       "typedGaps": []
     },
@@ -98,7 +114,9 @@
       "sourceSnapshotDigest": "sha256:cb6eb3f08a31bf9fbc979cea88c358bacda76a53ecc17f6c7956cb01163dd772",
       "generatedFiles": {
         "frt-route.json": "sha256:3c3b627e81fb53374df952d5180b25df85039076b8f9bfbda654225dacae631a",
-        "package.json": "sha256:efea2253e496ff0d9bca25ff4cec70262767eae5d4847eda754366d9d2e8fc4a",
+        "openapi.json": "sha256:aea5b737c954c8921fdc8217db431e3429f105073e3b8f781acfac2169ee4eb1",
+        "package.json": "sha256:9f9753db1dcce3568683973ee0afdbc285d83896aba7dbbf950f790e59b4f038",
+        "server.mjs": "sha256:0d08229616a3972b8928d567d099b87ef2efcb6caa7b969c78d34fa5c622b7ed",
         "src/App.vue": "sha256:14a06f3a87e918013e8407a61f9e41774a6567090b68e1bfb48276f3f59bfcb3"
       },
       "typedGaps": []
@@ -111,7 +129,9 @@
       "sourceSnapshotDigest": "sha256:cb6eb3f08a31bf9fbc979cea88c358bacda76a53ecc17f6c7956cb01163dd772",
       "generatedFiles": {
         "frt-route.json": "sha256:ecdab5fd8dbf41ece5e3446ad292f5c3c7d7647be67955704f8e3f6314cf2109",
-        "package.json": "sha256:1cb209cd5eca01044025934235d31279ae8e169cb2d23cc8afce8398fca8feff",
+        "openapi.json": "sha256:c5c3209eb4d092bc57dcc612a13168b24877e5b7983ef6a21fd5d0c8f1421d78",
+        "package.json": "sha256:31e0319d4b3a31c78c6bb531d4c7d6553fd47cf4db0aee3dc0c3281420dd23fe",
+        "server.mjs": "sha256:4fb0dec072f570ce6e3c2aafec4605219c92297ab0f0404e6669534ecd1b5d0c",
         "src/App.css": "sha256:63ed60c1d9d98dc07880cfe689bea7867c933e0336eac47553b6361775d7efe2",
         "src/App.tsx": "sha256:6e43fb59e8a8c320a51bf72b8fc9219153b2fa7b28595b0d9e7f5ca742451ad0",
         "tsconfig.json": "sha256:f0d2901347e1404b5d011eac8a630aefd0961cb20cc92f7261c50b5e37ddc231"
@@ -125,13 +145,16 @@
       "targetValidation": "PASSED",
       "sourceSnapshotDigest": "sha256:cb6eb3f08a31bf9fbc979cea88c358bacda76a53ecc17f6c7956cb01163dd772",
       "generatedFiles": {
+        "app.js": "sha256:1ab645c73bcea61604f9cc4805a752ab9ba8fb66813d8c57cad34328c0ce4109",
         "app.json": "sha256:a8227a46813a049ec7adc2bba8af8ae96e6c20636dc96bf32a0414c674086cfb",
         "frt-route.json": "sha256:3b3b1ecbb204abc753434a2e00cfceab7816034d7d79cef87aba77b93bc00066",
+        "openapi.json": "sha256:dbedf7033c5a55d9a0e04b8f81c9b19d888ed4fad80613b5cd62d135cad38408",
         "pages/index/index.js": "sha256:e8ea3aaae87a53e83424c3ce967a881a61f161c156a0f2d200f5eb911ce1306f",
         "pages/index/index.json": "sha256:6b4f592fb4f1ec858c23eab97c213dc131c256074c85c223594f7863c51e9ce1",
         "pages/index/index.wxml": "sha256:9b107cf04b3bfa35be20ba550cdefe227bd7df693e4d29175992dd105e23032c",
         "pages/index/index.wxss": "sha256:63ed60c1d9d98dc07880cfe689bea7867c933e0336eac47553b6361775d7efe2",
-        "project.config.json": "sha256:5529c5741b7e74cbf1216809df4ce3d1940862db9299dae1f3fd03aaac60f120"
+        "project.config.json": "sha256:5529c5741b7e74cbf1216809df4ce3d1940862db9299dae1f3fd03aaac60f120",
+        "scripts/frt-smoke-start.mjs": "sha256:d5ab0426b2752661820baa88d739c8f7ac842cdb9a5f2addc409b18fdc1b6f6a"
       },
       "typedGaps": []
     },
@@ -146,13 +169,18 @@
         "build-profile.json5": "sha256:ef04a2f2d12540c3942e7b05cecf37bf181a0cf3d9e0d9e7cdd3cbc2375baeec",
         "entry/hvigorfile.ts": "sha256:f547983dcab9c8fff87cc3ddedb22bb98063663c5b8afe18bb32e131311ec289",
         "entry/oh-package.json5": "sha256:48f45a9a056591c10618432a29fa61a4143990237daadb0874fae18ec747906c",
+        "entry/src/main/ets/entryability/EntryAbility.ets": "sha256:cb294aabc0ba9486be0a0c5a36310905a92a9bd013366d87de186b37da00dcfa",
         "entry/src/main/ets/pages/Index.ets": "sha256:b9898ab08401f3a8f23e6ec365eda286a5445cff3a166fe7a9269ae588edb516",
-        "entry/src/main/module.json5": "sha256:c35c25affe1258e5848744c6c2f5a9ae0324eaf54eaf5862469b6c411b75906f",
+        "entry/src/main/module.json5": "sha256:005bb6cdbe07ee2a0a78dfbdc4fceae3487d3e7107e111c212ebc7a5cc608d7c",
+        "entry/src/main/resources/base/element/color.json": "sha256:26f6e195ab88786f18e15ea7a9769faaf968c0a631192ed8100fd2cf17d87d97",
+        "entry/src/main/resources/base/element/string.json": "sha256:26af2b77a1c43368c90352792d4ca41fc5784a6ae97666c2c553fe6627714cce",
         "entry/src/main/resources/base/profile/main_pages.json": "sha256:f21984fb1d5096f0db41314da0bb94c573e7ad018e5afae3044f8d5ff71b0bfc",
         "frt-route.json": "sha256:d36c752233e73148582f054da1a355ad88ad29562b67a13710f3b70ab262e450",
         "hvigor-config.json5": "sha256:c24b1704e827e0ff49d3a2acd013a97de53b05bef0e47b62931df1f121aa5398",
         "hvigorfile.ts": "sha256:2378c5e0c5246005ada73a67e8c9834fa08adb9ffd6fb6c219051456753bed5a",
-        "oh-package.json5": "sha256:11c46ae73ed2defc4294479ef01f2559f2a480a5fda32cd84a7703829bd56bcf"
+        "oh-package.json5": "sha256:11c46ae73ed2defc4294479ef01f2559f2a480a5fda32cd84a7703829bd56bcf",
+        "openapi.json": "sha256:cfc5c3b01275455069e32991d8c18bd27d66290306bc11b19c7ba3d1cb135e95",
+        "scripts/frt-smoke-start.mjs": "sha256:1253eafe1afa1cce052a7c6eeb467ec7b8c7516eb6be31b4dda900feeb9bda3d"
       },
       "typedGaps": []
     },
@@ -164,11 +192,15 @@
       "sourceSnapshotDigest": "sha256:cb6eb3f08a31bf9fbc979cea88c358bacda76a53ecc17f6c7956cb01163dd772",
       "generatedFiles": {
         ".fvmrc": "sha256:6748d55c6cc27876867415cd3ec374460c11bdefc03cc6e53bebeaa9b9a44147",
+        ".metadata": "sha256:8c9b1b5876c8bd02845c261b3afbc96059b457b7104eaf00f06824235bc6d1e4",
         "analysis_options.yaml": "sha256:6dae439bab95cb2a1536bb4f90c3b751f855544ab2cc37ef7f6df234805aefea",
         "frt-route.json": "sha256:480cc5d14d3f62bf59c8c60a7a46ee88db6031d7cfe1ba345a38b82a56de5e88",
         "lib/main.dart": "sha256:c7a468e8f112cadba87c6b599a08485a6a591cfb227d332a0047150dfb9bfdfd",
+        "openapi.json": "sha256:96647afb920f8b19a60915cf8d537e4e33508f20bc54b0089462d648b3f44c9c",
         "pubspec.yaml": "sha256:25357d2b876c1baab8761b18d0863c1e31127d0cd74972e3814bacb5aba89212",
-        "test/widget_test.dart": "sha256:6cc6458759538c88439efbf68831128c7c06e7fe001076693741a50f7d3d3e8c"
+        "test/widget_test.dart": "sha256:6cc6458759538c88439efbf68831128c7c06e7fe001076693741a50f7d3d3e8c",
+        "web/index.html": "sha256:10c7c2a3c86e7a7026a3d7d773cf21e344a0cb39fcc7e6fcb4ee1c9e26fac047",
+        "web/manifest.json": "sha256:bdb1c4f84920e7fdaf007e8f6d3b636bd5e87a3f95f74759f47b0d3ba7249d47"
       },
       "typedGaps": []
     },
@@ -180,7 +212,9 @@
       "sourceSnapshotDigest": "sha256:51bd145a21d29cd3c420c761816fbbc7085c5155d27ec4050e7d428b572dfad6",
       "generatedFiles": {
         "frt-route.json": "sha256:724371bf5ebd8d978816bad4582d781033bcc260d94030720a2dcbbec0098de6",
-        "package.json": "sha256:efea2253e496ff0d9bca25ff4cec70262767eae5d4847eda754366d9d2e8fc4a",
+        "openapi.json": "sha256:aea5b737c954c8921fdc8217db431e3429f105073e3b8f781acfac2169ee4eb1",
+        "package.json": "sha256:9f9753db1dcce3568683973ee0afdbc285d83896aba7dbbf950f790e59b4f038",
+        "server.mjs": "sha256:0d08229616a3972b8928d567d099b87ef2efcb6caa7b969c78d34fa5c622b7ed",
         "src/App.vue": "sha256:14a06f3a87e918013e8407a61f9e41774a6567090b68e1bfb48276f3f59bfcb3"
       },
       "typedGaps": []
@@ -193,7 +227,9 @@
       "sourceSnapshotDigest": "sha256:51bd145a21d29cd3c420c761816fbbc7085c5155d27ec4050e7d428b572dfad6",
       "generatedFiles": {
         "frt-route.json": "sha256:2f170719d3e6a73a6fd3e1faf1d6d694121676cb2d61d7db860dcf413007accf",
-        "package.json": "sha256:516e603b77f415977f270bceeeb01b5b23efb2022d93da516f9e5893f195db1b",
+        "openapi.json": "sha256:cb9df8f337ae397026023b6566a049c81f7e8220cb6a48609ca95a5fda526f42",
+        "package.json": "sha256:da9a2a3471bdbc889015f832679fb560fccc1c920d746eec06a2b8419f9a1876",
+        "server.mjs": "sha256:77bb234861dae5044efaa790bf7786257ec4dfc13ab7187a4f896461e580f46a",
         "src/App.vue": "sha256:e50eb1d32677884c3f9ceb6636ab75190b6fda343bbe8bf21ac63a1c49062a89"
       },
       "typedGaps": []
@@ -205,13 +241,16 @@
       "targetValidation": "PASSED",
       "sourceSnapshotDigest": "sha256:51bd145a21d29cd3c420c761816fbbc7085c5155d27ec4050e7d428b572dfad6",
       "generatedFiles": {
+        "app.js": "sha256:1ab645c73bcea61604f9cc4805a752ab9ba8fb66813d8c57cad34328c0ce4109",
         "app.json": "sha256:a8227a46813a049ec7adc2bba8af8ae96e6c20636dc96bf32a0414c674086cfb",
         "frt-route.json": "sha256:60a526e8d20ea5d4c65fc09383f78131e0e649c8d0ab526edf11b0a3f31bb68f",
+        "openapi.json": "sha256:dbedf7033c5a55d9a0e04b8f81c9b19d888ed4fad80613b5cd62d135cad38408",
         "pages/index/index.js": "sha256:e8ea3aaae87a53e83424c3ce967a881a61f161c156a0f2d200f5eb911ce1306f",
         "pages/index/index.json": "sha256:6b4f592fb4f1ec858c23eab97c213dc131c256074c85c223594f7863c51e9ce1",
         "pages/index/index.wxml": "sha256:9b107cf04b3bfa35be20ba550cdefe227bd7df693e4d29175992dd105e23032c",
         "pages/index/index.wxss": "sha256:63ed60c1d9d98dc07880cfe689bea7867c933e0336eac47553b6361775d7efe2",
-        "project.config.json": "sha256:5529c5741b7e74cbf1216809df4ce3d1940862db9299dae1f3fd03aaac60f120"
+        "project.config.json": "sha256:5529c5741b7e74cbf1216809df4ce3d1940862db9299dae1f3fd03aaac60f120",
+        "scripts/frt-smoke-start.mjs": "sha256:d5ab0426b2752661820baa88d739c8f7ac842cdb9a5f2addc409b18fdc1b6f6a"
       },
       "typedGaps": []
     },
@@ -226,13 +265,18 @@
         "build-profile.json5": "sha256:ef04a2f2d12540c3942e7b05cecf37bf181a0cf3d9e0d9e7cdd3cbc2375baeec",
         "entry/hvigorfile.ts": "sha256:f547983dcab9c8fff87cc3ddedb22bb98063663c5b8afe18bb32e131311ec289",
         "entry/oh-package.json5": "sha256:48f45a9a056591c10618432a29fa61a4143990237daadb0874fae18ec747906c",
+        "entry/src/main/ets/entryability/EntryAbility.ets": "sha256:cb294aabc0ba9486be0a0c5a36310905a92a9bd013366d87de186b37da00dcfa",
         "entry/src/main/ets/pages/Index.ets": "sha256:b9898ab08401f3a8f23e6ec365eda286a5445cff3a166fe7a9269ae588edb516",
-        "entry/src/main/module.json5": "sha256:c35c25affe1258e5848744c6c2f5a9ae0324eaf54eaf5862469b6c411b75906f",
+        "entry/src/main/module.json5": "sha256:005bb6cdbe07ee2a0a78dfbdc4fceae3487d3e7107e111c212ebc7a5cc608d7c",
+        "entry/src/main/resources/base/element/color.json": "sha256:26f6e195ab88786f18e15ea7a9769faaf968c0a631192ed8100fd2cf17d87d97",
+        "entry/src/main/resources/base/element/string.json": "sha256:26af2b77a1c43368c90352792d4ca41fc5784a6ae97666c2c553fe6627714cce",
         "entry/src/main/resources/base/profile/main_pages.json": "sha256:f21984fb1d5096f0db41314da0bb94c573e7ad018e5afae3044f8d5ff71b0bfc",
         "frt-route.json": "sha256:1cc064e5cb7e9ff8845d426615f2708ed76e5e6d6e01109d72957dc3f1a6f37e",
         "hvigor-config.json5": "sha256:c24b1704e827e0ff49d3a2acd013a97de53b05bef0e47b62931df1f121aa5398",
         "hvigorfile.ts": "sha256:2378c5e0c5246005ada73a67e8c9834fa08adb9ffd6fb6c219051456753bed5a",
-        "oh-package.json5": "sha256:11c46ae73ed2defc4294479ef01f2559f2a480a5fda32cd84a7703829bd56bcf"
+        "oh-package.json5": "sha256:11c46ae73ed2defc4294479ef01f2559f2a480a5fda32cd84a7703829bd56bcf",
+        "openapi.json": "sha256:cfc5c3b01275455069e32991d8c18bd27d66290306bc11b19c7ba3d1cb135e95",
+        "scripts/frt-smoke-start.mjs": "sha256:1253eafe1afa1cce052a7c6eeb467ec7b8c7516eb6be31b4dda900feeb9bda3d"
       },
       "typedGaps": []
     },
@@ -244,11 +288,15 @@
       "sourceSnapshotDigest": "sha256:51bd145a21d29cd3c420c761816fbbc7085c5155d27ec4050e7d428b572dfad6",
       "generatedFiles": {
         ".fvmrc": "sha256:6748d55c6cc27876867415cd3ec374460c11bdefc03cc6e53bebeaa9b9a44147",
+        ".metadata": "sha256:8c9b1b5876c8bd02845c261b3afbc96059b457b7104eaf00f06824235bc6d1e4",
         "analysis_options.yaml": "sha256:6dae439bab95cb2a1536bb4f90c3b751f855544ab2cc37ef7f6df234805aefea",
         "frt-route.json": "sha256:9d410fd853f9dd5aa7c558175f6b61e977deecc55403108cdd16c17ca582756d",
         "lib/main.dart": "sha256:c7a468e8f112cadba87c6b599a08485a6a591cfb227d332a0047150dfb9bfdfd",
+        "openapi.json": "sha256:96647afb920f8b19a60915cf8d537e4e33508f20bc54b0089462d648b3f44c9c",
         "pubspec.yaml": "sha256:25357d2b876c1baab8761b18d0863c1e31127d0cd74972e3814bacb5aba89212",
-        "test/widget_test.dart": "sha256:6cc6458759538c88439efbf68831128c7c06e7fe001076693741a50f7d3d3e8c"
+        "test/widget_test.dart": "sha256:6cc6458759538c88439efbf68831128c7c06e7fe001076693741a50f7d3d3e8c",
+        "web/index.html": "sha256:10c7c2a3c86e7a7026a3d7d773cf21e344a0cb39fcc7e6fcb4ee1c9e26fac047",
+        "web/manifest.json": "sha256:bdb1c4f84920e7fdaf007e8f6d3b636bd5e87a3f95f74759f47b0d3ba7249d47"
       },
       "typedGaps": []
     },
@@ -260,7 +308,9 @@
       "sourceSnapshotDigest": "sha256:7f3ec83d3b7bf93d7db04bfc2aa4947684e87932ddf6a30b7fc4237631bede53",
       "generatedFiles": {
         "frt-route.json": "sha256:fb314bd5dd4d5eb4551f90207f93829808bf7d0bed12de82dc207ee6fb5e4b75",
-        "package.json": "sha256:efea2253e496ff0d9bca25ff4cec70262767eae5d4847eda754366d9d2e8fc4a",
+        "openapi.json": "sha256:aea5b737c954c8921fdc8217db431e3429f105073e3b8f781acfac2169ee4eb1",
+        "package.json": "sha256:9f9753db1dcce3568683973ee0afdbc285d83896aba7dbbf950f790e59b4f038",
+        "server.mjs": "sha256:0d08229616a3972b8928d567d099b87ef2efcb6caa7b969c78d34fa5c622b7ed",
         "src/App.vue": "sha256:14a06f3a87e918013e8407a61f9e41774a6567090b68e1bfb48276f3f59bfcb3"
       },
       "typedGaps": []
@@ -273,7 +323,9 @@
       "sourceSnapshotDigest": "sha256:7f3ec83d3b7bf93d7db04bfc2aa4947684e87932ddf6a30b7fc4237631bede53",
       "generatedFiles": {
         "frt-route.json": "sha256:c5f3e79d8481f5a5644dc2df2287c1845b3bdd4a9eafbec14c7623ed64c8b8f1",
-        "package.json": "sha256:516e603b77f415977f270bceeeb01b5b23efb2022d93da516f9e5893f195db1b",
+        "openapi.json": "sha256:cb9df8f337ae397026023b6566a049c81f7e8220cb6a48609ca95a5fda526f42",
+        "package.json": "sha256:da9a2a3471bdbc889015f832679fb560fccc1c920d746eec06a2b8419f9a1876",
+        "server.mjs": "sha256:77bb234861dae5044efaa790bf7786257ec4dfc13ab7187a4f896461e580f46a",
         "src/App.vue": "sha256:e50eb1d32677884c3f9ceb6636ab75190b6fda343bbe8bf21ac63a1c49062a89"
       },
       "typedGaps": []
@@ -286,7 +338,9 @@
       "sourceSnapshotDigest": "sha256:7f3ec83d3b7bf93d7db04bfc2aa4947684e87932ddf6a30b7fc4237631bede53",
       "generatedFiles": {
         "frt-route.json": "sha256:7507a0d7acc0312c55a4544852306f7a9d7b02ba26458ecc3b8bf1df0d4046af",
-        "package.json": "sha256:1cb209cd5eca01044025934235d31279ae8e169cb2d23cc8afce8398fca8feff",
+        "openapi.json": "sha256:c5c3209eb4d092bc57dcc612a13168b24877e5b7983ef6a21fd5d0c8f1421d78",
+        "package.json": "sha256:31e0319d4b3a31c78c6bb531d4c7d6553fd47cf4db0aee3dc0c3281420dd23fe",
+        "server.mjs": "sha256:4fb0dec072f570ce6e3c2aafec4605219c92297ab0f0404e6669534ecd1b5d0c",
         "src/App.css": "sha256:63ed60c1d9d98dc07880cfe689bea7867c933e0336eac47553b6361775d7efe2",
         "src/App.tsx": "sha256:6e43fb59e8a8c320a51bf72b8fc9219153b2fa7b28595b0d9e7f5ca742451ad0",
         "tsconfig.json": "sha256:f0d2901347e1404b5d011eac8a630aefd0961cb20cc92f7261c50b5e37ddc231"
@@ -304,13 +358,18 @@
         "build-profile.json5": "sha256:ef04a2f2d12540c3942e7b05cecf37bf181a0cf3d9e0d9e7cdd3cbc2375baeec",
         "entry/hvigorfile.ts": "sha256:f547983dcab9c8fff87cc3ddedb22bb98063663c5b8afe18bb32e131311ec289",
         "entry/oh-package.json5": "sha256:48f45a9a056591c10618432a29fa61a4143990237daadb0874fae18ec747906c",
+        "entry/src/main/ets/entryability/EntryAbility.ets": "sha256:cb294aabc0ba9486be0a0c5a36310905a92a9bd013366d87de186b37da00dcfa",
         "entry/src/main/ets/pages/Index.ets": "sha256:b9898ab08401f3a8f23e6ec365eda286a5445cff3a166fe7a9269ae588edb516",
-        "entry/src/main/module.json5": "sha256:c35c25affe1258e5848744c6c2f5a9ae0324eaf54eaf5862469b6c411b75906f",
+        "entry/src/main/module.json5": "sha256:005bb6cdbe07ee2a0a78dfbdc4fceae3487d3e7107e111c212ebc7a5cc608d7c",
+        "entry/src/main/resources/base/element/color.json": "sha256:26f6e195ab88786f18e15ea7a9769faaf968c0a631192ed8100fd2cf17d87d97",
+        "entry/src/main/resources/base/element/string.json": "sha256:26af2b77a1c43368c90352792d4ca41fc5784a6ae97666c2c553fe6627714cce",
         "entry/src/main/resources/base/profile/main_pages.json": "sha256:f21984fb1d5096f0db41314da0bb94c573e7ad018e5afae3044f8d5ff71b0bfc",
         "frt-route.json": "sha256:d6a40495183893f4b8f1df5490604d7c26aefbdb64a1288dfaeda94617006b77",
         "hvigor-config.json5": "sha256:c24b1704e827e0ff49d3a2acd013a97de53b05bef0e47b62931df1f121aa5398",
         "hvigorfile.ts": "sha256:2378c5e0c5246005ada73a67e8c9834fa08adb9ffd6fb6c219051456753bed5a",
-        "oh-package.json5": "sha256:11c46ae73ed2defc4294479ef01f2559f2a480a5fda32cd84a7703829bd56bcf"
+        "oh-package.json5": "sha256:11c46ae73ed2defc4294479ef01f2559f2a480a5fda32cd84a7703829bd56bcf",
+        "openapi.json": "sha256:cfc5c3b01275455069e32991d8c18bd27d66290306bc11b19c7ba3d1cb135e95",
+        "scripts/frt-smoke-start.mjs": "sha256:1253eafe1afa1cce052a7c6eeb467ec7b8c7516eb6be31b4dda900feeb9bda3d"
       },
       "typedGaps": []
     },
@@ -322,11 +381,15 @@
       "sourceSnapshotDigest": "sha256:7f3ec83d3b7bf93d7db04bfc2aa4947684e87932ddf6a30b7fc4237631bede53",
       "generatedFiles": {
         ".fvmrc": "sha256:6748d55c6cc27876867415cd3ec374460c11bdefc03cc6e53bebeaa9b9a44147",
+        ".metadata": "sha256:8c9b1b5876c8bd02845c261b3afbc96059b457b7104eaf00f06824235bc6d1e4",
         "analysis_options.yaml": "sha256:6dae439bab95cb2a1536bb4f90c3b751f855544ab2cc37ef7f6df234805aefea",
         "frt-route.json": "sha256:bfc56228c6305f4c28ce10b4685223557425e83a3df6fac2271fdc572bfbfd01",
         "lib/main.dart": "sha256:c7a468e8f112cadba87c6b599a08485a6a591cfb227d332a0047150dfb9bfdfd",
+        "openapi.json": "sha256:96647afb920f8b19a60915cf8d537e4e33508f20bc54b0089462d648b3f44c9c",
         "pubspec.yaml": "sha256:25357d2b876c1baab8761b18d0863c1e31127d0cd74972e3814bacb5aba89212",
-        "test/widget_test.dart": "sha256:6cc6458759538c88439efbf68831128c7c06e7fe001076693741a50f7d3d3e8c"
+        "test/widget_test.dart": "sha256:6cc6458759538c88439efbf68831128c7c06e7fe001076693741a50f7d3d3e8c",
+        "web/index.html": "sha256:10c7c2a3c86e7a7026a3d7d773cf21e344a0cb39fcc7e6fcb4ee1c9e26fac047",
+        "web/manifest.json": "sha256:bdb1c4f84920e7fdaf007e8f6d3b636bd5e87a3f95f74759f47b0d3ba7249d47"
       },
       "typedGaps": []
     },
@@ -338,7 +401,9 @@
       "sourceSnapshotDigest": "sha256:d939057c437af5d1e4c010e4e6803f60d2b6455b4d0f3ccb9905abf8b0f988dd",
       "generatedFiles": {
         "frt-route.json": "sha256:b0764e900bb80fbd50413c4979507fa493e1c84cc8c7f3d04112f65a996f5d7d",
-        "package.json": "sha256:efea2253e496ff0d9bca25ff4cec70262767eae5d4847eda754366d9d2e8fc4a",
+        "openapi.json": "sha256:aea5b737c954c8921fdc8217db431e3429f105073e3b8f781acfac2169ee4eb1",
+        "package.json": "sha256:9f9753db1dcce3568683973ee0afdbc285d83896aba7dbbf950f790e59b4f038",
+        "server.mjs": "sha256:0d08229616a3972b8928d567d099b87ef2efcb6caa7b969c78d34fa5c622b7ed",
         "src/App.vue": "sha256:14a06f3a87e918013e8407a61f9e41774a6567090b68e1bfb48276f3f59bfcb3"
       },
       "typedGaps": []
@@ -351,7 +416,9 @@
       "sourceSnapshotDigest": "sha256:d939057c437af5d1e4c010e4e6803f60d2b6455b4d0f3ccb9905abf8b0f988dd",
       "generatedFiles": {
         "frt-route.json": "sha256:61986994197feb095533aa4c1fd3cc3b5ddfdd10fddff9d2aa743d81081b2575",
-        "package.json": "sha256:516e603b77f415977f270bceeeb01b5b23efb2022d93da516f9e5893f195db1b",
+        "openapi.json": "sha256:cb9df8f337ae397026023b6566a049c81f7e8220cb6a48609ca95a5fda526f42",
+        "package.json": "sha256:da9a2a3471bdbc889015f832679fb560fccc1c920d746eec06a2b8419f9a1876",
+        "server.mjs": "sha256:77bb234861dae5044efaa790bf7786257ec4dfc13ab7187a4f896461e580f46a",
         "src/App.vue": "sha256:e50eb1d32677884c3f9ceb6636ab75190b6fda343bbe8bf21ac63a1c49062a89"
       },
       "typedGaps": []
@@ -364,7 +431,9 @@
       "sourceSnapshotDigest": "sha256:d939057c437af5d1e4c010e4e6803f60d2b6455b4d0f3ccb9905abf8b0f988dd",
       "generatedFiles": {
         "frt-route.json": "sha256:66913ca585142798f98c1b64a597cf7824667bee5547b1873ccfbd27aaaefeb9",
-        "package.json": "sha256:1cb209cd5eca01044025934235d31279ae8e169cb2d23cc8afce8398fca8feff",
+        "openapi.json": "sha256:c5c3209eb4d092bc57dcc612a13168b24877e5b7983ef6a21fd5d0c8f1421d78",
+        "package.json": "sha256:31e0319d4b3a31c78c6bb531d4c7d6553fd47cf4db0aee3dc0c3281420dd23fe",
+        "server.mjs": "sha256:4fb0dec072f570ce6e3c2aafec4605219c92297ab0f0404e6669534ecd1b5d0c",
         "src/App.css": "sha256:63ed60c1d9d98dc07880cfe689bea7867c933e0336eac47553b6361775d7efe2",
         "src/App.tsx": "sha256:6e43fb59e8a8c320a51bf72b8fc9219153b2fa7b28595b0d9e7f5ca742451ad0",
         "tsconfig.json": "sha256:f0d2901347e1404b5d011eac8a630aefd0961cb20cc92f7261c50b5e37ddc231"
@@ -378,13 +447,16 @@
       "targetValidation": "PASSED",
       "sourceSnapshotDigest": "sha256:d939057c437af5d1e4c010e4e6803f60d2b6455b4d0f3ccb9905abf8b0f988dd",
       "generatedFiles": {
+        "app.js": "sha256:1ab645c73bcea61604f9cc4805a752ab9ba8fb66813d8c57cad34328c0ce4109",
         "app.json": "sha256:a8227a46813a049ec7adc2bba8af8ae96e6c20636dc96bf32a0414c674086cfb",
         "frt-route.json": "sha256:a9909fea8cc0ab8daa63943f5998dbb1ea8a02abdaaee2b6ae3dd3939d4d655e",
+        "openapi.json": "sha256:dbedf7033c5a55d9a0e04b8f81c9b19d888ed4fad80613b5cd62d135cad38408",
         "pages/index/index.js": "sha256:e8ea3aaae87a53e83424c3ce967a881a61f161c156a0f2d200f5eb911ce1306f",
         "pages/index/index.json": "sha256:6b4f592fb4f1ec858c23eab97c213dc131c256074c85c223594f7863c51e9ce1",
         "pages/index/index.wxml": "sha256:9b107cf04b3bfa35be20ba550cdefe227bd7df693e4d29175992dd105e23032c",
         "pages/index/index.wxss": "sha256:63ed60c1d9d98dc07880cfe689bea7867c933e0336eac47553b6361775d7efe2",
-        "project.config.json": "sha256:5529c5741b7e74cbf1216809df4ce3d1940862db9299dae1f3fd03aaac60f120"
+        "project.config.json": "sha256:5529c5741b7e74cbf1216809df4ce3d1940862db9299dae1f3fd03aaac60f120",
+        "scripts/frt-smoke-start.mjs": "sha256:d5ab0426b2752661820baa88d739c8f7ac842cdb9a5f2addc409b18fdc1b6f6a"
       },
       "typedGaps": []
     },
@@ -396,11 +468,15 @@
       "sourceSnapshotDigest": "sha256:d939057c437af5d1e4c010e4e6803f60d2b6455b4d0f3ccb9905abf8b0f988dd",
       "generatedFiles": {
         ".fvmrc": "sha256:6748d55c6cc27876867415cd3ec374460c11bdefc03cc6e53bebeaa9b9a44147",
+        ".metadata": "sha256:8c9b1b5876c8bd02845c261b3afbc96059b457b7104eaf00f06824235bc6d1e4",
         "analysis_options.yaml": "sha256:6dae439bab95cb2a1536bb4f90c3b751f855544ab2cc37ef7f6df234805aefea",
         "frt-route.json": "sha256:1c1a0d19b6cc6f96f950d282fb55a108e7639c3412b08ebec9a129bda88e6adf",
         "lib/main.dart": "sha256:c7a468e8f112cadba87c6b599a08485a6a591cfb227d332a0047150dfb9bfdfd",
+        "openapi.json": "sha256:96647afb920f8b19a60915cf8d537e4e33508f20bc54b0089462d648b3f44c9c",
         "pubspec.yaml": "sha256:25357d2b876c1baab8761b18d0863c1e31127d0cd74972e3814bacb5aba89212",
-        "test/widget_test.dart": "sha256:6cc6458759538c88439efbf68831128c7c06e7fe001076693741a50f7d3d3e8c"
+        "test/widget_test.dart": "sha256:6cc6458759538c88439efbf68831128c7c06e7fe001076693741a50f7d3d3e8c",
+        "web/index.html": "sha256:10c7c2a3c86e7a7026a3d7d773cf21e344a0cb39fcc7e6fcb4ee1c9e26fac047",
+        "web/manifest.json": "sha256:bdb1c4f84920e7fdaf007e8f6d3b636bd5e87a3f95f74759f47b0d3ba7249d47"
       },
       "typedGaps": []
     },
@@ -412,7 +488,9 @@
       "sourceSnapshotDigest": "sha256:8079a8d4f9410b86632e574533311ba868267c84f1a4fad4bd26e49fb4b15aee",
       "generatedFiles": {
         "frt-route.json": "sha256:85c04750c299c4d9a57fe93dcfd84ee56e0985b046e30a3fad109326035e07b5",
-        "package.json": "sha256:efea2253e496ff0d9bca25ff4cec70262767eae5d4847eda754366d9d2e8fc4a",
+        "openapi.json": "sha256:aea5b737c954c8921fdc8217db431e3429f105073e3b8f781acfac2169ee4eb1",
+        "package.json": "sha256:9f9753db1dcce3568683973ee0afdbc285d83896aba7dbbf950f790e59b4f038",
+        "server.mjs": "sha256:0d08229616a3972b8928d567d099b87ef2efcb6caa7b969c78d34fa5c622b7ed",
         "src/App.vue": "sha256:14a06f3a87e918013e8407a61f9e41774a6567090b68e1bfb48276f3f59bfcb3"
       },
       "typedGaps": []
@@ -425,7 +503,9 @@
       "sourceSnapshotDigest": "sha256:8079a8d4f9410b86632e574533311ba868267c84f1a4fad4bd26e49fb4b15aee",
       "generatedFiles": {
         "frt-route.json": "sha256:7b619527fcd4ec2d7738e7af44727046868d026ad55de2aa745ab32e8204ccaa",
-        "package.json": "sha256:516e603b77f415977f270bceeeb01b5b23efb2022d93da516f9e5893f195db1b",
+        "openapi.json": "sha256:cb9df8f337ae397026023b6566a049c81f7e8220cb6a48609ca95a5fda526f42",
+        "package.json": "sha256:da9a2a3471bdbc889015f832679fb560fccc1c920d746eec06a2b8419f9a1876",
+        "server.mjs": "sha256:77bb234861dae5044efaa790bf7786257ec4dfc13ab7187a4f896461e580f46a",
         "src/App.vue": "sha256:e50eb1d32677884c3f9ceb6636ab75190b6fda343bbe8bf21ac63a1c49062a89"
       },
       "typedGaps": []
@@ -438,7 +518,9 @@
       "sourceSnapshotDigest": "sha256:8079a8d4f9410b86632e574533311ba868267c84f1a4fad4bd26e49fb4b15aee",
       "generatedFiles": {
         "frt-route.json": "sha256:90a4ae1e1b9bd26a4e83fd73f91b70363dd8106ce7596a2f45cd3fa739aeda3c",
-        "package.json": "sha256:1cb209cd5eca01044025934235d31279ae8e169cb2d23cc8afce8398fca8feff",
+        "openapi.json": "sha256:c5c3209eb4d092bc57dcc612a13168b24877e5b7983ef6a21fd5d0c8f1421d78",
+        "package.json": "sha256:31e0319d4b3a31c78c6bb531d4c7d6553fd47cf4db0aee3dc0c3281420dd23fe",
+        "server.mjs": "sha256:4fb0dec072f570ce6e3c2aafec4605219c92297ab0f0404e6669534ecd1b5d0c",
         "src/App.css": "sha256:63ed60c1d9d98dc07880cfe689bea7867c933e0336eac47553b6361775d7efe2",
         "src/App.tsx": "sha256:6e43fb59e8a8c320a51bf72b8fc9219153b2fa7b28595b0d9e7f5ca742451ad0",
         "tsconfig.json": "sha256:f0d2901347e1404b5d011eac8a630aefd0961cb20cc92f7261c50b5e37ddc231"
@@ -452,13 +534,16 @@
       "targetValidation": "PASSED",
       "sourceSnapshotDigest": "sha256:8079a8d4f9410b86632e574533311ba868267c84f1a4fad4bd26e49fb4b15aee",
       "generatedFiles": {
+        "app.js": "sha256:1ab645c73bcea61604f9cc4805a752ab9ba8fb66813d8c57cad34328c0ce4109",
         "app.json": "sha256:a8227a46813a049ec7adc2bba8af8ae96e6c20636dc96bf32a0414c674086cfb",
         "frt-route.json": "sha256:834940db32ba8333a4d30393395ede27d63aeb3f34e7a7f7f60a3611b3d676cf",
+        "openapi.json": "sha256:dbedf7033c5a55d9a0e04b8f81c9b19d888ed4fad80613b5cd62d135cad38408",
         "pages/index/index.js": "sha256:e8ea3aaae87a53e83424c3ce967a881a61f161c156a0f2d200f5eb911ce1306f",
         "pages/index/index.json": "sha256:6b4f592fb4f1ec858c23eab97c213dc131c256074c85c223594f7863c51e9ce1",
         "pages/index/index.wxml": "sha256:9b107cf04b3bfa35be20ba550cdefe227bd7df693e4d29175992dd105e23032c",
         "pages/index/index.wxss": "sha256:63ed60c1d9d98dc07880cfe689bea7867c933e0336eac47553b6361775d7efe2",
-        "project.config.json": "sha256:5529c5741b7e74cbf1216809df4ce3d1940862db9299dae1f3fd03aaac60f120"
+        "project.config.json": "sha256:5529c5741b7e74cbf1216809df4ce3d1940862db9299dae1f3fd03aaac60f120",
+        "scripts/frt-smoke-start.mjs": "sha256:d5ab0426b2752661820baa88d739c8f7ac842cdb9a5f2addc409b18fdc1b6f6a"
       },
       "typedGaps": []
     },
@@ -473,13 +558,18 @@
         "build-profile.json5": "sha256:ef04a2f2d12540c3942e7b05cecf37bf181a0cf3d9e0d9e7cdd3cbc2375baeec",
         "entry/hvigorfile.ts": "sha256:f547983dcab9c8fff87cc3ddedb22bb98063663c5b8afe18bb32e131311ec289",
         "entry/oh-package.json5": "sha256:48f45a9a056591c10618432a29fa61a4143990237daadb0874fae18ec747906c",
+        "entry/src/main/ets/entryability/EntryAbility.ets": "sha256:cb294aabc0ba9486be0a0c5a36310905a92a9bd013366d87de186b37da00dcfa",
         "entry/src/main/ets/pages/Index.ets": "sha256:b9898ab08401f3a8f23e6ec365eda286a5445cff3a166fe7a9269ae588edb516",
-        "entry/src/main/module.json5": "sha256:c35c25affe1258e5848744c6c2f5a9ae0324eaf54eaf5862469b6c411b75906f",
+        "entry/src/main/module.json5": "sha256:005bb6cdbe07ee2a0a78dfbdc4fceae3487d3e7107e111c212ebc7a5cc608d7c",
+        "entry/src/main/resources/base/element/color.json": "sha256:26f6e195ab88786f18e15ea7a9769faaf968c0a631192ed8100fd2cf17d87d97",
+        "entry/src/main/resources/base/element/string.json": "sha256:26af2b77a1c43368c90352792d4ca41fc5784a6ae97666c2c553fe6627714cce",
         "entry/src/main/resources/base/profile/main_pages.json": "sha256:f21984fb1d5096f0db41314da0bb94c573e7ad018e5afae3044f8d5ff71b0bfc",
         "frt-route.json": "sha256:bea24f8bdcf2064f1e7f238e3fa7cbf7266af564b6d14171ac032d567eefa3cf",
         "hvigor-config.json5": "sha256:c24b1704e827e0ff49d3a2acd013a97de53b05bef0e47b62931df1f121aa5398",
         "hvigorfile.ts": "sha256:2378c5e0c5246005ada73a67e8c9834fa08adb9ffd6fb6c219051456753bed5a",
-        "oh-package.json5": "sha256:11c46ae73ed2defc4294479ef01f2559f2a480a5fda32cd84a7703829bd56bcf"
+        "oh-package.json5": "sha256:11c46ae73ed2defc4294479ef01f2559f2a480a5fda32cd84a7703829bd56bcf",
+        "openapi.json": "sha256:cfc5c3b01275455069e32991d8c18bd27d66290306bc11b19c7ba3d1cb135e95",
+        "scripts/frt-smoke-start.mjs": "sha256:1253eafe1afa1cce052a7c6eeb467ec7b8c7516eb6be31b4dda900feeb9bda3d"
       },
       "typedGaps": []
     }
@@ -488,7 +578,7 @@
     {
       "target": "Vue 2",
       "sourceRoute": "Vue 3 -> Vue 2",
-      "generatedDigest": "sha256:fb8a9bec9d167c0dbb69ba4be2504b7f3ce6eae7daa6bb9d571f32da4444c6c0",
+      "generatedDigest": "sha256:466ee4257a4945f0f1583a087538ff357fbc9714f6b435f9d7db7959e5457ec5",
       "evidenceType": "REAL_VUE2_TEMPLATE_BUILD",
       "execution": {
         "command": [
@@ -497,11 +587,11 @@
           "--input-type=module",
           "-e",
           "import { readFileSync } from \"node:fs\";import { createRequire } from \"node:module\";const require=createRequire(import.meta.url);const compiler=require(\"vue-template-compiler\");const source=readFileSync(process.argv[1],\"utf8\");const matched=source.match(/<template>([\\s\\S]*?)<\\/template>/);if(!matched)process.exit(2);const built=compiler.compile(matched[1],{outputSourceRange:true});if(built.errors.length){console.error(built.errors);process.exit(3)}console.log(\"vue2-template-build-passed\", built.render.length);",
-          "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-ngPSSL/vue-2/src/App.vue"
+          "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/vue-2/src/App.vue"
         ],
         "cwd": "/Users/stephen/DevProjects/AIProjects/elmos/engines/frontend-client-engine",
-        "startedAt": "2026-08-05T23:50:08.333Z",
-        "durationMs": 92,
+        "startedAt": "2026-08-08T06:21:01.547Z",
+        "durationMs": 1455,
         "exitCode": 0,
         "signal": null,
         "error": null,
@@ -510,12 +600,217 @@
         "stdoutSha256": "sha256:d2e2cabfb3921a8912b524d9d2b3ff8a8b6fd4a28b932320cee51458c557649b",
         "stderrSha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "status": "PASSED"
+      },
+      "runnableSmoke": {
+        "state": "PASSED",
+        "profileDigest": "sha256:ba02cdb440cb13e6f624828329f5a7a5953b2180e6e4000e41a7f0372f138e51",
+        "unknown": [],
+        "scaffold": {
+          "command": [
+            "python3",
+            "/Users/stephen/DevProjects/AIProjects/elmos/scripts/batch46/scaffold_smoke_pack.py",
+            "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/vue-2",
+            "--write"
+          ],
+          "cwd": "/Users/stephen/DevProjects/AIProjects/elmos",
+          "startedAt": "2026-08-08T06:20:59.276Z",
+          "durationMs": 812,
+          "exitCode": 0,
+          "signal": null,
+          "error": null,
+          "stdout": "smoke pack for vue-2: languages=['javascript'] entries[script=available, compose=unavailable, make=available, zero-dep=available]\n",
+          "stderr": "",
+          "stdoutSha256": "sha256:ac177c081d8c7c71fed5b4888750f56f333ce98a87b11f43e8ae600c45d2078c",
+          "stderrSha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "status": "PASSED"
+        },
+        "validation": {
+          "command": [
+            "python3",
+            "/Users/stephen/DevProjects/AIProjects/elmos/scripts/batch46/validate_smoke_pack.py",
+            "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/vue-2"
+          ],
+          "cwd": "/Users/stephen/DevProjects/AIProjects/elmos",
+          "startedAt": "2026-08-08T06:21:00.089Z",
+          "durationMs": 1458,
+          "exitCode": 0,
+          "signal": null,
+          "error": null,
+          "stdout": "smoke pack validation passed\n",
+          "stderr": "",
+          "stdoutSha256": "sha256:84bb743cf8adc4bc7c6ab44e17c336eb0ecacd2bac325990745afb31f8bd4c5c",
+          "stderrSha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "status": "PASSED"
+        },
+        "execution": {
+          "command": [
+            "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/vue-2/run-smoke.sh",
+            "--entry",
+            "script",
+            "--ttl",
+            "600",
+            "--no-hold"
+          ],
+          "cwd": "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/vue-2",
+          "startedAt": "2026-08-08T06:21:03.002Z",
+          "durationMs": 16983,
+          "exitCode": 0,
+          "signal": null,
+          "error": null,
+          "stdout": "ELMOS smoke run — entry 'script', lease 600s, project vue-2\n[  info ] installing dependencies: npm install --no-audit --no-fund\n[  info ] starting: npm run start:smoke\n[   PASS] process-started: pid 29817 is live\n[   PASS] port-listening: 127.0.0.1:62499 accepted a connection\n[   PASS] http-readiness: http://127.0.0.1:62499/ -> 200\n[   PASS] http-functional: http://127.0.0.1:62499/counter -> 200\n[  info ] --no-hold: asserting and tearing down immediately\n[   PASS] graceful-shutdown: every process exited within the grace period after SIGTERM\n[   PASS] lease-teardown: lease completed: services stopped, containers and volumes removed, 0 ephemeral path(s) deleted\n\nsmoke result: PASS (6/6 required checks passed)\nevidence: smoke/runtime/result.json  ·  lease: smoke/runtime/lease-result.json\nbatch46 smoke gate: runnable\nwrote smoke/runtime/gate-result.json and gate-report.md\n",
+          "stderr": "",
+          "stdoutSha256": "sha256:4b00b347670281da4975b32a8b30804c8238cc9bab1a19ef3cbd79435a4429ac",
+          "stderrSha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "status": "PASSED"
+        },
+        "result": {
+          "schema": "elmos.batch46.smoke-result/1",
+          "generated_at": "2026-08-08T06:21:19Z",
+          "lease_id": "smoke-1786170064-29452",
+          "entry": "script",
+          "port": 62499,
+          "overall": "PASS",
+          "required_total": 6,
+          "required_passed": 6,
+          "checks": [
+            {
+              "id": "process-started",
+              "status": "PASS",
+              "required": true,
+              "detail": "pid 29817 is live",
+              "observed_at": "2026-08-08T06:21:17Z"
+            },
+            {
+              "id": "port-listening",
+              "status": "PASS",
+              "required": true,
+              "detail": "127.0.0.1:62499 accepted a connection",
+              "observed_at": "2026-08-08T06:21:18Z",
+              "port": 62499
+            },
+            {
+              "id": "http-readiness",
+              "status": "PASS",
+              "required": true,
+              "detail": "http://127.0.0.1:62499/ -> 200",
+              "observed_at": "2026-08-08T06:21:18Z",
+              "url": "http://127.0.0.1:62499/",
+              "http_status": 200,
+              "body_head": "<!doctype html><html lang=\"en\"><meta charset=\"utf-8\"><title>Counter</title><body><main aria-label=\"Counter application\" data-server-rendered=\"true\"><h1>Counter</h1><button aria-label=\"Increment counte"
+            },
+            {
+              "id": "http-functional",
+              "status": "PASS",
+              "required": true,
+              "detail": "http://127.0.0.1:62499/counter -> 200",
+              "observed_at": "2026-08-08T06:21:19Z",
+              "url": "http://127.0.0.1:62499/counter",
+              "http_status": 200,
+              "body_head": "<!doctype html><html lang=\"en\"><meta charset=\"utf-8\"><title>Counter</title><body><main aria-label=\"Counter application\" data-server-rendered=\"true\"><h1>Counter</h1><button aria-label=\"Increment counte"
+            },
+            {
+              "id": "graceful-shutdown",
+              "status": "PASS",
+              "required": true,
+              "detail": "every process exited within the grace period after SIGTERM",
+              "observed_at": "2026-08-08T06:21:19Z",
+              "processes": [
+                {
+                  "pid": 29488,
+                  "graceful": false,
+                  "killed": false,
+                  "already_exited": true,
+                  "exit_code": 0
+                },
+                {
+                  "pid": 29817,
+                  "graceful": true,
+                  "killed": false,
+                  "exit_code": -15
+                }
+              ]
+            },
+            {
+              "id": "lease-teardown",
+              "status": "PASS",
+              "required": true,
+              "detail": "lease completed: services stopped, containers and volumes removed, 0 ephemeral path(s) deleted",
+              "observed_at": "2026-08-08T06:21:19Z",
+              "teardown": {
+                "reason": "completed",
+                "stopped_at": "2026-08-08T06:21:19Z",
+                "processes": [
+                  {
+                    "pid": 29488,
+                    "graceful": false,
+                    "killed": false,
+                    "already_exited": true,
+                    "exit_code": 0
+                  },
+                  {
+                    "pid": 29817,
+                    "graceful": true,
+                    "killed": false,
+                    "exit_code": -15
+                  }
+                ],
+                "compose": [],
+                "removed_paths": [],
+                "errors": []
+              }
+            }
+          ],
+          "notes": [],
+          "environment_manifest": {
+            "platform": "darwin",
+            "python": "3.14.6",
+            "docker": true,
+            "node": true,
+            "java": true,
+            "dotnet": true,
+            "cwd": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/vue-2"
+          },
+          "lease": {
+            "free_quota_seconds": 600,
+            "ttl_seconds": 600,
+            "billable_seconds": 0,
+            "end_reason": "completed",
+            "teardown_complete": true
+          },
+          "raw_logs": {
+            "stdout": "smoke/runtime/logs/app.stdout.log",
+            "stderr": "smoke/runtime/logs/app.stderr.log"
+          },
+          "scope_disclaimer": "Functional smoke evidence only. This result never substitutes for route, framework, database, client or certification gates.",
+          "result_digest": "sha256:9d77d3d3dea1eabc39a5cb2a85cf6c8a563e67d56008ffd81b8c339acb7c65f5"
+        },
+        "gate": {
+          "schema": "elmos.batch46.smoke-gate-result/1",
+          "evaluated_at": "2026-08-08T06:21:19Z",
+          "project": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/vue-2",
+          "status": "runnable",
+          "entry": "script",
+          "required_passed": 6,
+          "required_total": 6,
+          "failures": [],
+          "limitations": [],
+          "result_digest": "sha256:9d77d3d3dea1eabc39a5cb2a85cf6c8a563e67d56008ffd81b8c339acb7c65f5",
+          "pack_digest": "sha256:04171796c31402eef5603622bbffe264671ef60186313e18ba6fa90cafad0295",
+          "lease": {
+            "free_quota_seconds": 600,
+            "ttl_seconds": 600,
+            "billable_seconds": 0,
+            "end_reason": "completed",
+            "teardown_complete": true
+          },
+          "gate_version": "1.0.0"
+        }
       }
     },
     {
       "target": "Vue 3",
       "sourceRoute": "Vue 2 -> Vue 3",
-      "generatedDigest": "sha256:bf92dbb0d2713e9b62aa007d5429bc350e82e13c181182d96c07e47f722b46b3",
+      "generatedDigest": "sha256:2e2bbaf2f8dc48d81bfc236a928d64acfa1089798ed5bf1d25a20a34a2c97c85",
       "evidenceType": "REAL_VUE3_TEMPLATE_BUILD",
       "execution": {
         "command": [
@@ -524,11 +819,11 @@
           "--input-type=module",
           "-e",
           "import { readFileSync } from \"node:fs\";import { parse, compileTemplate } from \"@vue/compiler-sfc\";const source=readFileSync(process.argv[1],\"utf8\");const parsed=parse(source,{filename:\"App.vue\"});if(parsed.errors.length||!parsed.descriptor.template)process.exit(2);const built=compileTemplate({source:parsed.descriptor.template.content,filename:\"App.vue\",id:\"frt-real-build\"});if(built.errors.length){console.error(built.errors);process.exit(3)}console.log(\"vue3-template-build-passed\", built.code.length);",
-          "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-ngPSSL/vue-3/src/App.vue"
+          "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/vue-3/src/App.vue"
         ],
         "cwd": "/Users/stephen/DevProjects/AIProjects/elmos/engines/frontend-client-engine",
-        "startedAt": "2026-08-05T23:50:08.426Z",
-        "durationMs": 113,
+        "startedAt": "2026-08-08T06:21:20.963Z",
+        "durationMs": 1026,
         "exitCode": 0,
         "signal": null,
         "error": null,
@@ -537,22 +832,227 @@
         "stdoutSha256": "sha256:af41a34b189c06bd0eb376c4f1e1fda70810159c376634ff8e828d3965db702b",
         "stderrSha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "status": "PASSED"
+      },
+      "runnableSmoke": {
+        "state": "PASSED",
+        "profileDigest": "sha256:cb4ffa436f3d82b91f42eee48a5a1b9a9c5a577828bbf17a4df4bc3050b003b1",
+        "unknown": [],
+        "scaffold": {
+          "command": [
+            "python3",
+            "/Users/stephen/DevProjects/AIProjects/elmos/scripts/batch46/scaffold_smoke_pack.py",
+            "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/vue-3",
+            "--write"
+          ],
+          "cwd": "/Users/stephen/DevProjects/AIProjects/elmos",
+          "startedAt": "2026-08-08T06:21:20.002Z",
+          "durationMs": 548,
+          "exitCode": 0,
+          "signal": null,
+          "error": null,
+          "stdout": "smoke pack for vue-3: languages=['javascript'] entries[script=available, compose=unavailable, make=available, zero-dep=available]\n",
+          "stderr": "",
+          "stdoutSha256": "sha256:f7d1876a50b20d5fc0ad4fb04cfd864ed7bed952fbad1e4b14a64f8501d2b456",
+          "stderrSha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "status": "PASSED"
+        },
+        "validation": {
+          "command": [
+            "python3",
+            "/Users/stephen/DevProjects/AIProjects/elmos/scripts/batch46/validate_smoke_pack.py",
+            "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/vue-3"
+          ],
+          "cwd": "/Users/stephen/DevProjects/AIProjects/elmos",
+          "startedAt": "2026-08-08T06:21:20.551Z",
+          "durationMs": 411,
+          "exitCode": 0,
+          "signal": null,
+          "error": null,
+          "stdout": "smoke pack validation passed\n",
+          "stderr": "",
+          "stdoutSha256": "sha256:84bb743cf8adc4bc7c6ab44e17c336eb0ecacd2bac325990745afb31f8bd4c5c",
+          "stderrSha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "status": "PASSED"
+        },
+        "execution": {
+          "command": [
+            "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/vue-3/run-smoke.sh",
+            "--entry",
+            "script",
+            "--ttl",
+            "600",
+            "--no-hold"
+          ],
+          "cwd": "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/vue-3",
+          "startedAt": "2026-08-08T06:21:21.989Z",
+          "durationMs": 15588,
+          "exitCode": 0,
+          "signal": null,
+          "error": null,
+          "stdout": "ELMOS smoke run — entry 'script', lease 600s, project vue-3\n[  info ] installing dependencies: npm install --no-audit --no-fund\n[  info ] starting: npm run start:smoke\n[   PASS] process-started: pid 30287 is live\n[   PASS] port-listening: 127.0.0.1:62681 accepted a connection\n[   PASS] http-readiness: http://127.0.0.1:62681/ -> 200\n[   PASS] http-functional: http://127.0.0.1:62681/counter -> 200\n[  info ] --no-hold: asserting and tearing down immediately\n[   PASS] graceful-shutdown: every process exited within the grace period after SIGTERM\n[   PASS] lease-teardown: lease completed: services stopped, containers and volumes removed, 0 ephemeral path(s) deleted\n\nsmoke result: PASS (6/6 required checks passed)\nevidence: smoke/runtime/result.json  ·  lease: smoke/runtime/lease-result.json\nbatch46 smoke gate: runnable\nwrote smoke/runtime/gate-result.json and gate-report.md\n",
+          "stderr": "",
+          "stdoutSha256": "sha256:fae79b479adc677ac92423f5016e5290db4b381027ecc1746332becb6499d307",
+          "stderrSha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "status": "PASSED"
+        },
+        "result": {
+          "schema": "elmos.batch46.smoke-result/1",
+          "generated_at": "2026-08-08T06:21:35Z",
+          "lease_id": "smoke-1786170082-30023",
+          "entry": "script",
+          "port": 62681,
+          "overall": "PASS",
+          "required_total": 6,
+          "required_passed": 6,
+          "checks": [
+            {
+              "id": "process-started",
+              "status": "PASS",
+              "required": true,
+              "detail": "pid 30287 is live",
+              "observed_at": "2026-08-08T06:21:31Z"
+            },
+            {
+              "id": "port-listening",
+              "status": "PASS",
+              "required": true,
+              "detail": "127.0.0.1:62681 accepted a connection",
+              "observed_at": "2026-08-08T06:21:35Z",
+              "port": 62681
+            },
+            {
+              "id": "http-readiness",
+              "status": "PASS",
+              "required": true,
+              "detail": "http://127.0.0.1:62681/ -> 200",
+              "observed_at": "2026-08-08T06:21:35Z",
+              "url": "http://127.0.0.1:62681/",
+              "http_status": 200,
+              "body_head": "<!doctype html><html lang=\"en\"><meta charset=\"utf-8\"><title>Counter</title><body><main aria-label=\"Counter application\"><h1>Counter</h1><button aria-label=\"Increment counter\">Increment</button><p aria"
+            },
+            {
+              "id": "http-functional",
+              "status": "PASS",
+              "required": true,
+              "detail": "http://127.0.0.1:62681/counter -> 200",
+              "observed_at": "2026-08-08T06:21:35Z",
+              "url": "http://127.0.0.1:62681/counter",
+              "http_status": 200,
+              "body_head": "<!doctype html><html lang=\"en\"><meta charset=\"utf-8\"><title>Counter</title><body><main aria-label=\"Counter application\"><h1>Counter</h1><button aria-label=\"Increment counter\">Increment</button><p aria"
+            },
+            {
+              "id": "graceful-shutdown",
+              "status": "PASS",
+              "required": true,
+              "detail": "every process exited within the grace period after SIGTERM",
+              "observed_at": "2026-08-08T06:21:35Z",
+              "processes": [
+                {
+                  "pid": 30047,
+                  "graceful": false,
+                  "killed": false,
+                  "already_exited": true,
+                  "exit_code": 0
+                },
+                {
+                  "pid": 30287,
+                  "graceful": true,
+                  "killed": false,
+                  "exit_code": -15
+                }
+              ]
+            },
+            {
+              "id": "lease-teardown",
+              "status": "PASS",
+              "required": true,
+              "detail": "lease completed: services stopped, containers and volumes removed, 0 ephemeral path(s) deleted",
+              "observed_at": "2026-08-08T06:21:35Z",
+              "teardown": {
+                "reason": "completed",
+                "stopped_at": "2026-08-08T06:21:35Z",
+                "processes": [
+                  {
+                    "pid": 30047,
+                    "graceful": false,
+                    "killed": false,
+                    "already_exited": true,
+                    "exit_code": 0
+                  },
+                  {
+                    "pid": 30287,
+                    "graceful": true,
+                    "killed": false,
+                    "exit_code": -15
+                  }
+                ],
+                "compose": [],
+                "removed_paths": [],
+                "errors": []
+              }
+            }
+          ],
+          "notes": [],
+          "environment_manifest": {
+            "platform": "darwin",
+            "python": "3.14.6",
+            "docker": true,
+            "node": true,
+            "java": true,
+            "dotnet": true,
+            "cwd": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/vue-3"
+          },
+          "lease": {
+            "free_quota_seconds": 600,
+            "ttl_seconds": 600,
+            "billable_seconds": 0,
+            "end_reason": "completed",
+            "teardown_complete": true
+          },
+          "raw_logs": {
+            "stdout": "smoke/runtime/logs/app.stdout.log",
+            "stderr": "smoke/runtime/logs/app.stderr.log"
+          },
+          "scope_disclaimer": "Functional smoke evidence only. This result never substitutes for route, framework, database, client or certification gates.",
+          "result_digest": "sha256:d9914151f788363262348bb8861914f47c4440b70ea1cf0b792b5653724e9427"
+        },
+        "gate": {
+          "schema": "elmos.batch46.smoke-gate-result/1",
+          "evaluated_at": "2026-08-08T06:21:37Z",
+          "project": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/vue-3",
+          "status": "runnable",
+          "entry": "script",
+          "required_passed": 6,
+          "required_total": 6,
+          "failures": [],
+          "limitations": [],
+          "result_digest": "sha256:d9914151f788363262348bb8861914f47c4440b70ea1cf0b792b5653724e9427",
+          "pack_digest": "sha256:3d8327422a3fdd16b12af23d82adac49e870e7e1769964236edfa0b49cb923e5",
+          "lease": {
+            "free_quota_seconds": 600,
+            "ttl_seconds": 600,
+            "billable_seconds": 0,
+            "end_reason": "completed",
+            "teardown_complete": true
+          },
+          "gate_version": "1.0.0"
+        }
       }
     },
     {
       "target": "React",
       "sourceRoute": "Vue 2 -> React",
-      "generatedDigest": "sha256:03925a5a050d11a41ec2aec6f43317663f971610431b24bd5cb28cc7b0dc21e5",
+      "generatedDigest": "sha256:2ced8839564e0479c6a61f9e74c1f9a7726fc88cad123ec5e21647aed000b2f0",
       "evidenceType": "REAL_TYPESCRIPT_BUILD",
       "execution": {
         "command": [
           "/Users/stephen/DevProjects/AIProjects/elmos/engines/frontend-client-engine/node_modules/.bin/tsc",
           "-p",
-          "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-ngPSSL/react/tsconfig.json"
+          "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/react/tsconfig.json"
         ],
-        "cwd": "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-ngPSSL/react",
-        "startedAt": "2026-08-05T23:50:08.540Z",
-        "durationMs": 1830,
+        "cwd": "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/react",
+        "startedAt": "2026-08-08T06:21:38.682Z",
+        "durationMs": 32195,
         "exitCode": 0,
         "signal": null,
         "error": null,
@@ -561,35 +1061,227 @@
         "stdoutSha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "stderrSha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "status": "PASSED"
+      },
+      "runnableSmoke": {
+        "state": "PASSED",
+        "profileDigest": "sha256:def8544fdeda9ed2d8a9374b1c2ce1b7bb59f5f7a1dc943cc3cfc83713b992ba",
+        "unknown": [],
+        "scaffold": {
+          "command": [
+            "python3",
+            "/Users/stephen/DevProjects/AIProjects/elmos/scripts/batch46/scaffold_smoke_pack.py",
+            "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/react",
+            "--write"
+          ],
+          "cwd": "/Users/stephen/DevProjects/AIProjects/elmos",
+          "startedAt": "2026-08-08T06:21:37.578Z",
+          "durationMs": 593,
+          "exitCode": 0,
+          "signal": null,
+          "error": null,
+          "stdout": "smoke pack for react: languages=['typescript'] entries[script=available, compose=unavailable, make=available, zero-dep=available]\n",
+          "stderr": "",
+          "stdoutSha256": "sha256:cf551560f41fad90c494223763e79a1fcdb3a888ad74eeedafd5c940f2b0fea3",
+          "stderrSha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "status": "PASSED"
+        },
+        "validation": {
+          "command": [
+            "python3",
+            "/Users/stephen/DevProjects/AIProjects/elmos/scripts/batch46/validate_smoke_pack.py",
+            "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/react"
+          ],
+          "cwd": "/Users/stephen/DevProjects/AIProjects/elmos",
+          "startedAt": "2026-08-08T06:21:38.172Z",
+          "durationMs": 509,
+          "exitCode": 0,
+          "signal": null,
+          "error": null,
+          "stdout": "smoke pack validation passed\n",
+          "stderr": "",
+          "stdoutSha256": "sha256:84bb743cf8adc4bc7c6ab44e17c336eb0ecacd2bac325990745afb31f8bd4c5c",
+          "stderrSha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "status": "PASSED"
+        },
+        "execution": {
+          "command": [
+            "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/react/run-smoke.sh",
+            "--entry",
+            "script",
+            "--ttl",
+            "600",
+            "--no-hold",
+            "--no-install"
+          ],
+          "cwd": "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/react",
+          "startedAt": "2026-08-08T06:22:10.878Z",
+          "durationMs": 9136,
+          "exitCode": 0,
+          "signal": null,
+          "error": null,
+          "stdout": "ELMOS smoke run — entry 'script', lease 600s, project react\n[  info ] starting: npm run start:smoke\n[   PASS] process-started: pid 32194 is live\n[   PASS] port-listening: 127.0.0.1:63187 accepted a connection\n[   PASS] http-readiness: http://127.0.0.1:63187/ -> 200\n[   PASS] http-functional: http://127.0.0.1:63187/counter -> 200\n[  info ] --no-hold: asserting and tearing down immediately\n[   PASS] graceful-shutdown: every process exited within the grace period after SIGTERM\n[   PASS] lease-teardown: lease completed: services stopped, containers and volumes removed, 0 ephemeral path(s) deleted\n\nsmoke result: PASS (6/6 required checks passed)\nevidence: smoke/runtime/result.json  ·  lease: smoke/runtime/lease-result.json\nbatch46 smoke gate: runnable\nwrote smoke/runtime/gate-result.json and gate-report.md\n",
+          "stderr": "",
+          "stdoutSha256": "sha256:844b30c5235fd2d26fe7c122b025777312451152bb172c731f87f309571a8a2a",
+          "stderrSha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "status": "PASSED"
+        },
+        "result": {
+          "schema": "elmos.batch46.smoke-result/1",
+          "generated_at": "2026-08-08T06:22:18Z",
+          "lease_id": "smoke-1786170132-32102",
+          "entry": "script",
+          "port": 63187,
+          "overall": "PASS",
+          "required_total": 6,
+          "required_passed": 6,
+          "checks": [
+            {
+              "id": "process-started",
+              "status": "PASS",
+              "required": true,
+              "detail": "pid 32194 is live",
+              "observed_at": "2026-08-08T06:22:12Z"
+            },
+            {
+              "id": "port-listening",
+              "status": "PASS",
+              "required": true,
+              "detail": "127.0.0.1:63187 accepted a connection",
+              "observed_at": "2026-08-08T06:22:17Z",
+              "port": 63187
+            },
+            {
+              "id": "http-readiness",
+              "status": "PASS",
+              "required": true,
+              "detail": "http://127.0.0.1:63187/ -> 200",
+              "observed_at": "2026-08-08T06:22:17Z",
+              "url": "http://127.0.0.1:63187/",
+              "http_status": 200,
+              "body_head": "<!doctype html><html lang=\"en\"><meta charset=\"utf-8\"><title>Counter</title><body><main aria-label=\"Counter application\"><h1>Counter</h1><button aria-label=\"Increment counter\">Increment</button><p aria"
+            },
+            {
+              "id": "http-functional",
+              "status": "PASS",
+              "required": true,
+              "detail": "http://127.0.0.1:63187/counter -> 200",
+              "observed_at": "2026-08-08T06:22:18Z",
+              "url": "http://127.0.0.1:63187/counter",
+              "http_status": 200,
+              "body_head": "<!doctype html><html lang=\"en\"><meta charset=\"utf-8\"><title>Counter</title><body><main aria-label=\"Counter application\"><h1>Counter</h1><button aria-label=\"Increment counter\">Increment</button><p aria"
+            },
+            {
+              "id": "graceful-shutdown",
+              "status": "PASS",
+              "required": true,
+              "detail": "every process exited within the grace period after SIGTERM",
+              "observed_at": "2026-08-08T06:22:18Z",
+              "processes": [
+                {
+                  "pid": 32194,
+                  "graceful": true,
+                  "killed": false,
+                  "exit_code": -15
+                }
+              ]
+            },
+            {
+              "id": "lease-teardown",
+              "status": "PASS",
+              "required": true,
+              "detail": "lease completed: services stopped, containers and volumes removed, 0 ephemeral path(s) deleted",
+              "observed_at": "2026-08-08T06:22:18Z",
+              "teardown": {
+                "reason": "completed",
+                "stopped_at": "2026-08-08T06:22:18Z",
+                "processes": [
+                  {
+                    "pid": 32194,
+                    "graceful": true,
+                    "killed": false,
+                    "exit_code": -15
+                  }
+                ],
+                "compose": [],
+                "removed_paths": [],
+                "errors": []
+              }
+            }
+          ],
+          "notes": [],
+          "environment_manifest": {
+            "platform": "darwin",
+            "python": "3.14.6",
+            "docker": true,
+            "node": true,
+            "java": true,
+            "dotnet": true,
+            "cwd": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/react"
+          },
+          "lease": {
+            "free_quota_seconds": 600,
+            "ttl_seconds": 600,
+            "billable_seconds": 0,
+            "end_reason": "completed",
+            "teardown_complete": true
+          },
+          "raw_logs": {
+            "stdout": "smoke/runtime/logs/app.stdout.log",
+            "stderr": "smoke/runtime/logs/app.stderr.log"
+          },
+          "scope_disclaimer": "Functional smoke evidence only. This result never substitutes for route, framework, database, client or certification gates.",
+          "result_digest": "sha256:4880d6034471eb76e309db6ebba36c20f9a5f4d252481252c21b7e13d66fb420"
+        },
+        "gate": {
+          "schema": "elmos.batch46.smoke-gate-result/1",
+          "evaluated_at": "2026-08-08T06:22:19Z",
+          "project": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/react",
+          "status": "runnable",
+          "entry": "script",
+          "required_passed": 6,
+          "required_total": 6,
+          "failures": [],
+          "limitations": [],
+          "result_digest": "sha256:4880d6034471eb76e309db6ebba36c20f9a5f4d252481252c21b7e13d66fb420",
+          "pack_digest": "sha256:f3388dd2ba0e232b74176db3abaf8c66944f5cdfba8432338a9c47b3a35849e8",
+          "lease": {
+            "free_quota_seconds": 600,
+            "ttl_seconds": 600,
+            "billable_seconds": 0,
+            "end_reason": "completed",
+            "teardown_complete": true
+          },
+          "gate_version": "1.0.0"
+        }
       }
     },
     {
       "target": "WeChat Mini Program",
       "sourceRoute": "Vue 2 -> WeChat Mini Program",
-      "generatedDigest": "sha256:23ecb995624e3fbd9d919009060cf22c19f04be7a6f20dd4223ebf67cdc2b982",
+      "generatedDigest": "sha256:fe259bd0b0df1a1e1d762987a85a17e635992379ae6de1a064637c60d4b34a14",
       "evidenceType": "REAL_WECHAT_DEVTOOLS_PROJECT_OPEN",
       "execution": {
         "command": [
           "/Applications/wechatwebdevtools.app/Contents/MacOS/cli",
           "open",
           "--project",
-          "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-ngPSSL/wechat-mini-program",
+          "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/wechat-mini-program",
           "--port",
           "19420",
           "--lang",
           "en",
           "--disable-gpu"
         ],
-        "cwd": "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-ngPSSL/wechat-mini-program",
-        "startedAt": "2026-08-05T23:50:10.372Z",
-        "durationMs": 7302,
+        "cwd": "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/wechat-mini-program",
+        "startedAt": "2026-08-08T06:22:22.085Z",
+        "durationMs": 5728,
         "exitCode": 0,
         "signal": null,
         "error": null,
         "stdout": "",
-        "stderr": "- initialize\n\n✖ IDE may already started at port 19420, trying to connect\n\n✔ IDE server started successfully, listening on http://127.0.0.1:19420\n- preparing\n✔ open\n",
+        "stderr": "- initialize\n\n✔ IDE server has started, listening on http://127.0.0.1:19420\n- preparing\n✔ open\n",
         "stdoutSha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "stderrSha256": "sha256:931bb49e45d551e86b6defac2e4a8bb99cbbfa7914a5db20c6b9c6ae24559876",
+        "stderrSha256": "sha256:359f6315ce9b522608fbe21241468931bd1359e496e05330bb43acb78d4ae7e5",
         "status": "PASSED"
       },
       "close": {
@@ -597,13 +1289,13 @@
           "/Applications/wechatwebdevtools.app/Contents/MacOS/cli",
           "close",
           "--project",
-          "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-ngPSSL/wechat-mini-program",
+          "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/wechat-mini-program",
           "--port",
           "19420"
         ],
-        "cwd": "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-ngPSSL/wechat-mini-program",
-        "startedAt": "2026-08-05T23:50:17.674Z",
-        "durationMs": 380,
+        "cwd": "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/wechat-mini-program",
+        "startedAt": "2026-08-08T06:22:27.813Z",
+        "durationMs": 6033,
         "exitCode": 0,
         "signal": null,
         "error": null,
@@ -612,21 +1304,406 @@
         "stdoutSha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "stderrSha256": "sha256:b4681d390d0f71fa31ac2727a586fd0377883731e72c4674c0cd1c59ebe74cc4",
         "status": "PASSED"
+      },
+      "runnableSmoke": {
+        "state": "PASSED",
+        "profileDigest": "sha256:2c253a2d6b17cb052b90ee241ab52fe2ecee18b6914c39a9cb833467f74e5d11",
+        "unknown": [],
+        "scaffold": {
+          "command": [
+            "python3",
+            "/Users/stephen/DevProjects/AIProjects/elmos/scripts/batch46/scaffold_smoke_pack.py",
+            "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/wechat-mini-program",
+            "--write"
+          ],
+          "cwd": "/Users/stephen/DevProjects/AIProjects/elmos",
+          "startedAt": "2026-08-08T06:22:20.021Z",
+          "durationMs": 1147,
+          "exitCode": 0,
+          "signal": null,
+          "error": null,
+          "stdout": "smoke pack for wechat-mini-program: languages=['javascript'] entries[script=available, compose=unavailable, make=available, zero-dep=available]\n",
+          "stderr": "",
+          "stdoutSha256": "sha256:dee857282351957049030581b63c237f2aed415fbfb8c8e04f26ebf9952d7d94",
+          "stderrSha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "status": "PASSED"
+        },
+        "validation": {
+          "command": [
+            "python3",
+            "/Users/stephen/DevProjects/AIProjects/elmos/scripts/batch46/validate_smoke_pack.py",
+            "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/wechat-mini-program"
+          ],
+          "cwd": "/Users/stephen/DevProjects/AIProjects/elmos",
+          "startedAt": "2026-08-08T06:22:21.169Z",
+          "durationMs": 913,
+          "exitCode": 0,
+          "signal": null,
+          "error": null,
+          "stdout": "smoke pack validation passed\n",
+          "stderr": "",
+          "stdoutSha256": "sha256:84bb743cf8adc4bc7c6ab44e17c336eb0ecacd2bac325990745afb31f8bd4c5c",
+          "stderrSha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "status": "PASSED"
+        },
+        "execution": {
+          "command": [
+            "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/wechat-mini-program/run-smoke.sh",
+            "--entry",
+            "script",
+            "--ttl",
+            "600",
+            "--no-hold",
+            "--no-install"
+          ],
+          "cwd": "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/wechat-mini-program",
+          "startedAt": "2026-08-08T06:22:33.847Z",
+          "durationMs": 13292,
+          "exitCode": 0,
+          "signal": null,
+          "error": null,
+          "stdout": "ELMOS smoke run — entry 'script', lease 600s, project wechat-mini-program\n[  info ] starting: node scripts/frt-smoke-start.mjs\n[   PASS] process-started: pid 33425 is live\n[   PASS] port-listening: 127.0.0.1:63369 accepted a connection\n[   PASS] http-readiness: http://127.0.0.1:63369/health -> 200\n[   PASS] http-functional: http://127.0.0.1:63369/counter -> 200\n[  info ] --no-hold: asserting and tearing down immediately\n[   PASS] graceful-shutdown: every process exited within the grace period after SIGTERM\n[   PASS] lease-teardown: lease completed: services stopped, containers and volumes removed, 0 ephemeral path(s) deleted\n\nsmoke result: PASS (6/6 required checks passed)\nevidence: smoke/runtime/result.json  ·  lease: smoke/runtime/lease-result.json\nbatch46 smoke gate: runnable\nwrote smoke/runtime/gate-result.json and gate-report.md\n",
+          "stderr": "",
+          "stdoutSha256": "sha256:0b1a7a1d04b0c7d531765bfaf45c91be05aab09ec21f52d47b825aeedc1cd6c5",
+          "stderrSha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "status": "PASSED"
+        },
+        "result": {
+          "schema": "elmos.batch46.smoke-result/1",
+          "generated_at": "2026-08-08T06:22:44Z",
+          "lease_id": "smoke-1786170155-33340",
+          "entry": "script",
+          "port": 63369,
+          "overall": "PASS",
+          "required_total": 6,
+          "required_passed": 6,
+          "checks": [
+            {
+              "id": "process-started",
+              "status": "PASS",
+              "required": true,
+              "detail": "pid 33425 is live",
+              "observed_at": "2026-08-08T06:22:35Z"
+            },
+            {
+              "id": "port-listening",
+              "status": "PASS",
+              "required": true,
+              "detail": "127.0.0.1:63369 accepted a connection",
+              "observed_at": "2026-08-08T06:22:41Z",
+              "port": 63369
+            },
+            {
+              "id": "http-readiness",
+              "status": "PASS",
+              "required": true,
+              "detail": "http://127.0.0.1:63369/health -> 200",
+              "observed_at": "2026-08-08T06:22:41Z",
+              "url": "http://127.0.0.1:63369/health",
+              "http_status": 200,
+              "body_head": "{\"status\":\"launched\",\"target\":\"WECHAT_MINI_PROGRAM\"}"
+            },
+            {
+              "id": "http-functional",
+              "status": "PASS",
+              "required": true,
+              "detail": "http://127.0.0.1:63369/counter -> 200",
+              "observed_at": "2026-08-08T06:22:41Z",
+              "url": "http://127.0.0.1:63369/counter",
+              "http_status": 200,
+              "body_head": "{\"status\":\"launched\",\"target\":\"WECHAT_MINI_PROGRAM\"}"
+            },
+            {
+              "id": "graceful-shutdown",
+              "status": "PASS",
+              "required": true,
+              "detail": "every process exited within the grace period after SIGTERM",
+              "observed_at": "2026-08-08T06:22:44Z",
+              "processes": [
+                {
+                  "pid": 33425,
+                  "graceful": true,
+                  "killed": false,
+                  "exit_code": 0
+                }
+              ]
+            },
+            {
+              "id": "lease-teardown",
+              "status": "PASS",
+              "required": true,
+              "detail": "lease completed: services stopped, containers and volumes removed, 0 ephemeral path(s) deleted",
+              "observed_at": "2026-08-08T06:22:44Z",
+              "teardown": {
+                "reason": "completed",
+                "stopped_at": "2026-08-08T06:22:41Z",
+                "processes": [
+                  {
+                    "pid": 33425,
+                    "graceful": true,
+                    "killed": false,
+                    "exit_code": 0
+                  }
+                ],
+                "compose": [],
+                "removed_paths": [],
+                "errors": []
+              }
+            }
+          ],
+          "notes": [],
+          "environment_manifest": {
+            "platform": "darwin",
+            "python": "3.14.6",
+            "docker": true,
+            "node": true,
+            "java": true,
+            "dotnet": true,
+            "cwd": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/wechat-mini-program"
+          },
+          "lease": {
+            "free_quota_seconds": 600,
+            "ttl_seconds": 600,
+            "billable_seconds": 0,
+            "end_reason": "completed",
+            "teardown_complete": true
+          },
+          "raw_logs": {
+            "stdout": "smoke/runtime/logs/app.stdout.log",
+            "stderr": "smoke/runtime/logs/app.stderr.log"
+          },
+          "scope_disclaimer": "Functional smoke evidence only. This result never substitutes for route, framework, database, client or certification gates.",
+          "result_digest": "sha256:cdc35eeb02e7cafeff6b7e912297f74eee4815282936e66abcfebe3cff2e6215"
+        },
+        "gate": {
+          "schema": "elmos.batch46.smoke-gate-result/1",
+          "evaluated_at": "2026-08-08T06:22:46Z",
+          "project": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/wechat-mini-program",
+          "status": "runnable",
+          "entry": "script",
+          "required_passed": 6,
+          "required_total": 6,
+          "failures": [],
+          "limitations": [],
+          "result_digest": "sha256:cdc35eeb02e7cafeff6b7e912297f74eee4815282936e66abcfebe3cff2e6215",
+          "pack_digest": "sha256:d14afab7f7d795a79f556453a1b573e62d784fe14a6cbaab79cec3607375ac3f",
+          "lease": {
+            "free_quota_seconds": 600,
+            "ttl_seconds": 600,
+            "billable_seconds": 0,
+            "end_reason": "completed",
+            "teardown_complete": true
+          },
+          "gate_version": "1.0.0"
+        }
       }
     },
     {
       "target": "ArkUI",
       "sourceRoute": "Vue 2 -> ArkUI",
-      "generatedDigest": "sha256:1bee789289ab6768079808eb23e6d167db26ca3399cdab5aef97b88fc02caced",
+      "generatedDigest": "sha256:872677007d567a72f7db669b7fa131fb418e72b70b5f6fb70efd35bb168a7c5d",
       "evidenceType": "ARKUI_NATIVE_BUILD",
       "status": "NOT_RUN",
       "reason": "DEVECO_HVIGOR_TOOLCHAIN_UNAVAILABLE",
-      "remediation": "Install DevEco Studio/hvigor or set ELMOS_HVIGORW to the exact executable path, then rerun this script."
+      "remediation": "Install DevEco Studio/hvigor or set ELMOS_HVIGORW to the exact executable path, then rerun this script.",
+      "runnableSmoke": {
+        "state": "NOT_RUN",
+        "profileDigest": "sha256:c0b75c39544907cb4cbc22a92f0b47b683cf478b531ac251143a9bc37553d8c2",
+        "unknown": [],
+        "scaffold": {
+          "command": [
+            "python3",
+            "/Users/stephen/DevProjects/AIProjects/elmos/scripts/batch46/scaffold_smoke_pack.py",
+            "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/arkui",
+            "--write"
+          ],
+          "cwd": "/Users/stephen/DevProjects/AIProjects/elmos",
+          "startedAt": "2026-08-08T06:22:47.180Z",
+          "durationMs": 1336,
+          "exitCode": 0,
+          "signal": null,
+          "error": null,
+          "stdout": "smoke pack for arkui: languages=['ets'] entries[script=available, compose=unavailable, make=available, zero-dep=available]\n",
+          "stderr": "",
+          "stdoutSha256": "sha256:25d44246fcc02cc158f40195e9f2c08f0651dc5b88880904bbd41fb51845dc60",
+          "stderrSha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "status": "PASSED"
+        },
+        "validation": {
+          "command": [
+            "python3",
+            "/Users/stephen/DevProjects/AIProjects/elmos/scripts/batch46/validate_smoke_pack.py",
+            "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/arkui"
+          ],
+          "cwd": "/Users/stephen/DevProjects/AIProjects/elmos",
+          "startedAt": "2026-08-08T06:22:48.516Z",
+          "durationMs": 1152,
+          "exitCode": 0,
+          "signal": null,
+          "error": null,
+          "stdout": "smoke pack validation passed\n",
+          "stderr": "",
+          "stdoutSha256": "sha256:84bb743cf8adc4bc7c6ab44e17c336eb0ecacd2bac325990745afb31f8bd4c5c",
+          "stderrSha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "status": "PASSED"
+        },
+        "execution": {
+          "command": [
+            "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/arkui/run-smoke.sh",
+            "--entry",
+            "script",
+            "--ttl",
+            "600",
+            "--no-hold",
+            "--no-install"
+          ],
+          "cwd": "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/arkui",
+          "startedAt": "2026-08-08T06:22:49.706Z",
+          "durationMs": 8144,
+          "exitCode": 3,
+          "signal": null,
+          "error": null,
+          "stdout": "ELMOS smoke run — entry 'script', lease 600s, project arkui\n[  info ] starting: node scripts/frt-smoke-start.mjs\n[   PASS] process-started: pid 34407 is live\n[NOT_RUN] port-listening: the start command exited with code 3 before opening 127.0.0.1:63546\n[NOT_RUN] http-readiness: port never opened\n[NOT_RUN] http-functional: port never opened\n[   PASS] graceful-shutdown: every process exited within the grace period after SIGTERM\n[   PASS] lease-teardown: lease completed: services stopped, containers and volumes removed, 0 ephemeral path(s) deleted\n\nsmoke result: NOT_RUN (3/6 required checks passed)\nevidence: smoke/runtime/result.json  ·  lease: smoke/runtime/lease-result.json\nbatch46 smoke gate: blocked\n  FAIL recorded run is NOT_RUN; NOT_RUN never passes\n  LIMIT no contract-declared functional endpoint was exercised\nwrote smoke/runtime/gate-result.json and gate-report.md\n",
+          "stderr": "",
+          "stdoutSha256": "sha256:ba811219c68ed79318775b29265b07128cdee9745531c118d00c2340ba98e2cc",
+          "stderrSha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "status": "FAILED"
+        },
+        "result": {
+          "schema": "elmos.batch46.smoke-result/1",
+          "generated_at": "2026-08-08T06:22:54Z",
+          "lease_id": "smoke-1786170171-34267",
+          "entry": "script",
+          "port": 63546,
+          "overall": "NOT_RUN",
+          "required_total": 6,
+          "required_passed": 3,
+          "checks": [
+            {
+              "id": "process-started",
+              "status": "PASS",
+              "required": true,
+              "detail": "pid 34407 is live",
+              "observed_at": "2026-08-08T06:22:52Z"
+            },
+            {
+              "id": "port-listening",
+              "status": "NOT_RUN",
+              "required": true,
+              "detail": "the start command exited with code 3 before opening 127.0.0.1:63546",
+              "observed_at": "2026-08-08T06:22:54Z",
+              "port": 63546,
+              "stderr_tail": "ARKUI_HVIGOR_OR_HDC_UNAVAILABLE\n"
+            },
+            {
+              "id": "http-readiness",
+              "status": "NOT_RUN",
+              "required": true,
+              "detail": "port never opened",
+              "observed_at": "2026-08-08T06:22:54Z"
+            },
+            {
+              "id": "http-functional",
+              "status": "NOT_RUN",
+              "required": true,
+              "detail": "port never opened",
+              "observed_at": "2026-08-08T06:22:54Z"
+            },
+            {
+              "id": "graceful-shutdown",
+              "status": "PASS",
+              "required": true,
+              "detail": "every process exited within the grace period after SIGTERM",
+              "observed_at": "2026-08-08T06:22:54Z",
+              "processes": [
+                {
+                  "pid": 34407,
+                  "graceful": false,
+                  "killed": false,
+                  "already_exited": true,
+                  "exit_code": 3
+                }
+              ]
+            },
+            {
+              "id": "lease-teardown",
+              "status": "PASS",
+              "required": true,
+              "detail": "lease completed: services stopped, containers and volumes removed, 0 ephemeral path(s) deleted",
+              "observed_at": "2026-08-08T06:22:54Z",
+              "teardown": {
+                "reason": "completed",
+                "stopped_at": "2026-08-08T06:22:54Z",
+                "processes": [
+                  {
+                    "pid": 34407,
+                    "graceful": false,
+                    "killed": false,
+                    "already_exited": true,
+                    "exit_code": 3
+                  }
+                ],
+                "compose": [],
+                "removed_paths": [],
+                "errors": []
+              }
+            }
+          ],
+          "notes": [],
+          "environment_manifest": {
+            "platform": "darwin",
+            "python": "3.14.6",
+            "docker": true,
+            "node": true,
+            "java": true,
+            "dotnet": true,
+            "cwd": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/arkui"
+          },
+          "lease": {
+            "free_quota_seconds": 600,
+            "ttl_seconds": 600,
+            "billable_seconds": 0,
+            "end_reason": "completed",
+            "teardown_complete": true
+          },
+          "raw_logs": {
+            "stdout": "smoke/runtime/logs/app.stdout.log",
+            "stderr": "smoke/runtime/logs/app.stderr.log"
+          },
+          "scope_disclaimer": "Functional smoke evidence only. This result never substitutes for route, framework, database, client or certification gates.",
+          "result_digest": "sha256:87f52ebc9f7d6388a0d7c2d17d9ae5abb62bf10b16dc197da9c0a8c2e17587e1"
+        },
+        "gate": {
+          "schema": "elmos.batch46.smoke-gate-result/1",
+          "evaluated_at": "2026-08-08T06:22:57Z",
+          "project": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/arkui",
+          "status": "blocked",
+          "entry": "script",
+          "required_passed": 3,
+          "required_total": 6,
+          "failures": [
+            "recorded run is NOT_RUN; NOT_RUN never passes"
+          ],
+          "limitations": [
+            "no contract-declared functional endpoint was exercised"
+          ],
+          "result_digest": "sha256:87f52ebc9f7d6388a0d7c2d17d9ae5abb62bf10b16dc197da9c0a8c2e17587e1",
+          "pack_digest": "sha256:58730b9f68cbd48ec722e25787fb5889cd9389439793b6a959026654c4063dd7",
+          "lease": {
+            "free_quota_seconds": 600,
+            "ttl_seconds": 600,
+            "billable_seconds": 0,
+            "end_reason": "completed",
+            "teardown_complete": true
+          },
+          "gate_version": "1.0.0"
+        }
+      }
     },
     {
       "target": "Flutter",
       "sourceRoute": "Vue 2 -> Flutter",
-      "generatedDigest": "sha256:651cde7a5a32a16867f1727691661a842f20b881ce094c09f48178c646f8ca0d",
+      "generatedDigest": "sha256:3dabc4a4e1105ad0cebb76bd0d4d549a2a66e7e0f00ec78aa19b34ca7558aaa7",
       "evidenceType": "REAL_FLUTTER_ANALYZE_AND_WIDGET_TEST",
       "status": "PASSED",
       "dependencyResolution": {
@@ -641,9 +1718,9 @@
             "get",
             "--offline"
           ],
-          "cwd": "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-ngPSSL/flutter",
-          "startedAt": "2026-08-05T23:50:18.072Z",
-          "durationMs": 1429,
+          "cwd": "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/flutter",
+          "startedAt": "2026-08-08T06:23:00.269Z",
+          "durationMs": 8670,
           "exitCode": 0,
           "signal": null,
           "error": null,
@@ -660,15 +1737,15 @@
             "analyze",
             "--no-pub"
           ],
-          "cwd": "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-ngPSSL/flutter",
-          "startedAt": "2026-08-05T23:50:19.501Z",
-          "durationMs": 4944,
+          "cwd": "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/flutter",
+          "startedAt": "2026-08-08T06:23:08.940Z",
+          "durationMs": 15425,
           "exitCode": 0,
           "signal": null,
           "error": null,
-          "stdout": "Analyzing flutter...                                            \nNo issues found! (ran in 2.5s)\n",
+          "stdout": "Analyzing flutter...                                            \nNo issues found! (ran in 9.6s)\n",
           "stderr": "",
-          "stdoutSha256": "sha256:8ebd5554c3e12adc3cc5a8ca5b10d5055fbad234720b90bfa47b1f5e0c56ac5f",
+          "stdoutSha256": "sha256:32aa98bbda1741a43192d99a3d3661994be8cd4ebdf2fb40a78a321a5dc8f6ec",
           "stderrSha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "status": "PASSED"
         },
@@ -678,17 +1755,209 @@
             "test",
             "--no-pub"
           ],
-          "cwd": "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-ngPSSL/flutter",
-          "startedAt": "2026-08-05T23:50:24.444Z",
-          "durationMs": 8536,
+          "cwd": "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/flutter",
+          "startedAt": "2026-08-08T06:23:24.366Z",
+          "durationMs": 96640,
           "exitCode": 0,
           "signal": null,
           "error": null,
-          "stdout": "00:00 +0: loading /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-ngPSSL/flutter/test/widget_test.dart\n00:00 +0: counter route preserves the interaction contract\n00:00 +1: All tests passed!\n",
+          "stdout": "00:00 +0: loading /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/flutter/test/widget_test.dart\n00:00 +0: counter route preserves the interaction contract\n00:07 +1: All tests passed!\n",
           "stderr": "",
-          "stdoutSha256": "sha256:778dc0d55f864e8b8bd4bcb008f916702dbdb5cbe13a2e2d625f30288185d226",
+          "stdoutSha256": "sha256:5df5e9ad5d140eb9d92f7e8d137c1d21a092f943c9993c3b2fab5819d5e7139a",
           "stderrSha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "status": "PASSED"
+        }
+      },
+      "runnableSmoke": {
+        "state": "PASSED",
+        "profileDigest": "sha256:7599fce11150290e22364441a02a24569e46473eb9564417f6c24521a19d3af5",
+        "unknown": [],
+        "scaffold": {
+          "command": [
+            "python3",
+            "/Users/stephen/DevProjects/AIProjects/elmos/scripts/batch46/scaffold_smoke_pack.py",
+            "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/flutter",
+            "--write"
+          ],
+          "cwd": "/Users/stephen/DevProjects/AIProjects/elmos",
+          "startedAt": "2026-08-08T06:22:57.852Z",
+          "durationMs": 1339,
+          "exitCode": 0,
+          "signal": null,
+          "error": null,
+          "stdout": "smoke pack for flutter: languages=['dart'] entries[script=available, compose=unavailable, make=available, zero-dep=available]\n",
+          "stderr": "",
+          "stdoutSha256": "sha256:e37153ba7e140c4b0b4f1811f0121dd8199d9c75f4899ecfee7fcb60dad144ff",
+          "stderrSha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "status": "PASSED"
+        },
+        "validation": {
+          "command": [
+            "python3",
+            "/Users/stephen/DevProjects/AIProjects/elmos/scripts/batch46/validate_smoke_pack.py",
+            "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/flutter"
+          ],
+          "cwd": "/Users/stephen/DevProjects/AIProjects/elmos",
+          "startedAt": "2026-08-08T06:22:59.192Z",
+          "durationMs": 1038,
+          "exitCode": 0,
+          "signal": null,
+          "error": null,
+          "stdout": "smoke pack validation passed\n",
+          "stderr": "",
+          "stdoutSha256": "sha256:84bb743cf8adc4bc7c6ab44e17c336eb0ecacd2bac325990745afb31f8bd4c5c",
+          "stderrSha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "status": "PASSED"
+        },
+        "execution": {
+          "command": [
+            "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/flutter/run-smoke.sh",
+            "--entry",
+            "script",
+            "--ttl",
+            "600",
+            "--no-hold",
+            "--no-install"
+          ],
+          "cwd": "/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/flutter",
+          "startedAt": "2026-08-08T06:25:01.007Z",
+          "durationMs": 9809,
+          "exitCode": 0,
+          "signal": null,
+          "error": null,
+          "stdout": "ELMOS smoke run — entry 'script', lease 600s, project flutter\n[  info ] starting: flutter run -d web-server --web-hostname 127.0.0.1 --web-port 64720 --no-pub\n[   PASS] process-started: pid 39620 is live\n[   PASS] port-listening: 127.0.0.1:64720 accepted a connection\n[   PASS] http-readiness: http://127.0.0.1:64720/ -> 200\n[   PASS] http-functional: http://127.0.0.1:64720/counter -> 200\n[  info ] --no-hold: asserting and tearing down immediately\n[   PASS] graceful-shutdown: every process exited within the grace period after SIGTERM\n[   PASS] lease-teardown: lease completed: services stopped, containers and volumes removed, 0 ephemeral path(s) deleted\n\nsmoke result: PASS (6/6 required checks passed)\nevidence: smoke/runtime/result.json  ·  lease: smoke/runtime/lease-result.json\nbatch46 smoke gate: runnable\nwrote smoke/runtime/gate-result.json and gate-report.md\n",
+          "stderr": "",
+          "stdoutSha256": "sha256:f089418807f9feb3953989cb11c7eb1f630c4a96fc83df5504d6e30baea14e5e",
+          "stderrSha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "status": "PASSED"
+        },
+        "result": {
+          "schema": "elmos.batch46.smoke-result/1",
+          "generated_at": "2026-08-08T06:25:09Z",
+          "lease_id": "smoke-1786170302-39571",
+          "entry": "script",
+          "port": 64720,
+          "overall": "PASS",
+          "required_total": 6,
+          "required_passed": 6,
+          "checks": [
+            {
+              "id": "process-started",
+              "status": "PASS",
+              "required": true,
+              "detail": "pid 39620 is live",
+              "observed_at": "2026-08-08T06:25:02Z"
+            },
+            {
+              "id": "port-listening",
+              "status": "PASS",
+              "required": true,
+              "detail": "127.0.0.1:64720 accepted a connection",
+              "observed_at": "2026-08-08T06:25:05Z",
+              "port": 64720
+            },
+            {
+              "id": "http-readiness",
+              "status": "PASS",
+              "required": true,
+              "detail": "http://127.0.0.1:64720/ -> 200",
+              "observed_at": "2026-08-08T06:25:07Z",
+              "url": "http://127.0.0.1:64720/",
+              "http_status": 200,
+              "body_head": "<!doctype html>\n<html lang=\"en\">\n<head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>Counter</title></head>\n<body><script src=\"flutter_bootstrap.j"
+            },
+            {
+              "id": "http-functional",
+              "status": "PASS",
+              "required": true,
+              "detail": "http://127.0.0.1:64720/counter -> 200",
+              "observed_at": "2026-08-08T06:25:07Z",
+              "url": "http://127.0.0.1:64720/counter",
+              "http_status": 200,
+              "body_head": "<!doctype html>\n<html lang=\"en\">\n<head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>Counter</title></head>\n<body><script src=\"flutter_bootstrap.j"
+            },
+            {
+              "id": "graceful-shutdown",
+              "status": "PASS",
+              "required": true,
+              "detail": "every process exited within the grace period after SIGTERM",
+              "observed_at": "2026-08-08T06:25:09Z",
+              "processes": [
+                {
+                  "pid": 39620,
+                  "graceful": true,
+                  "killed": false,
+                  "exit_code": 0
+                }
+              ]
+            },
+            {
+              "id": "lease-teardown",
+              "status": "PASS",
+              "required": true,
+              "detail": "lease completed: services stopped, containers and volumes removed, 0 ephemeral path(s) deleted",
+              "observed_at": "2026-08-08T06:25:09Z",
+              "teardown": {
+                "reason": "completed",
+                "stopped_at": "2026-08-08T06:25:07Z",
+                "processes": [
+                  {
+                    "pid": 39620,
+                    "graceful": true,
+                    "killed": false,
+                    "exit_code": 0
+                  }
+                ],
+                "compose": [],
+                "removed_paths": [],
+                "errors": []
+              }
+            }
+          ],
+          "notes": [],
+          "environment_manifest": {
+            "platform": "darwin",
+            "python": "3.14.6",
+            "docker": true,
+            "node": true,
+            "java": true,
+            "dotnet": true,
+            "cwd": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/flutter"
+          },
+          "lease": {
+            "free_quota_seconds": 600,
+            "ttl_seconds": 600,
+            "billable_seconds": 0,
+            "end_reason": "completed",
+            "teardown_complete": true
+          },
+          "raw_logs": {
+            "stdout": "smoke/runtime/logs/app.stdout.log",
+            "stderr": "smoke/runtime/logs/app.stderr.log"
+          },
+          "scope_disclaimer": "Functional smoke evidence only. This result never substitutes for route, framework, database, client or certification gates.",
+          "result_digest": "sha256:927cdf2a431ce75f1b512f2cb6170970367b2d2da3bc251a75f510dafd6f4e75"
+        },
+        "gate": {
+          "schema": "elmos.batch46.smoke-gate-result/1",
+          "evaluated_at": "2026-08-08T06:25:10Z",
+          "project": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-frt-route-toolchains-zPGxmO/flutter",
+          "status": "runnable",
+          "entry": "script",
+          "required_passed": 6,
+          "required_total": 6,
+          "failures": [],
+          "limitations": [],
+          "result_digest": "sha256:927cdf2a431ce75f1b512f2cb6170970367b2d2da3bc251a75f510dafd6f4e75",
+          "pack_digest": "sha256:028322c6b3ba57b09572e84122dca47784df2aed80435a6927e5c7c92d058ac8",
+          "lease": {
+            "free_quota_seconds": 600,
+            "ttl_seconds": 600,
+            "billable_seconds": 0,
+            "end_reason": "completed",
+            "teardown_complete": true
+          },
+          "gate_version": "1.0.0"
         }
       }
     }

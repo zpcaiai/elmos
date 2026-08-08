@@ -48,7 +48,6 @@ from smoke_common import (  # noqa: E402
     read_json,
     smoke_dir,
     utc_now,
-    wait_for_port,
     write_json,
 )
 from smoke_lease import LeaseWatchdog, new_lease, remaining_seconds, runtime_dir  # noqa: E402
@@ -79,7 +78,12 @@ def http_probe(url: str, method: str = "GET", timeout: float = 5.0) -> tuple[int
         request.data = b"{}"
         request.add_header("Content-Type", "application/json")
     try:
-        with urllib.request.urlopen(request, timeout=timeout) as response:
+        # Smoke probes target the service that this process just started on
+        # loopback.  Never route that internal check through a developer or CI
+        # HTTP proxy: a proxy can return a misleading 502 while the service is
+        # healthy, making a real run fail for an unrelated network setting.
+        direct = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+        with direct.open(request, timeout=timeout) as response:
             body = response.read(4096).decode("utf-8", errors="replace")
             return response.status, body, None
     except urllib.error.HTTPError as error:
@@ -87,6 +91,18 @@ def http_probe(url: str, method: str = "GET", timeout: float = 5.0) -> tuple[int
         return error.code, body, None
     except (urllib.error.URLError, OSError, ValueError) as error:
         return None, "", str(error)
+
+
+def command_unavailable(return_code: int | None, stderr: str) -> bool:
+    """Distinguish a missing local runtime from a project that started and failed."""
+    if return_code in (126, 127):
+        return True
+    lowered = stderr.lower()
+    return return_code is not None and any(marker in lowered for marker in (
+        "command not found",
+        "is not recognized as an internal or external command",
+        "no such file or directory",
+    ))
 
 
 class SmokeRun:
@@ -109,7 +125,13 @@ class SmokeRun:
         self.logs_dir.mkdir(parents=True, exist_ok=True)
         self.stdout_path = self.logs_dir / "app.stdout.log"
         self.stderr_path = self.logs_dir / "app.stderr.log"
-        self.lease = new_lease(self.root, ttl_seconds=args.ttl, grace_seconds=args.grace, entry=self.entry)
+        self.lease = new_lease(
+            self.root,
+            ttl_seconds=args.ttl,
+            grace_seconds=args.grace,
+            entry=self.entry,
+            console_session_id=os.environ.get("ELMOS_SMOKE_CONSOLE_SESSION_ID"),
+        )
         self.watchdog = LeaseWatchdog(self.root, self.lease, log=log)
         self.notes: list[str] = []
         self._state = "STARTING"
@@ -136,6 +158,7 @@ class SmokeRun:
             "state": state,
             "updated_at": utc_now(),
             "lease_id": self.lease["lease_id"],
+            "console_session_id": self.lease.get("console_session_id"),
             "entry": self.entry,
             "port": self.port or None,
             "url": f"http://{HOST}:{self.port}" if self.port else None,
@@ -178,9 +201,23 @@ class SmokeRun:
     def build_env(self) -> dict[str, str]:
         env = dict(os.environ)
         env.update(load_env_file(self.smoke / "seed" / "env.smoke"))
-        self.port = free_port(self.primary.get("default_port") or None)
+        # Parallel packs must not race for framework defaults such as 5000 or
+        # 8080.  Allocate an ephemeral port by default and propagate the common
+        # framework-specific settings as well as the portable smoke contract.
+        # A legacy application that truly cannot consume a runtime port can opt
+        # into its declared default explicitly.
+        prefer_default = env.get("ELMOS_SMOKE_PREFER_DEFAULT_PORT", "").lower() in {
+            "1", "true", "yes",
+        }
+        preferred = self.primary.get("default_port") if prefer_default else None
+        self.port = free_port(preferred)
         env["SMOKE_PORT"] = str(self.port)
         env["PORT"] = str(self.port)
+        env["FLASK_RUN_PORT"] = str(self.port)
+        env["SERVER_PORT"] = str(self.port)
+        env["QUARKUS_HTTP_PORT"] = str(self.port)
+        env["MICRONAUT_SERVER_PORT"] = str(self.port)
+        env["ASPNETCORE_URLS"] = f"http://0.0.0.0:{self.port}"
         env["SMOKE_MODE"] = "1"
         env["SMOKE_LEASE_ID"] = self.lease["lease_id"]
         if self.entry == "zero-dep":
@@ -286,29 +323,95 @@ class SmokeRun:
         if self.args.install and self.primary.get("install_command"):
             install = self.primary["install_command"]
             log(f"[  info ] installing dependencies: {install}")
-            installed = subprocess.run(install, shell=True, cwd=self.root, env=env,
-                                       capture_output=True, text=True, timeout=self.args.install_timeout)
-            (self.logs_dir / "install.log").write_text(installed.stdout + installed.stderr, encoding="utf-8")
-            if installed.returncode != 0:
-                self.record("process-started", TRISTATE_FAIL,
-                            f"dependency install failed with exit {installed.returncode}", True,
-                            stderr_tail=installed.stderr[-2000:])
+            install_kwargs: dict[str, Any] = {
+                "shell": True,
+                "cwd": self.root,
+                "env": env,
+                "stdout": subprocess.PIPE,
+                "stderr": subprocess.PIPE,
+                "text": True,
+            }
+            if os.name == "posix":
+                install_kwargs["preexec_fn"] = os.setsid
+            else:  # pragma: no cover - windows process-group path
+                install_kwargs["creationflags"] = subprocess.CREATE_NEW_PROCESS_GROUP
+            installer = subprocess.Popen(install, **install_kwargs)
+            # Installation is part of the leased run.  It may download and run
+            # lifecycle hooks, so leaving it outside the watchdog would allow a
+            # slow or stuck installer to survive after lease expiry.
+            self.watchdog.track_process(installer, label="dependency-install")
+            install_timeout = min(
+                float(self.args.install_timeout),
+                max(1.0, remaining_seconds(self.lease) + 1.0),
+            )
+            try:
+                install_stdout, install_stderr = installer.communicate(timeout=install_timeout)
+            except subprocess.TimeoutExpired:
+                report = self.watchdog.release(
+                    "expired" if remaining_seconds(self.lease) <= 0 else "install-timeout"
+                )
+                install_stdout, install_stderr = installer.communicate(timeout=10)
+                (self.logs_dir / "install.log").write_text(
+                    install_stdout + install_stderr, encoding="utf-8"
+                )
+                self.record(
+                    "process-started",
+                    TRISTATE_NOT_RUN if remaining_seconds(self.lease) <= 0 else TRISTATE_FAIL,
+                    "the runtime lease expired during dependency installation"
+                    if remaining_seconds(self.lease) <= 0
+                    else "dependency installation exceeded its bounded timeout",
+                    True,
+                    teardown=report,
+                    stderr_tail=install_stderr[-2000:],
+                )
+                return False
+            (self.logs_dir / "install.log").write_text(
+                install_stdout + install_stderr, encoding="utf-8"
+            )
+            if installer.returncode != 0:
+                expired = remaining_seconds(self.lease) <= 0
+                unavailable = command_unavailable(installer.returncode, install_stderr)
+                self.record(
+                    "process-started",
+                    TRISTATE_NOT_RUN if expired or unavailable else TRISTATE_FAIL,
+                    "the runtime lease expired during dependency installation"
+                    if expired else (
+                        f"dependency installer is unavailable (exit {installer.returncode})"
+                        if unavailable else f"dependency install failed with exit {installer.returncode}"
+                    ),
+                    True,
+                    stderr_tail=install_stderr[-2000:],
+                )
                 return False
         log(f"[  info ] starting: {command}")
         stdout = self.stdout_path.open("w", encoding="utf-8")
         stderr = self.stderr_path.open("w", encoding="utf-8")
+        # Replace the POSIX shell with the declared application so the tracked
+        # PID and liveness checks describe the workload, not a transient shell
+        # waiting for a child that has already failed.
+        launch_command = f"exec {command}" if os.name == "posix" else command
         popen_kwargs: dict[str, Any] = {
             "cwd": self.root, "env": env, "stdout": stdout, "stderr": stderr, "shell": True,
         }
         if os.name == "posix":
             popen_kwargs["preexec_fn"] = os.setsid
-        self.process = subprocess.Popen(command, **popen_kwargs)
+        self.process = subprocess.Popen(launch_command, **popen_kwargs)
         self.watchdog.track_process(self.process, label=self.primary.get("id", "primary"))
         time.sleep(0.4)
         if self.process.poll() is not None:
-            self.record("process-started", TRISTATE_FAIL,
-                        f"start command exited immediately with code {self.process.returncode}", True,
-                        stderr_tail=self.stderr_path.read_text(encoding='utf-8', errors='replace')[-2000:])
+            stderr_tail = self.stderr_path.read_text(
+                encoding="utf-8", errors="replace"
+            )[-2000:]
+            unavailable = self.process.returncode == 3 or command_unavailable(
+                self.process.returncode, stderr_tail
+            )
+            self.record(
+                "process-started",
+                TRISTATE_NOT_RUN if unavailable else TRISTATE_FAIL,
+                f"start command exited immediately with code {self.process.returncode}",
+                True,
+                stderr_tail=stderr_tail,
+            )
             return False
         self.record("process-started", TRISTATE_PASS, f"pid {self.process.pid} is live", True)
         return True
@@ -320,10 +423,30 @@ class SmokeRun:
             self.record("port-listening", TRISTATE_NOT_RUN, "no listen port declared for this stack", False)
             return True
         timeout = float(spec.get("timeout_seconds", 120))
-        if wait_for_port(HOST, self.port, timeout=timeout):
-            self.record("port-listening", TRISTATE_PASS, f"{HOST}:{self.port} accepted a connection", True,
-                        port=self.port)
-            return True
+        deadline = time.time() + timeout
+        while time.time() < deadline:
+            if port_open(HOST, self.port, timeout=0.2):
+                self.record(
+                    "port-listening", TRISTATE_PASS,
+                    f"{HOST}:{self.port} accepted a connection", True, port=self.port,
+                )
+                return True
+            if self.process is not None and self.process.poll() is not None:
+                exit_code = self.process.returncode
+                stderr_tail = self.stderr_path.read_text(
+                    encoding="utf-8", errors="replace"
+                )[-2000:] if self.stderr_path.is_file() else ""
+                unavailable = exit_code == 3 or command_unavailable(exit_code, stderr_tail)
+                self.record(
+                    "port-listening",
+                    TRISTATE_NOT_RUN if unavailable else TRISTATE_FAIL,
+                    f"the start command exited with code {exit_code} before opening {HOST}:{self.port}",
+                    True,
+                    port=self.port,
+                    stderr_tail=stderr_tail,
+                )
+                return False
+            time.sleep(0.2)
         self.record("port-listening", TRISTATE_FAIL,
                     f"nothing listening on {HOST}:{self.port} after {timeout:.0f}s", True, port=self.port,
                     stderr_tail=self.stderr_path.read_text(encoding='utf-8', errors='replace')[-2000:]
@@ -338,12 +461,22 @@ class SmokeRun:
             self.record(check_id, TRISTATE_NOT_RUN, spec.get("expect", "not applicable"), False)
             return
         url = f"http://{HOST}:{self.port}{spec.get('path', '/')}"
-        deadline = time.time() + float(spec.get("timeout_seconds", 30))
+        # A probe is part of the lease and may never outlive it.  Previously a
+        # stalled listener could keep a three-second smoke run blocked for two
+        # minutes, delaying teardown and producing misleading gate evidence.
+        probe_budget = max(0.1, min(
+            float(spec.get("timeout_seconds", 30)),
+            remaining_seconds(self.lease),
+        ))
+        deadline = time.time() + probe_budget
         status = None
         body = ""
         error = None
         while time.time() < deadline:
-            status, body, error = http_probe(url, spec.get("method", "GET"))
+            request_timeout = max(0.1, min(5.0, deadline - time.time()))
+            status, body, error = http_probe(
+                url, spec.get("method", "GET"), timeout=request_timeout,
+            )
             if status is not None:
                 break
             time.sleep(0.5)
@@ -591,7 +724,33 @@ def main() -> int:
 
     if os.name == "posix":
         signal.signal(signal.SIGTERM, _signal_handler)
-    return run.execute()
+    exit_code = run.execute()
+
+    # Every delivered project owns its gate; Web Console, CLI, and a recipient
+    # invoking run-smoke.sh must see the same conservative decision. Running it
+    # here also closes the race where teardown completed but the UI could poll
+    # forever because no component ever materialised gate-result.json.
+    gate = smoke_dir(Path(args.project)) / "tools" / "run_smoke_gate.py"
+    if not gate.is_file():
+        log("[  fail ] vendored smoke gate is missing")
+        return 1 if exit_code == 0 else exit_code
+    try:
+        gated = subprocess.run(
+            [sys.executable, str(gate), str(Path(args.project).resolve())],
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+    except (OSError, subprocess.TimeoutExpired) as error:
+        log(f"[  fail ] smoke gate could not execute: {error}")
+        return 1 if exit_code == 0 else exit_code
+    if gated.stdout:
+        log(gated.stdout.rstrip())
+    if gated.stderr:
+        log(gated.stderr.rstrip())
+    if gated.returncode != 0 and exit_code == 0:
+        return 1
+    return exit_code
 
 
 if __name__ == "__main__":

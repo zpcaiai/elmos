@@ -9,9 +9,11 @@ import argparse
 import json
 import os
 import shutil
+import socket
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 from pathlib import Path
 
@@ -134,10 +136,66 @@ class SmokePackTestCase(unittest.TestCase):
         self.assertEqual(["postgres"], [d["engine"] for d in profile["datastores"]])
         self.assertEqual([], profile["unknown"])
 
+    def test_profile_digest_is_portable_across_checkout_paths(self) -> None:
+        copy = self.tmp / "other-location" / "demo"
+        shutil.copytree(self.project, copy)
+        left = detect_project_profile.detect(self.project)
+        right = detect_project_profile.detect(copy)
+        self.assertEqual(".", left["project_root"])
+        self.assertEqual(left["profile_digest"], right["profile_digest"])
+
+    def test_free_port_skips_an_existing_wildcard_listener(self) -> None:
+        from smoke_common import free_port
+
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as listener:
+            listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            listener.bind(("0.0.0.0", 0))
+            listener.listen(1)
+            occupied = int(listener.getsockname()[1])
+            selected = free_port(occupied)
+            self.assertNotEqual(occupied, selected)
+
     def test_missing_start_command_is_reported_as_unknown(self) -> None:
         project = make_project(self.tmp / "nostart", with_start=False)
         profile = detect_project_profile.detect(project)
         self.assertTrue(any("start command" in item["item"] for item in profile["unknown"]))
+
+    def test_detects_runnable_flutter_client_without_guessing_a_command(self) -> None:
+        project = self.tmp / "flutter"
+        (project / "lib").mkdir(parents=True)
+        (project / "web").mkdir()
+        (project / "pubspec.yaml").write_text(
+            "name: smoke_flutter\ndependencies:\n  flutter:\n    sdk: flutter\n",
+            encoding="utf-8",
+        )
+        (project / "lib" / "main.dart").write_text("void main() {}\n", encoding="utf-8")
+        (project / "web" / "index.html").write_text("<html></html>\n", encoding="utf-8")
+        profile = detect_project_profile.detect(project)
+        self.assertEqual("flutter", profile["stacks"][0]["framework"])
+        self.assertIn("flutter run -d web-server", profile["stacks"][0]["start_command"])
+        self.assertEqual([], profile["unknown"])
+
+    def test_detects_wechat_and_arkui_only_with_generated_bounded_runners(self) -> None:
+        wechat = self.tmp / "wechat"
+        (wechat / "scripts").mkdir(parents=True)
+        (wechat / "project.config.json").write_text(
+            json.dumps({"compileType": "miniprogram"}), encoding="utf-8"
+        )
+        (wechat / "app.json").write_text(json.dumps({"pages": ["pages/index/index"]}), encoding="utf-8")
+        (wechat / "scripts" / "frt-smoke-start.mjs").write_text("// generated runner\n", encoding="utf-8")
+        wechat_profile = detect_project_profile.detect(wechat)
+        self.assertEqual("wechat-mini-program", wechat_profile["stacks"][0]["framework"])
+        self.assertEqual([], wechat_profile["unknown"])
+
+        arkui = self.tmp / "arkui"
+        (arkui / "entry" / "src" / "main").mkdir(parents=True)
+        (arkui / "scripts").mkdir()
+        (arkui / "build-profile.json5").write_text("{}\n", encoding="utf-8")
+        (arkui / "entry" / "src" / "main" / "module.json5").write_text("{}\n", encoding="utf-8")
+        (arkui / "scripts" / "frt-smoke-start.mjs").write_text("// generated runner\n", encoding="utf-8")
+        ark_profile = detect_project_profile.detect(arkui)
+        self.assertEqual("arkui", ark_profile["stacks"][0]["framework"])
+        self.assertEqual([], ark_profile["unknown"])
 
     # ---------------------------------------------------------- requirements
     def test_minimal_data_orders_tables_by_dependency(self) -> None:
@@ -307,6 +365,17 @@ class LeaseTestCase(unittest.TestCase):
         self.assertEqual("expired", result["state"])
         self.assertTrue(result["teardown_complete"])
 
+    def test_tracking_the_same_path_twice_does_not_grow_the_lease(self) -> None:
+        import smoke_lease
+
+        lease = smoke_lease.new_lease(self.tmp, ttl_seconds=600)
+        watchdog = smoke_lease.LeaseWatchdog(self.tmp, lease, log=lambda _m: None)
+        victim = self.tmp / "ephemeral.sqlite"
+        watchdog.track_path(victim)
+        watchdog.track_path(victim)
+        stored = smoke_lease.load_lease(self.tmp)
+        self.assertEqual([str(victim)], stored["managed_paths"])
+
 
 @unittest.skipIf(os.environ.get("B46_SKIP_RUNTIME") == "1", "runtime execution disabled")
 class RuntimeTestCase(unittest.TestCase):
@@ -330,6 +399,7 @@ class RuntimeTestCase(unittest.TestCase):
         self.assertEqual(0, completed.returncode, completed.stdout + completed.stderr)
         result = json.loads((self.project / "smoke" / "runtime" / "result.json").read_text())
         self.assertEqual("PASS", result["overall"])
+        self.assertNotEqual(5000, result["port"], "parallel runs must not reuse the Flask default")
         self.assertEqual("expired", result["lease"]["end_reason"])
         self.assertTrue(result["lease"]["teardown_complete"])
         by_id = {c["id"]: c for c in result["checks"]}
@@ -337,6 +407,53 @@ class RuntimeTestCase(unittest.TestCase):
         self.assertEqual("PASS", by_id["graceful-shutdown"]["status"])
         self.assertEqual("PASS", by_id["lease-teardown"]["status"])
         self.assertFalse((self.project / "smoke" / "runtime" / "smoke.sqlite").exists())
+
+    def test_explicit_stop_is_acknowledged_by_the_originating_watchdog(self) -> None:
+        runner = self.project / "smoke" / "tools" / "run_smoke.py"
+        lease_cli = self.project / "smoke" / "tools" / "smoke_lease.py"
+        process = subprocess.Popen(
+            [sys.executable, str(runner), "--project", str(self.project),
+             "--entry", "zero-dep", "--ttl", "60", "--no-install"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        self.addCleanup(lambda: process.kill() if process.poll() is None else None)
+
+        status_path = self.project / "smoke" / "runtime" / "status.json"
+        deadline = time.monotonic() + 20
+        while time.monotonic() < deadline:
+            if status_path.is_file():
+                status = json.loads(status_path.read_text(encoding="utf-8"))
+                if status.get("state") == "HOLDING":
+                    break
+            time.sleep(0.1)
+        else:
+            self.fail("smoke run never reached HOLDING")
+
+        started = time.monotonic()
+        stopped = subprocess.run(
+            [sys.executable, str(lease_cli), "stop", "--project", str(self.project),
+             "--reason", "unit-explicit-stop"],
+            capture_output=True,
+            text=True,
+            timeout=20,
+        )
+        self.assertEqual(0, stopped.returncode, stopped.stdout + stopped.stderr)
+        self.assertLess(time.monotonic() - started, 10)
+        stdout, stderr = process.communicate(timeout=20)
+        self.assertEqual(0, process.returncode, stdout + stderr)
+
+        lease = json.loads(
+            (self.project / "smoke" / "runtime" / "lease-result.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual("unit-explicit-stop", lease["end_reason"])
+        self.assertTrue(lease["teardown_complete"])
+        self.assertEqual(1, len(lease["managed_paths"]))
+        gate = json.loads(
+            (self.project / "smoke" / "runtime" / "gate-result.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual("limited", gate["status"])
 
     def test_gate_reports_limited_for_the_zero_dep_entry(self) -> None:
         self._run("--entry", "zero-dep", "--ttl", "3")
@@ -360,6 +477,85 @@ class RuntimeTestCase(unittest.TestCase):
         gate = json.loads((self.project / "smoke" / "runtime" / "gate-result.json").read_text())
         self.assertEqual("blocked", gate["status"])
         self.assertTrue(any("digest does not match" in f for f in gate["failures"]))
+
+    def test_lease_expiry_terminates_dependency_installer_process_group(self) -> None:
+        profile_path = self.project / "smoke" / "profile.json"
+        profile = json.loads(profile_path.read_text(encoding="utf-8"))
+        profile["stacks"][0]["install_command"] = (
+            f'{sys.executable} -c "import os,time,pathlib; '
+            "pathlib.Path('smoke/runtime/install-child.pid').write_text(str(os.getpid())); "
+            'time.sleep(30)"'
+        )
+        profile_path.write_text(json.dumps(profile), encoding="utf-8")
+        completed = subprocess.run(
+            [sys.executable, str(self.project / "smoke" / "tools" / "run_smoke.py"),
+             "--project", str(self.project), "--entry", "script", "--ttl", "1"],
+            capture_output=True, text=True, timeout=20,
+        )
+        self.assertEqual(3, completed.returncode, completed.stdout + completed.stderr)
+        pid = int((self.project / "smoke" / "runtime" / "install-child.pid").read_text())
+        with self.assertRaises(ProcessLookupError):
+            os.kill(pid, 0)
+        result = json.loads((self.project / "smoke" / "runtime" / "result.json").read_text())
+        self.assertEqual("NOT_RUN", result["overall"])
+        self.assertTrue(result["lease"]["teardown_complete"])
+
+    def test_unavailable_toolchain_exit_does_not_wait_for_port_timeout(self) -> None:
+        (self.project / "app.py").write_text("raise SystemExit(3)\n", encoding="utf-8")
+        started = time.monotonic()
+        completed = self._run("--entry", "script", "--ttl", "10")
+        elapsed = time.monotonic() - started
+        self.assertEqual(3, completed.returncode, completed.stdout + completed.stderr)
+        self.assertLess(elapsed, 30.0, "missing tools must not consume the 120s port timeout")
+        result = json.loads((self.project / "smoke" / "runtime" / "result.json").read_text())
+        self.assertEqual("NOT_RUN", result["overall"])
+        by_id = {check["id"]: check for check in result["checks"]}
+        if "port-listening" in by_id:
+            self.assertEqual("NOT_RUN", by_id["port-listening"]["status"])
+            self.assertIn("exited with code", by_id["port-listening"]["detail"])
+        else:
+            self.assertEqual("NOT_RUN", by_id["process-started"]["status"])
+        # Depending on scheduler load the application may exit before or just
+        # after the initial 400 ms sample. Both paths must terminate as NOT_RUN
+        # without consuming the declared 120-second readiness timeout.
+
+    def test_missing_flutter_toolchain_is_not_run_instead_of_failed(self) -> None:
+        project = self.tmp / "missing-flutter"
+        project.mkdir()
+        (project / "pubspec.yaml").write_text(
+            "name: missing_flutter\nenvironment:\n  sdk: '>=3.0.0 <4.0.0'\n"
+            "dependencies:\n  flutter:\n    sdk: flutter\n",
+            encoding="utf-8",
+        )
+        (project / "lib").mkdir()
+        (project / "web").mkdir()
+        (project / "lib" / "main.dart").write_text("void main() {}\n", encoding="utf-8")
+        (project / "web" / "index.html").write_text("<html></html>\n", encoding="utf-8")
+        subprocess.run(
+            [sys.executable, str(SCRIPTS / "scaffold_smoke_pack.py"), str(project), "--write"],
+            cwd=REPO_ROOT,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        env = dict(os.environ)
+        env["PATH"] = "/usr/bin:/bin"
+        completed = subprocess.run(
+            [
+                sys.executable,
+                str(project / "smoke" / "tools" / "run_smoke.py"),
+                "--project", str(project), "--entry", "script", "--ttl", "5",
+                "--no-hold", "--no-install",
+            ],
+            cwd=project,
+            env=env,
+            capture_output=True,
+            text=True,
+            timeout=20,
+        )
+        self.assertEqual(3, completed.returncode, completed.stdout + completed.stderr)
+        result = json.loads((project / "smoke" / "runtime" / "result.json").read_text())
+        self.assertEqual("NOT_RUN", result["overall"])
 
 
 def detect_project_profile_write(project: Path) -> None:

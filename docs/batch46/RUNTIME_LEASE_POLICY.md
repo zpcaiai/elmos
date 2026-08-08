@@ -34,8 +34,10 @@ the application to stop; it stops it.
    is a finding, not a cleanup detail.
 3. `docker compose down -v --remove-orphans` runs for every tracked compose file.
 4. Every tracked ephemeral path is deleted.
-5. A `lease-result.json` is always written — on expiry, on early release, on
-   Ctrl-C, and on crash. Teardown is idempotent and safe to invoke twice.
+5. A `lease-result.json` is written on expiry, early release, Ctrl-C and handled
+   termination. An uncatchable host/process loss cannot manufacture a receipt;
+   its missing result remains a cleanup incident and blocks the gate. Teardown
+   is idempotent and safe to invoke twice.
 
 The `lease-teardown` assertion then verifies the outcome rather than trusting
 it: no live process, no undeleted path, no compose failure, and the port no
@@ -65,6 +67,13 @@ python3 smoke/tools/smoke_lease.py stop --project . --reason manual
 
 Ctrl-C during the hold does the same thing. Early release is the normal, encouraged
 path — the lease is a ceiling, not a target.
+
+The external `stop` command writes a bounded stop request into the lease and waits
+for the originating watchdog to acknowledge it. It does not reconstruct a second
+watchdog from serialized PIDs and paths: that would race the owner, lose real
+process handles, and could turn a corrupt lease into an arbitrary kill/delete
+instruction. A controller that does not acknowledge within the grace window
+returns failure and produces no successful teardown receipt.
 
 ## What the lease does not cover
 

@@ -68,6 +68,7 @@ def new_lease(
     ttl_seconds: int = DEFAULT_FREE_QUOTA_SECONDS,
     grace_seconds: int = DEFAULT_GRACE_SECONDS,
     entry: str = "script",
+    console_session_id: str | None = None,
 ) -> dict[str, Any]:
     started = time.time()
     lease = {
@@ -96,6 +97,8 @@ def new_lease(
         "managed_compose_files": [],
         "managed_paths": [],
     }
+    if console_session_id:
+        lease["console_session_id"] = console_session_id
     write_json(lease_path(project_root), lease)
     return lease
 
@@ -161,18 +164,28 @@ class LeaseWatchdog:
 
     # registration -------------------------------------------------------
     def track_process(self, process: subprocess.Popen, label: str = "") -> None:
+        if any(entry.get("pid") == process.pid for entry in self.lease["managed_processes"]):
+            return
         self._processes.append(process)
         self.lease["managed_processes"].append({"pid": process.pid, "label": label})
         save_lease(self.project_root, self.lease)
 
     def track_compose(self, compose_file: Path) -> None:
-        self._compose_files.append(Path(compose_file))
-        self.lease["managed_compose_files"].append(str(compose_file))
+        normalized = Path(compose_file)
+        if normalized in self._compose_files:
+            return
+        self._compose_files.append(normalized)
+        if str(normalized) not in self.lease["managed_compose_files"]:
+            self.lease["managed_compose_files"].append(str(normalized))
         save_lease(self.project_root, self.lease)
 
     def track_path(self, path: Path) -> None:
-        self._paths.append(Path(path))
-        self.lease["managed_paths"].append(str(path))
+        normalized = Path(path)
+        if normalized in self._paths:
+            return
+        self._paths.append(normalized)
+        if str(normalized) not in self.lease["managed_paths"]:
+            self.lease["managed_paths"].append(str(normalized))
         save_lease(self.project_root, self.lease)
 
     # lifecycle ----------------------------------------------------------
@@ -195,13 +208,26 @@ class LeaseWatchdog:
             return
         if stored.get("state") != "active":
             return
-        for field in ("expires_at_epoch", "ttl_seconds", "billable_seconds", "extensions"):
+        for field in (
+            "expires_at_epoch",
+            "ttl_seconds",
+            "billable_seconds",
+            "extensions",
+            "stop_requested_at",
+            "stop_reason",
+        ):
             if field in stored:
                 self.lease[field] = stored[field]
 
     def _watch(self) -> None:
         while not self._stop_event.is_set():
             self._refresh_from_disk()
+            if self.lease.get("stop_requested_at"):
+                reason = str(self.lease.get("stop_reason") or "manual")
+                self.log(f"[lease] explicit stop requested — releasing lease ({reason})")
+                self._reason = reason
+                self.teardown(reason)
+                return
             if remaining_seconds(self.lease) <= 0:
                 self.log(
                     f"[lease] free quota of {self.lease['ttl_seconds']}s reached — "
@@ -348,21 +374,40 @@ def _cmd_stop(args: argparse.Namespace) -> int:
     if not lease:
         print("no lease recorded")
         return 1
-    watchdog = LeaseWatchdog(project, lease)
-    for entry in lease.get("managed_compose_files", []):
-        watchdog.track_compose(Path(entry))
-    for entry in lease.get("managed_paths", []):
-        watchdog.track_path(Path(entry))
-    for entry in lease.get("managed_processes", []):
-        pid = entry.get("pid")
-        if pid:
-            try:
-                os.killpg(os.getpgid(pid), signal.SIGTERM)
-            except (ProcessLookupError, PermissionError, OSError):
-                pass
-    report = watchdog.teardown(args.reason)
-    print(json.dumps(report, indent=2))
-    return 0 if not report["errors"] else 1
+    if lease.get("state") != "active":
+        report = lease.get("teardown", {})
+        print(json.dumps(report, indent=2))
+        return 0 if lease.get("teardown_complete") is True else 1
+
+    # The originating watchdog owns live Popen handles and therefore can prove
+    # graceful exit, wait for children, and publish the canonical evidence.
+    # Request that teardown through the lease instead of constructing a second
+    # watchdog from serialized paths. The old implementation appended each
+    # serialized path back into the list while iterating it, causing an
+    # unbounded loop and a stop endpoint that never returned.
+    lease["stop_requested_at"] = utc_now()
+    lease["stop_reason"] = args.reason
+    save_lease(project, lease)
+
+    result_path = runtime_dir(project) / LEASE_RESULT_FILE
+    deadline = time.monotonic() + max(15, int(lease.get("grace_seconds", DEFAULT_GRACE_SECONDS)) + 15)
+    while time.monotonic() < deadline:
+        completed = read_json(result_path) if result_path.is_file() else None
+        if (
+            completed
+            and completed.get("lease_id") == lease.get("lease_id")
+            and completed.get("state") in {"released", "expired"}
+        ):
+            report = completed.get("teardown", {})
+            print(json.dumps(report, indent=2))
+            return 0 if completed.get("teardown_complete") is True else 1
+        time.sleep(0.1)
+
+    # A dead controller cannot provide trustworthy graceful-shutdown evidence.
+    # Fail closed rather than running a competing cleanup routine that races
+    # the original watchdog or fabricating a successful receipt.
+    print("error: smoke controller did not acknowledge the stop request", file=sys.stderr)
+    return 1
 
 
 def main() -> int:

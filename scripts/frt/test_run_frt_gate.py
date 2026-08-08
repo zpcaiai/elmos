@@ -10,6 +10,7 @@ from pathlib import Path
 
 from external_evidence import validate_external_check
 from run_frt_gate import (
+    REQUIRED_LOCAL,
     check_group,
     digest,
     evidence_digest,
@@ -19,6 +20,10 @@ from run_frt_gate import (
 
 
 class EvidenceReferenceTests(unittest.TestCase):
+    def test_runnable_route_smoke_is_a_required_local_gate(self) -> None:
+        self.assertIn("runnable_route_smoke", REQUIRED_LOCAL)
+        self.assertTrue(check_group("local_checks", {}, REQUIRED_LOCAL))
+
     def test_accepts_exact_content_addressed_file(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

@@ -252,10 +252,10 @@ export function FrontendTransformationStudio() {
           ...(action === "VERIFY" || Object.keys(submittedInput).length === 0 ? {} : { input: submittedInput }),
         }),
       });
-      const payload = await response.json() as FrtRunView & { reason?: string; errorCode?: string };
+      const payload = await response.json() as FrtRunView & Partial<FrtAuditView> & { reason?: string; errorCode?: string };
       if (!response.ok) throw new Error(payload.reason ?? payload.errorCode ?? "FRT_RUN_REJECTED");
       setRun(payload);
-      setAudit([]);
+      setAudit(Array.isArray(payload.audit) ? payload.audit : []);
       void refreshRun(payload.runId);
     } catch (error) {
       setOperationError(error instanceof Error ? error.message : "FRT_RUN_REJECTED");
@@ -274,9 +274,10 @@ export function FrontendTransformationStudio() {
         headers: requestHeaders(true),
         body: JSON.stringify({ expectedVersion: run.version }),
       });
-      const payload = await response.json() as FrtRunView & { reason?: string; errorCode?: string };
+      const payload = await response.json() as FrtRunView & Partial<FrtAuditView> & { reason?: string; errorCode?: string };
       if (!response.ok) throw new Error(payload.reason ?? payload.errorCode ?? "FRT_TRANSITION_REJECTED");
       setRun(payload);
+      if (Array.isArray(payload.audit)) setAudit(payload.audit);
       void refreshRun(payload.runId);
     } catch (error) {
       setOperationError(error instanceof Error ? error.message : "FRT_TRANSITION_REJECTED");

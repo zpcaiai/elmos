@@ -1,7 +1,7 @@
 {
   "schema_version": 3,
   "pack_key": "frt-g01-g30-platform",
-  "executed_on": "2026-08-06",
+  "executed_on": "2026-08-08",
   "environment": {
     "operating_system": "macOS 26.6 arm64",
     "node": "26.0.0",
@@ -21,7 +21,7 @@
     "runtime_installation": {
       "state": "PASSED",
       "command": "python3 tooling/integrate_frt_g01_g30.py --check && python3 scripts/frt/validate_frt_platform.py",
-      "summary": "472 Runtime interfaces and independently digested compiled execution contracts, 23 concrete semantic handler kinds, 30 directed routes, 2,832 exact per-Skill surface manifests, 15 schemas, and 62 shared implementation surfaces passed"
+      "summary": "472 Runtime interfaces and independently digested compiled execution contracts, 23 concrete semantic handler kinds, 30 directed routes, 2,832 exact per-Skill surface manifests, 15 schemas, and 71 shared implementation surfaces passed"
     },
     "strict_contract_and_security": {
       "state": "PASSED",
@@ -49,19 +49,24 @@
     "route_target_toolchains": {
       "state": "PARTIAL_LOCAL",
       "command": "node scripts/frt/run_frt_route_toolchains.mjs",
-      "summary": "Vue 2, Vue 3, React, WeChat Mini Program, and Flutter real local target checks passed. Flutter supports offline-cache resolution plus an evidenced online cold-cache fallback. ArkUI native hvigor build remains NOT_RUN because DevEco/hvigor is not installed"
+      "summary": "Vue 2, Vue 3, React, WeChat Mini Program, and Flutter real local target checks plus their 6/6 runnable smoke checks passed. Flutter supports offline-cache resolution plus an evidenced online cold-cache fallback. The bounded ArkUI runnable adapter exits promptly and honestly remains NOT_RUN because DevEco/hvigor and hdc are not installed"
+    },
+    "runnable_route_smoke": {
+      "state": "PARTIAL_LOCAL",
+      "command": "python3 -m unittest test_frt_route_smoke.py -v; python3 -m unittest discover -s tests/batch46 -p 'test_*.py' -v; node scripts/frt/run_frt_route_toolchains.mjs",
+      "summary": "The create-only route materializer attaches a portable validated Batch 46 pack and its real React execution passes the sole runnable gate; 34 Batch 46 contract/runtime tests pass. The full target matrix records 6/6 required smoke checks and runnable gates for React, Vue 2, Vue 3, Flutter web and WeChat DevTools. ArkUI executes the same bounded path but remains NOT_RUN without hvigor/hdc"
     },
     "runtime_contracts": {
       "state": "PASSED",
       "command": "pnpm test",
       "working_directory": "engines/frontend-client-engine",
-      "summary": "126 passed, 0 failed, 0 skipped"
+      "summary": "128 passed, 0 failed, 0 skipped"
     },
     "production_dependency_audit": {
       "state": "PASSED",
       "command": "pnpm audit --prod --registry=https://registry.npmjs.org",
       "working_directory": "apps/web-console",
-      "summary": "0 known production vulnerabilities with Next 16.3.0, PostCSS 8.5.24, and Sharp 0.35.3"
+      "summary": "0 known production vulnerabilities with Next 16.3.0, PDF.js 6.2.108, PostCSS 8.5.23, nanoid 3.3.17, and Sharp 0.35.3"
     },
     "production_build": {
       "state": "PASSED",
@@ -71,7 +76,7 @@
     },
     "browser_journeys": {
       "state": "PASSED",
-      "command": "ELMOS_E2E_CHROMIUM_CHANNEL=chrome pnpm exec playwright test e2e/frt-frontend-transformation.spec.ts --project=chromium --project=mobile-chromium; then run exact managed --project=firefox --project=webkit --project=mobile-webkit",
+      "command": "ELMOS_E2E_ENGINE_SKIP_BUILD=true ELMOS_E2E_PORT=33323 pnpm exec playwright test e2e/frt-frontend-transformation.spec.ts --project=chromium --project=firefox --project=webkit --project=mobile-chromium --project=mobile-webkit --workers=1",
       "working_directory": "apps/web-console",
       "summary": "All five declared local browser profiles passed their applicable current-revision journeys: desktop Chrome 5/5, desktop Firefox 4/4 plus one intentional Chromium-only lifecycle skip, desktop WebKit 4/4 plus one intentional Chromium-only lifecycle skip, Pixel 7 Chromium 2/2 plus three intentional desktop-only skips, and iPhone 15 WebKit 2/2 plus three intentional desktop-only skips"
     },
@@ -81,13 +86,13 @@
     },
     "external_quality_rehearsal": {
       "state": "PASSED_LOCAL_REHEARSAL_CURRENT_REVISION",
-      "command": "ELMOS_E2E_WEB_SERVER_MODE=development pnpm exec playwright test --config=playwright.external-quality.config.ts --grep-invert @visual across chromium, mobile-chromium, firefox, webkit and mobile-webkit",
+      "command": "ELMOS_E2E_WEB_SERVER_MODE=development ELMOS_E2E_ENGINE_SKIP_BUILD=true ELMOS_E2E_PORT=33324 pnpm exec playwright test --config=playwright.external-quality.config.ts --grep-invert @visual across chromium, mobile-chromium, firefox, webkit and mobile-webkit",
       "working_directory": "apps/web-console",
       "summary": "The semantic, keyboard, Axe, network, overflow and local navigation-budget rehearsal passed 5/5 for desktop Chrome, desktop Firefox, desktop WebKit, Pixel 7 Chromium and iPhone 15 WebKit emulation. This remains local engineering evidence, not independent visual, representative-performance or production evidence"
     },
     "visual_baseline_negative_gate": {
       "state": "PASSED_EXPECTED_REJECTION",
-      "command": "ELMOS_E2E_WEB_SERVER_MODE=development pnpm exec playwright test --config=playwright.external-quality.config.ts --grep @visual across all five declared local profiles with --workers=1",
+      "command": "ELMOS_E2E_WEB_SERVER_MODE=development ELMOS_E2E_ENGINE_SKIP_BUILD=true ELMOS_E2E_PORT=33325 pnpm exec playwright test --config=playwright.external-quality.config.ts --grep @visual across all five declared local profiles with --workers=1",
       "working_directory": "apps/web-console",
       "summary": "All five current-revision profile comparisons exited non-zero specifically because their approved snapshots were absent. updateSnapshots=none, zero pixel tolerance and an empty approved root were rechecked; no baseline was created or promoted and independent visual approval remains NOT_RUN"
     },
@@ -95,7 +100,7 @@
       "state": "PASSED_LOCAL_TOOLING",
       "command": "python3 -m unittest test_external_campaign_parameters.py test_external_evidence.py test_external_qualification.py test_record_frt_ios_device_evidence.py test_run_frt_gate.py -v",
       "working_directory": "scripts/frt",
-      "summary": "28 local integrity tests passed: 4 typed-campaign-parameter tests reject unknown commands, scope widening, drift and weakened minimums; 7 signed-protocol tests exercise valid and invalid records across all 9 external checks; 10 qualification plan/preflight/adapter-execution tests recompute observations and reject state, authority or observation tampering; 2 iOS evidence tests enforce physical-device identity and privacy minimization; and 5 gate-integrity tests reject missing, stale, escaping, unsigned or self-verified evidence"
+      "summary": "29 local integrity tests passed: 4 typed-campaign-parameter tests reject unknown commands, scope widening, drift and weakened minimums; 7 signed-protocol tests exercise valid and invalid records across all 9 external checks; 10 qualification plan/preflight/adapter-execution tests recompute observations and reject state, authority or observation tampering; 2 iOS evidence tests enforce physical-device identity and privacy minimization; and 6 gate-integrity tests require the runnable route check and reject missing, stale, escaping, unsigned or self-verified evidence"
     },
     "external_qualification_harness": {
       "state": "PASSED_LOCAL_TOOLING",
@@ -134,18 +139,20 @@
     "semantic_handlers": "sha256:6bac6a8b2b3d4ef96d78aa9eb21909b065fec6d48553264226060fc709d24578",
     "artifact_store": "sha256:2bb7bbafae7eac1fc956990d299baa52a5b452cb438bf755f48dd45217cc84f6",
     "evidence_collection": "sha256:692e23b7fc9f2e13680b4fcbf5b9d4b9c97622a771a419175fc5184a984e16a4",
-    "directional_route": "sha256:13c53626ea95596474a8dac54719b59254ec72ede74954270facb83fc7ba61ce",
-    "additional_source_extractors": "sha256:f88d7aa95375b64d253f912703a35afdaffc2918f0e8e2d76e71682ec948e571",
-    "runtime_tests": "sha256:550e1bfed0ec01a4ccc2ddbf7ccad0c0fc3a4db411d075db026d5ee0050884d6",
+    "directional_route": "sha256:9b773b41a864f9ed45a4287f26f0b2e90e60bc427c5b61fa650d2e855f1dddac",
+    "runnable_target_generator": "sha256:7227e3f9248a265aa7cfd4824c7cd71140bc79c2bbd6638f30e9b6d72a9ac2b2",
+    "additional_source_extractors": "sha256:b3521d5bedade00cab679b3a5c6d7338d84d09d83524b08f749647c8918c365b",
+    "runtime_tests": "sha256:78fb910231368df37b891535b0a8c1cca25eccc29d724748f3bdab7de73747fe",
     "semantic_handler_tests": "sha256:c6af11860b615107511d00044f412704f922c9f4351944ba74bef17be68c9766",
     "production_contract_tests": "sha256:d17b0ee8b1e5ecdfd9975d08e78a4950f19b0b30abdfa57ee270a306edcca124",
     "artifact_lifecycle_tests": "sha256:8afc427ee4c884441d2334d48c4a1bc853e43a6a63cbf6894fdec54c62eec723",
-    "additional_ir_tests": "sha256:cc53325055e023cba71c25c27d1ca313300b29d88eb5c33310fdda80ca912bd7",
-    "web_studio": "sha256:126866bf86f448d72d33e60a716e95c6211cc883e5ca2e0a8bf27867cb4e2e23",
-    "web_bff": "sha256:69e2a1f547d60892cb447702b4e279ed3c6eca0618d8267a6c78196737e5d8c0",
-    "web_package": "sha256:9ea9a6ff22fefa6b64fbbef326decae44d75a9d544b694f37d6cf2d061bbd2b2",
-    "web_lockfile": "sha256:0ad881b3af1838a6e1a3af8a0ca2b8346c907080d78f7666422cb662d3e6ecc4",
+    "additional_ir_tests": "sha256:c7099e8d65e54d002e2b1765d2af7e700cfc922f14351af9891a3b3e2a2b95a1",
+    "web_studio": "sha256:146c5d65be5d140ada7af4fb9e6a58921cce935e217379f15dd6034ada0b1695",
+    "web_bff": "sha256:ba0645f49330d1bd422ca85461447d7999589128b54bbf243544069a4dc0df92",
+    "web_package": "sha256:d5503f5ddb6c427ba55a06f2662e2b302ed1a67f763b69a917d61ae6bf42ced9",
+    "web_lockfile": "sha256:e5d920fe0af72e14fa3c07670812d3da26ac7b1e857f34d8a476ea02149bc543",
     "browser_tests": "sha256:c1cb6341b1d5297635ad65a11ec9cb06199952162a205b3bfcc911fbb659f5fd",
+    "browser_global_teardown": "sha256:b159a7ec3d9bded760239de89d15b8219b4f420a2a2de02c98a2785d659ef055",
     "external_quality_tests": "sha256:13c3eeba77838f3484f625be5c533adbe2db972ae5aba9d392b37d9d6a9cbfe2",
     "external_evidence_protocol": "sha256:1a871e3f8964e8722bbc437fb655ccdbd1579721b7efb94a6c3a24b6f1c49141",
     "external_campaign_parameters": "sha256:291490ee61f1e74cc1bcbe682512025cf08f2499455309b55927a3cc36bf0ebc",
@@ -158,8 +165,13 @@
     "ios_device_evidence_recorder": "sha256:3757996081e115b1b6e9780e9c433786dc648f01e1cf92c0b39d361f47469911",
     "ios_device_evidence_recorder_tests": "sha256:0a0b0a5952164c7ce31cc24226c09033e8a242baf86a4cf0d36aa1c3b103e52e",
     "batch32_gate": "sha256:40935aee8aa75625b0ba85fe2f8b4b471840d81ca2d3db2ca0107aafbdbf42c5",
-    "route_toolchain_evidence": "sha256:e8154f4e5cd3298c6253ace953329d4e506c9591d65162a384411f91207d7371",
-    "installed_manifest": "sha256:a09f6fab75c3c050873a557ace309041a56d1443a3a825347ead9b36fb1a7658",
+    "route_toolchain_evidence": "sha256:630c6b90e67a959d80e57288a6fa2b82c5995dd3afed74eeafa494097387beee",
+    "route_smoke_materializer": "sha256:456d0d2d979fdc60014ae5280ee05c01f78285796a89093e2478ae5fa822fcff",
+    "route_smoke_tests": "sha256:e5cca79cb8719194aff2aae1ec4a3b4c7cfd4e6cdc6e6dcb55c3c052d6ae9a09",
+    "batch46_detector": "sha256:59f6c020901fe53b9321cc2bf0ec5df7e23bb6acb9e9be794eb5479243834ca1",
+    "batch46_runner": "sha256:74d7193f67450ba67b03f109bc81460fede6114f72ac7f4f5796fe4aea75a1a6",
+    "batch46_tests": "sha256:3046c785ca1ad4927dbb349b9c46ba934cc76df204fffa6169c97483c5a712e9",
+    "installed_manifest": "sha256:4cec56aa3d6f5a2372de1e869d837bb8574c04370d1ac0b69e64f7d6579b94d4",
     "compiled_skill_contracts": "sha256:f757ac8014166a974f761793dbf8fb8dbcf37bdd4db77dfac21280d36aca3bf3"
   },
   "evidence_boundary": {
@@ -181,5 +193,5 @@
     "production_operation_authorized": false,
     "production_certification": "NOT_CERTIFIED"
   },
-  "refreshed_at": "2026-08-06T02:58:22.167445Z"
+  "refreshed_at": "2026-08-08T08:01:01.815230Z"
 }

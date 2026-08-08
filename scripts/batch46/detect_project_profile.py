@@ -185,6 +185,101 @@ def _detect_node(root: Path, out: dict[str, Any]) -> None:
     })
 
 
+def _detect_flutter(root: Path, out: dict[str, Any]) -> None:
+    pubspec = root / "pubspec.yaml"
+    entrypoint = root / "lib" / "main.dart"
+    web_entry = root / "web" / "index.html"
+    if not pubspec.is_file() or not entrypoint.is_file():
+        return
+    text = read_text(pubspec)
+    if not re.search(r"(?m)^\s*flutter:\s*$", text):
+        return
+    evidence = [
+        _evidence(root, pubspec, "dependencies.flutter sdk"),
+        _evidence(root, entrypoint, "Flutter entrypoint"),
+    ]
+    start = None
+    if web_entry.is_file():
+        evidence.append(_evidence(root, web_entry, "Flutter web bootstrap"))
+        start = (
+            "flutter run -d web-server --web-hostname 127.0.0.1 "
+            "--web-port ${SMOKE_PORT} --no-pub"
+        )
+    out["stacks"].append({
+        "id": "flutter-client",
+        "language": "dart",
+        "family": "b32",
+        "framework": "flutter",
+        "build_tool": "flutter",
+        "install_command": "flutter pub get",
+        "start_command": start,
+        "entrypoint": "lib/main.dart",
+        "default_port": 5173,
+        "readiness_path": "/",
+        "confidence": "high" if start else "medium",
+        "evidence": evidence,
+    })
+
+
+def _detect_wechat_mini_program(root: Path, out: dict[str, Any]) -> None:
+    project = root / "project.config.json"
+    app = root / "app.json"
+    runner = root / "scripts" / "frt-smoke-start.mjs"
+    if not project.is_file() or not app.is_file():
+        return
+    try:
+        config = json.loads(read_text(project))
+    except json.JSONDecodeError:
+        out["unknown"].append({"item": "project.config.json", "reason": "unparseable JSON"})
+        return
+    if config.get("compileType") != "miniprogram":
+        return
+    out["stacks"].append({
+        "id": "wechat-mini-program-client",
+        "language": "javascript",
+        "family": "b32",
+        "framework": "wechat-mini-program",
+        "build_tool": "wechat-devtools",
+        "install_command": None,
+        "start_command": "node scripts/frt-smoke-start.mjs" if runner.is_file() else None,
+        "entrypoint": "app.json",
+        "default_port": 5173,
+        "readiness_path": "/health",
+        "confidence": "high" if runner.is_file() else "medium",
+        "evidence": [
+            _evidence(root, project, "compileType=miniprogram"),
+            _evidence(root, app, "page manifest"),
+            *([_evidence(root, runner, "bounded DevTools launch sidecar")] if runner.is_file() else []),
+        ],
+    })
+
+
+def _detect_arkui(root: Path, out: dict[str, Any]) -> None:
+    profile = root / "build-profile.json5"
+    module = root / "entry" / "src" / "main" / "module.json5"
+    runner = root / "scripts" / "frt-smoke-start.mjs"
+    if not profile.is_file() or not module.is_file():
+        return
+    out["stacks"].append({
+        "id": "arkui-client",
+        "language": "ets",
+        "family": "b32",
+        "framework": "arkui",
+        "build_tool": "hvigor",
+        "install_command": None,
+        "start_command": "node scripts/frt-smoke-start.mjs" if runner.is_file() else None,
+        "entrypoint": "entry/src/main/module.json5",
+        "default_port": 5173,
+        "readiness_path": "/health",
+        "confidence": "high" if runner.is_file() else "medium",
+        "evidence": [
+            _evidence(root, profile, "ArkUI build profile"),
+            _evidence(root, module, "ArkUI entry module"),
+            *([_evidence(root, runner, "bounded hvigor/hdc launch sidecar")] if runner.is_file() else []),
+        ],
+    })
+
+
 def _detect_java(root: Path, out: dict[str, Any]) -> None:
     manifests = iter_files(root, ["pom.xml", "build.gradle", "build.gradle.kts"])
     if not manifests:
@@ -326,7 +421,10 @@ def detect(root: Path) -> dict[str, Any]:
     out: dict[str, Any] = {
         "schema": f"{SCHEMA_PREFIX}.project-profile/1",
         "generated_at": utc_now(),
-        "project_root": str(root),
+        # Pack content must remain portable after clone, archive extraction or
+        # atomic publish from a staging directory.  Never digest or disclose an
+        # operator's absolute workstation path.
+        "project_root": ".",
         "stacks": [],
         "datastores": [],
         "env_contract_files": [],
@@ -336,6 +434,9 @@ def detect(root: Path) -> dict[str, Any]:
     }
     _detect_python(root, out)
     _detect_node(root, out)
+    _detect_flutter(root, out)
+    _detect_wechat_mini_program(root, out)
+    _detect_arkui(root, out)
     _detect_java(root, out)
     _detect_dotnet(root, out)
     _detect_datastores(root, out)
@@ -345,7 +446,7 @@ def detect(root: Path) -> dict[str, Any]:
     if not out["stacks"]:
         out["unknown"].append({
             "item": "runnable stack",
-            "reason": "no python/node/java/dotnet manifest found under the scanned depth",
+            "reason": "no supported service or client manifest found under the scanned depth",
         })
     for stack in out["stacks"]:
         if not stack.get("start_command"):

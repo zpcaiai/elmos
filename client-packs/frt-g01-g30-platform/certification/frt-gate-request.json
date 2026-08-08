@@ -18,8 +18,8 @@
         },
         {
           "path": "client-packs/frt-g01-g30-platform/certification/local-validation-evidence.json",
-          "sha256": "sha256:00a1d6d52dd8503d8c8fcfa3941d360ebb9f50646438d10a06617c47e50deae6",
-          "bytes": 15654
+          "sha256": "sha256:8f18f0c91d339bc00b66e2815b69ae275ee785d4d10702ad9194d76175fb78b9",
+          "bytes": 17291
         }
       ]
     },
@@ -28,7 +28,7 @@
       "evidence_refs": [
         {
           "path": "docs/frt-g01-g30/installed-manifest.json",
-          "sha256": "sha256:a09f6fab75c3c050873a557ace309041a56d1443a3a825347ead9b36fb1a7658",
+          "sha256": "sha256:4cec56aa3d6f5a2372de1e869d837bb8574c04370d1ac0b69e64f7d6579b94d4",
           "bytes": 1202112
         },
         {
@@ -38,13 +38,13 @@
         },
         {
           "path": "scripts/frt/validate_frt_platform.py",
-          "sha256": "sha256:e05a35f318958fd3ba8d4544090a9062619bdb73bb247e18457b751f0ceb891f",
-          "bytes": 17538
+          "sha256": "sha256:84cef71e9d45cc773cbf441cde4a07dfe33eb41c4a603973d16f6bbf6842e17c",
+          "bytes": 17949
         },
         {
           "path": "client-packs/frt-g01-g30-platform/certification/local-validation-evidence.json",
-          "sha256": "sha256:00a1d6d52dd8503d8c8fcfa3941d360ebb9f50646438d10a06617c47e50deae6",
-          "bytes": 15654
+          "sha256": "sha256:8f18f0c91d339bc00b66e2815b69ae275ee785d4d10702ad9194d76175fb78b9",
+          "bytes": 17291
         }
       ]
     },
@@ -88,8 +88,8 @@
         },
         {
           "path": "scripts/frt/run_frt_gate.py",
-          "sha256": "sha256:5c8e3c54abe13789a1436e597a8bb3d8d15a44525ff78f01a510aae529d73d18",
-          "bytes": 8181
+          "sha256": "sha256:1b73df96f9519a20b8a643ff727052744f1de9bcc4541564b5812b7d1eb85035",
+          "bytes": 8209
         }
       ]
     },
@@ -158,8 +158,8 @@
         },
         {
           "path": "engines/frontend-client-engine/test/frt-runtime.test.ts",
-          "sha256": "sha256:550e1bfed0ec01a4ccc2ddbf7ccad0c0fc3a4db411d075db026d5ee0050884d6",
-          "bytes": 52638
+          "sha256": "sha256:78fb910231368df37b891535b0a8c1cca25eccc29d724748f3bdab7de73747fe",
+          "bytes": 53577
         },
         {
           "path": "engines/frontend-client-engine/test/frt-semantic-handlers.test.ts",
@@ -203,8 +203,8 @@
         },
         {
           "path": "engines/frontend-client-engine/test/frt-runtime.test.ts",
-          "sha256": "sha256:550e1bfed0ec01a4ccc2ddbf7ccad0c0fc3a4db411d075db026d5ee0050884d6",
-          "bytes": 52638
+          "sha256": "sha256:78fb910231368df37b891535b0a8c1cca25eccc29d724748f3bdab7de73747fe",
+          "bytes": 53577
         },
         {
           "path": "engines/frontend-client-engine/test/frt-artifact-lifecycle.test.ts",
@@ -223,8 +223,13 @@
       "evidence_refs": [
         {
           "path": "engines/frontend-client-engine/src/directional-route.ts",
-          "sha256": "sha256:13c53626ea95596474a8dac54719b59254ec72ede74954270facb83fc7ba61ce",
-          "bytes": 37828
+          "sha256": "sha256:9b773b41a864f9ed45a4287f26f0b2e90e60bc427c5b61fa650d2e855f1dddac",
+          "bytes": 37938
+        },
+        {
+          "path": "engines/frontend-client-engine/src/frt-runnable-target.ts",
+          "sha256": "sha256:7227e3f9248a265aa7cfd4824c7cd71140bc79c2bbd6638f30e9b6d72a9ac2b2",
+          "bytes": 13247
         },
         {
           "path": "engines/frontend-client-engine/src/frt-route-ir.ts",
@@ -233,8 +238,8 @@
         },
         {
           "path": "engines/frontend-client-engine/src/additional-ui-ir.ts",
-          "sha256": "sha256:f88d7aa95375b64d253f912703a35afdaffc2918f0e8e2d76e71682ec948e571",
-          "bytes": 40115
+          "sha256": "sha256:b3521d5bedade00cab679b3a5c6d7338d84d09d83524b08f749647c8918c365b",
+          "bytes": 40632
         },
         {
           "path": "engines/frontend-client-engine/src/vue3-ui-ir.ts",
@@ -253,8 +258,8 @@
         },
         {
           "path": "engines/frontend-client-engine/test/additional-ui-ir.test.ts",
-          "sha256": "sha256:cc53325055e023cba71c25c27d1ca313300b29d88eb5c33310fdda80ca912bd7",
-          "bytes": 7052
+          "sha256": "sha256:c7099e8d65e54d002e2b1765d2af7e700cfc922f14351af9891a3b3e2a2b95a1",
+          "bytes": 8204
         },
         {
           "path": "engines/frontend-client-engine/test/vue3-ui-ir.test.ts",
@@ -268,13 +273,73 @@
         },
         {
           "path": "scripts/frt/run_frt_route_toolchains.mjs",
-          "sha256": "sha256:49a68b5e0fd6bf16f6e95aff86ede6232139e292f710cd564264f9221964c98b",
-          "bytes": 13532
+          "sha256": "sha256:cce79cc0390897e575a807d8c501f241140b53e632c91e42d85ff8ee8be9b0b6",
+          "bytes": 16554
         },
         {
           "path": "client-packs/frt-g01-g30-platform/certification/route-toolchain-evidence.json",
-          "sha256": "sha256:e8154f4e5cd3298c6253ace953329d4e506c9591d65162a384411f91207d7371",
-          "bytes": 38832
+          "sha256": "sha256:630c6b90e67a959d80e57288a6fa2b82c5995dd3afed74eeafa494097387beee",
+          "bytes": 101809
+        }
+      ]
+    },
+    "runnable_route_smoke": {
+      "state": "PASSED",
+      "evidence_refs": [
+        {
+          "path": "engines/frontend-client-engine/src/frt-runnable-target.ts",
+          "sha256": "sha256:7227e3f9248a265aa7cfd4824c7cd71140bc79c2bbd6638f30e9b6d72a9ac2b2",
+          "bytes": 13247
+        },
+        {
+          "path": "engines/frontend-client-engine/test/frt-runtime.test.ts",
+          "sha256": "sha256:78fb910231368df37b891535b0a8c1cca25eccc29d724748f3bdab7de73747fe",
+          "bytes": 53577
+        },
+        {
+          "path": "scripts/frt/materialize_frt_route.mjs",
+          "sha256": "sha256:456d0d2d979fdc60014ae5280ee05c01f78285796a89093e2478ae5fa822fcff",
+          "bytes": 6580
+        },
+        {
+          "path": "scripts/frt/test_frt_route_smoke.py",
+          "sha256": "sha256:e5cca79cb8719194aff2aae1ec4a3b4c7cfd4e6cdc6e6dcb55c3c052d6ae9a09",
+          "bytes": 5665
+        },
+        {
+          "path": "scripts/batch46/detect_project_profile.py",
+          "sha256": "sha256:59f6c020901fe53b9321cc2bf0ec5df7e23bb6acb9e9be794eb5479243834ca1",
+          "bytes": 20379
+        },
+        {
+          "path": "scripts/batch46/scaffold_smoke_pack.py",
+          "sha256": "sha256:6072f7fbb2559809bc4a7a8c11ff1d2f19af1e5ac1e253d0748a23a79079ad1b",
+          "bytes": 6322
+        },
+        {
+          "path": "scripts/batch46/run_smoke.py",
+          "sha256": "sha256:74d7193f67450ba67b03f109bc81460fede6114f72ac7f4f5796fe4aea75a1a6",
+          "bytes": 35591
+        },
+        {
+          "path": "scripts/batch46/validate_smoke_pack.py",
+          "sha256": "sha256:2dfa07958f720f93e5a5f807fe19a58e08eb09064df9254c02758d42844cb118",
+          "bytes": 5951
+        },
+        {
+          "path": "scripts/batch46/run_smoke_gate.py",
+          "sha256": "sha256:ac4bf3c8a2026030701e11d59f24577d594626605f5ebef53c338dfcde470abb",
+          "bytes": 7968
+        },
+        {
+          "path": "tests/batch46/test_smoke_pack.py",
+          "sha256": "sha256:3046c785ca1ad4927dbb349b9c46ba934cc76df204fffa6169c97483c5a712e9",
+          "bytes": 27306
+        },
+        {
+          "path": "client-packs/frt-g01-g30-platform/certification/local-validation-evidence.json",
+          "sha256": "sha256:8f18f0c91d339bc00b66e2815b69ae275ee785d4d10702ad9194d76175fb78b9",
+          "bytes": 17291
         }
       ]
     },
@@ -283,8 +348,8 @@
       "evidence_refs": [
         {
           "path": "engines/frontend-client-engine/test/frt-runtime.test.ts",
-          "sha256": "sha256:550e1bfed0ec01a4ccc2ddbf7ccad0c0fc3a4db411d075db026d5ee0050884d6",
-          "bytes": 52638
+          "sha256": "sha256:78fb910231368df37b891535b0a8c1cca25eccc29d724748f3bdab7de73747fe",
+          "bytes": 53577
         },
         {
           "path": "engines/frontend-client-engine/test/server.test.ts",
@@ -303,8 +368,8 @@
         },
         {
           "path": "engines/frontend-client-engine/test/additional-ui-ir.test.ts",
-          "sha256": "sha256:cc53325055e023cba71c25c27d1ca313300b29d88eb5c33310fdda80ca912bd7",
-          "bytes": 7052
+          "sha256": "sha256:c7099e8d65e54d002e2b1765d2af7e700cfc922f14351af9891a3b3e2a2b95a1",
+          "bytes": 8204
         },
         {
           "path": "engines/frontend-client-engine/test/frt-semantic-handlers.test.ts",
@@ -318,8 +383,8 @@
         },
         {
           "path": "client-packs/frt-g01-g30-platform/certification/local-validation-evidence.json",
-          "sha256": "sha256:00a1d6d52dd8503d8c8fcfa3941d360ebb9f50646438d10a06617c47e50deae6",
-          "bytes": 15654
+          "sha256": "sha256:8f18f0c91d339bc00b66e2815b69ae275ee785d4d10702ad9194d76175fb78b9",
+          "bytes": 17291
         }
       ]
     },
@@ -328,28 +393,28 @@
       "evidence_refs": [
         {
           "path": "apps/web-console/package.json",
-          "sha256": "sha256:9ea9a6ff22fefa6b64fbbef326decae44d75a9d544b694f37d6cf2d061bbd2b2",
-          "bytes": 1271
+          "sha256": "sha256:d5503f5ddb6c427ba55a06f2662e2b302ed1a67f763b69a917d61ae6bf42ced9",
+          "bytes": 1346
         },
         {
           "path": "apps/web-console/pnpm-lock.yaml",
-          "sha256": "sha256:0ad881b3af1838a6e1a3af8a0ca2b8346c907080d78f7666422cb662d3e6ecc4",
-          "bytes": 35294
+          "sha256": "sha256:e5d920fe0af72e14fa3c07670812d3da26ac7b1e857f34d8a476ea02149bc543",
+          "bytes": 35285
         },
         {
           "path": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
-          "sha256": "sha256:126866bf86f448d72d33e60a716e95c6211cc883e5ca2e0a8bf27867cb4e2e23",
-          "bytes": 34575
+          "sha256": "sha256:146c5d65be5d140ada7af4fb9e6a58921cce935e217379f15dd6034ada0b1695",
+          "bytes": 34735
         },
         {
           "path": "apps/web-console/app/lib/server/frtEngineProxy.ts",
-          "sha256": "sha256:69e2a1f547d60892cb447702b4e279ed3c6eca0618d8267a6c78196737e5d8c0",
-          "bytes": 17522
+          "sha256": "sha256:ba0645f49330d1bd422ca85461447d7999589128b54bbf243544069a4dc0df92",
+          "bytes": 18807
         },
         {
           "path": "client-packs/frt-g01-g30-platform/certification/local-validation-evidence.json",
-          "sha256": "sha256:00a1d6d52dd8503d8c8fcfa3941d360ebb9f50646438d10a06617c47e50deae6",
-          "bytes": 15654
+          "sha256": "sha256:8f18f0c91d339bc00b66e2815b69ae275ee785d4d10702ad9194d76175fb78b9",
+          "bytes": 17291
         }
       ]
     },
@@ -373,8 +438,13 @@
         },
         {
           "path": "apps/web-console/playwright.config.ts",
-          "sha256": "sha256:74ca197bd8863e36c5923330723489214b70ab7044cd1dce96316e9e9f4aeb7b",
-          "bytes": 8085
+          "sha256": "sha256:d0df0fda23af76d51a8e1c458d7a2f4f6ef1932f4d4e50d1dd4e46d3ccd0a60b",
+          "bytes": 9694
+        },
+        {
+          "path": "apps/web-console/e2e/global-teardown.ts",
+          "sha256": "sha256:b159a7ec3d9bded760239de89d15b8219b4f420a2a2de02c98a2785d659ef055",
+          "bytes": 2441
         },
         {
           "path": "apps/web-console/playwright.external-quality.config.ts",
@@ -383,8 +453,8 @@
         },
         {
           "path": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
-          "sha256": "sha256:126866bf86f448d72d33e60a716e95c6211cc883e5ca2e0a8bf27867cb4e2e23",
-          "bytes": 34575
+          "sha256": "sha256:146c5d65be5d140ada7af4fb9e6a58921cce935e217379f15dd6034ada0b1695",
+          "bytes": 34735
         },
         {
           "path": "client-packs/frt-g01-g30-platform/acceptance/quality-matrix.json",
@@ -393,8 +463,8 @@
         },
         {
           "path": "client-packs/frt-g01-g30-platform/certification/local-validation-evidence.json",
-          "sha256": "sha256:00a1d6d52dd8503d8c8fcfa3941d360ebb9f50646438d10a06617c47e50deae6",
-          "bytes": 15654
+          "sha256": "sha256:8f18f0c91d339bc00b66e2815b69ae275ee785d4d10702ad9194d76175fb78b9",
+          "bytes": 17291
         }
       ]
     },
@@ -408,8 +478,8 @@
         },
         {
           "path": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
-          "sha256": "sha256:126866bf86f448d72d33e60a716e95c6211cc883e5ca2e0a8bf27867cb4e2e23",
-          "bytes": 34575
+          "sha256": "sha256:146c5d65be5d140ada7af4fb9e6a58921cce935e217379f15dd6034ada0b1695",
+          "bytes": 34735
         }
       ]
     },
@@ -428,8 +498,8 @@
         },
         {
           "path": "engines/frontend-client-engine/test/additional-ui-ir.test.ts",
-          "sha256": "sha256:cc53325055e023cba71c25c27d1ca313300b29d88eb5c33310fdda80ca912bd7",
-          "bytes": 7052
+          "sha256": "sha256:c7099e8d65e54d002e2b1765d2af7e700cfc922f14351af9891a3b3e2a2b95a1",
+          "bytes": 8204
         },
         {
           "path": "client-packs/frt-g01-g30-platform/acceptance/external-evidence-profile.json",
@@ -478,8 +548,8 @@
         },
         {
           "path": "client-packs/frt-g01-g30-platform/certification/local-validation-evidence.json",
-          "sha256": "sha256:00a1d6d52dd8503d8c8fcfa3941d360ebb9f50646438d10a06617c47e50deae6",
-          "bytes": 15654
+          "sha256": "sha256:8f18f0c91d339bc00b66e2815b69ae275ee785d4d10702ad9194d76175fb78b9",
+          "bytes": 17291
         }
       ]
     },
@@ -548,8 +618,8 @@
         },
         {
           "path": "client-packs/frt-g01-g30-platform/certification/local-validation-evidence.json",
-          "sha256": "sha256:00a1d6d52dd8503d8c8fcfa3941d360ebb9f50646438d10a06617c47e50deae6",
-          "bytes": 15654
+          "sha256": "sha256:8f18f0c91d339bc00b66e2815b69ae275ee785d4d10702ad9194d76175fb78b9",
+          "bytes": 17291
         }
       ]
     }

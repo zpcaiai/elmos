@@ -5,8 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  postcss: 8.5.24
-  sharp: 0.35.3
+  nanoid@<3.3.17: 3.3.17
 
 importers:
 
@@ -25,8 +24,8 @@ importers:
         specifier: 16.3.0
         version: 16.3.0(@playwright/test@1.61.1)(@types/node@24.3.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       pdfjs-dist:
-        specifier: 6.1.200
-        version: 6.1.200
+        specifier: 6.2.108
+        version: 6.2.108
       react:
         specifier: 19.2.7
         version: 19.2.7
@@ -476,8 +475,8 @@ packages:
     engines: {node: '>=12.0.0'}
     hasBin: true
 
-  nanoid@3.3.16:
-    resolution: {integrity: sha512-bzlKTyNJ7+LdGIIwy8ijFpIqEQIvafahV7eYykJ8Cvh42EdJeODoJ6gUJXpQJvej1BddH8OqTXZNE/KfbWAu8Q==}
+  nanoid@3.3.17:
+    resolution: {integrity: sha512-xQLf0A3HOMlgHq0n247/LRuAOYmB7dXJ/DvAxGvsSBij45XtBSmQycu+F8ODbHwns/XyFZagyL1+J0Offw1E0g==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
@@ -515,8 +514,8 @@ packages:
     resolution: {integrity: sha512-AVbw3UJ2e9bq64vSaS9Am0fje1Pa8pbGqTTsmXfaIiMpnr5DlDhfJOuLj9Sf95ZPVDAUerDfEk88MPmPe7UCQg==}
     engines: {node: '>=0.10.0'}
 
-  pdfjs-dist@6.1.200:
-    resolution: {integrity: sha512-o8MolyzirkkLrcdsae/HEOiIcXWI7DS5zGpvqW8xTC2YUsW30rltFw2bDGvw/fskUdEMrQm2br68jzDS5BH2vw==}
+  pdfjs-dist@6.2.108:
+    resolution: {integrity: sha512-YxFb+SQcodN2rnX9Tn3dHYlqfb7NjlzzfONPpJd+AKoKtUjEdevTfbC07d5TcczzOK6261auRkP/M8OBHs9vFQ==}
     engines: {node: '>=22.13.0 || >=24'}
 
   peberminta@0.10.0:
@@ -535,8 +534,8 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
-  postcss@8.5.24:
-    resolution: {integrity: sha512-8RyVklq0owXUTa4xlpzu4l9AaVKIdQvAcOHZWaMh98HgySsUtxRVf/chRe3dsSLqb6i40BzGRzEUddRaI+9TSw==}
+  postcss@8.5.23:
+    resolution: {integrity: sha512-g50586zr4bZmwFiTlflMu8E0bDTb5I5gertgwAKmsdUlTQIhZtunzUlD1WSzwcVWPoAVpsrA6vlfCD7oXvRwgg==}
     engines: {node: ^10 || ^12 || >=14}
 
   process-nextick-args@2.0.1:
@@ -960,7 +959,7 @@ snapshots:
       underscore: 1.13.8
       xmlbuilder: 10.1.1
 
-  nanoid@3.3.16: {}
+  nanoid@3.3.17: {}
 
   next@16.3.0(@playwright/test@1.61.1)(@types/node@24.3.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7):
     dependencies:
@@ -968,7 +967,7 @@ snapshots:
       '@swc/helpers': 0.5.15
       baseline-browser-mapping: 2.10.43
       caniuse-lite: 1.0.30001806
-      postcss: 8.5.24
+      postcss: 8.5.23
       react: 19.2.7
       react-dom: 19.2.7(react@19.2.7)
       styled-jsx: 5.1.6(react@19.2.7)
@@ -999,7 +998,7 @@ snapshots:
 
   path-is-absolute@1.0.1: {}
 
-  pdfjs-dist@6.1.200:
+  pdfjs-dist@6.2.108:
     optionalDependencies:
       '@napi-rs/canvas': 1.0.3
 
@@ -1015,9 +1014,9 @@ snapshots:
     optionalDependencies:
       fsevents: 2.3.2
 
-  postcss@8.5.24:
+  postcss@8.5.23:
     dependencies:
-      nanoid: 3.3.16
+      nanoid: 3.3.17
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
