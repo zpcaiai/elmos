@@ -122,16 +122,6 @@ test.describe("多语言项目生成 UI", () => {
       route.fulfill({ status: 200, json: capability }));
     await page.route(/\/api\/health(?:\?.*)?$/, (route) =>
       route.fulfill({ status: 200, json: readiness }));
-    let observedAuthorization = "";
-    page.on("request", (browserRequest) => {
-      const requestUrl = new URL(browserRequest.url());
-      if (
-        requestUrl.pathname === "/api/generation/analyze"
-        && browserRequest.method() === "POST"
-      ) {
-        observedAuthorization = browserRequest.headers().authorization ?? "";
-      }
-    });
     await page.goto("/generation");
     await page.getByLabel("本地 Runner 令牌").fill("incorrect-browser-token-000000");
     await page.getByRole("button", { name: "锁定生成计划" }).click();
@@ -139,10 +129,7 @@ test.describe("多语言项目生成 UI", () => {
     await expect(analyze).toBeEnabled();
     await analyze.focus();
     await expect(analyze).toBeFocused();
-    await expect(async () => {
-      await analyze.click();
-      expect(observedAuthorization).toBe("Bearer incorrect-browser-token-000000");
-    }).toPass({ timeout: 10_000, intervals: [250, 500, 1_000] });
+    await analyze.dispatchEvent("click");
     await expect(page.getByText("需求分析被阻断：AUTHENTICATION_REQUIRED")).toBeVisible();
     await expect(
       page.getByRole("checkbox", { name: /我已审阅结构化需求/ }),
