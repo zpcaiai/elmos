@@ -150,7 +150,10 @@ test.describe("多语言项目生成 UI", () => {
     await expect(analyze).toBeEnabled();
     await analyze.focus();
     await expect(analyze).toBeFocused();
-    await analyze.evaluate((button: HTMLButtonElement) => button.click());
+    // Use a real cross-browser pointer activation.  A DOM click injected
+    // through evaluate bypasses Playwright's actionability and event-loop
+    // synchronization and is observably unreliable in mobile WebKit.
+    await analyze.click();
     await expect.poll(() => page.evaluate(() =>
       (window as Window & { __generationAuthorization?: string })
         .__generationAuthorization ?? "",

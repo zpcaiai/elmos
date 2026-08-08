@@ -30,6 +30,7 @@ final class OperationsBusinessLineRegistry {
         ROUTES.put("/api/v1/delivery", "DELIVERY_GOVERNANCE");
         ROUTES.put("/api/v1/product-commercialization", "COMMERCIALIZATION");
         ROUTES.put("/api/v1/product-roadmap", "COMMERCIALIZATION");
+        ROUTES.put("/api/v1/tenant-quota", "COMMERCIALIZATION");
         ROUTES.put("/api/v1/mainframe", "MAINFRAME_MODERNIZATION");
         ROUTES.put("/api/v1/integration", "SYSTEM_INTEGRATION");
         ROUTES.put("/api/v1/composite", "SYSTEM_INTEGRATION");

@@ -3,8 +3,8 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 
 const temporaryNextTypeGlob = /^\.next-e2e-\d{4,5}\/(?:dev\/)?types\/\*\*\/\*\.ts$/;
-const temporaryNextRouteImport =
-  /^import "\.\/\.next-e2e-\d{4,5}\/(?:dev\/)?types\/routes\.d\.ts";$/m;
+const temporaryNextTypeImport =
+  /^import "\.\/\.next-e2e-\d{4,5}\/(?:dev\/)?types\/(routes|root-params)\.d\.ts";$/gm;
 
 async function removeTemporaryNextTypeReferences(applicationRoot: string): Promise<void> {
   const tsconfigPath = path.join(applicationRoot, "tsconfig.json");
@@ -26,8 +26,8 @@ async function removeTemporaryNextTypeReferences(applicationRoot: string): Promi
   const nextEnvironmentPath = path.join(applicationRoot, "next-env.d.ts");
   const nextEnvironmentSource = await readFile(nextEnvironmentPath, "utf8");
   const stableNextEnvironment = nextEnvironmentSource.replace(
-    temporaryNextRouteImport,
-    'import "./.next/types/routes.d.ts";',
+    temporaryNextTypeImport,
+    'import "./.next/types/$1.d.ts";',
   );
   if (stableNextEnvironment !== nextEnvironmentSource) {
     await writeFile(nextEnvironmentPath, stableNextEnvironment, "utf8");
@@ -50,19 +50,11 @@ export default async function globalTeardown(): Promise<void> {
     });
   }
 
-  const distDir = process.env.ELMOS_E2E_EFFECTIVE_DIST_DIR;
   const applicationRoot = path.resolve(process.cwd());
-  if (
-    distDir
-    && path.dirname(path.resolve(distDir)) === applicationRoot
-    && /^\.next-e2e-\d{4,5}$/.test(path.basename(distDir))
-  ) {
-    await rm(distDir, {
-      recursive: true,
-      force: true,
-      maxRetries: 5,
-      retryDelay: 100,
-    });
-  }
+  // Playwright runs globalTeardown before it terminates configured webServer
+  // processes. Removing the active Next dist directory here corrupts the live
+  // server and can also break a concurrent run using the same port. Dist output
+  // is intentionally left as a disposable cache; a run owns its port-specific
+  // directory and Next invalidates changed inputs itself.
   await removeTemporaryNextTypeReferences(applicationRoot);
 }

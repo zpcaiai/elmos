@@ -27,14 +27,17 @@ BATCHES = {
     35: {"skills": 22, "first_id": 1265, "last_id": 1286, "schemas": 13, "templates": 15},
     36: {"skills": 18, "first_id": 1287, "last_id": 1304, "schemas": 12, "templates": 16},
     37: {"skills": 36, "first_id": 1305, "last_id": 1324, "schemas": 25, "templates": 27, "supplemental": 16},
-    38: {"skills": 22, "first_id": 1325, "last_id": 1346, "schemas": 4},
-    39: {"skills": 22, "first_id": 1347, "last_id": 1368, "schemas": 4},
-    40: {"skills": 24, "first_id": 1369, "last_id": 1392, "schemas": 4},
-    41: {"skills": 20, "first_id": 1393, "last_id": 1412, "schemas": 4},
-    42: {"skills": 22, "first_id": 1413, "last_id": 1434, "schemas": 4},
-    43: {"skills": 20, "first_id": 1435, "last_id": 1454, "schemas": 4},
-    44: {"skills": 20, "first_id": 1455, "last_id": 1474, "schemas": 4},
-    45: {"skills": 22, "first_id": 1475, "last_id": 1496, "schemas": 4},
+    # B38-M45 grew domain-specific schemas after the original four-file
+    # scaffold (program, evidence, certification and gate-result).  Keep the
+    # counts explicit so a missing or unexpected schema still fails closed.
+    38: {"skills": 22, "first_id": 1325, "last_id": 1346, "schemas": 16},
+    39: {"skills": 22, "first_id": 1347, "last_id": 1368, "schemas": 16},
+    40: {"skills": 24, "first_id": 1369, "last_id": 1392, "schemas": 17},
+    41: {"skills": 20, "first_id": 1393, "last_id": 1412, "schemas": 16},
+    42: {"skills": 22, "first_id": 1413, "last_id": 1434, "schemas": 17},
+    43: {"skills": 20, "first_id": 1435, "last_id": 1454, "schemas": 17},
+    44: {"skills": 20, "first_id": 1455, "last_id": 1474, "schemas": 18},
+    45: {"skills": 22, "first_id": 1475, "last_id": 1496, "schemas": 18},
 }
 REQUIRED_SECTIONS = (
     "## Workflow",
@@ -197,7 +200,7 @@ def main() -> int:
         )
 
     require(total_skills == 372, f"Expected 372 Skills, found {total_skills}", errors)
-    require(total_schemas == 124, f"Expected 124 Schemas, found {total_schemas}", errors)
+    require(total_schemas == 227, f"Expected 227 Schemas, found {total_schemas}", errors)
     common_schema_root = ROOT / "schemas" / "mature-product"
     common_schema_files = sorted(common_schema_root.glob("*.json"))
     require(

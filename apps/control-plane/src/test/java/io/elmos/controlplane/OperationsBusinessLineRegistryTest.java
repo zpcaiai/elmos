@@ -25,6 +25,9 @@ class OperationsBusinessLineRegistryTest {
                 "MIGRATION_GOVERNANCE",
                 OperationsBusinessLineRegistry.classify("/api/v1/modernization-proof/jobs/123"));
         assertEquals(
+                "COMMERCIALIZATION",
+                OperationsBusinessLineRegistry.classify("/api/v1/tenant-quota/adjust"));
+        assertEquals(
                 "PRODUCT_OVERVIEW",
                 OperationsBusinessLineRegistry.classify("/api/v1/future-capability"));
     }
