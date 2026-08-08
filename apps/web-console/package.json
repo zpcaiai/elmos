@@ -9,6 +9,7 @@
     "start": "next start",
     "check": "tsc --noEmit && next build",
     "test:qr-code": "uv run --with qrcode==8.2 --with numpy==2.5.1 --with opencv-python-headless==4.13.0.92 node --experimental-strip-types app/lib/qrCode.verify.mjs",
+    "test:ordered-persistence": "node --experimental-strip-types --test app/lib/server/orderedSnapshotPersistence.test.mjs",
     "check:telemetry": "node ../../telemetry/validate.mjs",
     "test:e2e": "playwright test",
     "test:frt-external-quality": "playwright test --config=playwright.external-quality.config.ts",

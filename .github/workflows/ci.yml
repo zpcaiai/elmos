@@ -388,6 +388,8 @@ jobs:
           node-version: "26.0.0"
       - name: Install locked pnpm tool for Translation execution
         run: npm install --global pnpm@10.12.4
+      - name: Verify ordered terminal-state persistence
+        run: pnpm --dir apps/web-console test:ordered-persistence
       - name: Install Chromium for browser journeys
         run: pnpm --dir apps/web-console exec playwright install --with-deps chromium
       - name: Verify desktop and mobile browser journeys

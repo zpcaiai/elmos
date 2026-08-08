@@ -42,6 +42,7 @@ import {
   unsafeCookieValue,
   type AccountPermission,
 } from "./accountSession";
+import { OrderedSnapshotPersistence } from "./orderedSnapshotPersistence";
 import type { NextRequest } from "next/server";
 import type {
   GenerationAnalysis,
@@ -59,12 +60,14 @@ import type {
 type GenerationRunnerProcessState = {
   activeJobs: Map<string, ChildProcess>;
   activeRuntimes: Map<string, ChildProcess>;
+  runtimeJobs: Map<string, GenerationJob>;
   activeRootlessRuntimes: Set<string>;
   previewProcesses: Set<ChildProcess>;
   activeAnalyses: Map<string, number>;
   scheduledJobs: Set<string>;
   cancelledJobs: Set<string>;
-  stoppedRuntimes: Set<string>;
+  intentionallyStoppedRuntimes: WeakSet<ChildProcess>;
+  jobPersistence: OrderedSnapshotPersistence;
   exitCleanupRegistered: boolean;
 };
 
@@ -74,12 +77,14 @@ const globalRunnerState = globalThis as typeof globalThis & {
 const processState = globalRunnerState.__elmosGenerationRunnerState ??= {
   activeJobs: new Map<string, ChildProcess>(),
   activeRuntimes: new Map<string, ChildProcess>(),
+  runtimeJobs: new Map<string, GenerationJob>(),
   activeRootlessRuntimes: new Set<string>(),
   previewProcesses: new Set<ChildProcess>(),
   activeAnalyses: new Map<string, number>(),
   scheduledJobs: new Set<string>(),
   cancelledJobs: new Set<string>(),
-  stoppedRuntimes: new Set<string>(),
+  intentionallyStoppedRuntimes: new WeakSet<ChildProcess>(),
+  jobPersistence: new OrderedSnapshotPersistence(atomicJson),
   exitCleanupRegistered: false,
 };
 // Next.js development HMR preserves this object across module revisions. Hydrate
@@ -87,21 +92,24 @@ const processState = globalRunnerState.__elmosGenerationRunnerState ??= {
 // already-running process; production starts still take the initializer above.
 processState.activeJobs ??= new Map<string, ChildProcess>();
 processState.activeRuntimes ??= new Map<string, ChildProcess>();
+processState.runtimeJobs ??= new Map<string, GenerationJob>();
 processState.activeRootlessRuntimes ??= new Set<string>();
+processState.jobPersistence ??= new OrderedSnapshotPersistence(atomicJson);
 processState.activeAnalyses ??= new Map<string, number>();
 processState.scheduledJobs ??= new Set<string>();
 processState.cancelledJobs ??= new Set<string>();
-processState.stoppedRuntimes ??= new Set<string>();
+processState.intentionallyStoppedRuntimes ??= new WeakSet<ChildProcess>();
 processState.exitCleanupRegistered ??= false;
 const {
   activeJobs,
   activeRuntimes,
+  runtimeJobs,
   activeRootlessRuntimes,
   previewProcesses,
   activeAnalyses,
   scheduledJobs,
   cancelledJobs,
-  stoppedRuntimes,
+  intentionallyStoppedRuntimes,
 } = processState;
 if (!processState.exitCleanupRegistered) {
   const terminateAll = () => {
@@ -600,7 +608,7 @@ async function persist(
   context: AuthorizedContext,
   job: GenerationJob,
 ): Promise<void> {
-  await atomicJson(jobFile(runner, context, job.id), job);
+  await processState.jobPersistence.persist(jobFile(runner, context, job.id), job);
 }
 
 async function load(
@@ -1582,6 +1590,7 @@ async function confirmRuntimeHealth(
         && payload.status === "UP"
         && payload.service === expectedService
       ) {
+        if (child.exitCode !== null || activeRuntimes.get(key) !== child) return;
         job.runtime.status = "RUNNING";
         job.runtime.reason = undefined;
         job.runtime.updatedAt = new Date().toISOString();
@@ -1861,6 +1870,7 @@ export async function startRuntime(
     stdio: ["ignore", "pipe", "pipe"],
   });
   activeRuntimes.set(key, child);
+  runtimeJobs.set(key, job);
   job.runtime = {
     ...job.runtime,
     status: "STARTING",
@@ -1871,10 +1881,12 @@ export async function startRuntime(
     updatedAt: new Date().toISOString(),
   };
   child.stdout?.on("data", (chunk: Buffer) => {
+    if (activeRuntimes.get(key) !== child || runtimeJobs.get(key) !== job) return;
     log(job, "runtime", chunk.toString("utf-8"));
     void persist(runner, context, job);
   });
   child.stderr?.on("data", (chunk: Buffer) => {
+    if (activeRuntimes.get(key) !== child || runtimeJobs.get(key) !== job) return;
     log(job, "runtime", chunk.toString("utf-8"));
     void persist(runner, context, job);
   });
@@ -1890,7 +1902,9 @@ export async function startRuntime(
     );
   });
   child.once("error", (error) => {
+    if (runtimeJobs.get(key) !== job) return;
     activeRuntimes.delete(key);
+    runtimeJobs.delete(key);
     job.runtime.status = "BLOCKED";
     job.runtime.reason = `RUNTIME_SPAWN_FAILED:${redact(error.message)}`;
     job.runtime.pid = undefined;
@@ -1898,8 +1912,10 @@ export async function startRuntime(
     void persist(runner, context, job);
   });
   child.once("close", (code) => {
+    if (runtimeJobs.get(key) !== job) return;
     activeRuntimes.delete(key);
-    const intentionallyStopped = stoppedRuntimes.delete(key);
+    runtimeJobs.delete(key);
+    const intentionallyStopped = intentionallyStoppedRuntimes.delete(child);
     const healthBlocked = job.runtime.status === "BLOCKED"
       && job.runtime.reason?.startsWith("RUNTIME_HEALTH_PROBE");
     if (intentionallyStopped) {
@@ -1948,18 +1964,25 @@ export async function stopRuntime(
   }
   const key = jobKey(context, jobId);
   const child = activeRuntimes.get(key);
+  const runtimeJob = runtimeJobs.get(key) ?? job;
   if (child) {
-    stoppedRuntimes.add(key);
-    terminate(child);
+    intentionallyStoppedRuntimes.add(child);
+    runtimeJob.runtime.status = "STOPPED";
+    runtimeJob.runtime.pid = undefined;
+    runtimeJob.runtime.reason = "STOPPED_BY_AUTHORIZED_ACTOR";
+    runtimeJob.runtime.updatedAt = new Date().toISOString();
+    log(runtimeJob, "system", `Runtime stopped by ${context.actor}.`);
     activeRuntimes.delete(key);
+    terminate(child);
+  } else {
+    runtimeJob.runtime.status = "STOPPED";
+    runtimeJob.runtime.pid = undefined;
+    runtimeJob.runtime.reason = "STOPPED_BY_AUTHORIZED_ACTOR";
+    runtimeJob.runtime.updatedAt = new Date().toISOString();
+    log(runtimeJob, "system", `Runtime stopped by ${context.actor}.`);
   }
-  job.runtime.status = "STOPPED";
-  job.runtime.pid = undefined;
-  job.runtime.reason = "STOPPED_BY_AUTHORIZED_ACTOR";
-  job.runtime.updatedAt = new Date().toISOString();
-  log(job, "system", `Runtime stopped by ${context.actor}.`);
-  await persist(runner, context, job);
-  return job;
+  await persist(runner, context, runtimeJob);
+  return runtimeJob;
 }
 
 async function reconcilePersistentQueue(
