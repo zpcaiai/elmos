@@ -24,7 +24,11 @@ class ClosureSkillsAndGenerationTests(unittest.TestCase):
         mutable_action = re.compile(
             r"^\s*uses:\s+[^\s#]+@(?![0-9a-f]{40}(?:\s|$))", re.MULTILINE
         )
-        self.assertIsNone(mutable_action.search(rendered))
+        all_workflows = "\n".join(
+            path.read_text(encoding="utf-8")
+            for path in sorted((ROOT / ".github" / "workflows").glob("*.yml"))
+        )
+        self.assertIsNone(mutable_action.search(all_workflows))
         service_images = re.findall(r"^\s*image:\s+(\S+)", rendered, re.MULTILINE)
         self.assertTrue(service_images)
         self.assertTrue(
@@ -36,7 +40,13 @@ class ClosureSkillsAndGenerationTests(unittest.TestCase):
         self.assertEqual(
             3,
             rendered.count(
-                "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
+                "actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a"
+            ),
+        )
+        self.assertEqual(
+            4,
+            all_workflows.count(
+                "actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a"
             ),
         )
         for evidence_path in (

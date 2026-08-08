@@ -411,7 +411,7 @@ jobs:
           e2e/usage-meter-ui.spec.ts
       - name: Preserve browser journey evidence
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: web-console-browser-evidence-${{ github.sha }}-${{ github.run_attempt }}
           path: |
@@ -500,7 +500,7 @@ jobs:
               e2e/generation-ui.spec.ts
       - name: Preserve project generation browser evidence
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: project-generation-browser-evidence-${{ github.sha }}-${{ github.run_attempt }}
           path: |
@@ -553,7 +553,7 @@ jobs:
               e2e/spring-real-journey-ui.spec.ts
       - name: Preserve isolated Runner browser evidence
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: isolated-runner-browser-evidence-${{ github.sha }}-${{ github.run_attempt }}
           path: |
