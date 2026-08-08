@@ -1,16 +1,74 @@
 {
   "schema_version": 1,
   "pack_key": "elmos-batch105-108-proof-loop-console",
-  "nodes": [
-    {"id":"route-proof-loop","kind":"route","path":"/proof-loop","rendering":"client-interactive","source_trace":"apps/web-console/app/proof-loop/page.tsx"},
-    {"id":"operation-contracts","kind":"api-operation","method":"GET","path":"/api/modernization-proof/contracts","cache":"private-no-store","retry":"none"},
-    {"id":"operation-subject","kind":"api-operation","method":"POST","path":"/api/modernization-proof/subject-digest","mutation":"pure-server-derivation","retry":"none"},
-    {"id":"operation-create","kind":"api-operation","method":"POST","path":"/api/modernization-proof/jobs","mutation":"durable-idempotent","retry":"manual-only"},
-    {"id":"operation-status","kind":"api-operation","method":"GET","path":"/api/modernization-proof/jobs/{jobId}","cache":"private-no-store","cancellation":"AbortController"},
-    {"id":"operation-cancel","kind":"api-operation","method":"DELETE","path":"/api/modernization-proof/jobs/{jobId}","mutation":"idempotent-cancel-intent","retry":"manual-only"},
-    {"id":"cache-proof-job","kind":"server-state","key_dimensions":["authenticated-tenant","actor","jobId"],"persistence":"component-memory-only","invalidation":["terminal-state","cancel-response"]},
-    {"id":"error-proof-job","kind":"error-contract","states":["authentication","authorization","validation","configuration","timeout","unreachable","business-blocked"]},
-    {"id":"consistency-proof-job","kind":"consistency","rules":["no-create-auto-retry","single-inflight-poll","terminal-stops-poll","tenant-state-never-shared"]}
+  "source_snapshot_digest": "8ec8c416b8c3e07158af376d0676db1271137efe230a7ec761c970819861691c",
+  "routes": [
+    {"id":"route.proof-loop","kind":"route","name":"现代化生产证据闭环","source_refs":["apps/web-console/app/proof-loop/page.tsx"],"references":["view.proof-studio"]},
+    {"id":"route.proof-api","kind":"route","name":"租户绑定的现代化证据 BFF","source_refs":["apps/web-console/app/api/modernization-proof"],"references":["resource.proof-api","permission.modernization-execute"]}
   ],
-  "unknowns": ["production browser network behavior", "external IdP refresh behavior", "real Runner artifact publication latency"]
+  "views": [
+    {"id":"view.proof-studio","kind":"view","name":"验证计划与证据状态工作台","source_refs":["apps/web-console/app/proof-loop/ModernizationProofStudio.tsx"],"references":["component.proof-form","component.proof-summary","state.contracts","state.proof-job"]}
+  ],
+  "components": [
+    {"id":"component.proof-form","kind":"component","name":"类型化验证计划表单","source_refs":["apps/web-console/app/proof-loop/ModernizationProofStudio.tsx"],"references":["form.proof-plan","action.submit-proof"]},
+    {"id":"component.proof-summary","kind":"component","name":"失败关闭证据状态面板","source_refs":["apps/web-console/app/proof-loop/ModernizationProofStudio.tsx"],"references":["state.proof-job","a11y.live-job-status"]}
+  ],
+  "states": [
+    {"id":"state.contracts","kind":"remote-state-machine","name":"合同发现状态","source_refs":["apps/web-console/app/proof-loop/ModernizationProofStudio.tsx"],"references":["effect.discover-contracts","resource.proof-api"]},
+    {"id":"state.proof-job","kind":"remote-state-machine","name":"队列、运行与终态证据作业","source_refs":["apps/web-console/app/proof-loop/ModernizationProofStudio.tsx"],"references":["effect.poll-proof-job","resource.proof-api"]}
+  ],
+  "actions": [
+    {"id":"action.submit-proof","kind":"network-action","name":"提交单次幂等证据闭环","source_refs":["apps/web-console/app/proof-loop/ModernizationProofStudio.tsx","apps/web-console/app/lib/server/modernizationProofClient.ts"],"references":["form.proof-plan","permission.modernization-execute","resource.proof-api"]},
+    {"id":"action.cancel-proof","kind":"network-action","name":"提交可重复取消意图","source_refs":["apps/web-console/app/proof-loop/ModernizationProofStudio.tsx","apps/web-console/app/lib/server/modernizationProofClient.ts"],"references":["state.proof-job","permission.modernization-execute","resource.proof-api"]}
+  ],
+  "effects": [
+    {"id":"effect.discover-contracts","kind":"network-effect","name":"无缓存合同发现","source_refs":["apps/web-console/app/proof-loop/ModernizationProofStudio.tsx"],"references":["state.contracts","resource.proof-api"]},
+    {"id":"effect.poll-proof-job","kind":"network-effect","name":"可中止的有界终态轮询","source_refs":["apps/web-console/app/proof-loop/ModernizationProofStudio.tsx"],"references":["state.proof-job","resource.proof-api"]}
+  ],
+  "forms": [
+    {"id":"form.proof-plan","kind":"form","name":"项目、仓库、策略与证据声明","source_refs":["apps/web-console/app/proof-loop/ModernizationProofStudio.tsx"],"references":["binding.subject-identifiers","binding.typed-json","action.submit-proof"]}
+  ],
+  "bindings": [
+    {"id":"binding.subject-identifiers","kind":"form-binding","name":"项目、仓库、Commit 与内容摘要绑定","source_refs":["apps/web-console/app/proof-loop/ModernizationProofStudio.tsx"],"references":["permission.modernization-execute"]},
+    {"id":"binding.typed-json","kind":"form-binding","name":"对象形态 Inputs 与 Evidence JSON","source_refs":["apps/web-console/app/proof-loop/ModernizationProofStudio.tsx"],"references":["resource.proof-api"]}
+  ],
+  "permissions": [
+    {"id":"permission.modernization-execute","kind":"permission","name":"租户与 Actor 绑定的 modernization:execute 权限","source_refs":["apps/web-console/app/lib/server/modernizationProofClient.ts"],"references":[]}
+  ],
+  "resources": [
+    {"id":"resource.proof-api","kind":"api-resource","name":"合同、Subject 摘要与耐久作业 BFF","source_refs":["apps/web-console/app/api/modernization-proof","apps/web-console/app/lib/server/modernizationProofClient.ts"],"references":["permission.modernization-execute"]}
+  ],
+  "design_tokens": [
+    {"id":"token.proof-loop","kind":"design-token-set","name":"证据工作台、表单与状态样式","source_refs":["apps/web-console/app/globals.css"],"references":[]}
+  ],
+  "accessibility": [
+    {"id":"a11y.error-alert","kind":"accessibility-contract","name":"请求错误使用 alert 语义呈现","source_refs":["apps/web-console/app/proof-loop/ModernizationProofStudio.tsx"],"references":["component.proof-form"]},
+    {"id":"a11y.live-job-status","kind":"accessibility-contract","name":"作业状态变化通过 polite live region 公告","source_refs":["apps/web-console/app/proof-loop/ModernizationProofStudio.tsx"],"references":["component.proof-summary"]}
+  ],
+  "source_map": [
+    {"node_id":"route.proof-loop","owner":"elmos-web-console"},
+    {"node_id":"route.proof-api","owner":"elmos-web-console-api"},
+    {"node_id":"view.proof-studio","owner":"elmos-web-console"},
+    {"node_id":"component.proof-form","owner":"elmos-web-console"},
+    {"node_id":"component.proof-summary","owner":"elmos-web-console"},
+    {"node_id":"state.contracts","owner":"elmos-web-console"},
+    {"node_id":"state.proof-job","owner":"elmos-web-console"},
+    {"node_id":"action.submit-proof","owner":"elmos-web-console"},
+    {"node_id":"action.cancel-proof","owner":"elmos-web-console"},
+    {"node_id":"effect.discover-contracts","owner":"elmos-web-console"},
+    {"node_id":"effect.poll-proof-job","owner":"elmos-web-console"},
+    {"node_id":"form.proof-plan","owner":"elmos-web-console"},
+    {"node_id":"binding.subject-identifiers","owner":"elmos-control-plane-security"},
+    {"node_id":"binding.typed-json","owner":"elmos-web-console-api"},
+    {"node_id":"permission.modernization-execute","owner":"elmos-control-plane-security"},
+    {"node_id":"resource.proof-api","owner":"elmos-web-console-api"},
+    {"node_id":"token.proof-loop","owner":"elmos-product-design"},
+    {"node_id":"a11y.error-alert","owner":"elmos-accessibility-review"},
+    {"node_id":"a11y.live-job-status","owner":"elmos-accessibility-review"}
+  ],
+  "unknowns": [
+    {"id":"unknown.external-idp","severity":"critical","status":"NOT_RUN","detail":"Production IdP expiry, refresh and revocation remain externally unexecuted."},
+    {"id":"unknown.independent-holdout","severity":"critical","status":"NOT_RUN","detail":"Independent browser/device holdout remains unexecuted."},
+    {"id":"unknown.customer-runner","severity":"critical","status":"NOT_RUN","detail":"Customer Runner and artifact publication latency remain unexecuted."}
+  ]
 }

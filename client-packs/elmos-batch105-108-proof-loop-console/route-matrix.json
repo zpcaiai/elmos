@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-batch105-108-proof-loop-console",
+  "tuples": [
+    {
+      "source_stack": "nextjs-app-router",
+      "source_version": "16.3.0",
+      "target_stack": "nextjs-app-router",
+      "target_version": "16.3.0",
+      "runtime": "nodejs-22.23.1",
+      "browser": "google-chrome-150.0.7871.189",
+      "device": "desktop-1440x900",
+      "status": "experimental",
+      "evidence_refs": ["certification/evidence.json"]
+    },
+    {
+      "source_stack": "nextjs-app-router",
+      "source_version": "16.3.0",
+      "target_stack": "nextjs-app-router",
+      "target_version": "16.3.0",
+      "runtime": "nodejs-22.23.1",
+      "browser": "google-chrome-150.0.7871.189",
+      "device": "pixel-7-emulation-390x844",
+      "status": "experimental",
+      "evidence_refs": ["certification/evidence.json"]
+    }
+  ],
+  "recertification_triggers": [
+    "proof-api-schema-change",
+    "identity-session-change",
+    "browser-or-device-change",
+    "evidence-contract-change"
+  ]
+}

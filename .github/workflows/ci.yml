@@ -244,6 +244,19 @@ jobs:
           python-version: "3.12"
       - name: Install locked uv tool
         run: python -m pip install --disable-pip-version-check uv==0.11.16
+      - name: Verify installed Project Synthesis distribution boundary
+        run: |
+          python tooling/validate_project_synthesis_integration.py |
+            tee /tmp/elmos-project-synthesis-integration.txt
+          grep -F "source_bundle_integrity=NOT_RUN installed_runtime=PASS" \
+            /tmp/elmos-project-synthesis-integration.txt
+          if python tooling/validate_project_synthesis_integration.py \
+            --require-packages >/tmp/elmos-project-synthesis-required.txt 2>&1; then
+            echo "::error::strict Project Synthesis source-package mode unexpectedly passed"
+            exit 1
+          fi
+          grep -F "canonical Batch 46-60 project-synthesis manifest is missing" \
+            /tmp/elmos-project-synthesis-required.txt
       - name: Verify Project Synthesis
         working-directory: engines/project-synthesis-engine
         run: |
@@ -407,10 +420,12 @@ jobs:
         run: pnpm --dir apps/web-console test:qr-code
       - name: Type-check and build
         run: pnpm --dir apps/web-console check
-      - name: Verify Batch 32 account usage pack
+      - name: Verify every Batch 32 client pack
         run: |
           python scripts/batch32/validate_account_usage_corpora.py
-          python scripts/batch32/run_client_gate.py client-packs/elmos-web-console-account-usage
+          find client-packs -mindepth 1 -maxdepth 1 -type d -print | sort | while IFS= read -r pack; do
+            python scripts/batch32/run_client_gate.py "$pack"
+          done
       - name: Set up Node.js 26.0.0 for exact Translation execution
         uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:

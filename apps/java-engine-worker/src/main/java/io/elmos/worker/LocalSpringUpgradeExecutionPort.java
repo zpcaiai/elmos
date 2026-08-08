@@ -30,6 +30,8 @@ import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
@@ -59,6 +61,7 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
     private final Map<String, Path> javaHomes;
     private final Path targetJavaHome;
     private final String mavenExecutable;
+    private final String gradleExecutable;
     private final Set<String> allowedGitHosts;
     private final boolean allowFileRepositories;
     private final boolean mavenOffline;
@@ -111,10 +114,34 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
     }
 
     LocalSpringUpgradeExecutionPort(Path workspaceRoot, Map<String, Path> configuredJavaHomes,
+                                    String mavenExecutable, String gradleExecutable,
+                                    Set<String> allowedGitHosts, boolean allowFileRepositories,
+                                    boolean mavenOffline, Path dependencySeedRepository,
+                                    boolean experimentalRoutesEnabled, ObjectMapper json) {
+        this(workspaceRoot, configuredJavaHomes, mavenExecutable, gradleExecutable,
+                allowedGitHosts, allowFileRepositories, mavenOffline, dependencySeedRepository,
+                experimentalRoutesEnabled, json,
+                new DisabledSpringUpgradeCodingAgentPort(
+                        "Spring upgrade long-tail Coding Agent model selection was not wired into this "
+                                + "execution port instance; see docs/adr/ADR-0059-coding-agent-model-catalog.md."));
+    }
+
+    LocalSpringUpgradeExecutionPort(Path workspaceRoot, Map<String, Path> configuredJavaHomes,
                                     String mavenExecutable, Set<String> allowedGitHosts,
                                     boolean allowFileRepositories, boolean mavenOffline,
                                     Path dependencySeedRepository, boolean experimentalRoutesEnabled,
                                     ObjectMapper json, SpringUpgradeCodingAgentPort codingAgentPort) {
+        this(workspaceRoot, configuredJavaHomes, mavenExecutable, "gradle", allowedGitHosts,
+                allowFileRepositories, mavenOffline, dependencySeedRepository,
+                experimentalRoutesEnabled, json, codingAgentPort);
+    }
+
+    LocalSpringUpgradeExecutionPort(Path workspaceRoot, Map<String, Path> configuredJavaHomes,
+                                    String mavenExecutable, String gradleExecutable,
+                                    Set<String> allowedGitHosts, boolean allowFileRepositories,
+                                    boolean mavenOffline, Path dependencySeedRepository,
+                                    boolean experimentalRoutesEnabled, ObjectMapper json,
+                                    SpringUpgradeCodingAgentPort codingAgentPort) {
         this.workspaceRoot = normalizeRoot(workspaceRoot);
         this.javaHomes = verifiedJavaHomes(configuredJavaHomes);
         Path target = this.javaHomes.get(SpringRouteCatalog.TARGET_JAVA);
@@ -124,6 +151,7 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         }
         this.targetJavaHome = target;
         this.mavenExecutable = requireMaven(mavenExecutable, this.targetJavaHome);
+        this.gradleExecutable = requireExecutable(gradleExecutable, "Gradle");
         this.allowedGitHosts = Set.copyOf(allowedGitHosts);
         this.allowFileRepositories = allowFileRepositories;
         this.mavenOffline = mavenOffline;
@@ -200,6 +228,7 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         Fingerprint fingerprint = fingerprint(source);
         SpringRouteCatalog.Selection selection = selectRoute(fingerprint);
         SpringRouteCatalog.SpringRoute route = selection.route();
+        String buildTool = fingerprint.buildTool();
         String sourceJava = SpringRouteCatalog.normalizeJava(fingerprint.javaVersion());
         Path sourceJavaHome = sourceJavaHome(sourceJava);
         control.log("fingerprint spring-boot=" + fingerprint.springBootVersion()
@@ -222,12 +251,15 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         writeJson(runRoot.resolve("evidence/route-selection.json"), routeSelection);
 
         control.stage(Stage.SOURCE_BASELINE,
-                "Running the source repository's complete Maven verify lifecycle with Java " + sourceJava);
+                "Running the source repository's complete " + buildTool + " baseline with Java " + sourceJava);
         Path sourceBaseline = runRoot.resolve("source-baseline");
-        Path mavenHome = runRoot.resolve("maven-home");
-        createDirectory(mavenHome);
-        if (dependencySeedRepository != null) {
-            copyDependencySeed(dependencySeedRepository, mavenHome.resolve(".m2/repository"));
+        Path toolHome = runRoot.resolve(buildTool + "-home");
+        createDirectory(toolHome);
+        if (SpringRouteCatalog.GRADLE_BUILD_TOOL.equals(buildTool)) {
+            requireGradleVersion(sourceJavaHome, toolHome);
+        }
+        if (SpringRouteCatalog.MAVEN_BUILD_TOOL.equals(buildTool) && dependencySeedRepository != null) {
+            copyDependencySeed(dependencySeedRepository, toolHome.resolve(".m2/repository"));
             control.log("maven dependency seed copied into the isolated per-run repository");
         }
         copyTree(source, sourceBaseline);
@@ -244,12 +276,13 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
              * locked Snapshot remains read-only by construction even when a
              * repository commits target/ or a build plugin mutates its tree.
              */
-            runMaven(sourceBaseline, sourceJavaHome, mavenHome, control,
-                    List.of("verify"), Duration.ofMinutes(25));
+            runBuild(sourceBaseline, sourceJavaHome, toolHome, control,
+                    List.of(SpringRouteCatalog.MAVEN_BUILD_TOOL.equals(buildTool) ? "verify" : "build"),
+                    Duration.ofMinutes(25), buildTool);
             sourceTests = testSummary(sourceBaseline);
             requireSourceTests(sourceTests);
             writeJson(runRoot.resolve("evidence/source-test-summary.json"), sourceTests);
-            validateSourceStartup(sourceBaseline, runRoot, control, sourceJavaHome);
+            validateSourceStartup(sourceBaseline, runRoot, control, sourceJavaHome, buildTool);
         } finally {
             deleteTree(sourceBaseline);
         }
@@ -274,23 +307,26 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         copyTree(source, migrated);
         control.stage(Stage.OPENREWRITE,
                 "Applying pinned OpenRewrite recipe " + route.recipeId() + " for route " + route.routeId());
-        runRewrite(migrated, mavenHome, control, route);
+        runRewrite(migrated, toolHome, control, route);
         checkCancelled(control);
 
         control.stage(Stage.BUILD_AND_TEST,
-                "Running the target repository's complete Maven verify lifecycle with Java " + route.targetJava());
-        CommandOutcome firstBuild = runMavenOutcome(migrated, targetJavaHome, mavenHome, control,
-                List.of("verify"), Duration.ofMinutes(30));
+                "Running the target repository's complete " + buildTool + " build with Java " + route.targetJava());
+        CommandOutcome firstBuild = runBuildOutcome(migrated, targetJavaHome, toolHome, control,
+                List.of(SpringRouteCatalog.MAVEN_BUILD_TOOL.equals(buildTool) ? "verify" : "build"),
+                Duration.ofMinutes(30), buildTool);
         if (firstBuild.exitCode() != 0) {
             control.stage(Stage.DETERMINISTIC_REPAIR,
                     "Target build failed; applying one bounded deterministic OpenRewrite repair cycle");
-            runRewrite(migrated, mavenHome, control, route);
-            CommandOutcome secondBuild = runMavenOutcome(migrated, targetJavaHome, mavenHome, control,
-                    List.of("verify"), Duration.ofMinutes(30));
+            runRewrite(migrated, toolHome, control, route);
+            CommandOutcome secondBuild = runBuildOutcome(migrated, targetJavaHome, toolHome, control,
+                    List.of(SpringRouteCatalog.MAVEN_BUILD_TOOL.equals(buildTool) ? "verify" : "build"),
+                    Duration.ofMinutes(30), buildTool);
             if (secondBuild.exitCode() != 0) {
                 recordCodingAgentCandidates(runRoot, request.organizationId(), identity.commitSha());
-                throw blocked("MAVEN_COMMAND_FAILED",
-                        "A required Maven/OpenRewrite command failed; inspect the redacted run log.");
+                throw blocked(SpringRouteCatalog.MAVEN_BUILD_TOOL.equals(buildTool)
+                                ? "MAVEN_COMMAND_FAILED" : "GRADLE_COMMAND_FAILED",
+                        "A required build/OpenRewrite command failed; inspect the redacted run log.");
             }
         }
         TestSummary targetTests = testSummary(migrated);
@@ -308,7 +344,7 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
                         .filter(value -> !sourceTests.testIdentities().contains(value))
                         .toList()
         ));
-        SpringDeploymentGuidance.writeTo(migrated);
+        SpringDeploymentGuidance.writeTo(migrated, buildTool);
 
         control.stage(Stage.PACKAGE_ARTIFACT, "Packaging migrated repository as a content-addressed ZIP");
         Path artifact = runRoot.resolve("artifacts/" + route.artifactFileName());
@@ -329,7 +365,7 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
     ) {
         Path runRoot = confined(rawRunRoot);
         control.stage(Stage.START_APPLICATION, "Starting verified artifact with Java 21");
-        Path jar = bootJar(result.migratedRepository());
+        Path jar = bootJar(result.migratedRepository(), result.fingerprint().buildTool());
         int port = reservePort();
         Path log = runRoot.resolve("runtime/application.log");
         createDirectory(log.getParent());
@@ -366,8 +402,9 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         control.log("application stopped");
     }
 
-    private void validateSourceStartup(Path source, Path runRoot, Control control, Path sourceJavaHome) {
-        Path jar = bootJar(source);
+    private void validateSourceStartup(Path source, Path runRoot, Control control, Path sourceJavaHome,
+                                      String buildTool) {
+        Path jar = bootJar(source, buildTool);
         int port = reservePort();
         Path log = runRoot.resolve("evidence/source-startup.log");
         createDirectory(log.getParent());
@@ -458,13 +495,8 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
     Fingerprint fingerprint(Path root) {
         Path pom = root.resolve("pom.xml");
         if (!Files.isRegularFile(pom, LinkOption.NOFOLLOW_LINKS)) {
-            // Report the build tool that was actually found so route selection
-            // can produce a specific reason instead of "Maven only".
             if (hasGradleBuild(root)) {
-                throw blocked("SPRING_ROUTE_NOT_IMPLEMENTED",
-                        "A Gradle build was detected. The Gradle route is declared in the catalog but "
-                                + "has no execution driver: it needs its own wrapper verification and "
-                                + "rewrite plugin invocation.");
+                return fingerprintGradle(root);
             }
             throw blocked("BUILD_MODEL_UNRECOGNIZED",
                     "No root pom.xml and no Gradle build script were found; the source build model "
@@ -479,21 +511,87 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         String pomText = read(pom);
         Map<String,List<String>> traces = new TreeMap<>();
         List<String> capabilities = new ArrayList<>();
-        capability(pomText, root, traces, capabilities, "web", "spring-boot-starter-web", "@RestController", "@Controller");
-        capability(pomText, root, traces, capabilities, "spring-boot-parent", "spring-boot-starter-parent");
-        capability(pomText, root, traces, capabilities, "security", "spring-boot-starter-security", "@EnableWebSecurity", "SecurityFilterChain");
-        capability(pomText, root, traces, capabilities, "persistence", "spring-boot-starter-data-jpa", "@Entity", "JpaRepository");
-        capability(pomText, root, traces, capabilities, "transactions", "spring-tx", "@Transactional");
-        capability(pomText, root, traces, capabilities, "validation", "spring-boot-starter-validation", "@Valid", "@Validated");
-        capability(pomText, root, traces, capabilities, "actuator", "spring-boot-starter-actuator", "management.endpoints");
-        capability(pomText, root, traces, capabilities, "messaging", "spring-kafka", "@KafkaListener", "JmsListener");
-        capability(pomText, root, traces, capabilities, "scheduler", "spring-context", "@Scheduled", "@EnableScheduling");
+        capability(pomText, root, "pom.xml", traces, capabilities, "web", "spring-boot-starter-web", "@RestController", "@Controller");
+        capability(pomText, root, "pom.xml", traces, capabilities, "spring-boot-parent", "spring-boot-starter-parent");
+        capability(pomText, root, "pom.xml", traces, capabilities, "security", "spring-boot-starter-security", "@EnableWebSecurity", "SecurityFilterChain");
+        capability(pomText, root, "pom.xml", traces, capabilities, "persistence", "spring-boot-starter-data-jpa", "@Entity", "JpaRepository");
+        capability(pomText, root, "pom.xml", traces, capabilities, "transactions", "spring-tx", "@Transactional");
+        capability(pomText, root, "pom.xml", traces, capabilities, "validation", "spring-boot-starter-validation", "@Valid", "@Validated");
+        capability(pomText, root, "pom.xml", traces, capabilities, "actuator", "spring-boot-starter-actuator", "management.endpoints");
+        capability(pomText, root, "pom.xml", traces, capabilities, "messaging", "spring-kafka", "@KafkaListener", "JmsListener");
+        capability(pomText, root, "pom.xml", traces, capabilities, "scheduler", "spring-context", "@Scheduled", "@EnableScheduling");
         List<String> unknowns = new ArrayList<>();
         if (findFiles(root, ".java").stream().anyMatch(path -> read(path).contains("WebSecurityConfigurerAdapter")))
             unknowns.add("legacy-security-adapter-requires-rewrite-and-contract-review");
         if (Files.exists(root.resolve(".gitmodules"))) unknowns.add("submodules-present");
         return new Fingerprint(blank(boot) ? "UNKNOWN" : boot, blank(java) ? "UNKNOWN" : java.trim(),
                 "maven", modules, capabilities.stream().distinct().sorted().toList(), unknowns, traces);
+    }
+
+    private Fingerprint fingerprintGradle(Path root) {
+        List<Path> modelFiles = List.of("build.gradle", "build.gradle.kts", "settings.gradle", "settings.gradle.kts")
+                .stream()
+                .map(root::resolve)
+                .filter(path -> Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS))
+                .toList();
+        String model = modelFiles.stream().map(LocalSpringUpgradeExecutionPort::read)
+                .reduce("", (left, right) -> left + "\n" + right);
+        String boot = firstMatch(model,
+                "org\\.springframework\\.boot['\"]?\\s*\\)?\\s*version\\s*\\(?['\"]([0-9][^'\"]*)",
+                "springBootVersion\\s*=\\s*['\"]([0-9][^'\"]*)");
+        String java = firstMatch(model,
+                "JavaLanguageVersion\\.of\\(\\s*(\\d+)\\s*\\)",
+                "JavaVersion\\.VERSION_(\\d+)",
+                "(?:sourceCompatibility|targetCompatibility)\\s*=\\s*['\"]?(?:JavaVersion\\.VERSION_)?(\\d+(?:\\.\\d+)?)");
+        java = normalizeJavaScriptRelease(java);
+        Map<String,List<String>> traces = new TreeMap<>();
+        List<String> capabilities = new ArrayList<>();
+        String modelName = modelFiles.stream().map(path -> root.relativize(path).toString())
+                .findFirst().orElse("build.gradle");
+        if (hasSpringBootGradlePlugin(model)) {
+            capabilities.add("spring-boot-plugin");
+            traces.put("spring-boot-plugin", List.of(modelName + ":org.springframework.boot plugin"));
+        }
+        capability(model, root, modelName, traces, capabilities, "rewrite-gradle-plugin", "org.openrewrite.rewrite", "org.openrewrite.gradle.RewritePlugin");
+        capability(model, root, modelName, traces, capabilities, "web", "spring-boot-starter-web", "@RestController", "@Controller");
+        capability(model, root, modelName, traces, capabilities, "security", "spring-boot-starter-security", "@EnableWebSecurity", "SecurityFilterChain");
+        capability(model, root, modelName, traces, capabilities, "persistence", "spring-boot-starter-data-jpa", "@Entity", "JpaRepository");
+        capability(model, root, modelName, traces, capabilities, "transactions", "spring-tx", "@Transactional");
+        capability(model, root, modelName, traces, capabilities, "validation", "spring-boot-starter-validation", "@Valid", "@Validated");
+        capability(model, root, modelName, traces, capabilities, "actuator", "spring-boot-starter-actuator", "management.endpoints");
+        capability(model, root, modelName, traces, capabilities, "messaging", "spring-kafka", "@KafkaListener", "JmsListener");
+        capability(model, root, modelName, traces, capabilities, "scheduler", "spring-context", "@Scheduled", "@EnableScheduling");
+        List<String> unknowns = new ArrayList<>();
+        if (findFiles(root, ".java").stream().anyMatch(path -> read(path).contains("WebSecurityConfigurerAdapter")))
+            unknowns.add("legacy-security-adapter-requires-rewrite-and-contract-review");
+        if (Files.exists(root.resolve(".gitmodules"))) unknowns.add("submodules-present");
+        return new Fingerprint(blank(boot) ? "UNKNOWN" : boot.trim(), blank(java) ? "UNKNOWN" : java.trim(),
+                SpringRouteCatalog.GRADLE_BUILD_TOOL, List.of(),
+                capabilities.stream().distinct().sorted().toList(), unknowns, traces);
+    }
+
+    private static String firstMatch(String value, String... expressions) {
+        for (String expression : expressions) {
+            Matcher matcher = Pattern.compile(expression, Pattern.MULTILINE).matcher(value);
+            if (matcher.find()) return matcher.group(1).trim();
+        }
+        return "";
+    }
+
+    private static boolean hasSpringBootGradlePlugin(String model) {
+        return Pattern.compile(
+                        "(?:id\\s*\\(\\s*['\"]org\\.springframework\\.boot['\"]"
+                                + "|id\\s+['\"]org\\.springframework\\.boot['\"]"
+                                + "|apply\\s+plugin:\\s*['\"]org\\.springframework\\.boot['\"])")
+                .matcher(model).find();
+    }
+
+    private static String normalizeJavaScriptRelease(String value) {
+        if (blank(value)) return value;
+        String normalized = value.trim();
+        if (normalized.startsWith("1.")) normalized = normalized.substring(2);
+        int dot = normalized.indexOf('.');
+        return dot >= 0 ? normalized.substring(0, dot) : normalized;
     }
 
     private static boolean hasGradleBuild(Path root) {
@@ -513,10 +611,12 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
     SpringRouteCatalog.Selection selectRoute(Fingerprint fingerprint) {
         SpringRouteCatalog.Selection selection = SpringRouteCatalog.select(
                 fingerprint.springBootVersion(), fingerprint.javaVersion(), fingerprint.buildTool());
-        if (!fingerprint.activeCapabilities().contains("spring-boot-parent")) {
+        String versionAuthority = SpringRouteCatalog.MAVEN_BUILD_TOOL.equals(fingerprint.buildTool())
+                ? "spring-boot-parent" : "spring-boot-plugin";
+        if (!fingerprint.activeCapabilities().contains(versionAuthority)) {
             throw blocked("UNSUPPORTED_BOOT_VERSION_AUTHORITY",
-                    "Route " + selection.route().routeId() + " requires spring-boot-starter-parent as "
-                            + "the source version authority.");
+                    "Route " + selection.route().routeId() + " requires " + versionAuthority
+                            + " as the source version authority.");
         }
         if (selection.requiresExperimentalOptIn() && !experimentalRoutesEnabled) {
             throw blocked("SPRING_ROUTE_EVIDENCE_NOT_RUN",
@@ -531,10 +631,29 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         return selection;
     }
 
-    private void runRewrite(Path root, Path mavenHome, Control control,
+    private void runRewrite(Path root, Path toolHome, Control control,
                             SpringRouteCatalog.SpringRoute route) {
         Path recipeConfig = installExactRecipe(root, route);
-        runMaven(root, targetJavaHome, mavenHome, control, List.of(
+        if (SpringRouteCatalog.GRADLE_BUILD_TOOL.equals(route.buildTool())) {
+            if (!hasGradleRewritePlugin(root)) {
+                throw blocked("GRADLE_REWRITE_PLUGIN_NOT_DECLARED",
+                        "The Gradle project must declare org.openrewrite.rewrite or "
+                                + "org.openrewrite.gradle.RewritePlugin before an exact rewrite can run.");
+            }
+            if (!hasGradleRewriteRecipe(root)) {
+                throw blocked("GRADLE_REWRITE_RECIPE_NOT_DECLARED",
+                        "The Gradle project must declare rewrite-spring " + route.rewriteSpring()
+                                + " on its rewrite configuration before an exact rewrite can run.");
+            }
+            Path initScript = installGradleRewriteInitScript(root, recipeConfig);
+            runGradle(root, targetJavaHome, toolHome, control, List.of(
+                    "rewriteRun",
+                    "--init-script", root.relativize(initScript).toString(),
+                    "-Drewrite.activeRecipe=" + route.recipeId()
+            ), Duration.ofMinutes(30));
+            return;
+        }
+        runMaven(root, targetJavaHome, toolHome, control, List.of(
                 "org.openrewrite.maven:rewrite-maven-plugin:" + route.rewriteMavenPlugin() + ":run",
                 "-Drewrite.configLocation=" + root.relativize(recipeConfig),
                 "-Drewrite.activeRecipes=" + route.recipeId(),
@@ -542,6 +661,80 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
                         + route.rewriteSpring(),
                 "-Drewrite.exportDatatables=true"
         ), Duration.ofMinutes(30));
+    }
+
+    private static boolean hasGradleRewritePlugin(Path root) {
+        return findFiles(root, ".gradle", ".gradle.kts").stream()
+                .map(LocalSpringUpgradeExecutionPort::read)
+                .anyMatch(text -> text.contains("org.openrewrite.rewrite")
+                        || text.contains("org.openrewrite.gradle.RewritePlugin"));
+    }
+
+    private static boolean hasGradleRewriteRecipe(Path root) {
+        return findFiles(root, ".gradle", ".gradle.kts", ".toml") .stream()
+                .map(LocalSpringUpgradeExecutionPort::read)
+                .anyMatch(text -> text.contains("rewrite-spring"));
+    }
+
+    private static Path installGradleRewriteInitScript(Path root, Path recipeConfig) {
+        Path initScript = root.resolve(".elmos/openrewrite.init.gradle");
+        String script = """
+                allprojects {
+                    plugins.withId("org.openrewrite.rewrite") {
+                        rewrite {
+                            configFile = rootProject.file("%s")
+                            activeRecipe(System.getProperty("rewrite.activeRecipe"))
+                            setExportDatatables(true)
+                        }
+                    }
+                }
+                """.formatted(root.relativize(recipeConfig).toString().replace('\\', '/'));
+        write(initScript, script.getBytes(StandardCharsets.UTF_8));
+        return initScript;
+    }
+
+    private CommandOutcome runBuildOutcome(Path root, Path javaHome, Path toolHome, Control control,
+                                           List<String> goals, Duration timeout, String buildTool) {
+        if (SpringRouteCatalog.GRADLE_BUILD_TOOL.equals(buildTool))
+            return runGradleOutcome(root, javaHome, toolHome, control, goals, timeout);
+        return runMavenOutcome(root, javaHome, toolHome, control, goals, timeout);
+    }
+
+    private void requireGradleVersion(Path javaHome, Path gradleHome) {
+        Process process = null;
+        try {
+            ProcessBuilder builder = new ProcessBuilder(gradleExecutable, "--version")
+                    .redirectErrorStream(true);
+            builder.environment().put("JAVA_HOME", javaHome.toString());
+            builder.environment().put("GRADLE_USER_HOME", confined(gradleHome).toString());
+            process = builder.start();
+            String output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+            if (!process.waitFor(15, TimeUnit.SECONDS) || process.exitValue() != 0
+                    || !output.lines().anyMatch(line -> line.trim().equals("Gradle 8.14.3"))) {
+                throw blocked("GRADLE_VERSION_UNSUPPORTED",
+                        "The approved Gradle executable must report exactly 8.14.3.");
+            }
+        } catch (BlockedException error) {
+            throw error;
+        } catch (IOException error) {
+            throw blocked("GRADLE_TOOLCHAIN_UNAVAILABLE",
+                    "The approved Gradle executable could not be started.");
+        } catch (InterruptedException error) {
+            Thread.currentThread().interrupt();
+            throw blocked("RUN_CANCELLED", "The Gradle toolchain check was interrupted.");
+        } finally {
+            if (process != null && process.isAlive()) process.destroyForcibly();
+        }
+    }
+
+    private void runBuild(Path root, Path javaHome, Path toolHome, Control control,
+                          List<String> goals, Duration timeout, String buildTool) {
+        CommandOutcome outcome = runBuildOutcome(root, javaHome, toolHome, control, goals, timeout, buildTool);
+        if (outcome.exitCode() != 0) {
+            throw blocked(SpringRouteCatalog.GRADLE_BUILD_TOOL.equals(buildTool)
+                            ? "GRADLE_COMMAND_FAILED" : "MAVEN_COMMAND_FAILED",
+                    "A required build command failed; inspect the redacted run log.");
+        }
     }
 
     private static Path installExactRecipe(Path root, SpringRouteCatalog.SpringRoute route) {
@@ -630,6 +823,99 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
                     Thread.currentThread().interrupt();
                 }
             }
+        }
+    }
+
+    private CommandOutcome runGradleOutcome(Path root, Path javaHome, Path gradleHome, Control control,
+                                            List<String> goals, Duration timeout) {
+        checkCancelled(control);
+        Path confinedHome = confined(gradleHome);
+        createDirectory(confinedHome);
+        List<String> argv = new ArrayList<>();
+        argv.add(gradleExecutable);
+        argv.add("--no-daemon");
+        argv.add("--console=plain");
+        argv.add("--gradle-user-home");
+        argv.add(confinedHome.toString());
+        if (mavenOffline) argv.add("--offline");
+        argv.addAll(goals);
+        ProcessBuilder builder = new ProcessBuilder(argv).directory(root.toFile()).redirectErrorStream(true);
+        Map<String, String> inherited = Map.copyOf(builder.environment());
+        builder.environment().clear();
+        builder.environment().put("JAVA_HOME", javaHome.toString());
+        builder.environment().put("GRADLE_USER_HOME", confinedHome.toString());
+        builder.environment().put("HOME", confinedHome.toString());
+        builder.environment().put("LANG", "C.UTF-8");
+        builder.environment().put("LC_ALL", "C.UTF-8");
+        builder.environment().put("GRADLE_OPTS", gradleOptions(inherited, confinedHome));
+        Process process = null;
+        Thread output = null;
+        try {
+            process = builder.start();
+            control.process(process);
+            Process observedProcess = process;
+            output = Thread.ofVirtual().start(() -> {
+                try (var reader = observedProcess.inputReader(StandardCharsets.UTF_8)) {
+                    reader.lines().forEach(control::log);
+                } catch (IOException error) {
+                    control.log("command output collection failed");
+                }
+            });
+            boolean completed = process.waitFor(timeout.toMillis(), TimeUnit.MILLISECONDS);
+            if (!completed) {
+                process.destroyForcibly();
+                output.join(Duration.ofSeconds(5));
+                throw blocked("GRADLE_COMMAND_TIMEOUT", "The bounded Gradle command exceeded its execution budget.");
+            }
+            output.join(Duration.ofSeconds(5));
+            return new CommandOutcome(process.exitValue());
+        } catch (BlockedException error) {
+            throw error;
+        } catch (InterruptedException error) {
+            Thread.currentThread().interrupt();
+            throw blocked("RUN_CANCELLED", "The migration command was interrupted.");
+        } catch (IOException error) {
+            throw blocked("GRADLE_TOOLCHAIN_UNAVAILABLE", "The approved Gradle toolchain could not be started.");
+        } finally {
+            if (process != null && process.isAlive()) process.destroyForcibly();
+            if (output != null && output.isAlive()) {
+                try {
+                    output.join(Duration.ofSeconds(5));
+                } catch (InterruptedException error) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }
+    }
+
+    private void runGradle(Path root, Path javaHome, Path gradleHome, Control control,
+                           List<String> goals, Duration timeout) {
+        CommandOutcome outcome = runGradleOutcome(root, javaHome, gradleHome, control, goals, timeout);
+        if (outcome.exitCode() != 0)
+            throw blocked("GRADLE_COMMAND_FAILED", "A required Gradle/OpenRewrite command failed; inspect the redacted run log.");
+    }
+
+    private static String gradleOptions(Map<String, String> environment, Path home) {
+        String base = "-Djava.awt.headless=true -Duser.timezone=UTC -Duser.home=" + home;
+        String proxyValue = firstNonBlank(environment.get("HTTPS_PROXY"), environment.get("https_proxy"));
+        if (proxyValue == null) return base;
+        try {
+            URI proxy = URI.create(proxyValue);
+            String host = proxy.getHost();
+            int port = proxy.getPort() < 0 ? 80 : proxy.getPort();
+            if (!"http".equalsIgnoreCase(proxy.getScheme())
+                    || host == null || !host.matches("[A-Za-z0-9.-]{1,253}")
+                    || port < 1 || port > 65535 || proxy.getUserInfo() != null
+                    || proxy.getQuery() != null || proxy.getFragment() != null
+                    || !(proxy.getPath() == null || proxy.getPath().isEmpty() || "/".equals(proxy.getPath()))) {
+                throw new IllegalArgumentException("invalid proxy");
+            }
+            return base + " -Dhttps.proxyHost=" + host + " -Dhttps.proxyPort=" + port
+                    + " -Dhttp.proxyHost=" + host + " -Dhttp.proxyPort=" + port
+                    + " -Dhttp.nonProxyHosts=localhost|127.*|[::1]"
+                    + " -Dhttps.nonProxyHosts=localhost|127.*|[::1]";
+        } catch (IllegalArgumentException error) {
+            throw blocked("EGRESS_PROXY_CONFIGURATION_INVALID", "Approved Gradle egress proxy configuration is invalid.");
         }
     }
 
@@ -892,11 +1178,12 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
 
     private record HttpProbe(String path, int statusCode) {}
 
-    private void capability(String pom, Path root, Map<String,List<String>> traces, List<String> capabilities,
+    private void capability(String model, Path root, String modelName,
+                            Map<String,List<String>> traces, List<String> capabilities,
                             String id, String... needles) {
         List<String> found = new ArrayList<>();
         for (String needle : needles) {
-            if (pom.contains(needle)) found.add("pom.xml:" + needle);
+            if (model.contains(needle)) found.add(modelName + ":" + needle);
             for (Path file : findFiles(root, ".java", ".yml", ".yaml", ".properties")) {
                 if (read(file).contains(needle)) found.add(root.relativize(file).toString() + ":" + needle);
             }
@@ -928,7 +1215,8 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
             reports = stream
                     .filter(path -> Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS))
                     .filter(path -> path.getParent() != null
-                            && path.getParent().getFileName().toString().equals("surefire-reports"))
+                            && (path.getParent().getFileName().toString().equals("surefire-reports")
+                            || path.getParent().getFileName().toString().equals("test")))
                     .filter(path -> path.getFileName().toString().startsWith("TEST-")
                             && path.getFileName().toString().endsWith(".xml"))
                     .sorted()
@@ -944,7 +1232,7 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         Set<String> identities = new TreeSet<>();
         for (Path report : reports) {
             Document document = parseXml(report, "TEST_REPORT_INVALID",
-                    "Maven test report is invalid.");
+                    "Build test report is invalid.");
             Element suite = document.getDocumentElement();
             tests = Math.addExact(tests, longAttribute(suite, "tests"));
             failures = Math.addExact(failures, longAttribute(suite, "failures"));
@@ -1005,7 +1293,7 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
             if (parsed < 0) throw new NumberFormatException("negative");
             return parsed;
         } catch (NumberFormatException error) {
-            throw blocked("TEST_REPORT_INVALID", "Maven test report counters are invalid.");
+            throw blocked("TEST_REPORT_INVALID", "Build test report counters are invalid.");
         }
     }
 
@@ -1194,6 +1482,12 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         }
     }
 
+    private static String requireExecutable(String command, String label) {
+        if (command == null || command.isBlank() || command.indexOf('\0') >= 0)
+            throw new IllegalArgumentException(label + " executable is required");
+        return command;
+    }
+
     private static List<Path> findFiles(Path root, String... suffixes) {
         try (var stream = Files.walk(root)) {
             Set<String> suffix = Set.of(suffixes);
@@ -1295,8 +1589,10 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         }
     }
 
-    private static Path bootJar(Path root) {
-        try (var stream = Files.list(root.resolve("target"))) {
+    private static Path bootJar(Path root, String buildTool) {
+        Path outputDirectory = SpringRouteCatalog.GRADLE_BUILD_TOOL.equals(buildTool)
+                ? root.resolve("build/libs") : root.resolve("target");
+        try (var stream = Files.list(outputDirectory)) {
             return stream.filter(path -> path.getFileName().toString().endsWith(".jar"))
                     .filter(path -> !path.getFileName().toString().endsWith(".original"))
                     .filter(path -> !path.getFileName().toString().startsWith("original-"))

@@ -586,8 +586,13 @@ def render_kotlin_production(request: SynthesisRequest, port: int) -> dict[str, 
                 application
             }}
 
+            val elmosMavenRepository = providers.gradleProperty("elmosMavenRepository").orNull
             repositories {{
-                mavenCentral()
+                if (elmosMavenRepository == null) {{
+                    mavenCentral()
+                }} else {{
+                    maven {{ url = uri(elmosMavenRepository) }}
+                }}
             }}
 
             dependencies {{

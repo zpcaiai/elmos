@@ -13,6 +13,70 @@ final class SpringDeploymentGuidance {
     private SpringDeploymentGuidance() {
     }
 
+    static void writeTo(Path migratedRepository, String buildTool) {
+        if (!"gradle".equals(buildTool)) {
+            writeTo(migratedRepository);
+            return;
+        }
+        appendReadme(migratedRepository.resolve("README.md"));
+        write(migratedRepository.resolve("docs/LOCAL_RUN.md"), """
+                # Spring Boot 3.5.3 本地运行配置与步骤
+
+                本项目已从 Spring Boot 2.x / Gradle 转换为 Spring Boot 3.5.3 / Java 21 / Gradle 8.14.3。
+                本地运行证据和云端部署证据互不替代；云端状态仍为 `NOT_RUN`。
+
+                ```bash
+                java -version
+                gradle --version
+                gradle --no-daemon build
+                JAR_PATH="$(find build/libs -maxdepth 1 -type f -name '*.jar' | sort | head -n 1)"
+                test -n "$JAR_PATH"
+                SERVER_ADDRESS=127.0.0.1 SERVER_PORT=8080 java -jar "$JAR_PATH"
+                ```
+
+                在另一个终端执行：
+
+                ```bash
+                curl --fail http://127.0.0.1:8080/actuator/health \\
+                  || curl --fail http://127.0.0.1:8080/health
+                ```
+
+                数据库迁移、身份/权限、租户隔离、生产数据、容量、恢复演练和 SLO
+                仍需独立验收。
+                """);
+        write(migratedRepository.resolve("deploy/cloud-run/Dockerfile"), """
+                FROM gradle:8.14.3-jdk21 AS build
+                WORKDIR /workspace
+                COPY . .
+                RUN gradle --no-daemon build && \\
+                    jar_path="$(find build/libs -maxdepth 1 -type f -name '*.jar' | sort | head -n 1)" && \\
+                    test -n "$jar_path" && cp "$jar_path" /workspace/application.jar
+
+                FROM eclipse-temurin:21-jre
+                WORKDIR /app
+                COPY --from=build --chown=10001:10001 /workspace/application.jar /app/application.jar
+                USER 10001:10001
+                ENV SERVER_ADDRESS=0.0.0.0
+                ENV SERVER_PORT=8080
+                EXPOSE 8080
+                ENTRYPOINT ["java", "-jar", "/app/application.jar"]
+                """);
+        write(migratedRepository.resolve("deploy/cloud-run/Dockerfile.dockerignore"), """
+                .git
+                **/.git
+                **/build
+                **/.gradle
+                **/.idea
+                **/.vscode
+                .env
+                .env.*
+                **/id_rsa
+                **/id_ed25519
+                **/*.pem
+                **/*.key
+                """);
+    }
+
     static void writeTo(Path migratedRepository) {
         appendReadme(migratedRepository.resolve("README.md"));
         write(migratedRepository.resolve("docs/LOCAL_RUN.md"), """

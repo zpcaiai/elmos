@@ -1095,7 +1095,7 @@ def test_kotlin_build_and_runtime_bind_the_matched_java_home(
     assert environment["GRADLE_USER_HOME"] == str((tmp_path / "gradle-home").resolve())
 
 
-def test_kotlin_toolchain_translates_safe_lowercase_proxy_for_gradle(
+def test_kotlin_toolchain_ignores_ambient_shell_proxy_for_gradle(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -1120,12 +1120,11 @@ def test_kotlin_toolchain_translates_safe_lowercase_proxy_for_gradle(
     monkeypatch.setenv("http_proxy", "http://127.0.0.1:7890")
     monkeypatch.setenv("https_proxy", "http://127.0.0.1:7890")
 
-    options = " ".join(verification._gradle_proxy_system_properties())
-
-    assert "-Dhttp.proxyHost=127.0.0.1" in options
-    assert "-Dhttp.proxyPort=7890" in options
-    assert "-Dhttps.proxyHost=127.0.0.1" in options
-    assert "-Dhttps.proxyPort=7890" in options
+    options = verification._gradle_proxy_system_properties()
+    assert "-Djava.net.useSystemProxies=false" in options
+    assert "-Dhttp.proxyHost=" in options
+    assert "-Dhttps.proxyHost=" in options
+    assert not any("proxyPort" in option for option in options)
 
 
 def test_kotlin_toolchain_rejects_proxy_credentials(
@@ -1149,7 +1148,10 @@ def test_kotlin_toolchain_rejects_proxy_credentials(
         }],
     )
     monkeypatch.delenv("HTTP_PROXY", raising=False)
-    monkeypatch.setenv("http_proxy", "http://user:secret@127.0.0.1:7890")
+    monkeypatch.setenv(
+        "ELMOS_PROJECT_SYNTHESIS_GRADLE_PROXY",
+        "http://user:secret@127.0.0.1:7890",
+    )
 
     with pytest.raises(ValueError, match="KOTLIN_HTTP_PROXY_INVALID"):
         verification._gradle_proxy_system_properties()
@@ -1190,6 +1192,37 @@ def test_kotlin_toolchain_accepts_explicit_controlled_gradle_proxy(
     assert "-Dhttps.proxyHost=127.0.0.1" in options
 
 
+def test_kotlin_toolchain_accepts_explicit_https_gradle_repository(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv(
+        "ELMOS_PROJECT_SYNTHESIS_GRADLE_REPOSITORY",
+        "https://maven.example.test/repository/central/",
+    )
+
+    assert verification._gradle_repository_property() == [
+        "-PelmosMavenRepository=https://maven.example.test/repository/central"
+    ]
+
+
+@pytest.mark.parametrize(
+    "repository",
+    [
+        "http://maven.example.test/repository/central",
+        "https://user:secret@maven.example.test/repository/central",
+        "https://maven.example.test/repository/central?mutable=true",
+    ],
+)
+def test_kotlin_toolchain_rejects_unsafe_gradle_repository(
+    repository: str,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("ELMOS_PROJECT_SYNTHESIS_GRADLE_REPOSITORY", repository)
+
+    with pytest.raises(ValueError, match="KOTLIN_GRADLE_REPOSITORY_INVALID"):
+        verification._gradle_repository_property()
+
+
 def test_kotlin_toolchain_rejects_ambient_gradle_home_symlink(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -1218,6 +1251,20 @@ def test_health_probe_rejects_a_different_service_on_the_same_port() -> None:
         {"status": "UP", "service": "other-service"},
         expected_service="expected-service",
     )
+
+
+def test_loopback_runtime_environment_removes_ambient_proxies(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    for name in ("HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "http_proxy", "https_proxy"):
+        monkeypatch.setenv(name, "http://proxy.invalid:7890")
+
+    environment = verification._loopback_environment({"PORT": "43210"})
+
+    assert environment["PORT"] == "43210"
+    assert environment["NO_PROXY"] == "127.0.0.1,localhost"
+    assert environment["no_proxy"] == "127.0.0.1,localhost"
+    assert not any(name in environment for name in verification._PROXY_ENVIRONMENT_NAMES)
 
 
 def test_archive_includes_verified_lockfiles(tmp_path: Path) -> None:
@@ -1393,3 +1440,5 @@ def test_php_production_runtime_honors_the_verified_port_override(tmp_path: Path
     )
     assert "APP_PORT_ARGUMENT_INDEX = 2" in runtime
     assert 'command[APP_PORT_ARGUMENT_INDEX] = f"127.0.0.1:{port}"' in runtime
+    assert 'environment["NO_PROXY"] = "127.0.0.1,localhost"' in runtime
+    assert "environment.pop(proxy_name, None)" in runtime

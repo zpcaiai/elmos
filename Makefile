@@ -120,9 +120,9 @@ frt-g01-g30-check: frt-g01-g30-skills frontend
 # Optional canonical Skill import bundles.
 #
 # A normal source checkout intentionally does not contain them; the rule is
-# stated in tooling/validate_batch97_104_installed.py.  Their byte identities
-# live in the tracked installed manifests under docs/*/installed-manifest.json,
-# so a checkout validates the installed distribution, not the absent bundle.
+# stated in tooling/validate_batch97_104_installed.py. Where tracked installed
+# manifests exist, a checkout validates that installed distribution. Source
+# package byte integrity itself remains NOT_RUN while the bundle is absent.
 #
 # Every guarded step below therefore runs only when its bundle is present.  When
 # it is absent, tooling/source_package_guard.py prints one loud, greppable

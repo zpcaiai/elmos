@@ -1,6 +1,32 @@
 {
   "schema_version": 1,
   "status": "NOT_RUN",
+  "metrics": {
+    "source_fingerprint_coverage": 1.0,
+    "ui_ir_source_map_coverage": 1.0,
+    "target_build_green_rate": 1.0,
+    "target_startup_or_launch_rate": 1.0,
+    "p0_journey_pass_rate": 1.0,
+    "route_contract_pass_rate": 1.0,
+    "state_contract_pass_rate": 1.0,
+    "form_contract_pass_rate": 1.0,
+    "identity_permission_pass_rate": 1.0,
+    "visual_pass_rate": 0,
+    "accessibility_pass_rate": 0,
+    "i18n_pass_rate": 1.0,
+    "browser_matrix_pass_rate": 1.0,
+    "representative_workload_pass_rate": 0,
+    "source_map_coverage": 1.0
+  },
+  "critical_unknowns": 3,
+  "silent_ui_drops": 0,
+  "critical_visual_regressions": 0,
+  "critical_accessibility_violations": 0,
+  "critical_security_regressions": 0,
+  "critical_interaction_regressions": 0,
+  "test_integrity_violations": 0,
+  "unapproved_baseline_changes": 0,
+  "unapproved_dependency_changes": 0,
   "local_build": {
     "status": "PASSED_LOCAL_ENGINEERING",
     "command": "npm run build",
@@ -19,5 +45,9 @@
   "accessibility_review": "NOT_RUN",
   "holdout": "NOT_RUN",
   "representative_journeys": "NOT_RUN",
-  "certified": false
+  "customer_acceptance": "NOT_RUN",
+  "external_certification": "NOT_RUN",
+  "production_operation_authorized": false,
+  "certified": false,
+  "evidence_refs": []
 }

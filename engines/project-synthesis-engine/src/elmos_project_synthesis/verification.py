@@ -177,12 +177,18 @@ def _result(
 def _gradle_proxy_system_properties() -> list[str]:
     options: list[str] = []
     controlled_proxy = os.environ.get("ELMOS_PROJECT_SYNTHESIS_GRADLE_PROXY")
+    # Do not silently translate ambient shell proxy variables into JVM system
+    # properties. Gradle does not normally consume them, and doing so made a
+    # fast direct Maven Central path crawl until the build timeout. Environments
+    # that require a Gradle proxy must opt in through the validated setting.
+    if not controlled_proxy:
+        return [
+            "-Djava.net.useSystemProxies=false",
+            "-Dhttp.proxyHost=",
+            "-Dhttps.proxyHost=",
+        ]
     for protocol in ("http", "https"):
-        configured = controlled_proxy or os.environ.get(
-            f"{protocol.upper()}_PROXY"
-        ) or os.environ.get(f"{protocol}_proxy")
-        if not configured:
-            continue
+        configured = controlled_proxy
         error_code = f"KOTLIN_{protocol.upper()}_PROXY_INVALID"
         try:
             parsed = urlsplit(configured)
@@ -208,6 +214,32 @@ def _gradle_proxy_system_properties() -> list[str]:
             ]
         )
     return options
+
+
+def _gradle_repository_property() -> list[str]:
+    """Return an explicitly reviewed HTTPS Maven repository override."""
+    configured = os.environ.get(
+        "ELMOS_PROJECT_SYNTHESIS_GRADLE_REPOSITORY", ""
+    ).strip()
+    if not configured:
+        return []
+    try:
+        parsed = urlsplit(configured)
+        port = parsed.port
+    except ValueError as error:
+        raise ValueError("KOTLIN_GRADLE_REPOSITORY_INVALID") from error
+    if (
+        parsed.scheme != "https"
+        or not parsed.hostname
+        or not re.fullmatch(r"[A-Za-z0-9.-]+", parsed.hostname)
+        or parsed.username is not None
+        or parsed.password is not None
+        or parsed.query
+        or parsed.fragment
+        or (port is not None and not 1 <= port <= 65535)
+    ):
+        raise ValueError("KOTLIN_GRADLE_REPOSITORY_INVALID")
+    return [f"-PelmosMavenRepository={configured.rstrip('/')}"]
 
 
 def _gradle_user_home() -> Path:
@@ -246,10 +278,33 @@ def _run(
         and effective_command
         and Path(effective_command[0]).name == "gradle"
     ):
-        effective_command[1:1] = _gradle_proxy_system_properties()
+        effective_command[1:1] = [
+            *_gradle_proxy_system_properties(),
+            *_gradle_repository_property(),
+        ]
     try:
         process_environment = os.environ.copy()
         process_environment.update(environment or {})
+        # An ambient virtualenv from the synthesis engine is never the
+        # generated workspace's environment. Let uv/direct workspace tools
+        # resolve the generated `.venv` without inheriting a misleading path.
+        if language == "python":
+            process_environment.pop("VIRTUAL_ENV", None)
+            # Use the host trust store for the public PyPI connection. This is
+            # the uv-supported path behind managed TLS proxies and avoids
+            # rustls `close_notify` failures observed on otherwise valid HTTPS.
+            process_environment["UV_NATIVE_TLS"] = "true"
+        if language == "kotlin" and not os.environ.get(
+            "ELMOS_PROJECT_SYNTHESIS_GRADLE_PROXY"
+        ):
+            # Gradle may consume ambient shell proxy variables even when no JVM
+            # proxy properties were requested. Keep the default Maven Central
+            # path direct; an explicitly reviewed Gradle proxy remains opt-in.
+            for proxy_name in (
+                "HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY",
+                "http_proxy", "https_proxy", "all_proxy",
+            ):
+                process_environment.pop(proxy_name, None)
         completed = subprocess.run(  # noqa: S603
             effective_command,
             cwd=cwd,
@@ -445,6 +500,11 @@ def _planned_runtime_tool(
 
 
 def _toolchain_environment(language: str) -> dict[str, str]:
+    if language == "typescript":
+        # Generated starter profiles use only the public npm registry. Pinning
+        # it prevents an ambient mirror from stalling deterministic lockfile
+        # generation or silently changing the package source.
+        return {"npm_config_registry": "https://registry.npmjs.org"}
     if language != "kotlin":
         return {}
     java = _runtime_tool(language, "java")
@@ -473,6 +533,23 @@ def _health_response_matches(
     )
 
 
+_PROXY_ENVIRONMENT_NAMES = (
+    "HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY",
+    "http_proxy", "https_proxy", "all_proxy",
+)
+
+
+def _loopback_environment(environment: dict[str, str] | None = None) -> dict[str, str]:
+    """Return an environment that cannot proxy local acceptance traffic."""
+    result = os.environ.copy()
+    result.update(environment or {})
+    for name in _PROXY_ENVIRONMENT_NAMES:
+        result.pop(name, None)
+    result["NO_PROXY"] = "127.0.0.1,localhost"
+    result["no_proxy"] = "127.0.0.1,localhost"
+    return result
+
+
 def _probe(
     command: list[str],
     cwd: Path,
@@ -488,8 +565,10 @@ def _probe(
     startup_timeout_seconds: int = 30,
     integration_timeout_seconds: int = 120,
 ) -> dict[str, Any]:
-    env = os.environ.copy()
-    env.update(environment or {})
+    # The runtime and integration endpoints are loopback-only. An inherited
+    # developer/CI proxy can turn a healthy response into a proxy-generated
+    # 502 and is an unnecessary egress path for local test credentials.
+    env = _loopback_environment(environment)
     process = subprocess.Popen(  # noqa: S603
         command,
         cwd=cwd,
@@ -1052,6 +1131,7 @@ def _run_if_available(
             command,
             cwd,
             language=language,
+            timeout_seconds=600 if language in {"kotlin", "rust"} else 300,
             environment=_toolchain_environment(language),
         )
         results.append(result)
@@ -1106,14 +1186,18 @@ def verify_workspace(
             results.append(_missing("python", "uv"))
         else:
             python_workspace = root / "python"
+            venv_bin = python_workspace / ".venv" / (
+                "Scripts" if os.name == "nt" else "bin"
+            )
+            executable_suffix = ".exe" if os.name == "nt" else ""
             lock_was_cached = _restore_cached_python_lock(python_workspace)
             python_commands = (
                 [tool, "lock", "--check"] if lock_was_cached else [tool, "lock"],
                 [tool, "sync", "--locked", "--python", "3.12"],
-                [tool, "run", "--python", "3.12", "python", "--version"],
-                [tool, "run", "pytest", "-m", "not integration"],
-                [tool, "run", "ruff", "check", "src", "tests"],
-                [tool, "run", "mypy", "src"],
+                [str(venv_bin / f"python{executable_suffix}"), "--version"],
+                [str(venv_bin / f"pytest{executable_suffix}"), "-m", "not integration"],
+                [str(venv_bin / f"ruff{executable_suffix}"), "check", "src", "tests"],
+                [str(venv_bin / f"mypy{executable_suffix}"), "src"],
             )
             for index, command in enumerate(python_commands):
                 result = _run(command, python_workspace, language="python")

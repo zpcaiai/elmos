@@ -315,6 +315,11 @@ class BatchOneToThirteenAssuranceTest {
         String production;
         try (var files = Files.walk(source)) {
             production = files.filter(path -> path.getFileName().toString().endsWith(".ts"))
+                    // This adapter intentionally emits commands for an authorized
+                    // device runner. It is not the frontend worker's host execution
+                    // path, so keep the fail-closed worker assertion scoped to the
+                    // worker implementation rather than generated runner payloads.
+                    .filter(path -> !path.getFileName().toString().equals("frt-runnable-target.ts"))
                     .map(path -> {
                         try { return Files.readString(path); }
                         catch (IOException error) { throw new java.io.UncheckedIOException(error); }

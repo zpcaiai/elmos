@@ -75,9 +75,10 @@ class SpringRouteCatalogTest {
         assertEquals("UNSUPPORTED_SOURCE_JAVA_VERSION",
                 assertThrows(BlockedException.class,
                         () -> SpringRouteCatalog.select("1.5.22", "17", "maven")).code());
-        assertEquals("SPRING_ROUTE_NOT_IMPLEMENTED",
-                assertThrows(BlockedException.class,
-                        () -> SpringRouteCatalog.select("2.7.18", "17", "gradle")).code());
+        var gradle = SpringRouteCatalog.select("2.7.18", "17", "gradle");
+        assertEquals("boot-2.x-gradle-to-boot-3.5.3-java-21", gradle.route().routeId());
+        assertEquals(EvidenceStatus.NOT_RUN, gradle.evidence());
+        assertTrue(gradle.requiresExperimentalOptIn());
     }
 
     @Test void mavenSourceRangesAreDisjointAndOrdered() {
@@ -216,5 +217,12 @@ class SpringRouteCatalogTest {
             assertEquals(route, SpringRouteCatalog.byId(route.routeId()).orElseThrow());
         }
         assertTrue(SpringRouteCatalog.byId("does-not-exist").isEmpty());
+    }
+
+    @Test void gradleRouteUsesTheGradleToolchainInItsExactTuple() {
+        SpringRoute route = SpringRouteCatalog.byId("boot-2.x-gradle-to-boot-3.5.3-java-21").orElseThrow();
+        var tuple = route.tuple("2.7.18", "17");
+        assertEquals("gradle-8.14.3", tuple.sourceBuildTool());
+        assertEquals("gradle-8.14.3", tuple.targetBuildTool());
     }
 }

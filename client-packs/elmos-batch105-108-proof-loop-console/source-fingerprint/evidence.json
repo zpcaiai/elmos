@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-batch105-108-proof-loop-console",
+  "runs": [
+    {
+      "kind": "source-file-digest",
+      "status": "PASSED",
+      "digest": "8ec8c416b8c3e07158af376d0676db1271137efe230a7ec761c970819861691c",
+      "command": "(find apps/web-console/app/proof-loop apps/web-console/app/api/modernization-proof -type f -print; printf '%s\\n' apps/web-console/app/lib/server/modernizationProofClient.ts apps/web-console/e2e/modernization-proof.spec.ts apps/web-console/playwright.proof-loop.config.ts) | sort | xargs shasum -a 256 | shasum -a 256"
+    }
+  ],
+  "coverage": 1.0,
+  "evidence_refs": []
+}

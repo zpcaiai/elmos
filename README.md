@@ -1,6 +1,26 @@
 # ELMOS
 
-ELMOS（Enterprise Legacy Modernization Operating System）是证据驱动的企业代码库现代化与跨语言迁移平台。跨语言路线采用“源语言语义适配器 → 统一语义中间表示（UIR）→ 目标语言生成器 → 框架 Recipe/Agent 修复/验证门禁”，避免维护十二条相互独立的语言对翻译链路。
+## 能力边界速览
+
+三条业务线在**各自精确支持子集内**已跑通，并有可复现的本地工程证据；**没有任何一条达到认证**。
+所有 gate 一律 `NOT_CERTIFIED`，独立验证与外部证据一律 `NOT_RUN` —— 这是设计的失败关闭行为。
+先读这张表再读下面的能力叙述，可以避免把「广度」误读成「深度」。
+
+| 业务线 | 已跑通的范围 | 明确**不**支持 | 最高本地结论 |
+| --- | --- | --- | --- |
+| Spring 老项目现代化 | 4 条 Maven 路线，各绑定**一个精确元组**（Boot 1.5.22/Java 8、2.3.12/Java 11、2.7.18/Java 17、3.4.1/Java 17）→ Boot 3.5.3/Java 21，端到端源构建 + OpenRewrite + 目标构建 + 行为探针；Gradle 2.x 执行驱动已实现 | 元组以外的区间版本（需显式 experimental 开关）；Gradle 精确真实元组仍为 `NOT_RUN` | `PASSED_LOCAL`（仅四个 Maven 精确元组） |
+| 跨语言转换 | 6 语言两两成对共 30 条有向路线，语义 Profile 为 **`typed-pure-function-v1`**：有类型、无副作用、由 return/if/字面量/名字/白名单二元运算构成的函数 | **对象图、异常、async、I/O、框架、数据库、并发全部在范围外**。30 条路线是广度，不是深度 | `PASSED_LOCAL` / `limited` |
+| 多语言项目生成 | 8 个目标真实生成 + 精确工具链构建 + 启动探针；16 个 PostgreSQL 17.5 JWT/OIDC 生产 Profile 全通过 | **仅 Java/Python 支持多实体与关系**；Go/TypeScript/C#/Kotlin/Rust/PHP 为单实体边界，多实体请求失败关闭 | `PASSED_LOCAL` / `limited` |
+
+附属能力的实测覆盖率同样是子集而非全集：SQL 方言转写对本仓库 64 个真实迁移文件实测 **174/1015 = 17.1%**，
+大前端组件转写对 `apps/web-console` 实测 **8/33 = 24.2%**。两者的缺口都是结构性的，不是增量的。
+
+完整边界与外部证据清单见 [`docs/BUSINESS_LINE_CLOSURE_MATRIX.md`](docs/BUSINESS_LINE_CLOSURE_MATRIX.md)。
+全部 98 个 `NOT_CERTIFIED` 的共同前置是**独立验证**，其具体产出要求（从 gate 代码反推）见
+[`docs/INDEPENDENT_VERIFICATION.md`](docs/INDEPENDENT_VERIFICATION.md)。
+
+
+ELMOS（Enterprise Legacy Modernization Operating System）是证据驱动的企业代码库现代化与跨语言迁移平台。跨语言路线采用“源语言语义适配器 → 统一语义中间表示（UIR）→ 目标语言生成器 → 框架 Recipe/Agent 修复/验证门禁”，避免维护 30 条相互独立的语言对翻译链路。
 
 Polyglot Repository Intake 支持 Java、Python、C#、JavaScript/TypeScript。`modules/semantic` 实现 PSP v1；`modules/uir` 实现多视图 UIR、Dialect、Effect/Obligation/Provenance 与模块门禁；`modules/skeleton` 实现四语言目标 Profile、模块/命名/构建规划和 Skeleton-first 契约仓库；`modules/lowering` 实现 Faithful-first 方法体计划、规则/能力治理、静态验证后惯用化、安全 Patch 与 L-A 至 L-D 门禁；`modules/dependency-migration` 实现实际 API 使用驱动的候选映射、供应链/构建验证、Adapter/Runtime/Boundary 策略与 D-A 至 D-D 门禁。每批都 fail-closed：缺少权威分析器、UIR 资格、隔离构建证据、原生 Emitter/Compiler、依赖解析或差分验证后端时不会推进。
 
@@ -52,7 +72,7 @@ Java/Python 的生产 Emitter 支持多实体与关系；Go、TypeScript、C#、
 
 ELMOS 通过锁定的 `org.openrewrite.recipe:rewrite-spring:6.35.0` 复用同目录 `rewrite-spring` 的 Recipe 能力，不复制其 198 个 Java 源文件，也不形成私有分叉。审计时的上游快照为 `ae11461b732e13c27bc7b8ed9b1b2943b8e4944f`，详见 `docs/adr/0001-rewrite-spring-foundation.md`。
 
-遗留源版本由 `SpringRouteCatalog` 统一声明，不再断言单一元组：Maven 侧覆盖 Boot `[1.5.0, 2.0.0)` / Java 8、`[2.0.0, 2.7.0)` / Java 8·11·17、`[2.7.0, 2.8.0)` / Java 8·11·17 和 `[3.0.0, 3.5.0)` / Java 17·21 四条路线，各自绑定独立的 OpenRewrite Recipe 与按 Java 版本注册的源 JDK（`elmos.worker.spring-upgrade.java-homes=8=/opt/java/openjdk-8,11=...`）；Gradle 作为第五条路线在目录中声明为 `NOT_IMPLEMENTED`，指纹阶段会明确告知缺少构建驱动而不是笼统地说"仅支持 Maven"。**扩大目录不等于扩大证据**：只有 Boot 2.7.18 / Java 17 这一个元组有已记录的端到端本地执行证据（`PASSED_LOCAL`），区间内其余元组保持 `NOT_RUN`，必须显式开启 `elmos.worker.spring-upgrade.experimental-routes-enabled` 才会执行，否则以 `SPRING_ROUTE_EVIDENCE_NOT_RUN` 失败关闭。每次运行都会写出 `evidence/route-selection.json` 记录所选路线、接受区间与证据等级。
+遗留源版本由 `SpringRouteCatalog` 统一声明，不再断言单一元组：Maven 侧覆盖 Boot `[1.5.0, 2.0.0)` / Java 8、`[2.0.0, 2.7.0)` / Java 8·11·17、`[2.7.0, 2.8.0)` / Java 8·11·17 和 `[3.0.0, 3.5.0)` / Java 17·21 四条路线，各自绑定独立的 OpenRewrite Recipe 与按 Java 版本注册的源 JDK（`elmos.worker.spring-upgrade.java-homes=8=/opt/java/openjdk-8,11=...`）；Gradle 作为第五条路线已绑定 Gradle 8.14.3 的隔离构建、OpenRewrite、测试和启动执行器，但精确真实元组仍保持 `NOT_RUN`。**扩大目录不等于扩大证据**：四条 Maven 路线各有且只有一个已记录端到端本地执行证据的元组（`PASSED_LOCAL`）——Boot 1.5.22.RELEASE / Java 8、2.3.12.RELEASE / Java 11、2.7.18 / Java 17、3.4.1 / Java 17，逐条记录在 `evidence/spring-routes/<route-id>.json`（源构建、OpenRewrite 转换、目标构建与行为探针俱全）。**同一区间内的其余元组以及 Gradle 路线仍是 `NOT_RUN`**：证据绑定的是精确元组，不是整个区间或执行器，因此选中未记录元组时必须显式开启 `elmos.worker.spring-upgrade.experimental-routes-enabled` 才会执行，否则以 `SPRING_ROUTE_EVIDENCE_NOT_RUN` 失败关闭。四条 Maven 路线的 `independent_verification`、`external_evidence_status`、`rootless_runner` 与 `authorized_customer_repository` 一律保持 `NOT_RUN`，`certification_status` 保持 `NOT_CERTIFIED`。每次运行都会写出 `evidence/route-selection.json` 记录所选路线、接受区间与证据等级。
 
 Web Console `/spring` 与 Java Engine `/engine/v1/spring-upgrades` 提供一条精确的真实迁移旅程：导入公开 Git 或已物化 Snapshot、锁定 Commit 和确定性 Snapshot、识别 Boot 2.7.18 / Java 17 / Maven、先提取 FCM，再执行固定的 OpenRewrite Recipe，使用 Java 21 编译测试、从内容寻址 ZIP 做新目录验证，验证通过后才开放下载与一键启动、健康检查、日志、停止和重试。默认配置全部关闭；只有已经证明 rootless、只读根、能力移除、默认拒绝网络且绑定独立验证器的 Private Runner 才能启用。可重复的本地开发语料命令为 `ELMOS_MAVEN_EXECUTABLE=/path/to/apache-maven-3.9.11/bin/mvn python3 scripts/batch30/run_spring_boot_reference.py --repo-root .`；执行器拒绝其他 Maven 版本和仓库自带的 `mvnw`，其本地结果不替代客户仓库、Rootless Runner 或独立外部评审证据。
 
@@ -62,11 +82,33 @@ Web Console `/spring` 与 Java Engine `/engine/v1/spring-upgrades` 提供一条�
 
 ## 验证
 
+### 可选的 Skill 源包
+
+正常源码检出**有意不包含**各批次的权威 Skill 导入包（`elmos-project-synthesis-batch46-60`、
+`elmos-project-synthesis-batch61-65`、`elmos-codex-skills-batch66-80-complete`、
+`elmos-language-packs-batch81-95-complete`、`elmos-codex-skills-batch97-104-complete`、
+`elmos-codex-skills-batch56-product-closure`、`elmos-codex-skills-batch1-55-complete`
+及配套的 slightly-strict 测试包）。缺席源包的逐字节完整性会明确保持 `NOT_RUN`；
+已有安装清单的批次则继续通过受版本控制的摘要逐项校验已安装分发。两者不能互相替代。
+例如 Project Synthesis 的正常检出会验证 195 个 B66–80 Runtime Skill、180 个 B81–95
+Language Pack Skill 及其接口摘要，但不会声称重新验证了缺席的 PG001–PG417 源包。
+
+依赖源包的每一步都由 `tooling/source_package_guard.py` 把守：源包在场就执行原有的
+包完整性校验；不在场就打印一行醒目且可 grep 的
+
+```
+SOURCE_PACKAGE_ABSENT=<package> reason=missing:<manifest> …
+```
+
+然后继续执行不需要该源包的真实门禁。**被跳过的包完整性校验绝不等于通过的校验**——这正是
+标记必须打印而不能吞掉的原因。发布或打包源包时，用
+`make <target> REQUIRE_SOURCE_PACKAGES=1` 恢复严格行为，缺包即失败关闭。
+
 ```bash
 make verify
 ```
 
-`make business-line-contracts` 是三条核心业务线的失败关闭一致性门禁：`validate_spring_route_contract.py` 校验 `SpringUpgradeModels` 的精确元组与 OpenRewrite Recipe 资源、Recipe ID、归档名、引擎与控制台部署指引、Console 代理回退完全一致，并禁止 Spring 页面把版本号硬编码进 JSX；`validate_translation_route_matrix.py` 校验 `routes/inventory.json`、12 个 Route Pack、Polyglot 引擎语言集与 Web Console 一致，禁止证据倒挂（独立验证不得先于本地通过、外部认证不得先于独立验证），并禁止路线矩阵硬编码 `LOCAL PASS`。生成线的等价门禁是 `scripts/operations/validate_generation_support_matrix.py`，由 `make project-synthesis` 执行。
+`make business-line-contracts` 是三条核心业务线的失败关闭一致性门禁：`validate_spring_route_contract.py` 校验 `SpringUpgradeModels` 的精确元组与 OpenRewrite Recipe 资源、Recipe ID、归档名、引擎与控制台部署指引、Console 代理回退完全一致，并禁止 Spring 页面把版本号硬编码进 JSX；`validate_translation_route_matrix.py` 校验 `routes/inventory.json`、30 个有向 Route Pack（Java、Python、C#、Go、Rust、TypeScript 六种语言两两成对）、Polyglot 引擎语言集与 Web Console 一致，禁止证据倒挂（独立验证不得先于本地通过、外部认证不得先于独立验证），并禁止路线矩阵硬编码 `LOCAL PASS`。生成线的等价门禁是 `scripts/operations/validate_generation_support_matrix.py`，由 `make project-synthesis` 执行。
 
 `make backend` 使用 Java 21 执行单元测试、契约测试和 ArchUnit 边界测试；`make dotnet` 使用锁定的 .NET 10 SDK；`make python` 使用 Python 3.14 与 uv 锁执行 pytest、Ruff 和 mypy；`make frontend` 验证独立的 TypeScript/Node 客户端引擎；`make web` 执行 Next.js/TypeScript 静态检查。
 

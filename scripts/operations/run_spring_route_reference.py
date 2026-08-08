@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 """Execute one declared Spring route end to end and record what actually happened.
 
-Three of the five routes in ``SpringRouteCatalog`` carry ``NOT_RUN``. They are not
-missing code -- each ships a real OpenRewrite recipe -- they are missing an
-execution. ``scripts/batch30/run_spring_boot_reference.py`` produced the one
-recording that does exist, but it is hard-wired to Boot 2.7.18 on Java 17.
+The Gradle route in ``SpringRouteCatalog`` now has an execution driver and an
+exact OpenRewrite recipe, but its source tuple still carries ``NOT_RUN`` until
+a real Gradle project passes baseline, rewrite, target build and startup. This
+reference harness records the four Maven routes; the Java Worker is the
+authoritative Gradle execution path. ``scripts/batch30/run_spring_boot_reference.py``
+produced the original recording that exists, but it is hard-wired to Boot
+2.7.18 on Java 17.
 
 Copying that script per route does not work, and the reasons are specific:
 
@@ -808,9 +811,9 @@ def main() -> int:
     print(f"for route {route.route_id} and set:")
     print(f"    EvidenceStatus.PASSED_LOCAL, \"{route.source_boot}\", \"{route.source_java}\"")
     print()
-    print("Note: SpringRouteCatalogTest.exactlyOneRouteCarriesRecordedEvidence")
-    print("pins the catalog to a single verified route. Promoting a second one")
-    print("must update that test deliberately, not incidentally.")
+    print("Note: this harness records evidence but never promotes a route. The")
+    print("catalog stores local execution evidence separately from independent")
+    print("verification and external certification.")
     return 0
 
 

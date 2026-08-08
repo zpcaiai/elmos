@@ -34,6 +34,7 @@ final class SpringRouteCatalog {
     static final String MAVEN_BUILD_TOOL = "maven";
     static final String GRADLE_BUILD_TOOL = "gradle";
     static final String MAVEN_TOOLCHAIN = "maven-3.9.11";
+    static final String GRADLE_TOOLCHAIN = "gradle-8.14.3";
 
     /** Evidence a route carries for a specific detected tuple. */
     enum EvidenceStatus {
@@ -89,9 +90,10 @@ final class SpringRouteCatalog {
         }
 
         SpringUpgradeModels.ExactTuple tuple(String detectedBoot, String detectedJava) {
+            String toolchain = GRADLE_BUILD_TOOL.equals(buildTool) ? GRADLE_TOOLCHAIN : MAVEN_TOOLCHAIN;
             return new SpringUpgradeModels.ExactTuple(
-                    detectedBoot, detectedJava, MAVEN_TOOLCHAIN,
-                    targetBoot, targetJava, MAVEN_TOOLCHAIN,
+                    detectedBoot, detectedJava, toolchain,
+                    targetBoot, targetJava, toolchain,
                     rewriteSpring, rewriteMavenPlugin);
         }
     }
@@ -157,11 +159,14 @@ final class SpringRouteCatalog {
                     "Spring Boot 2.x / Gradle",
                     "2.0.0", "3.0.0", Set.of("8", "11", "17"), GRADLE_BUILD_TOOL,
                     TARGET_BOOT, TARGET_JAVA,
-                    "", "",
+                    "/rewrite/spring-boot-2.x-gradle-to-3.5.3.yml",
+                    "io.elmos.openrewrite.SpringBoot2xGradleToBoot3_5_3Java21",
                     REWRITE_SPRING, REWRITE_MAVEN_PLUGIN,
-                    EvidenceStatus.NOT_IMPLEMENTED, "", "",
-                    "Declared for inventory only. Gradle needs its own build driver, wrapper "
-                            + "verification and rewrite plugin invocation; no driver is bound yet.")
+                    EvidenceStatus.NOT_RUN, "", "",
+                    "Gradle execution is now wired through the approved Gradle 8.14.3 driver. "
+                            + "The exact source tuple remains NOT_RUN until a real Gradle project with "
+                            + "an OpenRewrite Gradle plugin/recipe dependency passes baseline, rewrite, "
+                            + "target build and loopback startup evidence.")
     );
 
     static List<SpringRoute> routes() {

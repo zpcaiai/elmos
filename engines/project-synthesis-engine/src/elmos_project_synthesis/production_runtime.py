@@ -332,6 +332,16 @@ def render_local_runtime(
             database_url_file = provision_database(socket, binaries, state, port)
 
             environment = dict(os.environ)
+            # Database, application, and verifier are loopback-only. Ambient
+            # proxies can turn direct local calls into 502 responses and must
+            # not receive local auth or database traffic.
+            for proxy_name in (
+                "HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY",
+                "http_proxy", "https_proxy", "all_proxy",
+            ):
+                environment.pop(proxy_name, None)
+            environment["NO_PROXY"] = "127.0.0.1,localhost"
+            environment["no_proxy"] = "127.0.0.1,localhost"
             environment[{ENV_DATABASE_URL_FILE!r}] = str(database_url_file)
             environment[{ENV_AUTH_ISSUER!r}] = {LOCAL_ISSUER!r}
             environment[{ENV_AUTH_AUDIENCE!r}] = {LOCAL_AUDIENCE!r}

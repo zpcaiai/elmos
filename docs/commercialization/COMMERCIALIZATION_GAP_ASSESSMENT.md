@@ -123,10 +123,11 @@ engines/sql-dialect-engine         1,249
 ### B 档 — 可做 POC / 按项目收费，不能按订阅承诺
 
 **Spring 老项目翻新 `/spring`**
-- 只有 **Boot 2.7.18 / Java 17 / Maven** 一个元组有 `PASSED_LOCAL` 端到端证据
-- Boot 1.5.x、2.0–2.7 其余版本、3.0–3.5 区间均为 `NOT_RUN`，需显式开
+- **Boot 1.5.22.RELEASE / Java 8、2.3.12.RELEASE / Java 11、2.7.18 / Java 17、
+  3.4.1 / Java 17** 四个精确 Maven 元组有 `PASSED_LOCAL` 端到端工程证据
+- 对应版本区间内的其他元组均为 `NOT_RUN`，需显式开
   `experimental-routes-enabled` 才执行
-- **Gradle 明确 `NOT_IMPLEMENTED`** —— 这会砍掉相当比例的真实客户仓库
+- **Gradle 执行驱动已实现但精确 tuple 仍 `NOT_RUN`** —— 在真实 Gradle 项目、隔离工具链、OpenRewrite、目标启动和独立验证完成前，仍不能作为已验证交付范围
 
 **Git 仓库接入 `/repositories`**（GitHub / Gitee / 通用 HTTPS）
 - 私有实仓 E2E、子模块、LFS、推送/PR 均 `NOT_RUN`

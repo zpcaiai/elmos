@@ -49,4 +49,16 @@ class SpringDeploymentGuidanceTest {
         assertTrue(profile.contains("\"external_execution_evidence\": \"NOT_RUN\""));
         assertTrue(profile.contains("\"image_reference_policy\": \"DIGEST_REQUIRED\""));
     }
+
+    @Test void writesGradleSpecificLocalAndContainerGuidance() throws Exception {
+        Files.writeString(temporaryDirectory.resolve("README.md"), "# Customer project\n");
+        SpringDeploymentGuidance.writeTo(temporaryDirectory, "gradle");
+
+        assertTrue(Files.readString(temporaryDirectory.resolve("docs/LOCAL_RUN.md"))
+                .contains("Gradle 8.14.3"));
+        assertTrue(Files.readString(temporaryDirectory.resolve("deploy/cloud-run/Dockerfile"))
+                .contains("gradle:8.14.3-jdk21"));
+        assertTrue(Files.readString(temporaryDirectory.resolve("deploy/cloud-run/Dockerfile.dockerignore"))
+                .contains("**/.gradle"));
+    }
 }

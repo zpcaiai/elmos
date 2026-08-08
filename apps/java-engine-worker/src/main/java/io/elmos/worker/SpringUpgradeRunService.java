@@ -860,7 +860,7 @@ final class SpringUpgradeRunService {
                     state.resolvedCommitSha,
                     state.snapshotId,
                     state.snapshotDigest,
-                    ExactTuple.supported("maven-3.9.11", "maven-3.9.11"),
+                    exactTuple(state.fingerprint),
                     state.fingerprint,
                     state.fcmArtifact,
                     downloadAvailable(state),
@@ -883,6 +883,19 @@ final class SpringUpgradeRunService {
                 && state.independentValidation != null
                 && "PASS".equals(state.independentValidation.status())
                 && state.result.artifactSha256().equals(state.independentValidation.artifactSha256());
+    }
+
+    private static ExactTuple exactTuple(Fingerprint fingerprint) {
+        if (fingerprint == null) return ExactTuple.supported("maven-3.9.11", "maven-3.9.11");
+        try {
+            SpringRouteCatalog.Selection selection = SpringRouteCatalog.select(
+                    fingerprint.springBootVersion(), fingerprint.javaVersion(), fingerprint.buildTool());
+            return selection.route().tuple(fingerprint.springBootVersion(), fingerprint.javaVersion());
+        } catch (RuntimeException ignored) {
+            // A queued or blocked run may not have a complete route tuple yet.
+            // Keep the pre-fingerprint default rather than exposing a fabricated tuple.
+            return ExactTuple.supported("maven-3.9.11", "maven-3.9.11");
+        }
     }
 
     private static Path requireArtifactIntegrity(RunState state) {
