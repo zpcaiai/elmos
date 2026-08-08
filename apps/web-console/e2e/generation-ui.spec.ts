@@ -122,6 +122,26 @@ test.describe("多语言项目生成 UI", () => {
       route.fulfill({ status: 200, json: capability }));
     await page.route(/\/api\/health(?:\?.*)?$/, (route) =>
       route.fulfill({ status: 200, json: readiness }));
+    let analyzeRequestObserved = false;
+    await page.route("**/api/generation/analyze", async (route) => {
+      const request = route.request();
+      expect(request.method()).toBe("POST");
+      expect(request.headers()["authorization"]).toBe(
+        "Bearer incorrect-browser-token-000000",
+      );
+      expect(request.headers()["x-elmos-tenant"]).toBe("local-dev");
+      expect(request.headers()["x-elmos-actor"]).toBe("user:reviewer");
+      expect(request.postDataJSON()).toMatchObject({
+        name: "order-service",
+        namespace: "io.elmos.orders",
+        entity: "order",
+        targets: ["java", "python"],
+        persistence: "in-memory",
+        authMode: "none",
+      });
+      analyzeRequestObserved = true;
+      await route.fulfill({ status: 401, json: blocked });
+    });
     await page.goto("/generation");
     await page.getByLabel("本地 Runner 令牌").fill("incorrect-browser-token-000000");
     await page.getByRole("button", { name: "锁定生成计划" }).click();
@@ -135,6 +155,7 @@ test.describe("多语言项目生成 UI", () => {
       await analyze.click();
     }
     await expect(page.getByText("需求分析被阻断：AUTHENTICATION_REQUIRED")).toBeVisible();
+    expect(analyzeRequestObserved).toBe(true);
     await expect(
       page.getByRole("checkbox", { name: /我已审阅结构化需求/ }),
     ).toBeDisabled();
