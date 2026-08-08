@@ -12,11 +12,12 @@ Generated projects now include `deploy/cloud-run-control.py` and an exact
 request template. The controller validates a regional Artifact Registry image
 digest, dedicated runtime identity, private ingress, immutable Secret versions,
 capacity and health contracts. Mutating actions default to refusal and require
-an exact, expiring, separate-approver authorization. Deployment creates a
-no-traffic candidate, runs the authenticated health contract, and only then
-promotes it; rollback and destroy require separate authorizations and receipts.
-Thirteen local generation/policy tests pass, including repository-owned negative
-and holdout corpora. This is code-level engineering
+an exact, timezone-bound, maximum-24-hour, separate-approver authorization.
+Deployment creates a no-traffic candidate, runs the bounded authenticated
+health contract, and only then promotes it; promotion, rollback and deletion
+must visibly converge, and success/failure receipts are private and atomic.
+Twenty-two local generation/policy tests pass, including repository-owned
+negative and holdout corpora. This is code-level engineering
 evidence, not Google Cloud execution evidence.
 
 Google Cloud execution remains `NOT_RUN` because `gcloud`, an approved project,

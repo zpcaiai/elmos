@@ -14,8 +14,8 @@
     },
     {
       "path": "certification/local-control-evidence.json",
-      "byte_size": 3011,
-      "sha256": "57f5a962cd04a8c40174c4d3725b56e35bab9a0474acd520513b489b98f239e1"
+      "byte_size": 3363,
+      "sha256": "2ff1812802bf4e7d564b186ebac3ae63c4ec5336c26a4ce6a1b04f5c69503cfc"
     },
     {
       "path": "corpus/development/cases.json",
@@ -70,7 +70,7 @@
     {
       "path": "source-fingerprint/fingerprint.json",
       "byte_size": 2350,
-      "sha256": "e705fe404ce468c1d0b3daaab02e0ba1959f2b7a1cc12c491e6cf245a5e31384"
+      "sha256": "5f01ac8fd240c2ffd6514bc012939d7c76555aa0ed269d8ccf5a9eb741a22e19"
     },
     {
       "path": "target-profile/profile.json",

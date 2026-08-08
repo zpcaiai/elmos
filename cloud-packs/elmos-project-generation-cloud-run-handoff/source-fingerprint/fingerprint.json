@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "pack_key": "elmos-project-generation-cloud-run-handoff",
-  "snapshot_digest": "sha256:54bd043d2e9b79afc1439af0ec1bba686b842ae5a9582b76163d62498a443ddf",
+  "snapshot_digest": "sha256:12bc88a6417798e411913cbfc214304c485a0fd753a2c9c9f40c88f0f1675e3b",
   "coverage": 1.0,
   "source_tuple": {
     "platform": "generated-local-container",
@@ -44,7 +44,7 @@
       "key": "generated-cloud-run-controller",
       "type": "deployment-controller",
       "source_ref": "engines/project-synthesis-engine/src/elmos_project_synthesis/cloud_run_control.py",
-      "digest": "sha256:54b71b642987c22aa5c4efb81478fcd5e3b63c2c7bab15be5557a48e4733797b"
+      "digest": "sha256:749be1e7942c46b3abc02096521115331cdc4b1dda109c8a205307d2565ba3dd"
     }
   ],
   "identities": [{"key": "container-user", "value": "10001:10001"}],

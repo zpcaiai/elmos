@@ -6,7 +6,7 @@ import sys
 
 from elmos_project_synthesis.intake import approve_request, create_draft
 from elmos_project_synthesis.models import SynthesisRequest
-from elmos_project_synthesis.workspace import render_workspace
+from elmos_project_synthesis.workspace import generate_workspace, render_workspace
 
 
 def _request(*, languages: tuple[str, ...] = ("java", "python")) -> SynthesisRequest:
@@ -17,6 +17,27 @@ def _request(*, languages: tuple[str, ...] = ("java", "python")) -> SynthesisReq
         languages=languages,
     )
     return SynthesisRequest.from_mapping(approve_request(draft, actor="user:deployment-reviewer"))
+
+
+def _secured_request() -> SynthesisRequest:
+    draft = create_draft(
+        name="secured-deployment-guide",
+        description="管理受租户隔离的订单并提供健康检查。",
+        entity="order",
+        languages=("python",),
+        persistence="postgresql",
+        auth_mode="jwt",
+        permissions=tuple(
+            {
+                "actor": "api_user",
+                "action": action,
+                "resource": "order",
+                "effect": "allow",
+            }
+            for action in ("create", "read", "update", "delete")
+        ),
+    )
+    return SynthesisRequest.from_mapping(approve_request(draft, actor="user:security-reviewer"))
 
 
 def test_generated_workspace_contains_exact_local_and_cloud_guidance() -> None:
@@ -68,6 +89,15 @@ def test_generated_workspace_contains_exact_local_and_cloud_guidance() -> None:
     assert cloud_request["ingress"] == "internal"
     assert "@sha256:" in cloud_request["image"]
     assert cloud_request["secrets"] == []
+    assert cloud_request["timeout_seconds"] == 300
+    assert cloud_request["health"]["expected_json"] == {
+        "service": "deployment-guide-service",
+        "status": "UP",
+    }
+    assert cloud_request["environment"] == {
+        "APP_ENV": "production",
+        "APP_NAME": "deployment-guide-service",
+    }
     authorization = json.loads(rendered["deploy/cloud-run-authorization.example.json"])
     assert authorization["approved"] is False
     assert authorization["action"].startswith("replace-")
@@ -120,26 +150,31 @@ def test_generated_cloud_run_controller_is_fail_closed(tmp_path) -> None:
     assert refused.returncode == 2
     assert "MUTATION_REQUIRES_EXECUTE_AUTHORIZATION_AND_EXECUTOR" in refused.stderr
 
+    failed_receipt = tmp_path / "failed-receipt.json"
+    refused_execution = subprocess.run(  # noqa: S603 - fixed interpreter and generated local test asset.
+        [
+            sys.executable,
+            str(controller),
+            "deploy",
+            "--config",
+            str(config),
+            "--execute",
+            "--receipt",
+            str(failed_receipt),
+        ],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    assert refused_execution.returncode == 2
+    failure = json.loads(failed_receipt.read_text(encoding="utf-8"))
+    assert failure["status"] == "failed"
+    assert failure["provider_mutation_status"] == "UNKNOWN_RECONCILIATION_REQUIRED"
+    assert failure["orphan_and_billing_review"] == "REQUIRED"
+
 
 def test_cloud_guidance_keeps_stateful_and_identity_work_fail_closed() -> None:
-    draft = create_draft(
-        name="secured-deployment-guide",
-        description="管理受租户隔离的订单并提供健康检查。",
-        entity="order",
-        languages=("python",),
-        persistence="postgresql",
-        auth_mode="jwt",
-        permissions=tuple(
-            {
-                "actor": "api_user",
-                "action": action,
-                "resource": "order",
-                "effect": "allow",
-            }
-            for action in ("create", "read", "update", "delete")
-        ),
-    )
-    request = SynthesisRequest.from_mapping(approve_request(draft, actor="user:security-reviewer"))
+    request = _secured_request()
     rendered = render_workspace(request)
     cloud = rendered["docs/CLOUD_DEPLOYMENT.md"]
 
@@ -148,3 +183,27 @@ def test_cloud_guidance_keeps_stateful_and_identity_work_fail_closed() -> None:
     assert "database-url:REQUIRED_VERSION" in cloud
     assert "ELMOS_DATABASE_URL_FILE=/run/secrets/database-url" in cloud
     assert "latest" in cloud
+    cloud_request = json.loads(rendered["deploy/cloud-run-request.example.json"])
+    assert cloud_request["environment"]["ELMOS_DATABASE_URL_FILE"] == "/run/secrets/database-url"
+    assert cloud_request["environment"]["ELMOS_JWT_HMAC_SECRET_FILE"] == "/run/secrets/jwt-hmac-secret"  # noqa: S105
+    assert {secret["mount_path"] for secret in cloud_request["secrets"]} == {
+        "/run/secrets/database-url",
+        "/run/secrets/jwt-hmac-secret",
+    }
+
+
+def test_local_controller_refuses_partial_compose_for_production_profiles(tmp_path) -> None:
+    request = _secured_request()
+    workspace = tmp_path / "workspace"
+    generate_workspace(request.raw, workspace)
+
+    refused = subprocess.run(  # noqa: S603 - fixed interpreter and generated local test asset.
+        [sys.executable, str(workspace / "scripts" / "projectctl.py"), "up", "--timeout", "5"],
+        cwd=workspace,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert refused.returncode == 2
+    assert "COMPOSE_DEVELOPMENT_PROFILE_UNAVAILABLE_USE_NATIVE_RUN:python" in refused.stderr

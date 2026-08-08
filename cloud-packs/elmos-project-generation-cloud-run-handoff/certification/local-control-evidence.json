@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "passed",
-  "executed_at": "2026-08-08T16:54:27Z",
+  "executed_at": "2026-08-08T18:29:12Z",
   "executor": "local-codex-session",
   "environment": {
     "python": "3.14.6",
@@ -9,37 +9,37 @@
     "provider_cli": "NOT_INSTALLED"
   },
   "command": "uv run --project engines/project-synthesis-engine pytest engines/project-synthesis-engine/tests/test_cloud_run_control.py engines/project-synthesis-engine/tests/test_deployment_guidance.py",
-  "tests": 13,
-  "passed": 13,
+  "tests": 22,
+  "passed": 22,
   "failed": 0,
   "source_digests": {
-    "cloud_run_control.py": "sha256:54b71b642987c22aa5c4efb81478fcd5e3b63c2c7bab15be5557a48e4733797b",
-    "deployment_guidance.py": "sha256:54bd043d2e9b79afc1439af0ec1bba686b842ae5a9582b76163d62498a443ddf"
+    "cloud_run_control.py": "sha256:749be1e7942c46b3abc02096521115331cdc4b1dda109c8a205307d2565ba3dd",
+    "deployment_guidance.py": "sha256:12bc88a6417798e411913cbfc214304c485a0fd753a2c9c9f40c88f0f1675e3b"
   },
   "test_digests": {
-    "test_cloud_run_control.py": "sha256:abeabbb6525c48e9ec1655ed694bd20373072c692438221015807d66d466f25a",
-    "test_deployment_guidance.py": "sha256:d6e0d531c2d8f8e549230fa9495bbc12fdc02dddd256f858c7cdfa1e44851a72"
+    "test_cloud_run_control.py": "sha256:48e35d1d45a658fedade62935bdeb684e3606c2190bdf913e8096852a525296a",
+    "test_deployment_guidance.py": "sha256:9bfdc05881913c6de0dca0113053ce21a8b443622f53b65b5d81fb9a15a835e4"
   },
   "repository_bindings": [
     {
       "path": "engines/project-synthesis-engine/src/elmos_project_synthesis/cloud_run_control.py",
-      "byte_size": 18766,
-      "sha256": "sha256:54b71b642987c22aa5c4efb81478fcd5e3b63c2c7bab15be5557a48e4733797b"
+      "byte_size": 29084,
+      "sha256": "sha256:749be1e7942c46b3abc02096521115331cdc4b1dda109c8a205307d2565ba3dd"
     },
     {
       "path": "engines/project-synthesis-engine/src/elmos_project_synthesis/deployment_guidance.py",
-      "byte_size": 18081,
-      "sha256": "sha256:54bd043d2e9b79afc1439af0ec1bba686b842ae5a9582b76163d62498a443ddf"
+      "byte_size": 20828,
+      "sha256": "sha256:12bc88a6417798e411913cbfc214304c485a0fd753a2c9c9f40c88f0f1675e3b"
     },
     {
       "path": "engines/project-synthesis-engine/tests/test_cloud_run_control.py",
-      "byte_size": 5967,
-      "sha256": "sha256:abeabbb6525c48e9ec1655ed694bd20373072c692438221015807d66d466f25a"
+      "byte_size": 8832,
+      "sha256": "sha256:48e35d1d45a658fedade62935bdeb684e3606c2190bdf913e8096852a525296a"
     },
     {
       "path": "engines/project-synthesis-engine/tests/test_deployment_guidance.py",
-      "byte_size": 6026,
-      "sha256": "sha256:d6e0d531c2d8f8e549230fa9495bbc12fdc02dddd256f858c7cdfa1e44851a72"
+      "byte_size": 8301,
+      "sha256": "sha256:9bfdc05881913c6de0dca0113053ce21a8b443622f53b65b5d81fb9a15a835e4"
     }
   ],
   "coverage": {
@@ -55,7 +55,14 @@
     "generated_project_includes_controller_and_request_template": true,
     "generated_project_includes_fail_closed_authorization_template": true,
     "repository_negative_and_holdout_corpora": true,
-    "default_execution_refusal": true
+    "default_execution_refusal": true,
+    "unknown_configuration_and_secret_path_rejection": true,
+    "secret_file_environment_binding": true,
+    "bounded_provider_and_identity_commands": true,
+    "bounded_private_health_response": true,
+    "post_promotion_and_rollback_health": true,
+    "traffic_and_delete_convergence": true,
+    "atomic_private_success_and_failure_receipts": true
   },
   "provider_execution": "NOT_RUN",
   "limitations": [

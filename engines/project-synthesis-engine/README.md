@@ -175,6 +175,26 @@ digests, and every non-`scratch` generated container base is pinned to an
 official multi-architecture manifest SHA-256. Human-readable release labels
 and image tags aid review but never determine immutable execution identity.
 
+Every generated workspace also has a root lifecycle entry point:
+
+```bash
+cd generated/order-service
+make doctor        # verify the generation manifest and required native tools
+make verify        # build and test every generated target
+make run           # run the first target; use make run-python, run-java, etc.
+make plan          # validate the hardened Compose plan without starting it
+make up            # build/start all in-memory, auth=none targets on 127.0.0.1
+make status        # verify exact service identity on every health endpoint
+make smoke         # record bounded local health-latency evidence
+make down          # stop the Compose stack and remove orphans
+```
+
+The Compose path deliberately refuses PostgreSQL/JWT/OIDC profiles. Those
+profiles use `make run-<language>`, whose target-owned harness provisions the
+disposable database, file Secret material, migrations, authentication negative
+cases, tenant-isolation journey, and cleanup. This avoids presenting a partial
+container start as a production-capable deployment.
+
 ## 4. Run real target verification
 
 ```bash

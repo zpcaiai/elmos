@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
+import re
 import sys
 import tempfile
 import zipfile
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any
 
 from .intake import approve_request, create_draft
@@ -18,10 +20,12 @@ from .models import (
     RequestValidationError,
 )
 from .verification import runtime_commands, verify_workspace
-from .workspace import WorkspaceConflictError, generate_workspace
+from .workspace import COMPATIBLE_MANIFEST_VERSIONS, WorkspaceConflictError, generate_workspace
 
 
 def _read_json(path: Path) -> dict[str, Any]:
+    if path.is_symlink() or not path.is_file():
+        raise ValueError("REQUEST_FILE_MUST_BE_REGULAR")
     if path.stat().st_size > 1_048_576:
         raise ValueError("REQUEST_FILE_TOO_LARGE")
     loaded = json.loads(path.read_text(encoding="utf-8"))
@@ -88,14 +92,62 @@ def _draft_from_intent(intent: dict[str, Any]) -> dict[str, Any]:
 SUPPORTED_DEFAULT_TARGETS = list(SUPPORTED_LANGUAGES)
 
 
+def _archive_entry(archive: zipfile.ZipFile, source: Path, arcname: str) -> int:
+    if source.is_symlink() or not source.is_file():
+        raise ValueError(f"ARCHIVE_SOURCE_UNSAFE:{arcname}")
+    size = source.stat().st_size
+    if size > 64 * 1024 * 1024:
+        raise ValueError(f"ARCHIVE_SOURCE_TOO_LARGE:{arcname}")
+    info = zipfile.ZipInfo(arcname, date_time=(1980, 1, 1, 0, 0, 0))
+    info.compress_type = zipfile.ZIP_DEFLATED
+    info.create_system = 3
+    mode = 0o755 if source.stat().st_mode & 0o111 else 0o644
+    info.external_attr = (mode & 0xFFFF) << 16
+    archive.writestr(info, source.read_bytes(), compress_type=zipfile.ZIP_DEFLATED, compresslevel=9)
+    return size
+
+
+def _archive_source(root: Path, relative: PurePosixPath) -> Path:
+    source = root.joinpath(*relative.parts)
+    if source.is_symlink():
+        raise ValueError(f"GENERATION_ARTIFACT_UNSAFE:{relative.as_posix()}")
+    try:
+        resolved = source.resolve(strict=True)
+    except OSError as error:
+        raise ValueError(f"GENERATION_ARTIFACT_MISSING:{relative.as_posix()}") from error
+    if resolved != source or not source.is_file():
+        raise ValueError(f"GENERATION_ARTIFACT_UNSAFE:{relative.as_posix()}")
+    return source
+
+
 def _archive_workspace(workspace: Path, destination: Path, *, evidence: Path | None = None) -> dict[str, Any]:
-    root = workspace.resolve(strict=True)
-    manifest_path = root / ".elmos" / "generation-manifest.json"
+    expanded_workspace = workspace.expanduser()
+    if expanded_workspace.is_symlink():
+        raise ValueError("ARCHIVE_WORKSPACE_SYMLINK_FORBIDDEN")
+    root = expanded_workspace.resolve(strict=True)
+    if not root.is_dir():
+        raise ValueError("ARCHIVE_WORKSPACE_MUST_BE_DIRECTORY")
+    manifest_path = _archive_source(root, PurePosixPath(".elmos/generation-manifest.json"))
     manifest = _read_json(manifest_path)
+    if (
+        manifest.get("engine") != "elmos.project-synthesis"
+        or manifest.get("engine_version") not in COMPATIBLE_MANIFEST_VERSIONS
+        or manifest.get("status") != "GENERATED"
+    ):
+        raise ValueError("GENERATION_MANIFEST_IDENTITY_INVALID")
+    blueprint_path = _archive_source(root, PurePosixPath("requirements/project-blueprint.json"))
+    blueprint = _read_json(blueprint_path)
+    project = blueprint.get("project")
+    archive_root = project.get("name") if isinstance(project, dict) else None
+    if not isinstance(archive_root, str) or re.fullmatch(r"[a-z][a-z0-9-]{1,62}[a-z0-9]", archive_root) is None:
+        raise ValueError("ARCHIVE_PROJECT_IDENTITY_INVALID")
     entries = manifest.get("files")
-    if not isinstance(entries, list):
+    if not isinstance(entries, list) or not entries or len(entries) > 10_000:
         raise ValueError("GENERATION_MANIFEST_FILES_INVALID")
-    destination = destination.expanduser().resolve(strict=False)
+    expanded_destination = destination.expanduser()
+    if expanded_destination.is_symlink():
+        raise ValueError("ARCHIVE_OUTPUT_MUST_BE_REGULAR_FILE")
+    destination = expanded_destination.resolve(strict=False)
     if destination.exists() and (destination.is_symlink() or not destination.is_file()):
         raise ValueError("ARCHIVE_OUTPUT_MUST_BE_REGULAR_FILE")
     destination.parent.mkdir(parents=True, exist_ok=True)
@@ -107,19 +159,41 @@ def _archive_workspace(workspace: Path, destination: Path, *, evidence: Path | N
     os.close(descriptor)
     temporary = Path(temporary_name)
     archived_paths: set[str] = set()
+    total_bytes = 0
     try:
         with zipfile.ZipFile(temporary, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
             for entry in entries:
-                if not isinstance(entry, dict) or not isinstance(entry.get("path"), str):
+                if (
+                    not isinstance(entry, dict)
+                    or not isinstance(entry.get("path"), str)
+                    or not isinstance(entry.get("sha256"), str)
+                    or len(entry["sha256"]) != 64
+                    or any(character not in "0123456789abcdef" for character in entry["sha256"])
+                ):
                     raise ValueError("GENERATION_MANIFEST_ENTRY_INVALID")
-                relative = Path(entry["path"])
-                if relative.is_absolute() or ".." in relative.parts:
+                relative = PurePosixPath(entry["path"])
+                relative_text = relative.as_posix()
+                if (
+                    relative.is_absolute()
+                    or not relative.parts
+                    or ".." in relative.parts
+                    or relative_text in archived_paths
+                ):
                     raise ValueError("GENERATION_MANIFEST_PATH_UNSAFE")
-                source = root / relative
-                if not source.is_file():
-                    raise ValueError(f"GENERATION_ARTIFACT_MISSING:{relative.as_posix()}")
-                archive.write(source, arcname=f"{root.name}/{relative.as_posix()}")
-                archived_paths.add(relative.as_posix())
+                source = _archive_source(root, relative)
+                if hashlib.sha256(source.read_bytes()).hexdigest() != entry["sha256"]:
+                    raise ValueError(f"GENERATION_ARTIFACT_INTEGRITY_MISMATCH:{relative_text}")
+                total_bytes += _archive_entry(archive, source, f"{archive_root}/{relative_text}")
+                archived_paths.add(relative_text)
+            required_paths = {
+                "Makefile",
+                "README.md",
+                "requirements/approved-request.json",
+                "requirements/project-blueprint.json",
+                "scripts/projectctl.py",
+            }
+            if not required_paths <= archived_paths:
+                raise ValueError("GENERATION_MANIFEST_REQUIRED_FILES_MISSING")
             derived_lockfiles = [
                 root / "python" / "uv.lock",
                 root / "typescript" / "pnpm-lock.yaml",
@@ -130,14 +204,29 @@ def _archive_workspace(workspace: Path, destination: Path, *, evidence: Path | N
             for source in derived_lockfiles:
                 if not source.is_file():
                     continue
-                relative = source.relative_to(root)
-                if relative.as_posix() in archived_paths:
+                if source.resolve(strict=True) != source or source.is_symlink():
+                    raise ValueError(f"ARCHIVE_DERIVED_SOURCE_UNSAFE:{source.relative_to(root)}")
+                derived_relative = source.relative_to(root)
+                if derived_relative.as_posix() in archived_paths:
                     continue
-                archive.write(source, arcname=f"{root.name}/{relative.as_posix()}")
-                archived_paths.add(relative.as_posix())
-            archive.write(manifest_path, arcname=f"{root.name}/.elmos/generation-manifest.json")
-            if evidence is not None and evidence.is_file():
-                archive.write(evidence, arcname=f"{root.name}/.elmos/verification.json")
+                total_bytes += _archive_entry(
+                    archive, source, f"{archive_root}/{derived_relative.as_posix()}"
+                )
+                archived_paths.add(derived_relative.as_posix())
+            total_bytes += _archive_entry(
+                archive,
+                manifest_path,
+                f"{archive_root}/.elmos/generation-manifest.json",
+            )
+            if evidence is not None:
+                total_bytes += _archive_entry(
+                    archive,
+                    evidence,
+                    f"{archive_root}/.elmos/verification.json",
+                )
+            if total_bytes > 256 * 1024 * 1024:
+                raise ValueError("ARCHIVE_UNCOMPRESSED_SIZE_LIMIT_EXCEEDED")
+        os.chmod(temporary, 0o600)
         temporary.replace(destination)
     finally:
         temporary.unlink(missing_ok=True)
@@ -145,6 +234,7 @@ def _archive_workspace(workspace: Path, destination: Path, *, evidence: Path | N
         "status": "ARCHIVED",
         "path": str(destination),
         "byte_count": destination.stat().st_size,
+        "sha256": hashlib.sha256(destination.read_bytes()).hexdigest(),
         "artifact_count": len(archived_paths) + 1 + int(evidence is not None and evidence.is_file()),
     }
 

@@ -28,7 +28,7 @@
     "local_container_health_pass_rate": 1.0,
     "local_cleanup_pass_rate": 1.0,
     "local_deployment_control_pass_rate": 1.0,
-    "local_deployment_control_tests": 13
+    "local_deployment_control_tests": 22
   },
   "critical_unknowns": 1,
   "silent_resource_drops": 0,

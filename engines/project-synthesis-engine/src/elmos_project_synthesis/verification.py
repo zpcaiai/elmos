@@ -536,15 +536,20 @@ def _probe(
 ) -> dict[str, Any]:
     env = os.environ.copy()
     env.update(environment or {})
-    process = subprocess.Popen(  # noqa: S603
-        command,
-        cwd=cwd,
-        env=env,
-        text=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        start_new_session=True,
-    )
+    process_output = tempfile.TemporaryFile(mode="w+t", encoding="utf-8")
+    try:
+        process = subprocess.Popen(  # noqa: S603
+            command,
+            cwd=cwd,
+            env=env,
+            text=True,
+            stdout=process_output,
+            stderr=subprocess.STDOUT,
+            start_new_session=True,
+        )
+    except BaseException:
+        process_output.close()
+        raise
     if not 5 <= startup_timeout_seconds <= 180:
         raise ValueError("STARTUP_TIMEOUT_OUT_OF_RANGE")
     deadline = time.monotonic() + startup_timeout_seconds
@@ -630,9 +635,11 @@ def _probe(
                     os.killpg(process.pid, signal.SIGKILL)
                 else:
                     process.kill()
-        output = process.stdout.read()[-6_000:] if process.stdout is not None else ""
-        if process.stdout is not None:
-            process.stdout.close()
+        process_output.flush()
+        end = process_output.seek(0, os.SEEK_END)
+        process_output.seek(max(0, end - 24_000))
+        output = process_output.read()[-6_000:]
+        process_output.close()
     result = _result(
         language=language,
         kind="startup-probe",

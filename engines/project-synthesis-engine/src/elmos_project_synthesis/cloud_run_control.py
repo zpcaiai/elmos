@@ -11,12 +11,15 @@ import argparse
 import datetime as dt
 import hashlib
 import json
+import os
 import re
 import shutil
 import subprocess
 import sys
+import tempfile
+import time
 import urllib.request
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any
 from urllib.parse import urlsplit
 
@@ -25,7 +28,36 @@ NAME_RE = re.compile(r"^[a-z][a-z0-9-]{0,61}[a-z0-9]$")
 REGION_RE = re.compile(r"^[a-z]+-[a-z]+[0-9]$")
 DIGEST_RE = re.compile(r"^[a-f0-9]{64}$")
 MEMORY_RE = re.compile(r"^[1-9][0-9]*(Mi|Gi)$")
+ACTOR_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@/-]{2,199}$")
+ENV_KEY_RE = re.compile(r"^[A-Z][A-Z0-9_]{0,63}$")
+ENV_VALUE_RE = re.compile(r"^[A-Za-z0-9._:/@+-]{1,512}$")
+HEALTH_PATH_RE = re.compile(r"^/[A-Za-z0-9._~!$&'()*+;=:@%/-]{0,255}$")
 INGRESS = {"internal", "internal-and-cloud-load-balancing"}
+MAX_JSON_BYTES = 1_048_576
+MAX_HEALTH_BYTES = 65_536
+MAX_IDENTITY_TOKEN_BYTES = 16_384
+MAX_AUTHORIZATION_LIFETIME = dt.timedelta(hours=24)
+PROVIDER_COMMAND_TIMEOUT_SECONDS = 900
+ALLOWED_CONFIG_KEYS = {
+    "schema_version",
+    "project_id",
+    "region",
+    "service_name",
+    "release_id",
+    "image",
+    "runtime_service_account",
+    "port",
+    "cpu",
+    "memory",
+    "concurrency",
+    "min_instances",
+    "max_instances",
+    "timeout_seconds",
+    "ingress",
+    "health",
+    "secrets",
+    "environment",
+}
 
 
 class ControlError(RuntimeError):
@@ -33,7 +65,11 @@ class ControlError(RuntimeError):
 
 
 def _load(path: Path) -> dict[str, Any]:
-    value = json.loads(path.read_text(encoding="utf-8"))
+    if path.is_symlink() or not path.is_file():
+        raise ControlError(f"JSON_FILE_UNSAFE:{path}")
+    if path.stat().st_size > MAX_JSON_BYTES:
+        raise ControlError(f"JSON_FILE_TOO_LARGE:{path}")
+    value = json.loads(path.read_text(encoding="utf-8"), parse_constant=_reject_json_constant)
     if not isinstance(value, dict):
         raise ControlError(f"JSON_OBJECT_REQUIRED:{path}")
     return value
@@ -46,6 +82,9 @@ def _canonical_digest(value: dict[str, Any]) -> str:
 
 def validate_config(config: dict[str, Any]) -> list[str]:
     errors: list[str] = []
+    unknown_keys = sorted(set(config) - ALLOWED_CONFIG_KEYS)
+    if unknown_keys:
+        errors.append("unknown configuration keys: " + ", ".join(unknown_keys))
     project = config.get("project_id")
     region = config.get("region")
     service = config.get("service_name")
@@ -98,13 +137,42 @@ def validate_config(config: dict[str, Any]) -> list[str]:
         errors.append("cpu must be one of 1, 2, 4, or 8")
     if not isinstance(config.get("memory"), str) or not MEMORY_RE.fullmatch(config["memory"]):
         errors.append("memory must use an exact Mi or Gi value")
+    timeout_seconds = config.get("timeout_seconds", 300)
+    if (
+        not isinstance(timeout_seconds, int)
+        or isinstance(timeout_seconds, bool)
+        or not 1 <= timeout_seconds <= 3600
+    ):
+        errors.append("timeout_seconds must be an integer in [1, 3600]")
     health = config.get("health")
-    if not isinstance(health, dict) or not isinstance(health.get("path"), str) or not health["path"].startswith("/"):
+    if (
+        not isinstance(health, dict)
+        or set(health) != {"path", "expected_json"}
+        or not isinstance(health.get("path"), str)
+        or HEALTH_PATH_RE.fullmatch(health["path"]) is None
+        or "//" in health["path"]
+    ):
         errors.append("health.path must be an absolute HTTP path")
+    else:
+        expected = health.get("expected_json")
+        if (
+            not isinstance(expected, dict)
+            or not expected
+            or len(expected) > 16
+            or not all(
+                isinstance(key, str)
+                and ENV_KEY_RE.fullmatch(key.upper()) is not None
+                and type(value) in {str, int, float, bool}
+                for key, value in expected.items()
+            )
+        ):
+            errors.append("health.expected_json must be a small non-empty scalar object")
     secrets = config.get("secrets", [])
     if not isinstance(secrets, list):
         errors.append("secrets must be a list")
     else:
+        seen_mounts: set[str] = set()
+        seen_names: set[str] = set()
         for index, secret in enumerate(secrets):
             if not isinstance(secret, dict):
                 errors.append(f"secrets[{index}] must be an object")
@@ -112,13 +180,52 @@ def validate_config(config: dict[str, Any]) -> list[str]:
             if set(secret) != {"mount_path", "name", "version"}:
                 errors.append(f"secrets[{index}] may contain only mount_path, name, and version")
                 continue
-            if not isinstance(secret["mount_path"], str) or not secret["mount_path"].startswith("/run/secrets/"):
+            mount_path = secret["mount_path"]
+            mount = PurePosixPath(mount_path) if isinstance(mount_path, str) else None
+            if (
+                mount is None
+                or not mount.is_absolute()
+                or mount.parent != PurePosixPath("/run/secrets")
+                or mount.name in {"", ".", ".."}
+                or str(mount) != mount_path
+            ):
                 errors.append(f"secrets[{index}].mount_path must be below /run/secrets")
-            if not isinstance(secret["name"], str) or not NAME_RE.fullmatch(secret["name"]):
+            elif mount_path in seen_mounts:
+                errors.append(f"secrets[{index}].mount_path is duplicated")
+            else:
+                seen_mounts.add(mount_path)
+            secret_name = secret["name"]
+            if not isinstance(secret_name, str) or not NAME_RE.fullmatch(secret_name):
                 errors.append(f"secrets[{index}].name is invalid")
+            elif secret_name in seen_names:
+                errors.append(f"secrets[{index}].name is duplicated")
+            else:
+                seen_names.add(secret_name)
             if not isinstance(secret["version"], str) or not secret["version"].isdigit():
                 errors.append(f"secrets[{index}].version must be an immutable numeric version")
+    environment = config.get("environment", {})
+    if not isinstance(environment, dict) or len(environment) > 32:
+        errors.append("environment must be an object with at most 32 entries")
+    else:
+        for key, value in environment.items():
+            key_is_valid = isinstance(key, str) and ENV_KEY_RE.fullmatch(key) is not None
+            value_is_valid = isinstance(value, str) and ENV_VALUE_RE.fullmatch(value) is not None
+            sensitive_name = key_is_valid and any(
+                marker in key for marker in ("PASSWORD", "SECRET", "TOKEN", "KEY")
+            )
+            file_reference = key_is_valid and key.endswith("_FILE")
+            if (
+                not key_is_valid
+                or not value_is_valid
+                or (sensitive_name and not file_reference)
+                or (file_reference and value not in seen_mounts)
+            ):
+                errors.append(f"environment entry is unsafe: {key}")
     return errors
+
+
+def _reject_json_constant(value: str) -> None:
+    raise ValueError(f"INVALID_JSON_CONSTANT:{value}")
 
 
 def deploy_command(config: dict[str, Any]) -> list[str]:
@@ -133,6 +240,7 @@ def deploy_command(config: dict[str, Any]) -> list[str]:
         f"--port={config['port']}", f"--cpu={config['cpu']}", f"--memory={config['memory']}",
         f"--concurrency={config['concurrency']}", f"--min-instances={config['min_instances']}",
         f"--max-instances={config['max_instances']}", f"--ingress={config['ingress']}",
+        f"--timeout={config.get('timeout_seconds', 300)}s",
         f"--revision-suffix={config['release_id']}", f"--tag=candidate-{config['release_id']}",
         "--no-allow-unauthenticated", "--no-traffic", "--quiet", "--format=json",
     ]
@@ -142,6 +250,10 @@ def deploy_command(config: dict[str, Any]) -> list[str]:
             f"{item['mount_path']}={item['name']}:{item['version']}" for item in secrets
         )
         command.append(f"--set-secrets={references}")
+    environment = config.get("environment", {})
+    if environment:
+        values = ",".join(f"{key}={environment[key]}" for key in sorted(environment))
+        command.append(f"--set-env-vars={values}")
     return command
 
 
@@ -184,29 +296,43 @@ def _authorization(path: Path, action: str, config: dict[str, Any], executor: st
         if auth.get(key) != value:
             raise ControlError(f"AUTHORIZATION_SCOPE_MISMATCH:{key}")
     approver = auth.get("approver")
-    if not isinstance(approver, str) or not approver or approver == executor:
+    if ACTOR_RE.fullmatch(executor) is None:
+        raise ControlError("EXECUTOR_IDENTITY_INVALID")
+    if not isinstance(approver, str) or ACTOR_RE.fullmatch(approver) is None or approver == executor:
         raise ControlError("AUTHORIZATION_REQUIRES_SEPARATE_APPROVER")
     try:
         expires = dt.datetime.fromisoformat(str(auth["expires_at"]).replace("Z", "+00:00"))
     except (KeyError, ValueError) as exc:
         raise ControlError("AUTHORIZATION_EXPIRY_INVALID") from exc
-    if expires <= dt.datetime.now(dt.UTC):
+    if expires.tzinfo is None or expires.utcoffset() is None:
+        raise ControlError("AUTHORIZATION_EXPIRY_MUST_INCLUDE_TIMEZONE")
+    now = dt.datetime.now(dt.UTC)
+    if expires <= now:
         raise ControlError("AUTHORIZATION_EXPIRED")
+    if expires > now + MAX_AUTHORIZATION_LIFETIME:
+        raise ControlError("AUTHORIZATION_LIFETIME_EXCEEDS_24_HOURS")
     return auth
 
 
-def _run(command: list[str]) -> dict[str, Any]:
+def _run(command: list[str], *, timeout: int = PROVIDER_COMMAND_TIMEOUT_SECONDS) -> dict[str, Any]:
     if not command or Path(command[0]).name != "gcloud":
         raise ControlError("ONLY_GCLOUD_COMMANDS_ARE_ALLOWED")
     executable = shutil.which(command[0])
     if not executable:
         raise ControlError("GCLOUD_NOT_INSTALLED")
-    completed = subprocess.run(  # noqa: S603 - executable and arguments are validated, never passed to a shell.
-        [executable, *command[1:]], check=False, capture_output=True, text=True
-    )
+    try:
+        completed = subprocess.run(  # noqa: S603 - validated executable and structured arguments.
+            [executable, *command[1:]],
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+        )
+    except subprocess.TimeoutExpired as exc:
+        raise ControlError(f"GCLOUD_TIMEOUT:{command[1]}:{timeout}") from exc
     if completed.returncode:
-        message = completed.stderr.strip().splitlines()[-1:] or ["provider command failed"]
-        raise ControlError(f"GCLOUD_FAILED:{command[1]}:{message[0]}")
+        message = (completed.stderr or completed.stdout or "provider command failed")[-2_000:]
+        raise ControlError(f"GCLOUD_FAILED:{command[1]}:{message.replace(chr(10), ' ')}")
     if not completed.stdout.strip():
         return {}
     try:
@@ -223,6 +349,59 @@ def _describe(config: dict[str, Any]) -> dict[str, Any]:
     ])
 
 
+def _describe_optional(config: dict[str, Any]) -> dict[str, Any] | None:
+    try:
+        return _describe(config)
+    except ControlError as error:
+        message = str(error).lower()
+        if "not found" in message or "does not exist" in message:
+            return None
+        raise
+
+
+def _traffic_is_exact(service: dict[str, Any], revision: str) -> bool:
+    traffic = service.get("status", {}).get("traffic", [])
+    return isinstance(traffic, list) and any(
+        isinstance(item, dict)
+        and item.get("revisionName") == revision
+        and item.get("percent") == 100
+        for item in traffic
+    )
+
+
+def _wait_for_traffic(config: dict[str, Any], revision: str, *, timeout: int = 120) -> None:
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        if _traffic_is_exact(_describe(config), revision):
+            return
+        time.sleep(2)
+    raise ControlError("TRAFFIC_CONVERGENCE_TIMEOUT")
+
+
+def _wait_for_candidate(config: dict[str, Any], tag: str, *, timeout: int = 120) -> dict[str, Any]:
+    deadline = time.monotonic() + timeout
+    last_error = "CANDIDATE_TAG_NOT_OBSERVED"
+    while time.monotonic() < deadline:
+        service = _describe(config)
+        try:
+            candidate_probe_endpoints(service, tag)
+        except ControlError as error:
+            last_error = str(error)
+            time.sleep(2)
+            continue
+        return service
+    raise ControlError(f"CANDIDATE_CONVERGENCE_TIMEOUT:{last_error}")
+
+
+def _wait_until_deleted(config: dict[str, Any], *, timeout: int = 120) -> None:
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        if _describe_optional(config) is None:
+            return
+        time.sleep(2)
+    raise ControlError("SERVICE_DELETION_NOT_OBSERVED")
+
+
 def candidate_probe_endpoints(service: dict[str, Any], tag: str) -> tuple[str, str]:
     status = service.get("status", {})
     audience = status.get("url")
@@ -234,7 +413,7 @@ def candidate_probe_endpoints(service: dict[str, Any], tag: str) -> tuple[str, s
         parsed = urlsplit(value)
         if parsed.scheme != "https" or not parsed.hostname or not parsed.hostname.endswith(".run.app"):
             raise ControlError(f"{label}_INVALID")
-        if parsed.username or parsed.password or parsed.query or parsed.fragment:
+        if parsed.username or parsed.password or parsed.query or parsed.fragment or parsed.path not in {"", "/"}:
             raise ControlError(f"{label}_INVALID")
     assert isinstance(endpoint, str)
     assert isinstance(audience, str)
@@ -256,50 +435,112 @@ def preflight(config: dict[str, Any]) -> dict[str, Any]:
 
 
 def _write_receipt(path: Path, receipt: dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
+    if path.is_symlink() or (path.exists() and not path.is_file()):
+        raise ControlError("RECEIPT_OUTPUT_UNSAFE")
+    path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+    descriptor, temporary_name = tempfile.mkstemp(
+        prefix=f".{path.name}.", suffix=".tmp", dir=path.parent
+    )
+    temporary = Path(temporary_name)
+    try:
+        with os.fdopen(descriptor, "w", encoding="utf-8", newline="\n") as handle:
+            json.dump(receipt, handle, indent=2, sort_keys=True)
+            handle.write("\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.chmod(temporary, 0o600)
+        temporary.replace(path)
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
+def _identity_token(audience: str) -> str:
+    executable = shutil.which("gcloud")
+    if not executable:
+        raise ControlError("GCLOUD_NOT_INSTALLED")
+    try:
+        completed = subprocess.run(  # noqa: S603 - fixed provider operation and validated audience.
+            [executable, "auth", "print-identity-token", f"--audiences={audience}"],
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+    except subprocess.TimeoutExpired as error:
+        raise ControlError("IDENTITY_TOKEN_COMMAND_TIMEOUT") from error
+    token = completed.stdout.strip()
+    if completed.returncode or not token or len(token.encode()) > MAX_IDENTITY_TOKEN_BYTES:
+        raise ControlError("IDENTITY_TOKEN_REQUIRED_FOR_PRIVATE_HEALTH_PROBE")
+    return token
+
+
+def _private_health_request(config: dict[str, Any], uri: str, audience: str) -> None:
+    token = _identity_token(audience)
+    request = urllib.request.Request(  # noqa: S310 - provider-derived HTTPS URL is validated.
+        uri.rstrip("/") + config["health"]["path"]
+    )
+    request.add_header("Authorization", f"Bearer {token}")
+    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+    with opener.open(request, timeout=20) as response:  # noqa: S310 - validated provider-derived HTTPS.
+        raw = response.read(MAX_HEALTH_BYTES + 1)
+        if len(raw) > MAX_HEALTH_BYTES:
+            raise ControlError("PRIVATE_HEALTH_RESPONSE_TOO_LARGE")
+        if response.status != 200:
+            raise ControlError("PRIVATE_HEALTH_HTTP_STATUS_INVALID")
+    try:
+        body = json.loads(raw.decode("utf-8"))
+    except (UnicodeError, json.JSONDecodeError) as error:
+        raise ControlError("PRIVATE_HEALTH_JSON_INVALID") from error
+    expected = config["health"]["expected_json"]
+    if not isinstance(body, dict) or any(body.get(key) != value for key, value in expected.items()):
+        raise ControlError("PRIVATE_HEALTH_CONTRACT_FAILED")
+
+
+def _private_health_probe(config: dict[str, Any], service: dict[str, Any], tag: str) -> None:
+    uri, audience = candidate_probe_endpoints(service, tag)
+    _private_health_request(config, uri, audience)
+
+
+def _private_service_health_probe(config: dict[str, Any], service: dict[str, Any]) -> None:
+    service_url = service.get("status", {}).get("url")
+    if not isinstance(service_url, str):
+        raise ControlError("SERVICE_URL_NOT_OBSERVED")
+    parsed = urlsplit(service_url)
+    if (
+        parsed.scheme != "https"
+        or not parsed.hostname
+        or not parsed.hostname.endswith(".run.app")
+        or parsed.username
+        or parsed.password
+        or parsed.query
+        or parsed.fragment
+        or parsed.path not in {"", "/"}
+    ):
+        raise ControlError("SERVICE_URL_INVALID")
+    _private_health_request(config, service_url, service_url)
 
 
 def execute_deploy(config: dict[str, Any], authorization: Path, executor: str, receipt_path: Path) -> None:
     preflight(config)
     auth = _authorization(authorization, "deploy", config, executor)
-    try:
-        before = _describe(config)
-        previous = before.get("status", {}).get("latestReadyRevisionName")
-    except ControlError:
-        previous = None
+    before = _describe_optional(config)
+    previous = before.get("status", {}).get("latestReadyRevisionName") if before else None
     _run(deploy_command(config))
     after = _describe(config)
     revision = after.get("status", {}).get("latestReadyRevisionName")
     if not isinstance(revision, str) or revision == previous:
         raise ControlError("NEW_READY_REVISION_NOT_OBSERVED")
     tag = f"candidate-{config['release_id']}"
-    uri, audience = candidate_probe_endpoints(after, tag)
-    executable = shutil.which("gcloud")
-    if not executable:
-        raise ControlError("GCLOUD_NOT_INSTALLED")
-    token_result = subprocess.run(  # noqa: S603 - fixed gcloud operation with provider-derived HTTPS audience.
-        [executable, "auth", "print-identity-token", f"--audiences={audience}"],
-        check=False, capture_output=True, text=True,
-    )
-    token = token_result.stdout.strip()
-    if token_result.returncode or not token:
-        raise ControlError("IDENTITY_TOKEN_REQUIRED_FOR_PRIVATE_HEALTH_PROBE")
-    request = urllib.request.Request(  # noqa: S310 - URI is verified provider-derived HTTPS.
-        uri.rstrip("/") + config["health"]["path"]
-    )
-    request.add_header("Authorization", f"Bearer {token}")
-    with urllib.request.urlopen(request, timeout=20) as response:  # noqa: S310 - URI is provider-derived HTTPS.
-        body = json.loads(response.read().decode("utf-8"))
-    expected = config["health"].get("expected_json", {"status": "UP"})
-    if any(body.get(key) != value for key, value in expected.items()):
-        raise ControlError("PRIVATE_HEALTH_CONTRACT_FAILED")
+    candidate = _wait_for_candidate(config, tag)
+    _private_health_probe(config, candidate, tag)
     promote = [
         "gcloud", "run", "services", "update-traffic", config["service_name"],
         f"--project={config['project_id']}", f"--region={config['region']}",
         f"--to-revisions={revision}=100", "--quiet", "--format=json",
     ]
     _run(promote)
+    _wait_for_traffic(config, revision)
+    _private_service_health_probe(config, _describe(config))
     _write_receipt(receipt_path, {
         "schema_version": 1, "action": "deploy", "status": "passed",
         "executed_at": dt.datetime.now(dt.UTC).isoformat(), "executor": executor,
@@ -330,6 +571,8 @@ def execute_rollback(
         f"--project={config['project_id']}", f"--region={config['region']}",
         f"--to-revisions={revision}=100", "--quiet", "--format=json",
     ])
+    _wait_for_traffic(config, revision)
+    _private_service_health_probe(config, _describe(config))
     _write_receipt(receipt_path, {
         "schema_version": 1, "action": "rollback", "status": "passed",
         "executed_at": dt.datetime.now(dt.UTC).isoformat(), "executor": executor,
@@ -345,6 +588,7 @@ def execute_destroy(config: dict[str, Any], authorization: Path, executor: str, 
         "gcloud", "run", "services", "delete", config["service_name"],
         f"--project={config['project_id']}", f"--region={config['region']}", "--quiet", "--format=json",
     ])
+    _wait_until_deleted(config)
     _write_receipt(receipt_path, {
         "schema_version": 1, "action": "destroy", "status": "passed",
         "executed_at": dt.datetime.now(dt.UTC).isoformat(), "executor": executor,
@@ -364,6 +608,7 @@ def main() -> int:
     parser.add_argument("--receipt", type=Path, default=Path("deploy/evidence/cloud-run-receipt.json"))
     parser.add_argument("--deploy-receipt", type=Path)
     args = parser.parse_args()
+    config: dict[str, Any] | None = None
     try:
         config = _load(args.config)
         if args.action == "validate":
@@ -389,7 +634,25 @@ def main() -> int:
             output = _load(args.receipt)
         print(json.dumps(output, indent=2))
         return 0
-    except (ControlError, OSError, json.JSONDecodeError) as exc:
+    except (ControlError, OSError, ValueError, json.JSONDecodeError) as exc:
+        if args.action in {"deploy", "rollback", "destroy"} and args.execute:
+            failure_receipt = {
+                "schema_version": 1,
+                "action": args.action,
+                "status": "failed",
+                "failed_at": dt.datetime.now(dt.UTC).isoformat(),
+                "executor": args.executor,
+                "error_code": str(exc).split(":", 1)[0],
+                "provider_mutation_status": "UNKNOWN_RECONCILIATION_REQUIRED",
+                "orphan_and_billing_review": "REQUIRED",
+                "certification_effect": "NONE_REQUIRES_INDEPENDENT_GATE",
+            }
+            if config is not None:
+                failure_receipt["config_digest"] = _canonical_digest(config)
+            try:
+                _write_receipt(args.receipt, failure_receipt)
+            except (ControlError, OSError) as receipt_error:
+                print(f"ERROR: FAILURE_RECEIPT_NOT_WRITTEN:{receipt_error}", file=sys.stderr)
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2
 

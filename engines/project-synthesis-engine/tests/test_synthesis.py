@@ -381,7 +381,10 @@ def test_renders_complete_language_projects_with_fail_closed_claims() -> None:
         "rust/Cargo.lock",
         "rust/Cargo.toml",
         "rust/Dockerfile",
+        "Makefile",
         "docker-compose.yml",
+        "scripts/projectctl.py",
+        "operations/performance-budget.json",
         "requirements/psir.json",
         "requirements/project-blueprint.json",
         "requirements/asset-graph.json",
@@ -395,6 +398,16 @@ def test_renders_complete_language_projects_with_fail_closed_claims() -> None:
     assert manifest["certification_status"] == "NOT_CERTIFIED"
     assert len(manifest["files"]) == len(files) - 1
     assert all(entry["sha256"] for entry in manifest["files"])
+    compose = files["docker-compose.yml"]
+    assert "127.0.0.1:8088:8088" in compose
+    assert "cap_drop: [ALL]" in compose
+    assert "no-new-privileges:true" in compose
+    assert "pids_limit: 256" in compose
+    assert "internal: true" in compose
+    assert "APP_NAME: work-order-service" in compose
+    assert "APP_NAME: work-order-service-java" not in compose
+    budget = json.loads(files["operations/performance-budget.json"])
+    assert budget["production_capacity_evidence"] == "NOT_RUN"
     asset_graph = json.loads(files["requirements/asset-graph.json"])
     build_graph = json.loads(files["requirements/build-graph.json"])
     assert {node["id"] for node in asset_graph["nodes"]} >= {
@@ -1347,9 +1360,62 @@ def test_archive_includes_verified_lockfiles(tmp_path: Path) -> None:
     assert result["status"] == "ARCHIVED"
     with zipfile.ZipFile(archive_path) as archive:
         names = set(archive.namelist())
-    assert "workspace/python/uv.lock" in names
-    assert "workspace/typescript/pnpm-lock.yaml" in names
-    assert "workspace/.elmos/verification.json" in names
+    assert "commerce-service/python/uv.lock" in names
+    assert "commerce-service/typescript/pnpm-lock.yaml" in names
+    assert "commerce-service/.elmos/verification.json" in names
+
+
+def test_archive_is_deterministic_and_refuses_manifest_drift(tmp_path: Path) -> None:
+    workspace = tmp_path / "workspace"
+    generate_workspace(multi_entity_request(languages=("python",)), workspace)
+    first = tmp_path / "first.zip"
+    second = tmp_path / "second.zip"
+
+    first_result = _archive_workspace(workspace, first)
+    second_result = _archive_workspace(workspace, second)
+
+    assert first.read_bytes() == second.read_bytes()
+    assert first_result["sha256"] == second_result["sha256"]
+    (workspace / "README.md").write_text("tampered\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="GENERATION_ARTIFACT_INTEGRITY_MISMATCH:README.md"):
+        _archive_workspace(workspace, tmp_path / "refused.zip")
+
+
+def test_archive_refuses_a_manifest_owned_symlink(tmp_path: Path) -> None:
+    workspace = tmp_path / "workspace"
+    generate_workspace(multi_entity_request(languages=("python",)), workspace)
+    readme = workspace / "README.md"
+    readme.unlink()
+    readme.symlink_to(tmp_path / "outside.md")
+
+    with pytest.raises(ValueError, match="GENERATION_ARTIFACT_UNSAFE:README.md"):
+        _archive_workspace(workspace, tmp_path / "refused.zip")
+
+
+def test_archive_refuses_a_manifest_owned_symlink_parent(tmp_path: Path) -> None:
+    workspace = tmp_path / "workspace"
+    generate_workspace(multi_entity_request(languages=("python",)), workspace)
+    outside = tmp_path / "outside-docs"
+    (workspace / "docs").rename(outside)
+    (workspace / "docs").symlink_to(outside, target_is_directory=True)
+
+    with pytest.raises(ValueError, match="GENERATION_ARTIFACT_UNSAFE:docs/"):
+        _archive_workspace(workspace, tmp_path / "refused.zip")
+
+
+def test_generated_local_controller_verifies_integrity_before_execution(tmp_path: Path) -> None:
+    workspace = tmp_path / "workspace"
+    generate_workspace(multi_entity_request(languages=("python",)), workspace)
+    command = ["make", "doctor"]
+
+    ready = subprocess.run(command, cwd=workspace, check=False, capture_output=True, text=True)  # noqa: S603
+    assert ready.returncode == 0, ready.stderr
+    assert '"managed_integrity": "PASSED"' in ready.stdout
+
+    (workspace / "README.md").write_text("tampered\n", encoding="utf-8")
+    refused = subprocess.run(command, cwd=workspace, check=False, capture_output=True, text=True)  # noqa: S603
+    assert refused.returncode == 2
+    assert "MANAGED_FILE_INTEGRITY_MISMATCH:README.md" in refused.stderr
 
 
 def test_runtime_plan_is_allowlisted_and_workspace_confined(tmp_path: Path) -> None:
@@ -1375,6 +1441,9 @@ def test_every_profile_open_target_declares_an_integration_command() -> None:
 _HEALTH_SERVER = """
 import json, sys
 from http.server import BaseHTTPRequestHandler, HTTPServer
+
+sys.stdout.write("startup-log:" + "x" * 200000)
+sys.stdout.flush()
 
 
 class Handler(BaseHTTPRequestHandler):

@@ -11,6 +11,7 @@ from elmos_project_synthesis.cloud_run_control import (
     ControlError,
     _authorization,
     _canonical_digest,
+    _write_receipt,
     candidate_probe_endpoints,
     deploy_command,
     plan,
@@ -36,9 +37,17 @@ def config() -> dict[str, object]:
         "concurrency": 40,
         "min_instances": 0,
         "max_instances": 10,
+        "timeout_seconds": 300,
         "ingress": "internal",
-        "health": {"path": "/health", "expected_json": {"status": "UP"}},
+        "health": {
+            "path": "/health",
+            "expected_json": {"service": "generated-api", "status": "UP"},
+        },
         "secrets": [{"mount_path": "/run/secrets/database-url", "name": "database-url", "version": "7"}],
+        "environment": {
+            "APP_ENV": "production",
+            "ELMOS_DATABASE_URL_FILE": "/run/secrets/database-url",
+        },
     }
 
 
@@ -50,7 +59,9 @@ def test_plan_is_private_digest_pinned_and_no_traffic() -> None:
     assert "--no-allow-unauthenticated" in command
     assert "--no-traffic" in command
     assert "--ingress=internal" in command
+    assert "--timeout=300s" in command
     assert "--set-secrets=/run/secrets/database-url=database-url:7" in command
+    assert "--set-env-vars=APP_ENV=production,ELMOS_DATABASE_URL_FILE=/run/secrets/database-url" in command
     assert result["external_execution_evidence"] == "NOT_RUN"
 
 
@@ -96,6 +107,34 @@ def test_latest_secret_alias_is_rejected() -> None:
         {"mount_path": "/run/secrets/database-url", "name": "database-url", "version": "latest"}
     ]
     assert any("immutable numeric version" in error for error in validate_config(deployment))
+
+
+@pytest.mark.parametrize(
+    ("patch", "message"),
+    [
+        ({"unexpected": True}, "unknown configuration keys"),
+        ({"health": {"path": "//metadata", "expected_json": {"status": "UP"}}}, "health.path"),
+        (
+            {
+                "secrets": [
+                    {"mount_path": "/run/secrets/../escape", "name": "database-url", "version": "7"}
+                ]
+            },
+            "mount_path",
+        ),
+        ({"environment": {"API_TOKEN": "secret-value"}}, "environment entry is unsafe"),
+        (
+            {"environment": {"ELMOS_DATABASE_URL_FILE": "/run/secrets/not-mounted"}},
+            "environment entry is unsafe",
+        ),
+    ],
+)
+def test_unsafe_secret_health_and_unknown_configuration_is_rejected(
+    patch: dict[str, object], message: str
+) -> None:
+    deployment = config()
+    deployment.update(patch)
+    assert any(message in error for error in validate_config(deployment))
 
 
 def test_repository_negative_and_holdout_corpora() -> None:
@@ -156,3 +195,43 @@ def test_authorization_cannot_be_reused_for_rollback(tmp_path) -> None:
     )
     with pytest.raises(ControlError, match="SCOPE_MISMATCH:action"):
         _authorization(path, "rollback", deployment, "user:operator")
+
+
+@pytest.mark.parametrize(
+    ("expires_at", "message"),
+    [
+        ((datetime.now(UTC) + timedelta(hours=25)).isoformat(), "EXCEEDS_24_HOURS"),
+        ((datetime.now() + timedelta(minutes=10)).isoformat(), "MUST_INCLUDE_TIMEZONE"),
+    ],
+)
+def test_authorization_rejects_unbounded_or_naive_expiry(
+    tmp_path: Path, expires_at: str, message: str
+) -> None:
+    deployment = config()
+    authorization = {
+        "schema_version": 1,
+        "approved": True,
+        "action": "deploy",
+        "config_digest": _canonical_digest(deployment),
+        "project_id": deployment["project_id"],
+        "region": deployment["region"],
+        "service_name": deployment["service_name"],
+        "approver": "user:cloud-approver",
+        "expires_at": expires_at,
+    }
+    path = tmp_path / "authorization.json"
+    path.write_text(json.dumps(authorization), encoding="utf-8")
+    with pytest.raises(ControlError, match=message):
+        _authorization(path, "deploy", deployment, "user:operator")
+
+
+def test_receipt_is_atomic_private_and_rejects_symlink(tmp_path: Path) -> None:
+    receipt = tmp_path / "evidence" / "receipt.json"
+    _write_receipt(receipt, {"status": "passed"})
+    assert json.loads(receipt.read_text(encoding="utf-8")) == {"status": "passed"}
+    assert receipt.stat().st_mode & 0o777 == 0o600
+
+    receipt.unlink()
+    receipt.symlink_to(tmp_path / "outside.json")
+    with pytest.raises(ControlError, match="RECEIPT_OUTPUT_UNSAFE"):
+        _write_receipt(receipt, {"status": "passed"})

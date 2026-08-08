@@ -5,6 +5,7 @@ import json
 import os
 import re
 import tempfile
+from importlib.resources import files as package_files
 from pathlib import Path, PurePosixPath
 from typing import Any, cast
 
@@ -26,8 +27,19 @@ from .rendering import clean, pretty_json
 from .rust_target import render_rust
 from .typescript_target import render_typescript
 
-ENGINE_VERSION = "1.3.0"
-COMPATIBLE_MANIFEST_VERSIONS = frozenset({"1.2.0", ENGINE_VERSION})
+ENGINE_VERSION = "1.4.0"
+COMPATIBLE_MANIFEST_VERSIONS = frozenset({"1.2.0", "1.3.0", ENGINE_VERSION})
+
+_COMPOSE_LIMITS: dict[str, tuple[str, str]] = {
+    "java": ("1.0", "1g"),
+    "python": ("1.0", "768m"),
+    "csharp": ("1.0", "1g"),
+    "typescript": ("1.0", "768m"),
+    "go": ("0.5", "256m"),
+    "kotlin": ("1.5", "1536m"),
+    "php": ("0.5", "256m"),
+    "rust": ("0.5", "256m"),
+}
 
 
 class WorkspaceConflictError(RuntimeError):
@@ -295,24 +307,124 @@ def _render_build_graph(request: SynthesisRequest) -> dict[str, Any]:
 
 
 def _compose(request: SynthesisRequest) -> str:
-    blocks: list[str] = ["services:"]
+    blocks: list[str] = [f"name: {request.project_name}", "services:"]
     for target in request.targets:
         directory = _target_directory(target.language)
+        cpus, memory = _COMPOSE_LIMITS[target.language]
         blocks.extend(
             [
                 f"  {target.language}:",
-                f"    build: ./{directory}",
+                "    build:",
+                f"      context: ./{directory}",
+                "      dockerfile: Dockerfile",
                 "    environment:",
-                f"      APP_NAME: {request.project_name}-{target.language}",
+                f"      APP_NAME: {request.project_name}",
                 "      APP_ENV: development",
                 f'      PORT: "{target.port}"',
-                f'    ports: ["{target.port}:{target.port}"]',
+                f'    ports: ["127.0.0.1:{target.port}:{target.port}"]',
+                "    init: true",
                 "    read_only: true",
-                "    tmpfs: [/tmp]",
+                '    tmpfs: ["/tmp:rw,noexec,nosuid,nodev,size=64m"]',
+                "    cap_drop: [ALL]",
                 "    security_opt: [no-new-privileges:true]",
+                "    pids_limit: 256",
+                f"    cpus: \"{cpus}\"",
+                f"    mem_limit: {memory}",
+                "    stop_grace_period: 15s",
+                "    networks: [runtime]",
+                "    labels:",
+                "      io.elmos.generated: \"true\"",
+                "      io.elmos.runtime-scope: local-development",
             ]
         )
+    blocks.extend(["networks:", "  runtime:", "    internal: true"])
     return "\n".join(blocks) + "\n"
+
+
+def _root_makefile(request: SynthesisRequest) -> str:
+    first = request.targets[0].language
+    phony_targets = " ".join(
+        [
+            "doctor",
+            "verify",
+            "run",
+            "plan",
+            "up",
+            "down",
+            "status",
+            "smoke",
+            *[f"run-{target.language}" for target in request.targets],
+            *[f"verify-{target.language}" for target in request.targets],
+        ]
+    )
+    lines = [
+        f".PHONY: {phony_targets}",
+        "",
+        "doctor:",
+        f"\tpython3 scripts/projectctl.py doctor --target {first}",
+        "",
+        "verify:",
+        "\tpython3 scripts/projectctl.py verify --all",
+        "",
+        f"run: run-{first}",
+        "",
+        "plan:",
+        "\tpython3 scripts/projectctl.py plan",
+        "",
+        "up:",
+        "\tpython3 scripts/projectctl.py up --timeout 180",
+        "",
+        "down:",
+        "\tpython3 scripts/projectctl.py down",
+        "",
+        "status:",
+        "\tpython3 scripts/projectctl.py status",
+        "",
+        "smoke:",
+        "\tpython3 scripts/projectctl.py smoke --requests 5 --evidence .elmos/local-smoke.json",
+    ]
+    for target in request.targets:
+        lines.extend(
+            [
+                "",
+                f"run-{target.language}:",
+                f"\tpython3 scripts/projectctl.py run --target {target.language}",
+                "",
+                f"verify-{target.language}:",
+                f"\tpython3 scripts/projectctl.py verify --target {target.language}",
+            ]
+        )
+    return "\n".join(lines) + "\n"
+
+
+def _performance_budget(request: SynthesisRequest) -> dict[str, Any]:
+    return {
+        "schema_version": "1.0.0",
+        "kind": "elmos.project-performance-budget",
+        "status": "DEFINED_NOT_EVIDENCED",
+        "local_health_smoke": {
+            "requests_per_target": 5,
+            "p95_latency_ms": 500,
+            "error_count": 0,
+            "runner": "scripts/projectctl.py smoke",
+        },
+        "application_slo": {
+            "p95_latency_ms": 300,
+            "availability": 0.999,
+            "evidence": "NOT_RUN",
+            "note": "Requires representative authenticated business traffic; health probes are not a substitute.",
+        },
+        "local_container_limits": {
+            target.language: {
+                "cpus": _COMPOSE_LIMITS[target.language][0],
+                "memory": _COMPOSE_LIMITS[target.language][1],
+                "pids": 256,
+            }
+            for target in request.targets
+        },
+        "production_capacity_evidence": "NOT_RUN",
+        "external_cost_evidence": "NOT_RUN",
+    }
 
 
 def _root_readme(request: SynthesisRequest) -> str:
@@ -373,8 +485,22 @@ def _root_readme(request: SynthesisRequest) -> str:
         ```
 
         Or run `elmos-project-synthesis verify --workspace .` from the engine environment.
-        Use `docker compose up --build` only after resolving and approving container image
-        digests in your delivery policy.
+
+        ## One-command local operation
+
+        ```bash
+        make doctor       # verify managed-file integrity and local prerequisites
+        make run          # run the first generated target with its exact native harness
+        make up           # hardened loopback-only Compose path for in-memory/no-auth starters
+        make smoke        # exact service-identity health probe and bounded local latency evidence
+        make down         # stop the Compose stack and remove orphan containers
+        ```
+
+        Every selected target also has `make run-<language>` and `make verify-<language>`.
+        PostgreSQL/JWT/OIDC profiles intentionally use `make run-<language>` because that
+        target-owned harness provisions disposable PostgreSQL, ephemeral local identity
+        material, migrations, tenant-isolation checks and cleanup. The simpler Compose
+        development path refuses those profiles instead of starting a misleading partial stack.
 
         ## Generated contracts
 
@@ -390,6 +516,8 @@ def _root_readme(request: SynthesisRequest) -> str:
         - `docs/CHANGE_HISTORY.md`: baseline history and behavior/API/data/security/operations impact.
         - `docs/LOCAL_RUN.md`: exact local hardware, toolchain, verification and startup steps.
         - `docs/CLOUD_DEPLOYMENT.md`: cloud options and the recommended Cloud Run configuration.
+        - `scripts/projectctl.py`: integrity-bound local doctor, verify, run, Compose and smoke controller.
+        - `operations/performance-budget.json`: local health and external business-load budgets.
         - `deploy/deployment-options.json`: fail-closed, machine-readable deployment handoff.
         - `deploy/cloud-run-control.py`: plan-first Cloud Run deploy, health, rollback, and cleanup controller.
         - `deploy/cloud-run-request.example.json`: private-ingress, digest-pinned deployment request template.
@@ -409,7 +537,12 @@ def _root_readme(request: SynthesisRequest) -> str:
 def render_workspace(request: SynthesisRequest) -> dict[str, str]:
     files: dict[str, str] = {
         "README.md": _root_readme(request),
+        "Makefile": _root_makefile(request),
         "docker-compose.yml": _compose(request),
+        "scripts/projectctl.py": package_files("elmos_project_synthesis")
+        .joinpath("local_project_control.py")
+        .read_text(encoding="utf-8"),
+        "operations/performance-budget.json": pretty_json(_performance_budget(request)),
         "requirements/approved-request.json": pretty_json(request.raw),
         "requirements/psir.json": pretty_json(_render_psir(request)),
         "requirements/project-blueprint.json": pretty_json(_render_blueprint(request)),
