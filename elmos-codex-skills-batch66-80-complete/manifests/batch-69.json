@@ -1,0 +1,317 @@
+{
+  "batch": 69,
+  "title": "PHP Laravel Symfony and CMS Project Pack",
+  "subject": "PHP, Composer, Laravel, Symfony, modular monoliths, persistence, queues, WordPress/WooCommerce, testing, modernization, and deployment",
+  "skill_count": 12,
+  "id_range": [
+    "PG259",
+    "PG270"
+  ],
+  "toolchain": [
+    "php",
+    "composer",
+    "phpunit/pest",
+    "phpstan/psalm",
+    "php-cs-fixer",
+    "rector"
+  ],
+  "source_markers": [
+    "composer.json",
+    "composer.lock",
+    "artisan",
+    "bin/console",
+    "public/index.php",
+    "wp-content/"
+  ],
+  "skills": [
+    {
+      "id": "PG259",
+      "batch": 69,
+      "name": "b69-php-project-profile-detector",
+      "title": "Php Project Profile Detector",
+      "summary": "Inspect and model Php Project Profile Detector for PHP, Composer, Laravel, Symfony, modular monoliths, persistence, queues, WordPress/WooCommerce, testing, modernization, and deployment, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b69-php-project-profile-detector/SKILL.md",
+      "catalog_path": "skills/batch-69/PG259-php-project-profile-detector.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG258"
+      ],
+      "outputs": [
+        "php_project_profile_detector.json",
+        "php_project_profile_detector_artifacts/",
+        "php_project_profile_detector_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG260",
+      "batch": 69,
+      "name": "b69-composer-dependency-reproducer",
+      "title": "Composer Dependency Reproducer",
+      "summary": "Reproduce deterministically Composer Dependency Reproducer for PHP, Composer, Laravel, Symfony, modular monoliths, persistence, queues, WordPress/WooCommerce, testing, modernization, and deployment, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b69-composer-dependency-reproducer/SKILL.md",
+      "catalog_path": "skills/batch-69/PG260-composer-dependency-reproducer.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG258",
+        "PG259"
+      ],
+      "outputs": [
+        "composer_dependency_reproducer_plan.json",
+        "composer_dependency_reproducer_artifacts/",
+        "composer_dependency_reproducer_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG261",
+      "batch": 69,
+      "name": "b69-laravel-application-generator",
+      "title": "Laravel Application Generator",
+      "summary": "Generate runnable and maintainable Laravel Application Generator for PHP, Composer, Laravel, Symfony, modular monoliths, persistence, queues, WordPress/WooCommerce, testing, modernization, and deployment, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b69-laravel-application-generator/SKILL.md",
+      "catalog_path": "skills/batch-69/PG261-laravel-application-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG258",
+        "PG260"
+      ],
+      "outputs": [
+        "laravel_application_generator_plan.json",
+        "laravel_application_generator_artifacts/",
+        "laravel_application_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG262",
+      "batch": 69,
+      "name": "b69-symfony-api-generator",
+      "title": "Symfony API Generator",
+      "summary": "Generate runnable and maintainable Symfony API Generator for PHP, Composer, Laravel, Symfony, modular monoliths, persistence, queues, WordPress/WooCommerce, testing, modernization, and deployment, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b69-symfony-api-generator/SKILL.md",
+      "catalog_path": "skills/batch-69/PG262-symfony-api-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG258",
+        "PG261"
+      ],
+      "outputs": [
+        "symfony_api_generator_plan.json",
+        "symfony_api_generator_artifacts/",
+        "symfony_api_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG263",
+      "batch": 69,
+      "name": "b69-php-modular-monolith-generator",
+      "title": "Php Modular Monolith Generator",
+      "summary": "Generate runnable and maintainable Php Modular Monolith Generator for PHP, Composer, Laravel, Symfony, modular monoliths, persistence, queues, WordPress/WooCommerce, testing, modernization, and deployment, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b69-php-modular-monolith-generator/SKILL.md",
+      "catalog_path": "skills/batch-69/PG263-php-modular-monolith-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG258",
+        "PG262"
+      ],
+      "outputs": [
+        "php_modular_monolith_generator_plan.json",
+        "php_modular_monolith_generator_artifacts/",
+        "php_modular_monolith_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG264",
+      "batch": 69,
+      "name": "b69-php-persistence-migration-generator",
+      "title": "Php Persistence Migration Generator",
+      "summary": "Generate runnable and maintainable Php Persistence Migration Generator for PHP, Composer, Laravel, Symfony, modular monoliths, persistence, queues, WordPress/WooCommerce, testing, modernization, and deployment, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b69-php-persistence-migration-generator/SKILL.md",
+      "catalog_path": "skills/batch-69/PG264-php-persistence-migration-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG258",
+        "PG263"
+      ],
+      "outputs": [
+        "php_persistence_migration_generator_plan.json",
+        "php_persistence_migration_generator_artifacts/",
+        "php_persistence_migration_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG265",
+      "batch": 69,
+      "name": "b69-php-queue-scheduler-generator",
+      "title": "Php Queue Scheduler Generator",
+      "summary": "Generate runnable and maintainable Php Queue Scheduler Generator for PHP, Composer, Laravel, Symfony, modular monoliths, persistence, queues, WordPress/WooCommerce, testing, modernization, and deployment, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b69-php-queue-scheduler-generator/SKILL.md",
+      "catalog_path": "skills/batch-69/PG265-php-queue-scheduler-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG258",
+        "PG264"
+      ],
+      "outputs": [
+        "php_queue_scheduler_generator_plan.json",
+        "php_queue_scheduler_generator_artifacts/",
+        "php_queue_scheduler_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG266",
+      "batch": 69,
+      "name": "b69-wordpress-woocommerce-extension-generator",
+      "title": "Wordpress Woocommerce Extension Generator",
+      "summary": "Generate runnable and maintainable Wordpress Woocommerce Extension Generator for PHP, Composer, Laravel, Symfony, modular monoliths, persistence, queues, WordPress/WooCommerce, testing, modernization, and deployment, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b69-wordpress-woocommerce-extension-generator/SKILL.md",
+      "catalog_path": "skills/batch-69/PG266-wordpress-woocommerce-extension-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG258",
+        "PG265"
+      ],
+      "outputs": [
+        "wordpress_woocommerce_extension_generator_plan.json",
+        "wordpress_woocommerce_extension_generator_artifacts/",
+        "wordpress_woocommerce_extension_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG267",
+      "batch": 69,
+      "name": "b69-php-contract-client-generator",
+      "title": "Php Contract Client Generator",
+      "summary": "Generate runnable and maintainable Php Contract Client Generator for PHP, Composer, Laravel, Symfony, modular monoliths, persistence, queues, WordPress/WooCommerce, testing, modernization, and deployment, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b69-php-contract-client-generator/SKILL.md",
+      "catalog_path": "skills/batch-69/PG267-php-contract-client-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG258",
+        "PG266"
+      ],
+      "outputs": [
+        "php_contract_client_generator_plan.json",
+        "php_contract_client_generator_artifacts/",
+        "php_contract_client_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG268",
+      "batch": 69,
+      "name": "b69-php-test-quality-harness",
+      "title": "Php Test Quality Harness",
+      "summary": "Implement and validate Php Test Quality Harness for PHP, Composer, Laravel, Symfony, modular monoliths, persistence, queues, WordPress/WooCommerce, testing, modernization, and deployment, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b69-php-test-quality-harness/SKILL.md",
+      "catalog_path": "skills/batch-69/PG268-php-test-quality-harness.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG258",
+        "PG267"
+      ],
+      "outputs": [
+        "php_test_quality_harness_plan.json",
+        "php_test_quality_harness_artifacts/",
+        "php_test_quality_harness_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG269",
+      "batch": 69,
+      "name": "b69-php-modernization-repair",
+      "title": "Php Modernization Repair",
+      "summary": "Implement and validate Php Modernization Repair for PHP, Composer, Laravel, Symfony, modular monoliths, persistence, queues, WordPress/WooCommerce, testing, modernization, and deployment, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b69-php-modernization-repair/SKILL.md",
+      "catalog_path": "skills/batch-69/PG269-php-modernization-repair.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG258",
+        "PG268"
+      ],
+      "outputs": [
+        "php_modernization_repair_plan.json",
+        "php_modernization_repair_artifacts/",
+        "php_modernization_repair_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG270",
+      "batch": 69,
+      "name": "b69-php-build-run-deploy-certifier",
+      "title": "Php Build Run Deploy Certifier",
+      "summary": "Execute and independently verify Php Build Run Deploy Certifier for PHP, Composer, Laravel, Symfony, modular monoliths, persistence, queues, WordPress/WooCommerce, testing, modernization, and deployment, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b69-php-build-run-deploy-certifier/SKILL.md",
+      "catalog_path": "skills/batch-69/PG270-php-build-run-deploy-certifier.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG258",
+        "PG269"
+      ],
+      "outputs": [
+        "php_build_run_deploy_certifier_plan.json",
+        "php_build_run_deploy_certifier_artifacts/",
+        "php_build_run_deploy_certifier_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md",
+        "certification_result.json",
+        "scope_and_limitations.md"
+      ]
+    }
+  ]
+}

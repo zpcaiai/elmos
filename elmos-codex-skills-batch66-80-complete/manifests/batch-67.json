@@ -1,0 +1,318 @@
+{
+  "batch": 67,
+  "title": "Go Cloud-Native Project Pack",
+  "subject": "Go modules, HTTP/gRPC services, CLI tools, workers, concurrency, operators, MCP servers, tests, and cross-compilation",
+  "skill_count": 12,
+  "id_range": [
+    "PG235",
+    "PG246"
+  ],
+  "toolchain": [
+    "go",
+    "gofmt",
+    "go vet",
+    "staticcheck",
+    "golangci-lint",
+    "go test -race",
+    "govulncheck"
+  ],
+  "source_markers": [
+    "go.mod",
+    "go.sum",
+    "go.work",
+    "cmd/",
+    "internal/",
+    "api/"
+  ],
+  "skills": [
+    {
+      "id": "PG235",
+      "batch": 67,
+      "name": "b67-go-repository-profile-detector",
+      "title": "Go Repository Profile Detector",
+      "summary": "Inspect and model Go Repository Profile Detector for Go modules, HTTP/gRPC services, CLI tools, workers, concurrency, operators, MCP servers, tests, and cross-compilation, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b67-go-repository-profile-detector/SKILL.md",
+      "catalog_path": "skills/batch-67/PG235-go-repository-profile-detector.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG234"
+      ],
+      "outputs": [
+        "go_repository_profile_detector.json",
+        "go_repository_profile_detector_artifacts/",
+        "go_repository_profile_detector_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG236",
+      "batch": 67,
+      "name": "b67-go-module-workspace-reproducer",
+      "title": "Go Module Workspace Reproducer",
+      "summary": "Reproduce deterministically Go Module Workspace Reproducer for Go modules, HTTP/gRPC services, CLI tools, workers, concurrency, operators, MCP servers, tests, and cross-compilation, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b67-go-module-workspace-reproducer/SKILL.md",
+      "catalog_path": "skills/batch-67/PG236-go-module-workspace-reproducer.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG234",
+        "PG235"
+      ],
+      "outputs": [
+        "go_module_workspace_reproducer_plan.json",
+        "go_module_workspace_reproducer_artifacts/",
+        "go_module_workspace_reproducer_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG237",
+      "batch": 67,
+      "name": "b67-go-http-grpc-service-generator",
+      "title": "Go HTTP gRPC Service Generator",
+      "summary": "Generate runnable and maintainable Go HTTP gRPC Service Generator for Go modules, HTTP/gRPC services, CLI tools, workers, concurrency, operators, MCP servers, tests, and cross-compilation, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b67-go-http-grpc-service-generator/SKILL.md",
+      "catalog_path": "skills/batch-67/PG237-go-http-grpc-service-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG234",
+        "PG236"
+      ],
+      "outputs": [
+        "go_http_grpc_service_generator_plan.json",
+        "go_http_grpc_service_generator_artifacts/",
+        "go_http_grpc_service_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG238",
+      "batch": 67,
+      "name": "b67-go-cli-generator",
+      "title": "Go CLI Generator",
+      "summary": "Generate runnable and maintainable Go CLI Generator for Go modules, HTTP/gRPC services, CLI tools, workers, concurrency, operators, MCP servers, tests, and cross-compilation, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b67-go-cli-generator/SKILL.md",
+      "catalog_path": "skills/batch-67/PG238-go-cli-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG234",
+        "PG237"
+      ],
+      "outputs": [
+        "go_cli_generator_plan.json",
+        "go_cli_generator_artifacts/",
+        "go_cli_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG239",
+      "batch": 67,
+      "name": "b67-go-worker-event-consumer-generator",
+      "title": "Go Worker Event Consumer Generator",
+      "summary": "Generate runnable and maintainable Go Worker Event Consumer Generator for Go modules, HTTP/gRPC services, CLI tools, workers, concurrency, operators, MCP servers, tests, and cross-compilation, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b67-go-worker-event-consumer-generator/SKILL.md",
+      "catalog_path": "skills/batch-67/PG239-go-worker-event-consumer-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG234",
+        "PG238"
+      ],
+      "outputs": [
+        "go_worker_event_consumer_generator_plan.json",
+        "go_worker_event_consumer_generator_artifacts/",
+        "go_worker_event_consumer_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG240",
+      "batch": 67,
+      "name": "b67-go-data-access-transaction-generator",
+      "title": "Go Data Access Transaction Generator",
+      "summary": "Generate runnable and maintainable Go Data Access Transaction Generator for Go modules, HTTP/gRPC services, CLI tools, workers, concurrency, operators, MCP servers, tests, and cross-compilation, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b67-go-data-access-transaction-generator/SKILL.md",
+      "catalog_path": "skills/batch-67/PG240-go-data-access-transaction-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG234",
+        "PG239"
+      ],
+      "outputs": [
+        "go_data_access_transaction_generator_plan.json",
+        "go_data_access_transaction_generator_artifacts/",
+        "go_data_access_transaction_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG241",
+      "batch": 67,
+      "name": "b67-go-concurrency-context-safety",
+      "title": "Go Concurrency Context Safety",
+      "summary": "Enforce and test Go Concurrency Context Safety for Go modules, HTTP/gRPC services, CLI tools, workers, concurrency, operators, MCP servers, tests, and cross-compilation, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b67-go-concurrency-context-safety/SKILL.md",
+      "catalog_path": "skills/batch-67/PG241-go-concurrency-context-safety.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG234",
+        "PG240"
+      ],
+      "outputs": [
+        "go_concurrency_context_safety_plan.json",
+        "go_concurrency_context_safety_artifacts/",
+        "go_concurrency_context_safety_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG242",
+      "batch": 67,
+      "name": "b67-go-observability-middleware-generator",
+      "title": "Go Observability Middleware Generator",
+      "summary": "Generate runnable and maintainable Go Observability Middleware Generator for Go modules, HTTP/gRPC services, CLI tools, workers, concurrency, operators, MCP servers, tests, and cross-compilation, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b67-go-observability-middleware-generator/SKILL.md",
+      "catalog_path": "skills/batch-67/PG242-go-observability-middleware-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG234",
+        "PG241"
+      ],
+      "outputs": [
+        "go_observability_middleware_generator_plan.json",
+        "go_observability_middleware_generator_artifacts/",
+        "go_observability_middleware_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG243",
+      "batch": 67,
+      "name": "b67-go-kubernetes-operator-generator",
+      "title": "Go Kubernetes Operator Generator",
+      "summary": "Generate runnable and maintainable Go Kubernetes Operator Generator for Go modules, HTTP/gRPC services, CLI tools, workers, concurrency, operators, MCP servers, tests, and cross-compilation, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b67-go-kubernetes-operator-generator/SKILL.md",
+      "catalog_path": "skills/batch-67/PG243-go-kubernetes-operator-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG234",
+        "PG242"
+      ],
+      "outputs": [
+        "go_kubernetes_operator_generator_plan.json",
+        "go_kubernetes_operator_generator_artifacts/",
+        "go_kubernetes_operator_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG244",
+      "batch": 67,
+      "name": "b67-go-mcp-tool-server-generator",
+      "title": "Go MCP Tool Server Generator",
+      "summary": "Generate runnable and maintainable Go MCP Tool Server Generator for Go modules, HTTP/gRPC services, CLI tools, workers, concurrency, operators, MCP servers, tests, and cross-compilation, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b67-go-mcp-tool-server-generator/SKILL.md",
+      "catalog_path": "skills/batch-67/PG244-go-mcp-tool-server-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG234",
+        "PG243"
+      ],
+      "outputs": [
+        "go_mcp_tool_server_generator_plan.json",
+        "go_mcp_tool_server_generator_artifacts/",
+        "go_mcp_tool_server_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG245",
+      "batch": 67,
+      "name": "b67-go-test-fuzz-race-generator",
+      "title": "Go Test Fuzz Race Generator",
+      "summary": "Generate runnable and maintainable Go Test Fuzz Race Generator for Go modules, HTTP/gRPC services, CLI tools, workers, concurrency, operators, MCP servers, tests, and cross-compilation, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b67-go-test-fuzz-race-generator/SKILL.md",
+      "catalog_path": "skills/batch-67/PG245-go-test-fuzz-race-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG234",
+        "PG244"
+      ],
+      "outputs": [
+        "go_test_fuzz_race_generator_plan.json",
+        "go_test_fuzz_race_generator_artifacts/",
+        "go_test_fuzz_race_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG246",
+      "batch": 67,
+      "name": "b67-go-build-crosscompile-certifier",
+      "title": "Go Build Crosscompile Certifier",
+      "summary": "Execute and independently verify Go Build Crosscompile Certifier for Go modules, HTTP/gRPC services, CLI tools, workers, concurrency, operators, MCP servers, tests, and cross-compilation, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b67-go-build-crosscompile-certifier/SKILL.md",
+      "catalog_path": "skills/batch-67/PG246-go-build-crosscompile-certifier.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG234",
+        "PG245"
+      ],
+      "outputs": [
+        "go_build_crosscompile_certifier_plan.json",
+        "go_build_crosscompile_certifier_artifacts/",
+        "go_build_crosscompile_certifier_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md",
+        "certification_result.json",
+        "scope_and_limitations.md"
+      ]
+    }
+  ]
+}

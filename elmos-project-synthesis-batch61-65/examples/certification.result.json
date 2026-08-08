@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.0.0",
+  "release": "elmos-project-synthesis-1.0",
+  "decision": "certified-with-limitations",
+  "scope": {
+    "languages": [
+      "java",
+      "python",
+      "csharp"
+    ],
+    "profiles": [
+      "rest-api",
+      "modular-monolith",
+      "worker"
+    ],
+    "max_repository_files": 5000
+  },
+  "evaluations": [
+    {
+      "skill_id": "PG192",
+      "status": "passed",
+      "score": 0.94,
+      "evidence_refs": [
+        "EVD-REQ-EVAL"
+      ]
+    },
+    {
+      "skill_id": "PG200",
+      "status": "limited",
+      "score": 0.82,
+      "evidence_refs": [
+        "EVD-SCALE-EVAL"
+      ]
+    }
+  ],
+  "limitations": [
+    "Repositories above 5000 files require extended scalability certification."
+  ],
+  "certificate_hash": "sha256:example"
+}

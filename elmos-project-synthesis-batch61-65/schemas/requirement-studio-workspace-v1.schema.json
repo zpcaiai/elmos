@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.project-synthesis.requirement-studio-workspace.v1",
+  "title": "ELMOS Requirement Studio Workspace",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "workspace_id",
+    "project_id",
+    "revision",
+    "sections",
+    "collaboration"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "workspace_id": {
+      "type": "string"
+    },
+    "project_id": {
+      "type": "string"
+    },
+    "revision": {
+      "type": "integer"
+    },
+    "sections": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "collaboration": {
+      "type": "object"
+    },
+    "approval_state": {
+      "type": "string"
+    },
+    "source_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

@@ -1,0 +1,343 @@
+{
+  "engine": "elmos.project-synthesis",
+  "schema": "elmos.project-synthesis.v1",
+  "release": "batch-46-48",
+  "skills": [
+    {
+      "id": "PG001",
+      "name": "project-synthesis-product-constitution",
+      "path": "skills/batch-46/PG001-project-synthesis-product-constitution.md",
+      "depends_on": [],
+      "summary": "Defines the product-level constitution, invariants, boundaries, and non-negotiable safety rules for ELMOS Project Synthesis."
+    },
+    {
+      "id": "PG002",
+      "name": "unified-synthesis-engine-contract",
+      "path": "skills/batch-46/PG002-unified-synthesis-engine-contract.md",
+      "depends_on": [
+        "PG001"
+      ],
+      "summary": "Defines the canonical engine API used by UI, CLI, agents, runners, and external integrations."
+    },
+    {
+      "id": "PG003",
+      "name": "project-synthesis-ir-schema",
+      "path": "skills/batch-46/PG003-project-synthesis-ir-schema.md",
+      "depends_on": [
+        "PG001",
+        "PG002"
+      ],
+      "summary": "Defines PSIR, the canonical intermediate representation for requirements, domain behavior, architecture intent, and delivery constraints."
+    },
+    {
+      "id": "PG004",
+      "name": "artifact-graph-schema",
+      "path": "skills/batch-46/PG004-artifact-graph-schema.md",
+      "depends_on": [
+        "PG003"
+      ],
+      "summary": "Defines the graph linking requirements, PSIR nodes, architecture decisions, generated files, tests, evidence, and deliveries."
+    },
+    {
+      "id": "PG005",
+      "name": "synthesis-job-state-machine",
+      "path": "skills/batch-46/PG005-synthesis-job-state-machine.md",
+      "depends_on": [
+        "PG001",
+        "PG002"
+      ],
+      "summary": "Defines the lifecycle, transitions, guards, compensations, and terminal states of a synthesis run."
+    },
+    {
+      "id": "PG006",
+      "name": "synthesis-scope-and-engine-extension",
+      "path": "skills/batch-46/PG006-synthesis-scope-and-engine-extension.md",
+      "depends_on": [
+        "PG001",
+        "PG002"
+      ],
+      "summary": "Extends ELMOS scope resolution so new-project synthesis and legacy modernization share platform objects without mixing semantics."
+    },
+    {
+      "id": "PG007",
+      "name": "evidence-and-audit-contract",
+      "path": "skills/batch-46/PG007-evidence-and-audit-contract.md",
+      "depends_on": [
+        "PG004",
+        "PG005"
+      ],
+      "summary": "Defines evidence objects, audit records, signatures, retention, and claim-to-proof rules."
+    },
+    {
+      "id": "PG008",
+      "name": "policy-and-capability-model",
+      "path": "skills/batch-46/PG008-policy-and-capability-model.md",
+      "depends_on": [
+        "PG001",
+        "PG006"
+      ],
+      "summary": "Defines policy evaluation and capability grants for agents, skills, tools, runners, repositories, networks, and secrets."
+    },
+    {
+      "id": "PG009",
+      "name": "deterministic-run-context",
+      "path": "skills/batch-46/PG009-deterministic-run-context.md",
+      "depends_on": [
+        "PG002",
+        "PG007",
+        "PG008"
+      ],
+      "summary": "Captures all versions, inputs, models, policies, templates, dependencies, and environment facts needed to reproduce a run."
+    },
+    {
+      "id": "PG010",
+      "name": "migration-synthesis-interoperability",
+      "path": "skills/batch-46/PG010-migration-synthesis-interoperability.md",
+      "depends_on": [
+        "PG003",
+        "PG004",
+        "PG006",
+        "PG009"
+      ],
+      "summary": "Defines controlled handoffs between newly generated projects and existing ELMOS modernization or cross-language migration engines."
+    },
+    {
+      "id": "PG011",
+      "name": "natural-language-session-orchestrator",
+      "path": "skills/batch-47/PG011-natural-language-session-orchestrator.md",
+      "depends_on": [
+        "PG001",
+        "PG002",
+        "PG003",
+        "PG005"
+      ],
+      "summary": "Runs the multi-turn discovery session that converts natural language into an approved requirement workspace."
+    },
+    {
+      "id": "PG012",
+      "name": "requirement-intent-classifier",
+      "path": "skills/batch-47/PG012-requirement-intent-classifier.md",
+      "depends_on": [
+        "PG011"
+      ],
+      "summary": "Classifies user utterances and documents into requirement-relevant intent categories."
+    },
+    {
+      "id": "PG013",
+      "name": "document-and-repo-input-adapter",
+      "path": "skills/batch-47/PG013-document-and-repo-input-adapter.md",
+      "depends_on": [
+        "PG002",
+        "PG007",
+        "PG008"
+      ],
+      "summary": "Normalizes requirements from documents, archives, API definitions, issue trackers, and example repositories."
+    },
+    {
+      "id": "PG014",
+      "name": "product-glossary-builder",
+      "path": "skills/batch-47/PG014-product-glossary-builder.md",
+      "depends_on": [
+        "PG013"
+      ],
+      "summary": "Builds and maintains the domain glossary, aliases, acronyms, and disambiguation rules for a synthesis workspace."
+    },
+    {
+      "id": "PG015",
+      "name": "stakeholder-and-actor-extractor",
+      "path": "skills/batch-47/PG015-stakeholder-and-actor-extractor.md",
+      "depends_on": [
+        "PG012",
+        "PG013",
+        "PG014"
+      ],
+      "summary": "Extracts stakeholders, system actors, external systems, responsibilities, and access expectations."
+    },
+    {
+      "id": "PG016",
+      "name": "functional-requirement-extractor",
+      "path": "skills/batch-47/PG016-functional-requirement-extractor.md",
+      "depends_on": [
+        "PG012",
+        "PG013",
+        "PG014",
+        "PG015"
+      ],
+      "summary": "Extracts atomic, testable functional requirements from natural language and source materials."
+    },
+    {
+      "id": "PG017",
+      "name": "nonfunctional-requirement-extractor",
+      "path": "skills/batch-47/PG017-nonfunctional-requirement-extractor.md",
+      "depends_on": [
+        "PG013",
+        "PG014"
+      ],
+      "summary": "Extracts quality attributes, operational constraints, compliance needs, and measurable service expectations."
+    },
+    {
+      "id": "PG018",
+      "name": "constraint-assumption-extractor",
+      "path": "skills/batch-47/PG018-constraint-assumption-extractor.md",
+      "depends_on": [
+        "PG012",
+        "PG013"
+      ],
+      "summary": "Extracts technical, organizational, legal, schedule, budget, and environment constraints while maintaining an explicit assumption ledger."
+    },
+    {
+      "id": "PG019",
+      "name": "ambiguity-question-generator",
+      "path": "skills/batch-47/PG019-ambiguity-question-generator.md",
+      "depends_on": [
+        "PG016",
+        "PG017",
+        "PG018"
+      ],
+      "summary": "Generates minimal, high-value clarification questions ranked by expected impact."
+    },
+    {
+      "id": "PG020",
+      "name": "conversation-memory-to-spec",
+      "path": "skills/batch-47/PG020-conversation-memory-to-spec.md",
+      "depends_on": [
+        "PG011",
+        "PG012",
+        "PG016",
+        "PG017",
+        "PG018",
+        "PG019"
+      ],
+      "summary": "Consolidates approved multi-turn conversation facts into the requirement specification while preserving supersession history."
+    },
+    {
+      "id": "PG021",
+      "name": "requirement-normalizer",
+      "path": "skills/batch-48/PG021-requirement-normalizer.md",
+      "depends_on": [
+        "PG014",
+        "PG016",
+        "PG017",
+        "PG020"
+      ],
+      "summary": "Normalizes requirement wording, structure, identifiers, modality, and verification fields."
+    },
+    {
+      "id": "PG022",
+      "name": "requirement-deduplicator",
+      "path": "skills/batch-48/PG022-requirement-deduplicator.md",
+      "depends_on": [
+        "PG021"
+      ],
+      "summary": "Detects exact, semantic, and partially overlapping duplicate requirements."
+    },
+    {
+      "id": "PG023",
+      "name": "requirement-conflict-detector",
+      "path": "skills/batch-48/PG023-requirement-conflict-detector.md",
+      "depends_on": [
+        "PG017",
+        "PG018",
+        "PG022"
+      ],
+      "summary": "Detects logical, temporal, permission, data, technology, and quality-target conflicts."
+    },
+    {
+      "id": "PG024",
+      "name": "scope-boundary-manager",
+      "path": "skills/batch-48/PG024-scope-boundary-manager.md",
+      "depends_on": [
+        "PG015",
+        "PG018",
+        "PG022",
+        "PG023"
+      ],
+      "summary": "Defines in-scope, out-of-scope, deferred, dependency, and future-option boundaries."
+    },
+    {
+      "id": "PG025",
+      "name": "requirement-priority-classifier",
+      "path": "skills/batch-48/PG025-requirement-priority-classifier.md",
+      "depends_on": [
+        "PG024"
+      ],
+      "summary": "Classifies requirement priority using value, urgency, dependency, risk, and delivery slicing."
+    },
+    {
+      "id": "PG026",
+      "name": "requirement-risk-classifier",
+      "path": "skills/batch-48/PG026-requirement-risk-classifier.md",
+      "depends_on": [
+        "PG023",
+        "PG024"
+      ],
+      "summary": "Scores requirements for ambiguity, complexity, security, compliance, integration, data, and delivery risk."
+    },
+    {
+      "id": "PG027",
+      "name": "measurable-quality-attribute-builder",
+      "path": "skills/batch-48/PG027-measurable-quality-attribute-builder.md",
+      "depends_on": [
+        "PG017",
+        "PG024"
+      ],
+      "summary": "Converts quality expectations into measurable scenarios with thresholds, workload, environment, and observation methods."
+    },
+    {
+      "id": "PG028",
+      "name": "acceptance-criteria-generator",
+      "path": "skills/batch-48/PG028-acceptance-criteria-generator.md",
+      "depends_on": [
+        "PG021",
+        "PG023",
+        "PG026",
+        "PG027"
+      ],
+      "summary": "Generates requirement-level acceptance criteria and negative scenarios from approved intent."
+    },
+    {
+      "id": "PG029",
+      "name": "definition-of-ready-validator",
+      "path": "skills/batch-48/PG029-definition-of-ready-validator.md",
+      "depends_on": [
+        "PG023",
+        "PG024",
+        "PG026",
+        "PG028"
+      ],
+      "summary": "Determines whether the requirement baseline is sufficiently complete and safe for architecture planning."
+    },
+    {
+      "id": "PG030",
+      "name": "requirement-quality-score",
+      "path": "skills/batch-48/PG030-requirement-quality-score.md",
+      "depends_on": [
+        "PG022",
+        "PG023",
+        "PG026",
+        "PG028"
+      ],
+      "summary": "Computes explainable quality scores for completeness, clarity, consistency, testability, traceability, and feasibility."
+    },
+    {
+      "id": "PG031",
+      "name": "requirements-baseline-and-approval",
+      "path": "skills/batch-48/PG031-requirements-baseline-and-approval.md",
+      "depends_on": [
+        "PG029",
+        "PG030"
+      ],
+      "summary": "Creates immutable requirement baselines and manages stakeholder approvals, rejections, and exceptions."
+    },
+    {
+      "id": "PG032",
+      "name": "requirements-change-impact",
+      "path": "skills/batch-48/PG032-requirements-change-impact.md",
+      "depends_on": [
+        "PG004",
+        "PG031"
+      ],
+      "summary": "Analyzes changes between requirement baselines and determines affected domain, architecture, code, test, data, and delivery artifacts."
+    }
+  ]
+}

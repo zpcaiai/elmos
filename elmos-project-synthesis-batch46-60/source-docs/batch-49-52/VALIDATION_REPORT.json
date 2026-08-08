@@ -1,0 +1,31 @@
+{
+  "package": "elmos-project-synthesis-batch-49-52",
+  "engine": "elmos.project-synthesis",
+  "skills": {
+    "total": 44,
+    "batch_49": 10,
+    "batch_50": 12,
+    "batch_51": 10,
+    "batch_52": 12
+  },
+  "schemas": 5,
+  "examples": 4,
+  "docs_including_readme": 5,
+  "skill_ids": {
+    "first": "PG033",
+    "last": "PG076",
+    "unique": true
+  },
+  "validation": {
+    "jsonschema": "passed",
+    "yaml_blueprint": "passed"
+  },
+  "checks": [
+    "all skill sections present",
+    "no TODO placeholders in skills",
+    "all JSON files parse",
+    "schema examples validate when parser available",
+    "all dependencies reference PG001–PG076",
+    "batch counts match plan"
+  ]
+}

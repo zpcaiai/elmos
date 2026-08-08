@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0.0",
+  "database_profile": "postgresql",
+  "from_version": "0",
+  "to_version": "1",
+  "steps": [
+    {
+      "id": "MIG-001",
+      "order": 1,
+      "operation": "Create maintenance schema and alerts table.",
+      "classification": "safe",
+      "rollback": "Drop only in empty non-production environments.",
+      "requires_approval": false
+    }
+  ],
+  "risk": "low",
+  "tests": [
+    "empty-database-migrate",
+    "restart-after-migrate",
+    "constraint-validation"
+  ]
+}

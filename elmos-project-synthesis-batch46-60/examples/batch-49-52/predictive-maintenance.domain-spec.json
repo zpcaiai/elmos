@@ -1,0 +1,169 @@
+{
+  "schema_version": "1.0.0",
+  "project_id": "PRJ-EQUIPMENT-MAINTENANCE",
+  "contexts": [
+    {
+      "id": "CTX-ASSET",
+      "name": "Asset Management",
+      "responsibilities": [
+        "Maintain equipment identity and operational metadata"
+      ],
+      "upstream_contexts": []
+    },
+    {
+      "id": "CTX-ALERT",
+      "name": "Alert Management",
+      "responsibilities": [
+        "Ingest, confirm, assign, and close equipment alerts"
+      ],
+      "upstream_contexts": [
+        "CTX-ASSET"
+      ]
+    }
+  ],
+  "aggregates": [
+    {
+      "id": "AGG-ALERT",
+      "context_id": "CTX-ALERT",
+      "name": "Alert",
+      "root_entity": "Alert",
+      "entities": [],
+      "value_objects": [
+        "AlertId",
+        "EquipmentId",
+        "AlertSeverity"
+      ],
+      "invariants": [
+        "A closed alert cannot be reassigned.",
+        "Only an open alert can be confirmed."
+      ]
+    }
+  ],
+  "business_rules": [
+    {
+      "id": "BR-ALERT-001",
+      "statement": "Only users with alert.assign permission may assign an alert.",
+      "rule_type": "authorization",
+      "requirement_ids": [
+        "REQ-ALERT-002"
+      ]
+    }
+  ],
+  "commands": [
+    {
+      "id": "CMD-CONFIRM-ALERT",
+      "name": "ConfirmAlert",
+      "context_id": "CTX-ALERT",
+      "payload": [
+        "alertId",
+        "confirmedBy",
+        "confirmedAt"
+      ],
+      "idempotent": true,
+      "version": "1.0"
+    }
+  ],
+  "queries": [
+    {
+      "id": "QRY-GET-ALERT",
+      "name": "GetAlert",
+      "context_id": "CTX-ALERT",
+      "payload": [
+        "alertId"
+      ],
+      "idempotent": true,
+      "version": "1.0"
+    }
+  ],
+  "events": [
+    {
+      "id": "EVT-ALERT-RECEIVED",
+      "name": "AlertReceived",
+      "context_id": "CTX-ALERT",
+      "payload": [
+        "alertId",
+        "equipmentId",
+        "severity",
+        "occurredAt"
+      ],
+      "idempotent": true,
+      "version": "1.0"
+    }
+  ],
+  "workflows": [
+    {
+      "id": "WF-ALERT-LIFECYCLE",
+      "name": "Alert Lifecycle",
+      "initial_state": "OPEN",
+      "states": [
+        "OPEN",
+        "CONFIRMED",
+        "ASSIGNED",
+        "CLOSED"
+      ],
+      "terminal_states": [
+        "CLOSED"
+      ],
+      "transitions": [
+        {
+          "from": "OPEN",
+          "to": "CONFIRMED",
+          "command": "ConfirmAlert"
+        },
+        {
+          "from": "CONFIRMED",
+          "to": "ASSIGNED",
+          "command": "AssignAlert"
+        },
+        {
+          "from": "ASSIGNED",
+          "to": "CLOSED",
+          "command": "CloseAlert"
+        }
+      ]
+    }
+  ],
+  "data_dictionary": [
+    {
+      "id": "DATA-ALERT-SEVERITY",
+      "name": "Alert Severity",
+      "definition": "Operational severity assigned to an equipment alert.",
+      "classification": "internal",
+      "format": "enum: INFO|WARNING|CRITICAL",
+      "owner_context_id": "CTX-ALERT"
+    }
+  ],
+  "api_drafts": [
+    {
+      "id": "API-ALERT-CONFIRM",
+      "method": "POST",
+      "path": "/alerts/{alertId}/confirm",
+      "permission": "alert.confirm"
+    }
+  ],
+  "permissions": [
+    {
+      "role": "maintenance_engineer",
+      "resource": "alert",
+      "actions": [
+        "read",
+        "confirm",
+        "assign",
+        "close"
+      ],
+      "scope": "assigned-organization"
+    }
+  ],
+  "trace_links": [
+    {
+      "from": "REQ-ALERT-002",
+      "to": "WF-ALERT-LIFECYCLE",
+      "type": "realizes"
+    },
+    {
+      "from": "REQ-ALERT-002",
+      "to": "BR-ALERT-001",
+      "type": "constrains"
+    }
+  ]
+}

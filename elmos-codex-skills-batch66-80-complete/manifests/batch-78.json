@@ -1,0 +1,415 @@
+{
+  "batch": 78,
+  "title": "HCL Terraform Kubernetes YAML and Helm Pack",
+  "subject": "Terraform/OpenTofu modules, providers, state, plan/policy/cost, imports and drift, Kubernetes workloads, secrets, networking, autoscaling, Helm charts, admission policy, GitOps, rollback, and certification",
+  "skill_count": 16,
+  "id_range": [
+    "PG375",
+    "PG390"
+  ],
+  "toolchain": [
+    "terraform/tofu",
+    "tflint",
+    "checkov/tfsec",
+    "kubectl",
+    "kubeconform",
+    "helm",
+    "conftest/OPA"
+  ],
+  "source_markers": [
+    "*.tf",
+    "*.tfvars",
+    "*.hcl",
+    "k8s/*.yaml",
+    "Chart.yaml",
+    "values*.yaml",
+    "templates/"
+  ],
+  "skills": [
+    {
+      "id": "PG375",
+      "batch": 78,
+      "name": "b78-iac-kubernetes-profile-detector",
+      "title": "IaC Kubernetes Profile Detector",
+      "summary": "Inspect and model IaC Kubernetes Profile Detector for Terraform/OpenTofu modules, providers, state, plan/policy/cost, imports and drift, Kubernetes workloads, secrets, networking, autoscaling, Helm charts, admission policy, GitOps, rollback, and certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b78-iac-kubernetes-profile-detector/SKILL.md",
+      "catalog_path": "skills/batch-78/PG375-iac-kubernetes-profile-detector.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG374"
+      ],
+      "outputs": [
+        "iac_kubernetes_profile_detector.json",
+        "iac_kubernetes_profile_detector_artifacts/",
+        "iac_kubernetes_profile_detector_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG376",
+      "batch": 78,
+      "name": "b78-terraform-module-scaffolder",
+      "title": "Terraform Module Scaffolder",
+      "summary": "Generate runnable and maintainable Terraform Module Scaffolder for Terraform/OpenTofu modules, providers, state, plan/policy/cost, imports and drift, Kubernetes workloads, secrets, networking, autoscaling, Helm charts, admission policy, GitOps, rollback, and certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b78-terraform-module-scaffolder/SKILL.md",
+      "catalog_path": "skills/batch-78/PG376-terraform-module-scaffolder.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG374",
+        "PG375"
+      ],
+      "outputs": [
+        "terraform_module_scaffolder_plan.json",
+        "terraform_module_scaffolder_artifacts/",
+        "terraform_module_scaffolder_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG377",
+      "batch": 78,
+      "name": "b78-terraform-provider-state-manager",
+      "title": "Terraform Provider State Manager",
+      "summary": "Coordinate and control Terraform Provider State Manager for Terraform/OpenTofu modules, providers, state, plan/policy/cost, imports and drift, Kubernetes workloads, secrets, networking, autoscaling, Helm charts, admission policy, GitOps, rollback, and certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b78-terraform-provider-state-manager/SKILL.md",
+      "catalog_path": "skills/batch-78/PG377-terraform-provider-state-manager.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG374",
+        "PG376"
+      ],
+      "outputs": [
+        "terraform_provider_state_manager_plan.json",
+        "terraform_provider_state_manager_artifacts/",
+        "terraform_provider_state_manager_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG378",
+      "batch": 78,
+      "name": "b78-terraform-plan-policy-cost-gate",
+      "title": "Terraform Plan Policy Cost Gate",
+      "summary": "Enforce and test Terraform Plan Policy Cost Gate for Terraform/OpenTofu modules, providers, state, plan/policy/cost, imports and drift, Kubernetes workloads, secrets, networking, autoscaling, Helm charts, admission policy, GitOps, rollback, and certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b78-terraform-plan-policy-cost-gate/SKILL.md",
+      "catalog_path": "skills/batch-78/PG378-terraform-plan-policy-cost-gate.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG374",
+        "PG377"
+      ],
+      "outputs": [
+        "terraform_plan_policy_cost_gate_plan.json",
+        "terraform_plan_policy_cost_gate_artifacts/",
+        "terraform_plan_policy_cost_gate_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG379",
+      "batch": 78,
+      "name": "b78-terraform-import-drift-reconciler",
+      "title": "Terraform Import Drift Reconciler",
+      "summary": "Coordinate and control Terraform Import Drift Reconciler for Terraform/OpenTofu modules, providers, state, plan/policy/cost, imports and drift, Kubernetes workloads, secrets, networking, autoscaling, Helm charts, admission policy, GitOps, rollback, and certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b78-terraform-import-drift-reconciler/SKILL.md",
+      "catalog_path": "skills/batch-78/PG379-terraform-import-drift-reconciler.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG374",
+        "PG378"
+      ],
+      "outputs": [
+        "terraform_import_drift_reconciler_plan.json",
+        "terraform_import_drift_reconciler_artifacts/",
+        "terraform_import_drift_reconciler_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG380",
+      "batch": 78,
+      "name": "b78-terraform-test-validation-harness",
+      "title": "Terraform Test Validation Harness",
+      "summary": "Implement and validate Terraform Test Validation Harness for Terraform/OpenTofu modules, providers, state, plan/policy/cost, imports and drift, Kubernetes workloads, secrets, networking, autoscaling, Helm charts, admission policy, GitOps, rollback, and certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b78-terraform-test-validation-harness/SKILL.md",
+      "catalog_path": "skills/batch-78/PG380-terraform-test-validation-harness.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG374",
+        "PG379"
+      ],
+      "outputs": [
+        "terraform_test_validation_harness_plan.json",
+        "terraform_test_validation_harness_artifacts/",
+        "terraform_test_validation_harness_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG381",
+      "batch": 78,
+      "name": "b78-kubernetes-workload-manifest-generator",
+      "title": "Kubernetes Workload Manifest Generator",
+      "summary": "Generate runnable and maintainable Kubernetes Workload Manifest Generator for Terraform/OpenTofu modules, providers, state, plan/policy/cost, imports and drift, Kubernetes workloads, secrets, networking, autoscaling, Helm charts, admission policy, GitOps, rollback, and certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b78-kubernetes-workload-manifest-generator/SKILL.md",
+      "catalog_path": "skills/batch-78/PG381-kubernetes-workload-manifest-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG374",
+        "PG380"
+      ],
+      "outputs": [
+        "kubernetes_workload_manifest_generator_plan.json",
+        "kubernetes_workload_manifest_generator_artifacts/",
+        "kubernetes_workload_manifest_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG382",
+      "batch": 78,
+      "name": "b78-kubernetes-config-secret-policy",
+      "title": "Kubernetes Config Secret Policy",
+      "summary": "Enforce and test Kubernetes Config Secret Policy for Terraform/OpenTofu modules, providers, state, plan/policy/cost, imports and drift, Kubernetes workloads, secrets, networking, autoscaling, Helm charts, admission policy, GitOps, rollback, and certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b78-kubernetes-config-secret-policy/SKILL.md",
+      "catalog_path": "skills/batch-78/PG382-kubernetes-config-secret-policy.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG374",
+        "PG381"
+      ],
+      "outputs": [
+        "kubernetes_config_secret_policy_plan.json",
+        "kubernetes_config_secret_policy_artifacts/",
+        "kubernetes_config_secret_policy_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG383",
+      "batch": 78,
+      "name": "b78-kubernetes-network-security-generator",
+      "title": "Kubernetes Network Security Generator",
+      "summary": "Generate runnable and maintainable Kubernetes Network Security Generator for Terraform/OpenTofu modules, providers, state, plan/policy/cost, imports and drift, Kubernetes workloads, secrets, networking, autoscaling, Helm charts, admission policy, GitOps, rollback, and certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b78-kubernetes-network-security-generator/SKILL.md",
+      "catalog_path": "skills/batch-78/PG383-kubernetes-network-security-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG374",
+        "PG382"
+      ],
+      "outputs": [
+        "kubernetes_network_security_generator_plan.json",
+        "kubernetes_network_security_generator_artifacts/",
+        "kubernetes_network_security_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG384",
+      "batch": 78,
+      "name": "b78-kubernetes-autoscaling-reliability",
+      "title": "Kubernetes Autoscaling Reliability",
+      "summary": "Implement and validate Kubernetes Autoscaling Reliability for Terraform/OpenTofu modules, providers, state, plan/policy/cost, imports and drift, Kubernetes workloads, secrets, networking, autoscaling, Helm charts, admission policy, GitOps, rollback, and certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b78-kubernetes-autoscaling-reliability/SKILL.md",
+      "catalog_path": "skills/batch-78/PG384-kubernetes-autoscaling-reliability.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG374",
+        "PG383"
+      ],
+      "outputs": [
+        "kubernetes_autoscaling_reliability_plan.json",
+        "kubernetes_autoscaling_reliability_artifacts/",
+        "kubernetes_autoscaling_reliability_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG385",
+      "batch": 78,
+      "name": "b78-helm-chart-generator",
+      "title": "Helm Chart Generator",
+      "summary": "Generate runnable and maintainable Helm Chart Generator for Terraform/OpenTofu modules, providers, state, plan/policy/cost, imports and drift, Kubernetes workloads, secrets, networking, autoscaling, Helm charts, admission policy, GitOps, rollback, and certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b78-helm-chart-generator/SKILL.md",
+      "catalog_path": "skills/batch-78/PG385-helm-chart-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG374",
+        "PG384"
+      ],
+      "outputs": [
+        "helm_chart_generator_plan.json",
+        "helm_chart_generator_artifacts/",
+        "helm_chart_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG386",
+      "batch": 78,
+      "name": "b78-helm-values-schema-manager",
+      "title": "Helm Values Schema Manager",
+      "summary": "Coordinate and control Helm Values Schema Manager for Terraform/OpenTofu modules, providers, state, plan/policy/cost, imports and drift, Kubernetes workloads, secrets, networking, autoscaling, Helm charts, admission policy, GitOps, rollback, and certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b78-helm-values-schema-manager/SKILL.md",
+      "catalog_path": "skills/batch-78/PG386-helm-values-schema-manager.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG374",
+        "PG385"
+      ],
+      "outputs": [
+        "helm_values_schema_manager_plan.json",
+        "helm_values_schema_manager_artifacts/",
+        "helm_values_schema_manager_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG387",
+      "batch": 78,
+      "name": "b78-helm-upgrade-rollback-gate",
+      "title": "Helm Upgrade Rollback Gate",
+      "summary": "Enforce and test Helm Upgrade Rollback Gate for Terraform/OpenTofu modules, providers, state, plan/policy/cost, imports and drift, Kubernetes workloads, secrets, networking, autoscaling, Helm charts, admission policy, GitOps, rollback, and certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b78-helm-upgrade-rollback-gate/SKILL.md",
+      "catalog_path": "skills/batch-78/PG387-helm-upgrade-rollback-gate.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG374",
+        "PG386"
+      ],
+      "outputs": [
+        "helm_upgrade_rollback_gate_plan.json",
+        "helm_upgrade_rollback_gate_artifacts/",
+        "helm_upgrade_rollback_gate_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG388",
+      "batch": 78,
+      "name": "b78-kubernetes-policy-admission-gate",
+      "title": "Kubernetes Policy Admission Gate",
+      "summary": "Enforce and test Kubernetes Policy Admission Gate for Terraform/OpenTofu modules, providers, state, plan/policy/cost, imports and drift, Kubernetes workloads, secrets, networking, autoscaling, Helm charts, admission policy, GitOps, rollback, and certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b78-kubernetes-policy-admission-gate/SKILL.md",
+      "catalog_path": "skills/batch-78/PG388-kubernetes-policy-admission-gate.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG374",
+        "PG387"
+      ],
+      "outputs": [
+        "kubernetes_policy_admission_gate_plan.json",
+        "kubernetes_policy_admission_gate_artifacts/",
+        "kubernetes_policy_admission_gate_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG389",
+      "batch": 78,
+      "name": "b78-gitops-release-bundle-generator",
+      "title": "Gitops Release Bundle Generator",
+      "summary": "Generate runnable and maintainable Gitops Release Bundle Generator for Terraform/OpenTofu modules, providers, state, plan/policy/cost, imports and drift, Kubernetes workloads, secrets, networking, autoscaling, Helm charts, admission policy, GitOps, rollback, and certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b78-gitops-release-bundle-generator/SKILL.md",
+      "catalog_path": "skills/batch-78/PG389-gitops-release-bundle-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG374",
+        "PG388"
+      ],
+      "outputs": [
+        "gitops_release_bundle_generator_plan.json",
+        "gitops_release_bundle_generator_artifacts/",
+        "gitops_release_bundle_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG390",
+      "batch": 78,
+      "name": "b78-iac-kubernetes-helm-certifier",
+      "title": "IaC Kubernetes Helm Certifier",
+      "summary": "Execute and independently verify IaC Kubernetes Helm Certifier for Terraform/OpenTofu modules, providers, state, plan/policy/cost, imports and drift, Kubernetes workloads, secrets, networking, autoscaling, Helm charts, admission policy, GitOps, rollback, and certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b78-iac-kubernetes-helm-certifier/SKILL.md",
+      "catalog_path": "skills/batch-78/PG390-iac-kubernetes-helm-certifier.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG374",
+        "PG389"
+      ],
+      "outputs": [
+        "iac_kubernetes_helm_certifier_plan.json",
+        "iac_kubernetes_helm_certifier_artifacts/",
+        "iac_kubernetes_helm_certifier_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md",
+        "certification_result.json",
+        "scope_and_limitations.md"
+      ]
+    }
+  ]
+}

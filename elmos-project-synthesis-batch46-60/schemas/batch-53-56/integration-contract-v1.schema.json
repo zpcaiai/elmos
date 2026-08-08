@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.project-synthesis.integration-contract.v1",
+  "title": "ELMOS Integration Contract",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "id",
+    "kind",
+    "owner",
+    "version",
+    "compatibility_policy"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "id": {
+      "type": "string"
+    },
+    "kind": {
+      "enum": [
+        "rest",
+        "grpc",
+        "event",
+        "webhook",
+        "file",
+        "external-api",
+        "object-storage"
+      ]
+    },
+    "owner": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "visibility": {
+      "enum": [
+        "private",
+        "internal",
+        "partner",
+        "public"
+      ]
+    },
+    "compatibility_policy": {
+      "enum": [
+        "strict-backward",
+        "backward",
+        "none-internal-only"
+      ]
+    },
+    "consumers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "providers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "schema_ref": {
+      "type": "string"
+    },
+    "security": {
+      "type": "object"
+    },
+    "delivery": {
+      "type": "object"
+    },
+    "lifecycle": {
+      "type": "object"
+    }
+  }
+}

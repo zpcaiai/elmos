@@ -1,0 +1,316 @@
+{
+  "batch": 76,
+  "title": "Makefile CMake and Nginx Build and Proxy Pack",
+  "subject": "Makefile and CMake build graphs plus Nginx reverse proxy, TLS, rate limiting, routing, and configuration certification",
+  "skill_count": 12,
+  "id_range": [
+    "PG351",
+    "PG362"
+  ],
+  "toolchain": [
+    "make",
+    "cmake",
+    "ninja",
+    "nginx",
+    "configuration linters"
+  ],
+  "source_markers": [
+    "Makefile",
+    "*.mk",
+    "CMakeLists.txt",
+    "CMakePresets.json",
+    "nginx.conf",
+    "conf.d/*.conf"
+  ],
+  "skills": [
+    {
+      "id": "PG351",
+      "batch": 76,
+      "name": "b76-makefile-profile-detector",
+      "title": "Makefile Profile Detector",
+      "summary": "Inspect and model Makefile Profile Detector for Makefile and CMake build graphs plus Nginx reverse proxy, TLS, rate limiting, routing, and configuration certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b76-makefile-profile-detector/SKILL.md",
+      "catalog_path": "skills/batch-76/PG351-makefile-profile-detector.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG350"
+      ],
+      "outputs": [
+        "makefile_profile_detector.json",
+        "makefile_profile_detector_artifacts/",
+        "makefile_profile_detector_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG352",
+      "batch": 76,
+      "name": "b76-portable-makefile-generator",
+      "title": "Portable Makefile Generator",
+      "summary": "Generate runnable and maintainable Portable Makefile Generator for Makefile and CMake build graphs plus Nginx reverse proxy, TLS, rate limiting, routing, and configuration certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b76-portable-makefile-generator/SKILL.md",
+      "catalog_path": "skills/batch-76/PG352-portable-makefile-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG350",
+        "PG351"
+      ],
+      "outputs": [
+        "portable_makefile_generator_plan.json",
+        "portable_makefile_generator_artifacts/",
+        "portable_makefile_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG353",
+      "batch": 76,
+      "name": "b76-make-incremental-dependency-manager",
+      "title": "Make Incremental Dependency Manager",
+      "summary": "Coordinate and control Make Incremental Dependency Manager for Makefile and CMake build graphs plus Nginx reverse proxy, TLS, rate limiting, routing, and configuration certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b76-make-incremental-dependency-manager/SKILL.md",
+      "catalog_path": "skills/batch-76/PG353-make-incremental-dependency-manager.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG350",
+        "PG352"
+      ],
+      "outputs": [
+        "make_incremental_dependency_manager_plan.json",
+        "make_incremental_dependency_manager_artifacts/",
+        "make_incremental_dependency_manager_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG354",
+      "batch": 76,
+      "name": "b76-make-test-release-orchestrator",
+      "title": "Make Test Release Orchestrator",
+      "summary": "Coordinate and control Make Test Release Orchestrator for Makefile and CMake build graphs plus Nginx reverse proxy, TLS, rate limiting, routing, and configuration certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b76-make-test-release-orchestrator/SKILL.md",
+      "catalog_path": "skills/batch-76/PG354-make-test-release-orchestrator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG350",
+        "PG353"
+      ],
+      "outputs": [
+        "make_test_release_orchestrator_plan.json",
+        "make_test_release_orchestrator_artifacts/",
+        "make_test_release_orchestrator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG355",
+      "batch": 76,
+      "name": "b76-cmake-profile-detector",
+      "title": "CMake Profile Detector",
+      "summary": "Inspect and model CMake Profile Detector for Makefile and CMake build graphs plus Nginx reverse proxy, TLS, rate limiting, routing, and configuration certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b76-cmake-profile-detector/SKILL.md",
+      "catalog_path": "skills/batch-76/PG355-cmake-profile-detector.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG350",
+        "PG354"
+      ],
+      "outputs": [
+        "cmake_profile_detector.json",
+        "cmake_profile_detector_artifacts/",
+        "cmake_profile_detector_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG356",
+      "batch": 76,
+      "name": "b76-cmake-target-graph-generator",
+      "title": "CMake Target Graph Generator",
+      "summary": "Generate runnable and maintainable CMake Target Graph Generator for Makefile and CMake build graphs plus Nginx reverse proxy, TLS, rate limiting, routing, and configuration certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b76-cmake-target-graph-generator/SKILL.md",
+      "catalog_path": "skills/batch-76/PG356-cmake-target-graph-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG350",
+        "PG355"
+      ],
+      "outputs": [
+        "cmake_target_graph_generator_plan.json",
+        "cmake_target_graph_generator_artifacts/",
+        "cmake_target_graph_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG357",
+      "batch": 76,
+      "name": "b76-cmake-dependency-package-manager",
+      "title": "CMake Dependency Package Manager",
+      "summary": "Coordinate and control CMake Dependency Package Manager for Makefile and CMake build graphs plus Nginx reverse proxy, TLS, rate limiting, routing, and configuration certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b76-cmake-dependency-package-manager/SKILL.md",
+      "catalog_path": "skills/batch-76/PG357-cmake-dependency-package-manager.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG350",
+        "PG356"
+      ],
+      "outputs": [
+        "cmake_dependency_package_manager_plan.json",
+        "cmake_dependency_package_manager_artifacts/",
+        "cmake_dependency_package_manager_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG358",
+      "batch": 76,
+      "name": "b76-cmake-presets-crossbuild-manager",
+      "title": "CMake Presets Crossbuild Manager",
+      "summary": "Coordinate and control CMake Presets Crossbuild Manager for Makefile and CMake build graphs plus Nginx reverse proxy, TLS, rate limiting, routing, and configuration certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b76-cmake-presets-crossbuild-manager/SKILL.md",
+      "catalog_path": "skills/batch-76/PG358-cmake-presets-crossbuild-manager.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG350",
+        "PG357"
+      ],
+      "outputs": [
+        "cmake_presets_crossbuild_manager_plan.json",
+        "cmake_presets_crossbuild_manager_artifacts/",
+        "cmake_presets_crossbuild_manager_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG359",
+      "batch": 76,
+      "name": "b76-nginx-topology-profile-detector",
+      "title": "Nginx Topology Profile Detector",
+      "summary": "Inspect and model Nginx Topology Profile Detector for Makefile and CMake build graphs plus Nginx reverse proxy, TLS, rate limiting, routing, and configuration certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b76-nginx-topology-profile-detector/SKILL.md",
+      "catalog_path": "skills/batch-76/PG359-nginx-topology-profile-detector.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG350",
+        "PG358"
+      ],
+      "outputs": [
+        "nginx_topology_profile_detector.json",
+        "nginx_topology_profile_detector_artifacts/",
+        "nginx_topology_profile_detector_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG360",
+      "batch": 76,
+      "name": "b76-nginx-reverse-proxy-generator",
+      "title": "Nginx Reverse Proxy Generator",
+      "summary": "Generate runnable and maintainable Nginx Reverse Proxy Generator for Makefile and CMake build graphs plus Nginx reverse proxy, TLS, rate limiting, routing, and configuration certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b76-nginx-reverse-proxy-generator/SKILL.md",
+      "catalog_path": "skills/batch-76/PG360-nginx-reverse-proxy-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG350",
+        "PG359"
+      ],
+      "outputs": [
+        "nginx_reverse_proxy_generator_plan.json",
+        "nginx_reverse_proxy_generator_artifacts/",
+        "nginx_reverse_proxy_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG361",
+      "batch": 76,
+      "name": "b76-nginx-tls-security-rate-limit",
+      "title": "Nginx TLS Security Rate Limit",
+      "summary": "Implement and validate Nginx TLS Security Rate Limit for Makefile and CMake build graphs plus Nginx reverse proxy, TLS, rate limiting, routing, and configuration certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b76-nginx-tls-security-rate-limit/SKILL.md",
+      "catalog_path": "skills/batch-76/PG361-nginx-tls-security-rate-limit.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG350",
+        "PG360"
+      ],
+      "outputs": [
+        "nginx_tls_security_rate_limit_plan.json",
+        "nginx_tls_security_rate_limit_artifacts/",
+        "nginx_tls_security_rate_limit_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG362",
+      "batch": 76,
+      "name": "b76-build-proxy-configuration-certifier",
+      "title": "Build Proxy Configuration Certifier",
+      "summary": "Execute and independently verify Build Proxy Configuration Certifier for Makefile and CMake build graphs plus Nginx reverse proxy, TLS, rate limiting, routing, and configuration certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b76-build-proxy-configuration-certifier/SKILL.md",
+      "catalog_path": "skills/batch-76/PG362-build-proxy-configuration-certifier.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG350",
+        "PG361"
+      ],
+      "outputs": [
+        "build_proxy_configuration_certifier_plan.json",
+        "build_proxy_configuration_certifier_artifacts/",
+        "build_proxy_configuration_certifier_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md",
+        "certification_result.json",
+        "scope_and_limitations.md"
+      ]
+    }
+  ]
+}

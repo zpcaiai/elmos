@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0.0",
+  "id": "CONTRACT-ALERT-REST",
+  "kind": "rest",
+  "owner": "MOD-ALERT",
+  "version": "1.0.0",
+  "visibility": "internal",
+  "compatibility_policy": "backward",
+  "consumers": [
+    "maintenance-web"
+  ],
+  "providers": [
+    "maintenance-api"
+  ],
+  "schema_ref": "openapi/alert-api.yaml",
+  "security": {
+    "authentication": "oidc",
+    "authorization_scope": "tenant-and-permission"
+  },
+  "delivery": {
+    "timeout_ms": 3000,
+    "idempotency": "required-for-mutating-commands"
+  },
+  "lifecycle": {
+    "status": "active"
+  }
+}

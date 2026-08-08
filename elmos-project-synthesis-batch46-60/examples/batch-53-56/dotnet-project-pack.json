@@ -1,0 +1,66 @@
+{
+  "schema_version": "1.0.0",
+  "language": "csharp",
+  "profiles": [
+    {
+      "id": "dotnet-aspnet-modular-monolith",
+      "skills": [
+        "PG101",
+        "PG102",
+        "PG103",
+        "PG104",
+        "PG105",
+        "PG106",
+        "PG107",
+        "PG108",
+        "PG109",
+        "PG110",
+        "PG111",
+        "PG112"
+      ]
+    }
+  ],
+  "runtime": {
+    "version": "platform-pinned-lts",
+    "support_policy": "LTS",
+    "framework": "aspnet-core",
+    "framework_version": "same-as-sdk"
+  },
+  "build": {
+    "system": "dotnet-sdk",
+    "central_package_management": true,
+    "locked_restore": true
+  },
+  "quality": {
+    "nullable": true,
+    "warnings_as_errors": true,
+    "analyzers": [
+      "platform-approved"
+    ]
+  },
+  "generators": [
+    {
+      "skill_id": "PG106",
+      "artifact_kinds": [
+        "endpoints",
+        "contracts",
+        "problem-details"
+      ],
+      "ownership_modes": [
+        "managed",
+        "protected"
+      ]
+    },
+    {
+      "skill_id": "PG105",
+      "artifact_kinds": [
+        "domain",
+        "application",
+        "ports"
+      ],
+      "ownership_modes": [
+        "protected"
+      ]
+    }
+  ]
+}

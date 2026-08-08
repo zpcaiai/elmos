@@ -1,0 +1,131 @@
+{
+  "batch": 57,
+  "engine": "elmos.project-synthesis",
+  "skill_count": 10,
+  "skills": [
+    {
+      "id": "PG125",
+      "name": "frontend-profile-selector",
+      "path": "skills/batch-57/PG125-frontend-profile-selector.md",
+      "depends_on": [
+        "PG033",
+        "PG053",
+        "PG055",
+        "PG064"
+      ],
+      "summary": "Selects the supported frontend application and rendering profile."
+    },
+    {
+      "id": "PG126",
+      "name": "typescript-client-sdk-generator",
+      "path": "skills/batch-57/PG126-typescript-client-sdk-generator.md",
+      "depends_on": [
+        "PG115",
+        "PG116",
+        "PG124",
+        "PG125"
+      ],
+      "summary": "Generates typed TypeScript clients from approved REST, RPC, event, or webhook contracts."
+    },
+    {
+      "id": "PG127",
+      "name": "auth-session-ui-generator",
+      "path": "skills/batch-57/PG127-auth-session-ui-generator.md",
+      "depends_on": [
+        "PG041",
+        "PG050",
+        "PG096",
+        "PG108",
+        "PG125"
+      ],
+      "summary": "Generates sign-in, sign-out, session, token refresh, tenant selection, and authorization-aware UI flows."
+    },
+    {
+      "id": "PG128",
+      "name": "form-validation-generator",
+      "path": "skills/batch-57/PG128-form-validation-generator.md",
+      "depends_on": [
+        "PG034",
+        "PG039",
+        "PG125",
+        "PG126"
+      ],
+      "summary": "Generates forms, field schemas, client validation, server-error mapping, accessibility, and optimistic concurrency handling."
+    },
+    {
+      "id": "PG129",
+      "name": "crud-table-detail-generator",
+      "path": "skills/batch-57/PG129-crud-table-detail-generator.md",
+      "depends_on": [
+        "PG033",
+        "PG040",
+        "PG041",
+        "PG125",
+        "PG126"
+      ],
+      "summary": "Generates list, filter, sort, page, create, view, edit, and delete interfaces from approved resource contracts."
+    },
+    {
+      "id": "PG130",
+      "name": "dashboard-chart-generator",
+      "path": "skills/batch-57/PG130-dashboard-chart-generator.md",
+      "depends_on": [
+        "PG027",
+        "PG040",
+        "PG125",
+        "PG126"
+      ],
+      "summary": "Generates KPI cards, charts, filters, drilldowns, freshness indicators, and accessible tabular alternatives."
+    },
+    {
+      "id": "PG131",
+      "name": "navigation-routing-permission-generator",
+      "path": "skills/batch-57/PG131-navigation-routing-permission-generator.md",
+      "depends_on": [
+        "PG033",
+        "PG041",
+        "PG045",
+        "PG125"
+      ],
+      "summary": "Generates application shell, route tree, breadcrumbs, navigation, deep links, and permission-aware visibility."
+    },
+    {
+      "id": "PG132",
+      "name": "design-token-component-adapter",
+      "path": "skills/batch-57/PG132-design-token-component-adapter.md",
+      "depends_on": [
+        "PG063",
+        "PG125"
+      ],
+      "summary": "Maps generated UI to approved design tokens and component-library primitives."
+    },
+    {
+      "id": "PG133",
+      "name": "frontend-state-data-fetch-generator",
+      "path": "skills/batch-57/PG133-frontend-state-data-fetch-generator.md",
+      "depends_on": [
+        "PG048",
+        "PG126",
+        "PG129"
+      ],
+      "summary": "Generates query caching, mutations, optimistic updates, invalidation, offline state, and error recovery."
+    },
+    {
+      "id": "PG134",
+      "name": "fullstack-e2e-wiring-generator",
+      "path": "skills/batch-57/PG134-fullstack-e2e-wiring-generator.md",
+      "depends_on": [
+        "PG076",
+        "PG088",
+        "PG100",
+        "PG112",
+        "PG124",
+        "PG125",
+        "PG126",
+        "PG127",
+        "PG133"
+      ],
+      "summary": "Wires frontend, generated SDK, backend, identity, database, messaging, configuration, local composition, and end-to-end journeys."
+    }
+  ]
+}

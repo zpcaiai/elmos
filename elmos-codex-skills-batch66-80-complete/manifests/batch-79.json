@@ -1,0 +1,389 @@
+{
+  "batch": 79,
+  "title": "GitHub Actions GitLab CI and Jenkins Pipeline Pack",
+  "subject": "GitHub Actions, GitLab CI, Jenkins pipelines, reusable components, runners, permissions, OIDC, caches, environments, releases, provenance, and cross-system certification",
+  "skill_count": 15,
+  "id_range": [
+    "PG391",
+    "PG405"
+  ],
+  "toolchain": [
+    "GitHub Actions",
+    "GitLab CI",
+    "Jenkins",
+    "actionlint",
+    "yamllint",
+    "container runners",
+    "OIDC/cloud CLIs"
+  ],
+  "source_markers": [
+    ".github/workflows/*.yml",
+    ".gitlab-ci.yml",
+    "gitlab-ci/*.yml",
+    "Jenkinsfile",
+    "vars/*.groovy"
+  ],
+  "skills": [
+    {
+      "id": "PG391",
+      "batch": 79,
+      "name": "b79-cicd-pipeline-profile-detector",
+      "title": "CI/CD Pipeline Profile Detector",
+      "summary": "Inspect and model CI/CD Pipeline Profile Detector for GitHub Actions, GitLab CI, Jenkins pipelines, reusable components, runners, permissions, OIDC, caches, environments, releases, provenance, and cross-system certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b79-cicd-pipeline-profile-detector/SKILL.md",
+      "catalog_path": "skills/batch-79/PG391-cicd-pipeline-profile-detector.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG390"
+      ],
+      "outputs": [
+        "cicd_pipeline_profile_detector.json",
+        "cicd_pipeline_profile_detector_artifacts/",
+        "cicd_pipeline_profile_detector_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG392",
+      "batch": 79,
+      "name": "b79-github-actions-workflow-generator",
+      "title": "GitHub Actions Workflow Generator",
+      "summary": "Generate runnable and maintainable GitHub Actions Workflow Generator for GitHub Actions, GitLab CI, Jenkins pipelines, reusable components, runners, permissions, OIDC, caches, environments, releases, provenance, and cross-system certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b79-github-actions-workflow-generator/SKILL.md",
+      "catalog_path": "skills/batch-79/PG392-github-actions-workflow-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG390",
+        "PG391"
+      ],
+      "outputs": [
+        "github_actions_workflow_generator_plan.json",
+        "github_actions_workflow_generator_artifacts/",
+        "github_actions_workflow_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG393",
+      "batch": 79,
+      "name": "b79-github-reusable-workflow-action-generator",
+      "title": "GitHub Reusable Workflow Action Generator",
+      "summary": "Generate runnable and maintainable GitHub Reusable Workflow Action Generator for GitHub Actions, GitLab CI, Jenkins pipelines, reusable components, runners, permissions, OIDC, caches, environments, releases, provenance, and cross-system certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b79-github-reusable-workflow-action-generator/SKILL.md",
+      "catalog_path": "skills/batch-79/PG393-github-reusable-workflow-action-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG390",
+        "PG392"
+      ],
+      "outputs": [
+        "github_reusable_workflow_action_generator_plan.json",
+        "github_reusable_workflow_action_generator_artifacts/",
+        "github_reusable_workflow_action_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG394",
+      "batch": 79,
+      "name": "b79-github-oidc-permission-hardening",
+      "title": "GitHub OIDC Permission Hardening",
+      "summary": "Enforce and test GitHub OIDC Permission Hardening for GitHub Actions, GitLab CI, Jenkins pipelines, reusable components, runners, permissions, OIDC, caches, environments, releases, provenance, and cross-system certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b79-github-oidc-permission-hardening/SKILL.md",
+      "catalog_path": "skills/batch-79/PG394-github-oidc-permission-hardening.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG390",
+        "PG393"
+      ],
+      "outputs": [
+        "github_oidc_permission_hardening_plan.json",
+        "github_oidc_permission_hardening_artifacts/",
+        "github_oidc_permission_hardening_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG395",
+      "batch": 79,
+      "name": "b79-github-matrix-cache-artifact-manager",
+      "title": "GitHub Matrix Cache Artifact Manager",
+      "summary": "Coordinate and control GitHub Matrix Cache Artifact Manager for GitHub Actions, GitLab CI, Jenkins pipelines, reusable components, runners, permissions, OIDC, caches, environments, releases, provenance, and cross-system certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b79-github-matrix-cache-artifact-manager/SKILL.md",
+      "catalog_path": "skills/batch-79/PG395-github-matrix-cache-artifact-manager.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG390",
+        "PG394"
+      ],
+      "outputs": [
+        "github_matrix_cache_artifact_manager_plan.json",
+        "github_matrix_cache_artifact_manager_artifacts/",
+        "github_matrix_cache_artifact_manager_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG396",
+      "batch": 79,
+      "name": "b79-gitlab-ci-pipeline-generator",
+      "title": "GitLab Ci Pipeline Generator",
+      "summary": "Generate runnable and maintainable GitLab Ci Pipeline Generator for GitHub Actions, GitLab CI, Jenkins pipelines, reusable components, runners, permissions, OIDC, caches, environments, releases, provenance, and cross-system certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b79-gitlab-ci-pipeline-generator/SKILL.md",
+      "catalog_path": "skills/batch-79/PG396-gitlab-ci-pipeline-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG390",
+        "PG395"
+      ],
+      "outputs": [
+        "gitlab_ci_pipeline_generator_plan.json",
+        "gitlab_ci_pipeline_generator_artifacts/",
+        "gitlab_ci_pipeline_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG397",
+      "batch": 79,
+      "name": "b79-gitlab-child-pipeline-component-generator",
+      "title": "GitLab Child Pipeline Component Generator",
+      "summary": "Generate runnable and maintainable GitLab Child Pipeline Component Generator for GitHub Actions, GitLab CI, Jenkins pipelines, reusable components, runners, permissions, OIDC, caches, environments, releases, provenance, and cross-system certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b79-gitlab-child-pipeline-component-generator/SKILL.md",
+      "catalog_path": "skills/batch-79/PG397-gitlab-child-pipeline-component-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG390",
+        "PG396"
+      ],
+      "outputs": [
+        "gitlab_child_pipeline_component_generator_plan.json",
+        "gitlab_child_pipeline_component_generator_artifacts/",
+        "gitlab_child_pipeline_component_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG398",
+      "batch": 79,
+      "name": "b79-gitlab-runner-secret-hardening",
+      "title": "GitLab Runner Secret Hardening",
+      "summary": "Enforce and test GitLab Runner Secret Hardening for GitHub Actions, GitLab CI, Jenkins pipelines, reusable components, runners, permissions, OIDC, caches, environments, releases, provenance, and cross-system certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b79-gitlab-runner-secret-hardening/SKILL.md",
+      "catalog_path": "skills/batch-79/PG398-gitlab-runner-secret-hardening.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG390",
+        "PG397"
+      ],
+      "outputs": [
+        "gitlab_runner_secret_hardening_plan.json",
+        "gitlab_runner_secret_hardening_artifacts/",
+        "gitlab_runner_secret_hardening_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG399",
+      "batch": 79,
+      "name": "b79-gitlab-environment-release-manager",
+      "title": "GitLab Environment Release Manager",
+      "summary": "Coordinate and control GitLab Environment Release Manager for GitHub Actions, GitLab CI, Jenkins pipelines, reusable components, runners, permissions, OIDC, caches, environments, releases, provenance, and cross-system certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b79-gitlab-environment-release-manager/SKILL.md",
+      "catalog_path": "skills/batch-79/PG399-gitlab-environment-release-manager.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG390",
+        "PG398"
+      ],
+      "outputs": [
+        "gitlab_environment_release_manager_plan.json",
+        "gitlab_environment_release_manager_artifacts/",
+        "gitlab_environment_release_manager_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG400",
+      "batch": 79,
+      "name": "b79-jenkins-declarative-pipeline-generator",
+      "title": "Jenkins Declarative Pipeline Generator",
+      "summary": "Generate runnable and maintainable Jenkins Declarative Pipeline Generator for GitHub Actions, GitLab CI, Jenkins pipelines, reusable components, runners, permissions, OIDC, caches, environments, releases, provenance, and cross-system certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b79-jenkins-declarative-pipeline-generator/SKILL.md",
+      "catalog_path": "skills/batch-79/PG400-jenkins-declarative-pipeline-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG390",
+        "PG399"
+      ],
+      "outputs": [
+        "jenkins_declarative_pipeline_generator_plan.json",
+        "jenkins_declarative_pipeline_generator_artifacts/",
+        "jenkins_declarative_pipeline_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG401",
+      "batch": 79,
+      "name": "b79-jenkins-shared-library-generator",
+      "title": "Jenkins Shared Library Generator",
+      "summary": "Generate runnable and maintainable Jenkins Shared Library Generator for GitHub Actions, GitLab CI, Jenkins pipelines, reusable components, runners, permissions, OIDC, caches, environments, releases, provenance, and cross-system certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b79-jenkins-shared-library-generator/SKILL.md",
+      "catalog_path": "skills/batch-79/PG401-jenkins-shared-library-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG390",
+        "PG400"
+      ],
+      "outputs": [
+        "jenkins_shared_library_generator_plan.json",
+        "jenkins_shared_library_generator_artifacts/",
+        "jenkins_shared_library_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG402",
+      "batch": 79,
+      "name": "b79-jenkins-agent-credential-hardening",
+      "title": "Jenkins Agent Credential Hardening",
+      "summary": "Enforce and test Jenkins Agent Credential Hardening for GitHub Actions, GitLab CI, Jenkins pipelines, reusable components, runners, permissions, OIDC, caches, environments, releases, provenance, and cross-system certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b79-jenkins-agent-credential-hardening/SKILL.md",
+      "catalog_path": "skills/batch-79/PG402-jenkins-agent-credential-hardening.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG390",
+        "PG401"
+      ],
+      "outputs": [
+        "jenkins_agent_credential_hardening_plan.json",
+        "jenkins_agent_credential_hardening_artifacts/",
+        "jenkins_agent_credential_hardening_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG403",
+      "batch": 79,
+      "name": "b79-cross-ci-release-promotion",
+      "title": "Cross Ci Release Promotion",
+      "summary": "Implement and validate Cross Ci Release Promotion for GitHub Actions, GitLab CI, Jenkins pipelines, reusable components, runners, permissions, OIDC, caches, environments, releases, provenance, and cross-system certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b79-cross-ci-release-promotion/SKILL.md",
+      "catalog_path": "skills/batch-79/PG403-cross-ci-release-promotion.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG390",
+        "PG402"
+      ],
+      "outputs": [
+        "cross_ci_release_promotion_plan.json",
+        "cross_ci_release_promotion_artifacts/",
+        "cross_ci_release_promotion_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG404",
+      "batch": 79,
+      "name": "b79-pipeline-security-provenance-gate",
+      "title": "Pipeline Security Provenance Gate",
+      "summary": "Enforce and test Pipeline Security Provenance Gate for GitHub Actions, GitLab CI, Jenkins pipelines, reusable components, runners, permissions, OIDC, caches, environments, releases, provenance, and cross-system certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b79-pipeline-security-provenance-gate/SKILL.md",
+      "catalog_path": "skills/batch-79/PG404-pipeline-security-provenance-gate.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG390",
+        "PG403"
+      ],
+      "outputs": [
+        "pipeline_security_provenance_gate_plan.json",
+        "pipeline_security_provenance_gate_artifacts/",
+        "pipeline_security_provenance_gate_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG405",
+      "batch": 79,
+      "name": "b79-cicd-cross-system-certifier",
+      "title": "CI/CD Cross System Certifier",
+      "summary": "Execute and independently verify CI/CD Cross System Certifier for GitHub Actions, GitLab CI, Jenkins pipelines, reusable components, runners, permissions, OIDC, caches, environments, releases, provenance, and cross-system certification, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b79-cicd-cross-system-certifier/SKILL.md",
+      "catalog_path": "skills/batch-79/PG405-cicd-cross-system-certifier.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG390",
+        "PG404"
+      ],
+      "outputs": [
+        "cicd_cross_system_certifier_plan.json",
+        "cicd_cross_system_certifier_artifacts/",
+        "cicd_cross_system_certifier_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md",
+        "certification_result.json",
+        "scope_and_limitations.md"
+      ]
+    }
+  ]
+}

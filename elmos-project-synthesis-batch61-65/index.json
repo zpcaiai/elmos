@@ -1,0 +1,610 @@
+{
+  "engine": "elmos.project-synthesis",
+  "schema": "elmos.project-synthesis.v1",
+  "release": "batch-61-65",
+  "skill_count": 52,
+  "skills": [
+    {
+      "id": "PG171",
+      "name": "spec-to-code-drift-detector",
+      "path": "skills/batch-61/PG171-spec-to-code-drift-detector.md",
+      "depends_on": [
+        "PG032",
+        "PG042",
+        "PG064",
+        "PG076",
+        "PG158"
+      ],
+      "summary": "Detects divergence between approved specifications and current repository behavior."
+    },
+    {
+      "id": "PG172",
+      "name": "code-to-spec-reconciliation",
+      "path": "skills/batch-61/PG172-code-to-spec-reconciliation.md",
+      "depends_on": [
+        "PG071",
+        "PG171"
+      ],
+      "summary": "Proposes controlled specification updates when valid repository behavior is not represented upstream."
+    },
+    {
+      "id": "PG173",
+      "name": "manual-edit-preservation",
+      "path": "skills/batch-61/PG173-manual-edit-preservation.md",
+      "depends_on": [
+        "PG071",
+        "PG072",
+        "PG074",
+        "PG171"
+      ],
+      "summary": "Preserves manual edits across regeneration using ownership, protected regions, semantic identity, and version history."
+    },
+    {
+      "id": "PG174",
+      "name": "incremental-regeneration-planner",
+      "path": "skills/batch-61/PG174-incremental-regeneration-planner.md",
+      "depends_on": [
+        "PG032",
+        "PG042",
+        "PG073",
+        "PG173"
+      ],
+      "summary": "Creates the smallest safe regeneration plan for an approved change request."
+    },
+    {
+      "id": "PG175",
+      "name": "change-set-impact-analyzer",
+      "path": "skills/batch-61/PG175-change-set-impact-analyzer.md",
+      "depends_on": [
+        "PG032",
+        "PG046",
+        "PG050",
+        "PG053",
+        "PG174"
+      ],
+      "summary": "Analyzes proposed repository changes across behavior, contracts, data, security, operations, and cost."
+    },
+    {
+      "id": "PG176",
+      "name": "architecture-drift-detector",
+      "path": "skills/batch-61/PG176-architecture-drift-detector.md",
+      "depends_on": [
+        "PG045",
+        "PG047",
+        "PG050",
+        "PG053",
+        "PG171"
+      ],
+      "summary": "Detects repository structures and runtime topology that violate the approved architecture baseline."
+    },
+    {
+      "id": "PG177",
+      "name": "database-api-compatibility-check",
+      "path": "skills/batch-61/PG177-database-api-compatibility-check.md",
+      "depends_on": [
+        "PG114",
+        "PG115",
+        "PG116",
+        "PG117",
+        "PG124",
+        "PG175"
+      ],
+      "summary": "Checks schema, migration, REST, RPC, event, and webhook compatibility for a change set."
+    },
+    {
+      "id": "PG178",
+      "name": "refactoring-and-upgrade-bridge",
+      "path": "skills/batch-61/PG178-refactoring-and-upgrade-bridge.md",
+      "depends_on": [
+        "PG010",
+        "PG057",
+        "PG058",
+        "PG175",
+        "PG177"
+      ],
+      "summary": "Plans controlled framework, runtime, dependency, and structural upgrades within Project Synthesis."
+    },
+    {
+      "id": "PG179",
+      "name": "human-approval-gate",
+      "path": "skills/batch-61/PG179-human-approval-gate.md",
+      "depends_on": [
+        "PG007",
+        "PG008",
+        "PG031",
+        "PG175"
+      ],
+      "summary": "Manages scoped approvals for high-impact change, reconciliation, repair, security, data, and delivery decisions."
+    },
+    {
+      "id": "PG180",
+      "name": "git-pr-delivery-manager",
+      "path": "skills/batch-61/PG180-git-pr-delivery-manager.md",
+      "depends_on": [
+        "PG158",
+        "PG175",
+        "PG177",
+        "PG179"
+      ],
+      "summary": "Packages approved incremental changes into reviewable commits and pull or merge requests."
+    },
+    {
+      "id": "PG181",
+      "name": "synthesis-agent-orchestrator",
+      "path": "skills/batch-62/PG181-synthesis-agent-orchestrator.md",
+      "depends_on": [
+        "PG005",
+        "PG008",
+        "PG009",
+        "PG180"
+      ],
+      "summary": "Coordinates specialist agents, skills, tools, approvals, budgets, and state transitions for Project Synthesis."
+    },
+    {
+      "id": "PG182",
+      "name": "planner-coder-reviewer-agent-team",
+      "path": "skills/batch-62/PG182-planner-coder-reviewer-agent-team.md",
+      "depends_on": [
+        "PG181"
+      ],
+      "summary": "Defines separated planner, implementer, reviewer, tester, security, and certifier responsibilities."
+    },
+    {
+      "id": "PG183",
+      "name": "skill-discovery-and-routing",
+      "path": "skills/batch-62/PG183-skill-discovery-and-routing.md",
+      "depends_on": [
+        "PG008",
+        "PG062",
+        "PG181"
+      ],
+      "summary": "Discovers and ranks Skills by contract compatibility, capability, policy, language, domain, and evidence quality."
+    },
+    {
+      "id": "PG184",
+      "name": "skill-input-output-contract-validator",
+      "path": "skills/batch-62/PG184-skill-input-output-contract-validator.md",
+      "depends_on": [
+        "PG002",
+        "PG003",
+        "PG007",
+        "PG183"
+      ],
+      "summary": "Validates Skill manifests, schemas, preconditions, outputs, evidence, and version compatibility."
+    },
+    {
+      "id": "PG185",
+      "name": "skill-sandbox-permission-enforcer",
+      "path": "skills/batch-62/PG185-skill-sandbox-permission-enforcer.md",
+      "depends_on": [
+        "PG008",
+        "PG147",
+        "PG184"
+      ],
+      "summary": "Enforces process, filesystem, network, repository, secret, deployment, and data capabilities for Skills and agents."
+    },
+    {
+      "id": "PG186",
+      "name": "model-routing-and-budget-controller",
+      "path": "skills/batch-62/PG186-model-routing-and-budget-controller.md",
+      "depends_on": [
+        "PG009",
+        "PG181"
+      ],
+      "summary": "Routes tasks across models and controls token, latency, monetary, and retry budgets."
+    },
+    {
+      "id": "PG187",
+      "name": "context-pack-builder",
+      "path": "skills/batch-62/PG187-context-pack-builder.md",
+      "depends_on": [
+        "PG004",
+        "PG009",
+        "PG182"
+      ],
+      "summary": "Builds minimal, source-grounded context packs for each specialist agent."
+    },
+    {
+      "id": "PG188",
+      "name": "domain-pack-sdk",
+      "path": "skills/batch-62/PG188-domain-pack-sdk.md",
+      "depends_on": [
+        "PG065",
+        "PG184"
+      ],
+      "summary": "Defines packaging, extension, validation, testing, and publication contracts for Domain Packs."
+    },
+    {
+      "id": "PG189",
+      "name": "template-skill-marketplace-publisher",
+      "path": "skills/batch-62/PG189-template-skill-marketplace-publisher.md",
+      "depends_on": [
+        "PG066",
+        "PG188"
+      ],
+      "summary": "Publishes governed Skills, templates, profiles, and Domain Packs into an internal or external marketplace."
+    },
+    {
+      "id": "PG190",
+      "name": "skill-version-compatibility-manager",
+      "path": "skills/batch-62/PG190-skill-version-compatibility-manager.md",
+      "depends_on": [
+        "PG184",
+        "PG188",
+        "PG189"
+      ],
+      "summary": "Manages Skill, schema, template, model adapter, and Domain Pack compatibility across platform releases."
+    },
+    {
+      "id": "PG191",
+      "name": "golden-project-benchmark-suite",
+      "path": "skills/batch-63/PG191-golden-project-benchmark-suite.md",
+      "depends_on": [
+        "PG077",
+        "PG089",
+        "PG101",
+        "PG124",
+        "PG190"
+      ],
+      "summary": "Defines representative benchmark projects across languages, architectures, and risk levels."
+    },
+    {
+      "id": "PG192",
+      "name": "requirements-understanding-eval",
+      "path": "skills/batch-63/PG192-requirements-understanding-eval.md",
+      "depends_on": [
+        "PG011",
+        "PG020",
+        "PG021",
+        "PG031",
+        "PG191"
+      ],
+      "summary": "Evaluates extraction, ambiguity handling, scope, conflict detection, assumptions, and acceptance criteria."
+    },
+    {
+      "id": "PG193",
+      "name": "architecture-quality-eval",
+      "path": "skills/batch-63/PG193-architecture-quality-eval.md",
+      "depends_on": [
+        "PG043",
+        "PG054",
+        "PG191"
+      ],
+      "summary": "Evaluates architecture simplicity, fit, boundaries, tradeoffs, security, data ownership, and operability."
+    },
+    {
+      "id": "PG194",
+      "name": "code-correctness-eval",
+      "path": "skills/batch-63/PG194-code-correctness-eval.md",
+      "depends_on": [
+        "PG069",
+        "PG075",
+        "PG191"
+      ],
+      "summary": "Evaluates semantic correctness, maintainability, contract conformance, language idioms, and generated-code governance."
+    },
+    {
+      "id": "PG195",
+      "name": "build-run-success-eval",
+      "path": "skills/batch-63/PG195-build-run-success-eval.md",
+      "depends_on": [
+        "PG147",
+        "PG156",
+        "PG158",
+        "PG191"
+      ],
+      "summary": "Evaluates clean setup, build, migration, startup, health, smoke, shutdown, and evidence reproducibility."
+    },
+    {
+      "id": "PG196",
+      "name": "security-compliance-eval",
+      "path": "skills/batch-63/PG196-security-compliance-eval.md",
+      "depends_on": [
+        "PG050",
+        "PG145",
+        "PG162",
+        "PG191"
+      ],
+      "summary": "Evaluates threat controls, authorization, tenant isolation, supply chain, secrets, data handling, and compliance evidence."
+    },
+    {
+      "id": "PG197",
+      "name": "traceability-completeness-eval",
+      "path": "skills/batch-63/PG197-traceability-completeness-eval.md",
+      "depends_on": [
+        "PG042",
+        "PG076",
+        "PG158",
+        "PG169"
+      ],
+      "summary": "Evaluates end-to-end lineage from source requirements through code, tests, evidence, releases, and change history."
+    },
+    {
+      "id": "PG198",
+      "name": "regeneration-safety-eval",
+      "path": "skills/batch-63/PG198-regeneration-safety-eval.md",
+      "depends_on": [
+        "PG173",
+        "PG174",
+        "PG180",
+        "PG191"
+      ],
+      "summary": "Evaluates idempotency, incremental scope, manual-edit preservation, merge behavior, and regression safety."
+    },
+    {
+      "id": "PG199",
+      "name": "cross-language-parity-eval",
+      "path": "skills/batch-63/PG199-cross-language-parity-eval.md",
+      "depends_on": [
+        "PG077",
+        "PG089",
+        "PG101",
+        "PG191"
+      ],
+      "summary": "Compares Java, Python, and .NET implementations of the same approved specification."
+    },
+    {
+      "id": "PG200",
+      "name": "large-project-scalability-eval",
+      "path": "skills/batch-63/PG200-large-project-scalability-eval.md",
+      "depends_on": [
+        "PG181",
+        "PG187",
+        "PG191"
+      ],
+      "summary": "Evaluates performance and reliability of synthesis on large repositories, specifications, graphs, and change sets."
+    },
+    {
+      "id": "PG201",
+      "name": "failure-recovery-chaos-eval",
+      "path": "skills/batch-63/PG201-failure-recovery-chaos-eval.md",
+      "depends_on": [
+        "PG149",
+        "PG150",
+        "PG181",
+        "PG191"
+      ],
+      "summary": "Evaluates recovery from model, tool, runner, network, registry, storage, broker, and approval interruptions."
+    },
+    {
+      "id": "PG202",
+      "name": "project-synthesis-product-certification",
+      "path": "skills/batch-63/PG202-project-synthesis-product-certification.md",
+      "depends_on": [
+        "PG192",
+        "PG193",
+        "PG194",
+        "PG195",
+        "PG196",
+        "PG197",
+        "PG198",
+        "PG199",
+        "PG200",
+        "PG201"
+      ],
+      "summary": "Combines benchmark and policy evidence into a versioned product certification decision."
+    },
+    {
+      "id": "PG203",
+      "name": "saas-admin-domain-pack",
+      "path": "skills/batch-64/PG203-saas-admin-domain-pack.md",
+      "depends_on": [
+        "PG051",
+        "PG188",
+        "PG202"
+      ],
+      "summary": "Provides reusable multi-tenant SaaS administration concepts, workflows, permissions, integrations, and tests."
+    },
+    {
+      "id": "PG204",
+      "name": "ecommerce-order-domain-pack",
+      "path": "skills/batch-64/PG204-ecommerce-order-domain-pack.md",
+      "depends_on": [
+        "PG122",
+        "PG188",
+        "PG202"
+      ],
+      "summary": "Provides catalog, cart, order, payment orchestration, fulfillment, return, and refund domain models."
+    },
+    {
+      "id": "PG205",
+      "name": "warehouse-logistics-domain-pack",
+      "path": "skills/batch-64/PG205-warehouse-logistics-domain-pack.md",
+      "depends_on": [
+        "PG117",
+        "PG188",
+        "PG202"
+      ],
+      "summary": "Provides inventory, location, receiving, picking, packing, shipment, task, and optimization domain concepts."
+    },
+    {
+      "id": "PG206",
+      "name": "manufacturing-mes-iot-domain-pack",
+      "path": "skills/batch-64/PG206-manufacturing-mes-iot-domain-pack.md",
+      "depends_on": [
+        "PG117",
+        "PG188",
+        "PG202"
+      ],
+      "summary": "Provides plant, equipment, work order, operation, quality, maintenance, telemetry, and traceability models."
+    },
+    {
+      "id": "PG207",
+      "name": "energy-ems-vpp-domain-pack",
+      "path": "skills/batch-64/PG207-energy-ems-vpp-domain-pack.md",
+      "depends_on": [
+        "PG117",
+        "PG188",
+        "PG202"
+      ],
+      "summary": "Provides assets, meters, forecasts, dispatch, constraints, tariffs, markets, settlement, and flexibility models."
+    },
+    {
+      "id": "PG208",
+      "name": "healthcare-clinical-admin-domain-pack",
+      "path": "skills/batch-64/PG208-healthcare-clinical-admin-domain-pack.md",
+      "depends_on": [
+        "PG119",
+        "PG188",
+        "PG202"
+      ],
+      "summary": "Provides patient administration, scheduling, encounter, order, result, consent, billing, and audit models."
+    },
+    {
+      "id": "PG209",
+      "name": "digital-twin-domain-pack",
+      "path": "skills/batch-64/PG209-digital-twin-domain-pack.md",
+      "depends_on": [
+        "PG117",
+        "PG188",
+        "PG202"
+      ],
+      "summary": "Provides physical assets, twin models, telemetry, state estimation, simulation, commands, scenarios, and calibration concepts."
+    },
+    {
+      "id": "PG210",
+      "name": "ai-agent-rag-domain-pack",
+      "path": "skills/batch-64/PG210-ai-agent-rag-domain-pack.md",
+      "depends_on": [
+        "PG092",
+        "PG188",
+        "PG202"
+      ],
+      "summary": "Provides knowledge source, ingestion, retrieval, prompt, tool, agent, memory, evaluation, and safety domain models."
+    },
+    {
+      "id": "PG211",
+      "name": "data-platform-analytics-domain-pack",
+      "path": "skills/batch-64/PG211-data-platform-analytics-domain-pack.md",
+      "depends_on": [
+        "PG039",
+        "PG188",
+        "PG202"
+      ],
+      "summary": "Provides source, pipeline, dataset, schema, quality, lineage, metric, dashboard, and access-control models."
+    },
+    {
+      "id": "PG212",
+      "name": "workflow-approval-domain-pack",
+      "path": "skills/batch-64/PG212-workflow-approval-domain-pack.md",
+      "depends_on": [
+        "PG038",
+        "PG179",
+        "PG188",
+        "PG202"
+      ],
+      "summary": "Provides configurable forms, cases, tasks, states, rules, approvals, escalations, SLAs, and audit models."
+    },
+    {
+      "id": "PG213",
+      "name": "requirement-studio-ui",
+      "path": "skills/batch-65/PG213-requirement-studio-ui.md",
+      "depends_on": [
+        "PG011",
+        "PG031",
+        "PG179"
+      ],
+      "summary": "Provides the interactive workspace for natural-language discovery, source review, requirements, assumptions, conflicts, scope, and baselines."
+    },
+    {
+      "id": "PG214",
+      "name": "architecture-review-ui",
+      "path": "skills/batch-65/PG214-architecture-review-ui.md",
+      "depends_on": [
+        "PG054",
+        "PG179"
+      ],
+      "summary": "Provides interactive architecture diagrams, ADRs, tradeoffs, risks, threats, deployment, and approval views."
+    },
+    {
+      "id": "PG215",
+      "name": "project-preview-and-diff-ui",
+      "path": "skills/batch-65/PG215-project-preview-and-diff-ui.md",
+      "depends_on": [
+        "PG173",
+        "PG174",
+        "PG175"
+      ],
+      "summary": "Provides repository tree, generated-file preview, ownership, symbol trace, semantic diff, and regeneration review."
+    },
+    {
+      "id": "PG216",
+      "name": "build-run-console-ui",
+      "path": "skills/batch-65/PG216-build-run-console-ui.md",
+      "depends_on": [
+        "PG147",
+        "PG158",
+        "PG181"
+      ],
+      "summary": "Provides live and historical build, test, startup, smoke, repair, and environment evidence views."
+    },
+    {
+      "id": "PG217",
+      "name": "artifact-evidence-explorer",
+      "path": "skills/batch-65/PG217-artifact-evidence-explorer.md",
+      "depends_on": [
+        "PG004",
+        "PG007",
+        "PG197"
+      ],
+      "summary": "Provides searchable lineage and evidence navigation across requirements, code, tests, builds, security, deployments, and releases."
+    },
+    {
+      "id": "PG218",
+      "name": "collaborative-comment-approval",
+      "path": "skills/batch-65/PG218-collaborative-comment-approval.md",
+      "depends_on": [
+        "PG179",
+        "PG213",
+        "PG214",
+        "PG215"
+      ],
+      "summary": "Provides reusable comments, mentions, assignments, decisions, approvals, exceptions, and notification workflows."
+    },
+    {
+      "id": "PG219",
+      "name": "tenant-policy-and-quota",
+      "path": "skills/batch-65/PG219-tenant-policy-and-quota.md",
+      "depends_on": [
+        "PG008",
+        "PG186"
+      ],
+      "summary": "Provides tenant administration for policy, capabilities, models, registries, runners, budgets, retention, and quotas."
+    },
+    {
+      "id": "PG220",
+      "name": "generation-usage-metering",
+      "path": "skills/batch-65/PG220-generation-usage-metering.md",
+      "depends_on": [
+        "PG186",
+        "PG219"
+      ],
+      "summary": "Meters model, tool, runner, storage, network, artifact, and support usage by tenant, project, run, and feature."
+    },
+    {
+      "id": "PG221",
+      "name": "support-diagnostic-bundle",
+      "path": "skills/batch-65/PG221-support-diagnostic-bundle.md",
+      "depends_on": [
+        "PG007",
+        "PG009",
+        "PG158",
+        "PG216"
+      ],
+      "summary": "Creates privacy-safe diagnostic packages for failed or degraded synthesis runs."
+    },
+    {
+      "id": "PG222",
+      "name": "feedback-to-skill-learning-loop",
+      "path": "skills/batch-65/PG222-feedback-to-skill-learning-loop.md",
+      "depends_on": [
+        "PG189",
+        "PG190",
+        "PG202",
+        "PG220",
+        "PG221"
+      ],
+      "summary": "Converts user feedback, defects, review findings, support cases, and evaluation failures into governed Skill improvements."
+    }
+  ]
+}

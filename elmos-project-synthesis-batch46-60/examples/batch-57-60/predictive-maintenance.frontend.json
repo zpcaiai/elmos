@@ -1,0 +1,44 @@
+{
+  "schema_version": "1.0.0",
+  "profile": {
+    "framework": "vue3-typescript",
+    "rendering": "spa"
+  },
+  "routes": [
+    {
+      "id": "route-alerts",
+      "path": "/alerts",
+      "permission": "alert.read"
+    },
+    {
+      "id": "route-alert-detail",
+      "path": "/alerts/:alertId",
+      "permission": "alert.read"
+    }
+  ],
+  "contracts": [
+    "CONTRACT-ALERT-REST@1.0.0"
+  ],
+  "state": {
+    "server_state": "query-cache",
+    "url_state": [
+      "status",
+      "page"
+    ],
+    "optimistic_mutations": [
+      "confirm-alert"
+    ]
+  },
+  "accessibility": {
+    "target": "WCAG-AA",
+    "keyboard_required": true,
+    "chart_table_alternative": true
+  },
+  "generation_units": [
+    {
+      "id": "GEN-WEB-ALERTS",
+      "path": "apps/web/src/features/alerts",
+      "ownership": "protected"
+    }
+  ]
+}

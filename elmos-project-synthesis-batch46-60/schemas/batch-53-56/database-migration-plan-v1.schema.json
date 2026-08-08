@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.project-synthesis.database-migration-plan.v1",
+  "title": "ELMOS Database Migration Plan",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "database_profile",
+    "from_version",
+    "to_version",
+    "steps",
+    "risk"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "database_profile": {
+      "type": "string"
+    },
+    "from_version": {
+      "type": "string"
+    },
+    "to_version": {
+      "type": "string"
+    },
+    "risk": {
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ]
+    },
+    "tests": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "order",
+          "operation",
+          "classification"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "order": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "operation": {
+            "type": "string"
+          },
+          "classification": {
+            "enum": [
+              "safe",
+              "online",
+              "breaking",
+              "data-migration"
+            ]
+          },
+          "rollback": {
+            "type": "string"
+          },
+          "requires_approval": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+}

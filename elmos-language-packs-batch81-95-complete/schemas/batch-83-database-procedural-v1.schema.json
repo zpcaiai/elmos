@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.language-packs.batch-83.v1",
+  "title": "PL/SQL / T-SQL / PL/pgSQL / SQL PL Pack",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "project",
+    "source_profile",
+    "target_profile",
+    "artifacts",
+    "evidence"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "project": {
+      "type": "object",
+      "required": [
+        "id",
+        "name"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "source_profile": {
+      "type": "object",
+      "properties": {
+        "family": {
+          "const": "database-programming"
+        },
+        "dialect": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "encoding": {
+          "type": "string"
+        }
+      }
+    },
+    "target_profile": {
+      "type": "object",
+      "properties": {
+        "profile": {
+          "type": "string"
+        },
+        "runtime": {
+          "type": "string"
+        },
+        "deployment": {
+          "type": "string"
+        }
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "source_ref",
+          "fingerprint"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "source_ref": {
+            "type": "string"
+          },
+          "fingerprint": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

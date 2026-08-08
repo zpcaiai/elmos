@@ -1,0 +1,116 @@
+{
+  "batch": 47,
+  "engine": "elmos.project-synthesis",
+  "skill_count": 10,
+  "skills": [
+    {
+      "id": "PG011",
+      "name": "natural-language-session-orchestrator",
+      "path": "skills/batch-47/PG011-natural-language-session-orchestrator.md",
+      "depends_on": [
+        "PG001",
+        "PG002",
+        "PG003",
+        "PG005"
+      ],
+      "summary": "Runs the multi-turn discovery session that converts natural language into an approved requirement workspace."
+    },
+    {
+      "id": "PG012",
+      "name": "requirement-intent-classifier",
+      "path": "skills/batch-47/PG012-requirement-intent-classifier.md",
+      "depends_on": [
+        "PG011"
+      ],
+      "summary": "Classifies user utterances and documents into requirement-relevant intent categories."
+    },
+    {
+      "id": "PG013",
+      "name": "document-and-repo-input-adapter",
+      "path": "skills/batch-47/PG013-document-and-repo-input-adapter.md",
+      "depends_on": [
+        "PG002",
+        "PG007",
+        "PG008"
+      ],
+      "summary": "Normalizes requirements from documents, archives, API definitions, issue trackers, and example repositories."
+    },
+    {
+      "id": "PG014",
+      "name": "product-glossary-builder",
+      "path": "skills/batch-47/PG014-product-glossary-builder.md",
+      "depends_on": [
+        "PG013"
+      ],
+      "summary": "Builds and maintains the domain glossary, aliases, acronyms, and disambiguation rules for a synthesis workspace."
+    },
+    {
+      "id": "PG015",
+      "name": "stakeholder-and-actor-extractor",
+      "path": "skills/batch-47/PG015-stakeholder-and-actor-extractor.md",
+      "depends_on": [
+        "PG012",
+        "PG013",
+        "PG014"
+      ],
+      "summary": "Extracts stakeholders, system actors, external systems, responsibilities, and access expectations."
+    },
+    {
+      "id": "PG016",
+      "name": "functional-requirement-extractor",
+      "path": "skills/batch-47/PG016-functional-requirement-extractor.md",
+      "depends_on": [
+        "PG012",
+        "PG013",
+        "PG014",
+        "PG015"
+      ],
+      "summary": "Extracts atomic, testable functional requirements from natural language and source materials."
+    },
+    {
+      "id": "PG017",
+      "name": "nonfunctional-requirement-extractor",
+      "path": "skills/batch-47/PG017-nonfunctional-requirement-extractor.md",
+      "depends_on": [
+        "PG013",
+        "PG014"
+      ],
+      "summary": "Extracts quality attributes, operational constraints, compliance needs, and measurable service expectations."
+    },
+    {
+      "id": "PG018",
+      "name": "constraint-assumption-extractor",
+      "path": "skills/batch-47/PG018-constraint-assumption-extractor.md",
+      "depends_on": [
+        "PG012",
+        "PG013"
+      ],
+      "summary": "Extracts technical, organizational, legal, schedule, budget, and environment constraints while maintaining an explicit assumption ledger."
+    },
+    {
+      "id": "PG019",
+      "name": "ambiguity-question-generator",
+      "path": "skills/batch-47/PG019-ambiguity-question-generator.md",
+      "depends_on": [
+        "PG016",
+        "PG017",
+        "PG018"
+      ],
+      "summary": "Generates minimal, high-value clarification questions ranked by expected impact."
+    },
+    {
+      "id": "PG020",
+      "name": "conversation-memory-to-spec",
+      "path": "skills/batch-47/PG020-conversation-memory-to-spec.md",
+      "depends_on": [
+        "PG011",
+        "PG012",
+        "PG016",
+        "PG017",
+        "PG018",
+        "PG019"
+      ],
+      "summary": "Consolidates approved multi-turn conversation facts into the requirement specification while preserving supersession history."
+    }
+  ]
+}

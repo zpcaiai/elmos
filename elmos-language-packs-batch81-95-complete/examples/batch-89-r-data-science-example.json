@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0.0",
+  "project": {
+    "id": "EXAMPLE-B89",
+    "name": "r-data-science-example"
+  },
+  "source_profile": {
+    "family": "data-science",
+    "dialect": "R scripts",
+    "version": "approved-version",
+    "encoding": "declared"
+  },
+  "target_profile": {
+    "profile": "R packages",
+    "runtime": "approved-runtime",
+    "deployment": "isolated-test"
+  },
+  "artifacts": [
+    {
+      "id": "ART-001",
+      "kind": "R scripts",
+      "source_ref": "source/example",
+      "fingerprint": "sha256:example"
+    }
+  ],
+  "findings": [
+    {
+      "severity": "medium",
+      "type": "statistical method drift",
+      "status": "mitigated-in-example"
+    }
+  ],
+  "evidence": [
+    "EVD-PARSE-001",
+    "EVD-TEST-001",
+    "EVD-TRACE-001"
+  ]
+}

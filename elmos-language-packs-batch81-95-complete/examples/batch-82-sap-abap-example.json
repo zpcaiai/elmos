@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0.0",
+  "project": {
+    "id": "EXAMPLE-B82",
+    "name": "sap-abap-example"
+  },
+  "source_profile": {
+    "family": "enterprise-sap",
+    "dialect": "ABAP reports/classes",
+    "version": "approved-version",
+    "encoding": "declared"
+  },
+  "target_profile": {
+    "profile": "ABAP Cloud artifacts",
+    "runtime": "approved-runtime",
+    "deployment": "isolated-test"
+  },
+  "artifacts": [
+    {
+      "id": "ART-001",
+      "kind": "ABAP reports/classes",
+      "source_ref": "source/example",
+      "fingerprint": "sha256:example"
+    }
+  ],
+  "findings": [
+    {
+      "severity": "medium",
+      "type": "clean-core violation",
+      "status": "mitigated-in-example"
+    }
+  ],
+  "evidence": [
+    "EVD-PARSE-001",
+    "EVD-TEST-001",
+    "EVD-TRACE-001"
+  ]
+}

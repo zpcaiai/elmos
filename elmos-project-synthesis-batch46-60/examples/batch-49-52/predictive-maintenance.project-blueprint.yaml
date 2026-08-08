@@ -1,0 +1,66 @@
+schema_version: 1.0.0
+project:
+  id: PRJ-EQUIPMENT-MAINTENANCE
+  name: predictive-maintenance-platform
+  requirements_baseline_ref: REQBASE-001
+  architecture_baseline_ref: ARCHBASE-001
+
+applications:
+  - id: APP-MAINTENANCE-API
+    profile: java-spring-boot-modular-monolith
+    modules: [asset, alert, identity]
+
+repository:
+  mode: monorepo
+  root_namespace: com.example.maintenance
+  generated_areas: [src/main/java, src/test/java, deploy]
+  user_owned_areas: [extensions]
+
+runtime:
+  language: java
+  java_version: "21"
+  framework: spring-boot
+  framework_version: "3.x"
+  database: postgresql
+
+dependencies:
+  - id: spring-boot-web
+    purpose: REST API
+    version_source: platform-bom
+  - id: spring-kafka
+    purpose: Kafka ingestion
+    version_source: platform-bom
+  - id: testcontainers-postgresql
+    purpose: Integration testing
+    scope: test
+
+build:
+  system: gradle
+  wrapper_required: true
+  tasks: [clean, test, integrationTest, bootJar]
+
+configuration:
+  - key: DATABASE_URL
+    required: true
+    secret: false
+  - key: OIDC_CLIENT_SECRET
+    required: true
+    secret: true
+
+quality:
+  formatter: spotless
+  static_analysis: [errorprone, spotbugs]
+  warnings_as_errors: true
+
+generation_units:
+  - id: GEN-ROOT
+    kind: project
+    target_path: .
+    ownership: managed
+    source_refs: [ARCHBASE-001]
+  - id: GEN-ALERT-MODULE
+    kind: module
+    target_path: src/main/java/com/example/maintenance/alert
+    ownership: protected
+    source_refs: [CTX-ALERT, REQ-ALERT-001, REQ-ALERT-002]
+    depends_on: [GEN-ROOT]

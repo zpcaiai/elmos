@@ -1,0 +1,123 @@
+{
+  "batch": 51,
+  "engine": "elmos.project-synthesis",
+  "skill_count": 10,
+  "skills": [
+    {
+      "id": "PG055",
+      "name": "application-profile-selector",
+      "depends_on": [
+        "PG054"
+      ],
+      "summary": "Selects project shapes such as API, modular monolith, worker, CLI, batch, event processor, desktop, or full stack.",
+      "path": "skills/batch-51/PG055-application-profile-selector.md"
+    },
+    {
+      "id": "PG056",
+      "name": "language-framework-profile-selector",
+      "depends_on": [
+        "PG018",
+        "PG055"
+      ],
+      "summary": "Selects language, framework, persistence, messaging, API, testing, and observability profiles.",
+      "path": "skills/batch-51/PG056-language-framework-profile-selector.md"
+    },
+    {
+      "id": "PG057",
+      "name": "runtime-version-policy-resolver",
+      "depends_on": [
+        "PG056"
+      ],
+      "summary": "Resolves runtime, SDK, compiler, framework, operating-system, database, and container versions.",
+      "path": "skills/batch-51/PG057-runtime-version-policy-resolver.md"
+    },
+    {
+      "id": "PG058",
+      "name": "dependency-catalog-and-bom-planner",
+      "depends_on": [
+        "PG050",
+        "PG056",
+        "PG057"
+      ],
+      "summary": "Creates approved dependency catalogs, BOMs, lock strategies, repositories, licenses, and vulnerability policies.",
+      "path": "skills/batch-51/PG058-dependency-catalog-and-bom-planner.md"
+    },
+    {
+      "id": "PG059",
+      "name": "repository-layout-planner",
+      "depends_on": [
+        "PG045",
+        "PG055",
+        "PG056"
+      ],
+      "summary": "Plans repository roots, applications, modules, libraries, tests, docs, deployment assets, and generated areas.",
+      "path": "skills/batch-51/PG059-repository-layout-planner.md"
+    },
+    {
+      "id": "PG060",
+      "name": "namespace-and-package-planner",
+      "depends_on": [
+        "PG035",
+        "PG056",
+        "PG059"
+      ],
+      "summary": "Plans namespaces, packages, modules, project names, artifact identifiers, and naming conventions.",
+      "path": "skills/batch-51/PG060-namespace-and-package-planner.md"
+    },
+    {
+      "id": "PG061",
+      "name": "build-system-planner",
+      "depends_on": [
+        "PG057",
+        "PG058",
+        "PG059",
+        "PG060"
+      ],
+      "summary": "Plans build tools, project graph, tasks, wrappers, caching, packaging, and reproducible build behavior.",
+      "path": "skills/batch-51/PG061-build-system-planner.md"
+    },
+    {
+      "id": "PG062",
+      "name": "environment-configuration-planner",
+      "depends_on": [
+        "PG047",
+        "PG050",
+        "PG053",
+        "PG055"
+      ],
+      "summary": "Plans configuration keys, defaults, environment overlays, feature flags, secrets, and local development dependencies.",
+      "path": "skills/batch-51/PG062-environment-configuration-planner.md"
+    },
+    {
+      "id": "PG063",
+      "name": "code-style-and-quality-profile",
+      "depends_on": [
+        "PG026",
+        "PG056",
+        "PG061"
+      ],
+      "summary": "Defines formatting, linting, typing, analyzers, warnings, complexity, coverage, and generated-code exemptions.",
+      "path": "skills/batch-51/PG063-code-style-and-quality-profile.md"
+    },
+    {
+      "id": "PG064",
+      "name": "project-blueprint-compiler",
+      "depends_on": [
+        "PG031",
+        "PG042",
+        "PG054",
+        "PG055",
+        "PG056",
+        "PG057",
+        "PG058",
+        "PG059",
+        "PG060",
+        "PG061",
+        "PG062",
+        "PG063"
+      ],
+      "summary": "Compiles approved requirements and architecture into the canonical machine-readable Project Blueprint.",
+      "path": "skills/batch-51/PG064-project-blueprint-compiler.md"
+    }
+  ]
+}

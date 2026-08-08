@@ -1,0 +1,100 @@
+{
+  "schema_version": "1.0.0",
+  "project": {
+    "id": "PRJ-EQUIPMENT-MAINTENANCE",
+    "name": "predictive-maintenance-platform",
+    "description": "Industrial equipment alert and maintenance workflow platform."
+  },
+  "actors": [
+    {
+      "id": "ACT-ADMIN",
+      "name": "设备管理员",
+      "kind": "human"
+    },
+    {
+      "id": "ACT-ENGINEER",
+      "name": "维修工程师",
+      "kind": "human"
+    },
+    {
+      "id": "SYS-KAFKA",
+      "name": "Kafka Telemetry Source",
+      "kind": "external-system"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-ALERT-001",
+      "kind": "functional",
+      "statement": "The system shall ingest equipment alert events from Kafka.",
+      "status": "approved",
+      "priority": "must",
+      "risk": "high",
+      "source_refs": [
+        {
+          "source_id": "conversation-1",
+          "location": "message-1"
+        }
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "REQ-ALERT-002",
+      "kind": "functional",
+      "statement": "Authorized users shall confirm, assign, and close an alert.",
+      "status": "approved",
+      "priority": "must",
+      "risk": "medium",
+      "source_refs": [
+        {
+          "source_id": "conversation-1",
+          "location": "message-1"
+        }
+      ],
+      "depends_on": [
+        "REQ-ALERT-001"
+      ]
+    }
+  ],
+  "acceptance_criteria": [
+    {
+      "id": "AC-ALERT-001",
+      "requirement_ids": [
+        "REQ-ALERT-001"
+      ],
+      "statement": "Given a valid Kafka alert event, the platform persists one alert and acknowledges the message only after persistence succeeds.",
+      "verification_type": "test"
+    }
+  ],
+  "constraints": [
+    {
+      "id": "CON-TECH-001",
+      "category": "technical",
+      "statement": "Backend implementation uses Java and PostgreSQL.",
+      "hard": true
+    }
+  ],
+  "assumptions": [
+    {
+      "id": "ASM-AUTH-001",
+      "statement": "OIDC-compatible identity provider will be available.",
+      "status": "proposed",
+      "impact": "high"
+    }
+  ],
+  "quality_attributes": [
+    {
+      "id": "QA-OBS-001",
+      "name": "observability",
+      "scenario": "Operations staff inspect ingestion failures in staging and production.",
+      "measure": "Each failed message exposes a trace identifier, structured error, retry count, and dead-letter outcome."
+    }
+  ],
+  "open_questions": [
+    {
+      "id": "Q-AUTH-001",
+      "question": "Which identity provider will be used?",
+      "impact": "high"
+    }
+  ]
+}

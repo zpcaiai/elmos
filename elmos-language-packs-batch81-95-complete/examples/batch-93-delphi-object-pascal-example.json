@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0.0",
+  "project": {
+    "id": "EXAMPLE-B93",
+    "name": "delphi-object-pascal-example"
+  },
+  "source_profile": {
+    "family": "windows-industrial-legacy",
+    "dialect": "Object Pascal",
+    "version": "approved-version",
+    "encoding": "declared"
+  },
+  "target_profile": {
+    "profile": "canonical Delphi IR",
+    "runtime": "approved-runtime",
+    "deployment": "isolated-test"
+  },
+  "artifacts": [
+    {
+      "id": "ART-001",
+      "kind": "Object Pascal",
+      "source_ref": "source/example",
+      "fingerprint": "sha256:example"
+    }
+  ],
+  "findings": [
+    {
+      "severity": "medium",
+      "type": "manual memory lifetime",
+      "status": "mitigated-in-example"
+    }
+  ],
+  "evidence": [
+    "EVD-PARSE-001",
+    "EVD-TEST-001",
+    "EVD-TRACE-001"
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0.0",
+  "project": {
+    "id": "EXAMPLE-B86",
+    "name": "modelica-fmi-example"
+  },
+  "source_profile": {
+    "family": "physical-modeling",
+    "dialect": "Modelica classes",
+    "version": "approved-version",
+    "encoding": "declared"
+  },
+  "target_profile": {
+    "profile": "Modelica models",
+    "runtime": "approved-runtime",
+    "deployment": "isolated-test"
+  },
+  "artifacts": [
+    {
+      "id": "ART-001",
+      "kind": "Modelica classes",
+      "source_ref": "source/example",
+      "fingerprint": "sha256:example"
+    }
+  ],
+  "findings": [
+    {
+      "severity": "medium",
+      "type": "unit inconsistency",
+      "status": "mitigated-in-example"
+    }
+  ],
+  "evidence": [
+    "EVD-PARSE-001",
+    "EVD-TEST-001",
+    "EVD-TRACE-001"
+  ]
+}

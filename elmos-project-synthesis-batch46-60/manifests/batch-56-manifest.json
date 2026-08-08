@@ -1,0 +1,160 @@
+{
+  "batch": 56,
+  "title": "Database, API and External Integration",
+  "skills": [
+    {
+      "id": "PG113",
+      "name": "relational-schema-generator",
+      "batch": 56,
+      "depends_on": [
+        "PG035",
+        "PG039",
+        "PG047",
+        "PG064"
+      ],
+      "path": "skills/batch-56/PG113-relational-schema-generator.md",
+      "summary": "database-neutral relational schema, ownership, keys, constraints, indexes and tenant boundaries"
+    },
+    {
+      "id": "PG114",
+      "name": "migration-seed-data-generator",
+      "batch": 56,
+      "depends_on": [
+        "PG032",
+        "PG113"
+      ],
+      "path": "skills/batch-56/PG114-migration-seed-data-generator.md",
+      "summary": "ordered forward migrations, safe recovery, deterministic reference/test seeds and migration certification tests"
+    },
+    {
+      "id": "PG115",
+      "name": "openapi-generator",
+      "batch": 56,
+      "depends_on": [
+        "PG039",
+        "PG040",
+        "PG041",
+        "PG081",
+        "PG094",
+        "PG106"
+      ],
+      "path": "skills/batch-56/PG115-openapi-generator.md",
+      "summary": "authoritative OpenAPI document, examples, security/error schemas, implementation comparison and compatibility report"
+    },
+    {
+      "id": "PG116",
+      "name": "grpc-protobuf-generator",
+      "batch": 56,
+      "depends_on": [
+        "PG039",
+        "PG048",
+        "PG064"
+      ],
+      "path": "skills/batch-56/PG116-grpc-protobuf-generator.md",
+      "summary": "Protobuf/gRPC contracts, stable field numbering, deadlines, streaming semantics, stubs and compatibility tests"
+    },
+    {
+      "id": "PG117",
+      "name": "event-schema-and-broker-generator",
+      "batch": 56,
+      "depends_on": [
+        "PG037",
+        "PG039",
+        "PG048"
+      ],
+      "path": "skills/batch-56/PG117-event-schema-and-broker-generator.md",
+      "summary": "versioned event wire schemas, topic/queue topology, routing, headers, retention and contract tests"
+    },
+    {
+      "id": "PG118",
+      "name": "cache-search-adapter-generator",
+      "batch": 56,
+      "depends_on": [
+        "PG047",
+        "PG048",
+        "PG064"
+      ],
+      "path": "skills/batch-56/PG118-cache-search-adapter-generator.md",
+      "summary": "cache/search adapters, keys, tenant scope, TTL, invalidation, rebuild and fallback behavior"
+    },
+    {
+      "id": "PG119",
+      "name": "object-storage-file-service-generator",
+      "batch": 56,
+      "depends_on": [
+        "PG039",
+        "PG050",
+        "PG064"
+      ],
+      "path": "skills/batch-56/PG119-object-storage-file-service-generator.md",
+      "summary": "object-storage adapters, secure upload/download, metadata, checksum, scanning, quarantine and lifecycle"
+    },
+    {
+      "id": "PG120",
+      "name": "external-api-client-generator",
+      "batch": 56,
+      "depends_on": [
+        "PG048",
+        "PG049",
+        "PG050",
+        "PG064"
+      ],
+      "path": "skills/batch-56/PG120-external-api-client-generator.md",
+      "summary": "typed external clients with auth references, pagination, rate limits, timeout, retry, circuit breaking and fixtures"
+    },
+    {
+      "id": "PG121",
+      "name": "resilience-timeout-retry-generator",
+      "batch": 56,
+      "depends_on": [
+        "PG048",
+        "PG049",
+        "PG077",
+        "PG089",
+        "PG101"
+      ],
+      "path": "skills/batch-56/PG121-resilience-timeout-retry-generator.md",
+      "summary": "cross-language timeout, retry, backoff, circuit, bulkhead, rate-limit and semantically safe fallback policies"
+    },
+    {
+      "id": "PG122",
+      "name": "idempotency-outbox-saga-generator",
+      "batch": 56,
+      "depends_on": [
+        "PG038",
+        "PG047",
+        "PG048",
+        "PG117"
+      ],
+      "path": "skills/batch-56/PG122-idempotency-outbox-saga-generator.md",
+      "summary": "idempotency keys, inbox/outbox, transactional publication, sagas, compensation and reconciliation"
+    },
+    {
+      "id": "PG123",
+      "name": "mock-stub-service-virtualization",
+      "batch": 56,
+      "depends_on": [
+        "PG115",
+        "PG116",
+        "PG117",
+        "PG120"
+      ],
+      "path": "skills/batch-56/PG123-mock-stub-service-virtualization.md",
+      "summary": "contract-valid HTTP/gRPC/event/webhook stubs, stateful scenarios, deterministic fixtures and fault injection"
+    },
+    {
+      "id": "PG124",
+      "name": "integration-contract-registry-publisher",
+      "batch": 56,
+      "depends_on": [
+        "PG115",
+        "PG116",
+        "PG117",
+        "PG119",
+        "PG120"
+      ],
+      "path": "skills/batch-56/PG124-integration-contract-registry-publisher.md",
+      "summary": "governed integration registry with owner, version, visibility, consumers/providers, lifecycle and compatibility evidence"
+    }
+  ]
+}

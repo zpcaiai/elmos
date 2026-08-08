@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.project-synthesis.certification-result.v1",
+  "title": "ELMOS Certification Result",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "release",
+    "decision",
+    "scope",
+    "evaluations",
+    "certificate_hash"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "release": {
+      "type": "string"
+    },
+    "decision": {
+      "enum": [
+        "certified",
+        "certified-with-limitations",
+        "not-certified"
+      ]
+    },
+    "scope": {
+      "type": "object"
+    },
+    "evaluations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "skill_id",
+          "status"
+        ],
+        "properties": {
+          "skill_id": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "passed",
+              "failed",
+              "limited"
+            ]
+          },
+          "score": {
+            "type": "number"
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "certificate_hash": {
+      "type": "string"
+    }
+  }
+}

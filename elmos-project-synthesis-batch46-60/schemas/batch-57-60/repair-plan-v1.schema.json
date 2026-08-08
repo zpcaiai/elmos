@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.project-synthesis.repair-plan.v1",
+  "title": "ELMOS Repair Plan",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "repair_id",
+    "root_causes",
+    "changes",
+    "limits",
+    "verification"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "repair_id": {
+      "type": "string"
+    },
+    "root_causes": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "changes": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "limits": {
+      "type": "object"
+    },
+    "verification": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "approval_required": {
+      "type": "boolean"
+    }
+  }
+}

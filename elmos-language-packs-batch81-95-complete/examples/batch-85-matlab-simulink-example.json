@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0.0",
+  "project": {
+    "id": "EXAMPLE-B85",
+    "name": "matlab-simulink-example"
+  },
+  "source_profile": {
+    "family": "model-based-engineering",
+    "dialect": "MATLAB files",
+    "version": "approved-version",
+    "encoding": "declared"
+  },
+  "target_profile": {
+    "profile": "MATLAB projects",
+    "runtime": "approved-runtime",
+    "deployment": "isolated-test"
+  },
+  "artifacts": [
+    {
+      "id": "ART-001",
+      "kind": "MATLAB files",
+      "source_ref": "source/example",
+      "fingerprint": "sha256:example"
+    }
+  ],
+  "findings": [
+    {
+      "severity": "medium",
+      "type": "floating-point drift",
+      "status": "mitigated-in-example"
+    }
+  ],
+  "evidence": [
+    "EVD-PARSE-001",
+    "EVD-TEST-001",
+    "EVD-TRACE-001"
+  ]
+}
