@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "corpus": "development",
+  "independent_from_holdout": true,
+  "may_author_rules": true,
+  "contains_customer_data": false,
+  "cases": [
+    {
+      "id": "NAV-DEV-001",
+      "journey": "workspace-navigation",
+      "fixture": "synthetic-local-navigation",
+      "expected": "declared-routes-remain-keyboard-reachable"
+    },
+    {
+      "id": "NAV-DEV-002",
+      "journey": "project-generation-draft",
+      "fixture": "synthetic-invalid-runner-token",
+      "expected": "server-rejects-with-authentication-required"
+    }
+  ]
+}

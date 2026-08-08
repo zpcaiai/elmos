@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "design_system": "elmos-console",
+  "version": "0.7.0",
+  "owner": "elmos-web-console-maintainers",
+  "token_source": "apps/web-console/app/globals.css",
+  "component_source": "apps/web-console/app/components",
+  "automatic_baseline_updates": false,
+  "customer_assets_included": false,
+  "external_approval_status": "NOT_RUN"
+}

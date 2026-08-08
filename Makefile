@@ -117,12 +117,12 @@ frt-g01-g30-skills:
 frt-g01-g30-check: frt-g01-g30-skills frontend
 	CI=true PATH="$(NODE_RUNTIME_BIN):$$PATH" $(PNPM) --dir apps/web-console install --frozen-lockfile
 	PATH="$(NODE_RUNTIME_BIN):$$PATH" $(PNPM) --dir apps/web-console check
-# Optional canonical Skill import bundles.
+# Canonical Skill import bundles.
 #
-# A normal source checkout intentionally does not contain them; the rule is
-# stated in tooling/validate_batch97_104_installed.py. Where tracked installed
-# manifests exist, a checkout validates that installed distribution. Source
-# package byte integrity itself remains NOT_RUN while the bundle is absent.
+# The full source checkout contains these immutable bundles and CI validates
+# them strictly. Installed-only or source-thinned distributions may omit a
+# bundle; in that bounded case the installed manifest remains verifiable while
+# source-package byte integrity stays explicitly NOT_RUN.
 #
 # Every guarded step below therefore runs only when its bundle is present.  When
 # it is absent, tooling/source_package_guard.py prints one loud, greppable

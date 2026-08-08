@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "corpus": "holdout",
+  "independent_from_development": true,
+  "may_author_rules": false,
+  "contains_customer_data": false,
+  "execution_status": "NOT_RUN",
+  "cases": [
+    {
+      "id": "NAV-HOLDOUT-001",
+      "journey": "global-command-navigation",
+      "fixture": "synthetic-unseen-route-order",
+      "expected": "focus-order-and-destination-contract-preserved"
+    },
+    {
+      "id": "NAV-HOLDOUT-002",
+      "journey": "mobile-bottom-navigation",
+      "fixture": "synthetic-unseen-mobile-viewport",
+      "expected": "all-p0-destinations-remain-reachable"
+    },
+    {
+      "id": "NAV-HOLDOUT-003",
+      "journey": "trust-chain-review",
+      "fixture": "synthetic-revoked-evidence-signer",
+      "expected": "review-remains-fail-closed"
+    }
+  ],
+  "independent_verifier_status": "NOT_RUN",
+  "customer_holdout_status": "NOT_RUN"
+}
