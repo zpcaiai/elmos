@@ -72,12 +72,19 @@
       "disposable-ed25519-hsm-and-certificate-chain",
       "signed-digest-pinned-adapter-execution",
       "command-injection-rejection",
-      "authorized-canary-and-registered-rollback"
+      "authorized-canary-and-registered-rollback",
+      "canary-plan-semantic-validation",
+      "rollback-plan-semantic-validation",
+      "external-preflight-code-boundary",
+      "external-preflight-missing-hsm-secret-rejection",
+      "external-preflight-invalid-plan-serialization",
+      "ledger-and-output-symlink-rejection",
+      "qualification-skill-profile-corpus-binding"
     ],
     "scope": "DISPOSABLE_TEST_TRUST_AND_LOCAL_LEDGER",
     "state": "PASS",
-    "test_count": 8,
-    "test_module_digest": "sha256:87b0a8830679f1c896fef8829e95f9f717b5ac4a05ff0fa7f232f4186253b9ab"
+    "test_count": 15,
+    "test_module_digest": "sha256:59057fb8799a53830ab43247c6ffd9a7c896cf27f00db5afbae345228d271f94"
   },
   "result_count": 2785,
   "results": [

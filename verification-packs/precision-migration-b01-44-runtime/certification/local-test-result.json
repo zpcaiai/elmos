@@ -2,8 +2,8 @@
   "schema_version": 1,
   "pack_key": "precision-migration-b01-44-runtime",
   "status": "PASSED",
-  "started_at": "2026-08-08T06:25:34.188814Z",
-  "completed_at": "2026-08-08T06:28:44.531500Z",
+  "started_at": "2026-08-08T16:30:07.051429Z",
+  "completed_at": "2026-08-08T16:30:20.824487Z",
   "executor": "local-engineering-runner",
   "independent_verifier": "NOT_RUN",
   "environment": {
@@ -42,8 +42,8 @@
       "timed_out": false,
       "timeout_seconds": 300,
       "raw_evidence": "raw/runtime-tests.txt",
-      "digest": "sha256:53ca670b4739f4315c267cc1b5b4bdf72119129544ecf3edebb65148098e044d",
-      "size_bytes": 11510
+      "digest": "sha256:2272ded8fe3b79b7469b6317571311702c132be94d3daceebf73dce816c41d15",
+      "size_bytes": 12937
     },
     "contract_qualification": {
       "command": [
@@ -199,13 +199,13 @@
       "size_bytes": 187
     }
   },
-  "test_count": 62,
+  "test_count": 69,
   "negative_corpus": "corpus/negative/cases.json",
   "local_execution_status": "PASSED_PRODUCTION_CODE_CLOSURE_FOR_587_OF_587_EXECUTABLE_DAG_FOR_45_OF_45_EXTERNAL_WORKFLOW_CODE_FOR_557_OF_557_AND_2785_OF_2785_ENGINEERING_CASES",
-  "external_engineering_status": "PASSED_LOCAL_ENGINEERING_SIMULATION_FOR_557_OF_557_WITH_2785_HANDLER_INVOCATIONS_AND_8_RELEASE_DRILLS; PRODUCTION_ELIGIBLE_FALSE",
+  "external_engineering_status": "PASSED_LOCAL_ENGINEERING_SIMULATION_FOR_557_OF_557_WITH_2785_HANDLER_INVOCATIONS_AND_15_RELEASE_DRILLS; PRODUCTION_ELIGIBLE_FALSE",
   "holdout_status": "PASSED_ENGINEERING_FIXTURE_FOR_557_AND_NATIVE_LOCAL_B16_FOR_30; INDEPENDENT_EXTERNAL_HOLDOUT_NOT_RUN",
   "representative_workload_status": "PASSED_ENGINEERING_FIXTURE_FOR_557_AND_NATIVE_LOCAL_B16_FOR_30; CUSTOMER_WORKLOAD_NOT_RUN",
   "external_evidence_status": "NOT_RUN",
   "production_certification": "NOT_CERTIFIED",
-  "result_digest": "sha256:4c0c87a2e6e77996cdd1dd2fbc3ecab5d0568cb6a5aa02837c2037c215ff6f4d"
+  "result_digest": "sha256:ee71ca7094e894ab9d85ac3f823de780876f90f5a2a30d0e56876b6c8c1fb097"
 }

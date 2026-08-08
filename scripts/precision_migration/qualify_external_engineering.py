@@ -43,6 +43,13 @@ RELEASE_TESTS = (
     "signed-digest-pinned-adapter-execution",
     "command-injection-rejection",
     "authorized-canary-and-registered-rollback",
+    "canary-plan-semantic-validation",
+    "rollback-plan-semantic-validation",
+    "external-preflight-code-boundary",
+    "external-preflight-missing-hsm-secret-rejection",
+    "external-preflight-invalid-plan-serialization",
+    "ledger-and-output-symlink-rejection",
+    "qualification-skill-profile-corpus-binding",
 )
 
 

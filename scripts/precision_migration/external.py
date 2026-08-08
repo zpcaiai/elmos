@@ -140,6 +140,124 @@ def _load_reference_json(reference: Any, roots: tuple[Path, ...], label: str) ->
     return payload, observed
 
 
+def validate_canary_plan(payload: Any, *, environment: str) -> dict[str, Any]:
+    """Validate the exact, executable shape of a production Canary plan.
+
+    The campaign gate used to bind only the plan bytes.  That proved integrity,
+    but not that the bytes described bounded traffic stages or an executable
+    rollback relationship.  Keep the plan provider-neutral while rejecting
+    floating percentages, missing observation windows, and non-rollbackable
+    stages before production authorization can be considered.
+    """
+    required = {
+        "schema_version", "plan_id", "environment", "stages",
+        "canary_adapter_id", "rollback_adapter_id", "approval_required",
+    }
+    if not isinstance(payload, dict) or set(payload) != required or payload.get("schema_version") != 1:
+        raise ExternalGateError("Canary plan fields are invalid")
+    plan_id = _require_text(payload.get("plan_id"), "canary.plan_id")
+    if payload.get("environment") != environment:
+        raise ExternalGateError("Canary plan environment does not match the campaign")
+    canary_adapter = _require_text(payload.get("canary_adapter_id"), "canary.canary_adapter_id")
+    rollback_adapter = _require_text(payload.get("rollback_adapter_id"), "canary.rollback_adapter_id")
+    if canary_adapter == rollback_adapter:
+        raise ExternalGateError("Canary and rollback adapters must be distinct")
+    if payload.get("approval_required") is not True:
+        raise ExternalGateError("Canary plan must require production approval")
+    stages = payload.get("stages")
+    if not isinstance(stages, list) or not 1 <= len(stages) <= 20:
+        raise ExternalGateError("Canary plan must contain between 1 and 20 stages")
+    stage_fields = {
+        "stage_id", "traffic_percent", "minimum_observation_seconds",
+        "required_sli", "rollback_on_failure",
+    }
+    identifiers: set[str] = set()
+    percentages: list[float] = []
+    for index, stage in enumerate(stages):
+        if not isinstance(stage, dict) or set(stage) != stage_fields:
+            raise ExternalGateError(f"Canary stage {index} fields are invalid")
+        stage_id = _require_text(stage.get("stage_id"), f"canary.stages[{index}].stage_id")
+        if stage_id in identifiers:
+            raise ExternalGateError("Canary stage identities must be unique")
+        identifiers.add(stage_id)
+        percentage = stage.get("traffic_percent")
+        if (
+            not isinstance(percentage, (int, float))
+            or isinstance(percentage, bool)
+            or not 0 < float(percentage) <= 100
+        ):
+            raise ExternalGateError("Canary traffic percentages must be in (0, 100]")
+        percentages.append(float(percentage))
+        observation = stage.get("minimum_observation_seconds")
+        if not isinstance(observation, int) or isinstance(observation, bool) or not 1 <= observation <= 604800:
+            raise ExternalGateError("Canary observation windows must be between 1 second and 7 days")
+        required_sli = stage.get("required_sli")
+        if (
+            not isinstance(required_sli, list)
+            or not required_sli
+            or any(not isinstance(item, str) or not item or len(item) > 200 for item in required_sli)
+        ):
+            raise ExternalGateError("Canary required_sli must be a unique non-empty string array")
+        if len(required_sli) != len(set(required_sli)):
+            raise ExternalGateError("Canary required_sli must be a unique non-empty string array")
+        if stage.get("rollback_on_failure") is not True:
+            raise ExternalGateError("every Canary stage must roll back on gate failure")
+    if percentages != sorted(percentages) or len(percentages) != len(set(percentages)):
+        raise ExternalGateError("Canary traffic percentages must increase strictly")
+    return {
+        "plan_id": plan_id,
+        "canary_adapter_id": canary_adapter,
+        "rollback_adapter_id": rollback_adapter,
+        "stage_count": len(stages),
+        "maximum_percent": percentages[-1],
+    }
+
+
+def validate_rollback_plan(
+    payload: Any,
+    *,
+    environment: str,
+    expected_adapter_id: str,
+) -> dict[str, Any]:
+    """Validate a bounded rollback exercise/operation plan."""
+    required = {
+        "schema_version", "plan_id", "environment", "target_digest",
+        "rollback_adapter_id", "maximum_rto_seconds", "verification_checks",
+        "data_reconciliation_required", "approval_required",
+    }
+    if not isinstance(payload, dict) or set(payload) != required or payload.get("schema_version") != 1:
+        raise ExternalGateError("rollback plan fields are invalid")
+    plan_id = _require_text(payload.get("plan_id"), "rollback.plan_id")
+    if payload.get("environment") != environment:
+        raise ExternalGateError("rollback plan environment does not match the campaign")
+    _require_digest(payload.get("target_digest"), "rollback.target_digest")
+    adapter_id = _require_text(payload.get("rollback_adapter_id"), "rollback.rollback_adapter_id")
+    if adapter_id != expected_adapter_id:
+        raise ExternalGateError("Canary and rollback plans name different rollback adapters")
+    maximum_rto = payload.get("maximum_rto_seconds")
+    if not isinstance(maximum_rto, int) or isinstance(maximum_rto, bool) or not 1 <= maximum_rto <= 86400:
+        raise ExternalGateError("rollback maximum_rto_seconds must be between 1 and 86400")
+    checks = payload.get("verification_checks")
+    if (
+        not isinstance(checks, list)
+        or not checks
+        or any(not isinstance(item, str) or not item or len(item) > 200 for item in checks)
+    ):
+        raise ExternalGateError("rollback verification_checks must be a unique non-empty string array")
+    if len(checks) != len(set(checks)):
+        raise ExternalGateError("rollback verification_checks must be a unique non-empty string array")
+    if payload.get("data_reconciliation_required") is not True:
+        raise ExternalGateError("rollback plan must require data reconciliation")
+    if payload.get("approval_required") is not True:
+        raise ExternalGateError("rollback plan must require production approval")
+    return {
+        "plan_id": plan_id,
+        "rollback_adapter_id": adapter_id,
+        "maximum_rto_seconds": maximum_rto,
+        "verification_check_count": len(checks),
+    }
+
+
 def _verify_corpus(
     partition: str,
     reference: Any,
@@ -175,6 +293,74 @@ def _verify_corpus(
     return by_skill, observed
 
 
+def validate_external_corpus(
+    partition: str,
+    reference: Any,
+    *,
+    profile_registry: ExternalProfileRegistry | None = None,
+    evidence_roots: Iterable[Path] | None = None,
+) -> dict[str, Any]:
+    """Validate one exact 557-Skill corpus without executing it.
+
+    This public preflight surface intentionally returns only identity and
+    content-addressed observations.  It cannot promote a corpus or any Skill
+    maturity state; the independently signed result manifests remain the only
+    execution evidence accepted by :func:`evaluate_external_campaign`.
+    """
+    if partition not in {"development", "holdout", "representative"}:
+        raise ExternalGateError("external corpus partition is not supported")
+    registry = profile_registry or ExternalProfileRegistry.load()
+    cases, observed = _verify_corpus(
+        partition,
+        reference,
+        registry,
+        configured_roots(evidence_roots),
+    )
+    return {
+        "state": "VALIDATED_NOT_EXECUTED",
+        "partition": partition,
+        "case_count": len(cases),
+        "profile_registry_digest": registry.digest,
+        "content": observed,
+        "execution_state": "NOT_RUN",
+    }
+
+
+def validate_external_case_binding(
+    partition: str,
+    reference: Any,
+    *,
+    skill: str,
+    profile_digest: str,
+    case_digest: str,
+    profile_registry: ExternalProfileRegistry | None = None,
+    evidence_roots: Iterable[Path] | None = None,
+) -> dict[str, Any]:
+    """Bind one external operation to an exact profile-owned corpus case."""
+    if partition not in {"development", "holdout", "representative"}:
+        raise ExternalGateError("external corpus partition is not supported")
+    registry = profile_registry or ExternalProfileRegistry.load()
+    profile = registry.by_skill.get(skill)
+    if profile is None or profile.get("profile_digest") != profile_digest:
+        raise ExternalGateError("external operation profile binding is invalid")
+    cases, observed = _verify_corpus(
+        partition,
+        reference,
+        registry,
+        configured_roots(evidence_roots),
+    )
+    _require_digest(case_digest, "external operation case_digest")
+    if cases.get(skill) != case_digest:
+        raise ExternalGateError("external operation case binding is invalid")
+    return {
+        "skill": skill,
+        "profile_digest": profile_digest,
+        "partition": partition,
+        "case_digest": case_digest,
+        "corpus_digest": observed["digest"],
+    }
+
+
 def _verify_result_manifest(
     campaign_id: str,
     stage: str,
@@ -192,6 +378,8 @@ def _verify_result_manifest(
     ):
         raise ExternalGateError(f"{stage} result manifest identity is invalid")
     bundle = verify_content_reference(payload.get("evidence_bundle"), roots)
+    if bundle["size_bytes"] == 0:
+        raise ExternalGateError(f"{stage} evidence bundle must not be empty")
     results = payload.get("results")
     if not isinstance(results, list) or len(results) != 557:
         raise ExternalGateError(f"{stage} result manifest must contain 557 results")
@@ -338,15 +526,28 @@ def evaluate_external_campaign(
                 if overlap:
                     failures.append(f"corpus partitions overlap: {left}/{right}")
     plan_observations: dict[str, dict[str, Any]] = {}
+    plan_payloads: dict[str, dict[str, Any]] = {}
     plans = campaign.get("plans")
     if not isinstance(plans, dict) or set(plans) != {"canary", "rollback"}:
         failures.append("campaign plans must contain Canary and rollback")
     else:
         for name in ("canary", "rollback"):
             try:
-                plan_observations[name] = verify_content_reference(plans[name], roots)
+                plan_payloads[name], plan_observations[name] = _load_reference_json(
+                    plans[name], roots, f"{name} plan"
+                )
             except (OSError, ValueError) as exc:
                 failures.append(f"{name} plan failed verification: {exc}")
+        if len(plan_payloads) == 2:
+            try:
+                canary = validate_canary_plan(plan_payloads["canary"], environment=str(campaign.get("environment")))
+                validate_rollback_plan(
+                    plan_payloads["rollback"],
+                    environment=str(campaign.get("environment")),
+                    expected_adapter_id=canary["rollback_adapter_id"],
+                )
+            except ExternalGateError as exc:
+                failures.append(str(exc))
     if failures:
         return _external_result(result_base, states, failures, 0, False, False)
     digest = _campaign_digest(campaign, registry, corpus_observations, plan_observations)

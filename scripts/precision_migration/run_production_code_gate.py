@@ -143,7 +143,7 @@ def build() -> dict[str, Any]:
     require(external_engineering.get("production_eligible") is False, "external engineering evidence must not be production eligible", failures)
     require(
         external_engineering.get("release_engineering_drill", {}).get("state") == "PASS"
-        and external_engineering.get("release_engineering_drill", {}).get("test_count") == 8,
+        and external_engineering.get("release_engineering_drill", {}).get("test_count") == 15,
         "external release engineering drill is incomplete",
         failures,
     )
@@ -193,6 +193,7 @@ def build() -> dict[str, Any]:
         path: digest(ROOT / path)
         for path in (
             "scripts/precision_migration/adapters.py",
+            "scripts/precision_migration/check_external_readiness.py",
             "scripts/precision_migration/exact.py",
             "scripts/precision_migration/external.py",
             "scripts/precision_migration/generated_handlers.py",
@@ -234,7 +235,7 @@ def build() -> dict[str, Any]:
             "engineering_simulation": {
                 "case_count": 2785,
                 "actual_handler_invocation_count": 2785,
-                "release_drill_test_count": 8,
+                "release_drill_test_count": 15,
                 "decision": "PASSED_LOCAL_ENGINEERING_SIMULATION",
                 "production_eligible": False,
             },

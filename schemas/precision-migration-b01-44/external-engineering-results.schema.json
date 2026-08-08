@@ -24,8 +24,8 @@
       "required": ["state", "test_count", "scenarios", "scope", "test_module_digest", "engineering_hsm_signature_verification", "engineering_canary_and_rollback", "engineering_external_certificate", "production_hsm", "authorized_production_canary", "external_certification", "production_eligible"],
       "properties": {
         "state": { "const": "PASS" },
-        "test_count": { "const": 8 },
-        "scenarios": { "type": "array", "minItems": 8, "maxItems": 8, "uniqueItems": true },
+        "test_count": { "const": 15 },
+        "scenarios": { "type": "array", "minItems": 15, "maxItems": 15, "uniqueItems": true },
         "scope": { "const": "DISPOSABLE_TEST_TRUST_AND_LOCAL_LEDGER" },
         "test_module_digest": { "$ref": "#/$defs/digest" },
         "engineering_hsm_signature_verification": { "const": "PASSED_WITH_EPHEMERAL_ED25519_KEY" },

@@ -66,6 +66,12 @@ content-addressed inputs, and scoped authorization. Mutating Canary operations
 add idempotency, monotonic fencing, a registered rollback adapter, independent
 approval, and `UNKNOWN` reconciliation for ambiguous outcomes.
 
+Qualification operations are additionally bound to one exact Skill, immutable
+profile digest, required corpus partition and case digest. The corpus reference
+must be one of the request's content-addressed inputs and must contain all 557
+unique profile-owned cases, so one generic success receipt cannot be replayed as
+evidence for another Skill or corpus partition.
+
 The repository also generates an exact 2,785-case engineering suite for those
 557 profiles: five actual handler invocations per Skill for positive source
 fixture, target integration fixture, fail-closed negative, locally partitioned
@@ -105,6 +111,19 @@ Code-owned external workflow validation is available without promoting those
 states:
 
 ```bash
+export ELMOS_PRECISION_ENVIRONMENT=production-equivalent-approved
+export ELMOS_PRECISION_INDEPENDENT_TRUST_STORE=/authorized/trust-store.json
+export ELMOS_PRECISION_EXTERNAL_ADAPTER_REGISTRY=/authorized/signed-adapters.json
+export ELMOS_PRECISION_EVIDENCE_ROOTS=/approved/evidence
+export ELMOS_PRECISION_HSM_PROVIDER=pkcs11
+export ELMOS_PRECISION_HSM_KEY_REFERENCE='pkcs11:token=elmos;object=release;type=private'
+export ELMOS_PRECISION_HSM_PIN='<injected by the production secret manager>'
+export ELMOS_PRECISION_CUSTOMER_WORKLOAD_MANIFEST=/approved/evidence/representative-corpus.json
+export ELMOS_PRECISION_CANARY_PLAN=/approved/evidence/canary-plan.json
+export ELMOS_PRECISION_ROLLBACK_PLAN=/approved/evidence/rollback-plan.json
+export ELMOS_PRECISION_PRODUCTION_AUTHORIZATION=/approved/evidence/production-authorization.json
+python3 scripts/precision_migration/check_external_readiness.py
+
 python3 scripts/precision_migration/external.py validate-profiles
 python3 tooling/generate_precision_migration_external_engineering_cases.py --check
 python3 scripts/precision_migration/qualify_external_engineering.py --check
@@ -120,6 +139,15 @@ python3 scripts/precision_migration/external.py evaluate \
   --trust-store /authorized/trust-store.json \
   --evidence-root /approved/evidence
 ```
+
+The preflight validates all twelve independent trust roles, distinct current
+key material, the signed executable registry's seven stage classes, exact
+557-case representative corpus coverage, a non-secret PKCS#11 private-key
+reference, secret-manager PIN presence, monotonic rollback-on-failure Canary
+stages, an environment-matched rollback plan, and a signed production change
+authorization. Even when it returns `READY_FOR_AUTHORIZED_EXTERNAL_EXECUTION`,
+it invokes no adapter and reports native execution, holdout, customer workload,
+HSM, Canary, rollback and certification as `NOT_RUN`/`NOT_CERTIFIED`.
 
 The external gate validates exact 557-Skill aggregate manifests, disjoint
 development/holdout/representative corpora, source and target receipts,

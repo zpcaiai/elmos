@@ -19,12 +19,18 @@ import signal
 import sqlite3
 import stat
 import subprocess
+import tempfile
 from contextlib import closing
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterable
 
-from scripts.precision_migration.external import ExternalProfileRegistry, STAGES
+from scripts.precision_migration.external import (
+    ExternalProfileRegistry,
+    STAGES,
+    STAGE_PARTITIONS,
+    validate_external_case_binding,
+)
 from scripts.precision_migration.trust import (
     TrustStore,
     canonical_digest,
@@ -239,8 +245,16 @@ def _parse_adapter(value: Any) -> Adapter:
 
 class OperationLedger:
     def __init__(self, path: Path) -> None:
-        self.path = path.resolve()
-        self.path.parent.mkdir(parents=True, exist_ok=True)
+        supplied = path.expanduser()
+        if supplied.is_symlink():
+            raise ProductionRuntimeError("operation ledger must not be a symlink")
+        supplied.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+        parent = supplied.parent.resolve(strict=True)
+        self.path = parent / supplied.name
+        if self.path.exists():
+            observed = self.path.lstat()
+            if stat.S_ISLNK(observed.st_mode) or not stat.S_ISREG(observed.st_mode):
+                raise ProductionRuntimeError("operation ledger must be a regular file")
         with closing(self._connect()) as connection:
             connection.executescript(
                 """
@@ -261,6 +275,7 @@ class OperationLedger:
                 );
                 """
             )
+        os.chmod(self.path, 0o600)
 
     def _connect(self) -> sqlite3.Connection:
         connection = sqlite3.connect(self.path, timeout=30, isolation_level=None)
@@ -368,6 +383,25 @@ def _redact(value: bytes, secrets: tuple[str, ...]) -> str:
     return text
 
 
+def _captured(sink: Any) -> tuple[bytes, bool]:
+    size = os.fstat(sink.fileno()).st_size
+    sink.seek(0)
+    return sink.read(MAX_CAPTURE_BYTES), size > MAX_CAPTURE_BYTES
+
+
+def _write_once_json(path: Path, payload: dict[str, Any]) -> None:
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    descriptor = os.open(path, flags, 0o600)
+    try:
+        rendered = (json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n").encode("utf-8")
+        offset = 0
+        while offset < len(rendered):
+            offset += os.write(descriptor, rendered[offset:])
+        os.fsync(descriptor)
+    finally:
+        os.close(descriptor)
+
+
 def execute_operation(
     request: dict[str, Any],
     *,
@@ -379,7 +413,8 @@ def execute_operation(
 ) -> dict[str, Any]:
     fields = {
         "schema_version", "operation_id", "campaign_id", "adapter_id", "stage", "parameters",
-        "input_refs", "idempotency_key", "fencing_token", "compensates_idempotency_key", "authorization",
+        "input_refs", "qualification_binding", "idempotency_key", "fencing_token",
+        "compensates_idempotency_key", "authorization",
     }
     if not isinstance(request, dict) or set(request) != fields or request.get("schema_version") != 1:
         raise ProductionRuntimeError("external operation request fields are invalid")
@@ -401,7 +436,43 @@ def execute_operation(
     if set(parameters) - set(specifications) or any(item.required and item.name not in parameters for item in adapter.parameters):
         raise ProductionRuntimeError("parameters differ from the signed adapter contract")
     roots = configured_roots(evidence_roots)
-    observed_inputs = [verify_content_reference(item, roots) for item in request.get("input_refs", [])]
+    input_refs = request.get("input_refs")
+    if not isinstance(input_refs, list) or len(input_refs) > 100:
+        raise ProductionRuntimeError("input_refs must be a bounded array")
+    observed_inputs = [verify_content_reference(item, roots) for item in input_refs]
+    qualification = request.get("qualification_binding")
+    verified_qualification: dict[str, Any] | None = None
+    if adapter.stage in STAGES:
+        qualification_fields = {
+            "skill", "profile_digest", "partition", "case_digest", "corpus_ref_index",
+        }
+        if not isinstance(qualification, dict) or set(qualification) != qualification_fields:
+            raise ProductionRuntimeError("qualification stage requires an exact Skill/corpus binding")
+        corpus_index = qualification.get("corpus_ref_index")
+        if (
+            not isinstance(corpus_index, int)
+            or isinstance(corpus_index, bool)
+            or not 0 <= corpus_index < len(input_refs)
+        ):
+            raise ProductionRuntimeError("qualification corpus_ref_index is invalid")
+        expected_partition = STAGE_PARTITIONS[adapter.stage]
+        if qualification.get("partition") != expected_partition:
+            raise ProductionRuntimeError("qualification corpus partition does not match the stage")
+        try:
+            verified_qualification = validate_external_case_binding(
+                expected_partition,
+                input_refs[corpus_index],
+                skill=str(qualification.get("skill")),
+                profile_digest=str(qualification.get("profile_digest")),
+                case_digest=str(qualification.get("case_digest")),
+                profile_registry=ExternalProfileRegistry.load(),
+                evidence_roots=roots,
+            )
+        except ValueError as exc:
+            raise ProductionRuntimeError(f"qualification binding failed verification: {exc}") from exc
+        verified_qualification["corpus_ref_index"] = corpus_index
+    elif qualification is not None:
+        raise ProductionRuntimeError("production operation must not claim a qualification binding")
     values = {name: _parameter(value, specifications[name], roots) for name, value in parameters.items()}
     argv = [str(adapter.executable)]
     for token in adapter.argv:
@@ -421,6 +492,7 @@ def execute_operation(
         "stage": adapter.stage,
         "parameters_digest": canonical_digest(parameters),
         "input_digests": [item["digest"] for item in observed_inputs],
+        "qualification_binding": verified_qualification,
         "idempotency_key": idempotency_key,
         "fencing_token": fencing,
         "compensates_idempotency_key": request.get("compensates_idempotency_key"),
@@ -463,7 +535,11 @@ def execute_operation(
         environment[name] = os.environ[name]
     environment["ELMOS_PRECISION_OPERATION_ID"] = str(operation_id)
     environment["ELMOS_PRECISION_IDEMPOTENCY_KEY"] = str(idempotency_key)
-    output_dir.mkdir(parents=True, exist_ok=True)
+    if output_dir.is_symlink():
+        raise ProductionRuntimeError("external operation output directory must not be a symlink")
+    output_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
+    if not output_dir.is_dir():
+        raise ProductionRuntimeError("external operation output path must be a directory")
     destination = output_dir / f"{operation_id}.json"
     existing_operation = ledger.original(str(idempotency_key))
     if existing_operation is not None:
@@ -479,32 +555,39 @@ def execute_operation(
     if previous is not None:
         return {**previous, "idempotent_replay": True}
     timed_out = False
+    stdout_truncated = False
+    stderr_truncated = False
     try:
-        process = subprocess.Popen(
-            argv,
-            cwd=output_dir,
-            env=environment,
-            stdin=subprocess.DEVNULL,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            shell=False,
-            start_new_session=True,
-        )
-        try:
-            stdout_raw, stderr_raw = process.communicate(timeout=adapter.timeout_seconds)
-            exit_code = process.returncode
-        except subprocess.TimeoutExpired:
-            timed_out = True
+        # File-backed capture prevents an untrusted external tool from growing
+        # the controller process without bound before the receipt truncates it.
+        with tempfile.TemporaryFile() as stdout_sink, tempfile.TemporaryFile() as stderr_sink:
+            process = subprocess.Popen(
+                argv,
+                cwd=output_dir,
+                env=environment,
+                stdin=subprocess.DEVNULL,
+                stdout=stdout_sink,
+                stderr=stderr_sink,
+                shell=False,
+                start_new_session=True,
+            )
             try:
-                os.killpg(process.pid, signal.SIGTERM)
-                stdout_raw, stderr_raw = process.communicate(timeout=5)
-            except (ProcessLookupError, subprocess.TimeoutExpired):
+                process.communicate(timeout=adapter.timeout_seconds)
+                exit_code = process.returncode
+            except subprocess.TimeoutExpired:
+                timed_out = True
                 try:
-                    os.killpg(process.pid, signal.SIGKILL)
-                except ProcessLookupError:
-                    pass
-                stdout_raw, stderr_raw = process.communicate()
-            exit_code = None
+                    os.killpg(process.pid, signal.SIGTERM)
+                    process.communicate(timeout=5)
+                except (ProcessLookupError, subprocess.TimeoutExpired):
+                    try:
+                        os.killpg(process.pid, signal.SIGKILL)
+                    except ProcessLookupError:
+                        pass
+                    process.communicate()
+                exit_code = None
+            stdout_raw, stdout_truncated = _captured(stdout_sink)
+            stderr_raw, stderr_truncated = _captured(stderr_sink)
     except OSError as exc:
         stdout_raw, stderr_raw, exit_code = b"", str(exc).encode("utf-8"), None
     if exit_code == 0:
@@ -525,6 +608,8 @@ def execute_operation(
         "argv_digest": canonical_digest(argv),
         "stdout": _redact(stdout_raw, secrets),
         "stderr": _redact(stderr_raw, secrets),
+        "stdout_truncated": stdout_truncated,
+        "stderr_truncated": stderr_truncated,
         "authorization": authorization,
         "external_verification": "NOT_RUN",
     }
@@ -532,7 +617,7 @@ def execute_operation(
     ledger.finish(str(operation_id), state, receipt)
     if state == "SUCCEEDED" and compensation_key is not None:
         ledger.mark_compensated(compensation_key)
-    destination.write_text(json.dumps(receipt, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    _write_once_json(destination, receipt)
     return receipt
 
 

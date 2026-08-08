@@ -16,6 +16,7 @@ from scripts.precision_migration.external import (
     evaluate_external_campaign,
     scaffold,
 )
+from scripts.precision_migration.check_external_readiness import evaluate_preflight
 from scripts.precision_migration.production_runtime import (
     OperationLedger,
     ProductionRuntimeError,
@@ -165,8 +166,47 @@ class PrecisionMigrationExternalTest(unittest.TestCase):
         development, development_ref = self.corpus("development")
         holdout, holdout_ref = self.corpus("holdout")
         representative, representative_ref = self.corpus("representative")
-        _, canary_ref = self.write_json("canary-plan.json", {"stages": [1, 2, 5], "rollback_required": True})
-        _, rollback_ref = self.write_json("rollback-plan.json", {"target": "last-known-good", "maximum_rto_seconds": 300})
+        _, canary_ref = self.write_json(
+            "canary-plan.json",
+            {
+                "schema_version": 1,
+                "plan_id": "canary-plan-one",
+                "environment": "production-equivalent-test-environment",
+                "stages": [
+                    {
+                        "stage_id": "stage-one",
+                        "traffic_percent": 1,
+                        "minimum_observation_seconds": 60,
+                        "required_sli": ["error-rate", "latency", "data-integrity"],
+                        "rollback_on_failure": True,
+                    },
+                    {
+                        "stage_id": "stage-two",
+                        "traffic_percent": 5,
+                        "minimum_observation_seconds": 300,
+                        "required_sli": ["error-rate", "latency", "data-integrity"],
+                        "rollback_on_failure": True,
+                    },
+                ],
+                "canary_adapter_id": "canary-controller-one",
+                "rollback_adapter_id": "rollback-controller-one",
+                "approval_required": True,
+            },
+        )
+        _, rollback_ref = self.write_json(
+            "rollback-plan.json",
+            {
+                "schema_version": 1,
+                "plan_id": "rollback-plan-one",
+                "environment": "production-equivalent-test-environment",
+                "target_digest": "sha256:" + "7" * 64,
+                "rollback_adapter_id": "rollback-controller-one",
+                "maximum_rto_seconds": 300,
+                "verification_checks": ["source-capacity", "data-integrity", "route-restoration"],
+                "data_reconciliation_required": True,
+                "approval_required": True,
+            },
+        )
         campaign: dict[str, object] = {
             "schema_version": 1,
             "namespace": "precision-migration-b01-44",
@@ -313,6 +353,73 @@ class PrecisionMigrationExternalTest(unittest.TestCase):
         )
         self.assertEqual("REJECTED", result["decision"])
         self.assertTrue(any("overlap" in failure for failure in result["failures"]))
+
+    def test_canary_plan_requires_monotonic_rollbackable_stages(self) -> None:
+        campaign, _ = self.base_campaign()
+        _, invalid = self.write_json(
+            "invalid-canary-plan.json",
+            {
+                "schema_version": 1,
+                "plan_id": "canary-plan-invalid",
+                "environment": campaign["environment"],
+                "stages": [
+                    {
+                        "stage_id": "stage-five",
+                        "traffic_percent": 5,
+                        "minimum_observation_seconds": 60,
+                        "required_sli": ["error-rate"],
+                        "rollback_on_failure": True,
+                    },
+                    {
+                        "stage_id": "stage-one",
+                        "traffic_percent": 1,
+                        "minimum_observation_seconds": 60,
+                        "required_sli": ["error-rate"],
+                        "rollback_on_failure": False,
+                    },
+                ],
+                "canary_adapter_id": "canary-controller-one",
+                "rollback_adapter_id": "rollback-controller-one",
+                "approval_required": True,
+            },
+        )
+        campaign["plans"]["canary"] = invalid
+        result = evaluate_external_campaign(
+            campaign,
+            evidence_roots=[self.case_root],
+            trust_store=self.trust,
+            profile_registry=self.profiles,
+            now=NOW,
+        )
+        self.assertEqual("REJECTED", result["decision"])
+        self.assertTrue(any("roll back" in failure or "increase strictly" in failure for failure in result["failures"]))
+
+    def test_rollback_plan_must_match_canary_adapter_and_environment(self) -> None:
+        campaign, _ = self.base_campaign()
+        _, invalid = self.write_json(
+            "invalid-rollback-plan.json",
+            {
+                "schema_version": 1,
+                "plan_id": "rollback-plan-invalid",
+                "environment": "wrong-production-environment",
+                "target_digest": "sha256:" + "8" * 64,
+                "rollback_adapter_id": "different-rollback-controller",
+                "maximum_rto_seconds": 300,
+                "verification_checks": ["data-integrity"],
+                "data_reconciliation_required": True,
+                "approval_required": True,
+            },
+        )
+        campaign["plans"]["rollback"] = invalid
+        result = evaluate_external_campaign(
+            campaign,
+            evidence_roots=[self.case_root],
+            trust_store=self.trust,
+            profile_registry=self.profiles,
+            now=NOW,
+        )
+        self.assertEqual("REJECTED", result["decision"])
+        self.assertTrue(any("rollback plan environment" in failure for failure in result["failures"]))
 
     def test_full_557_skill_evidence_reaches_external_verified_only(self) -> None:
         campaign = self.complete_external_campaign()
@@ -479,8 +586,158 @@ class PrecisionMigrationExternalTest(unittest.TestCase):
         path, _ = self.write_json("external-adapters.json", envelope)
         return TrustedAdapterRegistry.load(path, self.trust, self.profiles), path
 
+    def signed_preflight_adapter_registry(self) -> Path:
+        executable = Path("/usr/bin/printf").resolve(strict=True)
+        executable_digest = "sha256:" + hashlib.sha256(executable.read_bytes()).hexdigest()
+
+        def adapter(
+            adapter_id: str,
+            stage: str,
+            *,
+            effect: str = "read-only",
+            compensation: str | None = None,
+            environment: list[str] | None = None,
+        ) -> dict[str, object]:
+            return {
+                "adapter_id": adapter_id,
+                "stage": stage,
+                "executable": str(executable),
+                "executable_digest": executable_digest,
+                "argv": [adapter_id],
+                "parameters": [],
+                "environment_allowlist": environment or [],
+                "timeout_seconds": 10,
+                "effect_class": effect,
+                "compensation_adapter": compensation,
+            }
+
+        payload = {
+            "record_type": "PRECISION_EXTERNAL_ADAPTER_REGISTRY",
+            "record_id": "preflight-adapter-registry-one",
+            "actor_id": "adapter-admin-actor",
+            "registry_id": "preflight-registry-one",
+            "profile_registry_digest": self.profiles.digest,
+            "adapters": [
+                adapter("native-source-one", "native_source_execution"),
+                adapter("native-target-one", "native_target_execution"),
+                adapter("holdout-one", "independent_holdout"),
+                adapter("customer-one", "representative_customer_workload"),
+                adapter(
+                    "production-hsm-one",
+                    "production_hsm",
+                    effect="approval-required",
+                    environment=["ELMOS_PRECISION_HSM_PIN"],
+                ),
+                adapter(
+                    "canary-controller-one",
+                    "authorized_canary",
+                    effect="reversible",
+                    compensation="rollback-controller-one",
+                ),
+                adapter(
+                    "rollback-controller-one",
+                    "verified_rollback",
+                    effect="approval-required",
+                ),
+            ],
+            "issued_at": "2026-01-01T00:00:00Z",
+            "expires_at": "2029-01-01T00:00:00Z",
+        }
+        path, _ = self.write_json(
+            "preflight-external-adapters.json",
+            self.sign("external-adapter-admin", payload),
+        )
+        return path
+
+    def preflight_config(self) -> dict[str, str]:
+        campaign, _ = self.base_campaign()
+        registry_path = self.signed_preflight_adapter_registry()
+        authorization = self.sign(
+            "production-change-approver",
+            {
+                "record_type": "PRECISION_PRODUCTION_CHANGE_AUTHORIZATION",
+                "record_id": "preflight-production-auth-one",
+                "actor_id": "production-change-approver-actor",
+                "campaign_id": campaign["campaign_id"],
+                "release_digest": "sha256:" + "9" * 64,
+                "environment": campaign["environment"],
+                "decision": "APPROVED",
+                "issued_at": "2026-01-01T00:00:00Z",
+                "expires_at": "2029-01-01T00:00:00Z",
+            },
+        )
+        authorization_path, _ = self.write_json("preflight-production-auth.json", authorization)
+
+        def referenced_path(reference: dict[str, object]) -> str:
+            return verify_content_reference(reference, (self.case_root.resolve(),))["resolved_path"]
+
+        return {
+            "environment": str(campaign["environment"]),
+            "independent_verifier_trust_store": str(self.trust_path),
+            "external_adapter_registry": str(registry_path),
+            "evidence_roots": str(self.case_root),
+            "hsm_provider": "pkcs11",
+            "hsm_key_reference": "pkcs11:token=elmos-production;object=release-signing;type=private",
+            "customer_workload_manifest": referenced_path(campaign["corpora"]["representative"]),
+            "canary_plan": referenced_path(campaign["plans"]["canary"]),
+            "rollback_plan": referenced_path(campaign["plans"]["rollback"]),
+            "production_authorization": str(authorization_path),
+        }
+
+    def test_external_preflight_validates_code_owned_boundary_without_promoting_evidence(self) -> None:
+        result = evaluate_preflight(
+            self.preflight_config(),
+            secret_names={"ELMOS_PRECISION_HSM_PIN"},
+            now=NOW,
+        )
+        self.assertEqual("READY_FOR_AUTHORIZED_EXTERNAL_EXECUTION", result["status"])
+        self.assertEqual(557, result["checks"]["representative_customer_workload"]["case_count"])
+        self.assertEqual(7, len(result["checks"]["external_adapter_registry"]["stage_counts"]))
+        self.assertFalse(result["external_operations_executed"])
+        self.assertEqual("NOT_RUN", result["independent_holdout"])
+        self.assertEqual("NOT_RUN", result["hsm_signing"])
+        self.assertEqual("NOT_RUN", result["customer_workload"])
+        self.assertEqual("NOT_RUN", result["canary"])
+        self.assertEqual("NOT_RUN", result["rollback"])
+        self.assertEqual("NOT_CERTIFIED", result["production_certification"])
+
+    def test_external_preflight_fails_closed_without_hsm_secret_reference(self) -> None:
+        result = evaluate_preflight(self.preflight_config(), secret_names=set(), now=NOW)
+        self.assertEqual("BLOCKED", result["status"])
+        self.assertEqual("BLOCKED", result["checks"]["production_hsm"]["state"])
+        self.assertTrue(any("HSM_PIN" in item for item in result["failures"]))
+        self.assertFalse(result["external_operations_executed"])
+        self.assertEqual("NOT_CERTIFIED", result["production_certification"])
+
+    def test_external_preflight_invalid_plan_is_serializable_and_fail_closed(self) -> None:
+        config = self.preflight_config()
+        invalid_path, _ = self.write_json("preflight-invalid-canary.json", {"stages": [100]})
+        config["canary_plan"] = str(invalid_path)
+        result = evaluate_preflight(
+            config,
+            secret_names={"ELMOS_PRECISION_HSM_PIN"},
+            now=NOW,
+        )
+        self.assertEqual("BLOCKED", result["status"])
+        self.assertEqual("BLOCKED", result["checks"]["canary_plan"]["state"])
+        self.assertEqual("BLOCKED", result["checks"]["rollback_plan"]["state"])
+        self.assertEqual("BLOCKED", result["checks"]["external_adapter_registry"]["state"])
+        json.dumps(result, sort_keys=True)
+        self.assertEqual("NOT_CERTIFIED", result["production_certification"])
+
     def operation_request(self, registry: TrustedAdapterRegistry, value: str) -> dict[str, object]:
         parameters = {"value": value}
+        cases, corpus_reference = self.corpus("development")
+        skill = sorted(self.profiles.by_skill)[0]
+        profile_digest = self.profiles.by_skill[skill]["profile_digest"]
+        qualification_binding = {
+            "skill": skill,
+            "profile_digest": profile_digest,
+            "partition": "development",
+            "case_digest": cases[skill],
+            "corpus_digest": corpus_reference["digest"],
+            "corpus_ref_index": 0,
+        }
         identity = {
             "operation_id": "operation-one",
             "campaign_id": "campaign-one",
@@ -488,7 +745,8 @@ class PrecisionMigrationExternalTest(unittest.TestCase):
             "adapter_registry_digest": registry.digest,
             "stage": "native_source_execution",
             "parameters_digest": canonical_digest(parameters),
-            "input_digests": [],
+            "input_digests": [corpus_reference["digest"]],
+            "qualification_binding": qualification_binding,
             "idempotency_key": "idempotency-one",
             "fencing_token": 1,
             "compensates_idempotency_key": None,
@@ -502,7 +760,14 @@ class PrecisionMigrationExternalTest(unittest.TestCase):
             "adapter_id": "native-source-one",
             "stage": "native_source_execution",
             "parameters": parameters,
-            "input_refs": [],
+            "input_refs": [corpus_reference],
+            "qualification_binding": {
+                "skill": skill,
+                "profile_digest": profile_digest,
+                "partition": "development",
+                "case_digest": cases[skill],
+                "corpus_ref_index": 0,
+            },
             "idempotency_key": "idempotency-one",
             "fencing_token": 1,
             "compensates_idempotency_key": None,
@@ -545,8 +810,36 @@ class PrecisionMigrationExternalTest(unittest.TestCase):
         )
         self.assertEqual("SUCCEEDED", first["state"])
         self.assertEqual("safe-value", first["stdout"])
+        self.assertFalse(first["stdout_truncated"])
+        self.assertFalse(first["stderr_truncated"])
         self.assertTrue(second["idempotent_replay"])
         self.assertEqual(first["receipt_digest"], second["receipt_digest"])
+        self.assertEqual(0o600, (self.case_root / "operation-ledger.sqlite3").stat().st_mode & 0o777)
+        self.assertEqual(0o600, (output / "operation-one.json").stat().st_mode & 0o777)
+
+    def test_operation_ledger_and_receipt_directory_reject_symlinks(self) -> None:
+        real_ledger = self.case_root / "real-ledger.sqlite3"
+        OperationLedger(real_ledger)
+        linked_ledger = self.case_root / "linked-ledger.sqlite3"
+        linked_ledger.symlink_to(real_ledger)
+        with self.assertRaisesRegex(ProductionRuntimeError, "must not be a symlink"):
+            OperationLedger(linked_ledger)
+
+        registry, _ = self.signed_adapter_registry()
+        request = self.operation_request(registry, "safe-value")
+        real_output = self.case_root / "real-operation-output"
+        real_output.mkdir()
+        linked_output = self.case_root / "linked-operation-output"
+        linked_output.symlink_to(real_output, target_is_directory=True)
+        with self.assertRaisesRegex(ProductionRuntimeError, "output directory must not be a symlink"):
+            execute_operation(
+                request,
+                registry=registry,
+                trust_store=self.trust,
+                evidence_roots=[self.case_root],
+                ledger=OperationLedger(self.case_root / "symlink-output-ledger.sqlite3"),
+                output_dir=linked_output,
+            )
 
     def test_external_adapter_rejects_parameter_command_injection(self) -> None:
         registry, _ = self.signed_adapter_registry()
@@ -559,6 +852,20 @@ class PrecisionMigrationExternalTest(unittest.TestCase):
                 evidence_roots=[self.case_root],
                 ledger=OperationLedger(self.case_root / "injection-ledger.sqlite3"),
                 output_dir=self.case_root / "injection-output",
+            )
+
+    def test_qualification_operation_rejects_wrong_skill_case_binding(self) -> None:
+        registry, _ = self.signed_adapter_registry()
+        request = self.operation_request(registry, "safe-value")
+        request["qualification_binding"]["case_digest"] = "sha256:" + "0" * 64
+        with self.assertRaisesRegex(ProductionRuntimeError, "case binding"):
+            execute_operation(
+                request,
+                registry=registry,
+                trust_store=self.trust,
+                evidence_roots=[self.case_root],
+                ledger=OperationLedger(self.case_root / "wrong-case-ledger.sqlite3"),
+                output_dir=self.case_root / "wrong-case-output",
             )
 
     def signed_cutover_registry(self) -> TrustedAdapterRegistry:
@@ -622,6 +929,7 @@ class PrecisionMigrationExternalTest(unittest.TestCase):
             "stage": stage,
             "parameters_digest": canonical_digest({}),
             "input_digests": [],
+            "qualification_binding": None,
             "idempotency_key": idempotency_key,
             "fencing_token": fencing_token,
             "compensates_idempotency_key": compensates,
@@ -635,6 +943,7 @@ class PrecisionMigrationExternalTest(unittest.TestCase):
             "stage": stage,
             "parameters": {},
             "input_refs": [],
+            "qualification_binding": None,
             "idempotency_key": idempotency_key,
             "fencing_token": fencing_token,
             "compensates_idempotency_key": compensates,
