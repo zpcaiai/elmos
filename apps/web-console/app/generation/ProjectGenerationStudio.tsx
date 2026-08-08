@@ -1172,8 +1172,8 @@ export function ProjectGenerationStudio() {
               {job && !["COMPLETED", "PARTIAL", "BLOCKED", "CANCELLED"].includes(job.status) && <button className="button button-secondary" type="button" disabled={runnerBusy} onClick={() => void postJobAction("cancel")}><Icon name="close" size={16} />取消任务</button>}
               <button className="button button-secondary" type="button" disabled={!draft} onClick={downloadIntent}><Icon name="external" size={16} />导出 Intent</button>
               <button className="button button-secondary" type="submit"><Icon name="spark" size={16} />锁定生成计划</button>
-              <button className="button button-secondary" type="button" disabled={!draft || !runnerReady || runnerBusy} onClick={() => void analyzeDraft()}><Icon name="workflow" size={16} />分析并整理需求</button>
-              <button className="button button-primary" type="button" disabled={!draft || !analysis || analysis.request.open_questions.length > 0 || !approved || !runnerReady || runnerBusy} onClick={() => void executeJob()}><Icon name="play" size={16} />一键生成、验证并归档</button>
+              <button className="button button-secondary" type="button" disabled={!draft || !runnerReady || !runnerCredentialReady || runnerBusy} onClick={() => void analyzeDraft()}><Icon name="workflow" size={16} />分析并整理需求</button>
+              <button className="button button-primary" type="button" disabled={!draft || !analysis || analysis.request.open_questions.length > 0 || !approved || !runnerReady || !runnerCredentialReady || runnerBusy} onClick={() => void executeJob()}><Icon name="play" size={16} />一键生成、验证并归档</button>
             </div>
           </div>
         </form>

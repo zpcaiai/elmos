@@ -128,9 +128,10 @@ test.describe("多语言项目生成 UI", () => {
       await route.fulfill({ status: 401, json: blocked });
     });
     await page.goto("/generation");
-    await page.getByLabel("本地 Runner 令牌").fill("incorrect-browser-token-000000");
     await page.getByRole("button", { name: "锁定生成计划" }).click();
     const analyze = page.getByRole("button", { name: "分析并整理需求" });
+    await expect(analyze).toBeDisabled();
+    await page.getByLabel("本地 Runner 令牌").fill("incorrect-browser-token-000000");
     await expect(analyze).toBeEnabled();
     await analyze.focus();
     await expect(analyze).toBeFocused();
