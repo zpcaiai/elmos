@@ -194,6 +194,7 @@ export function ProjectGenerationStudio() {
   const [targetError, setTargetError] = useState("");
   const feedbackTimer = useRef<number | null>(null);
   const sourceFileInput = useRef<HTMLInputElement | null>(null);
+  const jobRequestEpoch = useRef(0);
   const accountRunner = account.status === "authenticated"
     && account.principal?.permissions.includes("generation:execute") === true;
   const runnerCredentialReady = accountRunner || runnerToken.length >= 24;
@@ -337,8 +338,11 @@ export function ProjectGenerationStudio() {
       || ["STARTING", "RUNNING"].includes(job.runtime.status);
     if (!active) return;
     const timer = window.setInterval(() => {
+      const requestEpoch = jobRequestEpoch.current;
       void runnerRequest<GenerationJob>(`/api/generation/jobs/${job.id}`)
-        .then(setJob)
+        .then((next) => {
+          if (jobRequestEpoch.current === requestEpoch) setJob(next);
+        })
         .catch(() => undefined);
     }, 1200);
     return () => window.clearInterval(timer);
@@ -689,6 +693,7 @@ export function ProjectGenerationStudio() {
 
   async function postJobAction(action: "cancel" | "run" | "stop") {
     if (!job) return;
+    jobRequestEpoch.current += 1;
     setRunnerBusy(true);
     try {
       const next = await runnerRequest<GenerationJob>(
@@ -703,6 +708,7 @@ export function ProjectGenerationStudio() {
     } catch (error) {
       announce(`操作被阻断：${error instanceof Error ? error.message : "UNKNOWN_ERROR"}`);
     } finally {
+      jobRequestEpoch.current += 1;
       setRunnerBusy(false);
     }
   }

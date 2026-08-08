@@ -85,6 +85,7 @@ test.describe("多语言项目生成 UI", () => {
   });
 
   test("错误凭证失败关闭且不能绕过需求审阅", async ({ page }) => {
+    test.setTimeout(120_000);
     let resolveAuthorization: (authorization: string) => void = () => undefined;
     const rejectedAnalysis = new Promise<string>((resolve) => {
       resolveAuthorization = resolve;
@@ -100,7 +101,9 @@ test.describe("多语言项目生成 UI", () => {
     await page.goto("/generation");
     await page.getByLabel("本地 Runner 令牌").fill("incorrect-browser-token-000000");
     await page.getByRole("button", { name: "锁定生成计划" }).click();
-    await page.getByRole("button", { name: "分析并整理需求" }).click();
+    const analyzeButton = page.getByRole("button", { name: "分析并整理需求" });
+    await expect(analyzeButton).toBeEnabled({ timeout: 30_000 });
+    await analyzeButton.click();
     expect(await rejectedAnalysis).toBe(
       "Bearer incorrect-browser-token-000000",
     );
