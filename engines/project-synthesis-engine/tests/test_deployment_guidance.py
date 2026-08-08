@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+import subprocess
+import sys
 
 from elmos_project_synthesis.intake import approve_request, create_draft
 from elmos_project_synthesis.models import SynthesisRequest
@@ -34,6 +36,7 @@ def test_generated_workspace_contains_exact_local_and_cloud_guidance() -> None:
 
     assert "Google Cloud Run" in cloud
     assert "--no-allow-unauthenticated" in cloud
+    assert "cloud-run-control.py" in cloud
     assert "IMAGE_NAME@$IMAGE_DIGEST" in cloud
     assert "不得直接开放公网" in cloud
     assert "`NOT_RUN`" in cloud
@@ -56,7 +59,66 @@ def test_generated_workspace_contains_exact_local_and_cloud_guidance() -> None:
         "docs/LOCAL_RUN.md",
         "docs/CLOUD_DEPLOYMENT.md",
         "deploy/deployment-options.json",
+        "deploy/cloud-run-control.py",
+        "deploy/cloud-run-request.example.json",
+        "deploy/cloud-run-authorization.example.json",
     } <= manifest_paths
+
+    cloud_request = json.loads(rendered["deploy/cloud-run-request.example.json"])
+    assert cloud_request["ingress"] == "internal"
+    assert "@sha256:" in cloud_request["image"]
+    assert cloud_request["secrets"] == []
+    authorization = json.loads(rendered["deploy/cloud-run-authorization.example.json"])
+    assert authorization["approved"] is False
+    assert authorization["action"].startswith("replace-")
+
+
+def test_generated_cloud_run_controller_is_fail_closed(tmp_path) -> None:
+    rendered = render_workspace(_request(languages=("python",)))
+    controller = tmp_path / "cloud-run-control.py"
+    config = tmp_path / "cloud-run-request.json"
+    controller.write_text(rendered["deploy/cloud-run-control.py"], encoding="utf-8")
+    cloud_request = json.loads(rendered["deploy/cloud-run-request.example.json"])
+    cloud_request.update(
+        {
+            "project_id": "approved-project-1",
+            "release_id": "release-01",
+            "image": "asia-east1-docker.pkg.dev/approved-project-1/apps/api@sha256:" + "a" * 64,
+            "runtime_service_account": (
+                "deployment-guide-service-runtime@approved-project-1.iam.gserviceaccount.com"
+            ),
+        }
+    )
+    config.write_text(json.dumps(cloud_request), encoding="utf-8")
+
+    validated = subprocess.run(  # noqa: S603 - fixed interpreter and generated local test asset.
+        [sys.executable, str(controller), "validate", "--config", str(config)],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    assert validated.returncode == 0, validated.stderr
+
+    planned = subprocess.run(  # noqa: S603 - fixed interpreter and generated local test asset.
+        [sys.executable, str(controller), "plan", "--config", str(config)],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    assert planned.returncode == 0, planned.stderr
+    plan = json.loads(planned.stdout)
+    assert "--no-allow-unauthenticated" in plan["deploy"]
+    assert "--no-traffic" in plan["deploy"]
+    assert plan["external_execution_evidence"] == "NOT_RUN"
+
+    refused = subprocess.run(  # noqa: S603 - fixed interpreter and generated local test asset.
+        [sys.executable, str(controller), "deploy", "--config", str(config)],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    assert refused.returncode == 2
+    assert "MUTATION_REQUIRES_EXECUTE_AUTHORIZATION_AND_EXECUTOR" in refused.stderr
 
 
 def test_cloud_guidance_keeps_stateful_and_identity_work_fail_closed() -> None:

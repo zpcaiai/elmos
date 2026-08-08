@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "executed_at": "2026-08-08T16:54:27Z",
+  "executor": "local-codex-session",
+  "environment": {
+    "python": "3.14.6",
+    "uv": "0.11.16",
+    "provider_cli": "NOT_INSTALLED"
+  },
+  "command": "uv run --project engines/project-synthesis-engine pytest engines/project-synthesis-engine/tests/test_cloud_run_control.py engines/project-synthesis-engine/tests/test_deployment_guidance.py",
+  "tests": 13,
+  "passed": 13,
+  "failed": 0,
+  "source_digests": {
+    "cloud_run_control.py": "sha256:54b71b642987c22aa5c4efb81478fcd5e3b63c2c7bab15be5557a48e4733797b",
+    "deployment_guidance.py": "sha256:54bd043d2e9b79afc1439af0ec1bba686b842ae5a9582b76163d62498a443ddf"
+  },
+  "test_digests": {
+    "test_cloud_run_control.py": "sha256:abeabbb6525c48e9ec1655ed694bd20373072c692438221015807d66d466f25a",
+    "test_deployment_guidance.py": "sha256:d6e0d531c2d8f8e549230fa9495bbc12fdc02dddd256f858c7cdfa1e44851a72"
+  },
+  "repository_bindings": [
+    {
+      "path": "engines/project-synthesis-engine/src/elmos_project_synthesis/cloud_run_control.py",
+      "byte_size": 18766,
+      "sha256": "sha256:54b71b642987c22aa5c4efb81478fcd5e3b63c2c7bab15be5557a48e4733797b"
+    },
+    {
+      "path": "engines/project-synthesis-engine/src/elmos_project_synthesis/deployment_guidance.py",
+      "byte_size": 18081,
+      "sha256": "sha256:54bd043d2e9b79afc1439af0ec1bba686b842ae5a9582b76163d62498a443ddf"
+    },
+    {
+      "path": "engines/project-synthesis-engine/tests/test_cloud_run_control.py",
+      "byte_size": 5967,
+      "sha256": "sha256:abeabbb6525c48e9ec1655ed694bd20373072c692438221015807d66d466f25a"
+    },
+    {
+      "path": "engines/project-synthesis-engine/tests/test_deployment_guidance.py",
+      "byte_size": 6026,
+      "sha256": "sha256:d6e0d531c2d8f8e549230fa9495bbc12fdc02dddd256f858c7cdfa1e44851a72"
+    }
+  ],
+  "coverage": {
+    "digest_pinned_artifact_registry_image": true,
+    "private_ingress_and_authenticated_invocation": true,
+    "immutable_numeric_secret_versions": true,
+    "candidate_revision_no_traffic": true,
+    "private_health_before_promotion": true,
+    "traffic_tag_probe_uses_base_service_token_audience": true,
+    "separate_deploy_rollback_destroy_authorizations": true,
+    "authorization_record_expiry_scope_and_asserted_actor_separation": true,
+    "rollback_receipt_binding": true,
+    "generated_project_includes_controller_and_request_template": true,
+    "generated_project_includes_fail_closed_authorization_template": true,
+    "repository_negative_and_holdout_corpora": true,
+    "default_execution_refusal": true
+  },
+  "provider_execution": "NOT_RUN",
+  "limitations": [
+    "Local policy and generated-artifact tests only",
+    "No gcloud CLI or approved Google Cloud project",
+    "Approver and executor identity assertions require authentication by the external approved workflow",
+    "No independent verifier",
+    "No provider plan, deployment, health, rollback, destroy, drift, cost, or orphan evidence"
+  ]
+}

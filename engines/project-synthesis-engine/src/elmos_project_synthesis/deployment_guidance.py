@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from importlib.resources import files
 from typing import Any
 
 from .models import TARGET_PROFILES, SynthesisRequest
@@ -242,7 +243,39 @@ def _cloud_markdown(request: SynthesisRequest, profiles: list[dict[str, Any]]) -
         |---|---|---:|---|
         {target_rows}
 
-        ### 命令模板（补齐后逐条审阅）
+        ### 受控的一键入口
+
+        生成包内的 `deploy/cloud-run-control.py` 是默认入口。先复制并填写
+        `deploy/cloud-run-request.example.json`，然后执行：
+
+        ```bash
+        python3 deploy/cloud-run-control.py validate --config deploy/cloud-run-request.json
+        python3 deploy/cloud-run-control.py plan --config deploy/cloud-run-request.json \
+          > deploy/cloud-run-plan.json
+        ```
+
+        `plan` 不访问云端。实际部署使用 `deploy --execute`，还必须提供独立审批人签发的、
+        与计划中 `config_digest`、项目、区域、服务和动作完全匹配且未过期的授权 JSON。
+        控制器先部署不接流量的候选修订，完成私有身份 `/health` 检查后才切换流量；
+        `rollback` 和 `destroy` 需要各自独立授权，并输出 JSON 回执。
+
+        复制 `deploy/cloud-run-authorization.example.json`，由外部受控工作流完成审批人身份验证、
+        填入计划摘要和有效期并把 `approved` 改为 `true` 后，可用一个命令执行：
+
+        ```bash
+        python3 deploy/cloud-run-control.py deploy \
+          --config deploy/cloud-run-request.json \
+          --execute \
+          --authorization deploy/cloud-run-deploy-authorization.json \
+          --executor user:cloud-operator \
+          --receipt deploy/evidence/cloud-run-deploy-receipt.json
+        ```
+
+        授权 JSON 中的身份是外部工作流断言；控制器不把自填字符串当作身份认证证据。
+
+        ### 底层命令模板（补齐后逐条审阅）
+
+        以下命令用于解释控制器行为，不建议直接复制绕过审批与回执。
 
         ```bash
         export CLOUD_PROJECT_ID="REQUIRED"
@@ -314,4 +347,53 @@ def render_deployment_guidance(request: SynthesisRequest) -> dict[str, str]:
         "docs/LOCAL_RUN.md": _local_markdown(request, profiles, aggregate),
         "docs/CLOUD_DEPLOYMENT.md": _cloud_markdown(request, profiles),
         "deploy/deployment-options.json": json.dumps(contract, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+        "deploy/cloud-run-control.py": (
+            files("elmos_project_synthesis")
+            .joinpath("cloud_run_control.py")
+            .read_text(encoding="utf-8")
+        ),
+        "deploy/cloud-run-request.example.json": json.dumps(
+            {
+                "schema_version": 1,
+                "project_id": "replace-project-id",
+                "region": "asia-east1",
+                "service_name": request.project_name,
+                "release_id": "replace-release",
+                "image": (
+                    "asia-east1-docker.pkg.dev/replace-project-id/replace-repository/"
+                    f"{request.project_name}@sha256:" + "0" * 64
+                ),
+                "runtime_service_account": (
+                    f"{request.project_name}-runtime@replace-project-id.iam.gserviceaccount.com"
+                ),
+                "port": profiles[0]["port"],
+                "cpu": "1",
+                "memory": "512Mi",
+                "concurrency": 40,
+                "min_instances": 0,
+                "max_instances": 10,
+                "ingress": "internal",
+                "health": {"path": "/health", "expected_json": {"status": "UP"}},
+                "secrets": [],
+            },
+            ensure_ascii=False,
+            indent=2,
+            sort_keys=True,
+        ) + "\n",
+        "deploy/cloud-run-authorization.example.json": json.dumps(
+            {
+                "schema_version": 1,
+                "approved": False,
+                "action": "replace-with-deploy-rollback-or-destroy",
+                "config_digest": "sha256:replace-with-plan-config-digest",
+                "project_id": "replace-project-id",
+                "region": "asia-east1",
+                "service_name": request.project_name,
+                "approver": "replace-with-authenticated-approver",
+                "expires_at": "replace-with-short-lived-rfc3339-timestamp",
+            },
+            ensure_ascii=False,
+            indent=2,
+            sort_keys=True,
+        ) + "\n",
     }

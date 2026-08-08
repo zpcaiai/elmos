@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "pack_key": "elmos-project-generation-cloud-run-handoff",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "status": "experimental",
   "mode": "replatform",
   "owner": "elmos-project-synthesis-engineering",
@@ -45,7 +45,7 @@
     "account_model": "approved-isolated-project-required",
     "iac_tool": {
       "name": "gcloud-cli",
-      "version": "NOT_INSTALLED_2026-07-29"
+      "version": "NOT_INSTALLED_2026-08-09"
     },
     "runtime": {
       "name": "cloud-run",

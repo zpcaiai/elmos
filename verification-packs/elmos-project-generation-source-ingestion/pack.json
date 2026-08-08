@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "pack_key": "elmos-project-generation-source-ingestion",
-  "version": "0.1.0",
-  "status": "experimental",
+  "version": "0.2.0",
+  "status": "limited",
   "owner": "elmos-project-synthesis-engineering",
   "maintenance_owner": "elmos-project-synthesis-engineering",
   "scope": {

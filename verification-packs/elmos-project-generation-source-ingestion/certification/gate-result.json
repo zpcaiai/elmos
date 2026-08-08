@@ -5,6 +5,6 @@
   "structural_gate_status": "passed",
   "certification_requested": false,
   "certification_decision": "NOT_CERTIFIED",
-  "pack_status": "experimental",
+  "pack_status": "limited",
   "failures": []
 }

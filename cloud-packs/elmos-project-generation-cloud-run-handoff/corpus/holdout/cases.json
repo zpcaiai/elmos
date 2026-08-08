@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {
+      "id": "HOLDOUT-001",
+      "patch": {
+        "cpu": "2",
+        "memory": "1Gi",
+        "concurrency": 20,
+        "max_instances": 5
+      },
+      "expected": "valid"
+    },
+    {
+      "id": "HOLDOUT-002",
+      "patch": {
+        "ingress": "internal-and-cloud-load-balancing",
+        "min_instances": 1,
+        "max_instances": 3
+      },
+      "expected": "valid"
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 from __future__ import annotations
-import json,subprocess,sys,tempfile,unittest
+import hashlib,json,subprocess,sys,tempfile,unittest
+from shutil import copytree
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2]; SCRIPTS=ROOT/'scripts'/'batch35'
 def load(p): return json.loads(Path(p).read_text())
@@ -41,4 +42,23 @@ class Tests(unittest.TestCase):
    for corpus_key in ['negative','holdout','representative-workloads']:
     write(pack/f'corpus/{corpus_key}/manifest.json',{'status':'not-run','source_digest':'sha256:source','dataset_digest':'sha256:data','evidence_refs':['certification/sample-evidence.txt']})
    completed=subprocess.run([sys.executable,str(SCRIPTS/'run_verification_gate.py'),str(pack)]); self.assertEqual(completed.returncode,2); self.assertTrue(any('status must be passed' in failure for failure in load(pack/'certification/gate-result.json')['failures']))
+ def test_content_addressed_evidence_rejects_tampering(self):
+  source=ROOT/'verification-packs/elmos-project-generation-source-ingestion'
+  with tempfile.TemporaryDirectory() as d:
+   pack=Path(d)/source.name; copytree(source,pack)
+   result=pack/'certification/local-test-result.json'
+   result.write_text(result.read_text()+'tampered\n')
+   completed=subprocess.run([sys.executable,str(SCRIPTS/'validate_verification_pack.py'),str(pack)])
+   self.assertEqual(completed.returncode,1)
+ def test_repository_binding_rejects_source_drift(self):
+  verifier=ROOT/'scripts/verify_evidence_manifest.py'
+  with tempfile.TemporaryDirectory() as d:
+   repo=Path(d); pack=repo/'pack'; pack.mkdir(); source=repo/'source.txt'; source.write_text('safe\n')
+   content=source.read_bytes(); record=pack/'record.json'
+   write(record,{'repository_bindings':[{'path':'source.txt','byte_size':len(content),'sha256':'sha256:'+hashlib.sha256(content).hexdigest()}]})
+   manifest=pack/'manifest.json'
+   subprocess.run([sys.executable,str(verifier),str(pack),str(manifest),'--write','--include','record.json'],check=True)
+   source.write_text('drifted\n')
+   completed=subprocess.run([sys.executable,str(verifier),str(pack),str(manifest),'--repository-root',str(repo),'--binding-record',str(record)])
+   self.assertEqual(completed.returncode,1)
 if __name__=='__main__': unittest.main()

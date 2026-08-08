@@ -1,6 +1,10 @@
 {
   "schema_version": 1,
   "pack_key": "elmos-project-generation-source-ingestion",
+  "integrity_manifest": "certification/evidence-manifest.json",
+  "repository_binding_records": [
+    "certification/local-test-result.json"
+  ],
   "metrics": {
     "property_pass_rate": 1.0,
     "metamorphic_pass_rate": 1.0,

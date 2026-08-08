@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "pack_key": "elmos-project-generation-source-ingestion",
-  "status": "experimental",
+  "status": "limited",
   "owner": "elmos-project-synthesis-engineering",
   "exact_scope": {
     "migration_route": "project-intent-to-approved-source-bundle",

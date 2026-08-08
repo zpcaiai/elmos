@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "algorithm": "sha256",
+  "entries": [
+    {
+      "path": "certification/external-tooling-status.json",
+      "byte_size": 842,
+      "sha256": "5f7987a678ed9346e2d8915ef5945b4093c667ff3c2b5fe06ffb00fa00105ec3"
+    },
+    {
+      "path": "certification/local-container-evidence.json",
+      "byte_size": 1367,
+      "sha256": "aa0a19fbbd1d79a33084f16b5756d75d8eaa4da9395e0ca09979ff8d66d41aa2"
+    },
+    {
+      "path": "certification/local-control-evidence.json",
+      "byte_size": 3011,
+      "sha256": "57f5a962cd04a8c40174c4d3725b56e35bab9a0474acd520513b489b98f239e1"
+    },
+    {
+      "path": "corpus/development/cases.json",
+      "byte_size": 454,
+      "sha256": "f7fdc9d48e218d1a7fb6cabeda96fd36d243bbde7b60d84c470104e8dd6bda92"
+    },
+    {
+      "path": "corpus/development/manifest.json",
+      "byte_size": 210,
+      "sha256": "78db6e51a0338f0e1b02f843562a0cb8bd1439b1b887d0c4fe0284f674d10b9c"
+    },
+    {
+      "path": "corpus/holdout/cases.json",
+      "byte_size": 437,
+      "sha256": "166bc81e3150562ccf12efb07918ee03aca8d798a0e229bdbd2febab7887fa6f"
+    },
+    {
+      "path": "corpus/holdout/manifest.json",
+      "byte_size": 281,
+      "sha256": "fe1e0ce8940913f01efc56f1101d09f32a4ae063c5c90ad48b99a7b573220b05"
+    },
+    {
+      "path": "corpus/negative/cases.json",
+      "byte_size": 836,
+      "sha256": "53d5bdf4945787911c42f653787009ec3c1d676e264318f8a3951c239ae46ab5"
+    },
+    {
+      "path": "corpus/negative/manifest.json",
+      "byte_size": 207,
+      "sha256": "558df922c9e543a35938f76a4c47ec1f8f457fa377f92597bbd6db979e7ef2a9"
+    },
+    {
+      "path": "corpus/representative-workloads/cases.json",
+      "byte_size": 406,
+      "sha256": "2af00b63404ff45175145343384e3e31ded5bf1cd637adff5b8f6a1351001c35"
+    },
+    {
+      "path": "corpus/representative-workloads/manifest.json",
+      "byte_size": 236,
+      "sha256": "e2ae5750c6b341874d5019a598ec252c2d5489b4e623c3dfe82715e26d9d048c"
+    },
+    {
+      "path": "iac-ir/model.json",
+      "byte_size": 3437,
+      "sha256": "d24b11cef1b9b39352c0abf746fe22904978a199b4daa689d5a0359d1cfe30b5"
+    },
+    {
+      "path": "runtime-architecture/contract.json",
+      "byte_size": 7515,
+      "sha256": "4393792fdda1b554333dcb709ed591813688b095242aea5ba0b999cfeb3f90ee"
+    },
+    {
+      "path": "source-fingerprint/fingerprint.json",
+      "byte_size": 2350,
+      "sha256": "e705fe404ce468c1d0b3daaab02e0ba1959f2b7a1cc12c491e6cf245a5e31384"
+    },
+    {
+      "path": "target-profile/profile.json",
+      "byte_size": 2981,
+      "sha256": "21dfad031ed073c2423a5fc419d1ede79396eff886c7f0e38142b88b30ac03ac"
+    },
+    {
+      "path": "validation/validation-profile.json",
+      "byte_size": 1401,
+      "sha256": "3de602b48157109f823eb3c8dbec9d27520f4dae6d4a8bb4d8fcb4685027867f"
+    }
+  ]
+}

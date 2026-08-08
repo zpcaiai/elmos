@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "passed",
-  "executed_at": "2026-07-29T04:43:54Z",
+  "executed_at": "2026-08-08T16:37:21Z",
   "executor": "local-codex-session",
   "environment": {
     "node": "v26.0.0",
@@ -9,14 +9,26 @@
     "playwright": "1.61.1",
     "browser_project": "chromium"
   },
-  "command": "ELMOS_E2E_PORT=3221 pnpm exec playwright test --project=chromium e2e/generation-source-ingestion.spec.ts",
+  "command": "ELMOS_E2E_PORT=3291 pnpm --dir apps/web-console exec playwright test --workers=1 --project=chromium e2e/generation-source-ingestion.spec.ts",
   "tests": 9,
   "passed": 9,
   "failed": 0,
-  "duration_seconds": 10.2,
+  "duration_seconds": 3.0,
   "source_digest": "sha256:d9b2dae38cd583a3521729f05cc3be022338c4dd07c3d9e51a2d71904263c5b1",
   "test_digest": "sha256:7887bdd510865dc97487078945640c2c4cdbf7f4eaea8f614e65de0b0daf36e3",
   "environment_digest": "sha256:e148832efecfee927b24f4176624699a9b9845416169dfc74e417fa1ae51086a",
+  "repository_bindings": [
+    {
+      "path": "apps/web-console/app/lib/server/generationSourceIngestion.ts",
+      "byte_size": 18360,
+      "sha256": "sha256:d9b2dae38cd583a3521729f05cc3be022338c4dd07c3d9e51a2d71904263c5b1"
+    },
+    {
+      "path": "apps/web-console/e2e/generation-source-ingestion.spec.ts",
+      "byte_size": 10224,
+      "sha256": "sha256:7887bdd510865dc97487078945640c2c4cdbf7f4eaea8f614e65de0b0daf36e3"
+    }
+  ],
   "coverage": {
     "supported_text_formats": true,
     "file_limits_and_malformed_inputs": true,

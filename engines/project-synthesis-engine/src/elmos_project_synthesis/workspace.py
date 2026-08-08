@@ -391,6 +391,9 @@ def _root_readme(request: SynthesisRequest) -> str:
         - `docs/LOCAL_RUN.md`: exact local hardware, toolchain, verification and startup steps.
         - `docs/CLOUD_DEPLOYMENT.md`: cloud options and the recommended Cloud Run configuration.
         - `deploy/deployment-options.json`: fail-closed, machine-readable deployment handoff.
+        - `deploy/cloud-run-control.py`: plan-first Cloud Run deploy, health, rollback, and cleanup controller.
+        - `deploy/cloud-run-request.example.json`: private-ingress, digest-pinned deployment request template.
+        - `deploy/cloud-run-authorization.example.json`: fail-closed exact-scope authorization template.
         - `.elmos/generation-manifest.json`: ownership, hashes, trace links, and claim boundary.
 
         ## Current boundary

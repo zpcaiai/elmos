@@ -103,6 +103,13 @@ Google Cloud Run remains `NOT_RUN`, not failed and not certified:
   probe, revision rollback, destroy/orphan cleanup, drift, cost, and
   production-representative evidence do not exist.
 
+Generated projects now contain a locally tested, plan-first
+`deploy/cloud-run-control.py`. It refuses provider mutations by default,
+requires exact expiring authorizations for deploy/rollback/destroy, stages a
+no-traffic candidate, checks the private health contract, and only then moves
+traffic. This closes the code-generation and control-flow gap; without an
+approved project and `gcloud`, it does not close the provider-evidence gap.
+
 Azure CLI is installed but not logged in. AWS CLI has incomplete credentials.
 Neither is an authorized substitute for the exact Google Cloud Run route.
 
@@ -123,7 +130,9 @@ The feature is complete and runnable within the verified local
 `HOST_DEVELOPMENT` scope. The production `ROOTLESS_CONTAINER` route is
 implemented but is not runnable on this host because Docker Desktop does not
 advertise a rootless engine; that preflight remains `BLOCKED` rather than being
-weakened. The feature is not independently certified and must not be presented
+weakened. The Batch 35 source-ingestion pack is `limited` for its exact,
+content-addressed local scope and remains `NOT_CERTIFIED`. The feature is not
+independently certified and must not be presented
 as production-cloud proven until the exact Cloud Run route is executed in an
 approved isolated project with independent evidence. Controlled public
 DNS-rebinding tests, independent holdout review, and production-derived
