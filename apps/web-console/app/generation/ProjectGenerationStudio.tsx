@@ -689,6 +689,10 @@ export function ProjectGenerationStudio() {
 
   async function postJobAction(action: "cancel" | "run" | "stop") {
     if (!job) return;
+    if (!runnerCredentialReady) {
+      announce("任务操作需要企业账户会话或本地短期 Runner 令牌。");
+      return;
+    }
     setRunnerBusy(true);
     try {
       const next = await runnerRequest<GenerationJob>(
@@ -709,6 +713,10 @@ export function ProjectGenerationStudio() {
 
   async function downloadArtifact() {
     if (!job?.artifactReady) return;
+    if (!runnerCredentialReady) {
+      announce("归档下载需要企业账户会话或本地短期 Runner 令牌。");
+      return;
+    }
     try {
       const response = await fetch(`/api/generation/jobs/${job.id}/artifact`, {
         cache: "no-store",
@@ -966,7 +974,7 @@ export function ProjectGenerationStudio() {
                 </div>
               )}
               <div className="generation-source-actions">
-                <button type="button" className="button button-secondary" onClick={() => void ingestSources()} disabled={sourceBusy || runnerBusy}>
+                <button type="button" className="button button-secondary" onClick={() => void ingestSources()} disabled={sourceBusy || runnerBusy || !runnerCredentialReady}>
                   <Icon name={sourceBusy ? "refresh" : "spark"} size={14} className={sourceBusy ? "spinning" : ""} />
                   {sourceBusy ? "正在提取与绑定" : "解析并合并来源"}
                 </button>
@@ -1123,7 +1131,7 @@ export function ProjectGenerationStudio() {
                   maxLength={36}
                 />
               </label>
-              <button className="button button-secondary" type="button" disabled={runnerBusy || !runnerReady} onClick={() => void recoverJob()}>
+              <button className="button button-secondary" type="button" disabled={runnerBusy || !runnerReady || !runnerCredentialReady} onClick={() => void recoverJob()}>
                 <Icon name="refresh" size={15} />恢复任务
               </button>
               <small>使用当前租户、审批者与重新输入的短期令牌恢复服务端原子持久化任务；浏览器不保存令牌。</small>
@@ -1158,9 +1166,9 @@ export function ProjectGenerationStudio() {
                 )}
                 <div className="generation-runtime-controls">
                   <label><span>运行目标</span><select value={runtimeLanguage} onChange={(event) => setRuntimeLanguage(event.target.value as GenerationTargetId)} disabled={["STARTING", "RUNNING"].includes(job.runtime.status)}>{job.runtime.plans.map((plan) => <option key={plan.language} value={plan.language}>{plan.language} · :{plan.port}</option>)}</select></label>
-                  <button className="button button-secondary" type="button" disabled={runnerBusy || job.runtime.plans.length === 0 || ["STARTING", "RUNNING"].includes(job.runtime.status)} onClick={() => void postJobAction("run")}><Icon name="play" size={15} />一键运行</button>
-                  <button className="button button-secondary" type="button" disabled={runnerBusy || !["STARTING", "RUNNING"].includes(job.runtime.status)} onClick={() => void postJobAction("stop")}><Icon name="close" size={15} />停止</button>
-                  <button className="button button-primary" type="button" disabled={!job.artifactReady} onClick={() => void downloadArtifact()}><Icon name="file" size={15} />下载归档</button>
+                  <button className="button button-secondary" type="button" disabled={runnerBusy || !runnerCredentialReady || job.runtime.plans.length === 0 || ["STARTING", "RUNNING"].includes(job.runtime.status)} onClick={() => void postJobAction("run")}><Icon name="play" size={15} />一键运行</button>
+                  <button className="button button-secondary" type="button" disabled={runnerBusy || !runnerCredentialReady || !["STARTING", "RUNNING"].includes(job.runtime.status)} onClick={() => void postJobAction("stop")}><Icon name="close" size={15} />停止</button>
+                  <button className="button button-primary" type="button" disabled={!job.artifactReady || !runnerCredentialReady} onClick={() => void downloadArtifact()}><Icon name="file" size={15} />下载归档</button>
                 </div>
               </div>
             )}
@@ -1169,11 +1177,11 @@ export function ProjectGenerationStudio() {
           <div className="generation-submit-row">
             <div><Icon name="lock" size={16} /><span><strong>显式批准后才允许执行</strong><small>未配置 Runner 时仍可导出 Intent 与 CLI 交接</small></span></div>
             <div className="generation-submit-actions">
-              {job && !["COMPLETED", "PARTIAL", "BLOCKED", "CANCELLED"].includes(job.status) && <button className="button button-secondary" type="button" disabled={runnerBusy} onClick={() => void postJobAction("cancel")}><Icon name="close" size={16} />取消任务</button>}
+              {job && !["COMPLETED", "PARTIAL", "BLOCKED", "CANCELLED"].includes(job.status) && <button className="button button-secondary" type="button" disabled={runnerBusy || !runnerCredentialReady} onClick={() => void postJobAction("cancel")}><Icon name="close" size={16} />取消任务</button>}
               <button className="button button-secondary" type="button" disabled={!draft} onClick={downloadIntent}><Icon name="external" size={16} />导出 Intent</button>
               <button className="button button-secondary" type="submit"><Icon name="spark" size={16} />锁定生成计划</button>
-              <button className="button button-secondary" type="button" disabled={!draft || !runnerReady || runnerBusy} onClick={() => void analyzeDraft()}><Icon name="workflow" size={16} />分析并整理需求</button>
-              <button className="button button-primary" type="button" disabled={!draft || !analysis || analysis.request.open_questions.length > 0 || !approved || !runnerReady || runnerBusy} onClick={() => void executeJob()}><Icon name="play" size={16} />一键生成、验证并归档</button>
+              <button className="button button-secondary" type="button" disabled={!draft || !runnerReady || !runnerCredentialReady || runnerBusy} onClick={() => void analyzeDraft()}><Icon name="workflow" size={16} />分析并整理需求</button>
+              <button className="button button-primary" type="button" disabled={!draft || !analysis || analysis.request.open_questions.length > 0 || !approved || !runnerReady || !runnerCredentialReady || runnerBusy} onClick={() => void executeJob()}><Icon name="play" size={16} />一键生成、验证并归档</button>
             </div>
           </div>
         </form>
