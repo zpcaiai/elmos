@@ -6,11 +6,12 @@ import {
   precisionContext,
   PrecisionMigrationRunnerError,
 } from "../../../lib/server/precisionMigrationRunner";
+import { BoundedJsonError, readBoundedJson } from "../../../lib/server/boundedJson";
 
 export const dynamic = "force-dynamic";
 
 function blocked(error: unknown): NextResponse {
-  const status = error instanceof PrecisionMigrationRunnerError ? error.status : 500;
+  const status = error instanceof PrecisionMigrationRunnerError || error instanceof BoundedJsonError ? error.status : 500;
   const reason = error instanceof Error ? error.message : "PRECISION_RUNNER_FAILED";
   return NextResponse.json({ status: "BLOCKED", reason }, { status });
 }
@@ -27,14 +28,9 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    if (!request.headers.get("content-type")?.startsWith("application/json")) {
-      return NextResponse.json({ status: "BLOCKED", reason: "JSON_CONTENT_TYPE_REQUIRED" }, { status: 415 });
-    }
-    const raw = await request.text();
-    if (Buffer.byteLength(raw, "utf-8") > 1024 * 1024) {
-      return NextResponse.json({ status: "BLOCKED", reason: "PRECISION_REQUEST_TOO_LARGE" }, { status: 413 });
-    }
-    return NextResponse.json(await createPrecisionJob(precisionContext(request), JSON.parse(raw)), { status: 202 });
+    const context = precisionContext(request);
+    const body = await readBoundedJson(request, 1024 * 1024, "PRECISION_REQUEST_TOO_LARGE");
+    return NextResponse.json(await createPrecisionJob(context, body), { status: 202 });
   } catch (error) {
     return blocked(error);
   }

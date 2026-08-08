@@ -35,9 +35,11 @@ test_exact_python_adapter_runs_allowlisted_native_compiler (test_precision_migra
 test_exact_skill_with_complete_signed_evidence_is_verified (test_precision_migration_runtime.PrecisionMigrationRuntimeTest.test_exact_skill_with_complete_signed_evidence_is_verified) ... ok
 test_expired_authorization_is_rejected (test_precision_migration_runtime.PrecisionMigrationRuntimeTest.test_expired_authorization_is_rejected) ... ok
 test_job_audit_tampering_is_detected_before_append (test_precision_migration_runtime.PrecisionMigrationRuntimeTest.test_job_audit_tampering_is_detected_before_append) ... ok
+test_job_cancel_wins_when_requested_before_worker_finalization (test_precision_migration_runtime.PrecisionMigrationRuntimeTest.test_job_cancel_wins_when_requested_before_worker_finalization) ... ok
 test_job_storage_permissions_and_gc_are_recoverable (test_precision_migration_runtime.PrecisionMigrationRuntimeTest.test_job_storage_permissions_and_gc_are_recoverable) ... ok
 test_job_submission_rejects_weakened_or_unknown_request_fields (test_precision_migration_runtime.PrecisionMigrationRuntimeTest.test_job_submission_rejects_weakened_or_unknown_request_fields) ... ok
 test_job_tenant_isolation_quota_and_cooperative_cancel (test_precision_migration_runtime.PrecisionMigrationRuntimeTest.test_job_tenant_isolation_quota_and_cooperative_cancel) ... ok
+test_job_worker_spawn_failure_is_persisted_as_terminal (test_precision_migration_runtime.PrecisionMigrationRuntimeTest.test_job_worker_spawn_failure_is_persisted_as_terminal) ... ok
 test_loaded_trust_store_snapshots_public_key_material (test_precision_migration_runtime.PrecisionMigrationRuntimeTest.test_loaded_trust_store_snapshots_public_key_material) ... ok
 test_missing_transform_evidence_is_conditionally_verified (test_precision_migration_runtime.PrecisionMigrationRuntimeTest.test_missing_transform_evidence_is_conditionally_verified) ... ok
 test_native_command_injection_is_not_an_allowed_parameter (test_precision_migration_runtime.PrecisionMigrationRuntimeTest.test_native_command_injection_is_not_an_allowed_parameter) ... ok
@@ -61,6 +63,6 @@ test_unsigned_authorization_is_rejected (test_precision_migration_runtime.Precis
 test_wrong_signing_role_is_rejected (test_precision_migration_runtime.PrecisionMigrationRuntimeTest.test_wrong_signing_role_is_rejected) ... ok
 
 ----------------------------------------------------------------------
-Ran 60 tests in 5.978s
+Ran 62 tests in 28.370s
 
 OK

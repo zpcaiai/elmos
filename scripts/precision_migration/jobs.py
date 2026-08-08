@@ -142,20 +142,7 @@ class JobStore:
         base = self.tenant_root(tenant_id)
         path = base / "audit.jsonl"
         with locked(base / ".audit.lock"):
-            previous = "sha256:" + "0" * 64
-            if path.is_file():
-                lines = [line for line in path.read_text(encoding="utf-8").splitlines() if line]
-                for index, line in enumerate(lines):
-                    entry = json.loads(line)
-                    claimed = entry.pop("entry_hash", None)
-                    if entry.get("previous_hash") != previous:
-                        raise JobError(f"audit chain previous hash mismatch at entry {index}")
-                    observed = "sha256:" + hashlib.sha256(
-                        json.dumps(entry, sort_keys=True, separators=(",", ":")).encode("utf-8")
-                    ).hexdigest()
-                    if claimed != observed:
-                        raise JobError(f"audit chain entry hash mismatch at entry {index}")
-                    previous = observed
+            _, previous = self._verify_audit_path(path)
             body = {"occurred_at": now(), "previous_hash": previous, **event}
             body["entry_hash"] = "sha256:" + hashlib.sha256(
                 json.dumps(body, sort_keys=True, separators=(",", ":")).encode("utf-8")
@@ -165,6 +152,33 @@ class JobStore:
                 handle.flush()
                 os.fsync(handle.fileno())
             os.chmod(path, 0o600)
+
+    @staticmethod
+    def _verify_audit_path(path: Path) -> tuple[int, str]:
+        previous = "sha256:" + "0" * 64
+        lines = [line for line in path.read_text(encoding="utf-8").splitlines() if line] if path.is_file() else []
+        for index, line in enumerate(lines):
+            try:
+                entry = json.loads(line)
+            except json.JSONDecodeError as exc:
+                raise JobError(f"audit chain contains invalid JSON at entry {index}") from exc
+            if not isinstance(entry, dict):
+                raise JobError(f"audit chain entry {index} is not an object")
+            claimed = entry.pop("entry_hash", None)
+            if entry.get("previous_hash") != previous:
+                raise JobError(f"audit chain previous hash mismatch at entry {index}")
+            observed = "sha256:" + hashlib.sha256(
+                json.dumps(entry, sort_keys=True, separators=(",", ":")).encode("utf-8")
+            ).hexdigest()
+            if claimed != observed:
+                raise JobError(f"audit chain entry hash mismatch at entry {index}")
+            previous = observed
+        return len(lines), previous
+
+    def verify_audit(self, tenant_id: str) -> tuple[int, str]:
+        base = self.tenant_root(tenant_id)
+        with locked(base / ".audit.lock"):
+            return self._verify_audit_path(base / "audit.jsonl")
 
     def submit(
         self,
@@ -248,19 +262,41 @@ class JobStore:
         if trust_store:
             command.extend(["--trust-store", str(trust_store)])
         log_path = job_root / "worker.log"
-        log = log_path.open("ab")
-        os.chmod(log_path, 0o600)
-        subprocess.Popen(
-            command,
-            cwd=ROOT,
-            env={"PATH": os.environ.get("PATH", ""), "PYTHONDONTWRITEBYTECODE": "1"},
-            stdin=subprocess.DEVNULL,
-            stdout=log,
-            stderr=subprocess.STDOUT,
-            start_new_session=True,
-            close_fds=True,
-        )
-        log.close()
+        try:
+            with log_path.open("ab") as log:
+                os.chmod(log_path, 0o600)
+                subprocess.Popen(
+                    command,
+                    cwd=ROOT,
+                    env={"PATH": os.environ.get("PATH", ""), "PYTHONDONTWRITEBYTECODE": "1"},
+                    stdin=subprocess.DEVNULL,
+                    stdout=log,
+                    stderr=subprocess.STDOUT,
+                    start_new_session=True,
+                    close_fds=True,
+                )
+        except OSError as exc:
+            with locked(job_root / ".job.lock"):
+                current = self.read(payload["tenant_id"], payload["job_id"])
+                if current["status"] == "QUEUED":
+                    current.update(
+                        {
+                            "status": "FAILED",
+                            "progress": 100,
+                            "updated_at": now(),
+                            "result": {
+                                "status": "FAILED",
+                                "error": "WORKER_START_FAILED",
+                                "message": type(exc).__name__,
+                            },
+                        }
+                    )
+                    self._write(current)
+            self.audit(
+                payload["tenant_id"],
+                {"event": "JOB_FAILED", "job_id": payload["job_id"], "actor": payload["actor"]},
+            )
+            raise JobError("worker start failed") from exc
 
     def run(self, tenant_id: str, job_id: str, *, evidence_roots: list[Path], trust_store: Path | None) -> dict[str, Any]:
         payload = self.read(tenant_id, job_id)
@@ -281,12 +317,17 @@ class JobStore:
         output = job_root / "artifacts"
         try:
             result = execute(request, output, evidence_roots=evidence_roots, trust_store=trust_store)
-            cancelled = (job_root / "cancel.requested").exists()
+        except Exception as exc:  # worker boundary must persist a terminal record
+            result = {"status": "FAILED", "error": type(exc).__name__, "message": str(exc)}
+        with locked(job_root / ".job.lock"):
+            payload = self.read(tenant_id, job_id)
+            cancelled = payload["status"] == "CANCEL_REQUESTED" or (job_root / "cancel.requested").exists()
+            execution_state = result.get("execution_state")
             if cancelled:
                 status = "CANCELLED"
-            elif result["execution_state"] == "LOCAL_EXECUTED":
+            elif execution_state == "LOCAL_EXECUTED":
                 status = "SUCCEEDED"
-            elif result["execution_state"] in {"REQUIRES_ADAPTER", "CONDITIONALLY_VERIFIED", "REQUIRES_HUMAN_REVIEW", "UNSUPPORTED", "INCONCLUSIVE"}:
+            elif execution_state in {"REQUIRES_ADAPTER", "CONDITIONALLY_VERIFIED", "REQUIRES_HUMAN_REVIEW", "UNSUPPORTED", "INCONCLUSIVE"}:
                 status = "BLOCKED"
             else:
                 status = "FAILED"
@@ -300,29 +341,21 @@ class JobStore:
                     "artifacts": result.get("artifacts", []),
                 }
             )
-        except Exception as exc:  # worker boundary must persist a terminal record
-            payload.update(
-                {
-                    "status": "FAILED",
-                    "progress": 100,
-                    "updated_at": now(),
-                    "result": {"status": "FAILED", "error": type(exc).__name__, "message": str(exc)},
-                    "artifacts": [],
-                }
-            )
-        self._write(payload)
+            self._write(payload)
         self.audit(tenant_id, {"event": f"JOB_{payload['status']}", "job_id": job_id, "actor": payload["actor"]})
         return payload
 
     def cancel(self, tenant_id: str, actor: str, job_id: str) -> dict[str, Any]:
-        payload = self.read(tenant_id, job_id)
-        if payload["status"] in TERMINAL:
-            return payload
-        marker = self.job_root(tenant_id, job_id) / "cancel.requested"
-        marker.write_text(now() + "\n", encoding="utf-8")
-        os.chmod(marker, 0o600)
-        payload.update({"status": "CANCEL_REQUESTED", "cancel_requested": True, "updated_at": now()})
-        self._write(payload)
+        job_root = self.job_root(tenant_id, job_id)
+        with locked(job_root / ".job.lock"):
+            payload = self.read(tenant_id, job_id)
+            if payload["status"] in TERMINAL:
+                return payload
+            marker = job_root / "cancel.requested"
+            marker.write_text(now() + "\n", encoding="utf-8")
+            os.chmod(marker, 0o600)
+            payload.update({"status": "CANCEL_REQUESTED", "cancel_requested": True, "updated_at": now()})
+            self._write(payload)
         self.audit(tenant_id, {"event": "JOB_CANCEL_REQUESTED", "job_id": job_id, "actor": actor})
         return payload
 
@@ -345,8 +378,7 @@ class JobStore:
         states: dict[str, int] = {}
         for job in jobs:
             states[job["status"]] = states.get(job["status"], 0) + 1
-        audit_path = self.tenant_root(tenant_id) / "audit.jsonl"
-        audit_events = len(audit_path.read_text(encoding="utf-8").splitlines()) if audit_path.is_file() else 0
+        audit_events, audit_head = self.verify_audit(tenant_id)
         return {
             "jobs": jobs,
             "quota": {
@@ -360,7 +392,8 @@ class JobStore:
             "observability": {
                 "job_states": dict(sorted(states.items())),
                 "audit_events": audit_events,
-                "audit_chain": "HASH_CHAINED",
+                "audit_chain": "HASH_CHAINED_VALID",
+                "audit_head": audit_head,
                 "external_monitoring": "NOT_CONFIGURED",
             },
         }

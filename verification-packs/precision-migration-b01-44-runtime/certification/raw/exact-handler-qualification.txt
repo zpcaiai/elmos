@@ -1,2 +1,2 @@
-$ /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/precision_migration/qualify_domains.py --check
+$ /opt/homebrew/opt/python@3.14/bin/python3.14 -m scripts.precision_migration.qualify_domains --check
 {"results": 2680, "scope": "EXACT_CONTRACT_LOCAL", "skills": 536, "status": "PASS"}

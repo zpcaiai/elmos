@@ -7,6 +7,7 @@ import os
 import subprocess
 import sys
 import tempfile
+import threading
 import unittest
 from datetime import datetime, timezone
 from pathlib import Path
@@ -963,6 +964,53 @@ class PrecisionMigrationRuntimeTest(unittest.TestCase):
         )
         self.assertEqual("CANCELLED", cancelled["status"])
 
+    def test_job_cancel_wins_when_requested_before_worker_finalization(self) -> None:
+        store = JobStore(self.root / "jobs-cancel-race", max_active=1, max_jobs=10, max_bytes=10_000_000)
+        request = self.base_request("repository-modernization-assessment")
+        submitted = store.submit(request, tenant_id="tenant-race", actor="actor-race")
+        entered = threading.Event()
+        release = threading.Event()
+        outcome: dict[str, object] = {}
+
+        def delayed_execute(*_args: object, **_kwargs: object) -> dict[str, object]:
+            entered.set()
+            self.assertTrue(release.wait(timeout=5))
+            return {"execution_state": "LOCAL_EXECUTED", "artifacts": [], "exit_code": 0}
+
+        def run_worker() -> None:
+            outcome.update(
+                store.run(
+                    "tenant-race",
+                    submitted["job_id"],
+                    evidence_roots=[self.root],
+                    trust_store=self.trust_store,
+                )
+            )
+
+        with mock.patch("scripts.precision_migration.jobs.execute", side_effect=delayed_execute):
+            worker = threading.Thread(target=run_worker, daemon=True)
+            worker.start()
+            self.assertTrue(entered.wait(timeout=5))
+            cancelling = store.cancel("tenant-race", "actor-race", submitted["job_id"])
+            self.assertEqual("CANCEL_REQUESTED", cancelling["status"])
+            release.set()
+            worker.join(timeout=5)
+        self.assertFalse(worker.is_alive())
+        self.assertEqual("CANCELLED", outcome["status"])
+        self.assertTrue(outcome["cancel_requested"])
+
+    def test_job_worker_spawn_failure_is_persisted_as_terminal(self) -> None:
+        store = JobStore(self.root / "jobs-spawn-failure", max_active=1, max_jobs=10, max_bytes=10_000_000)
+        request = self.base_request("repository-modernization-assessment")
+        submitted = store.submit(request, tenant_id="tenant-spawn", actor="actor-spawn")
+        with mock.patch("scripts.precision_migration.jobs.subprocess.Popen", side_effect=OSError("spawn denied")):
+            with self.assertRaisesRegex(JobError, "worker start failed"):
+                store.start_worker(submitted, evidence_roots=[self.root], trust_store=self.trust_store)
+        failed = store.read("tenant-spawn", submitted["job_id"])
+        self.assertEqual("FAILED", failed["status"])
+        self.assertEqual("WORKER_START_FAILED", failed["result"]["error"])
+        self.assertEqual(0, store.list("tenant-spawn")["quota"]["active"])
+
     def test_job_submission_rejects_weakened_or_unknown_request_fields(self) -> None:
         store = JobStore(self.root / "jobs-request-validation", max_active=2, max_jobs=10, max_bytes=10_000_000)
         weakened = self.base_request("repository-modernization-assessment")
@@ -986,6 +1034,8 @@ class PrecisionMigrationRuntimeTest(unittest.TestCase):
         audit_path.write_text(json.dumps(tampered, sort_keys=True) + "\n", encoding="utf-8")
         with self.assertRaisesRegex(JobError, "entry hash mismatch"):
             store.audit("tenant-audit", {"event": "MUST_NOT_APPEND", "actor": "actor-audit"})
+        with self.assertRaisesRegex(JobError, "entry hash mismatch"):
+            store.list("tenant-audit")
         self.assertEqual(1, len(audit_path.read_text(encoding="utf-8").splitlines()))
 
     def test_job_storage_permissions_and_gc_are_recoverable(self) -> None:

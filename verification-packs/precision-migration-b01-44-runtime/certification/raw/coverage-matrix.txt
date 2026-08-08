@@ -1,2 +1,2 @@
-$ /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/precision_migration/build_coverage.py --check
+$ /opt/homebrew/opt/python@3.14/bin/python3.14 -m scripts.precision_migration.build_coverage --check
 {"output": "/Users/stephen/DevProjects/AIProjects/elmos/verification-packs/precision-migration-b01-44-runtime/coverage/coverage-matrix.json", "rows": 587, "status": "PASS"}

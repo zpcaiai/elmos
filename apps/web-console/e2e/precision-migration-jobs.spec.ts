@@ -45,6 +45,27 @@ test("租户隔离 API 完成真实只读评估并提供内容寻址产物", asy
   expect(runnerRoot).toBeTruthy();
   const commandMarker = path.join(runnerRoot!, "request-command-must-not-run");
 
+  const unsupportedMedia = await request.post("/api/precision-migration/jobs", {
+    headers: { ...runnerHeaders, "Content-Type": "text/plain" },
+    data: "{}",
+  });
+  expect(unsupportedMedia.status()).toBe(415);
+  expect(await unsupportedMedia.json()).toMatchObject({ reason: "JSON_CONTENT_TYPE_REQUIRED" });
+
+  const oversized = await request.post("/api/precision-migration/jobs", {
+    headers: runnerHeaders,
+    data: Buffer.alloc(1024 * 1024 + 1, 0x20),
+  });
+  expect(oversized.status()).toBe(413);
+  expect(await oversized.json()).toMatchObject({ reason: "PRECISION_REQUEST_TOO_LARGE" });
+
+  const malformed = await request.post("/api/precision-migration/jobs", {
+    headers: runnerHeaders,
+    data: Buffer.from("{not-json", "utf-8"),
+  });
+  expect(malformed.status()).toBe(400);
+  expect(await malformed.json()).toMatchObject({ reason: "INVALID_JSON" });
+
   const weakened = assessmentRequest() as ReturnType<typeof assessmentRequest>;
   weakened.policy.allow_test_weakening = true;
   const rejected = await request.post("/api/precision-migration/jobs", {
@@ -86,6 +107,13 @@ test("租户隔离 API 完成真实只读评估并提供内容寻址产物", asy
   expect(completed!.artifacts![0].digest).toMatch(/^sha256:[0-9a-f]{64}$/);
   expect(completed!.artifacts![0].size_bytes).toBeGreaterThan(100);
   expect(existsSync(commandMarker)).toBe(false);
+
+  const malformedAction = await request.post(`/api/precision-migration/jobs/${submission.job_id}`, {
+    headers: runnerHeaders,
+    data: Buffer.from("{not-json", "utf-8"),
+  });
+  expect(malformedAction.status()).toBe(400);
+  expect(await malformedAction.json()).toMatchObject({ reason: "INVALID_JSON" });
 
   const artifact = await request.get(
     `/api/precision-migration/jobs/${submission.job_id}/artifacts/repository-assessment.json`,

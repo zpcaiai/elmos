@@ -13,16 +13,16 @@ type RangeItem = { range: string; title: string; count: number; source: string; 
 
 const precisionIcons: IconName[] = ["route", "layers", "code", "workflow", "database", "test", "shield", "spark"];
 const precisionMaturityCounts = precisionMigrationSummary.maturityCounts as Readonly<Record<string, number>>;
-const precisionExecutableCount = (precisionMaturityCounts.LOCAL_EXECUTED ?? 0)
-  + (precisionMaturityCounts.ADAPTER_DECLARED ?? 0);
+const precisionExecutableCount = ["ADAPTER_DECLARED", "ADAPTER_CONTRACT_PASSED", "LOCAL_EXECUTED", "HOLDOUT_PASSED", "EXTERNAL_VERIFIED", "CERTIFIED"]
+  .reduce((total, maturity) => total + (precisionMaturityCounts[maturity] ?? 0), 0);
 const precisionRanges: RangeItem[] = precisionMigrationPhases.map((phase, index) => ({
   range: phase.batchRange.replace("-", "–"),
   title: phase.phase.replace(/^[A-L]\s+/, ""),
   count: phase.skillCount,
-  source: `${phase.adapterDeclaredCount} adapter contracts / ${phase.installedOnlyCount} installed only`,
-  status: Number(phase.installedOnlyCount) === 0 ? "ADAPTER_DECLARED" : "INSTALLED",
+  source: `${phase.localExecutedCount} local executed / ${phase.skillCount} child Skills`,
+  status: Number(phase.localExecutedCount) === Number(phase.skillCount) ? "LOCAL_EXECUTED" : Number(phase.installedOnlyCount) === 0 ? "ADAPTER_DECLARED" : "INSTALLED",
   icon: precisionIcons[index % precisionIcons.length],
-  note: `结构契约已安装；${phase.adapterDeclaredCount} 个条目拥有受控 handler，实际执行、holdout 与外部证据仍为 NOT_RUN。`,
+  note: `${phase.localExecutedCount} 个条目已运行受控本地 handler；原生工具链广度、独立 holdout 与外部证据仍为 NOT_RUN。`,
 }));
 
 const ranges: Record<Namespace, RangeItem[]> = {

@@ -1,4 +1,4 @@
-$ /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/precision_migration/external.py validate-profiles
+$ /opt/homebrew/opt/python@3.14/bin/python3.14 -m scripts.precision_migration.external validate-profiles
 {
   "profiles": 557,
   "registry_digest": "sha256:5645fedd1b927cab109d66a548a87f8ef4ebe76247c1e0165e1141f98edae067",

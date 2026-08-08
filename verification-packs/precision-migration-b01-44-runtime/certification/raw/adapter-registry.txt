@@ -1,4 +1,4 @@
-$ /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/precision_migration/adapters.py validate-registry
+$ /opt/homebrew/opt/python@3.14/bin/python3.14 -m scripts.precision_migration.adapters validate-registry
 {
   "status": "PASS",
   "entries": 632,

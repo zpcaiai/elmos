@@ -534,12 +534,20 @@ def render_web_catalog(manifest: dict[str, Any]) -> str:
         phase = str(record["phase"])
         group = phases.setdefault(
             phase,
-            {"phase": phase, "batches": set(), "skillCount": 0, "adapterDeclaredCount": 0},
+            {
+                "phase": phase,
+                "batches": set(),
+                "skillCount": 0,
+                "adapterDeclaredCount": 0,
+                "localExecutedCount": 0,
+            },
         )
         group["batches"].add(int(record["batch"]))
         group["skillCount"] += 1
-        if record["maturity"] == "ADAPTER_DECLARED":
+        if record["binding"]["binding_state"] == "DECLARED":
             group["adapterDeclaredCount"] += 1
+        if record["maturity"] in {"LOCAL_EXECUTED", "HOLDOUT_PASSED", "EXTERNAL_VERIFIED", "CERTIFIED"}:
+            group["localExecutedCount"] += 1
     rendered_phases = []
     for value in phases.values():
         batches = sorted(value["batches"])
@@ -551,6 +559,7 @@ def render_web_catalog(manifest: dict[str, Any]) -> str:
                 ),
                 "skillCount": value["skillCount"],
                 "adapterDeclaredCount": value["adapterDeclaredCount"],
+                "localExecutedCount": value["localExecutedCount"],
                 "installedOnlyCount": value["skillCount"] - value["adapterDeclaredCount"],
             }
         )

@@ -175,6 +175,6 @@ export function PrecisionMigrationJobs() {
         return name ? <button className="precision-artifact-link" type="button" key={artifact.digest ?? name} onClick={() => void download(artifact)}>{name}<small>{artifact.digest?.slice(0, 20)}… · {artifact.size_bytes} bytes</small></button> : null;
       })}</div> : null}
     </div> : null}
-    <small className="form-note">UI 只能触发清单中的受控 handler；`INSTALLED` 条目会返回 `REQUIRES_ADAPTER`，不会执行请求携带的命令。</small>
+    <small className="form-note">UI 只能触发清单中的受控 handler；缺少精确原生或外部能力时会失败关闭，不会执行请求携带的命令。</small>
   </section>;
 }

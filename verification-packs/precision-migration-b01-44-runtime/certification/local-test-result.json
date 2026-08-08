@@ -2,8 +2,8 @@
   "schema_version": 1,
   "pack_key": "precision-migration-b01-44-runtime",
   "status": "PASSED",
-  "started_at": "2026-08-05T23:39:06.099545Z",
-  "completed_at": "2026-08-05T23:39:32.639402Z",
+  "started_at": "2026-08-08T06:25:34.188814Z",
+  "completed_at": "2026-08-08T06:28:44.531500Z",
   "executor": "local-engineering-runner",
   "independent_verifier": "NOT_RUN",
   "environment": {
@@ -15,14 +15,15 @@
     "adapter_registry": {
       "command": [
         "/opt/homebrew/opt/python@3.14/bin/python3.14",
-        "scripts/precision_migration/adapters.py",
+        "-m",
+        "scripts.precision_migration.adapters",
         "validate-registry"
       ],
       "exit_code": 0,
       "timed_out": false,
       "timeout_seconds": 300,
       "raw_evidence": "raw/adapter-registry.txt",
-      "digest": "sha256:13021387c6f0ce28a016ecd2f7c5575b1d3d5d66acba069b100515866bb8970d",
+      "digest": "sha256:b1c5f2ad847abd21289535a7cf5fff8e9e73b77e80657a3f7172caff47c75d19",
       "size_bytes": 162
     },
     "runtime_tests": {
@@ -41,153 +42,164 @@
       "timed_out": false,
       "timeout_seconds": 300,
       "raw_evidence": "raw/runtime-tests.txt",
-      "digest": "sha256:ad8955389b3241e40d501f1fe65444a7c8df018a50511deedfcb10de391a94c6",
-      "size_bytes": 11129
+      "digest": "sha256:53ca670b4739f4315c267cc1b5b4bdf72119129544ecf3edebb65148098e044d",
+      "size_bytes": 11510
     },
     "contract_qualification": {
       "command": [
         "/opt/homebrew/opt/python@3.14/bin/python3.14",
-        "scripts/precision_migration/qualify_contracts.py",
+        "-m",
+        "scripts.precision_migration.qualify_contracts",
         "--check"
       ],
       "exit_code": 0,
       "timed_out": false,
       "timeout_seconds": 300,
       "raw_evidence": "raw/contract-qualification.txt",
-      "digest": "sha256:6e2dec6a88cda985821a512b6e65a1a5c5dff0721d269b6664364354a229fe26",
+      "digest": "sha256:145b9f8c62197be9d6154e4d0ee96f792785414c534474123ebd50ca183c8cdb",
       "size_bytes": 178
     },
     "exact_handler_qualification": {
       "command": [
         "/opt/homebrew/opt/python@3.14/bin/python3.14",
-        "scripts/precision_migration/qualify_domains.py",
+        "-m",
+        "scripts.precision_migration.qualify_domains",
         "--check"
       ],
       "exit_code": 0,
       "timed_out": false,
       "timeout_seconds": 300,
       "raw_evidence": "raw/exact-handler-qualification.txt",
-      "digest": "sha256:7f2dab67752d88d2dc70f65c980b05da47e8623f4b25c688efcf6c5bb53df1be",
+      "digest": "sha256:da5a35f707d1b8caac26bf69283f089f1031d907152d4a9295aa8665fc63ec31",
       "size_bytes": 186
     },
     "orchestrator_qualification": {
       "command": [
         "/opt/homebrew/opt/python@3.14/bin/python3.14",
-        "scripts/precision_migration/qualify_orchestrators.py",
+        "-m",
+        "scripts.precision_migration.qualify_orchestrators",
         "--check"
       ],
       "exit_code": 0,
       "timed_out": false,
       "timeout_seconds": 300,
       "raw_evidence": "raw/orchestrator-qualification.txt",
-      "digest": "sha256:a7f79c61aa7f7cc553d4aeac9c953be583b36379b952482dbe38bd44aa0f21db",
+      "digest": "sha256:cfe03317f752267acacecac5c21885b80c8604bec1e5c9eb5e5fd62a992c30d0",
       "size_bytes": 164
     },
     "batch41_qualification": {
       "command": [
         "/opt/homebrew/opt/python@3.14/bin/python3.14",
-        "scripts/precision_migration/qualify_b41.py",
+        "-m",
+        "scripts.precision_migration.qualify_b41",
         "--check"
       ],
       "exit_code": 0,
       "timed_out": false,
       "timeout_seconds": 300,
       "raw_evidence": "raw/batch41-qualification.txt",
-      "digest": "sha256:e573505834d3a6443181540f3182bc9cc360d8913071a6f429f1fb15cfa987a3",
+      "digest": "sha256:df349332bff4f8e9a05c9f4fb05f57c849e4d5681a6bfd09f8363b385a8292ae",
       "size_bytes": 164
     },
     "batch16_routes": {
       "command": [
         "/opt/homebrew/opt/python@3.14/bin/python3.14",
-        "scripts/precision_migration/validate_b16_routes.py"
+        "-m",
+        "scripts.precision_migration.validate_b16_routes"
       ],
       "exit_code": 0,
       "timed_out": false,
       "timeout_seconds": 900,
       "raw_evidence": "raw/batch16-routes.txt",
-      "digest": "sha256:42171e2d784a4cd8511dc56554ced57c0d56cddef2d9a98cbab0f65fb2a4951f",
+      "digest": "sha256:0228ffc75e4eb5baaff3e2437e6c19f2b01406ec51208b1c2752582449de5748",
       "size_bytes": 306
     },
     "batch16_qualification": {
       "command": [
         "/opt/homebrew/opt/python@3.14/bin/python3.14",
-        "scripts/precision_migration/qualify_b16.py",
+        "-m",
+        "scripts.precision_migration.qualify_b16",
         "--check"
       ],
       "exit_code": 0,
       "timed_out": false,
       "timeout_seconds": 300,
       "raw_evidence": "raw/batch16-qualification.txt",
-      "digest": "sha256:00e30ef09098e7ce05f958602c5b2a75ed4921f00ccc2ab7695461a9e8224286",
+      "digest": "sha256:aa0c97bde76c61f87bf1d8e0857fdb2384d56101f686af37ff1b0d163acd27ad",
       "size_bytes": 147
     },
     "specialized_qualification": {
       "command": [
         "/opt/homebrew/opt/python@3.14/bin/python3.14",
-        "scripts/precision_migration/qualify_specialized.py",
+        "-m",
+        "scripts.precision_migration.qualify_specialized",
         "--check"
       ],
       "exit_code": 0,
       "timed_out": false,
       "timeout_seconds": 300,
       "raw_evidence": "raw/specialized-qualification.txt",
-      "digest": "sha256:cf43a649a238df5490efa2033644ac7e92144a73a122ef626db610b2244f30a7",
+      "digest": "sha256:1797f2c7f3daf48425c5e18b03ff0484ece44dee6d615f88331d9d0b815a59eb",
       "size_bytes": 154
     },
     "external_execution_profiles": {
       "command": [
         "/opt/homebrew/opt/python@3.14/bin/python3.14",
-        "scripts/precision_migration/external.py",
+        "-m",
+        "scripts.precision_migration.external",
         "validate-profiles"
       ],
       "exit_code": 0,
       "timed_out": false,
       "timeout_seconds": 300,
       "raw_evidence": "raw/external-execution-profiles.txt",
-      "digest": "sha256:313b517b2e2ff7a75da6ced18fb9d06db6f00cf4a2d70c31db5fa35bcc818b2a",
+      "digest": "sha256:c9de2a7de7edbc72b87c5f4358322d93a92f82b5216566fc3d3020137580627a",
       "size_bytes": 243
     },
     "external_engineering_qualification": {
       "command": [
         "/opt/homebrew/opt/python@3.14/bin/python3.14",
-        "scripts/precision_migration/qualify_external_engineering.py",
+        "-m",
+        "scripts.precision_migration.qualify_external_engineering",
         "--check"
       ],
       "exit_code": 0,
       "timed_out": false,
       "timeout_seconds": 300,
       "raw_evidence": "raw/external-engineering-qualification.txt",
-      "digest": "sha256:4d7e1b385a5a7cf3df5fe63c1041edaf9096d7d19ac82d9a92e243ccd3f437fd",
+      "digest": "sha256:1373dfcf8e221ad3eb33ab3e7b68e94adec4e4ad3b4283327f4b038c5d438e8e",
       "size_bytes": 296
     },
     "coverage_matrix": {
       "command": [
         "/opt/homebrew/opt/python@3.14/bin/python3.14",
-        "scripts/precision_migration/build_coverage.py",
+        "-m",
+        "scripts.precision_migration.build_coverage",
         "--check"
       ],
       "exit_code": 0,
       "timed_out": false,
       "timeout_seconds": 300,
       "raw_evidence": "raw/coverage-matrix.txt",
-      "digest": "sha256:967ac44e0645affb396d515c6afdeb7075494baa7807b6a0bba3243109b7befd",
+      "digest": "sha256:94bebd32534e2c84088c7aa5ae3125d4c41cd7ed094bcccd5533356ce59a4c3c",
       "size_bytes": 274
     },
     "production_code_gate": {
       "command": [
         "/opt/homebrew/opt/python@3.14/bin/python3.14",
-        "scripts/precision_migration/run_production_code_gate.py",
+        "-m",
+        "scripts.precision_migration.run_production_code_gate",
         "--check"
       ],
       "exit_code": 0,
       "timed_out": false,
       "timeout_seconds": 300,
       "raw_evidence": "raw/production-code-gate.txt",
-      "digest": "sha256:10af66686a4e3321fd0881ee26a5ca7a0956c4d6b7e8c9d5d7b0881026a29bcf",
+      "digest": "sha256:7711b4b1774a71cd2ec0991ec53dc838d6c5cea21e2a2e7ecedaf5f5b89187a1",
       "size_bytes": 187
     }
   },
-  "test_count": 60,
+  "test_count": 62,
   "negative_corpus": "corpus/negative/cases.json",
   "local_execution_status": "PASSED_PRODUCTION_CODE_CLOSURE_FOR_587_OF_587_EXECUTABLE_DAG_FOR_45_OF_45_EXTERNAL_WORKFLOW_CODE_FOR_557_OF_557_AND_2785_OF_2785_ENGINEERING_CASES",
   "external_engineering_status": "PASSED_LOCAL_ENGINEERING_SIMULATION_FOR_557_OF_557_WITH_2785_HANDLER_INVOCATIONS_AND_8_RELEASE_DRILLS; PRODUCTION_ELIGIBLE_FALSE",
@@ -195,5 +207,5 @@
   "representative_workload_status": "PASSED_ENGINEERING_FIXTURE_FOR_557_AND_NATIVE_LOCAL_B16_FOR_30; CUSTOMER_WORKLOAD_NOT_RUN",
   "external_evidence_status": "NOT_RUN",
   "production_certification": "NOT_CERTIFIED",
-  "result_digest": "sha256:6d666a2232e46d273631b0ac833abe0c7c299e343f9cb1d99c97ef0f53c4b164"
+  "result_digest": "sha256:4c0c87a2e6e77996cdd1dd2fbc3ecab5d0568cb6a5aa02837c2037c215ff6f4d"
 }

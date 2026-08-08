@@ -216,6 +216,18 @@ def main() -> int:
         or '"childSkillCount": 587' not in web_text
     ):
         fail("Precision Migration web catalog counts drifted")
+    phase_match = re.search(r"precisionMigrationPhases = (\[.*\]) as const;", web_text, re.DOTALL)
+    if phase_match is None:
+        fail("Precision Migration web phase catalog is invalid")
+    web_phases = json.loads(phase_match.group(1))
+    if (
+        len(web_phases) != 12
+        or sum(item.get("skillCount", 0) for item in web_phases) != 587
+        or sum(item.get("adapterDeclaredCount", 0) for item in web_phases) != 587
+        or sum(item.get("localExecutedCount", 0) for item in web_phases) != 587
+        or any(item.get("installedOnlyCount") != 0 for item in web_phases)
+    ):
+        fail("Precision Migration web phase maturity counts drifted")
     adapter_registry = json.loads(ADAPTER_REGISTRY.read_text(encoding="utf-8"))
     jsonschema.Draft202012Validator(
         json.loads((SCHEMA_ROOT / "adapter-registry.schema.json").read_text(encoding="utf-8"))

@@ -1,2 +1,2 @@
-$ /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/precision_migration/run_production_code_gate.py --check
+$ /opt/homebrew/opt/python@3.14/bin/python3.14 -m scripts.precision_migration.run_production_code_gate --check
 {"decision": "READY_FOR_EXTERNAL_GATE", "failures": [], "status": "PASSED"}

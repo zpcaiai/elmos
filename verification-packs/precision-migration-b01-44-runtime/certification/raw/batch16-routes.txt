@@ -1,2 +1,2 @@
-$ /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/precision_migration/validate_b16_routes.py
+$ /opt/homebrew/opt/python@3.14/bin/python3.14 -m scripts.precision_migration.validate_b16_routes
 {"corpora_per_route": 3, "external_certification": "NOT_RUN", "failures": [], "independent_verification": "NOT_RUN", "native_build_and_behavior": "PASSED_LOCAL", "passed": 30, "routes": 30, "status": "PASS"}
