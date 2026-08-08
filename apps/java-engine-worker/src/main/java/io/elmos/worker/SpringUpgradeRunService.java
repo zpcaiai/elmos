@@ -273,6 +273,7 @@ final class SpringUpgradeRunService {
 
     private void execute(RunState state) {
         DurableRunLeaseStore.Lease lease;
+        RunStatus terminalStatus = RunStatus.FAILED;
         try {
             lease = leaseStore.acquire(
                     state.request.organizationId(), state.runId, state.createdAt,
@@ -354,11 +355,11 @@ final class SpringUpgradeRunService {
             synchronized (state) {
                 state.independentValidation = decision;
                 state.stage = Stage.READY;
-                state.status = RunStatus.SUCCEEDED;
                 appendEvent(state, Stage.READY, "PASS",
                         "Migration artifact passed independent validation and is ready to download");
                 touch(state);
             }
+            terminalStatus = RunStatus.SUCCEEDED;
             if (state.request.startAfterVerification()) {
                 synchronized (state) {
                     state.runtimeStatus = RuntimeStatus.STARTING;
@@ -367,20 +368,18 @@ final class SpringUpgradeRunService {
                 launchRuntime(state);
             }
         } catch (BlockedException error) {
+            terminalStatus = state.cancelled.get() || "RUN_CANCELLED".equals(error.code())
+                    ? RunStatus.CANCELLED
+                    : RunStatus.BLOCKED;
             synchronized (state) {
-                if (state.cancelled.get() || "RUN_CANCELLED".equals(error.code())) {
-                    state.status = RunStatus.CANCELLED;
-                } else {
-                    state.status = RunStatus.BLOCKED;
-                }
                 state.failureCode = error.code();
                 state.failureMessage = error.getMessage();
-                appendEvent(state, state.stage, state.status.name(), error.getMessage());
+                appendEvent(state, state.stage, terminalStatus.name(), error.getMessage());
                 touch(state);
             }
         } catch (RuntimeException error) {
+            terminalStatus = RunStatus.FAILED;
             synchronized (state) {
-                state.status = RunStatus.FAILED;
                 state.failureCode = "SPRING_UPGRADE_INTERNAL_FAILURE";
                 state.failureMessage = "The migration worker failed safely; inspect the redacted logs.";
                 appendEvent(state, state.stage, "FAILED", state.failureMessage);
@@ -388,7 +387,7 @@ final class SpringUpgradeRunService {
             }
         } finally {
             heartbeat.cancel(false);
-            String outcome = switch (state.status) {
+            String outcome = switch (terminalStatus) {
                 case SUCCEEDED -> "SUCCEEDED";
                 case CANCELLED -> "CANCELLED";
                 case BLOCKED -> "BLOCKED";
@@ -396,6 +395,10 @@ final class SpringUpgradeRunService {
             };
             try {
                 lease.release(outcome);
+                synchronized (state) {
+                    state.status = terminalStatus;
+                    touch(state);
+                }
             } catch (RuntimeException error) {
                 synchronized (state) {
                     state.status = RunStatus.BLOCKED;

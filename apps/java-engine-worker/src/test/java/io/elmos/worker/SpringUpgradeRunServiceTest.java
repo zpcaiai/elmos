@@ -155,6 +155,11 @@ class SpringUpgradeRunServiceTest {
         service = service(new SuccessfulTransformer(), new PassingVerifier());
         RunView completed = awaitTerminal(service.create("org-a", request).runId(), "org-a");
         Path artifact = service.artifact("org-a", completed.runId());
+        Path leaseReceipts = workspace.resolve(".durable-queue/receipts/spring-upgrade");
+        try (var receipts = Files.walk(leaseReceipts)) {
+            assertEquals(1, receipts.filter(Files::isRegularFile).count(),
+                    "a terminal run must not be observable before its lease receipt is durable");
+        }
         service.close();
 
         service = service(new SuccessfulTransformer(), new PassingVerifier());

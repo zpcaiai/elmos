@@ -17,6 +17,45 @@ SKILLS = (
 
 
 class ClosureSkillsAndGenerationTests(unittest.TestCase):
+    def test_ci_actions_are_digest_pinned_and_browser_evidence_is_retained(self) -> None:
+        rendered = (ROOT / ".github" / "workflows" / "ci.yml").read_text(
+            encoding="utf-8"
+        )
+        mutable_action = re.compile(
+            r"^\s*uses:\s+[^\s#]+@(?![0-9a-f]{40}(?:\s|$))", re.MULTILINE
+        )
+        all_workflows = "\n".join(
+            path.read_text(encoding="utf-8")
+            for path in sorted((ROOT / ".github" / "workflows").glob("*.yml"))
+        )
+        self.assertIsNone(mutable_action.search(all_workflows))
+        service_images = re.findall(r"^\s*image:\s+(\S+)", rendered, re.MULTILINE)
+        self.assertTrue(service_images)
+        self.assertTrue(
+            all(
+                re.fullmatch(r"[^@\s]+@sha256:[0-9a-f]{64}", image)
+                for image in service_images
+            )
+        )
+        self.assertEqual(
+            3,
+            rendered.count(
+                "actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a"
+            ),
+        )
+        self.assertEqual(
+            4,
+            all_workflows.count(
+                "actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a"
+            ),
+        )
+        for evidence_path in (
+            "apps/web-console/test-results/ci-playwright-report",
+            "apps/web-console/test-results/ci-generation-browser-matrix-report",
+            "apps/web-console/test-results/ci-runner-playwright-report",
+        ):
+            self.assertIn(evidence_path, rendered)
+
     def test_ci_covers_every_polyglot_engine_business_line(self) -> None:
         workflow = yaml.safe_load((ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8"))
         jobs = workflow["jobs"]
@@ -60,6 +99,7 @@ class ClosureSkillsAndGenerationTests(unittest.TestCase):
         self.assertIn("python scripts/run_acceptance.py --require-all-toolchains", synthesis_evidence_job)
         self.assertIn("python scripts/run_production_matrix.py", synthesis_evidence_job)
         self.assertIn("playwright install --with-deps chromium", rendered)
+        self.assertIn("pnpm --dir apps/web-console test:ordered-persistence", rendered)
         self.assertIn("--project=mobile-chromium", rendered)
         self.assertIn("e2e/generation-runner.spec.ts", rendered)
         self.assertIn("e2e/spring-real-journey-ui.spec.ts", rendered)

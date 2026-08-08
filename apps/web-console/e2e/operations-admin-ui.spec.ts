@@ -119,6 +119,10 @@ test("collector batches semantic actions without input values or URL queries", a
   });
 
   await page.goto("/?secret=must-not-be-logged");
+  await expect.poll(
+    () => captured.some((event) => event.eventName === "page_view"),
+    { timeout: 10_000 },
+  ).toBe(true);
   await page.getByRole("button", { name: "打开全局搜索" }).click();
   await page.evaluate(async () => {
     await fetch("/api/generation/jobs/1d39f590-6191-4ae9-8c79-f6273d2860ad?token=must-not-be-logged");
