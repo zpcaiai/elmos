@@ -63,7 +63,7 @@ test("跨语言整库范围只保存发现与拆分交接，不伪造执行结�
       file_count: 1,
       source_file_count: 1,
       source_bytes: 128,
-      language_counts: { java: 1, csharp: 0, python: 0, typescript: 0 },
+      language_counts: { java: 1, csharp: 0, go: 0, rust: 0, python: 0, typescript: 0 },
       ignored_symlink_count: 0,
       work_units: [{
         id: "WU-00001",
@@ -160,7 +160,7 @@ test("发现报告的接受判定发生在服务端，READY 判定必须带分�
     [{ execution_status: "PASSED" }, "DISCOVERY_EXECUTION_CLAIMED"],
     [{ certification_status: "CERTIFIED" }, "DISCOVERY_CERTIFICATION_CLAIMED"],
     [{ ready_count: 2 }, "DISCOVERY_READY_COUNT_DRIFT"],
-    [{ route_id: "java-to-rust" }, "DISCOVERY_ROUTE_UNKNOWN"],
+    [{ route_id: "java-to-java" }, "DISCOVERY_ROUTE_UNKNOWN"],
     [
       { results: [{ ...baseReport.results[0], analyzer: undefined }, baseReport.results[1]] },
       "DISCOVERY_READY_WITHOUT_ANALYZER",
@@ -201,7 +201,7 @@ test("整库清单的接受判定发生在服务端，被篡改的客户端请�
     file_count: 1,
     source_file_count: 1,
     source_bytes: 128,
-    language_counts: { java: 1, csharp: 0, python: 0, typescript: 0 },
+    language_counts: { java: 1, csharp: 0, go: 0, rust: 0, python: 0, typescript: 0 },
     ignored_symlink_count: 0,
     work_units: [{
       id: "WU-00001",
@@ -237,7 +237,7 @@ test("整库清单的接受判定发生在服务端，被篡改的客户端请�
   for (const [mutation, expectedCode] of [
     [{ execution_status: "PASSED" }, "PLAN_EXECUTION_CLAIMED"],
     [{ certification_status: "CERTIFIED" }, "PLAN_CERTIFICATION_CLAIMED"],
-    [{ route_id: "java-to-rust" }, "PLAN_ROUTE_UNKNOWN"],
+    [{ route_id: "java-to-java" }, "PLAN_ROUTE_UNKNOWN"],
     [{ source_file_count: 2 }, "PLAN_SOURCE_FILE_COUNT_INVALID"],
     [{ limitations: [] }, "PLAN_LIMITATIONS_INVALID"],
     [

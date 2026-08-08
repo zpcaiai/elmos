@@ -27,11 +27,15 @@ PASS: signed customer snapshot intake stores only metadata and content digests
 PASS: sealed Holdout rejects corpus reuse and actor-role overlap
 PASS: sealed Holdout requires byte-bound per-Claim execution plus independent executor/verifier signatures
 PASS: production Holdout requires exact Claim-to-Oracle/version mapping and independent Oracle owners
+PASS: v2 Actor Trust Store enforces organization-level production role separation
+PASS: production soak heartbeats bind raw telemetry receipts and support signed timeout termination
+PASS: production assessment requires a digest-pinned organization-independent external authority
 PASS: cutover/rollback state machine uses monotonic fencing and one-winner concurrent transitions
 PASS: Provider receipts bind exact API/account/region/Adapter/IaC tuple, least privilege, state and rollback evidence
 PASS: controlled-clock seven-day protocol remains engineering-only and cannot claim real elapsed production time
 PASS: production soak enforces seven real days, near-real-time telemetry, six-hour gaps, thresholds and verifier separation
 PASS: current SQLite records must match their latest hash-chain event and relational metadata
+PASS: readiness selects one exact evidence chain without allowing failed history to poison an independent complete chain
 PASS: production assessment binds exact run/cutover/release/account and remains certified=false
 PASS: PostgreSQL 16.10 to 17.5 pg_dump/pg_restore detail reconciliation and rollback restore
 PASS: checksum-bound idempotent target migration and duplicate/transaction negative tests
@@ -52,14 +56,15 @@ PASS: 41 runtime, transaction, concurrency, installation, closure, adapter and n
 - idempotency/approval/fencing-bound side-effect planning without hidden execution;
 - package-owned empty CA Trust Policy that cannot be replaced by the workspace Actor Trust Store and disables certification.
 - immutable 347-Claim Oracle registry and 38-handler domain-executor registry;
-- workspace-bound Actor Trust Store for Ed25519 Executor, Oracle Owner and Verifier authentication;
+- workspace-bound v2 Actor Trust Store for Ed25519 role, organization and authority-class authentication;
 - required development/negative/holdout/production corpus composition before a Claim is satisfied;
 - typed native domain-result validation with exact tool versions, argv digest, Claim assertions and raw evidence bytes.
 - disposable real-toolchain E2E for PostgreSQL migration, MinIO S3 operations, GitHub Provider reads,
   detail reconciliation, target expand-contract migration, rollback restore and cleanup evidence.
 - production-closure control plane for authorized customer snapshot metadata, independent Holdout,
-  exact Provider/account/operation and rollback receipts, real-time thresholded soak telemetry, and
-  run/release/account-bound conflict-separated external assessment import.
+  exact Provider/account/operation and rollback receipts, raw real-time thresholded soak telemetry,
+  signed heartbeat-timeout termination, and digest-pinned external-authority assessment import. Readiness reports the
+  exact selected evidence-chain identities while retaining failed historical attempts for audit.
 
 ## Evidence Boundary
 

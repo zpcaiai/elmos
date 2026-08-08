@@ -67,7 +67,14 @@ const identifierPattern = /^[a-z0-9][a-z0-9._-]{2,80}$/;
 const jobIdPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 const digestPattern = /^[0-9a-f]{64}$/;
 const immutableImagePattern = /^[^@\s]+@sha256:[0-9a-f]{64}$/;
-const languages = new Set<TranslationLanguageId>(["java", "csharp", "python", "typescript"]);
+const languages = new Set<TranslationLanguageId>([
+  "java",
+  "csharp",
+  "go",
+  "rust",
+  "python",
+  "typescript",
+]);
 const sensitivePattern = /(authorization|token|secret|password|cookie|api[-_]?key)\s*[:=]\s*\S+/gi;
 
 export type TranslationRunnerHealth = {

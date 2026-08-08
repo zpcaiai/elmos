@@ -18,36 +18,18 @@ SPEC.loader.exec_module(MODULE)
 
 
 class EmptyNeonBootstrapTests(unittest.TestCase):
-    def test_repository_migrations_are_contiguous_except_exact_reserved_versions(self) -> None:
+    def test_repository_migrations_are_strictly_contiguous(self) -> None:
         migrations = MODULE.discover_migrations()
 
         observed = [item.version for item in migrations]
-        expected = [
-            version
-            for version in range(1, observed[-1] + 1)
-            if version not in MODULE.RESERVED_MIGRATION_VERSIONS
-        ]
+        expected = list(range(1, observed[-1] + 1))
         self.assertEqual(expected, observed)
-        self.assertNotIn(52, observed)
-        self.assertTrue(MODULE.RESERVED_MIGRATION_VERSIONS[52].is_file())
-        # Floor kept from the other branch: V53/V54 must actually be picked
-        # up. A floor rather than an equality so adding a migration does not
-        # break this test.
-        self.assertGreaterEqual(observed[-1], 54)
+        self.assertIn(52, observed)
+        self.assertGreaterEqual(observed[-1], 64)
         self.assertEqual(-1305174584, migrations[0].checksum)
         self.assertEqual(410399635, migrations[1].checksum)
         self.assertEqual(1595351014, migrations[2].checksum)
-        # This compared the reserved V52 against migrations[51] back when V52
-        # still lived in the migration directory and occupied that index. It
-        # does not any more -- V52 was superseded by V57, which creates the
-        # same tables, so keeping both would fail a fresh bootstrap with
-        # "relation already exists". The guard's intent (the reserved source
-        # must not be edited silently) is kept by pinning its checksum
-        # directly, which no longer depends on a positional index.
-        self.assertEqual(
-            -594893506,
-            MODULE.flyway_checksum(MODULE.RESERVED_MIGRATION_VERSIONS[52]),
-        )
+        self.assertEqual(-594893506, migrations[51].checksum)
 
     def test_bootstrap_contract_requires_explicit_empty_database_confirmation(self) -> None:
         source = SCRIPT.read_text(encoding="utf-8")
@@ -55,10 +37,10 @@ class EmptyNeonBootstrapTests(unittest.TestCase):
         self.assertIn("ELMOS_COMMERCIAL_DATABASE_EMPTY_BOOTSTRAP_CONFIRMED", source)
         self.assertIn("TARGET_DATABASE_NOT_EMPTY", source)
         self.assertIn("FLYWAY_HISTORY_RECONCILIATION_FAILED", source)
-        self.assertIn("RESERVED_MIGRATION_VERSIONS", source)
+        self.assertNotIn("RESERVED_MIGRATION_VERSIONS", source)
         self.assertIn("--single-transaction", source)
 
-    def test_unreserved_gap_and_reserved_version_collision_fail_closed(self) -> None:
+    def test_gap_and_duplicate_version_fail_closed(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             directory = Path(temporary)
             (directory / "V1__first.sql").write_text("select 1;\n", encoding="utf-8")
@@ -73,7 +55,8 @@ class EmptyNeonBootstrapTests(unittest.TestCase):
                     f"select {version};\n",
                     encoding="utf-8",
                 )
-            with self.assertRaisesRegex(MODULE.BootstrapBlocked, "collisions=\\[52\\]"):
+            (directory / "V52__duplicate.sql").write_text("select 52;\n", encoding="utf-8")
+            with self.assertRaisesRegex(MODULE.BootstrapBlocked, "duplicates=\\[52\\]"):
                 MODULE.discover_migrations(directory)
 
     def test_history_literals_are_escaped_without_psql_command_substitution(self) -> None:

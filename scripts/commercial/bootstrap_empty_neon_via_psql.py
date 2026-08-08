@@ -24,12 +24,6 @@ MIGRATION_DIRECTORY = (
     ROOT / "modules" / "persistence" / "src" / "main" / "resources" / "db" / "migration"
 )
 MIGRATION_PATTERN = re.compile(r"^V(?P<version>[1-9][0-9]*)__([A-Za-z0-9_]+)\.sql$")
-# V52 is intentionally reserved by an approved, repository-visible design
-# artifact. A gap is accepted only when it is enumerated here and the named
-# source still exists; every other missing or colliding version fails closed.
-RESERVED_MIGRATION_VERSIONS = {
-    52: ROOT / "docs" / "p0-implementation" / "sql" / "V52__execution_job_queue_and_runner_fleet.sql",
-}
 
 
 class BootstrapBlocked(RuntimeError):
@@ -83,24 +77,12 @@ def discover_migrations(directory: Path = MIGRATION_DIRECTORY) -> tuple[Migratio
         raise BootstrapBlocked("MIGRATION_INVENTORY_EMPTY")
     expected = list(range(1, observed[-1] + 1))
     missing = sorted(set(expected) - set(observed))
-    reserved = sorted(RESERVED_MIGRATION_VERSIONS)
-    missing_reservations = [
-        version
-        for version in missing
-        if version not in RESERVED_MIGRATION_VERSIONS
-    ]
-    reservation_collisions = sorted(set(observed) & set(reserved))
-    unavailable_reservations = sorted(
-        version
-        for version, source in RESERVED_MIGRATION_VERSIONS.items()
-        if version in missing and (not source.is_file() or source.name.split("__", 1)[0] != f"V{version}")
-    )
-    if missing_reservations or reservation_collisions or unavailable_reservations:
+    duplicates = sorted(version for version in set(observed) if observed.count(version) > 1)
+    if observed != expected:
         raise BootstrapBlocked(
             "MIGRATION_VERSION_SEQUENCE_INVALID:"
             f"expected={expected}:observed={observed}:missing={missing}:"
-            f"reserved={reserved}:collisions={reservation_collisions}:"
-            f"unavailable={unavailable_reservations}"
+            f"duplicates={duplicates}"
         )
     return tuple(migrations)
 

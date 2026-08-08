@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-web-console-account-usage",
+  "current_usage": {"cache":"private-no-store", "poll_seconds":"server-bounded-minimum-2", "hidden_page":"abort-and-pause"},
+  "stale_data": {"retain_last_trusted_snapshot":true, "label_as_current":false, "retry_only_retryable_errors":true},
+  "identity": {"production":"http-only-cookie-session", "development_fallback":"explicit-local-runner-only", "unknown":"deny"},
+  "rollback": {"method":"disable-account-usage-route-and-preserve-read-only-billing-api", "data_migration_required":false}
+}

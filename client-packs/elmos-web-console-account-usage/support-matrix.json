@@ -3,28 +3,36 @@
   "pack_key": "elmos-web-console-account-usage",
   "capabilities": [
     {
-      "id": "live-quota-progress",
+      "id": "live-quota-and-reservation-progress",
       "domain": "state",
       "status": "experimental",
       "owner": "elmos-web-console",
-      "evidence_refs": ["apps/web-console/app/pricing/UsageDashboard.tsx"],
-      "reason": "Type checked locally; production browser journey is NOT_RUN."
+      "evidence_refs": ["apps/web-console/app/pricing/UsageDashboard.tsx", "apps/web-console/e2e/usage-meter-ui.spec.ts"],
+      "reason": "Local typed parsing, polling, reservation and stale-state journeys are executable; customer workloads remain NOT_RUN."
     },
     {
-      "id": "cookie-session-bff",
+      "id": "cookie-session-bff-and-local-development-auth",
       "domain": "security",
       "status": "experimental",
       "owner": "elmos-control-plane-security",
-      "evidence_refs": ["apps/web-console/app/lib/server/commercialBillingProxy.ts"],
-      "reason": "Bearer forwarding, HTTPS and cookie mutation origin checks are implemented; external IdP is NOT_RUN."
+      "evidence_refs": ["apps/web-console/app/lib/server/commercialBillingProxy.ts", "apps/web-console/e2e/usage-meter-ui.spec.ts"],
+      "reason": "Local negative and cross-tenant checks exist; external IdP and independent security review remain NOT_RUN."
     },
     {
-      "id": "history-alert-export",
-      "domain": "component",
+      "id": "history-alert-forecast-and-csv",
+      "domain": "journey",
       "status": "experimental",
       "owner": "elmos-web-console",
-      "evidence_refs": ["apps/web-console/app/api/usage"],
-      "reason": "Local contracts are implemented; independent accessibility and customer acceptance remain NOT_RUN."
+      "evidence_refs": ["apps/web-console/app/api/usage", "apps/web-console/e2e/pricing-ui.spec.ts"],
+      "reason": "The local browser contract is executable; production email delivery and customer acceptance remain NOT_RUN."
+    },
+    {
+      "id": "external-assistive-technology-matrix",
+      "domain": "accessibility",
+      "status": "blocked",
+      "owner": "elmos-accessibility-review",
+      "evidence_refs": [],
+      "reason": "Independent screen-reader, keyboard-only and high-contrast evidence has not been supplied."
     }
   ]
 }

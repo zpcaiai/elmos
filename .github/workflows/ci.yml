@@ -161,15 +161,22 @@ jobs:
 
   polyglot-routes:
     name: Directed language route contracts
-    runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    # Objective-C target execution requires the real Foundation framework.
+    # Linux clang can parse the bounded source subset, but cannot provide that
+    # runtime contract, so the complete 9-language matrix runs on macOS.
+    runs-on: macos-15
+    timeout-minutes: 60
     steps:
       - name: Check out repository
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
-      - name: Set up Python 3.12.12
+      - name: Set up bootstrap Python 3.12.10
         uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
         with:
-          python-version: "3.12.12"
+          # CPython stopped publishing the macOS installers consumed by
+          # setup-python after 3.12.10.  This interpreter only bootstraps uv;
+          # route execution uses uv's separately pinned CPython 3.12.12 below.
+          python-version: "3.12.10"
+          architecture: arm64
       - name: Set up Java 21.0.11
         uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
         with:
@@ -183,14 +190,29 @@ jobs:
         uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
           node-version: "26.0.0"
+      - name: Set up Go 1.25.0
+        uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # v5
+        with:
+          go-version: "1.25.0"
+      - name: Set up Rust 1.89.0
+        uses: dtolnay/rust-toolchain@451ce45ce31d200b52705aadd15ce75018b006de # 1.89.0
+        with:
+          toolchain: "1.89.0"
       - name: Install locked tools
         run: |
           python -m pip install --disable-pip-version-check uv==0.11.16
+          uv python install 3.12.12
           npm install --global pnpm@10.12.4
           pnpm --dir engines/frontend-client-engine install --frozen-lockfile
       - name: Verify compiler-backed route engine
         run: |
           export ELMOS_JAVA21_HOME="$JAVA_HOME"
+          # The hosted Xcode image is the native toolchain artifact for this
+          # engineering run. Bind its exact observed identities into every
+          # report; this remains local evidence and never upgrades a route to
+          # externally certified status.
+          export ELMOS_CLANG_VERSION="$(clang --version | head -n 1)"
+          export ELMOS_SWIFT_VERSION="$(swiftc --version | head -n 1)"
           uv --directory engines/polyglot-route-engine sync --locked
           uv --directory engines/polyglot-route-engine run --locked pytest
           uv --directory engines/polyglot-route-engine run --locked ruff check src tests
@@ -254,7 +276,13 @@ jobs:
           uv run --with 'jsonschema>=4.23' --with pyyaml python scripts/mature_product_toolkit.py validate --batch 45
           uv run --with 'jsonschema>=4.23' --with pyyaml python -m unittest discover -s tests/batch45 -p 'test_*.py'
       - name: Verify Batch 97-104 Skill distribution
-        run: make batch97-104-skills
+        run: |
+          if [[ -f elmos-codex-skills-batch97-104-complete/manifest.json ]]; then
+            make batch97-104-skills
+          else
+            python tooling/validate_batch97_104_installed.py
+            python -m unittest tests.test_batch97_104_installed
+          fi
       - name: Verify Product closure and convergence distributions
         run: make product-closure-convergence-skills
 
@@ -336,12 +364,23 @@ jobs:
           npm install --global pnpm@10.12.4
       - name: Install dependencies
         run: |
+          uv --directory engines/polyglot-route-engine sync --locked --no-dev
           pnpm --dir engines/frontend-client-engine install --frozen-lockfile
           pnpm --dir apps/web-console install --frozen-lockfile
       - name: Verify WeChat Native QR encoder
         run: pnpm --dir apps/web-console test:qr-code
       - name: Type-check and build
         run: pnpm --dir apps/web-console check
+      - name: Verify Batch 32 account usage pack
+        run: |
+          python scripts/batch32/validate_account_usage_corpora.py
+          python scripts/batch32/run_client_gate.py client-packs/elmos-web-console-account-usage
+      - name: Set up Node.js 26.0.0 for exact Translation execution
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: "26.0.0"
+      - name: Install locked pnpm tool for Translation execution
+        run: npm install --global pnpm@10.12.4
       - name: Install Chromium for browser journeys
         run: pnpm --dir apps/web-console exec playwright install --with-deps chromium
       - name: Verify desktop and mobile browser journeys
@@ -527,6 +566,12 @@ jobs:
           --health-retries 10
     env:
       DATABASE_URL: postgresql://postgres:elmos@localhost:5432/elmos_ci
+      PGPASSWORD: elmos
+      ELMOS_PAYMENT_VERIFY_DSN: -h 127.0.0.1 -p 5432 -U postgres
+      ELMOS_PAYMENT_VERIFY_DISPOSABLE_CONFIRMED: "true"
+      ELMOS_ACTIVATION_VERIFY_DSN: -h 127.0.0.1 -p 5432 -U postgres
+      ELMOS_ACTIVATION_VERIFY_DB: elmos_ci
+      ELMOS_ACTIVATION_VERIFY_DISPOSABLE_CONFIRMED: "true"
     steps:
       - uses: actions/checkout@v4
 
@@ -542,5 +587,5 @@ jobs:
       - name: 订阅激活存储函数
         run: bash tooling/payment-db-verify/verify_subscription_activation.sh
 
-      - name: 订单目录与租户隔离（V55）
+      - name: 订单目录与租户隔离（V62）
         run: bash tooling/payment-db-verify/verify_order_directory.sh

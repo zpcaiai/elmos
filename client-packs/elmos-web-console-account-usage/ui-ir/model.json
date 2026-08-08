@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-web-console-account-usage",
+  "source_snapshot_digest": "cb280a7fd05dccb8df1eef95d07944c0412c2c36e64b7087f499f88bb9cb5ffb",
+  "routes": [
+    {"id":"route.pricing","kind":"route","name":"套餐与用量","source_refs":["apps/web-console/app/pricing/page.tsx"],"references":["view.usage-dashboard"]},
+    {"id":"route.usage-api","kind":"route","name":"用量 BFF API","source_refs":["apps/web-console/app/api/usage"],"references":["resource.usage-api"]}
+  ],
+  "views": [
+    {"id":"view.usage-dashboard","kind":"view","name":"账户用量面板","source_refs":["apps/web-console/app/pricing/UsageDashboard.tsx"],"references":["component.usage-meter","component.usage-insights","state.usage-read","form.alert-preferences"]}
+  ],
+  "components": [
+    {"id":"component.usage-meter","kind":"component","name":"消耗、预留与剩余额度计量器","source_refs":["apps/web-console/app/pricing/UsageDashboard.tsx"],"references":["state.usage-read","a11y.progress-value"]},
+    {"id":"component.usage-insights","kind":"component","name":"历史、预测、告警与导出","source_refs":["apps/web-console/app/pricing/UsageDashboard.tsx"],"references":["state.usage-insights","action.export-csv"]}
+  ],
+  "states": [
+    {"id":"state.usage-read","kind":"remote-state-machine","name":"idle/loading/current/stale/error 用量状态","source_refs":["apps/web-console/app/pricing/UsageDashboard.tsx"],"references":["effect.refresh-current-usage"]},
+    {"id":"state.usage-insights","kind":"remote-state-machine","name":"历史与告警洞察状态","source_refs":["apps/web-console/app/pricing/UsageDashboard.tsx"],"references":["effect.load-insights"]}
+  ],
+  "actions": [
+    {"id":"action.connect-development","kind":"form-submit","name":"建立开发态受限身份","source_refs":["apps/web-console/app/pricing/UsageDashboard.tsx"],"references":["permission.development-auth","state.usage-read"]},
+    {"id":"action.save-alerts","kind":"network-action","name":"保存服务器校验的告警偏好","source_refs":["apps/web-console/app/pricing/UsageDashboard.tsx"],"references":["form.alert-preferences","resource.usage-api"]},
+    {"id":"action.export-csv","kind":"download-action","name":"导出当前身份范围的用量 CSV","source_refs":["apps/web-console/app/pricing/UsageDashboard.tsx"],"references":["permission.tenant-bound-usage","resource.usage-api"]}
+  ],
+  "effects": [
+    {"id":"effect.refresh-current-usage","kind":"network-effect","name":"可见页面轮询并保留最后可信快照","source_refs":["apps/web-console/app/pricing/UsageDashboard.tsx"],"references":["resource.usage-api","state.usage-read"]},
+    {"id":"effect.load-insights","kind":"network-effect","name":"并行加载 30 天历史与告警偏好","source_refs":["apps/web-console/app/pricing/UsageDashboard.tsx"],"references":["resource.usage-api","state.usage-insights"]}
+  ],
+  "forms": [
+    {"id":"form.development-credentials","kind":"form","name":"仅开发环境本地凭据","source_refs":["apps/web-console/app/pricing/UsageDashboard.tsx"],"references":["binding.development-credentials","permission.development-auth"]},
+    {"id":"form.alert-preferences","kind":"form","name":"用量阈值与通知渠道","source_refs":["apps/web-console/app/pricing/UsageDashboard.tsx"],"references":["binding.alert-preferences","action.save-alerts"]}
+  ],
+  "bindings": [
+    {"id":"binding.development-credentials","kind":"form-binding","name":"租户、执行者和短期令牌请求头","source_refs":["apps/web-console/app/pricing/UsageDashboard.tsx"],"references":["permission.development-auth"]},
+    {"id":"binding.alert-preferences","kind":"form-binding","name":"阈值基点与通知布尔值","source_refs":["apps/web-console/app/pricing/UsageDashboard.tsx"],"references":["resource.usage-api"]}
+  ],
+  "permissions": [
+    {"id":"permission.tenant-bound-usage","kind":"permission","name":"租户与执行者绑定的用量读取","source_refs":["apps/web-console/app/lib/server/commercialBillingProxy.ts","apps/web-console/app/lib/server/usageMeter.ts"],"references":[]},
+    {"id":"permission.development-auth","kind":"permission","name":"仅本地 Runner 可启用显式 Bearer","source_refs":["apps/web-console/app/lib/server/commercialBillingProxy.ts"],"references":[]}
+  ],
+  "resources": [
+    {"id":"resource.usage-api","kind":"api-resource","name":"当前、历史、告警和导出 BFF","source_refs":["apps/web-console/app/api/usage"],"references":["permission.tenant-bound-usage"]}
+  ],
+  "design_tokens": [
+    {"id":"token.usage-dashboard","kind":"design-token-set","name":"用量卡片、进度和状态样式","source_refs":["apps/web-console/app/pricing/UsageDashboard.module.css"],"references":[]}
+  ],
+  "accessibility": [
+    {"id":"a11y.progress-value","kind":"accessibility-contract","name":"进度条提供额度上下界、当前值与完整文字值","source_refs":["apps/web-console/app/pricing/UsageDashboard.tsx"],"references":["component.usage-meter"]},
+    {"id":"a11y.error-status","kind":"accessibility-contract","name":"错误、陈旧与硬停止状态不依赖颜色","source_refs":["apps/web-console/app/pricing/UsageDashboard.tsx"],"references":["state.usage-read"]}
+  ],
+  "source_map": [
+    {"node_id":"route.pricing","owner":"elmos-web-console"},
+    {"node_id":"route.usage-api","owner":"elmos-web-console-api"},
+    {"node_id":"view.usage-dashboard","owner":"elmos-web-console"},
+    {"node_id":"component.usage-meter","owner":"elmos-web-console"},
+    {"node_id":"component.usage-insights","owner":"elmos-web-console"},
+    {"node_id":"state.usage-read","owner":"elmos-web-console"},
+    {"node_id":"state.usage-insights","owner":"elmos-web-console"},
+    {"node_id":"action.connect-development","owner":"elmos-web-console"},
+    {"node_id":"action.save-alerts","owner":"elmos-web-console"},
+    {"node_id":"action.export-csv","owner":"elmos-web-console"},
+    {"node_id":"effect.refresh-current-usage","owner":"elmos-web-console"},
+    {"node_id":"effect.load-insights","owner":"elmos-web-console"},
+    {"node_id":"form.development-credentials","owner":"elmos-web-console"},
+    {"node_id":"form.alert-preferences","owner":"elmos-web-console"},
+    {"node_id":"binding.development-credentials","owner":"elmos-control-plane-security"},
+    {"node_id":"binding.alert-preferences","owner":"elmos-web-console-api"},
+    {"node_id":"permission.tenant-bound-usage","owner":"elmos-control-plane-security"},
+    {"node_id":"permission.development-auth","owner":"elmos-control-plane-security"},
+    {"node_id":"resource.usage-api","owner":"elmos-web-console-api"},
+    {"node_id":"token.usage-dashboard","owner":"elmos-product-design"},
+    {"node_id":"a11y.progress-value","owner":"elmos-accessibility-review"},
+    {"node_id":"a11y.error-status","owner":"elmos-accessibility-review"}
+  ],
+  "unknowns": [
+    {"id":"unknown.external-idp","severity":"critical","status":"NOT_RUN","detail":"Production OIDC session and revocation execution is not authorized or supplied."},
+    {"id":"unknown.customer-workload","severity":"critical","status":"NOT_RUN","detail":"No customer usage ledger or customer acceptance result is stored in this pack."},
+    {"id":"unknown.assistive-technology","severity":"critical","status":"NOT_RUN","detail":"Independent screen-reader and high-contrast execution remains outstanding."}
+  ]
+}

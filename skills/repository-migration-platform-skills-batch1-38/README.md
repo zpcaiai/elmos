@@ -1,6 +1,6 @@
 # Repository Migration Platform — Batch 1–38 Skills Bag
 
-版本：`3.5.0`
+版本：`3.6.0`
 
 本包包含 **38个Batch级Codex Skills + 1个Master Skill**，覆盖：
 
@@ -21,11 +21,12 @@ Source冻结与语义恢复
 - 共享运行时实现38个Batch Profile、Source指纹、真实仓库发现、90条路径清单、argv-only执行计划、内容寻址Typed Evidence、独立Verifier、依赖Gate和副作用账本。
 - 347个输出、测试和外部Claim全部绑定不可变专属Oracle；38个Batch分别绑定唯一Domain Executor handler，原始工具链证据必须通过字节数和SHA-256校验。
 - 38个handler均为可调用、互异的Batch领域策略；每个策略固定operation、capabilities和safety controls，并由全覆盖测试执行。跨Batch合同替换、能力证据缺失和安全断言缺失都会fail closed。
-- Executor、Oracle Owner、Verifier使用Ed25519认证并强制角色冲突隔离；development、negative、holdout与production Corpus按Claim分别闭合，Holdout/Production使用独立角色。
+- Executor、Oracle Owner、Verifier使用Ed25519认证并强制角色冲突隔离；v2 Actor Trust Store同时绑定组织和权威类别，生产数据所有者、转换作者、Holdout保管者、Executor、Oracle Owner、Verifier与批准者不能用同组织的多个别名伪造独立性。
 - 权威状态使用SQLite WAL、`BEGIN IMMEDIATE`、外键、唯一约束、整数Fencing Token和哈希链事件；JSON文件只是可重建镜像。
 - `trusted_adapters.py`只接受运维方Ed25519签名的Adapter Registry：可执行文件、SHA-256、版本、argv模板、参数类型、环境引用、超时、副作用等级与补偿操作均不可由仓库内容修改。变更操作要求独立Approver、幂等键和单调Fencing；超时造成的不确定副作用保持`UNKNOWN`并禁止自动重试。
-- `production_closure.py`实现客户快照只读摄取、内容摘要最小化、Claim专属Oracle Holdout、切换/回滚状态机、并发版本与Fencing、七天生产长稳下限、心跳间隔和独立认证报告导入。生产Provider Profile还必须绑定API/Adapter/IaC精确版本、账户模型、身份、最小权限、状态后端及回滚计划摘要；当前记录必须与哈希链末事件一致。受控测试时钟始终产生`engineering-only`证据且`real_seven_day_elapsed=false`，测试或Sandbox结果只能到`LOCAL_TOOLKIT_PASS`，导入报告也不能在仓库内开启认证。
-- 本地Gate最多返回`LOCAL_TOOLKIT_PASS`。随包Trust Policy不含信任密钥并禁用`CERTIFIED`；真实客户、生产、Provider、Kernel Proof、独立评审与CA证据保持`NOT_RUN`。
+- `production_closure.py`实现客户快照只读摄取、内容摘要最小化、Claim专属Oracle Holdout、切换/回滚状态机、并发版本与Fencing、七天生产长稳下限、原始遥测回执和独立认证报告导入。生产心跳绑定精确Provider账户、监控源及内容寻址原始回执；watchdog暴露下一截止时间，超时只能由独立Verifier签名并原子终止为`FAILED`。生产评估必须来自摘要固定、由内部治理组织批准且组织独立的外部认证Trust Store，工作区Actor Trust Store不能冒充外部CA。受控测试时钟始终产生`engineering-only`证据且`real_seven_day_elapsed=false`。
+- readiness按一条精确的Snapshot→Holdout→Result→Cutover→Soak→Assessment证据链判定并返回`selected_chain`；旧失败仍保留在哈希链和计数中，但不会错误污染另一条完整链。任何全局事件完整性错误仍然fail closed。
+- 本地Gate最多返回`LOCAL_TOOLKIT_PASS`。随包Trust Policy不含信任密钥并禁用`CERTIFIED`；真实客户、生产、Provider、Kernel Proof、独立Holdout、七天运行、独立评审与外部CA证据保持`NOT_RUN` / `NOT_CERTIFIED`。
 
 ## 安装
 
@@ -70,8 +71,9 @@ python3 scripts/real_toolchain_e2e.py \
 身份、最小权限、状态后端、回滚计划以及 precheck / execute / verify / rollback 操作。每次 Provider
 状态转换同时校验包装回执、原生 Adapter 回执和四类控制证据的真实字节；
 生产 soak 只能在切换成功后近实时启动，至少运行七天，心跳间隔不超过六小时，并执行最低可用性、
-最高错误率、最少观察数和独立最终验证者门禁。生产独立评估还必须绑定精确 run、cutover、release
-及 Provider 账户；导入后依旧保持 `certified=false`。
+最高错误率、最少观察数、原始监控回执和独立最终验证者门禁。`soak-status`暴露精确截止时间，
+`expire-soak`对漏报执行签名、组织独立且不可逆的失败终止。生产独立评估还必须绑定精确
+run、cutover、release、Provider账户和经摘要批准的外部认证信任根；导入后仍保持`certified=false`。
 
 Holdout 的 `SEALED` 只表示语料保管完成，不表示测试通过。生产Holdout必须使用与development不同的
 分区标识、不可变Oracle Registry摘要和完整Claim→Oracle/version映射；每个Claim由预声明且独立的

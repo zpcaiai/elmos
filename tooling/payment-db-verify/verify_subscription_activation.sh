@@ -82,7 +82,7 @@ row=$(q "SELECT status||'|'||plan_id||'|'||provider||'|'||price_minor||'|'||
                 to_char(current_period_end,'YYYY-MM-DD')
            FROM subscriptions WHERE subscription_id='$SUB';")
 [[ "$row" == "ACTIVE|$PLAN|ALIPAY_CHECKOUT|12900|2026-10-02" ]] \
-  && ok "订阅为 ACTIVE，套餐/通道/价格/期末均正确（$row）" \
+  && ok "订阅为 ACTIVE，套餐/通道/价格/期末均正确（${row}）" \
   || bad "订阅行不符：$row"
 
 alloc=$(q "SELECT status||'|'||token_limit||'|'||credit_limit
@@ -115,7 +115,7 @@ echo "3. 续费（同一订阅 ID，新期间）"
 out=$(activate "$SUB" "qa-renew-$$" "2026-10-02T00:00:00Z" "2026-11-02T00:00:00Z" "evt-renew-$$")
 matches "$out" "ERROR" && bad "续费报错: $(echo "$out"|grep ERROR|head -1)" || ok "续费执行无错误"
 newend=$(q "SELECT to_char(current_period_end,'YYYY-MM-DD') FROM subscriptions WHERE subscription_id='$SUB';")
-[[ "$newend" == "2026-11-02" ]] && ok "订阅期间被推后（$newend），而不是新建一条订阅" \
+[[ "$newend" == "2026-11-02" ]] && ok "订阅期间被推后（${newend}），而不是新建一条订阅" \
                                 || bad "续费后期末为 $newend"
 subs=$(q "SELECT count(*) FROM subscriptions WHERE organization_id='$ORG';")
 [[ "$subs" == "1" ]] && ok "组织下仍只有 1 条订阅" || bad "订阅变成 $subs 条"
@@ -183,7 +183,7 @@ SQL
 )
 matches "$out" "ORDER_NOT_CLOSEABLE" && ok "EXPIRED 订单关单失败并中止" || bad "EXPIRED 订单未中止"
 after=$(q "SELECT count(*) FROM subscriptions WHERE organization_id='$ORG';")
-[[ "$before" == "$after" ]] && ok "回滚后订阅数不变（$after），没有留下孤儿订阅" \
+[[ "$before" == "$after" ]] && ok "回滚后订阅数不变（${after}），没有留下孤儿订阅" \
                             || bad "订阅数从 $before 变成 $after"
 
 echo

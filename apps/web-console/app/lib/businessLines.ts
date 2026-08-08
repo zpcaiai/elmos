@@ -17,6 +17,8 @@ export const springModernizationStages: SpringModernizationStage[] = [
 export const translationLanguages: TranslationLanguage[] = [
   { id: "java", label: "Java", compiler: "Java 21.0.11 / JDK Tree API", runtime: "JVM 21.0.11", enginePath: "engines/polyglot-route-engine/native/java/Analyzer.java" },
   { id: "csharp", label: "C#", compiler: ".NET SDK 10.0.301 / Roslyn 5.6.0", runtime: ".NET 10", enginePath: "engines/dotnet-engine/src/Elmos.Dotnet.SemanticCli" },
+  { id: "go", label: "Go", compiler: "Go 1.25.0 / go/parser AST", runtime: "Go 1.25.0", enginePath: "engines/polyglot-route-engine/native/go/analyzer.go" },
+  { id: "rust", label: "Rust", compiler: "rustc 1.89.0 / syn AST 2.0.119", runtime: "Rust 1.89.0", enginePath: "engines/polyglot-route-engine/native/rust/src/main.rs" },
   { id: "python", label: "Python", compiler: "CPython AST 3.12.12", runtime: "CPython 3.12.12", enginePath: "engines/polyglot-route-engine/src/elmos_polyglot_route/python_analyzer.py" },
   { id: "typescript", label: "TypeScript", compiler: "TypeScript 5.9.2 Compiler API", runtime: "Node.js 26.0.0", enginePath: "engines/frontend-client-engine/src/polyglot.ts" },
 ];
@@ -24,6 +26,8 @@ export const translationLanguages: TranslationLanguage[] = [
 const sourceHazards: Record<TranslationLanguageId, string[]> = {
   java: ["泛型擦除、checked exception 与反射", "同步、线程与内存模型", "注解、序列化与类加载"],
   csharp: ["值类型、nullable 与 decimal", "LINQ、委托、事件与 async/await", "attribute、reflection 与 disposal"],
+  go: ["接口方法集、nil 与零值", "goroutine、channel 与内存模型", "defer、panic/recover 与构建标签"],
+  rust: ["所有权、借用与生命周期", "trait、泛型与模式匹配", "unsafe、并发与 panic 语义"],
   python: ["动态属性、MRO 与 duck typing", "truthiness、任意精度整数与生成器", "装饰器、元类、运行时导入与原生扩展"],
   typescript: ["结构类型、联合/交叉类型", "undefined/null 与 number 精度", "Promise 事件循环、原型与运行时类型守卫"],
 };
@@ -31,6 +35,8 @@ const sourceHazards: Record<TranslationLanguageId, string[]> = {
 const targetHazards: Record<TranslationLanguageId, string[]> = {
   java: ["目标必须使用名义类型且不退化为 Object", "对象图、异常、框架与并发不属于当前纯函数 profile"],
   csharp: ["目标必须显式表达 nullable/Task/decimal", "Task、事件、资源释放与框架不属于当前纯函数 profile"],
+  go: ["目标必须显式处理 nil、错误值与整数宽度", "goroutine、channel、defer 与 I/O 不属于当前纯函数 profile"],
+  rust: ["目标必须显式表达所有权、借用与溢出策略", "trait、unsafe、async 与 I/O 不属于当前纯函数 profile"],
   python: ["目标类型证据与运行时约束必须分开", "动态对象、装饰器、导入副作用不属于当前纯函数 profile"],
   typescript: ["目标必须区分 null、undefined 与缺失属性", "Promise、原型、I/O 与框架不属于当前纯函数 profile"],
 };

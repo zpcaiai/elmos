@@ -13,6 +13,8 @@ _EXTENSIONS: dict[str, Language] = {
     ".py": "python",
     ".cs": "csharp",
     ".ts": "typescript",
+    ".go": "go",
+    ".rs": "rust",
 }
 _IGNORED_DIRECTORIES = {
     ".git",

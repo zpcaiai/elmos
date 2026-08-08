@@ -20,6 +20,7 @@ final class OperationsBusinessLineRegistry {
         ROUTES.put("/api/v1/repository-snapshots", "REPOSITORY_WORKSPACE");
         ROUTES.put("/api/v1/github", "REPOSITORY_WORKSPACE");
         ROUTES.put("/api/webhooks/github", "REPOSITORY_WORKSPACE");
+        ROUTES.put("/api/v1/modernization-proof", "MIGRATION_GOVERNANCE");
         ROUTES.put("/api/v1/migration-pack-certification", "MIGRATION_GOVERNANCE");
         ROUTES.put("/api/v1/database-data", "DATABASE_DATA");
         ROUTES.put("/api/v1/frontend-client", "CLIENT_MODERNIZATION");

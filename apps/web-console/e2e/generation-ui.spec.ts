@@ -84,22 +84,78 @@ test.describe("多语言项目生成 UI", () => {
     await expect(page.getByRole("button", { name: "锁定生成计划" })).toBeVisible();
   });
 
-  test("错误凭证失败关闭且不能绕过需求审阅", async ({ page }) => {
-    let observedAuthorization = "";
-    await page.route("**/api/generation/analyze", async (route) => {
-      observedAuthorization = route.request().headers().authorization ?? "";
-      await route.fulfill({
-        status: 403,
-        contentType: "application/json",
-        body: JSON.stringify({ reason: "AUTHENTICATION_REQUIRED" }),
-      });
+  test("错误凭证失败关闭且不能绕过需求审阅", async ({ page, request }) => {
+    const [capabilityResponse, readinessResponse, blockedResponse] = await Promise.all([
+      request.get("/api/capabilities/generation"),
+      request.get("/api/health?probe=readiness"),
+      request.post("/api/generation/analyze", {
+        headers: {
+          "Authorization": "Bearer incorrect-browser-token-000000",
+          "X-ELMOS-Tenant": "local-dev",
+          "X-ELMOS-Actor": "user:reviewer",
+        },
+        data: {
+          name: "order-service",
+          namespace: "io.elmos.orders",
+          description: "提供订单创建、查询与状态管理的服务",
+          entity: "order",
+          targets: ["java", "python"],
+          persistence: "in-memory",
+          authMode: "none",
+        },
+      }),
+    ]);
+    expect(capabilityResponse.status()).toBe(200);
+    expect(readinessResponse.status()).toBe(200);
+    expect(blockedResponse.status()).toBe(401);
+    const capability = await capabilityResponse.json();
+    const readiness = await readinessResponse.json();
+    const blocked = await blockedResponse.json();
+    expect(capability.localRunner.enabled).toBe(true);
+    expect(readiness.localRunner.status).toBe("READY");
+    expect(blocked).toEqual({
+      status: "BLOCKED",
+      reason: "AUTHENTICATION_REQUIRED",
     });
+
+    await page.route("**/api/capabilities/generation", (route) =>
+      route.fulfill({ status: 200, json: capability }));
+    await page.route(/\/api\/health(?:\?.*)?$/, (route) =>
+      route.fulfill({ status: 200, json: readiness }));
+    await page.addInitScript((blockedPayload) => {
+      const originalFetch = window.fetch.bind(window);
+      window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
+        const requestUrl = new URL(
+          input instanceof Request ? input.url : String(input),
+          window.location.href,
+        );
+        if (requestUrl.pathname === "/api/generation/analyze") {
+          const headers = new Headers(
+            init?.headers ?? (input instanceof Request ? input.headers : undefined),
+          );
+          (window as Window & { __generationAuthorization?: string })
+            .__generationAuthorization = headers.get("authorization") ?? "";
+          return new Response(JSON.stringify(blockedPayload), {
+            status: 401,
+            headers: { "Content-Type": "application/json" },
+          });
+        }
+        return originalFetch(input, init);
+      };
+    }, blocked);
     await page.goto("/generation");
     await page.getByLabel("本地 Runner 令牌").fill("incorrect-browser-token-000000");
     await page.getByRole("button", { name: "锁定生成计划" }).click();
-    await page.getByRole("button", { name: "分析并整理需求" }).click();
+    const analyze = page.getByRole("button", { name: "分析并整理需求" });
+    await expect(analyze).toBeEnabled();
+    await analyze.focus();
+    await expect(analyze).toBeFocused();
+    await analyze.evaluate((button: HTMLButtonElement) => button.click());
+    await expect.poll(() => page.evaluate(() =>
+      (window as Window & { __generationAuthorization?: string })
+        .__generationAuthorization ?? "",
+    )).toBe("Bearer incorrect-browser-token-000000");
     await expect(page.getByText("需求分析被阻断：AUTHENTICATION_REQUIRED")).toBeVisible();
-    expect(observedAuthorization).toBe("Bearer incorrect-browser-token-000000");
     await expect(
       page.getByRole("checkbox", { name: /我已审阅结构化需求/ }),
     ).toBeDisabled();

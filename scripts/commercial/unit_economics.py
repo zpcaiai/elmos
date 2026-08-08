@@ -12,6 +12,7 @@
 用法：
     python3 unit_economics.py --inputs my-costs.json --catalog <定价目录>
     python3 unit_economics.py --template > my-costs.json     # 生成待填模板
+    python3 unit_economics.py --check                        # 自检失败关闭语义
 
 退出码：0 全部套餐贡献毛利为正；3 存在负毛利或输入不全；2 输入非法。
 """
@@ -94,6 +95,36 @@ def validate_inputs(raw: dict) -> tuple[dict, list[str]]:
         if not (Decimal(0) <= parsed[key] <= Decimal(1)):
             missing.append(f"{key} 必须在 0–1 之间，当前为 {parsed[key]}")
     return parsed, missing
+
+
+def check_fail_closed_contract() -> dict:
+    """验证空模板不会被误当成零成本的可计算输入。"""
+    parsed, missing = validate_inputs(TEMPLATE)
+    missing_keys = {
+        item.split("（", 1)[0]
+        for item in missing
+        if "（" in item
+    }
+    errors: list[str] = []
+    if parsed:
+        errors.append("空模板产生了已解析成本输入")
+    if missing_keys != set(REQUIRED_INPUTS):
+        errors.append(
+            "空模板未阻断全部必填成本字段："
+            f"expected={sorted(REQUIRED_INPUTS)} observed={sorted(missing_keys)}"
+        )
+    if len(missing) != len(REQUIRED_INPUTS):
+        errors.append(
+            f"空模板缺失项数量错误：expected={len(REQUIRED_INPUTS)} observed={len(missing)}"
+        )
+    return {
+        "decision": "CHECK_PASSED" if not errors else "CHECK_FAILED",
+        "costValidationStatus": "NOT_RUN",
+        "requiredInputCount": len(REQUIRED_INPUTS),
+        "blockedInputCount": len(missing),
+        "marginProduced": False,
+        "errors": errors,
+    }
 
 
 def token_cost_fen(tokens: Decimal, cfg: dict) -> Decimal:
@@ -180,17 +211,37 @@ def breakeven_utilization(plan: dict, cfg: dict) -> Decimal | None:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--inputs", type=Path, help="成本输入 JSON")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--inputs", type=Path, help="成本输入 JSON")
+    mode.add_argument("--template", action="store_true", help="输出待填模板后退出")
+    mode.add_argument(
+        "--check",
+        action="store_true",
+        help="自检空模板严格保持 NOT_RUN 且不产生毛利结果",
+    )
     parser.add_argument("--catalog", type=Path,
                         default=Path("contracts/pricing-catalog-schema/"
                                      "elmos-cny-self-serve-v1.json"))
-    parser.add_argument("--template", action="store_true", help="输出待填模板后退出")
     parser.add_argument("--json", action="store_true", help="机器可读输出")
     args = parser.parse_args(argv)
 
     if args.template:
         print(json.dumps(TEMPLATE, ensure_ascii=False, indent=2))
         return 0
+
+    if args.check:
+        payload = check_fail_closed_contract()
+        if args.json:
+            print(json.dumps(payload, ensure_ascii=False, indent=2))
+        else:
+            print(f"DECISION={payload['decision']}")
+            print(f"costValidationStatus={payload['costValidationStatus']}")
+            print(f"requiredInputCount={payload['requiredInputCount']}")
+            print(f"blockedInputCount={payload['blockedInputCount']}")
+            print("marginProduced=false")
+            for error in payload["errors"]:
+                print(f"  - {error}")
+        return 0 if payload["decision"] == "CHECK_PASSED" else 2
 
     if not args.inputs:
         parser.error("需要 --inputs，或用 --template 先生成模板")

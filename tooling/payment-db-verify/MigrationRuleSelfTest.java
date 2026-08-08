@@ -6,7 +6,6 @@ import java.util.stream.IntStream;
 
 /** 复刻打补丁后的断言逻辑，在合成目录上验证它挡得住什么、放得过什么。 */
 public final class MigrationRuleSelfTest {
-    private static final Set<Integer> PERMANENTLY_SKIPPED_MIGRATIONS = Set.of(52);
     private static int passed, failed;
 
     /** 返回 null 表示通过；否则返回失败原因。逻辑与测试方法逐行一致。 */
@@ -23,7 +22,6 @@ public final class MigrationRuleSelfTest {
         if (versions.size() != unique.size()) return "重复版本号";
         int highest = unique.stream().mapToInt(Integer::intValue).max().orElseThrow();
         Set<Integer> expected = IntStream.rangeClosed(1, highest).boxed()
-                .filter(v -> !PERMANENTLY_SKIPPED_MIGRATIONS.contains(v))
                 .collect(Collectors.toSet());
         if (!expected.equals(unique)) {
             Set<Integer> missing = new TreeSet<>(expected); missing.removeAll(unique);
@@ -41,17 +39,14 @@ public final class MigrationRuleSelfTest {
     }
 
     public static void main(String[] args) throws Exception {
-        int[] current = new int[53];
-        int i = 0;
-        for (int v = 1; v <= 51; v++) current[i++] = v;
-        current[i++] = 53; current[i++] = 54;                 // 无 52
+        int[] current = IntStream.rangeClosed(1, 64).toArray();
 
-        check("当前真实版本集（V1–V51, V53, V54，无 V52）应通过",
+        check("当前真实版本集（V1–V64，严格连续）应通过",
                 evaluate(scenario("cur", current)) == null);
 
-        int[] withoutV54 = Arrays.copyOf(current, 52);
-        check("去掉 V54 也通过（说明修复不是为了迁就 V54）",
-                evaluate(scenario("nov54", withoutV54)) == null);
+        int[] lowerContiguous = IntStream.rangeClosed(1, 54).toArray();
+        check("较低但连续的 V1–V54 也通过（上限自适应）",
+                evaluate(scenario("lower", lowerContiguous)) == null);
 
         int[] gap = Arrays.stream(current).filter(v -> v != 30).toArray();
         String r = evaluate(scenario("gap", gap));
@@ -60,15 +55,13 @@ public final class MigrationRuleSelfTest {
         String r2 = evaluate(scenario("dup", current, "V30__another.sql"));
         check("同一版本号出现两次 -> 失败: " + r2, "重复版本号".equals(r2));
 
-        int[] filled = Arrays.copyOf(current, current.length + 1);
-        filled[current.length] = 52;
-        String r3 = evaluate(scenario("filled", filled));
-        check("有人补上了已声明的空缺 V52 -> 失败（声明不是免死金牌）: " + r3,
-                r3 != null && r3.contains("52"));
+        int[] missingV52 = Arrays.stream(current).filter(v -> v != 52).toArray();
+        String r3 = evaluate(scenario("missing52", missingV52));
+        check("V52 被删除 -> 失败: " + r3, r3 != null && r3.contains("52"));
 
         int[] next = Arrays.copyOf(current, current.length + 1);
-        next[current.length] = 55;
-        check("正常新增 V55 -> 通过（不必再改测试）",
+        next[current.length] = 65;
+        check("正常新增 V65 -> 通过（不必再改测试）",
                 evaluate(scenario("next", next)) == null);
 
         int[] twoGaps = Arrays.stream(next).filter(v -> v != 40 && v != 41).toArray();

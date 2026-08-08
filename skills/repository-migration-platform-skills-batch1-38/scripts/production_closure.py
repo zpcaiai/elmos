@@ -21,6 +21,7 @@ from pathlib import Path
 from typing import Any
 
 from actor_trust import ActorTrustStore, canonical_digest, parse_time
+import external_authority
 
 
 MAX_MANIFEST_BYTES = 16 * 1024 * 1024
@@ -422,6 +423,36 @@ def provider_profile(value: Any, *, require_exact: bool = False) -> dict[str, st
     return result
 
 
+def production_actor_groups(trust: ActorTrustStore, groups: dict[str, list[str]]) -> dict[str, list[str]]:
+    """Resolve exact organizations and reject actor aliases masquerading as independence."""
+    if trust.schema_version != "2.0" or trust.purpose != "workspace-actors":
+        raise ClosureError("production evidence requires a version 2 workspace Actor Trust Store")
+    organizations: dict[str, list[str]] = {}
+    role_by_group = {
+        "data_owner": "data-owner", "transformation_authors": "transformation-author",
+        "custodian": "holdout-custodian", "executors": "holdout-executor",
+        "verifiers": "holdout-verifier", "oracle_owners": "oracle-owner",
+    }
+    for group, actor_ids in groups.items():
+        expected_role = role_by_group[group]
+        observed: set[str] = set()
+        for actor_id in actor_ids:
+            actor = trust.actors.get(actor_id)
+            if (actor is None or expected_role not in actor.roles or not actor.organization_id or
+                    not actor.authority_class):
+                raise ClosureError(f"production actor group {group} is not organization/role bound")
+            observed.add(actor.organization_id)
+        if not observed:
+            raise ClosureError(f"production actor group {group} is empty")
+        organizations[group] = sorted(observed)
+    items = list(organizations.items())
+    for left, (left_name, left_orgs) in enumerate(items):
+        for right_name, right_orgs in items[left + 1:]:
+            if set(left_orgs) & set(right_orgs):
+                raise ClosureError(f"production organizations overlap: {left_name}/{right_name}")
+    return organizations
+
+
 def provider_transition_receipt(value: Any, roots: tuple[Path, ...], cutover: dict[str, Any],
                                 target_state: str) -> dict[str, Any]:
     """Verify an exact provider/account/operation wrapper and its native receipt bytes."""
@@ -524,6 +555,8 @@ def register_snapshot(workspace: Path, manifest_path: Path, authorization: dict[
     actor = trust.verify(authorization, "data-owner", {"snapshot_id": snapshot_id, "tenant_id": tenant_id,
                          "manifest_sha256": manifest_sha, "environment_class": environment,
                          "purpose": manifest.get("purpose")})
+    if environment == "production":
+        production_actor_groups(trust, {"data_owner": [actor["actor_id"]]})
     record = {"schema_version": "1.0", "snapshot_id": snapshot_id, "tenant_id": tenant_id,
               "environment_class": environment, "classification": manifest["classification"],
               "purpose": manifest["purpose"], "manifest_sha256": manifest_sha, "file_count": len(files),
@@ -601,6 +634,13 @@ def register_holdout(workspace: Path, manifest_path: Path, authorization: dict[s
                          "development_partition_id": manifest["development_partition_id"],
                          "holdout_partition_id": manifest["holdout_partition_id"]})
     actor = trust.verify(authorization, "holdout-custodian", bindings)
+    organizations = None
+    if environment == "production":
+        organizations = production_actor_groups(trust, {
+            "transformation_authors": manifest["transformation_author_ids"],
+            "custodian": [actor["actor_id"]], "executors": manifest["executor_ids"],
+            "verifiers": manifest["verifier_ids"], "oracle_owners": manifest["oracle_owner_ids"],
+        })
     record = {"schema_version": version, "holdout_id": holdout_id, "tenant_id": tenant_id,
               "environment_class": environment, "manifest_sha256": manifest_sha, "corpus": corpus,
               "sealed": True, "custodian": actor, "transformation_author_ids": manifest["transformation_author_ids"],
@@ -608,7 +648,9 @@ def register_holdout(workspace: Path, manifest_path: Path, authorization: dict[s
               **({"oracle_owner_ids": manifest["oracle_owner_ids"], "oracle_registry_sha256": oracle_registry_sha,
                   "claim_oracle_map": claim_oracle_map, "claim_oracle_root": claim_oracle_root,
                   "development_partition_id": manifest["development_partition_id"],
-                  "holdout_partition_id": manifest["holdout_partition_id"]} if version == "2.0" else {})}
+                  "holdout_partition_id": manifest["holdout_partition_id"]} if version == "2.0" else {}),
+              **({"organization_bound": True, "independence_organizations": organizations,
+                  "actor_trust_store_sha256": trust.digest} if organizations is not None else {})}
     return ClosureStore(workspace).insert("holdouts", holdout_id,
         (holdout_id, tenant_id, corpus["sha256"]), record, "HOLDOUT_SEALED")
 
@@ -642,6 +684,9 @@ def record_holdout_result(workspace: Path, manifest_path: Path, executor_attesta
     normalized, claim_ids, outcomes, oracle_actor_ids = [], set(), [], set()
     expected_oracles = {item["claim_id"]: item for item in holdout.get("claim_oracle_map", [])}
     trust = ActorTrustStore.load(trust_path)
+    if holdout.get("environment_class") == "production" and (
+            trust.schema_version != "2.0" or trust.digest != holdout.get("actor_trust_store_sha256")):
+        raise ClosureError("production Holdout result must use the exact sealed organization Trust Store")
     for index, item in enumerate(claim_results):
         expected_fields = ({"claim_id", "outcome", "evidence", "oracle_id", "oracle_version", "oracle_attestation"}
                            if value["schema_version"] == "2.0" else {"claim_id", "outcome", "evidence"})
@@ -692,6 +737,14 @@ def record_holdout_result(workspace: Path, manifest_path: Path, executor_attesta
              set(holdout.get("oracle_owner_ids", []))) or
             oracle_actor_ids & {executor["actor_id"], verifier["actor_id"]}):
         raise ClosureError("holdout execution actors violate the sealed custody roles")
+    if holdout.get("environment_class") == "production":
+        expected_orgs = holdout.get("independence_organizations", {})
+        oracle_orgs = {trust.actors[item].organization_id for item in oracle_actor_ids}
+        if (executor.get("organization_id") not in expected_orgs.get("executors", []) or
+                verifier.get("organization_id") not in expected_orgs.get("verifiers", []) or
+                executor.get("organization_id") == verifier.get("organization_id") or
+                not oracle_orgs.issubset(set(expected_orgs.get("oracle_owners", [])))):
+            raise ClosureError("production Holdout result violates organization-level independence")
     record = {**value, "corpus_sha256": holdout["corpus"]["sha256"], "manifest_sha256": manifest_sha,
               "execution_receipt": execution_receipt, "claim_results": normalized,
               "evidence_root": evidence_root, "executor": executor, "verifier": verifier,
@@ -744,6 +797,15 @@ def plan_cutover(workspace: Path, plan_path: Path, approval: dict[str, Any], tru
     actor = trust.verify(approval, "production-approver", {"cutover_id": cutover_id, "tenant_id": tenant_id,
                          "plan_sha256": plan_sha, "snapshot_id": snapshot["snapshot_id"],
                          "target_key": plan["target_key"]})
+    if snapshot["environment_class"] == "production":
+        holdout = ClosureStore(workspace).row("holdouts", holdout_result["holdout_id"])
+        if (trust.schema_version != "2.0" or trust.digest != snapshot["authorization"].get("trust_store_sha256") or
+                trust.digest != holdout.get("actor_trust_store_sha256") or not actor.get("organization_id")):
+            raise ClosureError("production cutover approval must use the exact organization-bound Trust Store")
+        forbidden = set().union(*(holdout["independence_organizations"][name]
+                                  for name in ("transformation_authors", "executors", "verifiers", "oracle_owners")))
+        if actor["organization_id"] in forbidden:
+            raise ClosureError("production approver organization conflicts with Holdout execution or Oracle roles")
     record = {**plan, "provider": provider, "plan_sha256": plan_sha, "environment_class": snapshot["environment_class"],
               "state": "PLANNED", "fencing_token": 0,
               "approval": actor, "transitions": []}
@@ -777,6 +839,17 @@ def transition_cutover(workspace: Path, cutover_id: str, expected_state: str, ta
                          "fencing_token": fencing_token, "receipt_sha256": evidence["sha256"]})
     if target_state in {"SUCCEEDED", "ROLLED_BACK"} and actor["actor_id"] == current["approval"]["actor_id"]:
         raise ClosureError("cutover final verifier must be independent from approver")
+    if current.get("environment_class") == "production":
+        if (trust.schema_version != "2.0" or trust.digest != current["approval"].get("trust_store_sha256") or
+                not actor.get("organization_id")):
+            raise ClosureError("production transition must use the approved organization Trust Store")
+        if target_state in {"SUCCEEDED", "ROLLED_BACK"}:
+            conflicted_orgs = {current["approval"].get("organization_id")}
+            conflicted_orgs.update(item.get("actor", {}).get("organization_id")
+                                   for item in current.get("transitions", [])
+                                   if item.get("to") in {"PRECHECKED", "EXECUTING", "ROLLING_BACK", "UNKNOWN"})
+            if actor["organization_id"] in conflicted_orgs:
+                raise ClosureError("cutover final verifier organization conflicts with approval or execution")
     transition = {"from": expected_state, "to": target_state, "fencing_token": fencing_token,
                   "receipt": evidence, "actor": actor, "recorded_at": now_text()}
     record = {**current, "state": target_state, "fencing_token": fencing_token,
@@ -784,11 +857,56 @@ def transition_cutover(workspace: Path, cutover_id: str, expected_state: str, ta
     return store.transition_cutover(cutover_id, expected_state, target_state, fencing_token, record)
 
 
+def production_telemetry_profile(value: Any, cutover: dict[str, Any], max_gap_seconds: int) -> dict[str, Any]:
+    required = {"schema_version", "monitor_id", "provider_account_sha256", "metrics_source_sha256",
+                "collection_interval_seconds", "raw_evidence_required"}
+    provider = cutover.get("provider")
+    if (not isinstance(value, dict) or set(value) != required or value.get("schema_version") != "1.0" or
+            value.get("raw_evidence_required") is not True or not isinstance(provider, dict)):
+        raise ClosureError("production telemetry profile is invalid")
+    monitor_id = identifier(value.get("monitor_id"), "telemetry monitor_id")
+    account = require_digest(value.get("provider_account_sha256"), "telemetry provider_account_sha256")
+    source = require_digest(value.get("metrics_source_sha256"), "telemetry metrics_source_sha256")
+    interval = value.get("collection_interval_seconds")
+    if (account != provider.get("account_binding_sha256") or not isinstance(interval, int) or
+            isinstance(interval, bool) or interval <= 0 or interval > max_gap_seconds):
+        raise ClosureError("production telemetry profile differs from Provider account or gap policy")
+    return {"schema_version": "1.0", "monitor_id": monitor_id, "provider_account_sha256": account,
+            "metrics_source_sha256": source, "collection_interval_seconds": interval,
+            "raw_evidence_required": True}
+
+
+def telemetry_observation_receipt(value: Any, roots: tuple[Path, ...], current: dict[str, Any],
+                                  sequence: int, observed_at: str, metrics: dict[str, Any]) -> dict[str, Any]:
+    outer = artifact_ref(value, roots, "telemetry receipt")
+    path = confined(Path(value["path"]), roots, "telemetry receipt")
+    try:
+        payload = json.loads(read_regular(path, MAX_MANIFEST_BYTES, "telemetry receipt"))
+    except json.JSONDecodeError as exc:
+        raise ClosureError("telemetry receipt is invalid JSON") from exc
+    required = {"schema_version", "monitor_id", "run_id", "sequence", "observed_at",
+                "provider_account_sha256", "metrics_source_sha256", "source_event_id", "metrics"}
+    profile = current.get("telemetry_profile")
+    if (not isinstance(payload, dict) or set(payload) != required or payload.get("schema_version") != "1.0" or
+            not isinstance(profile, dict) or payload.get("monitor_id") != profile.get("monitor_id") or
+            payload.get("run_id") != current.get("run_id") or payload.get("sequence") != sequence or
+            payload.get("observed_at") != observed_at or
+            payload.get("provider_account_sha256") != profile.get("provider_account_sha256") or
+            payload.get("metrics_source_sha256") != profile.get("metrics_source_sha256") or
+            payload.get("metrics") != metrics):
+        raise ClosureError("telemetry receipt differs from the exact soak observation tuple")
+    source_event_id = identifier(payload.get("source_event_id"), "telemetry source_event_id")
+    return {**outer, "monitor_id": profile["monitor_id"], "source_event_id": source_event_id,
+            "provider_account_sha256": profile["provider_account_sha256"],
+            "metrics_source_sha256": profile["metrics_source_sha256"]}
+
+
 def start_soak(workspace: Path, cutover_id: str, run_id: str, environment_class: str,
                started_at: str, required_seconds: int, max_gap_seconds: int,
                minimum_availability: float = 0.0, maximum_error_rate: float = 1.0,
                minimum_observations: int = 1,
-               clock: SystemEvidenceClock | ControlledTestClock | None = None) -> dict[str, Any]:
+               clock: SystemEvidenceClock | ControlledTestClock | None = None,
+               telemetry_profile: dict[str, Any] | None = None) -> dict[str, Any]:
     selected_clock = evidence_clock(clock)
     cutover = ClosureStore(workspace).row("cutovers", cutover_id)
     if cutover["state"] != "SUCCEEDED":
@@ -829,6 +947,9 @@ def start_soak(workspace: Path, cutover_id: str, run_id: str, environment_class:
         if (holdout_result.get("schema_version") != "2.0" or holdout_result.get("independent") is not True or
                 holdout_result.get("oracle_bound") is not True):
             raise ClosureError("production soak requires independent Claim-specific Oracle Holdout evidence")
+        holdout = ClosureStore(workspace).row("holdouts", holdout_result["holdout_id"])
+        if holdout.get("organization_bound") is not True:
+            raise ClosureError("production soak requires organization-independent Holdout evidence")
         if (max_gap_seconds > PRODUCTION_MAX_GAP_SECONDS or
                 minimum_observations < required_observations or minimum_availability < 0.99 or
                 maximum_error_rate > 0.01):
@@ -838,6 +959,11 @@ def start_soak(workspace: Path, cutover_id: str, run_id: str, environment_class:
                 started < parse_time(last_transition.get("recorded_at"), "cutover succeeded_at") or
                 (selected_clock.now() - started).total_seconds() > PRODUCTION_OBSERVATION_SKEW_SECONDS):
             raise ClosureError("production soak must start after cutover and near real time")
+        normalized_telemetry = production_telemetry_profile(telemetry_profile, cutover, max_gap_seconds)
+    else:
+        if telemetry_profile is not None:
+            raise ClosureError("production telemetry profile cannot be attached to a non-production soak")
+        normalized_telemetry = None
     clock_mode = selected_clock.mode
     evidence_class = ("production-pending" if environment_class == "production" and clock_mode == "system"
                       else "engineering-only")
@@ -850,14 +976,19 @@ def start_soak(workspace: Path, cutover_id: str, run_id: str, environment_class:
               "total_requests": 0, "total_errors": 0, "minimum_observed_availability": 1.0,
               "observer_ids": [], "clock_mode": clock_mode, "evidence_class": evidence_class,
               "production_protocol_simulated": environment_class == "production" and clock_mode != "system",
-              "real_seven_day_elapsed": False}
+              "real_seven_day_elapsed": False,
+              **({"telemetry_profile": normalized_telemetry,
+                  "telemetry_profile_sha256": canonical_digest(normalized_telemetry)}
+                 if normalized_telemetry is not None else {})}
     return ClosureStore(workspace).insert("soak_runs", run_id,
         (run_id, cutover_id, environment_class, "RUNNING", 0, None), record, "SOAK_STARTED")
 
 
 def observe_soak(workspace: Path, run_id: str, sequence: int, observed_at: str,
-                 metrics: dict[str, Any], attestation: dict[str, Any], trust_path: Path,
-                 clock: SystemEvidenceClock | ControlledTestClock | None = None) -> dict[str, Any]:
+                  metrics: dict[str, Any], attestation: dict[str, Any], trust_path: Path,
+                  clock: SystemEvidenceClock | ControlledTestClock | None = None,
+                  telemetry_receipt: dict[str, Any] | None = None,
+                  roots: tuple[Path, ...] = ()) -> dict[str, Any]:
     selected_clock = evidence_clock(clock)
     store = ClosureStore(workspace)
     current = store.row("soak_runs", run_id)
@@ -881,11 +1012,28 @@ def observe_soak(workspace: Path, run_id: str, sequence: int, observed_at: str,
     if (current["environment_class"] == "production" and
             abs((now - observed).total_seconds()) > PRODUCTION_OBSERVATION_SKEW_SECONDS):
         raise ClosureError("production soak observations must be recorded near real time")
-    metrics_sha = canonical_digest(metrics)
+    receipt = None
+    if current["environment_class"] == "production":
+        if telemetry_receipt is None or not roots:
+            raise ClosureError("production soak observation requires a raw telemetry receipt")
+        receipt = telemetry_observation_receipt(telemetry_receipt, roots, current, sequence, observed_at, metrics)
+        metrics_sha = canonical_digest({"metrics": metrics, "telemetry_receipt_sha256": receipt["sha256"],
+                                        "telemetry_profile_sha256": current["telemetry_profile_sha256"]})
+    else:
+        if telemetry_receipt is not None:
+            raise ClosureError("non-production soak cannot import production telemetry evidence")
+        metrics_sha = canonical_digest(metrics)
     actor = ActorTrustStore.load(trust_path).verify(attestation, "operations-owner",
         {"run_id": run_id, "sequence": sequence, "observed_at": observed_at, "metrics_sha256": metrics_sha})
+    if current["environment_class"] == "production":
+        trust = ActorTrustStore.load(trust_path)
+        cutover = store.row("cutovers", current["cutover_id"])
+        if (trust.schema_version != "2.0" or trust.digest != cutover["approval"].get("trust_store_sha256") or
+                not actor.get("organization_id")):
+            raise ClosureError("production soak observation must use the approved organization Trust Store")
     observation = {"sequence": sequence, "observed_at": observed_at, "metrics": metrics,
-                   "metrics_sha256": metrics_sha, "actor": actor}
+                   "metrics_sha256": metrics_sha, "actor": actor,
+                   **({"telemetry_receipt": receipt} if receipt is not None else {})}
     observer_ids = list(current.get("observer_ids", []))
     if actor["actor_id"] not in observer_ids:
         observer_ids.append(actor["actor_id"])
@@ -913,7 +1061,78 @@ def soak_evidence_root(record: dict[str, Any]) -> str:
         "minimum_observations": record.get("minimum_observations", 1),
         "clock_mode": record.get("clock_mode", "system"),
         "production_protocol_simulated": record.get("production_protocol_simulated", False),
+        "telemetry_profile_sha256": record.get("telemetry_profile_sha256"),
         "observations": observations})
+
+
+def soak_status(workspace: Path, run_id: str,
+                clock: SystemEvidenceClock | ControlledTestClock | None = None) -> dict[str, Any]:
+    """Return a clock-bound watchdog view without mutating soak evidence."""
+    selected_clock = evidence_clock(clock)
+    current = ClosureStore(workspace).row("soak_runs", identifier(run_id, "run_id"))
+    if current.get("clock_mode", "system") != selected_clock.mode:
+        raise ClosureError("soak evidence clock mode cannot change during a run")
+    now = selected_clock.now()
+    started = parse_time(current["started_at"], "started_at")
+    heartbeat = parse_time(current.get("last_observed_at") or current["started_at"], "heartbeat base")
+    deadline = heartbeat + timedelta(seconds=current["max_gap_seconds"])
+    running = current.get("state") == "RUNNING"
+    return {
+        "schema_version": "1.0", "run_id": current["run_id"], "state": current["state"],
+        "clock_mode": selected_clock.mode,
+        "checked_at": now.isoformat().replace("+00:00", "Z"),
+        "next_sequence": current["last_sequence"] + 1 if running else None,
+        "heartbeat_deadline": deadline.isoformat().replace("+00:00", "Z"),
+        "heartbeat_overdue": bool(running and now > deadline),
+        "elapsed_seconds": max(0, int((now - started).total_seconds())),
+        "remaining_required_seconds": max(0, int(current["required_seconds"] - (now - started).total_seconds())),
+        "evidence_class": current.get("evidence_class", "engineering-only"),
+        "real_seven_day_elapsed": current.get("real_seven_day_elapsed", False),
+    }
+
+
+def expire_soak(workspace: Path, run_id: str, observed_at: str,
+                attestation: dict[str, Any], trust_path: Path,
+                clock: SystemEvidenceClock | ControlledTestClock | None = None) -> dict[str, Any]:
+    """Fail a running soak atomically after a missed heartbeat deadline."""
+    selected_clock = evidence_clock(clock)
+    store = ClosureStore(workspace)
+    current = store.row("soak_runs", identifier(run_id, "run_id"))
+    status = soak_status(workspace, run_id, selected_clock)
+    if current.get("state") != "RUNNING" or status["heartbeat_overdue"] is not True:
+        raise ClosureError("soak heartbeat is not overdue")
+    observed = parse_time(observed_at, "observed_at")
+    now = selected_clock.now()
+    deadline = parse_time(status["heartbeat_deadline"], "heartbeat_deadline")
+    if observed <= deadline or observed > now + timedelta(seconds=MAX_CLOCK_SKEW_SECONDS):
+        raise ClosureError("soak expiration time does not prove a missed heartbeat")
+    if (current["environment_class"] == "production" and
+            abs((now - observed).total_seconds()) > PRODUCTION_OBSERVATION_SKEW_SECONDS):
+        raise ClosureError("production soak expiration must be recorded near real time")
+    sequence = current["last_sequence"] + 1
+    evidence_root = soak_evidence_root(current)
+    payload = {"run_id": run_id, "sequence": sequence, "observed_at": observed_at,
+               "target_state": "FAILED", "evidence_root": evidence_root,
+               "heartbeat_deadline": status["heartbeat_deadline"], "reason": "HEARTBEAT_TIMEOUT"}
+    trust = ActorTrustStore.load(trust_path)
+    actor = trust.verify(attestation, "production-verifier", payload)
+    cutover = store.row("cutovers", current["cutover_id"])
+    if actor["actor_id"] in set(current.get("observer_ids", [])) | {cutover["approval"]["actor_id"]}:
+        raise ClosureError("soak timeout verifier must be independent from observers and cutover approver")
+    if current["environment_class"] == "production":
+        observer_orgs = {item.get("actor", {}).get("organization_id") for item in current["observations"]}
+        if (trust.schema_version != "2.0" or trust.digest != cutover["approval"].get("trust_store_sha256") or
+                not actor.get("organization_id") or
+                actor["organization_id"] in observer_orgs | {cutover["approval"].get("organization_id")}):
+            raise ClosureError("soak timeout verifier organization conflicts with observers or approver")
+    record = {**current, "state": "FAILED", "last_sequence": sequence, "last_observed_at": observed_at,
+              "duration_seconds": max(0, (observed - parse_time(current["started_at"], "started_at")).total_seconds()),
+              "evidence_root": evidence_root, "final_verifier": actor,
+              "terminal_reason": "HEARTBEAT_TIMEOUT", "heartbeat_deadline": status["heartbeat_deadline"],
+              "real_seven_day_elapsed": False,
+              "evidence_class": ("production" if current["environment_class"] == "production" and
+                                   selected_clock.mode == "system" else "engineering-only")}
+    return store.update_soak(run_id, sequence, observed_at, record, "FAILED")
 
 
 def finish_soak(workspace: Path, run_id: str, sequence: int, observed_at: str,
@@ -951,6 +1170,13 @@ def finish_soak(workspace: Path, run_id: str, sequence: int, observed_at: str,
     cutover = store.row("cutovers", current["cutover_id"])
     if actor["actor_id"] in set(current.get("observer_ids", [])) | {cutover["approval"]["actor_id"]}:
         raise ClosureError("final soak verifier must be independent from observers and cutover approver")
+    if current["environment_class"] == "production":
+        trust = ActorTrustStore.load(trust_path)
+        observer_orgs = {item.get("actor", {}).get("organization_id") for item in current["observations"]}
+        if (trust.schema_version != "2.0" or trust.digest != cutover["approval"].get("trust_store_sha256") or
+                not actor.get("organization_id") or
+                actor["organization_id"] in observer_orgs | {cutover["approval"].get("organization_id")}):
+            raise ClosureError("final soak verifier organization conflicts with observers or approver")
     record = {**current, "state": target, "last_sequence": sequence, "last_observed_at": observed_at,
               "duration_seconds": duration, "error_rate": error_rate, "evidence_root": evidence_root,
               "final_verifier": actor,
@@ -963,7 +1189,10 @@ def finish_soak(workspace: Path, run_id: str, sequence: int, observed_at: str,
 
 
 def import_assessment(workspace: Path, report_path: Path, attestation: dict[str, Any],
-                      trust_path: Path, roots: tuple[Path, ...]) -> dict[str, Any]:
+                      trust_path: Path, roots: tuple[Path, ...], *,
+                      authority_policy_path: Path | None = None,
+                      authority_approval: dict[str, Any] | None = None,
+                      internal_trust_path: Path | None = None) -> dict[str, Any]:
     report, report_sha = load_manifest(report_path, roots, "independent assessment")
     base = {"schema_version", "assessment_id", "tenant_id", "scope", "decision", "evidence_root",
             "limitations", "issued_at", "expires_at"}
@@ -987,7 +1216,7 @@ def import_assessment(workspace: Path, report_path: Path, attestation: dict[str,
     payload = attestation.get("payload") if isinstance(attestation, dict) else None
     actor_id = payload.get("actor_id") if isinstance(payload, dict) else None
     store = ClosureStore(workspace)
-    conflicts, eligible_soaks = [], {}
+    conflicts, conflict_organizations, eligible_soaks = [], [], {}
     connection = store.connect()
     try:
         for table, fields in (("snapshots", ("authorization",)), ("holdouts", ("custodian",)),
@@ -1002,19 +1231,26 @@ def import_assessment(workspace: Path, report_path: Path, attestation: dict[str,
                 for field in fields:
                     if isinstance(value.get(field), dict):
                         conflicts.append(value[field].get("actor_id"))
+                        conflict_organizations.append(value[field].get("organization_id"))
                 if table == "holdouts":
                     conflicts.extend(value.get("executor_ids", []))
                     conflicts.extend(value.get("verifier_ids", []))
                     conflicts.extend(value.get("oracle_owner_ids", []))
                 if table == "cutovers":
                     conflicts.extend(item.get("actor", {}).get("actor_id") for item in value.get("transitions", []))
+                    conflict_organizations.extend(item.get("actor", {}).get("organization_id")
+                                                  for item in value.get("transitions", []))
                 if table == "soak_runs":
                     conflicts.extend(value.get("observer_ids", []))
+                    conflict_organizations.extend(item.get("actor", {}).get("organization_id")
+                                                  for item in value.get("observations", []))
     finally:
         connection.close()
     matched_soak = eligible_soaks.get(report["evidence_root"])
     if matched_soak is None:
         raise ClosureError("assessment evidence_root is not a PASSED tenant soak run")
+    external_authority_record = None
+    assessment_trust = ActorTrustStore.load(trust_path)
     if matched_soak.get("environment_class") == "production":
         cutover = store.row("cutovers", matched_soak["cutover_id"])
         provider = cutover.get("provider")
@@ -1026,13 +1262,28 @@ def import_assessment(workspace: Path, report_path: Path, attestation: dict[str,
             raise ClosureError("production assessment is not bound to the exact run, release, and provider account")
         require_digest(report.get("target_release_sha256"), "target_release_sha256")
         require_digest(report.get("provider_account_sha256"), "provider_account_sha256")
+        if authority_policy_path is None or authority_approval is None or internal_trust_path is None:
+            raise ClosureError("production assessment requires a digest-pinned external certification authority")
+        try:
+            assessment_trust, external_authority_record = external_authority.authorize(
+                authority_policy_path, authority_approval, internal_trust_path, trust_path,
+                tenant_id, "independent-certification", roots)
+        except external_authority.ExternalAuthorityError as exc:
+            raise ClosureError(str(exc)) from exc
     if actor_id in conflicts:
         raise ClosureError("independent certifier conflicts with execution/approval roles")
-    actor = ActorTrustStore.load(trust_path).verify(attestation, "independent-certifier",
+    actor = assessment_trust.verify(attestation, "independent-certifier",
         {"assessment_id": assessment_id, "tenant_id": tenant_id, "report_sha256": report_sha,
          "evidence_root": report["evidence_root"], "decision": report["decision"]})
+    if (matched_soak.get("environment_class") == "production" and
+            (actor.get("authority_class") != "certification-body" or
+             actor.get("organization_id") in set(conflict_organizations))):
+        raise ClosureError("production certifier organization is not independent from execution")
     record = {**report, "report_sha256": report_sha, "certifier": actor,
               "local_effect": "EXTERNAL_EVIDENCE_IMPORTED", "certified": False,
+              "external_authority_authorized": external_authority_record is not None,
+              **({"external_authority": external_authority_record}
+                 if external_authority_record is not None else {}),
               "boundary": "An imported assessment cannot enable repository certification."}
     return store.insert("assessments", assessment_id,
         (assessment_id, tenant_id, report["evidence_root"]), record, "ASSESSMENT_IMPORTED")
@@ -1040,9 +1291,7 @@ def import_assessment(workspace: Path, report_path: Path, attestation: dict[str,
 
 def readiness(workspace: Path, tenant_id: str) -> dict[str, Any]:
     store = ClosureStore(workspace)
-    counts: dict[str, int] = {}
-    production = True
-    state_findings: list[str] = []
+    records: dict[str, list[dict[str, Any]]] = {}
     connection = store.connect()
     try:
         for table in ("snapshots", "holdouts", "holdout_results", "cutovers", "soak_runs", "assessments"):
@@ -1051,58 +1300,118 @@ def readiness(workspace: Path, tenant_id: str) -> dict[str, Any]:
                 "SELECT record_json FROM soak_runs", (tenant_id,) if table != "soak_runs" else ()).fetchall()]
             if table == "soak_runs":
                 rows = [row for row in rows if row.get("tenant_id") == tenant_id]
-            counts[table] = len(rows)
-            if table in {"snapshots", "holdouts"}:
-                production = production and bool(rows) and all(row.get("environment_class") == "production" for row in rows)
-            if table == "soak_runs":
-                production = production and bool(rows) and all(
-                    row.get("environment_class") == "production" and row.get("clock_mode") == "system" and
-                    row.get("real_seven_day_elapsed") is True and row.get("evidence_class") == "production"
-                    for row in rows)
-            if table == "cutovers" and any(row.get("state") != "SUCCEEDED" for row in rows):
-                state_findings.append("cutover has not reached SUCCEEDED")
-            if table == "holdout_results" and any(row.get("decision") != "PASS" for row in rows):
-                state_findings.append("independent Holdout result has not passed")
-            if table == "soak_runs" and any(row.get("state") != "PASSED" for row in rows):
-                state_findings.append("soak run has not reached PASSED")
-            if table == "assessments" and any(row.get("decision") == "INCONCLUSIVE" for row in rows):
-                state_findings.append("independent assessment is INCONCLUSIVE")
-            if table == "assessments" and any(parse_time(row.get("expires_at"), "assessment expires_at") <= utc_now() for row in rows):
-                state_findings.append("independent assessment has expired")
+            records[table] = rows
     finally:
         connection.close()
-    findings = [*store.verify_event_chain(), *state_findings]
-    if production:
-        connection = store.connect()
-        try:
-            assessment_rows = [json.loads(row[0]) for row in connection.execute(
-                "SELECT record_json FROM assessments WHERE tenant_id=?", (tenant_id,)).fetchall()]
-        finally:
-            connection.close()
-        connection = store.connect()
-        try:
-            soak_rows = [json.loads(row[0]) for row in connection.execute(
-                "SELECT record_json FROM soak_runs").fetchall()]
-        finally:
-            connection.close()
-        required_roots = {row.get("evidence_root") for row in soak_rows
-                          if row.get("tenant_id") == tenant_id and row.get("environment_class") == "production"
-                          and row.get("state") == "PASSED"}
-        positive_roots = {row.get("evidence_root") for row in assessment_rows
-                          if row.get("decision") == "CERTIFIED" and
-                          parse_time(row.get("expires_at"), "assessment expires_at") > utc_now()}
-        if not required_roots or not required_roots.issubset(positive_roots):
-            findings.append("production soak evidence lacks exact positive independent assessment coverage")
+
+    counts = {table: len(rows) for table, rows in records.items()}
+    integrity_findings = store.verify_event_chain()
     if not any(counts.values()):
         decision = "NOT_RUN"
-    elif findings or any(counts[name] == 0 for name in counts):
+        return {"schema_version": "1.0", "tenant_id": tenant_id, "decision": decision,
+                "certified": False, "counts": counts, "findings": integrity_findings,
+                "selected_chain": None, "evaluated_chains": 0, "ignored_historical_chains": 0,
+                "external_runtime_status": "NOT_RUN", "production_status": "NOT_CERTIFIED"}
+
+    snapshots = {row.get("snapshot_id"): row for row in records["snapshots"]}
+    holdouts = {row.get("holdout_id"): row for row in records["holdouts"]}
+    results = {row.get("result_id"): row for row in records["holdout_results"]}
+    cutovers = {row.get("cutover_id"): row for row in records["cutovers"]}
+
+    def evaluate(soak: dict[str, Any]) -> dict[str, Any]:
+        chain_findings: list[str] = []
+        cutover = cutovers.get(soak.get("cutover_id"))
+        if cutover is None or cutover.get("tenant_id") != tenant_id:
+            chain_findings.append("soak does not resolve to a same-tenant cutover")
+        elif cutover.get("state") != "SUCCEEDED":
+            chain_findings.append("cutover has not reached SUCCEEDED")
+
+        snapshot = snapshots.get(cutover.get("snapshot_id")) if cutover else None
+        if snapshot is None or snapshot.get("tenant_id") != tenant_id:
+            chain_findings.append("cutover does not resolve to a same-tenant snapshot")
+
+        result = results.get(cutover.get("holdout_result_id")) if cutover else None
+        if cutover and result is None and cutover.get("schema_version") == "1.0":
+            legacy = [row for row in records["holdout_results"]
+                      if row.get("target_release_sha256") == cutover.get("target_release_sha256")]
+            if len(legacy) == 1:
+                result = legacy[0]
+            else:
+                chain_findings.append("legacy cutover does not resolve exactly one Holdout result")
+        if result is None or result.get("tenant_id") != tenant_id:
+            chain_findings.append("cutover does not resolve to a same-tenant Holdout result")
+        elif result.get("decision") != "PASS" or result.get("independent") is not True:
+            chain_findings.append("independent Holdout result has not passed")
+
+        holdout = holdouts.get(result.get("holdout_id")) if result else None
+        if holdout is None or holdout.get("tenant_id") != tenant_id:
+            chain_findings.append("Holdout result does not resolve to a same-tenant sealed Holdout")
+
+        if soak.get("state") != "PASSED":
+            chain_findings.append("soak run has not reached PASSED")
+        evidence_root = soak.get("evidence_root")
+        matching_assessments = [row for row in records["assessments"]
+                                if row.get("evidence_root") == evidence_root]
+        valid_assessments = []
+        for assessment in matching_assessments:
+            try:
+                unexpired = parse_time(assessment.get("expires_at"), "assessment expires_at") > utc_now()
+            except ClosureError:
+                unexpired = False
+            if unexpired and assessment.get("decision") != "INCONCLUSIVE":
+                valid_assessments.append(assessment)
+        if not valid_assessments:
+            chain_findings.append("soak evidence lacks a current conclusive independent assessment")
+
+        production = bool(
+            snapshot and holdout and result and cutover and
+            snapshot.get("environment_class") == "production" and
+            holdout.get("environment_class") == "production" and
+            cutover.get("environment_class") == "production" and
+            soak.get("environment_class") == "production" and soak.get("clock_mode") == "system" and
+            soak.get("real_seven_day_elapsed") is True and soak.get("evidence_class") == "production")
+        if production:
+            provider = cutover.get("provider")
+            if (cutover.get("schema_version") != "2.0" or result.get("schema_version") != "2.0" or
+                    result.get("oracle_bound") is not True or not isinstance(provider, dict) or
+                    result.get("target_release_sha256") != cutover.get("target_release_sha256") or
+                    result.get("provider_account_sha256") != provider.get("account_binding_sha256")):
+                chain_findings.append("production chain lacks exact release, Provider, and Claim-Oracle bindings")
+            positive = [row for row in valid_assessments if row.get("decision") == "CERTIFIED" and
+                        row.get("external_authority_authorized") is True and
+                        row.get("schema_version") == "2.0" and row.get("run_id") == soak.get("run_id") and
+                        row.get("cutover_id") == cutover.get("cutover_id") and
+                        row.get("target_release_sha256") == cutover.get("target_release_sha256") and
+                        isinstance(provider, dict) and
+                        row.get("provider_account_sha256") == provider.get("account_binding_sha256")]
+            if not positive:
+                chain_findings.append("production soak evidence lacks exact positive independent assessment coverage")
+
+        return {"run_id": soak.get("run_id"), "production": production, "findings": chain_findings,
+                "chain": {"snapshot_id": snapshot.get("snapshot_id") if snapshot else None,
+                          "holdout_id": holdout.get("holdout_id") if holdout else None,
+                          "result_id": result.get("result_id") if result else None,
+                          "cutover_id": cutover.get("cutover_id") if cutover else None,
+                          "run_id": soak.get("run_id"),
+                          "assessment_ids": sorted(row["assessment_id"] for row in valid_assessments)}}
+
+    evaluations = [evaluate(soak) for soak in records["soak_runs"]]
+    eligible = [item for item in evaluations if not item["findings"]]
+    eligible.sort(key=lambda item: (item["production"], item["run_id"] or ""), reverse=True)
+    selected = eligible[0] if eligible else (min(evaluations, key=lambda item: len(item["findings"]))
+                                             if evaluations else None)
+    findings = [*integrity_findings, *(selected["findings"] if selected and not eligible else [])]
+    if not evaluations:
+        findings.append("tenant has no soak evidence chain")
+    if integrity_findings or not eligible:
         decision = "BLOCKED"
-    elif production:
-        decision = "READY_FOR_EXTERNAL_GATE"
     else:
-        decision = "LOCAL_TOOLKIT_PASS"
+        decision = "READY_FOR_EXTERNAL_GATE" if selected["production"] else "LOCAL_TOOLKIT_PASS"
     return {"schema_version": "1.0", "tenant_id": tenant_id, "decision": decision,
             "certified": False, "counts": counts, "findings": findings,
+            "selected_chain": selected["chain"] if selected else None,
+            "evaluated_chains": len(evaluations),
+            "ignored_historical_chains": max(0, len(evaluations) - (1 if selected else 0)),
             "external_runtime_status": "NOT_RUN" if decision != "READY_FOR_EXTERNAL_GATE" else "EVIDENCE_IMPORTED",
             "production_status": "NOT_CERTIFIED"}
 
@@ -1159,6 +1468,7 @@ def main() -> int:
     start.add_argument("--minimum-availability", type=float, default=0.0)
     start.add_argument("--maximum-error-rate", type=float, default=1.0)
     start.add_argument("--minimum-observations", type=int, default=1)
+    start.add_argument("--telemetry-profile", type=Path)
     observe = sub.add_parser("observe-soak")
     observe.add_argument("--workspace", type=Path, required=True)
     observe.add_argument("--run-id", required=True)
@@ -1167,6 +1477,8 @@ def main() -> int:
     observe.add_argument("--metrics", type=Path, required=True)
     observe.add_argument("--attestation", type=Path, required=True)
     observe.add_argument("--trust-store", type=Path, required=True)
+    observe.add_argument("--telemetry-receipt", type=Path)
+    observe.add_argument("--evidence-root", type=Path, action="append")
     finish = sub.add_parser("finish-soak")
     finish.add_argument("--workspace", type=Path, required=True)
     finish.add_argument("--run-id", required=True)
@@ -1174,9 +1486,21 @@ def main() -> int:
     finish.add_argument("--observed-at", required=True)
     finish.add_argument("--attestation", type=Path, required=True)
     finish.add_argument("--trust-store", type=Path, required=True)
+    watchdog = sub.add_parser("soak-status")
+    watchdog.add_argument("--workspace", type=Path, required=True)
+    watchdog.add_argument("--run-id", required=True)
+    expire = sub.add_parser("expire-soak")
+    expire.add_argument("--workspace", type=Path, required=True)
+    expire.add_argument("--run-id", required=True)
+    expire.add_argument("--observed-at", required=True)
+    expire.add_argument("--attestation", type=Path, required=True)
+    expire.add_argument("--trust-store", type=Path, required=True)
     assessment = evidence_command("import-assessment")
     assessment.add_argument("--report", type=Path, required=True)
     assessment.add_argument("--attestation", type=Path, required=True)
+    assessment.add_argument("--external-authority-policy", type=Path)
+    assessment.add_argument("--authority-approval", type=Path)
+    assessment.add_argument("--internal-trust-store", type=Path)
     status = sub.add_parser("readiness")
     status.add_argument("--workspace", type=Path, required=True)
     status.add_argument("--tenant-id", required=True)
@@ -1202,16 +1526,30 @@ def main() -> int:
     elif args.command == "start-soak":
         result = start_soak(args.workspace, args.cutover_id, args.run_id, args.environment_class,
                             args.started_at, args.required_seconds, args.max_gap_seconds,
-                            args.minimum_availability, args.maximum_error_rate, args.minimum_observations)
+                            args.minimum_availability, args.maximum_error_rate, args.minimum_observations,
+                            telemetry_profile=(json_file(args.telemetry_profile, "telemetry profile")
+                                               if args.telemetry_profile else None))
     elif args.command == "observe-soak":
+        observe_roots = tuple(path.expanduser().resolve(strict=True) for path in (args.evidence_root or []))
         result = observe_soak(args.workspace, args.run_id, args.sequence, args.observed_at,
-            json_file(args.metrics, "metrics"), json_file(args.attestation, "attestation"), args.trust_store)
+            json_file(args.metrics, "metrics"), json_file(args.attestation, "attestation"), args.trust_store,
+            telemetry_receipt=(json_file(args.telemetry_receipt, "telemetry receipt reference")
+                               if args.telemetry_receipt else None), roots=observe_roots)
     elif args.command == "finish-soak":
         result = finish_soak(args.workspace, args.run_id, args.sequence, args.observed_at,
                              json_file(args.attestation, "attestation"), args.trust_store)
+    elif args.command == "soak-status":
+        result = soak_status(args.workspace, args.run_id)
+    elif args.command == "expire-soak":
+        result = expire_soak(args.workspace, args.run_id, args.observed_at,
+                             json_file(args.attestation, "attestation"), args.trust_store)
     elif args.command == "import-assessment":
         result = import_assessment(args.workspace, args.report, json_file(args.attestation, "attestation"),
-                                   args.trust_store, roots)
+                                   args.trust_store, roots,
+                                   authority_policy_path=args.external_authority_policy,
+                                   authority_approval=(json_file(args.authority_approval, "authority approval")
+                                                       if args.authority_approval else None),
+                                   internal_trust_path=args.internal_trust_store)
     elif args.command == "readiness":
         result = readiness(args.workspace, args.tenant_id)
     else:

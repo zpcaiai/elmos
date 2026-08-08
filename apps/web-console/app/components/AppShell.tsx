@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
+import styles from "./AppShell.module.css";
 import { useAccountSession } from "./AccountSessionProvider";
 import { Icon, type IconName } from "./Icon";
 import { useUiPreferences } from "./UiPreferencesProvider";
@@ -35,7 +36,7 @@ const mobileNavigation = navigation.filter((item) =>
 const commands = [
   ...navigation.map((item) => ({ ...item, group: "页面", keywords: `${item.label} ${item.hint}` })),
   { href: "/spring", label: "评估 Spring 老项目", hint: "XML / Java 8 / Jakarta / Boot 3.5.3", icon: "workflow" as IconName, group: "业务线", keywords: "Spring 老项目 翻新 XML Java 8 Jakarta Security JPA" },
-  { href: "/translation", label: "选择跨语言方向路线", hint: "Java / C# / Python / TypeScript", icon: "code" as IconName, group: "业务线", keywords: "跨语言 转换 12 routes Java C# Python TypeScript" },
+  { href: "/translation", label: "选择跨语言方向路线", hint: "Java / C# / Go / Rust / Python / TypeScript", icon: "code" as IconName, group: "业务线", keywords: "跨语言 转换 30 routes Java C# Go Rust Python TypeScript" },
   { href: "/migration", label: "查看 M36 开发者工作流", hint: "IDE / CLI / PR Bot", icon: "spark" as IconName, group: "能力", keywords: "M36 开发者 IDE CLI PR Bot" },
   { href: "/migration", label: "查看 M37 扩展 Marketplace", hint: "SDK / Signing / Revocation", icon: "box" as IconName, group: "能力", keywords: "M37 Marketplace SDK 签名 撤销" },
   { href: "/proof-loop", label: "运行 B105–B108 证据闭环", hint: "Golden route / Preview / Live validation / Certificate", icon: "shield" as IconName, group: "业务线", keywords: "B105 B106 B107 B108 现代化 预览 验证 证书" },
@@ -214,14 +215,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <div><strong>Fail closed</strong><small>{english ? "Not run is not passed" : "未运行不等于通过"}</small></div>
         </div>
         <nav className="secondary-nav" aria-label={english ? "Utility navigation" : "辅助导航"}>
-          <a className="secondary-link" href="/api/capabilities/migration" target="_blank" rel="noreferrer"><Icon name="box" size={18} />{english ? "Capability API" : "能力 API"}</a>
-          <button className="secondary-link" type="button" onClick={toggleTelemetry} data-telemetry-ignore="true">
+          <a className={`secondary-link ${styles.readableSecondary}`} href="/api/capabilities/migration" target="_blank" rel="noreferrer"><Icon name="box" size={18} />{english ? "Capability API" : "能力 API"}</a>
+          <button className={`secondary-link ${styles.readableSecondary}`} type="button" onClick={toggleTelemetry} data-telemetry-ignore="true">
             <Icon name={telemetryEnabled ? "check" : "close"} size={18} />
             {english
               ? `Anonymous performance log: ${telemetryEnabled ? "on" : "off"}`
               : `匿名性能日志：${telemetryEnabled ? "开" : "关"}`}
           </button>
-          <Link className="secondary-link" href="/help"><Icon name="help" size={18} />{english ? "Help and readiness" : "帮助与就绪状态"}</Link>
+          <Link className={`secondary-link ${styles.readableSecondary}`} href="/help"><Icon name="help" size={18} />{english ? "Help and readiness" : "帮助与就绪状态"}</Link>
         </nav>
         <div className="profile-area">
           <button
