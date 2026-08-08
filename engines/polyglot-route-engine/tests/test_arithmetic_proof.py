@@ -10,6 +10,7 @@ this suite executes Go. The proof does not need a Go toolchain to notice.
 """
 from __future__ import annotations
 
+import importlib
 import sys
 from pathlib import Path
 
@@ -18,8 +19,7 @@ import pytest
 z3 = pytest.importorskip("z3", reason="z3-solver is required for the proof obligations")
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
-
-import prove_arithmetic_compensation as proof  # noqa: E402
+proof = importlib.import_module("prove_arithmetic_compensation")
 
 
 #: Obligations that discharge quickly. `go *` and the Python division pair

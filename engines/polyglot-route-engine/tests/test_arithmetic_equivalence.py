@@ -322,11 +322,13 @@ def _typescript_outcomes(source: str, name: str) -> list[Any]:
         "}",
         "console.log(JSON.stringify(results));",
     ]
+    node = shutil.which("node")
+    assert node is not None  # guarded by the test's skip marker
     with tempfile.TemporaryDirectory() as directory:
         path = Path(directory) / "unit.ts"
         path.write_text(source + "\n" + "\n".join(harness) + "\n", encoding="utf-8")
         completed = subprocess.run(  # noqa: S603 - fixed argv, temp file input
-            ["node", "--experimental-strip-types", "--no-warnings", str(path)],
+            [node, "--experimental-strip-types", "--no-warnings", str(path)],
             capture_output=True,
             text=True,
             timeout=60,

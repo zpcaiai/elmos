@@ -61,7 +61,7 @@ python3 scripts/product-convergence/validate_convergence_bundle.py product-conve
 python3 scripts/product-convergence/run_convergence_gate.py product-convergence
 ```
 
-## Stop and escalate when
+## Stop / escalate
 
 - Regex作为语义核心。
 - Agent Patch代替缺失Engine能力。

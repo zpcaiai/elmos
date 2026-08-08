@@ -59,7 +59,7 @@ python3 scripts/product-convergence/validate_convergence_bundle.py product-conve
 python3 scripts/product-convergence/run_convergence_gate.py product-convergence
 ```
 
-## Stop and escalate when
+## Stop / escalate
 
 - 平面搜索数百个Skill。
 - 同一请求触发多个互斥Orchestrator。

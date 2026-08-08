@@ -60,7 +60,7 @@ python3 scripts/product-convergence/validate_convergence_bundle.py product-conve
 python3 scripts/product-convergence/run_convergence_gate.py product-convergence
 ```
 
-## Stop and escalate when
+## Stop / escalate
 
 - 只有文档没有实操。
 - 迁移团队代替客户完成测试。

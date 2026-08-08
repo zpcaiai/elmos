@@ -47,8 +47,13 @@ class Batch46CompleteIntegrationTest(unittest.TestCase):
         self.assertEqual("NOT_RUN", report["external_evidence"])
 
     def test_source_batch_label_never_installs_as_global_b46(self) -> None:
-        self.assertEqual([], list((ROOT / ".agents" / "skills").glob("b46-*")))
         manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
+        colliding_source_aliases = [
+            record["source_name"]
+            for record in manifest["skills"]
+            if (ROOT / ".agents" / "skills" / record["source_name"]).is_dir()
+        ]
+        self.assertEqual([], colliding_source_aliases)
         self.assertEqual(
             "Project Synthesis PG001 start; never overwritten",
             manifest["namespace_policy"]["global_batch46"],

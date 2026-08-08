@@ -59,7 +59,7 @@ python3 scripts/product-convergence/validate_convergence_bundle.py product-conve
 python3 scripts/product-convergence/run_convergence_gate.py product-convergence
 ```
 
-## Stop and escalate when
+## Stop / escalate
 
 - 存在多套互相矛盾的客户主状态。
 - 状态可人工直接修改。

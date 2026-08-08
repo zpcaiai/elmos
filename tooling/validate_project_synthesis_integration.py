@@ -33,14 +33,169 @@ def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+REQUIRED_RUNTIME_FILES = [
+    ".agents/skills/elmos-project-synthesis/SKILL.md",
+    ".agents/skills/elmos-project-synthesis/agents/openai.yaml",
+    ".agents/skills/elmos-project-synthesis/scripts/synthesize.py",
+    "contracts/project-synthesis-schema/synthesis-request-v1.schema.json",
+    "engines/project-synthesis-engine/pyproject.toml",
+    "engines/project-synthesis-engine/uv.lock",
+    "engines/project-synthesis-engine/scripts/run_acceptance.py",
+]
+
+
+def check_runtime_files() -> None:
+    """Validate the tracked repository-side files, which no source package gates."""
+    for relative in REQUIRED_RUNTIME_FILES:
+        require((ROOT / relative).is_file(), f"required integration file is missing: {relative}")
+
+
+def fail_on_errors() -> None:
+    if errors:
+        print("\n".join(f"ERROR: {error}" for error in errors), file=sys.stderr)
+        raise SystemExit(1)
+
+
+def check_installed_project_synthesis() -> None:
+    """Validate the tracked runtime distribution when canonical imports are absent."""
+    check_runtime_files()
+
+    capability_map_path = ROOT / ".agents/skills/elmos-project-synthesis/references/capability-map.md"
+    capability_map = capability_map_path.read_text(encoding="utf-8") if capability_map_path.is_file() else ""
+    for marker in (
+        "46 / PG001–PG010",
+        "65 / PG213–PG222",
+        "66 / PG223–PG234",
+        "80 / PG406–PG417",
+        "81 / source PG223–PG234",
+        "95 / source PG391–PG402",
+    ):
+        require(marker in capability_map, f"installed capability map is missing exact range: {marker}")
+
+    for relative in (
+        "docs/project-synthesis-batch46-60-verification.md",
+        "docs/project-synthesis-batch46-65-verification.md",
+        "docs/project-synthesis-batch46-80-verification.md",
+        "docs/project-synthesis-batch46-95-verification.md",
+        "docs/project-synthesis/bundled-emitter-support.json",
+        "docs/project-synthesis/local-toolchain-acceptance.json",
+        "docs/project-synthesis/local-production-profile-matrix.json",
+    ):
+        require((ROOT / relative).is_file(), f"installed Project Synthesis evidence boundary is missing: {relative}")
+
+    polyglot: list[tuple[int, str, str, Path]] = []
+    for skill_path in sorted(RUNTIME_ROOT.glob("b*-*/SKILL.md")):
+        text = skill_path.read_text(encoding="utf-8")
+        batch_match = re.search(r"^\s*batch:\s*(\d+)\s*$", text, re.MULTILINE)
+        if not batch_match or not 66 <= int(batch_match.group(1)) <= 80:
+            continue
+        batch = int(batch_match.group(1))
+        id_match = re.search(r"^\s*id:\s*(PG\d{3})\s*$", text, re.MULTILINE)
+        name_match = re.search(r"^name:\s*([a-z0-9-]+)\s*$", text, re.MULTILINE)
+        require(id_match is not None, f"installed Batch {batch} Skill has no PG identity: {skill_path.parent.name}")
+        require(name_match is not None, f"installed Batch {batch} Skill has no name: {skill_path.parent.name}")
+        if not id_match or not name_match:
+            continue
+        name = name_match.group(1)
+        require(name == skill_path.parent.name, f"installed Runtime Skill path/name mismatch: {skill_path.parent.name}")
+        interface = skill_path.parent / "agents/openai.yaml"
+        require(interface.is_file(), f"installed Runtime Skill interface is missing: {name}")
+        if interface.is_file():
+            require(f"${name}" in interface.read_text(encoding="utf-8"), f"installed Runtime Skill interface is stale: {name}")
+        for heading in (
+            "## Objective",
+            "## Inputs",
+            "## Outputs",
+            "## Workflow",
+            "## Required Tests",
+            "## Verification",
+            "## Evidence Contract",
+            "## Definition of Done",
+        ):
+            require(heading in text, f"installed Runtime Skill is missing {heading}: {name}")
+        polyglot.append((batch, id_match.group(1), name, skill_path))
+
+    require(len(polyglot) == 195, f"expected 195 installed Batch 66-80 Skills, found {len(polyglot)}")
+    require(
+        [identifier for _, identifier, _, _ in sorted(polyglot, key=lambda row: int(row[1][2:]))]
+        == [f"PG{number:03d}" for number in range(223, 418)],
+        "installed Batch 66-80 PG identities must remain contiguous PG223-PG417",
+    )
+    require(
+        {batch for batch, _, _, _ in polyglot} == set(range(66, 81)),
+        "installed Batch 66-80 Batch coverage is incomplete",
+    )
+
+    require(LANGUAGE_INSTALL_MANIFEST.is_file(), "Batch 81-95 normalized install manifest is missing")
+    language_install = load_json(LANGUAGE_INSTALL_MANIFEST) if LANGUAGE_INSTALL_MANIFEST.is_file() else {}
+    language_entries = language_install.get("skills", [])
+    require(language_install.get("source_id_namespace") == "package-local-language-pack", "Batch 81-95 source namespace is invalid")
+    require(language_install.get("source_id_range") == ["PG223", "PG402"], "Batch 81-95 installed manifest relabels source IDs")
+    require(language_install.get("skill_count") == 180, "Batch 81-95 installed manifest must contain 180 Skills")
+    require(language_install.get("global_pg_collision", {}).get("detected") is True, "Batch 81-95 PG collision must remain explicit")
+    require(isinstance(language_entries, list) and len(language_entries) == 180, "Batch 81-95 normalized Skill inventory is invalid")
+    for entry in language_entries if isinstance(language_entries, list) else []:
+        name = entry.get("installed_name")
+        installed = ROOT / str(entry.get("installed_path"))
+        interface = ROOT / str(entry.get("interface_path"))
+        require(isinstance(name, str) and installed.is_file(), f"Batch 81-95 installed Skill is missing: {name}")
+        require(interface.is_file(), f"Batch 81-95 installed interface is missing: {name}")
+        if installed.is_file():
+            require(entry.get("installed_sha256") == "sha256:" + sha256(installed), f"Batch 81-95 installed Skill digest mismatch: {name}")
+            installed_text = installed.read_text(encoding="utf-8")
+            require(f'name: {name}' in installed_text, f"Batch 81-95 installed Skill name mismatch: {name}")
+            require(f'source_id: "{entry.get("source_id")}"' in installed_text, f"Batch 81-95 source identity is missing: {name}")
+        if interface.is_file():
+            require(entry.get("interface_sha256") == "sha256:" + sha256(interface), f"Batch 81-95 interface digest mismatch: {name}")
+            require(f"${name}" in interface.read_text(encoding="utf-8"), f"Batch 81-95 installed interface is stale: {name}")
+
+
 manifest_path = BASE_PACKAGE / "manifest.json"
 extension_manifest_path = EXTENSION_PACKAGE / "package-manifest.json"
 polyglot_manifest_path = POLYGLOT_PACKAGE / "manifest.json"
 language_manifest_path = LANGUAGE_PACKAGE / "package-manifest.json"
+
+# The four canonical import bundles are optional in a normal source checkout.
+# Their source-package byte integrity cannot be re-proved while absent, but the
+# installed B66-95 distribution, master Skill, engine contracts and evidence
+# boundaries remain independently verifiable. Pass --require-packages to demand
+# source-package integrity for release or bundle-publishing runs.
+REQUIRE_PACKAGES = "--require-packages" in sys.argv[1:]
+OPTIONAL_PACKAGES = [
+    ("Batch 46-60 Project Synthesis", BASE_PACKAGE, manifest_path),
+    ("Batch 61-65 Project Synthesis", EXTENSION_PACKAGE, extension_manifest_path),
+    ("Batch 66-80 Polyglot", POLYGLOT_PACKAGE, polyglot_manifest_path),
+    ("Batch 81-95 Language Pack", LANGUAGE_PACKAGE, language_manifest_path),
+]
+absent_packages = [entry for entry in OPTIONAL_PACKAGES if not entry[2].is_file()]
+
+if absent_packages and not REQUIRE_PACKAGES:
+    for label, package, path in absent_packages:
+        print(
+            f"SOURCE_PACKAGE_ABSENT={package.name} "
+            f"reason=missing:{path.relative_to(ROOT)} "
+            f"({label} bundle-integrity checks skipped)",
+            flush=True,
+        )
+    require(
+        len(absent_packages) == len(OPTIONAL_PACKAGES),
+        "partial canonical Project Synthesis package materialization is not allowed; provide all four or none",
+    )
+    check_installed_project_synthesis()
+    fail_on_errors()
+    print(
+        f"PROJECT_SYNTHESIS_INTEGRATION=PARTIAL absent_packages={len(absent_packages)}/4 "
+        "source_bundle_integrity=NOT_RUN installed_runtime=PASS "
+        "polyglot_skills=195 language_pack_skills=180 — "
+        "re-run with --require-packages once the canonical bundles are materialised"
+    )
+    raise SystemExit(0)
+
 require(manifest_path.is_file(), "canonical Batch 46-60 project-synthesis manifest is missing")
 require(extension_manifest_path.is_file(), "canonical Batch 61-65 project-synthesis manifest is missing")
 require(polyglot_manifest_path.is_file(), "canonical Batch 66-80 project-synthesis manifest is missing")
 require(language_manifest_path.is_file(), "canonical Batch 81-95 Language Pack manifest is missing")
+fail_on_errors()
 manifest = load_json(manifest_path) if manifest_path.is_file() else {}
 extension_manifest = load_json(extension_manifest_path) if extension_manifest_path.is_file() else {}
 polyglot_manifest = load_json(polyglot_manifest_path) if polyglot_manifest_path.is_file() else {}
@@ -324,21 +479,9 @@ for schema in schemas:
     except (OSError, json.JSONDecodeError) as exc:
         errors.append(f"invalid Project Synthesis schema {schema.relative_to(ROOT)}: {exc}")
 
-runtime_files = [
-    ROOT / ".agents/skills/elmos-project-synthesis/SKILL.md",
-    ROOT / ".agents/skills/elmos-project-synthesis/agents/openai.yaml",
-    ROOT / ".agents/skills/elmos-project-synthesis/scripts/synthesize.py",
-    ROOT / "contracts/project-synthesis-schema/synthesis-request-v1.schema.json",
-    ROOT / "engines/project-synthesis-engine/pyproject.toml",
-    ROOT / "engines/project-synthesis-engine/uv.lock",
-    ROOT / "engines/project-synthesis-engine/scripts/run_acceptance.py",
-]
-for path in runtime_files:
-    require(path.is_file(), f"required integration file is missing: {path.relative_to(ROOT)}")
+check_runtime_files()
 
-if errors:
-    print("\n".join(f"ERROR: {error}" for error in errors), file=sys.stderr)
-    raise SystemExit(1)
+fail_on_errors()
 print(
     f"OK: {len(skills)} global Project Synthesis skills + {len(language_skills)} "
     f"package-local Language Pack skills, {len(schemas) + 1} schemas, Batch 46-95 runtime integration"

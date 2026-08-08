@@ -444,11 +444,16 @@ def verify() -> None:
     expected = expected_manifest(registry, checksums, prerequisites)
     if load_json(INSTALL_MANIFEST) != expected:
         fail("complete convergence installed manifest is missing or stale")
-    if any(
-        path.is_dir()
-        for path in AGENT_SKILL_ROOT.glob("b46-*")
-    ):
-        fail("colliding b46-* source Skills must not be installed in .agents/skills")
+    colliding_source_aliases = sorted(
+        source_name
+        for source_name in ALIAS_BY_SOURCE_NAME
+        if (AGENT_SKILL_ROOT / source_name).is_dir()
+    )
+    if colliding_source_aliases:
+        fail(
+            "colliding Product Convergence source Skills must not be installed "
+            "in .agents/skills: " + ", ".join(colliding_source_aliases)
+        )
     print(
         json.dumps(
             {

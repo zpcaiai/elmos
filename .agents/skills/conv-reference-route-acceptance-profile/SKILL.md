@@ -60,7 +60,7 @@ python3 scripts/product-convergence/validate_convergence_bundle.py product-conve
 python3 scripts/product-convergence/run_convergence_gate.py product-convergence
 ```
 
-## Stop and escalate when
+## Stop / escalate
 
 - 路线范围不断变化。
 - 首条路线同时支持所有框架。
