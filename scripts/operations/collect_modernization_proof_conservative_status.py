@@ -156,6 +156,37 @@ def classify_check_rollup(checks: object) -> dict[str, Any]:
     }
 
 
+def classify_pr_check_domains(checks: object) -> dict[str, Any]:
+    """Separate GitHub Actions CI from provider/deployment status checks.
+
+    GitHub's ``statusCheckRollup`` combines Actions workflow checks with legacy
+    status contexts and third-party check runs.  Treating that combined list as
+    ``remote_ci`` makes a Vercel preview failure look like a failed CI workflow.
+    Keep both domains fail-closed, but report them without changing their
+    meaning.
+    """
+
+    raw_checks = (
+        [check for check in checks if isinstance(check, dict)]
+        if isinstance(checks, list)
+        else []
+    )
+    remote_ci_checks = [
+        check
+        for check in raw_checks
+        if check.get("__typename") == "CheckRun"
+        and isinstance(check.get("workflowName"), str)
+        and bool(check["workflowName"].strip())
+    ]
+    external_checks = [
+        check for check in raw_checks if check not in remote_ci_checks
+    ]
+    return {
+        "remote_ci": classify_check_rollup(remote_ci_checks),
+        "external_checks": classify_check_rollup(external_checks),
+    }
+
+
 def observe_pr(repository: str, number: int, expected_head: str) -> dict[str, Any]:
     document = json.loads(
         run(
@@ -186,7 +217,7 @@ def observe_pr(repository: str, number: int, expected_head: str) -> dict[str, An
         raise StatusCollectionFailure(
             "Draft PR observation does not match release subject"
         )
-    ci = classify_check_rollup(document.get("statusCheckRollup"))
+    check_domains = classify_pr_check_domains(document.get("statusCheckRollup"))
     observation = {
         "provider": "github",
         "repository": repository,
@@ -199,7 +230,7 @@ def observe_pr(repository: str, number: int, expected_head: str) -> dict[str, An
         "base_ref": "main",
         "author": (document.get("author") or {}).get("login"),
         "observed_at": datetime.now(timezone.utc).isoformat(),
-        "remote_ci": ci,
+        **check_domains,
     }
     observation["observation_sha256"] = sha256_bytes(canonical_json(observation))
     return observation
@@ -397,6 +428,14 @@ def collect_status(
         blockers.append("REMOTE_CI_IN_PROGRESS_OR_NON_SUCCESS")
     if ci["status"] != "PASSED":
         blockers.append("REMOTE_CI_NOT_PASSED")
+    external_checks = pr["external_checks"]
+    if external_checks["failure_count"]:
+        blockers.append("EXTERNAL_CHECK_FAILED")
+    if (
+        external_checks["pending_count"]
+        or external_checks["other_non_success_count"]
+    ):
+        blockers.append("EXTERNAL_CHECK_IN_PROGRESS_OR_NON_SUCCESS")
     v63 = evaluate_v63_integration(
         xml_report=xml_report,
         text_report=text_report,
@@ -409,7 +448,7 @@ def collect_status(
     blockers = sorted(set(blockers))
     return {
         **gate,
-        "schema_version": 2,
+        "schema_version": 3,
         "evaluated_at": datetime.now(timezone.utc).isoformat(),
         "decision": "BLOCKED" if blockers else gate["decision"],
         "blockers": blockers,

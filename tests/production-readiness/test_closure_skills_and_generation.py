@@ -17,6 +17,35 @@ SKILLS = (
 
 
 class ClosureSkillsAndGenerationTests(unittest.TestCase):
+    def test_ci_actions_are_digest_pinned_and_browser_evidence_is_retained(self) -> None:
+        rendered = (ROOT / ".github" / "workflows" / "ci.yml").read_text(
+            encoding="utf-8"
+        )
+        mutable_action = re.compile(
+            r"^\s*uses:\s+[^\s#]+@(?![0-9a-f]{40}(?:\s|$))", re.MULTILINE
+        )
+        self.assertIsNone(mutable_action.search(rendered))
+        service_images = re.findall(r"^\s*image:\s+(\S+)", rendered, re.MULTILINE)
+        self.assertTrue(service_images)
+        self.assertTrue(
+            all(
+                re.fullmatch(r"[^@\s]+@sha256:[0-9a-f]{64}", image)
+                for image in service_images
+            )
+        )
+        self.assertEqual(
+            3,
+            rendered.count(
+                "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
+            ),
+        )
+        for evidence_path in (
+            "apps/web-console/test-results/ci-playwright-report",
+            "apps/web-console/test-results/ci-generation-browser-matrix-report",
+            "apps/web-console/test-results/ci-runner-playwright-report",
+        ):
+            self.assertIn(evidence_path, rendered)
+
     def test_ci_covers_every_polyglot_engine_business_line(self) -> None:
         workflow = yaml.safe_load((ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8"))
         jobs = workflow["jobs"]

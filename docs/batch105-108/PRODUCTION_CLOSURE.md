@@ -115,9 +115,13 @@ python3 scripts/operations/collect_modernization_proof_conservative_status.py \
 The collector re-runs the gate instead of trusting the previous result. It
 records the primary and isolated worktrees separately, binds the V63 report to
 the migration, test source and exact PostgreSQL image digest, and observes the
-current PR checks. A CI result is `PASSED` only when the rollup is non-empty and
-every check succeeded. Failures and still-running checks are counted
-separately. V63 success is explicitly scoped to `LOCAL_ENGINEERING_INTEGRATION`
+current PR checks. GitHub Actions workflow checks are reported as `remote_ci`;
+legacy status contexts and third-party checks such as a Vercel preview are
+reported separately as `external_checks`. Either domain remains fail-closed,
+but a provider preview failure cannot be mislabeled as a failed CI workflow. A
+CI result is `PASSED` only when the workflow rollup is non-empty and every check
+succeeded. Failures and still-running checks are counted separately. V63
+success is explicitly scoped to `LOCAL_ENGINEERING_INTEGRATION`
 with `production_equivalent=false`, `promotes_external_boundary=false` and
 `certifies_release=false`.
 

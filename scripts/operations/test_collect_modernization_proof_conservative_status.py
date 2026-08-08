@@ -50,6 +50,29 @@ class ConservativeStatusTest(unittest.TestCase):
         self.assertEqual(1, result["other_non_success_count"])
         self.assertFalse(result["claimed_passed"])
 
+    def test_pr_check_domains_keep_provider_failure_out_of_remote_ci(self):
+        domains = subject.classify_pr_check_domains(
+            [
+                self.check(),
+                self.check(),
+                self.check("FAILURE", kind="StatusContext"),
+                {
+                    "__typename": "CheckRun",
+                    "name": "Vercel Preview Comments",
+                    "workflowName": "",
+                    "status": "COMPLETED",
+                    "conclusion": "SUCCESS",
+                    "detailsUrl": "https://example.test/vercel-comments",
+                },
+            ]
+        )
+
+        self.assertEqual("PASSED", domains["remote_ci"]["status"])
+        self.assertEqual(2, domains["remote_ci"]["success_count"])
+        self.assertEqual("FAILED", domains["external_checks"]["status"])
+        self.assertEqual(1, domains["external_checks"]["failure_count"])
+        self.assertEqual(1, domains["external_checks"]["success_count"])
+
     def test_v63_pass_is_local_only_and_digest_bound(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -171,7 +194,13 @@ class ConservativeStatusTest(unittest.TestCase):
                 "failure_count": 2,
                 "pending_count": 1,
                 "other_non_success_count": 0,
-            }
+            },
+            "external_checks": {
+                "status": "FAILED",
+                "failure_count": 1,
+                "pending_count": 0,
+                "other_non_success_count": 0,
+            },
         }
         v63_mock.return_value = {"status": "PASSED", "blockers": []}
         with tempfile.TemporaryDirectory() as directory:
@@ -218,6 +247,7 @@ class ConservativeStatusTest(unittest.TestCase):
         self.assertFalse(result["certified"])
         self.assertIn("REMOTE_CI_FAILED", result["blockers"])
         self.assertIn("REMOTE_CI_IN_PROGRESS_OR_NON_SUCCESS", result["blockers"])
+        self.assertIn("EXTERNAL_CHECK_FAILED", result["blockers"])
 
 
 if __name__ == "__main__":

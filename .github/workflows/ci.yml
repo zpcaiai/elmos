@@ -36,7 +36,7 @@ jobs:
     timeout-minutes: 30
     services:
       postgres:
-        image: postgres:17.5-alpine
+        image: postgres@sha256:6567bca8d7bc8c82c5922425a0baee57be8402df92bae5eacad5f01ae9544daa # 17.5-alpine
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -409,6 +409,16 @@ jobs:
           e2e/repository-workspace-ui.spec.ts
           e2e/runtime-deployment-guide.spec.ts
           e2e/usage-meter-ui.spec.ts
+      - name: Preserve browser journey evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: web-console-browser-evidence-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            apps/web-console/test-results/ci-playwright
+            apps/web-console/test-results/ci-playwright-report
+          if-no-files-found: error
+          retention-days: 30
 
   precision-migration-b01-44:
     name: Precision Migration trust and coverage
@@ -488,6 +498,16 @@ jobs:
               e2e/account-session-ui.spec.ts \
               e2e/generation-source-ingestion.spec.ts \
               e2e/generation-ui.spec.ts
+      - name: Preserve project generation browser evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: project-generation-browser-evidence-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            apps/web-console/test-results/ci-generation-browser-matrix
+            apps/web-console/test-results/ci-generation-browser-matrix-report
+          if-no-files-found: error
+          retention-days: 30
 
   web-console-runner-e2e:
     name: Isolated browser Runner journeys
@@ -531,6 +551,16 @@ jobs:
               e2e/generation-runner.spec.ts \
               e2e/precision-migration-jobs.spec.ts \
               e2e/spring-real-journey-ui.spec.ts
+      - name: Preserve isolated Runner browser evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: isolated-runner-browser-evidence-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            apps/web-console/test-results/ci-runner-playwright
+            apps/web-console/test-results/ci-runner-playwright-report
+          if-no-files-found: error
+          retention-days: 30
 
   commercial-gates:
     name: 商业化门禁（定价目录 / 单位经济 / 支付迁移）
@@ -538,9 +568,11 @@ jobs:
     # 这些门禁的作用是"没算清楚就不许发布"，因此必须与构建同权重，
     # 不能设 continue-on-error —— 那等于把门禁降级成一条提示。
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
 
-      - uses: actions/setup-python@v5
+      - name: Set up Python 3.11
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
         with:
           python-version: '3.11'
 
@@ -558,9 +590,9 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        # 仓库目标版本是 17.5。本地只验到 16.13，两者语义一致，
-        # 但"语义一致"是推断，这个 job 是证据。
-        image: postgres:17.5
+        # 与本地 V63/Testcontainers 证据使用同一 17.5-alpine 多架构摘要；
+        # CI 仍是一次独立的真实 PostgreSQL 引擎重放。
+        image: postgres@sha256:6567bca8d7bc8c82c5922425a0baee57be8402df92bae5eacad5f01ae9544daa # 17.5-alpine
         env:
           POSTGRES_PASSWORD: elmos
           POSTGRES_DB: elmos_ci
@@ -580,7 +612,8 @@ jobs:
       ELMOS_ACTIVATION_VERIFY_DB: elmos_ci
       ELMOS_ACTIVATION_VERIFY_DISPOSABLE_CONFIRMED: "true"
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
 
       - name: 应用全部迁移
         run: |
