@@ -578,9 +578,9 @@ jobs:
     # 这些门禁的作用是"没算清楚就不许发布"，因此必须与构建同权重，
     # 不能设 continue-on-error —— 那等于把门禁降级成一条提示。
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
         with:
           python-version: '3.11'
 
@@ -620,7 +620,7 @@ jobs:
       ELMOS_ACTIVATION_VERIFY_DB: elmos_ci
       ELMOS_ACTIVATION_VERIFY_DISPOSABLE_CONFIRMED: "true"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
 
       - name: 应用全部迁移
         run: |
