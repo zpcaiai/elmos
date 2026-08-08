@@ -84,7 +84,7 @@ test.describe("多语言项目生成 UI", () => {
     await expect(page.getByRole("button", { name: "锁定生成计划" })).toBeVisible();
   });
 
-  test("错误凭证失败关闭且不能绕过需求审阅", async ({ page, request }) => {
+  test("错误凭证失败关闭且不能绕过需求审阅", async ({ page, request }, testInfo) => {
     const [capabilityResponse, readinessResponse, blockedResponse] = await Promise.all([
       request.get("/api/capabilities/generation"),
       request.get("/api/health?probe=readiness"),
@@ -129,7 +129,11 @@ test.describe("多语言项目生成 UI", () => {
     await expect(analyze).toBeEnabled();
     await analyze.focus();
     await expect(analyze).toBeFocused();
-    await analyze.dispatchEvent("click");
+    if (testInfo.project.name.startsWith("mobile-")) {
+      await analyze.tap();
+    } else {
+      await analyze.click();
+    }
     await expect(page.getByText("需求分析被阻断：AUTHENTICATION_REQUIRED")).toBeVisible();
     await expect(
       page.getByRole("checkbox", { name: /我已审阅结构化需求/ }),
