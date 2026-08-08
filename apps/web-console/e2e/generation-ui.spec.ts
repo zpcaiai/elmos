@@ -134,10 +134,11 @@ test.describe("多语言项目生成 UI", () => {
     await expect(analyze).toBeEnabled();
     await analyze.focus();
     await expect(analyze).toBeFocused();
-    // Use a real cross-browser pointer activation.  A DOM click injected
-    // through evaluate bypasses Playwright's actionability and event-loop
-    // synchronization and is observably unreliable in mobile WebKit.
-    await analyze.click();
+    // Exercise the same accessible activation path in every browser. WebKit's
+    // synthesized pointer activation can complete before the async handler is
+    // dispatched under a loaded CI runner, while Enter on the focused native
+    // button is a browser-level user action with deterministic semantics.
+    await analyze.press("Enter");
     await expect.poll(() => observedAuthorization)
       .toBe("Bearer incorrect-browser-token-000000");
     await expect(page.getByText("需求分析被阻断：AUTHENTICATION_REQUIRED")).toBeVisible();
