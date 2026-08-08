@@ -185,6 +185,10 @@ uv run elmos-project-synthesis verify \
 
 Verification invokes only the selected native toolchains. A missing toolchain,
 failed build, failed test, or failed startup probe returns a non-success result.
+Each build or analysis command has a bounded 600-second default timeout. A
+controlled runner may set `ELMOS_PROJECT_SYNTHESIS_COMMAND_TIMEOUT_SECONDS` to
+an integer from 30 through 900; timeout remains `FAILED` and never becomes a
+successful or skipped result.
 The optional runtime plan is also bound to the same exact toolchain selection;
 it omits a target instead of falling back to a different version:
 

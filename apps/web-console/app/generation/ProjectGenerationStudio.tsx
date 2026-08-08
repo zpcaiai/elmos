@@ -114,7 +114,7 @@ function shellQuote(value: string) {
 function runnerReasonMessage(reason?: string) {
   if (!reason) return "";
   if (reason.includes("ROOTLESS_CONTAINER_ENGINE_REQUIRED")) {
-    return "当前容器引擎不是 rootless；生产一键运行保持关闭，请配置 rootless Podman/Docker。";
+    return "当前容器引擎不是 rootless；生产一键本地部署运行保持关闭，请配置 rootless Podman/Docker。";
   }
   if (reason.includes("TOOLCHAIN_IMAGES_NOT_AVAILABLE_OFFLINE")) {
     return "精确工具链镜像尚未缓存，且构建网络为 none；请预加载 digest 镜像或审批受限构建网络。";
@@ -699,7 +699,7 @@ export function ProjectGenerationStudio() {
         },
       );
       setJob(next);
-      announce(action === "cancel" ? "任务已请求取消。" : action === "run" ? "运行进程已启动，正在等待健康探针。" : "运行进程已停止。");
+      announce(action === "cancel" ? "任务已请求取消。" : action === "run" ? "本地部署进程已启动，正在等待健康探针。" : "本地部署进程已停止。");
     } catch (error) {
       announce(`操作被阻断：${error instanceof Error ? error.message : "UNKNOWN_ERROR"}`);
     } finally {
@@ -1108,7 +1108,7 @@ export function ProjectGenerationStudio() {
 
           <section className="generation-runner" aria-labelledby="generation-runner-title">
             <div className="generation-section-heading compact">
-              <div><span className="overline">GOVERNED LOCAL RUNNER</span><h3 id="generation-runner-title">执行、验证与一键运行</h3></div>
+              <div><span className="overline">GOVERNED LOCAL RUNNER</span><h3 id="generation-runner-title">执行、验证与一键本地部署运行</h3></div>
               <StatusChip status={job?.status ?? (runnerReady ? "READY" : runnerReadiness?.status === "BLOCKED" ? "BLOCKED" : "NOT_CONFIGURED")} compact />
             </div>
             <div className="generation-job-recovery">
@@ -1158,7 +1158,7 @@ export function ProjectGenerationStudio() {
                 )}
                 <div className="generation-runtime-controls">
                   <label><span>运行目标</span><select value={runtimeLanguage} onChange={(event) => setRuntimeLanguage(event.target.value as GenerationTargetId)} disabled={["STARTING", "RUNNING"].includes(job.runtime.status)}>{job.runtime.plans.map((plan) => <option key={plan.language} value={plan.language}>{plan.language} · :{plan.port}</option>)}</select></label>
-                  <button className="button button-secondary" type="button" disabled={runnerBusy || job.runtime.plans.length === 0 || ["STARTING", "RUNNING"].includes(job.runtime.status)} onClick={() => void postJobAction("run")}><Icon name="play" size={15} />一键运行</button>
+                  <button className="button button-secondary" type="button" disabled={runnerBusy || job.runtime.plans.length === 0 || ["STARTING", "RUNNING"].includes(job.runtime.status)} onClick={() => void postJobAction("run")}><Icon name="play" size={15} />一键本地部署运行</button>
                   <button className="button button-secondary" type="button" disabled={runnerBusy || !["STARTING", "RUNNING"].includes(job.runtime.status)} onClick={() => void postJobAction("stop")}><Icon name="close" size={15} />停止</button>
                   <button className="button button-primary" type="button" disabled={!job.artifactReady} onClick={() => void downloadArtifact()}><Icon name="file" size={15} />下载归档</button>
                 </div>

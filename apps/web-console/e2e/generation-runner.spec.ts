@@ -7,8 +7,9 @@ const runnerHeaders = {
   "X-ELMOS-Tenant": "local-e2e",
   "X-ELMOS-Actor": "user:e2e",
 };
+const runnerPipelineOutcomeTimeoutMs = 21 * 60_000;
 
-test.describe.configure({ mode: "serial" });
+test.describe.configure({ mode: "serial", timeout: 25 * 60_000 });
 
 test("在线 HTML 读取拒绝回环与私网目标", async ({ request }, testInfo) => {
   test.skip(testInfo.project.name !== "chromium", "SSRF 负例只执行一次");
@@ -135,11 +136,10 @@ test("服务端在消费审阅摘要前阻断单实体目标的多实体生产�
   });
 });
 
-test("需求分析、生成验证、文件树、归档与健康确认的一键运行闭环", async ({
+test("需求分析、生成验证、文件树、归档与健康确认的一键本地部署运行闭环", async ({
   page,
 }, testInfo) => {
   test.skip(testInfo.project.name !== "chromium", "有副作用的代表旅程只执行一次");
-  test.setTimeout(360_000);
 
   await page.goto("/generation");
   await page.getByLabel("审批者标识").fill("user:e2e");
@@ -158,7 +158,9 @@ test("需求分析、生成验证、文件树、归档与健康确认的一键�
   const javaTarget = page.locator("label.target-card").filter({ hasText: "Java 21" })
     .locator('input[type="checkbox"]');
   await expect(javaTarget).toBeChecked();
-  await javaTarget.uncheck();
+  await javaTarget.focus();
+  await javaTarget.press("Space");
+  await expect(javaTarget).not.toBeChecked();
 
   await page.getByRole("button", { name: "锁定生成计划" }).click();
   await page.getByRole("button", { name: "分析并整理需求" }).click();
@@ -172,11 +174,24 @@ test("需求分析、生成验证、文件树、归档与健康确认的一键�
   await page.getByRole("checkbox", { name: /我已审阅结构化需求/ }).check();
   await page.getByRole("button", { name: "一键生成、验证并归档" }).click();
   const generationOutcome = await Promise.race([
-    page.getByText("生成文件树").waitFor({ state: "visible", timeout: 260_000 })
+    page.getByText("生成文件树").waitFor({
+      state: "visible",
+      timeout: runnerPipelineOutcomeTimeoutMs,
+    })
       .then(() => "READY"),
-    page.getByText("BLOCKED", { exact: true }).last().waitFor({ state: "visible", timeout: 260_000 })
+    page.getByText("BLOCKED", { exact: true }).last().waitFor({
+      state: "visible",
+      timeout: runnerPipelineOutcomeTimeoutMs,
+    })
       .then(() => "BLOCKED"),
   ]);
+  if (generationOutcome === "BLOCKED") {
+    const reason = await page.getByRole("alert").last().textContent();
+    const logs = await page.getByLabel("任务日志").textContent();
+    throw new Error(
+      `GENERATION_BLOCKED:${reason ?? "UNKNOWN"}\n${logs ?? "NO_JOB_LOGS"}`,
+    );
+  }
   expect(generationOutcome).toBe("READY");
   await expect(page.getByText("python/", { exact: true })).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
@@ -186,21 +201,20 @@ test("需求分析、生成验证、文件树、归档与健康确认的一键�
   const download = await downloadPromise;
   expect(download.suggestedFilename()).toBe("order-service.zip");
 
-  await page.getByRole("button", { name: "一键运行" }).click();
+  await page.getByRole("button", { name: "一键本地部署运行" }).click();
   await expect(page.getByText("RUNNING", { exact: true })).toBeVisible({ timeout: 45_000 });
+  await expect(page.getByLabel("任务日志")).toContainText("Runtime health probe passed on 127.0.0.1:");
   await page.getByRole("button", { name: "停止" }).click();
   await expect(page.getByText("STOPPED", { exact: true })).toBeVisible({ timeout: 15_000 });
   await page.waitForTimeout(1_500);
   await expect(page.getByText("STOPPED", { exact: true })).toBeVisible();
 });
 
-test("Python PostgreSQL JWT/OIDC 企业配置均可生成、验证并一键运行", async ({
-  page,
-}, testInfo) => {
-  test.skip(testInfo.project.name !== "chromium", "企业配置的真实有副作用旅程只执行一次");
-  test.setTimeout(1_200_000);
-
-  for (const authMode of ["jwt", "oidc"] as const) {
+for (const authMode of ["jwt", "oidc"] as const) {
+  test(`Python PostgreSQL ${authMode.toUpperCase()} 企业配置可生成、验证并一键本地部署运行`, async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== "chromium", "企业配置的真实有副作用旅程只执行一次");
     await page.goto("/generation");
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
@@ -230,10 +244,13 @@ test("Python PostgreSQL JWT/OIDC 企业配置均可生成、验证并一键运�
     await page.getByRole("checkbox", { name: /我已审阅结构化需求/ }).check();
     await page.getByRole("button", { name: "一键生成、验证并归档" }).click();
     const generationOutcome = await Promise.race([
-      page.getByText("生成文件树").waitFor({ state: "visible", timeout: 600_000 })
+      page.getByText("生成文件树").waitFor({
+        state: "visible",
+        timeout: runnerPipelineOutcomeTimeoutMs,
+      })
         .then(() => "READY"),
       page.getByText("BLOCKED", { exact: true }).last()
-        .waitFor({ state: "visible", timeout: 600_000 })
+        .waitFor({ state: "visible", timeout: runnerPipelineOutcomeTimeoutMs })
         .then(() => "BLOCKED"),
     ]);
     if (generationOutcome === "BLOCKED") {
@@ -250,9 +267,10 @@ test("Python PostgreSQL JWT/OIDC 企业配置均可生成、验证并一键运�
       timeout: 600_000,
     });
 
-    await page.getByRole("button", { name: "一键运行" }).click();
+    await page.getByRole("button", { name: "一键本地部署运行" }).click();
     await expect(page.getByText("RUNNING", { exact: true })).toBeVisible({ timeout: 60_000 });
+    await expect(page.getByLabel("任务日志")).toContainText("Runtime health probe passed on 127.0.0.1:");
     await page.getByRole("button", { name: "停止" }).click();
     await expect(page.getByText("STOPPED", { exact: true })).toBeVisible({ timeout: 20_000 });
-  }
-});
+  });
+}

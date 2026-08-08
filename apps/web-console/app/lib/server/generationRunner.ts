@@ -1174,6 +1174,24 @@ async function executeCommand(
     let stdout = "";
     let stderr = "";
     let timedOut = false;
+    let persistenceFailure: Error | null = null;
+    let persistenceQueue = Promise.resolve();
+    const queuePersist = () => {
+      persistenceQueue = persistenceQueue
+        .then(() => persist(runner, context, job))
+        .catch((error: unknown) => {
+          persistenceFailure ??= error instanceof Error ? error : new Error("JOB_PERSISTENCE_FAILED");
+        });
+    };
+    const startedAt = Date.now();
+    const progressHeartbeat = stage === "pipeline"
+      ? setInterval(() => {
+          const elapsedSeconds = Math.floor((Date.now() - startedAt) / 1_000);
+          log(job, "system", `pipeline is still running within the bounded execution window (${elapsedSeconds}s elapsed).`);
+          queuePersist();
+        }, 30_000)
+      : null;
+    progressHeartbeat?.unref();
     const timeout = setTimeout(() => {
       timedOut = true;
       log(job, "system", `${stage} exceeded its bounded execution time.`);
@@ -1182,21 +1200,29 @@ async function executeCommand(
     child.stdout?.on("data", (chunk: Buffer) => {
       stdout = `${stdout}${chunk.toString("utf-8")}`.slice(-200_000);
       log(job, "stdout", chunk.toString("utf-8"));
-      void persist(runner, context, job);
+      queuePersist();
     });
     child.stderr?.on("data", (chunk: Buffer) => {
       stderr = `${stderr}${chunk.toString("utf-8")}`.slice(-200_000);
       log(job, "stderr", chunk.toString("utf-8"));
-      void persist(runner, context, job);
+      queuePersist();
     });
-    child.once("error", (error) => {
+    child.once("error", async (error) => {
       clearTimeout(timeout);
+      if (progressHeartbeat) clearInterval(progressHeartbeat);
       activeJobs.delete(key);
-      reject(error);
+      await persistenceQueue;
+      reject(persistenceFailure ?? error);
     });
-    child.once("close", (code, signal) => {
+    child.once("close", async (code, signal) => {
       clearTimeout(timeout);
+      if (progressHeartbeat) clearInterval(progressHeartbeat);
       activeJobs.delete(key);
+      await persistenceQueue;
+      if (persistenceFailure) {
+        reject(persistenceFailure);
+        return;
+      }
       const exitCode = timedOut ? 124 : code ?? (signal ? 128 : 1);
       log(job, "system", `${stage} finished with exit code ${exitCode}`);
       resolve({ exitCode, stdout: redact(stdout), stderr: redact(stderr) });

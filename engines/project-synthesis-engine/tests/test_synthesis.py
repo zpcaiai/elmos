@@ -867,21 +867,131 @@ def test_native_verification_timeout_fails_closed(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    attempts = 0
+
     def time_out(*args: object, **kwargs: object) -> None:
-        raise subprocess.TimeoutExpired(["native-build"], 30, output="partial output")
+        nonlocal attempts
+        attempts += 1
+        raise subprocess.TimeoutExpired(
+            ["uv", "sync", "--locked"], 30, output="partial output"
+        )
 
     monkeypatch.setattr(verification.subprocess, "run", time_out)
     result = verification._run(
-        ["native-build"],
+        ["uv", "sync", "--locked"],
         tmp_path,
-        language="test-runtime",
+        language="python",
         timeout_seconds=30,
     )
 
+    assert attempts == 1
     assert result["status"] == "FAILED"
     assert result["exit_code"] is None
     assert "COMMAND_TIMEOUT:30s" in result["output"]
     assert "partial output" in result["output"]
+
+
+def test_native_verification_uses_bounded_configured_default_timeout(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    observed_timeout: float | None = None
+
+    def run(*args: object, **kwargs: object) -> subprocess.CompletedProcess[str]:
+        nonlocal observed_timeout
+        observed_timeout = float(kwargs["timeout"])
+        return subprocess.CompletedProcess(["native-build"], 0, stdout="ok", stderr="")
+
+    monkeypatch.setenv("ELMOS_PROJECT_SYNTHESIS_COMMAND_TIMEOUT_SECONDS", "600")
+    monkeypatch.setattr(verification.subprocess, "run", run)
+    result = verification._run(
+        ["native-build"],
+        tmp_path,
+        language="test-runtime",
+    )
+
+    assert observed_timeout == 600
+    assert result["status"] == "PASSED"
+
+
+def test_native_verification_rejects_unbounded_configured_timeout(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("ELMOS_PROJECT_SYNTHESIS_COMMAND_TIMEOUT_SECONDS", "901")
+
+    with pytest.raises(ValueError, match="COMMAND_TIMEOUT_OUT_OF_RANGE"):
+        verification._run(
+            ["native-build"],
+            tmp_path,
+            language="test-runtime",
+        )
+
+
+def test_locked_python_dependency_sync_retries_one_transient_fetch_failure(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    attempts = 0
+
+    def run(*args: object, **kwargs: object) -> subprocess.CompletedProcess[str]:
+        nonlocal attempts
+        attempts += 1
+        if attempts == 1:
+            return subprocess.CompletedProcess(
+                ["uv", "sync", "--locked"],
+                1,
+                stdout="",
+                stderr="Failed to fetch package: operation timed out",
+            )
+        return subprocess.CompletedProcess(
+            ["uv", "sync", "--locked"],
+            0,
+            stdout="resolved locked dependencies",
+            stderr="",
+        )
+
+    monkeypatch.setattr(verification.subprocess, "run", run)
+    monkeypatch.setattr(verification.time, "sleep", lambda _: None)
+    result = verification._run(
+        ["uv", "sync", "--locked", "--python", "3.12"],
+        tmp_path,
+        language="python",
+    )
+
+    assert attempts == 2
+    assert result["status"] == "PASSED"
+    assert result["exit_code"] == 0
+    assert "TRANSIENT_DEPENDENCY_FETCH_RETRY:1/1" in result["output"]
+    assert "resolved locked dependencies" in result["output"]
+
+
+def test_locked_python_dependency_sync_does_not_retry_build_failures(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    attempts = 0
+
+    def run(*args: object, **kwargs: object) -> subprocess.CompletedProcess[str]:
+        nonlocal attempts
+        attempts += 1
+        return subprocess.CompletedProcess(
+            ["uv", "sync", "--locked"],
+            1,
+            stdout="",
+            stderr="Python package compilation failed",
+        )
+
+    monkeypatch.setattr(verification.subprocess, "run", run)
+    result = verification._run(
+        ["uv", "sync", "--locked", "--python", "3.12"],
+        tmp_path,
+        language="python",
+    )
+
+    assert attempts == 1
+    assert result["status"] == "FAILED"
+    assert "TRANSIENT_DEPENDENCY_FETCH_RETRY" not in result["output"]
 
 
 def test_acceptance_cleanup_retries_transient_directory_not_empty(

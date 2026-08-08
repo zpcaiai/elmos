@@ -1,6 +1,6 @@
 # Project Generation Qualification
 
-Date: 2026-07-29
+Date: 2026-08-08
 
 ## Scope
 
@@ -12,6 +12,7 @@ Skill, repository workspace, or public HTTPS HTML through:
 - review and approval;
 - deterministic project generation;
 - native build, test, startup, health, file-tree, and archive checks;
+- one-click governed local deployment/run with exact health confirmation and stop;
 - local software/hardware and run documentation;
 - cloud deployment guidance and the exact evidence boundary.
 
@@ -24,14 +25,15 @@ Skill, repository workspace, or public HTTPS HTML through:
 | Mutation negative controls | allow-all-IPv4 and allow-loopback-IPv6 | 2/2 killed |
 | Independent stored corpora | negative, holdout, representative engineering workloads | passed locally |
 | Web type/build | `pnpm check` | passed |
-| Production dependency audit | `pnpm audit --prod --audit-level high` | no known vulnerabilities |
-| Browser/accessibility matrix | Chromium, Firefox, WebKit, mobile Chromium, mobile WebKit | 23 passed, 27 intentionally skipped |
+| Production dependency audit | `pnpm audit --prod --audit-level high` | no known vulnerabilities after PDF.js and Nano ID security updates |
+| Browser/accessibility matrix | Chromium, Firefox, WebKit, mobile Chromium, mobile WebKit | 37 passed, 63 intentionally skipped |
 | Browser skip boundary | heavy format/Runner representatives run once in Chromium; common rendering, keyboard, axe, failure-close, production profile, and both mobile layouts run on their declared projects | expected |
-| Project Synthesis Engine | `pytest -q` | 67 passed |
+| Project Synthesis Engine | `pytest -q` | 71 passed |
 | Python quality | Ruff and strict MyPy over 30 source files | passed |
-| Real one-click Runner | `generation-runner.spec.ts` | 5 passed in 9.0 minutes |
+| Real one-click local deploy/run | `generation-runner.spec.ts` | 3 security/review boundaries plus in-memory, PostgreSQL/JWT, and PostgreSQL/OIDC generation, exact health, and stop journeys passed |
 | Batch 35 pack | validator and conservative gate | structurally passed, `NOT_CERTIFIED` |
-| Local container handoff | Docker 29.4.0 build/start/health/stop/remove | passed |
+| Prior local container handoff | Docker 29.4.0 build/start/health/stop/remove | passed; not substituted for the current host preflight |
+| Current production rootless preflight | Docker Desktop server 29.6.1 | `BLOCKED: ROOTLESS_CONTAINER_ENGINE_REQUIRED` |
 | Batch 33 Cloud pack | validator and conservative gate | structurally passed, `experimental` |
 
 The browser run intentionally executes the expensive multi-format parsing,
@@ -39,7 +41,21 @@ repository handoff, task recovery, and full runtime representatives once in
 Chromium. Cross-browser rendering, keyboard focus, axe accessibility, failure
 closure, production-profile controls, and mobile overflow/action reachability
 are exercised on the applicable Chromium, Firefox, WebKit, Pixel, and iPhone
-projects.
+projects. CI serializes the side-effecting Spring and project-generation Runner
+journeys and includes the deployment guide in the five-browser qualification.
+
+Long native generation pipelines emit a persisted heartbeat every 30 seconds
+and remain bounded by the Runner's 20-minute pipeline limit. Each native build
+or analysis command has a bounded 600-second default, configurable only from 30
+through 900 seconds. Browser qualification observes the pipeline for 21 minutes
+inside a 25-minute journey limit, so it records either the file tree or an
+explicit `BLOCKED` state after the product boundary; absence of output is never
+treated as success.
+
+Locked Python dependency synchronization retries exactly once only when the
+captured failure is an allowlisted transient network/fetch condition. Build,
+test, type, security, lock-integrity, and all other failures remain immediate
+fail-closed results, and retry evidence is retained in the verification output.
 
 ## Security boundaries exercised
 
@@ -95,10 +111,20 @@ exact configuration obligations, least-privilege identity guidance, immutable
 image and Secret requirements, health validation, rollback, and cleanup steps.
 The Batch 33 pack records the missing external prerequisites and fails closed.
 
+The console action is deliberately labelled **one-click local deploy/run**. It
+starts only an allowlisted generated target on loopback, waits for the exact
+`/health` response before reporting `RUNNING`, and exposes an explicit stop
+action. It does not call a cloud provider and must not be described as one-click
+Cloud Run deployment.
+
 ## Remaining certification limits
 
-The feature is complete and runnable within the verified local scope. It is not
-independently certified and must not be presented as production-cloud proven
-until the exact Cloud Run route is executed in an approved isolated project
-with independent evidence. Controlled public DNS-rebinding tests, independent
-holdout review, and production-derived workloads also remain `NOT_RUN`.
+The feature is complete and runnable within the verified local
+`HOST_DEVELOPMENT` scope. The production `ROOTLESS_CONTAINER` route is
+implemented but is not runnable on this host because Docker Desktop does not
+advertise a rootless engine; that preflight remains `BLOCKED` rather than being
+weakened. The feature is not independently certified and must not be presented
+as production-cloud proven until the exact Cloud Run route is executed in an
+approved isolated project with independent evidence. Controlled public
+DNS-rebinding tests, independent holdout review, and production-derived
+workloads also remain `NOT_RUN`.
