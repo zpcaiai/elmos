@@ -31,14 +31,18 @@ class ProductBatch40To55SkillAssuranceTest {
     }
 
     @Test
-    void generatedPlanningEditionCannotMasqueradeAsCertification() throws IOException {
+    void repositoryInstructionsKeepPlanningEditionFailClosed() throws IOException {
         String repositoryInstructions = Files.readString(root.resolve("AGENTS.md"));
-        String packageReadme = Files.readString(root.resolve(
-                "elmos-codex-skills-batch40-55-complete/README.md"));
-        String provenance = Files.readString(root.resolve(
-                "elmos-codex-skills-batch40-55-complete/references/provenance.md"));
         assertTrue(repositoryInstructions.contains("generated planning edition"));
         assertTrue(repositoryInstructions.contains("static Skill checks remain engineering evidence only"));
+    }
+
+    @Test
+    void optionalPlanningBundleCannotMasqueradeAsCertification() throws IOException {
+        String packageReadme = Files.readString(OptionalSourcePackage.required(
+                root, "elmos-codex-skills-batch40-55-complete/README.md"));
+        String provenance = Files.readString(OptionalSourcePackage.required(
+                root, "elmos-codex-skills-batch40-55-complete/references/provenance.md"));
         assertTrue(packageReadme.contains("does not certify production implementations"));
         assertTrue(provenance.contains("generated as a structured planning edition"));
         assertTrue(provenance.contains("have not yet been reviewed one subbatch at a time"));

@@ -675,6 +675,26 @@ class MigrationPlatformRuntimeTest(unittest.TestCase):
         with self.assertRaisesRegex(trusted_adapters.AdapterError, "binds a different effect"):
             trusted_adapters.execute(self.workspace, request_path, self.adapter_registry(), self.trust_store, (self.root.resolve(),))
 
+    def test_adapter_compensation_graph_rejects_fake_rollback_topologies(self) -> None:
+        self.prepare(1)
+        envelope = json.loads(self.adapter_registry().read_text(encoding="utf-8"))
+        adapter = envelope["payload"]["adapters"][0]
+
+        read_only_with_compensation = json.loads(json.dumps(adapter))
+        read_only_with_compensation["operations"][0]["compensation_operation"] = "undo"
+        with self.assertRaisesRegex(trusted_adapters.AdapterError, "read-only operation.*cannot declare compensation"):
+            trusted_adapters.parse_adapter(read_only_with_compensation)
+
+        self_compensating = json.loads(json.dumps(adapter))
+        self_compensating["operations"][1]["compensation_operation"] = "apply"
+        with self.assertRaisesRegex(trusted_adapters.AdapterError, "cannot compensate itself"):
+            trusted_adapters.parse_adapter(self_compensating)
+
+        cyclic = json.loads(json.dumps(adapter))
+        cyclic["operations"][2]["compensation_operation"] = "apply"
+        with self.assertRaisesRegex(trusted_adapters.AdapterError, "cannot require another compensation"):
+            trusted_adapters.parse_adapter(cyclic)
+
     def test_mutating_adapter_compensation_is_approved_and_atomic(self) -> None:
         self.prepare(1)
         source_fingerprint = runtime.state_store(self.workspace).metadata()["source_fingerprint"]
@@ -725,6 +745,95 @@ class MigrationPlatformRuntimeTest(unittest.TestCase):
                                         {"request_sha256": "sha256:" + "1" * 64}, runtime.utc_now())
         self.assertEqual("PLANNED", store.effects()[0]["state"])
         self.assertEqual(planned["effect_id"], store.effects()[0]["effect_id"])
+
+    def test_effect_audit_chain_detects_current_record_and_metadata_tampering(self) -> None:
+        self.prepare(17)
+        runtime.plan_effect(self.workspace, 17, "tamper-key", "deploy", "sandbox",
+                            "actor-a", "approval-a", 1, True)
+        store = runtime.state_store(self.workspace)
+        connection = store.connect()
+        try:
+            row = connection.execute(
+                "SELECT record_json FROM effects WHERE idempotency_key='tamper-key'"
+            ).fetchone()
+            record = json.loads(row["record_json"])
+            record["state"] = "SUCCEEDED"
+            connection.execute(
+                "UPDATE effects SET record_json=?,fencing_token=2 WHERE idempotency_key='tamper-key'",
+                (json.dumps(record),),
+            )
+        finally:
+            connection.close()
+        findings = store.verify_event_chain()
+        self.assertTrue(any("current record differs from latest event" in item for item in findings))
+        self.assertTrue(any("metadata mismatch" in item and "fencing_token" in item for item in findings))
+        request = {
+            "schema_version": "1.0", "batch": 17, "adapter_id": "fixture-provider",
+            "operation": "inspect", "parameters": {"target": "tampered-state"},
+            "idempotency_key": "audit-block", "fencing_token": 3,
+            "source_fingerprint": store.metadata()["source_fingerprint"],
+            "approval": None, "compensates_idempotency_key": None,
+        }
+        request_path = self.root / "audit-block-request.json"
+        request_path.write_text(json.dumps(request), encoding="utf-8")
+        with self.assertRaisesRegex(trusted_adapters.AdapterError, "transactional state audit failed"):
+            trusted_adapters.execute(
+                self.workspace, request_path, self.adapter_registry(), self.trust_store, (self.root.resolve(),)
+            )
+
+    def test_event_chain_audit_reports_invalid_json_without_crashing(self) -> None:
+        self.prepare(17)
+        runtime.plan_effect(self.workspace, 17, "invalid-json-key", "deploy", "sandbox",
+                            "actor-a", "approval-a", 1, True)
+        store = runtime.state_store(self.workspace)
+
+        connection = store.connect()
+        try:
+            connection.execute(
+                "UPDATE events SET payload_json='{' WHERE revision=(SELECT MAX(revision) FROM events)"
+            )
+        finally:
+            connection.close()
+        findings = store.verify_event_chain()
+        self.assertTrue(any("event payload is invalid" in item for item in findings))
+        self.assertTrue(any("event chain mismatch" in item for item in findings))
+
+        # Exercise a second database so the malformed event above cannot mask
+        # the current-record JSON handling below.
+        second_workspace = self.root / "invalid-current-record-workspace"
+        second_workspace.mkdir()
+        source = self.root / "invalid-current-record-source"
+        source.mkdir()
+        (source / "README.md").write_text("fixture", encoding="utf-8")
+        runtime.prepare_batch(
+            17, source, second_workspace, "audit malformed current records",
+            actor_trust_store=self.trust_store,
+        )
+        second_store = runtime.state_store(second_workspace)
+        connection = second_store.connect()
+        try:
+            connection.execute(
+                "INSERT INTO gate_results(batch,mode,decision,evidence_root,evaluated_revision,"
+                "result_json,created_revision) VALUES(17,'local','PASS','sha256:x',1,'{',1)"
+            )
+            connection.execute(
+                "INSERT INTO certificates(batch,certificate_sha256,policy_id,expires_at,certificate_json,"
+                "created_revision) VALUES(17,'sha256:z','policy-1','2099-01-01T00:00:00Z','{',1)"
+            )
+        finally:
+            connection.close()
+        findings = second_store.verify_event_chain()
+        self.assertTrue(any("gate_results current record is invalid" in item for item in findings))
+        self.assertTrue(any("certificates current record is invalid" in item for item in findings))
+
+    def test_external_authority_paths_must_be_inside_approved_roots(self) -> None:
+        external_store, policy_path, approval = self.external_certification_authority("tenant-001")
+        with self.assertRaisesRegex(production_closure.external_authority.ExternalAuthorityError,
+                                    "external Trust Store escapes approved roots"):
+            production_closure.external_authority.authorize(
+                policy_path, approval, self.trust_store, external_store, "tenant-001",
+                "independent-certification", (policy_path.resolve(),),
+            )
 
     def test_production_closure_control_plane_runs_complete_engineering_flow(self) -> None:
         snapshot_file = self.root / "customer-snapshot.bin"
@@ -1320,6 +1429,89 @@ class MigrationPlatformRuntimeTest(unittest.TestCase):
         with self.assertRaisesRegex(production_closure.ClosureError, "sequence/state conflict"):
             production_closure.finish_soak(self.workspace, "expired-production-soak", 2, revival_text,
                                            revival, self.trust_store, clock=clock)
+
+    def test_soak_timeout_and_heartbeat_races_have_one_atomic_winner(self) -> None:
+        start = datetime(2026, 1, 1, tzinfo=timezone.utc)
+        start_text = start.isoformat().replace("+00:00", "Z")
+        store = production_closure.ClosureStore(self.workspace)
+        cutover = {
+            "schema_version": "1.0", "cutover_id": "race-cutover", "tenant_id": "tenant-001",
+            "environment_class": "test", "target_key": "race-target", "state": "SUCCEEDED",
+            "fencing_token": 1, "plan_sha256": production_closure.sha256_bytes(b"race-plan"),
+            "approval": {"actor_id": "approver"}, "transitions": [],
+        }
+        store.insert("cutovers", "race-cutover",
+                     ("race-cutover", "tenant-001", "race-target", "SUCCEEDED", 1, cutover["plan_sha256"]),
+                     cutover, "CUTOVER_SUCCEEDED")
+
+        def timeout_attestation(run_id: str, clock: production_closure.ControlledTestClock) -> dict:
+            status = production_closure.soak_status(self.workspace, run_id, clock)
+            current = store.row("soak_runs", run_id)
+            observed_at = clock.now().isoformat().replace("+00:00", "Z")
+            return self.sign("verifier-production", {
+                "run_id": run_id, "sequence": current["last_sequence"] + 1,
+                "observed_at": observed_at, "target_state": "FAILED",
+                "evidence_root": production_closure.soak_evidence_root(current),
+                "heartbeat_deadline": status["heartbeat_deadline"], "reason": "HEARTBEAT_TIMEOUT",
+            }, suffix=f"timeout-{run_id}")
+
+        expire_clock = production_closure.ControlledTestClock(start)
+        production_closure.start_soak(self.workspace, "race-cutover", "expire-race", "test",
+                                      start_text, 60, 60, clock=expire_clock)
+        expire_clock.set(start + timedelta(seconds=61))
+        expire_at = expire_clock.now().isoformat().replace("+00:00", "Z")
+        expiration = timeout_attestation("expire-race", expire_clock)
+
+        def expire_once(_: int) -> str:
+            try:
+                production_closure.expire_soak(self.workspace, "expire-race", expire_at,
+                                               expiration, self.trust_store, expire_clock)
+                return "won"
+            except production_closure.ClosureError:
+                return "lost"
+
+        with ThreadPoolExecutor(max_workers=16) as pool:
+            outcomes = list(pool.map(expire_once, range(32)))
+        self.assertEqual(1, outcomes.count("won"))
+        self.assertEqual("FAILED", store.row("soak_runs", "expire-race")["state"])
+
+        heartbeat_clock = production_closure.ControlledTestClock(start)
+        production_closure.start_soak(self.workspace, "race-cutover", "heartbeat-race", "test",
+                                      start_text, 60, 60, clock=heartbeat_clock)
+        heartbeat_clock.set(start + timedelta(seconds=61))
+        heartbeat_at = (start + timedelta(seconds=60)).isoformat().replace("+00:00", "Z")
+        metrics = {"requests": 1, "errors": 0, "critical_failures": 0, "availability": 1.0}
+        heartbeat = self.sign("operations-owner", {
+            "run_id": "heartbeat-race", "sequence": 1, "observed_at": heartbeat_at,
+            "metrics_sha256": production_closure.canonical_digest(metrics),
+        }, suffix="heartbeat-race")
+        timeout = timeout_attestation("heartbeat-race", heartbeat_clock)
+        timeout_at = heartbeat_clock.now().isoformat().replace("+00:00", "Z")
+
+        def race(action: str) -> str:
+            try:
+                if action == "heartbeat":
+                    production_closure.observe_soak(
+                        self.workspace, "heartbeat-race", 1, heartbeat_at, metrics,
+                        heartbeat, self.trust_store, heartbeat_clock,
+                    )
+                else:
+                    production_closure.expire_soak(
+                        self.workspace, "heartbeat-race", timeout_at, timeout,
+                        self.trust_store, heartbeat_clock,
+                    )
+                return action
+            except production_closure.ClosureError:
+                return "lost"
+
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            outcomes = list(pool.map(race, ("heartbeat", "timeout")))
+        self.assertEqual(1, sum(item in {"heartbeat", "timeout"} for item in outcomes))
+        raced = store.row("soak_runs", "heartbeat-race")
+        self.assertIn(raced["state"], {"RUNNING", "FAILED"})
+        self.assertEqual(1, raced["last_sequence"])
+        self.assertEqual([], store.verify_event_chain())
+
     def test_24_concurrent_commands_have_no_evidence_crosstalk(self) -> None:
         self.prepare(1)
 

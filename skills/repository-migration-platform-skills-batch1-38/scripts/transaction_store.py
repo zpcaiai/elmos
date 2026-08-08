@@ -589,6 +589,24 @@ class TransactionStore:
         errors: list[str] = []
         previous = ZERO_HASH
         expected_revision = 1
+        latest_payloads: dict[tuple[str, str], dict[str, Any]] = {}
+        current_keys: set[tuple[str, str]] = set()
+
+        def event_category(event_type: str) -> str | None:
+            if event_type == "EVIDENCE_RECORDED":
+                return "evidence"
+            if event_type == "EVIDENCE_VERIFIED":
+                return "verifications"
+            if event_type.startswith("EFFECT_"):
+                return "effects"
+            if event_type == "GATE_EVALUATED":
+                return "gate_results"
+            if event_type == "CERTIFICATE_REQUESTED":
+                return "certificate_requests"
+            if event_type == "CERTIFICATE_IMPORTED":
+                return "certificates"
+            return None
+
         connection = self.connect()
         try:
             integrity = str(connection.execute("PRAGMA integrity_check").fetchone()[0])
@@ -598,7 +616,15 @@ class TransactionStore:
                 if int(row["revision"]) != expected_revision:
                     errors.append(f"event revision gap before {row['revision']}")
                 expected_revision = int(row["revision"]) + 1
-                payload = decode_object(row["payload_json"])
+                try:
+                    payload = decode_object(row["payload_json"])
+                except (json.JSONDecodeError, TypeError, StoreConflict):
+                    errors.append(f"event payload is invalid at revision {row['revision']}")
+                    # The stored hash still has to be checked deterministically.  An
+                    # invalid JSON payload cannot be reconstructed as its original
+                    # typed object, so bind the raw stored text into a sentinel
+                    # payload that is guaranteed not to match a legitimate event.
+                    payload = {"invalid_payload_json": str(row["payload_json"])}
                 material = {
                     "event_type": row["event_type"],
                     "aggregate_id": row["aggregate_id"],
@@ -611,7 +637,104 @@ class TransactionStore:
                     errors.append(f"event chain mismatch at revision {row['revision']}")
                 if row["event_id"] != "event-" + expected.split(":", 1)[1][:24]:
                     errors.append(f"event id mismatch at revision {row['revision']}")
+                category = event_category(str(row["event_type"]))
+                if category is not None:
+                    latest_payloads[(category, str(row["aggregate_id"]))] = payload
                 previous = str(row["event_hash"])
+
+            current_records = (
+                ("evidence", "evidence_id", "record_json"),
+                ("verifications", "verification_id", "record_json"),
+                ("effects", "effect_id", "record_json"),
+                ("certificate_requests", "request_id", "request_json"),
+            )
+            for table, identity_column, json_column in current_records:
+                for row in connection.execute(
+                    f"SELECT {identity_column} AS aggregate_id,{json_column} AS current_json FROM {table}"
+                ):
+                    aggregate = str(row["aggregate_id"])
+                    current_keys.add((table, aggregate))
+                    try:
+                        current = decode_object(row["current_json"])
+                    except (json.JSONDecodeError, TypeError, StoreConflict):
+                        errors.append(f"{table} current record is invalid for {aggregate}")
+                        continue
+                    if latest_payloads.get((table, aggregate)) != current:
+                        errors.append(f"{table} current record differs from latest event for {aggregate}")
+            for row in connection.execute("SELECT batch,mode,result_json FROM gate_results"):
+                aggregate = f"batch-{int(row['batch']):02d}:{row['mode']}"
+                current_keys.add(("gate_results", aggregate))
+                try:
+                    current = decode_object(row["result_json"])
+                except (json.JSONDecodeError, TypeError, StoreConflict):
+                    errors.append(f"gate_results current record is invalid for {aggregate}")
+                    continue
+                if latest_payloads.get(("gate_results", aggregate)) != current:
+                    errors.append(f"gate_results current record differs from latest event for {aggregate}")
+            for row in connection.execute("SELECT batch,certificate_json FROM certificates"):
+                aggregate = f"batch-{int(row['batch']):02d}"
+                current_keys.add(("certificates", aggregate))
+                try:
+                    current = decode_object(row["certificate_json"])
+                except (json.JSONDecodeError, TypeError, StoreConflict):
+                    errors.append(f"certificates current record is invalid for {aggregate}")
+                    continue
+                if latest_payloads.get(("certificates", aggregate)) != current:
+                    errors.append(f"certificates current record differs from latest event for {aggregate}")
+            for key in latest_payloads:
+                if key[0] != "certificate_requests" and key not in current_keys:
+                    errors.append(f"{key[0]} latest event has no current record for {key[1]}")
+
+            metadata_checks = (
+                ("evidence", "evidence_id", (("batch", "batch"), ("claim_type", "claim_type"),
+                                                ("claim_index", "claim_index"), ("object_sha256", "object"))),
+                ("verifications", "verification_id", (("batch", "batch"), ("evidence_id", "evidence_id"),
+                                                        ("verifier_id", "verifier_id"), ("outcome", "outcome"))),
+                ("effects", "effect_id", (("idempotency_key", "idempotency_key"), ("batch", "batch"),
+                                            ("target", "target"), ("fencing_token", "fencing_token"))),
+            )
+            for table, identity_column, fields in metadata_checks:
+                selected = ",".join(dict.fromkeys(
+                    (identity_column, *(column for column, _ in fields), "record_json")
+                ))
+                for row in connection.execute(f"SELECT {selected} FROM {table}"):
+                    try:
+                        record = decode_object(row["record_json"])
+                    except (json.JSONDecodeError, TypeError, StoreConflict):
+                        continue
+                    for column, field in fields:
+                        expected_value = record.get(field)
+                        if table == "evidence" and field == "object":
+                            expected_value = expected_value.get("sha256") if isinstance(expected_value, dict) else None
+                        if row[column] != expected_value:
+                            errors.append(f"{table} metadata mismatch for {row[identity_column]}: {column}")
+            for row in connection.execute(
+                "SELECT batch,mode,decision,evidence_root,evaluated_revision,result_json FROM gate_results"
+            ):
+                aggregate = f"batch-{int(row['batch']):02d}:{row['mode']}"
+                try:
+                    record = decode_object(row["result_json"])
+                except (json.JSONDecodeError, TypeError, StoreConflict):
+                    # The current-record pass already reports the invalid JSON;
+                    # metadata comparison must not turn a complete audit into an
+                    # unstructured exception.
+                    continue
+                for column in ("decision", "evidence_root", "evaluated_revision"):
+                    if row[column] != record.get(column):
+                        errors.append(f"gate_results metadata mismatch for {aggregate}: {column}")
+            for row in connection.execute(
+                "SELECT batch,certificate_sha256,policy_id,expires_at,certificate_json FROM certificates"
+            ):
+                aggregate = f"batch-{int(row['batch']):02d}"
+                try:
+                    record = decode_object(row["certificate_json"])
+                except (json.JSONDecodeError, TypeError, StoreConflict):
+                    continue
+                if row["certificate_sha256"] != sha256_bytes(canonical_bytes(record)):
+                    errors.append(f"certificates metadata mismatch for {aggregate}: certificate_sha256")
+                for column in ("policy_id", "expires_at"):
+                    if row[column] != record.get(column):
+                        errors.append(f"certificates metadata mismatch for {aggregate}: {column}")
             bindings = (
                 ("evidence", "evidence_id", "EVIDENCE_RECORDED"),
                 ("verifications", "verification_id", "EVIDENCE_VERIFIED"),

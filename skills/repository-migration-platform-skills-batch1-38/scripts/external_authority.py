@@ -48,7 +48,7 @@ def authorize(policy_path: Path, approval: dict[str, Any], internal_trust_path: 
     expires = parse_time(policy.get("expires_at"), "policy.expires_at")
     if not issued <= observed < expires:
         raise ExternalAuthorityError("external authority policy is outside its validity window")
-    external = ActorTrustStore.load(external_trust_path)
+    external = ActorTrustStore.load(confined(external_trust_path, roots, "external Trust Store"))
     expected_store_purpose = ("external-certification" if purpose == "independent-certification"
                               else "source-provenance")
     expected_class = "certification-body" if purpose == "independent-certification" else "source-archive"
@@ -62,7 +62,7 @@ def authorize(policy_path: Path, approval: dict[str, Any], internal_trust_path: 
                 for actor in external.actors.values())):
         raise ExternalAuthorityError("external Trust Store actors do not belong to the approved authority organization")
     policy_sha = canonical_digest(policy)
-    internal = ActorTrustStore.load(internal_trust_path)
+    internal = ActorTrustStore.load(confined(internal_trust_path, roots, "internal Trust Store"))
     if internal.schema_version != "2.0" or internal.purpose != "workspace-actors":
         raise ExternalAuthorityError("external authority approval requires a version 2 workspace Trust Store")
     approver = internal.verify(approval, "external-trust-approver", {
@@ -78,4 +78,3 @@ def authorize(policy_path: Path, approval: dict[str, Any], internal_trust_path: 
         "authority_class": expected_class, "expires_at": policy["expires_at"],
         "approved_by": approver, "revoked": False,
     }
-

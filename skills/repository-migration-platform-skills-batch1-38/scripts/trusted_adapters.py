@@ -152,11 +152,23 @@ def parse_adapter(value: Any) -> Adapter:
         operations[operation.name] = operation
     referenced_compensations = {item.compensation_operation for item in operations.values() if item.compensation_operation}
     for operation in operations.values():
-        if (operation.effect_class != "read-only" and operation.compensation_operation not in operations and
-                operation.name not in referenced_compensations):
+        if operation.effect_class == "read-only":
+            if operation.compensation_operation is not None:
+                raise AdapterError(f"read-only operation {adapter_id}/{operation.name} cannot declare compensation")
+            continue
+        if operation.compensation_operation == operation.name:
+            raise AdapterError(f"operation {adapter_id}/{operation.name} cannot compensate itself")
+        if operation.name in referenced_compensations:
+            if operation.compensation_operation is not None:
+                raise AdapterError(f"compensation {adapter_id}/{operation.name} cannot require another compensation")
+            continue
+        if operation.compensation_operation not in operations:
             raise AdapterError(f"mutating operation {adapter_id}/{operation.name} lacks registered compensation")
-        if operation.compensation_operation and operations[operation.compensation_operation].effect_class == "read-only":
+        compensation = operations[operation.compensation_operation]
+        if compensation.effect_class == "read-only":
             raise AdapterError(f"compensation {adapter_id}/{operation.compensation_operation} cannot be read-only")
+        if compensation.compensation_operation is not None:
+            raise AdapterError(f"compensation {adapter_id}/{operation.compensation_operation} cannot require another compensation")
     return Adapter(adapter_id, capability, executable, expected, version, tuple(environment), operations)
 
 
@@ -275,6 +287,9 @@ def execute(workspace: Path, request_path: Path, registry_path: Path, trust_path
         environment[name] = os.environ[name]
     environment["ELMOS_IDEMPOTENCY_KEY"] = key
     store = platform.state_store(workspace)
+    audit_findings = store.verify_event_chain()
+    if audit_findings:
+        raise AdapterError(f"transactional state audit failed: {audit_findings[0]}")
     if compensates_key is not None:
         original = next((item for item in store.effects() if item.get("idempotency_key") == compensates_key), None)
         original_receipt = original.get("receipt") if isinstance(original, dict) else None

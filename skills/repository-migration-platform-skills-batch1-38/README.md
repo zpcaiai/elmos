@@ -23,8 +23,8 @@ Source冻结与语义恢复
 - 38个handler均为可调用、互异的Batch领域策略；每个策略固定operation、capabilities和safety controls，并由全覆盖测试执行。跨Batch合同替换、能力证据缺失和安全断言缺失都会fail closed。
 - Executor、Oracle Owner、Verifier使用Ed25519认证并强制角色冲突隔离；v2 Actor Trust Store同时绑定组织和权威类别，生产数据所有者、转换作者、Holdout保管者、Executor、Oracle Owner、Verifier与批准者不能用同组织的多个别名伪造独立性。
 - 权威状态使用SQLite WAL、`BEGIN IMMEDIATE`、外键、唯一约束、整数Fencing Token和哈希链事件；JSON文件只是可重建镜像。
-- `trusted_adapters.py`只接受运维方Ed25519签名的Adapter Registry：可执行文件、SHA-256、版本、argv模板、参数类型、环境引用、超时、副作用等级与补偿操作均不可由仓库内容修改。变更操作要求独立Approver、幂等键和单调Fencing；超时造成的不确定副作用保持`UNKNOWN`并禁止自动重试。
-- `production_closure.py`实现客户快照只读摄取、内容摘要最小化、Claim专属Oracle Holdout、切换/回滚状态机、并发版本与Fencing、七天生产长稳下限、原始遥测回执和独立认证报告导入。生产心跳绑定精确Provider账户、监控源及内容寻址原始回执；watchdog暴露下一截止时间，超时只能由独立Verifier签名并原子终止为`FAILED`。生产评估必须来自摘要固定、由内部治理组织批准且组织独立的外部认证Trust Store，工作区Actor Trust Store不能冒充外部CA。受控测试时钟始终产生`engineering-only`证据且`real_seven_day_elapsed=false`。
+- `trusted_adapters.py`只接受运维方Ed25519签名的Adapter Registry：可执行文件、SHA-256、版本、argv模板、参数类型、环境引用、超时、副作用等级与补偿操作均不可由仓库内容修改。变更操作要求独立Approver、幂等键和单调Fencing；补偿必须是独立的单层终止操作，只读补偿、自补偿和补偿链/环全部拒绝。每次副作用前都会核对SQLite当前记录、元数据和最新哈希链事件；超时造成的不确定副作用保持`UNKNOWN`并禁止自动重试。
+- `production_closure.py`实现客户快照只读摄取、内容摘要最小化、Claim专属Oracle Holdout、切换/回滚状态机、并发版本与Fencing、七天生产长稳下限、原始遥测回执和独立认证报告导入。生产心跳绑定精确Provider账户、监控源及内容寻址原始回执；watchdog暴露下一截止时间，超时只能由独立Verifier签名并原子终止为`FAILED`。生产评估必须来自摘要固定、由内部治理组织批准且组织独立的外部认证Trust Store，工作区Actor Trust Store不能冒充外部CA；外部Policy、外部Trust Store和内部批准Trust Store都必须位于显式批准的证据根内。受控测试时钟始终产生`engineering-only`证据且`real_seven_day_elapsed=false`。
 - readiness按一条精确的Snapshot→Holdout→Result→Cutover→Soak→Assessment证据链判定并返回`selected_chain`；旧失败仍保留在哈希链和计数中，但不会错误污染另一条完整链。任何全局事件完整性错误仍然fail closed。
 - 本地Gate最多返回`LOCAL_TOOLKIT_PASS`。随包Trust Policy不含信任密钥并禁用`CERTIFIED`；真实客户、生产、Provider、Kernel Proof、独立Holdout、七天运行、独立评审与外部CA证据保持`NOT_RUN` / `NOT_CERTIFIED`。
 
@@ -116,7 +116,8 @@ python3 "$RMP_RUNTIME" execute-plan \
 
 数据库、Cloud、SCM和迁移工具等Provider副作用应通过签名Adapter执行，而不是把仓库字符串直接当命令。安装后的入口为
 `.repository-migration-platform-runtime/trusted_adapters.py`；请求必须绑定当前Source指纹、精确Batch、签名Registry、
-幂等键和Fencing Token。成功Receipt仍需进入下面的Claim-Oracle与独立Verifier链，不能直接形成认证。
+幂等键和Fencing Token。Adapter补偿图必须是单层且无环；运行前状态审计发现当前记录、元数据或事件链不一致时不会启动进程。
+成功Receipt仍需进入下面的Claim-Oracle与独立Verifier链，不能直接形成认证。
 
 客户生产闭环通过`.repository-migration-platform-runtime/production_closure.py`记录。它只摄取已授权、
 逐字节校验的Manifest和Provider Receipt，不保存客户文件内容；Snapshot、Holdout、Approver、Executor、

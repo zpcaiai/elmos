@@ -204,6 +204,13 @@ jobs:
           uv python install 3.12.12
           npm install --global pnpm@10.12.4
           pnpm --dir engines/frontend-client-engine install --frozen-lockfile
+          # The Rust analyzer deliberately executes with --offline --locked so
+          # repository input can never trigger an undeclared network fetch.
+          # Hydrate only the exact Cargo.lock graph before entering that
+          # fail-closed execution phase.
+          cargo fetch \
+            --locked \
+            --manifest-path engines/polyglot-route-engine/native/rust/Cargo.toml
       - name: Verify compiler-backed route engine
         run: |
           export ELMOS_JAVA21_HOME="$JAVA_HOME"
