@@ -85,7 +85,12 @@ test.describe("多语言项目生成 UI", () => {
   });
 
   test("错误凭证失败关闭且不能绕过需求审阅", async ({ page }) => {
+    let resolveAuthorization: (authorization: string) => void = () => undefined;
+    const rejectedAnalysis = new Promise<string>((resolve) => {
+      resolveAuthorization = resolve;
+    });
     await page.route("**/api/generation/analyze", async (route) => {
+      resolveAuthorization(route.request().headers().authorization ?? "");
       await route.fulfill({
         status: 403,
         contentType: "application/json",
@@ -95,13 +100,8 @@ test.describe("多语言项目生成 UI", () => {
     await page.goto("/generation");
     await page.getByLabel("本地 Runner 令牌").fill("incorrect-browser-token-000000");
     await page.getByRole("button", { name: "锁定生成计划" }).click();
-    const rejectedAnalysis = page.waitForResponse((response) =>
-      response.url().includes("/api/generation/analyze")
-      && response.request().method() === "POST");
     await page.getByRole("button", { name: "分析并整理需求" }).click();
-    const response = await rejectedAnalysis;
-    expect(response.status()).toBe(403);
-    expect(response.request().headers().authorization).toBe(
+    expect(await rejectedAnalysis).toBe(
       "Bearer incorrect-browser-token-000000",
     );
     await expect(page.getByText("需求分析被阻断：AUTHENTICATION_REQUIRED")).toBeVisible({
