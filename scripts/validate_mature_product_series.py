@@ -14,7 +14,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 BATCHES = {
     29: {"skills": 20, "first_id": 1141, "last_id": 1160, "schemas": 3},
-    30: {"skills": 20, "first_id": 1161, "last_id": 1180, "schemas": 4},
+    30: {"skills": 20, "first_id": 1161, "last_id": 1180, "schemas": 6},
     # 9 since 2026-07-28: sql-transpilation-request/-result and
     # sql-runtime-gate-result landed with the SQL dialect transpilation work
     # (docs/batch31/SQL_TRANSPILATION.md) but this count was never updated.
@@ -200,7 +200,7 @@ def main() -> int:
         )
 
     require(total_skills == 372, f"Expected 372 Skills, found {total_skills}", errors)
-    require(total_schemas == 227, f"Expected 227 Schemas, found {total_schemas}", errors)
+    require(total_schemas == 229, f"Expected 229 Schemas, found {total_schemas}", errors)
     common_schema_root = ROOT / "schemas" / "mature-product"
     common_schema_files = sorted(common_schema_root.glob("*.json"))
     require(

@@ -105,7 +105,7 @@ class BatchOneToThirteenAssuranceTest {
         assertTrue(Files.isRegularFile(root.resolve("docs/test-suite/IMPORT_AUDIT.md")));
         assertTrue(Files.isRegularFile(root.resolve("docs/test-suite/VALIDATION.md")));
         int[] matureSkillCounts = {20, 20, 22, 20, 20, 22, 22, 18, 36, 22, 22, 24, 20, 22, 20, 20, 22};
-        int[] matureSchemaCounts = {3, 4, 9, 8, 8, 10, 13, 12, 25, 16, 16, 17, 16, 17, 17, 18, 18};
+        int[] matureSchemaCounts = {3, 6, 9, 8, 8, 10, 13, 12, 25, 16, 16, 17, 16, 17, 17, 18, 18};
         for (int offset = 0; offset < matureSkillCounts.length; offset++) {
             int batch = 29 + offset;
             assertEquals(matureSkillCounts[offset], countSkillsWithPrefix(
