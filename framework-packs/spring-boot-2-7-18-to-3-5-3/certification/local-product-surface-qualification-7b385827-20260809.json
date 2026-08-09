@@ -1,0 +1,412 @@
+{
+  "schema_version": 1,
+  "record_type": "LOCAL_PRODUCT_SURFACE_QUALIFICATION_SNAPSHOT",
+  "evidence_class": "LOCAL_QUALIFICATION_SNAPSHOT",
+  "certification_eligible": false,
+  "pack_key": "spring-boot-2-7-18-to-3-5-3",
+  "pack_version": "0.3.0",
+  "pack_status": "limited",
+  "observed_at": "2026-08-09T14:00:10Z",
+  "repository": {
+    "implementation_revision": "7b385827960bdef3b47c570465b305c73ac19198",
+    "base_revision": "7b385827960bdef3b47c570465b305c73ac19198",
+    "upstream_revision": "7b385827960bdef3b47c570465b305c73ac19198",
+    "scoped_inputs_source": "FINAL_GIT_COMMIT_OBJECTS",
+    "scoped_inputs_count": 32,
+    "scoped_inputs_in_hosted_run": true,
+    "scoped_inputs": [
+      {
+        "path": "apps/java-engine-transformer/Dockerfile",
+        "sha256": "e9a2604932fbb871fccf66c9607ff32e39bfe35ae5d47c95c0422aed7cd4cc41",
+        "bytes": 5708
+      },
+      {
+        "path": "apps/java-engine-verifier/Dockerfile",
+        "sha256": "97f37a114d969885414d5a50177b3bb95f583689e8beeb43795f6559607ff041",
+        "bytes": 5188
+      },
+      {
+        "path": "apps/web-console/app/api/auth/callback/route.ts",
+        "sha256": "c4b13ca56c7cec916d8d5d38c8fc3c4c57e1ee4bd0c794a0de627f9de0f67162",
+        "bytes": 2895
+      },
+      {
+        "path": "apps/web-console/app/api/auth/logout/route.ts",
+        "sha256": "faffa0c925637d202b755221ec665b3821168d8ea5ab5f485b0368f5994c2f1f",
+        "bytes": 1678
+      },
+      {
+        "path": "apps/web-console/app/api/auth/refresh/route.ts",
+        "sha256": "ceefc7df506bb0fb7e2bcbfa36d1c48d790a18d459651f45b30396c427f9682f",
+        "bytes": 2047
+      },
+      {
+        "path": "apps/web-console/app/lib/server/accountSession.ts",
+        "sha256": "c4dccc1c22cb8434b9bcb64c5997523864f63a8461b255186d7d901b3554258b",
+        "bytes": 27904
+      },
+      {
+        "path": "apps/web-console/app/login/page.tsx",
+        "sha256": "1e5ba917442fe0a70fa6653963706cf7e917ad0bb981be8b1ecaa09f28cde609",
+        "bytes": 2372
+      },
+      {
+        "path": "apps/web-console/e2e/fixtures/production-node-ca-preflight.cjs",
+        "sha256": "23fc0932a97ce27ed2345124e2e3e39fd02014b27100f8c2220dacd607871f05",
+        "bytes": 511
+      },
+      {
+        "path": "apps/web-console/e2e/fixtures/production-oidc-harness.mjs",
+        "sha256": "ddc992e511f24d883b0afd0e711a46c47e3b4e87f83a8a6dac674949c78d34ea",
+        "bytes": 16358
+      },
+      {
+        "path": "apps/web-console/e2e/spring-production-oidc-boundary.spec.ts",
+        "sha256": "1c84852112fc6f9f57e045ae16d068c3147452680146ad91439dd713b90e859f",
+        "bytes": 7096
+      },
+      {
+        "path": "apps/web-console/e2e/spring-real-journey-ui.spec.ts",
+        "sha256": "1256b2ba349961b11426165f8a4b04179bba0063581d2bba584b6dd1f9b41a60",
+        "bytes": 26199
+      },
+      {
+        "path": "apps/web-console/playwright.config.ts",
+        "sha256": "94b857cc60bbec999d0f806883ea941d4a040cbed1ea06ca99f61c139f9ef8ef",
+        "bytes": 18744
+      },
+      {
+        "path": "framework-packs/certification-templates/README.md",
+        "sha256": "30de88b492822087230658d7a4cd6e644c65e88cb16bf8565f5109f095f52c50",
+        "bytes": 2678
+      },
+      {
+        "path": "framework-packs/certification-templates/external-certification-intake.template.json",
+        "sha256": "65133e1cc0771ba00db457c2c1d12922eaf09bb2837c3f898d72eec132345770",
+        "bytes": 3640
+      },
+      {
+        "path": "framework-packs/certification-templates/external-evidence-trust-store.template.json",
+        "sha256": "883833780d8be6f9738a3c172a59fe33c131656197e1cd45eca3c68ba5f0b153",
+        "bytes": 2314
+      },
+      {
+        "path": "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/real-repository/PUBLIC_QUALIFICATION.md",
+        "sha256": "3d4a895fcbc3e1ad3571be863693f6085e55036d099258dcaf48d1bd4f756d36",
+        "bytes": 4846
+      },
+      {
+        "path": "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/real-repository/public-qualification-manifest.json",
+        "sha256": "b8ee2bfb1ab55a3ed8d0ed43a071e2de364c6c32074c7fedc082db6b158bca30",
+        "bytes": 7446
+      },
+      {
+        "path": "schemas/batch30/external-certification-intake.schema.json",
+        "sha256": "69c157879748a74c899d3dac1283afc26eb0b5579c98623e4ec0fdc2c52479d8",
+        "bytes": 12473
+      },
+      {
+        "path": "schemas/batch30/external-evidence-trust-store.schema.json",
+        "sha256": "93d3b29b2b69f4885821d225869730a31c89c2d596d3b613fd49383b380ce5cd",
+        "bytes": 2248
+      },
+      {
+        "path": "scripts/batch30/run_framework_gate.py",
+        "sha256": "c85bc4998f98f7fd5ac8e6986b3a98b6e01661a05623a7e885cce778c5f6dd68",
+        "bytes": 15276
+      },
+      {
+        "path": "scripts/batch30/run_spring_boot_reference.py",
+        "sha256": "2807444d247f9a414b70b9ca1a3ce044d664bfa7c83f00bab9bba4b306408662",
+        "bytes": 25715
+      },
+      {
+        "path": "scripts/batch30/validate_external_certification_intake.py",
+        "sha256": "27582260804d90a0557c8ec99ea8c880428633aa354877e920335a4f1c465e48",
+        "bytes": 29296
+      },
+      {
+        "path": "scripts/operations/qualify_spring_public_repository.py",
+        "sha256": "a4254bc4624b190ac904cea4aae32fa976264738c4b195dca9b03ee964923654",
+        "bytes": 45258
+      },
+      {
+        "path": "scripts/operations/run_spring_docker_smoke.py",
+        "sha256": "bdb7b9dfb820e57a298cc65af51cb959907e986cf7a51853645d9e4bf3e1dc5e",
+        "bytes": 15824
+      },
+      {
+        "path": "tests/batch30/test_external_certification_intake.py",
+        "sha256": "2fc9eadfcb93f1cc0bdc0697269f6b05b2553c6b267899ab6062d8512a7bb368",
+        "bytes": 26321
+      },
+      {
+        "path": "tests/batch30/test_spring_docker_build_contract.py",
+        "sha256": "addbb2bee34ca6fe290e958cab93543beb6b063a11e97749c811ccad01ce500f",
+        "bytes": 9706
+      },
+      {
+        "path": "tests/batch30/test_spring_public_repository_qualification.py",
+        "sha256": "f00db3ff3db1b2c28991f6313f3e63670ca1123a2ddfe98fb2bdabe4dbb71b3b",
+        "bytes": 13289
+      },
+      {
+        "path": "tests/batch30/test_spring_qualification_snapshot_discovery.py",
+        "sha256": "5536c6053eda7e2673791137dd4861fea571a37df891972741b76d472d5e36d8",
+        "bytes": 2192
+      },
+      {
+        "path": "tests/batch30/test_toolkit.py",
+        "sha256": "c1f7731d382baa9dc011b01be6dd1715b391261815a61e1bafa54e1d7c489915",
+        "bytes": 10425
+      },
+      {
+        "path": "tests/production-readiness/test_generation_runner_operations.py",
+        "sha256": "5ec5b5f0313aca8cbbaf7e2fd407e720b895bc5af5b57d138315ecc44e751a1a",
+        "bytes": 7853
+      },
+      {
+        "path": "modules/architecture-tests/src/test/java/io/elmos/architecture/BatchOneToThirteenAssuranceTest.java",
+        "sha256": "2a24f1e54916bf20495af9ead4ff132eca3ebf7d29975fd6ea3458dbb547559e",
+        "bytes": 38155
+      },
+      {
+        "path": "scripts/validate_mature_product_series.py",
+        "sha256": "2b649878cc10ceae7be073e3a48d57f0943e5f808ee2df1c5f4726e5a2533ebb",
+        "bytes": 10992
+      }
+    ]
+  },
+  "overall_evaluation": "NOT_EVALUATED",
+  "arbitrary_spring_project_success_rate": "NOT_EVALUATED",
+  "certification_decision": "NOT_CERTIFIED",
+  "external_execution_status": "NOT_RUN",
+  "customer_outcome_status": "NOT_EVALUATED",
+  "independent_review_status": "NOT_RUN",
+  "checks": {
+    "exact_route_requalification": {
+      "status": "PASSED_LOCAL_ENGINEERING",
+      "evidence_scope": "FOUR_SYNTHETIC_EXACT_FIXTURES",
+      "routes_passed": 4,
+      "routes_failed": 0,
+      "source_tests_executed": 4,
+      "target_tests_executed": 4,
+      "runtime_health_checks_passed": 8,
+      "bidirectional_probe_comparisons_passed": 12,
+      "success_rate_inference": "NOT_PERMITTED"
+    },
+    "browser_real_spring_api_boundary": {
+      "status": "PASSED_LOCAL_ENGINEERING",
+      "desktop": {
+        "browser": "system Google Chrome 151.0.7922.108",
+        "viewport": "1440x900",
+        "passed": 8,
+        "failed": 0
+      },
+      "server": "REAL_NEXT_PRODUCTION",
+      "spring_api": "REAL_JAVA_WORKER_READ_ONLY_BOUNDARY",
+      "spring_upgrade_api_mocked": false,
+      "telemetry_api_mocked": true,
+      "covered": [
+        "real Spring capability discovery",
+        "real missing-run 404 response",
+        "anonymous 401",
+        "viewer permission 403",
+        "cross-tenant 403",
+        "state nonce and PKCE negative paths",
+        "logout and token revocation"
+      ],
+      "identity_provider": "LOCAL_ISOLATED_SYNTHETIC_IDP",
+      "node_tls": "EPHEMERAL_CA_PREFLIGHT",
+      "browser_tls": "LOCAL_LEAF_SPKI_TEST_EXCEPTION",
+      "ignore_http_errors_fixture": false,
+      "enterprise_tls_evidence": "NOT_RUN",
+      "full_migration_execution": "NOT_RUN_FEATURE_DISABLED",
+      "mobile_real_api_boundary": "NOT_RUN_CAPACITY",
+      "report": {
+        "path": "apps/web-console/test-results/spring-real-engine-tls-pin-final-report/index.html",
+        "sha256": "491667ba4685ecc01e2a1356a5f4ac377f11cf411bd9021998733ccdcd28b751",
+        "bytes": 533250,
+        "repository_evidence_promoted": false
+      }
+    },
+    "browser_mocked_development_journeys": {
+      "status": "PASSED_LOCAL_ENGINEERING_MOCKED_API",
+      "desktop_passed": 7,
+      "mobile_passed": 7,
+      "axe_violations": 0,
+      "scope_boundary": "These UI journeys retain mocked Spring business APIs and are not real migration execution evidence."
+    },
+    "docker_images": {
+      "status": "BLOCKED_CAPACITY",
+      "current_images_present": 0,
+      "current_images_required": 3,
+      "historical_runtime_runner": {
+        "status": "PASSED_LOCAL_NON_CERTIFYING_ARTIFACT_DELETED",
+        "image_id": "sha256:6777a0c878ffafda12168bb86fb7bea3cb3d9a3aa5b27d922bf08d0e41343529",
+        "image_bytes": 267141969,
+        "architecture": "arm64",
+        "runtime_user": "10003:10003",
+        "controls": [
+          "read-only filesystem",
+          "cap-drop ALL",
+          "no-new-privileges",
+          "network none"
+        ],
+        "current_artifact_present": false,
+        "deletion_reason": "Recover local capacity after bounded Spring qualification attempts."
+      },
+      "transformer": {
+        "status": "BLOCKED_CAPACITY",
+        "image_present": false,
+        "runtime_smoke": "NOT_RUN"
+      },
+      "verifier": {
+        "status": "BLOCKED_CAPACITY_NOT_BUILT",
+        "image_present": false,
+        "runtime_smoke": "NOT_RUN"
+      },
+      "three_image_joint_smoke": "NOT_RUN",
+      "rootless_runtime": "NOT_RUN"
+    },
+    "public_complex_repository": {
+      "status": "SUPERSEDED_EXPLORATORY_BLOCKED_SOURCE_PREREQUISITES",
+      "repository": "https://github.com/retro-game/retro-game",
+      "commit": "3d08c4b2ca814acfd873fc7874f724089e5b1d85",
+      "source_tuple": "Spring Boot 2.7.18 / Java 17 / Maven 3.9.11",
+      "corrected_exact_jni_harness_revision": "2e4d0a1bf1856c62789f8843b88bb18c8aaa312e",
+      "corrected_exact_jni_execution": "NOT_RUN",
+      "exploratory_native_result": "INVALIDATED_NOT_PASS_JNI_RESOLVED_JDK26",
+      "declared_tests": 22,
+      "complete_source_baseline": "NOT_RUN_PREREQUISITES",
+      "target_execution": "NOT_RUN_SOURCE_NOT_GREEN",
+      "behavioral_equivalence": "NOT_EVALUATED",
+      "evidence": {
+        "path": "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/real-repository/retro-game-public-qualification-20260809.json",
+        "sha256": "fa4af932b77da480d0c0686208dc62972eff3999105672e0907f0b53e865b706",
+        "bytes": 21917,
+        "promotion_status": "SUPERSEDED_EXPLORATORY_NOT_ELIGIBLE"
+      }
+    },
+    "hosted_engineering_ci": {
+      "status": "SUCCESS_AFTER_BOUNDED_FAILED_JOB_RERUN",
+      "certification_eligible": false,
+      "organizationally_independent": false,
+      "run_url": "https://github.com/zpcaiai/elmos/actions/runs/31317242853",
+      "head_revision": "7b385827960bdef3b47c570465b305c73ac19198",
+      "final_attempt": 2,
+      "overall_result": "SUCCESS",
+      "spring_browser_runner_job": {
+        "status": "SUCCESS",
+        "attempt": 1,
+        "job_id": 93254366054,
+        "url": "https://github.com/zpcaiai/elmos/actions/runs/31317242853/job/93254366054"
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "overall_result": "FAILURE",
+          "successful_spring_relevant_jobs": [
+            {
+              "name": "Java reactor",
+              "job_id": 93254365962,
+              "status": "SUCCESS"
+            },
+            {
+              "name": "Makefile portability and composite targets",
+              "job_id": 93254366068,
+              "status": "SUCCESS"
+            },
+            {
+              "name": "Isolated browser Runner journeys",
+              "job_id": 93254366054,
+              "status": "SUCCESS"
+            }
+          ],
+          "failed_jobs": [
+            {
+              "name": "Web Console",
+              "status": "FAILURE",
+              "failure": "core-business-lines desktop timeout",
+              "spring_scope_relation": "UNRELATED"
+            }
+          ]
+        },
+        {
+          "attempt": 2,
+          "rerun_mode": "--failed",
+          "rerun_scope": "Web Console only",
+          "overall_result": "SUCCESS",
+          "jobs": [
+            {
+              "name": "Web Console",
+              "job_id": 93256057435,
+              "url": "https://github.com/zpcaiai/elmos/actions/runs/31317242853/job/93256057435",
+              "status": "SUCCESS"
+            }
+          ]
+        }
+      ],
+      "superseded_previous_run": {
+        "run_url": "https://github.com/zpcaiai/elmos/actions/runs/31316134388",
+        "head_revision": "2e4d0a1bf1856c62789f8843b88bb18c8aaa312e",
+        "overall_result": "FAILURE",
+        "spring_browser_runner_job": "SUCCESS",
+        "superseded_by_revision": "7b385827960bdef3b47c570465b305c73ac19198",
+        "certification_eligible": false
+      },
+      "final_terminal_refresh_required": false
+    },
+    "signed_external_certification_intake": {
+      "implementation_status": "IMPLEMENTED_LOCAL_ENGINEERING",
+      "content_addressed_evidence": true,
+      "ed25519_role_signatures": true,
+      "separate_executor_verifier_approver": true,
+      "maximum_intake_result": "READY_FOR_EXTERNAL_GATE_REVIEW",
+      "certification_promotion_enabled": false,
+      "real_customer_rootless_independent_intake": "NOT_RUN",
+      "certification_decision": "NOT_CERTIFIED"
+    },
+    "authorized_customer_repository": {
+      "status": "NOT_RUN",
+      "reason": "No authorized customer repository, immutable commit and accountable acceptance authority were supplied."
+    },
+    "rootless_execution": {
+      "status": "NOT_RUN",
+      "reason": "No content-addressed rootless runtime evidence intake was supplied."
+    },
+    "external_independent_verification": {
+      "status": "NOT_RUN",
+      "reason": "No organizationally independent verifier, signed assessment and trust material were supplied; GitHub CI is not independent certification evidence."
+    }
+  },
+  "final_gates": {
+    "boot_pack": {
+      "gate_result": "PASS",
+      "support_status": "limited",
+      "certification_status": "NOT_CERTIFIED"
+    },
+    "spring_mvc_to_boot": {
+      "gate_result": "PASS",
+      "support_status": "experimental",
+      "execution_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED"
+    },
+    "arbitrary_old_spring_behavioral_equivalence": {
+      "evaluation": "NOT_EVALUATED",
+      "success_rate": "NOT_EVALUATED"
+    }
+  },
+  "gate_updates_eligible": [],
+  "raw_evidence_promotion_status": "NOT_RUN",
+  "limitations": [
+    "The real browser boundary covers desktop read-only Spring APIs; full migration execution and its mobile real-API journey are NOT_RUN.",
+    "The identity provider is locally synthesized and the browser uses an exact leaf-SPKI test exception, neither of which is enterprise identity or TLS evidence.",
+    "The UI telemetry endpoint remains mocked, and the separate 7 desktop plus 7 mobile development journeys retain mocked Spring business APIs.",
+    "The historical runtime-runner artifact was deleted to recover capacity; current Docker artifact production is 0 of 3 and the joint smoke is NOT_RUN.",
+    "The prior retro-game native build is invalidated because CMake resolved JDK 26 JNI paths instead of declared JDK 17; the corrected exact-JNI run, all 22 source tests and target execution remain NOT_RUN.",
+    "Signed content-addressed external intake is implemented only as a fail-closed review entry point; certified promotion is disabled and no real intake was executed.",
+    "Customer, rootless and organizationally independent evidence all remain NOT_RUN.",
+    "Four synthetic exact routes cannot support a percentage claim for arbitrary old Spring projects."
+  ]
+}

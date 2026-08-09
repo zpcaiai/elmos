@@ -3,7 +3,8 @@
     "certification/local-reference-evidence.json",
     "certification/local-product-journey-evidence.json",
     "certification/public-reference-route-evidence.json",
-    "certification/local-product-surface-qualification-fbe840c8-20260809.json"
+    "certification/local-product-surface-qualification-fbe840c8-20260809.json",
+    "certification/local-product-surface-qualification-7b385827-20260809.json"
   ],
   "certification_decision": "NOT_CERTIFIED",
   "declared_scope": [
