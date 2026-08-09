@@ -50,8 +50,10 @@ import shutil
 import socket
 import subprocess
 import sys
+import tempfile
 import time
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -756,6 +758,105 @@ def execute(repo: Path, route: Route, workspace: Path) -> dict[str, Any]:
     }
 
 
+def utc_now() -> str:
+    """Return a stable, machine-readable UTC timestamp for attempt auditing."""
+    return datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
+
+
+def write_json_atomic(destination: Path, payload: dict[str, Any]) -> None:
+    """Replace one JSON record atomically without exposing a partial document.
+
+    The temporary file lives beside the destination, so ``os.replace`` remains
+    a same-filesystem atomic rename. This matters most for canonical PASS
+    evidence: an interrupted rerun must leave either the old complete record or
+    the new complete record, never a truncated hybrid.
+    """
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    temporary_path: Path | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            dir=destination.parent,
+            prefix=f".{destination.name}.",
+            suffix=".tmp",
+            delete=False,
+        ) as temporary:
+            temporary_path = Path(temporary.name)
+            temporary.write(
+                json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+            )
+            temporary.flush()
+            os.fsync(temporary.fileno())
+        os.replace(temporary_path, destination)
+        temporary_path = None
+    finally:
+        if temporary_path is not None and temporary_path.exists():
+            temporary_path.unlink()
+
+
+def canonical_execution_status(destination: Path) -> str:
+    """Describe the canonical record without making failure auditing fragile."""
+    if not destination.is_file():
+        return "ABSENT"
+    try:
+        payload = json.loads(destination.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return "UNKNOWN"
+    if not isinstance(payload, dict):
+        return "UNKNOWN"
+    status = payload.get("execution_status")
+    return status if isinstance(status, str) and status else "UNKNOWN"
+
+
+def failure_attempt_destination(repo: Path, route: Route) -> Path:
+    """One stable audit file per route, separate from canonical evidence."""
+    return (
+        repo
+        / "evidence/spring-routes/attempts"
+        / f"{route.route_id}.latest-attempt.json"
+    )
+
+
+def record_failure_attempt(
+    repo: Path,
+    route: Route,
+    canonical_destination: Path,
+    failure: RunFailure,
+) -> Path:
+    """Audit a failed rerun without modifying canonical route evidence."""
+    attempt_destination = failure_attempt_destination(repo, route)
+    try:
+        canonical_path = str(canonical_destination.relative_to(repo))
+    except ValueError:
+        canonical_path = str(canonical_destination)
+    write_json_atomic(
+        attempt_destination,
+        {
+            "schema_version": 1,
+            "record_type": "NON_CERTIFYING_ROUTE_ATTEMPT",
+            "route_id": route.route_id,
+            "attempted_at": utc_now(),
+            "execution_status": "FAILED",
+            "failure": str(failure),
+            "evidence_scope": "LOCAL_ATTEMPT_AUDIT_ONLY",
+            "certification_eligible": False,
+            "canonical_evidence": {
+                "path": canonical_path,
+                "updated": False,
+                "execution_status_at_attempt": canonical_execution_status(
+                    canonical_destination
+                ),
+            },
+            "authorized_customer_repository": "NOT_RUN",
+            "independent_verification": "NOT_RUN",
+            "external_evidence_status": "NOT_RUN",
+            "certification_status": "NOT_CERTIFIED",
+        },
+    )
+    return attempt_destination
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--route", help="route id from SpringRouteCatalog")
@@ -787,21 +888,19 @@ def main() -> int:
     try:
         evidence = execute(repo, route, workspace)
     except RunFailure as failure:
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        destination.write_text(json.dumps({
-            "schema_version": 1,
-            "route_id": route.route_id,
-            "execution_status": "FAILED",
-            "failure": str(failure),
-        }, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        attempt_destination = record_failure_attempt(
+            repo, route, destination, failure
+        )
         print(f"FAIL: {route.route_id}\n{failure}", file=sys.stderr)
-        print(f"recorded at {destination}", file=sys.stderr)
+        print(
+            f"non-certifying attempt recorded at {attempt_destination}",
+            file=sys.stderr,
+        )
+        if destination.exists():
+            print(f"canonical evidence preserved at {destination}", file=sys.stderr)
         return 1
 
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    destination.write_text(
-        json.dumps(evidence, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8")
+    write_json_atomic(destination, evidence)
 
     print(f"PASS: {route.route_id}")
     print(f"evidence: {destination}")

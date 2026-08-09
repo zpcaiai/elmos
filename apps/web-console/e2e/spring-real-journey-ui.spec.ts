@@ -546,8 +546,10 @@ test("页面刷新后使用会话内 Run ID 与显式租户身份恢复最近运
   await expect(page.getByText(`${runId.slice(0, 8)} · #1`)).toBeVisible();
   await expect(page.getByLabel("Spring 目标精确版本")).toHaveValue("3.2.12|17");
   releaseCapability();
-  await expect(page.getByText("Runner 与独立验证器已配置，可以提交精确路线。")).toBeVisible();
-  await expect(page.getByLabel("Spring 目标精确版本")).toHaveValue("3.2.12|17");
+  const targetSelector = page.getByLabel("Spring 目标精确版本");
+  await expect(targetSelector).toBeEnabled();
+  await expect(targetSelector.locator('option[value="3.5.3|21"]')).toHaveCount(1);
+  await expect(targetSelector).toHaveValue("3.2.12|17");
   const metrics = page.getByLabel("精确迁移路线");
   await expect(metrics.getByText("Boot 3.2.12", { exact: true })).toBeVisible();
   await expect(metrics.getByText("Java 17 · 当前 Run 不可变目标", { exact: true })).toBeVisible();

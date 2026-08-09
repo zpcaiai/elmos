@@ -20,7 +20,8 @@
   "runs": [
     "local-reference-evidence.json",
     "local-product-journey-evidence.json",
-    "public-reference-route-evidence.json"
+    "public-reference-route-evidence.json",
+    "local-product-surface-qualification-fbe840c8-20260809.json"
   ],
   "schema_version": 1,
   "silent_framework_drops": 0,

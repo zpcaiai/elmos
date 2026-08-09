@@ -5,7 +5,7 @@ WORKDIR /src
 COPY apps/java-runtime-runner/HealthProbe.java /src/io/elmos/runner/HealthProbe.java
 RUN javac --release 17 -d /runner /src/io/elmos/runner/HealthProbe.java
 
-FROM eclipse-temurin:21-jre@sha256:27339648ce6fc450b3b14701ba8f40141186273fc61f24d93c0e4d6b5b27c396
+FROM eclipse-temurin:21-jre@sha256:8cef5fc7bebe421363ab543a2f4db5caf7d119d8db67d56b0f56c485d2de4d55
 RUN groupadd --gid 10003 runtime \
     && useradd --uid 10003 --gid 10003 --no-create-home --home-dir /nonexistent --shell /usr/sbin/nologin runtime \
     && mkdir -p /app /runner \

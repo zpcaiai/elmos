@@ -551,6 +551,12 @@ def execute(repo: Path) -> Path:
         if public_evidence and (local_evidence / name).is_file():
             runs.append(name)
             evidence_refs.append(f"certification/{name}")
+    qualification_snapshot = (
+        "local-product-surface-qualification-fbe840c8-20260809.json"
+    )
+    if (local_evidence / qualification_snapshot).is_file():
+        runs.append(qualification_snapshot)
+        evidence_refs.append(f"certification/{qualification_snapshot}")
     write_json(
         local_evidence / "evidence.json",
         {
