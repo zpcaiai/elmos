@@ -11,6 +11,8 @@ from typing import Any
 
 
 SHA256 = re.compile(r"[0-9a-f]{64}")
+SIGNED_EXTERNAL_CERTIFICATION_INTAKE_IMPLEMENTED = True
+EXTERNAL_CERTIFICATION_PROMOTION_ENABLED = False
 
 
 def load(path: Path) -> dict[str, Any]:
@@ -304,6 +306,16 @@ def main() -> int:
             failures.append("limited pack must preserve external execution NOT_RUN")
 
     if status == "certified":
+        if not SIGNED_EXTERNAL_CERTIFICATION_INTAKE_IMPLEMENTED:
+            failures.append(
+                "certified status is disabled until signed, content-addressed external "
+                "customer/rootless/independent evidence intake is implemented"
+            )
+        if not EXTERNAL_CERTIFICATION_PROMOTION_ENABLED:
+            failures.append(
+                "certified status remains disabled: verified external intake is review-only "
+                "and cannot promote a framework pack"
+            )
         if evidence.get("external_execution_status") != "PASSED":
             failures.append("certified pack requires external execution PASSED")
         for field in (

@@ -146,6 +146,19 @@ class GenerationRunnerOperationsTests(unittest.TestCase):
         health_route = (
             ROOT / "apps" / "web-console" / "app" / "api" / "health" / "route.ts"
         ).read_text(encoding="utf-8")
+        auth_callback = (
+            ROOT
+            / "apps"
+            / "web-console"
+            / "app"
+            / "api"
+            / "auth"
+            / "callback"
+            / "route.ts"
+        ).read_text(encoding="utf-8")
+        login_page = (
+            ROOT / "apps" / "web-console" / "app" / "login" / "page.tsx"
+        ).read_text(encoding="utf-8")
 
         self.assertIn("USER 10001:10001", dockerfile)
         self.assertIn("HEALTHCHECK", dockerfile)
@@ -168,7 +181,16 @@ class GenerationRunnerOperationsTests(unittest.TestCase):
         self.assertIn("RESTART_RECOVERY_LIMIT_EXCEEDED", runner_source)
         self.assertIn("reconcilePersistentQueue", runner_source)
         self.assertIn('probe === "liveness"', health_route)
-        self.assertIn('runner.status === "BLOCKED" ? 503 : 200', health_route)
+        self.assertIn('const blocked = runner.status === "BLOCKED"', health_route)
+        self.assertIn(
+            'dependencies.some((dependency) => dependency.status === "BLOCKED")',
+            health_route,
+        )
+        self.assertIn("const status = blocked ? 503 : 200", health_route)
+        self.assertIn("trustedPublicOrigin(request)", auth_callback)
+        self.assertNotIn("new URL(flow.returnTo, request.url)", auth_callback)
+        self.assertNotIn('import Link from "next/link"', login_page)
+        self.assertIn('href={`/api/auth/login?', login_page)
 
 
 if __name__ == "__main__":

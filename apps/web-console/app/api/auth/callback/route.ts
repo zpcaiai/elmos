@@ -1,19 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   accountCookieNames,
+  accountCookieDeletionOptions,
   exchangeAuthorizationCode,
   readAuthorizationFlow,
   sessionCookieMaxAge,
+  trustedPublicOrigin,
 } from "../../../lib/server/accountSession";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 function loginError(request: NextRequest, code: string): NextResponse {
-  const target = new URL("/login", request.url);
+  const target = new URL("/login", trustedPublicOrigin(request));
   target.searchParams.set("error", code);
   const response = NextResponse.redirect(target, 302);
-  response.cookies.delete(accountCookieNames.authorizationFlow);
+  response.cookies.set(
+    accountCookieNames.authorizationFlow,
+    "",
+    accountCookieDeletionOptions(accountCookieNames.authorizationFlow),
+  );
   response.headers.set("Cache-Control", "no-store, private");
   return response;
 }
@@ -30,7 +36,10 @@ export async function GET(request: NextRequest) {
   try {
     const flow = readAuthorizationFlow(sealedFlow, state);
     const result = await exchangeAuthorizationCode(code, flow);
-    const response = NextResponse.redirect(new URL(flow.returnTo, request.url), 302);
+    const response = NextResponse.redirect(
+      new URL(flow.returnTo, trustedPublicOrigin(request)),
+      302,
+    );
     const maxAge = sessionCookieMaxAge(result.expiresAt);
     response.cookies.set(accountCookieNames.session, result.session, {
       httpOnly: true,
@@ -55,8 +64,16 @@ export async function GET(request: NextRequest) {
         maxAge: 8 * 60 * 60,
       });
     }
-    response.cookies.delete(accountCookieNames.authorizationFlow);
-    response.cookies.delete(accountCookieNames.tenant);
+    response.cookies.set(
+      accountCookieNames.authorizationFlow,
+      "",
+      accountCookieDeletionOptions(accountCookieNames.authorizationFlow),
+    );
+    response.cookies.set(
+      accountCookieNames.tenant,
+      "",
+      accountCookieDeletionOptions(accountCookieNames.tenant),
+    );
     response.headers.set("Cache-Control", "no-store, private");
     return response;
   } catch (error) {

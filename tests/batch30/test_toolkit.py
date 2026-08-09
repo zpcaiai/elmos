@@ -131,6 +131,58 @@ class ToolkitTests(unittest.TestCase):
             self.assertEqual(rejected.returncode, 1)
             self.assertIn("pack and certification statuses must match", rejected.stderr)
 
+    def test_certified_gate_rejects_status_only_external_claims(self):
+        with tempfile.TemporaryDirectory() as td:
+            pack = Path(td) / "spring-boot-2-7-18-to-3-5-3"
+            shutil.copytree(
+                ROOT / "framework-packs" / "spring-boot-2-7-18-to-3-5-3",
+                pack,
+                ignore=shutil.ignore_patterns("target", "*.log"),
+            )
+            manifest_path = pack / "pack.json"
+            manifest = json.loads(manifest_path.read_text())
+            manifest["status"] = "certified"
+            manifest_path.write_text(json.dumps(manifest, indent=2) + "\n")
+
+            support_path = pack / "support-matrix.json"
+            support = json.loads(support_path.read_text())
+            for capability in support["capabilities"]:
+                if capability.get("status") == "supported":
+                    capability["status"] = "certified"
+            support_path.write_text(json.dumps(support, indent=2) + "\n")
+
+            evidence_path = pack / "certification" / "evidence.json"
+            evidence = json.loads(evidence_path.read_text())
+            evidence["external_execution_status"] = "PASSED"
+            evidence_path.write_text(json.dumps(evidence, indent=2) + "\n")
+
+            certification_path = pack / "certification" / "certification.json"
+            certification = json.loads(certification_path.read_text())
+            certification["status"] = "certified"
+            certification["certification_decision"] = "CERTIFIED"
+            for field in (
+                "authorized_customer_repository",
+                "customer_holdout",
+                "rootless_runner",
+                "rootless_transformer",
+                "rootless_verifier",
+                "independent_review",
+            ):
+                certification["gate_results"][field] = "PASSED"
+            certification_path.write_text(json.dumps(certification, indent=2) + "\n")
+
+            rejected = subprocess.run(
+                [sys.executable, str(SCRIPTS / "run_framework_gate.py"), str(pack)],
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(rejected.returncode, 2, rejected.stdout + rejected.stderr)
+            self.assertIn(
+                "certified status remains disabled: verified external intake is review-only",
+                rejected.stderr,
+            )
+
     def test_limited_gate_rejects_zero_test_public_evidence(self):
         with tempfile.TemporaryDirectory() as td:
             pack = Path(td) / "spring-boot-2-7-18-to-3-5-3"

@@ -1,0 +1,78 @@
+{
+  "_template_status": "NOT_RUN_REMOVE_BEFORE_VALIDATION",
+  "schema_version": 1,
+  "namespace": "batch30-framework-external-certification",
+  "keys": [
+    {
+      "key_id": "UNKNOWN",
+      "actor_id": "UNKNOWN",
+      "organization_id": "UNKNOWN",
+      "roles": ["batch30-customer-authorizer"],
+      "public_key_path": "keys/customer-authorizer.pem",
+      "not_before": "UNKNOWN",
+      "not_after": "UNKNOWN",
+      "revoked": true
+    },
+    {
+      "key_id": "UNKNOWN",
+      "actor_id": "UNKNOWN",
+      "organization_id": "UNKNOWN",
+      "roles": ["batch30-customer-repository-verifier"],
+      "public_key_path": "keys/customer-repository-verifier.pem",
+      "not_before": "UNKNOWN",
+      "not_after": "UNKNOWN",
+      "revoked": true
+    },
+    {
+      "key_id": "UNKNOWN",
+      "actor_id": "UNKNOWN",
+      "organization_id": "UNKNOWN",
+      "roles": ["batch30-customer-holdout-verifier"],
+      "public_key_path": "keys/customer-holdout-verifier.pem",
+      "not_before": "UNKNOWN",
+      "not_after": "UNKNOWN",
+      "revoked": true
+    },
+    {
+      "key_id": "UNKNOWN",
+      "actor_id": "UNKNOWN",
+      "organization_id": "UNKNOWN",
+      "roles": ["batch30-rootless-runner-attestor"],
+      "public_key_path": "keys/rootless-runner-attestor.pem",
+      "not_before": "UNKNOWN",
+      "not_after": "UNKNOWN",
+      "revoked": true
+    },
+    {
+      "key_id": "UNKNOWN",
+      "actor_id": "UNKNOWN",
+      "organization_id": "UNKNOWN",
+      "roles": ["batch30-rootless-transformer-attestor"],
+      "public_key_path": "keys/rootless-transformer-attestor.pem",
+      "not_before": "UNKNOWN",
+      "not_after": "UNKNOWN",
+      "revoked": true
+    },
+    {
+      "key_id": "UNKNOWN",
+      "actor_id": "UNKNOWN",
+      "organization_id": "UNKNOWN",
+      "roles": ["batch30-rootless-verifier-attestor"],
+      "public_key_path": "keys/rootless-verifier-attestor.pem",
+      "not_before": "UNKNOWN",
+      "not_after": "UNKNOWN",
+      "revoked": true
+    },
+    {
+      "key_id": "UNKNOWN",
+      "actor_id": "UNKNOWN",
+      "organization_id": "UNKNOWN",
+      "roles": ["batch30-independent-verifier"],
+      "public_key_path": "keys/independent-verifier.pem",
+      "not_before": "UNKNOWN",
+      "not_after": "UNKNOWN",
+      "revoked": true
+    }
+  ],
+  "revoked_record_ids": []
+}

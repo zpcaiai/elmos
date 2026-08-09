@@ -1,0 +1,350 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/batch30/external-certification-intake.schema.json",
+  "title": "Batch 30 signed external certification evidence intake",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "namespace",
+    "intake_id",
+    "producer_organization_id",
+    "customer_organization_id",
+    "rootless_organization_id",
+    "independent_organization_id",
+    "binding",
+    "artifact",
+    "execution_profile",
+    "customer_authorization",
+    "evidence"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "namespace": {"const": "batch30-framework-external-certification"},
+    "intake_id": {"$ref": "#/$defs/identity"},
+    "producer_organization_id": {"$ref": "#/$defs/identity"},
+    "customer_organization_id": {"$ref": "#/$defs/identity"},
+    "rootless_organization_id": {"$ref": "#/$defs/identity"},
+    "independent_organization_id": {"$ref": "#/$defs/identity"},
+    "binding": {"$ref": "#/$defs/binding"},
+    "artifact": {"$ref": "#/$defs/contentReference"},
+    "execution_profile": {"$ref": "#/$defs/contentReference"},
+    "customer_authorization": {"$ref": "#/$defs/signedEnvelope"},
+    "evidence": {
+      "type": "object",
+      "required": [
+        "authorized_customer_repository",
+        "customer_holdout",
+        "rootless_runner",
+        "rootless_transformer",
+        "rootless_verifier",
+        "independent_review"
+      ],
+      "properties": {
+        "authorized_customer_repository": {"$ref": "#/$defs/evidenceItem"},
+        "customer_holdout": {"$ref": "#/$defs/evidenceItem"},
+        "rootless_runner": {"$ref": "#/$defs/evidenceItem"},
+        "rootless_transformer": {"$ref": "#/$defs/evidenceItem"},
+        "rootless_verifier": {"$ref": "#/$defs/evidenceItem"},
+        "independent_review": {"$ref": "#/$defs/evidenceItem"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "identity": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,199}$",
+      "not": {"enum": ["UNKNOWN", "INCONCLUSIVE", "NOT_RUN", "NOT_EVALUATED", "BLOCKED"]}
+    },
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "tuple": {
+      "type": "object",
+      "required": [
+        "framework",
+        "framework_version",
+        "runtime",
+        "runtime_version",
+        "build_tool",
+        "provider_versions"
+      ],
+      "properties": {
+        "framework": {"$ref": "#/$defs/identity"},
+        "framework_version": {"$ref": "#/$defs/identity"},
+        "runtime": {"$ref": "#/$defs/identity"},
+        "runtime_version": {"$ref": "#/$defs/identity"},
+        "build_tool": {"$ref": "#/$defs/identity"},
+        "provider_versions": {"type": "object"}
+      },
+      "additionalProperties": false
+    },
+    "binding": {
+      "type": "object",
+      "required": [
+        "pack_key",
+        "pack_version",
+        "pack_manifest_digest",
+        "source_tuple",
+        "target_tuple",
+        "version_matrix_digest",
+        "recipe_manifest_digest",
+        "target_profile_digest",
+        "artifact_digest",
+        "artifact_size_bytes",
+        "execution_profile_digest",
+        "execution_profile_size_bytes"
+      ],
+      "properties": {
+        "pack_key": {"$ref": "#/$defs/identity"},
+        "pack_version": {"$ref": "#/$defs/identity"},
+        "pack_manifest_digest": {"$ref": "#/$defs/digest"},
+        "source_tuple": {"$ref": "#/$defs/tuple"},
+        "target_tuple": {"$ref": "#/$defs/tuple"},
+        "version_matrix_digest": {"$ref": "#/$defs/digest"},
+        "recipe_manifest_digest": {"$ref": "#/$defs/digest"},
+        "target_profile_digest": {"$ref": "#/$defs/digest"},
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "artifact_size_bytes": {"type": "integer", "minimum": 1},
+        "execution_profile_digest": {"$ref": "#/$defs/digest"},
+        "execution_profile_size_bytes": {"type": "integer", "minimum": 1}
+      },
+      "additionalProperties": false
+    },
+    "contentReference": {
+      "type": "object",
+      "required": ["uri", "digest", "size_bytes", "media_type"],
+      "properties": {
+        "uri": {"type": "string", "pattern": "^file://"},
+        "digest": {"$ref": "#/$defs/digest"},
+        "size_bytes": {"type": "integer", "minimum": 1},
+        "media_type": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "authorizationScope": {
+      "type": "object",
+      "required": [
+        "action",
+        "pack_key",
+        "pack_version",
+        "binding_digest",
+        "artifact_digest",
+        "execution_profile_digest",
+        "producer_organization_id",
+        "customer_organization_id",
+        "rootless_organization_id",
+        "independent_organization_id",
+        "evidence_types",
+        "evidence_content_digests"
+      ],
+      "properties": {
+        "action": {"const": "validate-batch30-external-certification-intake"},
+        "pack_key": {"$ref": "#/$defs/identity"},
+        "pack_version": {"$ref": "#/$defs/identity"},
+        "binding_digest": {"$ref": "#/$defs/digest"},
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "execution_profile_digest": {"$ref": "#/$defs/digest"},
+        "producer_organization_id": {"$ref": "#/$defs/identity"},
+        "customer_organization_id": {"$ref": "#/$defs/identity"},
+        "rootless_organization_id": {"$ref": "#/$defs/identity"},
+        "independent_organization_id": {"$ref": "#/$defs/identity"},
+        "evidence_types": {
+          "type": "array",
+          "minItems": 6,
+          "maxItems": 6,
+          "prefixItems": [
+            {"const": "authorized_customer_repository"},
+            {"const": "customer_holdout"},
+            {"const": "rootless_runner"},
+            {"const": "rootless_transformer"},
+            {"const": "rootless_verifier"},
+            {"const": "independent_review"}
+          ],
+          "items": false
+        },
+        "evidence_content_digests": {
+          "type": "object",
+          "required": [
+            "authorized_customer_repository",
+            "customer_holdout",
+            "rootless_runner",
+            "rootless_transformer",
+            "rootless_verifier",
+            "independent_review"
+          ],
+          "properties": {
+            "authorized_customer_repository": {"$ref": "#/$defs/digest"},
+            "customer_holdout": {"$ref": "#/$defs/digest"},
+            "rootless_runner": {"$ref": "#/$defs/digest"},
+            "rootless_transformer": {"$ref": "#/$defs/digest"},
+            "rootless_verifier": {"$ref": "#/$defs/digest"},
+            "independent_review": {"$ref": "#/$defs/digest"}
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "authorizationPayload": {
+      "type": "object",
+      "required": [
+        "record_id",
+        "issued_at",
+        "expires_at",
+        "actor_id",
+        "organization_id",
+        "role",
+        "intake_id",
+        "binding_digest",
+        "scope",
+        "outcome",
+        "synthetic",
+        "unknowns",
+        "not_run"
+      ],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/identity"},
+        "issued_at": {"type": "string", "format": "date-time"},
+        "expires_at": {"type": "string", "format": "date-time"},
+        "actor_id": {"$ref": "#/$defs/identity"},
+        "organization_id": {"$ref": "#/$defs/identity"},
+        "role": {"const": "batch30-customer-authorizer"},
+        "intake_id": {"$ref": "#/$defs/identity"},
+        "binding_digest": {"$ref": "#/$defs/digest"},
+        "scope": {"$ref": "#/$defs/authorizationScope"},
+        "outcome": {"const": "AUTHORIZED"},
+        "synthetic": {"const": false},
+        "unknowns": {"type": "array", "maxItems": 0},
+        "not_run": {"type": "array", "maxItems": 0}
+      },
+      "additionalProperties": false
+    },
+    "customerRepositoryClaims": {
+      "const": {"authorized_repository": true, "fixed_commit": true, "acceptance_subject_bound": true}
+    },
+    "customerHoldoutClaims": {
+      "const": {"independent_from_development": true, "customer_owned_acceptance": true}
+    },
+    "rootlessClaims": {
+      "const": {"rootless": true, "privileged": false, "effective_uid_nonzero": true}
+    },
+    "independentClaims": {
+      "const": {"organizationally_independent": true, "separate_executor_and_verifier": true}
+    },
+    "attestationPayload": {
+      "type": "object",
+      "required": [
+        "record_id",
+        "issued_at",
+        "expires_at",
+        "actor_id",
+        "organization_id",
+        "role",
+        "intake_id",
+        "binding_digest",
+        "authorization_record_id",
+        "authorization_payload_digest",
+        "evidence_type",
+        "content_digest",
+        "content_size_bytes",
+        "outcome",
+        "evidence_class",
+        "synthetic",
+        "unknowns",
+        "not_run",
+        "claims"
+      ],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/identity"},
+        "issued_at": {"type": "string", "format": "date-time"},
+        "expires_at": {"type": "string", "format": "date-time"},
+        "actor_id": {"$ref": "#/$defs/identity"},
+        "organization_id": {"$ref": "#/$defs/identity"},
+        "role": {"$ref": "#/$defs/identity"},
+        "intake_id": {"$ref": "#/$defs/identity"},
+        "binding_digest": {"$ref": "#/$defs/digest"},
+        "authorization_record_id": {"$ref": "#/$defs/identity"},
+        "authorization_payload_digest": {"$ref": "#/$defs/digest"},
+        "evidence_type": {"$ref": "#/$defs/identity"},
+        "content_digest": {"$ref": "#/$defs/digest"},
+        "content_size_bytes": {"type": "integer", "minimum": 1},
+        "outcome": {"const": "PASS"},
+        "evidence_class": {"const": "EXTERNAL_NON_SYNTHETIC"},
+        "synthetic": {"const": false},
+        "unknowns": {"type": "array", "maxItems": 0},
+        "not_run": {"type": "array", "maxItems": 0},
+        "claims": {"type": "object"}
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "evidence_type": {"const": "authorized_customer_repository"},
+            "role": {"const": "batch30-customer-repository-verifier"},
+            "claims": {"$ref": "#/$defs/customerRepositoryClaims"}
+          }
+        },
+        {
+          "properties": {
+            "evidence_type": {"const": "customer_holdout"},
+            "role": {"const": "batch30-customer-holdout-verifier"},
+            "claims": {"$ref": "#/$defs/customerHoldoutClaims"}
+          }
+        },
+        {
+          "properties": {
+            "evidence_type": {"const": "rootless_runner"},
+            "role": {"const": "batch30-rootless-runner-attestor"},
+            "claims": {"$ref": "#/$defs/rootlessClaims"}
+          }
+        },
+        {
+          "properties": {
+            "evidence_type": {"const": "rootless_transformer"},
+            "role": {"const": "batch30-rootless-transformer-attestor"},
+            "claims": {"$ref": "#/$defs/rootlessClaims"}
+          }
+        },
+        {
+          "properties": {
+            "evidence_type": {"const": "rootless_verifier"},
+            "role": {"const": "batch30-rootless-verifier-attestor"},
+            "claims": {"$ref": "#/$defs/rootlessClaims"}
+          }
+        },
+        {
+          "properties": {
+            "evidence_type": {"const": "independent_review"},
+            "role": {"const": "batch30-independent-verifier"},
+            "claims": {"$ref": "#/$defs/independentClaims"}
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "signedEnvelope": {
+      "type": "object",
+      "required": ["algorithm", "key_id", "payload", "signature"],
+      "properties": {
+        "algorithm": {"const": "ed25519"},
+        "key_id": {"$ref": "#/$defs/identity"},
+        "payload": {
+          "oneOf": [
+            {"$ref": "#/$defs/authorizationPayload"},
+            {"$ref": "#/$defs/attestationPayload"}
+          ]
+        },
+        "signature": {"type": "string", "minLength": 1, "pattern": "^[A-Za-z0-9_+/=-]+$"}
+      },
+      "additionalProperties": false
+    },
+    "evidenceItem": {
+      "type": "object",
+      "required": ["content", "attestation"],
+      "properties": {
+        "content": {"$ref": "#/$defs/contentReference"},
+        "attestation": {"$ref": "#/$defs/signedEnvelope"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

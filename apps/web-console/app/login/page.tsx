@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { oidcConfigured } from "../lib/server/accountSession";
 
 export const metadata: Metadata = { title: "登录" };
@@ -33,12 +32,12 @@ export default async function LoginPage({
         <p>通过企业 OIDC 身份提供商登录。租户、角色和权限只从已验证的令牌声明派生。</p>
         {error && <div className="auth-error" role="alert">{error}</div>}
         {configured ? (
-          <Link
+          <a
             className="button button-primary"
             href={`/api/auth/login?${new URLSearchParams({ returnTo })}`}
           >
             使用企业账户登录
-          </Link>
+          </a>
         ) : (
           <div className="auth-not-configured" role="status">
             <strong>身份提供商未配置</strong>

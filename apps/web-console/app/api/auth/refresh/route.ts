@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   accountCookieNames,
+  accountCookieDeletionOptions,
   accountSessionErrorResponse,
   assertSameOriginMutation,
   refreshAccountSession,
@@ -55,7 +56,11 @@ export async function POST(request: NextRequest) {
         maxAge: 8 * 60 * 60,
       });
     }
-    response.cookies.delete(accountCookieNames.tenant);
+    response.cookies.set(
+      accountCookieNames.tenant,
+      "",
+      accountCookieDeletionOptions(accountCookieNames.tenant),
+    );
     response.headers.set("Cache-Control", "no-store, private");
     return response;
   } catch (error) {

@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/batch30/external-evidence-trust-store.schema.json",
+  "title": "Batch 30 external evidence Ed25519 trust store",
+  "type": "object",
+  "required": ["schema_version", "namespace", "keys", "revoked_record_ids"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "namespace": {"const": "batch30-framework-external-certification"},
+    "keys": {
+      "type": "array",
+      "minItems": 7,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "required": [
+          "key_id",
+          "actor_id",
+          "organization_id",
+          "roles",
+          "public_key_path",
+          "not_before",
+          "not_after",
+          "revoked"
+        ],
+        "properties": {
+          "key_id": {"$ref": "#/$defs/identity"},
+          "actor_id": {"$ref": "#/$defs/identity"},
+          "organization_id": {"$ref": "#/$defs/identity"},
+          "roles": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                "batch30-customer-authorizer",
+                "batch30-customer-repository-verifier",
+                "batch30-customer-holdout-verifier",
+                "batch30-rootless-runner-attestor",
+                "batch30-rootless-transformer-attestor",
+                "batch30-rootless-verifier-attestor",
+                "batch30-independent-verifier"
+              ]
+            }
+          },
+          "public_key_path": {"type": "string", "minLength": 1},
+          "not_before": {"type": "string", "format": "date-time"},
+          "not_after": {"type": "string", "format": "date-time"},
+          "revoked": {"type": "boolean"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "revoked_record_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/identity"}
+    }
+  },
+  "$defs": {
+    "identity": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,199}$",
+      "not": {"enum": ["UNKNOWN", "INCONCLUSIVE", "NOT_RUN", "NOT_EVALUATED", "BLOCKED"]}
+    }
+  },
+  "additionalProperties": false
+}

@@ -7,24 +7,82 @@ const commit = "a".repeat(40);
 const artifactBody = Buffer.from("PK\u0003\u0004ELMOS-E2E");
 const artifactSha = createHash("sha256").update(artifactBody).digest("hex");
 const snapshotSha = "c".repeat(64);
+const productionOidcEnabled = process.env.ELMOS_E2E_WEB_SERVER_MODE === "production"
+  && process.env.ELMOS_E2E_PRODUCTION_OIDC === "true";
+
+async function establishProductionOidcSession(page: Page) {
+  await page.goto("/login?returnTo=/");
+  await expect(page.getByText("身份提供商未配置", { exact: true })).toHaveCount(0);
+  await page.getByRole("link", { name: "使用企业账户登录" }).click();
+  await expect(page.getByRole("heading", { name: "选择合成测试身份" })).toBeVisible();
+  await page.getByRole("button", { name: "以 Spring E2E 开发者登录" }).click();
+  await expect(page).toHaveURL(/\/$/);
+
+  const session = await page.evaluate(async () => {
+    const response = await fetch("/api/auth/session", { cache: "no-store" });
+    return { status: response.status, body: await response.json() };
+  });
+  expect(session).toMatchObject({
+    status: 200,
+    body: {
+      authenticated: true,
+      configured: true,
+      principal: {
+        actorId: "user:spring-production-e2e",
+        organizationId: "spring-production-e2e",
+        roles: ["DEVELOPER"],
+      },
+    },
+  });
+  expect(session.body.principal.permissions).toContain("spring:execute");
+  const cookies = await page.context().cookies();
+  for (const name of ["__Host-elmos_session", "__Host-elmos_access_token"]) {
+    expect(cookies).toContainEqual(expect.objectContaining({
+      name,
+      httpOnly: true,
+      secure: true,
+      sameSite: "Lax",
+    }));
+  }
+  expect(cookies.map(({ name }) => name)).not.toContain("__Host-elmos_authorization_flow");
+  expect(await page.evaluate(() => document.cookie)).not.toContain("__Host-elmos_");
+}
 
 test.beforeEach(async ({ page }) => {
   await page.route("**/api/telemetry/events", (route) =>
     route.fulfill({ status: 204, body: "" }));
-  // This suite exercises the explicit short-lived Spring Runner lease. Keep
-  // the account-session probe deterministic and cover its fail-closed 401
-  // contract separately in account-session-ui.spec.ts.
-  await page.route("**/api/auth/session", (route) =>
+  // The seven Spring UI journeys use browser-level business API fixtures. Keep
+  // the authenticated GitHub catalog in that same explicit mock boundary; the
+  // separate production OIDC boundary suite does not install this route.
+  await page.route("**/api/github-repositories", (route) =>
     route.fulfill({
       status: 200,
       contentType: "application/json",
+      headers: { "cache-control": "no-store" },
       body: JSON.stringify({
-        authenticated: false,
-        configured: false,
-        principal: null,
-        expiresAt: null,
+        status: "NOT_CONFIGURED",
+        repositories: [],
+        message: "GitHub App is outside this Spring UI fixture.",
       }),
     }));
+  // This suite exercises the explicit short-lived Spring Runner lease. Keep
+  // the account-session probe deterministic and cover its fail-closed 401
+  // contract separately in account-session-ui.spec.ts.
+  if (productionOidcEnabled) {
+    await establishProductionOidcSession(page);
+  } else {
+    await page.route("**/api/auth/session", (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          authenticated: false,
+          configured: false,
+          principal: null,
+          expiresAt: null,
+        }),
+      }));
+  }
 });
 
 const capabilities = {
@@ -286,6 +344,15 @@ async function fulfillJson(route: Route, value: unknown, status = 200) {
 }
 
 async function fillSpringCredentials(page: Page) {
+  if (productionOidcEnabled) {
+    await expect(page.getByText("企业 OIDC · spring:execute", { exact: true })).toBeVisible();
+    await expect(page.getByLabel("Spring 租户标识")).toHaveValue("spring-production-e2e");
+    await expect(page.getByLabel("Spring 执行者标识")).toHaveValue("user:spring-production-e2e");
+    await expect(page.getByLabel("Spring 租户标识")).toHaveAttribute("readonly", "");
+    await expect(page.getByLabel("Spring 执行者标识")).toHaveAttribute("readonly", "");
+    await expect(page.getByLabel("Spring 代理短期令牌")).toHaveCount(0);
+    return;
+  }
   await page.getByLabel("Spring 租户标识").fill("spring-e2e");
   await page.getByLabel("Spring 执行者标识").fill("user:spring-e2e");
   await page.getByLabel("Spring 代理短期令牌").fill("spring-e2e-short-lived-token-32-characters");

@@ -1,0 +1,112 @@
+{
+  "_template_status": "NOT_RUN_REMOVE_BEFORE_VALIDATION",
+  "schema_version": 1,
+  "namespace": "batch30-framework-external-certification",
+  "intake_id": "UNKNOWN",
+  "producer_organization_id": "UNKNOWN",
+  "customer_organization_id": "UNKNOWN",
+  "rootless_organization_id": "UNKNOWN",
+  "independent_organization_id": "UNKNOWN",
+  "binding": {
+    "pack_key": "UNKNOWN",
+    "pack_version": "UNKNOWN",
+    "pack_manifest_digest": "sha256:UNKNOWN",
+    "source_tuple": {
+      "framework": "UNKNOWN",
+      "framework_version": "UNKNOWN",
+      "runtime": "UNKNOWN",
+      "runtime_version": "UNKNOWN",
+      "build_tool": "UNKNOWN",
+      "provider_versions": {}
+    },
+    "target_tuple": {
+      "framework": "UNKNOWN",
+      "framework_version": "UNKNOWN",
+      "runtime": "UNKNOWN",
+      "runtime_version": "UNKNOWN",
+      "build_tool": "UNKNOWN",
+      "provider_versions": {}
+    },
+    "version_matrix_digest": "sha256:UNKNOWN",
+    "recipe_manifest_digest": "sha256:UNKNOWN",
+    "target_profile_digest": "sha256:UNKNOWN",
+    "artifact_digest": "sha256:UNKNOWN",
+    "artifact_size_bytes": 0,
+    "execution_profile_digest": "sha256:UNKNOWN",
+    "execution_profile_size_bytes": 0
+  },
+  "artifact": {
+    "uri": "file:///approved/evidence/UNKNOWN",
+    "digest": "sha256:UNKNOWN",
+    "size_bytes": 0,
+    "media_type": "application/octet-stream"
+  },
+  "execution_profile": {
+    "uri": "file:///approved/evidence/UNKNOWN",
+    "digest": "sha256:UNKNOWN",
+    "size_bytes": 0,
+    "media_type": "application/json"
+  },
+  "customer_authorization": {
+    "algorithm": "ed25519",
+    "key_id": "UNKNOWN",
+    "payload": {},
+    "signature": "UNKNOWN"
+  },
+  "evidence": {
+    "authorized_customer_repository": {
+      "content": {
+        "uri": "file:///approved/evidence/UNKNOWN",
+        "digest": "sha256:UNKNOWN",
+        "size_bytes": 0,
+        "media_type": "application/json"
+      },
+      "attestation": {"algorithm": "ed25519", "key_id": "UNKNOWN", "payload": {}, "signature": "UNKNOWN"}
+    },
+    "customer_holdout": {
+      "content": {
+        "uri": "file:///approved/evidence/UNKNOWN",
+        "digest": "sha256:UNKNOWN",
+        "size_bytes": 0,
+        "media_type": "application/json"
+      },
+      "attestation": {"algorithm": "ed25519", "key_id": "UNKNOWN", "payload": {}, "signature": "UNKNOWN"}
+    },
+    "rootless_runner": {
+      "content": {
+        "uri": "file:///approved/evidence/UNKNOWN",
+        "digest": "sha256:UNKNOWN",
+        "size_bytes": 0,
+        "media_type": "application/json"
+      },
+      "attestation": {"algorithm": "ed25519", "key_id": "UNKNOWN", "payload": {}, "signature": "UNKNOWN"}
+    },
+    "rootless_transformer": {
+      "content": {
+        "uri": "file:///approved/evidence/UNKNOWN",
+        "digest": "sha256:UNKNOWN",
+        "size_bytes": 0,
+        "media_type": "application/json"
+      },
+      "attestation": {"algorithm": "ed25519", "key_id": "UNKNOWN", "payload": {}, "signature": "UNKNOWN"}
+    },
+    "rootless_verifier": {
+      "content": {
+        "uri": "file:///approved/evidence/UNKNOWN",
+        "digest": "sha256:UNKNOWN",
+        "size_bytes": 0,
+        "media_type": "application/json"
+      },
+      "attestation": {"algorithm": "ed25519", "key_id": "UNKNOWN", "payload": {}, "signature": "UNKNOWN"}
+    },
+    "independent_review": {
+      "content": {
+        "uri": "file:///approved/evidence/UNKNOWN",
+        "digest": "sha256:UNKNOWN",
+        "size_bytes": 0,
+        "media_type": "application/json"
+      },
+      "attestation": {"algorithm": "ed25519", "key_id": "UNKNOWN", "payload": {}, "signature": "UNKNOWN"}
+    }
+  }
+}

@@ -1,0 +1,183 @@
+{
+  "schema_version": 1,
+  "pack_key": "spring-boot-2-7-18-to-3-5-3",
+  "evidence_scope": "local-public-engineering-only",
+  "customer_repository": false,
+  "independent_verification": false,
+  "minimum_free_bytes": 10737418240,
+  "repositories": [
+    {
+      "id": "retro-game",
+      "role": "public-complex-negative",
+      "customer_repository": false,
+      "independent_verification": false,
+      "repository_url": "https://github.com/retro-game/retro-game",
+      "commit_sha": "3d08c4b2ca814acfd873fc7874f724089e5b1d85",
+      "tree_sha": "0d1d5b20c725f559d9f996609ebbe11a56832a41",
+      "commit_timestamp": "2026-01-25T21:46:42-08:00",
+      "archive": {
+        "url": "https://codeload.github.com/retro-game/retro-game/tar.gz/3d08c4b2ca814acfd873fc7874f724089e5b1d85",
+        "root": "retro-game-3d08c4b2ca814acfd873fc7874f724089e5b1d85",
+        "sha256": "4b911b019025fdc75e8168095b32d225536810385196133ab1d3f26f92cc6794",
+        "bytes": 4202611
+      },
+      "source_tuple": {
+        "spring_boot": "2.7.18",
+        "java": "17",
+        "maven": "3.9.11",
+        "junit_jupiter": "5.8.2",
+        "junit4": "4.13.2",
+        "testcontainers": "1.21.3"
+      },
+      "toolchain_assertions": {
+        "java_version_fragment": "17.0.11",
+        "target_java_version_fragment": "21.0.11",
+        "maven_version_fragment": "Apache Maven 3.9.11",
+        "cmake_version_fragment": "cmake version 4.4.0"
+      },
+      "required_files": [
+        {
+          "path": "pom.xml",
+          "sha256": "901f3c124d8784b6b976319a3fe067448339f7ad66b2ad312631956984c59492"
+        },
+        {
+          "path": "battle-engine/CMakeLists.txt",
+          "sha256": "e57dbd41349adcabd31c22864df555fc5ef9753ec36018533b734c84d8699f19"
+        },
+        {
+          "path": ".github/workflows/ci.yml",
+          "sha256": "c49d2d50edc9ceb1fa4f709d04856a713997a09f798c33c73f93fe1ce5f0bd47"
+        },
+        {
+          "path": "Dockerfile",
+          "sha256": "aee0dbaa1e9253b6bf71e7ef0ad48fa0055c7abc9b6e42e95719ee633fde868d"
+        },
+        {
+          "path": "docker-compose.yml",
+          "sha256": "15db21a106c62b5da09cbd46e4d5a65db53afa1f5f1e1f412a9f052a49fd821a"
+        },
+        {
+          "path": "src/test/java/com/github/retro_game/retro_game/differential/BattleEngineDifferentialTest.java",
+          "sha256": "efe01e34aad78ec9be7963033f82225c1c3ae17b5f05116c8519908fa40d7ec3"
+        },
+        {
+          "path": "src/test/java/com/github/retro_game/retro_game/integration/IntegrationTest.java",
+          "sha256": "b5219e1f3aec49344991447c55070076249ce59543a33dbedb628806b204ef6b"
+        },
+        {
+          "path": "src/test/java/com/github/retro_game/retro_game/integration/ShipyardServiceIntegrationTest.java",
+          "sha256": "0d73705eb771d1d2f0833de30ea100edb7bdf43333843ba023abaa5a5a85588e"
+        },
+        {
+          "path": "src/test/java/com/github/retro_game/retro_game/unit/BattleEngineUnitTest.java",
+          "sha256": "57dec4f2f8a03b0b7053ba7ba5356bd13e698b52c5a68fae50cc94109ed4c09a"
+        }
+      ],
+      "test_inventory": {
+        "test_source_files": 4,
+        "junit_jupiter_tests": 2,
+        "junit4_tests": 20,
+        "total_tests": 22
+      },
+      "test_discovery_overlay": {
+        "artifact": "org.junit.vintage:junit-vintage-engine",
+        "version": "5.8.2",
+        "scope": "test",
+        "purpose": "discover-existing-junit4-tests-only"
+      },
+      "native_artifacts": [
+        "libBattleEngine.dylib",
+        "libBattleEngine.so"
+      ],
+      "service_images": [
+        {
+          "role": "postgresql-testcontainers",
+          "source_reference": "postgres:13-alpine",
+          "resolved_index_digest": "sha256:fb9065b6e3e213bdc07edd372a5b2a26245840b7fb65d1fd8b6700106d51805c",
+          "resolved_reference": "mirror.gcr.io/library/postgres@sha256:3119f20c52c059928a1f3455ef0c4ce57fa4f4c39562f0bf4c5ead414ad55b84",
+          "platform": "linux/arm64",
+          "platform_digest": "sha256:3119f20c52c059928a1f3455ef0c4ce57fa4f4c39562f0bf4c5ead414ad55b84",
+          "resolved_version": "13.23-alpine3.22",
+          "resolved_at": "2026-08-09T10:38:45Z"
+        },
+        {
+          "role": "redis-testcontainers",
+          "source_reference": "redis:6-alpine",
+          "resolved_index_digest": "sha256:ec5e187c913d422cdf60f4216a5fdfb95246792c6de6fe21ff5bed75cbfc8c23",
+          "resolved_reference": "mirror.gcr.io/library/redis@sha256:ef0234ae359f2550f773accc0b4207ae213475eccaa0b2dd17c2710abb8c1998",
+          "platform": "linux/arm64",
+          "platform_digest": "sha256:ef0234ae359f2550f773accc0b4207ae213475eccaa0b2dd17c2710abb8c1998",
+          "resolved_version": "6.2.23-alpine",
+          "resolved_at": "2026-08-09T10:40:00Z"
+        },
+        {
+          "role": "testcontainers-resource-reaper",
+          "source_reference": "testcontainers/ryuk:0.12.0",
+          "resolved_index_digest": "sha256:dd3f023a6ed7015b3f95a49ccd65a2daf0c56e681422c12952b19a810dfa6298",
+          "resolved_reference": "testcontainers/ryuk@sha256:dd3f023a6ed7015b3f95a49ccd65a2daf0c56e681422c12952b19a810dfa6298",
+          "platform": "linux/arm64",
+          "platform_digest": "sha256:dd3f023a6ed7015b3f95a49ccd65a2daf0c56e681422c12952b19a810dfa6298",
+          "resolved_version": "0.12.0",
+          "resolved_at": "2026-08-09T12:22:37Z"
+        }
+      ],
+      "source_test_properties": {
+        "spring.datasource.url": "jdbc:tc:postgresql:13-alpine:///databasename?TC_INITSCRIPT=file:sql/schema.sql",
+        "spring.datasource.driver-class-name": "org.testcontainers.jdbc.ContainerDatabaseDriver"
+      },
+      "timeouts_seconds": {
+        "native_configure": 120,
+        "native_build": 180,
+        "source_tests": 1200,
+        "target_transform": 3600,
+        "target_tests": 1800
+      },
+      "target": {
+        "spring_boot": "3.5.3",
+        "java": "21",
+        "maven": "3.9.11",
+        "recipe_path": "framework-packs/spring-boot-2-7-18-to-3-5-3/recipes/spring-boot-2.7.18-to-3.5.3.yml",
+        "recipe_id": "io.elmos.openrewrite.SpringBoot2_7_18To3_5_3Java21",
+        "rewrite_maven_plugin": "6.44.0",
+        "rewrite_spring": "6.35.0",
+        "vintage_version_authority": "SPRING_BOOT_TARGET_BOM",
+        "execution_policy": "source-all-tests-green-first",
+        "current_status": "NOT_RUN"
+      }
+    }
+  ],
+  "separate_public_candidates": [
+    {
+      "id": "scc-digitalhub-aac",
+      "repository_url": "https://github.com/scc-digitalhub/AAC",
+      "commit_sha": "f946102986af5e6324b881b68486648563e89e99",
+      "tree_sha": "6cf8269ab52b2a486e916683d4611aee1d427544",
+      "commit_timestamp": "2025-04-01T12:28:55+02:00",
+      "pom_git_blob": "0a4336d43b1d6cffb05e48fe06e7129ccb661454",
+      "pom_sha256": "ea548f950513888d6115c9979b6c8306818433befcb09f0536159223c93f2623",
+      "pom_bytes": 19873,
+      "source_tuple": {
+        "spring_boot": "2.7.18",
+        "java": "17"
+      },
+      "static_tree_counts": {
+        "main_java_files": 1244,
+        "test_java_files": 39
+      },
+      "security_and_data_scope": [
+        "spring-security",
+        "oauth2",
+        "openid-connect",
+        "saml",
+        "jpa",
+        "mail",
+        "actuator"
+      ],
+      "capture_status": "FIXED_COMMIT_STATIC_CANDIDATE",
+      "source_execution": "NOT_RUN",
+      "target_execution": "NOT_RUN",
+      "customer_repository": false,
+      "independent_verification": false
+    }
+  ]
+}

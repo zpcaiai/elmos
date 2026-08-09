@@ -20,6 +20,23 @@ RECIPE_NAME = "io.elmos.openrewrite.SpringBoot2_7_18To3_5_3Java21"
 SOURCE_JAVA = Path("/Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home")
 TARGET_JAVA = Path("/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home")
 
+
+def governed_qualification_snapshots(certification_dir: Path) -> list[str]:
+    snapshots: list[str] = []
+    for path in sorted(
+        certification_dir.glob("local-product-surface-qualification-*.json")
+    ):
+        record = json.loads(path.read_text(encoding="utf-8"))
+        if (
+            record.get("pack_key") != PACK_KEY
+            or record.get("evidence_class") != "LOCAL_QUALIFICATION_SNAPSHOT"
+            or record.get("certification_eligible") is not False
+            or record.get("certification_decision") != "NOT_CERTIFIED"
+        ):
+            raise ValueError(f"UNSAFE_LOCAL_QUALIFICATION_SNAPSHOT:{path.name}")
+        snapshots.append(path.name)
+    return snapshots
+
 APPLICATION = """package io.elmos.reference;
 
 import org.springframework.boot.SpringApplication;
@@ -551,10 +568,7 @@ def execute(repo: Path) -> Path:
         if public_evidence and (local_evidence / name).is_file():
             runs.append(name)
             evidence_refs.append(f"certification/{name}")
-    qualification_snapshot = (
-        "local-product-surface-qualification-fbe840c8-20260809.json"
-    )
-    if (local_evidence / qualification_snapshot).is_file():
+    for qualification_snapshot in governed_qualification_snapshots(local_evidence):
         runs.append(qualification_snapshot)
         evidence_refs.append(f"certification/{qualification_snapshot}")
     write_json(

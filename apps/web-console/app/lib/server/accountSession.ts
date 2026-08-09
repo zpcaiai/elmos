@@ -15,6 +15,20 @@ export const accountCookieNames = {
   tenant: "__Host-elmos_tenant",
 } as const;
 
+export type AccountCookieName =
+  typeof accountCookieNames[keyof typeof accountCookieNames];
+
+export function accountCookieDeletionOptions(name: AccountCookieName) {
+  return {
+    httpOnly: true,
+    secure: true,
+    sameSite: name === accountCookieNames.refreshToken ? "strict" : "lax",
+    path: "/",
+    maxAge: 0,
+    expires: new Date(0),
+  } as const;
+}
+
 const identifierPattern = /^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,199}$/;
 const organizationPattern = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/;
 const roleNames = [
