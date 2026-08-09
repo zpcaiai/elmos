@@ -256,6 +256,40 @@ class PrecisionMigrationRuntimeTest(unittest.TestCase):
                 now=NOW,
             )
 
+    def test_trust_store_from_bytes_uses_the_supplied_json_snapshot(self) -> None:
+        snapshot = self.root / "trust-json-snapshot"
+        snapshot.mkdir()
+        public = snapshot / "evidence-public.pem"
+        public.write_bytes((self.root / "evidence-authorizer.public.pem").read_bytes())
+        store_path = snapshot / "trust-store.json"
+        store_path.write_text(
+            json.dumps(
+                {
+                    "schema_version": 1,
+                    "keys": [{
+                        "key_id": "snapshot-evidence-authorizer",
+                        "roles": ["evidence-authorizer"],
+                        "public_key_path": public.name,
+                        "not_before": "2025-01-01T00:00:00Z",
+                        "not_after": "2030-01-01T00:00:00Z",
+                        "revoked": False,
+                    }],
+                    "revoked_record_ids": [],
+                }
+            ),
+            encoding="utf-8",
+        )
+        original = store_path.read_bytes()
+        expected = TrustStore.load(store_path)
+        store_path.write_text("{invalid", encoding="utf-8")
+
+        loaded = TrustStore.from_bytes(store_path, original)
+
+        self.assertEqual(expected.digest, loaded.digest)
+        self.assertEqual(set(expected.keys), set(loaded.keys))
+        with self.assertRaises(json.JSONDecodeError):
+            TrustStore.load(store_path)
+
     def test_trust_store_rejects_symlinked_public_key(self) -> None:
         snapshot = self.root / "trust-symlink"
         snapshot.mkdir()

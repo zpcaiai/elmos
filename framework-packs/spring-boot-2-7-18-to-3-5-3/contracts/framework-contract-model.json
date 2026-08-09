@@ -20,6 +20,18 @@
         "application.properties"
       ],
       "status": "captured"
+    },
+    {
+      "id": "configuration-runtime-contract",
+      "obligations": [
+        "management health endpoint exposure remains enabled",
+        "health details remain hidden",
+        "graceful shutdown remains enabled"
+      ],
+      "source_traces": [
+        "application.properties"
+      ],
+      "status": "captured"
     }
   ],
   "exact_tuple": {

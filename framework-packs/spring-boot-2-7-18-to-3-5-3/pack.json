@@ -33,8 +33,8 @@
       "2.7.18"
     ],
     "provider_versions": {
-      "servlet": "4.0",
-      "validation": "2.0"
+      "servlet": "4.0.1",
+      "validation": "2.0.2"
     },
     "runtime": "java",
     "runtime_versions": [
@@ -51,8 +51,8 @@
       "3.5.3"
     ],
     "provider_versions": {
-      "servlet": "6.1",
-      "validation": "3.1"
+      "servlet": "6.0.0",
+      "validation": "3.0.2"
     },
     "runtime": "java",
     "runtime_versions": [

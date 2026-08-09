@@ -44,6 +44,16 @@ class SpringPublicRepositoryQualificationTests(unittest.TestCase):
         self.assertEqual(retro["source_tuple"]["java"], "17")
         self.assertFalse(retro["customer_repository"])
         self.assertFalse(retro["independent_verification"])
+        policy = manifest["execution_policy"]
+        self.assertEqual(
+            policy["untrusted_build_execution"],
+            QUALIFICATION.ROOTLESS_EXECUTION_STATUS,
+        )
+        self.assertEqual(
+            policy["protected_rootless_runner_receipt_verifier"],
+            "NOT_IMPLEMENTED",
+        )
+        self.assertFalse(policy["caller_supplied_attestation_accepted"])
         self.assertEqual(retro["test_inventory"]["total_tests"], 22)
         self.assertEqual(len(retro["service_images"]), 3)
         self.assertEqual(
@@ -60,9 +70,23 @@ class SpringPublicRepositoryQualificationTests(unittest.TestCase):
             retro["service_images"][2]["source_reference"],
             "testcontainers/ryuk:0.12.0",
         )
+        for image in retro["service_images"]:
+            self.assertEqual(image["execution_reference"], image["resolved_reference"])
+            self.assertIn("@sha256:", image["execution_reference"])
+            self.assertNotEqual(image["source_reference"], image["execution_reference"])
         self.assertEqual(retro["target"]["spring_boot"], "3.5.3")
         self.assertEqual(retro["target"]["java"], "21")
         self.assertEqual(retro["target"]["maven"], "3.9.11")
+        contract = retro["toolchain_contract"]
+        self.assertEqual(contract["platform_system"], "Darwin")
+        self.assertEqual(contract["platform_machine"], "arm64")
+        self.assertEqual(
+            set(contract["executables"]), set(QUALIFICATION.EXACT_TOOLCHAIN_NAMES)
+        )
+        self.assertTrue(contract["maven_policy"]["strict_checksums"])
+        for identity in contract["executables"].values():
+            self.assertRegex(identity["sha256"], r"^[0-9a-f]{64}$")
+            self.assertNotIn("\n", identity["version_line"])
         candidate = manifest["separate_public_candidates"][0]
         self.assertEqual(candidate["source_execution"], "NOT_RUN")
         self.assertEqual(candidate["target_execution"], "NOT_RUN")
@@ -128,6 +152,24 @@ public void legacy() { throw new RuntimeException(); } }
         )
         return source
 
+    def make_fake_jdk(self, name: str = "jdk-17") -> Path:
+        java_home = self.root / name
+        include = java_home / "include"
+        platform_include = include / "darwin"
+        server = java_home / "lib/server"
+        binaries = java_home / "bin"
+        platform_include.mkdir(parents=True)
+        server.mkdir(parents=True)
+        binaries.mkdir(parents=True)
+        (include / "jni.h").write_text("jni", encoding="utf-8")
+        (platform_include / "jni_md.h").write_text("jni-md", encoding="utf-8")
+        (server / "libjvm.dylib").write_bytes(b"jvm")
+        (java_home / "lib/libjawt.dylib").write_bytes(b"awt")
+        for binary in (binaries / "java", binaries / "javac"):
+            binary.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+            binary.chmod(0o755)
+        return java_home
+
     def test_vintage_overlay_exposes_legacy_tests_without_editing_test_sources(self) -> None:
         source = self.make_source()
         repository = {
@@ -163,37 +205,39 @@ public void legacy() { throw new RuntimeException(); } }
         )
         self.assertNotIn("<version>5.8.2</version>", target_pom)
 
-    def test_service_image_requires_source_tag_to_match_pinned_digest(self) -> None:
+    def test_service_image_audit_uses_only_resolved_digest_reference(self) -> None:
+        resolved = "postgres@sha256:" + "1" * 64
         repository = {
             "service_images": [
                 {
                     "role": "postgres",
                     "source_reference": "postgres:13-alpine",
-                    "resolved_reference": "postgres@sha256:" + "1" * 64,
+                    "resolved_reference": resolved,
+                    "execution_reference": resolved,
                     "platform": "linux/arm64",
                     "platform_digest": "sha256:" + "1" * 64,
                 }
             ]
         }
-        records = [
-            {
-                "exit_code": 0,
-                "output": json.dumps([{"Id": "sha256:pinned"}]),
-                "timed_out": False,
-            },
-            {
-                "exit_code": 0,
-                "output": json.dumps([{"Id": "sha256:other"}]),
-                "timed_out": False,
-            },
-        ]
+        inspect = {
+            "exit_code": 0,
+            "output": json.dumps(
+                [{"Id": "sha256:pinned", "RepoDigests": [resolved]}]
+            ),
+            "timed_out": False,
+        }
         with (
             mock.patch.object(QUALIFICATION.shutil, "which", return_value="docker"),
-            mock.patch.object(QUALIFICATION, "run_command", side_effect=records),
+            mock.patch.object(
+                QUALIFICATION, "run_command", return_value=inspect
+            ) as run,
         ):
             result = QUALIFICATION.service_image_audit(repository, self.root)[0]
-        self.assertEqual(result["status"], "NOT_AVAILABLE")
-        self.assertEqual(result["reason"], "SOURCE_TAG_NOT_BOUND_TO_PINNED_IMAGE")
+        self.assertEqual(result["status"], "AVAILABLE_RESOLVED_DIGEST_LOCAL")
+        self.assertFalse(result["source_reference_used_for_execution"])
+        self.assertEqual(run.call_count, 1)
+        self.assertEqual(run.call_args.args[0], ["docker", "image", "inspect", resolved])
+        self.assertNotIn("postgres:13-alpine", run.call_args.args[0])
 
     def test_surefire_summary_counts_every_report_and_failure_class(self) -> None:
         reports = self.root / "target/surefire-reports"
@@ -227,36 +271,26 @@ public void legacy() { throw new RuntimeException(); } }
         self.assertEqual(len(summary["test_cases"]), 22)
 
     def test_exact_jni_toolchain_resolves_every_input_below_declared_jdk(self) -> None:
-        java_home = self.root / "jdk-17"
+        java_home = self.make_fake_jdk()
         include = java_home / "include"
         platform_include = include / "darwin"
-        server = java_home / "lib/server"
-        platform_include.mkdir(parents=True)
-        server.mkdir(parents=True)
-        (include / "jni.h").write_text("jni", encoding="utf-8")
-        (platform_include / "jni_md.h").write_text("jni-md", encoding="utf-8")
-        (server / "libjvm.dylib").write_bytes(b"jvm")
-        (java_home / "lib/libjawt.dylib").write_bytes(b"awt")
 
         selected = QUALIFICATION.exact_jni_toolchain(java_home)
 
         self.assertEqual(selected["JAVA_HOME"], java_home.resolve())
+        self.assertEqual(
+            selected["Java_JAVA_EXECUTABLE"], (java_home / "bin/java").resolve()
+        )
+        self.assertEqual(
+            selected["Java_JAVAC_EXECUTABLE"], (java_home / "bin/javac").resolve()
+        )
         self.assertEqual(selected["JAVA_INCLUDE_PATH"], include.resolve())
         self.assertEqual(selected["JAVA_INCLUDE_PATH2"], platform_include.resolve())
         for path in selected.values():
             self.assertTrue(path.is_relative_to(java_home.resolve()))
 
     def test_cmake_jni_cache_rejects_homebrew_or_other_jdk_paths(self) -> None:
-        java_home = self.root / "jdk-17"
-        include = java_home / "include"
-        platform_include = include / "darwin"
-        server = java_home / "lib/server"
-        platform_include.mkdir(parents=True)
-        server.mkdir(parents=True)
-        (include / "jni.h").write_text("jni", encoding="utf-8")
-        (platform_include / "jni_md.h").write_text("jni-md", encoding="utf-8")
-        (server / "libjvm.dylib").write_bytes(b"jvm")
-        (java_home / "lib/libjawt.dylib").write_bytes(b"awt")
+        java_home = self.make_fake_jdk()
         expected = QUALIFICATION.exact_jni_toolchain(java_home)
         foreign = self.root / "homebrew-openjdk-26/include"
         foreign.mkdir(parents=True)
@@ -277,17 +311,195 @@ public void legacy() { throw new RuntimeException(); } }
             any(item.startswith("JAVA_INCLUDE_PATH:EXPECTED:") for item in audit["mismatches"])
         )
 
-    def test_target_execution_remains_blocked_without_java_21(self) -> None:
-        result = QUALIFICATION.qualify_target(
-            source=self.root,
-            workspace=self.root,
-            repository={},
-            maven=Path("/missing/mvn"),
-            target_java_home=None,
-            source_reports={"test_cases": []},
-            expected_tests=0,
+    def test_cmake_jni_cache_rejects_additional_foreign_jni_path(self) -> None:
+        java_home = self.make_fake_jdk()
+        expected = QUALIFICATION.exact_jni_toolchain(java_home)
+        foreign = self.root / "homebrew-openjdk-26/include"
+        foreign.mkdir(parents=True)
+        (foreign / "jni.h").write_text("foreign", encoding="utf-8")
+        cache = self.root / "CMakeCache.txt"
+        cache.write_text(
+            "\n".join(
+                [*(f"{name}:PATH={path}" for name, path in expected.items()),
+                 f"JNI_INCLUDE_DIRS:PATH={expected['JAVA_INCLUDE_PATH']};{foreign}"]
+            ),
+            encoding="utf-8",
         )
-        self.assertEqual(result["status"], "NOT_RUN_TARGET_TOOLCHAIN_NOT_DECLARED")
+
+        audit = QUALIFICATION.audit_cmake_jni_cache(cache, expected)
+
+        self.assertFalse(audit["matched"])
+        self.assertIn(
+            f"FOREIGN_JNI_PATH:JNI_INCLUDE_DIRS:{foreign.resolve()}",
+            audit["mismatches"],
+        )
+        self.assertRegex(audit["cache_sha256"], r"^[0-9a-f]{64}$")
+
+    def test_cmake_command_pins_jdk_compiler_and_make(self) -> None:
+        java_home = self.make_fake_jdk()
+        expected = QUALIFICATION.exact_jni_toolchain(java_home)
+        cmake = self.root / "cmake"
+        cxx = self.root / "c++"
+        make = self.root / "make"
+        command = QUALIFICATION.cmake_configure_command(
+            cmake=cmake,
+            cxx=cxx,
+            make=make,
+            source=self.root / "source",
+            build=self.root / "build",
+            jni_toolchain=expected,
+        )
+
+        self.assertEqual(command[0], str(cmake))
+        self.assertIn(f"-DCMAKE_CXX_COMPILER={cxx}", command)
+        self.assertIn(f"-DCMAKE_MAKE_PROGRAM={make}", command)
+        for name, path in expected.items():
+            self.assertIn(f"-D{name}={path}", command)
+
+    def test_exact_executable_audit_requires_digest_and_exact_version_line(self) -> None:
+        executable = self.root / "tool"
+        executable.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+        executable.chmod(0o755)
+        execution = {
+            "exit_code": 0,
+            "timed_out": False,
+            "output": "tool version 17.0.11\n",
+        }
+        identity = {
+            "sha256": QUALIFICATION.sha256_file(executable),
+            "version_line": "tool version 17.0.11",
+        }
+        with mock.patch.object(QUALIFICATION, "run_command", return_value=execution):
+            matched = QUALIFICATION.exact_executable_audit(
+                name="source_java",
+                executable=executable,
+                identity=identity,
+                cwd=self.root,
+            )
+            digest_mismatch = QUALIFICATION.exact_executable_audit(
+                name="source_java",
+                executable=executable,
+                identity={**identity, "sha256": "0" * 64},
+                cwd=self.root,
+            )
+            version_mismatch = QUALIFICATION.exact_executable_audit(
+                name="source_java",
+                executable=executable,
+                identity={**identity, "version_line": "tool version 17"},
+                cwd=self.root,
+            )
+
+        self.assertTrue(matched["matched"])
+        self.assertFalse(digest_mismatch["matched"])
+        self.assertFalse(version_mismatch["matched"])
+        self.assertEqual(matched["sha256"], identity["sha256"])
+        self.assertEqual(matched["bytes"], executable.stat().st_size)
+        self.assertTrue(matched["identity_stable_during_audit"])
+        self.assertEqual(
+            matched["evidence_scope"],
+            "LOCAL_TOOLCHAIN_ENGINEERING_AUDIT_NOT_ROOTLESS_ATTESTATION",
+        )
+
+        def mutate_during_version_check(*args: object, **kwargs: object) -> dict[str, object]:
+            executable.write_text("#!/bin/sh\nexit 1\n", encoding="utf-8")
+            return execution
+
+        with mock.patch.object(
+            QUALIFICATION,
+            "run_command",
+            side_effect=mutate_during_version_check,
+        ):
+            drift = QUALIFICATION.exact_executable_audit(
+                name="source_java",
+                executable=executable,
+                identity=identity,
+                cwd=self.root,
+            )
+        self.assertFalse(drift["matched"])
+        self.assertFalse(drift["identity_stable_during_audit"])
+        self.assertEqual(drift["status"], "FAILED_EXECUTABLE_DRIFT_DURING_AUDIT")
+        self.assertIsNone(drift["execution_path"])
+
+    def test_maven_commands_are_strict_and_workspace_isolated(self) -> None:
+        workspace = self.root / "workspace"
+        workspace.mkdir()
+        isolation = QUALIFICATION.prepare_maven_isolation(workspace)
+        arguments = QUALIFICATION.exact_maven_arguments(isolation)
+
+        self.assertIn("--strict-checksums", arguments)
+        self.assertIn(
+            f"-Dmaven.repo.local={isolation['local_repository']}", arguments
+        )
+        self.assertIn(f"-Duser.home={isolation['user_home']}", arguments)
+        for path in isolation.values():
+            self.assertTrue(path.is_relative_to(workspace.resolve()))
+
+        java_home = self.make_fake_jdk("maven-jdk")
+        contaminated = {
+            "MAVEN_ARGS": "--lax-checksums",
+            "MAVEN_CONFIG": "/foreign",
+            "MAVEN_OPTS": "-Dmaven.repo.local=/foreign",
+            "JAVA_TOOL_OPTIONS": "-Duser.home=/foreign",
+            "HOME": "/foreign",
+        }
+        with mock.patch.dict(QUALIFICATION.os.environ, contaminated, clear=False):
+            environment = QUALIFICATION.exact_maven_environment(
+                java_home, isolation
+            )
+        self.assertNotIn("MAVEN_ARGS", environment)
+        self.assertNotIn("MAVEN_CONFIG", environment)
+        self.assertNotIn("JAVA_TOOL_OPTIONS", environment)
+        self.assertNotIn("/foreign", environment["MAVEN_OPTS"])
+        self.assertEqual(environment["HOME"], str(isolation["user_home"]))
+
+    def test_all_untrusted_execution_helpers_require_protected_rootless_runner(self) -> None:
+        missing = Path("/missing")
+        with mock.patch.object(QUALIFICATION, "run_command") as run:
+            results = [
+                QUALIFICATION.native_build(
+                    self.root,
+                    missing,
+                    {},
+                    cmake=missing,
+                    cxx=missing,
+                    make=missing,
+                ),
+                QUALIFICATION.source_test_command(
+                    self.root,
+                    missing,
+                    missing,
+                    {},
+                    {},
+                    {},
+                ),
+                QUALIFICATION.transform_target(
+                    self.root,
+                    self.root / "target",
+                    {},
+                    missing,
+                    missing,
+                    {},
+                ),
+                QUALIFICATION.qualify_target(
+                    source=self.root,
+                    workspace=self.root,
+                    repository={},
+                    maven=missing,
+                    cmake=missing,
+                    cxx=missing,
+                    make=missing,
+                    maven_isolation={},
+                    target_java_home=None,
+                    source_reports={"test_cases": []},
+                    expected_tests=0,
+                ),
+            ]
+        run.assert_not_called()
+        self.assertTrue(all(result["status"] == QUALIFICATION.ROOTLESS_EXECUTION_STATUS for result in results))
+        self.assertTrue(all(result["execution_enabled"] is False for result in results))
+        self.assertTrue(
+            all(result["caller_supplied_attestation_accepted"] is False for result in results)
+        )
 
     def test_target_pom_audit_requires_exact_boot_and_java(self) -> None:
         source = self.make_source()

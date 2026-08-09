@@ -3,9 +3,9 @@
 
 This harness is deliberately narrower than the synthetic Spring route runner.
 It consumes a repository-owned manifest, verifies an immutable public archive,
-audits the complete source-test inventory, and records every prerequisite before
-it may execute the source baseline. Target transformation and the same complete
-test oracle are attempted only after the source baseline is complete and green.
+audits the complete source-test inventory, and records prerequisites. Untrusted
+build, transformation, and test execution is hard-disabled until a protected
+rootless-runner receipt verifier is implemented.
 
 The result is local public engineering evidence.  A public repository is not a
 customer repository and this process is not an independent verifier.
@@ -43,6 +43,35 @@ ALLOWED_ARCHIVE_HOSTS = {"codeload.github.com"}
 HEX_40 = re.compile(r"[0-9a-f]{40}")
 HEX_64 = re.compile(r"[0-9a-f]{64}")
 MAVEN_NS = "http://maven.apache.org/POM/4.0.0"
+EXACT_TOOLCHAIN_NAMES = (
+    "source_java",
+    "source_javac",
+    "target_java",
+    "target_javac",
+    "maven",
+    "cmake",
+    "cxx",
+    "make",
+)
+TOOLCHAIN_VERSION_ARGUMENTS = {
+    "source_java": ["-version"],
+    "source_javac": ["-version"],
+    "target_java": ["-version"],
+    "target_javac": ["-version"],
+    "maven": ["-version"],
+    "cmake": ["--version"],
+    "cxx": ["--version"],
+    "make": ["--version"],
+}
+ROOTLESS_EXECUTION_STATUS = "NOT_RUN_ROOTLESS_ATTESTED_RUNNER_REQUIRED"
+PROTECTED_RUNNER_RECEIPT_VERIFIER_IMPLEMENTED = False
+EXECUTION_IMPLEMENTATION_REQUIREMENTS = (
+    "protected-control-plane runner receipt verification",
+    "content-addressed runner image and sandbox-policy binding",
+    "rootless runtime and nonzero effective-uid attestation",
+    "digest-only service-image injection and runtime verification",
+    "separate executor and verifier identities with freshness and revocation checks",
+)
 
 
 class QualificationError(RuntimeError):
@@ -68,12 +97,42 @@ def require(condition: bool, reason: str) -> None:
         raise QualificationError(reason)
 
 
+def protected_execution_gate(operation: str) -> dict[str, Any]:
+    """Return the hard execution boundary; caller-supplied claims are not inputs."""
+
+    return {
+        "status": ROOTLESS_EXECUTION_STATUS,
+        "operation": operation,
+        "execution_enabled": False,
+        "protected_runner_receipt_verifier": "NOT_IMPLEMENTED",
+        "caller_supplied_attestation_accepted": False,
+        "implementation_requirements": list(EXECUTION_IMPLEMENTATION_REQUIREMENTS),
+        "evidence_scope": "LOCAL_STATIC_AND_PREREQUISITE_AUDIT_ONLY",
+    }
+
+
 def load_manifest(path: Path) -> dict[str, Any]:
     payload = json.loads(path.read_text(encoding="utf-8"))
     require(payload.get("schema_version") == 1, "MANIFEST_SCHEMA_UNSUPPORTED")
     require(
         payload.get("pack_key") == PACK_KEY,
         "MANIFEST_PACK_MISMATCH",
+    )
+    execution_policy = payload.get("execution_policy")
+    require(
+        execution_policy
+        == {
+            "default_mode": "static-prerequisite-audit-only",
+            "untrusted_build_execution": ROOTLESS_EXECUTION_STATUS,
+            "protected_rootless_runner_receipt_verifier": "NOT_IMPLEMENTED",
+            "caller_supplied_attestation_accepted": False,
+            "implementation_requirements": list(EXECUTION_IMPLEMENTATION_REQUIREMENTS),
+        },
+        "EXECUTION_POLICY_NOT_FAIL_CLOSED",
+    )
+    require(
+        PROTECTED_RUNNER_RECEIPT_VERIFIER_IMPLEMENTED is False,
+        "PROTECTED_RUNNER_RECEIPT_VERIFIER_STATE_UNEXPECTED",
     )
     repositories = payload.get("repositories")
     require(isinstance(repositories, list) and repositories, "REPOSITORIES_EMPTY")
@@ -131,6 +190,15 @@ def load_manifest(path: Path) -> dict[str, Any]:
                 str(image.get("resolved_reference", "")).endswith(digest),
                 f"SERVICE_IMAGE_REFERENCE_NOT_PINNED:{repository_id}:{image.get('role')}",
             )
+            require(
+                image.get("execution_reference") == image.get("resolved_reference")
+                and "@sha256:" in str(image.get("execution_reference", "")),
+                f"SERVICE_IMAGE_EXECUTION_REFERENCE_NOT_PINNED:{repository_id}:{image.get('role')}",
+            )
+            require(
+                image.get("source_reference") != image.get("execution_reference"),
+                f"SERVICE_IMAGE_SOURCE_TAG_USED_AS_EXECUTION_OBJECT:{repository_id}:{image.get('role')}",
+            )
         target = repository.get("target", {})
         require(target.get("spring_boot") == "3.5.3", f"TARGET_BOOT_MISMATCH:{repository_id}")
         require(target.get("java") == "21", f"TARGET_JAVA_MISMATCH:{repository_id}")
@@ -154,6 +222,53 @@ def load_manifest(path: Path) -> dict[str, Any]:
             )
             == "21.0.11",
             f"TARGET_JAVA_TOOLCHAIN_MISMATCH:{repository_id}",
+        )
+        toolchain_contract = repository.get("toolchain_contract")
+        require(
+            isinstance(toolchain_contract, dict),
+            f"TOOLCHAIN_CONTRACT_MISSING:{repository_id}",
+        )
+        require(
+            toolchain_contract.get("platform_system") == "Darwin"
+            and toolchain_contract.get("platform_machine") == "arm64",
+            f"TOOLCHAIN_PLATFORM_NOT_EXACT:{repository_id}",
+        )
+        identities = toolchain_contract.get("executables")
+        require(
+            isinstance(identities, dict),
+            f"TOOLCHAIN_EXECUTABLES_MISSING:{repository_id}",
+        )
+        require(
+            set(identities) == set(EXACT_TOOLCHAIN_NAMES),
+            f"TOOLCHAIN_EXECUTABLE_SET_MISMATCH:{repository_id}",
+        )
+        for name in EXACT_TOOLCHAIN_NAMES:
+            identity = identities[name]
+            require(
+                isinstance(identity, dict),
+                f"TOOLCHAIN_IDENTITY_INVALID:{repository_id}:{name}",
+            )
+            require(
+                HEX_64.fullmatch(str(identity.get("sha256", ""))) is not None,
+                f"TOOLCHAIN_DIGEST_INVALID:{repository_id}:{name}",
+            )
+            version_line = identity.get("version_line")
+            require(
+                isinstance(version_line, str)
+                and bool(version_line)
+                and "\n" not in version_line
+                and "\r" not in version_line,
+                f"TOOLCHAIN_VERSION_LINE_INVALID:{repository_id}:{name}",
+            )
+        require(
+            toolchain_contract.get("maven_policy")
+            == {
+                "isolated_user_home": True,
+                "isolated_local_repository": True,
+                "strict_checksums": True,
+                "inherited_maven_options": False,
+            },
+            f"MAVEN_POLICY_NOT_FAIL_CLOSED:{repository_id}",
         )
         recipe_value = str(target.get("recipe_path", ""))
         require(bool(recipe_value) and not Path(recipe_value).is_absolute(), "TARGET_RECIPE_PATH_INVALID")
@@ -434,18 +549,107 @@ def create_vintage_overlay(
     }
 
 
-def executable_version(
-    command: list[str],
-    expected_fragment: str,
+def exact_executable_audit(
+    *,
+    name: str,
+    executable: Path,
+    identity: dict[str, Any],
     cwd: Path,
     environment: dict[str, str] | None = None,
+    command_prefix: list[str] | None = None,
+    required_root: Path | None = None,
 ) -> dict[str, Any]:
-    record = run_command(
-        command, cwd=cwd, environment=environment, timeout_seconds=20
+    """Bind a tool invocation to its exact executable bytes and version line."""
+
+    require(name in TOOLCHAIN_VERSION_ARGUMENTS, f"TOOLCHAIN_NAME_UNKNOWN:{name}")
+    requested = executable.absolute()
+    result: dict[str, Any] = {
+        "name": name,
+        "requested_path": str(requested),
+        "expected_sha256": identity["sha256"],
+        "expected_version_line": identity["version_line"],
+        "matched": False,
+    }
+    try:
+        resolved = requested.resolve(strict=True)
+    except (OSError, RuntimeError) as exc:
+        return {**result, "status": "FAILED_EXECUTABLE_MISSING", "error": str(exc)}
+    result["resolved_path"] = str(resolved)
+    if not resolved.is_file() or not os.access(resolved, os.X_OK):
+        return {**result, "status": "FAILED_NOT_EXECUTABLE"}
+    if required_root is not None:
+        try:
+            resolved.relative_to(required_root.resolve(strict=True))
+        except (OSError, RuntimeError, ValueError) as exc:
+            return {
+                **result,
+                "status": "FAILED_EXECUTABLE_OUTSIDE_REQUIRED_ROOT",
+                "error": str(exc),
+            }
+
+    actual_sha256 = sha256_file(resolved)
+    result.update(
+        {
+            "sha256": actual_sha256,
+            "bytes": resolved.stat().st_size,
+            "digest_matched": actual_sha256 == identity["sha256"],
+        }
     )
-    record["expected_fragment"] = expected_fragment
-    record["matched"] = record["exit_code"] == 0 and expected_fragment in record["output"]
-    return record
+    command = [
+        str(resolved),
+        *(command_prefix or []),
+        *TOOLCHAIN_VERSION_ARGUMENTS[name],
+    ]
+    execution = run_command(
+        command,
+        cwd=cwd,
+        environment=environment,
+        timeout_seconds=20,
+    )
+    post_audit: dict[str, Any]
+    identity_stable = False
+    try:
+        post_resolved = requested.resolve(strict=True)
+        post_sha256 = sha256_file(post_resolved)
+        post_audit = {
+            "resolved_path": str(post_resolved),
+            "sha256": post_sha256,
+            "bytes": post_resolved.stat().st_size,
+        }
+        identity_stable = bool(
+            post_resolved == resolved
+            and post_sha256 == actual_sha256
+            and post_audit["bytes"] == result["bytes"]
+        )
+    except (OSError, RuntimeError) as exc:
+        post_audit = {"error": str(exc)}
+    observed_line = next(
+        (line.strip() for line in execution["output"].splitlines() if line.strip()),
+        "",
+    )
+    version_matched = observed_line == identity["version_line"]
+    matched = bool(
+        execution["exit_code"] == 0
+        and not execution["timed_out"]
+        and result["digest_matched"]
+        and version_matched
+        and identity_stable
+    )
+    status = "PASSED_EXACT_IDENTITY" if matched else "FAILED_IDENTITY_MISMATCH"
+    if not identity_stable:
+        status = "FAILED_EXECUTABLE_DRIFT_DURING_AUDIT"
+    return {
+        **result,
+        "status": status,
+        "observed_version_line": observed_line,
+        "version_matched": version_matched,
+        "post_execution_identity": post_audit,
+        "identity_stable_during_audit": identity_stable,
+        "execution_path": str(resolved) if identity_stable else None,
+        "evidence_scope": "LOCAL_TOOLCHAIN_ENGINEERING_AUDIT_NOT_ROOTLESS_ATTESTATION",
+        "matched": matched,
+        "execution": execution,
+    }
 
 
 def exact_jni_toolchain(java_home: Path) -> dict[str, Path]:
@@ -500,6 +704,8 @@ def exact_jni_toolchain(java_home: Path) -> dict[str, Path]:
 
     selected = {
         "JAVA_HOME": root,
+        "Java_JAVA_EXECUTABLE": (root / "bin/java").resolve(strict=True),
+        "Java_JAVAC_EXECUTABLE": (root / "bin/javac").resolve(strict=True),
         "JAVA_INCLUDE_PATH": include,
         "JAVA_INCLUDE_PATH2": platform_include,
         "JAVA_AWT_INCLUDE_PATH": include,
@@ -511,26 +717,41 @@ def exact_jni_toolchain(java_home: Path) -> dict[str, Path]:
             path.relative_to(root)
         except ValueError as exc:
             raise QualificationError(f"EXACT_JDK_PATH_ESCAPE:{name}") from exc
+    for name in ("Java_JAVA_EXECUTABLE", "Java_JAVAC_EXECUTABLE"):
+        require(
+            selected[name].is_file() and os.access(selected[name], os.X_OK),
+            f"EXACT_JDK_EXECUTABLE_INVALID:{name}",
+        )
     return selected
 
 
-def audit_cmake_jni_cache(
-    cache_path: Path, expected: dict[str, Path]
-) -> dict[str, Any]:
-    """Require CMake to retain the exact JDK paths supplied by the harness."""
-
+def parse_cmake_cache(cache_path: Path) -> tuple[dict[str, str], list[str]]:
     require(cache_path.is_file(), "CMAKE_CACHE_MISSING")
     entries: dict[str, str] = {}
+    duplicates: list[str] = []
     for line in cache_path.read_text(encoding="utf-8", errors="replace").splitlines():
         if not line or line.startswith(("#", "//")) or "=" not in line:
             continue
         key_with_type, value = line.split("=", 1)
         key = key_with_type.split(":", 1)[0]
+        if key in entries:
+            duplicates.append(key)
         entries[key] = value
+    return entries, sorted(set(duplicates))
 
+
+def audit_cmake_jni_cache(
+    cache_path: Path,
+    expected: dict[str, Path],
+    expected_build_paths: dict[str, Path] | None = None,
+) -> dict[str, Any]:
+    """Reject required or additional JNI/Java cache paths outside the exact JDK."""
+
+    entries, duplicates = parse_cmake_cache(cache_path)
+    root = expected["JAVA_HOME"].resolve(strict=True)
     actual: dict[str, str | None] = {}
-    mismatches: list[str] = []
-    for name, expected_path in expected.items():
+    mismatches = [f"DUPLICATE_CACHE_KEY:{key}" for key in duplicates]
+    for name, expected_path in {**expected, **(expected_build_paths or {})}.items():
         value = entries.get(name)
         actual[name] = value
         if value is None or value.endswith("-NOTFOUND"):
@@ -541,19 +762,95 @@ def audit_cmake_jni_cache(
         except (OSError, RuntimeError):
             mismatches.append(f"{name}:UNRESOLVED:{value}")
             continue
-        if resolved != expected_path:
-            mismatches.append(f"{name}:EXPECTED:{expected_path}:ACTUAL:{resolved}")
+        if resolved != expected_path.resolve(strict=True):
+            mismatches.append(
+                f"{name}:EXPECTED:{expected_path.resolve(strict=True)}:ACTUAL:{resolved}"
+            )
+
+    observed_jni_paths: list[dict[str, Any]] = []
+    jni_markers = ("JAVA", "JNI", "JVM", "JDK", "AWT")
+    for key, value in sorted(entries.items()):
+        if not any(marker in key.upper() for marker in jni_markers):
+            continue
+        for token in value.split(";"):
+            candidate_text = token.strip().strip('"')
+            candidate = Path(candidate_text)
+            if not candidate.is_absolute():
+                continue
+            resolved = candidate.resolve(strict=False)
+            try:
+                resolved.relative_to(root)
+                inside_exact_jdk = True
+            except ValueError:
+                inside_exact_jdk = False
+            observed_jni_paths.append(
+                {
+                    "key": key,
+                    "declared": candidate_text,
+                    "resolved": str(resolved),
+                    "inside_exact_jdk": inside_exact_jdk,
+                }
+            )
+            if not inside_exact_jdk:
+                mismatches.append(f"FOREIGN_JNI_PATH:{key}:{resolved}")
+            elif not resolved.exists():
+                mismatches.append(f"UNRESOLVED_JNI_PATH:{key}:{resolved}")
+
     return {
         "status": "PASSED_EXACT_JDK" if not mismatches else "FAILED_JDK_PATH_MISMATCH",
         "matched": not mismatches,
         "cache_path": str(cache_path),
-        "expected": {name: str(path) for name, path in expected.items()},
+        "cache_sha256": sha256_file(cache_path),
+        "cache_bytes": cache_path.stat().st_size,
+        "expected": {
+            name: str(path)
+            for name, path in {**expected, **(expected_build_paths or {})}.items()
+        },
         "actual": actual,
-        "mismatches": mismatches,
+        "observed_jni_paths": observed_jni_paths,
+        "mismatches": sorted(set(mismatches)),
     }
 
 
-def native_build(source: Path, java_home: Path, repository: dict[str, Any]) -> dict[str, Any]:
+def cmake_configure_command(
+    *,
+    cmake: Path,
+    cxx: Path,
+    make: Path,
+    source: Path,
+    build: Path,
+    jni_toolchain: dict[str, Path],
+) -> list[str]:
+    return [
+        str(cmake),
+        "-S",
+        str(source / "battle-engine"),
+        "-B",
+        str(build),
+        "-G",
+        "Unix Makefiles",
+        "-DCMAKE_BUILD_TYPE=Release",
+        f"-DCMAKE_CXX_COMPILER={cxx}",
+        f"-DCMAKE_MAKE_PROGRAM={make}",
+        *(f"-D{name}={path}" for name, path in jni_toolchain.items()),
+    ]
+
+
+def native_build(
+    source: Path,
+    java_home: Path,
+    repository: dict[str, Any],
+    *,
+    cmake: Path,
+    cxx: Path,
+    make: Path,
+) -> dict[str, Any]:
+    # Untrusted CMake configure/build is unavailable until a protected receipt
+    # verifier exists. This cannot be overridden with caller-supplied JSON.
+    return protected_execution_gate("untrusted-cmake-native-build")
+
+    # Retained implementation is unreachable scaffolding for a future protected
+    # runner integration; the gate above must only move behind real receipt checks.
     build = source / "qualification-native-build"
     try:
         jni_toolchain = exact_jni_toolchain(java_home)
@@ -568,22 +865,29 @@ def native_build(source: Path, java_home: Path, repository: dict[str, Any]) -> d
             "library_directory": str(build),
         }
     environment = os.environ.copy()
+    for key in (
+        "CMAKE_INCLUDE_PATH",
+        "CMAKE_LIBRARY_PATH",
+        "CMAKE_PREFIX_PATH",
+        "CPATH",
+        "CPLUS_INCLUDE_PATH",
+        "JAVA_TOOL_OPTIONS",
+        "JDK_JAVA_OPTIONS",
+        "JDK_HOME",
+        "JRE_HOME",
+        "_JAVA_OPTIONS",
+    ):
+        environment.pop(key, None)
     environment["JAVA_HOME"] = str(jni_toolchain["JAVA_HOME"])
-    cmake_jni_arguments = [
-        f"-D{name}={path}" for name, path in jni_toolchain.items()
-    ]
     configure = run_command(
-        [
-            "cmake",
-            "-S",
-            str(source / "battle-engine"),
-            "-B",
-            str(build),
-            "-G",
-            "Unix Makefiles",
-            "-DCMAKE_BUILD_TYPE=Release",
-            *cmake_jni_arguments,
-        ],
+        cmake_configure_command(
+            cmake=cmake,
+            cxx=cxx,
+            make=make,
+            source=source,
+            build=build,
+            jni_toolchain=jni_toolchain,
+        ),
         cwd=source,
         environment=environment,
         timeout_seconds=repository["timeouts_seconds"]["native_configure"],
@@ -593,11 +897,16 @@ def native_build(source: Path, java_home: Path, repository: dict[str, Any]) -> d
     artifact: dict[str, Any] | None = None
     if configure["exit_code"] == 0 and not configure["timed_out"]:
         toolchain_audit = audit_cmake_jni_cache(
-            build / "CMakeCache.txt", jni_toolchain
+            build / "CMakeCache.txt",
+            jni_toolchain,
+            {
+                "CMAKE_CXX_COMPILER": cxx.resolve(strict=True),
+                "CMAKE_MAKE_PROGRAM": make.resolve(strict=True),
+            },
         )
         if toolchain_audit["matched"]:
             compile_record = run_command(
-                ["cmake", "--build", str(build), "--config", "release"],
+                [str(cmake), "--build", str(build), "--config", "Release"],
                 cwd=source,
                 environment=environment,
                 timeout_seconds=repository["timeouts_seconds"]["native_build"],
@@ -634,8 +943,10 @@ def service_image_audit(repository: dict[str, Any], source: Path) -> list[dict[s
     for image in repository["service_images"]:
         result: dict[str, Any] = {
             "role": image["role"],
-            "source_reference": image["source_reference"],
+            "source_reference_provenance_only": image["source_reference"],
+            "source_reference_used_for_execution": False,
             "resolved_reference": image["resolved_reference"],
+            "execution_reference": image["execution_reference"],
             "platform": image["platform"],
             "expected_platform_digest": image["platform_digest"],
             "status": "NOT_AVAILABLE",
@@ -644,39 +955,70 @@ def service_image_audit(repository: dict[str, Any], source: Path) -> list[dict[s
             result["reason"] = "DOCKER_CLI_NOT_AVAILABLE"
         else:
             inspect = run_command(
-                [docker, "image", "inspect", image["resolved_reference"]],
+                [docker, "image", "inspect", image["execution_reference"]],
                 cwd=source,
                 timeout_seconds=20,
             )
             result["inspect"] = inspect
             if inspect["exit_code"] == 0:
-                source_inspect = run_command(
-                    [docker, "image", "inspect", image["source_reference"]],
-                    cwd=source,
-                    timeout_seconds=20,
-                )
-                result["source_reference_inspect"] = source_inspect
                 try:
-                    pinned_id = json.loads(inspect["output"])[0]["Id"]
-                    source_id = json.loads(source_inspect["output"])[0]["Id"]
+                    inspected = json.loads(inspect["output"])[0]
+                    pinned_id = inspected["Id"]
+                    repo_digests = inspected.get("RepoDigests", [])
                 except (IndexError, KeyError, TypeError, json.JSONDecodeError):
                     pinned_id = None
-                    source_id = None
+                    repo_digests = []
                 result["pinned_image_id"] = pinned_id
-                result["source_reference_image_id"] = source_id
-                if pinned_id is not None and pinned_id == source_id:
-                    result["status"] = "AVAILABLE_PINNED_LOCAL"
+                result["repo_digests"] = repo_digests
+                if (
+                    pinned_id is not None
+                    and image["execution_reference"] in repo_digests
+                ):
+                    result["status"] = "AVAILABLE_RESOLVED_DIGEST_LOCAL"
                 else:
-                    result["reason"] = "SOURCE_TAG_NOT_BOUND_TO_PINNED_IMAGE"
+                    result["reason"] = "RESOLVED_DIGEST_REFERENCE_NOT_BOUND_LOCALLY"
             else:
                 result["reason"] = "PINNED_IMAGE_NOT_PRESENT_NO_PULL_PERFORMED"
         results.append(result)
     return results
 
 
-def exact_maven_environment(java_home: Path) -> dict[str, str]:
+def prepare_maven_isolation(workspace: Path) -> dict[str, Path]:
+    root = (workspace.resolve(strict=True) / ".elmos-maven-isolation").resolve()
+    require(root.is_relative_to(workspace.resolve(strict=True)), "MAVEN_ISOLATION_PATH_ESCAPE")
+    user_home = root / "user-home"
+    local_repository = root / "repository"
+    for path in (user_home, local_repository):
+        path.mkdir(parents=True, exist_ok=False)
+    return {
+        "root": root,
+        "user_home": user_home.resolve(strict=True),
+        "local_repository": local_repository.resolve(strict=True),
+    }
+
+
+def exact_maven_arguments(isolation: dict[str, Path]) -> list[str]:
+    root = isolation["root"].resolve(strict=True)
+    user_home = isolation["user_home"].resolve(strict=True)
+    local_repository = isolation["local_repository"].resolve(strict=True)
+    for name, path in (("USER_HOME", user_home), ("LOCAL_REPOSITORY", local_repository)):
+        try:
+            path.relative_to(root)
+        except ValueError as exc:
+            raise QualificationError(f"MAVEN_{name}_PATH_ESCAPE") from exc
+    return [
+        "--strict-checksums",
+        f"-Dmaven.repo.local={local_repository}",
+        f"-Duser.home={user_home}",
+    ]
+
+
+def exact_maven_environment(
+    java_home: Path, isolation: dict[str, Path]
+) -> dict[str, str]:
     environment = os.environ.copy()
-    environment["JAVA_HOME"] = str(java_home)
+    environment["JAVA_HOME"] = str(java_home.resolve(strict=True))
+    environment["HOME"] = str(isolation["user_home"].resolve(strict=True))
     for key in (
         "HTTPS_PROXY",
         "HTTP_PROXY",
@@ -684,6 +1026,12 @@ def exact_maven_environment(java_home: Path) -> dict[str, str]:
         "https_proxy",
         "http_proxy",
         "all_proxy",
+        "JAVA_TOOL_OPTIONS",
+        "JDK_JAVA_OPTIONS",
+        "MAVEN_ARGS",
+        "MAVEN_CONFIG",
+        "MAVEN_OPTS",
+        "_JAVA_OPTIONS",
     ):
         environment.pop(key, None)
     environment["NO_PROXY"] = "repo.maven.apache.org,localhost,127.0.0.1"
@@ -693,8 +1041,7 @@ def exact_maven_environment(java_home: Path) -> dict[str, str]:
         "-Dhttp.proxyHost= -Dhttps.proxyHost= -DsocksProxyHost= "
         "-Dhttp.nonProxyHosts=* -Dhttps.nonProxyHosts=*"
     )
-    current_options = environment.get("MAVEN_OPTS", "").strip()
-    environment["MAVEN_OPTS"] = f"{current_options} {proxy_guards}".strip()
+    environment["MAVEN_OPTS"] = proxy_guards
     return environment
 
 
@@ -704,14 +1051,19 @@ def source_test_command(
     java_home: Path,
     native: dict[str, Any],
     repository: dict[str, Any],
+    maven_isolation: dict[str, Path],
     timeout_key: str = "source_tests",
 ) -> dict[str, Any]:
-    environment = exact_maven_environment(java_home)
+    return protected_execution_gate("untrusted-maven-source-tests")
+
+    # See native_build: retained for a future protected runner only.
+    environment = exact_maven_environment(java_home, maven_isolation)
     jdbc = repository["source_test_properties"]
     command = [
         str(maven),
         "-B",
         "-ntp",
+        *exact_maven_arguments(maven_isolation),
         "-f",
         str(source / "qualification-pom.xml"),
         f"-DargLine=-Djava.library.path={native['library_directory']}",
@@ -795,7 +1147,11 @@ def transform_target(
     repository: dict[str, Any],
     maven: Path,
     target_java_home: Path,
+    maven_isolation: dict[str, Path],
 ) -> dict[str, Any]:
+    return protected_execution_gate("untrusted-maven-openrewrite-transform")
+
+    # See native_build: retained for a future protected runner only.
     if target.exists():
         shutil.rmtree(target)
     shutil.copytree(
@@ -818,7 +1174,7 @@ def transform_target(
         str(maven),
         "-B",
         "-ntp",
-        "--strict-checksums",
+        *exact_maven_arguments(maven_isolation),
         f"org.openrewrite.maven:rewrite-maven-plugin:{target_profile['rewrite_maven_plugin']}:run",
         "-Drewrite.configLocation=.elmos/openrewrite.yml",
         f"-Drewrite.activeRecipes={target_profile['recipe_id']}",
@@ -829,7 +1185,7 @@ def transform_target(
     execution = run_command(
         command,
         cwd=target,
-        environment=exact_maven_environment(target_java_home),
+        environment=exact_maven_environment(target_java_home, maven_isolation),
         timeout_seconds=repository["timeouts_seconds"]["target_transform"],
     )
     pom = target_pom_audit(target, repository) if (target / "pom.xml").is_file() else None
@@ -865,38 +1221,99 @@ def qualify_target(
     workspace: Path,
     repository: dict[str, Any],
     maven: Path,
+    cmake: Path,
+    cxx: Path,
+    make: Path,
+    maven_isolation: dict[str, Path],
     target_java_home: Path | None,
     source_reports: dict[str, Any],
     expected_tests: int,
 ) -> dict[str, Any]:
+    return {
+        **protected_execution_gate("untrusted-target-build-and-test"),
+        "source_green_required": True,
+    }
+
+    # See native_build: retained for a future protected runner only.
     if target_java_home is None:
         return {
             "status": "NOT_RUN_TARGET_TOOLCHAIN_NOT_DECLARED",
             "source_green_required": True,
         }
-    target_java = executable_version(
-        [str(target_java_home / "bin/java"), "-version"],
-        repository["toolchain_assertions"]["target_java_version_fragment"],
-        source,
+    identities = repository["toolchain_contract"]["executables"]
+    target_java = exact_executable_audit(
+        name="target_java",
+        executable=target_java_home / "bin/java",
+        identity=identities["target_java"],
+        cwd=source,
+        required_root=target_java_home,
     )
+    target_javac = exact_executable_audit(
+        name="target_javac",
+        executable=target_java_home / "bin/javac",
+        identity=identities["target_javac"],
+        cwd=source,
+        required_root=target_java_home,
+    )
+    target_maven_environment = exact_maven_environment(
+        target_java_home, maven_isolation
+    )
+    target_maven = exact_executable_audit(
+        name="maven",
+        executable=maven,
+        identity=identities["maven"],
+        cwd=source,
+        environment=target_maven_environment,
+        command_prefix=exact_maven_arguments(maven_isolation),
+    )
+    target_maven["java_home_matched"] = (
+        f"runtime: {target_java_home.resolve(strict=True)}"
+        in target_maven.get("execution", {}).get("output", "")
+    )
+    target_maven["matched"] = bool(
+        target_maven["matched"] and target_maven["java_home_matched"]
+    )
+    target_toolchain = {
+        "java": target_java,
+        "javac": target_javac,
+        "maven": target_maven,
+    }
+    if not all(item["matched"] for item in target_toolchain.values()):
+        return {
+            "status": "FAILED_TARGET_TOOLCHAIN_IDENTITY",
+            "source_green_required": True,
+            "toolchain": target_toolchain,
+        }
     target = workspace / "migrated"
     transformation = transform_target(
-        source, target, repository, maven, target_java_home
+        source,
+        target,
+        repository,
+        maven,
+        target_java_home,
+        maven_isolation,
     )
-    if not target_java["matched"] or transformation["status"] != "PASSED_LOCAL":
+    if transformation["status"] != "PASSED_LOCAL":
         return {
             "status": "FAILED_TRANSFORMATION",
             "source_green_required": True,
-            "toolchain": target_java,
+            "toolchain": target_toolchain,
             "transformation": transformation,
         }
     overlay = create_vintage_overlay(target, repository, target_profile=True)
-    native = native_build(target, target_java_home, repository)
+    native = native_build(
+        target,
+        target_java_home,
+        repository,
+        cmake=cmake,
+        cxx=cxx,
+        make=make,
+    )
     if native["status"] != "PASSED_LOCAL":
         return {
             "status": "FAILED_TARGET_NATIVE_PREREQUISITE",
             "source_green_required": True,
-            "toolchain": target_java,
+            "toolchain": target_toolchain,
             "transformation": transformation,
             "test_discovery_overlay": overlay,
             "native_prerequisite": native,
@@ -907,6 +1324,7 @@ def qualify_target(
         target_java_home,
         native,
         repository,
+        maven_isolation,
         timeout_key="target_tests",
     )
     reports = surefire_summary(target)
@@ -925,7 +1343,7 @@ def qualify_target(
     return {
         "status": "PASSED_LOCAL" if passed else "FAILED_TARGET_TESTS",
         "source_green_required": True,
-        "toolchain": target_java,
+        "toolchain": target_toolchain,
         "transformation": transformation,
         "test_discovery_overlay": overlay,
         "native_prerequisite": native,
@@ -943,6 +1361,9 @@ def qualification(
     output: Path,
     java_home: Path,
     maven: Path,
+    cmake: Path,
+    cxx: Path,
+    make: Path,
     target_java_home: Path | None = None,
 ) -> dict[str, Any]:
     manifest = load_manifest(manifest_path)
@@ -969,106 +1390,89 @@ def qualification(
     pom = pom_audit(source, repository)
     inventory = test_inventory(source, repository)
     overlay = create_vintage_overlay(source, repository)
+    maven_isolation = prepare_maven_isolation(workspace)
+    contract = repository["toolchain_contract"]
+    require(
+        platform.system() == contract["platform_system"]
+        and platform.machine() == contract["platform_machine"],
+        "TOOLCHAIN_PLATFORM_MISMATCH",
+    )
+    identities = contract["executables"]
+    java = exact_executable_audit(
+        name="source_java",
+        executable=java_home / "bin/java",
+        identity=identities["source_java"],
+        cwd=workspace,
+        required_root=java_home,
+    )
+    javac = exact_executable_audit(
+        name="source_javac",
+        executable=java_home / "bin/javac",
+        identity=identities["source_javac"],
+        cwd=workspace,
+        required_root=java_home,
+    )
+    maven_environment = exact_maven_environment(java_home, maven_isolation)
+    maven_record = exact_executable_audit(
+        name="maven",
+        executable=maven,
+        identity=identities["maven"],
+        cwd=workspace,
+        environment=maven_environment,
+        command_prefix=exact_maven_arguments(maven_isolation),
+    )
+    maven_record["java_home_matched"] = (
+        f"runtime: {java_home.resolve(strict=True)}"
+        in maven_record.get("execution", {}).get("output", "")
+    )
+    maven_record["matched"] = bool(
+        maven_record["matched"] and maven_record["java_home_matched"]
+    )
+    if not maven_record["matched"]:
+        maven_record["status"] = "FAILED_MAVEN_OR_JAVA_IDENTITY"
+    cmake_record = exact_executable_audit(
+        name="cmake",
+        executable=cmake,
+        identity=identities["cmake"],
+        cwd=workspace,
+    )
+    cxx_record = exact_executable_audit(
+        name="cxx",
+        executable=cxx,
+        identity=identities["cxx"],
+        cwd=workspace,
+    )
+    make_record = exact_executable_audit(
+        name="make",
+        executable=make,
+        identity=identities["make"],
+        cwd=workspace,
+    )
+    toolchain_records = {
+        "java": java,
+        "javac": javac,
+        "maven": maven_record,
+        "cmake": cmake_record,
+        "cxx": cxx_record,
+        "make": make_record,
+    }
+    toolchains_green = all(item["matched"] for item in toolchain_records.values())
 
-    java = executable_version(
-        [str(java_home / "bin/java"), "-version"],
-        repository["toolchain_assertions"]["java_version_fragment"],
-        source,
-    )
-    maven_environment = exact_maven_environment(java_home)
-    maven_record = executable_version(
-        [str(maven), "-version"],
-        repository["toolchain_assertions"]["maven_version_fragment"],
-        source,
-        maven_environment,
-    )
-    maven_record["java_version_fragment"] = repository["toolchain_assertions"][
-        "java_version_fragment"
-    ]
-    maven_record["java_matched"] = (
-        maven_record["java_version_fragment"] in maven_record["output"]
-    )
-    cmake_record = executable_version(
-        ["cmake", "--version"],
-        repository["toolchain_assertions"]["cmake_version_fragment"],
-        source,
-    )
-    toolchains_green = (
-        java["matched"]
-        and maven_record["matched"]
-        and maven_record["java_matched"]
-        and cmake_record["matched"]
-    )
-
-    native = (
-        native_build(source, java_home, repository)
-        if toolchains_green
-        else {"status": "NOT_RUN_TOOLCHAIN_MISMATCH"}
-    )
+    native = protected_execution_gate("untrusted-cmake-native-build")
     services = service_image_audit(repository, source)
-    prerequisites_green = (
-        toolchains_green
-        and native["status"] == "PASSED_LOCAL"
-        and all(item["status"] == "AVAILABLE_PINNED_LOCAL" for item in services)
-    )
-    if prerequisites_green:
-        source_tests = source_test_command(source, maven, java_home, native, repository)
-        reports = surefire_summary(source)
-        source_tests["surefire"] = reports
-        source_test_status = (
-            "PASSED_LOCAL"
-            if source_tests["exit_code"] == 0
-            and not source_tests["timed_out"]
-            and reports["tests"] == inventory["total_tests"]
-            and len(reports["test_cases"]) == inventory["total_tests"]
-            and reports["failures"] == 0
-            and reports["errors"] == 0
-            and reports["skipped"] == 0
-            else "FAILED"
-        )
-    else:
-        source_tests = None
-        reports = None
-        source_test_status = "NOT_RUN_PREREQUISITES"
-
-    if source_test_status == "PASSED_LOCAL":
-        assert reports is not None
-        target_execution = qualify_target(
-            source=source,
-            workspace=workspace,
-            repository=repository,
-            maven=maven,
-            target_java_home=target_java_home,
-            source_reports=reports,
-            expected_tests=inventory["total_tests"],
-        )
-    else:
-        target_execution = {
-            "status": "NOT_RUN_SOURCE_NOT_GREEN",
-            "source_green_required": True,
-        }
+    source_tests = None
+    source_test_status = ROOTLESS_EXECUTION_STATUS
+    target_execution = {
+        **protected_execution_gate("untrusted-target-build-and-test"),
+        "source_green_required": True,
+    }
     target_status = target_execution["status"]
-    blocker_codes = []
+    blocker_codes = [ROOTLESS_EXECUTION_STATUS]
     if not toolchains_green:
         blocker_codes.append("EXACT_TOOLCHAIN_MISMATCH")
-    if native["status"] != "PASSED_LOCAL":
-        blocker_codes.append("NATIVE_ARTIFACT_BUILD_FAILED")
-    if any(item["status"] != "AVAILABLE_PINNED_LOCAL" for item in services):
+    if any(item["status"] != "AVAILABLE_RESOLVED_DIGEST_LOCAL" for item in services):
         blocker_codes.append("PINNED_SERVICE_IMAGES_NOT_AVAILABLE")
-    if source_test_status != "PASSED_LOCAL":
-        blocker_codes.append("SOURCE_TEST_BASELINE_NOT_GREEN")
-    if target_status != "PASSED_LOCAL":
-        blocker_codes.append("TARGET_TEST_ORACLE_NOT_GREEN")
-
-    overall_status = (
-        "PASSED_LOCAL_SOURCE_AND_TARGET_TEST_ORACLE"
-        if source_test_status == "PASSED_LOCAL" and target_status == "PASSED_LOCAL"
-        else (
-            "PARTIAL_SOURCE_ONLY_TARGET_NOT_GREEN"
-            if source_test_status == "PASSED_LOCAL"
-            else "BLOCKED_SOURCE_PREREQUISITES"
-        )
-    )
+    overall_status = ROOTLESS_EXECUTION_STATUS
 
     evidence = {
         "schema_version": 1,
@@ -1103,6 +1507,9 @@ def qualification(
             "minimum_free_bytes_stop_line": minimum_free,
             "free_bytes_after_run": shutil.disk_usage(workspace).free,
         },
+        "protected_execution_gate": protected_execution_gate(
+            "public-repository-source-transform-target"
+        ),
         "source_tuple": repository["source_tuple"],
         "verified_files": files,
         "pom_audit": pom,
@@ -1118,7 +1525,15 @@ def qualification(
             "runtime_execution_in_this_replay": source_test_status,
         },
         "test_discovery_overlay": overlay,
-        "toolchains": {"java": java, "maven": maven_record, "cmake": cmake_record},
+        "toolchains": toolchain_records,
+        "maven_isolation": {
+            "status": "ENFORCED",
+            "strict_checksums": True,
+            "inherited_maven_options": False,
+            "root": str(maven_isolation["root"]),
+            "user_home": str(maven_isolation["user_home"]),
+            "local_repository": str(maven_isolation["local_repository"]),
+        },
         "native_prerequisite": native,
         "service_prerequisites": services,
         "source_baseline": {
@@ -1159,6 +1574,12 @@ def qualification(
                 str(target_java_home) if target_java_home else "<java-21-home>",
                 "--maven-executable",
                 str(maven),
+                "--cmake-executable",
+                str(cmake),
+                "--cxx-executable",
+                str(cxx),
+                "--make-executable",
+                str(make),
             ],
         },
     }
@@ -1176,6 +1597,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--java-home", type=Path, required=True)
     parser.add_argument("--target-java-home", type=Path)
     parser.add_argument("--maven-executable", type=Path, required=True)
+    parser.add_argument("--cmake-executable", type=Path, required=True)
+    parser.add_argument("--cxx-executable", type=Path, required=True)
+    parser.add_argument("--make-executable", type=Path, required=True)
     return parser.parse_args()
 
 
@@ -1190,6 +1614,9 @@ def main() -> int:
             output=args.output.resolve(),
             java_home=args.java_home.resolve(),
             maven=args.maven_executable.resolve(),
+            cmake=args.cmake_executable.resolve(),
+            cxx=args.cxx_executable.resolve(),
+            make=args.make_executable.resolve(),
             target_java_home=(
                 args.target_java_home.resolve() if args.target_java_home else None
             ),

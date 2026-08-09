@@ -9,9 +9,14 @@
   "runtime_versions": ["21"],
   "architecture_style": "modular-monolith-compatible-spring-boot-application",
   "providers": {
-    "serializer": {"provider": "jackson", "version": "managed-by-spring-boot-3.5.3"},
-    "dependency_injection": {"provider": "spring-framework", "version": "managed-by-spring-boot-3.5.3"},
-    "validation": {"namespace": "jakarta.validation", "version": "managed-by-spring-boot-3.5.3"},
+    "serializer": {"provider": "jackson", "version": "2.19.1"},
+    "dependency_injection": {"provider": "spring-framework", "version": "6.2.8"},
+    "validation": {
+      "provider": "hibernate-validator",
+      "version": "8.0.2.Final",
+      "namespace": "jakarta.validation",
+      "api_version": "3.0.2"
+    },
     "authentication": {"strategy": "preserve-and-independently-verify", "automatic_support": false},
     "authorization": {"strategy": "preserve-and-independently-verify", "automatic_support": false},
     "persistence": {"strategy": "preserve-and-independently-verify", "automatic_support": false},

@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Any
 
@@ -75,9 +76,105 @@ RUNTIME_GATE_FIELDS = {
     "independent_review",
 }
 
+MAVEN_NAMESPACE = "http://maven.apache.org/POM/4.0.0"
+POM_PROPERTIES = {
+    "maven.compiler.release": "11",
+    "spring-framework.version": "5.3.39",
+    "servlet-api.version": "4.0.1",
+    "hamcrest.version": "2.2",
+    "json-path.version": "2.7.0",
+}
+TEST_DEPENDENCIES = {
+    ("org.hamcrest", "hamcrest"): "${hamcrest.version}",
+    ("com.jayway.jsonpath", "json-path"): "${json-path.version}",
+}
+
 
 def load(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _maven_tag(name: str) -> str:
+    return f"{{{MAVEN_NAMESPACE}}}{name}"
+
+
+def _unique_text(
+    parent: ET.Element,
+    child_name: str,
+    expected: str,
+    label: str,
+    errors: list[str],
+) -> None:
+    matches = parent.findall(_maven_tag(child_name))
+    if len(matches) != 1:
+        errors.append(f"fixture POM {label} must appear exactly once")
+        return
+    if (matches[0].text or "").strip() != expected:
+        errors.append(f"fixture POM {label} must equal {expected}")
+
+
+def validate_fixture_pom(pom_path: Path) -> list[str]:
+    errors: list[str] = []
+    try:
+        root = ET.parse(pom_path).getroot()
+    except (OSError, ET.ParseError) as exc:
+        return [f"fixture POM is not valid XML: {exc}"]
+    if root.tag != _maven_tag("project"):
+        return ["fixture POM root must use the Maven POM namespace"]
+
+    _unique_text(root, "packaging", "war", "packaging", errors)
+
+    property_nodes = root.findall(_maven_tag("properties"))
+    if len(property_nodes) != 1:
+        errors.append("fixture POM properties must appear exactly once")
+    else:
+        properties = property_nodes[0]
+        for name, expected in POM_PROPERTIES.items():
+            _unique_text(properties, name, expected, f"property {name}", errors)
+
+    dependencies_nodes = root.findall(_maven_tag("dependencies"))
+    if len(dependencies_nodes) != 1:
+        errors.append("fixture POM dependencies must appear exactly once")
+        return errors
+
+    dependencies = dependencies_nodes[0].findall(_maven_tag("dependency"))
+    for (expected_group, expected_artifact), expected_version in TEST_DEPENDENCIES.items():
+        candidates = []
+        for dependency in dependencies:
+            groups = {
+                (item.text or "").strip()
+                for item in dependency.findall(_maven_tag("groupId"))
+            }
+            artifacts = {
+                (item.text or "").strip()
+                for item in dependency.findall(_maven_tag("artifactId"))
+            }
+            if expected_group in groups or expected_artifact in artifacts:
+                candidates.append(dependency)
+        coordinate = f"{expected_group}:{expected_artifact}"
+        if len(candidates) != 1:
+            errors.append(
+                f"fixture POM dependency {coordinate} must appear exactly once"
+            )
+            continue
+        dependency = candidates[0]
+        _unique_text(dependency, "groupId", expected_group, f"dependency {coordinate} groupId", errors)
+        _unique_text(
+            dependency,
+            "artifactId",
+            expected_artifact,
+            f"dependency {coordinate} artifactId",
+            errors,
+        )
+        _unique_text(
+            dependency,
+            "version",
+            expected_version,
+            f"dependency {coordinate} version",
+            errors,
+        )
+        _unique_text(dependency, "scope", "test", f"dependency {coordinate} scope", errors)
+    return errors
 
 
 def main() -> int:
@@ -101,7 +198,6 @@ def main() -> int:
     certification = load(pack / "certification/certification.json")
     evidence = load(pack / "certification/evidence.json")
     support = load(pack / "support-matrix.json")
-    version_matrix = load(pack / "version-matrix.json")
     fingerprint = load(pack / "source-fingerprint/manifest.json")
     fingerprint_evidence = load(pack / "source-fingerprint/evidence.json")
     fcm = load(pack / "contracts/framework-contract-model.json")
@@ -215,15 +311,9 @@ def main() -> int:
         if corpus_manifest.get("inputs") != []:
             errors.append(f"{corpus} inputs must remain empty until selected")
 
-    pom = (pack / "corpus/development/legacy-spring-mvc/pom.xml").read_text(encoding="utf-8")
-    for token in (
-        "<packaging>war</packaging>",
-        "<maven.compiler.release>11</maven.compiler.release>",
-        "<spring-framework.version>5.3.39</spring-framework.version>",
-        "<servlet-api.version>4.0.1</servlet-api.version>",
-    ):
-        if token not in pom:
-            errors.append(f"fixture POM missing exact token: {token}")
+    errors.extend(
+        validate_fixture_pom(pack / "corpus/development/legacy-spring-mvc/pom.xml")
+    )
 
     recipe_text = (
         pack / "recipes/spring-framework-5.3-mvc-to-spring-boot-3.5.3.yml"

@@ -5,6 +5,19 @@
   "customer_repository": false,
   "independent_verification": false,
   "minimum_free_bytes": 10737418240,
+  "execution_policy": {
+    "default_mode": "static-prerequisite-audit-only",
+    "untrusted_build_execution": "NOT_RUN_ROOTLESS_ATTESTED_RUNNER_REQUIRED",
+    "protected_rootless_runner_receipt_verifier": "NOT_IMPLEMENTED",
+    "caller_supplied_attestation_accepted": false,
+    "implementation_requirements": [
+      "protected-control-plane runner receipt verification",
+      "content-addressed runner image and sandbox-policy binding",
+      "rootless runtime and nonzero effective-uid attestation",
+      "digest-only service-image injection and runtime verification",
+      "separate executor and verifier identities with freshness and revocation checks"
+    ]
+  },
   "repositories": [
     {
       "id": "retro-game",
@@ -34,6 +47,50 @@
         "target_java_version_fragment": "21.0.11",
         "maven_version_fragment": "Apache Maven 3.9.11",
         "cmake_version_fragment": "cmake version 4.4.0"
+      },
+      "toolchain_contract": {
+        "platform_system": "Darwin",
+        "platform_machine": "arm64",
+        "executables": {
+          "source_java": {
+            "version_line": "java version \"17.0.11\" 2024-04-16 LTS",
+            "sha256": "02b486e8254ad580397b6f0b0ed5a001ae6740be92aa47516daf05fba5656980"
+          },
+          "source_javac": {
+            "version_line": "javac 17.0.11",
+            "sha256": "ae713c239e6f646210dbd6dc0e475691fd17482d51ff17675e576ad9f3018393"
+          },
+          "target_java": {
+            "version_line": "openjdk version \"21.0.11\" 2026-04-21",
+            "sha256": "2c2aca8d8796794fd92ad9ca0c544e91dfd77487b34dd7f2b1ba0b29d6e57d42"
+          },
+          "target_javac": {
+            "version_line": "javac 21.0.11",
+            "sha256": "c4a7ba406f2c6d4f11723954b0070509606b6f016433975d3283105c9acb43db"
+          },
+          "maven": {
+            "version_line": "Apache Maven 3.9.11 (3e54c93a704957b63ee3494413a2b544fd3d825b)",
+            "sha256": "f9381d0cb98abaaf9592dae421eddc497e84ed9bfb723b84c111d1350863c3a2"
+          },
+          "cmake": {
+            "version_line": "cmake version 4.4.0",
+            "sha256": "8f136fce6bb8e9dbea38320f8a615b1f4896fe80cc7da5c1ff3da69e834f5d4c"
+          },
+          "cxx": {
+            "version_line": "Apple clang version 21.0.0 (clang-2100.1.1.101)",
+            "sha256": "44a68ddc1983d6cff3fd35ba3f9ba5f82004216f1dcde69892b3d1b06e408698"
+          },
+          "make": {
+            "version_line": "GNU Make 3.81",
+            "sha256": "44a68ddc1983d6cff3fd35ba3f9ba5f82004216f1dcde69892b3d1b06e408698"
+          }
+        },
+        "maven_policy": {
+          "isolated_user_home": true,
+          "isolated_local_repository": true,
+          "strict_checksums": true,
+          "inherited_maven_options": false
+        }
       },
       "required_files": [
         {
@@ -95,6 +152,7 @@
           "source_reference": "postgres:13-alpine",
           "resolved_index_digest": "sha256:fb9065b6e3e213bdc07edd372a5b2a26245840b7fb65d1fd8b6700106d51805c",
           "resolved_reference": "mirror.gcr.io/library/postgres@sha256:3119f20c52c059928a1f3455ef0c4ce57fa4f4c39562f0bf4c5ead414ad55b84",
+          "execution_reference": "mirror.gcr.io/library/postgres@sha256:3119f20c52c059928a1f3455ef0c4ce57fa4f4c39562f0bf4c5ead414ad55b84",
           "platform": "linux/arm64",
           "platform_digest": "sha256:3119f20c52c059928a1f3455ef0c4ce57fa4f4c39562f0bf4c5ead414ad55b84",
           "resolved_version": "13.23-alpine3.22",
@@ -105,6 +163,7 @@
           "source_reference": "redis:6-alpine",
           "resolved_index_digest": "sha256:ec5e187c913d422cdf60f4216a5fdfb95246792c6de6fe21ff5bed75cbfc8c23",
           "resolved_reference": "mirror.gcr.io/library/redis@sha256:ef0234ae359f2550f773accc0b4207ae213475eccaa0b2dd17c2710abb8c1998",
+          "execution_reference": "mirror.gcr.io/library/redis@sha256:ef0234ae359f2550f773accc0b4207ae213475eccaa0b2dd17c2710abb8c1998",
           "platform": "linux/arm64",
           "platform_digest": "sha256:ef0234ae359f2550f773accc0b4207ae213475eccaa0b2dd17c2710abb8c1998",
           "resolved_version": "6.2.23-alpine",
@@ -115,6 +174,7 @@
           "source_reference": "testcontainers/ryuk:0.12.0",
           "resolved_index_digest": "sha256:dd3f023a6ed7015b3f95a49ccd65a2daf0c56e681422c12952b19a810dfa6298",
           "resolved_reference": "testcontainers/ryuk@sha256:dd3f023a6ed7015b3f95a49ccd65a2daf0c56e681422c12952b19a810dfa6298",
+          "execution_reference": "testcontainers/ryuk@sha256:dd3f023a6ed7015b3f95a49ccd65a2daf0c56e681422c12952b19a810dfa6298",
           "platform": "linux/arm64",
           "platform_digest": "sha256:dd3f023a6ed7015b3f95a49ccd65a2daf0c56e681422c12952b19a810dfa6298",
           "resolved_version": "0.12.0",

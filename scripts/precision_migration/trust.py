@@ -236,6 +236,20 @@ class TrustStore:
         supplied_store = path.expanduser()
         resolved_store = supplied_store.resolve(strict=True)
         store_bytes = read_regular_file_once(supplied_store, max_bytes=1024 * 1024, label="trust store")
+        return cls.from_bytes(resolved_store, store_bytes)
+
+    @classmethod
+    def from_bytes(cls, path: Path, store_bytes: bytes) -> "TrustStore":
+        """Load a trust store from one immutable snapshot of its JSON bytes.
+
+        ``path`` remains the origin used to resolve public-key paths.  Callers that
+        already performed a bounded, no-follow read can pass those exact bytes here
+        so metadata inspection and trust construction cannot observe different JSON
+        revisions.  ``load`` remains the path-based, backward-compatible entrypoint.
+        """
+        if not isinstance(store_bytes, bytes):
+            raise TypeError("trust store content must be bytes")
+        resolved_store = path.expanduser().resolve(strict=True)
         payload = json.loads(store_bytes.decode("utf-8"))
         if payload.get("schema_version") != 1:
             raise ValueError("trust store schema_version must be 1")

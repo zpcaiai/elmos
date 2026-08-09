@@ -120,6 +120,13 @@ class LoadedTrust:
     metadata: dict[str, SignerMetadata]
 
 
+@dataclass(frozen=True)
+class JsonFileSnapshot:
+    value: dict[str, Any]
+    digest: str
+    size_bytes: int
+
+
 def _require_object(value: Any, label: str) -> dict[str, Any]:
     if not isinstance(value, dict):
         raise ExternalIntakeError(f"{label} must be an object")
@@ -150,18 +157,19 @@ def _reject_non_success(value: Any, label: str) -> None:
             _reject_non_success(item, f"{label}[{index}]")
 
 
-def _load_json(path: Path, label: str, *, max_bytes: int = MAX_JSON_BYTES) -> dict[str, Any]:
+def _load_json_snapshot(
+    path: Path, label: str, *, max_bytes: int = MAX_JSON_BYTES
+) -> JsonFileSnapshot:
     try:
         raw = read_regular_file_once(path, max_bytes=max_bytes, label=label)
         value = json.loads(raw.decode("utf-8"))
     except (OSError, UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
         raise ExternalIntakeError(f"{label} is not bounded regular UTF-8 JSON: {exc}") from exc
-    return _require_object(value, label)
-
-
-def _raw_file_digest(path: Path, label: str) -> str:
-    raw = read_regular_file_once(path, max_bytes=MAX_JSON_BYTES, label=label)
-    return "sha256:" + hashlib.sha256(raw).hexdigest()
+    return JsonFileSnapshot(
+        value=_require_object(value, label),
+        digest="sha256:" + hashlib.sha256(raw).hexdigest(),
+        size_bytes=len(raw),
+    )
 
 
 def _approved_roots(values: Iterable[Path]) -> tuple[Path, ...]:
@@ -251,16 +259,33 @@ def _exact_side(manifest: dict[str, Any], side_name: str) -> dict[str, Any]:
     }
 
 
-def _validate_pack_identity(pack_dir: Path) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
+def _validate_pack_identity(
+    pack_dir: Path,
+) -> tuple[
+    dict[str, Any],
+    dict[str, Any],
+    dict[str, Any],
+    dict[str, JsonFileSnapshot],
+]:
     if pack_dir.is_symlink():
         raise ExternalIntakeError("pack_dir must not be a symlink")
     pack = pack_dir.resolve(strict=True)
     if not pack.is_dir():
         raise ExternalIntakeError("pack_dir must be a directory")
-    manifest = _load_json(pack / "pack.json", "pack manifest")
-    matrix = _load_json(pack / "version-matrix.json", "version matrix")
-    target_profile = _load_json(pack / "target-profile" / "profile.json", "target profile")
-    recipes = _load_json(pack / "recipes" / "manifest.json", "recipe manifest")
+    snapshots = {
+        "pack_manifest": _load_json_snapshot(pack / "pack.json", "pack manifest"),
+        "version_matrix": _load_json_snapshot(pack / "version-matrix.json", "version matrix"),
+        "target_profile": _load_json_snapshot(
+            pack / "target-profile" / "profile.json", "target profile"
+        ),
+        "recipe_manifest": _load_json_snapshot(
+            pack / "recipes" / "manifest.json", "recipe manifest"
+        ),
+    }
+    manifest = snapshots["pack_manifest"].value
+    matrix = snapshots["version_matrix"].value
+    target_profile = snapshots["target_profile"].value
+    recipes = snapshots["recipe_manifest"].value
     pack_key = _require_identity(manifest.get("pack_key"), "pack.pack_key")
     if matrix.get("pack_key") != pack_key or recipes.get("pack_key") != pack_key:
         raise ExternalIntakeError("pack, version matrix, and recipe manifest pack_key must match")
@@ -307,7 +332,7 @@ def _validate_pack_identity(pack_dir: Path) -> tuple[dict[str, Any], dict[str, A
         or any(recipe not in recipes["recipes"] for recipe in edge_recipes)
     ):
         raise ExternalIntakeError("version matrix edge and recipe manifest are not exactly aligned")
-    return manifest, source, target
+    return manifest, source, target, snapshots
 
 
 def _tuple_matches(candidate: Any, exact: dict[str, Any]) -> bool:
@@ -334,7 +359,7 @@ def build_expected_binding(
     """Build and verify the exact immutable binding signers must attest."""
     roots = _approved_roots(evidence_roots)
     pack = pack_dir.resolve(strict=True)
-    manifest, source, target = _validate_pack_identity(pack)
+    manifest, source, target, snapshots = _validate_pack_identity(pack)
     artifact = _verify_reference(artifact_reference, roots, "artifact")
     execution_profile = _verify_reference(execution_profile_reference, roots, "execution_profile")
     if artifact["digest"] == execution_profile["digest"]:
@@ -342,12 +367,12 @@ def build_expected_binding(
     binding = {
         "pack_key": manifest["pack_key"],
         "pack_version": _require_identity(manifest.get("version"), "pack.version"),
-        "pack_manifest_digest": _raw_file_digest(pack / "pack.json", "pack manifest"),
+        "pack_manifest_digest": snapshots["pack_manifest"].digest,
         "source_tuple": source,
         "target_tuple": target,
-        "version_matrix_digest": _raw_file_digest(pack / "version-matrix.json", "version matrix"),
-        "recipe_manifest_digest": _raw_file_digest(pack / "recipes" / "manifest.json", "recipe manifest"),
-        "target_profile_digest": _raw_file_digest(pack / "target-profile" / "profile.json", "target profile"),
+        "version_matrix_digest": snapshots["version_matrix"].digest,
+        "recipe_manifest_digest": snapshots["recipe_manifest"].digest,
+        "target_profile_digest": snapshots["target_profile"].digest,
         "artifact_digest": artifact["digest"],
         "artifact_size_bytes": artifact["size_bytes"],
         "execution_profile_digest": execution_profile["digest"],
@@ -357,9 +382,17 @@ def build_expected_binding(
 
 
 def _load_trust(path: Path) -> LoadedTrust:
-    if path.expanduser().is_symlink():
+    supplied = path.expanduser()
+    if supplied.is_symlink():
         raise ExternalIntakeError("trust store must not be a symlink")
-    payload = _load_json(path.expanduser(), "Batch 30 trust store", max_bytes=1024 * 1024)
+    try:
+        resolved = supplied.resolve(strict=True)
+        before = read_regular_file_once(
+            supplied, max_bytes=1024 * 1024, label="Batch 30 trust store"
+        )
+        payload = _require_object(json.loads(before.decode("utf-8")), "Batch 30 trust store")
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
+        raise ExternalIntakeError(f"Batch 30 trust store is invalid: {exc}") from exc
     _require_exact_fields(payload, {"schema_version", "namespace", "keys", "revoked_record_ids"}, "trust store")
     if payload.get("schema_version") != 1 or payload.get("namespace") != NAMESPACE:
         raise ExternalIntakeError("trust store identity is invalid")
@@ -368,7 +401,7 @@ def _load_trust(path: Path) -> LoadedTrust:
     if not isinstance(keys, list) or not keys:
         raise ExternalIntakeError("trust store keys must be a non-empty array")
     metadata: dict[str, SignerMetadata] = {}
-    base = path.expanduser().resolve(strict=True).parent
+    base = resolved.parent
     key_fields = {
         "key_id", "actor_id", "organization_id", "roles", "public_key_path",
         "not_before", "not_after", "revoked",
@@ -399,7 +432,7 @@ def _load_trust(path: Path) -> LoadedTrust:
             raise ExternalIntakeError(f"trust store key {key_id}.revoked must be boolean")
         metadata[key_id] = SignerMetadata(key_id, actor, organization, role_values)
     try:
-        store = TrustStore.load(path)
+        store = TrustStore.from_bytes(resolved, before)
     except (OSError, ValueError) as exc:
         raise ExternalIntakeError(f"Batch 30 trust store verification failed: {exc}") from exc
     return LoadedTrust(store=store, metadata=metadata)
@@ -639,6 +672,39 @@ def evaluate_external_intake(
     }
 
 
+def evaluate_external_intake_file(
+    intake_path: Path,
+    *,
+    pack_dir: Path,
+    trust_store: Path | LoadedTrust,
+    evidence_roots: Iterable[Path],
+    now: datetime | None = None,
+) -> dict[str, Any]:
+    """Read an intake once and return its byte identity with the review result."""
+    supplied = intake_path.expanduser()
+    if supplied.is_symlink():
+        raise ExternalIntakeError("external intake must not be a symlink")
+    try:
+        raw = read_regular_file_once(
+            supplied, max_bytes=MAX_JSON_BYTES, label="external intake"
+        )
+        intake = _require_object(json.loads(raw.decode("utf-8")), "external intake")
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
+        raise ExternalIntakeError(f"external intake is invalid: {exc}") from exc
+    result = evaluate_external_intake(
+        intake,
+        pack_dir=pack_dir,
+        trust_store=trust_store,
+        evidence_roots=evidence_roots,
+        now=now,
+    )
+    return {
+        **result,
+        "intake_content_digest": "sha256:" + hashlib.sha256(raw).hexdigest(),
+        "intake_size_bytes": len(raw),
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("pack_dir", type=Path)
@@ -648,9 +714,8 @@ def main() -> int:
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
     try:
-        intake = _load_json(args.intake, "external intake")
-        result = evaluate_external_intake(
-            intake,
+        result = evaluate_external_intake_file(
+            args.intake,
             pack_dir=args.pack_dir,
             trust_store=args.trust_store,
             evidence_roots=args.evidence_root,

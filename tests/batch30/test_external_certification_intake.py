@@ -9,6 +9,7 @@ import tempfile
 import unittest
 from datetime import datetime, timezone
 from pathlib import Path
+from unittest.mock import patch
 
 from scripts.batch30.validate_external_certification_intake import (
     CUSTOMER_AUTHORIZATION_ROLE,
@@ -18,7 +19,12 @@ from scripts.batch30.validate_external_certification_intake import (
     build_expected_binding,
     evaluate_external_intake,
 )
-from scripts.precision_migration.trust import canonical_bytes, canonical_digest
+from scripts.precision_migration.trust import (
+    TrustStore,
+    canonical_bytes,
+    canonical_digest,
+    read_regular_file_once as trust_read_regular_file_once,
+)
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -391,6 +397,85 @@ class ExternalCertificationIntakeTests(unittest.TestCase):
         self.assertEqual(0, completed.returncode, completed.stderr)
         result = json.loads(completed.stdout)
         self.assertEqual("NOT_CERTIFIED", result["certification_decision"])
+        raw = intake_path.read_bytes()
+        self.assertEqual(
+            "sha256:" + hashlib.sha256(raw).hexdigest(),
+            result["intake_content_digest"],
+        )
+        self.assertEqual(len(raw), result["intake_size_bytes"])
+
+    def test_trust_metadata_and_verifier_use_one_json_snapshot(self) -> None:
+        original = self.trust_path.read_bytes()
+        expected_digest = TrustStore.from_bytes(self.trust_path, original).digest
+        raced_payload = json.loads(original.decode("utf-8"))
+        raced_payload["revoked_record_ids"] = ["unrelated-raced-revocation"]
+        raced = (json.dumps(raced_payload, sort_keys=True) + "\n").encode("utf-8")
+        trust_reads = 0
+
+        def race_trust_store(path: Path, *, max_bytes: int, label: str) -> bytes:
+            nonlocal trust_reads
+            if label != "Batch 30 trust store":
+                return trust_read_regular_file_once(path, max_bytes=max_bytes, label=label)
+            trust_reads += 1
+            if trust_reads == 1:
+                snapshot = trust_read_regular_file_once(path, max_bytes=max_bytes, label=label)
+                self.trust_path.write_bytes(raced)
+                return snapshot
+            # The former read-verify-read implementation could be fooled by A -> B -> A.
+            self.trust_path.write_bytes(original)
+            return trust_read_regular_file_once(path, max_bytes=max_bytes, label=label)
+
+        with patch(
+            "scripts.batch30.validate_external_certification_intake.read_regular_file_once",
+            side_effect=race_trust_store,
+        ):
+            result = self.evaluate()
+
+        self.assertEqual(1, trust_reads)
+        self.assertEqual(expected_digest, result["trust_store_digest"])
+
+    def test_pack_semantics_and_binding_digest_share_one_file_snapshot(self) -> None:
+        copied_pack = self.case / "raced-framework-pack"
+        shutil.copytree(self.pack, copied_pack)
+        manifest_path = copied_pack / "pack.json"
+        original = manifest_path.read_bytes()
+        raced = original.replace(b'"version": "0.3.0"', b'"version": "9.9.9"')
+        self.assertNotEqual(original, raced)
+        identity_files = {
+            (copied_pack / "pack.json").resolve(),
+            (copied_pack / "version-matrix.json").resolve(),
+            (copied_pack / "target-profile" / "profile.json").resolve(),
+            (copied_pack / "recipes" / "manifest.json").resolve(),
+        }
+        reads = {path: 0 for path in identity_files}
+
+        def race_pack_manifest(path: Path, *, max_bytes: int, label: str) -> bytes:
+            resolved = Path(path).resolve()
+            snapshot = trust_read_regular_file_once(path, max_bytes=max_bytes, label=label)
+            if resolved in reads:
+                reads[resolved] += 1
+            if resolved == manifest_path.resolve() and reads[resolved] == 1:
+                manifest_path.write_bytes(raced)
+            return snapshot
+
+        with patch(
+            "scripts.batch30.validate_external_certification_intake.read_regular_file_once",
+            side_effect=race_pack_manifest,
+        ):
+            binding, _ = build_expected_binding(
+                copied_pack,
+                self.artifact_ref,
+                self.execution_profile_ref,
+                evidence_roots=[self.evidence_root],
+            )
+
+        self.assertEqual({path: 1 for path in identity_files}, reads)
+        self.assertEqual(
+            "sha256:" + hashlib.sha256(original).hexdigest(),
+            binding["pack_manifest_digest"],
+        )
+        self.assertEqual("0.3.0", binding["pack_version"])
+        self.assertEqual(raced, manifest_path.read_bytes())
 
     def test_missing_role_and_unknown_outcome_fail_closed(self) -> None:
         missing = copy.deepcopy(self.intake)

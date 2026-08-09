@@ -4,10 +4,22 @@
       "evidence_refs": [
         "certification/local-reference-evidence.json"
       ],
+      "evidence_bindings": [
+        {
+          "bytes": 8432,
+          "path": "certification/local-reference-evidence.json",
+          "role": "runtime-equivalence",
+          "sha256": "e31f4380fac82e6777f2254ab4ccb318f0fdc0dc382c99e2aea811ee5e365579"
+        }
+      ],
       "id": "web",
+      "fcm_capability_ids": [
+        "web-json-contract"
+      ],
       "reason": "Exact local source/target builds and startup plus separate public holdout and representative repository behavior passed; customer and external certification remain NOT_RUN.",
       "status": "supported",
-      "strategy": "framework-contract-and-real-runtime"
+      "strategy": "framework-contract-and-real-runtime",
+      "target_profile_key": "spring-boot-2-7-18-to-3-5-3-target"
     },
     {
       "evidence_refs": [],
@@ -18,12 +30,38 @@
     },
     {
       "evidence_refs": [
-        "certification/local-reference-evidence.json"
+        "certification/local-reference-evidence.json",
+        "corpus/development/source/src/main/resources/application.properties",
+        "corpus/development/migrated/src/main/resources/application.properties"
+      ],
+      "evidence_bindings": [
+        {
+          "bytes": 8432,
+          "path": "certification/local-reference-evidence.json",
+          "role": "runtime-equivalence",
+          "sha256": "e31f4380fac82e6777f2254ab4ccb318f0fdc0dc382c99e2aea811ee5e365579"
+        },
+        {
+          "bytes": 120,
+          "path": "corpus/development/source/src/main/resources/application.properties",
+          "role": "source-configuration",
+          "sha256": "46a842498a4c053721caf47bfbc4e498a2c8f8a3cd14b92cd4cdbec908681392"
+        },
+        {
+          "bytes": 120,
+          "path": "corpus/development/migrated/src/main/resources/application.properties",
+          "role": "target-configuration",
+          "sha256": "46a842498a4c053721caf47bfbc4e498a2c8f8a3cd14b92cd4cdbec908681392"
+        }
       ],
       "id": "configuration",
+      "fcm_capability_ids": [
+        "configuration-runtime-contract"
+      ],
       "reason": "Exact local source/target builds and startup plus separate public holdout and representative repository behavior passed; customer and external certification remain NOT_RUN.",
       "status": "supported",
-      "strategy": "framework-contract-and-real-runtime"
+      "strategy": "framework-contract-and-real-runtime",
+      "target_profile_key": "spring-boot-2-7-18-to-3-5-3-target"
     },
     {
       "evidence_refs": [],
@@ -85,12 +123,24 @@
       "evidence_refs": [
         "certification/local-reference-evidence.json"
       ],
+      "evidence_bindings": [
+        {
+          "bytes": 8432,
+          "path": "certification/local-reference-evidence.json",
+          "role": "runtime-equivalence",
+          "sha256": "e31f4380fac82e6777f2254ab4ccb318f0fdc0dc382c99e2aea811ee5e365579"
+        }
+      ],
       "id": "lifecycle",
+      "fcm_capability_ids": [
+        "health-lifecycle"
+      ],
       "reason": "Exact local source/target builds and startup plus separate public holdout and representative repository behavior passed; customer and external certification remain NOT_RUN.",
       "status": "supported",
-      "strategy": "framework-contract-and-real-runtime"
+      "strategy": "framework-contract-and-real-runtime",
+      "target_profile_key": "spring-boot-2-7-18-to-3-5-3-target"
     }
   ],
   "pack_key": "spring-boot-2-7-18-to-3-5-3",
-  "schema_version": 1
+  "schema_version": 2
 }

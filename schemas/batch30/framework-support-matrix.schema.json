@@ -8,7 +8,7 @@
   ],
   "properties": {
     "schema_version": {
-      "type": "integer"
+      "enum": [1, 2]
     },
     "pack_key": {
       "type": "string"
@@ -45,12 +45,94 @@
           },
           "evidence_refs": {
             "type": "array",
+            "uniqueItems": true,
             "items": {
-              "type": "string"
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "fcm_capability_ids": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "target_profile_key": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evidence_bindings": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "object",
+              "required": ["role", "path", "sha256", "bytes"],
+              "properties": {
+                "role": {
+                  "enum": [
+                    "runtime-equivalence",
+                    "source-configuration",
+                    "target-configuration"
+                  ]
+                },
+                "path": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "bytes": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "additionalProperties": false
             }
           }
         }
       }
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "schema_version": {"const": 2}
+        },
+        "required": ["schema_version"]
+      },
+      "then": {
+        "properties": {
+          "capabilities": {
+            "items": {
+              "if": {
+                "properties": {
+                  "status": {"enum": ["supported", "certified"]}
+                },
+                "required": ["status"]
+              },
+              "then": {
+                "required": [
+                  "evidence_refs",
+                  "evidence_bindings",
+                  "fcm_capability_ids",
+                  "target_profile_key"
+                ],
+                "properties": {
+                  "evidence_refs": {"minItems": 1},
+                  "evidence_bindings": {"minItems": 1}
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
 }
