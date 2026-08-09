@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "pack_key": "spring-framework-5-3-mvc-to-spring-boot-3-5-3",
+  "tuples": [
+    {
+      "id": "spring-framework-5.3.39-mvc-war-java-11-maven-3.9.11",
+      "framework": "spring-framework-mvc",
+      "framework_version": "5.3.39",
+      "java": "11",
+      "build": "maven-3.9.11",
+      "packaging": "war",
+      "servlet_api": "javax.servlet-api-4.0.1",
+      "status": "experimental-input"
+    },
+    {
+      "id": "spring-boot-3.5.3-java-21-maven-3.9.11",
+      "framework": "spring-boot",
+      "framework_version": "3.5.3",
+      "spring_framework": "6.2.8",
+      "java": "21",
+      "build": "maven-3.9.11",
+      "packaging": "jar",
+      "servlet_api": "jakarta.servlet-6.1",
+      "embedded_container": "tomcat-10.1.42",
+      "status": "experimental-output"
+    }
+  ],
+  "upgrade_edges": [
+    {
+      "from": "spring-framework-5.3.39-mvc-war-java-11-maven-3.9.11",
+      "to": "spring-boot-3.5.3-java-21-maven-3.9.11",
+      "directional": true,
+      "reverse_supported": false,
+      "rewrite_spring": "6.35.0",
+      "rewrite_maven_plugin": "6.44.0",
+      "recipe": "io.elmos.openrewrite.SpringFramework5_3MvcToSpringBoot3_5_3Java21",
+      "execution_status": "NOT_RUN"
+    }
+  ]
+}

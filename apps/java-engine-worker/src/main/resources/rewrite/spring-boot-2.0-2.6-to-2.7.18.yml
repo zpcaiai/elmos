@@ -1,0 +1,42 @@
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: io.elmos.openrewrite.SpringBoot2_0To2_6ToBoot2_7_18Java17
+displayName: Migrate Spring Boot 2.0-2.6 to Spring Boot 2.7.18 on Java 17
+description: >-
+  Applies the ordered Boot 2.7 migration, upgrades Java to 17 and pins the exact
+  directed ELMOS target tuple. Runtime behavior evidence for security, database,
+  transaction and messaging scenarios remains NOT_RUN.
+recipeList:
+  - org.openrewrite.java.spring.boot2.UpgradeSpringBoot_2_7
+  - org.openrewrite.java.migrate.UpgradeToJava17
+  - org.openrewrite.maven.ChangeParentPom:
+      oldGroupId: org.springframework.boot
+      oldArtifactId: spring-boot-starter-parent
+      newGroupId: org.springframework.boot
+      newArtifactId: spring-boot-starter-parent
+      newVersion: 2.7.18
+      allowVersionDowngrades: false
+  - org.openrewrite.maven.UpgradeParentVersion:
+      groupId: org.springframework.boot
+      artifactId: spring-boot-starter-parent
+      newVersion: 2.7.18
+  - org.openrewrite.maven.ChangePropertyValue:
+      key: spring-boot.version
+      newValue: "2.7.18"
+      addIfMissing: false
+      trustParent: false
+  - org.openrewrite.maven.ChangePropertyValue:
+      key: java.version
+      newValue: "17"
+      addIfMissing: true
+      trustParent: false
+  - org.openrewrite.maven.ChangePropertyValue:
+      key: maven.compiler.source
+      newValue: "17"
+      addIfMissing: false
+      trustParent: false
+  - org.openrewrite.maven.ChangePropertyValue:
+      key: maven.compiler.target
+      newValue: "17"
+      addIfMissing: false
+      trustParent: false

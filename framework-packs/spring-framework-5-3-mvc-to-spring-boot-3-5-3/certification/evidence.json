@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "pack_key": "spring-framework-5-3-mvc-to-spring-boot-3-5-3",
+  "pack_version": "0.1.0",
+  "evidence_class": "STATIC_EXPERIMENTAL_PACK",
+  "runs": [],
+  "metrics": {
+    "source_fingerprint_coverage": null,
+    "framework_contract_coverage": null,
+    "build_green_rate": null,
+    "startup_pass_rate": null,
+    "p0_contract_pass_rate": null,
+    "source_map_coverage": null,
+    "manual_hours": null,
+    "cost_per_verified_workload": null
+  },
+  "metric_status": "NOT_RUN",
+  "static_validation": {
+    "executed_at": "2026-08-09",
+    "status": "PASSED_LOCAL_STATIC",
+    "certification_eligible": false,
+    "checks": [
+      "pack-specific fail-closed validator",
+      "Batch 30 framework pack validator",
+      "Batch 30 experimental gate",
+      "three negative regression tests",
+      "XML well-formedness"
+    ]
+  },
+  "critical_unknowns": 12,
+  "silent_framework_drops": null,
+  "critical_security_regressions": null,
+  "critical_transaction_regressions": null,
+  "critical_data_regressions": null,
+  "duplicate_message_or_job_effects": null,
+  "test_integrity_violations": null,
+  "source_build_status": "NOT_RUN",
+  "source_startup_status": "NOT_RUN",
+  "transformation_status": "NOT_RUN",
+  "target_build_status": "NOT_RUN",
+  "target_startup_status": "NOT_RUN",
+  "behavior_equivalence_status": "NOT_RUN",
+  "negative_corpus_status": "NOT_RUN",
+  "holdout_status": "NOT_RUN",
+  "representative_repository_status": "NOT_RUN",
+  "external_execution_status": "NOT_RUN",
+  "notes": [
+    "Static fixture and recipe validation are engineering preparation only.",
+    "No pass rate is defined because no source/target execution evidence exists.",
+    "Known unknowns are retained instead of being counted as zero regressions."
+  ]
+}

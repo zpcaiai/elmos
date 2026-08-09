@@ -1,0 +1,305 @@
+{
+  "schema_version": "1.0",
+  "pack_key": "spring-framework-5-3-mvc-to-spring-boot-3-5-3",
+  "model_status": "STATIC_DESIGN_ONLY",
+  "extraction_status": "NOT_RUN",
+  "source_snapshot_sha256": null,
+  "exact_tuple": {
+    "framework": "spring-framework-mvc",
+    "framework_version": "5.3.39",
+    "runtime": "java",
+    "runtime_version": "11",
+    "build": "maven-3.9.11",
+    "packaging": "war"
+  },
+  "capabilities": [
+    {
+      "id": "mvc-dispatch-and-json",
+      "domain": "web",
+      "observation_status": "CAPTURED_FROM_DECLARED_FIXTURE",
+      "behavior_verification_status": "NOT_RUN",
+      "source_traces": [
+        "WEB-INF/web.xml",
+        "WEB-INF/spring/servlet-context.xml",
+        "LegacyOrderController.java"
+      ],
+      "obligations": [
+        "DispatcherServlet is mapped to /",
+        "GET /api/orders/{id} preserves status, headers and JSON field/value semantics",
+        "POST /api/orders preserves validation and 201 response semantics"
+      ],
+      "target_strategy": "Boot MVC with explicit FCM-derived configuration",
+      "blockers": [
+        "runtime contract replay NOT_RUN"
+      ]
+    },
+    {
+      "id": "root-web-context-bean-graph",
+      "domain": "dependency-injection",
+      "observation_status": "CAPTURED_FROM_DECLARED_FIXTURE",
+      "behavior_verification_status": "NOT_RUN",
+      "source_traces": [
+        "WEB-INF/web.xml",
+        "WEB-INF/spring/root-context.xml",
+        "WEB-INF/spring/servlet-context.xml"
+      ],
+      "obligations": [
+        "preserve root versus DispatcherServlet child context ownership",
+        "preserve component-scan inclusion and exclusion",
+        "preserve bean names, qualifiers, scopes, primary selection and initialization order"
+      ],
+      "target_strategy": "merge only after an extracted bean graph proves no shadowing",
+      "blockers": [
+        "runtime bean graph NOT_RUN"
+      ]
+    },
+    {
+      "id": "xml-properties-profiles",
+      "domain": "configuration",
+      "observation_status": "CAPTURED_FROM_DECLARED_FIXTURE",
+      "behavior_verification_status": "NOT_RUN",
+      "source_traces": [
+        "WEB-INF/spring/root-context.xml",
+        "WEB-INF/spring/servlet-context.xml",
+        "classpath:legacy.properties"
+      ],
+      "obligations": [
+        "preserve property source order and unresolved-placeholder failure behavior",
+        "preserve active profiles and XML imports",
+        "map only proven settings to Boot configuration"
+      ],
+      "target_strategy": "typed property mapping with explicit precedence oracle",
+      "blockers": [
+        "effective property graph NOT_RUN"
+      ]
+    },
+    {
+      "id": "bean-validation-and-error-shape",
+      "domain": "validation",
+      "observation_status": "CAPTURED_FROM_DECLARED_FIXTURE",
+      "behavior_verification_status": "NOT_RUN",
+      "source_traces": [
+        "LegacyOrderForm.java",
+        "LegacyOrderController.java",
+        "ApiExceptionHandler.java"
+      ],
+      "obligations": [
+        "migrate javax.validation to jakarta.validation",
+        "preserve validation groups, messages and fail-fast configuration",
+        "preserve HTTP 400 error field semantics"
+      ],
+      "target_strategy": "Jakarta Validation 3.0.2 with Hibernate Validator 8.0.2.Final",
+      "blockers": [
+        "provider and locale replay NOT_RUN"
+      ]
+    },
+    {
+      "id": "authentication-chain",
+      "domain": "authentication",
+      "observation_status": "NOT_PRESENT_IN_DECLARED_FIXTURE",
+      "behavior_verification_status": "NOT_RUN",
+      "source_traces": [],
+      "obligations": [
+        "detect servlet filters, container realms and Spring Security before migration",
+        "fail closed when an active authentication mechanism lacks a target profile"
+      ],
+      "target_strategy": "security-profile-required",
+      "blockers": [
+        "no security corpus",
+        "customer authentication evidence NOT_RUN"
+      ]
+    },
+    {
+      "id": "authorization-policy",
+      "domain": "authorization",
+      "observation_status": "NOT_PRESENT_IN_DECLARED_FIXTURE",
+      "behavior_verification_status": "NOT_RUN",
+      "source_traces": [],
+      "obligations": [
+        "preserve URL, method and view authorization decisions",
+        "preserve deny-by-default and exception behavior"
+      ],
+      "target_strategy": "security-profile-required",
+      "blockers": [
+        "no authorization corpus",
+        "customer policy evidence NOT_RUN"
+      ]
+    },
+    {
+      "id": "persistence-session-query",
+      "domain": "persistence",
+      "observation_status": "NOT_PRESENT_IN_DECLARED_FIXTURE",
+      "behavior_verification_status": "NOT_RUN",
+      "source_traces": [],
+      "obligations": [
+        "detect entity mappings, session lifetime, lazy loading and query semantics",
+        "require exact provider and database profile"
+      ],
+      "target_strategy": "provider-profile-required",
+      "blockers": [
+        "no persistence corpus",
+        "database execution NOT_RUN"
+      ]
+    },
+    {
+      "id": "transaction-boundaries",
+      "domain": "transactions",
+      "observation_status": "NOT_PRESENT_IN_DECLARED_FIXTURE",
+      "behavior_verification_status": "NOT_RUN",
+      "source_traces": [],
+      "obligations": [
+        "preserve transaction manager selection, propagation, isolation and rollback rules",
+        "preserve proxy/self-invocation behavior"
+      ],
+      "target_strategy": "transaction-profile-required",
+      "blockers": [
+        "no transaction corpus",
+        "provider execution NOT_RUN"
+      ]
+    },
+    {
+      "id": "controller-advice-errors",
+      "domain": "error-handling",
+      "observation_status": "CAPTURED_FROM_DECLARED_FIXTURE",
+      "behavior_verification_status": "NOT_RUN",
+      "source_traces": [
+        "ApiExceptionHandler.java"
+      ],
+      "obligations": [
+        "preserve handler precedence, HTTP status and response content type",
+        "preserve exception disclosure and logging policy"
+      ],
+      "target_strategy": "Boot ControllerAdvice with explicit error contract tests",
+      "blockers": [
+        "negative replay NOT_RUN"
+      ]
+    },
+    {
+      "id": "filter-interceptor-order",
+      "domain": "servlet-filters-and-interceptors",
+      "observation_status": "CAPTURED_FROM_DECLARED_FIXTURE",
+      "behavior_verification_status": "NOT_RUN",
+      "source_traces": [
+        "WEB-INF/web.xml",
+        "WEB-INF/spring/servlet-context.xml",
+        "RequestAuditInterceptor.java"
+      ],
+      "obligations": [
+        "CharacterEncodingFilter runs before request body decoding",
+        "audit interceptor runs before controller invocation and after completion",
+        "async/error dispatch types remain explicit"
+      ],
+      "target_strategy": "ordered FilterRegistrationBean and WebMvcConfigurer mapping",
+      "blockers": [
+        "real container order replay NOT_RUN"
+      ]
+    },
+    {
+      "id": "message-delivery",
+      "domain": "messaging",
+      "observation_status": "NOT_PRESENT_IN_DECLARED_FIXTURE",
+      "behavior_verification_status": "NOT_RUN",
+      "source_traces": [],
+      "obligations": [
+        "detect provider, acknowledgement, retry and duplicate-effect behavior"
+      ],
+      "target_strategy": "provider-profile-required",
+      "blockers": [
+        "no messaging corpus"
+      ]
+    },
+    {
+      "id": "cache-contract",
+      "domain": "cache",
+      "observation_status": "NOT_PRESENT_IN_DECLARED_FIXTURE",
+      "behavior_verification_status": "NOT_RUN",
+      "source_traces": [],
+      "obligations": [
+        "detect cache provider, keys, TTL, serialization and invalidation"
+      ],
+      "target_strategy": "provider-profile-required",
+      "blockers": [
+        "no cache corpus"
+      ]
+    },
+    {
+      "id": "scheduler-contract",
+      "domain": "scheduler",
+      "observation_status": "NOT_PRESENT_IN_DECLARED_FIXTURE",
+      "behavior_verification_status": "NOT_RUN",
+      "source_traces": [],
+      "obligations": [
+        "detect scheduler provider, timezone, overlap, retry and misfire behavior"
+      ],
+      "target_strategy": "provider-profile-required",
+      "blockers": [
+        "no scheduler corpus"
+      ]
+    },
+    {
+      "id": "view-resolution-and-resources",
+      "domain": "views-and-static-resources",
+      "observation_status": "DETECTED_IN_DECLARED_FIXTURE",
+      "behavior_verification_status": "NOT_RUN",
+      "source_traces": [
+        "WEB-INF/spring/servlet-context.xml"
+      ],
+      "obligations": [
+        "preserve view resolver order, prefix/suffix and model exposure",
+        "preserve static resource paths, caching and welcome behavior"
+      ],
+      "target_strategy": "manual-view-technology-decision-required",
+      "blockers": [
+        "JSP on executable JAR is not assumed equivalent",
+        "view rendering corpus NOT_RUN"
+      ]
+    },
+    {
+      "id": "servlet-to-boot-lifecycle",
+      "domain": "lifecycle",
+      "observation_status": "CAPTURED_FROM_DECLARED_FIXTURE",
+      "behavior_verification_status": "NOT_RUN",
+      "source_traces": [
+        "WEB-INF/web.xml"
+      ],
+      "obligations": [
+        "preserve root context before child web context initialization",
+        "preserve eager DispatcherServlet startup",
+        "preserve readiness and graceful shutdown behavior"
+      ],
+      "target_strategy": "Boot application lifecycle with explicit startup/shutdown probes",
+      "blockers": [
+        "source and target startup NOT_RUN"
+      ]
+    }
+  ],
+  "ordering_and_defaults": {
+    "context_hierarchy": "root context before DispatcherServlet child context",
+    "dispatcher_load_on_startup": 1,
+    "filter_order": [
+      "CharacterEncodingFilter",
+      "UNKNOWN_ADDITIONAL_FILTERS"
+    ],
+    "interceptor_order": [
+      "RequestAuditInterceptor",
+      "UNKNOWN_ADDITIONAL_INTERCEPTORS"
+    ],
+    "property_precedence": "NOT_RUN",
+    "default_error_mapping": "EXPLICIT_CONTROLLER_ADVICE_PLUS_CONTAINER_DEFAULTS_NOT_RUN",
+    "view_resolution": "InternalResourceViewResolver detected; target strategy blocked"
+  },
+  "unknowns": [
+    "effective Maven model",
+    "external servlet container",
+    "container JNDI and realms",
+    "programmatic servlet initialization",
+    "runtime bean graph and shadowing",
+    "custom handler order",
+    "security filters and policies",
+    "JSP/container view behavior",
+    "persistence provider",
+    "transaction behavior",
+    "messaging/cache/scheduler providers",
+    "production lifecycle"
+  ]
+}

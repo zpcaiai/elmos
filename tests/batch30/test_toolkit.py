@@ -131,6 +131,51 @@ class ToolkitTests(unittest.TestCase):
             self.assertEqual(rejected.returncode, 1)
             self.assertIn("pack and certification statuses must match", rejected.stderr)
 
+    def test_limited_gate_rejects_zero_test_public_evidence(self):
+        with tempfile.TemporaryDirectory() as td:
+            pack = Path(td) / "spring-boot-2-7-18-to-3-5-3"
+            shutil.copytree(
+                ROOT / "framework-packs" / "spring-boot-2-7-18-to-3-5-3",
+                pack,
+                ignore=shutil.ignore_patterns("target", "*.log"),
+            )
+            public_path = pack / "certification" / "public-reference-route-evidence.json"
+            public = json.loads(public_path.read_text())
+            public["holdout_public_repository"]["target_tests"]["executed"] = 0
+            public_path.write_text(json.dumps(public, indent=2) + "\n")
+            rejected = subprocess.run(
+                [sys.executable, str(SCRIPTS / "run_framework_gate.py"), str(pack)],
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(rejected.returncode, 2)
+            self.assertIn(
+                "public holdout target tests executed must be a positive integer",
+                rejected.stderr,
+            )
+
+    def test_limited_gate_rejects_public_tuple_drift(self):
+        with tempfile.TemporaryDirectory() as td:
+            pack = Path(td) / "spring-boot-2-7-18-to-3-5-3"
+            shutil.copytree(
+                ROOT / "framework-packs" / "spring-boot-2-7-18-to-3-5-3",
+                pack,
+                ignore=shutil.ignore_patterns("target", "*.log"),
+            )
+            public_path = pack / "certification" / "public-reference-route-evidence.json"
+            public = json.loads(public_path.read_text())
+            public["route"]["target_spring_boot"] = "3.5.4"
+            public_path.write_text(json.dumps(public, indent=2) + "\n")
+            rejected = subprocess.run(
+                [sys.executable, str(SCRIPTS / "run_framework_gate.py"), str(pack)],
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(rejected.returncode, 2)
+            self.assertIn("public evidence route target_spring_boot mismatch", rejected.stderr)
+
 
 if __name__ == "__main__":
     unittest.main()

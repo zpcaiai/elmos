@@ -106,7 +106,7 @@ final class EphemeralSpringVerifierBroker {
                     "Candidate Artifact differs from the transformation digest.");
         }
         requireRootless();
-        images.requireApproved("spring-verifier-java21-maven", verifierImageDigest);
+        images.requireApproved("spring-verifier-java17-java21-maven", verifierImageDigest);
 
         Path serviceRunEvidence = confined(serviceEvidenceRoot, request.runId());
         Path hostRunEvidence = confined(hostEvidenceRoot, request.runId());
@@ -228,6 +228,8 @@ final class EphemeralSpringVerifierBroker {
                 || !"PASS".equals(response.status())
                 || !verifierId.equals(response.verifierId())
                 || !request.artifactSha256().equals(response.artifactSha256())
+                || !request.targetSpringBoot().equals(response.targetSpringBoot())
+                || !request.targetJava().equals(response.targetJava())
                 || !response.physicallySeparateVerifierService()
                 || response.transformCapability()) {
             throw rejected("EPHEMERAL_VERIFIER_PROTOCOL_ERROR",
@@ -359,7 +361,8 @@ final class EphemeralSpringVerifierBroker {
                     || !request.runId().matches("[0-9a-fA-F-]{36}")
                     || request.artifactRelativePath() == null
                     || request.artifactSha256() == null
-                    || !request.artifactSha256().matches("[0-9a-f]{64}")) {
+                    || !request.artifactSha256().matches("[0-9a-f]{64}")
+                    || !supportedTarget(request.targetSpringBoot(), request.targetJava())) {
                 throw rejected("VERIFIER_REQUEST_REJECTED", "Verifier request fields are invalid.");
             }
             UUID.fromString(request.runId());
@@ -479,8 +482,15 @@ final class EphemeralSpringVerifierBroker {
     private record VerificationRequest(
             String runId,
             String artifactRelativePath,
-            String artifactSha256
-    ) {}
+            String artifactSha256,
+            String targetSpringBoot,
+            String targetJava
+    ) {
+        VerificationRequest {
+            if (targetSpringBoot == null || targetSpringBoot.isBlank()) targetSpringBoot = "3.5.3";
+            if (targetJava == null || targetJava.isBlank()) targetJava = "21";
+        }
+    }
 
     private record VerificationResponse(
             String status,
@@ -506,5 +516,11 @@ final class EphemeralSpringVerifierBroker {
 
     private static Rejected rejected(String code, String message) {
         return new Rejected(code, message);
+    }
+
+    private static boolean supportedTarget(String boot, String java) {
+        return ("2.7.18".equals(boot) && "17".equals(java))
+                || ("3.2.12".equals(boot) && "17".equals(java))
+                || ("3.5.3".equals(boot) && "21".equals(java));
     }
 }

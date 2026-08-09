@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "pack_key": "spring-framework-5-3-mvc-to-spring-boot-3-5-3",
+  "fingerprint_version": "1.0.0",
+  "exact_tuple": {
+    "framework": "spring-framework-mvc",
+    "framework_version": "5.3.39",
+    "runtime": "java",
+    "runtime_version": "11",
+    "build": "maven-3.9.11",
+    "packaging": "war",
+    "servlet_api": "javax.servlet-api-4.0.1"
+  },
+  "discovery_surfaces": [
+    {
+      "id": "maven-effective-model",
+      "classification": "required",
+      "patterns": [
+        "pom.xml",
+        "dependencyManagement",
+        "war packaging",
+        "maven-war-plugin",
+        "profiles and modules"
+      ],
+      "execution_status": "NOT_RUN"
+    },
+    {
+      "id": "servlet-bootstrap",
+      "classification": "required",
+      "patterns": [
+        "WEB-INF/web.xml",
+        "DispatcherServlet",
+        "ContextLoaderListener",
+        "WebApplicationInitializer",
+        "ServletContainerInitializer"
+      ],
+      "execution_status": "NOT_RUN"
+    },
+    {
+      "id": "spring-application-contexts",
+      "classification": "required",
+      "patterns": [
+        "applicationContext*.xml",
+        "*-servlet.xml",
+        "@Configuration",
+        "component-scan",
+        "imports and profiles"
+      ],
+      "execution_status": "NOT_RUN"
+    },
+    {
+      "id": "web-and-cross-cutting-order",
+      "classification": "required",
+      "patterns": [
+        "HandlerMapping",
+        "HandlerAdapter",
+        "HandlerInterceptor",
+        "Filter",
+        "ControllerAdvice",
+        "ViewResolver",
+        "HttpMessageConverter"
+      ],
+      "execution_status": "NOT_RUN"
+    },
+    {
+      "id": "provider-contracts",
+      "classification": "conditional",
+      "patterns": [
+        "Spring Security",
+        "JPA or Hibernate",
+        "PlatformTransactionManager",
+        "JMS or AMQP",
+        "CacheManager",
+        "TaskScheduler"
+      ],
+      "execution_status": "NOT_RUN"
+    }
+  ],
+  "fixture_inventory": {
+    "path": "corpus/development/legacy-spring-mvc",
+    "status": "PREPARED_STATIC_FIXTURE",
+    "runtime_evidence": "NOT_RUN"
+  },
+  "generated_assets": [
+    "source-snapshot-manifest.json",
+    "framework-contract-model.json",
+    "source-map.json",
+    "manual-obligations.json"
+  ],
+  "unknowns": [
+    "effective Maven model and active profiles",
+    "external servlet container implementation and version",
+    "container JNDI resources and realm configuration",
+    "programmatic servlet initializers",
+    "parent and child ApplicationContext bean shadowing",
+    "custom HandlerMapping and HandlerAdapter ordering",
+    "custom filters and security chains",
+    "JSP tag libraries and container view behavior",
+    "persistence provider and schema lifecycle",
+    "transaction manager, propagation and rollback rules",
+    "messaging, cache and scheduler providers",
+    "production startup, shutdown and operational probes"
+  ]
+}

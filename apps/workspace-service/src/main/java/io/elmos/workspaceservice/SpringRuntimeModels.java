@@ -13,10 +13,27 @@ final class SpringRuntimeModels {
             String organizationId,
             String artifactRelativePath,
             String artifactSha256,
-            List<String> healthCandidates
+            List<String> healthCandidates,
+            String targetJava
     ) {
         Request {
             healthCandidates = healthCandidates == null ? List.of() : List.copyOf(healthCandidates);
+            if (action == Action.START && (targetJava == null || targetJava.isBlank())) {
+                // Rolling compatibility for the original single-target 3.5.3 / Java 21 protocol.
+                targetJava = "21";
+            }
+        }
+
+        Request(
+                Action action,
+                String runtimeId,
+                String organizationId,
+                String artifactRelativePath,
+                String artifactSha256,
+                List<String> healthCandidates
+        ) {
+            this(action, runtimeId, organizationId, artifactRelativePath, artifactSha256,
+                    healthCandidates, action == Action.START ? "21" : null);
         }
     }
 

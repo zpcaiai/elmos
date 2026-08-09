@@ -1,5 +1,6 @@
 package io.elmos.worker;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import io.elmos.snapshot.DeterministicSnapshotArchiver;
@@ -23,7 +24,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.PosixFilePermission;
-import java.nio.file.attribute.PosixFilePermission;
 import java.security.MessageDigest;
 import java.time.Duration;
 import java.time.Instant;
@@ -46,6 +46,32 @@ import static io.elmos.worker.SpringUpgradeModels.*;
 final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPort {
     private static final long MAX_SOURCE_BYTES = 512L * 1024 * 1024;
     private static final int MAX_SOURCE_FILES = 100_000;
+    private static final long MAX_CAPABILITY_MANIFEST_BYTES = 512L * 1024;
+    private static final Path CAPABILITY_TEST_MANIFEST =
+            Path.of("elmos", "spring-capability-tests.json");
+    private static final Set<String> COMPLEX_CAPABILITY_STATES = Set.of(
+            "observed", "conditional", "declared-only", "generated", "unknown");
+    private static final Map<String, List<String>> REQUIRED_COMPLEX_CAPABILITY_INVARIANTS = Map.of(
+            "security", List.of(
+                    "authentication-success-and-failure",
+                    "authorization-allow-and-deny",
+                    "filter-chain-order",
+                    "csrf-cors-session-and-error-contract"),
+            "persistence_database", List.of(
+                    "schema-mapping-and-generated-identifiers",
+                    "query-result-null-and-precision-equivalence",
+                    "constraint-locking-and-exception-semantics",
+                    "provider-dialect-and-transaction-resource-binding"),
+            "transactions", List.of(
+                    "commit-rollback-and-exception-timing",
+                    "propagation-isolation-read-only-and-timeout",
+                    "transaction-manager-selection",
+                    "nested-and-self-invocation-boundaries"),
+            "messaging", List.of(
+                    "payload-header-and-serialization-equivalence",
+                    "ack-retry-redelivery-and-dead-letter",
+                    "ordering-concurrency-and-duplicate-handling",
+                    "broker-transaction-boundaries"));
     private static final Set<String> EXCLUDED = Set.of(
             ".git", "target", ".gradle", ".idea", ".vscode", ".elmos",
             ".env", "id_rsa", "id_ed25519"
@@ -59,7 +85,6 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
      * with the release named instead of silently compiling on the wrong JDK.
      */
     private final Map<String, Path> javaHomes;
-    private final Path targetJavaHome;
     private final String mavenExecutable;
     private final String gradleExecutable;
     private final Set<String> allowedGitHosts;
@@ -144,13 +169,11 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
                                     SpringUpgradeCodingAgentPort codingAgentPort) {
         this.workspaceRoot = normalizeRoot(workspaceRoot);
         this.javaHomes = verifiedJavaHomes(configuredJavaHomes);
-        Path target = this.javaHomes.get(SpringRouteCatalog.TARGET_JAVA);
-        if (target == null) {
-            throw new IllegalStateException(
-                    "target JAVA_HOME for Java " + SpringRouteCatalog.TARGET_JAVA + " is required");
-        }
-        this.targetJavaHome = target;
-        this.mavenExecutable = requireMaven(mavenExecutable, this.targetJavaHome);
+        Path mavenProbeJavaHome = this.javaHomes.entrySet().stream()
+                .max(Comparator.comparingInt(entry -> Integer.parseInt(entry.getKey())))
+                .orElseThrow()
+                .getValue();
+        this.mavenExecutable = requireMaven(mavenExecutable, mavenProbeJavaHome);
         this.gradleExecutable = requireExecutable(gradleExecutable, "Gradle");
         this.allowedGitHosts = Set.copyOf(allowedGitHosts);
         this.allowFileRepositories = allowFileRepositories;
@@ -195,6 +218,18 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         return home;
     }
 
+    private Path targetJavaHome(String release) {
+        String normalized = SpringRouteCatalog.normalizeJava(release);
+        Path home = javaHomes.get(normalized);
+        if (home == null) {
+            throw blocked("TARGET_JDK_NOT_PROVISIONED",
+                    "The selected route targets Java " + normalized + " but this Runner only provides "
+                            + String.join(", ", javaHomes.keySet())
+                            + ". Provision the exact target JDK before running this route.");
+        }
+        return home;
+    }
+
     @Override public ExecutionResult execute(StartRequest request, Path rawRunRoot, Control control) {
         Path runRoot = confined(rawRunRoot);
         createDirectory(runRoot);
@@ -226,12 +261,15 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
 
         control.stage(Stage.FINGERPRINT, "Detecting exact Java, Spring Boot, build and active capability tuple");
         Fingerprint fingerprint = fingerprint(source);
-        SpringRouteCatalog.Selection selection = selectRoute(fingerprint);
+        SpringRouteCatalog.Selection selection = selectRoute(fingerprint, request);
         SpringRouteCatalog.SpringRoute route = selection.route();
         String buildTool = fingerprint.buildTool();
         String sourceJava = SpringRouteCatalog.normalizeJava(fingerprint.javaVersion());
         Path sourceJavaHome = sourceJavaHome(sourceJava);
+        Path targetJavaHome = targetJavaHome(route.targetJava());
         control.log("fingerprint spring-boot=" + fingerprint.springBootVersion()
+                + " source-framework=" + fingerprint.sourceFrameworkFamily()
+                + ":" + fingerprint.sourceFrameworkVersion()
                 + " java=" + sourceJava + " build=" + fingerprint.buildTool()
                 + " route=" + route.routeId() + " evidence=" + selection.evidence());
         Map<String, Object> routeSelection = new LinkedHashMap<>();
@@ -239,6 +277,8 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         routeSelection.put("route_id", route.routeId());
         routeSelection.put("pack_key", route.packKey());
         routeSelection.put("detected_spring_boot", fingerprint.springBootVersion());
+        routeSelection.put("detected_source_framework_family", fingerprint.sourceFrameworkFamily());
+        routeSelection.put("detected_source_framework_version", fingerprint.sourceFrameworkVersion());
         routeSelection.put("detected_java", sourceJava);
         routeSelection.put("detected_build_tool", fingerprint.buildTool());
         routeSelection.put("accepted_source_range",
@@ -282,7 +322,8 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
             sourceTests = testSummary(sourceBaseline);
             requireSourceTests(sourceTests);
             writeJson(runRoot.resolve("evidence/source-test-summary.json"), sourceTests);
-            validateSourceStartup(sourceBaseline, runRoot, control, sourceJavaHome, buildTool);
+            validateSourceStartup(sourceBaseline, runRoot, control, sourceJavaHome, buildTool,
+                    fingerprint);
         } finally {
             deleteTree(sourceBaseline);
         }
@@ -307,7 +348,7 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         copyTree(source, migrated);
         control.stage(Stage.OPENREWRITE,
                 "Applying pinned OpenRewrite recipe " + route.recipeId() + " for route " + route.routeId());
-        runRewrite(migrated, toolHome, control, route);
+        runRewrite(migrated, toolHome, control, route, targetJavaHome);
         checkCancelled(control);
 
         control.stage(Stage.BUILD_AND_TEST,
@@ -318,7 +359,7 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         if (firstBuild.exitCode() != 0) {
             control.stage(Stage.DETERMINISTIC_REPAIR,
                     "Target build failed; applying one bounded deterministic OpenRewrite repair cycle");
-            runRewrite(migrated, toolHome, control, route);
+            runRewrite(migrated, toolHome, control, route, targetJavaHome);
             CommandOutcome secondBuild = runBuildOutcome(migrated, targetJavaHome, toolHome, control,
                     List.of(SpringRouteCatalog.MAVEN_BUILD_TOOL.equals(buildTool) ? "verify" : "build"),
                     Duration.ofMinutes(30), buildTool);
@@ -344,7 +385,24 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
                         .filter(value -> !sourceTests.testIdentities().contains(value))
                         .toList()
         ));
-        SpringDeploymentGuidance.writeTo(migrated, buildTool);
+        ComplexCapabilityDecision complexCapabilityDecision = evaluateComplexCapabilities(
+                source,
+                migrated,
+                fingerprint,
+                new CapabilityTestRun(sourceTests.testIdentities(), sourceTests.skipped()),
+                new CapabilityTestRun(targetTests.testIdentities(), targetTests.skipped()),
+                json);
+        writeJson(runRoot.resolve("evidence/complex-capability-verification.json"),
+                complexCapabilityDecision.report());
+        control.log("complex capability verification status="
+                + complexCapabilityDecision.report().get("status"));
+        if (!complexCapabilityDecision.blockers().isEmpty()) {
+            throw blocked("COMPLEX_CAPABILITY_VERIFICATION_BLOCKED",
+                    "Complex Spring capability verification failed closed: "
+                            + String.join(", ", complexCapabilityDecision.blockers().stream()
+                            .limit(8).toList()));
+        }
+        SpringDeploymentGuidance.writeTo(migrated, buildTool, route);
 
         control.stage(Stage.PACKAGE_ARTIFACT, "Packaging migrated repository as a content-addressed ZIP");
         Path artifact = runRoot.resolve("artifacts/" + route.artifactFileName());
@@ -364,7 +422,9 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
             Control control
     ) {
         Path runRoot = confined(rawRunRoot);
-        control.stage(Stage.START_APPLICATION, "Starting verified artifact with Java 21");
+        String targetJava = SpringRouteCatalog.normalizeJava(request.targetJava());
+        Path targetJavaHome = targetJavaHome(targetJava);
+        control.stage(Stage.START_APPLICATION, "Starting verified artifact with Java " + targetJava);
         Path jar = bootJar(result.migratedRepository(), result.fingerprint().buildTool());
         int port = reservePort();
         Path log = runRoot.resolve("runtime/application.log");
@@ -403,7 +463,8 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
     }
 
     private void validateSourceStartup(Path source, Path runRoot, Control control, Path sourceJavaHome,
-                                      String buildTool) {
+                                      String buildTool, Fingerprint fingerprint) {
+        requireSupportedSourceStartup(fingerprint);
         Path jar = bootJar(source, buildTool);
         int port = reservePort();
         Path log = runRoot.resolve("evidence/source-startup.log");
@@ -433,7 +494,7 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
                     + probe.path() + " with status " + probe.statusCode());
         } catch (IOException error) {
             throw blocked("SOURCE_STARTUP_FAILED",
-                    "Source baseline could not be started with the exact Java 17 toolchain.");
+                    "Source baseline could not be started with the exact selected source Java toolchain.");
         } finally {
             if (process != null && process.isAlive()) {
                 process.destroy();
@@ -444,6 +505,16 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
                     process.destroyForcibly();
                 }
             }
+        }
+    }
+
+    static void requireSupportedSourceStartup(Fingerprint fingerprint) {
+        Objects.requireNonNull(fingerprint, "fingerprint");
+        if ("spring-mvc".equals(fingerprint.sourceFrameworkFamily())) {
+            throw blocked("SPRING_MVC_SOURCE_CONTAINER_NOT_PROVISIONED",
+                    "Traditional Spring MVC source startup requires an exact approved Servlet 4 "
+                            + "container and executable WAR deployment contract; Boot bootstrap/context, "
+                            + "web.xml, and view behavior conversion is not implemented.");
         }
     }
 
@@ -502,31 +573,152 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
                     "No root pom.xml and no Gradle build script were found; the source build model "
                             + "could not be identified.");
         }
-        Document document = parsePom(pom);
-        String boot = springBootVersion(document);
-        String java = property(document, "java.version");
-        if (blank(java)) java = property(document, "maven.compiler.release");
-        if (blank(java)) java = property(document, "maven.compiler.source");
-        List<String> modules = children(document, "modules", "module");
-        String pomText = read(pom);
+        return fingerprintMaven(root);
+    }
+
+    /**
+     * Inspect the complete declared Maven reactor. An aggregator POM often owns
+     * neither the Spring nor Java version, so reading only {@code /pom.xml}
+     * silently misclassifies real multi-module applications. Conversely, a
+     * reactor with conflicting exact authorities cannot be represented by the
+     * single source tuple used by a migration route and must fail closed.
+     */
+    static Fingerprint fingerprintMaven(Path root) {
+        List<MavenPomModel> reactor = mavenReactor(root);
+        Set<String> bootVersions = exactAuthorities(reactor, model -> springBootVersion(model.document()));
+        Set<String> javaVersions = exactAuthorities(reactor, model -> javaVersion(model.document()));
+        if (bootVersions.size() > 1) {
+            throw blocked("MAVEN_REACTOR_SPRING_BOOT_VERSION_CONFLICT",
+                    "Maven modules declare multiple exact Spring Boot versions: "
+                            + String.join(", ", bootVersions) + ". Split or normalize the reactor before migration.");
+        }
+        if (javaVersions.size() > 1) {
+            throw blocked("MAVEN_REACTOR_JAVA_VERSION_CONFLICT",
+                    "Maven modules declare multiple exact Java releases: "
+                            + String.join(", ", javaVersions) + ". This route requires one exact source JDK tuple.");
+        }
+        String boot = bootVersions.stream().findFirst().orElse("");
+        String java = javaVersions.stream().findFirst().orElse("");
+        List<String> modules = reactor.stream()
+                .map(MavenPomModel::path)
+                .map(root.toAbsolutePath().normalize()::relativize)
+                .map(Path::getParent)
+                .filter(Objects::nonNull)
+                .map(Path::toString)
+                .filter(value -> !value.isBlank())
+                .distinct()
+                .sorted()
+                .toList();
+        String pomText = reactor.stream()
+                .map(model -> "\n<!-- elmos-reactor-model:"
+                        + root.toAbsolutePath().normalize().relativize(model.path()) + " -->\n"
+                        + model.text())
+                .reduce("", String::concat);
+        String modelName = reactor.size() == 1 ? "pom.xml" : "maven-reactor-poms";
         Map<String,List<String>> traces = new TreeMap<>();
         List<String> capabilities = new ArrayList<>();
-        capability(pomText, root, "pom.xml", traces, capabilities, "web", "spring-boot-starter-web", "@RestController", "@Controller");
-        capability(pomText, root, "pom.xml", traces, capabilities, "spring-boot-parent", "spring-boot-starter-parent");
-        capability(pomText, root, "pom.xml", traces, capabilities, "security", "spring-boot-starter-security", "@EnableWebSecurity", "SecurityFilterChain");
-        capability(pomText, root, "pom.xml", traces, capabilities, "persistence", "spring-boot-starter-data-jpa", "@Entity", "JpaRepository");
-        capability(pomText, root, "pom.xml", traces, capabilities, "transactions", "spring-tx", "@Transactional");
-        capability(pomText, root, "pom.xml", traces, capabilities, "validation", "spring-boot-starter-validation", "@Valid", "@Validated");
-        capability(pomText, root, "pom.xml", traces, capabilities, "actuator", "spring-boot-starter-actuator", "management.endpoints");
-        capability(pomText, root, "pom.xml", traces, capabilities, "messaging", "spring-kafka", "@KafkaListener", "JmsListener");
-        capability(pomText, root, "pom.xml", traces, capabilities, "scheduler", "spring-context", "@Scheduled", "@EnableScheduling");
+        capability(pomText, root, modelName, traces, capabilities,
+                "spring-boot-parent", "spring-boot-starter-parent");
         List<String> unknowns = new ArrayList<>();
-        if (findFiles(root, ".java").stream().anyMatch(path -> read(path).contains("WebSecurityConfigurerAdapter")))
-            unknowns.add("legacy-security-adapter-requires-rewrite-and-contract-review");
         if (Files.exists(root.resolve(".gitmodules"))) unknowns.add("submodules-present");
-        return new Fingerprint(blank(boot) ? "UNKNOWN" : boot, blank(java) ? "UNKNOWN" : java.trim(),
-                "maven", modules, capabilities.stream().distinct().sorted().toList(), unknowns, traces);
+        SpringCapabilityFingerprint.Analysis analysis =
+                SpringCapabilityFingerprint.analyze(root, pomText, modelName);
+        String sourceFamily = sourceFrameworkFamily(boot, analysis);
+        Set<String> frameworkVersions = exactAuthorities(
+                reactor, model -> springFrameworkVersion(model.document()));
+        if ("spring-mvc".equals(sourceFamily) && frameworkVersions.size() > 1) {
+            throw blocked("MAVEN_REACTOR_SPRING_FRAMEWORK_VERSION_CONFLICT",
+                    "Maven modules declare multiple exact Spring Framework versions: "
+                            + String.join(", ", frameworkVersions)
+                            + ". This MVC route requires one exact source framework tuple.");
+        }
+        String sourceFrameworkVersion = "spring-boot".equals(sourceFamily)
+                ? boot : frameworkVersions.stream().findFirst().orElse("");
+        if ("spring-mvc".equals(sourceFamily) && blank(sourceFrameworkVersion)) {
+            unknowns.add("spring-framework-version-unresolved");
+            sourceFrameworkVersion = "UNKNOWN";
+        }
+        Fingerprint base = new Fingerprint(blank(boot) ? "UNKNOWN" : boot,
+                blank(java) ? "UNKNOWN" : java.trim(), "maven", modules,
+                capabilities.stream().distinct().sorted().toList(), unknowns, traces,
+                sourceFamily, blank(sourceFrameworkVersion) ? "UNKNOWN" : sourceFrameworkVersion);
+        return SpringCapabilityFingerprint.enrich(base, analysis);
     }
+
+    private static List<MavenPomModel> mavenReactor(Path rawRoot) {
+        Path root = rawRoot.toAbsolutePath().normalize();
+        Path rootPom = root.resolve("pom.xml");
+        if (!Files.isRegularFile(rootPom, LinkOption.NOFOLLOW_LINKS)) {
+            throw blocked("BUILD_MODEL_UNRECOGNIZED", "The Maven reactor root pom.xml is unavailable.");
+        }
+        final int maxModels = 256;
+        Map<Path, MavenPomModel> models = new LinkedHashMap<>();
+        Deque<Path> pending = new ArrayDeque<>();
+        pending.add(rootPom);
+        while (!pending.isEmpty()) {
+            Path requested = pending.removeFirst().toAbsolutePath().normalize();
+            if (models.containsKey(requested)) continue;
+            if (!requested.startsWith(root) || Files.isSymbolicLink(requested)
+                    || !Files.isRegularFile(requested, LinkOption.NOFOLLOW_LINKS)) {
+                throw blocked("MAVEN_REACTOR_INCOMPLETE",
+                        "Every declared Maven module must resolve to a regular in-snapshot pom.xml.");
+            }
+            try {
+                if (!requested.toRealPath().startsWith(root.toRealPath()) || Files.size(requested) > 1024L * 1024L) {
+                    throw blocked("MAVEN_REACTOR_MODEL_REJECTED",
+                            "A Maven module model escaped the snapshot or exceeded the 1 MiB model limit.");
+                }
+            } catch (IOException error) {
+                throw blocked("MAVEN_REACTOR_MODEL_REJECTED",
+                        "A Maven module model could not be resolved safely.");
+            }
+            if (models.size() >= maxModels) {
+                throw blocked("MAVEN_REACTOR_MODEL_LIMIT_EXCEEDED",
+                        "The Maven reactor exceeds the 256-module fingerprint limit.");
+            }
+            Document document = parsePom(requested);
+            models.put(requested, new MavenPomModel(requested, document, read(requested)));
+            for (String module : children(document, "modules", "module")) {
+                if (module.isBlank() || module.contains("${")) {
+                    throw blocked("MAVEN_REACTOR_MODULE_UNRESOLVED",
+                            "Maven module paths must be exact project-owned relative paths.");
+                }
+                Path declared = Path.of(module);
+                if (declared.isAbsolute()) {
+                    throw blocked("MAVEN_REACTOR_MODULE_ESCAPES_SNAPSHOT",
+                            "Maven module paths may not be absolute.");
+                }
+                Path modulePom = requested.getParent().resolve(declared).resolve("pom.xml").normalize();
+                if (!modulePom.startsWith(root)) {
+                    throw blocked("MAVEN_REACTOR_MODULE_ESCAPES_SNAPSHOT",
+                            "A Maven module path escapes the locked source snapshot.");
+                }
+                pending.addLast(modulePom);
+            }
+        }
+        return List.copyOf(models.values());
+    }
+
+    private static Set<String> exactAuthorities(
+            List<MavenPomModel> models,
+            java.util.function.Function<MavenPomModel, String> extractor
+    ) {
+        Set<String> values = new TreeSet<>();
+        for (MavenPomModel model : models) {
+            String value = extractor.apply(model);
+            if (!blank(value)) values.add(value.trim());
+        }
+        return Collections.unmodifiableSet(new LinkedHashSet<>(values));
+    }
+
+    private static String javaVersion(Document document) {
+        String java = resolveProperty(document, property(document, "java.version"));
+        if (blank(java)) java = resolveProperty(document, property(document, "maven.compiler.release"));
+        if (blank(java)) java = resolveProperty(document, property(document, "maven.compiler.source"));
+        return blank(java) ? "" : SpringRouteCatalog.normalizeJava(java);
+    }
+
+    private record MavenPomModel(Path path, Document document, String text) {}
 
     private Fingerprint fingerprintGradle(Path root) {
         List<Path> modelFiles = List.of("build.gradle", "build.gradle.kts", "settings.gradle", "settings.gradle.kts")
@@ -553,21 +745,22 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
             traces.put("spring-boot-plugin", List.of(modelName + ":org.springframework.boot plugin"));
         }
         capability(model, root, modelName, traces, capabilities, "rewrite-gradle-plugin", "org.openrewrite.rewrite", "org.openrewrite.gradle.RewritePlugin");
-        capability(model, root, modelName, traces, capabilities, "web", "spring-boot-starter-web", "@RestController", "@Controller");
-        capability(model, root, modelName, traces, capabilities, "security", "spring-boot-starter-security", "@EnableWebSecurity", "SecurityFilterChain");
-        capability(model, root, modelName, traces, capabilities, "persistence", "spring-boot-starter-data-jpa", "@Entity", "JpaRepository");
-        capability(model, root, modelName, traces, capabilities, "transactions", "spring-tx", "@Transactional");
-        capability(model, root, modelName, traces, capabilities, "validation", "spring-boot-starter-validation", "@Valid", "@Validated");
-        capability(model, root, modelName, traces, capabilities, "actuator", "spring-boot-starter-actuator", "management.endpoints");
-        capability(model, root, modelName, traces, capabilities, "messaging", "spring-kafka", "@KafkaListener", "JmsListener");
-        capability(model, root, modelName, traces, capabilities, "scheduler", "spring-context", "@Scheduled", "@EnableScheduling");
         List<String> unknowns = new ArrayList<>();
-        if (findFiles(root, ".java").stream().anyMatch(path -> read(path).contains("WebSecurityConfigurerAdapter")))
-            unknowns.add("legacy-security-adapter-requires-rewrite-and-contract-review");
         if (Files.exists(root.resolve(".gitmodules"))) unknowns.add("submodules-present");
-        return new Fingerprint(blank(boot) ? "UNKNOWN" : boot.trim(), blank(java) ? "UNKNOWN" : java.trim(),
-                SpringRouteCatalog.GRADLE_BUILD_TOOL, List.of(),
-                capabilities.stream().distinct().sorted().toList(), unknowns, traces);
+        SpringCapabilityFingerprint.Analysis analysis =
+                SpringCapabilityFingerprint.analyze(root, model, modelName);
+        String sourceFamily = sourceFrameworkFamily(boot, analysis);
+        String sourceFrameworkVersion = "spring-boot".equals(sourceFamily)
+                ? boot : springFrameworkVersion(model);
+        if ("spring-mvc".equals(sourceFamily) && blank(sourceFrameworkVersion)) {
+            unknowns.add("spring-framework-version-unresolved");
+            sourceFrameworkVersion = "UNKNOWN";
+        }
+        Fingerprint base = new Fingerprint(blank(boot) ? "UNKNOWN" : boot.trim(),
+                blank(java) ? "UNKNOWN" : java.trim(), SpringRouteCatalog.GRADLE_BUILD_TOOL,
+                List.of(), capabilities.stream().distinct().sorted().toList(), unknowns, traces,
+                sourceFamily, blank(sourceFrameworkVersion) ? "UNKNOWN" : sourceFrameworkVersion.trim());
+        return SpringCapabilityFingerprint.enrich(base, analysis);
     }
 
     private static String firstMatch(String value, String... expressions) {
@@ -609,20 +802,61 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
      * is willing to claim by default.
      */
     SpringRouteCatalog.Selection selectRoute(Fingerprint fingerprint) {
-        SpringRouteCatalog.Selection selection = SpringRouteCatalog.select(
-                fingerprint.springBootVersion(), fingerprint.javaVersion(), fingerprint.buildTool());
-        String versionAuthority = SpringRouteCatalog.MAVEN_BUILD_TOOL.equals(fingerprint.buildTool())
-                ? "spring-boot-parent" : "spring-boot-plugin";
-        if (!fingerprint.activeCapabilities().contains(versionAuthority)) {
-            throw blocked("UNSUPPORTED_BOOT_VERSION_AUTHORITY",
-                    "Route " + selection.route().routeId() + " requires " + versionAuthority
-                            + " as the source version authority.");
+        return selectRoute(fingerprint, SpringRouteCatalog.TARGET_BOOT,
+                SpringRouteCatalog.TARGET_JAVA, experimentalRoutesEnabled);
+    }
+
+    SpringRouteCatalog.Selection selectRoute(Fingerprint fingerprint, StartRequest request) {
+        return selectRoute(fingerprint, request.targetSpringBoot(), request.targetJava(),
+                experimentalRoutesEnabled);
+    }
+
+    static SpringRouteCatalog.Selection selectRoute(
+            Fingerprint fingerprint,
+            String targetSpringBoot,
+            String targetJava,
+            boolean experimentalRoutesEnabled
+    ) {
+        String sourceFamily = fingerprint.sourceFrameworkFamily();
+        SpringRouteCatalog.Selection selection;
+        String sourceDescription;
+        if (SpringRouteCatalog.SourceFamily.SPRING_MVC.contractValue().equals(sourceFamily)) {
+            selection = SpringRouteCatalog.selectSpringMvc(
+                    fingerprint.sourceFrameworkVersion(), fingerprint.javaVersion(),
+                    fingerprint.buildTool(), targetSpringBoot, targetJava);
+            boolean activeMvc = fingerprint.activeCapabilities().contains("spring-mvc")
+                    || fingerprint.activeCapabilities().contains("spring-mvc-xml")
+                    || fingerprint.activeCapabilities().contains("servlet-initializer");
+            if (!activeMvc) {
+                throw blocked("SPRING_MVC_RUNTIME_EVIDENCE_REQUIRED",
+                        "Route " + selection.route().routeId()
+                                + " requires a production Spring MVC controller, XML MVC contract, "
+                                + "WebApplicationInitializer or DispatcherServlet source trace; a "
+                                + "declared spring-webmvc dependency alone is not active behavior evidence.");
+            }
+            sourceDescription = "Spring Framework " + fingerprint.sourceFrameworkVersion();
+        } else if (SpringRouteCatalog.SourceFamily.SPRING_BOOT.contractValue().equals(sourceFamily)) {
+            selection = SpringRouteCatalog.select(
+                    fingerprint.springBootVersion(), fingerprint.javaVersion(), fingerprint.buildTool(),
+                    targetSpringBoot, targetJava);
+            String versionAuthority = SpringRouteCatalog.MAVEN_BUILD_TOOL.equals(fingerprint.buildTool())
+                    ? "spring-boot-parent" : "spring-boot-plugin";
+            if (!fingerprint.activeCapabilities().contains(versionAuthority)) {
+                throw blocked("UNSUPPORTED_BOOT_VERSION_AUTHORITY",
+                        "Route " + selection.route().routeId() + " requires " + versionAuthority
+                                + " as the source version authority.");
+            }
+            sourceDescription = "Spring Boot " + fingerprint.springBootVersion();
+        } else {
+            throw blocked("SPRING_SOURCE_FAMILY_UNRESOLVED",
+                    "The source repository did not expose an exact Spring Boot or Spring MVC framework family.");
         }
         if (selection.requiresExperimentalOptIn() && !experimentalRoutesEnabled) {
             throw blocked("SPRING_ROUTE_EVIDENCE_NOT_RUN",
-                    "Route " + selection.route().routeId() + " accepts Spring Boot "
-                            + fingerprint.springBootVersion() + " on Java "
+                    "Route " + selection.route().routeId() + " accepts " + sourceDescription + " on Java "
                             + SpringRouteCatalog.normalizeJava(fingerprint.javaVersion())
+                            + " to Spring Boot " + selection.route().targetBoot() + " on Java "
+                            + selection.route().targetJava()
                             + ", but this tuple has no recorded local execution evidence ("
                             + selection.evidence() + "). Enable "
                             + "elmos.worker.spring-upgrade.experimental-routes-enabled to run it as an "
@@ -632,7 +866,7 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
     }
 
     private void runRewrite(Path root, Path toolHome, Control control,
-                            SpringRouteCatalog.SpringRoute route) {
+                            SpringRouteCatalog.SpringRoute route, Path targetJavaHome) {
         Path recipeConfig = installExactRecipe(root, route);
         if (SpringRouteCatalog.GRADLE_BUILD_TOOL.equals(route.buildTool())) {
             if (!hasGradleRewritePlugin(root)) {
@@ -1080,14 +1314,15 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         model.put("source_commit", identity.commitSha());
         model.put("source_snapshot_sha256", snapshotDigest);
         model.put("extraction_status", "STATIC_AND_SOURCE_BASELINE");
+        model.put("source_framework", Map.of(
+                "family", fingerprint.sourceFrameworkFamily(),
+                "version", fingerprint.sourceFrameworkVersion()));
+        String detectedSourceVersion = SpringRouteCatalog.SourceFamily.SPRING_MVC.contractValue()
+                .equals(fingerprint.sourceFrameworkFamily())
+                ? fingerprint.sourceFrameworkVersion() : fingerprint.springBootVersion();
         model.put("exact_tuple", route.tuple(
-                fingerprint.springBootVersion(), SpringRouteCatalog.normalizeJava(fingerprint.javaVersion())));
-        model.put("capabilities", fingerprint.activeCapabilities().stream().map(capability -> Map.of(
-                "id", capability,
-                "status", "observed",
-                "source_traces", fingerprint.sourceTraces().getOrDefault(capability, List.of()),
-                "obligations", List.of("target-build", "startup", "behavior-comparison")
-        )).toList());
+                detectedSourceVersion, SpringRouteCatalog.normalizeJava(fingerprint.javaVersion())));
+        model.put("capabilities", SpringCapabilityFingerprint.fcmCapabilities(fingerprint));
         model.put("unknowns", fingerprint.unknowns());
         model.put("ordering_and_defaults", Map.of(
                 "security_filter_order", "preserve-and-verify",
@@ -1178,9 +1413,9 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
 
     private record HttpProbe(String path, int statusCode) {}
 
-    private void capability(String model, Path root, String modelName,
-                            Map<String,List<String>> traces, List<String> capabilities,
-                            String id, String... needles) {
+    private static void capability(String model, Path root, String modelName,
+                                   Map<String,List<String>> traces, List<String> capabilities,
+                                   String id, String... needles) {
         List<String> found = new ArrayList<>();
         for (String needle : needles) {
             if (model.contains(needle)) found.add(modelName + ":" + needle);
@@ -1285,6 +1520,407 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         }
     }
 
+    static Map<String, List<String>> requiredComplexCapabilityInvariants() {
+        return REQUIRED_COMPLEX_CAPABILITY_INVARIANTS;
+    }
+
+    /**
+     * Fail-closed local engineering gate for security, data, transaction and
+     * messaging behavior. The manifest is only a project-owned declaration
+     * binding executed test identities to invariants; it is not independent or
+     * certification evidence.
+     */
+    static ComplexCapabilityDecision evaluateComplexCapabilities(
+            Path sourceRoot,
+            Path targetRoot,
+            Fingerprint fingerprint,
+            CapabilityTestRun sourceRun,
+            CapabilityTestRun targetRun,
+            ObjectMapper json
+    ) {
+        Objects.requireNonNull(sourceRoot, "sourceRoot");
+        Objects.requireNonNull(targetRoot, "targetRoot");
+        Objects.requireNonNull(fingerprint, "fingerprint");
+        Objects.requireNonNull(sourceRun, "sourceRun");
+        Objects.requireNonNull(targetRun, "targetRun");
+        Objects.requireNonNull(json, "json");
+
+        List<Map<String, Object>> criticalCapabilities = new ArrayList<>();
+        Set<String> requiredDomains = new TreeSet<>();
+        Set<String> unresolvedConditionalCapabilities = new TreeSet<>();
+        Set<String> seen = new HashSet<>();
+        for (Map<String, Object> capability : SpringCapabilityFingerprint.fcmCapabilities(fingerprint)) {
+            String id = Objects.toString(capability.get("id"), "");
+            String state = Objects.toString(capability.get("status"), "unknown");
+            String domain = complexCapabilityDomain(id);
+            if (domain == null || !COMPLEX_CAPABILITY_STATES.contains(state)) continue;
+            if (!seen.add(id + "|" + state)) continue;
+            requiredDomains.add(domain);
+            Map<String, Object> rendered = new LinkedHashMap<>();
+            rendered.put("id", id);
+            rendered.put("domain", domain);
+            rendered.put("status", state);
+            rendered.put("source_trace_count",
+                    fingerprint.sourceTraces().getOrDefault(id, List.of()).size());
+            criticalCapabilities.add(rendered);
+            if ("conditional".equals(state)) unresolvedConditionalCapabilities.add(id);
+        }
+
+        Map<String, Set<String>> requiredInvariants = new TreeMap<>();
+        for (String domain : requiredDomains) {
+            requiredInvariants.put(domain,
+                    new TreeSet<>(REQUIRED_COMPLEX_CAPABILITY_INVARIANTS.get(domain)));
+        }
+        for (String unknown : fingerprint.unknowns()) {
+            String unresolvedState = unresolvedCapabilityState(unknown);
+            if (unresolvedState != null) {
+                String id = unknown.substring(unknown.indexOf(':') + 1);
+                String domain = complexCapabilityDomain(id);
+                if (domain != null) {
+                    requiredDomains.add(domain);
+                    requiredInvariants.computeIfAbsent(domain,
+                            ignored -> new TreeSet<>(
+                                    REQUIRED_COMPLEX_CAPABILITY_INVARIANTS.get(domain)));
+                    if ("conditional".equals(unresolvedState)) {
+                        unresolvedConditionalCapabilities.add(id);
+                    }
+                    if (seen.add(id + "|" + unresolvedState)) {
+                        criticalCapabilities.add(Map.of(
+                                "id", id,
+                                "domain", domain,
+                                "status", unresolvedState,
+                                "source_trace_count", 0));
+                    }
+                }
+                continue;
+            }
+            String domain = customOrDynamicDomain(unknown);
+            if (domain == null) continue;
+            requiredDomains.add(domain);
+            requiredInvariants.computeIfAbsent(domain,
+                    ignored -> new TreeSet<>(REQUIRED_COMPLEX_CAPABILITY_INVARIANTS.get(domain)));
+            String extraInvariant = customOrDynamicInvariant(unknown);
+            if (extraInvariant != null) requiredInvariants.get(domain).add(extraInvariant);
+            if (seen.add("unknown|" + unknown)) {
+                criticalCapabilities.add(Map.of(
+                        "id", unknown,
+                        "domain", domain,
+                        "status", "custom-or-dynamic",
+                        "source_trace_count", 0));
+            }
+        }
+        criticalCapabilities.sort(Comparator.comparing(entry -> entry.get("id").toString()));
+
+        Set<String> sourceIdentities = normalizedTestIdentities(sourceRun.testIdentities());
+        Set<String> targetIdentities = normalizedTestIdentities(targetRun.testIdentities());
+        boolean exactIdentityMatch = sourceIdentities.equals(targetIdentities)
+                && sourceIdentities.size() == sourceRun.testIdentities().size()
+                && targetIdentities.size() == targetRun.testIdentities().size();
+        Map<String, Object> testIdentityReport = new LinkedHashMap<>();
+        testIdentityReport.put("source_count", sourceIdentities.size());
+        testIdentityReport.put("target_count", targetIdentities.size());
+        testIdentityReport.put("source_sha256", digestStrings(sourceIdentities));
+        testIdentityReport.put("target_sha256", digestStrings(targetIdentities));
+        testIdentityReport.put("exact_match", exactIdentityMatch);
+        testIdentityReport.put("source_skipped", sourceRun.skipped());
+        testIdentityReport.put("target_skipped", targetRun.skipped());
+
+        Map<String, Object> report = baseComplexCapabilityReport();
+        report.put("critical_capabilities", List.copyOf(criticalCapabilities));
+        report.put("required_domains", requiredDomains.stream().toList());
+        report.put("required_invariants", immutableInvariantMap(requiredInvariants));
+        report.put("test_identity", testIdentityReport);
+        report.put("conditional_activation", Map.of(
+                "status", unresolvedConditionalCapabilities.isEmpty()
+                        ? "NO_UNRESOLVED_CONDITIONS_OBSERVED" : "UNRESOLVED",
+                "unresolved_capabilities", unresolvedConditionalCapabilities.stream().toList()));
+
+        if (requiredDomains.isEmpty()) {
+            report.put("status", "NOT_APPLICABLE");
+            report.put("manifest", Map.of(
+                    "path", CAPABILITY_TEST_MANIFEST.toString(),
+                    "status", "NOT_REQUIRED"));
+            report.put("blockers", List.of());
+            return new ComplexCapabilityDecision(report, List.of());
+        }
+
+        List<String> blockers = new ArrayList<>();
+        for (String capability : unresolvedConditionalCapabilities) {
+            blockers.add("CONDITIONAL_ACTIVATION_UNRESOLVED:" + capability);
+        }
+        if (sourceIdentities.isEmpty()) blockers.add("SOURCE_COMPLEX_CAPABILITY_TEST_IDENTITIES_EMPTY");
+        if (!exactIdentityMatch) blockers.add("SOURCE_TARGET_TEST_IDENTITY_MISMATCH");
+        if (sourceRun.skipped() != 0 || targetRun.skipped() != 0) {
+            blockers.add("COMPLEX_CAPABILITY_TESTS_SKIPPED");
+        }
+
+        ManifestInspection manifest = inspectCapabilityManifest(
+                sourceRoot, targetRoot, requiredInvariants, sourceIdentities, json, blockers);
+        report.put("manifest", manifest.report());
+        List<String> distinctBlockers = blockers.stream().distinct().sorted().toList();
+        report.put("status", distinctBlockers.isEmpty() ? "PASS_LOCAL_ENGINEERING" : "BLOCKED");
+        report.put("blockers", distinctBlockers);
+        return new ComplexCapabilityDecision(report, distinctBlockers);
+    }
+
+    private static Map<String, Object> baseComplexCapabilityReport() {
+        Map<String, Object> report = new LinkedHashMap<>();
+        report.put("schema_version", "1.0");
+        report.put("kind", "elmos.spring-complex-capability-verification");
+        report.put("scope", "LOCAL_ENGINEERING_ONLY");
+        report.put("certification_eligible", false);
+        report.put("certification_status", "NOT_CERTIFIED");
+        report.put("independent_verification", "NOT_RUN");
+        report.put("customer_evidence", "NOT_RUN");
+        report.put("production_evidence", "NOT_RUN");
+        report.put("evidence_refs", List.of(
+                "evidence/source-test-summary.json",
+                "evidence/target-test-summary.json",
+                "evidence/test-parity.json",
+                CAPABILITY_TEST_MANIFEST.toString()));
+        return report;
+    }
+
+    private static ManifestInspection inspectCapabilityManifest(
+            Path sourceRoot,
+            Path targetRoot,
+            Map<String, Set<String>> requiredInvariants,
+            Set<String> sourceTestIdentities,
+            ObjectMapper json,
+            List<String> blockers
+    ) {
+        Path sourceManifest = sourceRoot.resolve(CAPABILITY_TEST_MANIFEST).normalize();
+        Path targetManifest = targetRoot.resolve(CAPABILITY_TEST_MANIFEST).normalize();
+        Map<String, Object> report = new LinkedHashMap<>();
+        report.put("path", CAPABILITY_TEST_MANIFEST.toString());
+        boolean sourcePresent = confinedRegularManifest(sourceRoot, sourceManifest);
+        boolean targetPresent = confinedRegularManifest(targetRoot, targetManifest);
+        report.put("source_present", sourcePresent);
+        report.put("target_present", targetPresent);
+        report.put("project_owned_source_path", sourcePresent);
+        report.put("source_sha256", "NOT_AVAILABLE");
+        report.put("target_sha256", "NOT_AVAILABLE");
+        report.put("target_byte_identical", false);
+        report.put("schema_valid", false);
+
+        if (!sourcePresent) {
+            blockers.add("CAPABILITY_TEST_MANIFEST_MISSING");
+            report.put("status", "MISSING");
+            return new ManifestInspection(report);
+        }
+        byte[] sourceBytes = boundedManifestBytes(sourceManifest, blockers, "SOURCE");
+        if (sourceBytes == null) {
+            report.put("status", "INVALID");
+            return new ManifestInspection(report);
+        }
+        report.put("source_sha256", digestBytes(sourceBytes));
+        if (!targetPresent) {
+            blockers.add("TARGET_CAPABILITY_TEST_MANIFEST_MISSING");
+        } else {
+            byte[] targetBytes = boundedManifestBytes(targetManifest, blockers, "TARGET");
+            if (targetBytes != null) {
+                report.put("target_sha256", digestBytes(targetBytes));
+                boolean identical = MessageDigest.isEqual(sourceBytes, targetBytes);
+                report.put("target_byte_identical", identical);
+                if (!identical) blockers.add("CAPABILITY_TEST_MANIFEST_CHANGED_BY_TRANSFORMATION");
+            }
+        }
+
+        int blockersBeforeSchema = blockers.size();
+        try {
+            JsonNode root = json.readTree(sourceBytes);
+            if (root == null || !root.isObject()) {
+                blockers.add("CAPABILITY_TEST_MANIFEST_ROOT_INVALID");
+            } else {
+                if (!"1.0".equals(root.path("schema_version").asText())) {
+                    blockers.add("CAPABILITY_TEST_MANIFEST_SCHEMA_VERSION_INVALID");
+                }
+                if (!"elmos.spring-capability-tests".equals(root.path("kind").asText())) {
+                    blockers.add("CAPABILITY_TEST_MANIFEST_KIND_INVALID");
+                }
+                Set<String> manifestTestIdentities = strictManifestStrings(
+                        root.get("test_identities"), "MANIFEST_TEST_IDENTITIES", blockers);
+                if (!sourceTestIdentities.containsAll(manifestTestIdentities)) {
+                    blockers.add("MANIFEST_TEST_IDENTITIES_NOT_IN_SOURCE_EXECUTION");
+                }
+                JsonNode domains = root.get("domains");
+                if (domains == null || !domains.isObject()) {
+                    blockers.add("CAPABILITY_TEST_MANIFEST_DOMAINS_INVALID");
+                } else {
+                    for (Map.Entry<String, Set<String>> required : requiredInvariants.entrySet()) {
+                        JsonNode domain = domains.get(required.getKey());
+                        if (domain == null || !domain.isObject()) {
+                            blockers.add("CAPABILITY_TEST_DOMAIN_MISSING:" + required.getKey());
+                            continue;
+                        }
+                        Set<String> invariants = strictManifestStrings(
+                                domain.get("invariants"),
+                                "MANIFEST_INVARIANTS:" + required.getKey(), blockers);
+                        Set<String> missing = new TreeSet<>(required.getValue());
+                        missing.removeAll(invariants);
+                        if (!missing.isEmpty()) {
+                            blockers.add("MANIFEST_INVARIANTS_MISSING:" + required.getKey()
+                                    + ":" + String.join("+", missing));
+                        }
+                        Set<String> domainTests = strictManifestStrings(
+                                domain.get("test_identities"),
+                                "MANIFEST_DOMAIN_TEST_IDENTITIES:" + required.getKey(), blockers);
+                        if (!manifestTestIdentities.containsAll(domainTests)) {
+                            blockers.add("DOMAIN_TEST_IDENTITIES_NOT_IN_MANIFEST:" + required.getKey());
+                        }
+                        if (!sourceTestIdentities.containsAll(domainTests)) {
+                            blockers.add("DOMAIN_TEST_IDENTITIES_NOT_EXECUTED:" + required.getKey());
+                        }
+                    }
+                }
+            }
+        } catch (IOException | RuntimeException error) {
+            blockers.add("CAPABILITY_TEST_MANIFEST_JSON_INVALID");
+        }
+        boolean schemaValid = blockers.size() == blockersBeforeSchema;
+        report.put("schema_valid", schemaValid);
+        report.put("status", schemaValid
+                && Boolean.TRUE.equals(report.get("target_byte_identical")) ? "VALID" : "INVALID");
+        return new ManifestInspection(report);
+    }
+
+    private static boolean confinedRegularManifest(Path root, Path candidate) {
+        Path normalizedRoot = root.toAbsolutePath().normalize();
+        Path normalizedCandidate = candidate.toAbsolutePath().normalize();
+        if (!normalizedCandidate.startsWith(normalizedRoot)
+                || normalizedCandidate.equals(normalizedRoot)) return false;
+        Path current = normalizedRoot;
+        for (Path segment : normalizedRoot.relativize(normalizedCandidate)) {
+            current = current.resolve(segment);
+            if (Files.isSymbolicLink(current)) return false;
+        }
+        return Files.isRegularFile(normalizedCandidate, LinkOption.NOFOLLOW_LINKS);
+    }
+
+    private static byte[] boundedManifestBytes(Path path, List<String> blockers, String role) {
+        try {
+            long size = Files.size(path);
+            if (size <= 0 || size > MAX_CAPABILITY_MANIFEST_BYTES) {
+                blockers.add(role + "_CAPABILITY_TEST_MANIFEST_SIZE_INVALID");
+                return null;
+            }
+            return Files.readAllBytes(path);
+        } catch (IOException error) {
+            blockers.add(role + "_CAPABILITY_TEST_MANIFEST_READ_FAILED");
+            return null;
+        }
+    }
+
+    private static Set<String> strictManifestStrings(
+            JsonNode node,
+            String field,
+            List<String> blockers
+    ) {
+        Set<String> values = new TreeSet<>();
+        if (node == null || !node.isArray() || node.isEmpty()) {
+            blockers.add(field + "_EMPTY_OR_INVALID");
+            return values;
+        }
+        for (JsonNode entry : node) {
+            if (!entry.isTextual()) {
+                blockers.add(field + "_NON_STRING");
+                continue;
+            }
+            String value = entry.asText().trim();
+            if (value.isEmpty() || value.length() > 512 || value.contains("*") || value.contains("?")) {
+                blockers.add(field + "_VALUE_INVALID");
+                continue;
+            }
+            if (!values.add(value)) blockers.add(field + "_DUPLICATE");
+        }
+        return values;
+    }
+
+    private static Set<String> normalizedTestIdentities(List<String> identities) {
+        Set<String> normalized = new TreeSet<>();
+        for (String identity : identities) {
+            if (identity != null && !identity.isBlank()) normalized.add(identity.trim());
+        }
+        return normalized;
+    }
+
+    private static Map<String, List<String>> immutableInvariantMap(
+            Map<String, Set<String>> invariants
+    ) {
+        Map<String, List<String>> immutable = new TreeMap<>();
+        invariants.forEach((domain, values) -> immutable.put(domain, values.stream().toList()));
+        return Map.copyOf(immutable);
+    }
+
+    private static String complexCapabilityDomain(String id) {
+        if (id.equals("security") || id.equals("authentication") || id.equals("authorization")) {
+            return "security";
+        }
+        if (id.equals("persistence") || id.startsWith("persistence-")
+                || id.startsWith("database-provider-")) {
+            return "persistence_database";
+        }
+        if (id.equals("transactions")) return "transactions";
+        if (id.equals("messaging") || id.startsWith("messaging-")) return "messaging";
+        return null;
+    }
+
+    private static String unresolvedCapabilityState(String unknown) {
+        if (unknown.startsWith("conditional-capability-activation-unresolved:")) {
+            return "conditional";
+        }
+        if (unknown.startsWith("generated-capability-build-activation-unresolved:")) {
+            return "generated";
+        }
+        if (unknown.startsWith("declared-only-capability-runtime-activation-unobserved:")) {
+            return "declared-only";
+        }
+        if (unknown.startsWith("capability-semantics-unknown:")) return "unknown";
+        return null;
+    }
+
+    private static String customOrDynamicDomain(String unknown) {
+        if (unknown.startsWith("custom-authentication-provider")
+                || unknown.startsWith("legacy-security-adapter")) return "security";
+        if (unknown.startsWith("dynamic-datasource-routing")) return "persistence_database";
+        if (unknown.startsWith("multi-resource-transaction")) return "transactions";
+        String lower = unknown.toLowerCase(Locale.ROOT);
+        if ((lower.contains("custom") || lower.contains("dynamic"))
+                && lower.contains("messag")) return "messaging";
+        return null;
+    }
+
+    private static String customOrDynamicInvariant(String unknown) {
+        if (unknown.startsWith("custom-authentication-provider")) {
+            return "custom-authentication-provider-contract";
+        }
+        if (unknown.startsWith("legacy-security-adapter")) {
+            return "legacy-security-adapter-behavior";
+        }
+        if (unknown.startsWith("dynamic-datasource-routing")) {
+            return "dynamic-datasource-routing-contract";
+        }
+        if (unknown.startsWith("multi-resource-transaction")) {
+            return "multi-resource-atomicity-recovery-contract";
+        }
+        String lower = unknown.toLowerCase(Locale.ROOT);
+        if ((lower.contains("custom") || lower.contains("dynamic"))
+                && lower.contains("messag")) return "custom-listener-container-contract";
+        return null;
+    }
+
+    private static String digestStrings(Set<String> values) {
+        return digestBytes(String.join("\n", values).getBytes(StandardCharsets.UTF_8));
+    }
+
+    private static String digestBytes(byte[] value) {
+        try {
+            return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(value));
+        } catch (java.security.NoSuchAlgorithmException error) {
+            throw new IllegalStateException("SHA-256 unavailable", error);
+        }
+    }
+
     private static long longAttribute(Element element, String name) {
         String value = element.getAttribute(name);
         if (value == null || value.isBlank()) return 0;
@@ -1325,6 +1961,55 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         return resolveProperty(document, property(document, "spring-boot.version"));
     }
 
+    static String sourceFrameworkFamily(
+            String springBootVersion,
+            SpringCapabilityFingerprint.Analysis analysis
+    ) {
+        if (!blank(springBootVersion)) return "spring-boot";
+        if (analysis.sourceTraces().containsKey("spring-mvc")
+                || analysis.sourceTraces().containsKey("spring-mvc-xml")
+                || analysis.sourceTraces().containsKey("servlet-initializer")) {
+            return "spring-mvc";
+        }
+        return "unknown";
+    }
+
+    /**
+     * Resolve a traditional Maven Spring Framework version only from an exact
+     * project-owned authority: a conventional property, the Spring Framework
+     * BOM, or an explicitly versioned Spring dependency. Inherited versions
+     * that are not materialized in the inspected POM remain UNKNOWN.
+     */
+    static String springFrameworkVersion(Document document) {
+        for (String propertyName : List.of(
+                "spring-framework.version", "spring.version", "org.springframework.version")) {
+            String candidate = resolveProperty(document, property(document, propertyName));
+            if (!blank(candidate)) return candidate;
+        }
+        Element root = document.getDocumentElement();
+        for (Element dependency : descendants(root, "dependency")) {
+            String group = resolveProperty(document, text(dependency, "groupId"));
+            String artifact = resolveProperty(document, text(dependency, "artifactId"));
+            if (!"org.springframework".equals(group)) continue;
+            if (!("spring-framework-bom".equals(artifact)
+                    || "spring-webmvc".equals(artifact)
+                    || "spring-web".equals(artifact)
+                    || "spring-context".equals(artifact)
+                    || "spring-core".equals(artifact))) continue;
+            String candidate = resolveProperty(document, text(dependency, "version"));
+            if (!blank(candidate)) return candidate;
+        }
+        return "";
+    }
+
+    /** Gradle equivalent of the exact, project-owned Spring version authority. */
+    static String springFrameworkVersion(String model) {
+        return firstMatch(model,
+                "org\\.springframework:(?:spring-framework-bom|spring-webmvc|spring-web|spring-context|spring-core):([0-9][A-Za-z0-9._+\\-]*)",
+                "(?:springFrameworkVersion|springVersion|spring_version)\\s*=\\s*['\"]([0-9][A-Za-z0-9._+\\-]*)",
+                "(?:spring-framework\\.version|spring\\.version)\\s*[=:]\\s*['\"]?([0-9][A-Za-z0-9._+\\-]*)");
+    }
+
     private static String property(Document document, String name) {
         Element properties = direct(document.getDocumentElement(), "properties");
         if (properties == null) return "";
@@ -1339,7 +2024,13 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
     private static String resolveProperty(Document document, String value) {
         if (value == null) return "";
         String trimmed = value.trim();
-        if (trimmed.matches("\\$\\{[^}]+}")) return property(document, trimmed.substring(2, trimmed.length() - 1));
+        Set<String> visited = new HashSet<>();
+        while (trimmed.matches("\\$\\{[^}]+}")) {
+            String propertyName = trimmed.substring(2, trimmed.length() - 1);
+            if (!visited.add(propertyName)) return "";
+            trimmed = property(document, propertyName).trim();
+            if (trimmed.isEmpty() || visited.size() >= 8) return trimmed;
+        }
         return trimmed;
     }
 
@@ -1740,6 +2431,23 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
 
     private record SourceIdentity(String commitSha, String treeSha) {}
     private record CommandOutcome(int exitCode) {}
+    record CapabilityTestRun(List<String> testIdentities, long skipped) {
+        CapabilityTestRun {
+            testIdentities = List.copyOf(testIdentities);
+            if (skipped < 0) throw new IllegalArgumentException("skipped must not be negative");
+        }
+    }
+    record ComplexCapabilityDecision(Map<String, Object> report, List<String> blockers) {
+        ComplexCapabilityDecision {
+            report = Map.copyOf(report);
+            blockers = List.copyOf(blockers);
+        }
+    }
+    private record ManifestInspection(Map<String, Object> report) {
+        private ManifestInspection {
+            report = Map.copyOf(report);
+        }
+    }
     private record TestSummary(
             List<String> reports,
             long tests,

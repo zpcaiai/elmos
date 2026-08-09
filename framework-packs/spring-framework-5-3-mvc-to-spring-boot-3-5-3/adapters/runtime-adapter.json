@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "pack_key": "spring-framework-5-3-mvc-to-spring-boot-3-5-3",
+  "implementation": "NOT_WIRED",
+  "route_catalog_registration": "NOT_PRESENT",
+  "local_execution_port_registration": "NOT_PRESENT",
+  "disabled_by_default": true,
+  "execution_status": "NOT_RUN",
+  "required_attestations": [
+    "exact Java 11 and Maven 3.9.11 source baseline",
+    "exact Java 21 and Maven 3.9.11 target build",
+    "rootless one-shot Transformer",
+    "fresh-artifact independent Verifier",
+    "network-none Runtime",
+    "FCM and source-map digest binding"
+  ],
+  "promotion_requires_independent_pass": true
+}

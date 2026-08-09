@@ -37,6 +37,7 @@ const capabilities = {
       routeId: "boot-2.0-2.6-maven-to-boot-3.5.3-java-21",
       packKey: "spring-boot-2-0-2-6-to-3-5-3",
       label: "Spring Boot 2.0–2.6 / Java 8, 11, 17 / Maven",
+      sourceFrameworkFamily: "spring-boot",
       buildTool: "maven",
       sourceBootMinInclusive: "2.0.0",
       sourceBootMaxExclusive: "2.7.0",
@@ -49,9 +50,26 @@ const capabilities = {
       verifiedSourceJava: "",
     },
     {
+      routeId: "boot-2.7-maven-to-boot-3.2.12-java-17",
+      packKey: "spring-boot-2-7-to-3-2-12",
+      label: "Spring Boot 2.7.x / Java 8, 11, 17 / Maven → Boot 3.2.12 / Java 17",
+      sourceFrameworkFamily: "spring-boot",
+      buildTool: "maven",
+      sourceBootMinInclusive: "2.7.0",
+      sourceBootMaxExclusive: "2.8.0",
+      sourceJavaVersions: ["11", "17", "8"],
+      targetSpringBoot: "3.2.12",
+      targetJava: "17",
+      recipeId: "io.elmos.openrewrite.SpringBoot2_7ToBoot3_2_12Java17",
+      evidenceStatus: "NOT_RUN",
+      verifiedSourceSpringBoot: "",
+      verifiedSourceJava: "",
+    },
+    {
       routeId: "boot-2.7-maven-to-boot-3.5.3-java-21",
       packKey: "spring-boot-2-7-18-to-3-5-3",
       label: "Spring Boot 2.7.x / Java 8, 11, 17 / Maven",
+      sourceFrameworkFamily: "spring-boot",
       buildTool: "maven",
       sourceBootMinInclusive: "2.7.0",
       sourceBootMaxExclusive: "2.8.0",
@@ -62,6 +80,56 @@ const capabilities = {
       evidenceStatus: "PASSED_LOCAL",
       verifiedSourceSpringBoot: "2.7.18",
       verifiedSourceJava: "17",
+    },
+    {
+      routeId: "spring-framework-5.3-mvc-maven-to-boot-3.5.3-java-21",
+      packKey: "spring-framework-5-3-mvc-to-spring-boot-3-5-3",
+      label: "Spring Framework 5.3.x MVC / Java 11 / Maven → Boot 3.5.3 / Java 21",
+      sourceFrameworkFamily: "spring-mvc",
+      buildTool: "maven",
+      sourceBootMinInclusive: "5.3.0",
+      sourceBootMaxExclusive: "5.4.0",
+      sourceJavaVersions: ["11"],
+      targetSpringBoot: "3.5.3",
+      targetJava: "21",
+      recipeId: "io.elmos.openrewrite.SpringFramework5_3MvcToSpringBoot3_5_3Java21",
+      evidenceStatus: "NOT_RUN",
+      verifiedSourceSpringBoot: "",
+      verifiedSourceJava: "",
+    },
+    {
+      routeId: "boot-1.5-3.5.15-maven-to-boot-3.5.16-java-21",
+      packKey: "spring-boot-1-5-3-5-15-to-3-5-16-inventory-only",
+      label: "Spring Boot 1.5–3.5.15 / Java 8, 11, 17, 21 / Maven → Boot 3.5.16 / Java 21",
+      sourceFrameworkFamily: "spring-boot",
+      buildTool: "maven",
+      sourceBootMinInclusive: "1.5.0",
+      sourceBootMaxExclusive: "3.5.16",
+      sourceJavaVersions: ["8", "11", "17", "21"],
+      targetSpringBoot: "3.5.16",
+      targetJava: "21",
+      recipeId: "",
+      evidenceStatus: "NOT_IMPLEMENTED",
+      verifiedSourceSpringBoot: "",
+      verifiedSourceJava: "",
+      notes: "Inventory gap; no executable recipe is available.",
+    },
+    {
+      routeId: "boot-1.5-4.0-maven-to-boot-4.1.0-java-21",
+      packKey: "spring-boot-1-5-4-0-to-4-1-0-inventory-only",
+      label: "Spring Boot 1.5–4.0 / Java 8, 11, 17, 21 / Maven → Boot 4.1.0 / Java 21",
+      sourceFrameworkFamily: "spring-boot",
+      buildTool: "maven",
+      sourceBootMinInclusive: "1.5.0",
+      sourceBootMaxExclusive: "4.1.0",
+      sourceJavaVersions: ["8", "11", "17", "21"],
+      targetSpringBoot: "4.1.0",
+      targetJava: "21",
+      recipeId: "",
+      evidenceStatus: "NOT_IMPLEMENTED",
+      verifiedSourceSpringBoot: "",
+      verifiedSourceJava: "",
+      notes: "Inventory gap; no executable recipe is available.",
     },
   ],
   experimentalRoutesRequireOptIn: true,
@@ -146,6 +214,65 @@ function completedRun(overrides: Record<string, unknown> = {}) {
     },
     events: events(),
     ...overrides,
+  };
+}
+
+function runWithTarget(
+  targetSpringBoot: string,
+  targetJava: string,
+  overrides: Record<string, unknown> = {},
+) {
+  const base = completedRun();
+  return {
+    ...base,
+    exactTuple: {
+      ...base.exactTuple,
+      targetSpringBoot,
+      targetJava,
+    },
+    ...overrides,
+  };
+}
+
+function activeRun(targetSpringBoot: string, targetJava: string) {
+  return runWithTarget(targetSpringBoot, targetJava, {
+    status: "RUNNING",
+    stage: "BUILD_AND_TEST",
+    runtimeStatus: "NOT_STARTED",
+    downloadAvailable: false,
+    artifactSha256: null,
+    artifactSize: null,
+    independentValidation: null,
+    events: [
+      ...events().slice(0, 6),
+      {
+        sequence: 7,
+        stage: "BUILD_AND_TEST",
+        status: "RUNNING",
+        message: "正在使用不可变目标执行真实构建",
+        observedAt: "2026-07-26T10:00:07Z",
+      },
+    ],
+  });
+}
+
+function completedMvcRun() {
+  const base = completedRun();
+  return {
+    ...base,
+    exactTuple: {
+      ...base.exactTuple,
+      sourceSpringBoot: "5.3.39",
+      sourceJava: "11",
+    },
+    fingerprint: {
+      ...base.fingerprint,
+      springBootVersion: "UNKNOWN",
+      sourceFrameworkFamily: "spring-mvc",
+      sourceFrameworkVersion: "5.3.39",
+      javaVersion: "11",
+      activeCapabilities: ["spring-mvc", "servlet"],
+    },
   };
 }
 
@@ -267,12 +394,18 @@ test("Spring 真实旅程 UI 可完成导入、证据查看、下载、启动、
   // The catalog is rendered from the engine contract, and only the tuple that
   // carries recorded evidence may display PASSED_LOCAL.
   const catalog = page.getByRole("table", { name: "Spring 遗留版本路线目录" });
-  await expect(catalog.getByRole("cell", { name: "Boot [2.0.0, 2.7.0)" })).toBeVisible();
-  await expect(catalog.getByRole("cell", { name: "Boot [2.7.0, 2.8.0)" })).toBeVisible();
-  await expect(catalog.getByRole("cell", { name: "NOT_RUN", exact: true })).toBeVisible();
+  await expect(catalog.getByRole("cell", { name: "Spring Boot [2.0.0, 2.7.0)" })).toBeVisible();
+  await expect(catalog.getByRole("cell", { name: "Spring Boot [2.7.0, 2.8.0)" }).first()).toBeVisible();
+  await expect(catalog.getByRole("cell", { name: "Spring Framework MVC [5.3.0, 5.4.0)" })).toBeVisible();
+  await expect(catalog.getByRole("cell", { name: "NOT_RUN · Spring Framework MVC" })).toBeVisible();
+  await expect(catalog.getByRole("cell", { name: "NOT_IMPLEMENTED · Spring Boot" })).toHaveCount(2);
+  await expect(page.getByText("NOT_IMPLEMENTED 仅记录 inventory gap", { exact: false })).toBeVisible();
   await expect(
-    catalog.getByRole("cell", { name: "PASSED_LOCAL @ 2.7.18 / Java 17" }),
+    catalog.getByRole("cell", { name: "PASSED_LOCAL @ Spring Boot 2.7.18 / Java 17" }),
   ).toBeVisible();
+  const targetSelector = page.getByLabel("Spring 目标精确版本");
+  await expect(targetSelector.locator('option[value="3.5.16|21"]')).toHaveCount(0);
+  await expect(targetSelector.locator('option[value="4.1.0|21"]')).toHaveCount(0);
 
   await page.getByLabel("Git 仓库 URL").fill("https://github.com/example/legacy-orders.git");
   await page.getByLabel("Branch / Tag").fill("main");
@@ -280,7 +413,7 @@ test("Spring 真实旅程 UI 可完成导入、证据查看、下载、启动、
   await page.getByLabel("验证通过后自动一键启动").check();
   await page.getByRole("button", { name: "开始真实迁移" }).click();
 
-  await expect(page.getByText("2.7.18 · Java 17 · maven")).toBeVisible();
+  await expect(page.getByText("Spring Boot 2.7.18 · Java 17 · maven")).toBeVisible();
   await expect(page.getByText("PASS", { exact: true }).first()).toBeVisible();
   await expect(page.getByRole("button", { name: "下载新项目 ZIP" })).toBeVisible();
   expect(api.postedBody()).toMatchObject({
@@ -289,6 +422,8 @@ test("Spring 真实旅程 UI 可完成导入、证据查看、下载、启动、
     requestedRef: "main",
     expectedCommitSha: commit,
     startAfterVerification: true,
+    targetSpringBoot: "3.5.3",
+    targetJava: "21",
   });
 
   const downloadPromise = page.waitForEvent("download");
@@ -384,13 +519,21 @@ test("GitHub App 私有仓库入口只跳转经过校验的 GitHub HTTPS 安装�
 });
 
 test("页面刷新后使用会话内 Run ID 与显式租户身份恢复最近运行", async ({ page }) => {
+  const recovered = runWithTarget("3.2.12", "17");
+  let releaseCapability = () => {};
+  const capabilityGate = new Promise<void>((resolve) => {
+    releaseCapability = resolve;
+  });
   await page.addInitScript(({ key, value }) => {
     window.sessionStorage.setItem(key, value);
   }, { key: "elmos.spring.latest-run-id", value: runId });
   await page.route("**/api/spring-upgrades/**", async (route) => {
     const path = new URL(route.request().url()).pathname;
-    if (path.endsWith("/capabilities")) return fulfillJson(route, capabilities);
-    return fulfillJson(route, completedRun());
+    if (path.endsWith("/capabilities")) {
+      await capabilityGate;
+      return fulfillJson(route, capabilities);
+    }
+    return fulfillJson(route, recovered);
   });
   await page.route("**/api/github-repositories", (route) =>
     fulfillJson(route, { status: "NOT_CONFIGURED", repositories: [] }));
@@ -401,5 +544,59 @@ test("页面刷新后使用会话内 Run ID 与显式租户身份恢复最近运
   await page.getByRole("button", { name: "恢复运行" }).click();
   await expect(page.getByText("已按 Run UUID 与当前租户身份恢复持久迁移运行。")).toBeVisible();
   await expect(page.getByText(`${runId.slice(0, 8)} · #1`)).toBeVisible();
+  await expect(page.getByLabel("Spring 目标精确版本")).toHaveValue("3.2.12|17");
+  releaseCapability();
+  await expect(page.getByText("Runner 与独立验证器已配置，可以提交精确路线。")).toBeVisible();
+  await expect(page.getByLabel("Spring 目标精确版本")).toHaveValue("3.2.12|17");
+  const metrics = page.getByLabel("精确迁移路线");
+  await expect(metrics.getByText("Boot 3.2.12", { exact: true })).toBeVisible();
+  await expect(metrics.getByText("Java 17 · 当前 Run 不可变目标", { exact: true })).toBeVisible();
+  await expect(page.getByText(
+    "Spring Boot 3.2.12 / Java 17 真实测试；失败时最多一次确定性修复。",
+  )).toBeVisible();
   await expect(page.getByRole("button", { name: "下载新项目 ZIP" })).toBeVisible();
+});
+
+test("恢复活动迁移后锁定不可变目标并禁止重复提交", async ({ page }) => {
+  await page.route("**/api/spring-upgrades/**", async (route) => {
+    const path = new URL(route.request().url()).pathname;
+    if (path.endsWith("/capabilities")) return fulfillJson(route, capabilities);
+    return fulfillJson(route, activeRun("3.2.12", "17"));
+  });
+  await page.route("**/api/github-repositories", (route) =>
+    fulfillJson(route, { status: "NOT_CONFIGURED", repositories: [] }));
+
+  await page.goto("/spring");
+  await fillSpringCredentials(page);
+  await page.getByLabel("恢复 Run UUID").fill(runId);
+  await page.getByRole("button", { name: "恢复运行" }).click();
+
+  await expect(page.getByLabel("Spring 目标精确版本")).toHaveValue("3.2.12|17");
+  await expect(page.getByLabel("Spring 目标精确版本")).toBeDisabled();
+  await expect(page.getByRole("button", { name: "迁移运行中" })).toBeDisabled();
+  await expect(page.getByLabel("精确迁移路线").getByText(
+    "Java 17 · 当前 Run 不可变目标",
+    { exact: true },
+  )).toBeVisible();
+});
+
+test("MVC Run 检测结果按源 family 展示精确 Spring Framework 版本", async ({ page }) => {
+  await page.route("**/api/spring-upgrades/**", async (route) => {
+    const path = new URL(route.request().url()).pathname;
+    if (path.endsWith("/capabilities")) return fulfillJson(route, capabilities);
+    return fulfillJson(route, completedMvcRun());
+  });
+  await page.route("**/api/github-repositories", (route) =>
+    fulfillJson(route, { status: "NOT_CONFIGURED", repositories: [] }));
+
+  await page.goto("/spring");
+  await fillSpringCredentials(page);
+  await page.getByLabel("恢复 Run UUID").fill(runId);
+  await page.getByRole("button", { name: "恢复运行" }).click();
+
+  await expect(page.getByText(
+    "Spring Framework MVC 5.3.39 · Java 11 · maven",
+    { exact: true },
+  )).toBeVisible();
+  await expect(page.getByText("Spring Boot UNKNOWN", { exact: false })).toHaveCount(0);
 });

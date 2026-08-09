@@ -222,7 +222,9 @@ final class SpringUpgradeRunService {
                     source.request.snapshotId(),
                     source.request.materializedRelativePath(),
                     source.request.startAfterVerification(),
-                    retryIdempotencyKey
+                    retryIdempotencyKey,
+                    source.request.targetSpringBoot(),
+                    source.request.targetJava()
             );
             RunState state = newState(request, runId, source.attempt + 1);
             runs.put(state.runId, state);
@@ -244,6 +246,7 @@ final class SpringUpgradeRunService {
                         Map.entry("routeId", route.routeId()),
                         Map.entry("packKey", route.packKey()),
                         Map.entry("label", route.label()),
+                        Map.entry("sourceFrameworkFamily", route.sourceFamily().contractValue()),
                         Map.entry("buildTool", route.buildTool()),
                         Map.entry("sourceBootMinInclusive", route.sourceBootMinInclusive()),
                         Map.entry("sourceBootMaxExclusive", route.sourceBootMaxExclusive()),
@@ -448,28 +451,36 @@ final class SpringUpgradeRunService {
              * declare any tuple it wanted.
              */
             String declaredRouteId = fcm.path("route_id").asText("");
-            SpringRouteCatalog.SpringRoute route = SpringRouteCatalog.byId(declaredRouteId)
-                    .filter(SpringRouteCatalog.SpringRoute::implemented)
-                    .orElseThrow(() -> new BlockedException(
-                            "FCM_ROUTE_UNKNOWN",
-                            "Framework Contract Model declared a route the Worker catalog does not implement."));
+            SpringRouteCatalog.Selection authoritativeSelection =
+                    selectRoute(candidate.fingerprint(), state.request);
+            SpringRouteCatalog.SpringRoute route = authoritativeSelection.route();
+            if (!route.routeId().equals(declaredRouteId)) {
+                throw new BlockedException(
+                        "FCM_ROUTE_MISMATCH",
+                        "Framework Contract Model route does not match the requested exact target tuple.");
+            }
             requireFcmText(fcm, "pack_key", route.packKey());
             JsonNode tuple = fcm.path("exact_tuple");
             String declaredSourceBoot = tuple.path("sourceSpringBoot").asText("");
             String declaredSourceJava = tuple.path("sourceJava").asText("");
-            if (!SpringRouteCatalog.withinRange(declaredSourceBoot,
-                    route.sourceBootMinInclusive(), route.sourceBootMaxExclusive())) {
+            if (!Objects.equals(candidate.fingerprint().sourceFrameworkVersion(), declaredSourceBoot)
+                    || !SpringRouteCatalog.withinRange(declaredSourceBoot,
+                            route.sourceBootMinInclusive(), route.sourceBootMaxExclusive())) {
                 throw new BlockedException("FCM_SOURCE_BOOT_OUTSIDE_ROUTE",
-                        "Framework Contract Model source Spring Boot version is outside the declared route range.");
+                        "Framework Contract Model source version differs from the fingerprint or route range.");
             }
-            if (!route.sourceJavaVersions().contains(SpringRouteCatalog.normalizeJava(declaredSourceJava))) {
+            if (!Objects.equals(SpringRouteCatalog.normalizeJava(candidate.fingerprint().javaVersion()),
+                            SpringRouteCatalog.normalizeJava(declaredSourceJava))
+                    || !route.sourceJavaVersions().contains(SpringRouteCatalog.normalizeJava(declaredSourceJava))) {
                 throw new BlockedException("FCM_SOURCE_JAVA_OUTSIDE_ROUTE",
-                        "Framework Contract Model source Java release is outside the declared route set.");
+                        "Framework Contract Model source Java differs from the fingerprint or route set.");
             }
-            requireFcmText(tuple, "sourceBuildTool", "maven-3.9.11");
+            SpringUpgradeModels.ExactTuple exact = route.tuple(
+                    declaredSourceBoot, SpringRouteCatalog.normalizeJava(declaredSourceJava));
+            requireFcmText(tuple, "sourceBuildTool", exact.sourceBuildTool());
             requireFcmText(tuple, "targetSpringBoot", route.targetBoot());
             requireFcmText(tuple, "targetJava", route.targetJava());
-            requireFcmText(tuple, "targetBuildTool", "maven-3.9.11");
+            requireFcmText(tuple, "targetBuildTool", exact.targetBuildTool());
             requireFcmText(tuple, "rewriteSpring", route.rewriteSpring());
             requireFcmText(tuple, "rewriteMavenPlugin", route.rewriteMavenPlugin());
 
@@ -850,7 +861,7 @@ final class SpringUpgradeRunService {
                     state.runId,
                     state.retryOfRunId,
                     state.request.organizationId(),
-                    PACK_KEY,
+                    packKey(state),
                     state.status,
                     state.stage,
                     state.runtimeStatus,
@@ -860,7 +871,7 @@ final class SpringUpgradeRunService {
                     state.resolvedCommitSha,
                     state.snapshotId,
                     state.snapshotDigest,
-                    exactTuple(state.fingerprint),
+                    exactTuple(state.fingerprint, state.request),
                     state.fingerprint,
                     state.fcmArtifact,
                     downloadAvailable(state),
@@ -885,17 +896,56 @@ final class SpringUpgradeRunService {
                 && state.result.artifactSha256().equals(state.independentValidation.artifactSha256());
     }
 
-    private static ExactTuple exactTuple(Fingerprint fingerprint) {
-        if (fingerprint == null) return ExactTuple.supported("maven-3.9.11", "maven-3.9.11");
+    private static ExactTuple exactTuple(Fingerprint fingerprint, StartRequest request) {
+        if (fingerprint == null) {
+            return new ExactTuple(
+                    "UNKNOWN", "UNKNOWN", "UNKNOWN",
+                    request.targetSpringBoot(), request.targetJava(), "UNKNOWN",
+                    REWRITE_SPRING, REWRITE_MAVEN_PLUGIN);
+        }
         try {
-            SpringRouteCatalog.Selection selection = SpringRouteCatalog.select(
-                    fingerprint.springBootVersion(), fingerprint.javaVersion(), fingerprint.buildTool());
-            return selection.route().tuple(fingerprint.springBootVersion(), fingerprint.javaVersion());
+            SpringRouteCatalog.Selection selection = selectRoute(fingerprint, request);
+            return selection.route().tuple(
+                    fingerprint.sourceFrameworkVersion(), fingerprint.javaVersion());
         } catch (RuntimeException ignored) {
             // A queued or blocked run may not have a complete route tuple yet.
-            // Keep the pre-fingerprint default rather than exposing a fabricated tuple.
-            return ExactTuple.supported("maven-3.9.11", "maven-3.9.11");
+            // Preserve the requested target without fabricating a source tuple.
+            return new ExactTuple(
+                    Objects.toString(fingerprint.sourceFrameworkVersion(), "UNKNOWN"),
+                    Objects.toString(fingerprint.javaVersion(), "UNKNOWN"),
+                    Objects.toString(fingerprint.buildTool(), "UNKNOWN"),
+                    request.targetSpringBoot(), request.targetJava(), "UNKNOWN",
+                    REWRITE_SPRING, REWRITE_MAVEN_PLUGIN);
         }
+    }
+
+    private static String packKey(RunState state) {
+        if (state.fingerprint == null) return "PENDING_ROUTE_SELECTION";
+        try {
+            return selectRoute(state.fingerprint, state.request).route().packKey();
+        } catch (RuntimeException ignored) {
+            return "PENDING_ROUTE_SELECTION";
+        }
+    }
+
+    private static SpringRouteCatalog.Selection selectRoute(
+            Fingerprint fingerprint,
+            StartRequest request
+    ) {
+        if ("spring-mvc".equals(fingerprint.sourceFrameworkFamily())) {
+            return SpringRouteCatalog.selectSpringMvc(
+                    fingerprint.sourceFrameworkVersion(),
+                    fingerprint.javaVersion(),
+                    fingerprint.buildTool(),
+                    request.targetSpringBoot(),
+                    request.targetJava());
+        }
+        return SpringRouteCatalog.select(
+                fingerprint.springBootVersion(),
+                fingerprint.javaVersion(),
+                fingerprint.buildTool(),
+                request.targetSpringBoot(),
+                request.targetJava());
     }
 
     private static Path requireArtifactIntegrity(RunState state) {
@@ -1009,6 +1059,12 @@ final class SpringUpgradeRunService {
                 || request.idempotencyKey().length() > 128) {
             throw new InvalidRequest("A bounded idempotency key is required.");
         }
+        if (request.targetSpringBoot() == null
+                || !request.targetSpringBoot().matches("[0-9]+\\.[0-9]+\\.[0-9]+(?:[-.][A-Za-z0-9]+)*")
+                || request.targetJava() == null
+                || !request.targetJava().matches("[0-9]{1,2}")) {
+            throw new InvalidRequest("An exact target Spring Boot and Java tuple is required.");
+        }
         if (request.sourceMode() == SourceMode.PUBLIC_GIT
                 && (request.repositoryUrl() == null || request.repositoryUrl().isBlank())) {
             throw new InvalidRequest("Public Git repository URL is required.");
@@ -1052,7 +1108,9 @@ final class SpringUpgradeRunService {
                 Objects.toString(request.expectedCommitSha(), ""),
                 Objects.toString(request.snapshotId(), ""),
                 Objects.toString(request.materializedRelativePath(), ""),
-                Boolean.toString(request.startAfterVerification()));
+                Boolean.toString(request.startAfterVerification()),
+                Objects.toString(request.targetSpringBoot(), ""),
+                Objects.toString(request.targetJava(), ""));
         try {
             return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256")
                     .digest(value.getBytes(StandardCharsets.UTF_8)));

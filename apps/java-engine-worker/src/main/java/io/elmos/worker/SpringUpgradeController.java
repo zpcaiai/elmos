@@ -60,8 +60,12 @@ final class SpringUpgradeController {
         RunView view = service.get(organizationId, runId);
         Path artifact = service.artifact(organizationId, runId);
         String digest = view.artifactSha256();
+        String targetBoot = view.exactTuple().targetSpringBoot();
         if (digest == null || !digest.matches("[0-9a-f]{64}")) {
             throw new IllegalStateException("ARTIFACT_DIGEST_UNAVAILABLE");
+        }
+        if (targetBoot == null || !targetBoot.matches("[0-9]+\\.[0-9]+\\.[0-9]+")) {
+            throw new IllegalStateException("TARGET_TUPLE_UNAVAILABLE");
         }
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.noStore())
@@ -71,7 +75,7 @@ final class SpringUpgradeController {
                 .header("X-Content-SHA256", digest)
                 .header(HttpHeaders.CONTENT_DISPOSITION,
                         ContentDisposition.attachment()
-                                .filename("migrated-spring-boot-3.5.3.zip")
+                                .filename("migrated-spring-boot-" + targetBoot + ".zip")
                                 .build().toString())
                 .body(new FileSystemResource(artifact));
     }

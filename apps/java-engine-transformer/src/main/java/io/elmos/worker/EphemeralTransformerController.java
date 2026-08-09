@@ -61,6 +61,7 @@ public final class EphemeralTransformerController {
             @Value("${elmos.transformer.workspace-root:/workspace}") String workspaceRoot,
             @Value("${elmos.transformer.source-java-home:/opt/java/openjdk-17}") String sourceJavaHome,
             @Value("${elmos.transformer.target-java-home:/opt/java/openjdk}") String targetJavaHome,
+            @Value("${elmos.transformer.java-homes:}") String additionalJavaHomes,
             @Value("${elmos.transformer.maven-executable:/usr/share/maven/bin/mvn}") String mavenExecutable,
             @Value("${elmos.transformer.maven-dependency-seed:/opt/elmos/maven-seed}") String mavenDependencySeed,
             @Value("${elmos.transformer.allowed-git-hosts:github.com}") String allowedGitHosts,
@@ -85,13 +86,14 @@ public final class EphemeralTransformerController {
         this.progress = runRoot.resolve("evidence/transform-progress.jsonl");
         this.execution = new LocalSpringUpgradeExecutionPort(
                 root,
-                Path.of(sourceJavaHome),
-                Path.of(targetJavaHome),
+                SpringUpgradeConfiguration.javaHomes(
+                        sourceJavaHome, targetJavaHome, additionalJavaHomes),
                 mavenExecutable,
                 hosts(allowedGitHosts),
                 false,
                 true,
                 Path.of(mavenDependencySeed),
+                false,
                 json
         );
     }

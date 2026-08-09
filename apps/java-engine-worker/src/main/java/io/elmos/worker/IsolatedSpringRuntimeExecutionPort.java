@@ -77,7 +77,8 @@ final class IsolatedSpringRuntimeExecutionPort implements SpringUpgradeExecution
                 request.organizationId(),
                 runtimeArtifact.relativePath(),
                 runtimeArtifact.sha256(),
-                result.healthCandidates()
+                result.healthCandidates(),
+                request.targetJava()
         ));
         if (!"HEALTHY".equals(response.status())
                 || !runRoot.getFileName().toString().equals(response.runtimeId())
@@ -110,7 +111,8 @@ final class IsolatedSpringRuntimeExecutionPort implements SpringUpgradeExecution
                 handle.organizationId(),
                 null,
                 null,
-                List.of()
+                List.of(),
+                null
         ));
         if (!"STOPPED".equals(response.status())) {
             throw blocked("ISOLATED_RUNTIME_STOP_FAILED",
@@ -128,7 +130,8 @@ final class IsolatedSpringRuntimeExecutionPort implements SpringUpgradeExecution
                 handle.organizationId(),
                 null,
                 null,
-                List.of()
+                List.of(),
+                null
         ));
         return response.logs();
     }
@@ -280,7 +283,8 @@ final class IsolatedSpringRuntimeExecutionPort implements SpringUpgradeExecution
             String organizationId,
             String artifactRelativePath,
             String artifactSha256,
-            List<String> healthCandidates
+            List<String> healthCandidates,
+            String targetJava
     ) {}
 
     private record RuntimeResponse(

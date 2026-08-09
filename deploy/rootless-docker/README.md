@@ -49,10 +49,12 @@ UID 不同，共享的只读文件应为 `0444`，并由父目录阻止其他宿
 转换模块。Workspace Service 为每个验证请求创建短生命周期验证器容器，只挂载该
 Run 的候选文件、Evidence 子目录和一次性 HMAC；长期 Worker-to-broker HMAC 不会
 进入客户构建容器。OpenRewrite、源码编译和测试也不在长期 Worker 中运行：
-Workspace Service 以 profile `spring-transformer-java17-java21-maven` 校验不可变
-Transformer image digest，为每个 Run 创建专用 Rootless 容器和空白 tmpfs Maven
-repository。镜像构建 Gate 会先用精确的 Java 17/21、Maven 3.9.11、OpenRewrite
-6.44.0 和 rewrite-spring 6.35.0 完整执行一次参考转换，把所需依赖固化成只读种子；
+Workspace Service 以 profile `spring-transformer-java8-java11-java17-java21-maven`
+校验不可变 Transformer image digest，为每个 Run 创建专用 Rootless 容器和空白
+tmpfs Maven repository。镜像包含精确的 Java 8/11/17/21 工具链；镜像构建 Gate
+目前只用 Java 17/21、Maven 3.9.11、OpenRewrite 6.44.0 和 rewrite-spring 6.35.0
+完整执行一次已有参考转换，把所需依赖固化成只读种子。Java 8/11 遗留基线的容器内
+执行仍是 `NOT_RUN`；
 子容器启动时把该种子复制到每个 Run 独立的 tmpfs，并强制 Maven `--offline`。
 Transformer 与 Worker 使用相同的非 root UID `10001`。权威 Run 根下的
 `evidence/run-state.json`、提升后的 FCM 和独立验证收据只由 Worker 持有；子容器唯一
@@ -65,7 +67,7 @@ Transformer 与 Worker 使用相同的非 root UID `10001`。权威 Run 根下�
 不可变日志存储。
 
 `apps/java-runtime-runner/Dockerfile` 必须单独构建、扫描、记录不可变 digest，并以
-profile `spring-runtime-java21` 写入批准镜像注册表。一键启动不会在 Engine Worker
+profile `spring-runtime-java17-java21` 写入批准镜像注册表。一键启动不会在 Engine Worker
 进程中执行客户 JAR；Workspace Service 会再次确认 daemon 的 `rootless` 安全选项，
 按 Run 创建 `network=none`、只读根、全部能力移除、非 root、限 CPU/内存/PID 的
 专属容器，在容器内部执行回环健康检查；停止会删除该容器。Worker 永远不挂载 Docker

@@ -36,7 +36,7 @@ final class ProcessMavenVerification implements MavenVerification {
     private final Path immutableDependencyCache;
 
     ProcessMavenVerification(Path javaHome, String mavenExecutable, int timeoutMinutes) {
-        this(javaHome, mavenExecutable, timeoutMinutes, null);
+        this(javaHome, mavenExecutable, timeoutMinutes, null, "21");
     }
 
     ProcessMavenVerification(
@@ -45,14 +45,26 @@ final class ProcessMavenVerification implements MavenVerification {
             int timeoutMinutes,
             Path immutableDependencyCache
     ) {
+        this(javaHome, mavenExecutable, timeoutMinutes, immutableDependencyCache, "21");
+    }
+
+    ProcessMavenVerification(
+            Path javaHome,
+            String mavenExecutable,
+            int timeoutMinutes,
+            Path immutableDependencyCache,
+            String expectedJavaRelease
+    ) {
         this.javaHome = javaHome.toAbsolutePath().normalize();
-        this.mavenExecutable = requireMaven(mavenExecutable, this.javaHome);
+        this.mavenExecutable = requireMaven(
+                mavenExecutable, this.javaHome, expectedJavaRelease);
         this.timeout = Duration.ofMinutes(timeoutMinutes);
         this.immutableDependencyCache = immutableDependencyCache == null
                 ? null
                 : requireDependencyCache(immutableDependencyCache);
         if (!Files.isExecutable(this.javaHome.resolve("bin/java"))) {
-            throw new IllegalStateException("independent verifier Java 21 is unavailable");
+            throw new IllegalStateException(
+                    "independent verifier Java " + expectedJavaRelease + " is unavailable");
         }
         if (timeoutMinutes < 1 || timeoutMinutes > 120) {
             throw new IllegalArgumentException("verifier timeout must be 1-120 minutes");
@@ -266,7 +278,11 @@ final class ProcessMavenVerification implements MavenVerification {
         }
     }
 
-    private static String requireMaven(String command, Path javaHome) {
+    private static String requireMaven(
+            String command,
+            Path javaHome,
+            String expectedJavaRelease
+    ) {
         if (command == null || command.isBlank() || command.indexOf('\0') >= 0) {
             throw new IllegalArgumentException("Maven executable is required");
         }
@@ -277,15 +293,27 @@ final class ProcessMavenVerification implements MavenVerification {
             String output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
             if (!process.waitFor(15, TimeUnit.SECONDS)
                     || process.exitValue() != 0
-                    || !output.contains("Apache Maven 3.9.11")) {
+                    || !output.contains("Apache Maven 3.9.11")
+                    || !reportsJavaRelease(output, expectedJavaRelease)) {
                 process.destroyForcibly();
-                throw new IllegalStateException("approved verifier Maven executable must be exactly 3.9.11");
+                throw new IllegalStateException(
+                        "approved verifier requires Maven 3.9.11 on exact Java "
+                                + expectedJavaRelease);
             }
             return command;
         } catch (IOException | InterruptedException error) {
             if (error instanceof InterruptedException) Thread.currentThread().interrupt();
             throw new IllegalStateException("approved verifier Maven executable could not be verified", error);
         }
+    }
+
+    static boolean reportsJavaRelease(String output, String release) {
+        if (output == null || release == null || !release.matches("[0-9]{1,2}")) return false;
+        return java.util.regex.Pattern.compile(
+                        "(?im)^Java version:\\s*" + java.util.regex.Pattern.quote(release)
+                                + "(?:\\.|\\s|$)")
+                .matcher(output)
+                .find();
     }
 
     private static void copyBounded(InputStream input, Path logFile) {

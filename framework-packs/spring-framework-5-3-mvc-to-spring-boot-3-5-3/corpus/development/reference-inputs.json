@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "corpus": "development",
+  "execution_status": "NOT_RUN",
+  "inputs": [
+    {
+      "id": "legacy-spring-mvc-war-fixture",
+      "path": "corpus/development/legacy-spring-mvc",
+      "source_framework": "spring-framework-mvc-5.3.39",
+      "java": "11",
+      "maven": "3.9.11",
+      "packaging": "war",
+      "status": "PREPARED_NOT_RUN"
+    }
+  ],
+  "customer_repository": false,
+  "external_execution": "NOT_RUN"
+}

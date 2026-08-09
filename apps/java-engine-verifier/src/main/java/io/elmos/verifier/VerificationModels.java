@@ -6,7 +6,22 @@ import java.util.List;
 final class VerificationModels {
     private VerificationModels() {}
 
-    record Request(String runId, String artifactRelativePath, String artifactSha256) {}
+    record Request(
+            String runId,
+            String artifactRelativePath,
+            String artifactSha256,
+            String targetSpringBoot,
+            String targetJava
+    ) {
+        Request {
+            if (targetSpringBoot == null || targetSpringBoot.isBlank()) targetSpringBoot = "3.5.3";
+            if (targetJava == null || targetJava.isBlank()) targetJava = "21";
+        }
+
+        Request(String runId, String artifactRelativePath, String artifactSha256) {
+            this(runId, artifactRelativePath, artifactSha256, "3.5.3", "21");
+        }
+    }
 
     record Response(
             String status,

@@ -13,6 +13,103 @@ final class SpringDeploymentGuidance {
     private SpringDeploymentGuidance() {
     }
 
+    /**
+     * Route-aware handoff. The older overloads remain for the single recorded
+     * 3.5.3 route, while every new edge gets target-correct local instructions.
+     * A target without a repository-pinned container base is deliberately not
+     * given an executable cloud Dockerfile.
+     */
+    static void writeTo(
+            Path migratedRepository,
+            String buildTool,
+            SpringRouteCatalog.SpringRoute route
+    ) {
+        if (SpringRouteCatalog.TARGET_BOOT.equals(route.targetBoot())
+                && SpringRouteCatalog.TARGET_JAVA.equals(route.targetJava())) {
+            writeTo(migratedRepository, buildTool);
+        } else {
+            appendReadme(migratedRepository.resolve("README.md"));
+            write(migratedRepository.resolve("docs/CLOUD_DEPLOYMENT.md"), """
+                    # Spring Boot %s 云端部署交接
+
+                    当前状态：`CONFIGURATION_REQUIRED`；外部执行证据：`NOT_RUN`；
+                    生产交付状态：`NOT_RUN`。
+
+                    路线 `%s` 的目标为 Spring Boot %s / Java %s。仓库尚未绑定并验证
+                    与该精确目标一致的内容寻址构建镜像和运行镜像，因此本迁移不会生成或
+                    覆盖 `deploy/cloud-run/Dockerfile`。请在独立云端门禁中固定镜像摘要、
+                    最小权限身份、Secret 版本、数据库迁移/回滚、容量、ingress 和清理策略。
+                    """.formatted(
+                    route.targetBoot(), route.routeId(), route.targetBoot(), route.targetJava()));
+            write(migratedRepository.resolve("deploy/cloud-run/deployment-profile.json"), """
+                    {
+                      "schema_version": "1.0.0",
+                      "kind": "elmos.spring-cloud-deployment-guidance",
+                      "status": "CONFIGURATION_REQUIRED",
+                      "external_execution_evidence": "NOT_RUN",
+                      "production_delivery_status": "NOT_RUN",
+                      "route_id": "%s",
+                      "runtime": {
+                        "framework": "Spring Boot %s",
+                        "java": "%s",
+                        "build_tool": "%s",
+                        "container_image": "NOT_PINNED",
+                        "image_reference_policy": "DIGEST_REQUIRED"
+                      }
+                    }
+                    """.formatted(route.routeId(), route.targetBoot(), route.targetJava(), buildTool));
+        }
+        writeRouteAwareLocalRun(migratedRepository, buildTool, route);
+    }
+
+    private static void writeRouteAwareLocalRun(
+            Path migratedRepository,
+            String buildTool,
+            SpringRouteCatalog.SpringRoute route
+    ) {
+        boolean gradle = "gradle".equals(buildTool);
+        String buildCommand = gradle
+                ? "gradle --no-daemon build"
+                : "mvn -B -ntp verify";
+        String jarCommand = gradle
+                ? "find build/libs -maxdepth 1 -type f -name '*.jar' | sort | head -n 1"
+                : "find target -maxdepth 1 -type f -name '*.jar' ! -name '*.original' "
+                    + "! -name '*-sources.jar' ! -name '*-javadoc.jar' | sort | head -n 1";
+        write(migratedRepository.resolve("docs/LOCAL_RUN.md"), """
+                # Spring Boot %s 本地运行与验证
+
+                精确路线：`%s`
+
+                - 声明源范围：%s [%s, %s)，Java %s，%s
+                - 精确目标：Spring Boot %s，Java %s
+                - 路线工程证据：%s；这不是客户、生产或认证证据
+
+                ```bash
+                java -version
+                %s
+                JAR_PATH="$(%s)"
+                test -n "$JAR_PATH"
+                SERVER_ADDRESS=127.0.0.1 SERVER_PORT=8080 java -jar "$JAR_PATH"
+                ```
+
+                在另一终端对声明的健康端点执行回环检查。安全身份与授权、数据库结构和数据、
+                事务隔离/回滚、Kafka/Rabbit/JMS 交付语义、缓存、定时任务和外部系统仍须按
+                FCM obligations 独立验证；未执行的域保持 `NOT_RUN`。
+                """.formatted(
+                route.targetBoot(),
+                route.routeId(),
+                route.sourceFamily().contractValue(),
+                route.sourceBootMinInclusive(),
+                route.sourceBootMaxExclusive(),
+                String.join(",", route.sourceJavaVersions().stream().sorted().toList()),
+                buildTool,
+                route.targetBoot(),
+                route.targetJava(),
+                route.routeEvidence(),
+                buildCommand,
+                jarCommand));
+    }
+
     static void writeTo(Path migratedRepository, String buildTool) {
         if (!"gradle".equals(buildTool)) {
             writeTo(migratedRepository);

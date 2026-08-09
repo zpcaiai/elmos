@@ -1,10 +1,30 @@
+FROM eclipse-temurin:17-jdk-jammy@sha256:29467857e8bde40ab1f7befecbda0ea764b95afec1cc7f89aa90f7a766577e19 AS verifier-jdk17
+
 FROM maven:3.9.11-eclipse-temurin-21@sha256:6fdc855a6ed81d288ca7ca37ac6ff5e9308b612485c0801d70b25a858c83d237 AS build
 WORKDIR /src
 COPY . .
 RUN --mount=type=cache,target=/root/.m2 mvn -B -pl apps/java-engine-verifier -am -DskipTests package
-RUN mvn -B --no-transfer-progress \
+COPY --from=verifier-jdk17 /opt/java/openjdk /opt/java/openjdk-17
+RUN JAVA_HOME=/opt/java/openjdk-17 \
+    PATH=/opt/java/openjdk-17/bin:${PATH} \
+    mvn -B --no-transfer-progress \
     -Dmaven.repo.local=/opt/elmos/maven-cache \
-    -f framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/migrated/pom.xml \
+    -f apps/java-engine-verifier/cache-seeds/spring-boot-2.7.18-java-17/pom.xml \
+    org.apache.maven.plugins:maven-dependency-plugin:3.8.1:go-offline \
+    verify
+RUN JAVA_HOME=/opt/java/openjdk-17 \
+    PATH=/opt/java/openjdk-17/bin:${PATH} \
+    mvn -B --no-transfer-progress \
+    -Dmaven.repo.local=/opt/elmos/maven-cache \
+    -f apps/java-engine-verifier/cache-seeds/spring-boot-3.2.12-java-17/pom.xml \
+    org.apache.maven.plugins:maven-dependency-plugin:3.8.1:go-offline \
+    verify
+RUN JAVA_HOME=/opt/java/openjdk \
+    PATH=/opt/java/openjdk/bin:${PATH} \
+    mvn -B --no-transfer-progress \
+    -Dmaven.repo.local=/opt/elmos/maven-cache \
+    -f apps/java-engine-verifier/cache-seeds/spring-boot-3.5.3-java-21/pom.xml \
+    org.apache.maven.plugins:maven-dependency-plugin:3.8.1:go-offline \
     verify
 
 FROM maven:3.9.11-eclipse-temurin-21@sha256:6fdc855a6ed81d288ca7ca37ac6ff5e9308b612485c0801d70b25a858c83d237
@@ -13,8 +33,12 @@ RUN groupadd --gid 10002 verifier \
     && mkdir -p /app /input/runs /verification /home/verifier/.m2 \
     && chown -R 10002:10002 /app /verification /home/verifier
 COPY --from=build /src/apps/java-engine-verifier/target/elmos-java-engine-verifier-0.1.0-SNAPSHOT-exec.jar /app/app.jar
-COPY --from=build --chown=10002:10002 /opt/elmos/maven-cache /opt/elmos/maven-cache
+COPY --from=build --chown=0:0 /opt/elmos/maven-cache /opt/elmos/maven-cache
+COPY --from=verifier-jdk17 /opt/java/openjdk /opt/java/openjdk-17
+RUN chmod -R a+rX /opt/elmos/maven-cache
+RUN chmod -R a-w /opt/elmos/maven-cache
 ENV ELMOS_VERIFIER_JAVA_HOME=/opt/java/openjdk \
+    ELMOS_VERIFIER_JAVA_HOMES=17=/opt/java/openjdk-17 \
     ELMOS_VERIFIER_MAVEN_EXECUTABLE=/usr/share/maven/bin/mvn \
     ELMOS_VERIFIER_DEPENDENCY_CACHE_ROOT=/opt/elmos/maven-cache
 USER 10002:10002

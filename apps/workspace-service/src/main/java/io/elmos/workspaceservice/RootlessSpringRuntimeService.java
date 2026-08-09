@@ -65,7 +65,8 @@ final class RootlessSpringRuntimeService {
 
     private Response start(Request request) {
         requireRootless();
-        images.requireApproved("spring-runtime-java21", imageDigest);
+        String javaExecutable = runtimeJavaExecutable(request.targetJava());
+        images.requireApproved("spring-runtime-java17-java21", imageDigest);
         Path serviceArtifact = artifact(serviceArtifactRoot, request.artifactRelativePath());
         Path hostArtifact = artifact(hostArtifactRoot, request.artifactRelativePath());
         if (!request.artifactSha256().equals(sha256(serviceArtifact))) {
@@ -81,7 +82,8 @@ final class RootlessSpringRuntimeService {
             String container = existing.getFirst();
             var inspect = docker.inspectContainerCmd(container).exec();
             if (Boolean.TRUE.equals(inspect.getState().getRunning())) {
-                String health = waitForHealth(container, healthCandidates(request));
+                String health = waitForHealth(
+                        container, healthCandidates(request), javaExecutable);
                 return response("HEALTHY", request.runtimeId(), health, container);
             }
             remove(container);
@@ -92,6 +94,7 @@ final class RootlessSpringRuntimeService {
                 "elmos.resource_role", "spring-runtime",
                 "elmos.runtime_id", request.runtimeId(),
                 "elmos.organization_id", request.organizationId(),
+                "elmos.target_java", request.targetJava(),
                 "elmos.retention", "ephemeral"
         );
         HostConfig host = HostConfig.newHostConfig()
@@ -116,7 +119,7 @@ final class RootlessSpringRuntimeService {
                 .withName(name)
                 .withUser("10003:10003")
                 .withWorkingDir("/app")
-                .withEntrypoint("/opt/java/openjdk/bin/java")
+                .withEntrypoint(javaExecutable)
                 .withCmd("-XX:MaxRAMPercentage=70", "-Djava.awt.headless=true", "-Duser.timezone=UTC",
                         "-jar", "/app/application.jar")
                 .withEnv("SERVER_PORT=" + PORT, "MANAGEMENT_SERVER_PORT=" + PORT)
@@ -126,7 +129,8 @@ final class RootlessSpringRuntimeService {
                 .getId();
         try {
             docker.startContainerCmd(container).exec();
-            String health = waitForHealth(container, healthCandidates(request));
+            String health = waitForHealth(
+                    container, healthCandidates(request), javaExecutable);
             return response("HEALTHY", request.runtimeId(), health, container);
         } catch (RuntimeException error) {
             try {
@@ -160,7 +164,11 @@ final class RootlessSpringRuntimeService {
         return new Response(status, request.runtimeId(), imageDigest, PORT, null, logs.lines(), logs.truncated());
     }
 
-    private String waitForHealth(String container, List<String> candidates) {
+    private String waitForHealth(
+            String container,
+            List<String> candidates,
+            String javaExecutable
+    ) {
         long deadline = System.nanoTime() + Duration.ofSeconds(75).toNanos();
         while (System.nanoTime() < deadline) {
             var inspect = docker.inspectContainerCmd(container).exec();
@@ -174,7 +182,7 @@ final class RootlessSpringRuntimeService {
                         .withAttachStderr(true)
                         .withPrivileged(false)
                         .withCmd(
-                                "/opt/java/openjdk/bin/java",
+                                javaExecutable,
                                 "-cp",
                                 "/runner",
                                 "io.elmos.runner.HealthProbe",
@@ -302,7 +310,8 @@ final class RootlessSpringRuntimeService {
         if (request.action() == Action.START
                 && (request.artifactRelativePath() == null
                 || request.artifactSha256() == null
-                || !request.artifactSha256().matches("[0-9a-f]{64}"))) {
+                || !request.artifactSha256().matches("[0-9a-f]{64}")
+                || !("17".equals(request.targetJava()) || "21".equals(request.targetJava())))) {
             throw rejected("RUNTIME_REQUEST_REJECTED", "Runtime Artifact fields are invalid.");
         }
         for (String path : healthCandidates(request)) {
@@ -314,6 +323,16 @@ final class RootlessSpringRuntimeService {
 
     private static List<String> healthCandidates(Request request) {
         return request.healthCandidates().isEmpty() ? DEFAULT_HEALTH : request.healthCandidates();
+    }
+
+    private static String runtimeJavaExecutable(String targetJava) {
+        return switch (Objects.toString(targetJava, "")) {
+            case "17" -> "/opt/java/openjdk-17/bin/java";
+            case "21" -> "/opt/java/openjdk/bin/java";
+            default -> throw rejected(
+                    "TARGET_JDK_NOT_PROVISIONED",
+                    "Rootless Runtime does not provide the exact requested target JDK.");
+        };
     }
 
     private static Path artifact(Path root, String relativeValue) {

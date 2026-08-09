@@ -151,7 +151,9 @@ final class EphemeralSpringTransformerBroker {
             }
         }
         requireRootless();
-        images.requireApproved("spring-transformer-java17-java21-maven", transformerImageDigest);
+        images.requireApproved(
+                "spring-transformer-java8-java11-java17-java21-maven",
+                transformerImageDigest);
 
         byte[] oneTimeSecret = new byte[48];
         random.nextBytes(oneTimeSecret);

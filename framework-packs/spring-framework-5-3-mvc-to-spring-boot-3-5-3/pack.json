@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "pack_key": "spring-framework-5-3-mvc-to-spring-boot-3-5-3",
+  "version": "0.1.0",
+  "mode": "modernization",
+  "status": "experimental",
+  "owner": "ELMOS Java Modernization Team",
+  "maintenance_owner": "ELMOS Framework Pack Maintainers",
+  "review_date": "2026-11-09",
+  "source": {
+    "framework": "spring-framework-mvc",
+    "framework_versions": [
+      "5.3.39"
+    ],
+    "runtime": "java",
+    "runtime_versions": [
+      "11"
+    ],
+    "build_tools": [
+      "maven-3.9.11"
+    ],
+    "provider_versions": {
+      "spring-framework": "5.3.39",
+      "servlet-api": "javax.servlet-api-4.0.1",
+      "validation-api": "javax.validation-2.0.1.Final",
+      "hibernate-validator": "6.2.5.Final",
+      "runtime-container": "UNBOUND_REQUIRES_SOURCE_FINGERPRINT"
+    }
+  },
+  "target": {
+    "framework": "spring-boot",
+    "framework_versions": [
+      "3.5.3"
+    ],
+    "runtime": "java",
+    "runtime_versions": [
+      "21"
+    ],
+    "build_tools": [
+      "maven-3.9.11"
+    ],
+    "provider_versions": {
+      "spring-framework": "6.2.8",
+      "servlet-api": "jakarta.servlet-6.1",
+      "embedded-container": "tomcat-10.1.42",
+      "validation-api": "jakarta.validation-3.0.2",
+      "hibernate-validator": "8.0.2.Final"
+    }
+  },
+  "paths": {
+    "support_matrix": "support-matrix.json",
+    "source_fingerprint": "source-fingerprint",
+    "contracts": "contracts",
+    "target_profile": "target-profile/profile.json",
+    "corpus": "corpus",
+    "certification": "certification"
+  },
+  "gates": {
+    "real_source_runtime": true,
+    "real_target_runtime": true,
+    "startup_required": true,
+    "holdout_required": true,
+    "representative_repository_required": true,
+    "critical_unknowns_allowed": 0,
+    "critical_security_regressions_allowed": 0,
+    "critical_transaction_regressions_allowed": 0,
+    "critical_data_regressions_allowed": 0
+  }
+}

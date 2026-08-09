@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "pack_key": "spring-framework-5-3-mvc-to-spring-boot-3-5-3",
+  "rewrite_spring": "6.35.0",
+  "rewrite_maven_plugin": "6.44.0",
+  "recipes": [
+    "io.elmos.openrewrite.SpringFramework5_3MvcToSpringBoot3_5_3Java21"
+  ],
+  "recipe_config": "recipes/spring-framework-5.3-mvc-to-spring-boot-3.5.3.yml",
+  "deterministic": true,
+  "exact_source_binding": true,
+  "exact_target_binding": true,
+  "regex_as_semantic_core": false,
+  "execution_status": "NOT_RUN",
+  "manual_obligation_policy": "fail-closed",
+  "blocked_automatic_operations": [
+    "replace an existing corporate Maven parent",
+    "delete web.xml before FCM bootstrap equivalence passes",
+    "convert JSP to REST or templates without a view contract",
+    "enable or weaken security",
+    "select persistence, transaction, messaging, cache or scheduler providers"
+  ]
+}

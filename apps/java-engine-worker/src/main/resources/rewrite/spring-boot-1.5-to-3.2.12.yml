@@ -1,0 +1,43 @@
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: io.elmos.openrewrite.SpringBoot1_5ToBoot3_2_12Java17
+displayName: Migrate Spring Boot 1.5 on Java 8 to Spring Boot 3.2.12 on Java 17
+description: >-
+  Applies the ordered Boot 2.0, 2.7 and 3.2 migrations, upgrades Java to 17 and
+  pins the exact directed ELMOS target tuple. Runtime behavior remains NOT_RUN.
+recipeList:
+  - org.openrewrite.java.spring.boot2.UpgradeSpringBoot_2_0
+  - org.openrewrite.java.spring.boot2.UpgradeSpringBoot_2_7
+  - org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_2
+  - org.openrewrite.java.migrate.UpgradeToJava17
+  - org.openrewrite.maven.ChangeParentPom:
+      oldGroupId: org.springframework.boot
+      oldArtifactId: spring-boot-starter-parent
+      newGroupId: org.springframework.boot
+      newArtifactId: spring-boot-starter-parent
+      newVersion: 3.2.12
+      allowVersionDowngrades: false
+  - org.openrewrite.maven.UpgradeParentVersion:
+      groupId: org.springframework.boot
+      artifactId: spring-boot-starter-parent
+      newVersion: 3.2.12
+  - org.openrewrite.maven.ChangePropertyValue:
+      key: spring-boot.version
+      newValue: "3.2.12"
+      addIfMissing: false
+      trustParent: false
+  - org.openrewrite.maven.ChangePropertyValue:
+      key: java.version
+      newValue: "17"
+      addIfMissing: true
+      trustParent: false
+  - org.openrewrite.maven.ChangePropertyValue:
+      key: maven.compiler.source
+      newValue: "17"
+      addIfMissing: false
+      trustParent: false
+  - org.openrewrite.maven.ChangePropertyValue:
+      key: maven.compiler.target
+      newValue: "17"
+      addIfMissing: false
+      trustParent: false

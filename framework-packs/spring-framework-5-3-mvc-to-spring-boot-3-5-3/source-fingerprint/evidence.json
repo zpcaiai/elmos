@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "pack_key": "spring-framework-5-3-mvc-to-spring-boot-3-5-3",
+  "evidence_class": "STATIC_FIXTURE_PREPARATION",
+  "execution_status": "NOT_RUN",
+  "coverage": null,
+  "runs": [],
+  "source_snapshot_sha256": null,
+  "source_commit": null,
+  "runtime_facts_collected": 0,
+  "evidence_refs": [],
+  "limitations": [
+    "The checked-in fixture is not a fingerprint result for a customer repository.",
+    "No Java 11/Maven 3.9.11 source build or servlet-container startup was executed.",
+    "No percentage is reported without a measured denominator."
+  ]
+}

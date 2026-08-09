@@ -69,7 +69,8 @@ final class LocalSpringUpgradeIndependentValidator implements SpringUpgradeIndep
         Path validationRoot = runRoot.resolve("independent-validation");
         deleteTree(validationRoot);
         unzip(result.downloadArtifact(), validationRoot);
-        validateTargetTuple(validationRoot);
+        TargetTuple target = targetTuple(result, runRoot);
+        validateTargetTuple(validationRoot, target);
         runVerify(validationRoot, control);
         Instant decidedAt = Instant.now();
         Path evidence = runRoot.resolve("evidence/independent-validation.json");
@@ -82,8 +83,8 @@ final class LocalSpringUpgradeIndependentValidator implements SpringUpgradeIndep
         record.put("transform_capability", "NONE");
         record.put("physically_separate_verifier_service", false);
         record.put("artifact_sha256", result.artifactSha256());
-        record.put("target_spring_boot", TARGET_BOOT);
-        record.put("target_java", TARGET_JAVA);
+        record.put("target_spring_boot", target.springBoot());
+        record.put("target_java", target.java());
         record.put("command", List.of(mavenExecutable, "-B", "--no-transfer-progress", "verify"));
         record.put("status", "PASS");
         record.put("decided_at", decidedAt);
@@ -207,7 +208,38 @@ final class LocalSpringUpgradeIndependentValidator implements SpringUpgradeIndep
         }
     }
 
-    private static void validateTargetTuple(Path root) {
+    private TargetTuple targetTuple(ExecutionResult result, Path runRoot) {
+        try {
+            Path fcm = runRoot.resolve(result.fcmArtifact()).normalize();
+            if (!fcm.startsWith(runRoot)
+                    || !Files.isRegularFile(fcm, LinkOption.NOFOLLOW_LINKS)
+                    || Files.isSymbolicLink(fcm)) {
+                throw blocked("FCM_TARGET_TUPLE_UNAVAILABLE",
+                        "Authoritative Framework Contract Model is unavailable to the verifier.");
+            }
+            var tuple = json.readTree(fcm.toFile()).path("exact_tuple");
+            String boot = tuple.path("targetSpringBoot").asText("");
+            String java = tuple.path("targetJava").asText("");
+            if (!supportedTarget(boot, java)) {
+                throw blocked("FCM_TARGET_TUPLE_UNSUPPORTED",
+                        "Framework Contract Model requested a target outside the verifier allowlist.");
+            }
+            return new TargetTuple(boot, java);
+        } catch (BlockedException error) {
+            throw error;
+        } catch (IOException error) {
+            throw blocked("FCM_TARGET_TUPLE_UNAVAILABLE",
+                    "Authoritative Framework Contract Model could not be read by the verifier.");
+        }
+    }
+
+    private static boolean supportedTarget(String boot, String java) {
+        return ("2.7.18".equals(boot) && "17".equals(java))
+                || ("3.2.12".equals(boot) && "17".equals(java))
+                || ("3.5.3".equals(boot) && "21".equals(java));
+    }
+
+    private static void validateTargetTuple(Path root, TargetTuple expected) {
         Path pom = root.resolve("pom.xml");
         if (!Files.isRegularFile(pom, LinkOption.NOFOLLOW_LINKS)) {
             throw blocked("TARGET_POM_MISSING", "Candidate artifact has no root Maven project.");
@@ -216,11 +248,13 @@ final class LocalSpringUpgradeIndependentValidator implements SpringUpgradeIndep
         String boot = springBootVersion(document);
         String java = property(document, "java.version");
         if (java.isBlank()) java = property(document, "maven.compiler.release");
-        if (!TARGET_BOOT.equals(boot) || !TARGET_JAVA.equals(java)) {
+        if (!expected.springBoot().equals(boot) || !expected.java().equals(java)) {
             throw blocked("TARGET_TUPLE_MISMATCH",
-                    "Candidate artifact is not exactly Spring Boot 3.5.3 with Java 21.");
+                    "Candidate artifact does not match the FCM target Spring Boot / Java tuple.");
         }
     }
+
+    private record TargetTuple(String springBoot, String java) {}
 
     private static Document parsePom(Path pom) {
         try {

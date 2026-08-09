@@ -16,6 +16,7 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.HexFormat;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -42,15 +43,7 @@ class SpringArtifactVerifierTest {
         Files.createDirectories(input);
         json = new ObjectMapper().findAndRegisterModules();
         Clock clock = Clock.fixed(NOW, ZoneOffset.UTC);
-        MavenVerification maven = (project, log) -> {
-            try {
-                Files.writeString(log, "[INFO] BUILD SUCCESS\n", StandardOpenOption.CREATE_NEW);
-                createBootJar(project.resolve("target/application.jar"));
-                return List.of("/usr/share/maven/bin/mvn", "-B", "--no-transfer-progress", "verify");
-            } catch (IOException error) {
-                throw new IllegalStateException(error);
-            }
-        };
+        MavenVerification maven = fakeMaven();
         verifier = new SpringArtifactVerifier(
                 "verifier-a",
                 input,
@@ -60,6 +53,18 @@ class SpringArtifactVerifierTest {
                 json,
                 clock
         );
+    }
+
+    private static MavenVerification fakeMaven() {
+        return (project, log) -> {
+            try {
+                Files.writeString(log, "[INFO] BUILD SUCCESS\n", StandardOpenOption.CREATE_NEW);
+                createBootJar(project.resolve("target/application.jar"));
+                return List.of("/usr/share/maven/bin/mvn", "-B", "--no-transfer-progress", "verify");
+            } catch (IOException error) {
+                throw new IllegalStateException(error);
+            }
+        };
     }
 
     @Test
@@ -155,6 +160,45 @@ class SpringArtifactVerifierTest {
                 .isInstanceOf(Rejected.class)
                 .extracting(error -> ((Rejected) error).code())
                 .isEqualTo("UNAUTHORIZED");
+    }
+
+    @Test
+    void selectsTheExactJava17VerifierForOlderBootTargets() throws Exception {
+        Clock clock = Clock.fixed(NOW, ZoneOffset.UTC);
+        verifier = new SpringArtifactVerifier(
+                "verifier-a",
+                input,
+                evidence,
+                new VerifierAuthentication(SECRET, clock, 90),
+                Map.of("17", fakeMaven()),
+                json,
+                clock
+        );
+        Path artifact = input.resolve("boot-2.7-java17.zip");
+        writeProject(artifact, "2.7.18", "17");
+        Request request = new Request(
+                UUID.randomUUID().toString(), "boot-2.7-java17.zip", sha256(artifact),
+                "2.7.18", "17");
+
+        Response response = invoke(request, UUID.randomUUID().toString());
+
+        assertThat(response.status()).isEqualTo("PASS");
+        assertThat(response.targetSpringBoot()).isEqualTo("2.7.18");
+        assertThat(response.targetJava()).isEqualTo("17");
+    }
+
+    @Test
+    void oldThreeFieldWireRequestDefaultsOnlyToTheOriginalTarget() throws Exception {
+        Request restored = json.readValue("""
+                {
+                  "runId": "123e4567-e89b-42d3-a456-426614174000",
+                  "artifactRelativePath": "candidate.zip",
+                  "artifactSha256": "%s"
+                }
+                """.formatted("a".repeat(64)), Request.class);
+
+        assertThat(restored.targetSpringBoot()).isEqualTo("3.5.3");
+        assertThat(restored.targetJava()).isEqualTo("21");
     }
 
     private Response invoke(Request request, String nonce) throws Exception {

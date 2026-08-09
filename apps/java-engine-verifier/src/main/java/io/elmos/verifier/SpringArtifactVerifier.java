@@ -22,8 +22,6 @@ import java.util.zip.ZipFile;
 import static io.elmos.verifier.VerificationModels.*;
 
 final class SpringArtifactVerifier {
-    private static final String TARGET_BOOT = "3.5.3";
-    private static final String TARGET_JAVA = "21";
     private static final int MAX_ENTRIES = 100_000;
     private static final long MAX_EXPANDED_BYTES = 512L * 1024 * 1024;
     private static final long MAX_ARTIFACT_BYTES = 256L * 1024 * 1024;
@@ -32,7 +30,7 @@ final class SpringArtifactVerifier {
     private final Path inputRoot;
     private final Path evidenceRoot;
     private final VerifierAuthentication authentication;
-    private final MavenVerification maven;
+    private final Map<String, MavenVerification> mavenByTargetJava;
     private final ObjectMapper json;
     private final Clock clock;
 
@@ -45,11 +43,27 @@ final class SpringArtifactVerifier {
             ObjectMapper json,
             Clock clock
     ) {
+        this(verifierId, inputRoot, evidenceRoot, authentication,
+                Map.of("21", maven), json, clock);
+    }
+
+    SpringArtifactVerifier(
+            String verifierId,
+            Path inputRoot,
+            Path evidenceRoot,
+            VerifierAuthentication authentication,
+            Map<String, MavenVerification> mavenByTargetJava,
+            ObjectMapper json,
+            Clock clock
+    ) {
         this.verifierId = requireIdentifier(verifierId, "verifier ID");
         this.inputRoot = inputRoot.toAbsolutePath().normalize();
         this.evidenceRoot = evidenceRoot.toAbsolutePath().normalize();
         this.authentication = Objects.requireNonNull(authentication);
-        this.maven = Objects.requireNonNull(maven);
+        this.mavenByTargetJava = Map.copyOf(Objects.requireNonNull(mavenByTargetJava));
+        if (this.mavenByTargetJava.isEmpty()) {
+            throw new IllegalArgumentException("at least one exact target JDK verifier is required");
+        }
         this.json = Objects.requireNonNull(json);
         this.clock = Objects.requireNonNull(clock);
         if (this.inputRoot.equals(this.evidenceRoot)
@@ -95,7 +109,12 @@ final class SpringArtifactVerifier {
             Files.deleteIfExists(log);
             Files.deleteIfExists(runtimeArtifact);
             unzip(artifact, candidate);
-            validateTargetTuple(candidate);
+            validateTargetTuple(candidate, request.targetSpringBoot(), request.targetJava());
+            MavenVerification maven = mavenByTargetJava.get(request.targetJava());
+            if (maven == null) {
+                throw rejected("TARGET_JDK_NOT_PROVISIONED",
+                        "Independent verifier does not provide the exact requested target JDK.");
+            }
             List<String> command = maven.verify(candidate, log);
             Files.copy(bootJar(candidate), runtimeArtifact);
             Instant decidedAt = clock.instant();
@@ -110,8 +129,8 @@ final class SpringArtifactVerifier {
             record.put("physically_separate_verifier_service", true);
             record.put("input_mount_mode", "READ_ONLY");
             record.put("artifact_sha256", request.artifactSha256());
-            record.put("target_spring_boot", TARGET_BOOT);
-            record.put("target_java", TARGET_JAVA);
+            record.put("target_spring_boot", request.targetSpringBoot());
+            record.put("target_java", request.targetJava());
             record.put("command", command);
             record.put("runtime_artifact_relative_path", evidenceRoot.relativize(runtimeArtifact).toString());
             record.put("runtime_artifact_sha256", sha256(runtimeArtifact));
@@ -123,8 +142,8 @@ final class SpringArtifactVerifier {
                     "PASS",
                     verifierId,
                     request.artifactSha256(),
-                    TARGET_BOOT,
-                    TARGET_JAVA,
+                    request.targetSpringBoot(),
+                    request.targetJava(),
                     true,
                     false,
                     true,
@@ -172,7 +191,8 @@ final class SpringArtifactVerifier {
                 || request.artifactRelativePath() == null
                 || request.artifactRelativePath().isBlank()
                 || request.artifactSha256() == null
-                || !request.artifactSha256().matches("[0-9a-f]{64}")) {
+                || !request.artifactSha256().matches("[0-9a-f]{64}")
+                || !supportedTarget(request.targetSpringBoot(), request.targetJava())) {
             throw rejected("REQUEST_REJECTED", "Verifier request fields are invalid.");
         }
         try {
@@ -222,6 +242,8 @@ final class SpringArtifactVerifier {
             if (!"PASS".equals(response.status())
                     || !verifierId.equals(response.verifierId())
                     || !request.artifactSha256().equals(response.artifactSha256())
+                    || !request.targetSpringBoot().equals(response.targetSpringBoot())
+                    || !request.targetJava().equals(response.targetJava())
                     || !response.physicallySeparateVerifierService()
                     || response.transformCapability()) {
                 throw rejected("STALE_VERIFIER_RECEIPT", "Stored verifier receipt does not match this request.");
@@ -307,7 +329,13 @@ final class SpringArtifactVerifier {
         }
     }
 
-    private static void validateTargetTuple(Path root) {
+    private static boolean supportedTarget(String boot, String java) {
+        return ("2.7.18".equals(boot) && "17".equals(java))
+                || ("3.2.12".equals(boot) && "17".equals(java))
+                || ("3.5.3".equals(boot) && "21".equals(java));
+    }
+
+    private static void validateTargetTuple(Path root, String expectedBoot, String expectedJava) {
         Path pom = root.resolve("pom.xml");
         if (!Files.isRegularFile(pom, LinkOption.NOFOLLOW_LINKS)) {
             throw rejected("TARGET_POM_MISSING", "Candidate artifact has no root Maven project.");
@@ -316,9 +344,9 @@ final class SpringArtifactVerifier {
         String boot = springBootVersion(document);
         String java = property(document, "java.version");
         if (java.isBlank()) java = property(document, "maven.compiler.release");
-        if (!TARGET_BOOT.equals(boot) || !TARGET_JAVA.equals(java)) {
+        if (!expectedBoot.equals(boot) || !expectedJava.equals(java)) {
             throw rejected("TARGET_TUPLE_MISMATCH",
-                    "Candidate artifact is not exactly Spring Boot 3.5.3 with Java 21.");
+                    "Candidate artifact does not match the requested exact Spring Boot / Java tuple.");
         }
     }
 

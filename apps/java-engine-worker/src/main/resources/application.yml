@@ -43,6 +43,7 @@ elmos:
         lease-seconds: ${ELMOS_SPRING_UPGRADE_LEASE_TTL_SECONDS:120}
       source-java-home: ${ELMOS_SOURCE_JAVA_HOME:/opt/java/openjdk-17}
       target-java-home: ${ELMOS_TARGET_JAVA_HOME:/opt/java/openjdk}
+      java-homes: ${ELMOS_SPRING_UPGRADE_JAVA_HOMES:}
       maven-executable: ${ELMOS_MAVEN_EXECUTABLE:mvn}
       gradle-executable: ${ELMOS_GRADLE_EXECUTABLE:gradle}
       maven-dependency-seed: ${ELMOS_MAVEN_DEPENDENCY_SEED:}

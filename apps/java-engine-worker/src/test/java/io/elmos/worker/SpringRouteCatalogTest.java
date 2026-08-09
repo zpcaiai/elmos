@@ -5,7 +5,6 @@ import io.elmos.worker.SpringRouteCatalog.SpringRoute;
 import io.elmos.worker.SpringUpgradeModels.BlockedException;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -30,6 +29,58 @@ class SpringRouteCatalogTest {
         assertEquals("boot-2.7-maven-to-boot-3.5.3-java-21", selection.route().routeId());
         assertEquals(EvidenceStatus.NOT_RUN, selection.evidence());
         assertTrue(selection.requiresExperimentalOptIn());
+        assertEquals("UNSUPPORTED_SOURCE_JAVA_VERSION",
+                assertThrows(BlockedException.class,
+                        () -> SpringRouteCatalog.selectSpringMvc(
+                                "5.3.39", "17", "maven", "3.5.3", "21")).code());
+    }
+
+    @Test void selectsExactIntermediateTargetsWithoutPromotingTheirEvidence() {
+        var oneFive = SpringRouteCatalog.select(
+                "1.5.22.RELEASE", "8", "maven", "2.7.18", "17");
+        assertEquals("boot-1.5-java-8-maven-to-boot-2.7.18-java-17",
+                oneFive.route().routeId());
+        assertEquals(EvidenceStatus.NOT_RUN, oneFive.evidence());
+
+        var twoThree = SpringRouteCatalog.select(
+                "2.3.12.RELEASE", "11", "maven", "2.7.18", "17");
+        assertEquals("boot-2.0-2.6-maven-to-boot-2.7.18-java-17",
+                twoThree.route().routeId());
+        assertEquals(EvidenceStatus.NOT_RUN, twoThree.evidence());
+
+        var twoSeven = SpringRouteCatalog.select(
+                "2.7.18", "17", "maven", "3.2.12", "17");
+        assertEquals("boot-2.7-maven-to-boot-3.2.12-java-17",
+                twoSeven.route().routeId());
+        assertEquals(EvidenceStatus.NOT_RUN, twoSeven.evidence());
+
+        var oneFiveToThreeTwo = SpringRouteCatalog.select(
+                "1.5.22.RELEASE", "8", "maven", "3.2.12", "17");
+        assertEquals("boot-1.5-java-8-maven-to-boot-3.2.12-java-17",
+                oneFiveToThreeTwo.route().routeId());
+        assertEquals(EvidenceStatus.NOT_RUN, oneFiveToThreeTwo.evidence());
+
+        var twoThreeToThreeTwo = SpringRouteCatalog.select(
+                "2.3.12.RELEASE", "11", "maven", "3.2.12", "17");
+        assertEquals("boot-2.0-2.6-maven-to-boot-3.2.12-java-17",
+                twoThreeToThreeTwo.route().routeId());
+        assertEquals(EvidenceStatus.NOT_RUN, twoThreeToThreeTwo.evidence());
+
+        var threeOneToThreeTwo = SpringRouteCatalog.select(
+                "3.1.12", "17", "maven", "3.2.12", "17");
+        assertEquals("boot-3.0-3.1-maven-to-boot-3.2.12-java-17",
+                threeOneToThreeTwo.route().routeId());
+        assertEquals(EvidenceStatus.NOT_RUN, threeOneToThreeTwo.evidence());
+    }
+
+    @Test void legacySelectorRemainsBoundToTheDefaultTarget() {
+        var legacy = SpringRouteCatalog.select("2.7.18", "17", "maven");
+        var exact = SpringRouteCatalog.select(
+                "2.7.18", "17", "maven",
+                SpringRouteCatalog.TARGET_BOOT, SpringRouteCatalog.TARGET_JAVA);
+        assertEquals(exact, legacy);
+        assertEquals("3.5.3", legacy.route().targetBoot());
+        assertEquals("21", legacy.route().targetJava());
     }
 
     @Test void coversTheLegacyBootLines() {
@@ -69,7 +120,7 @@ class SpringRouteCatalogTest {
         assertEquals("UNSUPPORTED_SOURCE_BOOT_VERSION",
                 assertThrows(BlockedException.class,
                         () -> SpringRouteCatalog.select("1.4.7", "8", "maven")).code());
-        assertEquals("UNSUPPORTED_SOURCE_BOOT_VERSION",
+        assertEquals("SPRING_BOOT_TARGET_DOWNGRADE_REJECTED",
                 assertThrows(BlockedException.class,
                         () -> SpringRouteCatalog.select("3.5.3", "21", "maven")).code());
         assertEquals("UNSUPPORTED_SOURCE_JAVA_VERSION",
@@ -81,19 +132,24 @@ class SpringRouteCatalogTest {
         assertTrue(gradle.requiresExperimentalOptIn());
     }
 
-    @Test void mavenSourceRangesAreDisjointAndOrdered() {
-        List<SpringRoute> maven = SpringRouteCatalog.routes().stream()
-                .filter(route -> route.buildTool().equals(SpringRouteCatalog.MAVEN_BUILD_TOOL))
-                .toList();
-        assertTrue(maven.size() >= 4);
-        List<SpringRoute> sorted = new ArrayList<>(maven);
-        sorted.sort((left, right) -> SpringRouteCatalog.compare(
-                left.sourceBootMinInclusive(), right.sourceBootMinInclusive()));
-        for (int index = 0; index + 1 < sorted.size(); index += 1) {
-            assertTrue(SpringRouteCatalog.compare(
-                            sorted.get(index).sourceBootMaxExclusive(),
-                            sorted.get(index + 1).sourceBootMinInclusive()) <= 0,
-                    "maven source ranges must not overlap");
+    @Test void sourceRangesAreDisjointForEachExactDirectedTarget() {
+        List<SpringRoute> routes = SpringRouteCatalog.routes();
+        assertTrue(routes.size() >= 15);
+        for (int leftIndex = 0; leftIndex < routes.size(); leftIndex += 1) {
+            for (int rightIndex = leftIndex + 1; rightIndex < routes.size(); rightIndex += 1) {
+                SpringRoute left = routes.get(leftIndex);
+                SpringRoute right = routes.get(rightIndex);
+                if (left.sourceFamily() != right.sourceFamily()
+                        || !left.buildTool().equals(right.buildTool())
+                        || !left.targetBoot().equals(right.targetBoot())
+                        || !left.targetJava().equals(right.targetJava())) continue;
+                boolean disjoint = SpringRouteCatalog.compare(
+                                left.sourceBootMaxExclusive(), right.sourceBootMinInclusive()) <= 0
+                        || SpringRouteCatalog.compare(
+                                right.sourceBootMaxExclusive(), left.sourceBootMinInclusive()) <= 0;
+                assertTrue(disjoint,
+                        "exact directed target ranges overlap: " + left.routeId() + " / " + right.routeId());
+            }
         }
     }
 
@@ -104,9 +160,101 @@ class SpringRouteCatalogTest {
             assertTrue(recipeIds.add(route.recipeId()), "recipe ids must be unique: " + route.recipeId());
             assertNotNull(SpringRouteCatalog.class.getResourceAsStream(route.recipeResource()),
                     "missing recipe resource for " + route.routeId());
-            assertEquals(SpringRouteCatalog.TARGET_BOOT, route.targetBoot());
-            assertEquals(SpringRouteCatalog.TARGET_JAVA, route.targetJava());
+            assertTrue(Set.of("2.7.18/17", "3.2.12/17", "3.5.3/21")
+                            .contains(route.targetBoot() + "/" + route.targetJava()),
+                    "unexpected target tuple for " + route.routeId());
         }
+    }
+
+    @Test void exactSelectionRejectsMissingUnsupportedAndDowngradeTargets() {
+        assertEquals("TARGET_SPRING_BOOT_VERSION_UNRESOLVED",
+                assertThrows(BlockedException.class,
+                        () -> SpringRouteCatalog.select("2.7.18", "17", "maven", "", "17")).code());
+        assertEquals("TARGET_JAVA_VERSION_UNRESOLVED",
+                assertThrows(BlockedException.class,
+                        () -> SpringRouteCatalog.select("2.7.18", "17", "maven", "3.2.12", "")).code());
+        assertEquals("UNSUPPORTED_TARGET_SPRING_BOOT_VERSION",
+                assertThrows(BlockedException.class,
+                        () -> SpringRouteCatalog.select("2.7.18", "17", "maven", "3.3.0", "17")).code());
+        assertEquals("UNSUPPORTED_TARGET_JAVA_VERSION",
+                assertThrows(BlockedException.class,
+                        () -> SpringRouteCatalog.select("2.7.18", "17", "maven", "3.2.12", "21")).code());
+        assertEquals("SPRING_BOOT_TARGET_DOWNGRADE_REJECTED",
+                assertThrows(BlockedException.class,
+                        () -> SpringRouteCatalog.select("3.4.1", "21", "maven", "3.2.12", "17")).code());
+        assertEquals("SPRING_BOOT_TARGET_DOWNGRADE_REJECTED",
+                assertThrows(BlockedException.class,
+                        () -> SpringRouteCatalog.select("2.7.18", "17", "maven", "2.7.18", "17")).code());
+    }
+
+    @Test void duplicateExactEdgesFailAsAmbiguous() {
+        SpringRoute route = SpringRouteCatalog
+                .byId("boot-2.7-maven-to-boot-3.2.12-java-17").orElseThrow();
+        var request = SpringRouteCatalog.RouteRequest.boot(
+                "2.7.18", "17", "maven", "3.2.12", "17");
+        assertEquals("SPRING_ROUTE_AMBIGUOUS",
+                assertThrows(BlockedException.class,
+                        () -> SpringRouteCatalog.selectFrom(List.of(route, route), request)).code());
+    }
+
+    @Test void selectsOnlyThePackBackedSpringFrameworkFiveThreeMvcEdge() {
+        var selection = SpringRouteCatalog.selectSpringMvc(
+                "5.3.39", "11", "maven", "3.5.3", "21");
+        assertEquals("spring-framework-5.3-mvc-maven-to-boot-3.5.3-java-21",
+                selection.route().routeId());
+        assertEquals("spring-framework-5-3-mvc-to-spring-boot-3-5-3",
+                selection.route().packKey());
+        assertEquals("/rewrite/spring-framework-5.3-mvc-to-spring-boot-3.5.3.yml",
+                selection.route().recipeResource());
+        assertEquals("io.elmos.openrewrite.SpringFramework5_3MvcToSpringBoot3_5_3Java21",
+                selection.route().recipeId());
+        assertEquals(SpringRouteCatalog.SourceFamily.SPRING_MVC,
+                selection.route().sourceFamily());
+        assertEquals(EvidenceStatus.NOT_RUN, selection.evidence());
+        assertTrue(selection.requiresExperimentalOptIn());
+    }
+
+    @Test void olderSpringMvcLinesRemainDeclaredButCannotBeSelected() {
+        SpringRoute inventory = SpringRouteCatalog
+                .byId("spring-mvc-3.2-5.2-maven-to-boot-3.5.3-java-21").orElseThrow();
+        assertEquals(EvidenceStatus.NOT_IMPLEMENTED, inventory.routeEvidence());
+        assertFalse(inventory.implemented());
+        assertTrue(inventory.recipeResource().isBlank());
+        assertTrue(inventory.recipeId().isBlank());
+
+        assertEquals("SPRING_ROUTE_NOT_IMPLEMENTED",
+                assertThrows(BlockedException.class,
+                        () -> SpringRouteCatalog.selectSpringMvc(
+                                "5.2.22.RELEASE", "8", "maven", "3.5.3", "21")).code());
+    }
+
+    @Test void currentPublishedTargetsRemainInventoryOnlyAndCannotBeSelected() {
+        SpringRoute threeFive = SpringRouteCatalog
+                .byId("boot-1.5-3.5.15-maven-to-boot-3.5.16-java-21").orElseThrow();
+        SpringRoute fourOne = SpringRouteCatalog
+                .byId("boot-1.5-4.0-maven-to-boot-4.1.0-java-21").orElseThrow();
+
+        for (SpringRoute route : List.of(threeFive, fourOne)) {
+            assertEquals(EvidenceStatus.NOT_IMPLEMENTED, route.routeEvidence());
+            assertFalse(route.implemented());
+            assertTrue(route.recipeResource().isBlank());
+            assertTrue(route.recipeId().isBlank());
+            assertTrue(route.verifiedSourceBoot().isBlank());
+            assertTrue(route.verifiedSourceJava().isBlank());
+        }
+        assertEquals("3.5.16", threeFive.targetBoot());
+        assertEquals("21", threeFive.targetJava());
+        assertEquals("4.1.0", fourOne.targetBoot());
+        assertEquals("21", fourOne.targetJava());
+
+        assertEquals("SPRING_ROUTE_NOT_IMPLEMENTED",
+                assertThrows(BlockedException.class,
+                        () -> SpringRouteCatalog.select(
+                                "3.5.3", "21", "maven", "3.5.16", "21")).code());
+        assertEquals("SPRING_ROUTE_NOT_IMPLEMENTED",
+                assertThrows(BlockedException.class,
+                        () -> SpringRouteCatalog.select(
+                                "4.0.1", "21", "maven", "4.1.0", "21")).code());
     }
 
     /**

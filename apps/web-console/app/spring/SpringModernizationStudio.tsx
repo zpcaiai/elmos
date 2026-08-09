@@ -34,6 +34,8 @@ type Capability = {
   runtimeRequiresIndependentPass: boolean;
 };
 
+type TargetTuple = { springBoot: string; java: string };
+
 type Event = {
   sequence: number;
   stage: Stage;
@@ -66,6 +68,8 @@ type Run = {
   };
   fingerprint?: {
     springBootVersion: string;
+    sourceFrameworkFamily?: SpringRouteDescriptor["sourceFrameworkFamily"];
+    sourceFrameworkVersion?: string;
     javaVersion: string;
     buildTool: string;
     modules: string[];
@@ -119,29 +123,58 @@ const latestRunStorageKey = "elmos.spring.latest-run-id";
  * capability contract has not been read, the copy says so rather than naming a
  * version pair the console cannot confirm.
  */
-function buildStageCards(capability: Capability | null): Array<{ stages: Stage[]; title: string; detail: string }> {
+function buildStageCards(
+  capability: Capability | null,
+  target: TargetTuple | null,
+): Array<{ stages: Stage[]; title: string; detail: string }> {
+  const verifiedRoutes = capability?.routes?.filter(
+    (route) => route.evidenceStatus === "PASSED_LOCAL",
+  ).length ?? (capability ? 1 : 0);
   const source = capability
-    ? `${capability.routes?.length ?? 1} 条声明路线；已验证点为 Boot ${capability.sourceTuple.springBoot}、`
-      + `Java ${capability.sourceTuple.java}、${capability.sourceTuple.build}`
+    ? `${capability.routes?.length ?? 1} 条声明路线；${verifiedRoutes} 个精确点有本地工程证据`
     : "契约未读取的路线目录";
-  const targetJava = capability ? `Java ${capability.targetTuple.java}` : "目标 Java";
+  const targetLabel = target
+    ? `Spring Boot ${target.springBoot} / Java ${target.java}`
+    : "目标 Spring Boot / Java";
   const rewrite = capability
     ? `固定 Rewrite Spring ${capability.openRewrite.rewriteSpring} 与插件 ${capability.openRewrite.mavenPlugin}。`
     : "固定 OpenRewrite 版本由 Engine 能力契约声明；契约未读取时不展示版本号。";
   return [
     { stages: ["IMPORT_GIT"], title: "导入 Git 仓库", detail: "仅允许批准的 HTTPS Git host，拒绝 URL 凭证。" },
     { stages: ["LOCK_SNAPSHOT"], title: "锁定 Commit / Snapshot", detail: "解析 40 位 Commit，并生成确定性内容摘要。" },
-    { stages: ["FINGERPRINT"], title: "精确版本识别", detail: `按 Boot、JDK 与构建工具从 ${source} 中选择，不做模糊匹配。` },
+    { stages: ["FINGERPRINT"], title: "精确版本识别", detail: `按 Spring family、精确版本、JDK 与构建工具从 ${source} 中选择，不做模糊匹配。` },
     { stages: ["SOURCE_BASELINE"], title: "源工程基线", detail: "在一次性副本中使用检测到且已配置的精确源 JDK 执行完整构建与测试。" },
     { stages: ["EXTRACT_FCM"], title: "提取 FCM", detail: "在转换前固化能力、来源映射、默认值与未知项。" },
     { stages: ["OPENREWRITE"], title: "OpenRewrite 实际转换", detail: rewrite },
-    { stages: ["BUILD_AND_TEST", "DETERMINISTIC_REPAIR"], title: "编译 / 测试 / 修复", detail: `${targetJava} 真实测试；失败时最多一次确定性修复。` },
+    { stages: ["BUILD_AND_TEST", "DETERMINISTIC_REPAIR"], title: "编译 / 测试 / 修复", detail: `${targetLabel} 真实测试；失败时最多一次确定性修复。` },
     { stages: ["PACKAGE_ARTIFACT"], title: "候选项目打包", detail: "生成内容寻址 ZIP，尚不自动开放下载。" },
     { stages: ["INDEPENDENT_VALIDATION"], title: "独立验证", detail: "另一验证器从 ZIP 新目录解包并执行 mvn verify。" },
     { stages: ["READY"], title: "下载新项目", detail: "只有独立 PASS 后才开放下载。" },
-    { stages: ["START_APPLICATION", "HEALTH_CHECK"], title: "一键隔离启动", detail: `${targetJava} 启动、回环健康检查，未配置 Rootless 时拒绝。` },
+    { stages: ["START_APPLICATION", "HEALTH_CHECK"], title: "一键隔离启动", detail: `${targetLabel} 启动、回环健康检查，未配置 Rootless 时拒绝。` },
     { stages: ["STOP_APPLICATION"], title: "日志 / 停止 / 重试", detail: "实时脱敏日志、优雅停止与新的可追溯尝试。" },
   ];
+}
+
+function routeSourceFamilyLabel(route: SpringRouteDescriptor) {
+  return route.sourceFrameworkFamily === "spring-mvc"
+    ? "Spring Framework MVC"
+    : "Spring Boot";
+}
+
+function routeEvidenceLabel(route: SpringRouteDescriptor) {
+  const sourceFamily = routeSourceFamilyLabel(route);
+  return route.evidenceStatus === "PASSED_LOCAL"
+    ? `PASSED_LOCAL @ ${sourceFamily} ${route.verifiedSourceSpringBoot} / Java ${route.verifiedSourceJava}`
+    : `${route.evidenceStatus} · ${sourceFamily}`;
+}
+
+function fingerprintSourceLabel(fingerprint: NonNullable<Run["fingerprint"]>) {
+  const version = fingerprint.sourceFrameworkVersion?.trim()
+    || fingerprint.springBootVersion.trim()
+    || "UNKNOWN";
+  return fingerprint.sourceFrameworkFamily === "spring-mvc"
+    ? `Spring Framework MVC ${version}`
+    : `Spring Boot ${version}`;
 }
 
 const orderedStages: Stage[] = [
@@ -200,6 +233,8 @@ export function SpringModernizationStudio() {
     useState<RepositoryCatalog["status"]>("NOT_CONFIGURED");
   const [startAfterVerification, setStartAfterVerification] = useState(false);
   const [capability, setCapability] = useState<Capability | null>(null);
+  const [targetSpringBoot, setTargetSpringBoot] = useState("");
+  const [targetJava, setTargetJava] = useState("");
   const [capabilityError, setCapabilityError] = useState("");
   const [run, setRun] = useState<Run | null>(null);
   const [logs, setLogs] = useState<LogResponse | null>(null);
@@ -232,6 +267,13 @@ export function SpringModernizationStudio() {
     setFeedbackKind(kind);
   }, []);
 
+  const applyRun = useCallback((next: Run) => {
+    setRun(next);
+    setTargetSpringBoot(next.exactTuple.targetSpringBoot);
+    setTargetJava(next.exactTuple.targetJava);
+    window.sessionStorage.setItem(latestRunStorageKey, next.runId);
+  }, []);
+
   const refreshGithubCatalog = useCallback(async () => {
     const catalog = await api<RepositoryCatalog>("/api/github-repositories", undefined, credentials);
     setGithubCatalogStatus(catalog.status);
@@ -246,18 +288,19 @@ export function SpringModernizationStudio() {
 
   const refresh = useCallback(async (runId: string, includeLogs = showLogs) => {
     const next = await api<Run>(`/api/spring-upgrades/${runId}`, undefined, credentials);
-    setRun(next);
-    window.sessionStorage.setItem(latestRunStorageKey, next.runId);
+    applyRun(next);
     if (includeLogs) {
       setLogs(await api<LogResponse>(`/api/spring-upgrades/${runId}/logs`, undefined, credentials));
     }
     return next;
-  }, [credentials, showLogs]);
+  }, [applyRun, credentials, showLogs]);
 
   useEffect(() => {
     api<Capability>("/api/spring-upgrades/capabilities")
       .then((value) => {
         setCapability(value);
+        setTargetSpringBoot((current) => current || value.targetTuple.springBoot);
+        setTargetJava((current) => current || value.targetTuple.java);
         setCapabilityError("");
       })
       .catch((error: Error) => {
@@ -315,18 +358,83 @@ export function SpringModernizationStudio() {
     && actorId.trim().length >= 3
     && proxyToken.length >= 24;
   const runtimeReady = Boolean(capability?.runtimeRunnerConfigured);
+  const migrationActive = Boolean(run && ["QUEUED", "RUNNING"].includes(run.status));
+  const targetOptions = useMemo(() => {
+    const distinct = new Map<string, TargetTuple>();
+    const routes = capability?.routes;
+    for (const route of routes?.filter(
+      (candidate) => candidate.evidenceStatus !== "NOT_IMPLEMENTED",
+    ) ?? []) {
+      const key = `${route.targetSpringBoot}|${route.targetJava}`;
+      distinct.set(key, { springBoot: route.targetSpringBoot, java: route.targetJava });
+    }
+    // A legacy capability response may omit the route catalog. Once a catalog
+    // is present, an inventory-only target must never become selectable.
+    if ((routes?.length ?? 0) === 0 && capability) {
+      const value = capability.targetTuple;
+      distinct.set(`${value.springBoot}|${value.java}`, value);
+    }
+    return [...distinct.values()].sort((left, right) =>
+      left.springBoot.localeCompare(right.springBoot, undefined, { numeric: true }));
+  }, [capability]);
+  const selectedTarget = useMemo<TargetTuple | null>(
+    () => targetSpringBoot && targetJava
+      ? { springBoot: targetSpringBoot, java: targetJava }
+      : null,
+    [targetJava, targetSpringBoot],
+  );
+  const runTarget = useMemo<TargetTuple | null>(
+    () => run
+      ? {
+          springBoot: run.exactTuple.targetSpringBoot,
+          java: run.exactTuple.targetJava,
+        }
+      : null,
+    [run],
+  );
+  const selectableTargetKeys = useMemo(
+    () => new Set(targetOptions.map((target) => `${target.springBoot}|${target.java}`)),
+    [targetOptions],
+  );
+  const displayedTargetOptions = useMemo(() => {
+    const distinct = new Map(
+      targetOptions.map((target) => [`${target.springBoot}|${target.java}`, target]),
+    );
+    // Preserve an immutable recovered Run target even if a newer capability
+    // catalog has retired it. The disabled option is evidence, not a new route.
+    if (runTarget) {
+      distinct.set(`${runTarget.springBoot}|${runTarget.java}`, runTarget);
+    }
+    return [...distinct.values()].sort((left, right) =>
+      left.springBoot.localeCompare(right.springBoot, undefined, { numeric: true }));
+  }, [runTarget, targetOptions]);
+  const selectedTargetSupported = Boolean(
+    selectedTarget
+    && selectableTargetKeys.has(`${selectedTarget.springBoot}|${selectedTarget.java}`),
+  );
+  const evidenceTarget = runTarget ?? selectedTarget;
+  const matchingTargetRoutes = capability?.routes?.filter(
+    (route) => route.evidenceStatus !== "NOT_IMPLEMENTED"
+      && route.targetSpringBoot === targetSpringBoot
+      && route.targetJava === targetJava,
+  ) ?? [];
+  const verifiedRouteCount = capability?.routes?.filter(
+    (route) => route.evidenceStatus === "PASSED_LOCAL",
+  ).length ?? (capability ? 1 : 0);
   const lastStageIndex = run ? orderedStages.indexOf(run.stage) : -1;
   // The exact tuple is owned by the Java engine capability contract. Until it
   // has been read, the page shows that it is unknown instead of printing a
   // version pair the console has not observed.
   const lockedRouteLabel = capability
-    ? `${capability.routes?.length ?? 1} 条精确源路线 → Spring Boot ${capability.targetTuple.springBoot}`
-      + ` / Java ${capability.targetTuple.java}；已验证点 Boot ${capability.sourceTuple.springBoot}`
-      + ` / Java ${capability.sourceTuple.java}`
+    ? `${matchingTargetRoutes.length || 1} 条候选源路线 → Spring Boot ${targetSpringBoot}`
+      + ` / Java ${targetJava}；目录内 ${verifiedRouteCount} 个精确点有本地工程证据`
     : "精确转换路线未读取（UNKNOWN）";
-  const stageCards = useMemo(() => buildStageCards(capability), [capability]);
-  const artifactFileName = capability
-    ? `migrated-spring-boot-${capability.targetTuple.springBoot}.zip`
+  const stageCards = useMemo(
+    () => buildStageCards(capability, evidenceTarget),
+    [capability, evidenceTarget],
+  );
+  const artifactFileName = evidenceTarget
+    ? `migrated-spring-boot-${evidenceTarget.springBoot}.zip`
     : "migrated-spring-boot.zip";
 
   const stageStatus = useCallback((stages: Stage[]) => {
@@ -353,6 +461,7 @@ export function SpringModernizationStudio() {
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (busy || migrationActive || !selectedTargetSupported) return;
     setBusy(true);
     setFeedback("");
     try {
@@ -377,11 +486,12 @@ export function SpringModernizationStudio() {
             : null,
           materializedRelativePath: sourceMode === "MATERIALIZED_SNAPSHOT" ? materializedRelativePath.trim() : null,
           startAfterVerification,
+          targetSpringBoot,
+          targetJava,
           idempotencyKey: randomKey("spring-upgrade"),
         }),
       }, credentials);
-      setRun(next);
-      window.sessionStorage.setItem(latestRunStorageKey, next.runId);
+      applyRun(next);
       setLogs(null);
       notify("迁移已排队；页面会持续读取真实阶段和证据状态。");
     } catch (error) {
@@ -418,8 +528,7 @@ export function SpringModernizationStudio() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify(body ?? {}),
       }, credentials);
-      setRun(next);
-      window.sessionStorage.setItem(latestRunStorageKey, next.runId);
+      applyRun(next);
       notify("操作已受理，状态将自动刷新。");
     } catch (error) {
       notify(error instanceof Error ? error.message : "操作失败", "error");
@@ -524,12 +633,18 @@ export function SpringModernizationStudio() {
         <article className="metric-card">
           <span>精确源路线</span>
           <strong className={`metric-word ${capability ? "" : "warning-text"}`}>{capability ? `${capability.routes?.length ?? 1} 条` : "UNKNOWN"}</strong>
-          <small>{capability ? `1 个已验证点：Boot ${capability.sourceTuple.springBoot} · Java ${capability.sourceTuple.java}` : "能力契约未读取"}</small>
+          <small>{capability ? `${verifiedRouteCount} 个 PASSED_LOCAL 精确点；NOT_RUN / NOT_IMPLEMENTED 均不计为通过` : "能力契约未读取"}</small>
         </article>
         <article className="metric-card">
           <span>目标版本</span>
-          <strong className={`metric-word ${capability ? "" : "warning-text"}`}>{capability ? `Boot ${capability.targetTuple.springBoot}` : "UNKNOWN"}</strong>
-          <small>{capability ? `Java ${capability.targetTuple.java} · ${capability.targetTuple.build}` : "能力契约未读取"}</small>
+          <strong className={`metric-word ${evidenceTarget ? "" : "warning-text"}`}>
+            {evidenceTarget ? `Boot ${evidenceTarget.springBoot}` : "UNKNOWN"}
+          </strong>
+          <small>
+            {evidenceTarget
+              ? `Java ${evidenceTarget.java} · ${run ? "当前 Run 不可变目标" : "下一次请求目标"}`
+              : "能力契约未读取"}
+          </small>
         </article>
         <article className="metric-card">
           <span>OpenRewrite</span>
@@ -675,6 +790,31 @@ export function SpringModernizationStudio() {
               </>
             )}
             <div className="locked-target spring-field-wide">
+              <span>目标精确版本</span>
+              <select
+                aria-label="Spring 目标精确版本"
+                value={`${targetSpringBoot}|${targetJava}`}
+                disabled={!capability || targetOptions.length === 0 || migrationActive}
+                onChange={(event) => {
+                  const [springBoot, java] = event.target.value.split("|");
+                  setTargetSpringBoot(springBoot);
+                  setTargetJava(java);
+                }}
+              >
+                {displayedTargetOptions.map((target) => (
+                  <option
+                    key={`${target.springBoot}|${target.java}`}
+                    value={`${target.springBoot}|${target.java}`}
+                    disabled={!selectableTargetKeys.has(`${target.springBoot}|${target.java}`)}
+                  >
+                    Spring Boot {target.springBoot} · Java {target.java}
+                  </option>
+                ))}
+              </select>
+              <strong>{lockedRouteLabel}</strong>
+              <small>源版本、JDK、构建工具和 Spring Boot / MVC family 会在 FINGERPRINT 后与该目标精确匹配。</small>
+            </div>
+            <div className="locked-target spring-field-wide">
               <span>锁定转换路线</span>
               <strong>{lockedRouteLabel}</strong>
               <small>
@@ -690,9 +830,9 @@ export function SpringModernizationStudio() {
             <span><strong>验证通过后自动一键启动</strong><small>{runtimeReady ? "独立验证 PASS 后，在每次运行专属的 Rootless 容器中执行。" : capability?.runtimeRunnerReason ?? "独立 Runtime Runner 尚未配置。"}</small></span>
           </label>
           <div className="business-actions">
-            <button className="button button-primary" type="submit" disabled={busy || !runnerReady || !credentialsReady}>
+            <button className="button button-primary" type="submit" disabled={busy || migrationActive || !runnerReady || !credentialsReady || !selectedTargetSupported}>
               <Icon name={busy ? "refresh" : "workflow"} size={16} className={busy ? "spinning" : undefined} />
-              {!runnerReady ? "隔离 Runner 未配置" : credentialsReady ? "开始真实迁移" : "登录企业账户或填写本地短期身份"}
+              {migrationActive ? "迁移运行中" : !runnerReady ? "隔离 Runner 未配置" : credentialsReady ? "开始真实迁移" : "登录企业账户或填写本地短期身份"}
             </button>
             {run && ["QUEUED", "RUNNING"].includes(run.status) && <button className="button button-secondary" type="button" onClick={() => lifecycle("cancel")} disabled={busy}>取消迁移</button>}
           </div>
@@ -727,7 +867,7 @@ export function SpringModernizationStudio() {
           {run?.fingerprint && (
             <div className="spring-fingerprint">
               <strong>检测结果</strong>
-              <span>{run.fingerprint.springBootVersion} · Java {run.fingerprint.javaVersion} · {run.fingerprint.buildTool}</span>
+              <span>{fingerprintSourceLabel(run.fingerprint)} · Java {run.fingerprint.javaVersion} · {run.fingerprint.buildTool}</span>
               <small>能力：{run.fingerprint.activeCapabilities.join("、") || "未识别"}</small>
               {run.fingerprint.unknowns.length > 0 && <small className="warning-text">未知项：{run.fingerprint.unknowns.join("、")}</small>}
             </div>
@@ -759,7 +899,7 @@ export function SpringModernizationStudio() {
         </div>
         <p className="spring-route-intro">
           指纹阶段按下表选择路线，而不是断言单一版本。只有带 PASSED_LOCAL 的元组有已记录的端到端本地执行证据；
-          其余元组即使在受支持区间内，也保持 NOT_RUN，需要 Runner 显式开启实验路线才会执行。
+          NOT_RUN 路线需要 Runner 显式开启实验执行；NOT_IMPLEMENTED 仅记录 inventory gap，不会进入目标选择器或执行。
         </p>
         {capability?.routes?.length
           ? (
@@ -783,16 +923,12 @@ export function SpringModernizationStudio() {
                   key={route.routeId}
                 >
                   <span role="cell" title={`${route.routeId}${route.notes ? ` · ${route.notes}` : ""}`}>
-                    Boot [{route.sourceBootMinInclusive}, {route.sourceBootMaxExclusive})
+                    {routeSourceFamilyLabel(route)} [{route.sourceBootMinInclusive}, {route.sourceBootMaxExclusive})
                   </span>
                   <span role="cell">{route.sourceJavaVersions.join(" / ")}</span>
                   <span role="cell">{route.buildTool}</span>
                   <span role="cell">Boot {route.targetSpringBoot} · Java {route.targetJava}</span>
-                  <span role="cell">
-                    {route.evidenceStatus === "PASSED_LOCAL"
-                      ? `PASSED_LOCAL @ ${route.verifiedSourceSpringBoot} / Java ${route.verifiedSourceJava}`
-                      : route.evidenceStatus}
-                  </span>
+                  <span role="cell">{routeEvidenceLabel(route)}</span>
                 </div>
               ))}
             </div>

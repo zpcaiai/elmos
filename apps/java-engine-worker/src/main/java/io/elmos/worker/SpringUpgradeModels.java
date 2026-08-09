@@ -50,8 +50,34 @@ final class SpringUpgradeModels {
             String snapshotId,
             String materializedRelativePath,
             boolean startAfterVerification,
-            String idempotencyKey
-    ) {}
+            String idempotencyKey,
+            String targetSpringBoot,
+            String targetJava
+    ) {
+        StartRequest {
+            targetSpringBoot = targetSpringBoot == null || targetSpringBoot.isBlank()
+                    ? TARGET_BOOT : targetSpringBoot.trim();
+            targetJava = targetJava == null || targetJava.isBlank()
+                    ? TARGET_JAVA : SpringRouteCatalog.normalizeJava(targetJava);
+        }
+
+        /** Keep durable runs and older API clients on the original 3.5.3 / Java 21 default. */
+        StartRequest(
+                String organizationId,
+                SourceMode sourceMode,
+                String repositoryUrl,
+                String requestedRef,
+                String expectedCommitSha,
+                String snapshotId,
+                String materializedRelativePath,
+                boolean startAfterVerification,
+                String idempotencyKey
+        ) {
+            this(organizationId, sourceMode, repositoryUrl, requestedRef, expectedCommitSha,
+                    snapshotId, materializedRelativePath, startAfterVerification, idempotencyKey,
+                    TARGET_BOOT, TARGET_JAVA);
+        }
+    }
 
     record ExactTuple(
             String sourceSpringBoot,
@@ -76,13 +102,38 @@ final class SpringUpgradeModels {
             List<String> modules,
             List<String> activeCapabilities,
             List<String> unknowns,
-            Map<String, List<String>> sourceTraces
+            Map<String, List<String>> sourceTraces,
+            String sourceFrameworkFamily,
+            String sourceFrameworkVersion
     ) {
         Fingerprint {
             modules = List.copyOf(modules);
             activeCapabilities = List.copyOf(activeCapabilities);
             unknowns = List.copyOf(unknowns);
             sourceTraces = Map.copyOf(sourceTraces);
+            sourceFrameworkFamily = sourceFrameworkFamily == null || sourceFrameworkFamily.isBlank()
+                    ? inferredFamily(springBootVersion) : sourceFrameworkFamily.trim();
+            sourceFrameworkVersion = sourceFrameworkVersion == null || sourceFrameworkVersion.isBlank()
+                    ? springBootVersion : sourceFrameworkVersion.trim();
+        }
+
+        Fingerprint(
+                String springBootVersion,
+                String javaVersion,
+                String buildTool,
+                List<String> modules,
+                List<String> activeCapabilities,
+                List<String> unknowns,
+                Map<String, List<String>> sourceTraces
+        ) {
+            this(springBootVersion, javaVersion, buildTool, modules, activeCapabilities,
+                    unknowns, sourceTraces, inferredFamily(springBootVersion), springBootVersion);
+        }
+
+        private static String inferredFamily(String springBootVersion) {
+            return springBootVersion == null || springBootVersion.isBlank()
+                    || "UNKNOWN".equalsIgnoreCase(springBootVersion)
+                    ? "unknown" : "spring-boot";
         }
     }
 

@@ -16,6 +16,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ProcessMavenVerificationTest {
     @TempDir Path temporaryDirectory;
 
+    @Test void distinguishesExactVerifierJavaReleasesFromMavenVersionOutput() {
+        String java17 = "Apache Maven 3.9.11\nJava version: 17.0.19, vendor: Eclipse Adoptium";
+        String java21 = "Apache Maven 3.9.11\nJava version: 21.0.7, vendor: Eclipse Adoptium";
+        assertTrue(ProcessMavenVerification.reportsJavaRelease(java17, "17"));
+        assertTrue(!ProcessMavenVerification.reportsJavaRelease(java17, "21"));
+        assertTrue(ProcessMavenVerification.reportsJavaRelease(java21, "21"));
+    }
+
     @Test void immutableCacheIsCopiedIntoAWritableVerifierPrivateRepository() throws Exception {
         Path cache = temporaryDirectory.resolve("cache");
         Path artifact = cache.resolve("org/example/library/1.0/library-1.0.jar");

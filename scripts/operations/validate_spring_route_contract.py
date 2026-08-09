@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Fail closed when the Spring modernization catalog drifts across its owners.
 
-`SpringRouteCatalog.java` is the only authority for which legacy Spring source
-lines the engine can modernize and which single tuple carries recorded
-end-to-end evidence. Four other places repeat parts of it: the OpenRewrite
-recipe resources, the engine and console deployment guidance, the console proxy
-fallback catalog, and the console page itself.
+`SpringRouteCatalog.java` is the authority for the directed legacy Spring
+source/target matrix and for the exact tuples that carry recorded end-to-end
+evidence. Other surfaces repeat parts of it: OpenRewrite recipe resources, the
+engine and console deployment guidance, the console proxy fallback catalog,
+and the console page itself.
 
 This validator keeps them identical, refuses a catalog that would let evidence
 run ahead of itself, and guards the regression it was written for -- a console
@@ -25,12 +25,38 @@ WORKER_JAVA = WORKER / "java" / "io" / "elmos" / "worker"
 CATALOG = WORKER_JAVA / "SpringRouteCatalog.java"
 MODELS = WORKER_JAVA / "SpringUpgradeModels.java"
 EXECUTION_PORT = WORKER_JAVA / "LocalSpringUpgradeExecutionPort.java"
+RUN_SERVICE = WORKER_JAVA / "SpringUpgradeRunService.java"
 ENGINE_GUIDANCE = WORKER_JAVA / "SpringDeploymentGuidance.java"
 CONSOLE = ROOT / "apps" / "web-console" / "app"
 CONSOLE_PROXY = CONSOLE / "api" / "spring-upgrades" / "[...path]" / "route.ts"
 CONSOLE_GUIDANCE = CONSOLE / "lib" / "deploymentGuidance.ts"
 CONSOLE_ROUTES = CONSOLE / "lib" / "springRoutes.ts"
 CONSOLE_STUDIO = CONSOLE / "spring" / "SpringModernizationStudio.tsx"
+MVC_PACK = ROOT / "framework-packs" / "spring-framework-5-3-mvc-to-spring-boot-3-5-3"
+MVC_PACK_RECIPE = MVC_PACK / "recipes" / "spring-framework-5.3-mvc-to-spring-boot-3.5.3.yml"
+MVC_EXECUTABLE_ROUTE_ID = "spring-framework-5.3-mvc-maven-to-boot-3.5.3-java-21"
+MVC_INVENTORY_ROUTE_ID = "spring-mvc-3.2-5.2-maven-to-boot-3.5.3-java-21"
+CURRENT_TARGET_INVENTORY = {
+    "boot-1.5-3.5.15-maven-to-boot-3.5.16-java-21": ("3.5.16", "21"),
+    "boot-1.5-4.0-maven-to-boot-4.1.0-java-21": ("4.1.0", "21"),
+}
+REQUIRED_BOOT_3_2_COMPOSITIONS = {
+    "boot-1.5-java-8-maven-to-boot-3.2.12-java-17": (
+        "org.openrewrite.java.spring.boot2.UpgradeSpringBoot_2_0",
+        "org.openrewrite.java.spring.boot2.UpgradeSpringBoot_2_7",
+        "org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_2",
+        "org.openrewrite.java.migrate.UpgradeToJava17",
+    ),
+    "boot-2.0-2.6-maven-to-boot-3.2.12-java-17": (
+        "org.openrewrite.java.spring.boot2.UpgradeSpringBoot_2_7",
+        "org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_2",
+        "org.openrewrite.java.migrate.UpgradeToJava17",
+    ),
+    "boot-3.0-3.1-maven-to-boot-3.2.12-java-17": (
+        "org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_2",
+        "org.openrewrite.java.migrate.UpgradeToJava17",
+    ),
+}
 
 EVIDENCE_STATUSES = {"PASSED_LOCAL", "NOT_RUN", "NOT_IMPLEMENTED"}
 
@@ -74,12 +100,20 @@ def version_key(value: str) -> tuple[int, ...]:
 
 def catalog_constants() -> dict[str, str]:
     text = CATALOG.read_text(encoding="utf-8")
-    values: dict[str, str] = {}
-    for name in ("TARGET_BOOT", "TARGET_JAVA", "REWRITE_SPRING", "REWRITE_MAVEN_PLUGIN", "MAVEN_TOOLCHAIN"):
-        match = re.search(rf'\b{name}\s*=\s*"([^"]+)"\s*;', text)
-        require(match is not None, f"CATALOG_CONSTANT_MISSING:{name}")
-        assert match is not None
-        values[name] = match.group(1)
+    values = dict(re.findall(r'\bstatic final String\s+([A-Z0-9_]+)\s*=\s*"([^"]+)"\s*;', text))
+    for name in (
+        "TARGET_BOOT",
+        "TARGET_JAVA",
+        "TARGET_BOOT_2_7",
+        "TARGET_BOOT_3_2",
+        "TARGET_BOOT_3_5_16",
+        "TARGET_BOOT_4_1",
+        "TARGET_JAVA_17",
+        "REWRITE_SPRING",
+        "REWRITE_MAVEN_PLUGIN",
+        "MAVEN_TOOLCHAIN",
+    ):
+        require(name in values, f"CATALOG_CONSTANT_MISSING:{name}")
     return values
 
 
@@ -99,6 +133,13 @@ def parse_catalog() -> list[dict[str, object]]:
     constants = catalog_constants()
     build_tools = {"MAVEN_BUILD_TOOL": "maven", "GRADLE_BUILD_TOOL": "gradle"}
 
+    def constant_or_string(token: str, route_id: str, field: str) -> str:
+        token = token.strip()
+        if token.startswith('"') and token.endswith('"'):
+            return token[1:-1]
+        require(token in constants, f"CATALOG_ROUTE_CONSTANT_UNKNOWN:{route_id}:{field}:{token}")
+        return constants[token]
+
     routes: list[dict[str, object]] = []
     chunks = block.group(1).split("new SpringRoute(")[1:]
     for body in chunks:
@@ -111,34 +152,52 @@ def parse_catalog() -> list[dict[str, object]]:
         head, tail = body.split("Set.of(", 1)
         head_strings = re.findall(r'"([^"]*)"', head)
         require(len(head_strings) >= 5, "CATALOG_ROUTE_HEAD_FIELDS_MISSING")
+        route_id = head_strings[0]
 
         after_set = tail.split(")", 1)[1]
-        build_token = re.search(r"\b(MAVEN_BUILD_TOOL|GRADLE_BUILD_TOOL)\b", after_set)
-        require(build_token is not None, "CATALOG_ROUTE_BUILD_TOOL_MISSING")
-        assert build_token is not None
+        directed_fields = re.search(
+            r"\b(MAVEN_BUILD_TOOL|GRADLE_BUILD_TOOL)\b\s*,\s*"
+            r"([A-Z0-9_]+|\"[^\"]+\")\s*,\s*"
+            r"([A-Z0-9_]+|\"[^\"]+\")\s*,\s*"
+            r'"([^"]*)"\s*,\s*"([^"]*)"',
+            after_set,
+            re.DOTALL,
+        )
+        require(directed_fields is not None, f"CATALOG_ROUTE_DIRECTED_FIELDS_MISSING:{route_id}")
+        assert directed_fields is not None
 
         evidence = re.search(r"EvidenceStatus\.([A-Z_]+)", after_set)
         require(evidence is not None, "CATALOG_ROUTE_EVIDENCE_MISSING")
         assert evidence is not None
         require(evidence.group(1) in EVIDENCE_STATUSES, f"CATALOG_EVIDENCE_INVALID:{evidence.group(1)}")
 
-        before_evidence, after_evidence = after_set.split("EvidenceStatus." + evidence.group(1), 1)
-        recipe_strings = re.findall(r'"([^"]*)"', before_evidence)
-        require(len(recipe_strings) >= 2, "CATALOG_ROUTE_RECIPE_FIELDS_MISSING")
+        _, after_evidence = after_set.split("EvidenceStatus." + evidence.group(1), 1)
         verified_strings = re.findall(r'"([^"]*)"', after_evidence)
         require(len(verified_strings) >= 2, "CATALOG_ROUTE_VERIFIED_FIELDS_MISSING")
+        source_family = re.search(r"SourceFamily\.([A-Z_]+)", body)
+        require(source_family is not None, f"CATALOG_ROUTE_SOURCE_FAMILY_MISSING:{route_id}")
+        assert source_family is not None
+        require(
+            source_family.group(1) in {"SPRING_BOOT", "SPRING_MVC"},
+            f"CATALOG_ROUTE_SOURCE_FAMILY_INVALID:{route_id}:{source_family.group(1)}",
+        )
 
         routes.append({
-            "route_id": head_strings[0],
+            "route_id": route_id,
             "pack_key": head_strings[1],
             "label": head_strings[2],
             "source_boot_min": head_strings[3],
             "source_boot_max": head_strings[4],
-            "build_tool": build_tools[build_token.group(1)],
-            "target_boot": constants["TARGET_BOOT"],
-            "target_java": constants["TARGET_JAVA"],
-            "recipe_resource": recipe_strings[0],
-            "recipe_id": recipe_strings[1],
+            "source_family": source_family.group(1),
+            "source_family_contract": {
+                "SPRING_BOOT": "spring-boot",
+                "SPRING_MVC": "spring-mvc",
+            }[source_family.group(1)],
+            "build_tool": build_tools[directed_fields.group(1)],
+            "target_boot": constant_or_string(directed_fields.group(2), route_id, "target_boot"),
+            "target_java": constant_or_string(directed_fields.group(3), route_id, "target_java"),
+            "recipe_resource": directed_fields.group(4),
+            "recipe_id": directed_fields.group(5),
             "verified_boot": verified_strings[0],
             "verified_java": verified_strings[1],
             "source_java_versions": sorted(java_set, key=lambda value: int(value)),
@@ -159,12 +218,28 @@ def check_catalog_shape(routes: list[dict[str, object]], constants: dict[str, st
             version_key(str(route["source_boot_min"])) < version_key(str(route["source_boot_max"])),
             f"ROUTE_RANGE_INVERTED:{route_id}",
         )
-        require(route["target_boot"] == constants["TARGET_BOOT"], f"ROUTE_TARGET_BOOT_DRIFT:{route_id}")
-        require(route["target_java"] == constants["TARGET_JAVA"], f"ROUTE_TARGET_JAVA_DRIFT:{route_id}")
+        require(
+            re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", str(route["target_boot"])) is not None,
+            f"ROUTE_TARGET_BOOT_NOT_EXACT:{route_id}:{route['target_boot']}",
+        )
+        require(
+            re.fullmatch(r"[0-9]+", str(route["target_java"])) is not None,
+            f"ROUTE_TARGET_JAVA_NOT_EXACT:{route_id}:{route['target_java']}",
+        )
+        if route["source_family"] == "SPRING_BOOT":
+            require(
+                version_key(str(route["source_boot_max"])) <= version_key(str(route["target_boot"])),
+                f"ROUTE_CAN_SELECT_DOWNGRADE:{route_id}",
+            )
         require(bool(route["source_java_versions"]), f"ROUTE_SOURCE_JAVA_EMPTY:{route_id}")
 
         if route["evidence"] == "NOT_IMPLEMENTED":
             require(route["recipe_resource"] == "", f"UNIMPLEMENTED_ROUTE_DECLARES_RECIPE:{route_id}")
+            require(route["recipe_id"] == "", f"UNIMPLEMENTED_ROUTE_DECLARES_RECIPE_ID:{route_id}")
+            require(
+                route["verified_boot"] == "" and route["verified_java"] == "",
+                f"UNIMPLEMENTED_ROUTE_DECLARES_EVIDENCE:{route_id}",
+            )
             continue
 
         recipe_id = str(route["recipe_id"])
@@ -175,13 +250,21 @@ def check_catalog_shape(routes: list[dict[str, object]], constants: dict[str, st
         recipe = resource.read_text(encoding="utf-8")
         require(f"name: {recipe_id}" in recipe, f"RECIPE_NAME_DRIFT:{recipe_id}")
         require(
-            f"newVersion: {constants['TARGET_BOOT']}" in recipe,
+            f"newVersion: {route['target_boot']}" in recipe,
             f"RECIPE_TARGET_BOOT_DRIFT:{recipe_id}",
         )
         require(
-            "org.openrewrite.java.migrate.UpgradeToJava21" in recipe,
+            f"org.openrewrite.java.migrate.UpgradeToJava{route['target_java']}" in recipe,
             f"RECIPE_MISSING_JAVA_MIGRATION:{recipe_id}",
         )
+        # Existing PASSED_LOCAL recipes remain byte-stable so their evidence is
+        # not silently rebound to edited recipe bytes. New unexecuted edges may
+        # not opt into parent-version downgrade behavior.
+        if route["evidence"] != "PASSED_LOCAL":
+            require(
+                "allowVersionDowngrades: true" not in recipe,
+                f"UNEXECUTED_RECIPE_PERMITS_VERSION_DOWNGRADE:{recipe_id}",
+            )
 
         if route["evidence"] == "PASSED_LOCAL":
             verified_boot = str(route["verified_boot"])
@@ -200,17 +283,150 @@ def check_catalog_shape(routes: list[dict[str, object]], constants: dict[str, st
                 f"UNVERIFIED_ROUTE_DECLARES_EVIDENCE:{route_id}",
             )
 
-    # Ranges within one build tool must be disjoint or selection is ambiguous.
-    for build_tool in {str(route["build_tool"]) for route in routes}:
+    # Source ranges may overlap when they lead to different exact targets. They
+    # must remain disjoint for the same family/build/target tuple, otherwise an
+    # exact request would still be ambiguous.
+    target_groups = {
+        (
+            str(route["source_family"]),
+            str(route["build_tool"]),
+            str(route["target_boot"]),
+            str(route["target_java"]),
+        )
+        for route in routes
+    }
+    for source_family, build_tool, target_boot, target_java in target_groups:
         ordered = sorted(
-            (route for route in routes if route["build_tool"] == build_tool),
+            (
+                route
+                for route in routes
+                if route["source_family"] == source_family
+                and route["build_tool"] == build_tool
+                and route["target_boot"] == target_boot
+                and route["target_java"] == target_java
+            ),
             key=lambda route: version_key(str(route["source_boot_min"])),
         )
         for left, right in zip(ordered, ordered[1:]):
             require(
                 version_key(str(left["source_boot_max"])) <= version_key(str(right["source_boot_min"])),
-                f"ROUTE_RANGES_OVERLAP:{build_tool}:{left['route_id']}:{right['route_id']}",
+                "ROUTE_RANGES_OVERLAP:"
+                f"{source_family}:{build_tool}:{target_boot}:{target_java}:"
+                f"{left['route_id']}:{right['route_id']}",
             )
+
+    required_not_run_edges = {
+        "boot-1.5-java-8-maven-to-boot-2.7.18-java-17",
+        "boot-1.5-java-8-maven-to-boot-3.2.12-java-17",
+        "boot-2.0-2.6-maven-to-boot-2.7.18-java-17",
+        "boot-2.0-2.6-maven-to-boot-3.2.12-java-17",
+        "boot-2.7-maven-to-boot-3.2.12-java-17",
+        "boot-3.0-3.1-maven-to-boot-3.2.12-java-17",
+        MVC_EXECUTABLE_ROUTE_ID,
+    }
+    for route_id in sorted(required_not_run_edges):
+        edge = next((route for route in routes if route["route_id"] == route_id), None)
+        require(edge is not None, f"REQUIRED_DIRECTED_EDGE_MISSING:{route_id}")
+        assert edge is not None
+        require(edge["evidence"] == "NOT_RUN", f"UNEXECUTED_EDGE_NOT_NOT_RUN:{route_id}")
+        require(
+            edge["verified_boot"] == "" and edge["verified_java"] == "",
+            f"UNEXECUTED_EDGE_DECLARES_VERIFIED_TUPLE:{route_id}",
+        )
+
+    for route_id, ordered_steps in REQUIRED_BOOT_3_2_COMPOSITIONS.items():
+        edge = next((route for route in routes if route["route_id"] == route_id), None)
+        require(edge is not None, f"REQUIRED_BOOT_3_2_EDGE_MISSING:{route_id}")
+        assert edge is not None
+        require(
+            edge["target_boot"] == "3.2.12" and edge["target_java"] == "17",
+            f"BOOT_3_2_EDGE_TARGET_DRIFT:{route_id}",
+        )
+        recipe = (
+            WORKER / "resources" / str(edge["recipe_resource"]).lstrip("/")
+        ).read_text(encoding="utf-8")
+        positions = []
+        for step in ordered_steps:
+            position = recipe.find(f"  - {step}")
+            require(position >= 0, f"BOOT_3_2_COMPOSITION_STEP_MISSING:{route_id}:{step}")
+            positions.append(position)
+        require(
+            positions == sorted(positions),
+            f"BOOT_3_2_COMPOSITION_ORDER_DRIFT:{route_id}",
+        )
+
+    mvc_inventory = next(
+        (route for route in routes if route["route_id"] == MVC_INVENTORY_ROUTE_ID), None
+    )
+    require(
+        mvc_inventory is not None,
+        f"REQUIRED_INVENTORY_EDGE_MISSING:{MVC_INVENTORY_ROUTE_ID}",
+    )
+    assert mvc_inventory is not None
+    require(
+        mvc_inventory["evidence"] == "NOT_IMPLEMENTED",
+        f"INVENTORY_EDGE_SELECTABLE:{MVC_INVENTORY_ROUTE_ID}",
+    )
+
+    for route_id, (target_boot, target_java) in CURRENT_TARGET_INVENTORY.items():
+        current_inventory = next(
+            (route for route in routes if route["route_id"] == route_id), None
+        )
+        require(current_inventory is not None, f"REQUIRED_INVENTORY_EDGE_MISSING:{route_id}")
+        assert current_inventory is not None
+        require(
+            current_inventory["source_family"] == "SPRING_BOOT",
+            f"CURRENT_TARGET_INVENTORY_SOURCE_FAMILY_DRIFT:{route_id}",
+        )
+        require(
+            current_inventory["target_boot"] == target_boot
+            and current_inventory["target_java"] == target_java,
+            f"CURRENT_TARGET_INVENTORY_TUPLE_DRIFT:{route_id}",
+        )
+        require(
+            current_inventory["evidence"] == "NOT_IMPLEMENTED",
+            f"CURRENT_TARGET_INVENTORY_SELECTABLE:{route_id}",
+        )
+        require(
+            current_inventory["recipe_resource"] == ""
+            and current_inventory["recipe_id"] == "",
+            f"CURRENT_TARGET_INVENTORY_DECLARES_RECIPE:{route_id}",
+        )
+        require(
+            current_inventory["verified_boot"] == ""
+            and current_inventory["verified_java"] == "",
+            f"CURRENT_TARGET_INVENTORY_DECLARES_EVIDENCE:{route_id}",
+        )
+
+    mvc = next((route for route in routes if route["route_id"] == MVC_EXECUTABLE_ROUTE_ID), None)
+    require(mvc is not None, f"MVC_PACK_ROUTE_MISSING:{MVC_EXECUTABLE_ROUTE_ID}")
+    assert mvc is not None
+    require(
+        mvc["pack_key"] == "spring-framework-5-3-mvc-to-spring-boot-3-5-3",
+        "MVC_PACK_KEY_DRIFT",
+    )
+    require(mvc["source_family"] == "SPRING_MVC", "MVC_SOURCE_FAMILY_DRIFT")
+    require(
+        mvc["source_boot_min"] == "5.3.0" and mvc["source_boot_max"] == "5.4.0",
+        "MVC_SOURCE_RANGE_NOT_5_3_X",
+    )
+    require(mvc["source_java_versions"] == ["11"], "MVC_SOURCE_JAVA_NOT_PACK_BOUND")
+    require(
+        mvc["recipe_id"]
+        == "io.elmos.openrewrite.SpringFramework5_3MvcToSpringBoot3_5_3Java21",
+        "MVC_RECIPE_ID_DRIFT",
+    )
+    require(MVC_PACK_RECIPE.is_file(), "MVC_PACK_RECIPE_MISSING")
+    runtime_recipe = WORKER / "resources" / str(mvc["recipe_resource"]).lstrip("/")
+    require(runtime_recipe.is_file(), "MVC_RUNTIME_RECIPE_MISSING")
+    require(
+        runtime_recipe.read_bytes() == MVC_PACK_RECIPE.read_bytes(),
+        "MVC_RUNTIME_RECIPE_PACK_DRIFT",
+    )
+    pack = json.loads((MVC_PACK / "pack.json").read_text(encoding="utf-8"))
+    require(pack.get("pack_key") == mvc["pack_key"], "MVC_PACK_MANIFEST_KEY_DRIFT")
+    require(pack.get("source", {}).get("framework_versions") == ["5.3.39"], "MVC_PACK_SOURCE_DRIFT")
+    require(pack.get("source", {}).get("runtime_versions") == ["11"], "MVC_PACK_JAVA_DRIFT")
 
     verified = [route for route in routes if route["evidence"] == "PASSED_LOCAL"]
     # This used to require exactly one verified route. A count is the wrong
@@ -218,9 +434,19 @@ def check_catalog_shape(routes: list[dict[str, object]], constants: dict[str, st
     # the only way past it is to raise the number, which is the edit nobody
     # thinks about. What matters is that at least one route is recorded and that
     # no two routes claim the same tuple -- two routes reporting the same
-    # source Boot and Java would mean one execution was counted twice.
+    # source/target tuple would mean one execution was counted twice.
     require(len(verified) >= 1, "NO_VERIFIED_ROUTE_RECORDED")
-    tuples = [(str(route["verified_boot"]), str(route["verified_java"])) for route in verified]
+    tuples = [
+        (
+            str(route["source_family"]),
+            str(route["verified_boot"]),
+            str(route["verified_java"]),
+            str(route["build_tool"]),
+            str(route["target_boot"]),
+            str(route["target_java"]),
+        )
+        for route in verified
+    ]
     require(len(set(tuples)) == len(tuples), "VERIFIED_TUPLE_DUPLICATED_ACROSS_ROUTES")
 
     bound = pack_bound_route(routes)
@@ -228,6 +454,8 @@ def check_catalog_shape(routes: list[dict[str, object]], constants: dict[str, st
     require(f'PACK_KEY = "{bound["pack_key"]}"' in models, "MODELS_PACK_KEY_DRIFT")
     require(f'SOURCE_BOOT = "{bound["verified_boot"]}"' in models, "MODELS_SOURCE_BOOT_DRIFT")
     require(f'SOURCE_JAVA = "{bound["verified_java"]}"' in models, "MODELS_SOURCE_JAVA_DRIFT")
+    for needle in ("String targetSpringBoot", "String targetJava"):
+        require(needle in models, f"MODELS_TARGET_REQUEST_MISSING:{needle}")
 
 
 def check_engine(routes: list[dict[str, object]], constants: dict[str, str]) -> None:
@@ -236,6 +464,10 @@ def check_engine(routes: list[dict[str, object]], constants: dict[str, str]) -> 
     # catalog driven; a literal version here means a hardcoded route is back.
     for needle in (
         "SpringRouteCatalog.select(",
+        "SpringRouteCatalog.selectSpringMvc(",
+        "selectRoute(fingerprint, request)",
+        "request.targetSpringBoot()",
+        "request.targetJava()",
         "route.recipeId()",
         "route.recipeResource()",
         "route.artifactFileName()",
@@ -247,6 +479,15 @@ def check_engine(routes: list[dict[str, object]], constants: dict[str, str]) -> 
         "requireExactSupportedTuple" not in port,
         "ENGINE_STILL_ASSERTS_SINGLE_TUPLE",
     )
+
+    service = RUN_SERVICE.read_text(encoding="utf-8")
+    for needle in (
+        'Map.entry("sourceFrameworkFamily", route.sourceFamily().contractValue())',
+        "request.targetSpringBoot()",
+        "request.targetJava()",
+        "SpringRouteCatalog.selectSpringMvc(",
+    ):
+        require(needle in service, f"RUN_SERVICE_NOT_DIRECTED_MATRIX_BOUND:{needle}")
 
     bound = pack_bound_route(routes)
     guidance = ENGINE_GUIDANCE.read_text(encoding="utf-8")
@@ -288,6 +529,8 @@ def check_console(routes: list[dict[str, object]], constants: dict[str, str]) ->
         assert body is not None
         for console_field, catalog_field in (
             ("packKey", "pack_key"),
+            ("label", "label"),
+            ("sourceFrameworkFamily", "source_family_contract"),
             ("buildTool", "build_tool"),
             ("sourceBootMinInclusive", "source_boot_min"),
             ("sourceBootMaxExclusive", "source_boot_max"),
@@ -350,11 +593,27 @@ def check_console(routes: list[dict[str, object]], constants: dict[str, str]) ->
     ):
         require(literal not in studio, f"STUDIO_HARDCODES_VERSION:{literal}")
     for needle in (
-        "capability.sourceTuple.springBoot",
-        "capability.targetTuple.springBoot",
+        'route.evidenceStatus === "PASSED_LOCAL"',
+        "value.targetTuple.springBoot",
         "capability.openRewrite.rewriteSpring",
         "capability?.routes",
         "lockedRouteLabel",
+        "setTargetSpringBoot(next.exactTuple.targetSpringBoot)",
+        "setTargetJava(next.exactTuple.targetJava)",
+        "setTargetSpringBoot((current) => current || value.targetTuple.springBoot)",
+        "setTargetJava((current) => current || value.targetTuple.java)",
+        'const migrationActive = Boolean(run && ["QUEUED", "RUNNING"].includes(run.status))',
+        "const evidenceTarget = runTarget ?? selectedTarget",
+        "disabled={!capability || targetOptions.length === 0 || migrationActive}",
+        'candidate.evidenceStatus !== "NOT_IMPLEMENTED"',
+        "disabled={!selectableTargetKeys.has(`${target.springBoot}|${target.java}`)}",
+        "busy || migrationActive || !selectedTargetSupported",
+        'route.sourceFrameworkFamily === "spring-mvc"',
+        "routeEvidenceLabel(route)",
+        'sourceFrameworkFamily?: SpringRouteDescriptor["sourceFrameworkFamily"]',
+        "sourceFrameworkVersion?: string",
+        'fingerprint.sourceFrameworkFamily === "spring-mvc"',
+        "fingerprintSourceLabel(run.fingerprint)",
     ):
         require(needle in studio, f"STUDIO_NOT_CONTRACT_BOUND:{needle}")
 
@@ -376,12 +635,24 @@ def main() -> int:
                 # Report every recorded tuple. Printing one of several would
                 # under-report the evidence while looking complete.
                 "recorded_tuples": sorted(
-                    f"{route['route_id']}: Spring Boot {route['verified_boot']}"
-                    f" / Java {route['verified_java']}"
+                    f"{route['route_id']}: {route['source_family']} {route['verified_boot']}"
+                    f" / Java {route['verified_java']} -> Spring Boot {route['target_boot']}"
+                    f" / Java {route['target_java']}"
                     for route in recorded
                 ),
                 "pack_bound_route": PACK_BOUND_ROUTE_ID,
-                "target": f"Spring Boot {constants['TARGET_BOOT']} / Java {constants['TARGET_JAVA']}",
+                "default_target": f"Spring Boot {constants['TARGET_BOOT']} / Java {constants['TARGET_JAVA']}",
+                "declared_targets": sorted(
+                    {
+                        f"Spring Boot {route['target_boot']} / Java {route['target_java']}"
+                        for route in routes
+                    }
+                ),
+                "inventory_only_targets": sorted(
+                    f"Spring Boot {target_boot} / Java {target_java}"
+                    for target_boot, target_java in CURRENT_TARGET_INVENTORY.values()
+                ),
+                "source_families": sorted({str(route["source_family"]) for route in routes}),
                 "open_rewrite": constants["REWRITE_SPRING"],
                 "maven_plugin": constants["REWRITE_MAVEN_PLUGIN"],
                 "external_evidence_status": "NOT_RUN",

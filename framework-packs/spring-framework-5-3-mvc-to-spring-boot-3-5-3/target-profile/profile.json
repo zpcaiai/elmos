@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "profile_key": "spring-framework-5-3-mvc-to-spring-boot-3-5-3-target",
+  "version": "0.1.0",
+  "owner": "ELMOS Java Modernization Team",
+  "framework": "spring-boot",
+  "framework_versions": [
+    "3.5.3"
+  ],
+  "runtime": "java",
+  "runtime_versions": [
+    "21"
+  ],
+  "architecture_style": "executable-spring-boot-servlet-application-generated-from-fcm",
+  "providers": {
+    "spring_framework": {
+      "provider": "spring-framework",
+      "version": "6.2.8"
+    },
+    "servlet": {
+      "namespace": "jakarta.servlet",
+      "version": "6.1",
+      "embedded_container": "tomcat-10.1.42"
+    },
+    "serializer": {
+      "provider": "jackson",
+      "version_authority": "spring-boot-3.5.3-bom",
+      "exact_resolution_status": "NOT_RUN"
+    },
+    "dependency_injection": {
+      "provider": "spring-framework",
+      "version": "6.2.8",
+      "context_merge_requires_fcm": true
+    },
+    "validation": {
+      "namespace": "jakarta.validation",
+      "api_version": "3.0.2",
+      "provider": "hibernate-validator",
+      "provider_version": "8.0.2.Final"
+    },
+    "authentication": {
+      "strategy": "fail-closed-require-exact-security-profile",
+      "automatic_support": false
+    },
+    "authorization": {
+      "strategy": "fail-closed-require-exact-security-profile",
+      "automatic_support": false
+    },
+    "persistence": {
+      "strategy": "fail-closed-require-exact-provider-profile",
+      "automatic_support": false
+    },
+    "transactions": {
+      "strategy": "fail-closed-require-exact-transaction-profile",
+      "automatic_support": false
+    },
+    "messaging": {
+      "strategy": "fail-closed-require-exact-provider-profile"
+    },
+    "cache": {
+      "strategy": "fail-closed-require-exact-provider-profile"
+    },
+    "scheduler": {
+      "strategy": "fail-closed-require-exact-provider-profile"
+    },
+    "observability": {
+      "provider": "spring-boot-actuator",
+      "health_path": "/actuator/health",
+      "exposure_requires_policy": true
+    }
+  },
+  "build": {
+    "commands": [
+      "mvn -B --no-transfer-progress test",
+      "mvn -B --no-transfer-progress verify",
+      "mvn -B --no-transfer-progress package"
+    ],
+    "required_maven": "3.9.11",
+    "toolchain_digests": [],
+    "execution_status": "NOT_RUN"
+  },
+  "startup": {
+    "command": "java -jar target/<verified-boot-artifact>.jar --server.address=127.0.0.1 --server.port=<ephemeral-port>",
+    "health_check": "GET http://127.0.0.1:<ephemeral-port>/actuator/health",
+    "shutdown_check": "SIGTERM followed by bounded graceful completion",
+    "execution_status": "NOT_RUN"
+  },
+  "manual_obligations": [
+    "existing corporate Maven parents require an approved parent/BOM strategy",
+    "JSP or other servlet-container view technologies require an explicit target decision",
+    "JNDI, realms and container descriptors require provider-specific adapters",
+    "security, persistence, transactions, messaging, cache and scheduler must remain blocked without exact profiles"
+  ]
+}

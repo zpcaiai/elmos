@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "pack_key": "spring-framework-5-3-mvc-to-spring-boot-3-5-3",
+  "capabilities": [
+    {
+      "id": "web",
+      "status": "experimental",
+      "strategy": "fcm-dispatcher-servlet-to-boot-mvc",
+      "reason": "DispatcherServlet, request mapping, response and interceptor obligations are modeled statically; runtime parity is NOT_RUN.",
+      "evidence_refs": [
+        "contracts/framework-contract-model.json"
+      ]
+    },
+    {
+      "id": "dependency-injection",
+      "status": "experimental",
+      "strategy": "fcm-root-and-servlet-context-merge",
+      "reason": "Root/web context ownership and component scanning are modeled; bean graph conformance is NOT_RUN.",
+      "evidence_refs": [
+        "contracts/framework-contract-model.json"
+      ]
+    },
+    {
+      "id": "configuration",
+      "status": "experimental",
+      "strategy": "explicit-property-and-xml-obligation-mapping",
+      "reason": "XML and property sources are inventoried; Boot precedence and binding parity are NOT_RUN.",
+      "evidence_refs": [
+        "contracts/framework-contract-model.json"
+      ]
+    },
+    {
+      "id": "validation",
+      "status": "experimental",
+      "strategy": "javax-to-jakarta-validation-contract",
+      "reason": "Validation annotations and error shape are modeled; provider/runtime parity is NOT_RUN.",
+      "evidence_refs": [
+        "contracts/framework-contract-model.json"
+      ]
+    },
+    {
+      "id": "authentication",
+      "status": "blocked",
+      "strategy": "detect-and-require-security-profile",
+      "reason": "No authentication is present in the development fixture; customer security filters must fail closed pending an exact profile.",
+      "evidence_refs": []
+    },
+    {
+      "id": "authorization",
+      "status": "blocked",
+      "strategy": "detect-and-require-security-profile",
+      "reason": "No authorization policy is present in the development fixture; URL and method policy preservation is NOT_RUN.",
+      "evidence_refs": []
+    },
+    {
+      "id": "persistence",
+      "status": "detected-only",
+      "strategy": "provider-specific-fcm-required",
+      "reason": "The development fixture has no persistence provider; entity, session and query behavior remain NOT_RUN.",
+      "evidence_refs": []
+    },
+    {
+      "id": "transactions",
+      "status": "blocked",
+      "strategy": "provider-specific-transaction-contract-required",
+      "reason": "Transaction manager identity, propagation and rollback semantics are absent from the fixture and cannot be inferred.",
+      "evidence_refs": []
+    },
+    {
+      "id": "error-handling",
+      "status": "experimental",
+      "strategy": "controller-advice-contract",
+      "reason": "ControllerAdvice status and JSON shape are modeled statically; exception parity is NOT_RUN.",
+      "evidence_refs": [
+        "contracts/framework-contract-model.json"
+      ]
+    },
+    {
+      "id": "servlet-filters-and-interceptors",
+      "status": "experimental",
+      "strategy": "ordered-filter-interceptor-contract",
+      "reason": "Encoding filter and audit interceptor ordering are modeled; real container order parity is NOT_RUN.",
+      "evidence_refs": [
+        "contracts/framework-contract-model.json"
+      ]
+    },
+    {
+      "id": "messaging",
+      "status": "detected-only",
+      "strategy": "detect-and-block-without-provider-profile",
+      "reason": "No messaging provider is present in the fixture; delivery and duplicate-effect behavior remain NOT_RUN.",
+      "evidence_refs": []
+    },
+    {
+      "id": "cache",
+      "status": "detected-only",
+      "strategy": "detect-and-block-without-provider-profile",
+      "reason": "No cache provider is present in the fixture; key, TTL and invalidation semantics remain NOT_RUN.",
+      "evidence_refs": []
+    },
+    {
+      "id": "scheduler",
+      "status": "detected-only",
+      "strategy": "detect-and-replay-with-provider-profile",
+      "reason": "No scheduler is present in the fixture; timing, overlap and misfire behavior remain NOT_RUN.",
+      "evidence_refs": []
+    },
+    {
+      "id": "views-and-static-resources",
+      "status": "blocked",
+      "strategy": "explicit-view-technology-profile",
+      "reason": "JSP/view resolver and static-resource behavior require an explicit target strategy; no silent REST conversion is allowed.",
+      "evidence_refs": []
+    },
+    {
+      "id": "lifecycle",
+      "status": "experimental",
+      "strategy": "listener-servlet-to-boot-lifecycle-contract",
+      "reason": "ContextLoaderListener and DispatcherServlet startup obligations are modeled; target startup and graceful shutdown are NOT_RUN.",
+      "evidence_refs": [
+        "contracts/framework-contract-model.json"
+      ]
+    }
+  ]
+}

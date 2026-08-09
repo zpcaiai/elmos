@@ -79,10 +79,13 @@ final class HttpSpringUpgradeIndependentValidator implements SpringUpgradeIndepe
                     "Independent validation was cancelled.");
         }
         try {
+            TargetTuple target = targetTuple(result, runRoot);
             byte[] body = json.writeValueAsBytes(new VerificationRequest(
                     runRoot.getFileName().toString(),
                     workspaceRoot.relativize(artifact).toString(),
-                    result.artifactSha256()
+                    result.artifactSha256(),
+                    target.springBoot(),
+                    target.java()
             ));
             String timestamp = Long.toString(clock.instant().getEpochSecond());
             String nonce = UUID.randomUUID().toString();
@@ -105,7 +108,7 @@ final class HttpSpringUpgradeIndependentValidator implements SpringUpgradeIndepe
                 throw verifierFailure(response);
             }
             VerificationResponse decision = json.readValue(response.body(), VerificationResponse.class);
-            validateDecision(decision, result);
+            validateDecision(decision, result, target);
             Instant decidedAt = Objects.requireNonNull(decision.decidedAt());
             Path evidence = runRoot.resolve("evidence/independent-validation.json");
             Map<String, Object> receipt = new LinkedHashMap<>();
@@ -165,13 +168,17 @@ final class HttpSpringUpgradeIndependentValidator implements SpringUpgradeIndepe
         return "Separate read-only artifact verifier is configured with digest-bound HMAC requests.";
     }
 
-    private void validateDecision(VerificationResponse decision, ExecutionResult result) {
+    private void validateDecision(
+            VerificationResponse decision,
+            ExecutionResult result,
+            TargetTuple target
+    ) {
         if (decision == null
                 || !"PASS".equals(decision.status())
                 || !expectedVerifierId.equals(decision.verifierId())
                 || !result.artifactSha256().equals(decision.artifactSha256())
-                || !TARGET_BOOT.equals(decision.targetSpringBoot())
-                || !TARGET_JAVA.equals(decision.targetJava())
+                || !target.springBoot().equals(decision.targetSpringBoot())
+                || !target.java().equals(decision.targetJava())
                 || !decision.freshArtifactWorkspace()
                 || decision.transformCapability()
                 || !decision.physicallySeparateVerifierService()
@@ -196,6 +203,37 @@ final class HttpSpringUpgradeIndependentValidator implements SpringUpgradeIndepe
             throw blocked("INDEPENDENT_VERIFIER_PROTOCOL_ERROR",
                     "Independent verifier returned a decision that violates the verification contract.");
         }
+    }
+
+    private TargetTuple targetTuple(ExecutionResult result, Path runRoot) {
+        try {
+            Path fcm = runRoot.resolve(result.fcmArtifact()).normalize();
+            if (!fcm.startsWith(runRoot)
+                    || !Files.isRegularFile(fcm, LinkOption.NOFOLLOW_LINKS)
+                    || Files.isSymbolicLink(fcm)) {
+                throw blocked("FCM_TARGET_TUPLE_UNAVAILABLE",
+                        "Authoritative Framework Contract Model is unavailable to the verifier client.");
+            }
+            JsonNode tuple = json.readTree(fcm.toFile()).path("exact_tuple");
+            String boot = tuple.path("targetSpringBoot").asText("");
+            String java = tuple.path("targetJava").asText("");
+            if (!supportedTarget(boot, java)) {
+                throw blocked("FCM_TARGET_TUPLE_UNSUPPORTED",
+                        "Framework Contract Model requested a target outside the verifier allowlist.");
+            }
+            return new TargetTuple(boot, java);
+        } catch (BlockedException error) {
+            throw error;
+        } catch (IOException error) {
+            throw blocked("FCM_TARGET_TUPLE_UNAVAILABLE",
+                    "Authoritative Framework Contract Model could not be read by the verifier client.");
+        }
+    }
+
+    private static boolean supportedTarget(String boot, String java) {
+        return ("2.7.18".equals(boot) && "17".equals(java))
+                || ("3.2.12".equals(boot) && "17".equals(java))
+                || ("3.5.3".equals(boot) && "21".equals(java));
     }
 
     private BlockedException verifierFailure(HttpResponse<byte[]> response) {
@@ -293,8 +331,12 @@ final class HttpSpringUpgradeIndependentValidator implements SpringUpgradeIndepe
     private record VerificationRequest(
             String runId,
             String artifactRelativePath,
-            String artifactSha256
+            String artifactSha256,
+            String targetSpringBoot,
+            String targetJava
     ) {}
+
+    private record TargetTuple(String springBoot, String java) {}
 
     private record VerificationResponse(
             String status,
