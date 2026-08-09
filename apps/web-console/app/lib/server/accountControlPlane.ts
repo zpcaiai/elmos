@@ -4,34 +4,26 @@ import {
   accountSessionErrorResponse,
   accountSessionFromRequest,
 } from "./accountSession";
+import { configuredControlPlaneBaseUrl } from "./trustedUpstream";
 
 const organizationPattern = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/;
 const accountPattern = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/;
 
 function baseUrl(): string {
-  const configured = process.env.ELMOS_CONTROL_PLANE_BASE_URL?.trim() ?? "";
-  let parsed: URL;
+  let configured: string | null;
   try {
-    parsed = new URL(configured);
+    configured = configuredControlPlaneBaseUrl();
   } catch {
-    throw new AccountSessionError(
-      503, "CONTROL_PLANE_NOT_CONFIGURED", "账户控制面尚未配置。",
-    );
-  }
-  const localDevelopment = process.env.NODE_ENV !== "production"
-    && ["localhost", "127.0.0.1"].includes(parsed.hostname);
-  if (
-    (parsed.protocol !== "https:" && !(localDevelopment && parsed.protocol === "http:"))
-    || parsed.username
-    || parsed.password
-    || parsed.search
-    || parsed.hash
-  ) {
     throw new AccountSessionError(
       503, "CONTROL_PLANE_CONFIGURATION_INVALID", "账户控制面地址无效。",
     );
   }
-  return parsed.toString().replace(/\/$/, "");
+  if (!configured) {
+    throw new AccountSessionError(
+      503, "CONTROL_PLANE_NOT_CONFIGURED", "账户控制面尚未配置。",
+    );
+  }
+  return configured;
 }
 
 function targetPath(parts: string[], method: string): {

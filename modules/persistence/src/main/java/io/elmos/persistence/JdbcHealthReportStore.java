@@ -16,7 +16,7 @@ import java.util.HexFormat;
 import java.util.Objects;
 
 @Repository
-public final class JdbcHealthReportStore implements HealthReportStore {
+public class JdbcHealthReportStore implements HealthReportStore {
     private final JdbcClient jdbc; private final ObjectMapper json;
     public JdbcHealthReportStore(JdbcClient jdbc, ObjectMapper json) { this.jdbc = jdbc; this.json = json; }
 

@@ -215,6 +215,112 @@ export type TenantQuotaView = {
   allocationVersion: number;
 };
 
+export type OperationsJobBusinessLine =
+  | "GENERATION"
+  | "TRANSLATION"
+  | "SPRING_UPGRADE"
+  | "REPOSITORY_WORKSPACE"
+  | "MODERNIZATION_PROOF";
+
+export type OperationsJobStatus =
+  | "QUEUED"
+  | "CLAIMED"
+  | "RUNNING"
+  | "SUCCEEDED"
+  | "PARTIAL"
+  | "FAILED"
+  | "CANCELLED"
+  | "LOST";
+
+export type OperationsJobResultStatus =
+  | "NOT_RUN"
+  | "PASSED"
+  | "PARTIAL"
+  | "FAILED"
+  | "BLOCKED";
+
+export type OperationsJobView = {
+  jobId: string;
+  organizationId: string;
+  actorId: string;
+  businessLine: OperationsJobBusinessLine;
+  jobKind: string;
+  status: OperationsJobStatus;
+  stage: string;
+  progress: number;
+  resultStatus: OperationsJobResultStatus;
+  failureCode: string | null;
+  attempt: number;
+  maxAttempts: number;
+  createdAt: string;
+  startedAt: string | null;
+  finishedAt: string | null;
+  cancelRequested: boolean;
+  stateVersion: number;
+};
+
+export type OperationsJobListView = {
+  schemaVersion: "1.0.0";
+  items: OperationsJobView[];
+  limit: number;
+  scanned: number;
+  scanTruncated: boolean;
+  businessLine: OperationsJobBusinessLine | null;
+  status: OperationsJobStatus | null;
+};
+
+export type OperationsJobCancellationView = {
+  schemaVersion: "1.0.0";
+  jobId: string;
+  status: OperationsJobStatus;
+  cancelRequested: true;
+  idempotentReplay: boolean;
+};
+
+export type RunnerFleetStatus =
+  | "REGISTERED"
+  | "READY"
+  | "DRAINING"
+  | "QUARANTINED"
+  | "LOST"
+  | "RETIRED";
+
+/**
+ * Secret-free runner projection exposed to tenant administrators.
+ *
+ * Credential identifiers, enrollment/node tokens, token hashes, raw
+ * attestation payloads, and verifier identities are intentionally absent.
+ */
+export type RunnerFleetNodeView = {
+  runnerNodeId: string;
+  runnerPoolId: string;
+  agentVersion: string;
+  fleetStatus: RunnerFleetStatus;
+  capabilities: string[];
+  maxConcurrency: number;
+  attestationVerified: boolean;
+  attestationVerifiedAt: string | null;
+  imageAllowlistVersion: string;
+  lastHeartbeatAt: string | null;
+  drainRequestedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type RunnerFleetListView = {
+  schemaVersion: "1.0.0";
+  items: RunnerFleetNodeView[];
+  limit: number;
+  returned: number;
+  truncated: boolean;
+  status: RunnerFleetStatus | null;
+};
+
+export type RunnerFleetMutationView = {
+  runnerNodeId: string;
+  status: "DRAINING" | "READY";
+};
+
 /**
  * One section of a run replay.
  *

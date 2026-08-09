@@ -10,7 +10,7 @@ import java.util.List;
  * active GitHub App installation. Callers receive no credential material.
  */
 @Repository
-public final class JdbcGitHubRepositoryCatalog {
+public class JdbcGitHubRepositoryCatalog {
     public record AuthorizedRepository(
             String repositoryId,
             long repositoryExternalId,

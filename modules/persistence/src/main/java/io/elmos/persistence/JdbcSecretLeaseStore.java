@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.time.OffsetDateTime;
 
 @Repository
-public final class JdbcSecretLeaseStore implements SecretInjectionService.SecretLeaseStore {
+public class JdbcSecretLeaseStore implements SecretInjectionService.SecretLeaseStore {
     private final JdbcClient jdbc;
     public JdbcSecretLeaseStore(JdbcClient jdbc) { this.jdbc = jdbc; }
     @Override public void save(SecretLease lease) {

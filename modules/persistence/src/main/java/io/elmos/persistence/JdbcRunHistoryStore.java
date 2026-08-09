@@ -1,5 +1,6 @@
 package io.elmos.persistence;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -36,7 +37,7 @@ import java.util.function.Supplier;
  * attempt where the run failed is worse than one that admits it is incomplete.
  */
 @Repository
-public final class JdbcRunHistoryStore {
+public class JdbcRunHistoryStore {
 
     /**
      * Generous enough that a real run never reaches it, small enough that a
@@ -49,6 +50,7 @@ public final class JdbcRunHistoryStore {
     private final TransactionTemplate readOnly;
     private final int sectionCap;
 
+    @Autowired
     public JdbcRunHistoryStore(JdbcClient jdbc, PlatformTransactionManager transactionManager) {
         this(jdbc, transactionManager, DEFAULT_SECTION_CAP);
     }

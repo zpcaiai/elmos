@@ -7,6 +7,23 @@ import {
   unsafeCookieValue,
   type AccountPermission,
 } from "./accountSession";
+import {
+  AdminMutationPolicyError,
+  assertAdminMutationOrigin,
+} from "./adminMutationPolicy";
+import {
+  assertEmptyOperationsJobQuery,
+  OperationsJobsPolicyError,
+  operationsJobId,
+  operationsJobListQuery,
+} from "./operationsJobsPolicy";
+import {
+  RunnerFleetPolicyError,
+  requireRunnerFleetOidcAdmin,
+  runnerFleetNodeId,
+  runnerFleetListQuery,
+} from "./runnerFleetPolicy";
+import { configuredControlPlaneBaseUrl } from "./trustedUpstream";
 
 const MAX_BODY_BYTES = 64 * 1024;
 const MAX_BATCH_SIZE = 50;
@@ -37,23 +54,15 @@ function requiredEnvironment(name: string, minimumLength = 1): string {
 }
 
 function controlPlaneBaseUrl(): string {
-  const configured = process.env.ELMOS_CONTROL_PLANE_BASE_URL?.trim()
-    || process.env.CONTROL_PLANE_BASE_URL?.trim();
-  const value = configured || (
-    process.env.NODE_ENV === "production"
-      ? requiredEnvironment("ELMOS_CONTROL_PLANE_BASE_URL")
-      : "http://127.0.0.1:8080"
-  );
-  let parsed: URL;
+  let configured: string | null;
   try {
-    parsed = new URL(value);
+    configured = configuredControlPlaneBaseUrl({
+      developmentFallback: "http://127.0.0.1:8080",
+    });
   } catch {
     throw new OperationsProxyError(503, "OPERATIONS_CONTROL_PLANE_URL_INVALID", "操作观测服务地址无效。");
   }
-  if (!["http:", "https:"].includes(parsed.protocol) || parsed.username || parsed.password) {
-    throw new OperationsProxyError(503, "OPERATIONS_CONTROL_PLANE_URL_INVALID", "操作观测服务地址无效。");
-  }
-  return parsed.toString().replace(/\/$/, "");
+  return configured ?? requiredEnvironment("ELMOS_CONTROL_PLANE_BASE_URL");
 }
 
 function internalHeaders(
@@ -457,6 +466,14 @@ export function authorizeAdmin(
   };
 }
 
+export function requireAdminMutationSameOrigin(request: Request): void {
+  const hasAmbientAccountCookie = Boolean(
+    unsafeCookieValue(request, accountCookieNames.session)
+    || unsafeCookieValue(request, accountCookieNames.accessToken),
+  );
+  assertAdminMutationOrigin(request, hasAmbientAccountCookie);
+}
+
 export async function fetchOperationsConsole(
   search: URLSearchParams,
   administrator: AdminPrincipal,
@@ -476,6 +493,82 @@ export async function fetchOperationsConsole(
     cache: "no-store",
     signal: AbortSignal.timeout(5_000),
   });
+}
+
+export async function fetchOperationsJobs(
+  search: URLSearchParams,
+  administrator: AdminPrincipal,
+): Promise<Response> {
+  const query = operationsJobListQuery(search);
+  return fetch(`${controlPlaneBaseUrl()}/api/v1/operations-observability/jobs?${query}`, {
+    headers: internalHeaders(randomUUID(), administrator),
+    cache: "no-store",
+    signal: AbortSignal.timeout(10_000),
+  });
+}
+
+export async function fetchOperationsRunnerFleet(
+  search: URLSearchParams,
+  administrator: AdminPrincipal,
+): Promise<Response> {
+  const query = runnerFleetListQuery(search);
+  return fetch(`${controlPlaneBaseUrl()}/api/v1/operations-observability/runners?${query}`, {
+    headers: internalHeaders(randomUUID(), administrator),
+    cache: "no-store",
+    signal: AbortSignal.timeout(10_000),
+  });
+}
+
+export async function requestRunnerDrain(
+  runnerNodeId: string,
+  administrator: AdminPrincipal,
+): Promise<Response> {
+  requireRunnerFleetOidcAdmin(administrator, "OPERATOR");
+  const resolvedNodeId = runnerFleetNodeId(runnerNodeId);
+  return fetch(
+    `${controlPlaneBaseUrl()}/api/v1/runner/nodes/${encodeURIComponent(resolvedNodeId)}/drain`,
+    {
+      method: "POST",
+      headers: internalHeaders(randomUUID(), administrator),
+      cache: "no-store",
+      signal: AbortSignal.timeout(10_000),
+    },
+  );
+}
+
+export async function verifyRunnerAttestation(
+  runnerNodeId: string,
+  administrator: AdminPrincipal,
+): Promise<Response> {
+  requireRunnerFleetOidcAdmin(administrator, "APPROVER");
+  const resolvedNodeId = runnerFleetNodeId(runnerNodeId);
+  return fetch(
+    `${controlPlaneBaseUrl()}/api/v1/runner/nodes/${encodeURIComponent(resolvedNodeId)}/attestation/verify`,
+    {
+      method: "POST",
+      headers: internalHeaders(randomUUID(), administrator),
+      cache: "no-store",
+      signal: AbortSignal.timeout(10_000),
+    },
+  );
+}
+
+export async function cancelOperationsJob(
+  jobId: string,
+  search: URLSearchParams,
+  administrator: AdminPrincipal,
+): Promise<Response> {
+  assertEmptyOperationsJobQuery(search);
+  const resolvedJobId = operationsJobId(jobId);
+  return fetch(
+    `${controlPlaneBaseUrl()}/api/v1/operations-observability/jobs/${encodeURIComponent(resolvedJobId)}/cancel`,
+    {
+      method: "POST",
+      headers: internalHeaders(randomUUID(), administrator),
+      cache: "no-store",
+      signal: AbortSignal.timeout(10_000),
+    },
+  );
 }
 
 /**
@@ -601,6 +694,23 @@ export async function adjustTenantQuota(
     throw new OperationsProxyError(400, "ADMIN_QUOTA_REQUEST_INVALID", "配额调整请求格式无效。");
   }
   const raw = body as Record<string, unknown>;
+  const allowedFields = new Set([
+    "quotaAllocationId",
+    "tokenLimit",
+    "creditLimit",
+    "expectedVersion",
+    "reasonCode",
+  ]);
+  if (
+    Object.keys(raw).length !== allowedFields.size
+    || Object.keys(raw).some((field) => !allowedFields.has(field))
+  ) {
+    throw new OperationsProxyError(
+      400,
+      "ADMIN_QUOTA_REQUEST_INVALID",
+      "配额调整请求包含缺失或多余字段。",
+    );
+  }
   const quotaAllocationId = identifier(raw.quotaAllocationId, "quotaAllocationId");
   const tokenLimit = decimalString(raw.tokenLimit, "tokenLimit");
   const creditLimit = decimalString(raw.creditLimit, "creditLimit");
@@ -671,10 +781,40 @@ function filterToken(value: string | null): string {
 }
 
 export function proxyErrorResponse(error: unknown): Response {
+  if (error instanceof AdminMutationPolicyError) {
+    return Response.json(
+      { errorCode: error.errorCode, message: error.message, retryable: false },
+      {
+        status: error.status,
+        headers: { "Cache-Control": "private, no-store, max-age=0", Vary: "Cookie, Authorization" },
+      },
+    );
+  }
+  if (error instanceof RunnerFleetPolicyError) {
+    return Response.json(
+      { errorCode: error.errorCode, message: error.message, retryable: false },
+      {
+        status: error.status,
+        headers: { "Cache-Control": "private, no-store, max-age=0", Vary: "Cookie, Authorization" },
+      },
+    );
+  }
+  if (error instanceof OperationsJobsPolicyError) {
+    return Response.json(
+      { errorCode: error.errorCode, message: error.message, retryable: false },
+      {
+        status: 400,
+        headers: { "Cache-Control": "no-store, private", Vary: "Authorization" },
+      },
+    );
+  }
   if (error instanceof OperationsProxyError) {
     return Response.json(
       { errorCode: error.errorCode, message: error.message, retryable: false },
-      { status: error.status },
+      {
+        status: error.status,
+        headers: { "Cache-Control": "no-store, private", Vary: "Authorization" },
+      },
     );
   }
   const timeout = error instanceof Error && (error.name === "TimeoutError" || error.name === "AbortError");
@@ -684,6 +824,9 @@ export function proxyErrorResponse(error: unknown): Response {
       message: timeout ? "操作观测服务响应超时。" : "操作观测服务当前不可用。",
       retryable: true,
     },
-    { status: 503 },
+    {
+      status: 503,
+      headers: { "Cache-Control": "no-store, private", Vary: "Authorization" },
+    },
   );
 }

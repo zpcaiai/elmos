@@ -1,5 +1,6 @@
 package io.elmos.controlplane;
 
+import jakarta.servlet.DispatcherType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -55,6 +56,7 @@ public class ControlPlaneSecurityConfiguration {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
+                        .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                         .requestMatchers(
                                 "/actuator/health/**",
                                 "/livez",
@@ -62,6 +64,28 @@ public class ControlPlaneSecurityConfiguration {
                                 "/api/webhooks/github",
                                 "/api/v1/auth/**",
                                 "/runner/v1/**")
+                        .permitAll()
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/v1/operations-observability/summary",
+                                "/api/v1/operations-observability/audit-export",
+                                "/api/v1/operations-observability/runs/*/replay",
+                                "/api/v1/operations-observability/console",
+                                "/api/v1/operations-observability/jobs",
+                                "/api/v1/operations-observability/runners",
+                                "/api/v1/tenant-quota")
+                        .permitAll()
+                        .requestMatchers(HttpMethod.POST,
+                                "/api/v1/operations-observability/events",
+                                "/api/v1/operations-observability/audit-events",
+                                "/api/v1/operations-observability/evaluate",
+                                "/api/v1/operations-observability/alerts/*/acknowledge",
+                                "/api/v1/operations-observability/incidents/*/assign",
+                                "/api/v1/operations-observability/incidents/*/resolve",
+                                "/api/v1/operations-observability/remediations/*/decision",
+                                "/api/v1/operations-observability/remediations/*/prepare-scm",
+                                "/api/v1/operations-observability/retention/enforce",
+                                "/api/v1/operations-observability/jobs/*/cancel",
+                                "/api/v1/tenant-quota/adjust")
                         .permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .anyRequest().authenticated())

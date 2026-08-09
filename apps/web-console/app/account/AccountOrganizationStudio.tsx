@@ -22,7 +22,7 @@ type Member = {
 
 type ErrorPayload = { code?: string; errorCode?: string; message?: string };
 
-export function AccountOrganizationStudio() {
+export function AccountOrganizationStudio({ embedded = false }: { embedded?: boolean } = {}) {
   const account = useAccountSession();
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [selectedId, setSelectedId] = useState("");
@@ -169,6 +169,7 @@ export function AccountOrganizationStudio() {
   }
 
   if (account.status !== "authenticated") {
+    if (embedded) return null;
     return (
       <section className={styles.page}>
         <header className="page-header">
@@ -184,10 +185,12 @@ export function AccountOrganizationStudio() {
 
   return (
     <section className={styles.page}>
-      <header className="page-header">
-        <div><span className="eyebrow">IDENTITY & TENANCY</span><h1>账户与组织</h1>
-          <p>创建组织、邀请成员、切换租户和管理最小权限角色。租户选择只是选择器，授权以控制面数据库为准。</p></div>
-      </header>
+      {!embedded && (
+        <header className="page-header">
+          <div><span className="eyebrow">IDENTITY & TENANCY</span><h1>账户与组织</h1>
+            <p>创建组织、邀请成员、切换租户和管理最小权限角色。租户选择只是选择器，授权以控制面数据库为准。</p></div>
+        </header>
+      )}
 
       {feedback && <div className={styles.feedback} role="status">{feedback}</div>}
 

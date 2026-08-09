@@ -31,7 +31,7 @@
 .locked p, .error p { max-width: 620px; margin: 0; color: var(--muted); font-size: 10px; line-height: 1.6; }
 .error { justify-content: flex-start; min-height: auto; border-style: solid; border-color: #efc5bd; background: #fff7f4; color: #9a4032; }
 .notice { padding: 12px 16px; border: 1px solid #b9ddd2; border-radius: 11px; background: #f0faf6; color: #256a5d; font-size: 10px; font-weight: 750; }
-.sectionNav { display: grid; grid-template-columns: repeat(7,minmax(0,1fr)); gap: 7px; padding: 8px; border: 1px solid var(--line); border-radius: 13px; background: var(--surface); box-shadow: var(--shadow-sm); }
+.sectionNav { display: grid; grid-template-columns: repeat(8,minmax(0,1fr)); gap: 7px; padding: 8px; border: 1px solid var(--line); border-radius: 13px; background: var(--surface); box-shadow: var(--shadow-sm); }
 .sectionNav button { min-height: 39px; padding: 0 9px; border: 0; border-radius: 8px; background: transparent; color: var(--muted); font-size: 9px; font-weight: 800; cursor: pointer; }
 .sectionNav button:hover,.sectionNav .activeSection { background: var(--cyan-soft); color: var(--cyan-dark); }
 .identityGrid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 11px; }
@@ -90,6 +90,12 @@
 .severity, .kind { flex: 0 0 auto; padding: 3px 6px; border-radius: 6px; background: #fff0ed; color: #a34435; font-size: 7px; font-weight: 850; }
 .kind { background: var(--cyan-soft); color: var(--cyan-dark); }
 .inlineActions { display: flex; flex-wrap: wrap; gap: 7px; }
+.inlineActions label { display: flex; flex-direction: column; gap: 5px; color: var(--muted); font-size: 8px; font-weight: 750; }
+.inlineActions input,.inlineActions select { min-height: 36px; padding: 0 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-soft); color: var(--ink); font: inherit; }
+.financeActions { min-width: 290px; display: flex; flex-direction: column; gap: 7px; }
+.financeActions input { width: 100%; min-height: 34px; padding: 0 9px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-soft); color: var(--ink); font-size: 8px; }
+.financeActions > div { display: flex; flex-wrap: wrap; gap: 6px; }
+.financeActions button { min-height: 31px; padding: 0 9px; font-size: 8px; }
 
 .evidence { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; padding: 15px 18px; border: 1px solid var(--line); border-radius: 13px; background: var(--surface); }
 .evidence strong { margin-right: auto; font-size: 10px; }
@@ -101,8 +107,10 @@
 .tableWrap td { max-width: 260px; padding: 11px 10px; border-bottom: 1px solid var(--line); color: var(--ink-soft); white-space: nowrap; }
 .tableWrap tr:last-child td { border-bottom: 0; }
 .tableWrap code { color: var(--cyan-dark); font-size: 8px; }
+.tableWrap td small { display: block; margin-top: 3px; color: var(--muted); font-size: 7px; }
 .tableWrap td:nth-child(4) { overflow: hidden; text-overflow: ellipsis; }
 .tableWrap td:nth-child(5) small { display: block; margin-top: 3px; color: #a34435; font-size: 7px; }
+.tableWrap td small.neutralDetail { color: var(--muted); }
 .resultGood, .resultBad { display: inline-block; padding: 3px 6px; border-radius: 6px; font-size: 7px; font-weight: 850; }
 .resultGood { background: var(--green-soft); color: var(--green); }
 .resultBad { background: #fff0ed; color: #a34435; }

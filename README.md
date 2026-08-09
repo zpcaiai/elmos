@@ -319,36 +319,23 @@ B016–B035 的 20 个 Build Skills 位于 `agent-skills/build`；Batch 9/10 的
 
 详见 `docs/product-closure-batch56/SOURCE_AUDIT.md` 与 `docs/product-closure-batch56/VERIFICATION.md`。
 
-## 本地演示
+## 本地商业管理核心（推荐）
 
 ```bash
-make up
-curl -X POST http://localhost:8080/api/v1/demo-runs
-curl http://localhost:8081/engine/v1/capabilities
-curl -H 'Content-Type: application/json' -d '{"snapshotId":"snapshot-local","relativePath":"."}' http://localhost:8081/engine/v1/health-checks
-curl -H 'Content-Type: application/json' -d '{"snapshotId":"snapshot-local","relativePath":"."}' http://localhost:8081/engine/v1/migration-plans
-curl http://localhost:8083/agent/v1/execution-capability
-curl http://localhost:8080/api/v1/delivery/evidence-packs/capability
-curl http://localhost:8084/enterprise/v1/capabilities
-curl http://localhost:8085/commercial/v1/capabilities
-curl http://localhost:8086/engine/v1/capabilities
-curl http://localhost:8087/engine/v1/capabilities
-curl http://localhost:8088/engine/v1/capabilities
-curl http://localhost:8089/engine/v1/capabilities
-curl http://localhost:8090/engine/v1/capabilities
-curl http://localhost:8091/engine/v1/capabilities
-curl http://localhost:8092/engine/v1/capabilities
-curl http://localhost:8093/engine/v1/capabilities
-curl http://localhost:8094/engine/v1/capabilities
-curl http://localhost:8095/engine/v1/capabilities
-curl http://localhost:8096/engine/v1/capabilities
-curl http://localhost:8097/engine/v1/capabilities
-curl http://localhost:8098/engine/v1/capabilities
-curl http://localhost:8099/engine/v1/capabilities
-curl http://localhost:8100/engine/v1/capabilities
-"$JAVA_HOME/bin/java" -jar apps/elmosctl/target/elmos-elmosctl-0.1.0-SNAPSHOT.jar verify
+make local-commercial-up
+# 按需取出 8 小时短期令牌，再在管理页登录
+python3 scripts/operations/local_commercial.py token
+# 打开 http://127.0.0.1:3000/admin
+make local-commercial-status
+make local-commercial-smoke
+make local-commercial-down
 ```
 
-Batch 1 演示会持久化 Repository、Snapshot、Assessment、批准后的 MigrationPlan、MigrationRun、模拟 Step、Evidence、Audit 和 Outbox 事件，并在返回值中明确标记 `simulated=true`。Java Worker 的健康检查和规划接口执行真实的有界静态分析；通用执行接口在批准的 Workspace Runner 尚未配置时失败关闭、返回空证据，并明确声明未执行客户代码。
+这条入口只构建 PostgreSQL、Control Plane、Commercial API、Workspace Service 和 Web Console，
+等待真实依赖 readiness，再以租户/操作者绑定的短期管理凭据请求管理聚合 API。端口全部只绑定
+`127.0.0.1`，详细说明与证据边界见 [`docs/LOCAL_COMMERCIAL_RUN.md`](docs/LOCAL_COMMERCIAL_RUN.md)。
+
+`make up` 仍保留为资源密集的全域引擎开发拓扑，不是商业就绪探针，也不会自动提供企业 OIDC、
+支付商户或 Private Runner。受保护 API 现在会正确要求身份/服务凭据，旧式匿名 curl 不再作为成功示例。
 
 核心策略与离线安全测试无需凭据。真实私有仓库、OpenRewrite/Agent Workspace、Testcontainers 双环境、PR/MR、Checks、Evidence Attestation、企业 IdP、私有 Runner、Vault/KMS、模型 Provider、GPU/Windows/Legacy Python、生产数据与模型资产、SIEM、商业系统和回滚/离线演练仍必须分别配置授权与测试基础设施。当前环境若缺少任一外部条件，相关能力返回 `NOT_CONFIGURED`、`NOT_RUN` 或 `BLOCKED`，绝不把计划或单元测试冒充真实客户迁移、企业登录、SCM 发布、数值/模型等价、财务结果、离线安装或生产可回滚。部署步骤见 `deploy/rootless-docker/README.md` 和 `deploy/air-gap/README.md`；完整 Gate 见各 Batch verification 文档。

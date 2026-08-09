@@ -5,6 +5,7 @@ import io.elmos.integrations.GitRepositoryWorkspaceService.ChangeRequest;
 import io.elmos.integrations.GitRepositoryWorkspaceService.FileChange;
 import io.elmos.persistence.JdbcUserActivityStore;
 import io.elmos.persistence.JdbcUserActivityStore.ActivityEvent;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
@@ -78,6 +79,7 @@ public final class RepositoryWorkspaceController {
     private final String apiKey;
     private final Path materializedRoot;
 
+    @Autowired
     public RepositoryWorkspaceController(
             GitRepositoryWorkspaceService workspaces,
             RepositoryWorkspaceCredentialStore credentials,

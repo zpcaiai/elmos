@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @Repository
-public final class JdbcWebhookDeliveryStore implements WebhookIngestionService.DeliveryStore {
+public class JdbcWebhookDeliveryStore implements WebhookIngestionService.DeliveryStore {
     private final JdbcClient jdbc; private final ObjectMapper objectMapper;
     public JdbcWebhookDeliveryStore(JdbcClient jdbc, ObjectMapper objectMapper) { this.jdbc = jdbc; this.objectMapper = objectMapper; }
 

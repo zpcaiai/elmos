@@ -1,14 +1,23 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { Icon } from "../components/Icon";
 import { useAccountSession } from "../components/AccountSessionProvider";
+import { AccountOrganizationStudio } from "../account/AccountOrganizationStudio";
 import type {
   AuditExportPage,
   AuditExportRow,
   OperationsConsoleView,
   OperationsIncident,
+  OperationsJobBusinessLine,
+  OperationsJobCancellationView,
+  OperationsJobListView,
+  OperationsJobStatus,
+  OperationsJobView,
   OperationsRemediation,
+  RunnerFleetListView,
+  RunnerFleetNodeView,
+  RunnerFleetStatus,
   RunReplayTimeline,
   TenantQuotaView,
 } from "../lib/operationsContracts";
@@ -39,9 +48,48 @@ const lines = [
 const lineLabels = Object.fromEntries(lines);
 const roleRank = { VIEWER: 1, OPERATOR: 2, APPROVER: 3 } as const;
 
-// 200 rows per page, so this bounds one download at 200k rows. Without a
-// ceiling a mistyped window turns into an unbounded request loop.
-const MAX_EXPORT_PAGES = 1_000;
+const jobBusinessLines: Array<[OperationsJobBusinessLine | "ALL", string]> = [
+  ["ALL", "全部作业类型"],
+  ["GENERATION", "项目生成"],
+  ["TRANSLATION", "跨语言转换"],
+  ["SPRING_UPGRADE", "Spring 升级"],
+  ["REPOSITORY_WORKSPACE", "仓库工作区"],
+  ["MODERNIZATION_PROOF", "现代化证明"],
+];
+const jobStatuses: Array<[OperationsJobStatus | "ALL", string]> = [
+  ["ALL", "全部状态"],
+  ["QUEUED", "排队"],
+  ["CLAIMED", "已租约"],
+  ["RUNNING", "运行中"],
+  ["SUCCEEDED", "成功"],
+  ["PARTIAL", "部分完成"],
+  ["FAILED", "失败"],
+  ["CANCELLED", "已取消"],
+  ["LOST", "租约丢失"],
+];
+const knownJobBusinessLines = new Set(jobBusinessLines.slice(1).map(([value]) => value));
+const knownJobStatuses = new Set(jobStatuses.slice(1).map(([value]) => value));
+const terminalJobStatuses = new Set<OperationsJobStatus>([
+  "SUCCEEDED", "PARTIAL", "FAILED", "CANCELLED", "LOST",
+]);
+const runnerFleetStatuses: Array<[RunnerFleetStatus | "ALL", string]> = [
+  ["ALL", "全部 Runner 状态"],
+  ["REGISTERED", "已注册 / 待验证"],
+  ["READY", "可调度"],
+  ["DRAINING", "排空中"],
+  ["QUARANTINED", "已隔离"],
+  ["LOST", "已失联"],
+  ["RETIRED", "已退役"],
+];
+const knownRunnerFleetStatuses = new Set(
+  runnerFleetStatuses.slice(1).map(([value]) => value),
+);
+
+// 200 rows per page, so this bounds one in-browser download at 20k rows.
+// The current exporter materializes both the row array and the CSV string;
+// allowing hundreds of thousands of rows can exhaust a management browser.
+// Larger exports belong in an asynchronous server-side artifact workflow.
+const MAX_EXPORT_PAGES = 100;
 
 const EXPORT_COLUMNS = [
   "occurredAt", "source", "eventId", "sessionId", "eventKind", "action",
@@ -76,7 +124,40 @@ function downloadCsv(rows: AuditExportRow[], days: string) {
 }
 
 type LoadState = "LOCKED" | "LOADING" | "READY" | "ERROR";
-type AdminSection = "USERS" | "TASKS" | "REPOSITORIES" | "AUDIT" | "ALERTS" | "USAGE" | "CONFIG";
+type SystemReadiness = {
+  status: "UP" | "BLOCKED";
+  checkedAt: string;
+  localRunner: { status: string; code?: string };
+  dependencies: Array<{
+    dependency: "control-plane" | "commercial-api" | "workspace-service";
+    status: "UP" | "BLOCKED";
+    reason?: string;
+  }>;
+};
+type ReconciliationStatus = "OPEN" | "RESOLVED" | "REJECTED";
+type ReconciliationCase = {
+  reconciliationCaseId: string;
+  provider: string;
+  providerObjectRef: string;
+  expectedState: string;
+  observedState: string;
+  status: ReconciliationStatus;
+  reasonCode: string;
+  openedAt: string;
+  resolvedAt: string | null;
+  resolverActorId: string | null;
+  resolutionRef: string | null;
+};
+type ReconciliationList = {
+  schemaVersion: "1.0.0";
+  items: ReconciliationCase[];
+};
+type FinancialMutationPayload = {
+  status?: unknown;
+  message?: unknown;
+  operationMayHaveCompleted?: unknown;
+};
+type AdminSection = "USERS" | "TASKS" | "REPOSITORIES" | "AUDIT" | "ALERTS" | "USAGE" | "FINANCE" | "CONFIG";
 const adminSections: Array<[AdminSection, string]> = [
   ["USERS", "用户与租户"],
   ["TASKS", "任务队列"],
@@ -84,6 +165,7 @@ const adminSections: Array<[AdminSection, string]> = [
   ["AUDIT", "审计"],
   ["ALERTS", "告警与事件"],
   ["USAGE", "用量与性能"],
+  ["FINANCE", "财务对账"],
   ["CONFIG", "配置与门禁"],
 ];
 type AdminAction =
@@ -109,6 +191,83 @@ function formatTime(value: string): string {
 
 function displayTarget(value: string): string {
   return value.length > 54 ? `${value.slice(0, 51)}…` : value;
+}
+
+function isReconciliationCase(value: unknown): value is ReconciliationCase {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) return false;
+  const item = value as Record<string, unknown>;
+  return typeof item.reconciliationCaseId === "string" && item.reconciliationCaseId.length <= 96
+    && typeof item.provider === "string" && item.provider.length <= 32
+    && typeof item.providerObjectRef === "string" && item.providerObjectRef.length <= 255
+    && typeof item.expectedState === "string" && item.expectedState.length <= 64
+    && typeof item.observedState === "string" && item.observedState.length <= 64
+    && typeof item.status === "string" && ["OPEN", "RESOLVED", "REJECTED"].includes(item.status)
+    && typeof item.reasonCode === "string" && item.reasonCode.length <= 96
+    && typeof item.openedAt === "string" && Number.isFinite(Date.parse(item.openedAt))
+    && (item.resolvedAt === null || (
+      typeof item.resolvedAt === "string" && Number.isFinite(Date.parse(item.resolvedAt))
+    ))
+    && (item.resolverActorId === null || (
+      typeof item.resolverActorId === "string" && item.resolverActorId.length <= 128
+    ))
+    && (item.resolutionRef === null || (
+      typeof item.resolutionRef === "string" && item.resolutionRef.length <= 255
+    ));
+}
+
+function isNullableTime(value: unknown): boolean {
+  return value === null || (typeof value === "string" && Number.isFinite(Date.parse(value)));
+}
+
+function isOperationsJob(value: unknown): value is OperationsJobView {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) return false;
+  const item = value as Record<string, unknown>;
+  return typeof item.jobId === "string"
+    && typeof item.organizationId === "string"
+    && typeof item.actorId === "string"
+    && typeof item.businessLine === "string"
+    && knownJobBusinessLines.has(item.businessLine as OperationsJobBusinessLine)
+    && typeof item.jobKind === "string"
+    && typeof item.status === "string"
+    && knownJobStatuses.has(item.status as OperationsJobStatus)
+    && typeof item.stage === "string"
+    && typeof item.progress === "number"
+    && Number.isFinite(item.progress)
+    && item.progress >= 0
+    && item.progress <= 100
+    && typeof item.resultStatus === "string"
+    && (item.failureCode === null || typeof item.failureCode === "string")
+    && Number.isInteger(item.attempt)
+    && Number.isInteger(item.maxAttempts)
+    && typeof item.createdAt === "string"
+    && Number.isFinite(Date.parse(item.createdAt))
+    && isNullableTime(item.startedAt)
+    && isNullableTime(item.finishedAt)
+    && typeof item.cancelRequested === "boolean"
+    && Number.isInteger(item.stateVersion);
+}
+
+function isRunnerFleetNode(value: unknown): value is RunnerFleetNodeView {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) return false;
+  const node = value as Record<string, unknown>;
+  return typeof node.runnerNodeId === "string"
+    && typeof node.runnerPoolId === "string"
+    && typeof node.agentVersion === "string"
+    && typeof node.fleetStatus === "string"
+    && knownRunnerFleetStatuses.has(node.fleetStatus as RunnerFleetStatus)
+    && Array.isArray(node.capabilities)
+    && node.capabilities.length <= 64
+    && node.capabilities.every((capability) => typeof capability === "string")
+    && Number.isInteger(node.maxConcurrency)
+    && typeof node.attestationVerified === "boolean"
+    && isNullableTime(node.attestationVerifiedAt)
+    && typeof node.imageAllowlistVersion === "string"
+    && isNullableTime(node.lastHeartbeatAt)
+    && isNullableTime(node.drainRequestedAt)
+    && typeof node.createdAt === "string"
+    && Number.isFinite(Date.parse(node.createdAt))
+    && typeof node.updatedAt === "string"
+    && Number.isFinite(Date.parse(node.updatedAt));
 }
 
 export function OperationsAdmin() {
@@ -137,7 +296,37 @@ export function OperationsAdmin() {
   const [quotaTokenLimit, setQuotaTokenLimit] = useState("");
   const [quotaCreditLimit, setQuotaCreditLimit] = useState("");
   const [quotaReason, setQuotaReason] = useState("");
+  const [operationsJobs, setOperationsJobs] = useState<OperationsJobView[]>([]);
+  const [operationsJobsLoaded, setOperationsJobsLoaded] = useState(false);
+  const [operationsJobsBusy, setOperationsJobsBusy] = useState(false);
+  const [operationsJobsError, setOperationsJobsError] = useState("");
+  const [operationsJobsNotice, setOperationsJobsNotice] = useState("");
+  const [operationsJobBusinessLine, setOperationsJobBusinessLine] =
+    useState<OperationsJobBusinessLine | "ALL">("ALL");
+  const [operationsJobStatus, setOperationsJobStatus] =
+    useState<OperationsJobStatus | "ALL">("ALL");
+  const [operationsJobCancelBusy, setOperationsJobCancelBusy] = useState("");
+  const [runnerFleet, setRunnerFleet] = useState<RunnerFleetNodeView[]>([]);
+  const [runnerFleetLoaded, setRunnerFleetLoaded] = useState(false);
+  const [runnerFleetBusy, setRunnerFleetBusy] = useState(false);
+  const [runnerFleetStatus, setRunnerFleetStatus] = useState<RunnerFleetStatus | "ALL">("ALL");
+  const [runnerFleetActionBusy, setRunnerFleetActionBusy] = useState("");
+  const [runnerFleetError, setRunnerFleetError] = useState("");
+  const [runnerFleetNotice, setRunnerFleetNotice] = useState("");
   const [adminSection, setAdminSection] = useState<AdminSection>("USERS");
+  const [systemReadiness, setSystemReadiness] = useState<SystemReadiness | null>(null);
+  const [systemReadinessBusy, setSystemReadinessBusy] = useState(false);
+  const [systemReadinessError, setSystemReadinessError] = useState("");
+  const [financialStatus, setFinancialStatus] = useState<ReconciliationStatus>("OPEN");
+  const [financialCases, setFinancialCases] = useState<ReconciliationCase[]>([]);
+  const [financialLoaded, setFinancialLoaded] = useState(false);
+  const [financialLoadBusy, setFinancialLoadBusy] = useState(false);
+  const [financialBusyAction, setFinancialBusyAction] = useState("");
+  const [financialError, setFinancialError] = useState("");
+  const [financialNotice, setFinancialNotice] = useState("");
+  const [financialUnknown, setFinancialUnknown] = useState("");
+  const [financialResolutionRefs, setFinancialResolutionRefs] = useState<Record<string, string>>({});
+  const financialIdempotencyKeys = useRef(new Map<string, string>());
 
   const summary = view?.activity ?? null;
   const periodLabel = useMemo(() => {
@@ -157,6 +346,55 @@ export function OperationsAdmin() {
       || event.action.startsWith("REPOSITORY_")),
     [summary],
   );
+
+  async function loadSystemReadiness() {
+    setSystemReadinessBusy(true);
+    setSystemReadinessError("");
+    try {
+      const response = await fetch("/api/health?probe=readiness", {
+        cache: "no-store",
+        credentials: "same-origin",
+      });
+      const payload = await response.json() as SystemReadiness & { message?: string };
+      if (!response.ok && payload.status !== "BLOCKED") {
+        throw new Error(payload.message || "系统依赖状态读取失败。");
+      }
+      setSystemReadiness(payload);
+    } catch (readinessFailure) {
+      setSystemReadiness(null);
+      setSystemReadinessError(
+        readinessFailure instanceof Error ? readinessFailure.message : "系统依赖状态读取失败。",
+      );
+    } finally {
+      setSystemReadinessBusy(false);
+    }
+  }
+
+  useEffect(() => {
+    if (adminSection === "CONFIG" && state === "READY" && !systemReadiness) {
+      void loadSystemReadiness();
+    }
+  }, [adminSection, state, systemReadiness]);
+
+  useEffect(() => {
+    setOperationsJobs([]);
+    setOperationsJobsLoaded(false);
+    setOperationsJobsError("");
+    setOperationsJobsNotice("");
+    setOperationsJobCancelBusy("");
+    setRunnerFleet([]);
+    setRunnerFleetLoaded(false);
+    setRunnerFleetError("");
+    setRunnerFleetNotice("");
+    setRunnerFleetActionBusy("");
+    setFinancialCases([]);
+    setFinancialLoaded(false);
+    setFinancialError("");
+    setFinancialNotice("");
+    setFinancialUnknown("");
+    setFinancialResolutionRefs({});
+    financialIdempotencyKeys.current.clear();
+  }, [account.principal?.organizationId]);
 
   /**
    * Walk the export cursor to the end and hand back a CSV file.
@@ -362,6 +600,385 @@ export function OperationsAdmin() {
     }
   }
 
+  async function loadOperationsJobs() {
+    if (account.status !== "authenticated" && token.trim().length < 24) {
+      setOperationsJobsError("请输入至少 24 字符的短期管理令牌。");
+      return;
+    }
+    setOperationsJobsBusy(true);
+    setOperationsJobsError("");
+    setOperationsJobsNotice("");
+    setOperationsJobs([]);
+    setOperationsJobsLoaded(false);
+    try {
+      const query = new URLSearchParams({ limit: "100" });
+      if (operationsJobBusinessLine !== "ALL") {
+        query.set("businessLine", operationsJobBusinessLine);
+      }
+      if (operationsJobStatus !== "ALL") query.set("status", operationsJobStatus);
+      const response = await fetch(`/api/admin/jobs?${query}`, {
+        headers: token.trim() ? { Authorization: `Bearer ${token.trim()}` } : undefined,
+        credentials: "same-origin",
+        cache: "no-store",
+      });
+      const payload = await response.json() as Partial<OperationsJobListView> & {
+        message?: string;
+      };
+      if (!response.ok) throw new Error(payload.message || "持久作业列表读取失败。");
+      if (
+        payload.schemaVersion !== "1.0.0"
+        || !Array.isArray(payload.items)
+        || payload.items.length > 100
+        || !payload.items.every(isOperationsJob)
+        || typeof payload.limit !== "number"
+        || typeof payload.scanned !== "number"
+        || typeof payload.scanTruncated !== "boolean"
+      ) {
+        throw new Error("控制面返回了不受支持的持久作业数据。");
+      }
+      setOperationsJobs(payload.items);
+      setOperationsJobsLoaded(true);
+      if (payload.scanTruncated) {
+        setOperationsJobsNotice(
+          `已扫描 ${payload.scanned} 条后达到服务端上限；请收窄状态或业务线。`,
+        );
+      }
+    } catch (jobsFailure) {
+      setOperationsJobsError(
+        jobsFailure instanceof Error ? jobsFailure.message : "持久作业列表读取失败。",
+      );
+    } finally {
+      setOperationsJobsBusy(false);
+    }
+  }
+
+  async function cancelOperationsJob(job: OperationsJobView) {
+    if (!can("OPERATOR")) {
+      setOperationsJobsError("取消作业需要 OPERATOR 或更高权限。");
+      return;
+    }
+    setOperationsJobCancelBusy(job.jobId);
+    setOperationsJobsError("");
+    setOperationsJobsNotice("");
+    let response: Response;
+    try {
+      response = await fetch(`/api/admin/jobs/${encodeURIComponent(job.jobId)}/cancel`, {
+        method: "POST",
+        headers: token.trim() ? { Authorization: `Bearer ${token.trim()}` } : undefined,
+        credentials: "same-origin",
+        cache: "no-store",
+      });
+    } catch {
+      setOperationsJobsError(
+        "取消请求结果未知，系统未自动重试。请先重新读取作业状态，再决定是否人工重放。",
+      );
+      setOperationsJobCancelBusy("");
+      return;
+    }
+    let payload: Partial<OperationsJobCancellationView> & {
+      message?: string;
+      errorCode?: string;
+    } = {};
+    try {
+      payload = await response.json() as typeof payload;
+    } catch {
+      // A confirmed non-2xx response can still be surfaced without inventing a body.
+    }
+    if (!response.ok) {
+      setOperationsJobsError(
+        response.status === 409
+          ? "该作业已进入终态，无法再取消；请重新读取列表。"
+          : payload.message || payload.errorCode || "作业取消被拒绝。",
+      );
+      setOperationsJobCancelBusy("");
+      return;
+    }
+    if (
+      payload.schemaVersion !== "1.0.0"
+      || payload.jobId !== job.jobId
+      || payload.cancelRequested !== true
+      || typeof payload.status !== "string"
+      || !knownJobStatuses.has(payload.status as OperationsJobStatus)
+      || typeof payload.idempotentReplay !== "boolean"
+    ) {
+      setOperationsJobsError(
+        "取消请求已返回，但结果无法确认。系统未自动重试，请重新读取作业。",
+      );
+      setOperationsJobCancelBusy("");
+      return;
+    }
+    setOperationsJobs((current) => current.map((candidate) => (
+      candidate.jobId === job.jobId
+        ? { ...candidate, status: payload.status as OperationsJobStatus, cancelRequested: true }
+        : candidate
+    )));
+    setOperationsJobsNotice(
+      payload.idempotentReplay
+        ? "该作业之前已请求取消；本次为幂等确认。"
+        : "取消请求已被持久队列接受。",
+    );
+    setOperationsJobCancelBusy("");
+  }
+
+  async function loadRunnerFleet() {
+    if (account.status !== "authenticated" && token.trim().length < 24) {
+      setRunnerFleetError("请输入至少 24 字符的短期管理令牌。");
+      return;
+    }
+    setRunnerFleetBusy(true);
+    setRunnerFleetError("");
+    setRunnerFleetNotice("");
+    setRunnerFleet([]);
+    setRunnerFleetLoaded(false);
+    try {
+      const query = new URLSearchParams({ limit: "100" });
+      if (runnerFleetStatus !== "ALL") query.set("status", runnerFleetStatus);
+      const response = await fetch(`/api/admin/runners?${query}`, {
+        headers: token.trim() ? { Authorization: `Bearer ${token.trim()}` } : undefined,
+        credentials: "same-origin",
+        cache: "no-store",
+      });
+      const payload = await response.json() as Partial<RunnerFleetListView> & {
+        message?: string;
+      };
+      if (!response.ok) throw new Error(payload.message || "Runner Fleet 读取失败。");
+      if (
+        payload.schemaVersion !== "1.0.0"
+        || !Array.isArray(payload.items)
+        || payload.items.length > 100
+        || !payload.items.every(isRunnerFleetNode)
+        || payload.returned !== payload.items.length
+        || typeof payload.truncated !== "boolean"
+      ) {
+        throw new Error("控制面返回了不受支持的 Runner Fleet 数据。");
+      }
+      setRunnerFleet(payload.items);
+      setRunnerFleetLoaded(true);
+      if (payload.truncated) {
+        setRunnerFleetNotice("列表已达 100 个节点上限；请按状态收窄结果。");
+      }
+    } catch (fleetFailure) {
+      setRunnerFleetError(
+        fleetFailure instanceof Error ? fleetFailure.message : "Runner Fleet 读取失败。",
+      );
+    } finally {
+      setRunnerFleetBusy(false);
+    }
+  }
+
+  async function mutateRunnerFleetNode(
+    node: RunnerFleetNodeView,
+    action: "drain" | "attestation/verify",
+  ) {
+    if (account.status !== "authenticated") {
+      setRunnerFleetError(
+        "Runner 证明和排空只接受已验证的企业 OIDC 会话；break-glass 只能查看。",
+      );
+      return;
+    }
+    const requiredRole = action === "drain" ? "OPERATOR" : "APPROVER";
+    if (!can(requiredRole)) {
+      setRunnerFleetError(`该 Runner 操作需要 ${requiredRole} 权限。`);
+      return;
+    }
+    const actionId = `${node.runnerNodeId}:${action}`;
+    setRunnerFleetActionBusy(actionId);
+    setRunnerFleetError("");
+    setRunnerFleetNotice("");
+    let response: Response;
+    try {
+      response = await fetch(
+        `/api/admin/runners/${encodeURIComponent(node.runnerNodeId)}/${action}`,
+        {
+          method: "POST",
+          credentials: "same-origin",
+          cache: "no-store",
+        },
+      );
+    } catch {
+      setRunnerFleetError(
+        "Runner 操作结果未知，系统未自动重试。请先重新读取 Fleet 状态。",
+      );
+      setRunnerFleetActionBusy("");
+      return;
+    }
+    let payload: {
+      status?: unknown;
+      runnerNodeId?: unknown;
+      message?: string;
+      code?: string;
+      errorCode?: string;
+    } = {};
+    try {
+      payload = await response.json() as typeof payload;
+    } catch {
+      // Preserve the authoritative HTTP outcome without inventing a response body.
+    }
+    const expectedStatus = action === "drain" ? "DRAINING" : "READY";
+    if (!response.ok) {
+      setRunnerFleetError(
+        payload.message || payload.errorCode || payload.code || "Runner 管理操作被拒绝。",
+      );
+      setRunnerFleetActionBusy("");
+      return;
+    }
+    if (payload.runnerNodeId !== node.runnerNodeId || payload.status !== expectedStatus) {
+      setRunnerFleetError(
+        "Runner 操作已返回，但结果无法确认。系统未自动重试，请重新读取 Fleet。",
+      );
+      setRunnerFleetActionBusy("");
+      return;
+    }
+    setRunnerFleetActionBusy("");
+    await loadRunnerFleet();
+    setRunnerFleetNotice(
+      action === "drain" ? "Runner 排空请求已确认。" : "Runner attestation 已经独立验证并进入 READY。",
+    );
+  }
+
+  async function loadFinancialReconciliation() {
+    if (account.status !== "authenticated") {
+      setFinancialCases([]);
+      setFinancialLoaded(false);
+      setFinancialError("财务对账只接受企业 OIDC 会话；短期 break-glass 令牌不授予财务权限。");
+      return;
+    }
+    setFinancialLoadBusy(true);
+    setFinancialError("");
+    setFinancialNotice("");
+    setFinancialUnknown("");
+    try {
+      const query = new URLSearchParams({ status: financialStatus, limit: "100" });
+      const response = await fetch(`/api/admin/billing/reconciliation?${query}`, {
+        credentials: "same-origin",
+        cache: "no-store",
+      });
+      const payload = await response.json() as Partial<ReconciliationList> & { message?: string };
+      if (!response.ok) throw new Error(payload.message || "财务对账列表读取失败。");
+      if (
+        payload.schemaVersion !== "1.0.0"
+        || !Array.isArray(payload.items)
+        || payload.items.length > 200
+        || !payload.items.every(isReconciliationCase)
+      ) {
+        throw new Error("商业服务返回了不受支持的财务对账数据。");
+      }
+      setFinancialCases(payload.items);
+      setFinancialLoaded(true);
+    } catch (loadFailure) {
+      setFinancialCases([]);
+      setFinancialLoaded(false);
+      setFinancialError(
+        loadFailure instanceof Error ? loadFailure.message : "财务对账列表读取失败。",
+      );
+    } finally {
+      setFinancialLoadBusy(false);
+    }
+  }
+
+  function stableFinancialIdempotencyKey(
+    reconciliationCaseId: string,
+    resolutionStatus: "RESOLVED" | "REJECTED",
+    resolutionRef: string,
+  ): { tuple: string; key: string } {
+    const tuple = JSON.stringify([reconciliationCaseId, resolutionStatus, resolutionRef]);
+    const existing = financialIdempotencyKeys.current.get(tuple);
+    if (existing) return { tuple, key: existing };
+    const key = `finance-${resolutionStatus.toLowerCase()}-${crypto.randomUUID()}`;
+    financialIdempotencyKeys.current.set(tuple, key);
+    return { tuple, key };
+  }
+
+  async function resolveFinancialReconciliation(
+    item: ReconciliationCase,
+    resolutionStatus: "RESOLVED" | "REJECTED",
+  ) {
+    if (account.status !== "authenticated") {
+      setFinancialError("财务对账只接受企业 OIDC 会话。");
+      return;
+    }
+    if (!account.principal?.permissions.includes("admin:approve")) {
+      setFinancialError("当前企业账户缺少 admin:approve，不能结案财务对账。");
+      return;
+    }
+    const resolutionRef = (financialResolutionRefs[item.reconciliationCaseId] ?? "").trim();
+    if (!/^[A-Za-z0-9][A-Za-z0-9._:/-]{7,254}$/.test(resolutionRef)) {
+      setFinancialError("处理依据必须是 8 到 255 字符的稳定外部证据代号。");
+      return;
+    }
+    const attempt = stableFinancialIdempotencyKey(
+      item.reconciliationCaseId,
+      resolutionStatus,
+      resolutionRef,
+    );
+    const actionId = `${item.reconciliationCaseId}:${resolutionStatus}`;
+    setFinancialBusyAction(actionId);
+    setFinancialError("");
+    setFinancialNotice("");
+    setFinancialUnknown("");
+    let response: Response;
+    try {
+      response = await fetch("/api/admin/billing/reconciliation", {
+        method: "POST",
+        credentials: "same-origin",
+        cache: "no-store",
+        headers: {
+          "Content-Type": "application/json",
+          "Idempotency-Key": attempt.key,
+        },
+        body: JSON.stringify({
+          reconciliationCaseId: item.reconciliationCaseId,
+          resolutionStatus,
+          resolutionRef,
+        }),
+      });
+    } catch {
+      setFinancialUnknown(
+        "本次结案结果未知，系统未自动重试。请先重新读取案件状态；若人工确认需要重放，当前页面会对相同案件、状态和依据复用原 Idempotency-Key。",
+      );
+      setFinancialBusyAction("");
+      return;
+    }
+
+    let payload: FinancialMutationPayload | null = null;
+    try {
+      payload = await response.json() as FinancialMutationPayload;
+    } catch {
+      payload = null;
+    }
+    if (
+      response.status >= 500
+      || payload?.status === "UNKNOWN"
+      || payload?.operationMayHaveCompleted === true
+      || (response.ok && payload?.status !== resolutionStatus)
+    ) {
+      setFinancialUnknown(
+        "本次结案结果未知，系统未自动重试。请先重新读取案件状态；若人工确认需要重放，当前页面会对相同案件、状态和依据复用原 Idempotency-Key。",
+      );
+      setFinancialBusyAction("");
+      return;
+    }
+    if (!response.ok) {
+      setFinancialError(
+        typeof payload?.message === "string" ? payload.message : "财务对账结案被拒绝。",
+      );
+      setFinancialBusyAction("");
+      return;
+    }
+
+    financialIdempotencyKeys.current.delete(attempt.tuple);
+    // The resolve endpoint confirms only the terminal status, not the database
+    // timestamp or resolver fields. Remove the case from this OPEN result set
+    // instead of inventing those evidence-bearing values in the browser.
+    setFinancialCases((current) => current.filter(
+      (candidate) => candidate.reconciliationCaseId !== item.reconciliationCaseId,
+    ));
+    setFinancialNotice(
+      resolutionStatus === "RESOLVED" ? "上游已确认案件为 RESOLVED。" : "上游已确认案件为 REJECTED。",
+    );
+    setFinancialBusyAction("");
+  }
+
   async function loadData() {
     if (account.status !== "authenticated" && token.trim().length < 24) {
       setState("ERROR");
@@ -424,6 +1041,23 @@ export function OperationsAdmin() {
   function lock() {
     setToken("");
     setView(null);
+    setOperationsJobs([]);
+    setOperationsJobsLoaded(false);
+    setOperationsJobsError("");
+    setOperationsJobsNotice("");
+    setOperationsJobCancelBusy("");
+    setRunnerFleet([]);
+    setRunnerFleetLoaded(false);
+    setRunnerFleetError("");
+    setRunnerFleetNotice("");
+    setRunnerFleetActionBusy("");
+    setFinancialCases([]);
+    setFinancialLoaded(false);
+    setFinancialResolutionRefs({});
+    setFinancialError("");
+    setFinancialNotice("");
+    setFinancialUnknown("");
+    financialIdempotencyKeys.current.clear();
     setError("");
     setNotice("");
     setState("LOCKED");
@@ -705,15 +1339,290 @@ export function OperationsAdmin() {
                 {(account.principal?.memberships.length ?? 0) === 0
                   && <Empty label="外部 IdP 全量用户目录同步尚未执行；不会据当前会话推断其他用户。" />}
               </div>
+              {account.status === "authenticated" && (
+                <AccountOrganizationStudio embedded />
+              )}
+              {account.status !== "authenticated" && (
+                <p className={styles.boundaryNote}>
+                  Break-glass 只开放当前租户的运营处置，不授予用户目录、邀请或成员角色管理能力；
+                  这些动作必须使用已验证的企业账户会话。
+                </p>
+              )}
             </section>
           )}
 
           {adminSection === "TASKS" && (
-            <section className={styles.panel}>
-              <header><div><span className="overline">DURABLE JOB CONTROL</span><h2>三条业务线任务</h2></div><small>持久状态、租约、TTL 与结果信号</small></header>
-              <EventTable events={taskEvents} empty="所选窗口内没有任务事件" />
-              <p className={styles.boundaryNote}>队列容量与租约由 Runner 持久层执行；此页不会通过前端按钮跳过租约、重试门禁或独立验证。</p>
-            </section>
+            <>
+              <section className={styles.panel} aria-label="持久作业队列">
+                <header>
+                  <div><span className="overline">DURABLE JOB CONTROL</span><h2>真实持久作业队列</h2></div>
+                  <small>租户隔离 · 最多 100 条 · 取消需 OPERATOR</small>
+                </header>
+                <div className={styles.inlineActions}>
+                  <label>
+                    <span>作业类型</span>
+                    <select
+                      aria-label="持久作业类型"
+                      value={operationsJobBusinessLine}
+                      disabled={operationsJobsBusy || Boolean(operationsJobCancelBusy)}
+                      onChange={(event) => {
+                        setOperationsJobBusinessLine(
+                          event.target.value as OperationsJobBusinessLine | "ALL",
+                        );
+                        setOperationsJobs([]);
+                        setOperationsJobsLoaded(false);
+                      }}
+                    >
+                      {jobBusinessLines.map(([value, label]) => (
+                        <option key={value} value={value}>{label}</option>
+                      ))}
+                    </select>
+                  </label>
+                  <label>
+                    <span>状态</span>
+                    <select
+                      aria-label="持久作业状态"
+                      value={operationsJobStatus}
+                      disabled={operationsJobsBusy || Boolean(operationsJobCancelBusy)}
+                      onChange={(event) => {
+                        setOperationsJobStatus(event.target.value as OperationsJobStatus | "ALL");
+                        setOperationsJobs([]);
+                        setOperationsJobsLoaded(false);
+                      }}
+                    >
+                      {jobStatuses.map(([value, label]) => (
+                        <option key={value} value={value}>{label}</option>
+                      ))}
+                    </select>
+                  </label>
+                  <button
+                    className="secondary-button"
+                    type="button"
+                    disabled={operationsJobsBusy || Boolean(operationsJobCancelBusy)}
+                    onClick={() => void loadOperationsJobs()}
+                  >
+                    <Icon name={operationsJobsBusy ? "refresh" : "search"} size={17} />
+                    {operationsJobsBusy ? "读取中…" : "读取作业"}
+                  </button>
+                </div>
+                {operationsJobsError && (
+                  <p className={styles.bad} role="alert">{operationsJobsError}</p>
+                )}
+                {operationsJobsNotice && (
+                  <p className={styles.good} role="status">{operationsJobsNotice}</p>
+                )}
+                {!operationsJobsLoaded ? (
+                  <Empty label="选择类型和状态后读取真实作业；页面不使用审计事件推断队列状态。" />
+                ) : operationsJobs.length === 0 ? (
+                  <Empty label="当前租户没有匹配的持久作业" />
+                ) : (
+                  <div className={styles.tableWrap}>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>作业 / 类型</th><th>状态 / 阶段</th><th>进度</th>
+                          <th>尝试</th><th>时间</th><th>取消</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {operationsJobs.map((job) => {
+                          const terminal = terminalJobStatuses.has(job.status);
+                          const cancelling = operationsJobCancelBusy === job.jobId;
+                          const failed = ["FAILED", "LOST"].includes(job.status);
+                          return (
+                            <tr key={job.jobId}>
+                              <td title={job.jobId}>
+                                <code>{displayTarget(job.jobId)}</code>
+                                <small>{job.businessLine} · {job.jobKind}</small>
+                              </td>
+                              <td>
+                                <span className={failed ? styles.resultBad : styles.resultGood}>
+                                  {job.status}
+                                </span>
+                                <small>{job.stage} · {job.resultStatus}</small>
+                                {job.failureCode && <small>{job.failureCode}</small>}
+                              </td>
+                              <td>{job.progress.toFixed(0)}%</td>
+                              <td>{job.attempt} / {job.maxAttempts}<small>state v{job.stateVersion}</small></td>
+                              <td>
+                                {formatTime(job.createdAt)}
+                                <small className={styles.neutralDetail}>{job.finishedAt
+                                  ? `结束 ${formatTime(job.finishedAt)}`
+                                  : job.startedAt ? `开始 ${formatTime(job.startedAt)}` : "尚未开始"}</small>
+                              </td>
+                              <td>
+                                <button
+                                  className="secondary-button"
+                                  type="button"
+                                  disabled={
+                                    !can("OPERATOR")
+                                    || terminal
+                                    || job.cancelRequested
+                                    || Boolean(operationsJobCancelBusy)
+                                  }
+                                  onClick={() => void cancelOperationsJob(job)}
+                                >
+                                  {cancelling
+                                    ? "提交中…"
+                                    : job.cancelRequested ? "已请求取消" : terminal ? "已终止" : "请求取消"}
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+                <p className={styles.boundaryNote}>
+                  取消只写入持久的 cancel-requested 信号，不跳过 Runner 租约、重试门禁或独立验证；
+                  结果未知时不会自动重试写操作。
+                </p>
+              </section>
+              <section className={styles.panel} aria-label="Runner Fleet">
+                <header>
+                  <div><span className="overline">RUNNER FLEET</span><h2>Runner 节点与证明状态</h2></div>
+                  <small>租户 RLS · secret-free 投影 · 最多 100 个节点</small>
+                </header>
+                <div className={styles.inlineActions}>
+                  <label>
+                    <span>Fleet 状态</span>
+                    <select
+                      aria-label="Runner Fleet 状态"
+                      value={runnerFleetStatus}
+                      disabled={runnerFleetBusy || Boolean(runnerFleetActionBusy)}
+                      onChange={(event) => {
+                        setRunnerFleetStatus(event.target.value as RunnerFleetStatus | "ALL");
+                        setRunnerFleet([]);
+                        setRunnerFleetLoaded(false);
+                      }}
+                    >
+                      {runnerFleetStatuses.map(([value, label]) => (
+                        <option key={value} value={value}>{label}</option>
+                      ))}
+                    </select>
+                  </label>
+                  <button
+                    className="secondary-button"
+                    type="button"
+                    disabled={runnerFleetBusy || Boolean(runnerFleetActionBusy)}
+                    onClick={() => void loadRunnerFleet()}
+                  >
+                    <Icon name={runnerFleetBusy ? "refresh" : "search"} size={17} />
+                    {runnerFleetBusy ? "读取中…" : "读取 Fleet"}
+                  </button>
+                </div>
+                {runnerFleetError && <p className={styles.bad} role="alert">{runnerFleetError}</p>}
+                {runnerFleetNotice && <p className={styles.good} role="status">{runnerFleetNotice}</p>}
+                {!runnerFleetLoaded ? (
+                  <Empty label="读取真实 Fleet 投影；凭据、token hash、原始 attestation 和验证者身份均不会返回浏览器。" />
+                ) : runnerFleet.length === 0 ? (
+                  <Empty label="当前租户没有匹配的 Runner 节点" />
+                ) : (
+                  <div className={styles.tableWrap}>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>节点 / 池</th><th>状态 / 版本</th><th>能力 / 并发</th>
+                          <th>Attestation</th><th>心跳 / 更新</th><th>操作</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {runnerFleet.map((node) => {
+                          const actionBusy = runnerFleetActionBusy.startsWith(`${node.runnerNodeId}:`);
+                          const badStatus = ["QUARANTINED", "LOST"].includes(node.fleetStatus);
+                          const ready = node.fleetStatus === "READY";
+                          return (
+                            <tr key={node.runnerNodeId}>
+                              <td title={node.runnerNodeId}>
+                                <code>{displayTarget(node.runnerNodeId)}</code>
+                                <small>{node.runnerPoolId}</small>
+                              </td>
+                              <td>
+                                <span className={badStatus
+                                  ? styles.resultBad : ready ? styles.resultGood : styles.kind}>
+                                  {node.fleetStatus}
+                                </span>
+                                <small>agent {node.agentVersion} · {node.imageAllowlistVersion}</small>
+                              </td>
+                              <td>
+                                {node.capabilities.join(" · ") || "无已报能力"}
+                                <small>最大并发 {node.maxConcurrency}</small>
+                              </td>
+                              <td>
+                                <span className={node.attestationVerified
+                                  ? styles.resultGood : styles.resultBad}>
+                                  {node.attestationVerified ? "VERIFIED" : "NOT_VERIFIED"}
+                                </span>
+                                <small>{node.attestationVerifiedAt
+                                  ? formatTime(node.attestationVerifiedAt) : "尚无独立验证"}</small>
+                              </td>
+                              <td>
+                                {node.lastHeartbeatAt ? formatTime(node.lastHeartbeatAt) : "无心跳"}
+                                <small className={styles.neutralDetail}>更新 {formatTime(node.updatedAt)}</small>
+                              </td>
+                              <td>
+                                <div className={styles.inlineActions}>
+                                  {node.fleetStatus === "REGISTERED" && (
+                                    <button
+                                      className="secondary-button"
+                                      type="button"
+                                      disabled={
+                                        account.status !== "authenticated"
+                                        || !can("APPROVER")
+                                        || Boolean(runnerFleetActionBusy)
+                                      }
+                                      onClick={() => void mutateRunnerFleetNode(
+                                        node, "attestation/verify",
+                                      )}
+                                    >
+                                      {runnerFleetActionBusy === `${node.runnerNodeId}:attestation/verify`
+                                        ? "验证中…" : "确认独立证明"}
+                                    </button>
+                                  )}
+                                  {(node.fleetStatus === "READY" || node.fleetStatus === "DRAINING") && (
+                                    <button
+                                      className="secondary-button"
+                                      type="button"
+                                      disabled={
+                                        account.status !== "authenticated"
+                                        || !can("OPERATOR")
+                                        || node.fleetStatus === "DRAINING"
+                                        || Boolean(runnerFleetActionBusy)
+                                      }
+                                      onClick={() => void mutateRunnerFleetNode(node, "drain")}
+                                    >
+                                      {node.fleetStatus === "DRAINING"
+                                        ? "正在排空"
+                                        : runnerFleetActionBusy === `${node.runnerNodeId}:drain`
+                                          ? "提交中…" : "排空节点"}
+                                    </button>
+                                  )}
+                                  {!actionBusy
+                                    && !["REGISTERED", "READY", "DRAINING"].includes(node.fleetStatus)
+                                    && <small>当前状态无可用在线操作</small>}
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+                <p className={styles.boundaryNote}>
+                  列表可由 VIEWER 或获批的短期 break-glass 凭据读取；独立证明确认与排空是生产操作，
+                  只接受企业 OIDC 会话的 APPROVER / OPERATOR，结果未知时不自动重试。
+                </p>
+              </section>
+              <section className={styles.panel} aria-label="作业审计信号">
+                <header>
+                  <div><span className="overline">JOB AUDIT SIGNALS</span><h2>作业相关审计事件</h2></div>
+                  <small>仅作证据辅助，不代替队列状态</small>
+                </header>
+                <EventTable events={taskEvents} empty="所选窗口内没有作业审计事件" />
+              </section>
+            </>
           )}
 
           {adminSection === "REPOSITORIES" && (
@@ -723,6 +1632,152 @@ export function OperationsAdmin() {
               <div className={styles.inlineActions}>
                 <a className="secondary-button" href="/repositories">打开仓库工作区</a>
               </div>
+            </section>
+          )}
+
+          {adminSection === "FINANCE" && (
+            <section className={styles.panel} aria-label="财务对账">
+              <header>
+                <div>
+                  <span className="overline">BILLING RECONCILIATION</span>
+                  <h2>财务对账案件</h2>
+                </div>
+                <small>租户：{account.principal?.organizationId ?? "企业 OIDC 会话必需"}</small>
+              </header>
+              <p>
+                列表来自 commercial-api 的租户隔离对账账本。读取需要 VIEWER，RESOLVED / REJECTED
+                结案需要 APPROVER、稳定处理依据和客户端 Idempotency-Key。
+              </p>
+              <div className={styles.inlineActions}>
+                <label>
+                  <span>案件状态</span>
+                  <select
+                    aria-label="财务对账状态"
+                    value={financialStatus}
+                    disabled={financialLoadBusy || Boolean(financialBusyAction)}
+                    onChange={(event) => {
+                      setFinancialStatus(event.target.value as ReconciliationStatus);
+                      setFinancialCases([]);
+                      setFinancialLoaded(false);
+                      setFinancialError("");
+                      setFinancialNotice("");
+                      setFinancialUnknown("");
+                    }}
+                  >
+                    <option value="OPEN">待处理 OPEN</option>
+                    <option value="RESOLVED">已解决 RESOLVED</option>
+                    <option value="REJECTED">已驳回 REJECTED</option>
+                  </select>
+                </label>
+                <button
+                  className="secondary-button"
+                  type="button"
+                  disabled={financialLoadBusy || Boolean(financialBusyAction)}
+                  onClick={() => void loadFinancialReconciliation()}
+                >
+                  <Icon name={financialLoadBusy ? "refresh" : "search"} size={17} />
+                  {financialLoadBusy ? "读取中…" : "读取对账"}
+                </button>
+              </div>
+              <p className={styles.boundaryNote}>
+                Break-glass 明确不具备财务权限。切换租户后，Web 会比较已验证会话的所选组织与 JWT
+                organization_id；不一致时拒绝转发并要求重新取得租户授权。未知写入结果不会自动重试。
+              </p>
+              {financialError && <p className={styles.bad} role="alert">{financialError}</p>}
+              {financialUnknown && <p className={styles.bad} role="alert">{financialUnknown}</p>}
+              {financialNotice && <p className={styles.good} role="status">{financialNotice}</p>}
+
+              {!financialLoaded ? (
+                <Empty label={account.status === "authenticated"
+                  ? "选择状态后读取真实对账案件；页面不会使用样例财务数据。"
+                  : "请先使用企业 OIDC 账户登录；break-glass 不能读取财务案件。"} />
+              ) : financialCases.length === 0 ? (
+                <Empty label={`当前租户没有 ${financialStatus} 对账案件`} />
+              ) : (
+                <div className={styles.tableWrap}>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>案件 / Provider</th>
+                        <th>原因</th>
+                        <th>预期 / 观测</th>
+                        <th>状态</th>
+                        <th>时间</th>
+                        <th>处理依据与决策</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {financialCases.map((item) => {
+                        const canApprove = Boolean(
+                          account.principal?.permissions.includes("admin:approve"),
+                        );
+                        const busy = Boolean(financialBusyAction);
+                        return (
+                          <tr key={item.reconciliationCaseId}>
+                            <td title={item.providerObjectRef}>
+                              <code>{item.reconciliationCaseId}</code>
+                              <small>{item.provider} · {displayTarget(item.providerObjectRef)}</small>
+                            </td>
+                            <td><code>{item.reasonCode}</code></td>
+                            <td>{item.expectedState}<small>观测：{item.observedState}</small></td>
+                            <td>
+                              <span className={item.status === "RESOLVED" ? styles.resultGood : styles.resultBad}>
+                                {item.status}
+                              </span>
+                            </td>
+                            <td>{formatTime(item.openedAt)}<small>{item.resolvedAt ? `结案 ${formatTime(item.resolvedAt)}` : "尚未结案"}</small></td>
+                            <td>
+                              {item.status === "OPEN" ? (
+                                <div className={styles.financeActions}>
+                                  <input
+                                    aria-label={`处理依据 ${item.reconciliationCaseId}`}
+                                    value={financialResolutionRefs[item.reconciliationCaseId] ?? ""}
+                                    onChange={(event) => setFinancialResolutionRefs((current) => ({
+                                      ...current,
+                                      [item.reconciliationCaseId]: event.target.value,
+                                    }))}
+                                    placeholder="bank-statement:2026-08-09/42"
+                                    pattern="[A-Za-z0-9][A-Za-z0-9._:/-]{7,254}"
+                                    minLength={8}
+                                    maxLength={255}
+                                    disabled={!canApprove || busy}
+                                  />
+                                  <div>
+                                    <button
+                                      className="secondary-button"
+                                      type="button"
+                                      disabled={!canApprove || busy}
+                                      onClick={() => void resolveFinancialReconciliation(item, "RESOLVED")}
+                                    >
+                                      {financialBusyAction === `${item.reconciliationCaseId}:RESOLVED`
+                                        ? "提交中…" : "标记已解决"}
+                                    </button>
+                                    <button
+                                      className="secondary-button"
+                                      type="button"
+                                      disabled={!canApprove || busy}
+                                      onClick={() => void resolveFinancialReconciliation(item, "REJECTED")}
+                                    >
+                                      {financialBusyAction === `${item.reconciliationCaseId}:REJECTED`
+                                        ? "提交中…" : "驳回案件"}
+                                    </button>
+                                  </div>
+                                  {!canApprove && <small>结案需要企业账户的 admin:approve。</small>}
+                                </div>
+                              ) : (
+                                <span>{item.resolutionRef ?? "—"}<small>{item.resolverActorId ?? "—"}</small></span>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+              <p className={styles.boundaryNote}>
+                此页面只闭环已有商业对账案件与追加式结案事件；不代表真实支付、税务、银行结算或会计认证已通过。
+              </p>
             </section>
           )}
 
@@ -967,6 +2022,54 @@ export function OperationsAdmin() {
                     ))}
                   </tbody>
                 </table>
+              </div>
+            )}
+          </section>}
+
+          {adminSection === "CONFIG" && <section className={styles.panel}>
+            <header>
+              <div><span className="overline">SYSTEM STATUS</span><h2>核心依赖就绪状态</h2></div>
+              <button
+                className="secondary-button"
+                type="button"
+                disabled={systemReadinessBusy}
+                onClick={() => void loadSystemReadiness()}
+              >
+                {systemReadinessBusy ? "检测中…" : "重新检测"}
+              </button>
+            </header>
+            {systemReadinessError && <p className={styles.bad} role="alert">{systemReadinessError}</p>}
+            {systemReadiness && (
+              <div className={styles.cardGrid}>
+                <article className={styles.controlCard}>
+                  <div>
+                    <span className={systemReadiness.status === "UP" ? styles.good : styles.bad}>
+                      {systemReadiness.status}
+                    </span>
+                    <strong>Web 聚合就绪</strong>
+                  </div>
+                  <small>{formatTime(systemReadiness.checkedAt)}</small>
+                </article>
+                {systemReadiness.dependencies.map((dependency) => (
+                  <article className={styles.controlCard} key={dependency.dependency}>
+                    <div>
+                      <span className={dependency.status === "UP" ? styles.good : styles.bad}>
+                        {dependency.status}
+                      </span>
+                      <strong>{dependency.dependency}</strong>
+                    </div>
+                    <small>{dependency.reason ?? "readiness probe passed"}</small>
+                  </article>
+                ))}
+                <article className={styles.controlCard}>
+                  <div>
+                    <span className={systemReadiness.localRunner.status === "BLOCKED" ? styles.bad : styles.kind}>
+                      {systemReadiness.localRunner.status}
+                    </span>
+                    <strong>local-runner</strong>
+                  </div>
+                  <small>生产默认 DISABLED；托管 Runner 池须另行验证。</small>
+                </article>
               </div>
             )}
           </section>}

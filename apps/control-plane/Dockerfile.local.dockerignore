@@ -1,0 +1,5 @@
+*
+!Dockerfile.local
+!target/
+target/*
+!target/elmos-control-plane-0.1.0-SNAPSHOT-exec.jar

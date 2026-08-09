@@ -11,7 +11,7 @@ import java.sql.SQLException;
 import java.time.OffsetDateTime;
 
 @Repository
-public final class JdbcSnapshotStore implements SnapshotPorts.SnapshotStore {
+public class JdbcSnapshotStore implements SnapshotPorts.SnapshotStore {
     private final JdbcClient jdbc;
     public JdbcSnapshotStore(JdbcClient jdbc) { this.jdbc = jdbc; }
 

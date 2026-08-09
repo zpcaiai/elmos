@@ -61,7 +61,7 @@ services:
   # ---------------------------------------------------------------------------
   web-console:
     <<: *hardening
-    build: ../../../apps/web-console
+    build: { context: ../../.., dockerfile: apps/web-console/Dockerfile }
     user: "10001:10001"          # 与 deploy/compose 一致，已在开发环境验证
     read_only: true
     tmpfs:
@@ -69,10 +69,15 @@ services:
     env_file: ["${ELMOS_ENV_FILE:-../elmos-commercial.env}"]
     environment:
       NODE_ENV: production
-      # 由 env_file 提供受信任的 HTTPS 控制面地址。生产 BFF 主动拒绝
-      # 非 loopback HTTP，避免在共享容器网络上传递租户 Bearer Token。
+      # 同一受控 Compose bridge 内只允许下面三个精确服务名使用 HTTP；
+      # 任意其他主机、路径、凭据或未显式开启的 HTTP 仍会失败关闭。
+      # 对外入口仍必须由 edge 提供 HTTPS。
+      ELMOS_TRUSTED_INTERNAL_HTTP: "true"
+      ELMOS_CONTROL_PLANE_BASE_URL: http://control-plane:8080
       ELMOS_COMMERCIAL_API_URL: http://commercial-api:8085
-      ELMOS_REPOSITORY_WORKSPACE_BASE_URL: http://workspace-service:8082
+      ELMOS_WORKSPACE_SERVICE_URL: http://workspace-service:8082
+      # Repository BFF 当前代理的是 Control Plane 的 /api/v1/repository-workspaces。
+      ELMOS_REPOSITORY_WORKSPACE_BASE_URL: http://control-plane:8080
       # /generation 首发不开放 Spring 代理与整库转换
       ELMOS_SPRING_PROXY_ENABLED: "false"
       # 生产业务请求只入持久队列；Web 容器绝不直接启动客户进程。
@@ -83,6 +88,7 @@ services:
     depends_on:
       control-plane: { condition: service_started }
       commercial-api: { condition: service_started }
+      workspace-service: { condition: service_started }
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "/dev/null",
              "http://127.0.0.1:3000/api/health?probe=readiness"]

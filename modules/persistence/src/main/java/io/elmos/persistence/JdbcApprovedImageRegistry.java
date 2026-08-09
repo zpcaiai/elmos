@@ -5,7 +5,7 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public final class JdbcApprovedImageRegistry implements WorkspaceInfrastructurePorts.ApprovedImageRegistry {
+public class JdbcApprovedImageRegistry implements WorkspaceInfrastructurePorts.ApprovedImageRegistry {
     private final JdbcClient jdbc;
     public JdbcApprovedImageRegistry(JdbcClient jdbc) { this.jdbc = jdbc; }
     @Override public void requireApproved(String sandboxProfile, String imageDigest) {

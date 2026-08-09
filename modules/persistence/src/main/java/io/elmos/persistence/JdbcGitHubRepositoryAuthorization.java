@@ -5,7 +5,7 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public final class JdbcGitHubRepositoryAuthorization implements GitHubInstallationTokenBroker.RepositoryAuthorizationPort {
+public class JdbcGitHubRepositoryAuthorization implements GitHubInstallationTokenBroker.RepositoryAuthorizationPort {
     private final JdbcClient jdbc;
     public JdbcGitHubRepositoryAuthorization(JdbcClient jdbc) { this.jdbc = jdbc; }
     @Override public boolean isAuthorized(String organizationId, String repositoryId,

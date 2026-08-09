@@ -30,6 +30,8 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/execution/jobs")
 public class ExecutionJobController {
+    private static final int MAX_LIST_OFFSET = 10_000;
+
     private final ExecutionJobPort jobs;
     private final JdbcObjectStorageStore artifacts;
     private final ObjectMapper json;
@@ -118,7 +120,13 @@ public class ExecutionJobController {
     public ResponseEntity<?> find(@PathVariable String jobId) {
         ControlPlanePrincipal principal = current();
         return jobs.find(principal.organizationId(), jobId)
-                .<ResponseEntity<?>>map(job -> ResponseEntity.ok(jobResponse(job)))
+                .<ResponseEntity<?>>map(job -> {
+                    principal.require(
+                            principal.organizationId(),
+                            principal.actorId(),
+                            profiles.get(job.businessLine()).permission());
+                    return ResponseEntity.ok(jobResponse(job));
+                })
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
                         "status", "ERROR", "code", "ELMOS_EXECUTION_JOB_UNKNOWN")));
     }
@@ -139,11 +147,16 @@ public class ExecutionJobController {
         ControlPlanePrincipal principal = current();
         ExecutionJobPort.BusinessLine line = businessLine == null || businessLine.isBlank()
                 ? null : parseLine(businessLine);
-        if (line != null) {
+        if (line == null) {
+            principal.require(
+                    principal.organizationId(), principal.actorId(), "admin:read");
+        } else {
             RuntimeProfile profile = profiles.get(line);
             principal.require(principal.organizationId(), principal.actorId(), profile.permission());
         }
-        return jobs.list(principal.organizationId(), line, limit, offset);
+        return jobs.list(
+                principal.organizationId(), line,
+                requireListLimit(limit), requireListOffset(offset));
     }
 
     @DeleteMapping("/{jobId}")
@@ -281,6 +294,20 @@ public class ExecutionJobController {
             throw new ExecutionJobPort.ExecutionStateException(code);
         }
         return candidate;
+    }
+
+    private static int requireListOffset(int offset) {
+        if (offset < 0 || offset > MAX_LIST_OFFSET) {
+            throw new ExecutionJobPort.ExecutionStateException("ELMOS_EXECUTION_OFFSET_INVALID");
+        }
+        return offset;
+    }
+
+    private static int requireListLimit(int limit) {
+        if (limit < 1 || limit > 100) {
+            throw new ExecutionJobPort.ExecutionStateException("ELMOS_EXECUTION_LIMIT_INVALID");
+        }
+        return limit;
     }
 
     @ExceptionHandler(ExecutionJobPort.ExecutionStateException.class)

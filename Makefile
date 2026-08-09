@@ -19,7 +19,7 @@ NODE_RUNTIME_BIN := $(if $(NODE_EXECUTABLE),$(dir $(NODE_EXECUTABLE)),/nonexiste
 PNPM_VERSION ?= $(shell sed -n 's/.*"packageManager": "pnpm@\([^"]*\)".*/\1/p' apps/web-console/package.json)
 PNPM ?= pnpm dlx pnpm@$(PNPM_VERSION)
 
-.PHONY: verify backend-fast business-line-contracts makefile-portability-check model-catalog-check backend database-data infrastructure security-compliance test-quality mainframe enterprise-integration enterprise-suite mature-product-skills mature-product-toolchain-test mature-product-packages product-roadmap production-readiness-check precision-migration-b01-44-skills precision-migration-b01-44-check precision-migration-b01-44-qualification batch1-55-skills batch66-80-skills batch66-80-test-skills language-packs-batch81-95 batch81-95-test-skills batch97-104-skills product-batch56-skills product-closure-convergence-skills product-closure-gate product-convergence-gate product-batch33-38-skills product-batch33-39-skills product-batch33-55-skills product-batch40-55-skills product-batch35-38 migration-pack-admission batch27-34-skills test-suite-validate test-suite-test test-suite-check test-suite-gate test-suite-1-55-check test-suite-1-55-gate test-suite-1-65-check test-suite-1-65-gate test-suite-66-80-check test-suite-66-80-gate test-suite-81-95-check test-suite-81-95-gate test-suite-b38-45-validate test-suite-b38-45-test test-suite-b38-45-check test-suite-b38-45-gate test-suite-local-qualification dotnet python project-synthesis project-synthesis-toolchains frontend sql-dialect component-dialect web up down
+.PHONY: verify backend-fast business-line-contracts makefile-portability-check model-catalog-check backend database-data infrastructure security-compliance test-quality mainframe enterprise-integration enterprise-suite mature-product-skills mature-product-toolchain-test mature-product-packages product-roadmap production-readiness-check precision-migration-b01-44-skills precision-migration-b01-44-check precision-migration-b01-44-qualification batch1-55-skills batch66-80-skills batch66-80-test-skills language-packs-batch81-95 batch81-95-test-skills batch97-104-skills product-batch56-skills product-closure-convergence-skills product-closure-gate product-convergence-gate product-batch33-38-skills product-batch33-39-skills product-batch33-55-skills product-batch40-55-skills product-batch35-38 migration-pack-admission batch27-34-skills test-suite-validate test-suite-test test-suite-check test-suite-gate test-suite-1-55-check test-suite-1-55-gate test-suite-1-65-check test-suite-1-65-gate test-suite-66-80-check test-suite-66-80-gate test-suite-81-95-check test-suite-81-95-gate test-suite-b38-45-validate test-suite-b38-45-test test-suite-b38-45-check test-suite-b38-45-gate test-suite-local-qualification dotnet python project-synthesis project-synthesis-toolchains frontend sql-dialect component-dialect web up down local-commercial-up local-commercial-smoke local-commercial-status local-commercial-down
 
 .PHONY: frt-g01-g30-skills frt-g01-g30-check
 
@@ -323,6 +323,14 @@ up:
 	docker compose -f deploy/compose/docker-compose.yml up --build
 down:
 	docker compose -f deploy/compose/docker-compose.yml down
+local-commercial-up:
+	python3 scripts/operations/local_commercial.py up
+local-commercial-smoke:
+	python3 scripts/operations/local_commercial.py smoke
+local-commercial-status:
+	python3 scripts/operations/local_commercial.py status
+local-commercial-down:
+	python3 scripts/operations/local_commercial.py down
 
 include Makefile.batch29
 include Makefile.batch30

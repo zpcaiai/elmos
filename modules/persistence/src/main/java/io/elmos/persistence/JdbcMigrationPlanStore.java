@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Map;
 
 @Repository
-public final class JdbcMigrationPlanStore implements MigrationPlanStore {
+public class JdbcMigrationPlanStore implements MigrationPlanStore {
     private final JdbcClient jdbc; private final ObjectMapper json;
     public JdbcMigrationPlanStore(JdbcClient jdbc, ObjectMapper json) { this.jdbc = jdbc; this.json = json; }
 

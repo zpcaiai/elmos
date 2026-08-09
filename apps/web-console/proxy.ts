@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { configuredControlPlaneBaseUrl } from "./app/lib/server/trustedUpstream";
 
 const identifier = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/;
 
@@ -38,9 +39,13 @@ async function auditApiAttempt(request: NextRequest): Promise<NextResponse | nul
   if (!path.startsWith("/api/") || path === "/api/telemetry/events" || path === "/api/health") {
     return null;
   }
-  const baseUrl = process.env.ELMOS_CONTROL_PLANE_BASE_URL?.trim()
-    || process.env.CONTROL_PLANE_BASE_URL?.trim()
-    || "";
+  let baseUrl = "";
+  try {
+    baseUrl = configuredControlPlaneBaseUrl() ?? "";
+  } catch {
+    // Treat malformed, conflicting, or policy-rejected configuration exactly
+    // like missing configuration. Never echo the rejected URL or send a key to it.
+  }
   const key = process.env.ELMOS_OPERATIONS_API_KEY?.trim() || "";
   const tenant = process.env.ELMOS_OPERATIONS_TENANT_ID?.trim() || "";
   const actor = process.env.ELMOS_OPERATIONS_ACTOR_ID?.trim() || "";
@@ -101,6 +106,8 @@ async function auditApiAttempt(request: NextRequest): Promise<NextResponse | nul
           }],
         }),
         cache: "no-store",
+        redirect: "error",
+        signal: AbortSignal.timeout(3_000),
       },
     );
     if (!response.ok) throw new Error("SERVER_OPERATION_AUDIT_REJECTED");
@@ -130,8 +137,11 @@ export async function proxy(request: NextRequest) {
       process.env.ELMOS_ALLOW_LOCAL_CREDENTIALS === "true"
       || process.env.ELMOS_LOCAL_RUNNER_ENABLED === "true"
     );
+  const approvedAdminFallback = request.nextUrl.pathname === "/admin"
+    && process.env.ELMOS_ADMIN_ALLOW_TOKEN_FALLBACK === "true";
   if (
     localCredentialMode
+    || approvedAdminFallback
     || request.cookies.has("__Host-elmos_session")
   ) {
     return NextResponse.next();

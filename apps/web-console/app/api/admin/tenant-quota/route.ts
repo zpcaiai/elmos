@@ -3,7 +3,9 @@ import {
   authorizeAdmin,
   fetchTenantQuota,
   proxyErrorResponse,
+  requireAdminMutationSameOrigin,
 } from "../../../lib/server/operationsProxy";
+import { readBoundedAdminJsonObject } from "../../../lib/server/adminMutationPolicy";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -54,8 +56,9 @@ export async function GET(request: Request) {
  */
 export async function POST(request: Request) {
   try {
+    requireAdminMutationSameOrigin(request);
     const administrator = authorizeAdmin(request, "APPROVER");
-    const body = await request.json();
+    const body = await readBoundedAdminJsonObject(request, 4 * 1024);
     const upstream = await adjustTenantQuota(body, administrator);
     const payload = await upstream.text();
     return new Response(payload, {

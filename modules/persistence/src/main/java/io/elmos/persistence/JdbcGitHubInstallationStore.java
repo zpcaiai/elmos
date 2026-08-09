@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Repository
-public final class JdbcGitHubInstallationStore implements GitHubInstallationLifecycleService.Store {
+public class JdbcGitHubInstallationStore implements GitHubInstallationLifecycleService.Store {
     private final JdbcClient jdbc; private final ObjectMapper mapper;
     public JdbcGitHubInstallationStore(JdbcClient jdbc, ObjectMapper mapper) { this.jdbc = jdbc; this.mapper = mapper; }
 

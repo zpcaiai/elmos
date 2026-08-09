@@ -258,7 +258,8 @@ class RunnerFleetAdministrationController {
     @PostMapping("/{runnerNodeId}/attestation/verify")
     ResponseEntity<?> verifyAttestation(@PathVariable String runnerNodeId) {
         ControlPlanePrincipal principal = principal("admin:approve");
-        fleet.verifyAttestation(runnerNodeId, principal.actorId());
+        fleet.verifyAttestation(
+                principal.organizationId(), runnerNodeId, principal.actorId());
         return ResponseEntity.ok(
                 Map.of("status", "READY", "runnerNodeId", runnerNodeId));
     }
@@ -266,7 +267,8 @@ class RunnerFleetAdministrationController {
     @PostMapping("/{runnerNodeId}/drain")
     ResponseEntity<?> drain(@PathVariable String runnerNodeId) {
         ControlPlanePrincipal principal = principal("admin:operate");
-        fleet.requestDrain(runnerNodeId, principal.actorId());
+        fleet.requestDrain(
+                principal.organizationId(), runnerNodeId, principal.actorId());
         return ResponseEntity.accepted().body(
                 Map.of("status", "DRAINING", "runnerNodeId", runnerNodeId));
     }

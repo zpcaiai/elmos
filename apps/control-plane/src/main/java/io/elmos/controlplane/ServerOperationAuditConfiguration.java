@@ -8,7 +8,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.time.Clock;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 final class ServerOperationAuditConfiguration implements WebMvcConfigurer {
     private final ServerOperationAuditInterceptor interceptor;
 

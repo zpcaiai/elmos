@@ -5,7 +5,6 @@ import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientImpl;
 import com.github.dockerjava.httpclient5.ApacheDockerHttpClient;
-import io.elmos.persistence.JdbcApprovedImageRegistry;
 import io.elmos.persistence.JdbcSecretLeaseStore;
 import io.elmos.persistence.JdbcWorkspaceLifecycleStore;
 import io.elmos.secret.SecretInjectionService;
@@ -28,6 +27,7 @@ import java.time.Clock;
 class WorkspaceServiceConfiguration {
     @Bean Clock workspaceClock() { return Clock.systemUTC(); }
     @Bean WorkspaceSecurityPolicy workspaceSecurityPolicy() { return new WorkspaceSecurityPolicy(); }
+    @Bean WorkspaceOwnership workspaceOwnership(JdbcClient jdbc) { return new JdbcWorkspaceOwnership(jdbc); }
 
     @Bean(destroyMethod = "close") @ConditionalOnProperty(name = "elmos.workspace.docker.enabled", havingValue = "true")
     DockerClient dockerClient() {
@@ -47,9 +47,6 @@ class WorkspaceServiceConfiguration {
             WorkspaceInfrastructurePorts.WorkspaceSecretFinalizer secrets, Clock clock) {
         return new DockerWorkspaceProvisioner(docker, policy, images, snapshots, sanitizer, artifacts, networkPolicies, lifecycle, secrets, clock);
     }
-
-    @Bean @ConditionalOnProperty(name = "elmos.workspace.docker.enabled", havingValue = "true")
-    WorkspaceInfrastructurePorts.ApprovedImageRegistry approvedImages(JdbcClient jdbc) { return new JdbcApprovedImageRegistry(jdbc); }
 
     @Bean @ConditionalOnProperty(name = "elmos.workspace.docker.enabled", havingValue = "true")
     WorkspaceInfrastructurePorts.WorkspaceLifecycleStore workspaceLifecycle(JdbcClient jdbc, ObjectMapper json, Clock clock) {

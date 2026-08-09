@@ -38,6 +38,7 @@ test-results/
 .env.*
 !.env.example
 .elmos/
+/apps/web-console/.local-pnpm/
 
 # Generated Spring route reference build (175M of regenerable output).
 build/

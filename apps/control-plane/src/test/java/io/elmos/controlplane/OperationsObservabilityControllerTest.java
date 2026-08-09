@@ -142,6 +142,10 @@ class OperationsObservabilityControllerTest {
     @Test void replayRefusesAWrongOperationsKey() {
         assertThrows(SecurityException.class,
                 () -> controller.replay("wrong-key-wrong-key-wrong-key", "org-1", "actor-1", "VIEWER", "run-1"));
+        assertThrows(SecurityException.class,
+                () -> controller.replay("x", "org-1", "actor-1", "VIEWER", "run-1"));
+        assertThrows(SecurityException.class,
+                () -> controller.replay("x".repeat(4_097), "org-1", "actor-1", "VIEWER", "run-1"));
         verify(runHistory, org.mockito.Mockito.never()).replay(anyString(), anyString());
     }
 }

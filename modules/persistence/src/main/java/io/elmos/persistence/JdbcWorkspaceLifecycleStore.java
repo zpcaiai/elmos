@@ -16,7 +16,7 @@ import java.security.MessageDigest;
 import java.util.HexFormat;
 import java.util.Map;
 
-public final class JdbcWorkspaceLifecycleStore implements WorkspaceInfrastructurePorts.WorkspaceLifecycleStore {
+public class JdbcWorkspaceLifecycleStore implements WorkspaceInfrastructurePorts.WorkspaceLifecycleStore {
     private final JdbcClient jdbc; private final ObjectMapper json; private final Clock clock;
     public JdbcWorkspaceLifecycleStore(JdbcClient jdbc,ObjectMapper json,Clock clock){this.jdbc=jdbc;this.json=json;this.clock=clock;}
     @Override @Transactional public void requested(WorkspaceModels.WorkspaceRequest request){

@@ -5,6 +5,7 @@ import type {
   GenerationJobCreateRequest,
 } from "../contracts";
 import { GenerationRunnerError } from "./generationRunner";
+import { configuredControlPlaneBaseUrl } from "./trustedUpstream";
 
 type AuthorizedContext = {
   tenantId: string;
@@ -48,25 +49,14 @@ export function hostedExecutionEnabled(): boolean {
 }
 
 function baseUrl(): string {
-  const configured = process.env.ELMOS_CONTROL_PLANE_BASE_URL?.trim() ?? "";
-  let url: URL;
+  let configured: string | null;
   try {
-    url = new URL(configured);
+    configured = configuredControlPlaneBaseUrl();
   } catch {
-    throw new GenerationRunnerError(503, "CONTROL_PLANE_NOT_CONFIGURED");
-  }
-  const localDevelopment = process.env.NODE_ENV !== "production"
-    && ["127.0.0.1", "localhost"].includes(url.hostname);
-  if (
-    (url.protocol !== "https:" && !(localDevelopment && url.protocol === "http:"))
-    || url.username
-    || url.password
-    || url.search
-    || url.hash
-  ) {
     throw new GenerationRunnerError(503, "CONTROL_PLANE_CONFIGURATION_INVALID");
   }
-  return configured.replace(/\/+$/, "");
+  if (!configured) throw new GenerationRunnerError(503, "CONTROL_PLANE_NOT_CONFIGURED");
+  return configured;
 }
 
 function idempotencyKey(context: AuthorizedContext, analysisDigest: string): string {

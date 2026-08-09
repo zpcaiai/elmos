@@ -9,6 +9,7 @@ import {
   unsafeCookieValue,
   type AccountPermission,
 } from "./accountSession";
+import { configuredRepositoryWorkspaceBaseUrl } from "./trustedUpstream";
 
 const maximumBodyBytes = 3 * 1024 * 1024;
 const maximumControlPlaneResponseBytes = 16 * 1024 * 1024;
@@ -109,12 +110,12 @@ function requiredEnvironment(name: string, minimumLength = 1): string {
 }
 
 function controlPlaneBaseUrl(): string {
-  const configured = process.env.ELMOS_REPOSITORY_WORKSPACE_BASE_URL?.trim()
-    || process.env.ELMOS_CONTROL_PLANE_BASE_URL?.trim()
-    || (process.env.NODE_ENV === "production" ? "" : "http://127.0.0.1:8080");
-  let parsed: URL;
+  let configured: string | null;
   try {
-    parsed = new URL(configured);
+    configured = configuredRepositoryWorkspaceBaseUrl({
+      fallbackToControlPlane: true,
+      developmentFallback: "http://127.0.0.1:8080",
+    });
   } catch {
     throw new RepositoryWorkspaceProxyError(
       503,
@@ -122,16 +123,14 @@ function controlPlaneBaseUrl(): string {
       "仓库工作区服务地址无效。",
     );
   }
-  const local = parsed.hostname === "127.0.0.1" || parsed.hostname === "localhost";
-  if ((parsed.protocol !== "https:" && !(local && parsed.protocol === "http:"))
-    || parsed.username || parsed.password || parsed.search || parsed.hash) {
+  if (!configured) {
     throw new RepositoryWorkspaceProxyError(
       503,
-      "REPOSITORY_WORKSPACE_URL_INVALID",
-      "仓库工作区服务必须使用无凭据 HTTPS 地址。",
+      "REPOSITORY_WORKSPACE_NOT_CONFIGURED",
+      "仓库工作区尚未配置。",
     );
   }
-  return parsed.toString().replace(/\/$/, "");
+  return configured;
 }
 
 type RepositoryActorContext = {

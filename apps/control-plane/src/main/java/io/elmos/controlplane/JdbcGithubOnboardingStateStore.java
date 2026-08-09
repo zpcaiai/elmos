@@ -8,7 +8,7 @@ import java.time.Clock;
 import java.util.Objects;
 import java.util.UUID;
 
-final class JdbcGithubOnboardingStateStore implements GithubInstallationOnboardingService.StateStore {
+class JdbcGithubOnboardingStateStore implements GithubInstallationOnboardingService.StateStore {
     private final JdbcClient jdbc;
     private final Clock clock;
 

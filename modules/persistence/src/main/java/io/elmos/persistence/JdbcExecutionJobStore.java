@@ -38,6 +38,7 @@ public final class JdbcExecutionJobStore implements ExecutionJobPort {
 
     private static final SecureRandom RANDOM = new SecureRandom();
     private static final int LEASE_TOKEN_BYTES = 32;
+    private static final int MAX_LIST_OFFSET = 10_000;
 
     private final JdbcClient jdbc;
     private final TransactionTemplate transactions;
@@ -91,19 +92,37 @@ public final class JdbcExecutionJobStore implements ExecutionJobPort {
     @Override
     public List<JobView> list(String organizationId, BusinessLine businessLine, int limit, int offset) {
         requireIdentifier(organizationId, "organizationId");
-        int boundedLimit = Math.min(Math.max(limit, 1), 100);
-        return inTenant(organizationId, () ->
-                jdbc.sql("""
-                        SELECT * FROM execution_jobs
-                         WHERE (:businessLine IS NULL OR business_line = :businessLine)
-                         ORDER BY created_at DESC
-                         LIMIT :limit OFFSET :offset
-                        """)
-                        .param("businessLine", businessLine == null ? null : businessLine.name())
-                        .param("limit", boundedLimit)
-                        .param("offset", Math.max(offset, 0))
-                        .query(this::readJob)
-                        .list());
+        if (limit < 1 || limit > 100) {
+            throw new ExecutionStateException("ELMOS_EXECUTION_LIMIT_INVALID");
+        }
+        if (offset < 0 || offset > MAX_LIST_OFFSET) {
+            throw new ExecutionStateException("ELMOS_EXECUTION_OFFSET_INVALID");
+        }
+        return inTenant(organizationId, () -> {
+            // Do not express an absent filter as `:value is null`. PostgreSQL
+            // cannot infer the type of a null bind in that arm, and a generic
+            // OR predicate also prevents this bounded management query from
+            // cleanly using the tenant/business-line ordering index. Both SQL
+            // shapes are fixed constants; only values remain parameterized.
+            var statement = businessLine == null
+                    ? jdbc.sql("""
+                            SELECT * FROM execution_jobs
+                             ORDER BY created_at DESC
+                             LIMIT :limit OFFSET :offset
+                            """)
+                    : jdbc.sql("""
+                            SELECT * FROM execution_jobs
+                             WHERE business_line = :businessLine
+                             ORDER BY created_at DESC
+                             LIMIT :limit OFFSET :offset
+                            """)
+                            .param("businessLine", businessLine.name());
+            return statement
+                    .param("limit", limit)
+                    .param("offset", offset)
+                    .query(this::readJob)
+                    .list();
+        });
     }
 
     @Override

@@ -4,7 +4,9 @@ import {
   mutateOperations,
   OperationsProxyError,
   proxyErrorResponse,
+  requireAdminMutationSameOrigin,
 } from "../../../lib/server/operationsProxy";
+import { readBoundedAdminJsonObject } from "../../../lib/server/adminMutationPolicy";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -37,7 +39,8 @@ type Action = keyof typeof actionRoles;
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json() as Record<string, unknown>;
+    requireAdminMutationSameOrigin(request);
+    const body = await readBoundedAdminJsonObject(request);
     const action = body.action;
     if (typeof action !== "string" || !Object.hasOwn(actionRoles, action)) {
       throw new OperationsProxyError(400, "ADMIN_OPERATION_INVALID", "管理操作不在允许清单中。");
@@ -59,6 +62,23 @@ function resolveAction(action: Action, body: Record<string, unknown>): {
   path: string;
   body: Record<string, unknown>;
 } {
+  const fieldsByAction: Record<Action, readonly string[]> = {
+    EVALUATE: ["action"],
+    ACKNOWLEDGE_ALERT: ["action", "alertId", "expectedVersion"],
+    ASSIGN_INCIDENT: ["action", "incidentId", "ownerActorId", "expectedVersion"],
+    RESOLVE_INCIDENT: ["action", "incidentId", "resolutionCode", "expectedVersion"],
+    APPROVE_REMEDIATION: ["action", "proposalId", "expectedVersion"],
+    REJECT_REMEDIATION: ["action", "proposalId", "expectedVersion"],
+    PREPARE_SCM: ["action", "proposalId", "expectedVersion"],
+    ENFORCE_RETENTION: ["action", "retentionDays"],
+  };
+  const allowedFields = new Set(fieldsByAction[action]);
+  if (
+    Object.keys(body).length !== allowedFields.size
+    || Object.keys(body).some((field) => !allowedFields.has(field))
+  ) {
+    throw new OperationsProxyError(400, "ADMIN_OPERATION_INVALID", "管理操作包含缺失或多余字段。");
+  }
   const identifier = (field: string): string => {
     const value = body[field];
     if (typeof value !== "string" || !/^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/.test(value)) {

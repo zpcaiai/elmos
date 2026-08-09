@@ -21,6 +21,11 @@ spring:
       enabled: true
 elmos:
   workspace:
+    service-auth:
+      api-key: ${ELMOS_REPOSITORY_WORKSPACE_API_KEY:}
+      api-key-expires-at: ${ELMOS_REPOSITORY_WORKSPACE_API_KEY_EXPIRES_AT:}
+      organization-id: ${ELMOS_REPOSITORY_WORKSPACE_TENANT_ID:}
+      actor-id: ${ELMOS_REPOSITORY_WORKSPACE_ACTOR_ID:}
     docker:
       enabled: ${ELMOS_WORKSPACE_DOCKER_ENABLED:false}
     snapshot-artifact-root: ${ELMOS_SNAPSHOT_ARTIFACT_ROOT:}

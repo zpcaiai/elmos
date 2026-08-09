@@ -26,7 +26,7 @@ import java.util.function.Supplier;
  * technical signals without weakening the immutable audit chain.</p>
  */
 @Repository
-public final class JdbcUserActivityStore {
+public class JdbcUserActivityStore {
     private final JdbcClient jdbc;
     private final TransactionTemplate transactions;
     private final ObjectMapper json;
@@ -217,8 +217,9 @@ public final class JdbcUserActivityStore {
         if (limit < 1 || limit > 200) throw new IllegalArgumentException("limit must be between 1 and 200");
         String line = normalizeFilter(businessLine);
         String outcome = normalizeFilter(result);
+        SummaryFilter filters = SummaryFilter.forValues(line, outcome);
         return inTenant(organizationId, () -> {
-            Totals totals = jdbc.sql("""
+            Totals totals = summaryStatement("""
                     with activity_events as (
                         select audit_id event_id, organization_id, session_id, event_kind, action,
                                business_line, route, target, occurred_at, duration_ms, result,
@@ -249,21 +250,18 @@ public final class JdbcUserActivityStore {
                                      and ((source = 'AUDIT' and event_kind = 'SERVER_OPERATION')
                                        or (source = 'TELEMETRY' and event_kind = 'API_REQUEST'))
                                ) p95_duration
-                      from activity_events
+                     from activity_events
                      where organization_id = :organization
                        and occurred_at >= :from and occurred_at < :to
-                       and (:line is null or business_line = :line)
-                       and (:result is null or result = :result)
-                    """)
-                    .param("organization", organizationId).param("from", offset(from)).param("to", offset(to))
-                    .param("line", line).param("result", outcome)
+                       %s
+                    """, organizationId, from, to, filters, line, outcome)
                     .query((rs, row) -> new Totals(
                             rs.getLong("event_count"), rs.getLong("session_count"),
                             rs.getLong("failure_count"), rs.getLong("outcome_count"),
                             nullableInteger(rs, "p95_duration")))
                     .single();
 
-            List<BusinessLineSummary> lines = jdbc.sql("""
+            List<BusinessLineSummary> lines = summaryStatement("""
                     with activity_events as (
                         select organization_id, session_id, business_line, occurred_at,
                                duration_ms, result, event_kind, 'AUDIT' source
@@ -292,16 +290,13 @@ public final class JdbcUserActivityStore {
                                      and ((source = 'AUDIT' and event_kind = 'SERVER_OPERATION')
                                        or (source = 'TELEMETRY' and event_kind = 'API_REQUEST'))
                                ) p95_duration
-                      from activity_events
+                     from activity_events
                      where organization_id = :organization
                        and occurred_at >= :from and occurred_at < :to
-                       and (:line is null or business_line = :line)
-                       and (:result is null or result = :result)
+                       %s
                      group by business_line
                      order by event_count desc, business_line
-                    """)
-                    .param("organization", organizationId).param("from", offset(from)).param("to", offset(to))
-                    .param("line", line).param("result", outcome)
+                    """, organizationId, from, to, filters, line, outcome)
                     .query((rs, row) -> {
                         long count = rs.getLong("event_count");
                         long failures = rs.getLong("failure_count");
@@ -311,7 +306,8 @@ public final class JdbcUserActivityStore {
                                 failures, rate(failures, outcomes), nullableInteger(rs, "p95_duration"));
                     }).list();
 
-            List<ErrorSummary> errors = jdbc.sql("""
+            SummaryFilter errorFilters = SummaryFilter.forValues(line, null);
+            List<ErrorSummary> errors = summaryStatement("""
                     with activity_events as (
                         select organization_id, business_line, occurred_at, result, error_code
                           from audit_events
@@ -325,19 +321,17 @@ public final class JdbcUserActivityStore {
                      where organization_id = :organization
                        and occurred_at >= :from and occurred_at < :to
                        and result = 'FAILURE'
-                       and (:line is null or business_line = :line)
+                       %s
                      group by coalesce(error_code, 'UNCLASSIFIED_FAILURE')
                      order by error_count desc, error_code
                      limit 10
-                    """)
-                    .param("organization", organizationId).param("from", offset(from)).param("to", offset(to))
-                    .param("line", line)
+                    """, organizationId, from, to, errorFilters, line, null)
                     .query((rs, row) -> new ErrorSummary(
                             rs.getString("error_code"), rs.getLong("error_count"),
                             instant(rs.getObject("last_seen", OffsetDateTime.class))))
                     .list();
 
-            List<RecentEvent> recent = jdbc.sql("""
+            List<RecentEvent> recent = summaryStatement("""
                     with activity_events as (
                         select audit_id event_id, organization_id, session_id, event_kind, action,
                                business_line, route, target, occurred_at, duration_ms, result,
@@ -352,16 +346,14 @@ public final class JdbcUserActivityStore {
                     select event_id, session_id, event_kind, action, business_line, route,
                            target, occurred_at, duration_ms, result, error_code,
                            metric_name, metric_value
-                      from activity_events
+                     from activity_events
                      where organization_id = :organization
                        and occurred_at >= :from and occurred_at < :to
-                       and (:line is null or business_line = :line)
-                       and (:result is null or result = :result)
+                       %s
                      order by occurred_at desc, event_id desc
                      limit :limit
-                    """)
-                    .param("organization", organizationId).param("from", offset(from)).param("to", offset(to))
-                    .param("line", line).param("result", outcome).param("limit", limit)
+                    """, organizationId, from, to, filters, line, outcome)
+                    .param("limit", limit)
                     .query(JdbcUserActivityStore::mapRecent)
                     .list();
 
@@ -507,6 +499,72 @@ public final class JdbcUserActivityStore {
                 nullableInteger(rs, "duration_ms"),
                 rs.getString("result"),
                 rs.getString("error_code"));
+    }
+
+    /**
+     * Builds one of four fixed predicate shapes. The selected fragment is an
+     * internal enum constant, never request text, while every filter value
+     * remains a named bind. Separate shapes let PostgreSQL use the
+     * organization/business-line or organization/result indexes even after the
+     * driver promotes a frequently used statement to a generic prepared plan.
+     */
+    private JdbcClient.StatementSpec summaryStatement(
+            String sql,
+            String organizationId,
+            Instant from,
+            Instant to,
+            SummaryFilter filters,
+            String businessLine,
+            String result
+    ) {
+        JdbcClient.StatementSpec statement = jdbc.sql(sql.formatted(filters.predicate()))
+                .param("organization", organizationId)
+                .param("from", offset(from))
+                .param("to", offset(to));
+        if (filters.businessLine()) {
+            statement = statement.param("line", businessLine);
+        }
+        if (filters.result()) {
+            statement = statement.param("result", result);
+        }
+        return statement;
+    }
+
+    private enum SummaryFilter {
+        NONE("", false, false),
+        BUSINESS_LINE("and business_line = :line", true, false),
+        RESULT("and result = :result", false, true),
+        BUSINESS_LINE_AND_RESULT(
+                "and business_line = :line and result = :result", true, true);
+
+        private final String predicate;
+        private final boolean businessLine;
+        private final boolean result;
+
+        SummaryFilter(String predicate, boolean businessLine, boolean result) {
+            this.predicate = predicate;
+            this.businessLine = businessLine;
+            this.result = result;
+        }
+
+        static SummaryFilter forValues(String businessLine, String result) {
+            if (businessLine != null && result != null) return BUSINESS_LINE_AND_RESULT;
+            if (businessLine != null) return BUSINESS_LINE;
+            if (result != null) return RESULT;
+            return NONE;
+        }
+
+        String predicate() {
+            return predicate;
+        }
+
+        boolean businessLine() {
+            return businessLine;
+        }
+
+        boolean result() {
+            return result;
+        }
     }
 
     private record Totals(

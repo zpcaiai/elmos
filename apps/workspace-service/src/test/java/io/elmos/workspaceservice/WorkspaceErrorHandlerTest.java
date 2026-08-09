@@ -17,12 +17,16 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standal
 
 class WorkspaceErrorHandlerTest {
     private WorkspaceProvisioningPort workspaces;
+    private WorkspaceOwnership ownership;
     private MockMvc mvc;
+    private final WorkspaceServiceCredentialFilter.Principal principal =
+            new WorkspaceServiceCredentialFilter.Principal("org-1", "actor-1");
 
     @BeforeEach
     void setUp() {
         workspaces = mock(WorkspaceProvisioningPort.class);
-        mvc = standaloneSetup(new WorkspaceController(workspaces))
+        ownership = mock(WorkspaceOwnership.class);
+        mvc = standaloneSetup(new WorkspaceController(workspaces, ownership))
                 .setControllerAdvice(new WorkspaceErrorHandler())
                 .build();
     }
@@ -30,6 +34,7 @@ class WorkspaceErrorHandlerTest {
     @Test
     void malformedRequestsHaveAStableNonRetryableContract() throws Exception {
         mvc.perform(post("/api/v1/workspaces")
+                        .requestAttr(WorkspaceServiceCredentialFilter.PRINCIPAL_ATTRIBUTE, principal)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{}"))
                 .andExpect(status().isBadRequest())
@@ -42,7 +47,8 @@ class WorkspaceErrorHandlerTest {
         doThrow(new SecurityException("sensitive policy implementation detail"))
                 .when(workspaces).terminate(anyString());
 
-        mvc.perform(delete("/api/v1/workspaces/ws-1"))
+        mvc.perform(delete("/api/v1/workspaces/ws-1")
+                        .requestAttr(WorkspaceServiceCredentialFilter.PRINCIPAL_ATTRIBUTE, principal))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.errorCode").value("WORKSPACE_POLICY_DENIED"))
                 .andExpect(jsonPath("$.message").value("The workspace request violates an enforced security policy."))
@@ -54,7 +60,8 @@ class WorkspaceErrorHandlerTest {
         doThrow(new IllegalStateException("rootless Docker workspace provisioning is disabled"))
                 .when(workspaces).terminate(anyString());
 
-        mvc.perform(delete("/api/v1/workspaces/ws-1"))
+        mvc.perform(delete("/api/v1/workspaces/ws-1")
+                        .requestAttr(WorkspaceServiceCredentialFilter.PRINCIPAL_ATTRIBUTE, principal))
                 .andExpect(status().isServiceUnavailable())
                 .andExpect(jsonPath("$.errorCode").value("WORKSPACE_SERVICE_UNAVAILABLE"))
                 .andExpect(jsonPath("$.retryable").value(true));

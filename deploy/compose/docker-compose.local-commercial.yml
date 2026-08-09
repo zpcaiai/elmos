@@ -1,0 +1,134 @@
+name: elmos-local-commercial
+
+x-java-hardening: &java-hardening
+  init: true
+  restart: unless-stopped
+  read_only: true
+  cap_drop: ["ALL"]
+  security_opt: ["no-new-privileges:true"]
+  tmpfs:
+    - "/tmp:rw,noexec,nosuid,size=128m"
+
+services:
+  postgres:
+    image: postgres:17.5-alpine@sha256:6567bca8d7bc8c82c5922425a0baee57be8402df92bae5eacad5f01ae9544daa
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: elmos
+      POSTGRES_USER: elmos
+      POSTGRES_PASSWORD: ${LOCAL_DATABASE_PASSWORD:?run scripts/operations/local_commercial.py first}
+    ports:
+      - "127.0.0.1:15432:5432"
+    volumes:
+      - local-commercial-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U elmos -d elmos"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+    security_opt: ["no-new-privileges:true"]
+
+  control-plane:
+    <<: *java-hardening
+    build: { context: ../../apps/control-plane, dockerfile: Dockerfile.local }
+    environment:
+      ELMOS_DATABASE_URL: jdbc:postgresql://postgres:5432/elmos
+      ELMOS_DATABASE_USER: elmos
+      ELMOS_DATABASE_PASSWORD: ${LOCAL_DATABASE_PASSWORD}
+      ELMOS_LOCAL_IDENTITY_ENABLED: "false"
+      ELMOS_OPERATIONS_API_KEY: ${LOCAL_OPERATIONS_API_KEY}
+      ELMOS_OPERATIONS_API_KEY_EXPIRES_AT: ${LOCAL_CREDENTIAL_EXPIRES_AT}
+      ELMOS_OPERATIONS_TENANT_ID: local-commercial
+      ELMOS_OPERATIONS_ACTOR_ID: local-commercial-admin
+      ELMOS_OPERATIONS_AUTOMATION_ENABLED: "false"
+      ELMOS_OPERATIONS_RETENTION_ENABLED: "false"
+      ELMOS_OPERATIONS_NOTIFICATION_ENABLED: "false"
+      ELMOS_REPOSITORY_WORKSPACE_ENABLED: "false"
+    ports:
+      - "127.0.0.1:18080:8080"
+    depends_on:
+      postgres: { condition: service_healthy }
+
+  commercial-api:
+    <<: *java-hardening
+    build: { context: ../../apps/commercial-api, dockerfile: Dockerfile.local }
+    environment:
+      ELMOS_COMMERCIAL_API_PORT: "8085"
+      ELMOS_COMMERCIAL_DATABASE_URL: jdbc:postgresql://postgres:5432/elmos
+      ELMOS_COMMERCIAL_DATABASE_USERNAME: elmos
+      ELMOS_COMMERCIAL_DATABASE_PASSWORD: ${LOCAL_DATABASE_PASSWORD}
+      ELMOS_BILLING_LIVE_ENABLED: "false"
+      ELMOS_USAGE_EMAIL_ALERTS_ENABLED: "false"
+    ports:
+      - "127.0.0.1:18085:8085"
+    depends_on:
+      postgres: { condition: service_healthy }
+
+  workspace-service:
+    <<: *java-hardening
+    build: { context: ../../apps/workspace-service, dockerfile: Dockerfile.local }
+    environment:
+      ELMOS_DATABASE_URL: jdbc:postgresql://postgres:5432/elmos
+      ELMOS_DATABASE_USER: elmos
+      ELMOS_DATABASE_PASSWORD: ${LOCAL_DATABASE_PASSWORD}
+      ELMOS_WORKSPACE_DOCKER_ENABLED: "false"
+      ELMOS_WORKSPACE_SECRETS_ENABLED: "false"
+      ELMOS_REPOSITORY_WORKSPACE_API_KEY: ${LOCAL_WORKSPACE_API_KEY}
+      ELMOS_REPOSITORY_WORKSPACE_API_KEY_EXPIRES_AT: ${LOCAL_CREDENTIAL_EXPIRES_AT}
+      ELMOS_REPOSITORY_WORKSPACE_TENANT_ID: local-commercial
+      ELMOS_REPOSITORY_WORKSPACE_ACTOR_ID: local-commercial-admin
+    ports:
+      - "127.0.0.1:18082:8082"
+    depends_on:
+      postgres: { condition: service_healthy }
+
+  web-console:
+    build: { context: ../.., dockerfile: apps/web-console/Dockerfile.local }
+    init: true
+    restart: unless-stopped
+    user: "10001:10001"
+    read_only: true
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    tmpfs:
+      - "/tmp:rw,noexec,nosuid,size=64m"
+    environment:
+      CONTROL_PLANE_BASE_URL: http://control-plane:8080
+      ELMOS_CONTROL_PLANE_BASE_URL: http://control-plane:8080
+      ELMOS_COMMERCIAL_API_URL: http://commercial-api:8085
+      ELMOS_WORKSPACE_SERVICE_URL: http://workspace-service:8082
+      ELMOS_REPOSITORY_WORKSPACE_BASE_URL: http://control-plane:8080
+      ELMOS_TRUSTED_INTERNAL_HTTP: "true"
+      ELMOS_BUSINESS_AUDIT_REQUIRED: "true"
+      ELMOS_OPERATIONS_API_KEY: ${LOCAL_OPERATIONS_API_KEY}
+      ELMOS_OPERATIONS_API_KEY_EXPIRES_AT: ${LOCAL_CREDENTIAL_EXPIRES_AT}
+      ELMOS_OPERATIONS_TENANT_ID: local-commercial
+      ELMOS_OPERATIONS_ACTOR_ID: local-commercial-admin
+      ELMOS_ADMIN_ALLOW_TOKEN_FALLBACK: "true"
+      ELMOS_ADMIN_OBSERVABILITY_TOKEN: ${LOCAL_ADMIN_TOKEN}
+      ELMOS_ADMIN_OBSERVABILITY_TOKEN_EXPIRES_AT: ${LOCAL_CREDENTIAL_EXPIRES_AT}
+      ELMOS_ADMIN_OBSERVABILITY_TENANT_ID: local-commercial
+      ELMOS_ADMIN_OBSERVABILITY_ACTOR_ID: local-commercial-admin
+      ELMOS_ADMIN_OBSERVABILITY_ROLE: APPROVER
+      ELMOS_REPOSITORY_WORKSPACE_API_KEY: ${LOCAL_WORKSPACE_API_KEY}
+      ELMOS_REPOSITORY_WORKSPACE_TENANT_ID: local-commercial
+      ELMOS_REPOSITORY_WORKSPACE_ACTOR_ID: local-commercial-admin
+      ELMOS_HOSTED_EXECUTION_ENABLED: "false"
+      ELMOS_LOCAL_RUNNER_ENABLED: "false"
+      ELMOS_PUBLIC_ORIGIN: http://127.0.0.1:3000
+      ELMOS_SESSION_SECRET: ${LOCAL_SESSION_SECRET}
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      control-plane: { condition: service_started }
+      commercial-api: { condition: service_started }
+      workspace-service: { condition: service_started }
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:3000/api/health?probe=readiness"]
+      interval: 10s
+      timeout: 5s
+      retries: 60
+      start_period: 30s
+
+volumes:
+  local-commercial-postgres:

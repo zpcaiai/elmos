@@ -11,6 +11,37 @@ import java.util.List;
  * node schedulable; {@link #verifyAttestation} is a separate operator action.</p>
  */
 public interface RunnerRegistrationPort {
+    enum FleetStatus {
+        REGISTERED,
+        READY,
+        DRAINING,
+        QUARANTINED,
+        LOST,
+        RETIRED
+    }
+
+    /**
+     * Secret-free administration projection for one tenant's runner fleet.
+     *
+     * <p>Credential identifiers, token hashes, attestation payloads and verifier
+     * identities deliberately do not cross this port.</p>
+     */
+    record FleetNodeView(
+            String runnerNodeId,
+            String runnerPoolId,
+            String agentVersion,
+            FleetStatus fleetStatus,
+            List<String> capabilities,
+            int maxConcurrency,
+            boolean attestationVerified,
+            Instant attestationVerifiedAt,
+            String imageAllowlistVersion,
+            Instant lastHeartbeatAt,
+            Instant drainRequestedAt,
+            Instant createdAt,
+            Instant updatedAt) {
+    }
+
     record EnrollmentCredential(
             String credentialId,
             String poolId,
@@ -73,7 +104,23 @@ public interface RunnerRegistrationPort {
 
     void authorizeNode(String runnerNodeId, String nodeToken);
 
-    void verifyAttestation(String runnerNodeId, String verifierActorId);
+    void verifyAttestation(
+            String organizationId,
+            String runnerNodeId,
+            String verifierActorId);
 
-    void requestDrain(String runnerNodeId, String actorId);
+    void requestDrain(
+            String organizationId,
+            String runnerNodeId,
+            String actorId);
+
+    /**
+     * Returns at most {@code limit} nodes visible to {@code organizationId}.
+     * A null status means all typed fleet states. Implementations must enforce
+     * the tenant boundary independently of caller-side filtering.
+     */
+    List<FleetNodeView> listFleet(
+            String organizationId,
+            FleetStatus status,
+            int limit);
 }

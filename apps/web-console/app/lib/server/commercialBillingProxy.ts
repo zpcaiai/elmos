@@ -1,6 +1,19 @@
 import type { NextRequest } from "next/server";
+import {
+  AccountSessionError,
+  accountCookieNames,
+  accountSessionFromRequest,
+  unsafeCookieValue,
+} from "./accountSession";
+import {
+  assertCommercialTenantDelegation,
+  CommercialBillingPolicyError,
+} from "./commercialBillingPolicy";
+import {
+  configuredCommercialApiBaseUrl,
+  UpstreamConfigurationError,
+} from "./trustedUpstream";
 
-const sessionCookieName = "__Host-elmos_access_token";
 const requestTimeoutMs = 8_000;
 
 export class CommercialBillingProxyError extends Error {
@@ -16,7 +29,7 @@ export class CommercialBillingProxyError extends Error {
 }
 
 function apiBase(): string {
-  const configured = process.env.ELMOS_COMMERCIAL_API_URL;
+  const configured = process.env.ELMOS_COMMERCIAL_API_URL?.trim();
   if (!configured) {
     throw new CommercialBillingProxyError(
       503,
@@ -26,36 +39,59 @@ function apiBase(): string {
       "NOT_CONFIGURED",
     );
   }
-  let parsed: URL;
+  let resolved: string | null;
   try {
-    parsed = new URL(configured);
-  } catch {
+    resolved = configuredCommercialApiBaseUrl();
+  } catch (error) {
+    const malformed = error instanceof UpstreamConfigurationError
+      && error.failure === "MALFORMED";
     throw new CommercialBillingProxyError(
       503,
-      "COMMERCIAL_API_URL_INVALID",
-      "商业计量 API 地址无效。",
+      malformed ? "COMMERCIAL_API_URL_INVALID" : "COMMERCIAL_API_TRANSPORT_INVALID",
+      malformed ? "商业计量 API 地址无效。" : "商业计量 API 必须使用受信任传输。",
       false,
       "NOT_CONFIGURED",
     );
   }
-  const local = parsed.hostname === "127.0.0.1" || parsed.hostname === "localhost";
-  if (parsed.protocol !== "https:" && !(local && parsed.protocol === "http:")) {
-    throw new CommercialBillingProxyError(
-      503,
-      "COMMERCIAL_API_TRANSPORT_INVALID",
-      "商业计量 API 必须使用 HTTPS。",
-      false,
-      "NOT_CONFIGURED",
-    );
-  }
-  return parsed.toString().replace(/\/$/, "");
+  if (!resolved) throw new CommercialBillingProxyError(
+    503,
+    "COMMERCIAL_API_NOT_CONFIGURED",
+    "商业计量 API 尚未配置。",
+    false,
+    "NOT_CONFIGURED",
+  );
+  return resolved;
 }
 
-function bearer(request: NextRequest): string {
-  const cookie = request.cookies.get(sessionCookieName)?.value ?? "";
+function bearer(request: Request): string {
+  const sessionCookie = unsafeCookieValue(request, accountCookieNames.session);
+  const accessTokenCookie = unsafeCookieValue(request, accountCookieNames.accessToken);
   const authorization = request.headers.get("authorization") ?? "";
   const headerToken = authorization.startsWith("Bearer ") ? authorization.slice(7) : "";
-  const token = cookie || headerToken;
+  let token = headerToken;
+  if (sessionCookie || accessTokenCookie) {
+    try {
+      const session = accountSessionFromRequest(request);
+      checkedBearerToken(session.accessToken);
+      assertCommercialTenantDelegation(
+        session.accessToken,
+        session.principal.organizationId,
+      );
+      token = session.accessToken;
+    } catch (error) {
+      if (error instanceof CommercialBillingPolicyError) {
+        throw new CommercialBillingProxyError(error.status, error.code, error.message, false);
+      }
+      if (error instanceof AccountSessionError) {
+        throw new CommercialBillingProxyError(error.status, error.code, error.message, false);
+      }
+      throw error;
+    }
+  }
+  return checkedBearerToken(token);
+}
+
+function checkedBearerToken(token: string): string {
   if (token.length < 24 || token.length > 16_384) {
     throw new CommercialBillingProxyError(
       401,
@@ -71,7 +107,7 @@ function requireSameOriginForCookieMutation(
   request: NextRequest,
   method: "GET" | "POST" | "PUT",
 ): void {
-  if (method === "GET" || !request.cookies.has(sessionCookieName)) return;
+  if (method === "GET" || !request.cookies.has(accountCookieNames.accessToken)) return;
   const origin = request.headers.get("origin");
   if (!origin || origin !== request.nextUrl.origin) {
     throw new CommercialBillingProxyError(

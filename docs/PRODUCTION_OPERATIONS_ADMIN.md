@@ -47,8 +47,9 @@ export ELMOS_COMMERCIAL_DATABASE_MIGRATION_PASSWORD='<secret-manager-injected>'
 ./scripts/commercial/migrate_neon.sh
 ```
 
-确认 Flyway 当前版本为 51、八张运营表和八条强制 RLS 策略存在。应用运行身份
-不得拥有绕过 RLS 的角色属性。连接串和密码不得进入仓库、镜像、日志或浏览器变量。
+确认 Flyway 至少迁移到当前仓库的 V64，运营、身份、执行队列、对象存储与支付目录所需表
+及强制 RLS 策略均存在。应用运行身份不得拥有绕过 RLS 的角色属性。连接串和密码不得进入
+仓库、镜像、日志或浏览器变量。
 
 ## 3. Control Plane
 

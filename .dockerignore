@@ -6,13 +6,27 @@
 
 **/node_modules
 **/.next
+**/.next-*
+**/.venv
+**/.build
+**/.gradle
 **/coverage
 **/playwright-report
 **/test-results
 **/target
+**/bin
+**/obj
+**/dist
+**/build
 **/__pycache__
 **/.pytest_cache
+**/.mypy_cache
 **/.ruff_cache
+**/.tox
+**/.cache
+!apps/web-console/.local-pnpm/
+!apps/web-console/.local-pnpm/**
+.elmos
 
 artifacts
 *.tar

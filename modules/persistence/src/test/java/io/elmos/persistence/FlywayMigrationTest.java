@@ -294,6 +294,58 @@ class FlywayMigrationTest {
                 enrollment.token(), firstNodeHash,
                 true, true, true, true, "allow-test");
         assertEquals("runner-test-1", nodeCredential.runnerNodeId());
+        var registeredFleet = runnerStore.listFleet(
+                organization,
+                io.elmos.workflow.RunnerRegistrationPort.FleetStatus.REGISTERED,
+                10);
+        assertEquals(1, registeredFleet.size());
+        assertEquals("runner-test-1", registeredFleet.getFirst().runnerNodeId());
+        assertEquals("pool-test", registeredFleet.getFirst().runnerPoolId());
+        assertEquals(false, registeredFleet.getFirst().attestationVerified());
+        assertEquals(0, runnerStore.listFleet(
+                "org-other-tenant",
+                io.elmos.workflow.RunnerRegistrationPort.FleetStatus.REGISTERED,
+                10).size(),
+                "the JDBC projection must bind RLS and must not enumerate another tenant's runners");
+        assertThrows(
+                io.elmos.workflow.RunnerRegistrationPort.RunnerAuthenticationException.class,
+                () -> runnerStore.listFleet(organization, null, 102),
+                "the persistence port must keep its own bounded-list invariant");
+        runnerStore.verifyAttestation(
+                organization, "runner-test-1", ownerActor);
+        var readyFleet = runnerStore.listFleet(
+                organization,
+                io.elmos.workflow.RunnerRegistrationPort.FleetStatus.READY,
+                10);
+        assertEquals(1, readyFleet.size());
+        assertTrue(readyFleet.getFirst().attestationVerified());
+        var crossTenantAttestation = assertThrows(
+                io.elmos.workflow.RunnerRegistrationPort.RunnerAuthenticationException.class,
+                () -> runnerStore.verifyAttestation(
+                        "org-other-tenant", "runner-test-1", ownerActor));
+        var unknownAttestation = assertThrows(
+                io.elmos.workflow.RunnerRegistrationPort.RunnerAuthenticationException.class,
+                () -> runnerStore.verifyAttestation(
+                        "org-other-tenant", "runner-missing", ownerActor));
+        assertEquals("ELMOS_RUNNER_UNKNOWN", crossTenantAttestation.code());
+        assertEquals(crossTenantAttestation.code(), unknownAttestation.code(),
+                "cross-tenant and nonexistent attestation targets must not be enumerable");
+        var crossTenantDrain = assertThrows(
+                io.elmos.workflow.RunnerRegistrationPort.RunnerAuthenticationException.class,
+                () -> runnerStore.requestDrain(
+                        "org-other-tenant", "runner-test-1", ownerActor));
+        var unknownDrain = assertThrows(
+                io.elmos.workflow.RunnerRegistrationPort.RunnerAuthenticationException.class,
+                () -> runnerStore.requestDrain(
+                        "org-other-tenant", "runner-missing", ownerActor));
+        assertEquals("ELMOS_RUNNER_UNKNOWN", crossTenantDrain.code());
+        assertEquals(crossTenantDrain.code(), unknownDrain.code(),
+                "cross-tenant and nonexistent drain targets must not be enumerable");
+        runnerStore.requestDrain(organization, "runner-test-1", ownerActor);
+        assertEquals(1, runnerStore.listFleet(
+                organization,
+                io.elmos.workflow.RunnerRegistrationPort.FleetStatus.DRAINING,
+                10).size());
         runnerStore.authorizeNode("runner-test-1", firstNodeToken);
         assertEquals(
                 "runner-test-1",

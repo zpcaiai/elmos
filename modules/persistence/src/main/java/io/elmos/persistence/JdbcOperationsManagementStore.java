@@ -32,7 +32,7 @@ import java.util.function.Supplier;
  * their own authorized systems and evidence; they are never simulated here.</p>
  */
 @Repository
-public final class JdbcOperationsManagementStore {
+public class JdbcOperationsManagementStore {
     public static final List<String> BUSINESS_LINES = List.of(
             "PRODUCT_OVERVIEW",
             "SPRING_MODERNIZATION",

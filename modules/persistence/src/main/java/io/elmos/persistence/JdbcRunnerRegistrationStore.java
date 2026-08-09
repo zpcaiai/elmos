@@ -10,6 +10,7 @@ import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.HexFormat;
 import java.util.List;
@@ -380,9 +381,15 @@ public final class JdbcRunnerRegistrationStore implements RunnerRegistrationPort
     }
 
     @Override
-    public void verifyAttestation(String runnerNodeId, String verifierActorId) {
-        String organizationId = organizationForNode(runnerNodeId);
-        inTenant(organizationId, () -> {
+    public void verifyAttestation(
+            String organizationId,
+            String runnerNodeId,
+            String verifierActorId
+    ) {
+        String tenant = requireText(
+                organizationId, "ELMOS_RUNNER_ORGANIZATION_REQUIRED");
+        requireRunnerId(runnerNodeId);
+        inTenant(tenant, () -> {
             int updated = jdbc.sql("""
                     UPDATE runner_nodes SET
                         rootless_attested = true,
@@ -393,6 +400,7 @@ public final class JdbcRunnerRegistrationStore implements RunnerRegistrationPort
                         attestation_verifier_actor_id = :actor,
                         fleet_status = 'READY'
                      WHERE runner_node_id = :node
+                       AND organization_id = :organization
                        AND fleet_status = 'REGISTERED'
                        AND payload #>> '{selfAttestation,rootless}' = 'true'
                        AND payload #>> '{selfAttestation,readOnlyRoot}' = 'true'
@@ -400,9 +408,11 @@ public final class JdbcRunnerRegistrationStore implements RunnerRegistrationPort
                        AND payload #>> '{selfAttestation,networkDefaultDeny}' = 'true'
                     """)
                     .param("node", runnerNodeId)
+                    .param("organization", tenant)
                     .param("actor", requireText(verifierActorId, "ELMOS_RUNNER_VERIFIER_REQUIRED"))
                     .update();
             if (updated != 1) {
+                requireOwnedNode(tenant, runnerNodeId);
                 throw rejected("ELMOS_RUNNER_ATTESTATION_INCOMPLETE");
             }
             return null;
@@ -410,25 +420,131 @@ public final class JdbcRunnerRegistrationStore implements RunnerRegistrationPort
     }
 
     @Override
-    public void requestDrain(String runnerNodeId, String actorId) {
-        String organizationId = organizationForNode(runnerNodeId);
-        inTenant(organizationId, () -> {
+    public void requestDrain(
+            String organizationId,
+            String runnerNodeId,
+            String actorId
+    ) {
+        String tenant = requireText(
+                organizationId, "ELMOS_RUNNER_ORGANIZATION_REQUIRED");
+        requireRunnerId(runnerNodeId);
+        inTenant(tenant, () -> {
             int updated = jdbc.sql("""
                     UPDATE runner_nodes
                        SET drain_requested_at = coalesce(drain_requested_at, now()),
                            fleet_status = CASE WHEN fleet_status = 'READY' THEN 'DRAINING' ELSE fleet_status END,
                            payload = payload || jsonb_build_object('drainRequestedBy', :actor)
                      WHERE runner_node_id = :node
+                       AND organization_id = :organization
                        AND fleet_status IN ('READY', 'DRAINING')
                     """)
                     .param("node", runnerNodeId)
+                    .param("organization", tenant)
                     .param("actor", requireText(actorId, "ELMOS_RUNNER_ACTOR_REQUIRED"))
                     .update();
             if (updated != 1) {
+                requireOwnedNode(tenant, runnerNodeId);
                 throw rejected("ELMOS_RUNNER_NOT_READY");
             }
             return null;
         });
+    }
+
+    @Override
+    public List<FleetNodeView> listFleet(
+            String organizationId,
+            FleetStatus status,
+            int limit
+    ) {
+        String tenant = requireText(
+                organizationId, "ELMOS_RUNNER_ORGANIZATION_REQUIRED");
+        // The HTTP surface asks for one extra row to report truncation. Keep the
+        // persistence boundary independently bounded in case another adapter
+        // calls it directly.
+        if (limit < 1 || limit > 101) {
+            throw rejected("ELMOS_RUNNER_LIST_LIMIT_INVALID");
+        }
+        return inTenant(tenant, () -> {
+            String baseSql = """
+                    SELECT runner_node_id, runner_pool_ref, agent_version,
+                           fleet_status, capabilities, max_concurrency,
+                           rootless_attested, readonly_root_attested,
+                           capability_drop_attested,
+                           network_default_deny_attested,
+                           attestation_verified_at, image_allowlist_version,
+                           last_heartbeat_at, drain_requested_at,
+                           created_at, updated_at
+                      FROM runner_nodes
+                     WHERE organization_id = :organization
+                       AND fleet_status IS NOT NULL
+                    """;
+            if (status == null) {
+                return jdbc.sql(baseSql + """
+                         ORDER BY last_heartbeat_at DESC NULLS LAST,
+                                  runner_node_id ASC
+                         LIMIT :limit
+                        """)
+                        .param("organization", tenant)
+                        .param("limit", limit)
+                        .query(JdbcRunnerRegistrationStore::mapFleetNode)
+                        .list();
+            }
+            return jdbc.sql(baseSql + """
+                       AND fleet_status = :fleetStatus
+                     ORDER BY last_heartbeat_at DESC NULLS LAST,
+                              runner_node_id ASC
+                     LIMIT :limit
+                    """)
+                    .param("organization", tenant)
+                    .param("fleetStatus", status.name())
+                    .param("limit", limit)
+                    .query(JdbcRunnerRegistrationStore::mapFleetNode)
+                    .list();
+        });
+    }
+
+    private static FleetNodeView mapFleetNode(
+            java.sql.ResultSet result,
+            int rowNumber
+    ) throws java.sql.SQLException {
+        java.sql.Array capabilityArray = result.getArray("capabilities");
+        List<String> capabilities;
+        try {
+            capabilities = capabilityArray == null
+                    ? List.of()
+                    : List.copyOf(Arrays.asList(
+                            (String[]) capabilityArray.getArray()));
+        } finally {
+            if (capabilityArray != null) capabilityArray.free();
+        }
+        Instant verifiedAt = nullableInstant(result, "attestation_verified_at");
+        boolean attestationVerified = verifiedAt != null
+                && result.getBoolean("rootless_attested")
+                && result.getBoolean("readonly_root_attested")
+                && result.getBoolean("capability_drop_attested")
+                && result.getBoolean("network_default_deny_attested");
+        return new FleetNodeView(
+                result.getString("runner_node_id"),
+                result.getString("runner_pool_ref"),
+                result.getString("agent_version"),
+                FleetStatus.valueOf(result.getString("fleet_status")),
+                capabilities,
+                result.getInt("max_concurrency"),
+                attestationVerified,
+                verifiedAt,
+                result.getString("image_allowlist_version"),
+                nullableInstant(result, "last_heartbeat_at"),
+                nullableInstant(result, "drain_requested_at"),
+                result.getTimestamp("created_at").toInstant(),
+                result.getTimestamp("updated_at").toInstant());
+    }
+
+    private static Instant nullableInstant(
+            java.sql.ResultSet result,
+            String column
+    ) throws java.sql.SQLException {
+        java.sql.Timestamp timestamp = result.getTimestamp(column);
+        return timestamp == null ? null : timestamp.toInstant();
     }
 
     private String authorize(String runnerNodeId, String nodeToken) {
@@ -449,15 +565,21 @@ public final class JdbcRunnerRegistrationStore implements RunnerRegistrationPort
                 .orElseThrow(() -> rejected("ELMOS_RUNNER_NODE_TOKEN_REJECTED")));
     }
 
-    private String organizationForNode(String runnerNodeId) {
-        return jdbc.sql("""
-                SELECT organization_id FROM runner_node_authentication
-                 WHERE runner_node_id = :node AND revoked_at IS NULL
+    private void requireOwnedNode(String organizationId, String runnerNodeId) {
+        Integer owned = jdbc.sql("""
+                SELECT count(*) FROM runner_nodes
+                 WHERE runner_node_id = :node
+                   AND organization_id = :organization
+                   AND fleet_status IS NOT NULL
                 """)
                 .param("node", runnerNodeId)
-                .query(String.class)
-                .optional()
-                .orElseThrow(() -> rejected("ELMOS_RUNNER_UNKNOWN"));
+                .param("organization", organizationId)
+                .query(Integer.class)
+                .single();
+        if (owned == null || owned != 1) {
+            // Cross-tenant and nonexistent nodes are intentionally identical.
+            throw rejected("ELMOS_RUNNER_UNKNOWN");
+        }
     }
 
     private <T> T inTenant(String organizationId, Supplier<T> work) {

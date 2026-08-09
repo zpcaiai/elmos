@@ -44,6 +44,7 @@ final class OperationsAuthorization {
 
     private final Clock clock;
     private final String apiKey;
+    private final byte[] apiKeyDigest;
     private final String apiKeyExpiresAt;
     private final String boundOrganizationId;
     private final String boundActorId;
@@ -57,6 +58,7 @@ final class OperationsAuthorization {
     ) {
         this.clock = Objects.requireNonNull(clock, "clock");
         this.apiKey = apiKey == null ? "" : apiKey.trim();
+        this.apiKeyDigest = sha256(this.apiKey.getBytes(StandardCharsets.UTF_8));
         this.apiKeyExpiresAt = apiKeyExpiresAt == null ? "" : apiKeyExpiresAt.trim();
         this.boundOrganizationId = boundOrganizationId == null ? "" : boundOrganizationId.trim();
         this.boundActorId = boundActorId == null ? "" : boundActorId.trim();
@@ -140,13 +142,25 @@ final class OperationsAuthorization {
         if (!boundOrganizationId.equals(organizationId)) {
             throw new SecurityException("operations observability identity binding failed");
         }
-        // Constant-time so a wrong key cannot be narrowed by timing. The length
-        // check is separate because MessageDigest.isEqual is only constant-time
-        // for equal-length inputs.
-        byte[] expected = apiKey.getBytes(StandardCharsets.UTF_8);
-        byte[] presented = (presentedKey == null ? "" : presentedKey).getBytes(StandardCharsets.UTF_8);
-        if (expected.length != presented.length || !MessageDigest.isEqual(expected, presented)) {
+        // Hash both sides to the same fixed width before the constant-time
+        // comparison. This avoids exposing the configured key length through
+        // an early length mismatch while the bound prevents an oversized
+        // header from becoming an avoidable CPU or allocation sink.
+        String candidate = presentedKey == null ? "" : presentedKey;
+        if (candidate.length() > 4_096) {
             throw new SecurityException("operations observability authorization failed");
+        }
+        byte[] presentedDigest = sha256(candidate.getBytes(StandardCharsets.UTF_8));
+        if (!MessageDigest.isEqual(apiKeyDigest, presentedDigest)) {
+            throw new SecurityException("operations observability authorization failed");
+        }
+    }
+
+    private static byte[] sha256(byte[] value) {
+        try {
+            return MessageDigest.getInstance("SHA-256").digest(value);
+        } catch (java.security.NoSuchAlgorithmException unavailable) {
+            throw new IllegalStateException("SHA-256 is unavailable", unavailable);
         }
     }
 

@@ -4,6 +4,7 @@ import io.elmos.persistence.JdbcOperationsManagementStore;
 import io.elmos.persistence.JdbcOperationsManagementStore.PendingNotification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -54,6 +55,7 @@ final class OperationsNotificationDispatcher {
     private final URI webhook;
     private final byte[] hmacSecret;
 
+    @Autowired
     OperationsNotificationDispatcher(
             JdbcOperationsManagementStore management,
             Clock clock,
